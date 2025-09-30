@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+// src/pages/AllArticlesPage.jsx
+import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Search, Filter, SortAsc, SortDesc } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, SortAsc, SortDesc } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { usePosts } from '@/hooks/useWordPress';
@@ -8,14 +9,16 @@ import PostCard from '@/components/PostCard';
 import PostCardSkeleton from '@/components/PostCardSkeleton';
 import FeaturedPosts from '@/components/FeaturedPosts';
 import MetaTags from '@/components/SEO/MetaTags';
+import { debounce } from '@/utils/performance';
+import { trackSearch } from '@/utils/analytics';
 
 const AllArticlesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortOrder, setSortOrder] = useState('desc'); // 'desc' for newest first, 'asc' for oldest
-  const [activeSearch, setActiveSearch] = useState(''); // The actual search being performed
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [activeSearch, setActiveSearch] = useState('');
   
-  const postsPerPage = 12; // Show 12 posts per page
+  const postsPerPage = 12;
 
   const { posts, loading, error, totalPages, totalPosts, refresh } = usePosts({
     page: currentPage,
@@ -30,11 +33,32 @@ const AllArticlesPage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Debounced search to avoid excessive API calls
+  const debouncedSearch = useCallback(
+    debounce((query) => {
+      setActiveSearch(query.trim());
+      setCurrentPage(1);
+      if (query.trim()) {
+        trackSearch(query.trim(), posts.length);
+      }
+    }, 500),
+    []
+  );
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    debouncedSearch(value);
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim() !== activeSearch) {
       setActiveSearch(searchQuery.trim());
-      setCurrentPage(1); // Reset to first page when searching
+      setCurrentPage(1);
+      if (searchQuery.trim()) {
+        trackSearch(searchQuery.trim(), posts.length);
+      }
     }
   };
 
@@ -46,12 +70,11 @@ const AllArticlesPage = () => {
 
   const toggleSortOrder = () => {
     setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc');
-    setCurrentPage(1); // Reset to first page when sorting changes
+    setCurrentPage(1);
   };
 
-  // Get pagination range
   const getPaginationRange = () => {
-    const delta = 2; // Number of pages to show on each side of current page
+    const delta = 2;
     const range = [];
     const rangeWithDots = [];
 
@@ -87,7 +110,6 @@ const AllArticlesPage = () => {
       />
       <div className="pt-1 pb-6">
         <div className="container mx-auto px-6">
-          {/* Header Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -101,7 +123,6 @@ const AllArticlesPage = () => {
               Explore our full library of content, from beginner tutorials to advanced deep dives into data engineering.
             </p>
             
-            {/* Search and Filter Controls */}
             <div className="max-w-2xl mx-auto mb-6">
               <form onSubmit={handleSearch} className="flex gap-2 mb-4">
                 <div className="relative flex-1">
@@ -110,7 +131,7 @@ const AllArticlesPage = () => {
                     type="text"
                     placeholder="Search articles..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={handleSearchChange}
                     className="pl-10 bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-blue-400"
                   />
                 </div>
@@ -166,10 +187,8 @@ const AllArticlesPage = () => {
             </div>
           </motion.div>
           
-          {/* Only show featured posts on first page and when not searching */}
           {currentPage === 1 && !activeSearch && <FeaturedPosts />}
           
-          {/* Results Info */}
           {!loading && (
             <motion.div 
               initial={{ opacity: 0 }}
@@ -200,7 +219,6 @@ const AllArticlesPage = () => {
             </motion.div>
           )}
           
-          {/* Posts Grid */}
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
               {Array.from({ length: postsPerPage }).map((_, i) => (
@@ -253,7 +271,6 @@ const AllArticlesPage = () => {
             </motion.div>
           ) : (
             <>
-              {/* Posts Grid */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -275,7 +292,6 @@ const AllArticlesPage = () => {
                 ))}
               </motion.div>
 
-              {/* Enhanced Pagination */}
               {totalPages > 1 && (
                 <div className="flex flex-col items-center space-y-4">
                   <div className="flex justify-center items-center space-x-2">
@@ -328,7 +344,6 @@ const AllArticlesPage = () => {
                     </Button>
                   </div>
                   
-                  {/* Page Info */}
                   <div className="text-center text-sm text-gray-400">
                     <div className="bg-gray-800/30 px-4 py-2 rounded-full">
                       Showing page <span className="text-white font-medium">{currentPage}</span> of{' '}
@@ -339,7 +354,6 @@ const AllArticlesPage = () => {
                 </div>
               )}
               
-              {/* Quick navigation for long lists */}
               {totalPages > 10 && (
                 <div className="mt-8 p-4 bg-gray-800/30 rounded-lg border border-gray-700">
                   <div className="flex items-center justify-center space-x-4">
