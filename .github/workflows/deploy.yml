@@ -41,6 +41,34 @@ jobs:
       - name: ✅ Validate Sitemap
         run: npm run sitemap:validate
       
+      - name: 🔑 Generate IndexNow Key (Pre-deployment)
+        run: |
+          echo "🔑 Ensuring IndexNow key exists..."
+          node -e "
+          const fs = require('fs');
+          const path = require('path');
+          const crypto = require('crypto');
+          
+          const publicDir = path.join(process.cwd(), 'public');
+          const keyFile = path.join(publicDir, 'indexnow-key.txt');
+          
+          if (!fs.existsSync(publicDir)) {
+            fs.mkdirSync(publicDir, { recursive: true });
+          }
+          
+          if (fs.existsSync(keyFile)) {
+            const key = fs.readFileSync(keyFile, 'utf8').trim();
+            console.log('✅ Using existing key:', key);
+          } else {
+            const key = crypto.randomBytes(16).toString('hex');
+            fs.writeFileSync(keyFile, key, 'utf8');
+            const verificationFile = path.join(publicDir, \`\${key}.txt\`);
+            fs.writeFileSync(verificationFile, key, 'utf8');
+            console.log('🔑 Generated new key:', key);
+            console.log('✅ Created verification file:', \`\${key}.txt\`);
+          }
+          "
+      
       - name: 🏗️ Build Application
         run: npm run build
         env:
@@ -67,28 +95,31 @@ jobs:
             echo "✅ Copied robots.txt"
           fi
           
-          # Copy IndexNow key files (IMPORTANT!)
-          if [ -f "public/indexnow-key.txt" ]; then
-            cp public/indexnow-key.txt dist/
-            echo "✅ Copied indexnow-key.txt"
-            
-            # Get the key value
-            KEY=$(cat public/indexnow-key.txt)
-            
-            # Copy the verification file (KEY.txt)
-            if [ -f "public/${KEY}.txt" ]; then
-              cp "public/${KEY}.txt" dist/
-              echo "✅ Copied ${KEY}.txt (verification file)"
-            else
-              echo "⚠️  Warning: Verification file public/${KEY}.txt not found"
+          # Copy ALL .txt files from public (includes IndexNow verification)
+          echo ""
+          echo "📝 Copying all .txt files from public/..."
+          TXT_COUNT=0
+          for txtfile in public/*.txt; do
+            if [ -f "$txtfile" ]; then
+              cp "$txtfile" dist/
+              echo "✅ Copied $(basename $txtfile)"
+              TXT_COUNT=$((TXT_COUNT + 1))
             fi
+          done
+          
+          if [ $TXT_COUNT -eq 0 ]; then
+            echo "⚠️  No .txt files found"
           else
-            echo "⚠️  Warning: indexnow-key.txt not found (will be generated on first notification)"
+            echo "✅ Copied $TXT_COUNT .txt files"
           fi
           
           echo ""
           echo "✅ Build verification passed"
-          echo "📁 Files in dist:"
+          echo ""
+          echo "📁 .txt files in dist/:"
+          ls -lh dist/*.txt 2>/dev/null || echo "  (none yet)"
+          echo ""
+          echo "📊 Sample of dist/ contents:"
           ls -lha dist/ | head -20
       
       - name: 🚀 Deploy to Hostinger
@@ -115,32 +146,55 @@ jobs:
       - name: 🔍 Verify Deployment
         run: |
           echo "🌐 Checking if files are accessible..."
+          echo ""
           
           # Check sitemap
           SITEMAP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/sitemap.xml || echo "000")
-          echo "Sitemap: HTTP $SITEMAP_CODE"
+          if [ "$SITEMAP_CODE" = "200" ]; then
+            echo "✅ Sitemap: HTTP $SITEMAP_CODE"
+          else
+            echo "⚠️  Sitemap: HTTP $SITEMAP_CODE"
+          fi
           
           # Check robots.txt
           ROBOTS_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/robots.txt || echo "000")
-          echo "Robots.txt: HTTP $ROBOTS_CODE"
+          if [ "$ROBOTS_CODE" = "200" ]; then
+            echo "✅ Robots.txt: HTTP $ROBOTS_CODE"
+          else
+            echo "⚠️  Robots.txt: HTTP $ROBOTS_CODE"
+          fi
           
-          # Check IndexNow key (if exists)
-          if [ -f "dist/indexnow-key.txt" ]; then
-            KEY=$(cat dist/indexnow-key.txt)
-            KEY_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://dataengineerhub.blog/${KEY}.txt" || echo "000")
-            echo "IndexNow Key (${KEY}.txt): HTTP $KEY_CODE"
+          # Check IndexNow key files
+          if [ -f "public/indexnow-key.txt" ]; then
+            KEY=$(cat public/indexnow-key.txt | tr -d '[:space:]')
+            echo ""
+            echo "🔑 IndexNow Key: $KEY"
             
-            if [ "$KEY_CODE" != "200" ]; then
-              echo "⚠️  Warning: IndexNow key file not accessible yet (may take a few minutes)"
+            # Check key file
+            KEY_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://dataengineerhub.blog/indexnow-key.txt" || echo "000")
+            if [ "$KEY_CODE" = "200" ]; then
+              echo "✅ indexnow-key.txt: HTTP $KEY_CODE"
             else
-              echo "✅ IndexNow key file is accessible!"
+              echo "⚠️  indexnow-key.txt: HTTP $KEY_CODE"
             fi
+            
+            # Check verification file (the important one!)
+            VERIFY_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://dataengineerhub.blog/${KEY}.txt" || echo "000")
+            if [ "$VERIFY_CODE" = "200" ]; then
+              echo "✅ ${KEY}.txt (verification): HTTP $VERIFY_CODE"
+              echo "🎉 IndexNow setup is complete!"
+            else
+              echo "❌ ${KEY}.txt (verification): HTTP $VERIFY_CODE"
+              echo "⚠️  This file is required for IndexNow to work!"
+            fi
+          else
+            echo "⚠️  IndexNow key not found (will be generated on first notification)"
           fi
       
       - name: 📢 Notify Search Engines
         run: |
           echo "📡 Notifying search engines..."
-          npm run sitemap:notify || echo "⚠️ Notification skipped (will retry on next deployment)"
+          npm run sitemap:notify || echo "⚠️ Notification skipped or failed (will retry on next deployment)"
         continue-on-error: true
       
       - name: 📊 Summary
@@ -148,13 +202,15 @@ jobs:
           echo "## 🚀 Deployment Complete!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "✅ Built and deployed to Hostinger" >> $GITHUB_STEP_SUMMARY
-          echo "🌐 **Live Site**: https://dataengineerhub.blog" >> $GITHUB_STEP_SUMMARY
-          echo "🗺️ **Sitemap**: https://dataengineerhub.blog/sitemap.xml" >> $GITHUB_STEP_SUMMARY
-          echo "🤖 **Robots**: https://dataengineerhub.blog/robots.txt" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
+          echo "- 🌐 [Live Site](https://dataengineerhub.blog)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🗺️ [Sitemap](https://dataengineerhub.blog/sitemap.xml)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🤖 [Robots.txt](https://dataengineerhub.blog/robots.txt)" >> $GITHUB_STEP_SUMMARY
           
-          if [ -f "dist/indexnow-key.txt" ]; then
-            KEY=$(cat dist/indexnow-key.txt)
-            echo "🔑 **IndexNow**: https://dataengineerhub.blog/${KEY}.txt" >> $GITHUB_STEP_SUMMARY
+          if [ -f "public/indexnow-key.txt" ]; then
+            KEY=$(cat public/indexnow-key.txt | tr -d '[:space:]')
+            echo "- 🔑 [IndexNow Key](https://dataengineerhub.blog/${KEY}.txt)" >> $GITHUB_STEP_SUMMARY
           fi
       
       - name: 💾 Upload Sitemap Artifact
