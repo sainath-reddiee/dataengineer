@@ -46,7 +46,7 @@ jobs:
         env:
           NODE_ENV: production
       
-      - name: 🔍 Verify Build
+      - name: 🔍 Verify Build & Copy Files
         run: |
           echo "📊 Checking build output..."
           
@@ -55,19 +55,41 @@ jobs:
             exit 1
           fi
           
-          # Ensure sitemap is in dist
-          if [ -f "public/sitemap.xml" ] && [ ! -f "dist/sitemap.xml" ]; then
-            cp public/sitemap.xml dist/sitemap.xml
-            echo "✅ Copied sitemap to dist"
+          # Copy sitemap
+          if [ -f "public/sitemap.xml" ]; then
+            cp public/sitemap.xml dist/
+            echo "✅ Copied sitemap.xml"
           fi
           
-          if [ -f "public/robots.txt" ] && [ ! -f "dist/robots.txt" ]; then
-            cp public/robots.txt dist/robots.txt
-            echo "✅ Copied robots.txt to dist"
+          # Copy robots.txt
+          if [ -f "public/robots.txt" ]; then
+            cp public/robots.txt dist/
+            echo "✅ Copied robots.txt"
           fi
           
+          # Copy IndexNow key files (IMPORTANT!)
+          if [ -f "public/indexnow-key.txt" ]; then
+            cp public/indexnow-key.txt dist/
+            echo "✅ Copied indexnow-key.txt"
+            
+            # Get the key value
+            KEY=$(cat public/indexnow-key.txt)
+            
+            # Copy the verification file (KEY.txt)
+            if [ -f "public/${KEY}.txt" ]; then
+              cp "public/${KEY}.txt" dist/
+              echo "✅ Copied ${KEY}.txt (verification file)"
+            else
+              echo "⚠️  Warning: Verification file public/${KEY}.txt not found"
+            fi
+          else
+            echo "⚠️  Warning: indexnow-key.txt not found (will be generated on first notification)"
+          fi
+          
+          echo ""
           echo "✅ Build verification passed"
-          ls -lh dist/ | head -10
+          echo "📁 Files in dist:"
+          ls -lha dist/ | head -20
       
       - name: 🚀 Deploy to Hostinger
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -85,21 +107,40 @@ jobs:
             **/node_modules/**
             **/.env
       
+      - name: ⏸️ Wait for FTP Sync
+        run: |
+          echo "⏳ Waiting 30 seconds for FTP files to sync..."
+          sleep 30
+      
       - name: 🔍 Verify Deployment
         run: |
-          echo "🌐 Waiting for deployment to complete..."
-          sleep 15
+          echo "🌐 Checking if files are accessible..."
           
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/sitemap.xml || echo "000")
+          # Check sitemap
+          SITEMAP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/sitemap.xml || echo "000")
+          echo "Sitemap: HTTP $SITEMAP_CODE"
           
-          if [ "$HTTP_CODE" == "200" ]; then
-            echo "✅ Sitemap is live!"
-          else
-            echo "⚠️ Sitemap returned HTTP $HTTP_CODE (might take a few minutes)"
+          # Check robots.txt
+          ROBOTS_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/robots.txt || echo "000")
+          echo "Robots.txt: HTTP $ROBOTS_CODE"
+          
+          # Check IndexNow key (if exists)
+          if [ -f "dist/indexnow-key.txt" ]; then
+            KEY=$(cat dist/indexnow-key.txt)
+            KEY_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://dataengineerhub.blog/${KEY}.txt" || echo "000")
+            echo "IndexNow Key (${KEY}.txt): HTTP $KEY_CODE"
+            
+            if [ "$KEY_CODE" != "200" ]; then
+              echo "⚠️  Warning: IndexNow key file not accessible yet (may take a few minutes)"
+            else
+              echo "✅ IndexNow key file is accessible!"
+            fi
           fi
       
       - name: 📢 Notify Search Engines
-        run: npm run sitemap:notify || echo "⚠️ Notification skipped"
+        run: |
+          echo "📡 Notifying search engines..."
+          npm run sitemap:notify || echo "⚠️ Notification skipped (will retry on next deployment)"
         continue-on-error: true
       
       - name: 📊 Summary
@@ -109,6 +150,12 @@ jobs:
           echo "✅ Built and deployed to Hostinger" >> $GITHUB_STEP_SUMMARY
           echo "🌐 **Live Site**: https://dataengineerhub.blog" >> $GITHUB_STEP_SUMMARY
           echo "🗺️ **Sitemap**: https://dataengineerhub.blog/sitemap.xml" >> $GITHUB_STEP_SUMMARY
+          echo "🤖 **Robots**: https://dataengineerhub.blog/robots.txt" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "dist/indexnow-key.txt" ]; then
+            KEY=$(cat dist/indexnow-key.txt)
+            echo "🔑 **IndexNow**: https://dataengineerhub.blog/${KEY}.txt" >> $GITHUB_STEP_SUMMARY
+          fi
       
       - name: 💾 Upload Sitemap Artifact
         uses: actions/upload-artifact@v4
@@ -117,7 +164,6 @@ jobs:
           path: dist/sitemap.xml
           retention-days: 30
 
-  # Separate job for PR validation
   validate-sitemap:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
