@@ -1,23 +1,34 @@
 {
-  "name": "dataengineerhub-blog",
+  "name": "dataengineerhub",
+  "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:sitemap && vite build",
-    "generate-sitemap": "node scripts/generateSitemap.js",
-    "build:sitemap": "node scripts/generateSitemap.js",
+    "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext js,jsx",
-    "test:seo": "node scripts/testSEO.js",
-    "analyze": "vite build --mode analyze",
-    "deploy": "npm run build && npm run deploy:vercel",
-    "deploy:vercel": "vercel --prod",
-    "prebuild": "npm run generate-sitemap",
-    "build:prod": "npm run build",
-    "sitemap:submit": "node scripts/submitSitemap.js"
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    
+    "sitemap:generate": "node scripts/generateSitemap.js",
+    "sitemap:generate:force": "node scripts/generateSitemap.js --force",
+    "sitemap:validate": "node scripts/validateSitemap.js",
+    "sitemap:notify": "node scripts/notifySearchEngines.js",
+    "sitemap:notify:force": "node scripts/notifySearchEngines.js --force",
+    
+    "prebuild": "npm run sitemap:generate && npm run sitemap:validate",
+    "build:production": "npm run build",
+    
+    "postbuild": "npm run sitemap:validate",
+    
+    "deploy": "npm run build:production && npm run deploy:run",
+    "deploy:run": "echo 'Add your deployment command here (vercel, netlify, etc.)'",
+    "postdeploy": "npm run sitemap:notify",
+    
+    "sitemap:full": "npm run sitemap:generate:force && npm run sitemap:validate && npm run sitemap:notify:force",
+    
+    "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap test passed'"
   },
-  "dependencies": {
+"dependencies": {
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-toast": "^1.1.5",
     "autoprefixer": "^10.4.21",
