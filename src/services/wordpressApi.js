@@ -24,6 +24,27 @@ class WordPressAPI {
     console.log('🧹 Cache cleared:', pattern || 'all');
   }
 
+  // Helper function to decode HTML entities
+  decodeHtmlEntities(text) {
+    if (!text || typeof text !== 'string') return '';
+    
+    // This is a safe way to decode entities in the browser
+    if (typeof window !== 'undefined') {
+      const textarea = document.createElement('textarea');
+      textarea.innerHTML = text;
+      return textarea.value;
+    }
+    
+    // Basic fallback for non-browser environments
+    return text
+      .replace(/&#8217;/g, "'")
+      .replace(/&amp;/g, "&")
+      .replace(/&quot;/g, '"')
+      .replace(/&#039;/g, "'")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">");
+  }
+
   // Enhanced request method with better error handling
   async makeRequest(endpoint, options = {}) {
     const cacheKey = `${endpoint}_${JSON.stringify(options)}`;
@@ -374,7 +395,7 @@ class WordPressAPI {
       const transformedPost = {
         id: wpPost.id || Math.random(),
         slug: wpPost.slug || '',
-        title: wpPost.title?.rendered || wpPost.title || 'Untitled',
+        title: this.decodeHtmlEntities(wpPost.title?.rendered || wpPost.title || 'Untitled'),
         excerpt: excerpt,
         content: wpPost.content?.rendered || wpPost.content || '',
         category: primaryCategory,
@@ -431,10 +452,10 @@ class WordPressAPI {
 
   cleanExcerpt(excerpt) {
     try {
-      return excerpt
+      const decoded = this.decodeHtmlEntities(excerpt);
+      return decoded
         .replace(/<[^>]*>/g, '')
         .replace(/\[&hellip;\]/g, '...')
-        .replace(/&[^;]+;/g, '') // Remove HTML entities
         .trim();
     } catch (error) {
       console.warn('⚠️ Error cleaning excerpt:', error);
