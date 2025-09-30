@@ -3,6 +3,8 @@
 import React, { Suspense } from 'react';
 import Hero from '../components/Hero';
 import MetaTags from '../components/SEO/MetaTags';
+import OptimizedImage from '@/components/OptimizedImage';
+import { optimizeWordPressImage } from '@/utils/imageOptimizer';
 
 const FeaturedPosts = React.lazy(() => import('../components/FeaturedPosts'));
 const TrendingPosts = React.lazy(() => import('../components/TrendingPosts'));
