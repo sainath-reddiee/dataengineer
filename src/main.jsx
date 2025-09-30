@@ -1,13 +1,13 @@
+// src/main.jsx
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import '@/index.css';
+import { initThirdPartyScripts } from '@/utils/scriptLoader';
 
-// Lazy load the main App component for better initial bundle size
 const App = React.lazy(() => import('@/App'));
 
-// Loading component for better UX
 const PageLoader = () => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
     <div className="flex flex-col items-center space-y-4">
@@ -17,7 +17,7 @@ const PageLoader = () => (
   </div>
 );
 
-// Preload critical fonts
+// Preload critical font
 const preloadFont = () => {
   const link = document.createElement('link');
   link.rel = 'preload';
@@ -30,7 +30,6 @@ const preloadFont = () => {
 
 // Load fonts efficiently
 const loadFonts = () => {
-  // Preconnect to font origins
   const preconnectGoogle = document.createElement('link');
   preconnectGoogle.rel = 'preconnect';
   preconnectGoogle.href = 'https://fonts.googleapis.com';
@@ -42,24 +41,21 @@ const loadFonts = () => {
   preconnectGstatic.crossOrigin = 'anonymous';
   document.head.appendChild(preconnectGstatic);
 
-  // Load fonts with display=swap for better performance
   const fontLink = document.createElement('link');
   fontLink.rel = 'stylesheet';
   fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap';
   fontLink.media = 'all';
   document.head.appendChild(fontLink);
 
-  // Preload critical font weights
   preloadFont();
 };
 
-// Initialize font loading
+// Initialize fonts
 loadFonts();
 
 // Performance monitoring
 if (typeof window !== 'undefined' && 'performance' in window) {
   window.addEventListener('load', () => {
-    // Log performance metrics for debugging
     const perfData = performance.getEntriesByType('navigation')[0];
     console.log('🚀 Performance Metrics:', {
       'Load Time': `${Math.round(perfData.loadEventEnd - perfData.fetchStart)}ms`,
@@ -82,3 +78,10 @@ root.render(
     </HelmetProvider>
   </React.StrictMode>
 );
+
+// Initialize third-party scripts after app loads
+if (typeof window !== 'undefined') {
+  setTimeout(() => {
+    initThirdPartyScripts();
+  }, 1000);
+}
