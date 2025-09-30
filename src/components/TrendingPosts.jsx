@@ -1,19 +1,26 @@
+// src/components/TrendingPosts.jsx - COMPLETE VERSION
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrendingUp, AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePosts } from '@/hooks/useWordPress';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { reduceMotion } from '@/utils/performance';
 import PostCard from './PostCard';
 import PostCardSkeleton from './PostCardSkeleton';
 
 const TrendingPosts = () => {
   const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
+  const shouldReduceMotion = reduceMotion();
   
   const { posts: trendingPosts, loading, error, refresh } = usePosts({
     per_page: 3,
     trending: true,
   });
+
+  const baseAnimationConfig = shouldReduceMotion
+    ? { initial: {}, animate: {}, transition: { duration: 0 } }
+    : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6 } };
 
   if (loading) {
     return (
@@ -45,7 +52,7 @@ const TrendingPosts = () => {
   }
 
   if (trendingPosts.length === 0) {
-    return null; // Don't render the section if there are no trending posts
+    return null;
   }
 
   return (
@@ -54,9 +61,7 @@ const TrendingPosts = () => {
         <AnimatePresence>
           {hasIntersected && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              {...baseAnimationConfig}
               className="text-center mb-12"
             >
               <div className="flex items-center justify-center gap-4 mb-6">
@@ -79,12 +84,14 @@ const TrendingPosts = () => {
           {hasIntersected && trendingPosts.map((post, index) => (
             <motion.div
               key={post.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.5,
-                delay: index * 0.1
-              }}
+              {...(shouldReduceMotion ? {} : {
+                initial: { opacity: 0, y: 20 },
+                animate: { opacity: 1, y: 0 },
+                transition: {
+                  duration: 0.5,
+                  delay: index * 0.1
+                }
+              })}
             >
               <PostCard post={post} />
             </motion.div>
