@@ -1,5 +1,4 @@
-/* CRITICAL: Remove blocking Google Fonts import and load efficiently */
-/* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap'); */
+/* src/index.css - COMPLETE PRODUCTION VERSION */
 
 @tailwind base;
 @tailwind components;
@@ -43,20 +42,386 @@ body {
   scroll-behavior: smooth;
 }
 
-/* MOBILE-FIRST PERFORMANCE OPTIMIZATIONS */
+/* ============================================
+   WORDPRESS TABLE STYLES - CRITICAL
+   ============================================ */
 
-/* Critical images optimization */
+.article-content table,
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  display: table;
+}
+
+.article-content thead,
+.prose thead {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(147, 51, 234, 0.2) 100%);
+}
+
+.article-content th,
+.prose th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 700;
+  color: #60a5fa;
+  border-bottom: 2px solid rgba(96, 165, 250, 0.3);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.article-content td,
+.prose td {
+  padding: 12px 16px;
+  color: #e2e8f0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  font-size: 0.9rem;
+}
+
+.article-content tbody tr,
+.prose tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.article-content tbody tr:hover,
+.prose tbody tr:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.article-content tbody tr:last-child td,
+.prose tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Responsive table styling */
+@media screen and (max-width: 768px) {
+  .article-content table,
+  .prose table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .article-content th,
+  .prose th,
+  .article-content td,
+  .prose td {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+/* ============================================
+   WORDPRESS CONTENT GENERAL STYLES
+   ============================================ */
+
+.article-content {
+  color: #e2e8f0;
+  line-height: 1.8;
+}
+
+/* Headings */
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5,
+.article-content h6 {
+  color: #f1f5f9;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.article-content h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.article-content h2 {
+  font-size: 2rem;
+  border-bottom: 2px solid rgba(96, 165, 250, 0.3);
+  padding-bottom: 0.5rem;
+}
+
+.article-content h3 {
+  font-size: 1.5rem;
+  color: #93c5fd;
+}
+
+.article-content h4 {
+  font-size: 1.25rem;
+  color: #bfdbfe;
+}
+
+/* Paragraphs */
+.article-content p {
+  margin-bottom: 1.5rem;
+  color: #cbd5e1;
+}
+
+/* Lists */
+.article-content ul,
+.article-content ol {
+  margin: 1.5rem 0;
+  padding-left: 2rem;
+  color: #cbd5e1;
+}
+
+.article-content li {
+  margin-bottom: 0.5rem;
+  line-height: 1.7;
+}
+
+.article-content ul li {
+  list-style-type: disc;
+}
+
+.article-content ol li {
+  list-style-type: decimal;
+}
+
+.article-content ul ul,
+.article-content ol ul,
+.article-content ul ol,
+.article-content ol ol {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Links */
+.article-content a {
+  color: #60a5fa;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+  font-weight: 500;
+}
+
+.article-content a:hover {
+  color: #93c5fd;
+}
+
+/* Auto-linked keywords from plugin */
+.article-content .auto-keyword-link {
+  color: #2563eb;
+  text-decoration: underline;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.article-content .auto-keyword-link:hover {
+  color: #1d4ed8;
+}
+
+/* Code blocks */
+.article-content code {
+  background: rgba(96, 165, 250, 0.1);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  color: #93c5fd;
+  font-family: 'Courier New', Courier, monospace;
+  border: 1px solid rgba(96, 165, 250, 0.2);
+}
+
+.article-content pre {
+  background: rgba(30, 41, 59, 0.8);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border: 1px solid rgba(96, 165, 250, 0.2);
+}
+
+.article-content pre code {
+  background: transparent;
+  padding: 0;
+  color: #e2e8f0;
+  border: none;
+}
+
+/* Blockquotes */
+.article-content blockquote {
+  border-left: 4px solid rgba(96, 165, 250, 0.5);
+  padding-left: 1.5rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(96, 165, 250, 0.05);
+  padding: 1rem 1.5rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.article-content blockquote p {
+  margin-bottom: 0.5rem;
+}
+
+.article-content blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Images */
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 2rem 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  display: block;
+}
+
+.article-content figure {
+  margin: 2rem 0;
+}
+
+.article-content figcaption {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Horizontal rules */
+.article-content hr {
+  border: none;
+  border-top: 2px solid rgba(148, 163, 184, 0.2);
+  margin: 3rem 0;
+}
+
+/* Strong and emphasis */
+.article-content strong {
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.article-content em {
+  font-style: italic;
+  color: #cbd5e1;
+}
+
+/* WordPress alignment classes */
+.article-content .alignleft {
+  float: left;
+  margin: 0 1.5rem 1rem 0;
+}
+
+.article-content .alignright {
+  float: right;
+  margin: 0 0 1rem 1.5rem;
+}
+
+.article-content .aligncenter {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* WordPress caption */
+.article-content .wp-caption {
+  max-width: 100%;
+}
+
+.article-content .wp-caption-text {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* WordPress gallery */
+.article-content .gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.article-content .gallery-item {
+  text-align: center;
+}
+
+/* Embedded content (videos, iframes) */
+.article-content iframe {
+  max-width: 100%;
+  border-radius: 0.5rem;
+  margin: 2rem 0;
+}
+
+.article-content .iframe-wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+  margin: 2rem 0;
+}
+
+.article-content .iframe-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.article-content .wp-block-embed {
+  margin: 2rem 0;
+}
+
+/* WordPress buttons */
+.article-content .wp-block-button {
+  margin: 1rem 0;
+}
+
+.article-content .wp-block-button__link {
+  background: linear-gradient(135deg, #3b82f6 0%, #9333ea 100%);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.2s ease;
+  font-weight: 600;
+}
+
+.article-content .wp-block-button__link:hover {
+  transform: translateY(-2px);
+}
+
+/* Fix for empty paragraphs */
+.article-content p:empty {
+  display: none;
+}
+
+/* Ensure content is visible */
+.article-content * {
+  max-width: 100%;
+}
+
+/* ============================================
+   CRITICAL IMAGES OPTIMIZATION
+   ============================================ */
+
 img {
   max-width: 100%;
   height: auto;
   display: block;
   transition: opacity 0.3s ease;
-  /* Add lazy loading attributes in HTML */
   content-visibility: auto;
   contain-intrinsic-size: 300px 200px;
 }
 
-/* Optimize for mobile LCP */
 .hero-image,
 .blog-card img,
 .featured-image {
@@ -65,7 +430,10 @@ img {
   transform: translateZ(0);
 }
 
-/* Reduce motion for users who prefer it */
+/* ============================================
+   REDUCED MOTION SUPPORT
+   ============================================ */
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -77,9 +445,11 @@ img {
   }
 }
 
-/* Mobile-specific optimizations */
+/* ============================================
+   MOBILE OPTIMIZATIONS
+   ============================================ */
+
 @media screen and (max-width: 768px) {
-  /* Reduce complex animations on mobile */
   .floating-animation {
     animation: none;
   }
@@ -88,26 +458,27 @@ img {
     animation: none;
   }
   
-  /* Simplify gradients for mobile performance */
   .gradient-text {
     background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
     animation: none;
   }
   
-  /* Optimize cards for mobile */
   .blog-card,
   .tech-card {
-    backdrop-filter: blur(5px); /* Reduce blur on mobile */
-    transition: transform 0.2s ease; /* Faster transitions */
+    backdrop-filter: blur(5px);
+    transition: transform 0.2s ease;
   }
   
   .blog-card:hover,
   .tech-card:hover {
-    transform: translateY(-2px); /* Reduced hover effect */
+    transform: translateY(-2px);
   }
 }
 
-/* Optimize animations with hardware acceleration */
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
 .floating-animation,
 .pulse-glow {
   will-change: transform;
@@ -115,7 +486,6 @@ img {
   contain: layout;
 }
 
-/* Optimized gradients with better performance */
 .gradient-text {
   background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 40%, #f472b6 80%, #fbbf24 100%);
   -webkit-background-clip: text;
@@ -125,7 +495,6 @@ img {
   background-size: 200% 200%;
 }
 
-/* Only animate on larger screens */
 @media screen and (min-width: 769px) {
   .gradient-text {
     animation: gradient-shift 3s ease-in-out infinite;
@@ -155,7 +524,10 @@ img {
   to { box-shadow: 0 0 40px rgba(96, 165, 250, 0.7), 0 0 60px rgba(168, 85, 247, 0.4); }
 }
 
-/* Optimized card styles with better mobile performance */
+/* ============================================
+   CARD STYLES
+   ============================================ */
+
 .tech-card {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
   backdrop-filter: blur(10px);
@@ -198,7 +570,10 @@ img {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Enhanced prose styles for article content */
+/* ============================================
+   PROSE STYLES
+   ============================================ */
+
 .prose {
   max-width: 65ch;
   margin: 0 auto;
@@ -243,7 +618,10 @@ img {
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* Improved form styles */
+/* ============================================
+   FORM STYLES
+   ============================================ */
+
 .form-input {
   transition: all 0.3s ease;
   border: 2px solid transparent;
@@ -254,7 +632,10 @@ img {
   box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
 }
 
-/* Button enhancements */
+/* ============================================
+   BUTTON ENHANCEMENTS
+   ============================================ */
+
 .btn-primary {
   position: relative;
   overflow: hidden;
@@ -276,7 +657,10 @@ img {
   left: 100%;
 }
 
-/* Critical loading states for better perceived performance */
+/* ============================================
+   LOADING STATES
+   ============================================ */
+
 .skeleton {
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
   background-size: 200% 100%;
