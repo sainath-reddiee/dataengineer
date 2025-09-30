@@ -114,12 +114,12 @@ async function submitToIndexNow(urls, apiKey) {
     urlList: urls.slice(0, 10000) // IndexNow limit
   };
 
-  console.log('\n📡 Submitting to IndexNow API...');
+  console.log('\n📡 Submitting to IndexNow API via Bing...');
   console.log(`   Host: ${host}`);
   console.log(`   URLs: ${urls.length}`);
 
   try {
-    const response = await makeRequest('https://api.indexnow.org/indexnow', {
+    const response = await makeRequest('https://www.bing.com/indexnow', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
@@ -129,7 +129,7 @@ async function submitToIndexNow(urls, apiKey) {
     });
 
     console.log(`✅ IndexNow: Success (HTTP ${response.status})`);
-    console.log('   Notified: Bing, Yandex, Seznam.cz, Naver');
+    console.log('   Notified: Bing (and other IndexNow search engines)');
     return true;
   } catch (error) {
     console.error(`❌ IndexNow failed: ${error.message}`);
@@ -183,7 +183,7 @@ async function notifySearchEngines(options = {}) {
   const { force = false, all = false } = options;
 
   console.log('🚀 Search Engine Notification Tool');
-  console.log('=' .repeat(60));
+  console.log('='.repeat(60));
   console.log(`📅 ${new Date().toISOString()}`);
   console.log(`🌐 Site: ${SITE_URL}`);
   console.log(`🔄 Force notification: ${force}`);
@@ -245,9 +245,9 @@ async function notifySearchEngines(options = {}) {
       
       saveNotificationCache(newCache);
 
-      console.log('\n' + '=' .repeat(60));
+      console.log('\n' + '='.repeat(60));
       console.log('✅ NOTIFICATION SUCCESSFUL!');
-      console.log('=' .repeat(60));
+      console.log('='.repeat(60));
       console.log(`📢 Notified ${urlsToNotify.length} URLs`);
       console.log('🔍 Search engines notified:');
       console.log('   - Bing');
