@@ -1,4 +1,4 @@
-// src/components/FeaturedPosts.jsx - FIXED VERSION
+// src/components/FeaturedPosts.jsx - COMPLETE PRODUCTION VERSION
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -23,9 +23,9 @@ const FeaturedPosts = () => {
 
   const displayPosts = featuredPosts;
 
-  // FIXED: Enhanced refresh handler with better feedback
+  // Enhanced refresh handler with user feedback
   const handleRefresh = async () => {
-    console.log('🔄 Refresh button clicked!');
+    console.log('🔄 Refresh button clicked in FeaturedPosts');
     
     toast({
       title: "🔄 Refreshing...",
@@ -39,8 +39,10 @@ const FeaturedPosts = () => {
         title: "✅ Refreshed!",
         description: "Featured posts updated successfully",
       });
+      
+      console.log('✅ Featured posts refreshed successfully');
     } catch (error) {
-      console.error('Error refreshing:', error);
+      console.error('❌ Error refreshing featured posts:', error);
       
       toast({
         title: "❌ Refresh Failed",
@@ -104,20 +106,21 @@ const FeaturedPosts = () => {
               {...animationConfig}
               className="text-center mb-12"
             >
-              <div className="flex items-center justify-center gap-4 mb-6">
+              <div className="flex items-center justify-center gap-4 mb-6 flex-wrap">
                 <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 backdrop-blur-sm border border-yellow-500/30 rounded-full px-6 py-3">
                   <Star className="h-5 w-5 text-yellow-400" />
                   <span className="text-sm font-medium text-yellow-200">Featured Content</span>
                 </div>
                 
-                {/* FIXED: Refresh button - ALWAYS VISIBLE with better styling */}
+                {/* PRODUCTION READY: Always visible refresh button with full functionality */}
                 <Button
                   onClick={handleRefresh}
                   variant="outline"
                   size="sm"
                   disabled={loading}
-                  className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20 transition-all duration-300 hover:scale-105"
+                  className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20 transition-all duration-300 hover:scale-105 disabled:opacity-50"
                   title="Refresh featured posts"
+                  aria-label="Refresh featured posts"
                 >
                   <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                   Refresh
