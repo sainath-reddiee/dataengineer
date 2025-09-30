@@ -1,3 +1,4 @@
+// src/pages/ArticlePage.jsx
 import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -5,19 +6,19 @@ import { ArrowLeft, Calendar, Clock, User, Loader, AlertCircle, RefreshCw } from
 import { Button } from '@/components/ui/button';
 import MetaTags from '@/components/SEO/MetaTags';
 import { usePost } from '@/hooks/useWordPress';
+import { preloadImage } from '@/utils/imageOptimizer';
+import { throttle } from '@/utils/performance';
+import { trackScrollDepth, trackArticleRead } from '@/utils/analytics';
+import LazyImage from '@/components/LazyImage';
 
-// Lazy load ad component to reduce initial bundle size
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
-// Enhanced Error Display Component
 const ErrorDisplay = ({ error, onRetry, slug }) => {
   const navigate = useNavigate();
   
   const getErrorMessage = (error) => {
     if (!error) return 'An unknown error occurred';
-    
     if (typeof error === 'string') return error;
-    
     if (error.message) {
       if (error.message.includes('not found')) {
         return `Article "${slug}" was not found. It may have been moved or deleted.`;
@@ -30,7 +31,6 @@ const ErrorDisplay = ({ error, onRetry, slug }) => {
       }
       return error.message;
     }
-    
     return 'Failed to load the article. Please try again.';
   };
 
@@ -108,23 +108,12 @@ const ErrorDisplay = ({ error, onRetry, slug }) => {
               </div>
             )}
           </div>
-          
-          {/* Debug info in development */}
-          {import.meta.env.DEV && (
-            <details className="mt-8 text-left max-w-lg">
-              <summary className="text-sm text-gray-500 cursor-pointer">Debug Info</summary>
-              <pre className="text-xs text-gray-600 mt-2 p-3 bg-gray-900 rounded overflow-auto">
-                {JSON.stringify({ slug, error: error?.toString() }, null, 2)}
-              </pre>
-            </details>
-          )}
         </motion.div>
       </div>
     </div>
   );
 };
 
-// Enhanced Loading Component
 const LoadingDisplay = () => (
   <div className="pt-4 pb-12">
     <div className="container mx-auto px-6 max-w-4xl">
@@ -166,104 +155,6 @@ const LoadingDisplay = () => (
   </div>
 );
 
-// Optimized Image component for better mobile performance
-const OptimizedImage = ({ src, alt, className }) => {
-  const [imageLoaded, setImageLoaded] = React.useState(false);
-  const [imageSrc, setImageSrc] = React.useState(null);
-  const [imageError, setImageError] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!src) {
-      setImageError(true);
-      return;
-    }
-
-    // Create different sized images for mobile optimization
-    const img = new Image();
-    
-    // Use smaller image for mobile devices
-    const isMobile = window.innerWidth <= 768;
-    let optimizedSrc = src;
-    
-    // Only modify if it's a valid URL
-    try {
-      const url = new URL(src);
-      if (isMobile && !src.includes('unsplash.com')) {
-        optimizedSrc = src.replace(/w=\d+/, 'w=400').replace(/h=\d+/, 'h=300');
-      }
-    } catch (e) {
-      console.warn('Invalid image URL:', src);
-    }
-    
-    img.onload = () => {
-      setImageSrc(optimizedSrc);
-      setImageLoaded(true);
-    };
-    
-    img.onerror = () => {
-      console.warn('Failed to load image:', optimizedSrc);
-      // Try original src as fallback
-      if (optimizedSrc !== src) {
-        const fallbackImg = new Image();
-        fallbackImg.onload = () => {
-          setImageSrc(src);
-          setImageLoaded(true);
-        };
-        fallbackImg.onerror = () => {
-          setImageError(true);
-        };
-        fallbackImg.src = src;
-      } else {
-        setImageError(true);
-      }
-    };
-    
-    img.src = optimizedSrc;
-  }, [src]);
-
-  if (imageError) {
-    return (
-      <div className={`relative ${className} bg-gradient-to-br from-slate-800 to-slate-700 flex items-center justify-center`}>
-        <div className="text-gray-500 text-center">
-          <AlertCircle className="h-8 w-8 mx-auto mb-2" />
-          <span className="text-sm">Image not available</span>
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
-      </div>
-    );
-  }
-
-  return (
-    <div className={`relative ${className}`}>
-      {!imageLoaded && (
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-pulse rounded-2xl flex items-center justify-center">
-          <Loader className="h-8 w-8 animate-spin text-blue-400" />
-        </div>
-      )}
-      {imageSrc && (
-        <img 
-          className={`w-full h-full object-cover transition-opacity duration-300 ${
-            imageLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
-          alt={alt || 'Article image'}
-          src={imageSrc}
-          loading="lazy"
-          decoding="async"
-          // Add responsive image attributes for mobile
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-          style={{ 
-            contentVisibility: 'auto',
-            containIntrinsicSize: '800px 400px'
-          }}
-          onError={() => setImageError(true)}
-        />
-      )}
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
-    </div>
-  );
-};
-
-// Loading skeleton for ads
 const AdSkeleton = () => (
   <div className="h-32 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-pulse rounded-lg flex items-center justify-center">
     <span className="text-gray-500 text-sm">Advertisement</span>
@@ -275,29 +166,57 @@ const ArticlePage = () => {
   const [retryCount, setRetryCount] = useState(0);
   const { post, loading, error, refetch } = usePost(slug);
 
-  // Validate slug
   useEffect(() => {
     if (!slug || typeof slug !== 'string' || slug.trim() === '') {
       console.error('Invalid slug provided:', slug);
     }
   }, [slug]);
 
+  // Preload hero image
+  useEffect(() => {
+    if (post?.image) {
+      preloadImage(post.image, { fetchpriority: 'high' });
+    }
+  }, [post?.image]);
+
+  // Track article read and scroll depth
+  useEffect(() => {
+    if (!post) return;
+
+    const readTimeMinutes = parseInt(post.readTime) || 1;
+    trackArticleRead(post.title, post.category, readTimeMinutes);
+
+    let maxDepth = 0;
+    const handleScroll = throttle(() => {
+      const scrollPercentage = Math.round(
+        (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
+      );
+      
+      if (scrollPercentage > maxDepth) {
+        maxDepth = scrollPercentage;
+        if ([25, 50, 75, 100].includes(scrollPercentage)) {
+          trackScrollDepth(post.title, scrollPercentage);
+        }
+      }
+    }, 1000);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [post]);
+
   const handleRetry = () => {
     setRetryCount(prev => prev + 1);
     refetch();
   };
 
-  // Show loading state
   if (loading) {
     return <LoadingDisplay />;
   }
 
-  // Show error state
   if (error) {
     return <ErrorDisplay error={error} onRetry={handleRetry} slug={slug} />;
   }
 
-  // Show not found state
   if (!post) {
     return <ErrorDisplay 
       error="Post not found" 
@@ -306,7 +225,6 @@ const ArticlePage = () => {
     />;
   }
 
-  // Validate post data before rendering
   const safePost = {
     id: post.id || 'unknown',
     title: post.title || 'Untitled',
@@ -319,7 +237,6 @@ const ArticlePage = () => {
     image: post.image || 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop'
   };
 
-  // Safe date parsing
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -380,11 +297,15 @@ const ArticlePage = () => {
           className="space-y-8"
         >
           {/* Hero Section */}
-          <div className="relative">
-            <OptimizedImage 
+          <div className="relative rounded-2xl overflow-hidden">
+            <LazyImage
               src={safePost.image}
               alt={safePost.title}
-              className="w-full h-64 md:h-96 rounded-2xl overflow-hidden"
+              width={1600}
+              quality={85}
+              sizes="(max-width: 768px) 100vw, 1200px"
+              className="w-full h-64 md:h-96"
+              priority={true}
             />
             
             <div className="absolute inset-0 flex items-end p-6 md:p-8">
