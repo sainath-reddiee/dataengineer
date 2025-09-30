@@ -1,26 +1,14 @@
-# .github/workflows/deploy.yml
-# Full automation: Generate sitemap, validate, build, deploy, notify
-name: Build, Deploy & Notify Search Engines
+name: Build and Deploy to Hostinger
 
 on:
-  # Trigger on push to main
   push:
     branches: [main]
-  
-  # Daily at 2 AM UTC to catch new WordPress posts
   schedule:
     - cron: '0 2 * * *'
-  
-  # Allow manual trigger
   workflow_dispatch:
     inputs:
       force_sitemap:
-        description: 'Force regenerate sitemap (ignore cache)'
-        required: false
-        type: boolean
-        default: false
-      force_notify:
-        description: 'Force notify search engines (ignore rate limit)'
+        description: 'Force regenerate sitemap'
         required: false
         type: boolean
         default: false
@@ -30,25 +18,23 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: 📥 Checkout repository
-        uses: actions/checkout@v3
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
       
       - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
       
-      - name: 📦 Install dependencies
+      - name: 📦 Install Dependencies
         run: npm ci
       
       - name: 🗺️ Generate Sitemap
         run: |
           if [ "${{ github.event.inputs.force_sitemap }}" == "true" ]; then
-            echo "🔄 Force generating sitemap..."
             npm run sitemap:generate:force
           else
-            echo "📄 Generating sitemap (with cache)..."
             npm run sitemap:generate
           fi
       
@@ -60,132 +46,114 @@ jobs:
         env:
           NODE_ENV: production
       
-      - name: 📊 Build Summary
+      - name: 🔍 Verify Build
         run: |
-          echo "## 📊 Build Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 Checking build output..."
           
-          if [ -f public/sitemap.xml ]; then
-            URL_COUNT=$(grep -c "<url>" public/sitemap.xml || echo "0")
-            FILE_SIZE=$(du -h public/sitemap.xml | cut -f1)
-            echo "✅ **Sitemap Generated**" >> $GITHUB_STEP_SUMMARY
-            echo "- URLs: $URL_COUNT" >> $GITHUB_STEP_SUMMARY
-            echo "- Size: $FILE_SIZE" >> $GITHUB_STEP_SUMMARY
+          if [ ! -d "dist" ]; then
+            echo "❌ dist directory not found!"
+            exit 1
+          fi
+          
+          # Ensure sitemap is in dist
+          if [ -f "public/sitemap.xml" ] && [ ! -f "dist/sitemap.xml" ]; then
+            cp public/sitemap.xml dist/sitemap.xml
+            echo "✅ Copied sitemap to dist"
+          fi
+          
+          if [ -f "public/robots.txt" ] && [ ! -f "dist/robots.txt" ]; then
+            cp public/robots.txt dist/robots.txt
+            echo "✅ Copied robots.txt to dist"
+          fi
+          
+          echo "✅ Build verification passed"
+          ls -lh dist/ | head -10
+      
+      - name: 🚀 Deploy to Hostinger
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_REMOTE_PATH }}/
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.env
+      
+      - name: 🔍 Verify Deployment
+        run: |
+          echo "🌐 Waiting for deployment to complete..."
+          sleep 15
+          
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/sitemap.xml || echo "000")
+          
+          if [ "$HTTP_CODE" == "200" ]; then
+            echo "✅ Sitemap is live!"
           else
-            echo "❌ **Sitemap Missing**" >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ Sitemap returned HTTP $HTTP_CODE (might take a few minutes)"
           fi
-          
-          if [ -d dist ]; then
-            DIST_SIZE=$(du -sh dist | cut -f1)
-            FILE_COUNT=$(find dist -type f | wc -l)
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "✅ **Build Complete**" >> $GITHUB_STEP_SUMMARY
-            echo "- Size: $DIST_SIZE" >> $GITHUB_STEP_SUMMARY
-            echo "- Files: $FILE_COUNT" >> $GITHUB_STEP_SUMMARY
-          fi
-      
-      # ============================================
-      # DEPLOYMENT STEP - CUSTOMIZE FOR YOUR PLATFORM
-      # ============================================
-      
-      # Option 1: Vercel
-      # - name: 🚀 Deploy to Vercel
-      #   uses: amondnet/vercel-action@v25
-      #   with:
-      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
-      #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-      #     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-      #     vercel-args: '--prod'
-      
-      # Option 2: Netlify
-      # - name: 🚀 Deploy to Netlify
-      #   uses: nwtgck/actions-netlify@v2
-      #   with:
-      #     publish-dir: './dist'
-      #     production-deploy: true
-      #   env:
-      #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-      #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-      
-      # Option 3: GitHub Pages
-      # - name: 🚀 Deploy to GitHub Pages
-      #   uses: peaceiris/actions-gh-pages@v3
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     publish_dir: ./dist
-      
-      # Option 4: Custom deployment
-      - name: 🚀 Deploy to Production
-        run: |
-          echo "🚀 Deploying application..."
-          # Add your deployment command here
-          # npm run deploy
-          echo "✅ Deployment complete (configure actual deployment)"
-      
-      # ============================================
-      # POST-DEPLOYMENT STEPS
-      # ============================================
       
       - name: 📢 Notify Search Engines
-        run: |
-          echo "📡 Notifying search engines..."
-          if [ "${{ github.event.inputs.force_notify }}" == "true" ]; then
-            npm run sitemap:notify:force
-          else
-            npm run sitemap:notify || echo "⚠️ Notification skipped (rate limit or no new URLs)"
-          fi
+        run: npm run sitemap:notify || echo "⚠️ Notification skipped"
         continue-on-error: true
       
+      - name: 📊 Summary
+        run: |
+          echo "## 🚀 Deployment Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Built and deployed to Hostinger" >> $GITHUB_STEP_SUMMARY
+          echo "🌐 **Live Site**: https://dataengineerhub.blog" >> $GITHUB_STEP_SUMMARY
+          echo "🗺️ **Sitemap**: https://dataengineerhub.blog/sitemap.xml" >> $GITHUB_STEP_SUMMARY
+      
       - name: 💾 Upload Sitemap Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: sitemap
-          path: public/sitemap.xml
+          name: sitemap-${{ github.run_number }}
+          path: dist/sitemap.xml
           retention-days: 30
-      
-      - name: 📈 Performance Report
-        if: always()
-        run: |
-          echo "## ⚡ Performance Metrics" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Workflow Duration**: \${{ job.duration }}s" >> $GITHUB_STEP_SUMMARY
-          echo "- **Node Version**: $(node --version)" >> $GITHUB_STEP_SUMMARY
-          echo "- **npm Version**: $(npm --version)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ **Deployment Complete!**" >> $GITHUB_STEP_SUMMARY
-      
-      - name: 🔔 Notify on Failure
-        if: failure()
-        run: |
-          echo "❌ Deployment failed!" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Check the workflow logs for details." >> $GITHUB_STEP_SUMMARY
 
-  # Separate job for sitemap validation only (runs on PRs)
+  # Separate job for PR validation
   validate-sitemap:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
       
-      - name: Install dependencies
+      - name: 📦 Install Dependencies
         run: npm ci
       
-      - name: Test sitemap generation
-        run: npm run test:sitemap
+      - name: 🗺️ Test Sitemap Generation
+        run: npm run sitemap:generate
       
-      - name: Comment PR
-        uses: actions/github-script@v6
+      - name: ✅ Validate Sitemap
+        run: npm run sitemap:validate
+      
+      - name: 🏗️ Test Build
+        run: npm run build
+      
+      - name: 💬 Comment on PR
+        uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
             if (fs.existsSync('public/sitemap.xml')) {
-              const urlCount = (fs.readFileSync('public/sitemap.xml', 'utf8').match(/<url>/g) || []).length;
-              github.rest.issues.createComment({
+              const content = fs.readFileSync('public/sitemap.xml', 'utf8');
+              const urlCount = (content.match(/<url>/g) || []).length;
+              
+              await github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
