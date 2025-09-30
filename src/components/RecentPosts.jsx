@@ -1,3 +1,4 @@
+// src/components/RecentPosts.jsx - COMPLETE VERSION
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCw, AlertCircle, ChevronDown, Grid, List } from 'lucide-react';
@@ -6,6 +7,7 @@ import { toast } from '@/components/ui/use-toast';
 import PostCard from '@/components/PostCard';
 import PostCardSkeleton from '@/components/PostCardSkeleton';
 import wordpressApi from '@/services/wordpressApi';
+import { reduceMotion } from '@/utils/performance';
 
 const RecentPosts = ({ 
   category = null, 
@@ -22,9 +24,10 @@ const RecentPosts = ({
   const [hasMore, setHasMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  const [viewMode, setViewMode] = useState('grid');
   
   const postsPerPage = initialLimit;
+  const shouldReduceMotion = reduceMotion();
 
   // Fetch posts function
   const fetchPosts = async (page = 1, append = false) => {
@@ -49,12 +52,11 @@ const RecentPosts = ({
         } catch (categoryError) {
           if (showCategoryError) {
             setError(`Category "${category}" not found. Please check if the category exists in WordPress.`);
-            setPosts([]); // Clear posts on category error
+            setPosts([]);
             setTotalPosts(0);
             setHasMore(false);
             return;
           }
-          // When not showing a category error, we just show no posts.
           result = { posts: [], totalPosts: 0, totalPages: 0 };
         }
       } else {
@@ -97,7 +99,7 @@ const RecentPosts = ({
   // Manual refresh
   const handleRefresh = () => {
     console.log('🔄 Manual refresh triggered');
-    wordpressApi.clearCache(); // Clear cache before refresh
+    wordpressApi.clearCache();
     setCurrentPage(1);
     fetchPosts(1, false);
     toast({
@@ -108,8 +110,6 @@ const RecentPosts = ({
 
   // Initial load and re-fetch when the category changes
   useEffect(() => {
-    // Clear the cache for posts and categories whenever a new category is viewed.
-    // This ensures that the user always sees the correct posts without needing to manually refresh.
     if (category) {
       wordpressApi.clearCache('posts');
       wordpressApi.clearCache('categories');
@@ -285,12 +285,14 @@ const RecentPosts = ({
         {posts.map((post, index) => (
           <motion.div
             key={post.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ 
-              duration: 0.5, 
-              delay: index * 0.05 
-            }}
+            {...(shouldReduceMotion ? {} : {
+              initial: { opacity: 0, y: 20 },
+              animate: { opacity: 1, y: 0 },
+              transition: { 
+                duration: 0.5, 
+                delay: index * 0.05 
+              }
+            })}
           >
             <PostCard post={post} />
           </motion.div>
