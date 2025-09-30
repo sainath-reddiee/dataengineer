@@ -3,15 +3,9 @@ name: Build and Deploy to Hostinger
 on:
   push:
     branches: [main]
+  workflow_dispatch: # Add this line to enable manual triggers
   schedule:
     - cron: '0 2 * * *'
-  workflow_dispatch:
-    inputs:
-      force_sitemap:
-        description: 'Force regenerate sitemap'
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   build-and-deploy:
@@ -31,12 +25,7 @@ jobs:
         run: npm ci
       
       - name: 🗺️ Generate Sitemap
-        run: |
-          if [ "${{ github.event.inputs.force_sitemap }}" == "true" ]; then
-            npm run sitemap:generate:force
-          else
-            npm run sitemap:generate
-          fi
+        run: npm run sitemap:generate
       
       - name: ✅ Validate Sitemap
         run: npm run sitemap:validate
