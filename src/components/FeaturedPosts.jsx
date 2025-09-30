@@ -1,3 +1,4 @@
+// src/components/FeaturedPosts.jsx
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -6,17 +7,18 @@ import { Button } from '@/components/ui/button';
 import { usePosts } from '@/hooks/useWordPress';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { WORDPRESS_API_URL } from '@/apiConfig';
+import { reduceMotion } from '@/utils/performance';
+import LazyImage from './LazyImage';
 
 const FeaturedPosts = () => {
   const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
+  const shouldReduceMotion = reduceMotion();
 
-  // Fetch ONLY featured posts
   const { posts: featuredPosts, loading, error, refresh } = usePosts({
-    per_page: 3, // Only fetch 3 posts
-    featured: true // Use the new API parameter
+    per_page: 3,
+    featured: true
   });
 
-  // We can now directly use featuredPosts as our displayPosts
   const displayPosts = featuredPosts;
 
   if (loading) {
@@ -60,15 +62,17 @@ const FeaturedPosts = () => {
     return null;
   }
 
+  const animationConfig = shouldReduceMotion 
+    ? { initial: {}, animate: {}, transition: { duration: 0 } }
+    : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6 } };
+
   return (
     <section ref={ref} className="py-16 relative">
       <div className="container mx-auto px-6">
         <AnimatePresence>
           {hasIntersected && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              {...animationConfig}
               className="text-center mb-12"
             >
               <div className="flex items-center justify-center gap-4 mb-6">
@@ -76,7 +80,6 @@ const FeaturedPosts = () => {
                   <Star className="h-5 w-5 text-yellow-400" />
                   <span className="text-sm font-medium text-yellow-200">Featured Content</span>
                 </div>
-                {/* Debug refresh button - only in development */}
                 {process.env.NODE_ENV === 'development' && (
                   <button
                     onClick={refresh}
@@ -97,23 +100,25 @@ const FeaturedPosts = () => {
           )}
         </AnimatePresence>
 
-        {/* FIXED: Changed grid layout to prevent stretching */}
         <div className="grid lg:grid-cols-2 gap-8 mb-12 items-start">
           {hasIntersected && displayPosts.length > 0 && (
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
+              {...(shouldReduceMotion ? {} : {
+                initial: { opacity: 0, x: -30 },
+                animate: { opacity: 1, x: 0 },
+                transition: { duration: 0.6 }
+              })}
             >
               <Link to={`/articles/${displayPosts[0].slug}`} className="block blog-card rounded-2xl overflow-hidden group">
                 <div className="relative">
-                  <img
+                  <LazyImage
                     src={displayPosts[0].image}
                     alt={displayPosts[0].title}
-                    className="w-full h-64 lg:h-96 object-cover group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      e.target.src = 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop';
-                    }}
+                    width={1200}
+                    quality={85}
+                    sizes="(max-width: 768px) 100vw, 80vw"
+                    className="w-full h-64 lg:h-96"
+                    priority={true}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                   <div className="absolute top-6 left-6">
@@ -154,28 +159,31 @@ const FeaturedPosts = () => {
             </motion.div>
           )}
 
-          {/* FIXED: Changed from space-y-8 div to individual cards with proper sizing */}
           <div className="flex flex-col space-y-6">
             {displayPosts.slice(1, 3).map((post, index) => (
               hasIntersected && (
                 <motion.div
                   key={post.id}
-                  initial={{ opacity: 0, x: 30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="flex-shrink-0" // Prevent flex stretching
+                  {...(shouldReduceMotion ? {} : {
+                    initial: { opacity: 0, x: 30 },
+                    animate: { opacity: 1, x: 0 },
+                    transition: { duration: 0.6, delay: index * 0.1 }
+                  })}
+                  className="flex-shrink-0"
                 >
-                  <Link to={`/articles/${post.slug}`} className="block blog-card rounded-xl overflow-hidden group h-40"> {/* Fixed height */}
+                  <Link to={`/articles/${post.slug}`} className="block blog-card rounded-xl overflow-hidden group h-40">
                     <div className="flex h-full">
-                      <img
-                        src={post.image}
-                        alt={post.title}
-                        className="w-32 h-full flex-shrink-0 object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          e.target.src = 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop';
-                        }}
-                      />
-                      <div className="p-4 flex-1 flex flex-col justify-between min-w-0"> {/* Added min-w-0 for text truncation */}
+                      <div className="w-32 h-full flex-shrink-0">
+                        <LazyImage
+                          src={post.image}
+                          alt={post.title}
+                          width={400}
+                          quality={80}
+                          sizes="128px"
+                          className="w-full h-full"
+                        />
+                      </div>
+                      <div className="p-4 flex-1 flex flex-col justify-between min-w-0">
                         <div>
                           <div className="mb-2 flex items-center gap-2">
                             <span className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
@@ -213,9 +221,11 @@ const FeaturedPosts = () => {
 
         {hasIntersected && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            {...(shouldReduceMotion ? {} : {
+              initial: { opacity: 0, y: 20 },
+              animate: { opacity: 1, y: 0 },
+              transition: { duration: 0.6, delay: 0.3 }
+            })}
             className="text-center"
           >
             <Button asChild size="lg" className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-8 py-4 rounded-full font-bold group shadow-xl">
@@ -225,18 +235,6 @@ const FeaturedPosts = () => {
               </Link>
             </Button>
           </motion.div>
-        )}
-
-        {/* Debug info in development */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mt-8 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-            <h4 className="text-sm font-semibold text-gray-300 mb-2">Debug Info</h4>
-            <div className="text-xs text-gray-400 space-y-1">
-              <div>Display posts: {displayPosts.length}</div>
-              <div>Loading: {loading.toString()}</div>
-              <div>Error: {error || 'None'}</div>
-            </div>
-          </div>
         )}
       </div>
     </section>
