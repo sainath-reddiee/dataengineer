@@ -1,3 +1,4 @@
+// src/components/TechCategories.jsx
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -13,12 +14,13 @@ import {
 } from 'lucide-react';
 import { useCategories } from '@/hooks/useWordPress';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { reduceMotion } from '@/utils/performance';
 
 const TechCategories = () => {
   const { categories: apiCategories, loading, refresh: refreshCategories } = useCategories();
   const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
+  const shouldReduceMotion = reduceMotion();
   
-  // Enhanced category configuration with better styling
   const categoryConfig = [
     {
       name: 'AWS',
@@ -86,7 +88,6 @@ const TechCategories = () => {
     }
   ];
 
-  // Merge API categories with config
   const categories = categoryConfig.map(config => {
     const apiCategory = apiCategories.find(cat => cat.name === config.name);
     return {
@@ -95,8 +96,16 @@ const TechCategories = () => {
     };
   });
 
-  // Enhanced animation variants
-  const animationVariants = {
+  const animationVariants = shouldReduceMotion ? {
+    bounce: { hover: {} },
+    pulse: { hover: {} },
+    wiggle: { hover: {} },
+    shake: { hover: {} },
+    swing: { hover: {} },
+    flip: { hover: {} },
+    rotate: { hover: {} },
+    zoom: { hover: {} }
+  } : {
     bounce: {
       hover: { y: -8, transition: { duration: 0.3, ease: "easeOut" } }
     },
@@ -123,6 +132,10 @@ const TechCategories = () => {
     }
   };
 
+  const baseAnimationConfig = shouldReduceMotion
+    ? { initial: {}, animate: {}, transition: { duration: 0 } }
+    : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6 } };
+
   return (
     <section ref={ref} className="py-16 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/5 to-transparent"></div>
@@ -131,16 +144,13 @@ const TechCategories = () => {
         <AnimatePresence>
           {hasIntersected && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              {...baseAnimationConfig}
               className="text-center mb-12"
             >
               <div className="flex items-center justify-center gap-4 mb-6">
                 <h2 className="text-3xl md:text-4xl font-bold">
                   Explore <span className="gradient-text">Technologies</span>
                 </h2>
-                {/* Debug refresh button - only in development */}
                 {process.env.NODE_ENV === 'development' && (
                   <button
                     onClick={refreshCategories}
@@ -168,27 +178,27 @@ const TechCategories = () => {
           {hasIntersected && categories.map((category, index) => {
             const IconComponent = category.icon;
             const animationVariant = animationVariants[category.animation];
+            
             return (
               <motion.div
                 key={category.name}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                {...(shouldReduceMotion ? {} : {
+                  initial: { opacity: 0, y: 30 },
+                  animate: { opacity: 1, y: 0 },
+                  transition: { duration: 0.6, delay: index * 0.1 }
+                })}
                 whileHover={animationVariant.hover}
               >
                 <Link to={category.path} className="block tech-card rounded-2xl p-8 group relative overflow-hidden h-full min-h-[280px] flex flex-col">
                   <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
-                    <img 
-                      className="w-full h-full object-cover"
-                      alt={`${category.name} technology background`}
-                      src="https://images.unsplash.com/photo-1595872018818-97555653a011" />
+                    <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-800"></div>
                   </div>
                   <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${category.color} opacity-10 rounded-full blur-2xl group-hover:opacity-20 transition-opacity duration-500`}></div>
                   
                   <div className="relative z-10 flex flex-col h-full">
                     <motion.div 
                       className={`inline-flex p-4 rounded-xl bg-gradient-to-br ${category.color} mb-6 self-start shadow-lg`}
-                      whileHover={{ scale: 1.1, rotate: 3 }}
+                      whileHover={shouldReduceMotion ? {} : { scale: 1.1, rotate: 3 }}
                       transition={{ duration: 0.3 }}
                     >
                       <IconComponent className="h-8 w-8 text-white" />
@@ -208,7 +218,7 @@ const TechCategories = () => {
                       </span>
                       <motion.div 
                         className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors border border-white/10"
-                        whileHover={{ rotate: 180 }}
+                        whileHover={shouldReduceMotion ? {} : { rotate: 180 }}
                         transition={{ duration: 0.3 }}
                       >
                         <Zap className="h-5 w-5 text-blue-400" />
@@ -220,18 +230,6 @@ const TechCategories = () => {
             );
           })}
         </div>
-
-        {/* Debug info in development */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mt-8 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-            <h4 className="text-sm font-semibold text-gray-300 mb-2">Debug Info</h4>
-            <div className="text-xs text-gray-400 space-y-1">
-              <div>Total categories: {apiCategories.length}</div>
-              <div>Categories loaded: {categories.length}</div>
-              <div>Loading: {loading.toString()}</div>
-            </div>
-          </div>
-        )}
       </div>
     </section>
   );
