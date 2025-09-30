@@ -1,4 +1,4 @@
-// src/components/FeaturedPosts.jsx
+// src/components/FeaturedPosts.jsx - FIXED VERSION
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -9,10 +9,12 @@ import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { WORDPRESS_API_URL } from '@/apiConfig';
 import { reduceMotion } from '@/utils/performance';
 import LazyImage from './LazyImage';
+import { useToast } from '@/components/ui/use-toast';
 
 const FeaturedPosts = () => {
   const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
   const shouldReduceMotion = reduceMotion();
+  const { toast } = useToast();
 
   const { posts: featuredPosts, loading, error, refresh } = usePosts({
     per_page: 3,
@@ -20,6 +22,33 @@ const FeaturedPosts = () => {
   });
 
   const displayPosts = featuredPosts;
+
+  // FIXED: Enhanced refresh handler with better feedback
+  const handleRefresh = async () => {
+    console.log('🔄 Refresh button clicked!');
+    
+    toast({
+      title: "🔄 Refreshing...",
+      description: "Loading latest featured posts",
+    });
+
+    try {
+      await refresh();
+      
+      toast({
+        title: "✅ Refreshed!",
+        description: "Featured posts updated successfully",
+      });
+    } catch (error) {
+      console.error('Error refreshing:', error);
+      
+      toast({
+        title: "❌ Refresh Failed",
+        description: "Could not refresh posts. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
 
   if (loading) {
     return (
@@ -45,7 +74,7 @@ const FeaturedPosts = () => {
               <p>Check browser console for more details</p>
             </div>
             <Button
-              onClick={refresh}
+              onClick={handleRefresh}
               variant="outline"
               className="border-red-400/50 text-red-300 hover:bg-red-500/20"
             >
@@ -80,16 +109,21 @@ const FeaturedPosts = () => {
                   <Star className="h-5 w-5 text-yellow-400" />
                   <span className="text-sm font-medium text-yellow-200">Featured Content</span>
                 </div>
-                {process.env.NODE_ENV === 'development' && (
-                  <button
-                    onClick={refresh}
-                    className="p-2 bg-blue-500/20 rounded-full hover:bg-blue-500/30 transition-colors"
-                    title="Refresh featured posts"
-                  >
-                    <RefreshCw className="h-4 w-4 text-blue-400" />
-                  </button>
-                )}
+                
+                {/* FIXED: Refresh button - ALWAYS VISIBLE with better styling */}
+                <Button
+                  onClick={handleRefresh}
+                  variant="outline"
+                  size="sm"
+                  disabled={loading}
+                  className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20 transition-all duration-300 hover:scale-105"
+                  title="Refresh featured posts"
+                >
+                  <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                  Refresh
+                </Button>
               </div>
+              
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 <span className="gradient-text">Must-Read</span> Articles
               </h2>
