@@ -1,4 +1,4 @@
-// src/pages/ArticlePage.jsx
+// src/pages/ArticlePage.jsx - COMPLETE PRODUCTION VERSION
 import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -10,8 +10,51 @@ import { preloadImage } from '@/utils/imageOptimizer';
 import { throttle } from '@/utils/performance';
 import { trackScrollDepth, trackArticleRead } from '@/utils/analytics';
 import LazyImage from '@/components/LazyImage';
+import DOMPurify from 'dompurify';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
+
+// PRODUCTION READY: Content processing function with full sanitization
+const processWordPressContent = (content) => {
+  if (!content) return '';
+  
+  // Configure DOMPurify to allow all necessary HTML elements
+  const config = {
+    ALLOWED_TAGS: [
+      'p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+      'ul', 'ol', 'li', 'a', 'img', 'figure', 'figcaption',
+      'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'caption',
+      'blockquote', 'pre', 'code', 'hr', 'div', 'span',
+      'iframe', 'video', 'audio', 'source', 'dl', 'dt', 'dd'
+    ],
+    ALLOWED_ATTR: [
+      'href', 'src', 'alt', 'title', 'class', 'id', 'style',
+      'width', 'height', 'target', 'rel', 'colspan', 'rowspan',
+      'data-*', 'frameborder', 'allowfullscreen', 'loading'
+    ],
+    ALLOW_DATA_ATTR: true,
+    KEEP_CONTENT: true
+  };
+  
+  // Sanitize the content
+  let cleanContent = DOMPurify.sanitize(content, config);
+  
+  // Fix common WordPress formatting issues
+  cleanContent = cleanContent
+    // Remove empty paragraphs
+    .replace(/<p>(\s|&nbsp;)*<\/p>/g, '')
+    // Fix self-closing tags
+    .replace(/<br\s*\/?>/g, '<br />')
+    // Ensure tables have proper class
+    .replace(/<table/g, '<table class="wp-table"')
+    // Add responsive wrapper to iframes
+    .replace(/<iframe/g, '<div class="iframe-wrapper"><iframe')
+    .replace(/<\/iframe>/g, '</iframe></div>')
+    // Fix line breaks
+    .replace(/\n\n/g, '</p><p>');
+  
+  return cleanContent;
+};
 
 const ErrorDisplay = ({ error, onRetry, slug }) => {
   const navigate = useNavigate();
@@ -156,7 +199,7 @@ const LoadingDisplay = () => (
 );
 
 const AdSkeleton = () => (
-  <div className="h-32 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-pulse rounded-lg flex items-center justify-center">
+  <div className="h-32 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-pulse rounded-lg flex items-center justify-center my-8">
     <span className="text-gray-500 text-sm">Advertisement</span>
   </div>
 );
@@ -269,6 +312,9 @@ const ArticlePage = () => {
         description={safePost.excerpt}
         image={safePost.image}
         type="article"
+        publishedTime={safePost.date}
+        category={safePost.category}
+        author={safePost.author}
       />
       
       <div className="container mx-auto px-6 max-w-4xl">
@@ -308,8 +354,8 @@ const ArticlePage = () => {
               priority={true}
             />
             
-            <div className="absolute inset-0 flex items-end p-6 md:p-8">
-              <div className="space-y-4 text-white">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex items-end p-6 md:p-8">
+              <div className="space-y-4 text-white w-full">
                 <div className="inline-block px-3 py-1 bg-blue-600/80 backdrop-blur-sm rounded-full text-sm font-medium">
                   {safePost.category}
                 </div>
@@ -339,11 +385,16 @@ const ArticlePage = () => {
             <AdPlacement position="article-top" />
           </Suspense>
 
-          {/* Article Content */}
+          {/* Article Content - PRODUCTION READY WITH FULL SANITIZATION */}
           <div className="prose prose-invert prose-lg max-w-none">
             <div 
-              dangerouslySetInnerHTML={{ __html: safePost.content }}
+              dangerouslySetInnerHTML={{ __html: processWordPressContent(safePost.content) }}
               className="article-content"
+              style={{
+                overflowWrap: 'break-word',
+                wordWrap: 'break-word',
+                minHeight: '200px'
+              }}
             />
           </div>
 
@@ -358,6 +409,7 @@ const ArticlePage = () => {
               <div className="space-y-2">
                 <p className="text-gray-400">Published by</p>
                 <p className="font-semibold text-white">{safePost.author}</p>
+                <p className="text-sm text-gray-500">{formatDate(safePost.date)}</p>
               </div>
               <Button 
                 asChild 
