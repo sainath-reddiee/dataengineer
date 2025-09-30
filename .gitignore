@@ -1,2 +1,11 @@
+# Sitemap cache files (optional - can commit them too)
+.sitemap-cache.json
+.notification-cache.json
+
+# Build output
+dist/
+dist-ssr/
+*.local
+
+# Node
 node_modules/
-.env
