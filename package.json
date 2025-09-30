@@ -8,7 +8,6 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    
     "sitemap:generate": "node scripts/generateSitemap.js",
     "sitemap:generate:force": "node scripts/generateSitemap.js --force",
     "sitemap:validate": "node scripts/validateSitemap.js",
@@ -16,13 +15,13 @@
     "sitemap:notify:force": "node scripts/notifySearchEngines.js --force",
     "indexnow:generate": "node scripts/generateIndexNowKey.js",
     "prebuild": "npm run indexnow:generate && npm run sitemap:generate && npm run sitemap:validate",
-
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap test passed'"
   },
-"dependencies": {
+  "dependencies": {
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-toast": "^1.1.5",
     "autoprefixer": "^10.4.21",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^11.0.0",
