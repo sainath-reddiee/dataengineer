@@ -1,8 +1,8 @@
-// src/hooks/useWordPress.js - ENHANCED REFRESH FUNCTION
+// src/hooks/useWordPress.js - COMPLETE PRODUCTION VERSION
 import { useState, useEffect, useCallback } from 'react';
 import wordpressApi from '@/services/wordpressApi';
 
-// Hook for fetching posts - ENHANCED & FIXED
+// Hook for fetching posts - ENHANCED WITH FULL REFRESH SUPPORT
 export const usePosts = ({ 
   page = 1, 
   per_page = 10, 
@@ -18,7 +18,7 @@ export const usePosts = ({
   const [totalPages, setTotalPages] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
   const [hasMore, setHasMore] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0); // ADDED: Force refresh trigger
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const fetchPosts = useCallback(async (forceRefresh = false) => {
     if (!enabled) {
@@ -28,7 +28,7 @@ export const usePosts = ({
 
     try {
       setError(null);
-      setLoading(true); // ALWAYS show loading state
+      setLoading(true);
 
       console.log('🔄 usePosts: Fetching posts with params:', { 
         page, per_page, categorySlug, search, featured, trending, forceRefresh 
@@ -36,7 +36,6 @@ export const usePosts = ({
 
       let categoryId = null;
       
-      // Convert category slug to ID if provided
       if (categorySlug) {
         console.log('🏷️ Converting category slug to ID:', categorySlug);
         try {
@@ -48,7 +47,6 @@ export const usePosts = ({
         }
       }
 
-      // FIXED: Always clear cache on force refresh
       if (forceRefresh) {
         console.log('🧹 Force refresh - clearing cache');
         wordpressApi.clearCache();
@@ -84,20 +82,15 @@ export const usePosts = ({
     } finally {
       setLoading(false);
     }
-  }, [page, per_page, categorySlug, search, featured, trending, enabled, refreshKey]); // ADDED refreshKey to dependencies
+  }, [page, per_page, categorySlug, search, featured, trending, enabled, refreshKey]);
 
-  // ENHANCED: Manual refresh function with loading state
+  // ENHANCED: Manual refresh function with proper state management
   const refresh = useCallback(async () => {
     console.log('🔄 Manual refresh triggered - incrementing refresh key');
-    
-    // Increment refresh key to trigger useEffect
     setRefreshKey(prev => prev + 1);
-    
-    // Also fetch immediately
     await fetchPosts(true);
   }, [fetchPosts]);
 
-  // Load more function for pagination
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return;
     
@@ -128,10 +121,9 @@ export const usePosts = ({
     }
   }, [page, per_page, categorySlug, search, featured, trending, loading, hasMore]);
 
-  // FIXED: Trigger fetch on mount and when dependencies change
   useEffect(() => {
     console.log('📡 usePosts useEffect triggered, refreshKey:', refreshKey);
-    fetchPosts(refreshKey > 0); // Force refresh if refreshKey > 0
+    fetchPosts(refreshKey > 0);
   }, [fetchPosts, refreshKey]);
 
   return { 
@@ -141,13 +133,13 @@ export const usePosts = ({
     totalPages, 
     totalPosts,
     hasMore,
-    refresh, // This is the function components should call
+    refresh,
     loadMore,
     refetch: fetchPosts
   };
 };
 
-// Rest of the hooks remain the same...
+// Hook for fetching a single post
 export const usePost = (slug, enabled = true) => {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -161,9 +153,7 @@ export const usePost = (slug, enabled = true) => {
 
     try {
       setError(null);
-      if (!forceRefresh) {
-        setLoading(true);
-      }
+      setLoading(true);
 
       console.log('📄 usePost: Fetching post with slug:', slug);
 
@@ -195,6 +185,7 @@ export const usePost = (slug, enabled = true) => {
   return { post, loading, error, refresh };
 };
 
+// Hook for fetching categories
 export const useCategories = (enabled = true) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -208,9 +199,7 @@ export const useCategories = (enabled = true) => {
 
     try {
       setError(null);
-      if (!forceRefresh) {
-        setLoading(true);
-      }
+      setLoading(true);
 
       console.log('📂 useCategories: Fetching categories with forceRefresh:', forceRefresh);
 
@@ -242,6 +231,7 @@ export const useCategories = (enabled = true) => {
   return { categories, loading, error, refresh };
 };
 
+// Simplified hook for posts by category
 export const usePostsByCategory = (categorySlug, { page = 1, per_page = 10, enabled = true } = {}) => {
   return usePosts({ 
     page, 
@@ -251,6 +241,7 @@ export const usePostsByCategory = (categorySlug, { page = 1, per_page = 10, enab
   });
 };
 
+// Hook for newsletter subscription
 export const useNewsletter = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -282,6 +273,7 @@ export const useNewsletter = () => {
   return { subscribe, loading, error, success, reset };
 };
 
+// Hook for contact form
 export const useContact = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
