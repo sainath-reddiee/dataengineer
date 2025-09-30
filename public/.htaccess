@@ -1,111 +1,262 @@
-# .htaccess - Browser Caching & Performance Optimization
-# Place this in your public_html/ directory
+# ==============================================================================
+# DATAENGINEERHUB.BLOG - COMPLETE .HTACCESS CONFIGURATION
+# Optimized for Performance, SEO, and Security
+# ==============================================================================
 
+# ==============================================================================
+# A) REACT ROUTER & SPA CONFIGURATION
+# ==============================================================================
+<IfModule mod_rewrite.c>
+    # Turn on the rewriting engine
+    RewriteEngine On
+
+    # Redirect www to non-www for SEO
+    RewriteCond %{HTTP_HOST} ^www\.dataengineerhub\.blog [NC]
+    RewriteRule ^(.*)$ https://dataengineerhub.blog/$1 [L,R=301]
+
+    # Force HTTPS (if not already on HTTPS)
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Set the base for all relative paths
+    RewriteBase /
+
+    # Redirect Ezoic ads.txt to their server
+    RewriteRule ^ads\.txt$ https://srv.adstxtmanager.com/19390/dataengineerhub.blog [R=301,L]
+
+    # If the requested path is NOT a real file that exists on the server...
+    RewriteCond %{REQUEST_FILENAME} !-f
+    # AND if the requested path is NOT a real directory...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    # ...then rewrite the request to the /index.html file to let React handle it.
+    RewriteRule . /index.html [L]
+</IfModule>
+
+# ==============================================================================
+# B) BROWSER CACHING - EXTENDED (PERFORMANCE BOOST)
+# ==============================================================================
 <IfModule mod_expires.c>
-  ExpiresActive On
-  
-  # Images - cache for 1 year
-  ExpiresByType image/jpeg "access plus 1 year"
-  ExpiresByType image/png "access plus 1 year"
-  ExpiresByType image/gif "access plus 1 year"
-  ExpiresByType image/webp "access plus 1 year"
-  ExpiresByType image/svg+xml "access plus 1 year"
-  ExpiresByType image/x-icon "access plus 1 year"
-  
-  # CSS and JavaScript - cache for 1 year (with versioning)
-  ExpiresByType text/css "access plus 1 year"
-  ExpiresByType text/javascript "access plus 1 year"
-  ExpiresByType application/javascript "access plus 1 year"
-  ExpiresByType application/x-javascript "access plus 1 year"
-  
-  # Fonts - cache for 1 year
-  ExpiresByType font/ttf "access plus 1 year"
-  ExpiresByType font/otf "access plus 1 year"
-  ExpiresByType font/woff "access plus 1 year"
-  ExpiresByType font/woff2 "access plus 1 year"
-  ExpiresByType application/font-woff "access plus 1 year"
-  
-  # Media files - cache for 1 year
-  ExpiresByType video/mp4 "access plus 1 year"
-  ExpiresByType audio/mpeg "access plus 1 year"
-  
-  # HTML - cache for 1 hour (frequently updated)
-  ExpiresByType text/html "access plus 1 hour"
-  
-  # Data files
-  ExpiresByType application/json "access plus 1 hour"
-  ExpiresByType application/xml "access plus 1 hour"
-  ExpiresByType text/xml "access plus 1 hour"
-  
-  # Sitemap and robots
-  ExpiresByType application/xml "access plus 1 day"
-  ExpiresByType text/xml "access plus 1 day"
-  ExpiresByType text/plain "access plus 1 day"
-  
-  # Default - cache for 1 hour
-  ExpiresDefault "access plus 1 hour"
+    ExpiresActive On
+    
+    # Images - cache for 1 year (immutable assets)
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    ExpiresByType image/vnd.microsoft.icon "access plus 1 year"
+    
+    # CSS and JavaScript - cache for 1 year (versioned assets)
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType application/x-javascript "access plus 1 year"
+    
+    # Fonts - cache for 1 year
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType font/otf "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+    ExpiresByType application/vnd.ms-fontobject "access plus 1 year"
+    ExpiresByType application/x-font-opentype "access plus 1 year"
+    ExpiresByType application/x-font-truetype "access plus 1 year"
+    ExpiresByType application/x-font-ttf "access plus 1 year"
+    
+    # Media files - cache for 1 year
+    ExpiresByType video/mp4 "access plus 1 year"
+    ExpiresByType video/webm "access plus 1 year"
+    ExpiresByType audio/mpeg "access plus 1 year"
+    ExpiresByType audio/ogg "access plus 1 year"
+    
+    # HTML - cache for 1 hour (frequently updated)
+    ExpiresByType text/html "access plus 1 hour"
+    
+    # Data files - cache for 1 hour
+    ExpiresByType application/json "access plus 1 hour"
+    ExpiresByType application/xml "access plus 1 day"
+    ExpiresByType text/xml "access plus 1 day"
+    ExpiresByType text/plain "access plus 1 day"
+    
+    # Manifest and sitemap
+    ExpiresByType application/manifest+json "access plus 1 week"
+    
+    # Default - cache for 1 day
+    ExpiresDefault "access plus 1 day"
 </IfModule>
 
-# Cache-Control Headers
+# Cache-Control Headers (more modern than Expires)
 <IfModule mod_headers.c>
-  # Static assets - immutable
-  <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico|css|js|woff|woff2|ttf|otf)$">
-    Header set Cache-Control "public, max-age=31536000, immutable"
-  </FilesMatch>
-  
-  # HTML - short cache
-  <FilesMatch "\.(html|htm)$">
-    Header set Cache-Control "public, max-age=3600, must-revalidate"
-  </FilesMatch>
-  
-  # Remove ETags (they cause issues with CDN)
-  Header unset ETag
-  FileETag None
+    # Static assets with hash/version - immutable for 1 year
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico|css|js|woff|woff2|ttf|otf|eot)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    
+    # HTML files - short cache with revalidation
+    <FilesMatch "\.(html|htm)$">
+        Header set Cache-Control "public, max-age=3600, must-revalidate"
+    </FilesMatch>
+    
+    # JSON, XML, TXT - moderate cache
+    <FilesMatch "\.(json|xml|txt)$">
+        Header set Cache-Control "public, max-age=86400"
+    </FilesMatch>
+    
+    # Remove ETags (they cause caching issues with multiple servers)
+    Header unset ETag
+    FileETag None
 </IfModule>
 
-# Enable GZIP Compression
+# ==============================================================================
+# C) GZIP COMPRESSION - EXTENDED (PERFORMANCE)
+# ==============================================================================
 <IfModule mod_deflate.c>
-  # Compress HTML, CSS, JavaScript, Text, XML and fonts
-  AddOutputFilterByType DEFLATE application/javascript
-  AddOutputFilterByType DEFLATE application/json
-  AddOutputFilterByType DEFLATE application/x-javascript
-  AddOutputFilterByType DEFLATE application/xml
-  AddOutputFilterByType DEFLATE application/xhtml+xml
-  AddOutputFilterByType DEFLATE image/svg+xml
-  AddOutputFilterByType DEFLATE text/css
-  AddOutputFilterByType DEFLATE text/html
-  AddOutputFilterByType DEFLATE text/javascript
-  AddOutputFilterByType DEFLATE text/plain
-  AddOutputFilterByType DEFLATE text/xml
-  
-  # Remove browser bugs (only needed for ancient browsers)
-  BrowserMatch ^Mozilla/4 gzip-only-text/html
-  BrowserMatch ^Mozilla/4\.0[678] no-gzip
-  BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
-  Header append Vary User-Agent
+    # Compress HTML, CSS, JavaScript
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/xml
+    
+    # Compress JavaScript
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+    
+    # Compress XML
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/atom+xml
+    
+    # Compress fonts
+    AddOutputFilterByType DEFLATE font/opentype
+    AddOutputFilterByType DEFLATE font/otf
+    AddOutputFilterByType DEFLATE font/ttf
+    AddOutputFilterByType DEFLATE application/font-woff
+    AddOutputFilterByType DEFLATE application/font-woff2
+    AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
+    AddOutputFilterByType DEFLATE application/x-font-opentype
+    AddOutputFilterByType DEFLATE application/x-font-truetype
+    AddOutputFilterByType DEFLATE application/x-font-ttf
+    
+    # Compress SVG
+    AddOutputFilterByType DEFLATE image/svg+xml
+    AddOutputFilterByType DEFLATE image/x-icon
+    
+    # Remove browser bugs (only needed for ancient browsers)
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+    Header append Vary User-Agent
 </IfModule>
 
-# Security Headers
+# ==============================================================================
+# D) SECURITY HEADERS - ENHANCED
+# ==============================================================================
 <IfModule mod_headers.c>
-  # XSS Protection
-  Header set X-XSS-Protection "1; mode=block"
-  
-  # Prevent MIME-sniffing
-  Header set X-Content-Type-Options "nosniff"
-  
-  # Prevent clickjacking
-  Header set X-Frame-Options "SAMEORIGIN"
-  
-  # Referrer Policy
-  Header set Referrer-Policy "strict-origin-when-cross-origin"
+    # CORS - Allow your API subdomain
+    Header always set Access-Control-Allow-Origin "https://app.dataengineerhub.blog"
+    Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type"
+    
+    # Prevent MIME-sniffing
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Prevent clickjacking
+    Header set X-Frame-Options "DENY"
+    
+    # XSS Protection (legacy, but still good)
+    Header set X-XSS-Protection "1; mode=block"
+    
+    # Referrer Policy - balance between privacy and analytics
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Permissions Policy (formerly Feature-Policy)
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    
+    # Content Security Policy (CSP) - Relaxed for Ezoic ads
+    # Note: Adjust this based on your needs
+    # Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.ezojs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://app.dataengineerhub.blog"
 </IfModule>
 
-# Disable server signature
+# ==============================================================================
+# E) PERFORMANCE OPTIMIZATIONS
+# ==============================================================================
+
+# Disable server signature (security + performance)
 ServerSignature Off
 
 # Prevent directory browsing
 Options -Indexes
 
-# Custom error pages
-ErrorDocument 404 /index.html
+# Prevent access to hidden files (like .git, .env)
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Prevent access to backup files
+<FilesMatch "\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ==============================================================================
+# F) CUSTOM ERROR PAGES
+# ==============================================================================
+# All errors redirect to index.html (React handles 404)
+ErrorDocument 400 /index.html
+ErrorDocument 401 /index.html
 ErrorDocument 403 /index.html
+ErrorDocument 404 /index.html
+ErrorDocument 500 /index.html
+
+# ==============================================================================
+# G) ADDITIONAL PERFORMANCE TWEAKS
+# ==============================================================================
+
+# Enable Keep-Alive (faster for multiple requests)
+<IfModule mod_headers.c>
+    Header set Connection keep-alive
+</IfModule>
+
+# Limit request size (prevent DoS)
+LimitRequestBody 10485760
+
+# Set default character set
+AddDefaultCharset UTF-8
+
+# ==============================================================================
+# H) FILE-SPECIFIC OPTIMIZATIONS
+# ==============================================================================
+
+# Force download for certain file types
+<FilesMatch "\.(pdf|doc|docx|xls|xlsx)$">
+    Header set Content-Disposition "attachment"
+</FilesMatch>
+
+# Proper MIME types for web fonts
+<IfModule mod_mime.c>
+    AddType font/woff2 .woff2
+    AddType font/woff .woff
+    AddType font/ttf .ttf
+    AddType font/otf .otf
+    AddType application/vnd.ms-fontobject .eot
+</IfModule>
+
+# ==============================================================================
+# I) REDIRECT RULES (SEO)
+# ==============================================================================
+
+# Add trailing slash to directories (optional - comment out if not needed)
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_URI} !(.*)/$
+# RewriteRule ^(.*)$ https://dataengineerhub.blog/$1/ [L,R=301]
+
+# ==============================================================================
+# END OF CONFIGURATION
+# ==============================================================================
