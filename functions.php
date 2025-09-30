@@ -542,25 +542,6 @@ function force_update_category_counts($post_id) {
 // Enhanced admin meta box to show detection results and manual suggestions
 add_action('add_meta_boxes', 'add_auto_category_detection_meta_box');
 
-function auto_link_keywords($content) {
-    $keywords = array(
-        'data engineering' => '/what-is-data-engineering',
-        'ETL' => '/etl-explained',
-        'Apache Spark' => '/apache-spark-guide'
-    );
-    
-    foreach ($keywords as $keyword => $url) {
-        $pattern = '/\b(' . preg_quote($keyword, '/') . ')\b/i';
-        $replacement = '<a href="' . home_url($url) . 
-                      '" class="auto-link">$1</a>';
-        $content = preg_replace($pattern, 
-                               $replacement, $content, 1);
-    }
-    
-    return $content;
-}
-add_filter('the_content', 'auto_link_keywords');
-
 function add_auto_category_detection_meta_box() {
     add_meta_box(
         'auto-category-detection',
