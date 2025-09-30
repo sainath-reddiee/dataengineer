@@ -8,10 +8,72 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
-    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
-    <link rel="dns-prefetch" href="https://www.ezojs.com">
     
-    <!-- Critical CSS Inline (extracted from main CSS) -->
+    <!-- DNS Prefetch for third-party scripts (load later) -->
+    <link rel="dns-prefetch" href="//www.googletagmanager.com">
+    <link rel="dns-prefetch" href="//www.ezojs.com">
+    <link rel="dns-prefetch" href="//cmp.gatekeeperconsent.com">
+    <link rel="dns-prefetch" href="//the.gatekeeperconsent.com">
+    
+    <!-- Fallback Meta Tags (will be replaced by React Helmet per page) -->
+    <title>DataEngineer Hub - Data Engineering Tutorials</title>
+    <meta name="description" content="Learn data engineering with expert tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow & dbt." />
+    
+    <!-- Static Structured Data - Organization (doesn't change per page) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://dataengineerhub.blog/#organization",
+      "name": "DataEngineer Hub",
+      "url": "https://dataengineerhub.blog",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://dataengineerhub.blog/logo.png",
+        "width": 250,
+        "height": 250
+      },
+      "sameAs": [
+        "https://twitter.com/sainath29",
+        "https://linkedin.com/company/dataengineerhub",
+        "https://github.com/dataengineerhub"
+      ]
+    }
+    </script>
+    
+    <!-- Critical Font Preloading (only the main font) -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin 
+          href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2">
+    
+    <!-- Optimized Google Fonts (load with media trick for non-blocking) -->
+    <link rel="preload" as="style"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+    <link rel="stylesheet" 
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+          media="print" onload="this.media='all'">
+    <noscript>
+      <link rel="stylesheet" 
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+    </noscript>
+    
+    <!-- Favicon and PWA -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Canonical (updated per page by Helmet) -->
+    <link rel="canonical" href="https://dataengineerhub.blog">
+    
+    <!-- Robots (updated per page by Helmet) -->
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    
+    <!-- Mobile Optimization -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1e293b">
+    
+    <!-- Critical CSS Inline -->
     <style>
       * {
         margin: 0;
@@ -39,25 +101,6 @@
         100% { transform: rotate(360deg); }
       }
       
-      /* Loading spinner */
-      .loading-spinner {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        padding: 20px;
-      }
-      
-      .spinner {
-        width: 48px;
-        height: 48px;
-        border: 4px solid #60a5fa;
-        border-top: 4px solid transparent;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-      
       @media (max-width: 768px) {
         body {
           font-size: 16px;
@@ -71,141 +114,156 @@
           transition-duration: 0.01ms !important;
         }
       }
-    </style>
-    
-    <!-- Optimized Font Loading (only load what's needed) -->
-    <link 
-      rel="preload" 
-      as="font" 
-      type="font/woff2" 
-      href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2"
-      crossorigin
-    />
-    
-    <!-- Load fonts with media query trick (non-blocking) -->
-    <link 
-      rel="preload" 
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-    />
-    <link 
-      rel="stylesheet" 
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-      media="print" 
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link 
-        rel="stylesheet" 
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-      />
-    </noscript>
-    
-    <!-- Fallback Meta Tags -->
-    <title>DataEngineer Hub - Data Engineering Tutorials</title>
-    <meta name="description" content="Learn data engineering with expert tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow & dbt." />
-    
-    <!-- Static Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "@id": "https://dataengineerhub.blog/#organization",
-      "name": "DataEngineer Hub",
-      "url": "https://dataengineerhub.blog",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://dataengineerhub.blog/logo.png",
-        "width": 250,
-        "height": 250
+      
+      /* Ezoic placeholder styles */
+      .ezoic-ad {
+        min-height: 50px;
+        display: block;
+        margin: 20px 0;
       }
-    }
-    </script>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link rel="canonical" href="https://dataengineerhub.blog" />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
-    <meta name="theme-color" content="#1e293b" />
-    
-    <!-- Ezoic CMP (Consent Management) - Load early but non-blocking -->
-    <script>
-      // Defer Ezoic CMP loading
-      setTimeout(() => {
-        const script1 = document.createElement('script');
-        script1.src = 'https://cmp.gatekeeperconsent.com/min.js';
-        script1.dataset.cfasync = 'false';
-        document.head.appendChild(script1);
-        
-        const script2 = document.createElement('script');
-        script2.src = 'https://the.gatekeeperconsent.com/cmp.min.js';
-        script2.dataset.cfasync = 'false';
-        document.head.appendChild(script2);
-      }, 1000);
-    </script>
+    </style>
     
     <!-- Performance Monitoring -->
     <script>
       if (typeof performance !== 'undefined' && performance.mark) {
         performance.mark('nav-start');
       }
+      
+      if ('connection' in navigator) {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (connection && connection.effectiveType) {
+          document.documentElement.setAttribute('data-connection', connection.effectiveType);
+        }
+      }
+      
+      if ('deviceMemory' in navigator) {
+        document.documentElement.setAttribute('data-device-memory', navigator.deviceMemory);
+      }
     </script>
   </head>
   <body>
     <div id="root">
-      <div class="loading-spinner">
-        <div class="spinner"></div>
-        <p style="color: #93c5fd; font-weight: 500; margin-top: 20px; font-size: 18px; text-align: center;">
-          Loading DataEngineer Hub...
-        </p>
+      <div style="
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
+        flex-direction: column;
+        padding: 20px;
+      ">
+        <div style="
+          width: 48px;
+          height: 48px;
+          border: 4px solid #60a5fa;
+          border-top: 4px solid transparent;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        "></div>
+        <p style="
+          color: #93c5fd;
+          font-weight: 500;
+          margin-top: 20px;
+          font-size: 18px;
+          text-align: center;
+        ">Loading DataEngineer Hub...</p>
       </div>
     </div>
     
-    <!-- Main App (loads React) -->
+    <!-- Main App (loads React) - PRIORITY -->
     <script type="module" src="/src/main.jsx"></script>
     
-    <!-- Load third-party scripts AFTER user interaction -->
+    <!-- Load third-party scripts AFTER user interaction or timeout -->
     <script>
-      // Load Google Analytics after interaction
-      function loadGA() {
-        if (window.gtag) return;
+      // Global objects for Ezoic and Analytics
+      window.ezstandalone = window.ezstandalone || {};
+      window.ezstandalone.cmd = window.ezstandalone.cmd || [];
+      window.dataLayer = window.dataLayer || [];
+      
+      // Flag to track if scripts are loaded
+      let scriptsLoaded = false;
+      
+      // Load Ezoic CMP (Consent Management Platform)
+      function loadEzoicCMP() {
+        if (document.getElementById('ezoic-cmp1')) return;
         
-        const script = document.createElement('script');
-        script.async = true;
-        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-MTMNP6EV9C';
-        document.head.appendChild(script);
+        const script1 = document.createElement('script');
+        script1.id = 'ezoic-cmp1';
+        script1.src = 'https://cmp.gatekeeperconsent.com/min.js';
+        script1.dataset.cfasync = 'false';
+        document.head.appendChild(script1);
         
-        window.dataLayer = window.dataLayer || [];
-        window.gtag = function() { dataLayer.push(arguments); };
-        window.gtag('js', new Date());
-        window.gtag('config', 'G-MTMNP6EV9C', { send_page_view: false });
+        const script2 = document.createElement('script');
+        script2.id = 'ezoic-cmp2';
+        script2.src = 'https://the.gatekeeperconsent.com/cmp.min.js';
+        script2.dataset.cfasync = 'false';
+        document.head.appendChild(script2);
+        
+        console.log('✅ Ezoic CMP loaded');
       }
       
-      // Load Ezoic ads after interaction
-      function loadEzoic() {
-        if (window.ezstandalone) return;
+      // Load Ezoic Ads
+      function loadEzoicAds() {
+        if (document.getElementById('ezoic-sa')) return;
         
         const script = document.createElement('script');
+        script.id = 'ezoic-sa';
         script.async = true;
         script.src = '//www.ezojs.com/ezoic/sa.min.js';
         document.head.appendChild(script);
         
-        window.ezstandalone = window.ezstandalone || {};
-        window.ezstandalone.cmd = window.ezstandalone.cmd || [];
+        console.log('✅ Ezoic Ads loaded');
+      }
+      
+      // Load Google Analytics
+      function loadGoogleAnalytics() {
+        if (window.gtag || document.getElementById('ga-gtag')) return;
+        
+        const script = document.createElement('script');
+        script.id = 'ga-gtag';
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-MTMNP6EV9C';
+        document.head.appendChild(script);
+        
+        script.onload = function() {
+          window.gtag = function() { window.dataLayer.push(arguments); };
+          window.gtag('js', new Date());
+          window.gtag('config', 'G-MTMNP6EV9C', {
+            'send_page_view': false
+          });
+          console.log('✅ Google Analytics loaded');
+        };
+      }
+      
+      // Load all third-party scripts
+      function loadAllScripts() {
+        if (scriptsLoaded) return;
+        scriptsLoaded = true;
+        
+        console.log('📊 Loading third-party scripts...');
+        loadEzoicCMP();
+        loadEzoicAds();
+        loadGoogleAnalytics();
       }
       
       // Wait for user interaction before loading
       const events = ['mousedown', 'touchstart', 'scroll', 'keydown'];
-      const loadScripts = () => {
-        loadGA();
-        loadEzoic();
-        events.forEach(e => document.removeEventListener(e, loadScripts));
+      const handleInteraction = () => {
+        loadAllScripts();
+        events.forEach(event => 
+          document.removeEventListener(event, handleInteraction)
+        );
       };
       
-      events.forEach(e => document.addEventListener(e, loadScripts, { once: true, passive: true }));
+      events.forEach(event => 
+        document.addEventListener(event, handleInteraction, { 
+          once: true, 
+          passive: true 
+        })
+      );
       
-      // Fallback: load after 3 seconds
-      setTimeout(loadScripts, 3000);
+      // Fallback: load after 2 seconds if no interaction
+      setTimeout(loadAllScripts, 2000);
     </script>
     
     <!-- Performance logging -->
@@ -216,19 +274,27 @@
           
           setTimeout(() => {
             const perfData = performance.getEntriesByType('navigation')[0];
+            const paintEntries = performance.getEntriesByType('paint');
+            
             if (perfData) {
-              const loadTime = Math.round(perfData.loadEventEnd - perfData.fetchStart);
-              console.log('⚡ Load time:', loadTime + 'ms');
+              const metrics = {
+                'Total Load': Math.round(perfData.loadEventEnd - perfData.fetchStart) + 'ms',
+                'DOM Ready': Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart) + 'ms',
+                'FCP': paintEntries[1] ? Math.round(paintEntries[1].startTime) + 'ms' : 'N/A'
+              };
               
+              console.log('📊 Performance:', metrics);
+              
+              // Send to GA once loaded
               if (typeof gtag !== 'undefined') {
                 gtag('event', 'timing_complete', {
-                  name: 'load',
-                  value: loadTime,
-                  event_category: 'Performance'
+                  'name': 'load',
+                  'value': Math.round(perfData.loadEventEnd - perfData.fetchStart),
+                  'event_category': 'Performance'
                 });
               }
             }
-          }, 1000);
+          }, 1500);
         }
       });
     </script>
