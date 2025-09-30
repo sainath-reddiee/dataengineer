@@ -73,6 +73,7 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
+          VITE_ADS_ENABLED: ${{ secrets.VITE_ADS_ENABLED }}
       
       - name: 🔍 Verify Build & Copy Files
         run: |
