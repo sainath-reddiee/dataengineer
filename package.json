@@ -15,7 +15,7 @@
     "sitemap:notify:force": "node scripts/notifySearchEngines.js --force",
     "indexnow:generate": "node scripts/generateIndexNowKey.js",
     "prebuild": "npm run indexnow:generate && npm run sitemap:generate && npm run sitemap:validate",
-    "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap test passed'"
+    "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
