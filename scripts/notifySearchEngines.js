@@ -114,18 +114,24 @@ async function submitToIndexNow(urls, apiKey) {
     urlList: urls.slice(0, 10000) // IndexNow limit
   };
 
+  const jsonPayload = JSON.stringify(payload);
+  const contentLength = Buffer.byteLength(jsonPayload);
+
   console.log('\n📡 Submitting to IndexNow API via Bing...');
   console.log(`   Host: ${host}`);
   console.log(`   URLs: ${urls.length}`);
+  console.log(`   Payload size: ${contentLength} bytes`);
+
 
   try {
     const response = await makeRequest('https://www.bing.com/indexnow', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
+        'Content-Length': contentLength,
         'User-Agent': 'DataEngineerHub-IndexNow/1.0'
       },
-      body: JSON.stringify(payload)
+      body: jsonPayload
     });
 
     console.log(`✅ IndexNow: Success (HTTP ${response.status})`);
