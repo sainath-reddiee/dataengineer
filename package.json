@@ -16,15 +16,6 @@
     "sitemap:notify:force": "node scripts/notifySearchEngines.js --force",
     
     "prebuild": "npm run sitemap:generate && npm run sitemap:validate",
-    "build:production": "npm run build",
-    
-    "postbuild": "npm run sitemap:validate",
-    
-    "deploy": "npm run build:production && npm run deploy:run",
-    "deploy:run": "echo 'Add your deployment command here (vercel, netlify, etc.)'",
-    "postdeploy": "npm run sitemap:notify",
-    
-    "sitemap:full": "npm run sitemap:generate:force && npm run sitemap:validate && npm run sitemap:notify:force",
     
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap test passed'"
   },
