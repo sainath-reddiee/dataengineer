@@ -14,7 +14,7 @@
     "sitemap:validate": "node scripts/validateSitemap.js",
     "sitemap:notify": "node scripts/notifySearchEngines.js",
     "sitemap:notify:force": "node scripts/notifySearchEngines.js --force",
-    
+    "indexnow:generate": "node scripts/generateIndexNowKey.js",
     "prebuild": "npm run sitemap:generate && npm run sitemap:validate",
     
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap test passed'"
