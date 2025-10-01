@@ -1,4 +1,4 @@
-// src/components/PostCard.jsx - FINAL VERSION with "Liquid Reveal" Animation
+// src/components/PostCard.jsx - FINAL VERSION with "Running Dog" Animation
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -7,33 +7,54 @@ import LazyImage from './LazyImage';
 
 const MotionLink = motion(Link);
 
+// A small helper component for the dust particles
+const DustParticle = ({ delay }) => {
+    const variants = {
+        rest: { opacity: 0, scale: 0 },
+        hover: {
+            opacity: [0, 1, 0],
+            scale: [0.5, 1, 0],
+            x: [0, -10, -20],
+            y: [0, 5, 0],
+            transition: {
+                delay,
+                duration: 0.6,
+                ease: 'easeOut',
+            }
+        },
+    };
+    return <motion.div variants={variants} className="absolute w-1 h-1 bg-blue-300/50 rounded-full" />;
+};
+
 const PostCard = ({ post }) => {
   if (!post) return null;
 
-  // --- Animation Variants for the "Liquid Reveal" effect ---
+  // --- Animation Variants for the "Running Dog" effect ---
   const cardVariants = {
-    rest: {
-      boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.2)',
-    },
-    hover: {
-      boxShadow: '0px 15px 30px rgba(0, 0, 0, 0.3)',
-    },
+    rest: { scale: 1, boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.2)' },
+    hover: { scale: 1.03, boxShadow: '0px 15px 30px rgba(0, 0, 0, 0.3)' },
   };
 
-  const imageMaskVariants = {
-    rest: {
-      scale: 0,
-      transition: { duration: 0.5, ease: 'easeOut' }
-    },
+  const borderVariants = {
+    rest: { opacity: 0 },
+    hover: { opacity: 1, transition: { duration: 0.4 } },
+  };
+
+  const dogVariants = {
+    rest: { x: '-110%', opacity: 0 },
     hover: {
-      scale: 4, // Expand to cover the entire card
-      transition: { duration: 0.5, ease: [0.25, 1, 0.5, 1] }
+      x: '110%',
+      opacity: 1,
+      transition: {
+        x: { duration: 0.8, ease: 'linear' },
+        opacity: { duration: 0.1 }
+      },
     },
   };
   
-  const imageVariants = {
-    rest: { scale: 1 },
-    hover: { scale: 1.1 },
+  const trailVariants = {
+      rest: {},
+      hover: { transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
   };
 
   return (
@@ -44,74 +65,37 @@ const PostCard = ({ post }) => {
       initial="rest"
       whileHover="hover"
       animate="rest"
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
     >
       <div className="relative h-48 overflow-hidden">
-        {/* --- The Liquid Reveal SVG Filter --- */}
-        <svg width="0" height="0" className="absolute">
-          <defs>
-            <filter id="liquid-filter">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
-              <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="contrast" />
-              <feComposite in="SourceGraphic" in2="contrast" operator="atop" />
-            </filter>
-          </defs>
-        </svg>
-
-        {/* Base Image (dimmed and desaturated) */}
-        <div className="w-full h-full filter saturate-[0.7] brightness-[0.8]">
-          <LazyImage
-            src={post.image}
-            alt={post.title}
-            width={400}
-            quality={80}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="w-full h-full object-cover"
-          />
+        <LazyImage
+          src={post.image}
+          alt={post.title}
+          width={400}
+          quality={80}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        
+        {/* --- The Running Dog Animation --- */}
+        <div className="absolute top-2 left-0 w-full h-8 overflow-hidden">
+            <motion.div variants={dogVariants}>
+                {/* SVG Dog Silhouette */}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" className="text-white/80">
+                    <path d="M12.2,2.8c-0.5,0-0.9,0.4-0.9,0.9v1.8c0,0.5,0.4,0.9,0.9,0.9s0.9-0.4,0.9-0.9V3.7C13.1,3.2,12.7,2.8,12.2,2.8z M19,10.3c-0.2-0.4-0.7-0.5-1.1-0.3c-0.4,0.2-0.5,0.7-0.3,1.1l1.1,2.1H13V9.7c0-0.5-0.4-0.9-0.9-0.9s-0.9,0.4-0.9,0.9v4.5c0,0.5,0.4,0.9,0.9,0.9h6.8l-1.1,2.1c-0.2,0.4-0.1,0.9,0.3,1.1c0.1,0.1,0.3,0.1,0.4,0.1c0.3,0,0.6-0.2,0.8-0.5l2.7-5c0.2-0.4,0.1-0.9-0.3-1.1L19,10.3z M8.5,8.8C7.1,8.8,6,9.9,6,11.3s1.1,2.5,2.5,2.5s2.5-1.1,2.5-2.5S9.9,8.8,8.5,8.8z M4.5,21.2c0.5,0,0.9-0.4,0.9-0.9v-2.7c0-0.5-0.4-0.9-0.9-0.9S3.6,17,3.6,17.5v2.7C3.6,20.8,4,21.2,4.5,21.2z M9.9,21.2c0.5,0,0.9-0.4,0.9-0.9v-2.7c0-0.5-0.4-0.9-0.9-0.9s-0.9,0.4-0.9,0.9v2.7C9,20.8,9.4,21.2,9.9,21.2z"/>
+                </svg>
+                {/* Dust Trail */}
+                <motion.div variants={trailVariants} className="absolute top-1/2 -left-2">
+                    {Array.from({length: 3}).map((_, i) => <DustParticle key={i} delay={i * 0.05} />)}
+                </motion.div>
+            </motion.div>
         </div>
 
-        {/* The Revealing Image Container (clipped by the liquid mask) */}
-        <div 
-          className="absolute inset-0"
-          style={{ clipPath: 'url(#liquid-mask)' }}
-        >
-          <motion.div variants={imageVariants} className="w-full h-full">
-            <LazyImage
-              src={post.image}
-              alt={post.title}
-              width={400}
-              quality={90} // Higher quality for the revealed image
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="w-full h-full object-cover"
-            />
-          </motion.div>
-        </div>
-
-        {/* The Liquid Mask itself (two expanding blobs) */}
-        <svg width="0" height="0" className="absolute">
-          <clipPath id="liquid-mask">
-            <g style={{ filter: 'url(#liquid-filter)' }}>
-              <motion.circle
-                cx="50%"
-                cy="50%"
-                r="80"
-                variants={imageMaskVariants}
-              />
-              <motion.circle
-                cx="20%"
-                cy="40%"
-                r="60"
-                variants={{
-                    rest: imageMaskVariants.rest,
-                    hover: {...imageMaskVariants.hover, transition: {...imageMaskVariants.hover.transition, delay: 0.1}}
-                }}
-              />
-            </g>
-          </clipPath>
-        </svg>
-
-        {/* Static background gradient and category */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+        <motion.div 
+            className="absolute inset-0 border-2 border-blue-400 rounded-xl pointer-events-none"
+            variants={borderVariants}
+        />
         <div className="absolute top-4 left-4 z-10">
           <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
             {post.category}
@@ -121,7 +105,7 @@ const PostCard = ({ post }) => {
       
       {/* Text Content */}
       <div className="p-6">
-        <h3 className="text-lg font-bold mb-3 group-hover:text-blue-400 transition-colors line-clamp-2">
+        <h3 className="text-lg font-bold mb-3 group-hover:text-blue-400 transition-colors duration-300 line-clamp-2">
           {post.title}
         </h3>
         <p className="text-gray-400 text-sm mb-4 line-clamp-3">
