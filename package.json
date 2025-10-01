@@ -13,7 +13,9 @@
     "sitemap:validate": "node scripts/validateSitemap.js",
     "sitemap:notify": "node scripts/notifySearchEngines.js",
     "sitemap:notify:force": "node scripts/notifySearchEngines.js --force",
+    "sitemap:notify:all": "node scripts/notifySearchEngines.js --all",
     "indexnow:generate": "node scripts/generateIndexNowKey.js",
+    "indexnow:test": "node scripts/testIndexNow.js",
     "prebuild": "npm run indexnow:generate && npm run sitemap:generate && npm run sitemap:validate",
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'"
   },
