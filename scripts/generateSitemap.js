@@ -202,7 +202,7 @@ async function generateSitemap() {
         url: `${SITE_URL}/articles/${post.slug}`,
         lastmod: postDate,
         changefreq: 'weekly',
-        priority: 0.8,
+        priority: 0.7,
       });
     });
 
