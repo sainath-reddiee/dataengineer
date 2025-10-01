@@ -1,4 +1,4 @@
-// src/hooks/useWordPress.js - COMPLETE FINAL VERSION WITH ALL FIXES
+// src/hooks/useWordPress.js - COMPLETE FULL VERSION
 import { useState, useEffect, useCallback } from 'react';
 import wordpressApi from '@/services/wordpressApi';
 
@@ -21,34 +21,8 @@ export const usePosts = ({
   const [totalPosts, setTotalPosts] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [categoryId, setCategoryId] = useState(null);
 
-  // FIXED: Reset categoryId whenever categorySlug changes
-  useEffect(() => {
-    setCategoryId(null);
-  }, [categorySlug]);
-
-  const resolveCategoryId = useCallback(async () => {
-    if (!categorySlug) {
-      return null;
-    }
-
-    // Check if we already have the ID for this slug
-    if (categoryId !== null) {
-      return categoryId;
-    }
-
-    try {
-      console.log('🔍 Resolving category ID for:', categorySlug);
-      const id = await wordpressApi.getCategoryIdBySlug(categorySlug);
-      setCategoryId(id);
-      return id;
-    } catch (error) {
-      console.error('❌ Failed to resolve category ID:', error);
-      throw error;
-    }
-  }, [categorySlug, categoryId]);
-
+  // FIXED: Fetch posts directly without caching categoryId in state
   const fetchPosts = useCallback(async (forceRefresh = false) => {
     if (!enabled) {
       setLoading(false);
@@ -63,22 +37,27 @@ export const usePosts = ({
         page, per_page, categorySlug, search, featured, trending, orderby, order, forceRefresh 
       });
 
-      let resolvedCategoryId = null;
-      
-      // Always resolve category if we have a slug
-      if (categorySlug) {
-        resolvedCategoryId = await resolveCategoryId();
-      }
-
       if (forceRefresh) {
         console.log('🧹 Force refresh - clearing cache');
         wordpressApi.clearCache();
       }
 
+      // FIXED: Get category ID fresh every time if needed
+      let categoryId = null;
+      if (categorySlug) {
+        try {
+          categoryId = await wordpressApi.getCategoryIdBySlug(categorySlug);
+          console.log('✅ Category resolved:', categorySlug, '→', categoryId);
+        } catch (catError) {
+          console.error('❌ Category resolution failed:', catError);
+          throw new Error(`Category "${categorySlug}" not found. Please check if it exists.`);
+        }
+      }
+
       const result = await wordpressApi.getPosts({ 
         page, 
         per_page, 
-        categoryId: resolvedCategoryId,
+        categoryId,
         search, 
         featured,
         trending,
@@ -97,7 +76,7 @@ export const usePosts = ({
         totalPosts: result.totalPosts,
         hasMore: page < result.totalPages,
         currentPage: page,
-        categoryId: resolvedCategoryId
+        categoryId
       });
     } catch (err) {
       console.error('❌ usePosts: Error fetching posts:', err);
@@ -109,12 +88,11 @@ export const usePosts = ({
     } finally {
       setLoading(false);
     }
-  }, [page, per_page, categorySlug, search, featured, trending, orderby, order, enabled, refreshKey, resolveCategoryId]);
+  }, [page, per_page, categorySlug, search, featured, trending, orderby, order, enabled, refreshKey]);
 
   // Manual refresh function
   const refresh = useCallback(async () => {
     console.log('🔄 Manual refresh triggered - incrementing refresh key');
-    setCategoryId(null); // Reset category ID
     setRefreshKey(prev => prev + 1);
     await fetchPosts(true);
   }, [fetchPosts]);
@@ -126,16 +104,16 @@ export const usePosts = ({
     try {
       setLoading(true);
       
-      let resolvedCategoryId = null;
+      let categoryId = null;
       if (categorySlug) {
-        resolvedCategoryId = await resolveCategoryId();
+        categoryId = await wordpressApi.getCategoryIdBySlug(categorySlug);
       }
       
       const nextPage = page + 1;
       const result = await wordpressApi.getPosts({
         page: nextPage,
         per_page,
-        categoryId: resolvedCategoryId,
+        categoryId,
         search,
         featured,
         trending,
@@ -150,7 +128,7 @@ export const usePosts = ({
     } finally {
       setLoading(false);
     }
-  }, [page, per_page, categorySlug, search, featured, trending, orderby, order, loading, hasMore, resolveCategoryId]);
+  }, [page, per_page, categorySlug, search, featured, trending, orderby, order, loading, hasMore]);
 
   useEffect(() => {
     console.log('📡 usePosts useEffect triggered, refreshKey:', refreshKey);
