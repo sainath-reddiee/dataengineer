@@ -1,5 +1,4 @@
-// src/pages/CategoryPage.jsx
-// FIXED: Added key prop to force component re-mount on category change
+// src/pages/CategoryPage.jsx - COMPLETE VERSION WITH ALL FEATURES
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -11,6 +10,16 @@ import MetaTags from '@/components/SEO/MetaTags';
 
 const CategoryPage = () => {
   const { categoryName } = useParams();
+  
+  // CRITICAL: Log when category changes
+  React.useEffect(() => {
+    console.log('🔄 CategoryPage mounted/updated with:', categoryName);
+    
+    return () => {
+      console.log('🧹 CategoryPage unmounting from:', categoryName);
+    };
+  }, [categoryName]);
+
   const formattedCategoryName = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
 
   // Category descriptions
@@ -101,7 +110,7 @@ const CategoryPage = () => {
             </Button>
           </motion.div>
 
-          {/* Header - FIXED: Animation resets on category change */}
+          {/* Header - Animation resets on category change */}
           <motion.div
             key={`header-${categoryName}`}
             initial={{ opacity: 0, y: 20 }}
@@ -131,16 +140,15 @@ const CategoryPage = () => {
             </div>
           </motion.div>
           
-          {/* CRITICAL FIX: Key prop forces complete re-mount when category changes */}
+          {/* CRITICAL FIX: Animation wrapper with timestamp key */}
           <motion.div
-            key={`posts-wrapper-${categoryName}`}
+            key={`posts-wrapper-${categoryName}-${Date.now()}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            {/* CRITICAL FIX: Use only categoryName as key to force complete re-mount */}
             <RecentPosts 
-              key={categoryName.toLowerCase()}
+              key={`posts-${categoryName}`}
               category={categoryName.toLowerCase()} 
               showCategoryError={true}
               initialLimit={9}
