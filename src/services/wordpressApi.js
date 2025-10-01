@@ -28,14 +28,12 @@ class WordPressAPI {
   decodeHtmlEntities(text) {
     if (!text || typeof text !== 'string') return '';
     
-    // This is a safe way to decode entities in the browser
     if (typeof window !== 'undefined') {
       const textarea = document.createElement('textarea');
       textarea.innerHTML = text;
       return textarea.value;
     }
     
-    // Basic fallback for non-browser environments
     return text
       .replace(/&#8217;/g, "'")
       .replace(/&amp;/g, "&")
@@ -96,7 +94,6 @@ class WordPressAPI {
         throw new Error('Invalid response format from server');
       }
       
-      // Validate that data exists
       if (data === null || data === undefined) {
         console.error('❌ Received null/undefined data from API');
         throw new Error('No data received from server');
@@ -122,7 +119,6 @@ class WordPressAPI {
         throw new Error('Request timed out - please check your connection');
       }
       
-      // Re-throw with more user-friendly messages
       if (error.message.includes('fetch')) {
         throw new Error('Network error - please check your internet connection');
       }
@@ -131,7 +127,7 @@ class WordPressAPI {
     }
   }
 
-  // FIXED: Enhanced getPosts with orderby and order parameters
+  // CORRECTED getPosts function
   async getPosts({ 
     page = 1, 
     per_page = 10, 
@@ -158,20 +154,18 @@ class WordPressAPI {
       if (search && search.trim()) {
         params.append('search', search.trim());
       }
+      // Use the new custom parameters that functions.php now understands
       if (featured) {
-        params.append('meta_key', 'featured');
-        params.append('meta_value', '1');
+        params.append('is_featured', 'true');
       }
       if (trending) {
-        params.append('meta_key', 'trending');
-        params.append('meta_value', '1');
+        params.append('is_trending', 'true');
       }
 
       console.log('📋 Fetching posts with params:', Object.fromEntries(params));
       
       const result = await this.makeRequest(`/posts?${params.toString()}`);
       
-      // Enhanced validation for API response
       if (!result || typeof result !== 'object') {
         console.error('❌ Invalid API response structure:', result);
         return { posts: [], totalPages: 1, totalPosts: 0 };
@@ -181,9 +175,7 @@ class WordPressAPI {
       
       if (!Array.isArray(posts)) {
         console.error('❌ Expected array of posts, got:', typeof posts, posts);
-        // Try to handle different response structures
         if (posts && typeof posts === 'object' && Array.isArray(posts.posts)) {
-          // Handle nested posts structure
           const transformedPosts = this.transformPosts(posts.posts);
           return {
             posts: transformedPosts,
@@ -308,7 +300,6 @@ class WordPressAPI {
         throw new Error('Invalid post data provided');
       }
 
-      // Safe image extraction with fallbacks
       let imageUrl = 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop';
       
       try {
@@ -331,7 +322,6 @@ class WordPressAPI {
         console.warn('⚠️ Error extracting image, using fallback:', imgError);
       }
 
-      // Safe category extraction
       let primaryCategory = 'Uncategorized';
       try {
         const categories = wpPost._embedded?.['wp:term']?.[0] || [];
@@ -343,7 +333,6 @@ class WordPressAPI {
         console.warn('⚠️ Error extracting category, using fallback:', catError);
       }
 
-      // Safe author extraction
       let author = 'DataEngineer Hub';
       try {
         const authorData = wpPost._embedded?.author?.[0];
@@ -354,7 +343,6 @@ class WordPressAPI {
         console.warn('⚠️ Error extracting author, using fallback:', authorError);
       }
 
-      // Safe meta extraction
       let featured = false;
       let trending = false;
       try {
@@ -366,7 +354,6 @@ class WordPressAPI {
         console.warn('⚠️ Error extracting meta, using defaults:', metaError);
       }
 
-      // Safe excerpt extraction
       let excerpt = '';
       try {
         if (wpPost.excerpt && wpPost.excerpt.rendered) {
@@ -376,7 +363,6 @@ class WordPressAPI {
         console.warn('⚠️ Error extracting excerpt:', excerptError);
       }
 
-      // Safe date handling with multiple fallbacks
       let postDate = new Date().toISOString();
       try {
         if (wpPost.date && wpPost.date !== '0000-00-00 00:00:00') {
@@ -421,7 +407,6 @@ class WordPressAPI {
       console.error('❌ Error transforming post:', error);
       console.error('Raw post data:', wpPost);
       
-      // Return a safe fallback post
       return {
         id: wpPost?.id || Math.random(),
         slug: wpPost?.slug || '',
