@@ -52,7 +52,7 @@ class WordPressAPI {
     const cached = this.cache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
       console.log('📦 Using cached data for:', endpoint);
-      return cached.data;
+      return cached;
     }
 
     try {
