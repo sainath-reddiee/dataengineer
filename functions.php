@@ -1169,5 +1169,43 @@ add_action('admin_notices', function() {
         echo '</div>';
     }
 });
+function add_custom_meta_query_to_rest($args, $request) {
+    // Check if the 'is_featured' parameter is set in the request
+    if (!empty($request['is_featured'])) {
+        $args['meta_key'] = 'featured';
+        $args['meta_value'] = '1';
+    }
 
+    // Check if the 'is_trending' parameter is set in the request
+    if (!empty($request['is_trending'])) {
+        $args['meta_key'] = 'trending';
+        $args['meta_value'] = '1';
+    }
+
+    return $args;
+}
+add_filter('rest_post_query', 'add_custom_meta_query_to_rest', 10, 2);
+
+/**
+ * Register the 'is_featured' and 'is_trending' parameters so the API knows they are valid.
+ */
+function add_custom_query_params_to_rest() {
+    register_rest_field('post', 'is_featured', array(
+        'get_callback'    => null,
+        'update_callback' => null,
+        'schema'          => array(
+            'description' => 'Filter by featured posts.',
+            'type'        => 'boolean',
+        ),
+    ));
+    register_rest_field('post', 'is_trending', array(
+        'get_callback'    => null,
+        'update_callback' => null,
+        'schema'          => array(
+            'description' => 'Filter by trending posts.',
+            'type'        => 'boolean',
+        ),
+    ));
+}
+add_action('rest_api_init', 'add_custom_query_params_to_rest');
 ?>
