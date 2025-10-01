@@ -1,5 +1,5 @@
-// src/hooks/useWordPress.js - COMPLETE FULL VERSION
-import { useState, useEffect, useCallback } from 'react';
+// src/hooks/useWordPress.js - FIXED VERSION WITH RACE CONDITION RESOLVED
+import { useState, useEffect, useCallback, useRef } from 'react';
 import wordpressApi from '@/services/wordpressApi';
 
 // Hook for fetching posts with proper sorting and pagination
@@ -21,91 +21,142 @@ export const usePosts = ({
   const [totalPosts, setTotalPosts] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  
+  // Track the current request to prevent race conditions
+  const currentRequestRef = useRef(0);
 
-  // FIXED: Fetch posts directly without caching categoryId in state
-  const fetchPosts = useCallback(async (forceRefresh = false) => {
+  // CRITICAL FIX: Reset posts immediately when categorySlug changes
+  useEffect(() => {
+    console.log('🔄 Category/search changed, resetting state:', { categorySlug, search });
+    setPosts([]);
+    setError(null);
+    setTotalPages(1);
+    setTotalPosts(0);
+    setHasMore(false);
+  }, [categorySlug, search]);
+
+  // Fetch posts with race condition protection
+  useEffect(() => {
     if (!enabled) {
       setLoading(false);
       return;
     }
 
-    try {
-      setError(null);
-      setLoading(true);
+    // Increment request counter to track this specific request
+    const requestId = ++currentRequestRef.current;
+    let isCancelled = false;
 
-      console.log('🔄 usePosts: Fetching posts with params:', { 
-        page, per_page, categorySlug, search, featured, trending, orderby, order, forceRefresh 
-      });
+    const fetchPosts = async () => {
+      try {
+        setError(null);
+        setLoading(true);
 
-      if (forceRefresh) {
-        console.log('🧹 Force refresh - clearing cache');
-        wordpressApi.clearCache();
-      }
+        console.log(`🔄 [Request #${requestId}] usePosts: Fetching posts with params:`, { 
+          page, per_page, categorySlug, search, featured, trending, orderby, order 
+        });
 
-      // FIXED: Get category ID fresh every time if needed
-      let categoryId = null;
-      if (categorySlug) {
-        try {
-          categoryId = await wordpressApi.getCategoryIdBySlug(categorySlug);
-          console.log('✅ Category resolved:', categorySlug, '→', categoryId);
-        } catch (catError) {
-          console.error('❌ Category resolution failed:', catError);
-          throw new Error(`Category "${categorySlug}" not found. Please check if it exists.`);
+        if (refreshKey > 0) {
+          console.log('🧹 Force refresh - clearing cache');
+          wordpressApi.clearCache();
+        }
+
+        // Get category ID fresh every time if needed
+        let categoryId = null;
+        if (categorySlug) {
+          try {
+            categoryId = await wordpressApi.getCategoryIdBySlug(categorySlug);
+            
+            // Check if this request is still valid
+            if (isCancelled || requestId !== currentRequestRef.current) {
+              console.log(`⚠️ [Request #${requestId}] Cancelled - newer request exists`);
+              return;
+            }
+            
+            console.log(`✅ [Request #${requestId}] Category resolved:`, categorySlug, '→', categoryId);
+          } catch (catError) {
+            if (isCancelled || requestId !== currentRequestRef.current) {
+              console.log(`⚠️ [Request #${requestId}] Cancelled during category resolution`);
+              return;
+            }
+            console.error(`❌ [Request #${requestId}] Category resolution failed:`, catError);
+            throw new Error(`Category "${categorySlug}" not found. Please check if it exists.`);
+          }
+        }
+
+        const result = await wordpressApi.getPosts({ 
+          page, 
+          per_page, 
+          categoryId,
+          search, 
+          featured,
+          trending,
+          orderby,
+          order
+        });
+
+        // Final check before updating state
+        if (isCancelled || requestId !== currentRequestRef.current) {
+          console.log(`⚠️ [Request #${requestId}] Cancelled - not updating state`);
+          return;
+        }
+
+        // Handle pagination - append or replace
+        if (page === 1) {
+          setPosts(result.posts);
+        } else {
+          setPosts(prev => [...prev, ...result.posts]);
+        }
+        
+        setTotalPages(result.totalPages);
+        setTotalPosts(result.totalPosts);
+        setHasMore(page < result.totalPages);
+
+        console.log(`✅ [Request #${requestId}] Posts loaded successfully:`, {
+          postsCount: result.posts.length,
+          totalPages: result.totalPages,
+          totalPosts: result.totalPosts,
+          hasMore: page < result.totalPages,
+          currentPage: page,
+          categoryId
+        });
+      } catch (err) {
+        // Only update error state if this request is still current
+        if (!isCancelled && requestId === currentRequestRef.current) {
+          console.error(`❌ [Request #${requestId}] Error fetching posts:`, err);
+          setError(err.message);
+          setPosts([]);
+          setTotalPages(1);
+          setTotalPosts(0);
+          setHasMore(false);
+        }
+      } finally {
+        // Only update loading state if this request is still current
+        if (!isCancelled && requestId === currentRequestRef.current) {
+          setLoading(false);
         }
       }
+    };
 
-      const result = await wordpressApi.getPosts({ 
-        page, 
-        per_page, 
-        categoryId,
-        search, 
-        featured,
-        trending,
-        orderby,
-        order
-      });
+    fetchPosts();
 
-      // Handle pagination - append or replace
-      if (page === 1) {
-        setPosts(result.posts);
-      } else {
-        setPosts(prev => [...prev, ...result.posts]);
-      }
-      
-      setTotalPages(result.totalPages);
-      setTotalPosts(result.totalPosts);
-      setHasMore(page < result.totalPages);
-
-      console.log('✅ usePosts: Posts loaded successfully:', {
-        postsCount: result.posts.length,
-        totalPages: result.totalPages,
-        totalPosts: result.totalPosts,
-        hasMore: page < result.totalPages,
-        currentPage: page,
-        categoryId
-      });
-    } catch (err) {
-      console.error('❌ usePosts: Error fetching posts:', err);
-      setError(err.message);
-      setPosts([]);
-      setTotalPages(1);
-      setTotalPosts(0);
-      setHasMore(false);
-    } finally {
-      setLoading(false);
-    }
+    // Cleanup function to cancel this request if component unmounts or deps change
+    return () => {
+      isCancelled = true;
+      console.log(`🧹 [Request #${requestId}] Cleanup - marking as cancelled`);
+    };
   }, [page, per_page, categorySlug, search, featured, trending, orderby, order, enabled, refreshKey]);
 
   // Manual refresh function
   const refresh = useCallback(async () => {
     console.log('🔄 Manual refresh triggered - incrementing refresh key');
     setRefreshKey(prev => prev + 1);
-    await fetchPosts(true);
-  }, [fetchPosts]);
+  }, []);
 
   // Load more function with proper category handling
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return;
+    
+    const requestId = ++currentRequestRef.current;
     
     try {
       setLoading(true);
@@ -113,6 +164,12 @@ export const usePosts = ({
       let categoryId = null;
       if (categorySlug) {
         categoryId = await wordpressApi.getCategoryIdBySlug(categorySlug);
+        
+        // Check if request is still valid
+        if (requestId !== currentRequestRef.current) {
+          console.log(`⚠️ [LoadMore #${requestId}] Cancelled`);
+          return;
+        }
       }
       
       const nextPage = page + 1;
@@ -127,19 +184,21 @@ export const usePosts = ({
         order
       });
 
-      setPosts(prev => [...prev, ...result.posts]);
-      setHasMore(nextPage < result.totalPages);
+      // Only update if still the current request
+      if (requestId === currentRequestRef.current) {
+        setPosts(prev => [...prev, ...result.posts]);
+        setHasMore(nextPage < result.totalPages);
+      }
     } catch (err) {
-      setError(err.message);
+      if (requestId === currentRequestRef.current) {
+        setError(err.message);
+      }
     } finally {
-      setLoading(false);
+      if (requestId === currentRequestRef.current) {
+        setLoading(false);
+      }
     }
   }, [page, per_page, categorySlug, search, featured, trending, orderby, order, loading, hasMore]);
-
-  useEffect(() => {
-    console.log('📡 usePosts useEffect triggered, refreshKey:', refreshKey);
-    fetchPosts(refreshKey > 0);
-  }, [fetchPosts, refreshKey]);
 
   return { 
     posts, 
@@ -149,8 +208,7 @@ export const usePosts = ({
     totalPosts,
     hasMore,
     refresh,
-    loadMore,
-    refetch: fetchPosts
+    loadMore
   };
 };
 
@@ -159,45 +217,76 @@ export const usePost = (slug, enabled = true) => {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const currentRequestRef = useRef(0);
 
-  const fetchPost = useCallback(async (forceRefresh = false) => {
+  useEffect(() => {
     if (!enabled || !slug) {
       setLoading(false);
       return;
     }
 
-    try {
-      setError(null);
-      setLoading(true);
+    const requestId = ++currentRequestRef.current;
+    let isCancelled = false;
 
-      console.log('📄 usePost: Fetching post with slug:', slug);
+    const fetchPost = async () => {
+      try {
+        setError(null);
+        setLoading(true);
 
-      if (forceRefresh) {
-        wordpressApi.clearCache(`posts?slug=${slug}`);
+        console.log(`📄 [Request #${requestId}] usePost: Fetching post with slug:`, slug);
+
+        const postData = await wordpressApi.getPostBySlug(slug);
+
+        if (!isCancelled && requestId === currentRequestRef.current) {
+          setPost(postData);
+          console.log(`✅ [Request #${requestId}] Post loaded successfully:`, postData.title);
+        }
+      } catch (err) {
+        if (!isCancelled && requestId === currentRequestRef.current) {
+          console.error(`❌ [Request #${requestId}] Error fetching post:`, err);
+          setError(err.message);
+          setPost(null);
+        }
+      } finally {
+        if (!isCancelled && requestId === currentRequestRef.current) {
+          setLoading(false);
+        }
       }
+    };
 
-      const postData = await wordpressApi.getPostBySlug(slug);
-      setPost(postData);
+    fetchPost();
 
-      console.log('✅ usePost: Post loaded successfully:', postData.title);
-    } catch (err) {
-      console.error('❌ usePost: Error fetching post:', err);
-      setError(err.message);
-      setPost(null);
-    } finally {
-      setLoading(false);
-    }
+    return () => {
+      isCancelled = true;
+      console.log(`🧹 [Request #${requestId}] usePost cleanup`);
+    };
   }, [slug, enabled]);
 
   const refresh = useCallback(async () => {
-    await fetchPost(true);
-  }, [fetchPost]);
+    if (!slug) return;
+    
+    wordpressApi.clearCache(`posts?slug=${slug}`);
+    const requestId = ++currentRequestRef.current;
+    
+    try {
+      setLoading(true);
+      const postData = await wordpressApi.getPostBySlug(slug);
+      
+      if (requestId === currentRequestRef.current) {
+        setPost(postData);
+      }
+    } catch (err) {
+      if (requestId === currentRequestRef.current) {
+        setError(err.message);
+      }
+    } finally {
+      if (requestId === currentRequestRef.current) {
+        setLoading(false);
+      }
+    }
+  }, [slug]);
 
-  useEffect(() => {
-    fetchPost();
-  }, [fetchPost]);
-
-  return { post, loading, error, refresh, refetch: fetchPost };
+  return { post, loading, error, refresh };
 };
 
 // Hook for fetching categories
@@ -205,43 +294,72 @@ export const useCategories = (enabled = true) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const currentRequestRef = useRef(0);
 
-  const fetchCategories = useCallback(async (forceRefresh = false) => {
+  useEffect(() => {
     if (!enabled) {
       setLoading(false);
       return;
     }
 
-    try {
-      setError(null);
-      setLoading(true);
+    const requestId = ++currentRequestRef.current;
+    let isCancelled = false;
 
-      console.log('📂 useCategories: Fetching categories with forceRefresh:', forceRefresh);
+    const fetchCategories = async () => {
+      try {
+        setError(null);
+        setLoading(true);
 
-      if (forceRefresh) {
-        wordpressApi.clearCache('categories');
+        console.log(`📂 [Request #${requestId}] useCategories: Fetching categories`);
+
+        const categoriesData = await wordpressApi.getCategories();
+
+        if (!isCancelled && requestId === currentRequestRef.current) {
+          setCategories(categoriesData);
+          console.log(`✅ [Request #${requestId}] Categories loaded:`, categoriesData.length);
+        }
+      } catch (err) {
+        if (!isCancelled && requestId === currentRequestRef.current) {
+          console.error(`❌ [Request #${requestId}] Error fetching categories:`, err);
+          setError(err.message);
+          setCategories([]);
+        }
+      } finally {
+        if (!isCancelled && requestId === currentRequestRef.current) {
+          setLoading(false);
+        }
       }
+    };
 
-      const categoriesData = await wordpressApi.getCategories();
-      setCategories(categoriesData);
+    fetchCategories();
 
-      console.log('✅ useCategories: Categories loaded successfully:', categoriesData.length);
-    } catch (err) {
-      console.error('❌ useCategories: Error fetching categories:', err);
-      setError(err.message);
-      setCategories([]);
-    } finally {
-      setLoading(false);
-    }
+    return () => {
+      isCancelled = true;
+      console.log(`🧹 [Request #${requestId}] useCategories cleanup`);
+    };
   }, [enabled]);
 
   const refresh = useCallback(async () => {
-    await fetchCategories(true);
-  }, [fetchCategories]);
-
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+    wordpressApi.clearCache('categories');
+    const requestId = ++currentRequestRef.current;
+    
+    try {
+      setLoading(true);
+      const categoriesData = await wordpressApi.getCategories();
+      
+      if (requestId === currentRequestRef.current) {
+        setCategories(categoriesData);
+      }
+    } catch (err) {
+      if (requestId === currentRequestRef.current) {
+        setError(err.message);
+      }
+    } finally {
+      if (requestId === currentRequestRef.current) {
+        setLoading(false);
+      }
+    }
+  }, []);
 
   return { categories, loading, error, refresh };
 };
