@@ -1,4 +1,4 @@
-// src/services/wordpressApi.js - COMPLETE FIXED VERSION
+// src/services/wordpressApi.js - COMPLETE FINAL VERSION
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog';
 const WP_API_BASE = `${WORDPRESS_API_URL}/wp-json/wp/v2`;
 
@@ -106,7 +106,6 @@ class WordPressAPI {
     }
   }
 
-  // FIXED: Enhanced getPosts with proper sorting and pagination
   async getPosts({ 
     page = 1, 
     per_page = 10, 
@@ -123,8 +122,8 @@ class WordPressAPI {
         per_page: Math.min(100, Math.max(1, per_page)).toString(),
         _embed: 'true',
         status: 'publish',
-        orderby: orderby || 'date', // FIXED: Always include orderby
-        order: order || 'desc' // FIXED: Always include order
+        orderby: orderby || 'date',
+        order: order || 'desc'
       });
 
       if (categoryId && !isNaN(categoryId)) {
@@ -211,7 +210,6 @@ class WordPressAPI {
     }
   }
 
-  // FIXED: Better error handling for category lookup
   async getCategoryIdBySlug(categorySlug) {
     try {
       if (!categorySlug || typeof categorySlug !== 'string') {
@@ -367,7 +365,6 @@ class WordPressAPI {
         console.warn('⚠️ Error parsing date, using current date:', dateError);
       }
 
-      // FIXED: Enhanced content extraction
       let content = '';
       try {
         if (wpPost.content && wpPost.content.rendered) {
