@@ -5,7 +5,7 @@ on:
     branches: [main]
   workflow_dispatch: # Add this line to enable manual triggers
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '30 9 * * *'
 
 jobs:
   build-and-deploy:
