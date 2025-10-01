@@ -1,15 +1,12 @@
-// src/components/TechCategories.jsx - FINAL VERSION with Production Icons
+// src/components/TechCategories.jsx - FINAL VERSION with Icon Glow
 import React, { useRef } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import {
-  Zap,
-  RefreshCw
-} from 'lucide-react';
+import { Zap, RefreshCw } from 'lucide-react';
 import { useCategories } from '@/hooks/useWordPress';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
-// ✅ HELPER: This function now provides the production icons
+// Helper function for providing the production icons
 const getCategoryIcon = (category, className = 'h-8 w-8') => {
     const lowerCategory = category.toLowerCase();
 
@@ -47,21 +44,16 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
     );
 };
 
-
-// A self-contained component for the holographic card effect
 const HolographicCard = ({ category }) => {
   const cardRef = useRef(null);
   const { name, description, color, path, posts } = category;
 
-  // Motion values to track mouse position
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
 
-  // Transform mouse position into 3D rotation
   const rotateX = useTransform(mouseY, [0, 1], [15, -15]);
   const rotateY = useTransform(mouseX, [0, 1], [-15, 15]);
 
-  // Transform mouse position for the glare effect
   const glareX = useTransform(mouseX, [0, 1], [20, 80]);
   const glareY = useTransform(mouseY, [0, 1], [20, 80]);
 
@@ -93,8 +85,8 @@ const HolographicCard = ({ category }) => {
           }}
         />
         <div style={{ transform: 'translateZ(40px)', transformStyle: 'preserve-3d' }} className="flex flex-col h-full">
-          <div className={`inline-flex p-4 rounded-xl bg-gradient-to-br ${color} mb-6 self-start shadow-lg`}>
-            {/* ✅ UPDATED: Call getCategoryIcon instead of using Lucide component */}
+          {/* ✅ UPDATED: Added a matching shadow on hover for a glow effect */}
+          <div className={`inline-flex p-4 rounded-xl bg-gradient-to-br ${color} mb-6 self-start shadow-lg group-hover:shadow-xl group-hover:shadow-blue-500/30 transition-shadow duration-300`}>
             {getCategoryIcon(name, 'h-8 w-8')}
           </div>
           <h3 className="text-xl font-bold mb-4 text-white" style={{ transform: 'translateZ(30px)' }}>
@@ -134,55 +126,26 @@ const TechCategories = () => {
 
   const categories = categoryConfig.map(config => {
     const apiCategory = apiCategories.find(cat => cat.name === config.name);
-    return {
-      ...config,
-      posts: apiCategory ? apiCategory.count : 0
-    };
+    return { ...config, posts: apiCategory ? apiCategory.count : 0 };
   });
 
   return (
     <section ref={ref} className="py-16 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/5 to-transparent"></div>
       <div className="container mx-auto px-6 relative z-10">
-          {hasIntersected && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center mb-12"
-            >
-              <div className="flex items-center justify-center gap-4 mb-6">
-                <h2 className="text-3xl md:text-4xl font-bold">
-                  Explore <span className="gradient-text">Technologies</span>
-                </h2>
-                {process.env.NODE_ENV === 'development' && (
-                  <button
-                    onClick={refreshCategories}
-                    className="p-2 bg-blue-500/20 rounded-full hover:bg-blue-500/30 transition-colors"
-                    title="Refresh categories"
-                  >
-                    <RefreshCw className="h-4 w-4 text-blue-400" />
-                  </button>
-                )}
-              </div>
-              <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-                Deep dive into the tools and platforms that power modern data engineering
-              </p>
-            </motion.div>
-          )}
-        {loading && (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
-          </div>
+        {hasIntersected && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center mb-12">
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold">Explore <span className="gradient-text">Technologies</span></h2>
+              {process.env.NODE_ENV === 'development' && (<button onClick={refreshCategories} className="p-2 bg-blue-500/20 rounded-full hover:bg-blue-500/30 transition-colors" title="Refresh categories"><RefreshCw className="h-4 w-4 text-blue-400" /></button>)}
+            </div>
+            <p className="text-lg text-gray-300 max-w-2xl mx-auto">Deep dive into the tools and platforms that power modern data engineering</p>
+          </motion.div>
         )}
+        {loading && (<div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div></div>)}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {hasIntersected && categories.map((category, index) => (
-            <motion.div
-              key={category.name}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-            >
+            <motion.div key={category.name} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: index * 0.1 }}>
               <HolographicCard category={category} />
             </motion.div>
           ))}
