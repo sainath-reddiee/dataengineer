@@ -1,5 +1,5 @@
-// API Debugging Utility
-// Add this to your main App component or create a separate debug page
+// src/components/ApiDebugger.jsx
+// API Debugging Utility - Fixed for Vite Fast Refresh
 
 import React, { useState, useEffect } from 'react';
 import { wordpressApi } from '@/services/wordpressApi';
@@ -70,7 +70,6 @@ const ApiDebugger = () => {
       {
         name: 'Fetch Single Post',
         fn: async () => {
-          // First get a post slug
           const result = await wordpressApi.getPosts({ per_page: 1 });
           if (result.posts.length === 0) {
             throw new Error('No posts available to test with');
@@ -136,7 +135,7 @@ const ApiDebugger = () => {
 
   // Auto-run tests on mount in development
   useEffect(() => {
-    if (__DEV__) {
+    if (import.meta.env.DEV) {
       runAllTests();
     }
   }, []);
@@ -206,7 +205,7 @@ const ApiDebugger = () => {
         <div className="text-sm text-gray-300 space-y-1">
           <p><strong>API URL:</strong> https://app.dataengineerhub.blog/wp-json/wp/v2</p>
           <p><strong>Cache Timeout:</strong> 10 seconds</p>
-          <p><strong>Environment:</strong> {__DEV__ ? 'Development' : 'Production'}</p>
+          <p><strong>Environment:</strong> {import.meta.env.DEV ? 'Development' : 'Production'}</p>
         </div>
       </div>
 
@@ -246,41 +245,3 @@ const ApiDebugger = () => {
 };
 
 export default ApiDebugger;
-
-// Hook to use in development
-export const useApiDebugger = () => {
-  const [debugMode, setDebugMode] = useState(false);
-
-  useEffect(() => {
-    // Enable debug mode with URL parameter or localStorage
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasDebugParam = urlParams.has('debug');
-    const hasDebugStorage = localStorage.getItem('api-debug') === 'true';
-    
-    if (hasDebugParam || hasDebugStorage) {
-      setDebugMode(true);
-      if (hasDebugParam) {
-        localStorage.setItem('api-debug', 'true');
-      }
-    }
-
-    // Global debug functions
-    window.debugAPI = {
-      clearCache: () => wordpressApi.clearCache(),
-      testConnection: () => wordpressApi.healthCheck(),
-      getApiInstance: () => wordpressApi,
-      toggleDebug: () => {
-        const newValue = !debugMode;
-        setDebugMode(newValue);
-        localStorage.setItem('api-debug', newValue.toString());
-        if (!newValue) {
-          const url = new URL(window.location);
-          url.searchParams.delete('debug');
-          window.history.replaceState({}, '', url);
-        }
-      }
-    };
-  }, [debugMode]);
-
-  return { debugMode, ApiDebugger };
-};
