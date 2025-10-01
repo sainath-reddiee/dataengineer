@@ -1,4 +1,4 @@
-// src/components/PostListItem.jsx - FINAL VERSION WITH COMBINED "TRINITY" ANIMATION
+// src/components/PostListItem.jsx - FINAL VERSION WITH "CORNER GLOW" ANIMATION
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -31,21 +31,20 @@ const Spark = ({ x, y, rotate, color }) => {
 const PostListItem = ({ post }) => {
   if (!post) return null;
 
-  // --- Animation Variants for all combined effects ---
-
   const cardVariants = {
-    rest: { scale: 1 },
-    hover: { scale: 1.015 },
+    rest: { 
+      scale: 1, 
+      boxShadow: '0px 5px 10px rgba(0, 0, 0, 0)',
+    },
+    hover: { 
+      scale: 1.015, 
+      boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.3)',
+    },
   };
 
   const imageVariants = {
     rest: { scale: 1 },
     hover: { scale: 1.05 },
-  };
-
-  const borderVariants = {
-    rest: { pathLength: 0 },
-    hover: { pathLength: 1, transition: { duration: 0.8, ease: 'circOut' } },
   };
   
   const sparkContainerVariants = {
@@ -82,16 +81,17 @@ const PostListItem = ({ post }) => {
         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
       />
 
-      {/* 2. CIRCUIT TRACE: Animated Border */}
-      <svg className="absolute inset-0 w-full h-full" width="100%" height="100%" fill="none">
-        <motion.rect
-          x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)"
-          rx="11" ry="11"
-          stroke="#60a5fa"
-          strokeWidth="2"
-          variants={borderVariants}
-        />
-      </svg>
+      {/* 2. CORNER GLOWS: Replaces the "Circuit Trace" */}
+      <motion.div
+        className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-blue-500/50 via-transparent to-transparent rounded-full"
+        initial={{ opacity: 0, scale: 0.5 }}
+        whileHover={{ opacity: 1, scale: 1.2, transition: { duration: 0.6, ease: 'easeOut' } }}
+      />
+      <motion.div
+        className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-purple-500/50 via-transparent to-transparent rounded-full"
+        initial={{ opacity: 0, scale: 0.5 }}
+        whileHover={{ opacity: 1, scale: 1.2, transition: { duration: 0.6, ease: 'easeOut' } }}
+      />
       
       {/* 3. CORNER BURST: Particle Emitters */}
       <motion.div variants={sparkContainerVariants} className="absolute top-0 left-0 w-12 h-12">
