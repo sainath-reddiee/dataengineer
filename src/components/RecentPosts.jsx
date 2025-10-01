@@ -1,4 +1,4 @@
-// src/components/RecentPosts.jsx - COMPLETE VERSION
+// src/components/RecentPosts.jsx - COMPLETE FIXED VERSION
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCw, AlertCircle, ChevronDown, Grid, List } from 'lucide-react';
@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import PostCard from '@/components/PostCard';
 import PostCardSkeleton from '@/components/PostCardSkeleton';
-import wordpressApi from '@/services/wordpressApi';
+import { usePosts } from '@/hooks/useWordPress';
 import { reduceMotion } from '@/utils/performance';
 
 const RecentPosts = ({ 
@@ -17,108 +17,60 @@ const RecentPosts = ({
   showLoadMore = true,
   showViewToggle = false
 }) => {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [error, setError] = useState(null);
-  const [hasMore, setHasMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPosts, setTotalPosts] = useState(0);
+  const [sortOrder, setSortOrder] = useState('desc');
   const [viewMode, setViewMode] = useState('grid');
+  const shouldReduceMotion = reduceMotion();
   
   const postsPerPage = initialLimit;
-  const shouldReduceMotion = reduceMotion();
 
-  // Fetch posts function
-  const fetchPosts = async (page = 1, append = false) => {
-    try {
-      setError(null);
-      if (!append) {
-        setLoading(true);
-      } else {
-        setLoadingMore(true);
-      }
-      
-      let result;
-      
-      if (category) {
-        // Get posts by category
-        try {
-          const categoryId = await wordpressApi.getCategoryIdBySlug(category);
-          result = await wordpressApi.getPostsByCategory(categoryId, { 
-            page, 
-            per_page: postsPerPage 
-          });
-        } catch (categoryError) {
-          if (showCategoryError) {
-            setError(`Category "${category}" not found. Please check if the category exists in WordPress.`);
-            setPosts([]);
-            setTotalPosts(0);
-            setHasMore(false);
-            return;
-          }
-          result = { posts: [], totalPosts: 0, totalPages: 0 };
-        }
-      } else {
-        // Get all posts
-        result = await wordpressApi.getPosts({ 
-          page, 
-          per_page: postsPerPage 
-        });
-      }
-      
-      if (append) {
-        setPosts(prevPosts => [...prevPosts, ...result.posts]);
-      } else {
-        setPosts(result.posts);
-      }
-      
-      setTotalPosts(result.totalPosts || 0);
-      setCurrentPage(page);
-      
-      // Check if there are more posts to load
-      const totalLoaded = append ? posts.length + result.posts.length : result.posts.length;
-      setHasMore(totalLoaded < (result.totalPosts || 0));
-      
-    } catch (err) {
-      setError(err.message);
-      console.error('Error fetching posts:', err);
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  };
+  // FIXED: Pass sortOrder to usePosts hook
+  const { 
+    posts, 
+    loading, 
+    error, 
+    totalPages, 
+    totalPosts, 
+    hasMore,
+    refresh 
+  } = usePosts({
+    page: currentPage,
+    per_page: postsPerPage,
+    categorySlug: category,
+    orderby: 'date',
+    order: sortOrder, // FIXED: This now actually changes the API call
+  });
 
-  // Load more posts
-  const loadMorePosts = () => {
-    if (!loadingMore && hasMore) {
-      fetchPosts(currentPage + 1, true);
-    }
-  };
+  // FIXED: Reset page when sort order changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sortOrder, category]);
 
   // Manual refresh
   const handleRefresh = () => {
-    console.log('🔄 Manual refresh triggered');
-    wordpressApi.clearCache();
-    setCurrentPage(1);
-    fetchPosts(1, false);
+    console.log('🔄 Manual refresh triggered in RecentPosts');
+    refresh();
     toast({
       title: "Refreshing posts...",
       description: "Loading latest content",
     });
   };
 
-  // Initial load and re-fetch when the category changes
-  useEffect(() => {
-    if (category) {
-      wordpressApi.clearCache('posts');
-      wordpressApi.clearCache('categories');
+  // FIXED: Toggle sort order
+  const toggleSortOrder = () => {
+    const newOrder = sortOrder === 'desc' ? 'asc' : 'desc';
+    console.log('🔄 Changing sort order to:', newOrder);
+    setSortOrder(newOrder);
+    setCurrentPage(1); // Reset to first page when sorting changes
+  };
+
+  // FIXED: Load more with proper pagination
+  const loadMorePosts = () => {
+    if (!loading && hasMore) {
+      console.log('📄 Loading more posts, next page:', currentPage + 1);
+      setCurrentPage(prev => prev + 1);
     }
-    setCurrentPage(1);
-    setPosts([]);
-    setHasMore(false);
-    fetchPosts(1, false);
-  }, [category, postsPerPage]);
+  };
 
   // Loading state
   if (loading && posts.length === 0) {
@@ -211,7 +163,7 @@ const RecentPosts = ({
           </h3>
           <p className="text-yellow-200/80 mb-4">
             {category 
-              ? 'This category exists but has no published posts yet. Try publishing a post with relevant keywords.'
+              ? 'This category exists but has no published posts yet.'
               : 'No posts have been published yet.'
             }
           </p>
@@ -259,6 +211,32 @@ const RecentPosts = ({
               </Button>
             </div>
           )}
+          
+          {/* FIXED: Sort button with actual functionality */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleSortOrder}
+            className="border-purple-400/50 text-purple-300 hover:bg-purple-500/20"
+            title={sortOrder === 'desc' ? 'Click for oldest first' : 'Click for newest first'}
+          >
+            <svg 
+              className="h-4 w-4 mr-2" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              {sortOrder === 'desc' ? (
+                // Descending icon
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+              ) : (
+                // Ascending icon
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+              )}
+            </svg>
+            {sortOrder === 'desc' ? 'Newest First' : 'Oldest First'}
+          </Button>
+          
           <Button 
             onClick={handleRefresh} 
             variant="outline" 
@@ -299,15 +277,15 @@ const RecentPosts = ({
         ))}
       </motion.div>
 
-      {/* Load More Button */}
+      {/* FIXED: Load More Button with proper state */}
       {showLoadMore && hasMore && (
         <div className="flex justify-center pt-8">
           <Button
             onClick={loadMorePosts}
-            disabled={loadingMore}
+            disabled={loading}
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105"
           >
-            {loadingMore ? (
+            {loading ? (
               <>
                 <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                 Loading more...
@@ -323,7 +301,7 @@ const RecentPosts = ({
       )}
 
       {/* Loading more indicator */}
-      {loadingMore && (
+      {loading && posts.length > 0 && (
         <div className={`grid gap-6 ${
           viewMode === 'list' 
             ? 'grid-cols-1' 
