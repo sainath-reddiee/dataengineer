@@ -1,4 +1,4 @@
-// src/services/wordpressApi.js - COMPLETE FINAL VERSION
+// Enhanced API service with better error handling and data validation
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog';
 const WP_API_BASE = `${WORDPRESS_API_URL}/wp-json/wp/v2`;
 
@@ -6,10 +6,11 @@ class WordPressAPI {
   constructor() {
     this.baseURL = WP_API_BASE;
     this.cache = new Map();
-    this.cacheTimeout = 10 * 1000; // 10 seconds
+    this.cacheTimeout = 10 * 1000; // 10 seconds for faster development updates
     this.requestQueue = new Map();
   }
 
+  // Simple cache management
   clearCache(pattern = null) {
     if (pattern) {
       for (const [key] of this.cache.entries()) {
@@ -23,6 +24,28 @@ class WordPressAPI {
     console.log('🧹 Cache cleared:', pattern || 'all');
   }
 
+  // Helper function to decode HTML entities
+  decodeHtmlEntities(text) {
+    if (!text || typeof text !== 'string') return '';
+    
+    // This is a safe way to decode entities in the browser
+    if (typeof window !== 'undefined') {
+      const textarea = document.createElement('textarea');
+      textarea.innerHTML = text;
+      return textarea.value;
+    }
+    
+    // Basic fallback for non-browser environments
+    return text
+      .replace(/&#8217;/g, "'")
+      .replace(/&amp;/g, "&")
+      .replace(/&quot;/g, '"')
+      .replace(/&#039;/g, "'")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">");
+  }
+
+  // Enhanced request method with better error handling
   async makeRequest(endpoint, options = {}) {
     const cacheKey = `${endpoint}_${JSON.stringify(options)}`;
     
@@ -73,6 +96,7 @@ class WordPressAPI {
         throw new Error('Invalid response format from server');
       }
       
+      // Validate that data exists
       if (data === null || data === undefined) {
         console.error('❌ Received null/undefined data from API');
         throw new Error('No data received from server');
@@ -98,6 +122,7 @@ class WordPressAPI {
         throw new Error('Request timed out - please check your connection');
       }
       
+      // Re-throw with more user-friendly messages
       if (error.message.includes('fetch')) {
         throw new Error('Network error - please check your internet connection');
       }
@@ -106,6 +131,7 @@ class WordPressAPI {
     }
   }
 
+  // FIXED: Enhanced getPosts with orderby and order parameters
   async getPosts({ 
     page = 1, 
     per_page = 10, 
@@ -145,6 +171,7 @@ class WordPressAPI {
       
       const result = await this.makeRequest(`/posts?${params.toString()}`);
       
+      // Enhanced validation for API response
       if (!result || typeof result !== 'object') {
         console.error('❌ Invalid API response structure:', result);
         return { posts: [], totalPages: 1, totalPosts: 0 };
@@ -154,7 +181,9 @@ class WordPressAPI {
       
       if (!Array.isArray(posts)) {
         console.error('❌ Expected array of posts, got:', typeof posts, posts);
+        // Try to handle different response structures
         if (posts && typeof posts === 'object' && Array.isArray(posts.posts)) {
+          // Handle nested posts structure
           const transformedPosts = this.transformPosts(posts.posts);
           return {
             posts: transformedPosts,
@@ -167,13 +196,6 @@ class WordPressAPI {
 
       const transformedPosts = this.transformPosts(posts);
       
-      console.log('✅ Posts fetched:', {
-        count: transformedPosts.length,
-        totalPages: result.totalPages,
-        totalPosts: result.totalPosts,
-        currentPage: page
-      });
-      
       return {
         posts: transformedPosts,
         totalPages: result.totalPages || 1,
@@ -185,6 +207,7 @@ class WordPressAPI {
     }
   }
 
+  // Get categories with validation
   async getCategories() {
     try {
       console.log('📂 Fetching categories...');
@@ -210,6 +233,7 @@ class WordPressAPI {
     }
   }
 
+  // Get category ID by slug with better error handling
   async getCategoryIdBySlug(categorySlug) {
     try {
       if (!categorySlug || typeof categorySlug !== 'string') {
@@ -219,6 +243,8 @@ class WordPressAPI {
       console.log('🔍 Looking for category slug:', categorySlug);
       
       const categories = await this.getCategories();
+      
+      console.log('📋 Available categories:', categories.map(c => `${c.slug} (${c.name})`).join(', '));
       
       const category = categories.find(cat => 
         cat.slug.toLowerCase() === categorySlug.toLowerCase() || 
@@ -230,7 +256,6 @@ class WordPressAPI {
         return category.id;
       } else {
         console.error('❌ Category not found:', categorySlug);
-        console.log('Available categories:', categories.map(c => c.slug).join(', '));
         throw new Error(`Category "${categorySlug}" not found`);
       }
     } catch (error) {
@@ -239,10 +264,12 @@ class WordPressAPI {
     }
   }
 
+  // Get posts by category
   async getPostsByCategory(categoryId, options = {}) {
     return this.getPosts({ ...options, categoryId });
   }
 
+  // Enhanced getPostBySlug with better validation
   async getPostBySlug(slug) {
     try {
       if (!slug || typeof slug !== 'string' || slug.trim() === '') {
@@ -274,12 +301,14 @@ class WordPressAPI {
     }
   }
 
+  // Enhanced transformPost with comprehensive validation
   transformPost(wpPost) {
     try {
       if (!wpPost || typeof wpPost !== 'object') {
         throw new Error('Invalid post data provided');
       }
 
+      // Safe image extraction with fallbacks
       let imageUrl = 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop';
       
       try {
@@ -302,6 +331,7 @@ class WordPressAPI {
         console.warn('⚠️ Error extracting image, using fallback:', imgError);
       }
 
+      // Safe category extraction
       let primaryCategory = 'Uncategorized';
       try {
         const categories = wpPost._embedded?.['wp:term']?.[0] || [];
@@ -313,6 +343,7 @@ class WordPressAPI {
         console.warn('⚠️ Error extracting category, using fallback:', catError);
       }
 
+      // Safe author extraction
       let author = 'DataEngineer Hub';
       try {
         const authorData = wpPost._embedded?.author?.[0];
@@ -323,6 +354,7 @@ class WordPressAPI {
         console.warn('⚠️ Error extracting author, using fallback:', authorError);
       }
 
+      // Safe meta extraction
       let featured = false;
       let trending = false;
       try {
@@ -334,6 +366,7 @@ class WordPressAPI {
         console.warn('⚠️ Error extracting meta, using defaults:', metaError);
       }
 
+      // Safe excerpt extraction
       let excerpt = '';
       try {
         if (wpPost.excerpt && wpPost.excerpt.rendered) {
@@ -343,6 +376,7 @@ class WordPressAPI {
         console.warn('⚠️ Error extracting excerpt:', excerptError);
       }
 
+      // Safe date handling with multiple fallbacks
       let postDate = new Date().toISOString();
       try {
         if (wpPost.date && wpPost.date !== '0000-00-00 00:00:00') {
@@ -365,30 +399,14 @@ class WordPressAPI {
         console.warn('⚠️ Error parsing date, using current date:', dateError);
       }
 
-      let content = '';
-      try {
-        if (wpPost.content && wpPost.content.rendered) {
-          content = wpPost.content.rendered;
-        } else if (wpPost.content && typeof wpPost.content === 'string') {
-          content = wpPost.content;
-        }
-        
-        if (content && !content.includes('<p>') && !content.includes('<table>')) {
-          content = `<p>${content}</p>`;
-        }
-      } catch (contentError) {
-        console.warn('⚠️ Error extracting content:', contentError);
-        content = '<p>Content could not be loaded.</p>';
-      }
-
       const transformedPost = {
         id: wpPost.id || Math.random(),
         slug: wpPost.slug || '',
-        title: wpPost.title?.rendered || wpPost.title || 'Untitled',
+        title: this.decodeHtmlEntities(wpPost.title?.rendered || wpPost.title || 'Untitled'),
         excerpt: excerpt,
-        content: content || '<p>No content available</p>',
+        content: wpPost.content?.rendered || wpPost.content || '',
         category: primaryCategory,
-        readTime: this.calculateReadTime(content),
+        readTime: this.calculateReadTime(wpPost.content?.rendered || wpPost.content || ''),
         date: postDate,
         image: imageUrl,
         featured: featured,
@@ -396,10 +414,14 @@ class WordPressAPI {
         author: author,
       };
 
+      console.log('✅ Post transformed:', transformedPost.title, 'Date:', transformedPost.date);
       return transformedPost;
 
     } catch (error) {
       console.error('❌ Error transforming post:', error);
+      console.error('Raw post data:', wpPost);
+      
+      // Return a safe fallback post
       return {
         id: wpPost?.id || Math.random(),
         slug: wpPost?.slug || '',
@@ -437,10 +459,10 @@ class WordPressAPI {
 
   cleanExcerpt(excerpt) {
     try {
-      return excerpt
+      const decoded = this.decodeHtmlEntities(excerpt);
+      return decoded
         .replace(/<[^>]*>/g, '')
         .replace(/\[&hellip;\]/g, '...')
-        .replace(/&[^;]+;/g, '')
         .trim();
     } catch (error) {
       console.warn('⚠️ Error cleaning excerpt:', error);
@@ -467,6 +489,7 @@ class WordPressAPI {
     }
   }
 
+  // Health check method
   async healthCheck() {
     try {
       console.log('🏥 Performing health check...');
@@ -479,13 +502,16 @@ class WordPressAPI {
     }
   }
 
+  // Newsletter and contact form methods
   async subscribeNewsletter(email) {
     console.log('📧 Newsletter subscription for:', email);
+    // Implement your newsletter logic here
     return { success: true };
   }
 
   async submitContactForm(formData) {
     console.log('📝 Contact form submission:', formData);
+    // Implement your contact form logic here
     return { success: true };
   }
 }
