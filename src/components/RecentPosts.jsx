@@ -13,29 +13,29 @@ import PostCardSkeleton from '@/components/PostCardSkeleton';
 import PostListItem from '@/components/PostListItem';
 import PostListItemSkeleton from '@/components/PostListItemSkeleton';
 
-const RecentPosts = ({ 
-  category = null, 
+const RecentPosts = ({
+  category = null,
   showCategoryError = false,
   initialLimit = 6,
   title = "Recent Posts",
   showLoadMore = true,
-  showViewToggle = false
+  showViewToggle = true
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState('desc');
   const [viewMode, setViewMode] = useState('grid');
   const shouldReduceMotion = reduceMotion();
-  
+
   const postsPerPage = initialLimit;
 
-  const { 
-    posts, 
-    loading, 
-    error, 
-    totalPages, 
-    totalPosts, 
+  const {
+    posts,
+    loading,
+    error,
+    totalPages,
+    totalPosts,
     hasMore,
-    refresh 
+    refresh
   } = usePosts({
     page: currentPage,
     per_page: postsPerPage,
@@ -73,14 +73,15 @@ const RecentPosts = ({
 
   const renderSkeletons = () => {
     return Array.from({ length: initialLimit }).map((_, i) => (
-      viewMode === 'list' 
+      viewMode === 'list'
         ? <PostListItemSkeleton key={`skel-list-${i}`} />
         : <PostCardSkeleton key={`skel-grid-${i}`} />
     ));
   };
-  
-  const containerClasses = viewMode === 'list' 
-    ? 'flex flex-col space-y-4' 
+
+  // ✅ FIXED: Constrained width for list view on larger screens for better readability.
+  const containerClasses = viewMode === 'list'
+    ? 'flex flex-col space-y-4 max-w-4xl mx-auto'
     : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
 
   if (loading && posts.length === 0) {
@@ -118,9 +119,9 @@ const RecentPosts = ({
             {category && showCategoryError ? `Category "${category}" Issue` : 'Failed to Load Posts'}
           </h3>
           <p className="text-red-200/80 mb-4">{error}</p>
-          <Button 
-            onClick={handleRefresh} 
-            variant="outline" 
+          <Button
+            onClick={handleRefresh}
+            variant="outline"
             className="border-red-400/50 text-red-300 hover:bg-red-500/20"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
@@ -146,7 +147,7 @@ const RecentPosts = ({
             {category ? `No posts found in "${category}" category` : 'No posts available'}
           </h3>
           <p className="text-yellow-200/80 mb-4">
-            {category 
+            {category
               ? 'This category exists but has no published posts yet.'
               : 'No posts have been published yet.'
             }
@@ -174,8 +175,8 @@ const RecentPosts = ({
                 variant="outline"
                 size="sm"
                 onClick={() => setViewMode('grid')}
-                className={viewMode === 'grid' 
-                  ? "bg-blue-600 text-white" 
+                className={viewMode === 'grid'
+                  ? "bg-blue-600 text-white"
                   : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
                 }
               >
@@ -185,8 +186,8 @@ const RecentPosts = ({
                 variant="outline"
                 size="sm"
                 onClick={() => setViewMode('list')}
-                className={viewMode === 'list' 
-                  ? "bg-blue-600 text-white" 
+                className={viewMode === 'list'
+                  ? "bg-blue-600 text-white"
                   : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
                 }
               >
@@ -194,7 +195,7 @@ const RecentPosts = ({
               </Button>
             </div>
           )}
-          
+
           <Button
             variant="outline"
             size="sm"
@@ -202,10 +203,10 @@ const RecentPosts = ({
             className="border-purple-400/50 text-purple-300 hover:bg-purple-500/20"
             title={sortOrder === 'desc' ? 'Click for oldest first' : 'Click for newest first'}
           >
-            <svg 
-              className="h-4 w-4 mr-2" 
-              fill="none" 
-              viewBox="0 0 24 24" 
+            <svg
+              className="h-4 w-4 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
               stroke="currentColor"
             >
               {sortOrder === 'desc' ? (
@@ -216,10 +217,10 @@ const RecentPosts = ({
             </svg>
             {sortOrder === 'desc' ? 'Newest First' : 'Oldest First'}
           </Button>
-          
-          <Button 
-            onClick={handleRefresh} 
-            variant="outline" 
+
+          <Button
+            onClick={handleRefresh}
+            variant="outline"
             size="sm"
             className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
             disabled={loading}
@@ -229,7 +230,7 @@ const RecentPosts = ({
           </Button>
         </div>
       </div>
-      
+
       <motion.div
         key={viewMode}
         initial={{ opacity: 0 }}
@@ -274,8 +275,8 @@ const RecentPosts = ({
       {loading && posts.length > 0 && (
         <div className={containerClasses}>
           {Array.from({ length: Math.min(postsPerPage, 3) }).map((_, i) => (
-            viewMode === 'list' 
-              ? <PostListItemSkeleton key={`loading-list-${i}`} /> 
+            viewMode === 'list'
+              ? <PostListItemSkeleton key={`loading-list-${i}`} />
               : <PostCardSkeleton key={`loading-grid-${i}`} />
           ))}
         </div>
