@@ -1,16 +1,55 @@
+// src/components/PostListItem.jsx - FINAL VERSION WITH HOVER ANIMATION
 import React from 'react';
 import { Link } from 'react-router-dom';
+// 1. Import motion from framer-motion
+import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import LazyImage from './LazyImage';
+
+// 2. Create a motion-compatible version of the Link component
+const MotionLink = motion(Link);
 
 const PostListItem = ({ post }) => {
   if (!post) return null;
 
+  // 3. Define animation variants for the hover effect
+  const cardVariants = {
+    rest: {
+      scale: 1,
+      transition: { duration: 0.3, ease: 'easeOut' },
+    },
+    hover: {
+      scale: 1.02,
+      transition: { duration: 0.3, ease: 'easeOut' },
+    },
+  };
+
+  const shineVariants = {
+    rest: {
+      x: '-150%',
+    },
+    hover: {
+      x: '150%',
+      transition: { duration: 0.7, ease: 'easeInOut' },
+    },
+  };
+
   return (
-    <Link
+    <MotionLink
       to={`/articles/${post.slug}`}
-      className="block w-full p-4 rounded-xl group transition-colors duration-300 hover:bg-slate-800/50"
+      className="relative block w-full p-4 rounded-xl group transition-colors duration-300 hover:bg-slate-800/50 overflow-hidden" // Added relative and overflow-hidden
+      variants={cardVariants}
+      initial="rest"
+      whileHover="hover"
+      animate="rest"
     >
+      {/* 4. Add the Shine/Glare Animation Element */}
+      <motion.div
+        className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent"
+        style={{ transform: 'skewX(-25deg)' }}
+        variants={shineVariants}
+      />
+
       <div className="flex flex-col sm:flex-row items-center gap-6">
         {/* Image */}
         <div className="w-full sm:w-48 flex-shrink-0">
@@ -49,7 +88,7 @@ const PostListItem = ({ post }) => {
             <ArrowRight className="h-6 w-6 text-gray-500 group-hover:text-blue-400 group-hover:translate-x-1 transition-transform" />
         </div>
       </div>
-    </Link>
+    </MotionLink>
   );
 };
 
