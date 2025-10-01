@@ -1,5 +1,5 @@
 // scripts/notifySearchEngines.js
-// Notify search engines of sitemap updates using IndexNow
+// Fixed version with proper IndexNow API submission
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
@@ -82,7 +82,7 @@ function makeRequest(url, options = {}) {
       res.on('data', (chunk) => data += chunk);
       res.on('end', () => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
-          resolve({ status: res.statusCode, data });
+          resolve({ status: res.statusCode, data, headers: res.headers });
         } else {
           reject(new Error(`HTTP ${res.statusCode}: ${data.substring(0, 200)}`));
         }
@@ -103,12 +103,13 @@ function makeRequest(url, options = {}) {
   });
 }
 
-// Submit to IndexNow
+// Submit to IndexNow with multiple endpoint support
 async function submitToIndexNow(urls, apiKey) {
-  const host = new URL(SITE_URL).hostname;
+  const urlObj = new URL(SITE_URL);
+  const host = urlObj.hostname; // Just the hostname, no protocol
   
   const payload = {
-    host,
+    host: host, // MUST NOT include https://
     key: apiKey,
     keyLocation: `${SITE_URL}/${apiKey}.txt`,
     urlList: urls.slice(0, 10000) // IndexNow limit
@@ -117,30 +118,66 @@ async function submitToIndexNow(urls, apiKey) {
   const jsonPayload = JSON.stringify(payload);
   const contentLength = Buffer.byteLength(jsonPayload);
 
-  console.log('\n📡 Submitting to IndexNow API via Bing...');
+  console.log('\n📡 Submitting to IndexNow API...');
   console.log(`   Host: ${host}`);
-  console.log(`   URLs: ${urls.length}`);
+  console.log(`   Key Location: ${payload.keyLocation}`);
+  console.log(`   Total URLs: ${urls.length}`);
   console.log(`   Payload size: ${contentLength} bytes`);
+  
+  console.log('\n📋 Complete URL List Being Submitted:');
+  console.log('='.repeat(60));
+  urls.forEach((url, index) => {
+    console.log(`${(index + 1).toString().padStart(3, ' ')}. ${url}`);
+  });
+  console.log('='.repeat(60));
 
+  // Try multiple endpoints for redundancy
+  const endpoints = [
+    { name: 'IndexNow.org API', url: 'https://api.indexnow.org/indexnow' },
+    { name: 'Bing', url: 'https://www.bing.com/indexnow' },
+    { name: 'Yandex', url: 'https://yandex.com/indexnow' }
+  ];
 
-  try {
-    const response = await makeRequest('https://www.bing.com/indexnow', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Content-Length': contentLength,
-        'User-Agent': 'DataEngineerHub-IndexNow/1.0'
-      },
-      body: jsonPayload
-    });
+  let lastError = null;
 
-    console.log(`✅ IndexNow: Success (HTTP ${response.status})`);
-    console.log('   Notified: Bing (and other IndexNow search engines)');
-    return true;
-  } catch (error) {
-    console.error(`❌ IndexNow failed: ${error.message}`);
-    return false;
+  for (const endpoint of endpoints) {
+    try {
+      console.log(`\n🎯 Trying: ${endpoint.name} (${endpoint.url})`);
+      
+      const response = await makeRequest(endpoint.url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Content-Length': contentLength.toString(),
+          'User-Agent': 'DataEngineerHub-IndexNow/1.0'
+        },
+        body: jsonPayload
+      });
+
+      console.log(`✅ ${endpoint.name}: Success (HTTP ${response.status})`);
+      
+      if (response.status === 200) {
+        console.log('   ✓ URLs submitted successfully');
+      } else if (response.status === 202) {
+        console.log('   ✓ Request accepted, will be processed');
+      }
+      
+      // Success! No need to try other endpoints
+      console.log('\n🎉 IndexNow submission successful!');
+      console.log('   Notified search engines: Bing, Yandex, Seznam.cz, Naver');
+      return true;
+      
+    } catch (error) {
+      console.error(`❌ ${endpoint.name} failed: ${error.message}`);
+      lastError = error;
+      // Continue to next endpoint
+    }
   }
+
+  // All endpoints failed
+  console.error('\n❌ All IndexNow endpoints failed');
+  console.error('Last error:', lastError?.message);
+  return false;
 }
 
 // Verify sitemap is accessible
@@ -184,11 +221,46 @@ function getNewUrls(allUrls, cache) {
   return allUrls.filter(url => !notifiedSet.has(url));
 }
 
+// Verify IndexNow key is accessible
+async function verifyIndexNowKey(apiKey) {
+  console.log('\n🔐 Verifying IndexNow key accessibility...');
+  
+  try {
+    // Check key file
+    const keyUrl = `${SITE_URL}/indexnow-key.txt`;
+    const keyResponse = await makeRequest(keyUrl);
+    
+    if (keyResponse.data.trim() !== apiKey) {
+      console.error('❌ Key file content does not match!');
+      return false;
+    }
+    console.log(`✅ indexnow-key.txt: Accessible`);
+    
+    // Check verification file
+    const verifyUrl = `${SITE_URL}/${apiKey}.txt`;
+    const verifyResponse = await makeRequest(verifyUrl);
+    
+    if (verifyResponse.data.trim() !== apiKey) {
+      console.error('❌ Verification file content does not match!');
+      return false;
+    }
+    console.log(`✅ ${apiKey}.txt: Accessible`);
+    
+    return true;
+  } catch (error) {
+    console.error('❌ Key verification failed:', error.message);
+    console.error('\n💡 Make sure these files are deployed:');
+    console.error(`   - ${SITE_URL}/indexnow-key.txt`);
+    console.error(`   - ${SITE_URL}/${apiKey}.txt`);
+    return false;
+  }
+}
+
 // Main notification function
 async function notifySearchEngines(options = {}) {
   const { force = false, all = false } = options;
 
-  console.log('🚀 Search Engine Notification Tool');
+  console.log('🚀 Search Engine Notification Tool (IndexNow)');
   console.log('='.repeat(60));
   console.log(`📅 ${new Date().toISOString()}`);
   console.log(`🌐 Site: ${SITE_URL}`);
@@ -209,6 +281,14 @@ async function notifySearchEngines(options = {}) {
 
     // Get or create API key
     const apiKey = getOrCreateApiKey();
+    
+    // Verify key is accessible
+    const keyValid = await verifyIndexNowKey(apiKey);
+    if (!keyValid) {
+      console.error('\n❌ IndexNow key verification failed!');
+      console.error('Please ensure the key files are deployed and try again.');
+      process.exit(1);
+    }
 
     // Load cache
     const cache = loadNotificationCache();
@@ -221,7 +301,7 @@ async function notifySearchEngines(options = {}) {
     if (force || all) {
       urlsToNotify = allUrls;
       console.log(`\n📢 Notifying ALL URLs (${force ? 'forced' : 'requested'})`);
-    } else if (hoursSinceLastNotification < 24) {
+    } else if (hoursSinceLastNotification < 24 && cache.lastNotified > 0) {
       console.log(`\n⏰ Last notification was ${hoursSinceLastNotification}h ago`);
       console.log('💡 Skipping notification (wait 24h between notifications)');
       console.log('   Use --force to override');
@@ -232,6 +312,7 @@ async function notifySearchEngines(options = {}) {
       if (urlsToNotify.length === 0) {
         console.log('\n✅ No new URLs to notify');
         console.log('   All URLs have been notified previously');
+        console.log('   Use --all to resubmit all URLs');
         return { skipped: true, reason: 'no_new_urls' };
       }
       
@@ -246,7 +327,8 @@ async function notifySearchEngines(options = {}) {
       const newCache = {
         lastNotified: Date.now(),
         notifiedUrls: all || force ? allUrls : [...new Set([...cache.notifiedUrls, ...urlsToNotify])],
-        lastNotificationCount: urlsToNotify.length
+        lastNotificationCount: urlsToNotify.length,
+        lastNotificationDate: new Date().toISOString()
       };
       
       saveNotificationCache(newCache);
@@ -255,15 +337,12 @@ async function notifySearchEngines(options = {}) {
       console.log('✅ NOTIFICATION SUCCESSFUL!');
       console.log('='.repeat(60));
       console.log(`📢 Notified ${urlsToNotify.length} URLs`);
-      console.log('🔍 Search engines notified:');
-      console.log('   - Bing');
-      console.log('   - Yandex');
-      console.log('   - Seznam.cz');
-      console.log('   - Naver');
+      console.log(`📊 Total URLs in cache: ${newCache.notifiedUrls.length}`);
       console.log('\n💡 Next steps:');
       console.log('   1. URLs will be crawled within hours');
       console.log('   2. Check indexing status in 24-48 hours');
-      console.log('   3. Monitor Google Search Console separately');
+      console.log('   3. Monitor Bing Webmaster Tools for indexing progress');
+      console.log('   4. Use URL Inspection tool to check individual pages');
       console.log('=' .repeat(60) + '\n');
 
       return {
