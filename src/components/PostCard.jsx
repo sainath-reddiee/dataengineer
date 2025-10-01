@@ -1,5 +1,5 @@
-// src/components/PostCard.jsx - FINAL VERSION with "Liquid Reveal + Particle Drift"
-import React, { useMemo } from 'react';
+// src/components/PostCard.jsx - FINAL VERSION with "Liquid Reveal" Animation
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
@@ -7,40 +7,10 @@ import LazyImage from './LazyImage';
 
 const MotionLink = motion(Link);
 
-// Helper component for the new drifting particles
-const Particle = ({ delay, duration, x, y, size }) => {
-    const variants = {
-        rest: { opacity: 0 },
-        hover: {
-            opacity: [0, 1, 1, 0],
-            y: [y, y - 40], // Animate upwards
-            transition: {
-                delay,
-                duration,
-                ease: 'linear',
-                repeat: Infinity,
-            },
-        },
-    };
-
-    return (
-        <motion.div
-            variants={variants}
-            className="absolute rounded-full"
-            style={{
-                left: `${x}%`,
-                top: `${y}%`,
-                width: size,
-                height: size,
-                backgroundColor: ['#60a5fa', '#a78bfa', '#ffffff'][Math.floor(Math.random() * 3)],
-            }}
-        />
-    );
-};
-
 const PostCard = ({ post }) => {
   if (!post) return null;
 
+  // --- Animation Variants for the "Liquid Reveal" effect ---
   const cardVariants = {
     rest: {
       boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.2)',
@@ -56,7 +26,7 @@ const PostCard = ({ post }) => {
       transition: { duration: 0.5, ease: 'easeOut' }
     },
     hover: {
-      scale: 4,
+      scale: 4, // Expand to cover the entire card
       transition: { duration: 0.5, ease: [0.25, 1, 0.5, 1] }
     },
   };
@@ -65,15 +35,6 @@ const PostCard = ({ post }) => {
     rest: { scale: 1 },
     hover: { scale: 1.1 },
   };
-
-  // Pre-calculate random values for the particles for better performance
-  const particles = useMemo(() => Array.from({ length: 15 }).map(() => ({
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: 1 + Math.random() * 2,
-    delay: Math.random() * 2,
-    duration: 3 + Math.random() * 2,
-  })), []);
 
   return (
     <MotionLink
@@ -86,7 +47,7 @@ const PostCard = ({ post }) => {
       transition={{ duration: 0.4 }}
     >
       <div className="relative h-48 overflow-hidden">
-        {/* SVG Filter for the liquid effect */}
+        {/* --- The Liquid Reveal SVG Filter --- */}
         <svg width="0" height="0" className="absolute">
           <defs>
             <filter id="liquid-filter">
@@ -97,13 +58,14 @@ const PostCard = ({ post }) => {
           </defs>
         </svg>
 
-        {/* Base Image (dimmed) */}
+        {/* Base Image (dimmed and desaturated) */}
         <div className="w-full h-full filter saturate-[0.7] brightness-[0.8]">
           <LazyImage
             src={post.image}
             alt={post.title}
             width={400}
             quality={80}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="w-full h-full object-cover"
           />
         </div>
@@ -118,17 +80,23 @@ const PostCard = ({ post }) => {
               src={post.image}
               alt={post.title}
               width={400}
-              quality={90}
+              quality={90} // Higher quality for the revealed image
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="w-full h-full object-cover"
             />
           </motion.div>
         </div>
 
-        {/* The Liquid Mask itself */}
+        {/* The Liquid Mask itself (two expanding blobs) */}
         <svg width="0" height="0" className="absolute">
           <clipPath id="liquid-mask">
             <g style={{ filter: 'url(#liquid-filter)' }}>
-              <motion.circle cx="50%" cy="50%" r="80" variants={imageMaskVariants} />
+              <motion.circle
+                cx="50%"
+                cy="50%"
+                r="80"
+                variants={imageMaskVariants}
+              />
               <motion.circle
                 cx="20%"
                 cy="40%"
@@ -141,15 +109,10 @@ const PostCard = ({ post }) => {
             </g>
           </clipPath>
         </svg>
-        
-        {/* --- NEW: Drifting Particles Container --- */}
-        <div className="absolute inset-0 z-10 pointer-events-none">
-            {particles.map((particle, i) => <Particle key={i} {...particle} />)}
-        </div>
 
         {/* Static background gradient and category */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-        <div className="absolute top-4 left-4 z-20">
+        <div className="absolute top-4 left-4 z-10">
           <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
             {post.category}
           </span>
