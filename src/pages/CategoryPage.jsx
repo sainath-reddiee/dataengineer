@@ -1,4 +1,4 @@
-// src/pages/CategoryPage.jsx - FINAL VERSION with unique background colors
+// src/pages/CategoryPage.jsx - FINAL VERSION with visible SQL Icon
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -8,12 +8,12 @@ import { Link } from 'react-router-dom';
 import RecentPosts from '@/components/RecentPosts';
 import MetaTags from '@/components/SEO/MetaTags';
 
-// ✅ CENTRALIZED CONFIG: Using a single source for category styles
+// ✅ UPDATED: SQL color changed for better contrast
 const categoryConfig = {
   snowflake: { name: 'Snowflake', color: 'from-blue-500 to-cyan-500', path: '/category/snowflake', description: "Master Snowflake with comprehensive tutorials on data warehousing, analytics, and cloud data platform features." },
   aws: { name: 'AWS', color: 'from-orange-500 to-red-500', path: '/category/aws', description: "Learn AWS data services: S3, Redshift, Glue, Lambda. Master cloud data engineering with Amazon Web Services." },
   azure: { name: 'Azure', color: 'from-blue-600 to-indigo-600', path: '/category/azure', description: "Explore Azure data services from Data Factory to Synapse Analytics. Complete guide for data engineers." },
-  sql: { name: 'SQL', color: 'from-green-500 to-emerald-500', path: '/category/sql', description: "Master SQL with advanced queries, optimization techniques, and best practices for data transformation." },
+  sql: { name: 'SQL', color: 'from-slate-400 to-gray-500', path: '/category/sql', description: "Master SQL with advanced queries, optimization techniques, and best practices for data transformation." },
   airflow: { name: 'Airflow', color: 'from-purple-500 to-violet-500', path: '/category/airflow', description: "Apache Airflow tutorials for workflow orchestration. Build, schedule, and monitor data pipelines effectively." },
   dbt: { name: 'dbt', color: 'from-pink-500 to-rose-500', path: '/category/dbt', description: "Data Build Tool (dbt) tutorials for modern data transformation and analytics engineering best practices." },
   python: { name: 'Python', color: 'from-yellow-500 to-orange-500', path: '/category/python', description: "Python for data engineering with pandas, NumPy, and more. Master data processing with Python libraries." },
@@ -70,7 +70,6 @@ const CategoryPage = () => {
             <RecentPosts category={lowerCategoryName} showCategoryError={true} initialLimit={6} title={`All ${currentCategory.name} Articles`} showLoadMore={true} showViewToggle={true} />
           </motion.div>
 
-          {/* ✅ UPDATED "Explore Other Categories" section */}
           <motion.div key={`explore-${categoryName}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="mt-16 p-6 bg-gradient-to-r from-blue-900/20 to-purple-900/20 backdrop-blur-sm border border-blue-400/20 rounded-2xl">
             <div className="text-xl font-bold mb-4 text-center gradient-text">Explore Other Categories</div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
