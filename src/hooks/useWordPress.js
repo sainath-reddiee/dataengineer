@@ -65,7 +65,13 @@ export const usePosts = ({
         order
       });
 
-      setPosts(result.posts);
+      // Handle pagination - append or replace
+      if (page === 1) {
+        setPosts(result.posts);
+      } else {
+        setPosts(prev => [...prev, ...result.posts]);
+      }
+      
       setTotalPages(result.totalPages);
       setTotalPosts(result.totalPosts);
       setHasMore(page < result.totalPages);
