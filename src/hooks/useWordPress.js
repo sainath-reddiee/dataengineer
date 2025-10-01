@@ -27,13 +27,16 @@ export const usePosts = ({
 
   // CRITICAL FIX: Reset posts immediately when categorySlug changes
   useEffect(() => {
-    console.log('🔄 Category/search changed, resetting state:', { categorySlug, search });
-    setPosts([]);
-    setError(null);
-    setTotalPages(1);
-    setTotalPosts(0);
-    setHasMore(false);
-  }, [categorySlug, search]);
+  console.log('🔄 Category/search changed, resetting state:', { categorySlug, search });
+  setPosts([]);
+  setError(null);
+  setLoading(true); // Set loading true immediately
+  setTotalPages(1);
+  setTotalPosts(0);
+  setHasMore(false);
+  // Increment request counter to cancel any in-flight requests
+  currentRequestRef.current++;
+}, [categorySlug, search]);
 
   // Fetch posts with race condition protection
   useEffect(() => {
