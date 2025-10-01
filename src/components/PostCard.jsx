@@ -1,4 +1,4 @@
-// src/components/PostCard.jsx - FINAL VERSION with "Running Dog" Animation
+// src/components/PostCard.jsx - FINAL VERSION with "Top Running Dog" Animation
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -7,29 +7,27 @@ import LazyImage from './LazyImage';
 
 const MotionLink = motion(Link);
 
-// A small helper component for the dust particles
+// A small helper component for the dust puffs
 const DustParticle = ({ delay }) => {
     const variants = {
-        rest: { opacity: 0, scale: 0 },
+        rest: { opacity: 0, scale: 0, y: 0 },
         hover: {
             opacity: [0, 1, 0],
             scale: [0.5, 1, 0],
-            x: [0, -10, -20],
-            y: [0, 5, 0],
+            y: [0, -5, -10],
             transition: {
                 delay,
-                duration: 0.6,
+                duration: 0.8, // Slower puff animation
                 ease: 'easeOut',
             }
         },
     };
-    return <motion.div variants={variants} className="absolute w-1 h-1 bg-blue-300/50 rounded-full" />;
+    return <motion.div variants={variants} className="absolute w-2 h-2 bg-blue-300/30 rounded-full" />;
 };
 
 const PostCard = ({ post }) => {
   if (!post) return null;
 
-  // --- Animation Variants for the "Running Dog" effect ---
   const cardVariants = {
     rest: { scale: 1, boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.2)' },
     hover: { scale: 1.03, boxShadow: '0px 15px 30px rgba(0, 0, 0, 0.3)' },
@@ -37,24 +35,28 @@ const PostCard = ({ post }) => {
 
   const borderVariants = {
     rest: { opacity: 0 },
-    hover: { opacity: 1, transition: { duration: 0.4 } },
+    hover: { opacity: 1, transition: { duration: 0.4, delay: 0.1 } },
   };
 
   const dogVariants = {
-    rest: { x: '-110%', opacity: 0 },
+    rest: { x: '-100%' }, // Start off-screen to the left
     hover: {
-      x: '110%',
-      opacity: 1,
+      x: '100vw', // Run far off-screen to the right
       transition: {
-        x: { duration: 0.8, ease: 'linear' },
-        opacity: { duration: 0.1 }
+        x: { 
+            duration: 2.5, // Slower run duration
+            ease: 'linear',
+            delay: 0.1,
+            repeat: Infinity,
+            repeatDelay: 2
+        },
       },
     },
   };
   
   const trailVariants = {
       rest: {},
-      hover: { transition: { staggerChildren: 0.05, delayChildren: 0.1 } }
+      hover: { transition: { staggerChildren: 0.08 } }
   };
 
   return (
@@ -67,6 +69,26 @@ const PostCard = ({ post }) => {
       animate="rest"
       transition={{ duration: 0.3, ease: 'easeOut' }}
     >
+        {/* --- The Running Dog Animation Container --- */}
+        {/* This container is now at the top level to span the whole card width */}
+        <div className="absolute top-0 -mt-4 left-0 w-full h-8 z-20 pointer-events-none">
+            <motion.div 
+                variants={dogVariants} 
+                className="absolute"
+                style={{ width: '40px', left: '-40px' }} // Position the container to start off-screen
+            >
+                {/* Stylized Dog SVG */}
+                <svg viewBox="0 0 50 32" fill="none" className="w-full h-full">
+                    <path d="M43.6,18.8c-0.3-0.8-1-1.3-1.8-1.3H26.3c-0.8,0-1.5,0.7-1.5,1.5v0c0,0.8,0.7,1.5,1.5,1.5h15.2l-2.4,4.7c-0.5,1-0.2,2.2,0.8,2.7c0.2,0.1,0.5,0.2,0.7,0.2c0.8,0,1.5-0.5,1.8-1.3L46,21.8c0.5-1-0.2-2.2-1.2-2.7L43.6,18.8z M19.5,14.7c-2.3,0-4.2,1.9-4.2,4.2s1.9,4.2,4.2,4.2s4.2-1.9,4.2-4.2S21.8,14.7,19.5,14.7z M12.3,29.9c0.8,0,1.5-0.7,1.5-1.5V22c0-0.8-0.7-1.5-1.5-1.5s-1.5,0.7-1.5,1.5v6.4C10.8,29.3,11.5,29.9,12.3,29.9z M22.5,29.9c0.8,0,1.5-0.7,1.5-1.5V22c0-0.8-0.7-1.5-1.5-1.5s-1.5,0.7-1.5,1.5v6.4C21,29.3,21.7,29.9,22.5,29.9z M25.4,3.2C24.6,3.2,24,3.8,24,4.6v3c0,0.8,0.7,1.5,1.5,1.5s1.5-0.7,1.5-1.5V4.6C26.9,3.8,26.2,3.2,25.4,3.2z" fill="rgba(255,255,255,0.8)"/>
+                </svg>
+                {/* Dust Trail */}
+                <motion.div variants={trailVariants} className="absolute top-full -left-2 mt-1">
+                    {Array.from({length: 3}).map((_, i) => <DustParticle key={i} delay={i * 0.1} />)}
+                </motion.div>
+            </motion.div>
+        </div>
+
+      {/* Card Content */}
       <div className="relative h-48 overflow-hidden">
         <LazyImage
           src={post.image}
@@ -76,21 +98,6 @@ const PostCard = ({ post }) => {
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        
-        {/* --- The Running Dog Animation --- */}
-        <div className="absolute top-2 left-0 w-full h-8 overflow-hidden">
-            <motion.div variants={dogVariants}>
-                {/* SVG Dog Silhouette */}
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" className="text-white/80">
-                    <path d="M12.2,2.8c-0.5,0-0.9,0.4-0.9,0.9v1.8c0,0.5,0.4,0.9,0.9,0.9s0.9-0.4,0.9-0.9V3.7C13.1,3.2,12.7,2.8,12.2,2.8z M19,10.3c-0.2-0.4-0.7-0.5-1.1-0.3c-0.4,0.2-0.5,0.7-0.3,1.1l1.1,2.1H13V9.7c0-0.5-0.4-0.9-0.9-0.9s-0.9,0.4-0.9,0.9v4.5c0,0.5,0.4,0.9,0.9,0.9h6.8l-1.1,2.1c-0.2,0.4-0.1,0.9,0.3,1.1c0.1,0.1,0.3,0.1,0.4,0.1c0.3,0,0.6-0.2,0.8-0.5l2.7-5c0.2-0.4,0.1-0.9-0.3-1.1L19,10.3z M8.5,8.8C7.1,8.8,6,9.9,6,11.3s1.1,2.5,2.5,2.5s2.5-1.1,2.5-2.5S9.9,8.8,8.5,8.8z M4.5,21.2c0.5,0,0.9-0.4,0.9-0.9v-2.7c0-0.5-0.4-0.9-0.9-0.9S3.6,17,3.6,17.5v2.7C3.6,20.8,4,21.2,4.5,21.2z M9.9,21.2c0.5,0,0.9-0.4,0.9-0.9v-2.7c0-0.5-0.4-0.9-0.9-0.9s-0.9,0.4-0.9,0.9v2.7C9,20.8,9.4,21.2,9.9,21.2z"/>
-                </svg>
-                {/* Dust Trail */}
-                <motion.div variants={trailVariants} className="absolute top-1/2 -left-2">
-                    {Array.from({length: 3}).map((_, i) => <DustParticle key={i} delay={i * 0.05} />)}
-                </motion.div>
-            </motion.div>
-        </div>
-
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
         <motion.div 
             className="absolute inset-0 border-2 border-blue-400 rounded-xl pointer-events-none"
@@ -103,7 +110,6 @@ const PostCard = ({ post }) => {
         </div>
       </div>
       
-      {/* Text Content */}
       <div className="p-6">
         <h3 className="text-lg font-bold mb-3 group-hover:text-blue-400 transition-colors duration-300 line-clamp-2">
           {post.title}
