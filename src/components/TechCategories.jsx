@@ -1,15 +1,16 @@
-// src/components/TechCategories.jsx - FINAL VERSION with Icon Glow
+// src/components/TechCategories.jsx - FINAL VERSION with Consistent Colors
 import React, { useRef } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Zap, RefreshCw } from 'lucide-react';
+import {
+  Zap,
+  RefreshCw
+} from 'lucide-react';
 import { useCategories } from '@/hooks/useWordPress';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
-// Helper function for providing the production icons
 const getCategoryIcon = (category, className = 'h-8 w-8') => {
     const lowerCategory = category.toLowerCase();
-
     const iconUrls = {
       snowflake: 'https://cdn.brandfetch.io/idJz-fGD_q/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B',
       aws: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg',
@@ -20,28 +21,11 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
       python: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
       analytics: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg'
     };
-
     const iconUrl = iconUrls[lowerCategory];
-
     if (iconUrl) {
-      return (
-        <img
-          src={iconUrl}
-          alt={`${category} logo`}
-          className={`${className} object-contain`}
-          onError={(e) => {
-            e.target.style.display = 'none';
-            e.target.parentNode.innerHTML = `<div class="${className} bg-blue-500/20 rounded-lg flex items-center justify-center text-2xl">📁</div>`;
-          }}
-        />
-      );
+      return (<img src={iconUrl} alt={`${category} logo`} className={`${className} object-contain`} onError={(e) => { e.target.style.display = 'none'; e.target.parentNode.innerHTML = `<div class="${className} bg-blue-500/20 rounded-lg flex items-center justify-center text-2xl">📁</div>`; }} />);
     }
-
-    return (
-      <svg viewBox="0 0 24 24" className={className} fill="currentColor">
-        <path fill="#6366F1" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
-      </svg>
-    );
+    return (<svg viewBox="0 0 24 24" className={className} fill="currentColor"><path fill="#6366F1" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>);
 };
 
 const HolographicCard = ({ category }) => {
@@ -71,37 +55,17 @@ const HolographicCard = ({ category }) => {
 
   return (
     <Link to={path} className="block h-full group" style={{ perspective: '1000px' }}>
-      <motion.div
-        ref={cardRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        style={{ rotateX, rotateY }}
-        className="tech-card rounded-2xl p-8 relative overflow-hidden h-full min-h-[280px] flex flex-col transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-blue-500/20"
-      >
-        <motion.div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-          style={{
-            background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(147, 197, 253, 0.35), transparent 40%)`,
-          }}
-        />
+      <motion.div ref={cardRef} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} style={{ rotateX, rotateY }} className="tech-card rounded-2xl p-8 relative overflow-hidden h-full min-h-[280px] flex flex-col transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-blue-500/20">
+        <motion.div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(147, 197, 253, 0.35), transparent 40%)` }} />
         <div style={{ transform: 'translateZ(40px)', transformStyle: 'preserve-3d' }} className="flex flex-col h-full">
-          {/* ✅ UPDATED: Added a matching shadow on hover for a glow effect */}
           <div className={`inline-flex p-4 rounded-xl bg-gradient-to-br ${color} mb-6 self-start shadow-lg group-hover:shadow-xl group-hover:shadow-blue-500/30 transition-shadow duration-300`}>
             {getCategoryIcon(name, 'h-8 w-8')}
           </div>
-          <h3 className="text-xl font-bold mb-4 text-white" style={{ transform: 'translateZ(30px)' }}>
-            {name}
-          </h3>
-          <p className="text-gray-400 text-sm mb-6 leading-relaxed flex-grow" style={{ transform: 'translateZ(20px)' }}>
-            {description}
-          </p>
+          <h3 className="text-xl font-bold mb-4 text-white" style={{ transform: 'translateZ(30px)' }}>{name}</h3>
+          <p className="text-gray-400 text-sm mb-6 leading-relaxed flex-grow" style={{ transform: 'translateZ(20px)' }}>{description}</p>
           <div className="flex items-center justify-between mt-auto" style={{ transform: 'translateZ(10px)' }}>
-            <span className="text-sm font-medium text-gray-300 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm border border-white/10">
-              {posts} articles
-            </span>
-            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors border border-white/10">
-              <Zap className="h-5 w-5 text-blue-400" />
-            </div>
+            <span className="text-sm font-medium text-gray-300 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm border border-white/10">{posts} articles</span>
+            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors border border-white/10"><Zap className="h-5 w-5 text-blue-400" /></div>
           </div>
         </div>
       </motion.div>
@@ -113,11 +77,12 @@ const TechCategories = () => {
   const { categories: apiCategories, loading, refresh: refreshCategories } = useCategories();
   const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
 
+  // ✅ UNIFIED & UPDATED: Consistent color scheme with an improved SQL gradient
   const categoryConfig = [
     { name: 'AWS', description: 'Cloud data services, S3, Redshift, Glue, and more', color: 'from-orange-500 to-red-500', path: '/category/aws' },
     { name: 'Snowflake', description: 'Modern cloud data warehouse and analytics', color: 'from-blue-500 to-cyan-500', path: '/category/snowflake' },
     { name: 'Azure', description: 'Microsoft cloud data platform and services', color: 'from-blue-600 to-indigo-600', path: '/category/azure' },
-    { name: 'SQL', description: 'Advanced queries, optimization, and best practices', color: 'from-green-500 to-emerald-500', path: '/category/sql' },
+    { name: 'SQL', description: 'Advanced queries, optimization, and best practices', color: 'from-sky-500 to-cyan-400', path: '/category/sql' },
     { name: 'Airflow', description: 'Workflow orchestration and data pipeline automation', color: 'from-purple-500 to-violet-500', path: '/category/airflow' },
     { name: 'dbt', description: 'Data transformation and analytics engineering', color: 'from-pink-500 to-rose-500', path: '/category/dbt' },
     { name: 'Python', description: 'Data engineering with Python libraries and frameworks', color: 'from-yellow-500 to-orange-500', path: '/category/python' },
