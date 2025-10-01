@@ -1,63 +1,89 @@
-// src/components/PostListItem.jsx - FINAL VERSION WITH HOVER ANIMATION
+// src/components/PostListItem.jsx - FINAL VERSION WITH UNIQUE "CIRCUIT TRACE" ANIMATION
 import React from 'react';
 import { Link } from 'react-router-dom';
-// 1. Import motion from framer-motion
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import LazyImage from './LazyImage';
 
-// 2. Create a motion-compatible version of the Link component
 const MotionLink = motion(Link);
 
 const PostListItem = ({ post }) => {
   if (!post) return null;
 
-  // 3. Define animation variants for the hover effect
+  // --- Animation Variants for the "Circuit Trace" effect ---
+
   const cardVariants = {
-    rest: {
-      scale: 1,
-      transition: { duration: 0.3, ease: 'easeOut' },
+    rest: { 
+      backgroundColor: 'rgba(30, 41, 59, 0)', // Transparent background initially
+      scale: 1 
     },
-    hover: {
-      scale: 1.02,
-      transition: { duration: 0.3, ease: 'easeOut' },
+    hover: { 
+      backgroundColor: 'rgba(30, 41, 59, 0.5)', // Glow effect on hover
+      scale: 1.015
     },
   };
 
-  const shineVariants = {
-    rest: {
-      x: '-150%',
-    },
-    hover: {
-      x: '150%',
-      transition: { duration: 0.7, ease: 'easeInOut' },
-    },
+  // Variants for the 4 border segments
+  const borderTopVariants = {
+    rest: { pathLength: 0 },
+    hover: { pathLength: 1, transition: { duration: 0.2, ease: 'easeInOut' } },
   };
+  const borderRightVariants = {
+    rest: { pathLength: 0 },
+    hover: { pathLength: 1, transition: { duration: 0.2, ease: 'easeInOut', delay: 0.2 } },
+  };
+  const borderBottomVariants = {
+    rest: { pathLength: 0 },
+    hover: { pathLength: 1, transition: { duration: 0.2, ease: 'easeInOut', delay: 0.4 } },
+  };
+  const borderLeftVariants = {
+    rest: { pathLength: 0 },
+    hover: { pathLength: 1, transition: { duration: 0.2, ease: 'easeInOut', delay: 0.6 } },
+  };
+  
+  const imageVariants = {
+    rest: { scale: 1 },
+    hover: { scale: 1.05 },
+  };
+  
+  const arrowVariants = {
+    rest: { x: 0 },
+    hover: { x: 5, transition: { repeat: Infinity, repeatType: 'reverse', duration: 0.4 } },
+  };
+
 
   return (
     <MotionLink
       to={`/articles/${post.slug}`}
-      className="relative block w-full p-4 rounded-xl group transition-colors duration-300 hover:bg-slate-800/50 overflow-hidden" // Added relative and overflow-hidden
+      className="relative block w-full p-4 rounded-xl group overflow-hidden" // Key classes: relative, overflow-hidden
       variants={cardVariants}
       initial="rest"
       whileHover="hover"
       animate="rest"
+      transition={{ duration: 0.4, ease: 'easeOut' }}
     >
-      {/* 4. Add the Shine/Glare Animation Element */}
-      <motion.div
-        className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent"
-        style={{ transform: 'skewX(-25deg)' }}
-        variants={shineVariants}
-      />
+      {/* --- Animated Border SVG --- */}
+      <svg className="absolute inset-0 w-full h-full" width="100%" height="100%">
+        <rect className="stroke-blue-500/80 stroke-2" width="100%" height="100%" rx="12" ry="12" fill="none">
+          <motion.path d="M1,1 H calc(100% - 1) V calc(100% - 1) H1 Z" stroke="none" />
+          <motion.path d="M1,1 H calc(100% - 1)" variants={borderTopVariants} />
+          <motion.path d="M calc(100% - 1),1 V calc(100% - 1)" variants={borderRightVariants} />
+          <motion.path d="M calc(100% - 1),calc(100% - 1) H1" variants={borderBottomVariants} />
+          <motion.path d="M1,calc(100% - 1) V1" variants={borderLeftVariants} />
+        </rect>
+      </svg>
+
 
       <div className="flex flex-col sm:flex-row items-center gap-6">
         {/* Image */}
-        <div className="w-full sm:w-48 flex-shrink-0">
-          <LazyImage
-            src={post.image}
-            alt={post.title}
-            className="aspect-video sm:aspect-square rounded-lg object-cover"
-          />
+        <div className="w-full sm:w-48 flex-shrink-0 overflow-hidden rounded-lg">
+          <motion.div variants={imageVariants} className="h-full">
+            <LazyImage
+              src={post.image}
+              alt={post.title}
+              className="aspect-video sm:aspect-square object-cover"
+            />
+          </motion.div>
         </div>
         
         {/* Content */}
@@ -85,7 +111,9 @@ const PostListItem = ({ post }) => {
 
         {/* Arrow */}
         <div className="hidden sm:block ml-auto self-center">
-            <ArrowRight className="h-6 w-6 text-gray-500 group-hover:text-blue-400 group-hover:translate-x-1 transition-transform" />
+            <motion.div variants={arrowVariants}>
+                <ArrowRight className="h-6 w-6 text-gray-500 group-hover:text-blue-400 transition-colors" />
+            </motion.div>
         </div>
       </div>
     </MotionLink>
