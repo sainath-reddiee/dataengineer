@@ -1,4 +1,4 @@
-// src/components/RecentPosts.jsx - COMPLETE FIXED VERSION
+// src/components/RecentPosts.jsx - COMPLETE FINAL VERSION
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCw, AlertCircle, ChevronDown, Grid, List } from 'lucide-react';
@@ -38,7 +38,7 @@ const RecentPosts = ({
     per_page: postsPerPage,
     categorySlug: category,
     orderby: 'date',
-    order: sortOrder, // FIXED: This now actually changes the API call
+    order: sortOrder,
   });
 
   // FIXED: Reset page when sort order changes
@@ -61,7 +61,7 @@ const RecentPosts = ({
     const newOrder = sortOrder === 'desc' ? 'asc' : 'desc';
     console.log('🔄 Changing sort order to:', newOrder);
     setSortOrder(newOrder);
-    setCurrentPage(1); // Reset to first page when sorting changes
+    setCurrentPage(1);
   };
 
   // FIXED: Load more with proper pagination
@@ -227,10 +227,8 @@ const RecentPosts = ({
               stroke="currentColor"
             >
               {sortOrder === 'desc' ? (
-                // Descending icon
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
               ) : (
-                // Ascending icon
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
               )}
             </svg>
