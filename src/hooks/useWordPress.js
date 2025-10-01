@@ -34,8 +34,6 @@ export const usePosts = ({
   setTotalPages(1);
   setTotalPosts(0);
   setHasMore(false);
-  // Increment request counter to cancel any in-flight requests
-  currentRequestRef.current++;
 }, [categorySlug, search]);
 
   // Fetch posts with race condition protection
