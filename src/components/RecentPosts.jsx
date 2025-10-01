@@ -1,13 +1,17 @@
-// src/components/RecentPosts.jsx - COMPLETE FINAL VERSION
+// src/components/RecentPosts.jsx - FINAL VERSION WITH ALL CODE
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCw, AlertCircle, ChevronDown, Grid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
-import PostCard from '@/components/PostCard';
-import PostCardSkeleton from '@/components/PostCardSkeleton';
 import { usePosts } from '@/hooks/useWordPress';
 import { reduceMotion } from '@/utils/performance';
+
+// Import the new components
+import PostCard from '@/components/PostCard';
+import PostCardSkeleton from '@/components/PostCardSkeleton';
+import PostListItem from '@/components/PostListItem';
+import PostListItemSkeleton from '@/components/PostListItemSkeleton';
 
 const RecentPosts = ({ 
   category = null, 
@@ -24,7 +28,6 @@ const RecentPosts = ({
   
   const postsPerPage = initialLimit;
 
-  // FIXED: Pass sortOrder to usePosts hook
   const { 
     posts, 
     loading, 
@@ -41,12 +44,10 @@ const RecentPosts = ({
     order: sortOrder,
   });
 
-  // FIXED: Reset page when sort order changes
   useEffect(() => {
     setCurrentPage(1);
   }, [sortOrder, category]);
 
-  // Manual refresh
   const handleRefresh = () => {
     console.log('🔄 Manual refresh triggered in RecentPosts');
     refresh();
@@ -56,7 +57,6 @@ const RecentPosts = ({
     });
   };
 
-  // FIXED: Toggle sort order
   const toggleSortOrder = () => {
     const newOrder = sortOrder === 'desc' ? 'asc' : 'desc';
     console.log('🔄 Changing sort order to:', newOrder);
@@ -64,7 +64,6 @@ const RecentPosts = ({
     setCurrentPage(1);
   };
 
-  // FIXED: Load more with proper pagination
   const loadMorePosts = () => {
     if (!loading && hasMore) {
       console.log('📄 Loading more posts, next page:', currentPage + 1);
@@ -72,53 +71,39 @@ const RecentPosts = ({
     }
   };
 
-  // Loading state
+  const renderSkeletons = () => {
+    return Array.from({ length: initialLimit }).map((_, i) => (
+      viewMode === 'list' 
+        ? <PostListItemSkeleton key={`skel-list-${i}`} />
+        : <PostCardSkeleton key={`skel-grid-${i}`} />
+    ));
+  };
+  
+  const containerClasses = viewMode === 'list' 
+    ? 'flex flex-col space-y-4' 
+    : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+
   if (loading && posts.length === 0) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <h2 className="text-2xl font-bold gradient-text">{title}</h2>
           {showViewToggle && (
             <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setViewMode('grid')}
-                className={viewMode === 'grid' 
-                  ? "bg-blue-600 text-white" 
-                  : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
-                }
-              >
+              <Button variant="outline" size="sm" onClick={() => setViewMode('grid')} className={viewMode === 'grid' ? "bg-blue-600 text-white" : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20"}>
                 <Grid className="h-4 w-4" />
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className={viewMode === 'list' 
-                  ? "bg-blue-600 text-white" 
-                  : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
-                }
-              >
+              <Button variant="outline" size="sm" onClick={() => setViewMode('list')} className={viewMode === 'list' ? "bg-blue-600 text-white" : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20"}>
                 <List className="h-4 w-4" />
               </Button>
             </div>
           )}
         </div>
-        <div className={`grid gap-6 ${
-          viewMode === 'list' 
-            ? 'grid-cols-1' 
-            : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-        }`}>
-          {Array.from({ length: initialLimit }, (_, i) => (
-            <PostCardSkeleton key={i} />
-          ))}
-        </div>
+        <div className={containerClasses}>{renderSkeletons()}</div>
       </div>
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="space-y-6">
@@ -130,7 +115,7 @@ const RecentPosts = ({
         >
           <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-red-300 mb-2">
-            {category ? `Category "${category}" Issue` : 'Failed to Load Posts'}
+            {category && showCategoryError ? `Category "${category}" Issue` : 'Failed to Load Posts'}
           </h3>
           <p className="text-red-200/80 mb-4">{error}</p>
           <Button 
@@ -146,7 +131,6 @@ const RecentPosts = ({
     );
   }
 
-  // Empty state
   if (posts.length === 0 && !loading) {
     return (
       <div className="space-y-6">
@@ -172,7 +156,6 @@ const RecentPosts = ({
     );
   }
 
-  // Success state - render posts
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
@@ -212,7 +195,6 @@ const RecentPosts = ({
             </div>
           )}
           
-          {/* FIXED: Sort button with actual functionality */}
           <Button
             variant="outline"
             size="sm"
@@ -249,33 +231,24 @@ const RecentPosts = ({
       </div>
       
       <motion.div
+        key={viewMode}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className={`grid gap-6 ${
-          viewMode === 'list' 
-            ? 'grid-cols-1' 
-            : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-        }`}
+        className={containerClasses}
       >
         {posts.map((post, index) => (
           <motion.div
             key={post.id}
-            {...(shouldReduceMotion ? {} : {
-              initial: { opacity: 0, y: 20 },
-              animate: { opacity: 1, y: 0 },
-              transition: { 
-                duration: 0.5, 
-                delay: index * 0.05 
-              }
-            })}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.05 }}
           >
-            <PostCard post={post} />
+            {viewMode === 'list' ? <PostListItem post={post} /> : <PostCard post={post} />}
           </motion.div>
         ))}
       </motion.div>
 
-      {/* FIXED: Load More Button with proper state */}
       {showLoadMore && hasMore && (
         <div className="flex justify-center pt-8">
           <Button
@@ -298,20 +271,16 @@ const RecentPosts = ({
         </div>
       )}
 
-      {/* Loading more indicator */}
       {loading && posts.length > 0 && (
-        <div className={`grid gap-6 ${
-          viewMode === 'list' 
-            ? 'grid-cols-1' 
-            : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-        }`}>
-          {Array.from({ length: Math.min(postsPerPage, 3) }, (_, i) => (
-            <PostCardSkeleton key={`loading-${i}`} />
+        <div className={containerClasses}>
+          {Array.from({ length: Math.min(postsPerPage, 3) }).map((_, i) => (
+            viewMode === 'list' 
+              ? <PostListItemSkeleton key={`loading-list-${i}`} /> 
+              : <PostCardSkeleton key={`loading-grid-${i}`} />
           ))}
         </div>
       )}
 
-      {/* End message */}
       {!hasMore && posts.length > initialLimit && (
         <div className="text-center py-8">
           <div className="inline-flex items-center space-x-2 text-gray-400 bg-gray-800/30 px-4 py-2 rounded-full">
