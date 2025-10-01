@@ -138,8 +138,9 @@ const CategoryPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
+            {/* CRITICAL FIX: Use only categoryName as key to force complete re-mount */}
             <RecentPosts 
-              key={`posts-${categoryName}`}
+              key={categoryName.toLowerCase()}
               category={categoryName.toLowerCase()} 
               showCategoryError={true}
               initialLimit={9}
