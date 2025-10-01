@@ -14,8 +14,8 @@ const STATIC_PAGES = [
   { url: '/', changefreq: 'daily', priority: 1.0 },
   { url: '/articles', changefreq: 'daily', priority: 0.9 },
   { url: '/about', changefreq: 'monthly', priority: 0.7 },
-  { url: '/contact', changefreq: 'monthly', priority: 0.6 },
-  { url: '/newsletter', changefreq: 'monthly', priority: 0.7 },
+  { url: '/contact', changefreq: 'monthly', priority: 0.4 },
+  { url: '/newsletter', changefreq: 'monthly', priority: 0.5 },
   { url: '/privacy-policy', changefreq: 'yearly', priority: 0.3 },
   { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3 },
 ];
