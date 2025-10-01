@@ -22,13 +22,13 @@
     <loc>https://dataengineerhub.blog/contact</loc>
     <lastmod>2025-10-01</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.4</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/newsletter</loc>
     <lastmod>2025-10-01</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/privacy-policy</loc>
@@ -46,103 +46,103 @@
     <loc>https://dataengineerhub.blog/articles/what-is-incremental-data-processing-a-data-engineers-guide</loc>
     <lastmod>2025-10-01</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/data-modeling-modern-data-warehouse</loc>
     <lastmod>2025-09-30</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/dynamic-data-masking-snowflake</loc>
     <lastmod>2025-09-30</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-data-sharing-governance</loc>
     <lastmod>2025-09-30</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/querying-data-in-snowflake</loc>
     <lastmod>2025-09-30</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/load-data-into-snowflake</loc>
     <lastmod>2025-09-30</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/what-is-snowflake-guide</loc>
     <lastmod>2025-09-30</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/loading-data-from-s3-to-snowflake</loc>
     <lastmod>2025-09-30</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/aws-data-pipeline-cost-optimization-strategies</loc>
     <lastmod>2025-09-30</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-performance-tuning-techniques</loc>
     <lastmod>2025-09-30</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/advanced-snowflake-interview-questions-experienced</loc>
     <lastmod>2025-09-30</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/automated-etl-airflow-python</loc>
     <lastmod>2025-09-27</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/sql-window-functions-guide</loc>
     <lastmod>2025-09-30</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/build-data-lakehouse-on-azure</loc>
     <lastmod>2025-09-30</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/serverless-data-pipeline-aws</loc>
     <lastmod>2025-09-30</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/dbt-projects-snowflake-structure</loc>
     <lastmod>2025-10-01</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-architecture</loc>
     <lastmod>2025-09-30</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/category/airflow</loc>
