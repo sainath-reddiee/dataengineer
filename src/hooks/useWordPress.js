@@ -1,8 +1,8 @@
-// src/hooks/useWordPress.js - COMPLETE PRODUCTION VERSION
+// src/hooks/useWordPress.js - COMPLETE FIXED VERSION WITH SORTING
 import { useState, useEffect, useCallback } from 'react';
 import wordpressApi from '@/services/wordpressApi';
 
-// Hook for fetching posts - ENHANCED WITH FULL REFRESH SUPPORT
+// FIXED: Hook for fetching posts with proper sorting and pagination
 export const usePosts = ({ 
   page = 1, 
   per_page = 10, 
@@ -10,6 +10,8 @@ export const usePosts = ({
   search = null, 
   featured = null,
   trending = null,
+  orderby = 'date',
+  order = 'desc',
   enabled = true 
 } = {}) => {
   const [posts, setPosts] = useState([]);
@@ -19,6 +21,24 @@ export const usePosts = ({
   const [totalPosts, setTotalPosts] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [categoryId, setCategoryId] = useState(null);
+
+  // FIXED: Resolve category ID once and cache it
+  const resolveCategoryId = useCallback(async () => {
+    if (!categorySlug) {
+      setCategoryId(null);
+      return null;
+    }
+
+    try {
+      const id = await wordpressApi.getCategoryIdBySlug(categorySlug);
+      setCategoryId(id);
+      return id;
+    } catch (error) {
+      console.error('❌ Failed to resolve category ID:', error);
+      throw error;
+    }
+  }, [categorySlug]);
 
   const fetchPosts = useCallback(async (forceRefresh = false) => {
     if (!enabled) {
@@ -31,20 +51,14 @@ export const usePosts = ({
       setLoading(true);
 
       console.log('🔄 usePosts: Fetching posts with params:', { 
-        page, per_page, categorySlug, search, featured, trending, forceRefresh 
+        page, per_page, categorySlug, search, featured, trending, orderby, order, forceRefresh 
       });
 
-      let categoryId = null;
+      let resolvedCategoryId = categoryId;
       
-      if (categorySlug) {
-        console.log('🏷️ Converting category slug to ID:', categorySlug);
-        try {
-          categoryId = await wordpressApi.getCategoryIdBySlug(categorySlug);
-          console.log('✅ Category ID resolved:', categoryId);
-        } catch (categoryError) {
-          console.error('❌ Category resolution failed:', categoryError);
-          throw new Error(`Category "${categorySlug}" not found. Please check if the category exists.`);
-        }
+      // Only resolve category if we don't have it cached or if categorySlug changed
+      if (categorySlug && !categoryId) {
+        resolvedCategoryId = await resolveCategoryId();
       }
 
       if (forceRefresh) {
@@ -55,10 +69,12 @@ export const usePosts = ({
       const result = await wordpressApi.getPosts({ 
         page, 
         per_page, 
-        categoryId,
+        categoryId: resolvedCategoryId,
         search, 
         featured,
-        trending
+        trending,
+        orderby, // FIXED: Pass orderby
+        order    // FIXED: Pass order
       });
 
       setPosts(result.posts);
@@ -70,7 +86,8 @@ export const usePosts = ({
         postsCount: result.posts.length,
         totalPages: result.totalPages,
         totalPosts: result.totalPosts,
-        hasMore: page < result.totalPages
+        hasMore: page < result.totalPages,
+        currentPage: page
       });
     } catch (err) {
       console.error('❌ usePosts: Error fetching posts:', err);
@@ -82,34 +99,38 @@ export const usePosts = ({
     } finally {
       setLoading(false);
     }
-  }, [page, per_page, categorySlug, search, featured, trending, enabled, refreshKey]);
+  }, [page, per_page, categorySlug, search, featured, trending, orderby, order, enabled, refreshKey, categoryId, resolveCategoryId]);
 
-  // ENHANCED: Manual refresh function with proper state management
+  // Manual refresh function
   const refresh = useCallback(async () => {
     console.log('🔄 Manual refresh triggered - incrementing refresh key');
     setRefreshKey(prev => prev + 1);
+    setCategoryId(null); // Reset category ID to force re-resolution
     await fetchPosts(true);
   }, [fetchPosts]);
 
+  // FIXED: Load more function with proper category handling
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return;
     
     try {
       setLoading(true);
       
-      let categoryId = null;
-      if (categorySlug) {
-        categoryId = await wordpressApi.getCategoryIdBySlug(categorySlug);
+      let resolvedCategoryId = categoryId;
+      if (categorySlug && !categoryId) {
+        resolvedCategoryId = await resolveCategoryId();
       }
       
       const nextPage = page + 1;
       const result = await wordpressApi.getPosts({
         page: nextPage,
         per_page,
-        categoryId,
+        categoryId: resolvedCategoryId,
         search,
         featured,
-        trending
+        trending,
+        orderby,
+        order
       });
 
       setPosts(prev => [...prev, ...result.posts]);
@@ -119,7 +140,7 @@ export const usePosts = ({
     } finally {
       setLoading(false);
     }
-  }, [page, per_page, categorySlug, search, featured, trending, loading, hasMore]);
+  }, [page, per_page, categorySlug, search, featured, trending, orderby, order, loading, hasMore, categoryId, resolveCategoryId]);
 
   useEffect(() => {
     console.log('📡 usePosts useEffect triggered, refreshKey:', refreshKey);
@@ -232,11 +253,13 @@ export const useCategories = (enabled = true) => {
 };
 
 // Simplified hook for posts by category
-export const usePostsByCategory = (categorySlug, { page = 1, per_page = 10, enabled = true } = {}) => {
+export const usePostsByCategory = (categorySlug, { page = 1, per_page = 10, orderby = 'date', order = 'desc', enabled = true } = {}) => {
   return usePosts({ 
     page, 
     per_page, 
-    categorySlug, 
+    categorySlug,
+    orderby,
+    order,
     enabled 
   });
 };
