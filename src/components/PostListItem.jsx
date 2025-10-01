@@ -1,5 +1,5 @@
-// src/components/PostListItem.jsx - FINAL VERSION WITH UNIQUE "CIRCUIT TRACE" ANIMATION
-import React from 'react';
+// src/components/PostListItem.jsx - FINAL VERSION WITH "CORNER BURST" ANIMATION
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
@@ -7,74 +7,106 @@ import LazyImage from './LazyImage';
 
 const MotionLink = motion(Link);
 
+// A small helper component for the spark particles
+const Spark = ({ x, y, rotate, color }) => {
+  const variants = {
+    rest: {
+      x: 0,
+      y: 0,
+      scale: 0,
+      opacity: 0,
+    },
+    hover: {
+      x: x,
+      y: y,
+      scale: 1,
+      opacity: [0, 1, 0],
+      transition: {
+        duration: 0.8,
+        ease: [0.25, 1, 0.5, 1], // A nice ease-out curve
+      },
+    },
+  };
+
+  return (
+    <motion.div
+      variants={variants}
+      className="absolute top-0 left-0 h-1 w-1 rounded-full"
+      style={{ backgroundColor: color, rotate }}
+    />
+  );
+};
+
 const PostListItem = ({ post }) => {
   if (!post) return null;
 
-  // --- Animation Variants for the "Circuit Trace" effect ---
-
+  // --- Animation Variants for the "Corner Burst" effect ---
   const cardVariants = {
     rest: { 
-      backgroundColor: 'rgba(30, 41, 59, 0)', // Transparent background initially
-      scale: 1 
+      scale: 1,
+      boxShadow: '0px 5px 10px rgba(0, 0, 0, 0)',
     },
     hover: { 
-      backgroundColor: 'rgba(30, 41, 59, 0.5)', // Glow effect on hover
-      scale: 1.015
+      scale: 1.015,
+      boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.3)',
     },
   };
 
-  // Variants for the 4 border segments
-  const borderTopVariants = {
-    rest: { pathLength: 0 },
-    hover: { pathLength: 1, transition: { duration: 0.2, ease: 'easeInOut' } },
-  };
-  const borderRightVariants = {
-    rest: { pathLength: 0 },
-    hover: { pathLength: 1, transition: { duration: 0.2, ease: 'easeInOut', delay: 0.2 } },
-  };
-  const borderBottomVariants = {
-    rest: { pathLength: 0 },
-    hover: { pathLength: 1, transition: { duration: 0.2, ease: 'easeInOut', delay: 0.4 } },
-  };
-  const borderLeftVariants = {
-    rest: { pathLength: 0 },
-    hover: { pathLength: 1, transition: { duration: 0.2, ease: 'easeInOut', delay: 0.6 } },
-  };
-  
   const imageVariants = {
     rest: { scale: 1 },
     hover: { scale: 1.05 },
   };
-  
-  const arrowVariants = {
-    rest: { x: 0 },
-    hover: { x: 5, transition: { repeat: Infinity, repeatType: 'reverse', duration: 0.4 } },
+
+  const containerVariants = {
+    rest: {},
+    hover: {
+      transition: {
+        staggerChildren: 0.04, // Stagger the animation of each spark
+      },
+    },
   };
 
+  // Pre-calculate random values for the sparks for better performance
+  const sparks = useMemo(() => {
+    const sparks = [];
+    for (let i = 0; i < 12; i++) {
+      const angle = Math.random() * 90; // Emit sparks within a 90-degree corner arc
+      const distance = 40 + Math.random() * 30;
+      sparks.push({
+        x: Math.cos(angle * (Math.PI / 180)) * distance,
+        y: Math.sin(angle * (Math.PI / 180)) * distance,
+        rotate: Math.random() * 360,
+        color: ['#60a5fa', '#a78bfa', '#ffffff'][Math.floor(Math.random() * 3)],
+      });
+    }
+    return sparks;
+  }, []);
 
   return (
     <MotionLink
       to={`/articles/${post.slug}`}
-      className="relative block w-full p-4 rounded-xl group overflow-hidden" // Key classes: relative, overflow-hidden
+      className="relative block w-full p-4 rounded-xl group overflow-hidden bg-slate-800/20"
       variants={cardVariants}
       initial="rest"
       whileHover="hover"
       animate="rest"
-      transition={{ duration: 0.4, ease: 'easeOut' }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
     >
-      {/* --- Animated Border SVG --- */}
-      <svg className="absolute inset-0 w-full h-full" width="100%" height="100%">
-        <rect className="stroke-blue-500/80 stroke-2" width="100%" height="100%" rx="12" ry="12" fill="none">
-          <motion.path d="M1,1 H calc(100% - 1) V calc(100% - 1) H1 Z" stroke="none" />
-          <motion.path d="M1,1 H calc(100% - 1)" variants={borderTopVariants} />
-          <motion.path d="M calc(100% - 1),1 V calc(100% - 1)" variants={borderRightVariants} />
-          <motion.path d="M calc(100% - 1),calc(100% - 1) H1" variants={borderBottomVariants} />
-          <motion.path d="M1,calc(100% - 1) V1" variants={borderLeftVariants} />
-        </rect>
-      </svg>
-
-
-      <div className="flex flex-col sm:flex-row items-center gap-6">
+      {/* --- Spark Containers for each corner --- */}
+      <motion.div variants={containerVariants} className="absolute top-0 left-0">
+        {sparks.map((spark, i) => <Spark key={i} x={spark.x} y={spark.y} rotate={spark.rotate} color={spark.color} />)}
+      </motion.div>
+      <motion.div variants={containerVariants} className="absolute top-0 right-0" style={{ transform: 'rotate(90deg)' }}>
+        {sparks.map((spark, i) => <Spark key={i} x={spark.x} y={spark.y} rotate={spark.rotate} color={spark.color} />)}
+      </motion.div>
+      <motion.div variants={containerVariants} className="absolute bottom-0 right-0" style={{ transform: 'rotate(180deg)' }}>
+        {sparks.map((spark, i) => <Spark key={i} x={spark.x} y={spark.y} rotate={spark.rotate} color={spark.color} />)}
+      </motion.div>
+      <motion.div variants={containerVariants} className="absolute bottom-0 left-0" style={{ transform: 'rotate(270deg)' }}>
+        {sparks.map((spark, i) => <Spark key={i} x={spark.x} y={spark.y} rotate={spark.rotate} color={spark.color} />)}
+      </motion.div>
+      
+      <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6 bg-slate-900/50 group-hover:bg-slate-800/50 p-4 rounded-lg transition-colors duration-300">
         {/* Image */}
         <div className="w-full sm:w-48 flex-shrink-0 overflow-hidden rounded-lg">
           <motion.div variants={imageVariants} className="h-full">
@@ -111,9 +143,7 @@ const PostListItem = ({ post }) => {
 
         {/* Arrow */}
         <div className="hidden sm:block ml-auto self-center">
-            <motion.div variants={arrowVariants}>
-                <ArrowRight className="h-6 w-6 text-gray-500 group-hover:text-blue-400 transition-colors" />
-            </motion.div>
+          <ArrowRight className="h-6 w-6 text-gray-500 group-hover:text-blue-400 group-hover:translate-x-1 transition-transform" />
         </div>
       </div>
     </MotionLink>
