@@ -149,7 +149,7 @@ const CategoryPage = () => {
             <RecentPosts 
               category={categoryName.toLowerCase()} 
               showCategoryError={true}
-              initialLimit={9}
+              initialLimit={6}
               title={`All ${formattedCategoryName} Articles`}
               showLoadMore={true}
               showViewToggle={true}
