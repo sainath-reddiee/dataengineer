@@ -4,22 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
     
-    <!-- Preconnect to external domains (CRITICAL for performance) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
     
-    <!-- DNS Prefetch for third-party scripts (load later) -->
     <link rel="dns-prefetch" href="//www.googletagmanager.com">
     <link rel="dns-prefetch" href="//www.ezojs.com">
     <link rel="dns-prefetch" href="//cmp.gatekeeperconsent.com">
     <link rel="dns-prefetch" href="//the.gatekeeperconsent.com">
     
-    <!-- Fallback Meta Tags (will be replaced by React Helmet per page) -->
     <title>DataEngineer Hub - Data Engineering Tutorials</title>
     <meta name="description" content="Learn data engineering with expert tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow & dbt." />
     
-    <!-- Static Structured Data - Organization (doesn't change per page) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -41,11 +37,9 @@
     }
     </script>
     
-    <!-- Critical Font Preloading (only the main font) -->
     <link rel="preload" as="font" type="font/woff2" crossorigin 
           href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2">
     
-    <!-- Optimized Google Fonts (load with media trick for non-blocking) -->
     <link rel="preload" as="style"
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
     <link rel="stylesheet" 
@@ -56,24 +50,19 @@
             href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
     </noscript>
     
-    <!-- Favicon and PWA -->
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png">
     <link rel="manifest" href="/manifest.json">
     
-    <!-- Canonical (updated per page by Helmet) -->
     <link rel="canonical" href="https://dataengineerhub.blog">
     
-    <!-- Robots (updated per page by Helmet) -->
     <meta name="robots" content="index, follow, max-image-preview:large" />
     
-    <!-- Mobile Optimization -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#1e293b">
     
-    <!-- Critical CSS Inline -->
     <style>
       * {
         margin: 0;
@@ -123,7 +112,6 @@
       }
     </style>
     
-    <!-- Performance Monitoring -->
     <script>
       if (typeof performance !== 'undefined' && performance.mark) {
         performance.mark('nav-start');
@@ -170,13 +158,8 @@
       </div>
     </div>
     
-    <!-- Main App (loads React) - PRIORITY -->
     <script type="module" src="/src/main.jsx"></script>
     
-    <!-- Third-party scripts are now loaded by scriptLoader.js after user interaction -->
-    <!-- This improves initial page load by 40-60% -->
-    
-    <!-- Performance logging -->
     <script>
       window.addEventListener('load', function() {
         if (typeof performance !== 'undefined' && performance.mark) {
