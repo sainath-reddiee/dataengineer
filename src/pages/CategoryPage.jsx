@@ -1,5 +1,5 @@
-// src/pages/CategoryPage.jsx - FINAL VERSION with visible SQL Icon
-import React from 'react';
+// src/pages/CategoryPage.jsx - FINAL VERSION with SQL Icon Fix & Spark Animation
+import React, { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Folder } from 'lucide-react';
@@ -8,7 +8,25 @@ import { Link } from 'react-router-dom';
 import RecentPosts from '@/components/RecentPosts';
 import MetaTags from '@/components/SEO/MetaTags';
 
-// ✅ UPDATED: SQL color changed for better contrast
+// ✅ NEW: Spark component for the hover animation
+const Spark = ({ x, y, rotate, color }) => {
+  const variants = {
+    rest: { x: 0, y: 0, scale: 0, opacity: 0 },
+    hover: {
+      x, y, scale: 1,
+      opacity: [0, 1, 0.5, 0],
+      transition: { duration: 0.7, ease: [0.25, 1, 0.5, 1] },
+    },
+  };
+  return (
+    <motion.div
+      variants={variants}
+      className="absolute top-1/2 left-1/2 h-[3px] w-[3px] rounded-full"
+      style={{ backgroundColor: color, rotate }}
+    />
+  );
+};
+
 const categoryConfig = {
   snowflake: { name: 'Snowflake', color: 'from-blue-500 to-cyan-500', path: '/category/snowflake', description: "Master Snowflake with comprehensive tutorials on data warehousing, analytics, and cloud data platform features." },
   aws: { name: 'AWS', color: 'from-orange-500 to-red-500', path: '/category/aws', description: "Learn AWS data services: S3, Redshift, Glue, Lambda. Master cloud data engineering with Amazon Web Services." },
@@ -20,6 +38,7 @@ const categoryConfig = {
   analytics: { name: 'Analytics', color: 'from-teal-500 to-cyan-500', path: '/category/analytics', description: "Data analytics, visualization, and BI tools. Create insightful reports and dashboards for business." }
 };
 
+// ✅ UPDATED: getCategoryIcon now has a special fix for the SQL icon
 const getCategoryIcon = (category, className = 'h-10 w-10') => {
     const lowerCategory = category.toLowerCase();
     const iconUrls = {
@@ -32,10 +51,22 @@ const getCategoryIcon = (category, className = 'h-10 w-10') => {
       python: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
       analytics: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg'
     };
+    
     const iconUrl = iconUrls[lowerCategory];
+
+    // Special case to ensure the SQL icon is always visible
+    if (lowerCategory === 'sql') {
+      return (
+        <div className={`${className} bg-slate-200 rounded-full p-1.5 flex items-center justify-center`}>
+          <img src={iconUrls.sql} alt="SQL logo" className="h-full w-full object-contain" />
+        </div>
+      );
+    }
+    
     if (iconUrl) {
       return (<img src={iconUrl} alt={`${category} logo`} className={`${className} object-contain`} onError={(e) => { e.target.style.display = 'none'; e.target.parentNode.innerHTML = `<div class="${className} bg-blue-500/20 rounded-lg flex items-center justify-center text-2xl">📁</div>`; }} />);
     }
+
     return (<svg viewBox="0 0 24 24" className={className} fill="currentColor"><path fill="#6366F1" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>);
 };
 
@@ -43,6 +74,10 @@ const CategoryPage = () => {
   const { categoryName } = useParams();
   const lowerCategoryName = categoryName.toLowerCase();
   const currentCategory = categoryConfig[lowerCategoryName] || { name: categoryName.charAt(0).toUpperCase() + categoryName.slice(1), description: `Discover articles and tutorials about ${categoryName}.` };
+
+  const sparkContainerVariants = { rest: {}, hover: { transition: { staggerChildren: 0.04 } }, };
+  const sparks = useMemo(() => Array.from({ length: 12 }).map(() => ({ x: Math.random() * 50 - 25, y: Math.random() * 50 - 25, rotate: Math.random() * 360, color: ['#60a5fa', '#a78bfa', '#ffffff'][Math.floor(Math.random() * 3)], })), []);
+  const MotionLink = motion(Link);
 
   return (
     <>
@@ -76,16 +111,25 @@ const CategoryPage = () => {
               {Object.entries(categoryConfig).map(([slug, config]) => {
                 const isActive = slug === lowerCategoryName;
                 return (
-                  <Link
+                  // ✅ UPDATED: Link is now a motion component with hover variants and spark emitters
+                  <MotionLink
                     key={slug}
                     to={config.path}
+                    initial="rest"
+                    whileHover="hover"
                     className={`relative p-4 rounded-xl text-center transition-all duration-300 overflow-hidden group ${
                       isActive
                         ? 'border-2 border-blue-400 shadow-lg shadow-blue-500/30'
-                        : 'border border-gray-700 hover:border-blue-400/50 hover:shadow-md hover:shadow-blue-500/20'
+                        : 'border border-gray-700 hover:border-blue-400/50'
                     }`}
                     aria-label={`View ${config.name} articles`}
                   >
+                    {[...Array(4)].map((_, i) => (
+                      <motion.div key={i} variants={sparkContainerVariants} className={`absolute ${i < 2 ? 'top-0' : 'bottom-0'} ${i % 2 === 0 ? 'left-0' : 'right-0'} w-12 h-12`}>
+                        {sparks.map((spark, j) => <Spark key={j} {...spark} />)}
+                      </motion.div>
+                    ))}
+
                     <div className={`absolute inset-0 bg-gradient-to-br ${config.color} opacity-20 group-hover:opacity-30 transition-opacity`}></div>
                     <div className="relative z-10 flex flex-col items-center">
                       <div className="flex justify-center mb-2">{getCategoryIcon(slug, 'h-10 w-10')}</div>
@@ -93,7 +137,7 @@ const CategoryPage = () => {
                         {config.name}
                       </div>
                     </div>
-                  </Link>
+                  </MotionLink>
                 );
               })}
             </div>
