@@ -1,3 +1,4 @@
+// src/App.jsx - FIXED VERSION
 import React, { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
@@ -6,7 +7,7 @@ import Layout from '@/components/Layout';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import MobileOptimization from '@/components/MobileOptimization';
 import { trackPageView, trackEvent } from '@/utils/analytics';
-import { useApiDebugger } from '@/components/ApiDebugger';
+import { useApiDebugger } from '@/hooks/useApiDebugger'; // FIXED: Import from hooks folder
 
 // Lazy load pages for code splitting
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -18,6 +19,7 @@ const ContactPage = lazy(() => import('./pages/ContactPage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
 const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
+const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
@@ -80,7 +82,7 @@ const RouteChangeTracker = () => {
 };
 
 function App() {
-  const { debugMode, ApiDebugger } = useApiDebugger();
+  const { debugMode } = useApiDebugger(); // FIXED: Now properly imported
 
   useEffect(() => {
     // Mark app initialization
