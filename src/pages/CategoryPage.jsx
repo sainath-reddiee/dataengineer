@@ -1,5 +1,5 @@
 // src/pages/CategoryPage.jsx
-// COMPLETE PRODUCTION VERSION - Single H1, All Features, Proper SEO
+// FIXED: Added key prop to force component re-mount on category change
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -13,7 +13,7 @@ const CategoryPage = () => {
   const { categoryName } = useParams();
   const formattedCategoryName = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
 
-  // FIXED: Optimized descriptions (120-155 chars for SEO)
+  // Category descriptions
   const categoryDescriptions = {
     snowflake: "Master Snowflake with comprehensive tutorials on data warehousing, analytics, and cloud data platform features.",
     aws: "Learn AWS data services: S3, Redshift, Glue, Lambda. Master cloud data engineering with Amazon Web Services.",
@@ -66,16 +66,13 @@ const CategoryPage = () => {
   const categoryDescription = categoryDescriptions[categoryName.toLowerCase()] || 
     `Discover articles and tutorials about ${formattedCategoryName} technology and best practices.`;
 
-  // FIXED: Optimized meta description (under 155 chars)
   const metaDescription = categoryDescriptions[categoryName.toLowerCase()] || 
     `Browse ${formattedCategoryName} articles on DataEngineer Hub. Learn best practices and advanced techniques.`;
 
-  // FIXED: Optimized title (under 60 chars total with site name)
   const pageTitle = `${formattedCategoryName} Tutorials`;
 
   return (
     <>
-      {/* FIXED: Optimized meta tags */}
       <MetaTags 
         title={pageTitle}
         description={metaDescription}
@@ -104,8 +101,9 @@ const CategoryPage = () => {
             </Button>
           </motion.div>
 
-          {/* FIXED: Single H1 tag for entire page */}
+          {/* Header - FIXED: Animation resets on category change */}
           <motion.div
+            key={`header-${categoryName}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
@@ -117,7 +115,6 @@ const CategoryPage = () => {
               </span>
             </div>
             
-            {/* FIXED: This is the ONLY H1 on the page */}
             <h1 className="text-3xl md:text-4xl font-black mb-4">
               <span className="gradient-text">{formattedCategoryName} Tutorials & Articles</span>
             </h1>
@@ -134,13 +131,15 @@ const CategoryPage = () => {
             </div>
           </motion.div>
           
-          {/* Posts Section */}
+          {/* CRITICAL FIX: Key prop forces complete re-mount when category changes */}
           <motion.div
+            key={`posts-wrapper-${categoryName}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <RecentPosts 
+              key={`posts-${categoryName}`}
               category={categoryName.toLowerCase()} 
               showCategoryError={true}
               initialLimit={9}
@@ -150,14 +149,14 @@ const CategoryPage = () => {
             />
           </motion.div>
 
-          {/* FIXED: Changed from H3 to styled div to avoid heading hierarchy issues */}
+          {/* Explore Other Categories */}
           <motion.div
+            key={`explore-${categoryName}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             className="mt-16 p-6 bg-gradient-to-r from-blue-900/20 to-purple-900/20 backdrop-blur-sm border border-blue-400/20 rounded-2xl"
           >
-            {/* FIXED: This is NOT an H3, just styled text to avoid SEO issues */}
             <div className="text-xl font-bold mb-4 text-center gradient-text">
               Explore Other Categories
             </div>
