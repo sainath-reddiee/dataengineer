@@ -1,7 +1,7 @@
 // src/components/FeaturedPosts.jsx - COMPLETE PRODUCTION VERSION
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Calendar, Clock, ArrowRight, Star, AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePosts } from '@/hooks/useWordPress';
@@ -15,6 +15,7 @@ const FeaturedPosts = () => {
   const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
   const shouldReduceMotion = reduceMotion();
   const { toast } = useToast();
+  const location = useLocation();
 
   const { posts: featuredPosts, loading, error, refresh } = usePosts({
     per_page: 3,
@@ -112,7 +113,6 @@ const FeaturedPosts = () => {
                   <span className="text-sm font-medium text-yellow-200">Featured Content</span>
                 </div>
                 
-                {/* PRODUCTION READY: Always visible refresh button with full functionality */}
                 <Button
                   onClick={handleRefresh}
                   variant="outline"
@@ -256,7 +256,7 @@ const FeaturedPosts = () => {
           </div>
         </div>
 
-        {hasIntersected && (
+        {hasIntersected && location.pathname !== '/articles' && (
           <motion.div
             {...(shouldReduceMotion ? {} : {
               initial: { opacity: 0, y: 20 },
