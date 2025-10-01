@@ -162,27 +162,6 @@ const AllArticlesPage = () => {
                     </div>
                   )}
                 </div>
-                
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={toggleSortOrder}
-                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
-                  >
-                    {sortOrder === 'desc' ? (
-                      <>
-                        <SortDesc className="h-4 w-4 mr-1" />
-                        Newest First
-                      </>
-                    ) : (
-                      <>
-                        <SortAsc className="h-4 w-4 mr-1" />
-                        Oldest First
-                      </>
-                    )}
-                  </Button>
-                </div>
               </div>
             </div>
           </motion.div>
@@ -206,15 +185,35 @@ const AllArticlesPage = () => {
                     </span>
                   )}
                 </div>
-                <Button 
-                  onClick={refresh} 
-                  variant="outline" 
-                  size="sm"
-                  className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
-                  disabled={loading}
-                >
-                  Refresh
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={toggleSortOrder}
+                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    {sortOrder === 'desc' ? (
+                      <>
+                        <SortDesc className="h-4 w-4 mr-1" />
+                        Newest First
+                      </>
+                    ) : (
+                      <>
+                        <SortAsc className="h-4 w-4 mr-1" />
+                        Oldest First
+                      </>
+                    )}
+                  </Button>
+                  <Button 
+                    onClick={refresh} 
+                    variant="outline" 
+                    size="sm"
+                    className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
+                    disabled={loading}
+                  >
+                    Refresh
+                  </Button>
+                </div>
               </div>
             </motion.div>
           )}
