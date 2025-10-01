@@ -1,8 +1,8 @@
-// src/hooks/useWordPress.js - COMPLETE FIXED VERSION WITH SORTING
+// src/hooks/useWordPress.js - COMPLETE FINAL VERSION WITH ALL FIXES
 import { useState, useEffect, useCallback } from 'react';
 import wordpressApi from '@/services/wordpressApi';
 
-// FIXED: Hook for fetching posts with proper sorting and pagination
+// Hook for fetching posts with proper sorting and pagination
 export const usePosts = ({ 
   page = 1, 
   per_page = 10, 
@@ -23,14 +23,23 @@ export const usePosts = ({
   const [refreshKey, setRefreshKey] = useState(0);
   const [categoryId, setCategoryId] = useState(null);
 
-  // FIXED: Resolve category ID once and cache it
+  // FIXED: Reset categoryId whenever categorySlug changes
+  useEffect(() => {
+    setCategoryId(null);
+  }, [categorySlug]);
+
   const resolveCategoryId = useCallback(async () => {
     if (!categorySlug) {
-      setCategoryId(null);
       return null;
     }
 
+    // Check if we already have the ID for this slug
+    if (categoryId !== null) {
+      return categoryId;
+    }
+
     try {
+      console.log('🔍 Resolving category ID for:', categorySlug);
       const id = await wordpressApi.getCategoryIdBySlug(categorySlug);
       setCategoryId(id);
       return id;
@@ -38,7 +47,7 @@ export const usePosts = ({
       console.error('❌ Failed to resolve category ID:', error);
       throw error;
     }
-  }, [categorySlug]);
+  }, [categorySlug, categoryId]);
 
   const fetchPosts = useCallback(async (forceRefresh = false) => {
     if (!enabled) {
@@ -54,10 +63,10 @@ export const usePosts = ({
         page, per_page, categorySlug, search, featured, trending, orderby, order, forceRefresh 
       });
 
-      let resolvedCategoryId = categoryId;
+      let resolvedCategoryId = null;
       
-      // Only resolve category if we don't have it cached or if categorySlug changed
-      if (categorySlug && !categoryId) {
+      // Always resolve category if we have a slug
+      if (categorySlug) {
         resolvedCategoryId = await resolveCategoryId();
       }
 
@@ -73,8 +82,8 @@ export const usePosts = ({
         search, 
         featured,
         trending,
-        orderby, // FIXED: Pass orderby
-        order    // FIXED: Pass order
+        orderby,
+        order
       });
 
       setPosts(result.posts);
@@ -87,7 +96,8 @@ export const usePosts = ({
         totalPages: result.totalPages,
         totalPosts: result.totalPosts,
         hasMore: page < result.totalPages,
-        currentPage: page
+        currentPage: page,
+        categoryId: resolvedCategoryId
       });
     } catch (err) {
       console.error('❌ usePosts: Error fetching posts:', err);
@@ -99,25 +109,25 @@ export const usePosts = ({
     } finally {
       setLoading(false);
     }
-  }, [page, per_page, categorySlug, search, featured, trending, orderby, order, enabled, refreshKey, categoryId, resolveCategoryId]);
+  }, [page, per_page, categorySlug, search, featured, trending, orderby, order, enabled, refreshKey, resolveCategoryId]);
 
   // Manual refresh function
   const refresh = useCallback(async () => {
     console.log('🔄 Manual refresh triggered - incrementing refresh key');
+    setCategoryId(null); // Reset category ID
     setRefreshKey(prev => prev + 1);
-    setCategoryId(null); // Reset category ID to force re-resolution
     await fetchPosts(true);
   }, [fetchPosts]);
 
-  // FIXED: Load more function with proper category handling
+  // Load more function with proper category handling
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return;
     
     try {
       setLoading(true);
       
-      let resolvedCategoryId = categoryId;
-      if (categorySlug && !categoryId) {
+      let resolvedCategoryId = null;
+      if (categorySlug) {
         resolvedCategoryId = await resolveCategoryId();
       }
       
@@ -140,7 +150,7 @@ export const usePosts = ({
     } finally {
       setLoading(false);
     }
-  }, [page, per_page, categorySlug, search, featured, trending, orderby, order, loading, hasMore, categoryId, resolveCategoryId]);
+  }, [page, per_page, categorySlug, search, featured, trending, orderby, order, loading, hasMore, resolveCategoryId]);
 
   useEffect(() => {
     console.log('📡 usePosts useEffect triggered, refreshKey:', refreshKey);
@@ -203,7 +213,7 @@ export const usePost = (slug, enabled = true) => {
     fetchPost();
   }, [fetchPost]);
 
-  return { post, loading, error, refresh };
+  return { post, loading, error, refresh, refetch: fetchPost };
 };
 
 // Hook for fetching categories
