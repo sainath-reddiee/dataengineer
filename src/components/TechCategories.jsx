@@ -1,4 +1,4 @@
-// src/components/TechCategories.jsx - FINAL VERSION with New Card Layout
+// src/components/TechCategories.jsx - FINAL VERSION with Consistent Colors
 import React, { useRef } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -28,7 +28,6 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
     return (<svg viewBox="0 0 24 24" className={className} fill="currentColor"><path fill="#6366F1" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>);
 };
 
-// ✅ UPDATED CARD LAYOUT to match the user's request
 const HolographicCard = ({ category }) => {
   const cardRef = useRef(null);
   const { name, description, color, path, posts } = category;
@@ -36,8 +35,8 @@ const HolographicCard = ({ category }) => {
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
 
-  const rotateX = useTransform(mouseY, [0, 1], [10, -10]);
-  const rotateY = useTransform(mouseX, [0, 1], [-10, 10]);
+  const rotateX = useTransform(mouseY, [0, 1], [15, -15]);
+  const rotateY = useTransform(mouseX, [0, 1], [-15, 15]);
 
   const glareX = useTransform(mouseX, [0, 1], [20, 80]);
   const glareY = useTransform(mouseY, [0, 1], [20, 80]);
@@ -56,37 +55,17 @@ const HolographicCard = ({ category }) => {
 
   return (
     <Link to={path} className="block h-full group" style={{ perspective: '1000px' }}>
-      <motion.div
-        ref={cardRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        style={{ rotateX, rotateY }}
-        className="tech-card rounded-2xl p-4 relative overflow-hidden h-full flex flex-col transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-blue-500/20"
-      >
-        <motion.div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-          style={{ background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(147, 197, 253, 0.35), transparent 40%)` }}
-        />
-        <div style={{ transform: 'translateZ(20px)' }} className="flex flex-col h-full">
-          {/* Main colored block for icon and title */}
-          <div className={`flex-shrink-0 p-6 rounded-xl bg-gradient-to-br ${color} flex flex-col items-center text-center shadow-lg mb-4`}>
-            {getCategoryIcon(name, 'h-12 w-12')}
-            <h3 className="text-xl font-bold mt-3 text-white">{name}</h3>
+      <motion.div ref={cardRef} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} style={{ rotateX, rotateY }} className="tech-card rounded-2xl p-8 relative overflow-hidden h-full min-h-[280px] flex flex-col transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-blue-500/20">
+        <motion.div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" style={{ background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(147, 197, 253, 0.35), transparent 40%)` }} />
+        <div style={{ transform: 'translateZ(40px)', transformStyle: 'preserve-3d' }} className="flex flex-col h-full">
+          <div className={`inline-flex p-4 rounded-xl bg-gradient-to-br ${color} mb-6 self-start shadow-lg group-hover:shadow-xl group-hover:shadow-blue-500/30 transition-shadow duration-300`}>
+            {getCategoryIcon(name, 'h-8 w-8')}
           </div>
-
-          {/* Container for description and stats */}
-          <div className="flex flex-col flex-grow justify-between text-center px-2">
-             <p className="text-gray-400 text-sm leading-relaxed flex-grow mb-4">
-               {description}
-             </p>
-             <div className="flex items-center justify-center space-x-2">
-                <span className="text-sm font-medium text-gray-300 bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm border border-white/10">
-                  {posts} articles
-                </span>
-                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/10">
-                  <Zap className="h-4 w-4 text-blue-400" />
-                </div>
-              </div>
+          <h3 className="text-xl font-bold mb-4 text-white" style={{ transform: 'translateZ(30px)' }}>{name}</h3>
+          <p className="text-gray-400 text-sm mb-6 leading-relaxed flex-grow" style={{ transform: 'translateZ(20px)' }}>{description}</p>
+          <div className="flex items-center justify-between mt-auto" style={{ transform: 'translateZ(10px)' }}>
+            <span className="text-sm font-medium text-gray-300 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm border border-white/10">{posts} articles</span>
+            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors border border-white/10"><Zap className="h-5 w-5 text-blue-400" /></div>
           </div>
         </div>
       </motion.div>
@@ -98,6 +77,7 @@ const TechCategories = () => {
   const { categories: apiCategories, loading, refresh: refreshCategories } = useCategories();
   const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
 
+  // ✅ UNIFIED & UPDATED: Consistent color scheme with an improved SQL gradient
   const categoryConfig = [
     { name: 'AWS', description: 'Cloud data services, S3, Redshift, Glue, and more', color: 'from-orange-500 to-red-500', path: '/category/aws' },
     { name: 'Snowflake', description: 'Modern cloud data warehouse and analytics', color: 'from-blue-500 to-cyan-500', path: '/category/snowflake' },
