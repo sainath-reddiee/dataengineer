@@ -229,7 +229,7 @@ class WordPressAPI {
       }));
     } catch (error) {
       console.error('❌ Error fetching categories:', error);
-      return [];
+      throw error;
     }
   }
 
