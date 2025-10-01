@@ -6,7 +6,6 @@ export const useApiDebugger = () => {
   const [debugMode, setDebugMode] = useState(false);
 
   useEffect(() => {
-    // Enable debug mode with URL parameter or localStorage
     const urlParams = new URLSearchParams(window.location.search);
     const hasDebugParam = urlParams.has('debug');
     const hasDebugStorage = localStorage.getItem('api-debug') === 'true';
@@ -18,7 +17,6 @@ export const useApiDebugger = () => {
       }
     }
 
-    // Global debug functions
     window.debugAPI = {
       clearCache: () => wordpressApi.clearCache(),
       testConnection: () => wordpressApi.healthCheck(),
