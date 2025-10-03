@@ -184,7 +184,7 @@ jobs:
       - name: 📢 Notify Search Engines
         run: |
           echo "📡 Notifying search engines via IndexNow..."
-          npm run sitemap:notify:force || echo "⚠️ Notification failed (will retry on next deployment)"
+          npm run sitemap:notify || echo "⚠️ Notification failed (will retry on next deployment)"
         continue-on-error: true
       
       - name: 📊 Summary
