@@ -3,9 +3,11 @@ name: Build and Deploy to Hostinger
 on:
   push:
     branches: [main]
-  workflow_dispatch: # Add this line to enable manual triggers
+  workflow_dispatch:
   schedule:
     - cron: '0 21 * * *'
+  repository_dispatch:
+    types: [ post-published ]
 
 jobs:
   build-and-deploy:
