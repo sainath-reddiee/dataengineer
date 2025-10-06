@@ -19,6 +19,7 @@ const ContactPage = lazy(() => import('./pages/ContactPage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
 const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
+const DisclaimerPage = lazy(() => import('./pages/DisclaimerPage')); // Added import
 const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
@@ -168,6 +169,11 @@ function App() {
           <Route path="terms-of-service" element={
             <Suspense fallback={<LoadingFallback text="Loading Terms..." />}>
               <TermsOfServicePage />
+            </Suspense>
+          } />
+          <Route path="disclaimer" element={
+            <Suspense fallback={<LoadingFallback text="Loading Disclaimer..." />}>
+              <DisclaimerPage />
             </Suspense>
           } />
           <Route path="newsletter" element={
