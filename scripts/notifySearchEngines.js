@@ -295,29 +295,29 @@ async function notifySearchEngines(options = {}) {
     const timeSinceLastNotification = Date.now() - cache.lastNotified;
     const hoursSinceLastNotification = Math.round(timeSinceLastNotification / 1000 / 60 / 60);
 
-    // Determine which URLs to notify
-    let urlsToNotify;
-    
+    // *** CORRECTED LOGIC: CHECK FOR NEW URLS FIRST ***
+    const newUrls = getNewUrls(allUrls, cache);
+
+    let urlsToNotify = [];
+
     if (force || all) {
       urlsToNotify = allUrls;
       console.log(`\n📢 Notifying ALL URLs (${force ? 'forced' : 'requested'})`);
+    } else if (newUrls.length > 0) {
+      urlsToNotify = newUrls;
+      console.log(`\n🆕 Found ${newUrls.length} new URLs to notify. Submitting immediately.`);
     } else if (hoursSinceLastNotification < 24 && cache.lastNotified > 0) {
       console.log(`\n⏰ Last notification was ${hoursSinceLastNotification}h ago`);
-      console.log('💡 Skipping notification (wait 24h between notifications)');
+      console.log('💡 No new URLs found. Skipping notification (wait 24h between notifications).');
       console.log('   Use --force to override');
       return { skipped: true, reason: 'rate_limit' };
     } else {
-      urlsToNotify = getNewUrls(allUrls, cache);
-      
-      if (urlsToNotify.length === 0) {
         console.log('\n✅ No new URLs to notify');
         console.log('   All URLs have been notified previously');
         console.log('   Use --all to resubmit all URLs');
         return { skipped: true, reason: 'no_new_urls' };
-      }
-      
-      console.log(`\n🆕 Found ${urlsToNotify.length} new URLs to notify`);
     }
+
 
     // Submit to IndexNow
     const success = await submitToIndexNow(urlsToNotify, apiKey);
