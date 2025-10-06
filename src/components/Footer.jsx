@@ -41,7 +41,8 @@ const Footer = () => {
       { name: 'Contact', href: '/contact' },
       { name: 'Newsletter', href: '/newsletter' },
       { name: 'Privacy Policy', href: '/privacy-policy' },
-      { name: 'Terms of Service', href: '/terms-of-service' }
+      { name: 'Terms of Service', href: '/terms-of-service' },
+      { name: 'Disclaimer', href: '/disclaimer' }
     ]
   };
 
