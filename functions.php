@@ -1208,4 +1208,70 @@ function add_custom_query_params_to_rest() {
     ));
 }
 add_action('rest_api_init', 'add_custom_query_params_to_rest');
+
+/**
+ * Triggers a GitHub Actions workflow when a post is published.
+ */
+function trigger_github_action_on_publish($ID, $post) {
+    // Only trigger for new posts or updates to existing ones, not on every save.
+    $post_status = get_post_status($ID);
+    $previous_status = get_post_meta($ID, '_previous_status', true);
+
+    // Trigger only when moving to 'publish' status from another status (e.g., 'draft' or 'pending').
+    if ($post_status !== 'publish' || $previous_status === 'publish') {
+        update_post_meta($ID, '_previous_status', $post_status);
+        return;
+    }
+    
+    // Ensure the post type is 'post'
+    if ($post->post_type !== 'post') {
+        return;
+    }
+
+    // Get the Personal Access Token from wp-config.php
+    if (!defined('GITHUB_PAT')) {
+        error_log('GitHub PAT is not defined in wp-config.php');
+        return;
+    }
+
+    $token = GITHUB_PAT;
+    $repo = 'sainath-reddiee/dataengineer'; // Your GitHub username/repository
+    $url = "https://api.github.com/repos/{$repo}/dispatches";
+
+    $body = wp_json_encode([
+        'event_type' => 'post-published',
+        'client_payload' => [
+            'post_id' => $ID,
+            'post_title' => $post->post_title
+        ]
+    ]);
+
+    $args = [
+        'body'    => $body,
+        'headers' => [
+            'Content-Type'  => 'application/json',
+            'Accept'        => 'application/vnd.github.v3+json',
+            'Authorization' => 'Bearer ' . $token,
+            'User-Agent'    => 'WordPress-GitHub-Action-Trigger'
+        ],
+    ];
+
+    // Send the request to GitHub
+    $response = wp_remote_post($url, $args);
+
+    if (is_wp_error($response)) {
+        error_log('GitHub Action trigger failed: ' . $response->get_error_message());
+    } else {
+        $response_code = wp_remote_retrieve_response_code($response);
+        if ($response_code === 204) {
+            error_log('Successfully triggered GitHub Action for post: ' . $post->post_title);
+        } else {
+            $response_body = wp_remote_retrieve_body($response);
+            error_log("GitHub Action trigger failed with code {$response_code}: " . $response_body);
+        }
+    }
+    
+    update_post_meta($ID, '_previous_status', 'publish');
+}
+add_action('transition_post_status', 'trigger_github_action_on_publish', 10, 3);
 ?>
