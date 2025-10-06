@@ -15,6 +15,12 @@ jobs:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
       
+      - name:  Cache notification file
+        uses: actions/cache@v4
+        with:
+          path: .notification-cache.json
+          key: ${{ runner.os }}-notification-cache
+
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
