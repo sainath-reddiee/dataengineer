@@ -13,7 +13,7 @@ const generateArticleRoutes = () => {
 
 // Generate category routes
 const generateCategoryRoutes = () => {
-  const categories = ['aws', 'snowflake', 'azure', 'sql', 'airflow', 'dbt', 'python', 'analytics'];
+  const categories = ['aws', 'snowflake', 'azure', 'sql', 'airflow', 'dbt', 'python', 'gcp'];
   return categories.map(category => ({
     path: `/category/${category}`,
     priority: 0.7,
