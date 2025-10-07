@@ -499,6 +499,25 @@ class WordPressAPI {
     // Implement your contact form logic here
     return { success: true };
   }
+  async getRelatedPosts(postId) {
+    if (!postId) return [];
+    
+    try {
+      console.log(`🧠 Fetching related posts for ID: ${postId}`);
+      const result = await this.makeRequest(`/posts/${postId}/related`);
+      
+      if (!result || !Array.isArray(result.data)) {
+        console.warn('⚠️ Related posts response was not an array:', result);
+        return [];
+      }
+
+      return this.transformPosts(result.data);
+    } catch (error) {
+      // It's okay if this fails, we just won't show related posts.
+      console.error('❌ Could not fetch related posts:', error.message);
+      return [];
+    }
+  }
 }
 
 export const wordpressApi = new WordPressAPI();
