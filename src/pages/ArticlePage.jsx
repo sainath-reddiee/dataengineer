@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, Clock, User, Loader, AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MetaTags from '@/components/SEO/MetaTags';
-import { usePost, usePosts } from '@/hooks/useWordPress';
+import { usePost, useRelatedPosts } from '@/hooks/useWordPress';
 import { preloadImage } from '@/utils/imageOptimizer';
 import { throttle } from '@/utils/performance';
 import { trackScrollDepth, trackArticleRead } from '@/utils/analytics';
@@ -197,10 +197,8 @@ const AdSkeleton = () => (
   </div>
 );
 
-const RelatedPosts = ({ categorySlug, currentPostId }) => {
-  const { posts, loading } = usePosts({ categorySlug, per_page: 3 });
-
-  const relatedPosts = posts.filter(post => post.id !== currentPostId);
+const RelatedPosts = ({ currentPostId }) => {
+  const { posts: relatedPosts, loading } = useRelatedPosts(currentPostId);
 
   if (loading) {
     return (
@@ -435,7 +433,7 @@ const ArticlePage = () => {
           </div>
         </motion.article>
         
-        <RelatedPosts categorySlug={safePost.category.toLowerCase()} currentPostId={safePost.id} />
+        <RelatedPosts currentPostId={safePost.id} />
       </div>
     </div>
   );
