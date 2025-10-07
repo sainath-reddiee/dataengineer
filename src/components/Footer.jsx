@@ -34,7 +34,7 @@ const Footer = () => {
       { name: 'Airflow', href: '/category/airflow' },
       { name: 'dbt', href: '/category/dbt' },
       { name: 'Python', href: '/category/python' },
-      { name: 'Analytics', href: '/category/analytics' }
+      { name: 'GCP', href: '/category/gcp' }
     ],
     company: [
       { name: 'About', href: '/about' },
