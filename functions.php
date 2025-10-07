@@ -1365,4 +1365,34 @@ function get_related_posts_by_id($data) {
     return new WP_REST_Response($related_posts, 200);
 }
 
+// Register Certification CPT
+function register_certification_cpt() {
+    register_post_type('certification', array(
+        'labels' => array(
+            'name' => 'Certifications',
+            'singular_name' => 'Certification'
+        ),
+        'public' => true,
+        'has_archive' => true,
+        'show_in_rest' => true, // CRITICAL for REST API
+        'supports' => array('title', 'editor', 'thumbnail', 'custom-fields'),
+        'menu_icon' => 'dashicons-awards'
+    ));
+}
+add_action('init', 'register_certification_cpt');
+
+// Register Question CPT
+function register_question_cpt() {
+    register_post_type('cert_question', array(
+        'labels' => array(
+            'name' => 'Questions',
+            'singular_name' => 'Question'
+        ),
+        'public' => true,
+        'show_in_rest' => true,
+        'supports' => array('title', 'editor', 'custom-fields'),
+        'menu_icon' => 'dashicons-clipboard'
+    ));
+}
+add_action('init', 'register_question_cpt');
 ?>
