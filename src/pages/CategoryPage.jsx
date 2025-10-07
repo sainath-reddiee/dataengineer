@@ -49,7 +49,7 @@ const getCategoryIcon = (category, className = 'h-10 w-10') => {
       airflow: 'https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/apacheairflow/apacheairflow-original.svg',
       dbt: 'https://seeklogo.com/images/D/dbt-logo-500AB0BAA7-seeklogo.com.png',
       python: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
-      analytics: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg'
+      gcp: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg'
     };
     
     const iconUrl = iconUrls[lowerCategory];
