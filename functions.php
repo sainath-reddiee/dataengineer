@@ -1395,4 +1395,106 @@ function register_question_cpt() {
     ));
 }
 add_action('init', 'register_question_cpt');
+// Custom REST endpoint for certifications
+add_action('rest_api_init', function() {
+    register_rest_route('cert/v1', '/certifications', array(
+        'methods' => 'GET',
+        'callback' => 'get_certifications',
+        'permission_callback' => '__return_true'
+    ));
+    
+    register_rest_route('cert/v1', '/questions/(?P<cert_id>\d+)', array(
+        'methods' => 'GET',
+        'callback' => 'get_questions_by_cert',
+        'permission_callback' => '__return_true'
+    ));
+    
+    register_rest_route('cert/v1', '/question/(?P<id>\d+)', array(
+        'methods' => 'GET',
+        'callback' => 'get_single_question',
+        'permission_callback' => '__return_true'
+    ));
+});
+
+function get_certifications($request) {
+    $args = array(
+        'post_type' => 'certification',
+        'posts_per_page' => -1,
+        'post_status' => 'publish'
+    );
+    
+    $certs = get_posts($args);
+    $result = array();
+    
+    foreach($certs as $cert) {
+        $result[] = array(
+            'id' => $cert->ID,
+            'title' => $cert->post_title,
+            'slug' => $cert->post_name,
+            'description' => $cert->post_content,
+            'thumbnail' => get_the_post_thumbnail_url($cert->ID, 'large'),
+            'question_count' => get_question_count($cert->ID)
+        );
+    }
+    
+    return rest_ensure_response($result);
+}
+
+function get_questions_by_cert($request) {
+    $cert_id = $request['cert_id'];
+    $page = $request->get_param('page') ?: 1;
+    $per_page = $request->get_param('per_page') ?: 20;
+    
+    $args = array(
+        'post_type' => 'cert_question',
+        'posts_per_page' => $per_page,
+        'paged' => $page,
+        'meta_query' => array(
+            array(
+                'key' => 'certification',
+                'value' => $cert_id,
+                'compare' => '='
+            )
+        )
+    );
+    
+    $questions = get_posts($args);
+    $result = array();
+    
+    foreach($questions as $question) {
+        $options = get_field('options', $question->ID);
+        $result[] = array(
+            'id' => $question->ID,
+            'question' => $question->post_content,
+            'options' => $options,
+            'explanation' => get_field('explanation', $question->ID),
+            'difficulty' => get_field('difficulty', $question->ID),
+            'tags' => wp_get_post_terms($question->ID, 'question_tag', array('fields' => 'names'))
+        );
+    }
+    
+    return rest_ensure_response(array(
+        'questions' => $result,
+        'total' => wp_count_posts('cert_question')->publish,
+        'page' => $page,
+        'per_page' => $per_page
+    ));
+}
+
+function get_question_count($cert_id) {
+    $args = array(
+        'post_type' => 'cert_question',
+        'posts_per_page' => -1,
+        'fields' => 'ids',
+        'meta_query' => array(
+            array(
+                'key' => 'certification',
+                'value' => $cert_id,
+                'compare' => '='
+            )
+        )
+    );
+    
+    return count(get_posts($args));
+}
 ?>
