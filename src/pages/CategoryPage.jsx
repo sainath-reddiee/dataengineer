@@ -35,7 +35,7 @@ const categoryConfig = {
   airflow: { name: 'Airflow', color: 'from-purple-500 to-violet-500', path: '/category/airflow', description: "Apache Airflow tutorials for workflow orchestration. Build, schedule, and monitor data pipelines effectively." },
   dbt: { name: 'dbt', color: 'from-pink-500 to-rose-500', path: '/category/dbt', description: "Data Build Tool (dbt) tutorials for modern data transformation and analytics engineering best practices." },
   python: { name: 'Python', color: 'from-yellow-500 to-orange-500', path: '/category/python', description: "Python for data engineering with pandas, NumPy, and more. Master data processing with Python libraries." },
-  analytics: { name: 'Analytics', color: 'from-teal-500 to-cyan-500', path: '/category/analytics', description: "Data analytics, visualization, and BI tools. Create insightful reports and dashboards for business." }
+  gcp: { name: 'GCP', color: 'from-green-500 to-blue-500', path: '/category/gcp', description: "Explore Google Cloud Platform services for data engineers, including BigQuery, Dataflow, and Dataproc."}
 };
 
 // ✅ UPDATED: getCategoryIcon now has a special fix for the SQL icon
