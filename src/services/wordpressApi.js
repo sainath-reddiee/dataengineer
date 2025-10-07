@@ -499,6 +499,7 @@ class WordPressAPI {
     // Implement your contact form logic here
     return { success: true };
   }
+
   async getRelatedPosts(postId) {
     if (!postId) return [];
     
@@ -511,7 +512,11 @@ class WordPressAPI {
         return [];
       }
 
-      return this.transformPosts(result.data);
+      // **THE FIX IS HERE**
+      // We check if the response has the extra 'data' wrapper and extract the actual post objects.
+      const rawPosts = result.data.map(item => item.data || item);
+      return this.transformPosts(rawPosts);
+
     } catch (error) {
       // It's okay if this fails, we just won't show related posts.
       console.error('❌ Could not fetch related posts:', error.message);
