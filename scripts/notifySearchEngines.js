@@ -292,31 +292,34 @@ async function notifySearchEngines(options = {}) {
 
     // Load cache
     const cache = loadNotificationCache();
-    const timeSinceLastNotification = Date.now() - cache.lastNotified;
-    const hoursSinceLastNotification = Math.round(timeSinceLastNotification / 1000 / 60 / 60);
 
-    // *** CORRECTED LOGIC: CHECK FOR NEW URLS FIRST ***
-    const newUrls = getNewUrls(allUrls, cache);
+    // --- REVISED AND MORE ROBUST LOGIC ---
 
     let urlsToNotify = [];
+    let notificationReason = '';
 
-    if (force || all) {
+    const newUrls = getNewUrls(allUrls, cache);
+
+    if (force) {
       urlsToNotify = allUrls;
-      console.log(`\n📢 Notifying ALL URLs (${force ? 'forced' : 'requested'})`);
+      notificationReason = 'Forced by --force flag';
+    } else if (all) {
+      urlsToNotify = allUrls;
+      notificationReason = 'All URLs requested by --all flag';
     } else if (newUrls.length > 0) {
       urlsToNotify = newUrls;
-      console.log(`\n🆕 Found ${newUrls.length} new URLs to notify. Submitting immediately.`);
-    } else if (hoursSinceLastNotification < 24 && cache.lastNotified > 0) {
-      console.log(`\n⏰ Last notification was ${hoursSinceLastNotification}h ago`);
-      console.log('💡 No new URLs found. Skipping notification (wait 24h between notifications).');
-      console.log('   Use --force to override');
-      return { skipped: true, reason: 'rate_limit' };
-    } else {
-        console.log('\n✅ No new URLs to notify');
-        console.log('   All URLs have been notified previously');
-        console.log('   Use --all to resubmit all URLs');
-        return { skipped: true, reason: 'no_new_urls' };
+      notificationReason = `Found ${newUrls.length} new URLs`;
     }
+
+    // 1. First, check if there's anything to do at all.
+    if (urlsToNotify.length === 0) {
+      console.log('\n✅ No new URLs to notify.');
+      console.log('   All URLs have been notified previously.');
+      console.log('   Use --force or --all to resubmit all URLs.');
+      return { skipped: true, reason: 'no_new_urls' };
+    }
+
+    console.log(`\n📢 Preparing to notify ${urlsToNotify.length} URLs. Reason: ${notificationReason}`);
 
 
     // Submit to IndexNow
