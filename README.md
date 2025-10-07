@@ -96,7 +96,7 @@ Create these exact categories in WordPress Admin → Posts → Categories:
 | Airflow | airflow | Apache Airflow workflow orchestration |
 | dbt | dbt | Data build tool transformation |
 | Python | python | Python for data engineering |
-| Analytics | analytics | Data visualization and BI tools |
+| GCP | gcp | Google Cloud Platform services |
 
 **Important**: Use the exact category names and slugs above for proper integration.
 
