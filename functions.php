@@ -1317,13 +1317,11 @@ function get_related_posts_by_id($data) {
 
     $related_query = new WP_Query($args);
 
-    if (!$related_query->have_posts()) {
+    if (!$related_query->have_posts() && !empty($cats)) {
         // Fallback to category if no posts found by tags
-        if (!empty($cats)) {
-            $args['tag__in'] = null; // Unset tags
-            $args['category__in'] = $cats;
-            $related_query = new WP_Query($args);
-        }
+        $args['tag__in'] = null; // Unset tags
+        $args['category__in'] = $cats;
+        $related_query = new WP_Query($args);
     }
     
     $related_posts = array();
@@ -1331,12 +1329,36 @@ function get_related_posts_by_id($data) {
         $related_query->the_post();
         $related_post_id = get_the_ID();
         
-        // Prepare data similar to the main REST API response for consistency
-        $controller = new WP_REST_Posts_Controller();
-        $request = new WP_REST_Request('GET', "/wp/v2/posts/{$related_post_id}");
-        $response = $controller->get_item($request);
+        $image_url = get_the_post_thumbnail_url($related_post_id, 'large');
+        if (!$image_url) {
+            $image_url = 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop';
+        }
 
-        $related_posts[] = $controller->prepare_response_for_collection($response);
+        $categories = get_the_category($related_post_id);
+        $primary_category = !empty($categories) ? $categories[0]->name : 'Uncategorized';
+        
+        // Manually build a response that mimics the structure your frontend needs
+        $post_data = array(
+            'id' => $related_post_id,
+            'slug' => get_post_field('post_name', $related_post_id),
+            'title' => array('rendered' => get_the_title()),
+            'excerpt' => array('rendered' => get_the_excerpt()),
+            'date' => get_the_date('c'), // ISO 8601 format
+            '_embedded' => array(
+                'wp:featuredmedia' => array(
+                    array('source_url' => $image_url)
+                ),
+                'wp:term' => array(
+                    array( // This nested array matches the structure for categories
+                        array('name' => $primary_category)
+                    )
+                ),
+                'author' => array(
+                    array('name' => get_the_author())
+                )
+            )
+        );
+        $related_posts[] = $post_data;
     }
     wp_reset_postdata();
 
