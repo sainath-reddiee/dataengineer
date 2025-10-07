@@ -130,7 +130,7 @@ The blog covers these main data engineering topics:
 - Airflow (Workflow orchestration)
 - dbt (Data transformation)
 - Python (Data engineering libraries)
-- Analytics (Visualization, BI tools)
+- GCP (Google Cloud Platform)
 
 ## Deployment
 
