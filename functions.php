@@ -1497,4 +1497,61 @@ function get_question_count($cert_id) {
     
     return count(get_posts($args));
 }
+// Register Certification Custom Post Type
+function register_certification_cpt() {
+    register_post_type('certification', array(
+        'labels' => array(
+            'name' => 'Certifications',
+            'singular_name' => 'Certification',
+            'add_new' => 'Add New Certification',
+            'add_new_item' => 'Add New Certification',
+            'edit_item' => 'Edit Certification',
+            'new_item' => 'New Certification',
+            'view_item' => 'View Certification',
+            'search_items' => 'Search Certifications',
+            'not_found' => 'No certifications found',
+            'not_found_in_trash' => 'No certifications found in trash',
+            'menu_name' => 'Certifications'
+        ),
+        'public' => true,
+        'publicly_queryable' => true,
+        'has_archive' => true,
+        'show_in_rest' => true, // CRITICAL for REST API
+        'supports' => array('title', 'editor', 'thumbnail', 'custom-fields'),
+        'menu_icon' => 'dashicons-awards',
+        'menu_position' => 20,
+        'rewrite' => array('slug' => 'certification'),
+        'capability_type' => 'post',
+    ));
+}
+add_action('init', 'register_certification_cpt');
+
+// Register Question Custom Post Type
+function register_question_cpt() {
+    register_post_type('cert_question', array(
+        'labels' => array(
+            'name' => 'Questions',
+            'singular_name' => 'Question',
+            'add_new' => 'Add New Question',
+            'add_new_item' => 'Add New Question',
+            'edit_item' => 'Edit Question',
+            'new_item' => 'New Question',
+            'view_item' => 'View Question',
+            'search_items' => 'Search Questions',
+            'not_found' => 'No questions found',
+            'not_found_in_trash' => 'No questions found in trash',
+            'menu_name' => 'Questions'
+        ),
+        'public' => true,
+        'publicly_queryable' => true,
+        'show_in_rest' => true, // CRITICAL for REST API
+        'supports' => array('title', 'editor', 'custom-fields'),
+        'menu_icon' => 'dashicons-clipboard',
+        'menu_position' => 21,
+        'rewrite' => array('slug' => 'question'),
+        'capability_type' => 'post',
+        'has_archive' => false, // We don't need an archive page for individual questions
+    ));
+}
+add_action('init', 'register_question_cpt');
 ?>
