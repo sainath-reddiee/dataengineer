@@ -1210,27 +1210,18 @@ function add_custom_query_params_to_rest() {
 add_action('rest_api_init', 'add_custom_query_params_to_rest');
 
 /**
- * Triggers a GitHub Actions workflow when a post is published.
+ * Triggers a GitHub Actions workflow when a post is published or updated.
+ * This is the corrected and improved version.
  */
 function trigger_github_action_on_publish($ID, $post) {
-    // Only trigger for new posts or updates to existing ones, not on every save.
-    $post_status = get_post_status($ID);
-    $previous_status = get_post_meta($ID, '_previous_status', true);
-
-    // Trigger only when moving to 'publish' status from another status (e.g., 'draft' or 'pending').
-    if ($post_status !== 'publish' || $previous_status === 'publish') {
-        update_post_meta($ID, '_previous_status', $post_status);
-        return;
-    }
-    
-    // Ensure the post type is 'post'
-    if ($post->post_type !== 'post') {
+    // Exit if this is an autosave, a revision, not a 'post', or not being published.
+    if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || wp_is_post_revision($ID) || $post->post_type !== 'post' || $post->post_status !== 'publish') {
         return;
     }
 
     // Get the Personal Access Token from wp-config.php
     if (!defined('GITHUB_PAT')) {
-        error_log('GitHub PAT is not defined in wp-config.php');
+        error_log('GitHub PAT is not defined in wp-config.php for workflow trigger.');
         return;
     }
 
@@ -1254,24 +1245,102 @@ function trigger_github_action_on_publish($ID, $post) {
             'Authorization' => 'Bearer ' . $token,
             'User-Agent'    => 'WordPress-GitHub-Action-Trigger'
         ],
+        // Add a timeout to prevent the editor from hanging
+        'timeout' => 15,
+        // IMPORTANT: Run this request in the background without waiting for a response
+        'blocking' => false 
     ];
 
     // Send the request to GitHub
     $response = wp_remote_post($url, $args);
-
+    
+    // Log the trigger attempt for debugging purposes. You can view these logs on your server.
     if (is_wp_error($response)) {
-        error_log('GitHub Action trigger failed: ' . $response->get_error_message());
+        error_log('GitHub Action trigger failed to dispatch: ' . $response->get_error_message());
     } else {
-        $response_code = wp_remote_retrieve_response_code($response);
-        if ($response_code === 204) {
-            error_log('Successfully triggered GitHub Action for post: ' . $post->post_title);
-        } else {
-            $response_body = wp_remote_retrieve_body($response);
-            error_log("GitHub Action trigger failed with code {$response_code}: " . $response_body);
+        error_log('Successfully dispatched GitHub Action trigger for post: ' . $post->post_title);
+    }
+}
+
+// Remove the old hook if it exists, to be safe.
+remove_action('transition_post_status', 'trigger_github_action_on_publish', 10, 3);
+// Use the 'save_post' hook which is reliable for both creating and updating posts.
+add_action('save_post', 'trigger_github_action_on_publish', 99, 2);
+// Add X-Robots-Tag to block indexing on the WordPress backend
+function add_noindex_header() {
+    // Only apply this header if the site being accessed is the WordPress backend
+    if (strpos($_SERVER['HTTP_HOST'], 'app.dataengineerhub.blog') !== false) {
+        header('X-Robots-Tag: noindex, nofollow', true);
+    }
+}
+add_action('template_redirect', 'add_noindex_header');
+
+function register_related_posts_endpoint() {
+    register_rest_route('wp/v2', '/posts/(?P<id>\d+)/related', array(
+        'methods' => 'GET',
+        'callback' => 'get_related_posts_by_id',
+        'permission_callback' => '__return_true',
+        'args' => array(
+            'id' => array(
+                'validate_callback' => function($param, $request, $key) {
+                    return is_numeric($param);
+                }
+            ),
+        ),
+    ));
+}
+add_action('rest_api_init', 'register_related_posts_endpoint');
+
+function get_related_posts_by_id($data) {
+    $post_id = $data['id'];
+    $post = get_post($post_id);
+
+    if (empty($post)) {
+        return new WP_Error('not_found', 'Post not found', array('status' => 404));
+    }
+
+    $tags = wp_get_post_tags($post_id, array('fields' => 'ids'));
+    $cats = wp_get_post_categories($post_id, array('fields' => 'ids'));
+
+    $args = array(
+        'post__not_in' => array($post_id),
+        'posts_per_page' => 3,
+        'ignore_sticky_posts' => 1,
+        'orderby' => 'rand', // Use 'rand' for variety or 'date' for newest
+    );
+
+    if (!empty($tags)) {
+        $args['tag__in'] = $tags;
+    } elseif (!empty($cats)) {
+        $args['category__in'] = $cats;
+    }
+
+    $related_query = new WP_Query($args);
+
+    if (!$related_query->have_posts()) {
+        // Fallback to category if no posts found by tags
+        if (!empty($cats)) {
+            $args['tag__in'] = null; // Unset tags
+            $args['category__in'] = $cats;
+            $related_query = new WP_Query($args);
         }
     }
     
-    update_post_meta($ID, '_previous_status', 'publish');
+    $related_posts = array();
+    while ($related_query->have_posts()) {
+        $related_query->the_post();
+        $related_post_id = get_the_ID();
+        
+        // Prepare data similar to the main REST API response for consistency
+        $controller = new WP_REST_Posts_Controller();
+        $request = new WP_REST_Request('GET', "/wp/v2/posts/{$related_post_id}");
+        $response = $controller->get_item($request);
+
+        $related_posts[] = $controller->prepare_response_for_collection($response);
+    }
+    wp_reset_postdata();
+
+    return new WP_REST_Response($related_posts, 200);
 }
-add_action('transition_post_status', 'trigger_github_action_on_publish', 10, 3);
+
 ?>
