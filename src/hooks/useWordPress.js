@@ -1,18 +1,18 @@
-// src/hooks/useWordPress.js - FIXED VERSION WITH RACE CONDITION RESOLVED
+// src/hooks/useWordPress.js - FINAL VERSION WITH RACE CONDITION RESOLVED
 import { useState, useEffect, useCallback, useRef } from 'react';
 import wordpressApi from '@/services/wordpressApi';
 
 // Hook for fetching posts with proper sorting and pagination
-export const usePosts = ({ 
-  page = 1, 
-  per_page = 10, 
+export const usePosts = ({
+  page = 1,
+  per_page = 10,
   categorySlug = null,
-  search = null, 
+  search = null,
   featured = null,
   trending = null,
   orderby = 'date',
   order = 'desc',
-  enabled = true 
+  enabled = true
 } = {}) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,20 +21,20 @@ export const usePosts = ({
   const [totalPosts, setTotalPosts] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  
+
   // Track the current request to prevent race conditions
   const currentRequestRef = useRef(0);
 
   // CRITICAL FIX: Reset posts immediately when categorySlug changes
   useEffect(() => {
-  console.log('🔄 Category/search changed, resetting state:', { categorySlug, search });
-  setPosts([]);
-  setError(null);
-  setLoading(true); // Set loading true immediately
-  setTotalPages(1);
-  setTotalPosts(0);
-  setHasMore(false);
-}, [categorySlug, search]);
+    console.log('🔄 Category/search changed, resetting state:', { categorySlug, search });
+    setPosts([]);
+    setError(null);
+    setLoading(true); // Set loading true immediately
+    setTotalPages(1);
+    setTotalPosts(0);
+    setHasMore(false);
+  }, [categorySlug, search]);
 
   // Fetch posts with race condition protection
   useEffect(() => {
@@ -52,8 +52,8 @@ export const usePosts = ({
         setError(null);
         setLoading(true);
 
-        console.log(`🔄 [Request #${requestId}] usePosts: Fetching posts with params:`, { 
-          page, per_page, categorySlug, search, featured, trending, orderby, order 
+        console.log(`🔄 [Request #${requestId}] usePosts: Fetching posts with params:`, {
+          page, per_page, categorySlug, search, featured, trending, orderby, order
         });
 
         if (refreshKey > 0) {
@@ -66,13 +66,13 @@ export const usePosts = ({
         if (categorySlug) {
           try {
             categoryId = await wordpressApi.getCategoryIdBySlug(categorySlug);
-            
+
             // Check if this request is still valid
             if (isCancelled || requestId !== currentRequestRef.current) {
               console.log(`⚠️ [Request #${requestId}] Cancelled - newer request exists`);
               return;
             }
-            
+
             console.log(`✅ [Request #${requestId}] Category resolved:`, categorySlug, '→', categoryId);
           } catch (catError) {
             if (isCancelled || requestId !== currentRequestRef.current) {
@@ -84,11 +84,11 @@ export const usePosts = ({
           }
         }
 
-        const result = await wordpressApi.getPosts({ 
-          page, 
-          per_page, 
+        const result = await wordpressApi.getPosts({
+          page,
+          per_page,
           categoryId,
-          search, 
+          search,
           featured,
           trending,
           orderby,
@@ -107,7 +107,7 @@ export const usePosts = ({
         } else {
           setPosts(prev => [...prev, ...result.posts]);
         }
-        
+
         setTotalPages(result.totalPages);
         setTotalPosts(result.totalPosts);
         setHasMore(page < result.totalPages);
@@ -156,23 +156,23 @@ export const usePosts = ({
   // Load more function with proper category handling
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return;
-    
+
     const requestId = ++currentRequestRef.current;
-    
+
     try {
       setLoading(true);
-      
+
       let categoryId = null;
       if (categorySlug) {
         categoryId = await wordpressApi.getCategoryIdBySlug(categorySlug);
-        
+
         // Check if request is still valid
         if (requestId !== currentRequestRef.current) {
           console.log(`⚠️ [LoadMore #${requestId}] Cancelled`);
           return;
         }
       }
-      
+
       const nextPage = page + 1;
       const result = await wordpressApi.getPosts({
         page: nextPage,
@@ -201,11 +201,11 @@ export const usePosts = ({
     }
   }, [page, per_page, categorySlug, search, featured, trending, orderby, order, loading, hasMore]);
 
-  return { 
-    posts, 
-    loading, 
-    error, 
-    totalPages, 
+  return {
+    posts,
+    loading,
+    error,
+    totalPages,
     totalPosts,
     hasMore,
     refresh,
@@ -265,14 +265,14 @@ export const usePost = (slug, enabled = true) => {
 
   const refresh = useCallback(async () => {
     if (!slug) return;
-    
+
     wordpressApi.clearCache(`posts?slug=${slug}`);
     const requestId = ++currentRequestRef.current;
-    
+
     try {
       setLoading(true);
       const postData = await wordpressApi.getPostBySlug(slug);
-      
+
       if (requestId === currentRequestRef.current) {
         setPost(postData);
       }
@@ -343,11 +343,11 @@ export const useCategories = (enabled = true) => {
   const refresh = useCallback(async () => {
     wordpressApi.clearCache('categories');
     const requestId = ++currentRequestRef.current;
-    
+
     try {
       setLoading(true);
       const categoriesData = await wordpressApi.getCategories();
-      
+
       if (requestId === currentRequestRef.current) {
         setCategories(categoriesData);
       }
@@ -367,15 +367,40 @@ export const useCategories = (enabled = true) => {
 
 // Simplified hook for posts by category
 export const usePostsByCategory = (categorySlug, { page = 1, per_page = 10, orderby = 'date', order = 'desc', enabled = true } = {}) => {
-  return usePosts({ 
-    page, 
-    per_page, 
+  return usePosts({
+    page,
+    per_page,
     categorySlug,
     orderby,
     order,
-    enabled 
+    enabled
   });
 };
+
+// New hook for fetching related posts
+export const useRelatedPosts = (postId, enabled = true) => {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!enabled || !postId) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchRelated = async () => {
+      setLoading(true);
+      const relatedData = await wordpressApi.getRelatedPosts(postId);
+      setPosts(relatedData);
+      setLoading(false);
+    };
+
+    fetchRelated();
+  }, [postId, enabled]);
+
+  return { posts, loading };
+};
+
 
 // Hook for newsletter subscription
 export const useNewsletter = () => {
@@ -391,7 +416,7 @@ export const useNewsletter = () => {
 
       await wordpressApi.subscribeNewsletter(email);
       setSuccess(true);
-      
+
       return { success: true };
     } catch (err) {
       setError(err.message);
@@ -423,7 +448,7 @@ export const useContact = () => {
 
       await wordpressApi.submitContactForm(formData);
       setSuccess(true);
-      
+
       return { success: true };
     } catch (err) {
       setError(err.message);
