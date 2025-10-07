@@ -1,24 +1,24 @@
-// src/pages/ArticlePage.jsx - COMPLETE PRODUCTION VERSION
+// src/pages/ArticlePage.jsx - FINAL VERSION
 import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, Clock, User, Loader, AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MetaTags from '@/components/SEO/MetaTags';
-import { usePost } from '@/hooks/useWordPress';
+import { usePost, usePosts } from '@/hooks/useWordPress';
 import { preloadImage } from '@/utils/imageOptimizer';
 import { throttle } from '@/utils/performance';
 import { trackScrollDepth, trackArticleRead } from '@/utils/analytics';
 import LazyImage from '@/components/LazyImage';
 import DOMPurify from 'dompurify';
+import PostCard from '@/components/PostCard';
+import PostCardSkeleton from '@/components/PostCardSkeleton';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
-// PRODUCTION READY: Content processing function with full sanitization
 const processWordPressContent = (content) => {
   if (!content) return '';
   
-  // Configure DOMPurify to allow all necessary HTML elements
   const config = {
     ALLOWED_TAGS: [
       'p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
@@ -36,21 +36,14 @@ const processWordPressContent = (content) => {
     KEEP_CONTENT: true
   };
   
-  // Sanitize the content
   let cleanContent = DOMPurify.sanitize(content, config);
   
-  // Fix common WordPress formatting issues
   cleanContent = cleanContent
-    // Remove empty paragraphs
     .replace(/<p>(\s|&nbsp;)*<\/p>/g, '')
-    // Fix self-closing tags
     .replace(/<br\s*\/?>/g, '<br />')
-    // Ensure tables have proper class
     .replace(/<table/g, '<table class="wp-table"')
-    // Add responsive wrapper to iframes
     .replace(/<iframe/g, '<div class="iframe-wrapper"><iframe')
     .replace(/<\/iframe>/g, '</iframe></div>')
-    // Fix line breaks
     .replace(/\n\n/g, '</p><p>');
   
   return cleanContent;
@@ -204,25 +197,54 @@ const AdSkeleton = () => (
   </div>
 );
 
+const RelatedPosts = ({ categorySlug, currentPostId }) => {
+  const { posts, loading } = usePosts({ categorySlug, per_page: 3 });
+
+  const relatedPosts = posts.filter(post => post.id !== currentPostId);
+
+  if (loading) {
+    return (
+      <div className="mt-16">
+        <h2 className="text-3xl font-bold mb-8 text-white text-center">
+          Related <span className="gradient-text">Articles</span>
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <PostCardSkeleton />
+          <PostCardSkeleton />
+          <PostCardSkeleton />
+        </div>
+      </div>
+    );
+  }
+
+  if (relatedPosts.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="mt-16">
+      <h2 className="text-3xl font-bold mb-8 text-white text-center">
+        Related <span className="gradient-text">Articles</span>
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {relatedPosts.map(post => (
+          <PostCard key={post.id} post={post} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const ArticlePage = () => {
   const { slug } = useParams();
-  const [retryCount, setRetryCount] = useState(0);
   const { post, loading, error, refetch } = usePost(slug);
 
-  useEffect(() => {
-    if (!slug || typeof slug !== 'string' || slug.trim() === '') {
-      console.error('Invalid slug provided:', slug);
-    }
-  }, [slug]);
-
-  // Preload hero image
   useEffect(() => {
     if (post?.image) {
       preloadImage(post.image, { fetchpriority: 'high' });
     }
   }, [post?.image]);
 
-  // Track article read and scroll depth
   useEffect(() => {
     if (!post) return;
 
@@ -248,7 +270,6 @@ const ArticlePage = () => {
   }, [post]);
 
   const handleRetry = () => {
-    setRetryCount(prev => prev + 1);
     refetch();
   };
 
@@ -262,7 +283,7 @@ const ArticlePage = () => {
 
   if (!post) {
     return <ErrorDisplay 
-      error="Post not found" 
+      error={{ message: "Post not found" }}
       onRetry={handleRetry} 
       slug={slug} 
     />;
@@ -284,11 +305,7 @@ const ArticlePage = () => {
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) {
-        return new Date().toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric', 
-          year: 'numeric' 
-        });
+        throw new Error("Invalid date");
       }
       return date.toLocaleDateString('en-US', { 
         month: 'short', 
@@ -296,7 +313,6 @@ const ArticlePage = () => {
         year: 'numeric' 
       });
     } catch (error) {
-      console.warn('Error formatting date:', error);
       return new Date().toLocaleDateString('en-US', { 
         month: 'short', 
         day: 'numeric', 
@@ -380,12 +396,10 @@ const ArticlePage = () => {
             </div>
           </div>
 
-          {/* Ad Placement - Top */}
           <Suspense fallback={<AdSkeleton />}>
             <AdPlacement position="article-top" />
           </Suspense>
 
-          {/* Article Content - PRODUCTION READY WITH FULL SANITIZATION */}
           <div className="prose prose-invert prose-lg max-w-none">
             <div 
               dangerouslySetInnerHTML={{ __html: processWordPressContent(safePost.content) }}
@@ -398,12 +412,10 @@ const ArticlePage = () => {
             />
           </div>
 
-          {/* Ad Placement - Bottom */}
           <Suspense fallback={<AdSkeleton />}>
             <AdPlacement position="article-bottom" />
           </Suspense>
 
-          {/* Article Footer */}
           <div className="border-t border-gray-800 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div className="space-y-2">
@@ -422,6 +434,8 @@ const ArticlePage = () => {
             </div>
           </div>
         </motion.article>
+        
+        <RelatedPosts categorySlug={safePost.category.toLowerCase()} currentPostId={safePost.id} />
       </div>
     </div>
   );
