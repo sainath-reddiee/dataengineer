@@ -171,7 +171,7 @@ function category_control_meta_box_callback($post) {
             <option value="python" <?php selected($primary_category, 'python'); ?>>Python</option>
             <option value="airflow" <?php selected($primary_category, 'airflow'); ?>>Airflow</option>
             <option value="dbt" <?php selected($primary_category, 'dbt'); ?>>dbt</option>
-            <option value="analytics" <?php selected($primary_category, 'analytics'); ?>>Analytics</option>
+            <option value="gcp" <?php selected($primary_category, 'gcp'); ?>>GCP</option>
         </select>
         
         <hr style="margin: 15px 0;">
@@ -179,7 +179,7 @@ function category_control_meta_box_callback($post) {
         <h4>Exclude Categories:</h4>
         <div style="max-height: 100px; overflow-y: auto; border: 1px solid #ddd; padding: 5px;">
             <?php
-            $categories = array('snowflake', 'aws', 'azure', 'sql', 'python', 'airflow', 'dbt', 'analytics');
+            $categories = array('snowflake', 'aws', 'azure', 'sql', 'python', 'airflow', 'dbt', 'gcp');
             foreach ($categories as $cat) {
                 $checked = in_array($cat, (array)$excluded_categories) ? 'checked' : '';
                 echo "<label style='display: block;'>";
@@ -297,11 +297,11 @@ function enhanced_auto_assign_categories_universal($post_id, $post) {
             'secondary_keywords' => array('transformation', 'analytics engineering', 'dbt model', 'dbt models')
         ),
         array(
-            'name' => 'Analytics',
-            'slug' => 'analytics',
-            'primary_keywords' => array('analytics', 'data visualization'),
-            'secondary_keywords' => array('bi', 'business intelligence', 'reporting', 'dashboard')  // 'bi' moved to secondary
-        )
+            'name' => 'GCP',
+            'slug' => 'gcp',
+            'primary_keywords' => array('gcp', 'google cloud'),
+            'secondary_keywords' => array('bigquery', 'dataflow', 'dataproc', 'google cloud platform', 'cloud storage')
+         )
     );
     
     $detected_categories = array();
@@ -634,10 +634,10 @@ function auto_category_detection_callback($post) {
             'primary' => array('dbt'),
             'secondary' => array('transformation')
         ),
-        'Analytics' => array(
-            'primary' => array('analytics', 'data visualization'),
-            'secondary' => array('bi', 'business intelligence')
-        )
+        'GCP' => array(
+            'primary' => array('gcp', 'google cloud'),
+            'secondary' => array('bigquery', 'dataflow')
+		)
     );
     
     echo '<h4>Keyword Detection (Improved):</h4>';
