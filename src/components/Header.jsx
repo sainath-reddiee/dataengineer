@@ -64,20 +64,20 @@ const Header = () => {
       }}
     >
       <nav className="container mx-auto px-6 py-6" style={{ overflow: 'visible', position: 'relative', zIndex: 9999 }}>
-        <div className="flex items-center justify-between gap-8">
+        <div className="flex items-center justify-between gap-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
+          <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
             <motion.div whileHover={{ scale: 1.05 }}>
               <div className="relative">
-                <Database className="h-10 w-10 text-blue-400" />
+                <Database className="h-8 w-8 text-blue-400" />
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse"></div>
               </div>
             </motion.div>
-            <span className="text-2xl md:text-3xl font-bold gradient-text whitespace-nowrap">DataEngineer Hub</span>
+            <span className="text-xl md:text-2xl font-bold gradient-text whitespace-nowrap">DataEngineer Hub</span>
           </Link>
 
           {/* Desktop Navigation with Dropdowns */}
-          <div className="hidden xl:flex items-center space-x-6" style={{ overflow: 'visible' }}>
+          <div className="hidden xl:flex items-center space-x-4 flex-shrink-0" style={{ overflow: 'visible' }}>
             {/* Home */}
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <NavLink
