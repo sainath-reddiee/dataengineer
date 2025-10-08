@@ -1,5 +1,5 @@
 /* src/index.css - COMPLETE PRODUCTION VERSION */
-
+@import './mobile.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
