@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { NavLink, Link } from 'react-router-dom';
-import { Menu, X, Database, ChevronDown } from 'lucide-react';
+import { NavLink, Link, useLocation } from 'react-router-dom';
+import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
@@ -9,6 +9,19 @@ const Header = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const location = useLocation();
+
+  // Check if current path is in a category
+  const isCloudActive = location.pathname.includes('/category/aws') || 
+                        location.pathname.includes('/category/azure') || 
+                        location.pathname.includes('/category/gcp');
+  
+  const isToolsActive = location.pathname.includes('/category/snowflake') || 
+                        location.pathname.includes('/category/airflow') || 
+                        location.pathname.includes('/category/dbt');
+  
+  const isLanguagesActive = location.pathname.includes('/category/python') || 
+                            location.pathname.includes('/category/sql');
 
   // Handle scroll to show/hide header
   React.useEffect(() => {
@@ -88,8 +101,9 @@ const Header = () => {
                 to="/"
                 end
                 style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                className="text-gray-300 hover:text-blue-400 font-semibold text-base transition-all duration-200"
+                className="text-gray-300 hover:text-blue-400 font-semibold text-base transition-all duration-200 flex items-center gap-2"
               >
+                <Home className="w-4 h-4" />
                 Home
               </NavLink>
             </motion.div>
@@ -99,7 +113,9 @@ const Header = () => {
               <motion.button 
                 whileHover={{ y: -2 }}
                 className="flex items-center gap-1.5 text-gray-300 hover:text-blue-400 font-medium text-base transition-all duration-200"
+                style={isCloudActive ? activeLinkStyle : undefined}
               >
+                <Cloud className="w-4 h-4" />
                 Cloud
                 <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
               </motion.button>
@@ -142,7 +158,9 @@ const Header = () => {
               <motion.button 
                 whileHover={{ y: -2 }}
                 className="flex items-center gap-1.5 text-gray-300 hover:text-blue-400 font-medium text-base transition-all duration-200"
+                style={isToolsActive ? activeLinkStyle : undefined}
               >
+                <Wrench className="w-4 h-4" />
                 Data Tools
                 <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
               </motion.button>
@@ -185,7 +203,9 @@ const Header = () => {
               <motion.button 
                 whileHover={{ y: -2 }}
                 className="flex items-center gap-1.5 text-gray-300 hover:text-blue-400 font-medium text-base transition-all duration-200"
+                style={isLanguagesActive ? activeLinkStyle : undefined}
               >
+                <Code className="w-4 h-4" />
                 Languages
                 <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
               </motion.button>
@@ -219,8 +239,9 @@ const Header = () => {
               <NavLink
                 to="/tag"
                 style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                className="text-gray-300 hover:text-blue-400 font-semibold text-base transition-all duration-200"
+                className="text-gray-300 hover:text-blue-400 font-semibold text-base transition-all duration-200 flex items-center gap-2"
               >
+                <Tags className="w-4 h-4" />
                 Tags
               </NavLink>
             </motion.div>
@@ -230,8 +251,9 @@ const Header = () => {
               <NavLink
                 to="/about"
                 style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                className="text-gray-300 hover:text-blue-400 font-semibold text-base transition-all duration-200"
+                className="text-gray-300 hover:text-blue-400 font-semibold text-base transition-all duration-200 flex items-center gap-2"
               >
+                <Info className="w-4 h-4" />
                 About
               </NavLink>
             </motion.div>
@@ -277,8 +299,9 @@ const Header = () => {
                 end
                 onClick={() => setIsMenuOpen(false)}
                 style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                className="text-white hover:text-blue-400 transition-colors font-semibold py-2 pl-3 rounded-lg hover:bg-slate-800/50"
+                className="text-white hover:text-blue-400 transition-colors font-semibold py-2 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2"
               >
+                <Home className="w-4 h-4" />
                 Home
               </NavLink>
 
@@ -287,8 +310,12 @@ const Header = () => {
                 <button
                   onClick={() => toggleMobileDropdown('cloud')}
                   className="w-full flex items-center justify-between text-white hover:text-blue-400 transition-colors font-medium py-2 pl-3 rounded-lg hover:bg-slate-800/50"
+                  style={isCloudActive ? activeLinkStyle : undefined}
                 >
-                  Cloud
+                  <span className="flex items-center gap-2">
+                    <Cloud className="w-4 h-4" />
+                    Cloud
+                  </span>
                   <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'cloud' ? 'rotate-180' : ''}`} />
                 </button>
                 {openDropdown === 'cloud' && (
@@ -305,8 +332,12 @@ const Header = () => {
                 <button
                   onClick={() => toggleMobileDropdown('tools')}
                   className="w-full flex items-center justify-between text-white hover:text-blue-400 transition-colors font-medium py-2 pl-3 rounded-lg hover:bg-slate-800/50"
+                  style={isToolsActive ? activeLinkStyle : undefined}
                 >
-                  Data Tools
+                  <span className="flex items-center gap-2">
+                    <Wrench className="w-4 h-4" />
+                    Data Tools
+                  </span>
                   <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'tools' ? 'rotate-180' : ''}`} />
                 </button>
                 {openDropdown === 'tools' && (
@@ -323,8 +354,12 @@ const Header = () => {
                 <button
                   onClick={() => toggleMobileDropdown('languages')}
                   className="w-full flex items-center justify-between text-white hover:text-blue-400 transition-colors font-medium py-2 pl-3 rounded-lg hover:bg-slate-800/50"
+                  style={isLanguagesActive ? activeLinkStyle : undefined}
                 >
-                  Languages
+                  <span className="flex items-center gap-2">
+                    <Code className="w-4 h-4" />
+                    Languages
+                  </span>
                   <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'languages' ? 'rotate-180' : ''}`} />
                 </button>
                 {openDropdown === 'languages' && (
@@ -335,8 +370,14 @@ const Header = () => {
                 )}
               </div>
 
-              <NavLink to="/tag" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-blue-400 transition-colors font-semibold py-2 pl-3 rounded-lg hover:bg-slate-800/50">Tags</NavLink>
-              <NavLink to="/about" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-blue-400 transition-colors font-semibold py-2 pl-3 rounded-lg hover:bg-slate-800/50">About</NavLink>
+              <NavLink to="/tag" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-blue-400 transition-colors font-semibold py-2 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2">
+                <Tags className="w-4 h-4" />
+                Tags
+              </NavLink>
+              <NavLink to="/about" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-blue-400 transition-colors font-semibold py-2 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2">
+                <Info className="w-4 h-4" />
+                About
+              </NavLink>
 
               <Button
                 onClick={() => setIsMenuOpen(false)}
