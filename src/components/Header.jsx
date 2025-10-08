@@ -7,6 +7,31 @@ import { Button } from '@/components/ui/button';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  // Handle scroll to show/hide header
+  React.useEffect(() => {
+    const controlHeader = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY < 10) {
+        // Always show header at the top
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY) {
+        // Scrolling down - hide header
+        setIsVisible(false);
+      } else {
+        // Scrolling up - show header
+        setIsVisible(true);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', controlHeader);
+    return () => window.removeEventListener('scroll', controlHeader);
+  }, [lastScrollY]);
 
   const activeLinkStyle = {
     color: '#60a5fa',
@@ -20,8 +45,11 @@ const Header = () => {
   return (
     <motion.header
       initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8 }}
+      animate={{ 
+        y: isVisible ? 0 : -100, 
+        opacity: isVisible ? 1 : 0 
+      }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
       className="fixed top-0 w-full z-[9999]"
       style={{ 
         background: 'rgba(15, 23, 42, 0.85)',
