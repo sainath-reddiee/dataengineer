@@ -9,6 +9,17 @@ import {
 import { useCategories } from '@/hooks/useWordPress';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
+const isMobile = window.innerWidth <= 768;
+
+// In the card component:
+<MotionLink
+  to={path}
+  className="block h-full group"
+  initial="rest"
+  whileHover={isMobile ? {} : "hover"} // Disable hover animations on mobile
+  whileTap={{ scale: 0.95 }} // Add tap feedback
+>
+
 // Icon provider with drop-shadow for visibility
 const getCategoryIcon = (category, className = 'h-8 w-8') => {
     const lowerCategory = category.toLowerCase();
