@@ -139,11 +139,11 @@ const Header = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="xl:hidden mt-6 pb-6 border-t border-gray-700 pt-6"
+            className="xl:hidden mt-6 pb-6 border-t border-gray-700 pt-6 bg-slate-900/95 backdrop-blur-xl rounded-lg px-4 shadow-2xl"
           >
             <div className="flex flex-col space-y-4">
               {/* Main Section */}
-              <div className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Main</div>
+              <div className="text-xs text-gray-400 uppercase tracking-wide font-bold">Main</div>
               {mainNavItems.map((item) => (
                 <NavLink
                   key={item.name}
@@ -151,14 +151,14 @@ const Header = () => {
                   end={item.path === '/'}
                   onClick={() => setIsMenuOpen(false)}
                   style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                  className="text-gray-300 hover:text-blue-400 transition-colors font-medium text-left py-2 pl-2"
+                  className="text-white hover:text-blue-400 transition-colors font-semibold text-left py-2 pl-3 rounded-md hover:bg-slate-800/50"
                 >
                   {item.name}
                 </NavLink>
               ))}
               
               {/* Categories Section */}
-              <div className="text-xs text-gray-500 uppercase tracking-wide font-semibold mt-4">Categories</div>
+              <div className="text-xs text-gray-400 uppercase tracking-wide font-bold mt-4 pt-4 border-t border-gray-700">Categories</div>
               <div className="grid grid-cols-2 gap-3">
                 {categoryItems.map((item) => (
                   <NavLink
@@ -166,7 +166,7 @@ const Header = () => {
                     to={item.path}
                     onClick={() => setIsMenuOpen(false)}
                     style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                    className="text-gray-300 hover:text-blue-400 transition-colors font-medium text-left py-2 pl-2 text-sm"
+                    className="text-white hover:text-blue-400 transition-colors font-medium text-left py-2 pl-3 rounded-md hover:bg-slate-800/50"
                   >
                     {item.name}
                   </NavLink>
@@ -174,14 +174,14 @@ const Header = () => {
               </div>
               
               {/* More Section */}
-              <div className="text-xs text-gray-500 uppercase tracking-wide font-semibold mt-4">More</div>
+              <div className="text-xs text-gray-400 uppercase tracking-wide font-bold mt-4 pt-4 border-t border-gray-700">More</div>
               {utilityItems.map((item) => (
                 <NavLink
                   key={item.name}
                   to={item.path}
                   onClick={() => setIsMenuOpen(false)}
                   style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                  className="text-gray-300 hover:text-blue-400 transition-colors font-medium text-left py-2 pl-2"
+                  className="text-white hover:text-blue-400 transition-colors font-semibold text-left py-2 pl-3 rounded-md hover:bg-slate-800/50"
                 >
                   {item.name}
                 </NavLink>
@@ -191,7 +191,7 @@ const Header = () => {
               <Button
                 onClick={() => setIsMenuOpen(false)}
                 asChild
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white w-full mt-4"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white w-full mt-6 py-3 text-base font-bold shadow-lg"
               >
                 <Link to="/newsletter">Subscribe</Link>
               </Button>
