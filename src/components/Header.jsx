@@ -54,9 +54,9 @@ const Header = () => {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8 }}
-      className="fixed top-0 w-full z-[9999] glass-effect"
+      className="fixed top-0 w-full z-[9999] glass-effect overflow-visible"
     >
-      <nav className="container mx-auto px-6 py-6 relative z-[9999]">
+      <nav className="container mx-auto px-6 py-6 relative z-[9999] overflow-visible">
         <div className="flex items-center justify-between gap-8">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
@@ -70,7 +70,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation with Dropdowns */}
-          <div className="hidden xl:flex items-center space-x-6">
+          <div className="hidden xl:flex items-center space-x-6 overflow-visible">
             {/* Home */}
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <NavLink
@@ -89,7 +89,7 @@ const Header = () => {
                 {navigationStructure.cloud.label}
                 <ChevronDown className="h-4 w-4" />
               </button>
-              <div className="absolute top-full left-0 mt-2 w-44 bg-slate-800 backdrop-blur-xl rounded-lg shadow-2xl border border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[10000]">
+              <div className="absolute top-full left-0 mt-2 w-44 bg-slate-900 backdrop-blur-xl rounded-lg shadow-2xl border border-gray-600 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[10001]">
                 {navigationStructure.cloud.items.map((item) => (
                   <NavLink
                     key={item.name}
@@ -109,13 +109,13 @@ const Header = () => {
                 {navigationStructure.tools.label}
                 <ChevronDown className="h-4 w-4" />
               </button>
-              <div className="absolute top-full left-0 mt-2 w-44 bg-slate-800 backdrop-blur-xl rounded-lg shadow-2xl border border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[10000]">
+              <div className="absolute top-full left-0 mt-2 w-44 bg-slate-900 backdrop-blur-xl rounded-lg shadow-2xl border border-gray-600 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[10001]">
                 {navigationStructure.tools.items.map((item) => (
                   <NavLink
                     key={item.name}
                     to={item.path}
                     style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                    className="block px-4 py-2.5 text-gray-300 hover:bg-slate-700/50 hover:text-blue-400 transition-colors first:rounded-t-lg last:rounded-b-lg"
+                    className="block px-4 py-2.5 text-gray-200 hover:bg-slate-700 hover:text-blue-400 transition-colors first:rounded-t-lg last:rounded-b-lg"
                   >
                     {item.name}
                   </NavLink>
@@ -129,13 +129,13 @@ const Header = () => {
                 {navigationStructure.languages.label}
                 <ChevronDown className="h-4 w-4" />
               </button>
-              <div className="absolute top-full left-0 mt-2 w-44 bg-slate-800 backdrop-blur-xl rounded-lg shadow-2xl border border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[10000]">
+              <div className="absolute top-full left-0 mt-2 w-44 bg-slate-900 backdrop-blur-xl rounded-lg shadow-2xl border border-gray-600 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[10001]">
                 {navigationStructure.languages.items.map((item) => (
                   <NavLink
                     key={item.name}
                     to={item.path}
                     style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                    className="block px-4 py-2.5 text-gray-300 hover:bg-slate-700/50 hover:text-blue-400 transition-colors first:rounded-t-lg last:rounded-b-lg"
+                    className="block px-4 py-2.5 text-gray-200 hover:bg-slate-700 hover:text-blue-400 transition-colors first:rounded-t-lg last:rounded-b-lg"
                   >
                     {item.name}
                   </NavLink>
