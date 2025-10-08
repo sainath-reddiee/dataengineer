@@ -1,4 +1,4 @@
-// Enhanced API service with better error handling and data validation
+// src/services/wordpressApi.js - COMPLETE VERSION WITH TAGS SUPPORT
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog';
 const WP_API_BASE = `${WORDPRESS_API_URL}/wp-json/wp/v2`;
 
@@ -127,11 +127,12 @@ class WordPressAPI {
     }
   }
 
-  // CORRECTED getPosts function
+  // Get posts with all filters
   async getPosts({ 
     page = 1, 
     per_page = 10, 
-    categoryId = null, 
+    categoryId = null,
+    tag = null,
     search = null,
     featured = null,
     trending = null,
@@ -151,10 +152,12 @@ class WordPressAPI {
       if (categoryId && !isNaN(categoryId)) {
         params.append('categories', categoryId.toString());
       }
+      if (tag) {
+        params.append('tags', tag.toString());
+      }
       if (search && search.trim()) {
         params.append('search', search.trim());
       }
-      // Use the new custom parameters that functions.php now understands
       if (featured) {
         params.append('is_featured', 'true');
       }
@@ -225,6 +228,63 @@ class WordPressAPI {
     }
   }
 
+  // Get tags (NEW)
+  async getTags() {
+    try {
+      console.log('🏷️ Fetching tags...');
+      
+      const result = await this.makeRequest('/tags?per_page=100&hide_empty=false');
+      const tags = result.data;
+      
+      if (!Array.isArray(tags)) {
+        console.warn('Tags response is not an array:', tags);
+        return [];
+      }
+
+      return tags.map(tag => ({
+        id: tag.id || 0,
+        name: tag.name || 'Unnamed Tag',
+        slug: tag.slug || '',
+        count: tag.count || 0,
+        description: tag.description || '',
+      }));
+    } catch (error) {
+      console.error('❌ Error fetching tags:', error);
+      throw error;
+    }
+  }
+
+  // Get tag ID by slug (NEW)
+  async getTagIdBySlug(tagSlug) {
+    try {
+      if (!tagSlug || typeof tagSlug !== 'string') {
+        throw new Error('Invalid tag slug provided');
+      }
+
+      console.log('🔍 Looking for tag slug:', tagSlug);
+      
+      const tags = await this.getTags();
+      
+      console.log('📋 Available tags:', tags.map(t => `${t.slug} (${t.name})`).join(', '));
+      
+      const tag = tags.find(t => 
+        t.slug.toLowerCase() === tagSlug.toLowerCase() || 
+        t.name.toLowerCase() === tagSlug.toLowerCase()
+      );
+
+      if (tag) {
+        console.log('✅ Tag found:', tag.name, 'ID:', tag.id);
+        return tag.id;
+      } else {
+        console.error('❌ Tag not found:', tagSlug);
+        throw new Error(`Tag "${tagSlug}" not found`);
+      }
+    } catch (error) {
+      console.error('❌ Error getting tag ID:', error);
+      throw error;
+    }
+  }
+
   // Get category ID by slug with better error handling
   async getCategoryIdBySlug(categorySlug) {
     try {
@@ -261,6 +321,11 @@ class WordPressAPI {
     return this.getPosts({ ...options, categoryId });
   }
 
+  // Get posts by tag (NEW)
+  async getPostsByTag(tagId, options = {}) {
+    return this.getPosts({ ...options, tag: tagId });
+  }
+
   // Enhanced getPostBySlug with better validation
   async getPostBySlug(slug) {
     try {
@@ -293,7 +358,7 @@ class WordPressAPI {
     }
   }
 
-  // Enhanced transformPost with comprehensive validation
+  // Enhanced transformPost with comprehensive validation INCLUDING TAGS
   transformPost(wpPost) {
     try {
       if (!wpPost || typeof wpPost !== 'object') {
@@ -331,6 +396,32 @@ class WordPressAPI {
         }
       } catch (catError) {
         console.warn('⚠️ Error extracting category, using fallback:', catError);
+      }
+
+      // ✅ EXTRACT TAGS (NEW)
+      let tags = [];
+      try {
+        // Try post_tags field first (if added via functions.php)
+        if (wpPost.post_tags && Array.isArray(wpPost.post_tags)) {
+          tags = wpPost.post_tags;
+          console.log('✅ Tags from post_tags:', tags.length);
+        } 
+        // Fallback: Try _embedded wp:term array
+        else if (wpPost._embedded?.['wp:term']) {
+          // Tags are usually at index 1 (categories at 0, tags at 1)
+          const tagTerms = wpPost._embedded['wp:term'][1] || [];
+          if (Array.isArray(tagTerms)) {
+            tags = tagTerms.map(tag => ({
+              id: tag.id,
+              name: tag.name,
+              slug: tag.slug,
+              link: tag.link
+            }));
+            console.log('✅ Tags from _embedded:', tags.length);
+          }
+        }
+      } catch (tagError) {
+        console.warn('⚠️ Error extracting tags, using empty array:', tagError);
       }
 
       let author = 'DataEngineer Hub';
@@ -392,6 +483,7 @@ class WordPressAPI {
         excerpt: excerpt,
         content: wpPost.content?.rendered || wpPost.content || '',
         category: primaryCategory,
+        tags: tags, // ✅ ADD TAGS
         readTime: this.calculateReadTime(wpPost.content?.rendered || wpPost.content || ''),
         date: postDate,
         image: imageUrl,
@@ -400,7 +492,7 @@ class WordPressAPI {
         author: author,
       };
 
-      console.log('✅ Post transformed:', transformedPost.title, 'Date:', transformedPost.date);
+      console.log('✅ Post transformed:', transformedPost.title, 'Tags:', transformedPost.tags.length);
       return transformedPost;
 
     } catch (error) {
@@ -414,6 +506,7 @@ class WordPressAPI {
         excerpt: 'There was an error loading this post content.',
         content: '<p>There was an error loading this post content. Please try refreshing the page.</p>',
         category: 'Uncategorized',
+        tags: [], // ✅ Empty tags array for fallback
         readTime: '1 min read',
         date: new Date().toISOString(),
         image: 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop',
@@ -490,13 +583,11 @@ class WordPressAPI {
   // Newsletter and contact form methods
   async subscribeNewsletter(email) {
     console.log('📧 Newsletter subscription for:', email);
-    // Implement your newsletter logic here
     return { success: true };
   }
 
   async submitContactForm(formData) {
     console.log('📝 Contact form submission:', formData);
-    // Implement your contact form logic here
     return { success: true };
   }
 
@@ -512,13 +603,10 @@ class WordPressAPI {
         return [];
       }
 
-      // **THE FIX IS HERE**
-      // We check if the response has the extra 'data' wrapper and extract the actual post objects.
       const rawPosts = result.data.map(item => item.data || item);
       return this.transformPosts(rawPosts);
 
     } catch (error) {
-      // It's okay if this fails, we just won't show related posts.
       console.error('❌ Could not fetch related posts:', error.message);
       return [];
     }
