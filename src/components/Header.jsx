@@ -1,31 +1,30 @@
-// src/components/Header.jsx - FINAL WORKING VERSION
-
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { NavLink, Link } from 'react-router-dom';
-import { Menu, X, Database, ChevronDown } from 'lucide-react';
+import { Menu, X, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isTopicsOpen, setIsTopicsOpen] = useState(false);
 
-  const topics = [
+  const navItems = [
+    { name: 'Home', path: '/' },
     { name: 'AWS', path: '/category/aws' },
     { name: 'Snowflake', path: '/category/snowflake' },
     { name: 'Azure', path: '/category/azure' },
     { name: 'GCP', path: '/category/gcp' },
-    { name: 'dbt', path: '/category/dbt' },
     { name: 'Airflow', path: '/category/airflow' },
+    { name: 'dbt', path: '/category/dbt' },
     { name: 'Python', path: '/category/python' },
     { name: 'SQL', path: '/category/sql' },
-  ];
-
-  const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'Articles', path: '/articles' },
+    { name: 'Tags', path: '/tag' },
     { name: 'About', path: '/about' }
   ];
+
+  // Group navigation items for better organization
+  const mainNavItems = navItems.slice(0, 1); // Home
+  const categoryItems = navItems.slice(1, -2); // Categories
+  const utilityItems = navItems.slice(-2); // Tags, About
 
   const activeLinkStyle = {
     color: '#60a5fa',
@@ -39,84 +38,96 @@ const Header = () => {
       transition={{ duration: 0.8 }}
       className="fixed top-0 w-full z-[9999] glass-effect"
     >
-      <nav className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
+      <nav className="container mx-auto px-6 py-6 relative z-[9999]">
+        <div className="flex items-center justify-between gap-8">
+          {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <motion.div whileHover={{ scale: 1.05 }}>
               <div className="relative">
-                <Database className="h-8 w-8 text-blue-400" />
+                <Database className="h-10 w-10 text-blue-400" />
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse"></div>
               </div>
             </motion.div>
-            <span className="text-2xl font-bold gradient-text">DataEngineer Hub</span>
+            <span className="text-2xl md:text-3xl font-bold gradient-text whitespace-nowrap">DataEngineer Hub</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
-            {navItems.map((item) => (
-              <motion.div key={item.name} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+          {/* Desktop Navigation - Hidden on smaller screens, visible on xl+ */}
+          <div className="hidden xl:flex items-center space-x-7">
+            {/* Home */}
+            {mainNavItems.map((item) => (
+              <motion.div
+                key={item.name}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
                 <NavLink
                   to={item.path}
                   end={item.path === '/'}
                   style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                  className="text-gray-300 hover:text-blue-400 transition-colors font-medium"
+                  className="text-gray-300 hover:text-blue-400 transition-colors font-semibold text-base"
                 >
                   {item.name}
                 </NavLink>
               </motion.div>
             ))}
-
-            {/* --- THE FIX IS HERE --- */}
-            <motion.div
-              className="relative" // This is crucial for positioning the dropdown
-              onHoverStart={() => setIsTopicsOpen(true)}
-              onHoverEnd={() => setIsTopicsOpen(false)}
-            >
-              {/* This is the "Topics" button */}
-              <div className="flex items-center cursor-pointer text-gray-300 hover:text-blue-400 transition-colors font-medium">
-                Topics
-                <ChevronDown className={`h-4 w-4 ml-1 transition-transform ${isTopicsOpen ? 'rotate-180' : ''}`} />
-              </div>
-
-              {/* This is the dropdown menu itself */}
-              <AnimatePresence>
-                {isTopicsOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 15 }}
-                    transition={{ duration: 0.2, ease: 'easeOut' }}
-                    // These classes ensure it's visible, positioned correctly, and has a solid background
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 rounded-lg bg-slate-900 border border-slate-700 shadow-2xl p-2"
-                  >
-                    {topics.map(topic => (
-                      <NavLink
-                        key={topic.name}
-                        to={topic.path}
-                        style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-300 rounded-md hover:bg-slate-700 hover:text-blue-400"
-                        onClick={() => setIsTopicsOpen(false)}
-                      >
-                        {topic.name}
-                      </NavLink>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-            {/* --- END OF FIX --- */}
             
+            {/* Visual separator */}
+            <div className="w-px h-7 bg-gray-600" />
+            
+            {/* Categories with better spacing */}
+            {categoryItems.map((item) => (
+              <motion.div
+                key={item.name}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <NavLink
+                  to={item.path}
+                  style={({ isActive }) => isActive ? activeLinkStyle : undefined}
+                  className="text-gray-300 hover:text-blue-400 transition-colors font-medium text-base"
+                >
+                  {item.name}
+                </NavLink>
+              </motion.div>
+            ))}
+            
+            {/* Visual separator */}
+            <div className="w-px h-7 bg-gray-600" />
+            
+            {/* Utility items (Tags, About) */}
+            {utilityItems.map((item) => (
+              <motion.div
+                key={item.name}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <NavLink
+                  to={item.path}
+                  style={({ isActive }) => isActive ? activeLinkStyle : undefined}
+                  className="text-gray-300 hover:text-blue-400 transition-colors font-semibold text-base"
+                >
+                  {item.name}
+                </NavLink>
+              </motion.div>
+            ))}
+            
+            {/* Subscribe Button */}
             <Button
               asChild
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-2 rounded-full font-semibold"
+              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-7 py-2.5 rounded-full font-semibold text-base ml-3"
             >
               <Link to="/newsletter">Subscribe</Link>
             </Button>
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
-            <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-white">
+          <div className="xl:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-white"
+            >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
           </div>
@@ -128,25 +139,59 @@ const Header = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden mt-4 pb-4"
+            className="xl:hidden mt-6 pb-6 border-t border-gray-700 pt-6 bg-slate-900/95 backdrop-blur-xl rounded-lg px-4 shadow-2xl"
           >
             <div className="flex flex-col space-y-4">
-              {[...navItems, ...topics].map((item) => (
+              {/* Main Section */}
+              <div className="text-xs text-gray-400 uppercase tracking-wide font-bold">Main</div>
+              {mainNavItems.map((item) => (
                 <NavLink
                   key={item.name}
                   to={item.path}
                   end={item.path === '/'}
                   onClick={() => setIsMenuOpen(false)}
                   style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                  className="text-gray-300 hover:text-blue-400 transition-colors font-medium text-left py-2"
+                  className="text-white hover:text-blue-400 transition-colors font-semibold text-left py-2 pl-3 rounded-md hover:bg-slate-800/50"
                 >
                   {item.name}
                 </NavLink>
               ))}
+              
+              {/* Categories Section */}
+              <div className="text-xs text-gray-400 uppercase tracking-wide font-bold mt-4 pt-4 border-t border-gray-700">Categories</div>
+              <div className="grid grid-cols-2 gap-3">
+                {categoryItems.map((item) => (
+                  <NavLink
+                    key={item.name}
+                    to={item.path}
+                    onClick={() => setIsMenuOpen(false)}
+                    style={({ isActive }) => isActive ? activeLinkStyle : undefined}
+                    className="text-white hover:text-blue-400 transition-colors font-medium text-left py-2 pl-3 rounded-md hover:bg-slate-800/50"
+                  >
+                    {item.name}
+                  </NavLink>
+                ))}
+              </div>
+              
+              {/* More Section */}
+              <div className="text-xs text-gray-400 uppercase tracking-wide font-bold mt-4 pt-4 border-t border-gray-700">More</div>
+              {utilityItems.map((item) => (
+                <NavLink
+                  key={item.name}
+                  to={item.path}
+                  onClick={() => setIsMenuOpen(false)}
+                  style={({ isActive }) => isActive ? activeLinkStyle : undefined}
+                  className="text-white hover:text-blue-400 transition-colors font-semibold text-left py-2 pl-3 rounded-md hover:bg-slate-800/50"
+                >
+                  {item.name}
+                </NavLink>
+              ))}
+              
+              {/* Subscribe Button */}
               <Button
                 onClick={() => setIsMenuOpen(false)}
                 asChild
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white w-full"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white w-full mt-6 py-3 text-base font-bold shadow-lg"
               >
                 <Link to="/newsletter">Subscribe</Link>
               </Button>
