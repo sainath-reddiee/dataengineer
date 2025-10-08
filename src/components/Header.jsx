@@ -12,11 +12,11 @@ const Header = () => {
     { name: 'AWS', path: '/category/aws' },
     { name: 'Snowflake', path: '/category/snowflake' },
     { name: 'Azure', path: '/category/azure' },
+    { name: 'GCP', path: '/category/gcp' },
     { name: 'SQL', path: '/category/sql' },
     { name: 'Airflow', path: '/category/airflow' },
     { name: 'dbt', path: '/category/dbt' },
     { name: 'Python', path: '/category/python' },
-    { name: 'GCP', path: '/category/gcp' },
     { name: 'About', path: '/about' },
     { name: 'Tags', path: '/tag' }
   ];
