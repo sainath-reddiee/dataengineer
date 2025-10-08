@@ -144,6 +144,11 @@ function App() {
               <CategoryPage />
             </Suspense>
           } />
+          <Route path="tag" element={
+  <Suspense fallback={<LoadingFallback text="Loading Tags..." />}>
+    <TagsArchivePage />
+  </Suspense>
+} />
           {/* NEW TAG ROUTE */}
           <Route path="tag/:tagSlug" element={
             <Suspense fallback={<LoadingFallback text="Loading Tag..." />}>
