@@ -38,21 +38,21 @@ const Header = () => {
       transition={{ duration: 0.8 }}
       className="fixed top-0 w-full z-[9999] glass-effect"
     >
-      <nav className="container mx-auto px-6 py-5 relative z-[9999]">
+      <nav className="container mx-auto px-6 py-6 relative z-[9999]">
         <div className="flex items-center justify-between gap-8">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <motion.div whileHover={{ scale: 1.05 }}>
               <div className="relative">
-                <Database className="h-8 w-8 text-blue-400" />
+                <Database className="h-10 w-10 text-blue-400" />
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse"></div>
               </div>
             </motion.div>
-            <span className="text-2xl font-bold gradient-text whitespace-nowrap">DataEngineer Hub</span>
+            <span className="text-2xl md:text-3xl font-bold gradient-text whitespace-nowrap">DataEngineer Hub</span>
           </Link>
 
           {/* Desktop Navigation - Hidden on smaller screens, visible on xl+ */}
-          <div className="hidden xl:flex items-center space-x-6">
+          <div className="hidden xl:flex items-center space-x-7">
             {/* Home */}
             {mainNavItems.map((item) => (
               <motion.div
@@ -64,7 +64,7 @@ const Header = () => {
                   to={item.path}
                   end={item.path === '/'}
                   style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                  className="text-gray-300 hover:text-blue-400 transition-colors font-medium"
+                  className="text-gray-300 hover:text-blue-400 transition-colors font-semibold text-base"
                 >
                   {item.name}
                 </NavLink>
@@ -72,7 +72,7 @@ const Header = () => {
             ))}
             
             {/* Visual separator */}
-            <div className="w-px h-6 bg-gray-600" />
+            <div className="w-px h-7 bg-gray-600" />
             
             {/* Categories with better spacing */}
             {categoryItems.map((item) => (
@@ -84,7 +84,7 @@ const Header = () => {
                 <NavLink
                   to={item.path}
                   style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                  className="text-gray-300 hover:text-blue-400 transition-colors font-medium text-sm"
+                  className="text-gray-300 hover:text-blue-400 transition-colors font-medium text-base"
                 >
                   {item.name}
                 </NavLink>
@@ -92,7 +92,7 @@ const Header = () => {
             ))}
             
             {/* Visual separator */}
-            <div className="w-px h-6 bg-gray-600" />
+            <div className="w-px h-7 bg-gray-600" />
             
             {/* Utility items (Tags, About) */}
             {utilityItems.map((item) => (
@@ -104,7 +104,7 @@ const Header = () => {
                 <NavLink
                   to={item.path}
                   style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                  className="text-gray-300 hover:text-blue-400 transition-colors font-medium"
+                  className="text-gray-300 hover:text-blue-400 transition-colors font-semibold text-base"
                 >
                   {item.name}
                 </NavLink>
@@ -114,7 +114,7 @@ const Header = () => {
             {/* Subscribe Button */}
             <Button
               asChild
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-2 rounded-full font-semibold ml-2"
+              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-7 py-2.5 rounded-full font-semibold text-base ml-3"
             >
               <Link to="/newsletter">Subscribe</Link>
             </Button>
