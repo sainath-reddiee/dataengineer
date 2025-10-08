@@ -1,4 +1,4 @@
-// src/components/Header.jsx - FINAL VERSION with Dropdown Menu
+// src/components/Header.jsx - FINAL CORRECTED VERSION
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,7 +10,6 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isTopicsOpen, setIsTopicsOpen] = useState(false);
 
-  // Group all technology links into a 'topics' array
   const topics = [
     { name: 'AWS', path: '/category/aws' },
     { name: 'Snowflake', path: '/category/snowflake' },
@@ -22,10 +21,9 @@ const Header = () => {
     { name: 'SQL', path: '/category/sql' },
   ];
 
-  // Keep the main navigation items separate
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Articles', path: '/articles' }, // Added a link to all articles
+    { name: 'Articles', path: '/articles' },
     { name: 'About', path: '/about' }
   ];
 
@@ -41,7 +39,7 @@ const Header = () => {
       transition={{ duration: 0.8 }}
       className="fixed top-0 w-full z-[9999] glass-effect"
     >
-      <nav className="container mx-auto px-6 py-4 relative z-[9999]">
+      <nav className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-3">
             <motion.div whileHover={{ scale: 1.05 }}>
@@ -53,8 +51,8 @@ const Header = () => {
             <span className="text-2xl font-bold gradient-text">DataEngineer Hub</span>
           </Link>
 
-          {/* --- MODIFIED DESKTOP NAVIGATION --- */}
-          <div className="hidden md:flex items-center space-x-6"> {/* Reduced spacing */}
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => (
               <motion.div key={item.name} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                 <NavLink
@@ -85,7 +83,7 @@ const Header = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-slate-800/80 backdrop-blur-md border border-slate-700 rounded-lg shadow-lg"
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-slate-800/90 backdrop-blur-md border border-slate-700 rounded-lg shadow-lg"
                   >
                     <div className="p-2">
                       {topics.map(topic => (
@@ -121,7 +119,7 @@ const Header = () => {
           </div>
         </div>
 
-        {/* --- MODIFIED MOBILE NAVIGATION --- */}
+        {/* Mobile Navigation */}
         {isMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
@@ -130,7 +128,6 @@ const Header = () => {
             className="md:hidden mt-4 pb-4"
           >
             <div className="flex flex-col space-y-4">
-              {/* Combine main items and topics for the mobile menu */}
               {[...navItems, ...topics].map((item) => (
                 <NavLink
                   key={item.name}
