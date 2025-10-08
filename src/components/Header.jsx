@@ -13,12 +13,12 @@ const Header = () => {
     { name: 'Snowflake', path: '/category/snowflake' },
     { name: 'Azure', path: '/category/azure' },
     { name: 'GCP', path: '/category/gcp' },
-    { name: 'SQL', path: '/category/sql' },
     { name: 'Airflow', path: '/category/airflow' },
     { name: 'dbt', path: '/category/dbt' },
     { name: 'Python', path: '/category/python' },
-    { name: 'About', path: '/about' },
-    { name: 'Tags', path: '/tag' }
+    { name: 'SQL', path: '/category/sql' },
+    { name: 'Tags', path: '/tag' },
+    { name: 'About', path: '/about' }
   ];
 
   const activeLinkStyle = {
