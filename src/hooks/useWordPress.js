@@ -1,4 +1,4 @@
-// src/hooks/useWordPress.js - FINAL VERSION WITH RACE CONDITION RESOLVED
+// src/hooks/useWordPress.js - COMPLETE FINAL VERSION WITH TAG SUPPORT
 import { useState, useEffect, useCallback, useRef } from 'react';
 import wordpressApi from '@/services/wordpressApi';
 
@@ -7,6 +7,7 @@ export const usePosts = ({
   page = 1,
   per_page = 10,
   categorySlug = null,
+  tag = null,
   search = null,
   featured = null,
   trending = null,
@@ -27,14 +28,14 @@ export const usePosts = ({
 
   // CRITICAL FIX: Reset posts immediately when categorySlug changes
   useEffect(() => {
-    console.log('🔄 Category/search changed, resetting state:', { categorySlug, search });
+    console.log('🔄 Category/search/tag changed, resetting state:', { categorySlug, search, tag });
     setPosts([]);
     setError(null);
-    setLoading(true); // Set loading true immediately
+    setLoading(true);
     setTotalPages(1);
     setTotalPosts(0);
     setHasMore(false);
-  }, [categorySlug, search]);
+  }, [categorySlug, search, tag]);
 
   // Fetch posts with race condition protection
   useEffect(() => {
@@ -53,7 +54,7 @@ export const usePosts = ({
         setLoading(true);
 
         console.log(`🔄 [Request #${requestId}] usePosts: Fetching posts with params:`, {
-          page, per_page, categorySlug, search, featured, trending, orderby, order
+          page, per_page, categorySlug, tag, search, featured, trending, orderby, order
         });
 
         if (refreshKey > 0) {
@@ -84,10 +85,33 @@ export const usePosts = ({
           }
         }
 
+        // Get tag ID if needed (NEW)
+        let tagId = tag;
+        if (typeof tag === 'string') {
+          try {
+            tagId = await wordpressApi.getTagIdBySlug(tag);
+
+            if (isCancelled || requestId !== currentRequestRef.current) {
+              console.log(`⚠️ [Request #${requestId}] Cancelled during tag resolution`);
+              return;
+            }
+
+            console.log(`✅ [Request #${requestId}] Tag resolved:`, tag, '→', tagId);
+          } catch (tagError) {
+            if (isCancelled || requestId !== currentRequestRef.current) {
+              console.log(`⚠️ [Request #${requestId}] Cancelled during tag resolution`);
+              return;
+            }
+            console.error(`❌ [Request #${requestId}] Tag resolution failed:`, tagError);
+            throw new Error(`Tag "${tag}" not found. Please check if it exists.`);
+          }
+        }
+
         const result = await wordpressApi.getPosts({
           page,
           per_page,
           categoryId,
+          tag: tagId,
           search,
           featured,
           trending,
@@ -118,7 +142,8 @@ export const usePosts = ({
           totalPosts: result.totalPosts,
           hasMore: page < result.totalPages,
           currentPage: page,
-          categoryId
+          categoryId,
+          tagId
         });
       } catch (err) {
         // Only update error state if this request is still current
@@ -145,7 +170,7 @@ export const usePosts = ({
       isCancelled = true;
       console.log(`🧹 [Request #${requestId}] Cleanup - marking as cancelled`);
     };
-  }, [page, per_page, categorySlug, search, featured, trending, orderby, order, enabled, refreshKey]);
+  }, [page, per_page, categorySlug, tag, search, featured, trending, orderby, order, enabled, refreshKey]);
 
   // Manual refresh function
   const refresh = useCallback(async () => {
@@ -173,11 +198,22 @@ export const usePosts = ({
         }
       }
 
+      let tagId = tag;
+      if (typeof tag === 'string') {
+        tagId = await wordpressApi.getTagIdBySlug(tag);
+
+        if (requestId !== currentRequestRef.current) {
+          console.log(`⚠️ [LoadMore #${requestId}] Cancelled`);
+          return;
+        }
+      }
+
       const nextPage = page + 1;
       const result = await wordpressApi.getPosts({
         page: nextPage,
         per_page,
         categoryId,
+        tag: tagId,
         search,
         featured,
         trending,
@@ -199,7 +235,7 @@ export const usePosts = ({
         setLoading(false);
       }
     }
-  }, [page, per_page, categorySlug, search, featured, trending, orderby, order, loading, hasMore]);
+  }, [page, per_page, categorySlug, tag, search, featured, trending, orderby, order, loading, hasMore]);
 
   return {
     posts,
@@ -365,6 +401,81 @@ export const useCategories = (enabled = true) => {
   return { categories, loading, error, refresh };
 };
 
+// Hook for fetching tags (NEW)
+export const useTags = (enabled = true) => {
+  const [tags, setTags] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const currentRequestRef = useRef(0);
+
+  useEffect(() => {
+    if (!enabled) {
+      setLoading(false);
+      return;
+    }
+
+    const requestId = ++currentRequestRef.current;
+    let isCancelled = false;
+
+    const fetchTags = async () => {
+      try {
+        setError(null);
+        setLoading(true);
+
+        console.log(`🏷️ [Request #${requestId}] useTags: Fetching tags`);
+
+        const tagsData = await wordpressApi.getTags();
+
+        if (!isCancelled && requestId === currentRequestRef.current) {
+          setTags(tagsData);
+          console.log(`✅ [Request #${requestId}] Tags loaded:`, tagsData.length);
+        }
+      } catch (err) {
+        if (!isCancelled && requestId === currentRequestRef.current) {
+          console.error(`❌ [Request #${requestId}] Error fetching tags:`, err);
+          setError(err.message);
+          setTags([]);
+        }
+      } finally {
+        if (!isCancelled && requestId === currentRequestRef.current) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchTags();
+
+    return () => {
+      isCancelled = true;
+      console.log(`🧹 [Request #${requestId}] useTags cleanup`);
+    };
+  }, [enabled]);
+
+  const refresh = useCallback(async () => {
+    wordpressApi.clearCache('tags');
+    const requestId = ++currentRequestRef.current;
+
+    try {
+      setLoading(true);
+      const tagsData = await wordpressApi.getTags();
+
+      if (requestId === currentRequestRef.current) {
+        setTags(tagsData);
+      }
+    } catch (err) {
+      if (requestId === currentRequestRef.current) {
+        setError(err.message);
+      }
+    } finally {
+      if (requestId === currentRequestRef.current) {
+        setLoading(false);
+      }
+    }
+  }, []);
+
+  return { tags, loading, error, refresh };
+};
+
 // Simplified hook for posts by category
 export const usePostsByCategory = (categorySlug, { page = 1, per_page = 10, orderby = 'date', order = 'desc', enabled = true } = {}) => {
   return usePosts({
@@ -377,7 +488,19 @@ export const usePostsByCategory = (categorySlug, { page = 1, per_page = 10, orde
   });
 };
 
-// New hook for fetching related posts
+// Hook for posts by tag (NEW)
+export const usePostsByTag = (tagSlug, { page = 1, per_page = 10, orderby = 'date', order = 'desc', enabled = true } = {}) => {
+  return usePosts({
+    page,
+    per_page,
+    tag: tagSlug,
+    orderby,
+    order,
+    enabled
+  });
+};
+
+// Hook for fetching related posts
 export const useRelatedPosts = (postId, enabled = true) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -400,7 +523,6 @@ export const useRelatedPosts = (postId, enabled = true) => {
 
   return { posts, loading };
 };
-
 
 // Hook for newsletter subscription
 export const useNewsletter = () => {
