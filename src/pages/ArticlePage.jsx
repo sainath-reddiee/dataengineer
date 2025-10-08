@@ -1,8 +1,8 @@
-// src/pages/ArticlePage.jsx - FINAL VERSION
+// src/pages/ArticlePage.jsx - COMPLETE VERSION WITH TAGS
 import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Clock, User, Loader, AlertCircle, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, User, Loader, AlertCircle, RefreshCw, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MetaTags from '@/components/SEO/MetaTags';
 import { usePost, useRelatedPosts } from '@/hooks/useWordPress';
@@ -10,6 +10,7 @@ import { preloadImage } from '@/utils/imageOptimizer';
 import { throttle } from '@/utils/performance';
 import { trackScrollDepth, trackArticleRead } from '@/utils/analytics';
 import LazyImage from '@/components/LazyImage';
+import TagsList from '@/components/TagsList';
 import DOMPurify from 'dompurify';
 import PostCard from '@/components/PostCard';
 import PostCardSkeleton from '@/components/PostCardSkeleton';
@@ -293,6 +294,7 @@ const ArticlePage = () => {
     excerpt: post.excerpt || '',
     content: post.content || '<p>Content not available</p>',
     category: post.category || 'Uncategorized',
+    tags: post.tags || [],
     author: post.author || 'DataEngineer Hub',
     date: post.date || new Date().toISOString(),
     readTime: post.readTime || '1 min read',
@@ -328,6 +330,7 @@ const ArticlePage = () => {
         type="article"
         publishedTime={safePost.date}
         category={safePost.category}
+        tags={safePost.tags}
         author={safePost.author}
       />
       
@@ -356,7 +359,6 @@ const ArticlePage = () => {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="space-y-8"
         >
-          {/* Hero Section */}
           <div className="relative rounded-2xl overflow-hidden">
             <LazyImage
               src={safePost.image}
@@ -409,6 +411,21 @@ const ArticlePage = () => {
               }}
             />
           </div>
+
+          {/* TAGS SECTION - NEW */}
+          {safePost.tags && safePost.tags.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="my-8 p-6 bg-slate-800/50 rounded-xl border border-slate-700"
+            >
+              <h3 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
+                <Tag className="h-5 w-5 text-blue-400" />
+                Related Topics
+              </h3>
+              <TagsList tags={safePost.tags} showIcon={false} size="default" />
+            </motion.div>
+          )}
 
           <Suspense fallback={<AdSkeleton />}>
             <AdPlacement position="article-bottom" />
