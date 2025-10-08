@@ -1,4 +1,4 @@
-// src/components/RecentPosts.jsx - FINAL VERSION WITH ALL CODE
+// src/components/RecentPosts.jsx - FIXED VERSION WITH TAG SUPPORT
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCw, AlertCircle, ChevronDown, Grid, List } from 'lucide-react';
@@ -15,6 +15,7 @@ import PostListItemSkeleton from '@/components/PostListItemSkeleton';
 
 const RecentPosts = ({
   category = null,
+  tag = null, // ✅ ADDED TAG PARAMETER
   showCategoryError = false,
   initialLimit = 6,
   title = "Recent Posts",
@@ -40,13 +41,14 @@ const RecentPosts = ({
     page: currentPage,
     per_page: postsPerPage,
     categorySlug: category,
+    tag: tag, // ✅ PASS TAG TO usePosts
     orderby: 'date',
     order: sortOrder,
   });
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [sortOrder, category]);
+  }, [sortOrder, category, tag]); // ✅ ADDED TAG TO DEPENDENCY
 
   const handleRefresh = () => {
     console.log('🔄 Manual refresh triggered in RecentPosts');
@@ -79,7 +81,6 @@ const RecentPosts = ({
     ));
   };
 
-  // ✅ FIXED: Constrained width for list view on larger screens for better readability.
   const containerClasses = viewMode === 'list'
     ? 'flex flex-col space-y-4 max-w-4xl mx-auto'
     : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
@@ -116,7 +117,10 @@ const RecentPosts = ({
         >
           <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-red-300 mb-2">
-            {category && showCategoryError ? `Category "${category}" Issue` : 'Failed to Load Posts'}
+            {/* ✅ UPDATED ERROR MESSAGE TO INCLUDE TAG */}
+            {(category || tag) && showCategoryError 
+              ? `${category ? `Category "${category}"` : `Tag "${tag}"`} Issue` 
+              : 'Failed to Load Posts'}
           </h3>
           <p className="text-red-200/80 mb-4">{error}</p>
           <Button
@@ -144,11 +148,18 @@ const RecentPosts = ({
           className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-8 text-center"
         >
           <h3 className="text-lg font-semibold text-yellow-300 mb-2">
-            {category ? `No posts found in "${category}" category` : 'No posts available'}
+            {/* ✅ UPDATED NO POSTS MESSAGE TO INCLUDE TAG */}
+            {category 
+              ? `No posts found in "${category}" category` 
+              : tag
+              ? `No posts found with tag "${tag}"`
+              : 'No posts available'}
           </h3>
           <p className="text-yellow-200/80 mb-4">
             {category
               ? 'This category exists but has no published posts yet.'
+              : tag
+              ? 'This tag exists but has no published posts yet.'
               : 'No posts have been published yet.'
             }
           </p>
