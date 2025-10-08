@@ -1,5 +1,5 @@
 /* src/index.css - COMPLETE PRODUCTION VERSION */
-@import './mobile.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -670,59 +670,4 @@ img {
 @keyframes loading {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
-}
-
-/* ============================================
-   MOBILE-SPECIFIC BUTTON FIXES
-   ============================================ */
-
-@media screen and (max-width: 768px) {
-  /* Ensure all buttons are visible on mobile */
-  button,
-  .button,
-  a.button,
-  [role="button"] {
-    min-height: 44px !important;
-    min-width: 44px !important;
-    background: rgba(59, 130, 246, 0.9) !important;
-    color: white !important;
-    border: 2px solid rgba(96, 165, 250, 0.5) !important;
-    border-radius: 8px !important;
-    padding: 12px 24px !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-  }
-
-  /* Fix gradient buttons */
-  button.bg-gradient-to-r,
-  .bg-gradient-to-r {
-    background: linear-gradient(135deg, #3b82f6 0%, #9333ea 100%) !important;
-    border: 2px solid rgba(147, 51, 234, 0.5) !important;
-  }
-
-  /* Fix category cards on mobile */
-  .tech-card {
-    background: rgba(30, 41, 59, 0.95) !important;
-    border: 2px solid rgba(148, 163, 184, 0.3) !important;
-    backdrop-filter: blur(10px) !important;
-  }
-
-  /* Fix card text visibility */
-  .tech-card h3,
-  .tech-card p {
-    color: white !important;
-  }
-
-  /* Improve touch targets */
-  .tech-card {
-    padding: 20px !important;
-    min-height: 200px !important;
-  }
-
-  /* Fix icon backgrounds */
-  .tech-card [class*="bg-gradient"] {
-    background: rgba(59, 130, 246, 0.3) !important;
-    border: 2px solid rgba(96, 165, 250, 0.5) !important;
-  }
 }
