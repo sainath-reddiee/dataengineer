@@ -1295,6 +1295,27 @@ function register_related_posts_endpoint() {
     ));
 }
 add_action('rest_api_init', 'register_related_posts_endpoint');
+// Add tags to REST API
+function add_tags_to_rest_api() {
+    register_rest_field('post', 'post_tags', array(
+        'get_callback' => function($post) {
+            $tags = get_the_tags($post['id']);
+            if (!$tags || is_wp_error($tags)) {
+                return [];
+            }
+            
+            return array_map(function($tag) {
+                return array(
+                    'id' => $tag->term_id,
+                    'name' => $tag->name,
+                    'slug' => $tag->slug,
+                    'link' => get_tag_link($tag->term_id)
+                );
+            }, $tags);
+        }
+    ));
+}
+add_action('rest_api_init', 'add_tags_to_rest_api');
 
 function get_related_posts_by_id($data) {
     $post_id = $data['id'];
