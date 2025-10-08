@@ -1,5 +1,4 @@
-// scripts/generateSitemap.js
-// Fixed version with proper date formatting
+// scripts/generateSitemap.js - FIXED WITH TAGS SUPPORT
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -24,7 +23,6 @@ const STATIC_PAGES = [
 function formatDate(dateString) {
   try {
     const date = new Date(dateString);
-    // Check if date is valid
     if (isNaN(date.getTime())) {
       return new Date().toISOString().split('T')[0];
     }
@@ -73,7 +71,6 @@ async function fetchAllPosts() {
       console.log(`✅ Fetched page ${page} (${posts.length} posts)`);
       page++;
       
-      // Add small delay to avoid rate limiting
       await new Promise(resolve => setTimeout(resolve, 100));
     }
 
@@ -115,6 +112,36 @@ async function fetchAllCategories() {
   }
 }
 
+// ✅ NEW: Fetch all tags
+async function fetchAllTags() {
+  try {
+    console.log('🏷️  Fetching tags from WordPress...');
+    
+    const response = await fetch(
+      `${WORDPRESS_API_URL}/tags?per_page=100&_fields=slug,count`,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'DataEngineerHub-Sitemap-Generator'
+        }
+      }
+    );
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const tags = await response.json();
+    const activeTags = tags.filter(tag => tag.count > 0);
+    
+    console.log(`✅ Total tags fetched: ${activeTags.length}`);
+    return activeTags;
+  } catch (error) {
+    console.error('❌ Error fetching tags:', error.message);
+    return [];
+  }
+}
+
 // Generate XML sitemap with proper escaping
 function generateSitemapXML(pages) {
   const escapeXml = (str) => {
@@ -148,18 +175,15 @@ function validateSitemap(entries) {
   const errors = [];
   
   entries.forEach((entry, index) => {
-    // Check URL format
     if (!entry.url.startsWith('http')) {
       errors.push(`Line ${index + 1}: Invalid URL format - ${entry.url}`);
     }
     
-    // Check date format (YYYY-MM-DD)
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!dateRegex.test(entry.lastmod)) {
       errors.push(`Line ${index + 1}: Invalid date format - ${entry.lastmod}`);
     }
     
-    // Check priority range
     if (entry.priority < 0 || entry.priority > 1) {
       errors.push(`Line ${index + 1}: Invalid priority - ${entry.priority}`);
     }
@@ -173,10 +197,11 @@ async function generateSitemap() {
   console.log('🚀 Starting sitemap generation...\n');
 
   try {
-    // Fetch data
-    const [posts, categories] = await Promise.all([
+    // Fetch data - ✅ NOW INCLUDING TAGS
+    const [posts, categories, tags] = await Promise.all([
       fetchAllPosts(),
-      fetchAllCategories()
+      fetchAllCategories(),
+      fetchAllTags() // ✅ NEW
     ]);
 
     // Build sitemap entries
@@ -217,6 +242,17 @@ async function generateSitemap() {
       });
     });
 
+    // ✅ NEW: Add tag pages
+    console.log('🏷️  Adding tag pages...');
+    tags.forEach(tag => {
+      sitemapEntries.push({
+        url: `${SITE_URL}/tag/${tag.slug}`,
+        lastmod: today,
+        changefreq: 'weekly',
+        priority: 0.6, // Slightly lower priority than categories
+      });
+    });
+
     // Validate sitemap entries
     console.log('\n🔍 Validating sitemap...');
     const validationErrors = validateSitemap(sitemapEntries);
@@ -248,6 +284,7 @@ async function generateSitemap() {
     console.log(`   - Static pages: ${STATIC_PAGES.length}`);
     console.log(`   - Blog posts: ${posts.length}`);
     console.log(`   - Categories: ${categories.length}`);
+    console.log(`   - Tags: ${tags.length}`); // ✅ NEW
     console.log(`\n💡 Next steps:`);
     console.log(`   1. Validate sitemap: https://www.xml-sitemaps.com/validate-xml-sitemap.html`);
     console.log(`   2. Test locally: Open ${sitemapPath} in browser`);
