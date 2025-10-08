@@ -54,10 +54,16 @@ const Header = () => {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8 }}
-      className="fixed top-0 w-full z-[9999] glass-effect"
-      style={{ overflow: 'visible' }}
+      className="fixed top-0 w-full z-[9999]"
+      style={{ 
+        overflow: 'visible',
+        background: 'rgba(15, 23, 42, 0.8)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        borderBottom: '1px solid rgba(51, 65, 85, 0.5)'
+      }}
     >
-      <nav className="container mx-auto px-6 py-6 relative" style={{ overflow: 'visible' }}>
+      <nav className="container mx-auto px-6 py-6" style={{ overflow: 'visible', position: 'relative', zIndex: 9999 }}>
         <div className="flex items-center justify-between gap-8">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
