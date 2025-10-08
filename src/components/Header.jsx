@@ -1,4 +1,4 @@
-// src/components/Header.jsx - FINAL CORRECTED VERSION
+// src/components/Header.jsx - FINAL WORKING VERSION
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -66,42 +66,45 @@ const Header = () => {
               </motion.div>
             ))}
 
-            {/* Topics Dropdown */}
-            <motion.div 
-              className="relative"
+            {/* --- THE FIX IS HERE --- */}
+            <motion.div
+              className="relative" // This is crucial for positioning the dropdown
               onHoverStart={() => setIsTopicsOpen(true)}
               onHoverEnd={() => setIsTopicsOpen(false)}
             >
-              <div
-                className="flex items-center cursor-pointer text-gray-300 hover:text-blue-400 transition-colors font-medium"
-              >
-                Topics <ChevronDown className={`h-4 w-4 ml-1 transition-transform ${isTopicsOpen ? 'rotate-180' : ''}`} />
+              {/* This is the "Topics" button */}
+              <div className="flex items-center cursor-pointer text-gray-300 hover:text-blue-400 transition-colors font-medium">
+                Topics
+                <ChevronDown className={`h-4 w-4 ml-1 transition-transform ${isTopicsOpen ? 'rotate-180' : ''}`} />
               </div>
+
+              {/* This is the dropdown menu itself */}
               <AnimatePresence>
                 {isTopicsOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-slate-800/90 backdrop-blur-md border border-slate-700 rounded-lg shadow-lg"
+                    exit={{ opacity: 0, y: 15 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                    // These classes ensure it's visible, positioned correctly, and has a solid background
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 rounded-lg bg-slate-900 border border-slate-700 shadow-2xl p-2"
                   >
-                    <div className="p-2">
-                      {topics.map(topic => (
-                        <NavLink
-                          key={topic.name}
-                          to={topic.path}
-                          style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                          className="block px-4 py-2 text-sm text-gray-300 hover:bg-slate-700 hover:text-blue-400 rounded-md"
-                          onClick={() => setIsTopicsOpen(false)}
-                        >
-                          {topic.name}
-                        </NavLink>
-                      ))}
-                    </div>
+                    {topics.map(topic => (
+                      <NavLink
+                        key={topic.name}
+                        to={topic.path}
+                        style={({ isActive }) => isActive ? activeLinkStyle : undefined}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-300 rounded-md hover:bg-slate-700 hover:text-blue-400"
+                        onClick={() => setIsTopicsOpen(false)}
+                      >
+                        {topic.name}
+                      </NavLink>
+                    ))}
                   </motion.div>
                 )}
               </AnimatePresence>
             </motion.div>
+            {/* --- END OF FIX --- */}
             
             <Button
               asChild
