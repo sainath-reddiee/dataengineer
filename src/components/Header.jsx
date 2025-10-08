@@ -17,7 +17,8 @@ const Header = () => {
     { name: 'dbt', path: '/category/dbt' },
     { name: 'Python', path: '/category/python' },
     { name: 'GCP', path: '/category/gcp' },
-    { name: 'About', path: '/about' }
+    { name: 'About', path: '/about' },
+    { name: 'Tags', path: '/tag' }
   ];
 
   const activeLinkStyle = {
