@@ -6,6 +6,13 @@ import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import LazyImage from './LazyImage';
 import TagsList from './TagsList';
 
+const isMobile = window.innerWidth <= 768;
+
+const cardVariants = {
+  rest: { scale: 1 },
+  hover: isMobile ? { scale: 1 } : { scale: 1.03 }, // Disable scale on mobile
+};
+
 const MotionLink = motion(Link);
 
 const PostCard = ({ post }) => {
