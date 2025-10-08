@@ -1,4 +1,4 @@
-// src/App.jsx - FIXED VERSION
+// src/App.jsx - COMPLETE WITH TAG ROUTE
 import React, { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
@@ -7,11 +7,12 @@ import Layout from '@/components/Layout';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import MobileOptimization from '@/components/MobileOptimization';
 import { trackPageView, trackEvent } from '@/utils/analytics';
-import { useApiDebugger } from '@/hooks/useApiDebugger'; // FIXED: Import from hooks folder
+import { useApiDebugger } from '@/hooks/useApiDebugger';
 
 // Lazy load pages for code splitting
 const HomePage = lazy(() => import('./pages/HomePage'));
 const CategoryPage = lazy(() => import('./pages/CategoryPage'));
+const TagPage = lazy(() => import('./pages/TagPage')); // NEW
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const AllArticlesPage = lazy(() => import('./pages/AllArticlesPage'));
 const ArticlePage = lazy(() => import('./pages/ArticlePage'));
@@ -19,7 +20,7 @@ const ContactPage = lazy(() => import('./pages/ContactPage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
 const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
-const DisclaimerPage = lazy(() => import('./pages/DisclaimerPage')); // Added import
+const DisclaimerPage = lazy(() => import('./pages/DisclaimerPage'));
 const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
@@ -44,15 +45,12 @@ const RouteChangeTracker = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Mark performance timing
     if (typeof performance !== "undefined" && performance.mark) {
       performance.mark(`route-${location.pathname}-${Date.now()}`);
     }
 
-    // Track page view in Google Analytics
     trackPageView(location.pathname + location.search);
 
-    // Refresh Ezoic ads on route change with proper timing
     const refreshAds = () => {
       try {
         if (window.ezstandalone && typeof window.ezstandalone.showAds === 'function') {
@@ -68,12 +66,10 @@ const RouteChangeTracker = () => {
       }
     };
 
-    // Delay ad refresh to avoid conflicts with page render
     const adTimeout = setTimeout(() => {
       requestAnimationFrame(refreshAds);
     }, 150);
 
-    // Scroll to top on route change (better UX)
     window.scrollTo({ top: 0, behavior: 'instant' });
 
     return () => clearTimeout(adTimeout);
@@ -83,21 +79,18 @@ const RouteChangeTracker = () => {
 };
 
 function App() {
-  const { debugMode } = useApiDebugger(); // FIXED: Now properly imported
+  const { debugMode } = useApiDebugger();
 
   useEffect(() => {
-    // Mark app initialization
     if (typeof performance !== "undefined" && performance.mark) {
       performance.mark('app-initialized');
     }
 
-    // Prefetch high-traffic pages after initial load
     const prefetchTimer = setTimeout(() => {
       import('./pages/AllArticlesPage');
       import('./pages/ArticlePage');
     }, 2000);
 
-    // Log initial performance metrics
     const logPerformance = () => {
       if (typeof performance !== 'undefined') {
         const perfData = performance.getEntriesByType('navigation')[0];
@@ -113,7 +106,6 @@ function App() {
       }
     };
 
-    // Track app initialization
     trackEvent({
       action: 'app_initialized',
       category: 'performance',
@@ -149,6 +141,12 @@ function App() {
           <Route path="category/:categoryName" element={
             <Suspense fallback={<LoadingFallback text="Loading Category..." />}>
               <CategoryPage />
+            </Suspense>
+          } />
+          {/* NEW TAG ROUTE */}
+          <Route path="tag/:tagSlug" element={
+            <Suspense fallback={<LoadingFallback text="Loading Tag..." />}>
+              <TagPage />
             </Suspense>
           } />
           <Route path="about" element={
