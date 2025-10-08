@@ -2,30 +2,36 @@
 // COMPLETE ENHANCED functions.php for DataEngineer Hub
 // Fixed keyword prioritization and scoring system
 
-// Enable CORS for frontend applications
+// Enable CORS for frontend applications - CORRECTED VERSION
 function handle_cors_requests() {
+    // Standard allowed origins for your development and main site
     $allowed_origins = [
         'https://dataengineerhub.blog',
         'https://app.dataengineerhub.blog',
-        // Common development origins
         'http://localhost:3000',
         'http://localhost:5173',
     ];
 
-    if (isset($_SERVER['HTTP_ORIGIN'])) {
-        $origin = $_SERVER['HTTP_ORIGIN'];
-        if (in_array($origin, $allowed_origins)) {
-            header("Access-Control-Allow-Origin: " . $origin);
-        } else {
-            // For development, allow localhost and common dev platforms
-            if (strpos($origin, 'localhost') !== false || 
-                strpos($origin, 'bolt.new') !== false || 
-                strpos($origin, 'staticblitz.com') !== false ||
-                strpos($origin, 'stackblitz.com') !== false ||
-                strpos($origin, 'local-credent') !== false) {
-                header("Access-Control-Allow-Origin: " . $origin);
-            }
-        }
+    $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+
+    // **THE FIX: Unconditionally allow all GET requests from any origin.**
+    // This is safe for public content and allows Googlebot/other crawlers to access your API.
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        header("Access-Control-Allow-Origin: *");
+    } 
+    // For other methods like POST, keep your specific origin check for security.
+    elseif (in_array($origin, $allowed_origins)) {
+        header("Access-Control-Allow-Origin: " . $origin);
+    }
+    // Handle development environments like StackBlitz, etc.
+    elseif (
+        strpos($origin, 'localhost') !== false ||
+        strpos($origin, 'bolt.new') !== false ||
+        strpos($origin, 'staticblitz.com') !== false ||
+        strpos($origin, 'stackblitz.com') !== false ||
+        strpos($origin, 'local-credent') !== false
+    ) {
+        header("Access-Control-Allow-Origin: " . $origin);
     }
 
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
@@ -42,7 +48,6 @@ function handle_cors_requests() {
 // Use a higher priority and remove any old hooks to be safe
 remove_action('init', 'handle_cors_requests');
 add_action('init', 'handle_cors_requests', 9);
-
 // =================================================================
 // CACHE MANAGEMENT SYSTEM
 // =================================================================
