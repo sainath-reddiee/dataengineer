@@ -84,12 +84,12 @@ const Header = () => {
             </motion.div>
 
             {/* Cloud Dropdown */}
-            <div className="relative group">
+            <div className="relative group z-[10000]">
               <button className="flex items-center gap-1 text-gray-300 hover:text-blue-400 transition-colors font-medium text-base">
                 {navigationStructure.cloud.label}
                 <ChevronDown className="h-4 w-4" />
               </button>
-              <div className="absolute top-full left-0 mt-2 w-44 bg-slate-800/95 backdrop-blur-xl rounded-lg shadow-xl border border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+              <div className="absolute top-full left-0 mt-2 w-44 bg-slate-800 backdrop-blur-xl rounded-lg shadow-2xl border border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[10000]">
                 {navigationStructure.cloud.items.map((item) => (
                   <NavLink
                     key={item.name}
@@ -104,12 +104,12 @@ const Header = () => {
             </div>
 
             {/* Data Tools Dropdown */}
-            <div className="relative group">
+            <div className="relative group z-[10000]">
               <button className="flex items-center gap-1 text-gray-300 hover:text-blue-400 transition-colors font-medium text-base">
                 {navigationStructure.tools.label}
                 <ChevronDown className="h-4 w-4" />
               </button>
-              <div className="absolute top-full left-0 mt-2 w-44 bg-slate-800/95 backdrop-blur-xl rounded-lg shadow-xl border border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+              <div className="absolute top-full left-0 mt-2 w-44 bg-slate-800 backdrop-blur-xl rounded-lg shadow-2xl border border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[10000]">
                 {navigationStructure.tools.items.map((item) => (
                   <NavLink
                     key={item.name}
@@ -124,12 +124,12 @@ const Header = () => {
             </div>
 
             {/* Languages Dropdown */}
-            <div className="relative group">
+            <div className="relative group z-[10000]">
               <button className="flex items-center gap-1 text-gray-300 hover:text-blue-400 transition-colors font-medium text-base">
                 {navigationStructure.languages.label}
                 <ChevronDown className="h-4 w-4" />
               </button>
-              <div className="absolute top-full left-0 mt-2 w-44 bg-slate-800/95 backdrop-blur-xl rounded-lg shadow-xl border border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+              <div className="absolute top-full left-0 mt-2 w-44 bg-slate-800 backdrop-blur-xl rounded-lg shadow-2xl border border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[10000]">
                 {navigationStructure.languages.items.map((item) => (
                   <NavLink
                     key={item.name}
