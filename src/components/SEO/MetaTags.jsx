@@ -1,5 +1,4 @@
-// src/components/SEO/MetaTags.jsx
-// FIXED VERSION - No duplicate tags, optimized lengths, proper schema
+// src/components/SEO/MetaTags.jsx - COMPLETE WITH TAGS SUPPORT
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
@@ -21,14 +20,12 @@ const MetaTags = ({
   const twitterHandle = '@sainath29';
   const siteUrl = 'https://dataengineerhub.blog';
   
-  // FIXED: Optimized title length (50-60 chars for SEO)
   const createTitle = () => {
     if (!title) {
       return 'DataEngineer Hub - Data Engineering Tutorials';
     }
     
-    // Truncate if too long
-    const maxLength = 60 - siteName.length - 3; // 3 for " | "
+    const maxLength = 60 - siteName.length - 3;
     const truncatedTitle = title.length > maxLength 
       ? title.substring(0, maxLength) + '...' 
       : title;
@@ -38,10 +35,8 @@ const MetaTags = ({
   
   const fullTitle = createTitle();
   
-  // FIXED: Optimized description length (120-155 chars for SEO)
   const createDescription = () => {
     if (description) {
-      // Truncate if too long (max 155 chars)
       return description.length > 155 
         ? description.substring(0, 152) + '...' 
         : description;
@@ -55,7 +50,6 @@ const MetaTags = ({
   const fullImage = image || `${siteUrl}/og-image.jpg`;
   const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : siteUrl);
 
-  // Format dates properly (ISO 8601)
   const formatDate = (date) => {
     if (!date) return null;
     try {
@@ -69,7 +63,25 @@ const MetaTags = ({
   const formattedPublishedTime = formatDate(publishedTime);
   const formattedModifiedTime = formatDate(modifiedTime || publishedTime);
 
-  // FIXED: Proper Article Schema with all required fields
+  // Generate keywords from tags
+  const generateKeywords = () => {
+    if (keywords) return keywords;
+    
+    const tagNames = Array.isArray(tags) 
+      ? tags.map(tag => typeof tag === 'string' ? tag : tag.name).filter(Boolean)
+      : [];
+    
+    const baseKeywords = ['data engineering', 'tutorials', 'data engineering blog'];
+    
+    if (category) {
+      baseKeywords.push(category.toLowerCase());
+    }
+    
+    return [...baseKeywords, ...tagNames].join(', ');
+  };
+
+  const finalKeywords = generateKeywords();
+
   const articleSchema = type === 'article' && formattedPublishedTime ? {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -103,10 +115,13 @@ const MetaTags = ({
       "@id": currentUrl
     },
     ...(category && { "articleSection": category }),
-    ...(tags.length > 0 && { "keywords": tags.join(", ") })
+    ...(tags.length > 0 && { 
+      "keywords": Array.isArray(tags) 
+        ? tags.map(t => typeof t === 'string' ? t : t.name).filter(Boolean).join(", ")
+        : tags
+    })
   } : null;
 
-  // FIXED: Website Schema for non-article pages
   const websiteSchema = type === 'website' ? {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -129,7 +144,6 @@ const MetaTags = ({
     }
   } : null;
 
-  // FIXED: BreadcrumbList Schema for better navigation
   const breadcrumbSchema = type === 'article' && category ? {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -163,15 +177,13 @@ const MetaTags = ({
 
   return (
     <Helmet>
-      {/* Basic Meta Tags */}
       <html lang="en" />
       <title>{fullTitle}</title>
       <meta name="description" content={fullDescription} />
-      {keywords && <meta name="keywords" content={keywords} />}
+      {finalKeywords && <meta name="keywords" content={finalKeywords} />}
       <meta name="author" content={author} />
       <link rel="canonical" href={currentUrl} />
 
-      {/* Robots - FIXED: Proper directives */}
       {noindex ? (
         <meta name="robots" content="noindex, nofollow" />
       ) : (
@@ -182,7 +194,6 @@ const MetaTags = ({
         </>
       )}
 
-      {/* Open Graph - FIXED: Complete required fields */}
       <meta property="og:type" content={type} />
       <meta property="og:url" content={currentUrl} />
       <meta property="og:title" content={fullTitle} />
@@ -194,7 +205,6 @@ const MetaTags = ({
       <meta property="og:site_name" content={siteName} />
       <meta property="og:locale" content="en_US" />
 
-      {/* Twitter Card - FIXED: Proper card type and fields */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:url" content={currentUrl} />
       <meta name="twitter:title" content={fullTitle} />
@@ -204,7 +214,6 @@ const MetaTags = ({
       <meta name="twitter:site" content={twitterHandle} />
       <meta name="twitter:creator" content={twitterHandle} />
 
-      {/* Article Specific Tags - FIXED: Only when type is article */}
       {type === 'article' && formattedPublishedTime && (
         <>
           <meta property="article:author" content={author} />
@@ -213,20 +222,19 @@ const MetaTags = ({
             <meta property="article:modified_time" content={formattedModifiedTime} />
           )}
           {category && <meta property="article:section" content={category} />}
-          {tags.map((tag, i) => (
-            <meta property="article:tag" content={tag} key={`article-tag-${i}`} />
-          ))}
+          {Array.isArray(tags) && tags.map((tag, i) => {
+            const tagName = typeof tag === 'string' ? tag : tag.name;
+            return tagName ? <meta property="article:tag" content={tagName} key={`article-tag-${i}`} /> : null;
+          })}
         </>
       )}
 
-      {/* Mobile Optimization */}
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
       <meta name="theme-color" content="#1e293b" />
       <meta name="mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-      {/* Structured Data - FIXED: Only add relevant schema per page type */}
       {articleSchema && (
         <script type="application/ld+json">
           {JSON.stringify(articleSchema)}
