@@ -54,9 +54,10 @@ const Header = () => {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8 }}
-      className="fixed top-0 w-full z-[9999] glass-effect overflow-visible"
+      className="fixed top-0 w-full z-[9999] glass-effect"
+      style={{ overflow: 'visible' }}
     >
-      <nav className="container mx-auto px-6 py-6 relative z-[9999] overflow-visible">
+      <nav className="container mx-auto px-6 py-6 relative" style={{ overflow: 'visible' }}>
         <div className="flex items-center justify-between gap-8">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
@@ -70,7 +71,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation with Dropdowns */}
-          <div className="hidden xl:flex items-center space-x-6 overflow-visible">
+          <div className="hidden xl:flex items-center space-x-6" style={{ overflow: 'visible' }}>
             {/* Home */}
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <NavLink
@@ -84,62 +85,95 @@ const Header = () => {
             </motion.div>
 
             {/* Cloud Dropdown */}
-            <div className="relative group z-[10000]">
-              <button className="flex items-center gap-1 text-gray-300 hover:text-blue-400 transition-colors font-medium text-base">
-                {navigationStructure.cloud.label}
-                <ChevronDown className="h-4 w-4" />
-              </button>
-              <div className="absolute top-full left-0 mt-2 w-44 bg-slate-900 backdrop-blur-xl rounded-lg shadow-2xl border border-gray-600 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[10001]">
-                {navigationStructure.cloud.items.map((item) => (
-                  <NavLink
-                    key={item.name}
-                    to={item.path}
-                    style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                    className="block px-4 py-2.5 text-gray-300 hover:bg-slate-700/50 hover:text-blue-400 transition-colors first:rounded-t-lg last:rounded-b-lg"
-                  >
-                    {item.name}
-                  </NavLink>
-                ))}
+            <div className="relative" style={{ overflow: 'visible' }}>
+              <div className="group">
+                <button className="flex items-center gap-1 text-gray-300 hover:text-blue-400 transition-colors font-medium text-base">
+                  {navigationStructure.cloud.label}
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                <div className="absolute left-0 mt-2 w-48 bg-slate-900 rounded-lg shadow-2xl border border-slate-700 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200"
+                  style={{ 
+                    top: '100%',
+                    zIndex: 99999,
+                    position: 'absolute'
+                  }}>
+                  {navigationStructure.cloud.items.map((item, index) => (
+                    <NavLink
+                      key={item.name}
+                      to={item.path}
+                      style={({ isActive }) => isActive ? activeLinkStyle : undefined}
+                      className={`block px-4 py-3 text-gray-200 hover:bg-slate-700 hover:text-blue-400 transition-colors ${
+                        index === 0 ? 'rounded-t-lg' : ''
+                      } ${
+                        index === navigationStructure.cloud.items.length - 1 ? 'rounded-b-lg' : ''
+                      }`}
+                    >
+                      {item.name}
+                    </NavLink>
+                  ))}
+                </div>
               </div>
             </div>
 
             {/* Data Tools Dropdown */}
-            <div className="relative group z-[10000]">
-              <button className="flex items-center gap-1 text-gray-300 hover:text-blue-400 transition-colors font-medium text-base">
-                {navigationStructure.tools.label}
-                <ChevronDown className="h-4 w-4" />
-              </button>
-              <div className="absolute top-full left-0 mt-2 w-44 bg-slate-900 backdrop-blur-xl rounded-lg shadow-2xl border border-gray-600 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[10001]">
-                {navigationStructure.tools.items.map((item) => (
-                  <NavLink
-                    key={item.name}
-                    to={item.path}
-                    style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                    className="block px-4 py-2.5 text-gray-200 hover:bg-slate-700 hover:text-blue-400 transition-colors first:rounded-t-lg last:rounded-b-lg"
-                  >
-                    {item.name}
-                  </NavLink>
-                ))}
+            <div className="relative" style={{ overflow: 'visible' }}>
+              <div className="group">
+                <button className="flex items-center gap-1 text-gray-300 hover:text-blue-400 transition-colors font-medium text-base">
+                  {navigationStructure.tools.label}
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                <div className="absolute left-0 mt-2 w-48 bg-slate-900 rounded-lg shadow-2xl border border-slate-700 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200"
+                  style={{ 
+                    top: '100%',
+                    zIndex: 99999,
+                    position: 'absolute'
+                  }}>
+                  {navigationStructure.tools.items.map((item, index) => (
+                    <NavLink
+                      key={item.name}
+                      to={item.path}
+                      style={({ isActive }) => isActive ? activeLinkStyle : undefined}
+                      className={`block px-4 py-3 text-gray-200 hover:bg-slate-700 hover:text-blue-400 transition-colors ${
+                        index === 0 ? 'rounded-t-lg' : ''
+                      } ${
+                        index === navigationStructure.tools.items.length - 1 ? 'rounded-b-lg' : ''
+                      }`}
+                    >
+                      {item.name}
+                    </NavLink>
+                  ))}
+                </div>
               </div>
             </div>
 
             {/* Languages Dropdown */}
-            <div className="relative group z-[10000]">
-              <button className="flex items-center gap-1 text-gray-300 hover:text-blue-400 transition-colors font-medium text-base">
-                {navigationStructure.languages.label}
-                <ChevronDown className="h-4 w-4" />
-              </button>
-              <div className="absolute top-full left-0 mt-2 w-44 bg-slate-900 backdrop-blur-xl rounded-lg shadow-2xl border border-gray-600 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[10001]">
-                {navigationStructure.languages.items.map((item) => (
-                  <NavLink
-                    key={item.name}
-                    to={item.path}
-                    style={({ isActive }) => isActive ? activeLinkStyle : undefined}
-                    className="block px-4 py-2.5 text-gray-200 hover:bg-slate-700 hover:text-blue-400 transition-colors first:rounded-t-lg last:rounded-b-lg"
-                  >
-                    {item.name}
-                  </NavLink>
-                ))}
+            <div className="relative" style={{ overflow: 'visible' }}>
+              <div className="group">
+                <button className="flex items-center gap-1 text-gray-300 hover:text-blue-400 transition-colors font-medium text-base">
+                  {navigationStructure.languages.label}
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                <div className="absolute left-0 mt-2 w-48 bg-slate-900 rounded-lg shadow-2xl border border-slate-700 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200"
+                  style={{ 
+                    top: '100%',
+                    zIndex: 99999,
+                    position: 'absolute'
+                  }}>
+                  {navigationStructure.languages.items.map((item, index) => (
+                    <NavLink
+                      key={item.name}
+                      to={item.path}
+                      style={({ isActive }) => isActive ? activeLinkStyle : undefined}
+                      className={`block px-4 py-3 text-gray-200 hover:bg-slate-700 hover:text-blue-400 transition-colors ${
+                        index === 0 ? 'rounded-t-lg' : ''
+                      } ${
+                        index === navigationStructure.languages.items.length - 1 ? 'rounded-b-lg' : ''
+                      }`}
+                    >
+                      {item.name}
+                    </NavLink>
+                  ))}
+                </div>
               </div>
             </div>
 
