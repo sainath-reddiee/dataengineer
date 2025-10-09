@@ -130,13 +130,12 @@ export function preconnectDomain(domain) {
  * Initialize all third-party scripts with delay
  */
 export function initThirdPartyScripts() {
-  // Preconnect to external domains first
   preconnectDomain('https://www.googletagmanager.com');
-  preconnectDomain('https://www.ezojs.com');
+  preconnectDomain('https://pagead2.googlesyndication.com');
+  preconnectDomain('https://googleads.g.doubleclick.net');
   
-  // Load after user interaction
   if (typeof window !== 'undefined') {
     loadGoogleAnalytics('G-MTMNP6EV9C');
-    loadEzoicAds();
+    loadAdSense('ca-pub-XXXXXXXXXX'); // Your AdSense ID
   }
 }
