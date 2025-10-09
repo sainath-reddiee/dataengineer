@@ -61,17 +61,20 @@ export function loadScriptDelayed(src, options = {}) {
 /**
  * Load Ezoic ads after interaction
  */
-export function loadEzoicAds() {
-  if (window.ezstandalone) return Promise.resolve();
+export function loadAdSense(publisherId) {
+  if (window.adsbygoogle) return Promise.resolve();
 
-  return loadScriptDelayed('https://www.ezojs.com/ezoic/sa.min.js', {
-    id: 'ezoic-sa',
-    timeout: 2000,
-    waitForInteraction: true
-  }).then(() => {
-    window.ezstandalone = window.ezstandalone || {};
-    window.ezstandalone.cmd = window.ezstandalone.cmd || [];
-    console.log('✅ Ezoic loaded');
+  return loadScriptDelayed(
+    `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`,
+    {
+      id: 'adsense-script',
+      timeout: 2000,
+      waitForInteraction: true,
+      async: true
+    }
+  ).then(() => {
+    window.adsbygoogle = window.adsbygoogle || [];
+    console.log('✅ AdSense loaded');
   });
 }
 
