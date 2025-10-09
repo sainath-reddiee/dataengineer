@@ -67,24 +67,49 @@ const PrivacyPolicyPage = () => {
 <p>
   Alternatively, users can opt out of a third-party vendor's use of cookies for personalized advertising by visiting <a href="http://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer">www.aboutads.info/choices</a>.
 </p>
-          <h2 className="text-xl font-bold text-white mt-8">Advertising Privacy Statement (Ezoic Services)</h2>
-          <div className="p-4 border border-gray-700 rounded-lg">
-            <h3 className="text-lg font-bold text-white">Ezoic Services</h3>
-            <p>This website uses the services of Ezoic Inc. ("Ezoic"), including to manage third-party interest-based advertising. Ezoic may employ a variety of technologies on this website, including tools to serve content, display advertisements and enable advertising to visitors of this website, which may utilize first and third-party cookies.</p>
-            <p>A cookie is a small text file sent to your device by a web server that enables the website to remember information about your browsing activity. First-party cookies are created by the site you are visiting, while third-party cookies are set by domains other than the one you're visiting. Ezoic and our partners may place third-party cookies, tags, beacons, pixels, and similar technologies to monitor interactions with advertisements and optimize ad targeting. Please note that disabling cookies may limit access to certain content and features on the website, and rejecting cookies does not eliminate advertisements but will result in non-personalized advertising. You can find more information about cookies and how to manage them <a href="https://allaboutcookies.org/" target="_blank" rel="noopener noreferrer">here</a>.</p>
-            <p>The following information may be collected, used, and stored in a cookie when serving personalized ads:</p>
-            <ul className="list-disc pl-5">
-              <li>IP address</li>
-              <li>Operating system type and version</li>
-              <li>Device type</li>
-              <li>Language preferences</li>
-              <li>Web browser type</li>
-              <li>Email (in a hashed or encrypted form)</li>
-            </ul>
-            <p>Ezoic and its partners may use this data in combination with information that has been independently collected to deliver targeted advertisements across various platforms and websites. Ezoic's partners may also gather additional data, such as unique IDs, advertising IDs, geolocation data, usage data, device information, traffic data, referral sources, and interactions between users and websites or advertisements, to create audience segments for targeted advertising across different devices, browsers, and apps. You can find more information about interest-based advertising and how to manage them <a href="https://youradchoices.com/" target="_blank" rel="noopener noreferrer">here</a>.</p>
-            <p>You can view Ezoic's privacy policy <a href="https://www.ezoic.com/privacy-policy/" target="_blank" rel="noopener noreferrer">here</a>, or for additional information about Ezoic's advertising and other partners, you can view Ezoic's advertising partners <a href="https://www.ezoic.com/privacy-policy/advertising-partners/" target="_blank" rel="noopener noreferrer">here</a>.</p>
-            <span id="ezoic-privacy-policy-embed"></span>
-          </div>
+<h2 className="text-xl font-bold text-white mt-8">Google AdSense Advertising</h2>
+<p>
+  We use Google AdSense to display advertisements on our website. Google AdSense uses cookies and web beacons to serve ads based on your prior visits to our website or other websites on the Internet.
+</p>
+
+<h3 className="text-lg font-semibold text-white mt-6">Cookies and Tracking</h3>
+<p>
+  Google uses cookies to serve ads on our site. Google's use of advertising cookies enables it and its partners to serve ads based on your visit to our sites and/or other sites on the Internet.
+</p>
+
+<h3 className="text-lg font-semibold text-white mt-6">Opt-Out Options</h3>
+<p>
+  You may opt out of personalized advertising by visiting:
+</p>
+<ul className="list-disc pl-8 mb-4">
+  <li>
+    <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">
+      Google Ads Settings
+    </a> - Control ads on Google services
+  </li>
+  <li>
+    <a href="http://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">
+      Digital Advertising Alliance
+    </a> - Opt out of participating companies
+  </li>
+  <li>
+    <a href="http://www.youronlinechoices.eu/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">
+      European Interactive Digital Advertising Alliance
+    </a> - For EU users
+  </li>
+</ul>
+
+<h3 className="text-lg font-semibold text-white mt-6">Third-Party Vendors</h3>
+<p>
+  Google, as a third-party vendor, uses cookies to serve ads on our site. These cookies enable Google and its partners to serve ads based on your visits to our site and/or other sites on the Internet. Google may also use web beacons and other technologies for analytics and ad serving purposes.
+</p>
+
+<p className="mt-4">
+  For more information about Google's privacy practices, please visit the{' '}
+  <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">
+    Google Privacy Policy
+  </a>.
+</p>
 <h2 class="text-xl font-bold text-white mt-8">8. CHILDREN'S INFORMATION</h2>
 <p>
   Our Site is not intended for use by children under the age of 13, and we do not knowingly collect personal information from children under 13. If we learn that we have collected personal information from a child under 13, we will take steps to delete such information from our files as soon as possible.
