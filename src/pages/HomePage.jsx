@@ -1,17 +1,14 @@
-// src/pages/HomePage.jsx
-// FIXED: Single H1, optimized meta tags, proper structure
+// src/pages/HomePage.jsx - FINAL VERSION WITH ADSENSE
 import React, { Suspense } from 'react';
 import Hero from '../components/Hero';
 import MetaTags from '../components/SEO/MetaTags';
-import OptimizedImage from '@/components/OptimizedImage';
-import { optimizeWordPressImage } from '@/utils/imageOptimizer';
 
 const FeaturedPosts = React.lazy(() => import('../components/FeaturedPosts'));
 const TrendingPosts = React.lazy(() => import('../components/TrendingPosts'));
 const RecentPosts = React.lazy(() => import('../components/RecentPosts'));
 const TechCategories = React.lazy(() => import('../components/TechCategories'));
 const Newsletter = React.lazy(() => import('../components/Newsletter'));
-const CallToAction = React.lazy(() => import('../components/CallToAction'));
+const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
 const SectionSkeleton = ({ height = "h-64" }) => (
   <div className={`${height} bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-pulse rounded-2xl mb-8`}>
@@ -33,12 +30,22 @@ const HomePage = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white">
         <Hero />
         
+        {/* Ad after Hero - High visibility position */}
+        <Suspense fallback={null}>
+          <AdPlacement position="homepage-top" format="auto" responsive={true} />
+        </Suspense>
+        
         <Suspense fallback={<SectionSkeleton height="h-96" />}>
           <FeaturedPosts />
         </Suspense>
         
         <Suspense fallback={<SectionSkeleton height="h-80" />}>
           <TrendingPosts />
+        </Suspense>
+        
+        {/* Ad between Trending and Tech Categories */}
+        <Suspense fallback={null}>
+          <AdPlacement position="homepage-middle" format="auto" responsive={true} />
         </Suspense>
         
         <Suspense fallback={<SectionSkeleton height="h-72" />}>
@@ -55,12 +62,13 @@ const HomePage = () => {
           />
         </Suspense>
         
-        <Suspense fallback={<SectionSkeleton height="h-64" />}>
-          <Newsletter />
+        {/* Ad before Newsletter - Good engagement position */}
+        <Suspense fallback={null}>
+          <AdPlacement position="homepage-bottom" format="auto" responsive={true} />
         </Suspense>
         
-        <Suspense fallback={<SectionSkeleton height="h-48" />}>
-          <CallToAction />
+        <Suspense fallback={<SectionSkeleton height="h-64" />}>
+          <Newsletter />
         </Suspense>
       </div>
     </>
