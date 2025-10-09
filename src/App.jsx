@@ -1,4 +1,4 @@
-// src/App.jsx - COMPLETE WITH TAG ROUTE
+// src/App.jsx - UPDATED FOR ADSENSE
 import React, { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
@@ -12,7 +12,7 @@ import { useApiDebugger } from '@/hooks/useApiDebugger';
 // Lazy load pages for code splitting
 const HomePage = lazy(() => import('./pages/HomePage'));
 const CategoryPage = lazy(() => import('./pages/CategoryPage'));
-const TagPage = lazy(() => import('./pages/TagPage')); // NEW
+const TagPage = lazy(() => import('./pages/TagPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const AllArticlesPage = lazy(() => import('./pages/AllArticlesPage'));
 const ArticlePage = lazy(() => import('./pages/ArticlePage'));
@@ -41,7 +41,7 @@ const LoadingFallback = ({ text = "Loading..." }) => (
   </div>
 );
 
-// Combined Route Change Tracker for Analytics & Ads
+// Combined Route Change Tracker for Analytics
 const RouteChangeTracker = () => {
   const location = useLocation();
 
@@ -52,28 +52,10 @@ const RouteChangeTracker = () => {
 
     trackPageView(location.pathname + location.search);
 
-    const refreshAds = () => {
-      try {
-        if (window.ezstandalone && typeof window.ezstandalone.showAds === 'function') {
-          window.ezstandalone.cmd.push(function() {
-            window.ezstandalone.showAds();
-          });
-        }
-        if (window.ezoic && typeof window.ezoic.refresh === 'function') {
-          window.ezoic.refresh();
-        }
-      } catch (e) {
-        console.error("Ezoic ad refresh error:", e);
-      }
-    };
-
-    const adTimeout = setTimeout(() => {
-      requestAnimationFrame(refreshAds);
-    }, 150);
-
+    // AdSense automatically refreshes on route changes
+    // No manual refresh needed unlike Ezoic
+    
     window.scrollTo({ top: 0, behavior: 'instant' });
-
-    return () => clearTimeout(adTimeout);
   }, [location.pathname, location.search]);
 
   return null;
@@ -145,11 +127,10 @@ function App() {
             </Suspense>
           } />
           <Route path="tag" element={
-  <Suspense fallback={<LoadingFallback text="Loading Tags..." />}>
-    <TagsArchivePage />
-  </Suspense>
-} />
-          {/* NEW TAG ROUTE */}
+            <Suspense fallback={<LoadingFallback text="Loading Tags..." />}>
+              <TagsArchivePage />
+            </Suspense>
+          } />
           <Route path="tag/:tagSlug" element={
             <Suspense fallback={<LoadingFallback text="Loading Tag..." />}>
               <TagPage />
