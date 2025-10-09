@@ -1,4 +1,4 @@
-// src/pages/ArticlePage.jsx - COMPLETE VERSION WITH TAGS AND NAVIGATION
+// src/pages/ArticlePage.jsx - COMPLETE VERSION WITH READING PROGRESS BAR
 import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -15,6 +15,7 @@ import DOMPurify from 'dompurify';
 import PostCard from '@/components/PostCard';
 import PostCardSkeleton from '@/components/PostCardSkeleton';
 import ArticleNavigation from '@/components/ArticleNavigation';
+import ReadingProgressBar from '@/components/ReadingProgressBar';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
@@ -324,6 +325,9 @@ const ArticlePage = () => {
 
   return (
     <div className="pt-4 pb-12">
+      {/* READING PROGRESS BAR - NEW */}
+      <ReadingProgressBar showPercentage={true} />
+      
       <MetaTags 
         title={safePost.title}
         description={safePost.excerpt}
@@ -413,7 +417,6 @@ const ArticlePage = () => {
             />
           </div>
 
-          {/* TAGS SECTION */}
           {safePost.tags && safePost.tags.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -451,13 +454,11 @@ const ArticlePage = () => {
           </div>
         </motion.article>
         
-        {/* PREVIOUS/NEXT NAVIGATION - NEW */}
         <ArticleNavigation 
           currentPostId={safePost.id} 
           category={safePost.category} 
         />
         
-        {/* RELATED POSTS */}
         <RelatedPosts currentPostId={safePost.id} />
       </div>
     </div>
