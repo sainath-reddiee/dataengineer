@@ -79,6 +79,40 @@ const Header = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [currentPath, setCurrentPath] = useState('/');
+
+  // Track current path for active states
+  useEffect(() => {
+    setCurrentPath(window.location.pathname);
+  }, []);
+
+  // Check if a category group is active
+  const isCategoryActive = (categoryKey) => {
+    const path = currentPath.toLowerCase();
+    
+    if (categoryKey === 'platforms') {
+      return path.includes('/category/aws') || 
+             path.includes('/category/azure') || 
+             path.includes('/category/gcp') || 
+             path.includes('/category/snowflake');
+    }
+    
+    if (categoryKey === 'tools') {
+      return path.includes('/category/airflow') || 
+             path.includes('/category/dbt');
+    }
+    
+    if (categoryKey === 'languages') {
+      return path.includes('/category/python') || 
+             path.includes('/category/sql');
+    }
+    
+    return false;
+  };
+
+  const isHomeActive = currentPath === '/';
+  const isTagsActive = currentPath.includes('/tag');
+  const isAboutActive = currentPath.includes('/about');
 
   // Enhanced category structure
   const categories = {
@@ -127,7 +161,7 @@ const Header = () => {
     return () => window.removeEventListener('scroll', controlHeader);
   }, [lastScrollY]);
 
-  const MegaMenu = ({ category }) => {
+  const MegaMenu = ({ category, categoryKey }) => {
     // Generate sparks for animation
     const sparks = useMemo(() => 
       Array.from({ length: 12 }).map(() => ({
@@ -141,6 +175,27 @@ const Header = () => {
     const sparkContainerVariants = {
       rest: {},
       hover: { transition: { staggerChildren: 0.04 } },
+    };
+
+    // Smart CTA text based on category
+    const getCtaText = () => {
+      if (categoryKey === 'platforms') {
+        return 'View all Cloud & Platform articles';
+      }
+      if (categoryKey === 'tools') {
+        return 'View all Orchestration & Transform articles';
+      }
+      if (categoryKey === 'languages') {
+        return 'View all Language articles';
+      }
+      return 'View all articles';
+    };
+
+    // Build filtered URL with categories
+    const getCtaUrl = () => {
+      const categoryNames = category.items.map(item => item.name.toLowerCase()).join(',');
+      // For now, just go to /articles - you can enhance this with query params later
+      return '/articles';
     };
 
     return (
@@ -211,13 +266,13 @@ const Header = () => {
           ))}
         </div>
 
-        {/* Footer CTA */}
+        {/* Smart Footer CTA */}
         <div className="mt-4 pt-4 border-t border-slate-700/50 text-center">
           <a 
-            href="/articles" 
+            href={getCtaUrl()}
             className="text-sm text-blue-400 hover:text-blue-300 font-medium inline-flex items-center gap-2 group"
           >
-            View all articles
+            {getCtaText()}
             <motion.span
               className="inline-block"
               animate={{ x: [0, 4, 0] }}
@@ -268,39 +323,63 @@ const Header = () => {
           <div className="hidden xl:flex items-center space-x-8">
             {/* Home */}
             <motion.div whileHover={{ y: -2 }}>
-              <a href="/" className="text-gray-300 hover:text-blue-400 font-semibold text-base transition-all duration-200 flex items-center gap-2">
+              <a 
+                href="/" 
+                className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
+                  isHomeActive 
+                    ? 'text-blue-400' 
+                    : 'text-gray-300 hover:text-blue-400'
+                }`}
+                style={isHomeActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+              >
                 <Home className="w-4 h-4" />
                 Home
               </a>
             </motion.div>
 
             {/* Mega Menus */}
-            {Object.entries(categories).map(([key, category]) => (
-              <div key={key} className="relative group">
-                <motion.button
-                  whileHover={{ y: -2 }}
-                  onMouseEnter={() => setOpenDropdown(key)}
-                  onMouseLeave={() => setOpenDropdown(null)}
-                  className="flex items-center gap-1.5 text-gray-300 hover:text-blue-400 font-medium text-base transition-all duration-200"
-                >
-                  <category.icon className="w-4 h-4" />
-                  {category.title.split(' ')[0]}
-                  <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
-                </motion.button>
+            {Object.entries(categories).map(([key, category]) => {
+              const isActive = isCategoryActive(key);
+              return (
+                <div key={key} className="relative group">
+                  <motion.button
+                    whileHover={{ y: -2 }}
+                    onMouseEnter={() => setOpenDropdown(key)}
+                    onMouseLeave={() => setOpenDropdown(null)}
+                    className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${
+                      isActive 
+                        ? 'text-blue-400' 
+                        : 'text-gray-300 hover:text-blue-400'
+                    }`}
+                    style={isActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+                  >
+                    <category.icon className="w-4 h-4" />
+                    {category.title.split(' ')[0]}
+                    <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
+                  </motion.button>
 
-                <AnimatePresence>
-                  {openDropdown === key && (
-                    <div onMouseEnter={() => setOpenDropdown(key)} onMouseLeave={() => setOpenDropdown(null)}>
-                      <MegaMenu category={category} />
-                    </div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ))}
+                  <AnimatePresence>
+                    {openDropdown === key && (
+                      <div onMouseEnter={() => setOpenDropdown(key)} onMouseLeave={() => setOpenDropdown(null)}>
+                        <MegaMenu category={category} categoryKey={key} />
+                      </div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
 
             {/* Tags */}
             <motion.div whileHover={{ y: -2 }}>
-              <a href="/tag" className="text-gray-300 hover:text-blue-400 font-semibold text-base transition-all duration-200 flex items-center gap-2">
+              <a 
+                href="/tag" 
+                className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
+                  isTagsActive 
+                    ? 'text-blue-400' 
+                    : 'text-gray-300 hover:text-blue-400'
+                }`}
+                style={isTagsActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+              >
                 <Tags className="w-4 h-4" />
                 Tags
               </a>
@@ -308,7 +387,15 @@ const Header = () => {
 
             {/* About */}
             <motion.div whileHover={{ y: -2 }}>
-              <a href="/about" className="text-gray-300 hover:text-blue-400 font-semibold text-base transition-all duration-200 flex items-center gap-2">
+              <a 
+                href="/about" 
+                className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
+                  isAboutActive 
+                    ? 'text-blue-400' 
+                    : 'text-gray-300 hover:text-blue-400'
+                }`}
+                style={isAboutActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+              >
                 <Info className="w-4 h-4" />
                 About
               </a>
