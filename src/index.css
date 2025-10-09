@@ -671,3 +671,39 @@ img {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+/* AdSense Ad Styling */
+.adsense-ad {
+  min-height: 100px;
+  display: block;
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.adsense-ad ins {
+  display: block;
+  text-decoration: none;
+}
+
+/* Responsive ad container */
+@media screen and (max-width: 768px) {
+  .adsense-ad {
+    margin: 1.5rem 0;
+  }
+}
+
+/* Loading state for ads */
+.adsense-ad[data-ad-status="loading"] {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
