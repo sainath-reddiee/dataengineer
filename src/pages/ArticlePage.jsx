@@ -1,5 +1,5 @@
-// src/pages/ArticlePage.jsx - COMPLETE VERSION WITH READING PROGRESS BAR
-import React, { Suspense, useEffect, useState } from 'react';
+// src/pages/ArticlePage.jsx - FINAL VERSION WITH READING PROGRESS BAR (NO PERCENTAGE)
+import React, { Suspense, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, Clock, User, Loader, AlertCircle, RefreshCw, Tag } from 'lucide-react';
@@ -325,8 +325,8 @@ const ArticlePage = () => {
 
   return (
     <div className="pt-4 pb-12">
-      {/* READING PROGRESS BAR - NEW */}
-      <ReadingProgressBar showPercentage={true} />
+      {/* READING PROGRESS BAR - ALWAYS VISIBLE, NO PERCENTAGE */}
+      <ReadingProgressBar />
       
       <MetaTags 
         title={safePost.title}
