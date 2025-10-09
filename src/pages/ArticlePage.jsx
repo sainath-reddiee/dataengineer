@@ -1,4 +1,4 @@
-// src/pages/ArticlePage.jsx - COMPLETE VERSION WITH TAGS
+// src/pages/ArticlePage.jsx - COMPLETE VERSION WITH TAGS AND NAVIGATION
 import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -14,6 +14,7 @@ import TagsList from '@/components/TagsList';
 import DOMPurify from 'dompurify';
 import PostCard from '@/components/PostCard';
 import PostCardSkeleton from '@/components/PostCardSkeleton';
+import ArticleNavigation from '@/components/ArticleNavigation';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
@@ -412,7 +413,7 @@ const ArticlePage = () => {
             />
           </div>
 
-          {/* TAGS SECTION - NEW */}
+          {/* TAGS SECTION */}
           {safePost.tags && safePost.tags.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -450,6 +451,13 @@ const ArticlePage = () => {
           </div>
         </motion.article>
         
+        {/* PREVIOUS/NEXT NAVIGATION - NEW */}
+        <ArticleNavigation 
+          currentPostId={safePost.id} 
+          category={safePost.category} 
+        />
+        
+        {/* RELATED POSTS */}
         <RelatedPosts currentPostId={safePost.id} />
       </div>
     </div>
