@@ -18,7 +18,7 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
       azure: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg',
       sql: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
       airflow: 'https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/apacheairflow/apacheairflow-original.svg',
-      dbt: 'https://images.seeklogo.com/logo-png/43/1/dbt-logo-png_seeklogo-431111.png',
+      dbt: 'https://docs.getdbt.com/img/dbt-logo.svg',
       python: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
       gcp: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg'
     };
