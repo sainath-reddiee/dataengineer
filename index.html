@@ -3,21 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX"
-       crossorigin="anonymous"></script>
-  
-  <!-- OPTIONAL: AdSense Auto Ads -->
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({
-      google_ad_client: "ca-pub-XXXXXXXXXX",
-      enable_page_level_ads: true
-    });
-  </script>
+    
+    <!-- AdSense will be loaded dynamically via scriptLoader.js -->
+    
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
-    <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
-  <link rel="preconnect" href="https://googleads.g.doubleclick.net" crossorigin>
+    
+    <!-- Preconnect to ad networks (only if ads enabled) -->
+    <!-- These will be added dynamically by scriptLoader.js -->
+    
     <link rel="dns-prefetch" href="//www.googletagmanager.com">
     
     <title>DataEngineer Hub - Data Engineering Tutorials</title>
@@ -178,7 +173,6 @@
               
               console.log('📊 Performance:', metrics);
               
-              // Send to GA once loaded
               if (typeof gtag !== 'undefined') {
                 gtag('event', 'timing_complete', {
                   'name': 'load',
