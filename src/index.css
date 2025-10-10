@@ -503,36 +503,6 @@ img {
 }
 
 /* ============================================
-   MOBILE OPTIMIZATIONS
-   ============================================ */
-
-@media screen and (max-width: 768px) {
-  .floating-animation {
-    animation: none;
-  }
-  
-  .pulse-glow {
-    animation: none;
-  }
-  
-  .gradient-text {
-    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
-    animation: none;
-  }
-  
-  .blog-card,
-  .tech-card {
-    backdrop-filter: blur(5px);
-    transition: transform 0.2s ease;
-  }
-  
-  .blog-card:hover,
-  .tech-card:hover {
-    transform: translateY(-2px);
-  }
-}
-
-/* ============================================
    ANIMATIONS
    ============================================ */
 
@@ -764,7 +734,115 @@ img {
   animation: loading 1.5s infinite;
 }
 
-@keyframes loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+/* ============================================
+   MOBILE OPTIMIZATIONS - PERFORMANCE CRITICAL
+   ============================================ */
+
+/* Reduce GPU usage on mobile */
+@media screen and (max-width: 768px) {
+  /* Disable expensive animations */
+  .floating-animation {
+    animation: none;
+    transform: none;
+  }
+  
+  .pulse-glow {
+    animation: none;
+    box-shadow: none;
+  }
+  
+  .gradient-text {
+    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+    animation: none;
+    background-position: 0% 50%;
+  }
+  
+  /* Reduce backdrop blur for performance */
+  .blog-card,
+  .tech-card,
+  .glass-effect {
+    backdrop-filter: blur(5px);
+    transition: transform 0.2s ease;
+  }
+  
+  /* Simplify hover effects */
+  .blog-card:hover,
+  .tech-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* Disable will-change on mobile to reduce memory */
+  * {
+    will-change: auto !important;
+  }
+  
+  /* Optimize images for mobile */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+  
+  /* Reduce complexity of shadows */
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-2xl {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+  }
+  
+  /* Disable smooth scroll on mobile - can cause reflows */
+  html {
+    scroll-behavior: auto;
+  }
+  
+  /* Optimize container queries */
+  .container {
+    contain: layout style;
+  }
+  
+  /* Reduce font weight variations on mobile */
+  body {
+    font-weight: 400;
+  }
+  
+  /* Optimize touch targets */
+  button,
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Reduce animation complexity */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Disable transforms on scroll */
+  .parallax,
+  .scroll-transform {
+    transform: none !important;
+  }
+}
+
+/* Optimize for very low-end devices */
+@media screen and (max-width: 768px) and (max-device-memory: 2) {
+  /* Further reduce visual effects */
+  .backdrop-blur,
+  [style*="backdrop-filter"] {
+    backdrop-filter: none !important;
+    background: rgba(15, 23, 42, 0.95) !important;
+  }
+  
+  /* Disable all animations */
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  /* Optimize gradients */
+  .gradient-text {
+    background: #60a5fa;
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
 }
