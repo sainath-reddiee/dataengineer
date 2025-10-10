@@ -1,8 +1,8 @@
-// src/pages/ArticlePage.jsx - FIXED NAVIGATION UI
+// src/pages/ArticlePage.jsx - FINAL VERSION WITH READING PROGRESS BAR (NO PERCENTAGE)
 import React, { Suspense, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Clock, User, Loader, AlertCircle, RefreshCw, Tag, Grid } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, User, Loader, AlertCircle, RefreshCw, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MetaTags from '@/components/SEO/MetaTags';
 import { usePost, useRelatedPosts } from '@/hooks/useWordPress';
@@ -76,23 +76,21 @@ const ErrorDisplay = ({ error, onRetry, slug }) => {
   const isNotFound = error?.message?.includes('not found') || error?.message?.includes('404');
 
   return (
-    <div className="pt-20 pb-12">
+    <div className="pt-4 pb-12">
       <div className="container mx-auto px-6 max-w-4xl">
-        {/* ✅ FIXED: Navigation buttons */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex items-center gap-3 mb-8"
+          className="mb-4"
         >
           <Button 
             asChild 
             variant="outline" 
-            size="lg"
             className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm"
           >
             <Link to="/articles">
-              <Grid className="mr-2 h-5 w-5" />
+              <ArrowLeft className="mr-2 h-4 w-4" />
               All Articles
             </Link>
           </Button>
@@ -156,22 +154,21 @@ const ErrorDisplay = ({ error, onRetry, slug }) => {
 };
 
 const LoadingDisplay = () => (
-  <div className="pt-20 pb-12">
+  <div className="pt-4 pb-12">
     <div className="container mx-auto px-6 max-w-4xl">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex items-center gap-3 mb-8"
+        className="mb-4"
       >
         <Button 
           asChild 
           variant="outline" 
-          size="lg"
           className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm"
         >
           <Link to="/articles">
-            <Grid className="mr-2 h-5 w-5" />
+            <ArrowLeft className="mr-2 h-4 w-4" />
             All Articles
           </Link>
         </Button>
@@ -327,7 +324,8 @@ const ArticlePage = () => {
   };
 
   return (
-    <div className="pt-20 pb-12">
+    <div className="pt-4 pb-12">
+      {/* READING PROGRESS BAR - ALWAYS VISIBLE, NO PERCENTAGE */}
       <ReadingProgressBar />
       
       <MetaTags 
@@ -342,21 +340,19 @@ const ArticlePage = () => {
       />
       
       <div className="container mx-auto px-6 max-w-4xl">
-        {/* ✅ FIXED: Better navigation with proper spacing */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex items-center gap-3 mb-8"
+          className="mb-4"
         >
           <Button 
             asChild 
             variant="outline" 
-            size="lg"
             className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm"
           >
             <Link to="/articles">
-              <Grid className="mr-2 h-5 w-5" />
+              <ArrowLeft className="mr-2 h-4 w-4" />
               All Articles
             </Link>
           </Button>
@@ -451,7 +447,6 @@ const ArticlePage = () => {
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <Link to="/articles">
-                  <Grid className="mr-2 h-4 w-4" />
                   Read More Articles
                 </Link>
               </Button>
