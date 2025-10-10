@@ -9,3 +9,11 @@ dist-ssr/
 
 # Node
 node_modules/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Don't ignore example
+!.env.example
