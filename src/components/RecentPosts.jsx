@@ -91,15 +91,37 @@ const RecentPosts = ({
         <div className="flex items-center justify-between flex-wrap gap-4">
           <h2 className="text-2xl font-bold gradient-text">{title}</h2>
           {showViewToggle && (
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm" onClick={() => setViewMode('grid')} className={viewMode === 'grid' ? "bg-blue-600 text-white" : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20"}>
-                <Grid className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => setViewMode('list')} className={viewMode === 'list' ? "bg-blue-600 text-white" : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20"}>
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
+  <div className="flex items-center space-x-2 mr-2">
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => setViewMode('grid')}
+      className={viewMode === 'grid'
+        ? "bg-blue-600 text-white"
+        : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
+      }
+      aria-label="Switch to grid view"  // ADD THIS
+      title="Grid view"                  // ADD THIS
+    >
+      <Grid className="h-4 w-4" />
+      <span className="sr-only">Grid view</span>  {/* ADD THIS */}
+    </Button>
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => setViewMode('list')}
+      className={viewMode === 'list'
+        ? "bg-blue-600 text-white"
+        : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
+      }
+      aria-label="Switch to list view"  // ADD THIS
+      title="List view"                  // ADD THIS
+    >
+      <List className="h-4 w-4" />
+      <span className="sr-only">List view</span>  {/* ADD THIS */}
+    </Button>
+  </div>
+)}
         </div>
         <div className={containerClasses}>{renderSkeletons()}</div>
       </div>
