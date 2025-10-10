@@ -65,6 +65,20 @@ if (typeof window !== 'undefined' && 'performance' in window) {
   });
 }
 
+// ✅ ADDED: Log environment configuration
+if (import.meta.env.DEV) {
+  console.log('🔧 Development Environment Configuration:', {
+    MODE: import.meta.env.MODE,
+    DEV: import.meta.env.DEV,
+    PROD: import.meta.env.PROD,
+    VITE_ADS_ENABLED: import.meta.env.VITE_ADS_ENABLED,
+    VITE_ADSENSE_PUBLISHER_ID: import.meta.env.VITE_ADSENSE_PUBLISHER_ID ? 
+      import.meta.env.VITE_ADSENSE_PUBLISHER_ID.slice(0, 15) + '...' : 
+      '❌ Not Set',
+    VITE_GA_MEASUREMENT_ID: import.meta.env.VITE_GA_MEASUREMENT_ID || '❌ Not Set'
+  });
+}
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
