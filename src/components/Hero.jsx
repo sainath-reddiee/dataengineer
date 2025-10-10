@@ -115,16 +115,16 @@ const Hero = () => {
                 </Link>
                 </Button>
                 
-                <Button 
-                asChild 
-                size="lg" 
-                variant="outline"
-                className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 px-8 py-6 text-lg rounded-full font-bold backdrop-blur-sm"
-                >
-                <Link to="/about">
-                    Learn More
-                </Link>
-                </Button>
+                <Button
+    asChild
+    size="lg"
+    variant="outline"
+    className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 px-8 py-6 text-lg rounded-full font-bold backdrop-blur-sm"
+>
+    <Link to="/about">
+        Learn More About Us
+    </Link>
+</Button>
             </motion.div>
 
             <motion.div
