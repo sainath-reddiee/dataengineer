@@ -1,4 +1,4 @@
-// src/components/RecentPosts.jsx - FIXED VERSION WITH TAG SUPPORT
+// src/components/RecentPosts.jsx - FIXED VERSION WITH ACCESSIBILITY
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCw, AlertCircle, ChevronDown, Grid, List } from 'lucide-react';
@@ -15,7 +15,7 @@ import PostListItemSkeleton from '@/components/PostListItemSkeleton';
 
 const RecentPosts = ({
   category = null,
-  tag = null, // ✅ ADDED TAG PARAMETER
+  tag = null,
   showCategoryError = false,
   initialLimit = 6,
   title = "Recent Posts",
@@ -41,14 +41,14 @@ const RecentPosts = ({
     page: currentPage,
     per_page: postsPerPage,
     categorySlug: category,
-    tag: tag, // ✅ PASS TAG TO usePosts
+    tag: tag,
     orderby: 'date',
     order: sortOrder,
   });
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [sortOrder, category, tag]); // ✅ ADDED TAG TO DEPENDENCY
+  }, [sortOrder, category, tag]);
 
   const handleRefresh = () => {
     console.log('🔄 Manual refresh triggered in RecentPosts');
@@ -91,37 +91,31 @@ const RecentPosts = ({
         <div className="flex items-center justify-between flex-wrap gap-4">
           <h2 className="text-2xl font-bold gradient-text">{title}</h2>
           {showViewToggle && (
-  <div className="flex items-center space-x-2 mr-2">
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={() => setViewMode('grid')}
-      className={viewMode === 'grid'
-        ? "bg-blue-600 text-white"
-        : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
-      }
-      aria-label="Switch to grid view"  // ADD THIS
-      title="Grid view"                  // ADD THIS
-    >
-      <Grid className="h-4 w-4" />
-      <span className="sr-only">Grid view</span>  {/* ADD THIS */}
-    </Button>
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={() => setViewMode('list')}
-      className={viewMode === 'list'
-        ? "bg-blue-600 text-white"
-        : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
-      }
-      aria-label="Switch to list view"  // ADD THIS
-      title="List view"                  // ADD THIS
-    >
-      <List className="h-4 w-4" />
-      <span className="sr-only">List view</span>  {/* ADD THIS */}
-    </Button>
-  </div>
-)}
+            <div className="flex items-center space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setViewMode('grid')} 
+                className={viewMode === 'grid' ? "bg-blue-600 text-white min-h-[44px] min-w-[44px]" : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20 min-h-[44px] min-w-[44px]"}
+                aria-label="Switch to grid view"
+                title="Grid view"
+              >
+                <Grid className="h-4 w-4" />
+                <span className="sr-only">Grid view</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setViewMode('list')} 
+                className={viewMode === 'list' ? "bg-blue-600 text-white min-h-[44px] min-w-[44px]" : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20 min-h-[44px] min-w-[44px]"}
+                aria-label="Switch to list view"
+                title="List view"
+              >
+                <List className="h-4 w-4" />
+                <span className="sr-only">List view</span>
+              </Button>
+            </div>
+          )}
         </div>
         <div className={containerClasses}>{renderSkeletons()}</div>
       </div>
@@ -139,7 +133,6 @@ const RecentPosts = ({
         >
           <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-red-300 mb-2">
-            {/* ✅ UPDATED ERROR MESSAGE TO INCLUDE TAG */}
             {(category || tag) && showCategoryError 
               ? `${category ? `Category "${category}"` : `Tag "${tag}"`} Issue` 
               : 'Failed to Load Posts'}
@@ -149,6 +142,7 @@ const RecentPosts = ({
             onClick={handleRefresh}
             variant="outline"
             className="border-red-400/50 text-red-300 hover:bg-red-500/20"
+            aria-label="Try again"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Try Again
@@ -170,7 +164,6 @@ const RecentPosts = ({
           className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-8 text-center"
         >
           <h3 className="text-lg font-semibold text-yellow-300 mb-2">
-            {/* ✅ UPDATED NO POSTS MESSAGE TO INCLUDE TAG */}
             {category 
               ? `No posts found in "${category}" category` 
               : tag
@@ -209,22 +202,28 @@ const RecentPosts = ({
                 size="sm"
                 onClick={() => setViewMode('grid')}
                 className={viewMode === 'grid'
-                  ? "bg-blue-600 text-white"
-                  : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
+                  ? "bg-blue-600 text-white min-h-[44px] min-w-[44px]"
+                  : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20 min-h-[44px] min-w-[44px]"
                 }
+                aria-label="Switch to grid view"
+                title="Grid view"
               >
                 <Grid className="h-4 w-4" />
+                <span className="sr-only">Grid view</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setViewMode('list')}
                 className={viewMode === 'list'
-                  ? "bg-blue-600 text-white"
-                  : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
+                  ? "bg-blue-600 text-white min-h-[44px] min-w-[44px]"
+                  : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20 min-h-[44px] min-w-[44px]"
                 }
+                aria-label="Switch to list view"
+                title="List view"
               >
                 <List className="h-4 w-4" />
+                <span className="sr-only">List view</span>
               </Button>
             </div>
           )}
@@ -235,6 +234,7 @@ const RecentPosts = ({
             onClick={toggleSortOrder}
             className="border-purple-400/50 text-purple-300 hover:bg-purple-500/20"
             title={sortOrder === 'desc' ? 'Click for oldest first' : 'Click for newest first'}
+            aria-label={sortOrder === 'desc' ? 'Sort oldest first' : 'Sort newest first'}
           >
             <svg
               className="h-4 w-4 mr-2"
@@ -257,6 +257,7 @@ const RecentPosts = ({
             size="sm"
             className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
             disabled={loading}
+            aria-label="Refresh posts"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
@@ -289,6 +290,7 @@ const RecentPosts = ({
             onClick={loadMorePosts}
             disabled={loading}
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105"
+            aria-label="Load more posts"
           >
             {loading ? (
               <>
@@ -328,4 +330,4 @@ const RecentPosts = ({
   );
 };
 
-export default RecentPosts;
+export default RecentPosts
