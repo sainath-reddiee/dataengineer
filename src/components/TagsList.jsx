@@ -10,11 +10,11 @@ const TagsList = ({ tags, limit = null, showIcon = true, size = 'default' }) => 
   const displayTags = limit ? tags.slice(0, limit) : tags;
 
   // Size variants
-  const sizeClasses = {
-    small: 'px-2 py-0.5 text-xs',
-    default: 'px-3 py-1 text-xs',
-    large: 'px-4 py-1.5 text-sm'
-  };
+const sizeClasses = {
+  small: 'px-3 py-1.5 text-xs min-h-[44px]',  // Added min-h for accessibility
+  default: 'px-4 py-2 text-sm min-h-[48px]',  // Increased padding for better touch targets
+  large: 'px-5 py-2.5 text-base min-h-[48px]'
+};
 
   const iconSizes = {
     small: 'h-3 w-3',
