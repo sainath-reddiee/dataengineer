@@ -6,7 +6,8 @@ class WordPressAPI {
   constructor() {
     this.baseURL = WP_API_BASE;
     this.cache = new Map();
-    this.cacheTimeout = 10 * 1000; // 10 seconds for faster development updates
+    // UPDATED: Cache timeout increased to 10 minutes for production performance
+    this.cacheTimeout = 600 * 1000; // 10 minutes (600 seconds)
     this.requestQueue = new Map();
   }
 
