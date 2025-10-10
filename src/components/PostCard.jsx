@@ -131,10 +131,15 @@ const PostCard = ({ post }) => {
         
         {/* TAGS SECTION - NEW */}
         {post.tags && post.tags.length > 0 && (
-          <div className="mb-4">
-            <TagsList tags={post.tags} limit={3} showIcon={false} size="small" />
-          </div>
-        )}
+  <div className="mb-4">
+    <TagsList 
+      tags={post.tags} 
+      limit={3} 
+      showIcon={false} 
+      size="default"  // Change from "small" to "default" for larger touch targets
+    />
+  </div>
+)}
         
         <div className="flex items-center justify-between text-xs text-gray-500">
           <div className="flex items-center space-x-3">
