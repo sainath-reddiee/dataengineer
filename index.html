@@ -6,6 +6,7 @@
     
     <!-- AdSense will be loaded dynamically via scriptLoader.js -->
     
+    <!-- MOBILE PERFORMANCE: Preconnect to critical domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
@@ -39,14 +40,16 @@
     }
     </script>
     
+    <!-- MOBILE PERFORMANCE: Preload critical font -->
     <link rel="preload" as="font" type="font/woff2" crossorigin 
           href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2">
     
+    <!-- MOBILE PERFORMANCE: Load font CSS asynchronously -->
     <link rel="preload" as="style"
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
     <link rel="stylesheet" 
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-          media="print" onload="this.media='all'">
+          media="print" onload="this.media='all'; this.onload=null;">
     <noscript>
       <link rel="stylesheet" 
             href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
