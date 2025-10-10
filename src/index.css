@@ -1,4 +1,4 @@
-/* src/index.css - COMPLETE PRODUCTION VERSION */
+/* src/index.css - COMPLETE PRODUCTION VERSION WITH ACCESSIBILITY FIXES */
 
 @tailwind base;
 @tailwind components;
@@ -40,6 +40,63 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   scroll-behavior: smooth;
+}
+
+/* ============================================
+   ACCESSIBILITY - MINIMUM TOUCH TARGETS
+   ============================================ */
+
+/* Ensure minimum touch target sizes for accessibility (WCAG 2.1 Level AAA) */
+button, 
+a[class*="inline-flex"],
+a[class*="block"],
+.blog-card {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Exception for inline text links that are part of paragraphs */
+p a,
+.prose a,
+a:not([class]) {
+  min-height: auto;
+  min-width: auto;
+}
+
+/* Screen reader only text - completely hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+/* Skip to main content link for keyboard users */
+.skip-to-main {
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  padding: 1em;
+  background-color: #000;
+  color: #fff;
+  text-decoration: none;
+}
+
+.skip-to-main:focus {
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
 }
 
 /* ============================================
@@ -671,7 +728,11 @@ img {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
-/* AdSense Ad Styling */
+
+/* ============================================
+   ADSENSE AD STYLING
+   ============================================ */
+
 .adsense-ad {
   min-height: 100px;
   display: block;
