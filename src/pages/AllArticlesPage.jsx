@@ -1,12 +1,14 @@
-// src/pages/AllArticlesPage.jsx - COMPLETE FINAL VERSION WITH ADSENSE
+// src/pages/AllArticlesPage.jsx - COMPLETE FINAL VERSION WITH ACCESSIBILITY FIXES
 import React, { useState, useCallback, Suspense } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Search, SortAsc, SortDesc } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, SortAsc, SortDesc, Grid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { usePosts } from '@/hooks/useWordPress';
 import PostCard from '@/components/PostCard';
 import PostCardSkeleton from '@/components/PostCardSkeleton';
+import PostListItem from '@/components/PostListItem';
+import PostListItemSkeleton from '@/components/PostListItemSkeleton';
 import FeaturedPosts from '@/components/FeaturedPosts';
 import MetaTags from '@/components/SEO/MetaTags';
 import { debounce } from '@/utils/performance';
@@ -20,6 +22,7 @@ const AllArticlesPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('desc');
   const [activeSearch, setActiveSearch] = useState('');
+  const [viewMode, setViewMode] = useState('grid');
   
   const postsPerPage = 12;
 
@@ -104,6 +107,10 @@ const AllArticlesPage = () => {
     return rangeWithDots;
   };
 
+  const containerClasses = viewMode === 'list'
+    ? 'flex flex-col space-y-4 max-w-4xl mx-auto'
+    : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6';
+
   return (
     <>
       <MetaTags 
@@ -138,12 +145,14 @@ const AllArticlesPage = () => {
                     value={searchQuery}
                     onChange={handleSearchChange}
                     className="pl-10 bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-blue-400"
+                    aria-label="Search articles"
                   />
                 </div>
                 <Button 
                   type="submit" 
                   className="bg-blue-600 hover:bg-blue-700 text-white px-6"
                   disabled={loading}
+                  aria-label="Search"
                 >
                   Search
                 </Button>
@@ -162,6 +171,7 @@ const AllArticlesPage = () => {
                         onClick={handleClearSearch}
                         className="text-gray-400 hover:text-white"
                         title="Clear search"
+                        aria-label="Clear search"
                       >
                         ✕
                       </button>
@@ -189,7 +199,7 @@ const AllArticlesPage = () => {
               animate={{ opacity: 1 }}
               className="mb-6"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4">
                   <h2 className="text-2xl font-bold gradient-text">
                     {activeSearch ? `Search Results` : 'All Articles'}
@@ -201,20 +211,54 @@ const AllArticlesPage = () => {
                   )}
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* VIEW TOGGLE BUTTONS - FIXED WITH ACCESSIBILITY */}
+                  <div className="flex items-center space-x-2 mr-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setViewMode('grid')}
+                      className={viewMode === 'grid'
+                        ? "bg-blue-600 text-white min-h-[44px] min-w-[44px]"
+                        : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20 min-h-[44px] min-w-[44px]"
+                      }
+                      aria-label="Switch to grid view"
+                      title="Grid view"
+                    >
+                      <Grid className="h-4 w-4" />
+                      <span className="sr-only">Grid view</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setViewMode('list')}
+                      className={viewMode === 'list'
+                        ? "bg-blue-600 text-white min-h-[44px] min-w-[44px]"
+                        : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20 min-h-[44px] min-w-[44px]"
+                      }
+                      aria-label="Switch to list view"
+                      title="List view"
+                    >
+                      <List className="h-4 w-4" />
+                      <span className="sr-only">List view</span>
+                    </Button>
+                  </div>
+
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={toggleSortOrder}
-                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                    className="border-purple-400/50 text-purple-300 hover:bg-purple-500/20"
+                    title={sortOrder === 'desc' ? 'Click for oldest first' : 'Click for newest first'}
+                    aria-label={sortOrder === 'desc' ? 'Sort oldest first' : 'Sort newest first'}
                   >
                     {sortOrder === 'desc' ? (
                       <>
-                        <SortDesc className="h-4 w-4 mr-1" />
+                        <SortDesc className="h-4 w-4 mr-2" />
                         Newest First
                       </>
                     ) : (
                       <>
-                        <SortAsc className="h-4 w-4 mr-1" />
+                        <SortAsc className="h-4 w-4 mr-2" />
                         Oldest First
                       </>
                     )}
@@ -225,6 +269,7 @@ const AllArticlesPage = () => {
                     size="sm"
                     className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
                     disabled={loading}
+                    aria-label="Refresh articles"
                   >
                     Refresh
                   </Button>
@@ -235,9 +280,9 @@ const AllArticlesPage = () => {
           
           {/* Loading State */}
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+            <div className={containerClasses}>
               {Array.from({ length: postsPerPage }).map((_, i) => (
-                <PostCardSkeleton key={i} />
+                viewMode === 'list' ? <PostListItemSkeleton key={i} /> : <PostCardSkeleton key={i} />
               ))}
             </div>
           ) : error ? (
@@ -253,6 +298,7 @@ const AllArticlesPage = () => {
                   onClick={refresh} 
                   variant="outline"
                   className="border-red-400/50 text-red-300 hover:bg-red-500/20"
+                  aria-label="Try again"
                 >
                   Try Again
                 </Button>
@@ -280,6 +326,7 @@ const AllArticlesPage = () => {
                     onClick={handleClearSearch}
                     variant="outline"
                     className="border-yellow-400/50 text-yellow-300 hover:bg-yellow-500/20"
+                    aria-label="Clear search"
                   >
                     Clear Search
                   </Button>
@@ -288,12 +335,12 @@ const AllArticlesPage = () => {
             </motion.div>
           ) : (
             <>
-              {/* Posts Grid */}
+              {/* Posts Grid/List */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12"
+                className={containerClasses}
               >
                 {posts.map((post, index) => (
                   <motion.div
@@ -305,7 +352,7 @@ const AllArticlesPage = () => {
                       delay: index * 0.05 
                     }}
                   >
-                    <PostCard post={post} />
+                    {viewMode === 'list' ? <PostListItem post={post} /> : <PostCard post={post} />}
                   </motion.div>
                 ))}
               </motion.div>
@@ -317,14 +364,15 @@ const AllArticlesPage = () => {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="flex justify-center items-center space-x-2">
+                <div className="flex flex-col items-center space-y-4 mt-12">
+                  <div className="flex justify-center items-center space-x-2 flex-wrap gap-2">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
                       className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                      aria-label="Previous page"
                     >
                       <ChevronLeft className="h-4 w-4 mr-1" />
                       Previous
@@ -336,6 +384,7 @@ const AllArticlesPage = () => {
                           <span 
                             key={`dots-${index}`} 
                             className="px-3 py-2 text-gray-400"
+                            aria-hidden="true"
                           >
                             ...
                           </span>
@@ -349,6 +398,8 @@ const AllArticlesPage = () => {
                               ? "bg-blue-600 text-white hover:bg-blue-700" 
                               : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
                             }
+                            aria-label={`Go to page ${pageNum}`}
+                            aria-current={currentPage === pageNum ? "page" : undefined}
                           >
                             {pageNum}
                           </Button>
@@ -362,6 +413,7 @@ const AllArticlesPage = () => {
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
                       className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                      aria-label="Next page"
                     >
                       Next
                       <ChevronRight className="h-4 w-4 ml-1" />
@@ -389,6 +441,7 @@ const AllArticlesPage = () => {
                       onClick={() => handlePageChange(1)}
                       disabled={currentPage === 1}
                       className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                      aria-label="Go to first page"
                     >
                       First Page
                     </Button>
@@ -398,6 +451,7 @@ const AllArticlesPage = () => {
                       onClick={() => handlePageChange(totalPages)}
                       disabled={currentPage === totalPages}
                       className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                      aria-label="Go to last page"
                     >
                       Last Page
                     </Button>
