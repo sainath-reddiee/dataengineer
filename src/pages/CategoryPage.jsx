@@ -1,4 +1,4 @@
-// src/pages/CategoryPage.jsx - COMPLETE FINAL VERSION WITH ADSENSE
+// src/pages/CategoryPage.jsx - FIXED UI LAYOUT
 import React, { useMemo, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -8,10 +8,8 @@ import { Link } from 'react-router-dom';
 import RecentPosts from '@/components/RecentPosts';
 import MetaTags from '@/components/SEO/MetaTags';
 
-// Lazy load AdPlacement
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
-// Spark component for animation
 const Spark = ({ x, y, rotate, color }) => {
   const variants = {
     rest: { x: 0, y: 0, scale: 0, opacity: 0 },
@@ -96,7 +94,6 @@ const getCategoryIcon = (category, className = 'h-10 w-10') => {
   
   const iconUrl = iconUrls[lowerCategory];
 
-  // Special case for SQL to ensure visibility
   if (lowerCategory === 'sql') {
     return (
       <div className={`${className} bg-slate-200 rounded-full p-1.5 flex items-center justify-center`}>
@@ -159,22 +156,24 @@ const CategoryPage = () => {
         type="website"
       />
       
-      <div className="pt-1 pb-8">
+      {/* ✅ FIXED: Better spacing and positioning */}
+      <div className="pt-20 pb-8">
         <div className="container mx-auto px-6">
-          {/* Back Button */}
+          {/* ✅ FIXED: Back Button with proper spacing */}
           <motion.div 
             initial={{ opacity: 0, y: -20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ duration: 0.5 }} 
-            className="mb-6"
+            className="mb-8"
           >
             <Button 
               asChild 
               variant="outline" 
+              size="lg"
               className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm"
             >
               <Link to="/">
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className="mr-2 h-5 w-5" />
                 Back to Home
               </Link>
             </Button>
@@ -186,7 +185,7 @@ const CategoryPage = () => {
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ duration: 0.5, delay: 0.1 }} 
-            className="text-center mb-8"
+            className="text-center mb-12"
           >
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-sm border border-blue-400/30 mb-6">
               {getCategoryIcon(categoryName)}
@@ -205,12 +204,10 @@ const CategoryPage = () => {
             </div>
           </motion.div>
           
-          {/* Ad after header, before posts */}
           <Suspense fallback={null}>
             <AdPlacement position="category-top" format="auto" responsive={true} />
           </Suspense>
           
-          {/* Posts Section */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
@@ -226,7 +223,6 @@ const CategoryPage = () => {
             />
           </motion.div>
 
-          {/* Ad after posts section */}
           <Suspense fallback={null}>
             <AdPlacement position="category-middle" format="auto" responsive={true} />
           </Suspense>
@@ -258,7 +254,6 @@ const CategoryPage = () => {
                     }`}
                     aria-label={`View ${config.name} articles`}
                   >
-                    {/* Spark emitters in corners */}
                     {[...Array(4)].map((_, i) => (
                       <motion.div 
                         key={i} 
@@ -269,10 +264,8 @@ const CategoryPage = () => {
                       </motion.div>
                     ))}
 
-                    {/* Gradient background on hover */}
                     <div className={`absolute inset-0 bg-gradient-to-br ${config.color} opacity-20 group-hover:opacity-30 transition-opacity`}></div>
                     
-                    {/* Content */}
                     <div className="relative z-10 flex flex-col items-center">
                       <div className="flex justify-center mb-2">
                         {getCategoryIcon(slug, 'h-10 w-10')}
@@ -286,7 +279,6 @@ const CategoryPage = () => {
               })}
             </div>
             
-            {/* View All Articles Button */}
             <div className="text-center mt-6">
               <Button 
                 asChild 
@@ -298,7 +290,6 @@ const CategoryPage = () => {
             </div>
           </motion.div>
 
-          {/* Ad at bottom of page */}
           <Suspense fallback={null}>
             <div className="mt-8">
               <AdPlacement position="category-bottom" format="auto" responsive={true} />
