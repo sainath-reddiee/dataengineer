@@ -1,5 +1,50 @@
 // src/utils/scriptLoader.js
-// Load third-party scripts efficiently
+// Load third-party scripts efficiently with environment awareness
+
+/**
+ * Check if ads are enabled based on environment
+ */
+function areAdsEnabled() {
+  // Check environment variable (string comparison needed for Vite)
+  const adsEnabled = import.meta.env.VITE_ADS_ENABLED;
+  
+  // Convert to boolean - handle string values from env
+  if (adsEnabled === 'false' || adsEnabled === false) {
+    console.log('🚫 Ads disabled via environment variable');
+    return false;
+  }
+  
+  // Check if we're in development mode
+  if (import.meta.env.DEV) {
+    console.log('🚫 Ads disabled in development mode');
+    return false;
+  }
+  
+  // Check for localhost
+  if (typeof window !== 'undefined' && 
+      (window.location.hostname === 'localhost' || 
+       window.location.hostname === '127.0.0.1')) {
+    console.log('🚫 Ads disabled on localhost');
+    return false;
+  }
+  
+  console.log('✅ Ads enabled');
+  return true;
+}
+
+/**
+ * Get AdSense Publisher ID from environment
+ */
+function getAdSensePublisherId() {
+  const publisherId = import.meta.env.VITE_ADSENSE_PUBLISHER_ID;
+  
+  if (!publisherId || publisherId === 'ca-pub-XXXXXXXXXX') {
+    console.warn('⚠️ AdSense Publisher ID not configured or using placeholder');
+    return null;
+  }
+  
+  return publisherId;
+}
 
 /**
  * Load script after user interaction or timeout
@@ -17,19 +62,27 @@ export function loadScriptDelayed(src, options = {}) {
   return new Promise((resolve, reject) => {
     // Check if already loaded
     if (id && document.getElementById(id)) {
+      console.log(`✅ Script already loaded: ${id}`);
       resolve();
       return;
     }
 
     const loadScript = () => {
+      console.log(`📥 Loading script: ${src}`);
       const script = document.createElement('script');
       script.src = src;
       script.async = async;
       script.defer = defer;
       if (id) script.id = id;
       
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error(`Failed to load ${src}`));
+      script.onload = () => {
+        console.log(`✅ Script loaded: ${id || src}`);
+        resolve();
+      };
+      script.onerror = () => {
+        console.error(`❌ Failed to load: ${src}`);
+        reject(new Error(`Failed to load ${src}`));
+      };
       
       document.head.appendChild(script);
     };
@@ -59,10 +112,33 @@ export function loadScriptDelayed(src, options = {}) {
 }
 
 /**
- * Load Ezoic ads after interaction
+ * Load AdSense with environment checks
  */
-export function loadAdSense(publisherId) {
-  if (window.adsbygoogle) return Promise.resolve();
+export function loadAdSense() {
+  // Check if ads should be loaded
+  if (!areAdsEnabled()) {
+    console.log('🚫 AdSense loading skipped - ads disabled');
+    return Promise.resolve();
+  }
+  
+  // Get publisher ID
+  const publisherId = getAdSensePublisherId();
+  if (!publisherId) {
+    console.error('❌ Cannot load AdSense - Publisher ID not configured');
+    return Promise.reject(new Error('AdSense Publisher ID not configured'));
+  }
+  
+  // Check if already loaded
+  if (window.adsbygoogle) {
+    console.log('✅ AdSense already initialized');
+    return Promise.resolve();
+  }
+
+  console.log('📢 Loading AdSense with Publisher ID:', publisherId);
+
+  // Preconnect to ad domains
+  preconnectDomain('https://pagead2.googlesyndication.com');
+  preconnectDomain('https://googleads.g.doubleclick.net');
 
   return loadScriptDelayed(
     `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`,
@@ -74,7 +150,17 @@ export function loadAdSense(publisherId) {
     }
   ).then(() => {
     window.adsbygoogle = window.adsbygoogle || [];
-    console.log('✅ AdSense loaded');
+    
+    // Initialize auto ads if desired
+    window.adsbygoogle.push({
+      google_ad_client: publisherId,
+      enable_page_level_ads: true
+    });
+    
+    console.log('✅ AdSense loaded and initialized');
+  }).catch(error => {
+    console.error('❌ AdSense loading failed:', error);
+    throw error;
   });
 }
 
@@ -82,7 +168,17 @@ export function loadAdSense(publisherId) {
  * Load Google Analytics after interaction
  */
 export function loadGoogleAnalytics(measurementId) {
-  if (window.gtag) return Promise.resolve();
+  if (!measurementId) {
+    console.warn('⚠️ Google Analytics Measurement ID not provided');
+    return Promise.resolve();
+  }
+  
+  if (window.gtag) {
+    console.log('✅ Google Analytics already initialized');
+    return Promise.resolve();
+  }
+
+  console.log('📊 Loading Google Analytics:', measurementId);
 
   return loadScriptDelayed(
     `https://www.googletagmanager.com/gtag/js?id=${measurementId}`,
@@ -98,7 +194,8 @@ export function loadGoogleAnalytics(measurementId) {
     };
     window.gtag('js', new Date());
     window.gtag('config', measurementId, {
-      send_page_view: false
+      send_page_view: false,
+      anonymize_ip: true
     });
     console.log('✅ Google Analytics loaded');
   });
@@ -119,23 +216,53 @@ export function prefetchResource(url, as = 'script') {
  * Preconnect to external domains
  */
 export function preconnectDomain(domain) {
+  // Check if already exists
+  if (document.querySelector(`link[rel="preconnect"][href="${domain}"]`)) {
+    return;
+  }
+  
   const link = document.createElement('link');
   link.rel = 'preconnect';
   link.href = domain;
   link.crossOrigin = 'anonymous';
   document.head.appendChild(link);
+  console.log(`🔗 Preconnecting to: ${domain}`);
 }
 
 /**
  * Initialize all third-party scripts with delay
  */
 export function initThirdPartyScripts() {
-  preconnectDomain('https://www.googletagmanager.com');
-  preconnectDomain('https://pagead2.googlesyndication.com');
-  preconnectDomain('https://googleads.g.doubleclick.net');
+  console.log('🚀 Initializing third-party scripts...');
+  console.log('Environment:', {
+    DEV: import.meta.env.DEV,
+    VITE_ADS_ENABLED: import.meta.env.VITE_ADS_ENABLED,
+    VITE_ADSENSE_PUBLISHER_ID: import.meta.env.VITE_ADSENSE_PUBLISHER_ID ? '✅ Set' : '❌ Not set',
+    VITE_GA_MEASUREMENT_ID: import.meta.env.VITE_GA_MEASUREMENT_ID ? '✅ Set' : '❌ Not set'
+  });
   
   if (typeof window !== 'undefined') {
-    loadGoogleAnalytics('G-MTMNP6EV9C');
-    loadAdSense('ca-pub-XXXXXXXXXX'); // Your AdSense ID
+    // Always preconnect to analytics
+    preconnectDomain('https://www.googletagmanager.com');
+    
+    // Load Google Analytics
+    const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+    if (gaId) {
+      loadGoogleAnalytics(gaId).catch(err => 
+        console.error('Failed to load Google Analytics:', err)
+      );
+    }
+    
+    // Load AdSense only if enabled
+    if (areAdsEnabled()) {
+      loadAdSense().catch(err => 
+        console.error('Failed to load AdSense:', err)
+      );
+    }
   }
 }
+
+/**
+ * Export environment check for use in components
+ */
+export { areAdsEnabled, getAdSensePublisherId };
