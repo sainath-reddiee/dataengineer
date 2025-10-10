@@ -1,4 +1,4 @@
-// src/components/TagsList.jsx - NEW FILE
+// src/components/TagsList.jsx - FIXED VERSION WITH ACCESSIBILITY
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -9,12 +9,12 @@ const TagsList = ({ tags, limit = null, showIcon = true, size = 'default' }) => 
 
   const displayTags = limit ? tags.slice(0, limit) : tags;
 
-  // Size variants
-const sizeClasses = {
-  small: 'px-3 py-1.5 text-xs min-h-[44px]',  // Added min-h for accessibility
-  default: 'px-4 py-2 text-sm min-h-[48px]',  // Increased padding for better touch targets
-  large: 'px-5 py-2.5 text-base min-h-[48px]'
-};
+  // Size variants - UPDATED WITH PROPER TOUCH TARGETS
+  const sizeClasses = {
+    small: 'px-3 py-1.5 text-xs min-h-[44px] min-w-[44px]',
+    default: 'px-4 py-2 text-sm min-h-[48px]',
+    large: 'px-5 py-2.5 text-base min-h-[48px]'
+  };
 
   const iconSizes = {
     small: 'h-3 w-3',
@@ -36,10 +36,12 @@ const sizeClasses = {
         >
           <Link
             to={`/tag/${tag.slug}`}
-            className={`inline-flex items-center ${sizeClasses[size]} rounded-full font-medium 
+            className={`inline-flex items-center justify-center ${sizeClasses[size]} rounded-full font-medium 
                      bg-blue-500/10 text-blue-300 border border-blue-500/20
                      hover:bg-blue-500/20 hover:border-blue-400/40 hover:scale-105
                      transition-all duration-200`}
+            aria-label={`View articles tagged with ${tag.name}`}
+            title={`View articles tagged with ${tag.name}`}
           >
             #{tag.name}
           </Link>
