@@ -1,4 +1,4 @@
-// src/components/LazyImage.jsx
+// src/components/LazyImage.jsx - OPTIMIZED FOR MOBILE PERFORMANCE
 import React, { useEffect, useRef, useState } from 'react';
 import { optimizeWordPressImage, generateSrcSet } from '@/utils/imageOptimizer';
 
@@ -17,35 +17,62 @@ const LazyImage = ({
   const [isInView, setIsInView] = useState(priority);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef(null);
+  const observerRef = useRef(null);
 
   useEffect(() => {
     if (priority) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
+    // Use requestIdleCallback for better performance
+    const scheduleObserver = () => {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => setupObserver(), { timeout: 2000 });
+      } else {
+        setTimeout(() => setupObserver(), 100);
+      }
+    };
+
+    const setupObserver = () => {
+      if (!imgRef.current) return;
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setIsInView(true);
+            observer.disconnect();
+          }
+        },
+        { 
+          rootMargin: '50px', 
+          threshold: 0.01 
         }
-      },
-      { rootMargin: '50px', threshold: 0.01 }
-    );
+      );
 
-    if (imgRef.current) {
       observer.observe(imgRef.current);
-    }
+      observerRef.current = observer;
+    };
 
-    return () => observer.disconnect();
+    scheduleObserver();
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
   }, [priority]);
 
   const handleLoad = (e) => {
-    setIsLoaded(true);
-    if (onLoad) onLoad(e);
+    // Use requestAnimationFrame to avoid forced reflow
+    requestAnimationFrame(() => {
+      setIsLoaded(true);
+      if (onLoad) onLoad(e);
+    });
   };
 
   const handleError = (e) => {
-    setHasError(true);
-    if (onError) onError(e);
+    requestAnimationFrame(() => {
+      setHasError(true);
+      if (onError) onError(e);
+    });
   };
 
   const optimizedSrc = optimizeWordPressImage(src, { width, quality });
@@ -79,6 +106,7 @@ const LazyImage = ({
           alt={alt}
           loading={priority ? 'eager' : 'lazy'}
           fetchpriority={priority ? 'high' : 'auto'}
+          decoding={priority ? 'sync' : 'async'}
           onLoad={handleLoad}
           onError={handleError}
           className={`w-full h-full object-cover transition-opacity duration-300 ${
