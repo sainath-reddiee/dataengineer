@@ -1,5 +1,5 @@
-// src/pages/AllArticlesPage.jsx
-import React, { useState, useCallback } from 'react';
+// src/pages/AllArticlesPage.jsx - COMPLETE FINAL VERSION WITH ADSENSE
+import React, { useState, useCallback, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Search, SortAsc, SortDesc } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,9 @@ import FeaturedPosts from '@/components/FeaturedPosts';
 import MetaTags from '@/components/SEO/MetaTags';
 import { debounce } from '@/utils/performance';
 import { trackSearch } from '@/utils/analytics';
+
+// Lazy load AdPlacement
+const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
 const AllArticlesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -110,6 +113,7 @@ const AllArticlesPage = () => {
       />
       <div className="pt-1 pb-6">
         <div className="container mx-auto px-6">
+          {/* Header Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -123,6 +127,7 @@ const AllArticlesPage = () => {
               Explore our full library of content, from beginner tutorials to advanced deep dives into data engineering.
             </p>
             
+            {/* Search Bar */}
             <div className="max-w-2xl mx-auto mb-6">
               <form onSubmit={handleSearch} className="flex gap-2 mb-4">
                 <div className="relative flex-1">
@@ -144,6 +149,7 @@ const AllArticlesPage = () => {
                 </Button>
               </form>
               
+              {/* Active Search Display */}
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-4">
                   {activeSearch && (
@@ -166,8 +172,17 @@ const AllArticlesPage = () => {
             </div>
           </motion.div>
           
+          {/* Ad after search, before featured posts */}
+          {currentPage === 1 && !activeSearch && (
+            <Suspense fallback={null}>
+              <AdPlacement position="article-list-top" format="auto" responsive={true} />
+            </Suspense>
+          )}
+          
+          {/* Featured Posts - Only on first page without search */}
           {currentPage === 1 && !activeSearch && <FeaturedPosts />}
           
+          {/* Articles Section Header */}
           {!loading && (
             <motion.div 
               initial={{ opacity: 0 }}
@@ -218,6 +233,7 @@ const AllArticlesPage = () => {
             </motion.div>
           )}
           
+          {/* Loading State */}
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
               {Array.from({ length: postsPerPage }).map((_, i) => (
@@ -225,6 +241,7 @@ const AllArticlesPage = () => {
               ))}
             </div>
           ) : error ? (
+            /* Error State */
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -242,6 +259,7 @@ const AllArticlesPage = () => {
               </div>
             </motion.div>
           ) : posts.length === 0 ? (
+            /* No Results State */
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -270,6 +288,7 @@ const AllArticlesPage = () => {
             </motion.div>
           ) : (
             <>
+              {/* Posts Grid */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -291,6 +310,12 @@ const AllArticlesPage = () => {
                 ))}
               </motion.div>
 
+              {/* Ad after posts grid, before pagination */}
+              <Suspense fallback={null}>
+                <AdPlacement position="article-list-bottom" format="auto" responsive={true} />
+              </Suspense>
+
+              {/* Pagination */}
               {totalPages > 1 && (
                 <div className="flex flex-col items-center space-y-4">
                   <div className="flex justify-center items-center space-x-2">
@@ -353,6 +378,7 @@ const AllArticlesPage = () => {
                 </div>
               )}
               
+              {/* Quick Jump for Many Pages */}
               {totalPages > 10 && (
                 <div className="mt-8 p-4 bg-gray-800/30 rounded-lg border border-gray-700">
                   <div className="flex items-center justify-center space-x-4">
