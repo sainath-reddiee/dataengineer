@@ -18,8 +18,12 @@ from trend_monitor_free import TrendMonitorFree
 from blog_generator_free import BlogGeneratorFree
 from wordpress_publisher import WordPressPublisher
 
-# Optional: Import image generator if you want images
-# from image_generator_free import ImageGeneratorFree
+# Optional: Import free image generator
+try:
+    from image_generator_free import ImageGeneratorFree
+except ImportError:
+    ImageGeneratorFree = None
+
 
 class BlogAutomationPipelineGemini:
     def __init__(self, config: dict):
@@ -43,12 +47,15 @@ class BlogAutomationPipelineGemini:
         # Optional: Image generator
         self.use_images = config.get('use_images', False)
         if self.use_images:
-            try:
-                from image_generator_free import ImageGeneratorFree
-                self.image_generator = ImageGeneratorFree()
-                print("✅ Image generation enabled (Hugging Face)")
-            except ImportError:
-                print("⚠️  Image generator not available, will skip images")
+            if ImageGeneratorFree:
+                try:
+                    self.image_generator = ImageGeneratorFree()
+                    print("✅ Image generation enabled (Hugging Face - FREE)")
+                except ValueError as e:
+                    print(f"⚠️  Image generator disabled: {e}")
+                    self.use_images = False
+            else:
+                print("⚠️  image_generator_free.py not found. Skipping images.")
                 self.use_images = False
         
         # Create output directory
@@ -65,11 +72,11 @@ class BlogAutomationPipelineGemini:
     ) -> list:
         """Run the complete automation pipeline"""
         print("="*70)
-        print("BLOG AUTOMATION PIPELINE (GEMINI-ONLY)")
+        print("BLOG AUTOMATION PIPELINE (GEMINI-ONLY & FREE)")
         print("="*70)
         print(f"📊 Posts to generate: {num_posts}")
         print(f"📝 Publish status: {publish_status}")
-        print(f"💰 API Cost: FREE (using Gemini)")
+        print(f"💰 API Cost: FREE (using Gemini & Hugging Face)")
         print(f"⏰ Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         
         results = []
@@ -82,6 +89,9 @@ class BlogAutomationPipelineGemini:
             else:
                 print("🔍 STEP 1: Analyzing trending topics (using Gemini)...")
                 topics = self.trend_monitor.analyze_trends(limit=num_posts * 2)
+                if not topics:
+                    print("❌ Could not fetch trending topics. Aborting.")
+                    return []
                 print(f"✅ Found {len(topics)} trending topics\n")
                 
                 # Display top topics
@@ -150,8 +160,8 @@ class BlogAutomationPipelineGemini:
         
         # Step 3: Handle images
         generated_images = []
-        if self.use_images:
-            print("🎨 STEP 3: Generating images...")
+        if self.use_images and self.image_generator:
+            print("🎨 STEP 3: Generating images (Hugging Face - FREE)...")
             image_dir = post_dir / 'images'
             image_dir.mkdir(exist_ok=True)
             
@@ -163,9 +173,9 @@ class BlogAutomationPipelineGemini:
                 successful = [img for img in generated_images if img.get('generated')]
                 print(f"✅ Images generated: {len(successful)}/{len(blog_data['images'])}\n")
             except Exception as e:
-                print(f"⚠️  Image generation skipped: {e}\n")
+                print(f"⚠️  Image generation failed: {e}\n")
         else:
-            print("ℹ️  STEP 3: Skipping images (disabled)\n")
+            print("ℹ️  STEP 3: Skipping images (disabled or not configured)\n")
         
         # Step 4: Publish to WordPress
         print("📤 STEP 4: Publishing to WordPress...")
@@ -198,7 +208,7 @@ class BlogAutomationPipelineGemini:
             'output_directory': str(post_dir),
             'duration_seconds': duration,
             'timestamp': datetime.now().isoformat(),
-            'api_used': 'Google Gemini',
+            'api_used': 'Google Gemini & Hugging Face',
             'cost': '$0.00 (FREE)'
         }
         
@@ -210,7 +220,7 @@ class BlogAutomationPipelineGemini:
             print(f"\n✅ POST {post_num} COMPLETED in {duration:.1f}s")
             print(f"   View: {publish_result['post_url']}")
             print(f"   Edit: {publish_result['edit_url']}")
-            print(f"   💰 Cost: $0.00 (FREE with Gemini!)")
+            print(f"   💰 Cost: $0.00 (FREE!)")
         else:
             print(f"\n❌ POST {post_num} FAILED")
             print(f"   Error: {publish_result.get('error', 'Unknown')}")
@@ -235,7 +245,7 @@ class BlogAutomationPipelineGemini:
         print(f"\n✅ Successful: {len(successful)}")
         print(f"❌ Failed: {len(failed)}")
         print(f"📊 Total: {len(results)}")
-        print(f"💰 Total Cost: $0.00 (FREE with Gemini!)")
+        print(f"💰 Total Cost: $0.00 (FREE!)")
         
         if successful:
             print("\n✅ SUCCESSFUL POSTS:")
@@ -259,9 +269,7 @@ def load_config() -> dict:
     """Load configuration"""
     load_dotenv()
     
-    # Only need Gemini API key!
     gemini_key = os.getenv('GEMINI_API_KEY')
-    
     if not gemini_key:
         print("❌ Missing GEMINI_API_KEY!")
         print("\nGet FREE API key:")
@@ -270,7 +278,6 @@ def load_config() -> dict:
         print("3. Add to .env: GEMINI_API_KEY=your_key")
         sys.exit(1)
     
-    # WordPress credentials
     wp_url = os.getenv('WORDPRESS_URL')
     wp_user = os.getenv('WORDPRESS_USER')
     wp_pass = os.getenv('WORDPRESS_APP_PASSWORD')
@@ -295,7 +302,7 @@ def load_config() -> dict:
 
 def main():
     parser = argparse.ArgumentParser(
-        description='AI Blog Automation (Gemini-Only Version)'
+        description='AI Blog Automation (Gemini-Only & FREE Version)'
     )
     parser.add_argument(
         '--posts', 
@@ -321,13 +328,9 @@ def main():
     
     args = parser.parse_args()
     
-    # Load config
     config = load_config()
-    
-    # Initialize pipeline
     pipeline = BlogAutomationPipelineGemini(config)
     
-    # Prepare topics
     specific_topics = None
     if args.topics:
         specific_topics = [
@@ -335,21 +338,18 @@ def main():
             for topic in args.topics
         ]
     elif args.category:
-        # Get category-specific trends
         print(f"🔍 Getting trends for category: {args.category}")
         monitor = TrendMonitorFree(config['gemini_api_key'])
         specific_topics = monitor.get_topics_by_category(args.category, limit=args.posts)
     
-    # Run pipeline
     results = pipeline.run_full_pipeline(
-        num_posts=args.posts,
+        num_posts=args.posts if not specific_topics else len(specific_topics),
         publish_status=args.status,
         specific_topics=specific_topics
     )
     
-    # Exit code
-    failed = len([r for r in results if not r.get('success')])
-    sys.exit(0 if failed == 0 else 1)
+    failed_count = len([r for r in results if not r.get('success')])
+    sys.exit(0 if failed_count == 0 else 1)
 
 
 if __name__ == "__main__":
