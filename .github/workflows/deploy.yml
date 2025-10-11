@@ -3,6 +3,16 @@ name: Build and Deploy to Hostinger
 on:
   push:
     branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'index.html' # <-- This is the corrected line
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.js'
+      - 'tailwind.config.js'
+      - 'postcss.config.js'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
   schedule:
     - cron: '0 21 * * *'
@@ -17,26 +27,48 @@ jobs:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
       
-      - name:  Cache notification file
+      # --- OPTIMIZATION 1: Cache Dependencies ---
+      - name: Cache npm dependencies
         uses: actions/cache@v4
         with:
-          path: .notification-cache.json
-          key: ${{ runner.os }}-notification-cache
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
+          cache: 'npm' # This also helps with caching
       
       - name: 📦 Install Dependencies
         run: npm ci
       
-      - name: 🗺️ Generate Sitemap
-        run: npm run sitemap:generate
-      
-      - name: ✅ Validate Sitemap
-        run: npm run sitemap:validate
+      # --- OPTIMIZATION 2: Cache Build Output ---
+      - name: Cache dist directory
+        id: cache-dist
+        uses: actions/cache@v4
+        with:
+          path: dist
+          key: ${{ runner.os }}-dist-${{ hashFiles('**/src/**', 'public/**', 'vite.config.js', 'tailwind.config.js', 'package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-dist-
+
+      - name: 🗺️ Generate Sitemap & Build
+        # Only run build if the cache was not restored
+        if: steps.cache-dist.outputs.cache-hit != 'true'
+        run: |
+          npm run sitemap:generate
+          npm run sitemap:validate
+          npm run build
+        env:
+          NODE_ENV: production
+          VITE_ADS_ENABLED: ${{ secrets.VITE_ADS_ENABLED }}
+
+      - name: Inform about cache hit
+        if: steps.cache-dist.outputs.cache-hit == 'true'
+        run: echo "✅ Build cache hit. Skipping build step."
       
       - name: 🔑 Generate IndexNow Key (Pre-deployment)
         run: |
@@ -65,12 +97,6 @@ jobs:
             console.log('✅ Created verification file:', \`\${key}.txt\`);
           }
           "
-      
-      - name: 🏗️ Build Application
-        run: npm run build
-        env:
-          NODE_ENV: production
-          VITE_ADS_ENABLED: ${{ secrets.VITE_ADS_ENABLED }}
       
       - name: 🔍 Verify Build & Copy Files
         run: |
@@ -135,10 +161,11 @@ jobs:
             **/.git*/**
             **/node_modules/**
             **/.env
-      
+
+      # --- OPTIMIZATION 3: Reduce Sleep Time ---
       - name: ⏸️ Wait for FTP Sync
         run: |
-          echo "⏳ Waiting 30 seconds for FTP files to sync..."
+          echo "⏳ Waiting 10 seconds for FTP files to sync..."
           sleep 10
       
       - name: 🔍 Verify Deployment
@@ -257,6 +284,6 @@ jobs:
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: `✅ Sitemap validation passed!\n\n📊 URLs: ${urlCount}`
+                body: \`✅ Sitemap validation passed!\n\n📊 URLs: \${urlCount}\`
               });
             }
