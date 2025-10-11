@@ -139,7 +139,7 @@ jobs:
       - name: ⏸️ Wait for FTP Sync
         run: |
           echo "⏳ Waiting 30 seconds for FTP files to sync..."
-          sleep 30
+          sleep 10
       
       - name: 🔍 Verify Deployment
         run: |
