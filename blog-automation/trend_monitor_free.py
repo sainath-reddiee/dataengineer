@@ -9,6 +9,7 @@ import os
 import json
 from typing import List, Dict
 from datetime import datetime
+from dotenv import load_dotenv
 
 try:
     import google.generativeai as genai
@@ -38,11 +39,11 @@ class TrendMonitorFree:
         
         # Use Gemini Pro if you have it, otherwise Flash (free)
         try:
-            self.model = genai.GenerativeModel('gemini-pro')
-            print("✅ Using Gemini Pro (You have paid version!)")
+            self.model = genai.GenerativeModel('gemini-1.5-pro-latest')
+            print("✅ Using Gemini 1.5 Pro (You have a paid/pro-tier key!)")
         except:
-            self.model = genai.GenerativeModel('gemini-1.5-flash')
-            print("✅ Using Gemini Flash (Free version)")
+            self.model = genai.GenerativeModel('gemini-1.5-flash-latest')
+            print("✅ Using Gemini 1.5 Flash (Free tier)")
     
     def analyze_trends(self, time_range: str = 'last_30_days', limit: int = 10) -> List[Dict]:
         """
@@ -288,6 +289,10 @@ Focus only on {category} topics."""
 
 def main():
     """Test the FREE trend monitor"""
+    # Find the .env file in the current or parent directories
+    dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+    load_dotenv(dotenv_path=dotenv_path, encoding='utf-16')
+    
     api_key = os.getenv('GEMINI_API_KEY')
     if not api_key:
         print("❌ GEMINI_API_KEY not found!")
@@ -349,3 +354,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
