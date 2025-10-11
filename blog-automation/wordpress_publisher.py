@@ -81,7 +81,7 @@ class WordPressPublisher:
                 'description': blog_data['seo']['meta_description'],
                 'keywords': ', '.join(blog_data['seo']['secondary_keywords'])
             },
-            'featured_media': uploaded_images[0]['id'] if uploaded_images else None
+            'featured_media': uploaded_images[0]['id'] if uploaded_images and 'id' in uploaded_images[0] else None
         }
         
         response = requests.post(
@@ -315,6 +315,7 @@ class WordPressPublisher:
 
 def main():
     """Test WordPress publisher"""
+    load_dotenv()
     site_url = os.getenv('WORDPRESS_URL')
     username = os.getenv('WORDPRESS_USER')
     app_password = os.getenv('WORDPRESS_APP_PASSWORD')
