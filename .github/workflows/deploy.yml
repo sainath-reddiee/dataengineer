@@ -6,7 +6,7 @@ on:
     paths:
       - 'src/**'
       - 'public/**'
-      - 'index.html' # <-- This is the corrected line
+      - 'index.html'
       - 'package.json'
       - 'package-lock.json'
       - 'vite.config.js'
@@ -27,7 +27,6 @@ jobs:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
       
-      # --- OPTIMIZATION 1: Cache Dependencies ---
       - name: Cache npm dependencies
         uses: actions/cache@v4
         with:
@@ -40,28 +39,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm' # This also helps with caching
+          cache: 'npm'
       
       - name: 📦 Install Dependencies
         run: npm ci
+
+      - name: 🗺️ Generate & Validate Sitemap
+        run: |
+          npm run sitemap:generate
+          npm run sitemap:validate
       
-      # --- OPTIMIZATION 2: Cache Build Output ---
       - name: Cache dist directory
         id: cache-dist
         uses: actions/cache@v4
         with:
           path: dist
-          key: ${{ runner.os }}-dist-${{ hashFiles('**/src/**', 'public/**', 'vite.config.js', 'tailwind.config.js', 'package-lock.json') }}
+          key: ${{ runner.os }}-dist-${{ hashFiles('**/src/**', 'public/**', 'index.html', 'vite.config.js', 'tailwind.config.js', 'package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-dist-
 
-      - name: 🗺️ Generate Sitemap & Build
-        # Only run build if the cache was not restored
+      - name: 🏗️ Build Application
         if: steps.cache-dist.outputs.cache-hit != 'true'
-        run: |
-          npm run sitemap:generate
-          npm run sitemap:validate
-          npm run build
+        run: npm run build
         env:
           NODE_ENV: production
           VITE_ADS_ENABLED: ${{ secrets.VITE_ADS_ENABLED }}
@@ -162,7 +161,6 @@ jobs:
             **/node_modules/**
             **/.env
 
-      # --- OPTIMIZATION 3: Reduce Sleep Time ---
       - name: ⏸️ Wait for FTP Sync
         run: |
           echo "⏳ Waiting 10 seconds for FTP files to sync..."
