@@ -47,10 +47,16 @@ class EnhancedTrendMonitor:
             'gcp': ['googlecloud', 'dataengineering', 'bigquery']
         }
         
-        # Official documentation URLs
+        # Official documentation URLs (EXPANDED SNOWFLAKE URLS)
         self.official_docs = {
             'snowflake': {
-                'release_notes': 'https://docs.snowflake.com/en/release-notes/preview-features',
+                'engineering_blog': 'https://www.snowflake.com/en/engineering-blog/',
+                'all_release_notes': 'https://docs.snowflake.com/release-notes/all-release-notes',
+                'openflow': 'https://docs.snowflake.com/en/release-notes/openflow',
+                'behavior_changes': 'https://docs.snowflake.com/en/release-notes/behavior-changes',
+                'performance_improvements': 'https://docs.snowflake.com/en/release-notes/performance-improvements',
+                'sql_improvements': 'https://docs.snowflake.com/en/release-notes/sql-improvements',
+                'preview_features': 'https://docs.snowflake.com/en/release-notes/preview-features',
                 'new_features': 'https://docs.snowflake.com/en/release-notes/new-features',
                 'blog': 'https://www.snowflake.com/blog/'
             },
@@ -182,10 +188,10 @@ class EnhancedTrendMonitor:
         
         for doc_type, url in docs_urls.items():
             try:
-                print(f"   • Checking {doc_type}: {url[:50]}...")
+                print(f"   • Checking {doc_type}: {url[:60]}...")
                 
                 if category == 'snowflake':
-                    if 'release-notes' in url:
+                    if 'release-notes' in url or 'docs.snowflake.com' in url:
                         signals.extend(self._scrape_snowflake_docs(url, doc_type))
                     elif 'blog' in url:
                         signals.extend(self._scrape_snowflake_blog(url))
@@ -223,25 +229,40 @@ class EnhancedTrendMonitor:
             if response.status_code == 200:
                 soup = BeautifulSoup(response.text, 'lxml')
                 
-                # Look for feature announcements
-                features = soup.find_all(['h2', 'h3', 'h4'], limit=10)
+                # Look for feature announcements in various structures
+                features = soup.find_all(['h2', 'h3', 'h4', 'div'], limit=15)
                 
                 for feature in features:
                     title = feature.get_text().strip()
                     
                     # Filter out navigation/generic titles
-                    if title and len(title) > 10 and not any(x in title.lower() for x in ['navigation', 'menu', 'search', 'table of contents']):
+                    if title and len(title) > 10 and not any(x in title.lower() for x in ['navigation', 'menu', 'search', 'table of contents', 'skip to', 'feedback']):
                         
                         # Try to find associated paragraph
                         next_p = feature.find_next('p')
                         description = next_p.get_text().strip()[:200] if next_p else ''
                         
+                        # Enhanced scoring based on doc type
+                        score_map = {
+                            'engineering_blog': 250,
+                            'openflow': 240,
+                            'all_release_notes': 230,
+                            'new_features': 220,
+                            'performance_improvements': 210,
+                            'sql_improvements': 210,
+                            'behavior_changes': 200,
+                            'preview_features': 220,
+                            'blog': 180
+                        }
+                        
+                        score = score_map.get(doc_type, 200)
+                        
                         signals.append({
                             'source': f'snowflake_official/{doc_type}',
-                            'title': f"Snowflake New Feature: {title}",
+                            'title': f"Snowflake: {title}",
                             'description': description,
-                            'score': 200,  # High priority for official docs
-                            'engagement': 200,
+                            'score': score,
+                            'engagement': score,
                             'url': url,
                             'created': time.time(),
                             'age_hours': 1,
@@ -251,7 +272,7 @@ class EnhancedTrendMonitor:
         except Exception as e:
             print(f"      Error scraping Snowflake docs: {str(e)[:50]}")
         
-        return signals[:5]  # Limit to top 5
+        return signals[:8]  # Return more signals
     
     def _scrape_snowflake_blog(self, url: str) -> List[Dict]:
         """Scrape Snowflake official blog"""
@@ -262,7 +283,7 @@ class EnhancedTrendMonitor:
                 soup = BeautifulSoup(response.text, 'lxml')
                 
                 # Find blog post titles (adjust selectors based on actual page structure)
-                articles = soup.find_all('article', limit=5) or soup.find_all('div', class_='post', limit=5)
+                articles = soup.find_all('article', limit=8) or soup.find_all('div', class_='post', limit=8)
                 
                 for article in articles:
                     title_elem = article.find(['h2', 'h3', 'a'])
@@ -1020,7 +1041,7 @@ def main():
     
     # ==================== USAGE EXAMPLES ====================
     
-    # Example 1: Snowflake-specific trending topics
+    # Example 1: Snowflake-specific trending topics (with expanded URLs)
     print("\n📊 EXAMPLE 1: Snowflake Trending Topics")
     print("="*70)
     topics = monitor.analyze_trends(limit=10, category='snowflake')
@@ -1066,7 +1087,7 @@ def main():
         'cost': '$0.00 (100% FREE)',
         'topics': topics,
         'sources_used': [
-            'Official Documentation (Snowflake, AWS, Azure, dbt, GCP)',
+            'Official Documentation (Snowflake: 9 URLs including Engineering Blog, Release Notes, OpenFlow, etc.)',
             'Reddit (category-specific)',
             'GitHub (topics)',
             'Stack Overflow (tags)',
