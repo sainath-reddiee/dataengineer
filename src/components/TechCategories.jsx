@@ -1,11 +1,8 @@
-// src/components/TechCategories.jsx - FINAL VERSION with Transparent Cards & Sparks
+// src/components/TechCategories.jsx - FINAL VERSION WITH MOBILE FIXES
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import {
-  Zap,
-  RefreshCw
-} from 'lucide-react';
+import { Zap, RefreshCw } from 'lucide-react';
 import { useCategories } from '@/hooks/useWordPress';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
@@ -60,7 +57,7 @@ const SparkleCard = ({ category }) => {
       <motion.div
         variants={{ rest: { scale: 1 }, hover: { scale: 1.03 } }}
         transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-        className="tech-card rounded-2xl p-6 md:p-8 relative overflow-hidden h-full flex flex-col"
+        className="tech-card rounded-2xl p-4 sm:p-6 md:p-8 relative overflow-hidden h-full flex flex-col min-h-[200px] sm:min-h-[280px]"
       >
         {/* Spark emitters in each corner */}
         {[...Array(4)].map((_, i) => (
@@ -74,25 +71,25 @@ const SparkleCard = ({ category }) => {
         ))}
 
         <div className="flex flex-col h-full z-10">
-          {/* ✅ UPDATED: Small, distinct icon container at the top-left */}
-          <div className={`inline-flex p-3 md:p-4 rounded-xl bg-gradient-to-br ${color} mb-4 md:mb-6 self-start shadow-lg`}>
-            {getCategoryIcon(name, 'h-6 w-6 md:h-8 md:w-8')}
+          {/* Small, distinct icon container at the top-left */}
+          <div className={`inline-flex p-2 sm:p-3 md:p-4 rounded-xl bg-gradient-to-br ${color} mb-3 sm:mb-4 md:mb-6 self-start shadow-lg`}>
+            {getCategoryIcon(name, 'h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8')}
           </div>
 
-          <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-4 text-white group-hover:text-blue-400 transition-colors">
+          <h3 className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 md:mb-4 text-white group-hover:text-blue-400 transition-colors">
             {name}
           </h3>
 
-          <p className="text-gray-400 text-sm mb-4 md:mb-6 leading-relaxed flex-grow">
+          <p className="text-xs sm:text-sm text-gray-400 mb-3 sm:mb-4 md:mb-6 leading-relaxed flex-grow line-clamp-3">
             {description}
           </p>
 
           <div className="flex items-center justify-between mt-auto">
-            <span className="text-xs md:text-sm font-medium text-gray-300 bg-white/10 px-3 py-1.5 md:px-4 md:py-2 rounded-full backdrop-blur-sm border border-white/10">
+            <span className="text-xs sm:text-sm font-medium text-gray-300 bg-white/10 px-2 sm:px-3 py-1 sm:py-1.5 md:px-4 md:py-2 rounded-full backdrop-blur-sm border border-white/10">
               {posts} articles
             </span>
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:bg-blue-500/20 transition-colors">
-              <Zap className="h-4 w-4 md:h-5 md:w-5 text-blue-400" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:bg-blue-500/20 transition-colors">
+              <Zap className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-blue-400" />
             </div>
           </div>
         </div>
@@ -123,20 +120,20 @@ const TechCategories = () => {
   });
 
   return (
-    <section ref={ref} className="py-16 relative">
+    <section ref={ref} className="py-12 sm:py-16 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/5 to-transparent"></div>
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {hasIntersected && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center mb-12">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <h2 className="text-3xl md:text-4xl font-bold">Explore <span className="gradient-text">Technologies</span></h2>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center mb-8 sm:mb-12">
+            <div className="flex items-center justify-center gap-4 mb-4 sm:mb-6 flex-wrap">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Explore <span className="gradient-text">Technologies</span></h2>
               {process.env.NODE_ENV === 'development' && (<button onClick={refreshCategories} className="p-2 bg-blue-500/20 rounded-full hover:bg-blue-500/30 transition-colors" title="Refresh categories"><RefreshCw className="h-4 w-4 text-blue-400" /></button>)}
             </div>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto">Deep dive into the tools and platforms that power modern data engineering</p>
+            <p className="text-base sm:text-lg text-gray-300 max-w-2xl mx-auto px-4">Deep dive into the tools and platforms that power modern data engineering</p>
           </motion.div>
         )}
         {loading && (<div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div></div>)}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
           {hasIntersected && categories.map((category, index) => (
             <motion.div key={category.name} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: index * 0.1 }}>
               <SparkleCard category={category} />
