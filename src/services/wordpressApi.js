@@ -1,4 +1,4 @@
-// src/services/wordpressApi.js - COMPLETE VERSION WITH TAGS SUPPORT
+// src/services/wordpressApi.js - COMPLETE VERSION WITH TAGS SUPPORT AND FEATURED IMAGE FIX
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog';
 const WP_API_BASE = `${WORDPRESS_API_URL}/wp-json/wp/v2`;
 
@@ -358,7 +358,7 @@ class WordPressAPI {
     }
   }
 
-  // Enhanced transformPost with comprehensive validation INCLUDING TAGS
+  // Enhanced transformPost with comprehensive validation INCLUDING TAGS AND FEATURED IMAGE FIX
   transformPost(wpPost) {
     try {
       if (!wpPost || typeof wpPost !== 'object') {
@@ -368,21 +368,31 @@ class WordPressAPI {
       let imageUrl = 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop';
       
       try {
-        const featuredMedia = wpPost._embedded?.['wp:featuredmedia']?.[0];
-        
-        if (featuredMedia && featuredMedia.source_url) {
-          if (featuredMedia.media_details?.sizes?.large?.source_url) {
-            imageUrl = featuredMedia.media_details.sizes.large.source_url;
-          } else if (featuredMedia.media_details?.sizes?.medium_large?.source_url) {
-            imageUrl = featuredMedia.media_details.sizes.medium_large.source_url;
-          } else {
-            imageUrl = featuredMedia.source_url;
-          }
-        } else if (wpPost.jetpack_featured_media_url) {
-          imageUrl = wpPost.jetpack_featured_media_url;
-        } else if (wpPost.featured_media_src_url) {
-          imageUrl = wpPost.featured_media_src_url;
+        // *** START OF FIX ***
+        // 1. Check for the custom 'featured_image_url' field first. This is the most reliable method.
+        if (wpPost.featured_image_url) {
+            imageUrl = wpPost.featured_image_url;
+        } 
+        // 2. Fallback to existing methods if the custom field isn't there.
+        else {
+            const featuredMedia = wpPost._embedded?.['wp:featuredmedia']?.[0];
+            
+            if (featuredMedia && featuredMedia.source_url) {
+              if (featuredMedia.media_details?.sizes?.large?.source_url) {
+                imageUrl = featuredMedia.media_details.sizes.large.source_url;
+              } else if (featuredMedia.media_details?.sizes?.medium_large?.source_url) {
+                imageUrl = featuredMedia.media_details.sizes.medium_large.source_url;
+              } else {
+                imageUrl = featuredMedia.source_url;
+              }
+            } else if (wpPost.jetpack_featured_media_url) {
+              imageUrl = wpPost.jetpack_featured_media_url;
+            } else if (wpPost.featured_media_src_url) {
+              imageUrl = wpPost.featured_media_src_url;
+            }
         }
+        // *** END OF FIX ***
+
       } catch (imgError) {
         console.warn('⚠️ Error extracting image, using fallback:', imgError);
       }
