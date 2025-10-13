@@ -300,7 +300,7 @@ const Header = () => {
         boxShadow: '0 4px 30px rgba(0, 0, 0, 0.3)'
       }}
     >
-      <nav className="container mx-auto px-6 py-5">
+      <nav className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <a href="/" className="flex items-center space-x-3 z-10">
@@ -310,11 +310,11 @@ const Header = () => {
               transition={{ type: "spring", stiffness: 300 }}
             >
               <div className="relative">
-                <Database className="h-9 w-9 text-blue-400" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse" />
+                <Database className="h-8 w-8 text-blue-400" />
+                <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse" />
               </div>
             </motion.div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               DataEngineer Hub
             </span>
           </a>
@@ -435,7 +435,7 @@ const Header = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="xl:hidden mt-6 pb-6 border-t border-slate-700/50 pt-6 bg-slate-900/95 backdrop-blur-xl rounded-xl px-4 shadow-2xl"
+              className="xl:hidden mt-4 pb-4 border-t border-slate-700/50 pt-4 bg-slate-900/95 backdrop-blur-xl rounded-xl px-4 shadow-2xl"
             >
               <div className="flex flex-col space-y-4">
                 <a href="/" className="text-white hover:text-blue-400 transition-colors font-semibold py-2 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2">
