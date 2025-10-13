@@ -11,8 +11,7 @@ const LazyImage = ({
   className = '',
   priority = false,
   onLoad,
-  onError,
-  aspectRatio = '16/9' // NEW: Allow custom aspect ratio
+  onError
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(priority);
@@ -23,6 +22,7 @@ const LazyImage = ({
   useEffect(() => {
     if (priority) return;
 
+    // Use requestIdleCallback for better performance
     const scheduleObserver = () => {
       if ('requestIdleCallback' in window) {
         requestIdleCallback(() => setupObserver(), { timeout: 2000 });
@@ -61,6 +61,7 @@ const LazyImage = ({
   }, [priority]);
 
   const handleLoad = (e) => {
+    // Use requestAnimationFrame to avoid forced reflow
     requestAnimationFrame(() => {
       setIsLoaded(true);
       if (onLoad) onLoad(e);
@@ -77,25 +78,8 @@ const LazyImage = ({
   const optimizedSrc = optimizeWordPressImage(src, { width, quality });
   const srcSet = generateSrcSet(src, [400, 800, 1200, 1600]);
 
-  // Calculate height based on width and aspect ratio
-  const calculateHeight = () => {
-    const [w, h] = aspectRatio.split('/').map(Number);
-    return Math.round((width * h) / w);
-  };
-
-  const height = calculateHeight();
-
   return (
-    <div 
-      ref={imgRef} 
-      className={`relative ${className}`}
-      style={{
-        aspectRatio: aspectRatio,
-        minHeight: '200px',
-        width: '100%',
-        containIntrinsicSize: `${width}px ${height}px`
-      }}
-    >
+    <div ref={imgRef} className={`relative ${className}`}>
       {/* Loading placeholder */}
       {!isLoaded && !hasError && !priority && (
         <div className="absolute inset-0 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-pulse" />
@@ -120,8 +104,6 @@ const LazyImage = ({
           srcSet={srcSet}
           sizes={sizes}
           alt={alt}
-          width={width}
-          height={height}
           loading={priority ? 'eager' : 'lazy'}
           fetchpriority={priority ? 'high' : 'auto'}
           decoding={priority ? 'sync' : 'async'}
@@ -132,7 +114,7 @@ const LazyImage = ({
           }`}
           style={{
             contentVisibility: 'auto',
-            containIntrinsicSize: `${width}px ${height}px`
+            containIntrinsicSize: '800px 400px'
           }}
         />
       )}
