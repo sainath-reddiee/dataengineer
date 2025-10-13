@@ -241,34 +241,10 @@ const ArticlePage = () => {
   const { post, loading, error, refetch } = usePost(slug);
 
   useEffect(() => {
-  if (post?.image) {
-    // Preload hero image with high priority
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'image';
-    link.href = optimizeWordPressImage(post.image, { 
-      width: 1200, 
-      quality: 85 
-    });
-    link.fetchPriority = 'high';
-    
-    // Append to head
-    document.head.appendChild(link);
-    
-    // Also use preloadImage utility
-    preloadImage(post.image, { 
-      fetchpriority: 'high',
-      width: 1200 
-    });
-    
-    // Cleanup
-    return () => {
-      if (link && link.parentNode) {
-        document.head.removeChild(link);
-      }
-    };
-  }
-}, [post?.image]);
+    if (post?.image) {
+      preloadImage(post.image, { fetchpriority: 'high' });
+    }
+  }, [post?.image]);
 
   useEffect(() => {
     if (!post) return;
