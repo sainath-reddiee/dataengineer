@@ -1,4 +1,4 @@
-/* src/index.css - COMPLETE PRODUCTION VERSION WITH ALL MOBILE FIXES */
+/* src/index.css - COMPLETE PRODUCTION VERSION WITH ULTRA MOBILE FIXES */
 
 @tailwind base;
 @tailwind components;
@@ -29,6 +29,17 @@
 * {
   border-color: hsl(var(--border));
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================
+   CRITICAL MOBILE OVERFLOW PREVENTION
+   ============================================ */
+html {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
 }
 
 body {
@@ -40,21 +51,26 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
 }
 
-/* ============================================
-   CRITICAL MOBILE FIXES - PREVENT OVERFLOW
-   ============================================ */
-html, body, #root {
+#root {
   overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+/* Force all direct children to respect container */
+#root > * {
   max-width: 100vw;
+  overflow-x: hidden;
 }
 
 /* ============================================
    ACCESSIBILITY - MINIMUM TOUCH TARGETS
    ============================================ */
-
-/* Ensure minimum touch target sizes for accessibility (WCAG 2.1 Level AAA) */
 button, 
 a[class*="inline-flex"],
 a[class*="block"],
@@ -63,7 +79,6 @@ a[class*="block"],
   min-width: 44px;
 }
 
-/* Exception for inline text links that are part of paragraphs */
 p a,
 .prose a,
 a:not([class]) {
@@ -71,7 +86,6 @@ a:not([class]) {
   min-width: auto;
 }
 
-/* Screen reader only text - completely hidden but accessible */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -84,13 +98,11 @@ a:not([class]) {
   border-width: 0;
 }
 
-/* Focus visible for keyboard navigation */
 *:focus-visible {
   outline: 2px solid #60a5fa;
   outline-offset: 2px;
 }
 
-/* Skip to main content link for keyboard users */
 .skip-to-main {
   position: absolute;
   left: -9999px;
@@ -108,24 +120,22 @@ a:not([class]) {
 }
 
 /* ============================================
-   WORDPRESS CONTENT STYLES - COMPREHENSIVE FIX
+   WORDPRESS CONTENT STYLES
    ============================================ */
-
 .article-content,
 .prose {
   color: #e2e8f0;
   line-height: 1.8;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  max-width: 100%;
 }
 
-/* Reset and base styles */
 .article-content * {
   max-width: 100%;
   box-sizing: border-box;
 }
 
-/* Headings - Proper spacing and hierarchy */
 .article-content h1,
 .article-content h2,
 .article-content h3,
@@ -167,26 +177,22 @@ a:not([class]) {
   color: #bfdbfe;
 }
 
-/* First heading should have less top margin */
 .article-content > h1:first-child,
 .article-content > h2:first-child,
 .article-content > h3:first-child {
   margin-top: 0;
 }
 
-/* Paragraphs - Better spacing */
 .article-content p {
   margin-bottom: 1.5rem;
   color: #cbd5e1;
   line-height: 1.75;
 }
 
-/* Remove margin from last paragraph */
 .article-content p:last-child {
   margin-bottom: 0;
 }
 
-/* Fix for paragraphs after headings */
 .article-content h1 + p,
 .article-content h2 + p,
 .article-content h3 + p,
@@ -194,7 +200,6 @@ a:not([class]) {
   margin-top: 0.75rem;
 }
 
-/* Lists - Better formatting */
 .article-content ul,
 .article-content ol {
   margin: 1.5rem 0;
@@ -216,7 +221,6 @@ a:not([class]) {
   list-style-type: decimal;
 }
 
-/* Nested lists */
 .article-content ul ul,
 .article-content ol ul,
 .article-content ul ol,
@@ -225,7 +229,6 @@ a:not([class]) {
   margin-bottom: 0.5rem;
 }
 
-/* Links - Better visibility */
 .article-content a {
   color: #60a5fa;
   text-decoration: underline;
@@ -239,7 +242,6 @@ a:not([class]) {
   text-decoration-color: #93c5fd;
 }
 
-/* Auto-linked keywords from plugin */
 .article-content .auto-keyword-link {
   color: #2563eb;
   text-decoration: underline;
@@ -251,7 +253,6 @@ a:not([class]) {
   color: #1d4ed8;
 }
 
-/* Strong and emphasis */
 .article-content strong,
 .article-content b {
   font-weight: 700;
@@ -264,7 +265,6 @@ a:not([class]) {
   color: #cbd5e1;
 }
 
-/* Code blocks - Improved styling */
 .article-content code {
   background: rgba(96, 165, 250, 0.1);
   padding: 0.2rem 0.4rem;
@@ -292,7 +292,6 @@ a:not([class]) {
   font-size: 0.875rem;
 }
 
-/* Blockquotes - Enhanced */
 .article-content blockquote {
   border-left: 4px solid rgba(96, 165, 250, 0.5);
   padding: 1rem 1.5rem;
@@ -311,7 +310,6 @@ a:not([class]) {
   margin-bottom: 0;
 }
 
-/* Images - Responsive and styled */
 .article-content img {
   max-width: 100%;
   height: auto;
@@ -333,7 +331,6 @@ a:not([class]) {
   font-style: italic;
 }
 
-/* WordPress alignment classes */
 .article-content .alignleft {
   float: left;
   margin: 0.5rem 1.5rem 1rem 0;
@@ -352,21 +349,18 @@ a:not([class]) {
   margin-right: auto;
 }
 
-/* Clear floats after content */
 .article-content::after {
   content: "";
   display: table;
   clear: both;
 }
 
-/* Horizontal rules */
 .article-content hr {
   border: none;
   border-top: 2px solid rgba(148, 163, 184, 0.2);
   margin: 3rem 0;
 }
 
-/* Tables - CRITICAL FIX */
 .article-content table,
 .prose table {
   width: 100%;
@@ -419,7 +413,6 @@ a:not([class]) {
   border-bottom: none;
 }
 
-/* Embedded content (iframes, videos) */
 .article-content iframe {
   max-width: 100%;
   border-radius: 0.5rem;
@@ -428,7 +421,7 @@ a:not([class]) {
 
 .article-content .iframe-wrapper {
   position: relative;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  padding-bottom: 56.25%;
   height: 0;
   overflow: hidden;
   margin: 2rem 0;
@@ -444,7 +437,6 @@ a:not([class]) {
   margin: 0;
 }
 
-/* WordPress blocks */
 .article-content .wp-block-image {
   margin: 2rem 0;
 }
@@ -472,12 +464,10 @@ a:not([class]) {
   transform: translateY(-2px);
 }
 
-/* Fix for empty paragraphs */
 .article-content p:empty {
   display: none;
 }
 
-/* WordPress caption */
 .article-content .wp-caption {
   max-width: 100%;
 }
@@ -489,7 +479,6 @@ a:not([class]) {
   margin-top: 0.5rem;
 }
 
-/* WordPress galleries */
 .article-content .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -501,35 +490,17 @@ a:not([class]) {
   text-align: center;
 }
 
-/* Ensure content is visible */
-.article-content * {
-  max-width: 100%;
-}
-
-/* ============================================
-   CRITICAL IMAGES OPTIMIZATION
-   ============================================ */
-
 img {
   max-width: 100%;
   height: auto;
   display: block;
-  transition: opacity 0.3s ease;
-  content-visibility: auto;
-  contain-intrinsic-size: 300px 200px;
 }
 
 .hero-image,
 .blog-card img,
 .featured-image {
   object-fit: cover;
-  will-change: transform;
-  transform: translateZ(0);
 }
-
-/* ============================================
-   REDUCED MOTION SUPPORT
-   ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -542,23 +513,11 @@ img {
   }
 }
 
-/* ============================================
-   ANIMATIONS
-   ============================================ */
-
-.floating-animation,
-.pulse-glow {
-  will-change: transform;
-  transform: translateZ(0);
-  contain: layout;
-}
-
 .gradient-text {
   background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 40%, #f472b6 80%, #fbbf24 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  will-change: background-position;
   background-size: 200% 200%;
 }
 
@@ -591,23 +550,17 @@ img {
   to { box-shadow: 0 0 40px rgba(96, 165, 250, 0.7), 0 0 60px rgba(168, 85, 247, 0.4); }
 }
 
-/* ============================================
-   CARD STYLES
-   ============================================ */
-
 .tech-card {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
-  contain: layout style paint;
 }
 
 .glass-effect {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  contain: layout style paint;
 }
 
 .blog-card {
@@ -616,19 +569,12 @@ img {
   border: 1px solid rgba(148, 163, 184, 0.2);
   transition: all 0.3s ease;
   min-height: 400px;
-  contain: layout style paint;
 }
 
 .blog-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 30px rgba(96, 165, 250, 0.2);
   border-color: rgba(96, 165, 250, 0.4);
-  will-change: transform;
-}
-
-.tech-card {
-  min-height: 280px;
-  transition: all 0.3s ease;
 }
 
 .tech-card:hover {
@@ -637,14 +583,9 @@ img {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* ============================================
-   PROSE STYLES
-   ============================================ */
-
 .prose {
   max-width: 65ch;
   margin: 0 auto;
-  contain: layout;
 }
 
 .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
@@ -653,7 +594,6 @@ img {
   line-height: 1.2;
   margin-top: 2rem;
   margin-bottom: 1rem;
-  contain: layout;
 }
 
 .prose p {
@@ -674,7 +614,6 @@ img {
   border-radius: 0.5rem;
   overflow-x: auto;
   margin: 1.5rem 0;
-  contain: layout;
 }
 
 .prose blockquote {
@@ -684,10 +623,6 @@ img {
   font-style: italic;
   color: rgba(255, 255, 255, 0.8);
 }
-
-/* ============================================
-   FORM STYLES
-   ============================================ */
 
 .form-input {
   transition: all 0.3s ease;
@@ -699,14 +634,9 @@ img {
   box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
 }
 
-/* ============================================
-   BUTTON ENHANCEMENTS
-   ============================================ */
-
 .btn-primary {
   position: relative;
   overflow: hidden;
-  contain: layout style;
 }
 
 .btn-primary::before {
@@ -724,10 +654,6 @@ img {
   left: 100%;
 }
 
-/* ============================================
-   LOADING STATES
-   ============================================ */
-
 .skeleton {
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
   background-size: 200% 100%;
@@ -738,10 +664,6 @@ img {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
-
-/* ============================================
-   ADSENSE AD STYLING
-   ============================================ */
 
 .adsense-ad {
   min-height: 100px;
@@ -755,7 +677,6 @@ img {
   text-decoration: none;
 }
 
-/* Loading state for ads */
 .adsense-ad[data-ad-status="loading"] {
   background: linear-gradient(
     90deg,
@@ -768,15 +689,26 @@ img {
 }
 
 /* ============================================
-   CRITICAL MOBILE RESPONSIVE FIXES
+   🔥 ULTRA CRITICAL MOBILE FIXES FOR IPHONE
    ============================================ */
 
 @media screen and (max-width: 768px) {
-  /* PREVENT HORIZONTAL OVERFLOW */
-  html, body {
+  /* FORCE PREVENT HORIZONTAL SCROLL - NUCLEAR OPTION */
+  * {
+    max-width: 100vw !important;
+  }
+  
+  html {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    position: relative !important;
+  }
+  
+  body {
     overflow-x: hidden !important;
     width: 100% !important;
     max-width: 100vw !important;
+    position: relative !important;
   }
   
   #root {
@@ -785,27 +717,43 @@ img {
     max-width: 100vw !important;
   }
   
-  /* FIX CONTAINER WIDTHS */
+  /* FIX EVERY SECTION AND CONTAINER */
+  section,
+  div,
+  main,
+  header,
+  footer,
+  nav {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* CONTAINER FIX */
   .container {
     max-width: 100% !important;
+    width: 100% !important;
     padding-left: 1rem !important;
     padding-right: 1rem !important;
     margin-left: auto !important;
     margin-right: auto !important;
   }
   
-  /* FIX ALL CARDS */
+  /* CARD FIXES */
   .blog-card,
   .tech-card,
   .glass-effect {
     width: 100% !important;
     max-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    min-width: 0 !important;
   }
   
-  /* Responsive typography */
-  h1, .text-5xl, .text-6xl, .text-7xl {
+  /* GRID FIXES */
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* TYPOGRAPHY FIXES */
+  h1, .text-7xl, .text-6xl, .text-5xl {
     font-size: 2rem !important;
     line-height: 1.2 !important;
   }
@@ -818,25 +766,33 @@ img {
     font-size: 1.5rem !important;
   }
   
-  p, .text-lg, .text-xl {
-    font-size: 1rem !important;
-    line-height: 1.6 !important;
+  h4, .text-2xl {
+    font-size: 1.25rem !important;
   }
-
-  /* Responsive adjustments for article content */
+  
+  p, .text-xl, .text-lg {
+    font-size: 1rem !important;
+  }
+  
+  .text-sm {
+    font-size: 0.875rem !important;
+  }
+  
+  .text-xs {
+    font-size: 0.75rem !important;
+  }
+  
+  /* ARTICLE CONTENT MOBILE */
   .article-content h1 {
     font-size: 1.75rem !important;
-    margin-top: 1.5rem !important;
   }
   
   .article-content h2 {
     font-size: 1.5rem !important;
-    margin-top: 1.25rem !important;
   }
   
   .article-content h3 {
     font-size: 1.25rem !important;
-    margin-top: 1rem !important;
   }
   
   .article-content .alignleft,
@@ -850,116 +806,102 @@ img {
   .prose table {
     display: block;
     overflow-x: auto;
-    white-space: nowrap;
     -webkit-overflow-scrolling: touch;
   }
   
-  .article-content th,
-  .prose th,
-  .article-content td,
-  .prose td {
-    padding: 8px 12px;
-    font-size: 0.85rem;
-  }
-  
-  .adsense-ad {
-    margin: 1.5rem 0;
-  }
-  
-  /* Disable expensive animations on mobile for performance */
-  .floating-animation {
+  /* DISABLE ANIMATIONS */
+  .floating-animation,
+  .pulse-glow {
     animation: none !important;
     transform: none !important;
   }
   
-  .pulse-glow {
-    animation: none !important;
-    box-shadow: none !important;
-  }
-  
   .gradient-text {
-    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
     animation: none !important;
-    background-position: 0% 50%;
   }
   
-  /* Reduce backdrop blur for performance */
+  /* REDUCE BACKDROP BLUR */
   .blog-card,
   .tech-card,
-  .glass-effect,
-  [style*="backdrop-filter"] {
+  .glass-effect {
     backdrop-filter: blur(5px) !important;
     -webkit-backdrop-filter: blur(5px) !important;
   }
   
-  /* Simplify hover effects on mobile */
+  /* SIMPLIFY HOVER */
   .blog-card:hover,
   .tech-card:hover {
-    transform: translateY(-2px) !important;
+    transform: none !important;
   }
   
-  /* Disable will-change on mobile to reduce memory usage */
-  * {
-    will-change: auto !important;
+  /* TOUCH TARGETS */
+  button,
+  a[role="button"],
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 48px !important;
+    min-width: 48px !important;
+    padding: 0.75rem 1.5rem !important;
   }
   
-  /* Optimize images for mobile */
-  img {
-    image-rendering: -webkit-optimize-contrast;
-  }
-  
-  /* Reduce complexity of shadows */
-  .shadow-lg,
-  .shadow-xl,
-  .shadow-2xl {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
-  }
-  
-  /* Disable smooth scroll on mobile */
-  html {
-    scroll-behavior: auto !important;
-  }
-  
-  /* FIX SPACING AND PADDING */
+  /* PADDING FIXES */
   section {
     padding-left: 1rem !important;
     padding-right: 1rem !important;
   }
   
-  /* GRID FIXES */
-  .grid {
-    grid-template-columns: 1fr !important;
+  /* MARGIN FIXES */
+  .mx-auto {
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
   
-  /* Ensure buttons are touch-friendly */
-  button,
-  a[role="button"],
-  .btn {
-    min-height: 48px !important;
-    padding: 0.75rem 1.5rem !important;
+  /* IMAGES */
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  
+  /* MEGA MENU FIX */
+  .absolute {
+    position: relative !important;
+  }
+  
+  /* DISABLE WILL-CHANGE */
+  * {
+    will-change: auto !important;
+  }
+  
+  /* SMOOTH SCROLLING OFF */
+  html {
+    scroll-behavior: auto !important;
   }
 }
 
-/* Optimize for very low-end devices */
-@media screen and (max-width: 768px) and (max-device-memory: 2) {
-  /* Further reduce visual effects */
-  .backdrop-blur,
-  [style*="backdrop-filter"] {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    background: rgba(15, 23, 42, 0.95) !important;
+/* iPhone 14 Pro Max Specific */
+@media screen and (max-width: 430px) {
+  body {
+    font-size: 16px !important;
   }
   
-  /* Disable all animations and transitions */
-  * {
-    animation: none !important;
-    transition: none !important;
+  h1 {
+    font-size: 1.875rem !important;
   }
   
-  /* Simplify gradients further */
-  .gradient-text {
-    background: #60a5fa;
-    -webkit-background-clip: text;
-    background-clip: text;
+  h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  .container {
+    padding-left: 0.875rem !important;
+    padding-right: 0.875rem !important;
+  }
+}
+
+/* LANDSCAPE MODE FIX */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  section {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
   }
 }
