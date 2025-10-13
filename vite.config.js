@@ -1,18 +1,15 @@
-// vite.config.js - COMPLETE WITH ALL FEATURES + OPTIMIZATIONS
+// vite.config.js - MOBILE PERFORMANCE OPTIMIZED
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react({
-      // Enable Fast Refresh
       fastRefresh: true,
-      // Optimize production build
       babel: {
         plugins: [
-          // Remove console.log in production
           process.env.NODE_ENV === 'production' && [
             'transform-remove-console',
             { exclude: ['error', 'warn'] }
@@ -29,72 +26,67 @@ export default defineConfig({
   },
   
   build: {
-    // Optimize output
     target: 'es2015',
+    minify: 'esbuild',
     
-    // OPTIMIZED: Use esbuild instead of terser (3x faster)
-    minify: 'esbuild', // Changed from 'terser'
-    
-    // REMOVED: terserOptions (not needed with esbuild)
-    // esbuild handles console removal through babel plugin above
-    
-    // Code splitting for better caching
     rollupOptions: {
       output: {
         manualChunks: {
-          // Vendor chunks
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'framer-motion': ['framer-motion'],
-          'ui-vendor': [
+          // Critical chunks - loaded first
+          'react-core': ['react', 'react-dom'],
+          'router': ['react-router-dom'],
+          
+          // Deferred chunks - loaded on interaction
+          'animations': ['framer-motion'],
+          'ui-components': [
             '@radix-ui/react-dialog',
             '@radix-ui/react-toast',
             '@radix-ui/react-slot',
             '@radix-ui/react-label'
           ],
           
-          // App chunks
-          'wordpress-api': ['./src/services/wordpressApi.js', './src/hooks/useWordPress.js'],
-          'utils': ['./src/utils/analytics.js', './src/utils/performance.js', './src/utils/imageOptimizer.js']
+          // API and utilities - loaded as needed
+          'api': ['./src/services/wordpressApi.js'],
+          'hooks': ['./src/hooks/useWordPress.js'],
+          'utils': ['./src/utils/analytics.js', './src/utils/performance.js']
         },
         
-        // Clean filenames
-        chunkFileNames: 'assets/js/[name]-[hash].js',
+        // Optimize chunk naming
+        chunkFileNames: (chunkInfo) => {
+          const facadeModuleId = chunkInfo.facadeModuleId;
+          if (facadeModuleId && facadeModuleId.includes('node_modules')) {
+            return 'assets/vendor/[name]-[hash].js';
+          }
+          return 'assets/js/[name]-[hash].js';
+        },
         entryFileNames: 'assets/js/[name]-[hash].js',
         assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
       }
     },
     
-    // Chunk size warnings
-    chunkSizeWarningLimit: 1000,
-    
-    // OPTIMIZED: Disable source maps for faster CI builds
-    sourcemap: false, // Can enable locally if needed
-    
-    // Optimize CSS
+    chunkSizeWarningLimit: 500, // REDUCED - force better chunking
+    sourcemap: false,
     cssCodeSplit: true,
+    reportCompressedSize: false, // Faster builds
+    assetsInlineLimit: 2048, // REDUCED - inline only tiny assets
     
-    // OPTIMIZED: Disable compressed size reporting in CI (saves ~2s)
-    reportCompressedSize: process.env.CI ? false : true,
-    
-    // Asset inlining threshold
-    assetsInlineLimit: 4096 // 4kb
+    // MOBILE OPTIMIZATION
+    cssMinify: 'esbuild', // Faster CSS minification
   },
   
-  // Optimize dependencies
   optimizeDeps: {
     include: [
       'react',
       'react-dom',
-      'react-router-dom',
-      'framer-motion',
-      '@radix-ui/react-dialog',
-      '@radix-ui/react-toast',
-      'lucide-react'
+      'react-router-dom'
     ],
-    exclude: []
+    exclude: [
+      'framer-motion', // Load on demand
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-toast'
+    ]
   },
   
-  // Server config for development
   server: {
     port: 3000,
     strictPort: true,
@@ -102,7 +94,6 @@ export default defineConfig({
     open: true
   },
   
-  // Preview config for production testing
   preview: {
     port: 4173,
     strictPort: true,
@@ -110,15 +101,12 @@ export default defineConfig({
     open: true
   },
   
-  // Environment variables
-  define: {
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
-  },
-  
-  // OPTIMIZED: Esbuild options for faster builds
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' },
-    // Drop console in production
-    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
+    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+    // MOBILE: Aggressive minification
+    minifyIdentifiers: true,
+    minifySyntax: true,
+    minifyWhitespace: true,
   }
 });
