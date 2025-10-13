@@ -60,7 +60,7 @@ const SparkleCard = ({ category }) => {
       <motion.div
         variants={{ rest: { scale: 1 }, hover: { scale: 1.03 } }}
         transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-        className="tech-card rounded-2xl p-8 relative overflow-hidden h-full flex flex-col"
+        className="tech-card rounded-2xl p-6 md:p-8 relative overflow-hidden h-full flex flex-col"
       >
         {/* Spark emitters in each corner */}
         {[...Array(4)].map((_, i) => (
@@ -75,24 +75,24 @@ const SparkleCard = ({ category }) => {
 
         <div className="flex flex-col h-full z-10">
           {/* ✅ UPDATED: Small, distinct icon container at the top-left */}
-          <div className={`inline-flex p-4 rounded-xl bg-gradient-to-br ${color} mb-6 self-start shadow-lg`}>
-            {getCategoryIcon(name, 'h-8 w-8')}
+          <div className={`inline-flex p-3 md:p-4 rounded-xl bg-gradient-to-br ${color} mb-4 md:mb-6 self-start shadow-lg`}>
+            {getCategoryIcon(name, 'h-6 w-6 md:h-8 md:w-8')}
           </div>
 
-          <h3 className="text-xl font-bold mb-4 text-white group-hover:text-blue-400 transition-colors">
+          <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-4 text-white group-hover:text-blue-400 transition-colors">
             {name}
           </h3>
 
-          <p className="text-gray-400 text-sm mb-6 leading-relaxed flex-grow">
+          <p className="text-gray-400 text-sm mb-4 md:mb-6 leading-relaxed flex-grow">
             {description}
           </p>
 
           <div className="flex items-center justify-between mt-auto">
-            <span className="text-sm font-medium text-gray-300 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm border border-white/10">
+            <span className="text-xs md:text-sm font-medium text-gray-300 bg-white/10 px-3 py-1.5 md:px-4 md:py-2 rounded-full backdrop-blur-sm border border-white/10">
               {posts} articles
             </span>
-            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:bg-blue-500/20 transition-colors">
-              <Zap className="h-5 w-5 text-blue-400" />
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:bg-blue-500/20 transition-colors">
+              <Zap className="h-4 w-4 md:h-5 md:w-5 text-blue-400" />
             </div>
           </div>
         </div>
@@ -136,7 +136,7 @@ const TechCategories = () => {
           </motion.div>
         )}
         {loading && (<div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div></div>)}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
           {hasIntersected && categories.map((category, index) => (
             <motion.div key={category.name} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: index * 0.1 }}>
               <SparkleCard category={category} />
