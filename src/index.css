@@ -1,4 +1,4 @@
-/* src/index.css - COMPLETE PRODUCTION VERSION WITH BALANCED MOBILE FIXES */
+/* src/index.css - COMPLETE PRODUCTION VERSION WITH PERFORMANCE OPTIMIZATIONS */
 
 @tailwind base;
 @tailwind components;
@@ -34,6 +34,7 @@
 html {
   overflow-x: hidden;
   width: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -44,7 +45,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  scroll-behavior: smooth;
   overflow-x: hidden;
   width: 100%;
 }
@@ -481,7 +481,6 @@ img {
   display: block;
   transition: opacity 0.3s ease;
   content-visibility: auto;
-  contain-intrinsic-size: 300px 200px;
 }
 
 .hero-image,
@@ -554,6 +553,7 @@ img {
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
   contain: layout style paint;
+  min-height: 280px; /* CRITICAL: Prevents layout shift */
 }
 
 .glass-effect {
@@ -568,7 +568,7 @@ img {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.2);
   transition: all 0.3s ease;
-  min-height: 400px;
+  min-height: 420px; /* CRITICAL: Prevents layout shift */
   contain: layout style paint;
 }
 
@@ -577,11 +577,6 @@ img {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 30px rgba(96, 165, 250, 0.2);
   border-color: rgba(96, 165, 250, 0.4);
   will-change: transform;
-}
-
-.tech-card {
-  min-height: 280px;
-  transition: all 0.3s ease;
 }
 
 .tech-card:hover {
@@ -643,7 +638,6 @@ img {
   border-color: rgba(96, 165, 250, 0.5);
   box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
 }
-
 .btn-primary {
   position: relative;
   overflow: hidden;
@@ -677,7 +671,7 @@ img {
 }
 
 .adsense-ad {
-  min-height: 100px;
+  min-height: 280px; /* CRITICAL: Reserve space for ads */
   display: block;
   margin: 2rem 0;
   text-align: center;
@@ -686,6 +680,7 @@ img {
 .adsense-ad ins {
   display: block;
   text-decoration: none;
+  min-height: 250px; /* CRITICAL: Prevents layout shift */
 }
 
 .adsense-ad[data-ad-status="loading"] {
@@ -700,7 +695,7 @@ img {
 }
 
 /* ============================================
-   BALANCED MOBILE RESPONSIVE FIXES
+   MOBILE PERFORMANCE OPTIMIZATIONS - CRITICAL
    ============================================ */
 
 @media screen and (max-width: 768px) {
@@ -746,44 +741,120 @@ img {
     -webkit-overflow-scrolling: touch;
   }
   
-  /* Disable animations on mobile */
+  /* DISABLE EXPENSIVE ANIMATIONS ON MOBILE - CRITICAL FOR PERFORMANCE */
   .floating-animation,
   .pulse-glow {
-    animation: none;
+    animation: none !important;
   }
   
   .gradient-text {
-    animation: none;
+    animation: none !important;
   }
   
-  /* Reduce backdrop blur for performance */
+  /* REDUCE BACKDROP BLUR FOR BETTER MOBILE PERFORMANCE */
   .blog-card,
   .tech-card,
   .glass-effect {
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
   }
   
-  /* Simplify hover effects */
+  /* SIMPLIFY HOVER EFFECTS ON MOBILE */
   .blog-card:hover,
   .tech-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) !important;
   }
   
-  /* Touch targets */
+  /* REMOVE WILL-CHANGE FOR BETTER PERFORMANCE */
+  * {
+    will-change: auto !important;
+  }
+  
+  /* SMOOTH SCROLLING OFF FOR BETTER PERFORMANCE */
+  html {
+    scroll-behavior: auto !important;
+  }
+  
+  /* FASTER TRANSITIONS ON MOBILE */
+  * {
+    transition-duration: 0.15s !important;
+  }
+  
+  /* REDUCE CARD MIN-HEIGHTS SLIGHTLY FOR MOBILE */
+  .blog-card {
+    min-height: 380px;
+  }
+  
+  .tech-card {
+    min-height: 240px;
+  }
+  
+  /* Touch targets - ensure minimum size */
   button,
-  a[role="button"] {
+  a[role="button"],
+  .blog-card,
+  .tech-card {
     min-height: 48px;
     padding: 0.75rem 1.5rem;
   }
   
-  /* Disable will-change */
-  * {
-    will-change: auto;
+  /* Optimize image rendering on mobile */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
   }
   
-  /* Smooth scrolling off */
-  html {
-    scroll-behavior: auto;
+  /* Reduce box shadows on mobile */
+  .blog-card,
+  .tech-card,
+  .glass-effect {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+  }
+  
+  /* Simplify gradients on mobile */
+  .gradient-text {
+    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+  }
+}
+
+/* ============================================
+   PERFORMANCE: REDUCE MOTION PREFERENCE
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .floating-animation,
+  .pulse-glow,
+  .gradient-text {
+    animation: none !important;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  .no-print,
+  header,
+  footer,
+  .adsense-ad {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+  
+  a {
+    text-decoration: underline;
+    color: #0066cc;
   }
 }
