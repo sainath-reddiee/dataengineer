@@ -1,4 +1,4 @@
-// src/main.jsx - OPTIMIZED FONT LOADING
+// src/main.jsx
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
@@ -17,9 +17,19 @@ const PageLoader = () => (
   </div>
 );
 
-// OPTIMIZED FONT LOADING
+// Preload critical font
+const preloadFont = () => {
+  const link = document.createElement('link');
+  link.rel = 'preload';
+  link.as = 'font';
+  link.type = 'font/woff2';
+  link.crossOrigin = 'anonymous';
+  link.href = 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2';
+  document.head.appendChild(link);
+};
+
+// Load fonts efficiently
 const loadFonts = () => {
-  // Preconnect to font domains
   const preconnectGoogle = document.createElement('link');
   preconnectGoogle.rel = 'preconnect';
   preconnectGoogle.href = 'https://fonts.googleapis.com';
@@ -31,21 +41,13 @@ const loadFonts = () => {
   preconnectGstatic.crossOrigin = 'anonymous';
   document.head.appendChild(preconnectGstatic);
 
-  // Preload critical font file
-  const preloadFont = document.createElement('link');
-  preloadFont.rel = 'preload';
-  preloadFont.as = 'font';
-  preloadFont.type = 'font/woff2';
-  preloadFont.crossOrigin = 'anonymous';
-  preloadFont.href = 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2';
-  document.head.appendChild(preloadFont);
-
-  // Load font stylesheet with font-display: swap
   const fontLink = document.createElement('link');
   fontLink.rel = 'stylesheet';
   fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap';
   fontLink.media = 'all';
   document.head.appendChild(fontLink);
+
+  preloadFont();
 };
 
 // Initialize fonts
@@ -63,7 +65,7 @@ if (typeof window !== 'undefined' && 'performance' in window) {
   });
 }
 
-// Log environment configuration in development
+// ✅ ADDED: Log environment configuration
 if (import.meta.env.DEV) {
   console.log('🔧 Development Environment Configuration:', {
     MODE: import.meta.env.MODE,
