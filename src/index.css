@@ -1,4 +1,4 @@
-/* src/index.css - COMPLETE PRODUCTION VERSION WITH ALL FIXES */
+/* src/index.css - COMPLETE PRODUCTION VERSION WITH ALL MOBILE FIXES */
 
 @tailwind base;
 @tailwind components;
@@ -40,6 +40,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   scroll-behavior: smooth;
+}
+
+/* ============================================
+   CRITICAL MOBILE FIXES - PREVENT OVERFLOW
+   ============================================ */
+html, body, #root {
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* ============================================
@@ -760,46 +768,82 @@ img {
 }
 
 /* ============================================
-   RESPONSIVE MOBILE OPTIMIZATIONS
+   CRITICAL MOBILE RESPONSIVE FIXES
    ============================================ */
 
 @media screen and (max-width: 768px) {
+  /* PREVENT HORIZONTAL OVERFLOW */
+  html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+  
+  #root {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+  
+  /* FIX CONTAINER WIDTHS */
+  .container {
+    max-width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  
+  /* FIX ALL CARDS */
+  .blog-card,
+  .tech-card,
+  .glass-effect {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
   /* Responsive typography */
   h1, .text-5xl, .text-6xl, .text-7xl {
-    font-size: 2.5rem !important; /* Adjust hero and page titles */
+    font-size: 2rem !important;
     line-height: 1.2 !important;
   }
+  
   h2, .text-4xl {
-    font-size: 2rem !important;
-  }
-  h3, .text-3xl {
     font-size: 1.75rem !important;
   }
+  
+  h3, .text-3xl {
+    font-size: 1.5rem !important;
+  }
+  
   p, .text-lg, .text-xl {
     font-size: 1rem !important;
+    line-height: 1.6 !important;
   }
 
   /* Responsive adjustments for article content */
   .article-content h1 {
-    font-size: 1.875rem;
-    margin-top: 2rem;
+    font-size: 1.75rem !important;
+    margin-top: 1.5rem !important;
   }
   
   .article-content h2 {
-    font-size: 1.5rem;
-    margin-top: 1.875rem;
+    font-size: 1.5rem !important;
+    margin-top: 1.25rem !important;
   }
   
   .article-content h3 {
-    font-size: 1.25rem;
-    margin-top: 1.5rem;
+    font-size: 1.25rem !important;
+    margin-top: 1rem !important;
   }
   
   .article-content .alignleft,
   .article-content .alignright {
-    float: none;
-    margin: 1rem auto;
-    max-width: 100%;
+    float: none !important;
+    margin: 1rem auto !important;
+    max-width: 100% !important;
   }
   
   .article-content table,
@@ -824,18 +868,18 @@ img {
   
   /* Disable expensive animations on mobile for performance */
   .floating-animation {
-    animation: none;
-    transform: none;
+    animation: none !important;
+    transform: none !important;
   }
   
   .pulse-glow {
-    animation: none;
-    box-shadow: none;
+    animation: none !important;
+    box-shadow: none !important;
   }
   
   .gradient-text {
     background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
-    animation: none;
+    animation: none !important;
     background-position: 0% 50%;
   }
   
@@ -844,14 +888,14 @@ img {
   .tech-card,
   .glass-effect,
   [style*="backdrop-filter"] {
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
   }
   
-  /* Simplify hover effects on mobile (they are mostly unused) */
+  /* Simplify hover effects on mobile */
   .blog-card:hover,
   .tech-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) !important;
   }
   
   /* Disable will-change on mobile to reduce memory usage */
@@ -871,9 +915,28 @@ img {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
   }
   
-  /* Disable smooth scroll on mobile to prevent potential jank */
+  /* Disable smooth scroll on mobile */
   html {
-    scroll-behavior: auto;
+    scroll-behavior: auto !important;
+  }
+  
+  /* FIX SPACING AND PADDING */
+  section {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  /* GRID FIXES */
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Ensure buttons are touch-friendly */
+  button,
+  a[role="button"],
+  .btn {
+    min-height: 48px !important;
+    padding: 0.75rem 1.5rem !important;
   }
 }
 
