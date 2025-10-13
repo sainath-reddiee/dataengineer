@@ -1,4 +1,4 @@
-/* src/index.css - COMPLETE PRODUCTION VERSION WITH ALL FIXES */
+/* src/index.css - COMPLETE FINAL PRODUCTION VERSION WITH JUSTIFIED TEXT */
 
 @tailwind base;
 @tailwind components;
@@ -100,7 +100,7 @@ a:not([class]) {
 }
 
 /* ============================================
-   WORDPRESS CONTENT STYLES - COMPREHENSIVE FIX
+   WORDPRESS CONTENT STYLES - COMPREHENSIVE FIX WITH JUSTIFIED TEXT
    ============================================ */
 
 .article-content,
@@ -119,7 +119,7 @@ a:not([class]) {
   box-sizing: border-box;
 }
 
-/* Headings should be left-aligned for readability */
+/* Headings - Proper spacing and hierarchy - LEFT ALIGNED */
 .article-content h1,
 .article-content h2,
 .article-content h3,
@@ -169,7 +169,7 @@ a:not([class]) {
   margin-top: 0;
 }
 
-/* Paragraphs - Better spacing with justified alignment */
+/* Paragraphs - Better spacing with JUSTIFIED TEXT */
 .article-content p {
   margin-bottom: 1.5rem;
   color: #cbd5e1;
@@ -191,7 +191,7 @@ a:not([class]) {
   margin-top: 0.75rem;
 }
 
-/* Lists - Better formatting */
+/* Lists - Better formatting - LEFT ALIGNED */
 .article-content ul,
 .article-content ol {
   margin: 1.5rem 0;
@@ -292,7 +292,7 @@ a:not([class]) {
   font-size: 0.875rem;
 }
 
-/* Blockquotes with justified text */
+/* Blockquotes - Enhanced with JUSTIFIED TEXT */
 .article-content blockquote {
   border-left: 4px solid rgba(96, 165, 250, 0.5);
   padding: 1rem 1.5rem;
@@ -327,7 +327,6 @@ a:not([class]) {
   margin: 2rem 0;
 }
 
-/* Captions centered */
 .article-content figcaption {
   text-align: center;
   font-size: 0.875rem;
@@ -369,7 +368,7 @@ a:not([class]) {
   margin: 3rem 0;
 }
 
-/* Tables - CRITICAL FIX */
+/* Tables - CRITICAL FIX - LEFT ALIGNED for readability */
 .article-content table,
 .prose table {
   width: 100%;
@@ -399,7 +398,6 @@ a:not([class]) {
   letter-spacing: 0.5px;
 }
 
-/* Table content should be left-aligned for readability */
 .article-content td,
 .prose td {
   padding: 12px 16px;
@@ -659,11 +657,14 @@ img {
   margin-top: 2rem;
   margin-bottom: 1rem;
   contain: layout;
+  text-align: left;
 }
 
 .prose p {
   margin-bottom: 1.5rem;
   line-height: 1.7;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .prose code {
@@ -688,6 +689,8 @@ img {
   margin: 1.5rem 0;
   font-style: italic;
   color: rgba(255, 255, 255, 0.8);
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 /* ============================================
@@ -777,7 +780,7 @@ img {
    ============================================ */
 
 @media screen and (max-width: 768px) {
-  /* Text alignment for mobile - Better readability */
+  /* Text alignment for mobile - LEFT ALIGNED for better readability */
   .article-content,
   .prose,
   .article-content p,
