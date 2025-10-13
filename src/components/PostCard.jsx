@@ -1,4 +1,4 @@
-// src/components/PostCard.jsx - COMPLETE VERSION WITH TAGS
+// src/components/PostCard.jsx - OPTIMIZED VERSION WITH LAYOUT SHIFT PREVENTION
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -10,7 +10,7 @@ const isMobile = window.innerWidth <= 768;
 
 const cardVariants = {
   rest: { scale: 1 },
-  hover: isMobile ? { scale: 1 } : { scale: 1.03 }, // Disable scale on mobile
+  hover: isMobile ? { scale: 1 } : { scale: 1.03 },
 };
 
 const MotionLink = motion(Link);
@@ -52,6 +52,9 @@ const PostCard = ({ post }) => {
       whileHover="hover"
       animate="rest"
       transition={{ duration: 0.4 }}
+      style={{ 
+        minHeight: '420px' // CRITICAL: Prevents layout shift
+      }}
     >
       <div className="relative h-48 overflow-hidden">
         <svg width="0" height="0" className="absolute">
@@ -72,6 +75,7 @@ const PostCard = ({ post }) => {
             quality={80}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="w-full h-full object-cover"
+            aspectRatio="16/9"
           />
         </div>
 
@@ -87,6 +91,7 @@ const PostCard = ({ post }) => {
               quality={90}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="w-full h-full object-cover"
+              aspectRatio="16/9"
             />
           </motion.div>
         </div>
@@ -129,17 +134,17 @@ const PostCard = ({ post }) => {
           {post.excerpt}
         </p>
         
-        {/* TAGS SECTION - NEW */}
+        {/* TAGS SECTION */}
         {post.tags && post.tags.length > 0 && (
-  <div className="mb-4">
-    <TagsList 
-      tags={post.tags} 
-      limit={3} 
-      showIcon={false} 
-      size="default"  // Change from "small" to "default" for larger touch targets
-    />
-  </div>
-)}
+          <div className="mb-4">
+            <TagsList 
+              tags={post.tags} 
+              limit={3} 
+              showIcon={false} 
+              size="default"
+            />
+          </div>
+        )}
         
         <div className="flex items-center justify-between text-xs text-gray-500">
           <div className="flex items-center space-x-3">
