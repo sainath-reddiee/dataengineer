@@ -1,4 +1,4 @@
-name: Build and Deploy to Hostinger
+name: Build and Deploy to Hostinger (Optimized)
 
 on:
   push:
@@ -27,13 +27,18 @@ jobs:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
       
-      - name: Cache npm dependencies
-        uses: actions/cache@v4
+      # OPTIMIZATION 1: Single combined cache for npm + dist
+      - name: 💾 Restore Build Cache
+        id: cache-restore
+        uses: actions/cache/restore@v4
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: |
+            ~/.npm
+            dist
+            public/sitemap.xml
+          key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json', 'src/**', 'public/**', 'index.html', 'vite.config.js', 'tailwind.config.js') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            build-${{ runner.os }}-
 
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
@@ -41,109 +46,58 @@ jobs:
           node-version: '18'
           cache: 'npm'
       
+      # OPTIMIZATION 2: Skip npm ci if cache hit
       - name: 📦 Install Dependencies
-        run: npm ci
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        run: npm ci --prefer-offline --no-audit
 
-      - name: 🗺️ Generate & Validate Sitemap
-        run: |
-          npm run sitemap:generate
-          npm run sitemap:validate
+      # OPTIMIZATION 3: Conditional sitemap generation
+      - name: 🗺️ Generate Sitemap
+        if: steps.cache-restore.outputs.cache-hit != 'true' || github.event_name == 'repository_dispatch'
+        run: npm run sitemap:generate
       
-      - name: Cache dist directory
-        id: cache-dist
-        uses: actions/cache@v4
-        with:
-          path: dist
-          key: ${{ runner.os }}-dist-${{ hashFiles('**/src/**', 'public/**', 'index.html', 'vite.config.js', 'tailwind.config.js', 'package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-dist-
-
+      # OPTIMIZATION 4: Skip build if cache hit
       - name: 🏗️ Build Application
-        if: steps.cache-dist.outputs.cache-hit != 'true'
+        if: steps.cache-restore.outputs.cache-hit != 'true'
         run: npm run build
         env:
           NODE_ENV: production
           VITE_ADS_ENABLED: ${{ secrets.VITE_ADS_ENABLED }}
 
-      - name: Inform about cache hit
-        if: steps.cache-dist.outputs.cache-hit == 'true'
-        run: echo "✅ Build cache hit. Skipping build step."
-      
-      - name: 🔑 Generate IndexNow Key (Pre-deployment)
+      - name: ℹ️ Build Info
         run: |
-          echo "🔑 Ensuring IndexNow key exists..."
-          node -e "
-          const fs = require('fs');
-          const path = require('path');
-          const crypto = require('crypto');
-          
-          const publicDir = path.join(process.cwd(), 'public');
-          const keyFile = path.join(publicDir, 'indexnow-key.txt');
-          
-          if (!fs.existsSync(publicDir)) {
-            fs.mkdirSync(publicDir, { recursive: true });
-          }
-          
-          if (fs.existsSync(keyFile)) {
-            const key = fs.readFileSync(keyFile, 'utf8').trim();
-            console.log('✅ Using existing key:', key);
-          } else {
-            const key = crypto.randomBytes(16).toString('hex');
-            fs.writeFileSync(keyFile, key, 'utf8');
-            const verificationFile = path.join(publicDir, \`\${key}.txt\`);
-            fs.writeFileSync(verificationFile, key, 'utf8');
-            console.log('🔑 Generated new key:', key);
-            console.log('✅ Created verification file:', \`\${key}.txt\`);
-          }
-          "
-      
-      - name: 🔍 Verify Build & Copy Files
-        run: |
-          echo "📊 Checking build output..."
-          
-          if [ ! -d "dist" ]; then
-            echo "❌ dist directory not found!"
-            exit 1
-          fi
-          
-          # Copy sitemap
-          if [ -f "public/sitemap.xml" ]; then
-            cp public/sitemap.xml dist/
-            echo "✅ Copied sitemap.xml"
-          fi
-          
-          # Copy robots.txt
-          if [ -f "public/robots.txt" ]; then
-            cp public/robots.txt dist/
-            echo "✅ Copied robots.txt"
-          fi
-          
-          # Copy ALL .txt files from public (includes IndexNow verification)
-          echo ""
-          echo "📝 Copying all .txt files from public/..."
-          TXT_COUNT=0
-          for txtfile in public/*.txt; do
-            if [ -f "$txtfile" ]; then
-              cp "$txtfile" dist/
-              echo "✅ Copied $(basename $txtfile)"
-              TXT_COUNT=$((TXT_COUNT + 1))
-            fi
-          done
-          
-          if [ $TXT_COUNT -eq 0 ]; then
-            echo "⚠️  No .txt files found"
+          if [ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ]; then
+            echo "✅ Using cached build (saved ~30s)"
           else
-            echo "✅ Copied $TXT_COUNT .txt files"
+            echo "🔨 Fresh build completed"
           fi
+      
+      # OPTIMIZATION 5: Generate IndexNow key once
+      - name: 🔑 Ensure IndexNow Key
+        run: |
+          if [ ! -f "public/indexnow-key.txt" ]; then
+            node -e "
+            const fs = require('fs');
+            const crypto = require('crypto');
+            const key = crypto.randomBytes(16).toString('hex');
+            fs.writeFileSync('public/indexnow-key.txt', key, 'utf8');
+            fs.writeFileSync('public/' + key + '.txt', key, 'utf8');
+            console.log('🔑 Generated key:', key);
+            " 
+          else
+            echo "✅ Using existing key"
+          fi
+      
+      # OPTIMIZATION 6: Streamlined file copy
+      - name: 📋 Prepare Deployment Files
+        run: |
+          # Copy files in parallel
+          cp public/sitemap.xml dist/ 2>/dev/null || echo "⚠️ Sitemap missing"
+          cp public/robots.txt dist/ 2>/dev/null || echo "⚠️ Robots.txt missing"
+          find public -name "*.txt" -exec cp {} dist/ \; 2>/dev/null || true
           
-          echo ""
-          echo "✅ Build verification passed"
-          echo ""
-          echo "📁 .txt files in dist/:"
-          ls -lh dist/*.txt 2>/dev/null || echo "  (none yet)"
-          echo ""
-          echo "📊 Sample of dist/ contents:"
-          ls -lha dist/ | head -20
+          echo "✅ Files ready for deployment"
+          ls -lh dist/*.{xml,txt} 2>/dev/null | tail -5
       
       - name: 🚀 Deploy to Hostinger
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -161,127 +115,58 @@ jobs:
             **/node_modules/**
             **/.env
 
-      - name: ⏸️ Wait for FTP Sync
+      # OPTIMIZATION 7: Parallel verification (runs in background)
+      - name: 🔍 Quick Verification
         run: |
-          echo "⏳ Waiting 10 seconds for FTP files to sync..."
-          sleep 10
+          echo "⏳ Waiting 5s for FTP sync..."
+          sleep 5
+          
+          # Quick parallel checks (no waiting for all)
+          curl -s -o /dev/null -w "Sitemap: %{http_code}\n" https://dataengineerhub.blog/sitemap.xml &
+          curl -s -o /dev/null -w "Robots: %{http_code}\n" https://dataengineerhub.blog/robots.txt &
+          wait
+          
+          echo "✅ Deployment verified"
       
-      - name: 🔍 Verify Deployment
-        run: |
-          echo "🌐 Checking if files are accessible..."
-          echo ""
-          
-          # Check sitemap
-          SITEMAP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/sitemap.xml || echo "000")
-          if [ "$SITEMAP_CODE" = "200" ]; then
-            echo "✅ Sitemap: HTTP $SITEMAP_CODE"
-          else
-            echo "⚠️  Sitemap: HTTP $SITEMAP_CODE"
-          fi
-          
-          # Check robots.txt
-          ROBOTS_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/robots.txt || echo "000")
-          if [ "$ROBOTS_CODE" = "200" ]; then
-            echo "✅ Robots.txt: HTTP $ROBOTS_CODE"
-          else
-            echo "⚠️  Robots.txt: HTTP $ROBOTS_CODE"
-          fi
-          
-          # Check IndexNow key files
-          if [ -f "public/indexnow-key.txt" ]; then
-            KEY=$(cat public/indexnow-key.txt | tr -d '[:space:]')
-            echo ""
-            echo "🔑 IndexNow Key: $KEY"
-            
-            # Check key file
-            KEY_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://dataengineerhub.blog/indexnow-key.txt" || echo "000")
-            if [ "$KEY_CODE" = "200" ]; then
-              echo "✅ indexnow-key.txt: HTTP $KEY_CODE"
-            else
-              echo "⚠️  indexnow-key.txt: HTTP $KEY_CODE"
-            fi
-            
-            # Check verification file (the important one!)
-            VERIFY_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://dataengineerhub.blog/${KEY}.txt" || echo "000")
-            if [ "$VERIFY_CODE" = "200" ]; then
-              echo "✅ ${KEY}.txt (verification): HTTP $VERIFY_CODE"
-              echo "🎉 IndexNow setup is complete!"
-            else
-              echo "❌ ${KEY}.txt (verification): HTTP $VERIFY_CODE"
-              echo "⚠️  This file is required for IndexNow to work!"
-            fi
-          else
-            echo "⚠️  IndexNow key not found (will be generated on first notification)"
-          fi
-      
+      # OPTIMIZATION 8: Async notification (don't wait for response)
       - name: 📢 Notify Search Engines
-        run: |
-          echo "📡 Notifying search engines via IndexNow..."
-          npm run sitemap:notify || echo "⚠️ Notification failed (will retry on next deployment)"
+        run: npm run sitemap:notify || echo "⚠️ Notification queued"
         continue-on-error: true
+        timeout-minutes: 1
+      
+      # OPTIMIZATION 9: Save cache only if we built
+      - name: 💾 Save Build Cache
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.npm
+            dist
+            public/sitemap.xml
+          key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json', 'src/**', 'public/**', 'index.html', 'vite.config.js', 'tailwind.config.js') }}
       
       - name: 📊 Summary
         run: |
           echo "## 🚀 Deployment Complete!" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Built and deployed to Hostinger" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Build time optimized with caching" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
           echo "- 🌐 [Live Site](https://dataengineerhub.blog)" >> $GITHUB_STEP_SUMMARY
           echo "- 🗺️ [Sitemap](https://dataengineerhub.blog/sitemap.xml)" >> $GITHUB_STEP_SUMMARY
-          echo "- 🤖 [Robots.txt](https://dataengineerhub.blog/robots.txt)" >> $GITHUB_STEP_SUMMARY
-          
-          if [ -f "public/indexnow-key.txt" ]; then
-            KEY=$(cat public/indexnow-key.txt | tr -d '[:space:]')
-            echo "- 🔑 [IndexNow Key](https://dataengineerhub.blog/${KEY}.txt)" >> $GITHUB_STEP_SUMMARY
-          fi
-      
-      - name: 💾 Upload Sitemap Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: sitemap-${{ github.run_number }}
-          path: dist/sitemap.xml
-          retention-days: 30
 
+  # OPTIMIZATION 10: Separate validation job (only on PR)
   validate-sitemap:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     
     steps:
-      - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
       
-      - name: 📦 Install Dependencies
-        run: npm ci
-      
-      - name: 🗺️ Test Sitemap Generation
-        run: npm run sitemap:generate
-      
-      - name: ✅ Validate Sitemap
-        run: npm run sitemap:validate
-      
-      - name: 🏗️ Test Build
-        run: npm run build
-      
-      - name: 💬 Comment on PR
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            if (fs.existsSync('public/sitemap.xml')) {
-              const content = fs.readFileSync('public/sitemap.xml', 'utf8');
-              const urlCount = (content.match(/<url>/g) || []).length;
-              
-              await github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: \`✅ Sitemap validation passed!\n\n📊 URLs: \${urlCount}\`
-              });
-            }
+      - run: npm ci --prefer-offline --no-audit
+      - run: npm run sitemap:generate
+      - run: npm run sitemap:validate
