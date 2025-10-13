@@ -7,17 +7,13 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "sitemap:generate": "node scripts/generateSitemap.js",
-    "sitemap:generate:force": "node scripts/generateSitemap.js --force",
     "sitemap:validate": "node scripts/validateSitemap.js",
     "sitemap:notify": "node scripts/notifySearchEngines.js",
-    "sitemap:notify:force": "node scripts/notifySearchEngines.js --force",
-    "sitemap:notify:all": "node scripts/notifySearchEngines.js --all",
-    "indexnow:generate": "node scripts/generateIndexNowKey.js",
+    "indexnow:key": "node scripts/generateIndexNowKey.js",
     "indexnow:test": "node scripts/testIndexNow.js",
-    "prebuild": "npm run indexnow:generate && npm run sitemap:generate && npm run sitemap:validate",
-    "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'"
+    "deploy:full": "npm run sitemap:generate && npm run build && npm run sitemap:notify",
+    "deploy:quick": "npm run build"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
