@@ -776,11 +776,26 @@ img {
 }
 
 /* ============================================
-   RESPONSIVE MOBILE OPTIMIZATIONS
+   MOBILE OPTIMIZATIONS - MAXIMUM PERFORMANCE
    ============================================ */
 
 @media screen and (max-width: 768px) {
-  /* Text alignment for mobile - LEFT ALIGNED for better readability */
+  /* CRITICAL: Disable performance-killing properties */
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    will-change: auto !important;
+    backdrop-filter: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+    contain: none !important;
+    content-visibility: auto !important;
+  }
+  
+  /* Text alignment for mobile */
   .article-content,
   .prose,
   .article-content p,
@@ -790,22 +805,21 @@ img {
     text-justify: auto;
   }
   
-  /* Responsive adjustments for article content */
-  .article-content h1 {
-    font-size: 1.875rem;
-    margin-top: 2rem;
+  /* Simplify backgrounds */
+  body,
+  .blog-card,
+  .tech-card,
+  .glass-effect {
+    background: #0f172a !important;
+    background-image: none !important;
   }
   
-  .article-content h2 {
-    font-size: 1.5rem;
-    margin-top: 1.875rem;
-  }
+  /* Optimize article content */
+  .article-content h1 { font-size: 1.75rem; margin-top: 1.5rem; }
+  .article-content h2 { font-size: 1.5rem; margin-top: 1.5rem; border: none; }
+  .article-content h3 { font-size: 1.25rem; margin-top: 1.25rem; }
   
-  .article-content h3 {
-    font-size: 1.25rem;
-    margin-top: 1.5rem;
-  }
-  
+  /* Remove float alignment */
   .article-content .alignleft,
   .article-content .alignright {
     float: none;
@@ -813,84 +827,43 @@ img {
     max-width: 100%;
   }
   
+  /* Simplify tables */
   .article-content table,
   .prose table {
     display: block;
     overflow-x: auto;
-    white-space: nowrap;
     -webkit-overflow-scrolling: touch;
+    background: transparent;
   }
   
+  /* Reduce padding */
   .article-content th,
-  .prose th,
-  .article-content td,
-  .prose td {
-    padding: 8px 12px;
+  .article-content td {
+    padding: 6px 8px;
     font-size: 0.85rem;
   }
   
-  .adsense-ad {
-    margin: 1.5rem 0;
+  /* Optimize images */
+  img {
+    image-rendering: auto;
+    contain-intrinsic-size: auto;
   }
   
-  /* Disable expensive animations on mobile */
-  .floating-animation {
-    animation: none;
-    transform: none;
-  }
-  
-  .pulse-glow {
-    animation: none;
-    box-shadow: none;
-  }
-  
+  /* Remove gradients */
   .gradient-text {
-    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
-    animation: none;
-    background-position: 0% 50%;
-  }
-  
-  /* Reduce backdrop blur for performance */
-  .blog-card,
-  .tech-card,
-  .glass-effect {
-    backdrop-filter: blur(5px);
-    transition: transform 0.2s ease;
+    background: #60a5fa;
+    -webkit-text-fill-color: #60a5fa;
+    color: #60a5fa;
   }
   
   /* Simplify hover effects */
   .blog-card:hover,
   .tech-card:hover {
-    transform: translateY(-2px);
+    transform: none;
   }
   
-  /* Disable will-change on mobile to reduce memory */
-  * {
-    will-change: auto !important;
-  }
-  
-  /* Optimize images for mobile */
-  img {
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-  }
-  
-  /* Reduce complexity of shadows */
-  .shadow-lg,
-  .shadow-xl,
-  .shadow-2xl {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
-  }
-  
-  /* Disable smooth scroll on mobile */
-  html {
-    scroll-behavior: auto;
-  }
-  
-  /* Optimize container queries */
-  .container {
-    contain: layout style;
-  }
+  /* Disable smooth scroll */
+  html { scroll-behavior: auto; }
 }
 
 /* Optimize for very low-end devices */
