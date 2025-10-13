@@ -1,15 +1,18 @@
-// vite.config.js - MOBILE PERFORMANCE OPTIMIZED
-
+// vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react({
+      // Enable Fast Refresh
       fastRefresh: true,
+      // Optimize production build
       babel: {
         plugins: [
+          // Remove console.log in production
           process.env.NODE_ENV === 'production' && [
             'transform-remove-console',
             { exclude: ['error', 'warn'] }
@@ -26,67 +29,74 @@ export default defineConfig({
   },
   
   build: {
+    // Optimize output
     target: 'es2015',
-    minify: 'esbuild',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug']
+      }
+    },
     
+    // Code splitting for better caching
     rollupOptions: {
       output: {
         manualChunks: {
-          // Critical chunks - loaded first
-          'react-core': ['react', 'react-dom'],
-          'router': ['react-router-dom'],
-          
-          // Deferred chunks - loaded on interaction
-          'animations': ['framer-motion'],
-          'ui-components': [
+          // Vendor chunks
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'framer-motion': ['framer-motion'],
+          'ui-vendor': [
             '@radix-ui/react-dialog',
             '@radix-ui/react-toast',
             '@radix-ui/react-slot',
             '@radix-ui/react-label'
           ],
           
-          // API and utilities - loaded as needed
-          'api': ['./src/services/wordpressApi.js'],
-          'hooks': ['./src/hooks/useWordPress.js'],
-          'utils': ['./src/utils/analytics.js', './src/utils/performance.js']
+          // App chunks
+          'wordpress-api': ['./src/services/wordpressApi.js', './src/hooks/useWordPress.js'],
+          'utils': ['./src/utils/analytics.js', './src/utils/performance.js', './src/utils/imageOptimizer.js']
         },
         
-        // Optimize chunk naming
-        chunkFileNames: (chunkInfo) => {
-          const facadeModuleId = chunkInfo.facadeModuleId;
-          if (facadeModuleId && facadeModuleId.includes('node_modules')) {
-            return 'assets/vendor/[name]-[hash].js';
-          }
-          return 'assets/js/[name]-[hash].js';
-        },
+        // Clean filenames
+        chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
         assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
       }
     },
     
-    chunkSizeWarningLimit: 500, // REDUCED - force better chunking
-    sourcemap: false,
-    cssCodeSplit: true,
-    reportCompressedSize: false, // Faster builds
-    assetsInlineLimit: 2048, // REDUCED - inline only tiny assets
+    // Chunk size warnings
+    chunkSizeWarningLimit: 1000,
     
-    // MOBILE OPTIMIZATION
-    cssMinify: 'esbuild', // Faster CSS minification
+    // Enable source maps for production debugging (optional)
+    sourcemap: false,
+    
+    // Optimize CSS
+    cssCodeSplit: true,
+    
+    // Compression
+    reportCompressedSize: true,
+    
+    // Asset inlining threshold
+    assetsInlineLimit: 4096 // 4kb
   },
   
+  // Optimize dependencies
   optimizeDeps: {
     include: [
       'react',
       'react-dom',
-      'react-router-dom'
-    ],
-    exclude: [
-      'framer-motion', // Load on demand
+      'react-router-dom',
+      'framer-motion',
       '@radix-ui/react-dialog',
-      '@radix-ui/react-toast'
-    ]
+      '@radix-ui/react-toast',
+      'lucide-react'
+    ],
+    exclude: []
   },
   
+  // Server config for development
   server: {
     port: 3000,
     strictPort: true,
@@ -94,6 +104,7 @@ export default defineConfig({
     open: true
   },
   
+  // Preview config for production testing
   preview: {
     port: 4173,
     strictPort: true,
@@ -101,12 +112,8 @@ export default defineConfig({
     open: true
   },
   
-  esbuild: {
-    logOverride: { 'this-is-undefined-in-esm': 'silent' },
-    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
-    // MOBILE: Aggressive minification
-    minifyIdentifiers: true,
-    minifySyntax: true,
-    minifyWhitespace: true,
+  // Environment variables
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
   }
 });
