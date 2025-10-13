@@ -1,4 +1,4 @@
-name: Build and Deploy to Hostinger (Optimized)
+name: Build and Deploy to Hostinger (Ultra-Optimized)
 
 on:
   push:
@@ -26,8 +26,23 @@ jobs:
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Need last 2 commits for change detection
       
-      # OPTIMIZATION 1: Single combined cache for npm + dist
+      # CRITICAL: Detect what actually changed
+      - name: 🔍 Detect Changes
+        id: changes
+        run: |
+          # Check if this is a fresh run or a content-only change
+          if git diff --name-only HEAD^ HEAD | grep -qE '^(src/|index.html|vite.config.js|tailwind.config.js|package)'; then
+            echo "code_changed=true" >> $GITHUB_OUTPUT
+            echo "🔨 Code changes detected - full rebuild needed"
+          else
+            echo "code_changed=false" >> $GITHUB_OUTPUT
+            echo "📄 Only content/config changed - trying cache"
+          fi
+      
+      # OPTIMIZED: Smart cache key that considers actual content
       - name: 💾 Restore Build Cache
         id: cache-restore
         uses: actions/cache/restore@v4
@@ -36,9 +51,11 @@ jobs:
             ~/.npm
             dist
             public/sitemap.xml
-          key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json', 'src/**', 'public/**', 'index.html', 'vite.config.js', 'tailwind.config.js') }}
+            public/indexnow-key.txt
+          # Cache key includes file hashes - only rebuilds if content actually changed
+          key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**', 'index.html', 'vite.config.js', 'tailwind.config.js', 'postcss.config.js') }}
           restore-keys: |
-            build-${{ runner.os }}-
+            build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
 
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
@@ -46,59 +63,79 @@ jobs:
           node-version: '18'
           cache: 'npm'
       
-      # OPTIMIZATION 2: Skip npm ci if cache hit
+      # Skip if cache hit AND no code changes
       - name: 📦 Install Dependencies
-        if: steps.cache-restore.outputs.cache-hit != 'true'
+        if: steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true'
         run: npm ci --prefer-offline --no-audit
 
-      # OPTIMIZATION 3: Conditional sitemap generation
-      - name: 🗺️ Generate Sitemap
-        if: steps.cache-restore.outputs.cache-hit != 'true' || github.event_name == 'repository_dispatch'
-        run: npm run sitemap:generate
+      # Always regenerate sitemap for scheduled/repository_dispatch
+      - name: 🗺️ Generate & Validate Sitemap
+        if: |
+          steps.cache-restore.outputs.cache-hit != 'true' || 
+          github.event_name == 'repository_dispatch' || 
+          github.event_name == 'schedule'
+        run: |
+          npm run sitemap:generate
+          npm run sitemap:validate
       
-      # OPTIMIZATION 4: Skip build if cache hit
+      # Skip build if cache hit AND no code changes
       - name: 🏗️ Build Application
-        if: steps.cache-restore.outputs.cache-hit != 'true'
+        if: steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true'
         run: npm run build
         env:
           NODE_ENV: production
           VITE_ADS_ENABLED: ${{ secrets.VITE_ADS_ENABLED }}
 
-      - name: ℹ️ Build Info
+      - name: ℹ️ Build Status
         run: |
           if [ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ]; then
-            echo "✅ Using cached build (saved ~30s)"
+            if [ "${{ steps.changes.outputs.code_changed }}" == "true" ]; then
+              echo "🔨 Code changed - rebuilt anyway"
+            else
+              echo "✅ Using cached build (saved ~50 seconds)"
+              echo "📊 FTP will only sync changed files (5-10s)"
+            fi
           else
-            echo "🔨 Fresh build completed"
+            echo "🆕 Fresh build completed"
           fi
       
-      # OPTIMIZATION 5: Generate IndexNow key once
-      - name: 🔑 Ensure IndexNow Key
+      - name: 🔑 Generate IndexNow Key
         run: |
-          if [ ! -f "public/indexnow-key.txt" ]; then
-            node -e "
-            const fs = require('fs');
-            const crypto = require('crypto');
-            const key = crypto.randomBytes(16).toString('hex');
-            fs.writeFileSync('public/indexnow-key.txt', key, 'utf8');
-            fs.writeFileSync('public/' + key + '.txt', key, 'utf8');
-            console.log('🔑 Generated key:', key);
-            " 
-          else
-            echo "✅ Using existing key"
-          fi
-      
-      # OPTIMIZATION 6: Streamlined file copy
-      - name: 📋 Prepare Deployment Files
-        run: |
-          # Copy files in parallel
-          cp public/sitemap.xml dist/ 2>/dev/null || echo "⚠️ Sitemap missing"
-          cp public/robots.txt dist/ 2>/dev/null || echo "⚠️ Robots.txt missing"
-          find public -name "*.txt" -exec cp {} dist/ \; 2>/dev/null || true
+          node -e "
+          const fs = require('fs');
+          const path = require('path');
+          const crypto = require('crypto');
           
-          echo "✅ Files ready for deployment"
-          ls -lh dist/*.{xml,txt} 2>/dev/null | tail -5
+          const publicDir = path.join(process.cwd(), 'public');
+          const keyFile = path.join(publicDir, 'indexnow-key.txt');
+          
+          if (!fs.existsSync(publicDir)) {
+            fs.mkdirSync(publicDir, { recursive: true });
+          }
+          
+          if (fs.existsSync(keyFile)) {
+            const key = fs.readFileSync(keyFile, 'utf8').trim();
+            console.log('✅ Using existing key');
+          } else {
+            const key = crypto.randomBytes(16).toString('hex');
+            fs.writeFileSync(keyFile, key, 'utf8');
+            const verificationFile = path.join(publicDir, \`\${key}.txt\`);
+            fs.writeFileSync(verificationFile, key, 'utf8');
+            console.log('🔑 Generated new key');
+          }
+          "
       
+      - name: 📋 Prepare Files
+        run: |
+          # Copy essential files
+          [ -f "public/sitemap.xml" ] && cp public/sitemap.xml dist/ && echo "✅ Sitemap"
+          [ -f "public/robots.txt" ] && cp public/robots.txt dist/ && echo "✅ Robots"
+          
+          # Copy .txt files
+          find public -name "*.txt" -exec cp {} dist/ \; 2>/dev/null
+          echo "✅ Files ready"
+      
+      # OPTIMIZED: FTP will be fast if nothing changed
       - name: 🚀 Deploy to Hostinger
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -109,59 +146,89 @@ jobs:
           local-dir: ./dist/
           server-dir: ${{ secrets.FTP_REMOTE_PATH }}/
           dangerous-clean-slate: false
+          # CRITICAL: Don't delete old files if build was cached
+          state-name: .ftp-deploy-sync-state.json
+          dry-run: false
           exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
             **/.env
 
-      # OPTIMIZATION 7: Parallel verification (runs in background)
+      - name: ⏸️ Smart Wait
+        run: |
+          # Only wait if files were actually uploaded
+          if [ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ] && [ "${{ steps.changes.outputs.code_changed }}" != "true" ]; then
+            echo "⚡ Cache hit - minimal wait (3s)"
+            sleep 3
+          else
+            echo "⏳ Full deploy - waiting 6s"
+            sleep 6
+          fi
+      
       - name: 🔍 Quick Verification
         run: |
-          echo "⏳ Waiting 5s for FTP sync..."
-          sleep 5
+          # Parallel verification
+          curl -sf https://dataengineerhub.blog/sitemap.xml > /dev/null && echo "✅ Sitemap OK" || echo "⚠️  Sitemap"
+          curl -sf https://dataengineerhub.blog/robots.txt > /dev/null && echo "✅ Robots OK" || echo "⚠️  Robots"
           
-          # Quick parallel checks (no waiting for all)
-          curl -s -o /dev/null -w "Sitemap: %{http_code}\n" https://dataengineerhub.blog/sitemap.xml &
-          curl -s -o /dev/null -w "Robots: %{http_code}\n" https://dataengineerhub.blog/robots.txt &
-          wait
-          
-          echo "✅ Deployment verified"
+          if [ -f "public/indexnow-key.txt" ]; then
+            KEY=$(cat public/indexnow-key.txt | tr -d '[:space:]')
+            curl -sf "https://dataengineerhub.blog/${KEY}.txt" > /dev/null && echo "✅ IndexNow OK" || echo "⚠️  IndexNow"
+          fi
       
-      # OPTIMIZATION 8: Async notification (don't wait for response)
       - name: 📢 Notify Search Engines
+        # Only notify if sitemap actually changed
+        if: |
+          steps.cache-restore.outputs.cache-hit != 'true' || 
+          github.event_name == 'repository_dispatch' || 
+          github.event_name == 'schedule'
         run: npm run sitemap:notify || echo "⚠️ Notification queued"
         continue-on-error: true
         timeout-minutes: 1
       
-      # OPTIMIZATION 9: Save cache only if we built
-      - name: 💾 Save Build Cache
-        if: steps.cache-restore.outputs.cache-hit != 'true'
+      - name: 📊 Deployment Summary
+        run: |
+          echo "## 🚀 Deployment Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ] && [ "${{ steps.changes.outputs.code_changed }}" != "true" ]; then
+            echo "⚡ **Cache Hit** - Only changed files uploaded" >> $GITHUB_STEP_SUMMARY
+            echo "⏱️ **Time Saved:** ~50 seconds" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "🔨 **Fresh Build** - All files deployed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
+          echo "- 🌐 [Live Site](https://dataengineerhub.blog)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🗺️ [Sitemap](https://dataengineerhub.blog/sitemap.xml)" >> $GITHUB_STEP_SUMMARY
+      
+      # Save cache only if we built
+      - name: 💾 Save Cache
+        if: steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true'
         uses: actions/cache/save@v4
         with:
           path: |
             ~/.npm
             dist
             public/sitemap.xml
-          key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json', 'src/**', 'public/**', 'index.html', 'vite.config.js', 'tailwind.config.js') }}
+            public/indexnow-key.txt
+          key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**', 'index.html', 'vite.config.js', 'tailwind.config.js', 'postcss.config.js') }}
       
-      - name: 📊 Summary
-        run: |
-          echo "## 🚀 Deployment Complete!" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Build time optimized with caching" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
-          echo "- 🌐 [Live Site](https://dataengineerhub.blog)" >> $GITHUB_STEP_SUMMARY
-          echo "- 🗺️ [Sitemap](https://dataengineerhub.blog/sitemap.xml)" >> $GITHUB_STEP_SUMMARY
+      - name: 💾 Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemap-${{ github.run_number }}
+          path: dist/sitemap.xml
+          retention-days: 30
 
-  # OPTIMIZATION 10: Separate validation job (only on PR)
   validate-sitemap:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     
     steps:
       - uses: actions/checkout@v4
-      
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
@@ -170,3 +237,20 @@ jobs:
       - run: npm ci --prefer-offline --no-audit
       - run: npm run sitemap:generate
       - run: npm run sitemap:validate
+      
+      - name: 💬 PR Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (fs.existsSync('public/sitemap.xml')) {
+              const content = fs.readFileSync('public/sitemap.xml', 'utf8');
+              const urlCount = (content.match(/<url>/g) || []).length;
+              
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `✅ Sitemap validation passed!\n\n📊 URLs: ${urlCount}`
+              });
+            }
