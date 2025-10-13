@@ -6,7 +6,7 @@ export const useStats = () => {
   const [stats, setStats] = useState({
     totalArticles: 0,
     totalCategories: 0,
-    totalReaders: '10K+', // Static placeholder
+    totalReaders: '10K+', // Static placeholder - change this value anytime!
     updateFrequency: 'Weekly',
     loading: true,
     error: null
@@ -23,18 +23,19 @@ export const useStats = () => {
           wordpressApi.getCategories()
         ]);
 
-        // Calculate total articles
+        // Calculate total articles (DYNAMIC)
         const totalArticles = postsResult.totalPosts || 0;
 
-        // Count non-"Uncategorized" categories
+        // Count non-"Uncategorized" categories (DYNAMIC)
         const totalCategories = categoriesResult.filter(
           cat => cat.name !== 'Uncategorized' && cat.count > 0
         ).length;
 
-        // Static reader count (you can manually update this anytime)
-        const totalReaders = '10K+'; // Change this to whatever you want: '5K+', '15K+', etc.
+        // Static reader count (MANUAL - update this value whenever you want!)
+        // Examples: '5K+', '10K+', '25K+', '50K+', '100K+', '1M+'
+        const totalReaders = '10K+'; // ← CHANGE THIS VALUE TO UPDATE READER COUNT
 
-        // Determine update frequency based on recent posts
+        // Determine update frequency based on recent posts (DYNAMIC)
         const updateFrequency = await determineUpdateFrequency();
 
         setStats({
@@ -46,8 +47,15 @@ export const useStats = () => {
           error: null
         });
 
+        console.log('✅ Stats loaded:', {
+          totalArticles,
+          totalCategories,
+          totalReaders,
+          updateFrequency
+        });
+
       } catch (error) {
-        console.error('Error fetching stats:', error);
+        console.error('❌ Error fetching stats:', error);
         setStats(prev => ({
           ...prev,
           loading: false,
@@ -73,6 +81,7 @@ const determineUpdateFrequency = async () => {
 
     if (result.posts.length < 2) return 'New';
 
+    // Calculate average days between posts
     const dates = result.posts.map(post => new Date(post.date).getTime());
     const daysBetween = [];
 
@@ -83,6 +92,7 @@ const determineUpdateFrequency = async () => {
 
     const avgDays = daysBetween.reduce((a, b) => a + b, 0) / daysBetween.length;
 
+    // Determine frequency based on average
     if (avgDays <= 1) return 'Daily';
     if (avgDays <= 7) return 'Weekly';
     if (avgDays <= 14) return 'Bi-weekly';
