@@ -1,4 +1,4 @@
-/* src/index.css - COMPLETE PRODUCTION VERSION WITH ULTRA MOBILE FIXES */
+/* src/index.css - COMPLETE PRODUCTION VERSION WITH BALANCED MOBILE FIXES */
 
 @tailwind base;
 @tailwind components;
@@ -29,17 +29,11 @@
 * {
   border-color: hsl(var(--border));
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
-/* ============================================
-   CRITICAL MOBILE OVERFLOW PREVENTION
-   ============================================ */
 html {
   overflow-x: hidden;
   width: 100%;
-  position: relative;
 }
 
 body {
@@ -53,19 +47,11 @@ body {
   scroll-behavior: smooth;
   overflow-x: hidden;
   width: 100%;
-  position: relative;
 }
 
 #root {
   overflow-x: hidden;
   width: 100%;
-  position: relative;
-}
-
-/* Force all direct children to respect container */
-#root > * {
-  max-width: 100vw;
-  overflow-x: hidden;
 }
 
 /* ============================================
@@ -128,7 +114,6 @@ a:not([class]) {
   line-height: 1.8;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  max-width: 100%;
 }
 
 .article-content * {
@@ -494,12 +479,17 @@ img {
   max-width: 100%;
   height: auto;
   display: block;
+  transition: opacity 0.3s ease;
+  content-visibility: auto;
+  contain-intrinsic-size: 300px 200px;
 }
 
 .hero-image,
 .blog-card img,
 .featured-image {
   object-fit: cover;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -513,11 +503,19 @@ img {
   }
 }
 
+.floating-animation,
+.pulse-glow {
+  will-change: transform;
+  transform: translateZ(0);
+  contain: layout;
+}
+
 .gradient-text {
   background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 40%, #f472b6 80%, #fbbf24 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  will-change: background-position;
   background-size: 200% 200%;
 }
 
@@ -555,12 +553,14 @@ img {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
+  contain: layout style paint;
 }
 
 .glass-effect {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.15);
+  contain: layout style paint;
 }
 
 .blog-card {
@@ -569,12 +569,19 @@ img {
   border: 1px solid rgba(148, 163, 184, 0.2);
   transition: all 0.3s ease;
   min-height: 400px;
+  contain: layout style paint;
 }
 
 .blog-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 30px rgba(96, 165, 250, 0.2);
   border-color: rgba(96, 165, 250, 0.4);
+  will-change: transform;
+}
+
+.tech-card {
+  min-height: 280px;
+  transition: all 0.3s ease;
 }
 
 .tech-card:hover {
@@ -586,6 +593,7 @@ img {
 .prose {
   max-width: 65ch;
   margin: 0 auto;
+  contain: layout;
 }
 
 .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
@@ -594,6 +602,7 @@ img {
   line-height: 1.2;
   margin-top: 2rem;
   margin-bottom: 1rem;
+  contain: layout;
 }
 
 .prose p {
@@ -614,6 +623,7 @@ img {
   border-radius: 0.5rem;
   overflow-x: auto;
   margin: 1.5rem 0;
+  contain: layout;
 }
 
 .prose blockquote {
@@ -637,6 +647,7 @@ img {
 .btn-primary {
   position: relative;
   overflow: hidden;
+  contain: layout style;
 }
 
 .btn-primary::before {
@@ -689,117 +700,43 @@ img {
 }
 
 /* ============================================
-   🔥 ULTRA CRITICAL MOBILE FIXES FOR IPHONE
+   BALANCED MOBILE RESPONSIVE FIXES
    ============================================ */
 
 @media screen and (max-width: 768px) {
-  /* FORCE PREVENT HORIZONTAL SCROLL - NUCLEAR OPTION */
-  * {
-    max-width: 100vw !important;
-  }
-  
-  html {
-    overflow-x: hidden !important;
-    width: 100% !important;
-    position: relative !important;
-  }
-  
-  body {
-    overflow-x: hidden !important;
-    width: 100% !important;
-    max-width: 100vw !important;
-    position: relative !important;
+  /* PREVENT OVERFLOW WITHOUT BREAKING LAYOUT */
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
   }
   
   #root {
-    overflow-x: hidden !important;
-    width: 100% !important;
-    max-width: 100vw !important;
+    overflow-x: hidden;
+    width: 100%;
   }
   
-  /* FIX EVERY SECTION AND CONTAINER */
-  section,
-  div,
-  main,
-  header,
-  footer,
-  nav {
-    max-width: 100vw !important;
-    overflow-x: hidden !important;
-  }
-  
-  /* CONTAINER FIX */
+  /* Container responsive padding */
   .container {
-    max-width: 100% !important;
-    width: 100% !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
   
-  /* CARD FIXES */
-  .blog-card,
-  .tech-card,
-  .glass-effect {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-  }
+  /* Responsive typography - BALANCED */
+  h1 { font-size: clamp(1.75rem, 5vw, 2.5rem); }
+  h2 { font-size: clamp(1.5rem, 4vw, 2rem); }
+  h3 { font-size: clamp(1.25rem, 3vw, 1.75rem); }
+  p { font-size: 1rem; }
   
-  /* GRID FIXES */
-  .grid {
-    grid-template-columns: 1fr !important;
-  }
-  
-  /* TYPOGRAPHY FIXES */
-  h1, .text-7xl, .text-6xl, .text-5xl {
-    font-size: 2rem !important;
-    line-height: 1.2 !important;
-  }
-  
-  h2, .text-4xl {
-    font-size: 1.75rem !important;
-  }
-  
-  h3, .text-3xl {
-    font-size: 1.5rem !important;
-  }
-  
-  h4, .text-2xl {
-    font-size: 1.25rem !important;
-  }
-  
-  p, .text-xl, .text-lg {
-    font-size: 1rem !important;
-  }
-  
-  .text-sm {
-    font-size: 0.875rem !important;
-  }
-  
-  .text-xs {
-    font-size: 0.75rem !important;
-  }
-  
-  /* ARTICLE CONTENT MOBILE */
-  .article-content h1 {
-    font-size: 1.75rem !important;
-  }
-  
-  .article-content h2 {
-    font-size: 1.5rem !important;
-  }
-  
-  .article-content h3 {
-    font-size: 1.25rem !important;
-  }
+  /* Article content mobile */
+  .article-content h1 { font-size: 1.75rem; }
+  .article-content h2 { font-size: 1.5rem; }
+  .article-content h3 { font-size: 1.25rem; }
   
   .article-content .alignleft,
   .article-content .alignright {
-    float: none !important;
-    margin: 1rem auto !important;
-    max-width: 100% !important;
+    float: none;
+    margin: 1rem auto;
+    max-width: 100%;
   }
   
   .article-content table,
@@ -809,99 +746,44 @@ img {
     -webkit-overflow-scrolling: touch;
   }
   
-  /* DISABLE ANIMATIONS */
+  /* Disable animations on mobile */
   .floating-animation,
   .pulse-glow {
-    animation: none !important;
-    transform: none !important;
+    animation: none;
   }
   
   .gradient-text {
-    animation: none !important;
+    animation: none;
   }
   
-  /* REDUCE BACKDROP BLUR */
+  /* Reduce backdrop blur for performance */
   .blog-card,
   .tech-card,
   .glass-effect {
-    backdrop-filter: blur(5px) !important;
-    -webkit-backdrop-filter: blur(5px) !important;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
   }
   
-  /* SIMPLIFY HOVER */
+  /* Simplify hover effects */
   .blog-card:hover,
   .tech-card:hover {
-    transform: none !important;
+    transform: translateY(-2px);
   }
   
-  /* TOUCH TARGETS */
+  /* Touch targets */
   button,
-  a[role="button"],
-  input[type="button"],
-  input[type="submit"] {
-    min-height: 48px !important;
-    min-width: 48px !important;
-    padding: 0.75rem 1.5rem !important;
+  a[role="button"] {
+    min-height: 48px;
+    padding: 0.75rem 1.5rem;
   }
   
-  /* PADDING FIXES */
-  section {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-  }
-  
-  /* MARGIN FIXES */
-  .mx-auto {
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-  
-  /* IMAGES */
-  img {
-    max-width: 100% !important;
-    height: auto !important;
-  }
-  
-  /* MEGA MENU FIX */
-  .absolute {
-    position: relative !important;
-  }
-  
-  /* DISABLE WILL-CHANGE */
+  /* Disable will-change */
   * {
-    will-change: auto !important;
+    will-change: auto;
   }
   
-  /* SMOOTH SCROLLING OFF */
+  /* Smooth scrolling off */
   html {
-    scroll-behavior: auto !important;
-  }
-}
-
-/* iPhone 14 Pro Max Specific */
-@media screen and (max-width: 430px) {
-  body {
-    font-size: 16px !important;
-  }
-  
-  h1 {
-    font-size: 1.875rem !important;
-  }
-  
-  h2 {
-    font-size: 1.5rem !important;
-  }
-  
-  .container {
-    padding-left: 0.875rem !important;
-    padding-right: 0.875rem !important;
-  }
-}
-
-/* LANDSCAPE MODE FIX */
-@media screen and (max-height: 500px) and (orientation: landscape) {
-  section {
-    padding-top: 2rem !important;
-    padding-bottom: 2rem !important;
+    scroll-behavior: auto;
   }
 }
