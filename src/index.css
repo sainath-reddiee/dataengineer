@@ -777,7 +777,7 @@ img {
    ============================================ */
 
 @media screen and (max-width: 768px) {
-  /* ✅ ADD THIS FIRST - Text alignment for mobile */
+  /* Text alignment for mobile - Better readability */
   .article-content,
   .prose,
   .article-content p,
