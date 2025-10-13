@@ -66,7 +66,7 @@ const Hero = () => {
   };
 
   return (
-    <section ref={ref} className="relative flex items-center justify-center overflow-hidden py-20 px-6">
+    <section ref={ref} className="relative flex items-center justify-center overflow-hidden py-16 sm:py-20 px-6">
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl floating-animation"></div>
@@ -95,13 +95,12 @@ const Hero = () => {
           >
             Master{' '}
             <span className="gradient-text">Data Engineering</span>
-            <br />
-            with Expert Tutorials
+            {' '}with Expert Tutorials
           </motion.h1>
 
           <motion.p
             variants={itemVariants}
-            className="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed max-w-3xl mx-auto"
+            className="text-lg md:text-xl text-gray-300 mb-12 leading-relaxed max-w-3xl mx-auto"
           >
             Learn Snowflake, AWS, Azure, SQL, Python, Airflow, dbt, and more with practical, 
             hands-on guides designed for data professionals.
@@ -136,60 +135,60 @@ const Hero = () => {
 
           <motion.div
             variants={itemVariants}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-4xl mx-auto"
+            className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8 max-w-4xl mx-auto"
           >
-            <div className="tech-card p-6 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform duration-300">
+            <div className="tech-card p-4 md:p-6 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform duration-300">
               <div className="flex items-center justify-center mb-3">
                 <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg">
-                  <Zap className="h-6 w-6 text-white" />
+                  <Zap className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
               </div>
-              <div className="text-3xl md:text-4xl font-black gradient-text mb-2">
+              <div className="text-2xl md:text-4xl font-black gradient-text mb-2">
                 100+
               </div>
-              <div className="text-gray-400 text-sm font-medium">
+              <div className="text-gray-400 text-xs md:text-sm font-medium">
                 Articles
               </div>
             </div>
 
-            <div className="tech-card p-6 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform duration-300">
+            <div className="tech-card p-4 md:p-6 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform duration-300">
               <div className="flex items-center justify-center mb-3">
                 <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
-                  <TrendingUp className="h-6 w-6 text-white" />
+                  <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
               </div>
-              <div className="text-3xl md:text-4xl font-black gradient-text mb-2">
+              <div className="text-2xl md:text-4xl font-black gradient-text mb-2">
                 8+
               </div>
-              <div className="text-gray-400 text-sm font-medium">
+              <div className="text-gray-400 text-xs md:text-sm font-medium">
                 Technologies
               </div>
             </div>
 
-            <div className="tech-card p-6 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform duration-300">
+            <div className="tech-card p-4 md:p-6 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform duration-300">
               <div className="flex items-center justify-center mb-3">
                 <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg">
-                  <Users className="h-6 w-6 text-white" />
+                  <Users className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
               </div>
-              <div className="text-3xl md:text-4xl font-black gradient-text mb-2">
+              <div className="text-2xl md:text-4xl font-black gradient-text mb-2">
                 10K+
               </div>
-              <div className="text-gray-400 text-sm font-medium">
+              <div className="text-gray-400 text-xs md:text-sm font-medium">
                 Readers
               </div>
             </div>
 
-            <div className="tech-card p-6 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform duration-300">
+            <div className="tech-card p-4 md:p-6 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform duration-300">
               <div className="flex items-center justify-center mb-3">
                 <div className="p-3 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg">
-                  <Sparkles className="h-6 w-6 text-white" />
+                  <Sparkles className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
               </div>
-              <div className="text-3xl md:text-4xl font-black gradient-text mb-2">
+              <div className="text-2xl md:text-4xl font-black gradient-text mb-2">
                 Weekly
               </div>
-              <div className="text-gray-400 text-sm font-medium">
+              <div className="text-gray-400 text-xs md:text-sm font-medium">
                 Updates
               </div>
             </div>
