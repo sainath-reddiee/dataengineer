@@ -1,4 +1,4 @@
-// src/pages/CategoryPage.jsx - COMPLETE FINAL VERSION WITH ADSENSE
+// src/pages/CategoryPage.jsx - COMPLETE FINAL VERSION WITH ADSENSE & MOBILE FIXES
 import React, { useMemo, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -188,8 +188,8 @@ const CategoryPage = () => {
             transition={{ duration: 0.5, delay: 0.1 }} 
             className="text-center mb-8"
           >
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-sm border border-blue-400/30 mb-6">
-              {getCategoryIcon(categoryName)}
+            <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-sm border border-blue-400/30 mb-6">
+              {getCategoryIcon(categoryName, 'h-8 w-8 md:h-10 md:w-10')}
             </div>
             <h1 className="text-3xl md:text-4xl font-black mb-4">
               <span className="gradient-text">{currentCategory.name} Tutorials & Articles</span>
@@ -242,7 +242,7 @@ const CategoryPage = () => {
             <div className="text-xl font-bold mb-4 text-center gradient-text">
               Explore Other Categories
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {Object.entries(categoryConfig).map(([slug, config]) => {
                 const isActive = slug === lowerCategoryName;
                 return (
@@ -275,7 +275,7 @@ const CategoryPage = () => {
                     {/* Content */}
                     <div className="relative z-10 flex flex-col items-center">
                       <div className="flex justify-center mb-2">
-                        {getCategoryIcon(slug, 'h-10 w-10')}
+                        {getCategoryIcon(slug, 'h-8 w-8 md:h-10 md:w-10')}
                       </div>
                       <div className={`text-sm font-medium ${isActive ? 'text-blue-300' : 'text-gray-300'}`}>
                         {config.name}
