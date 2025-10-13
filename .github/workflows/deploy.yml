@@ -145,7 +145,7 @@ jobs:
           port: ${{ secrets.FTP_PORT }}
           local-dir: ./dist/
           server-dir: ${{ secrets.FTP_REMOTE_PATH }}/
-          dangerous-clean-slate: true
+          dangerous-clean-slate: false
           # CRITICAL: Don't delete old files if build was cached
           state-name: .ftp-deploy-sync-state.json
           dry-run: false
