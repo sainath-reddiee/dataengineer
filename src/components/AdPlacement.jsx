@@ -1,4 +1,4 @@
-// src/components/AdPlacement.jsx
+// src/components/AdPlacement.jsx - OPTIMIZED WITH LAYOUT SHIFT PREVENTION
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -15,7 +15,6 @@ const AdPlacement = ({
   const [shouldRender, setShouldRender] = useState(false);
   const adInitialized = useRef(false);
 
-  // Your AdSense slot IDs from AdSense dashboard
   const AD_SLOTS = {
     'article-top': '1234567890',
     'article-middle': '0987654321',
@@ -38,23 +37,19 @@ const AdPlacement = ({
   const IS_DEV = import.meta.env.DEV;
   const currentSlot = AD_SLOTS[position] || AD_SLOTS['default'];
 
-  // Check if ads should be rendered
   useEffect(() => {
-    // Check environment variable (handle string values)
     if (ADS_ENABLED === 'false' || ADS_ENABLED === false) {
       console.log('🚫 Ads disabled via VITE_ADS_ENABLED');
       setShouldRender(false);
       return;
     }
 
-    // Check development mode
     if (IS_DEV) {
       console.log('🚫 Ads disabled in development mode');
       setShouldRender(false);
       return;
     }
 
-    // Check localhost
     if (typeof window !== 'undefined' && 
         (window.location.hostname === 'localhost' || 
          window.location.hostname === '127.0.0.1')) {
@@ -63,7 +58,6 @@ const AdPlacement = ({
       return;
     }
 
-    // Check if publisher ID is valid
     if (!PUBLISHER_ID || PUBLISHER_ID === 'ca-pub-XXXXXXXXXX') {
       console.warn('⚠️ AdSense Publisher ID not configured');
       setShouldRender(false);
@@ -77,7 +71,6 @@ const AdPlacement = ({
   useEffect(() => {
     if (!shouldRender) return;
 
-    // Initialize ad
     const initAd = () => {
       try {
         if (window.adsbygoogle && !adInitialized.current) {
@@ -92,7 +85,6 @@ const AdPlacement = ({
       }
     };
 
-    // Wait for AdSense script to load
     if (window.adsbygoogle) {
       initAd();
     } else {
@@ -103,7 +95,6 @@ const AdPlacement = ({
         }
       }, 100);
 
-      // Clear interval after 10 seconds
       const timeout = setTimeout(() => {
         clearInterval(checkInterval);
         if (!adInitialized.current) {
@@ -119,17 +110,17 @@ const AdPlacement = ({
     }
   }, [position, shouldRender]);
 
-  // Reset on route change (important for SPA)
   useEffect(() => {
     adInitialized.current = false;
   }, [location.pathname]);
 
-  // Don't render if ads are disabled
   if (!shouldRender) {
     if (IS_DEV) {
-      // Show placeholder in development
       return (
-        <div className={`dev-ad-placeholder my-8 p-4 border-2 border-dashed border-yellow-500 rounded-lg bg-yellow-500/10 ${className}`}>
+        <div 
+          className={`dev-ad-placeholder my-8 p-4 border-2 border-dashed border-yellow-500 rounded-lg bg-yellow-500/10 ${className}`}
+          style={{ minHeight: '280px' }} // CRITICAL: Reserve space
+        >
           <div className="text-center text-yellow-300 text-sm">
             <p className="font-semibold mb-1">📢 Ad Placeholder</p>
             <p className="text-xs">Position: {position}</p>
@@ -146,10 +137,17 @@ const AdPlacement = ({
       ref={adRef}
       className={`adsense-ad my-8 ${className}`}
       data-position={position}
+      style={{ 
+        minHeight: '280px', // CRITICAL: Prevents layout shift
+        display: 'block'
+      }}
     >
       <ins 
         className="adsbygoogle"
-        style={{ display: 'block' }}
+        style={{ 
+          display: 'block',
+          minHeight: '250px' // CRITICAL: Prevents layout shift
+        }}
         data-ad-client={PUBLISHER_ID}
         data-ad-slot={currentSlot}
         data-ad-format={format}
