@@ -1,16 +1,18 @@
-// src/components/Hero.jsx - FINAL OPTIMIZED VERSION WITH MOBILE FIXES
+// src/components/Hero.jsx - FINAL COMPLETE VERSION WITH DYNAMIC STATS
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles, Zap, TrendingUp, Users, ChevronDown } from 'lucide-react';
+import { ArrowRight, Sparkles, Zap, TrendingUp, Users, ChevronDown, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { reduceMotion } from '@/utils/performance';
 import { preloadImage } from '@/utils/imageOptimizer';
+import { useStats } from '@/hooks/useStats';
 
 const Hero = () => {
   const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
   const shouldReduceMotion = reduceMotion();
+  const { totalArticles, totalCategories, totalReaders, updateFrequency, loading } = useStats();
 
   useEffect(() => {
     // Defer non-critical image preloading
@@ -108,7 +110,7 @@ const Hero = () => {
 
           <motion.div
             variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 sm:mb-16 px-4"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 px-4"
           >
             <Button 
               asChild 
@@ -133,65 +135,43 @@ const Hero = () => {
             </Button>
           </motion.div>
 
+          {/* Dynamic stats - fetched from WordPress API */}
           <motion.div
             variants={itemVariants}
-            className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 md:gap-8 max-w-4xl mx-auto px-4"
+            className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 max-w-2xl mx-auto px-4 text-sm"
           >
-            <div className="tech-card p-3 sm:p-4 md:p-6 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform duration-300">
-              <div className="flex items-center justify-center mb-2 sm:mb-3">
-                <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg">
-                  <Zap className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white" />
+            {loading ? (
+              <div className="flex items-center gap-2 text-gray-400">
+                <Loader className="h-4 w-4 animate-spin" />
+                <span>Loading stats...</span>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 text-gray-300">
+                  <Zap className="h-4 w-4 text-blue-400" />
+                  <span className="font-semibold">{totalArticles}+</span>
+                  <span className="text-gray-400">Articles</span>
                 </div>
-              </div>
-              <div className="text-xl sm:text-2xl md:text-4xl font-black gradient-text mb-1 sm:mb-2">
-                100+
-              </div>
-              <div className="text-gray-400 text-xs sm:text-sm font-medium">
-                Articles
-              </div>
-            </div>
-
-            <div className="tech-card p-3 sm:p-4 md:p-6 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform duration-300">
-              <div className="flex items-center justify-center mb-2 sm:mb-3">
-                <div className="p-2 sm:p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
-                  <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white" />
+                <div className="h-4 w-px bg-gray-700 hidden sm:block"></div>
+                <div className="flex items-center gap-2 text-gray-300">
+                  <TrendingUp className="h-4 w-4 text-purple-400" />
+                  <span className="font-semibold">{totalCategories}+</span>
+                  <span className="text-gray-400">Technologies</span>
                 </div>
-              </div>
-              <div className="text-xl sm:text-2xl md:text-4xl font-black gradient-text mb-1 sm:mb-2">
-                8+
-              </div>
-              <div className="text-gray-400 text-xs sm:text-sm font-medium">
-                Technologies
-              </div>
-            </div>
-
-            <div className="tech-card p-3 sm:p-4 md:p-6 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform duration-300">
-              <div className="flex items-center justify-center mb-2 sm:mb-3">
-                <div className="p-2 sm:p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg">
-                  <Users className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white" />
+                <div className="h-4 w-px bg-gray-700 hidden sm:block"></div>
+                <div className="flex items-center gap-2 text-gray-300">
+                  <Users className="h-4 w-4 text-green-400" />
+                  <span className="font-semibold">{totalReaders}</span>
+                  <span className="text-gray-400">Readers</span>
                 </div>
-              </div>
-              <div className="text-xl sm:text-2xl md:text-4xl font-black gradient-text mb-1 sm:mb-2">
-                10K+
-              </div>
-              <div className="text-gray-400 text-xs sm:text-sm font-medium">
-                Readers
-              </div>
-            </div>
-
-            <div className="tech-card p-3 sm:p-4 md:p-6 rounded-xl backdrop-blur-sm hover:scale-105 transition-transform duration-300">
-              <div className="flex items-center justify-center mb-2 sm:mb-3">
-                <div className="p-2 sm:p-3 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg">
-                  <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white" />
+                <div className="h-4 w-px bg-gray-700 hidden sm:block"></div>
+                <div className="flex items-center gap-2 text-gray-300">
+                  <Sparkles className="h-4 w-4 text-orange-400" />
+                  <span className="font-semibold">{updateFrequency}</span>
+                  <span className="text-gray-400">Updates</span>
                 </div>
-              </div>
-              <div className="text-xl sm:text-2xl md:text-4xl font-black gradient-text mb-1 sm:mb-2">
-                Weekly
-              </div>
-              <div className="text-gray-400 text-xs sm:text-sm font-medium">
-                Updates
-              </div>
-            </div>
+              </>
+            )}
           </motion.div>
         </motion.div>
       </div>
