@@ -75,7 +75,7 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
 };
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -300,27 +300,27 @@ const Header = () => {
         boxShadow: '0 4px 30px rgba(0, 0, 0, 0.3)'
       }}
     >
-      <nav className="container mx-auto px-6 py-4">
+      <nav className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <a href="/" className="flex items-center space-x-3 z-10">
+          <a href="/" className="flex items-center space-x-2 sm:space-x-3 z-10">
             <motion.div
               whileHover={{ scale: 1.1, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
               <div className="relative">
-                <Database className="h-8 w-8 text-blue-400" />
+                <Database className="h-7 w-7 sm:h-8 sm:w-8 text-blue-400" />
                 <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse" />
               </div>
             </motion.div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               DataEngineer Hub
             </span>
           </a>
 
           {/* Desktop Navigation */}
-          <div className="hidden xl:flex items-center space-x-8">
+          <div className="hidden xl:flex items-center space-x-6 lg:space-x-8">
             {/* Home */}
             <motion.div whileHover={{ y: -2 }}>
               <a 
@@ -405,7 +405,7 @@ const Header = () => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <a
                 href="/newsletter"
-                className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white px-8 py-2.5 rounded-full font-bold text-base shadow-lg hover:shadow-xl transition-all duration-300 inline-block"
+                className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white px-6 lg:px-8 py-2.5 rounded-full font-bold text-base shadow-lg hover:shadow-xl transition-all duration-300 inline-block"
               >
                 Subscribe
               </a>
@@ -416,8 +416,8 @@ const Header = () => {
           <div className="xl:hidden">
             <motion.button
               whileTap={{ scale: 0.9 }}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 text-gray-300 hover:text-white transition-colors min-h-[44px] min-w-[44px]"
+              onClick={() => setMobileMenuOpen(!isMenuOpen)}
+              className="p-2 text-gray-300 hover:text-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
@@ -437,9 +437,9 @@ const Header = () => {
               exit={{ opacity: 0, height: 0 }}
               className="xl:hidden mt-4 pb-4 border-t border-slate-700/50 pt-4 bg-slate-900/95 backdrop-blur-xl rounded-xl px-4 shadow-2xl"
             >
-              <div className="flex flex-col space-y-4">
-                <a href="/" className="text-white hover:text-blue-400 transition-colors font-semibold py-2 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2">
-                  <Home className="w-4 h-4" />
+              <div className="flex flex-col space-y-3">
+                <a href="/" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                  <Home className="w-5 h-5" />
                   Home
                 </a>
 
@@ -448,13 +448,13 @@ const Header = () => {
                   <div key={key}>
                     <button
                       onClick={() => setOpenDropdown(openDropdown === key ? null : key)}
-                      className="w-full flex items-center justify-between text-white hover:text-blue-400 transition-colors font-medium py-2 pl-3 rounded-lg hover:bg-slate-800/50"
+                      className="w-full flex items-center justify-between text-white hover:text-blue-400 transition-colors font-medium py-3 pl-3 rounded-lg hover:bg-slate-800/50 min-h-[48px]"
                     >
                       <span className="flex items-center gap-2">
-                        <category.icon className="w-4 h-4" />
+                        <category.icon className="w-5 h-5" />
                         {category.title}
                       </span>
-                      <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === key ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-5 h-5 transition-transform ${openDropdown === key ? 'rotate-180' : ''}`} />
                     </button>
                     <AnimatePresence>
                       {openDropdown === key && (
@@ -468,7 +468,7 @@ const Header = () => {
                             <a
                               key={item.name}
                               href={item.path}
-                              className="block text-gray-300 hover:text-white py-2 pl-3 rounded hover:bg-slate-700/50 transition-colors"
+                              className="block text-gray-300 hover:text-white py-3 pl-3 rounded hover:bg-slate-700/50 transition-colors min-h-[48px] flex items-center"
                             >
                               {item.name}
                             </a>
@@ -479,18 +479,18 @@ const Header = () => {
                   </div>
                 ))}
 
-                <a href="/tag" className="text-white hover:text-blue-400 transition-colors font-semibold py-2 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2">
-                  <Tags className="w-4 h-4" />
+                <a href="/tag" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                  <Tags className="w-5 h-5" />
                   Tags
                 </a>
-                <a href="/about" className="text-white hover:text-blue-400 transition-colors font-semibold py-2 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2">
-                  <Info className="w-4 h-4" />
+                <a href="/about" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                  <Info className="w-5 h-5" />
                   About
                 </a>
 
                 <a
                   href="/newsletter"
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white w-full mt-4 py-3 text-base font-bold shadow-lg rounded-full text-center"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white w-full mt-4 py-3 text-base font-bold shadow-lg rounded-full text-center min-h-[48px] flex items-center justify-center"
                 >
                   Subscribe
                 </a>
