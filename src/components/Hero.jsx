@@ -1,4 +1,4 @@
-// src/components/Hero.jsx - FINAL COMPLETE VERSION WITH DYNAMIC STATS
+// src/components/Hero.jsx - OPTIMIZED FOR LCP
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -6,7 +6,6 @@ import { ArrowRight, Sparkles, Zap, TrendingUp, Users, ChevronDown, Loader } fro
 import { Button } from '@/components/ui/button';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { reduceMotion } from '@/utils/performance';
-import { preloadImage } from '@/utils/imageOptimizer';
 import { useStats } from '@/hooks/useStats';
 
 const Hero = () => {
@@ -14,34 +13,27 @@ const Hero = () => {
   const shouldReduceMotion = reduceMotion();
   const { totalArticles, totalCategories, totalReaders, updateFrequency, loading } = useStats();
 
-  useEffect(() => {
-    // Defer non-critical image preloading
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(() => {
-        const heroImages = [];
-        heroImages.forEach(img => preloadImage(img, { fetchpriority: 'high' }));
-      }, { timeout: 2000 });
-    }
-  }, []);
+  // ✅ CRITICAL: Reduce animations on mobile for better LCP
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
 
-  const containerVariants = shouldReduceMotion ? {} : {
+  const containerVariants = (shouldReduceMotion || isMobile) ? {} : {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.3
+        delayChildren: 0.1 // ✅ Reduced from 0.3
       }
     }
   };
 
-  const itemVariants = shouldReduceMotion ? {} : {
+  const itemVariants = (shouldReduceMotion || isMobile) ? {} : {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.5,
+        duration: 0.3, // ✅ Reduced from 0.5
         ease: "easeOut"
       }
     }
@@ -69,18 +61,20 @@ const Hero = () => {
 
   return (
     <section ref={ref} className="relative flex items-center justify-center overflow-hidden py-12 sm:py-16 md:py-20 px-4 sm:px-6">
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl floating-animation"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl floating-animation" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-pink-500/10 to-violet-500/10 rounded-full blur-3xl"></div>
-      </div>
+      {/* Animated Background - Simplified on mobile */}
+      {!isMobile && (
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl floating-animation"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl floating-animation" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-pink-500/10 to-violet-500/10 rounded-full blur-3xl"></div>
+        </div>
+      )}
 
       <div className="container mx-auto relative z-10 max-w-7xl">
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          animate={hasIntersected ? "visible" : "hidden"}
+          animate="visible" // ✅ Always animate, no hasIntersected check for Hero
           className="text-center"
         >
           <motion.div
@@ -135,7 +129,7 @@ const Hero = () => {
             </Button>
           </motion.div>
 
-          {/* Dynamic stats - fetched from WordPress API */}
+          {/* Dynamic stats */}
           <motion.div
             variants={itemVariants}
             className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 max-w-2xl mx-auto px-4 text-sm"
@@ -176,25 +170,27 @@ const Hero = () => {
         </motion.div>
       </div>
 
-      {/* Scroll Indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1, transition: { delay: 1 } }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center"
-      >
+      {/* Scroll Indicator - Desktop only */}
+      {!isMobile && (
         <motion.div
-          variants={chevronContainerVariants}
-          initial="initial"
-          animate="animate"
-          className="flex flex-col items-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, transition: { delay: 1 } }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center"
         >
-          {[0, 1, 2].map((i) => (
-            <motion.div key={i} variants={chevronVariants} custom={i}>
-              <ChevronDown className="h-6 w-6 text-blue-400/50" />
-            </motion.div>
-          ))}
+          <motion.div
+            variants={chevronContainerVariants}
+            initial="initial"
+            animate="animate"
+            className="flex flex-col items-center"
+          >
+            {[0, 1, 2].map((i) => (
+              <motion.div key={i} variants={chevronVariants} custom={i}>
+                <ChevronDown className="h-6 w-6 text-blue-400/50" />
+              </motion.div>
+            ))}
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
     </section>
   );
 };
