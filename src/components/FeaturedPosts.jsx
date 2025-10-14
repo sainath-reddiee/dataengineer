@@ -1,4 +1,4 @@
-// src/components/FeaturedPosts.jsx - FINAL IMPROVED LAYOUT VERSION
+// src/components/FeaturedPosts.jsx - FIXED CLS VERSION
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
@@ -9,8 +9,8 @@ import { usePosts } from '@/hooks/useWordPress';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { reduceMotion } from '@/utils/performance';
 import { useToast } from '@/components/ui/use-toast';
-import PostCard from './PostCard'; // Import the standard PostCard
-import PostCardSkeleton from './PostCardSkeleton'; // Import the skeleton for loading
+import PostCard from './PostCard';
+import PostCardSkeleton from './PostCardSkeleton';
 
 const FeaturedPosts = () => {
   const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
@@ -37,7 +37,8 @@ const FeaturedPosts = () => {
     return (
       <section className="pt-8 pb-12 relative">
         <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* ✅ RESERVE SPACE WITH MIN-HEIGHT */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" style={{ minHeight: '400px' }}>
             {Array.from({ length: 3 }).map((_, index) => <PostCardSkeleton key={index} />)}
           </div>
         </div>
@@ -46,7 +47,7 @@ const FeaturedPosts = () => {
   }
 
   if (error || featuredPosts.length === 0) {
-    return null; // Don't render the section if there's an error or no posts
+    return null;
   }
 
   const animationConfig = shouldReduceMotion 
@@ -64,7 +65,7 @@ const FeaturedPosts = () => {
                   <Star className="h-5 w-5 text-yellow-400" />
                   <span className="text-sm font-medium text-yellow-200">Featured Content</span>
                 </div>
-                <Button onClick={handleRefresh} variant="outline" size="sm" disabled={loading} className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20">
+                <Button onClick={handleRefresh} variant="outline" size="sm" disabled={loading} className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20 min-h-[44px]">
                   <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                   Refresh
                 </Button>
@@ -79,8 +80,11 @@ const FeaturedPosts = () => {
           )}
         </AnimatePresence>
 
-        {/* --- REWRITTEN LAYOUT --- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        {/* ✅ RESERVE SPACE TO PREVENT CLS */}
+        <div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12" 
+          style={{ minHeight: '400px' }} // Prevents layout shift
+        >
           {hasIntersected && featuredPosts.map((post, index) => (
             <motion.div
               key={post.id}
@@ -92,7 +96,6 @@ const FeaturedPosts = () => {
             </motion.div>
           ))}
         </div>
-        {/* --- END OF REWRITTEN LAYOUT --- */}
 
         {hasIntersected && location.pathname !== '/articles' && (
           <motion.div
@@ -101,7 +104,7 @@ const FeaturedPosts = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="text-center"
           >
-            <Button asChild size="lg" className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-8 py-4 rounded-full font-bold group shadow-xl">
+            <Button asChild size="lg" className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-8 py-4 rounded-full font-bold group shadow-xl min-h-[48px]">
               <Link to="/articles">
                 View All Articles
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
