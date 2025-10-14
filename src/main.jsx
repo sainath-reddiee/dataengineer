@@ -1,12 +1,11 @@
-// src/main.jsx
-import React, { Suspense } from 'react';
+// src/main.jsx - FIXED VERSION
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+import App from '@/App';
 import '@/index.css';
 import { initThirdPartyScripts } from '@/utils/scriptLoader';
-
-const App = React.lazy(() => import('@/App'));
 
 const PageLoader = () => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
@@ -65,7 +64,7 @@ if (typeof window !== 'undefined' && 'performance' in window) {
   });
 }
 
-// ✅ ADDED: Log environment configuration
+// Log environment configuration
 if (import.meta.env.DEV) {
   console.log('🔧 Development Environment Configuration:', {
     MODE: import.meta.env.MODE,
@@ -85,9 +84,9 @@ root.render(
   <React.StrictMode>
     <HelmetProvider>
       <BrowserRouter>
-        <Suspense fallback={<PageLoader />}>
+        <React.Suspense fallback={<PageLoader />}>
           <App />
-        </Suspense>
+        </React.Suspense>
       </BrowserRouter>
     </HelmetProvider>
   </React.StrictMode>
