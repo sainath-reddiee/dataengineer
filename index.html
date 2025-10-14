@@ -4,21 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
     
-    <!-- AdSense will be loaded dynamically via scriptLoader.js -->
-    
-    <!-- MOBILE PERFORMANCE: Preconnect to critical domains -->
+    <!-- ✅ CRITICAL: Preconnect to all external domains FIRST -->
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
     
-    <!-- Preconnect to ad networks (only if ads enabled) -->
-    <!-- These will be added dynamically by scriptLoader.js -->
-    
-    <link rel="dns-prefetch" href="//www.googletagmanager.com">
+    <!-- ✅ DNS Prefetch for other domains -->
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
     
     <title>DataEngineer Hub - Data Engineering Tutorials</title>
     <meta name="description" content="Learn data engineering with expert tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow & dbt." />
     
+    <!-- Schema.org structured data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -39,42 +39,12 @@
       ]
     }
     </script>
-    <style>
-  /* Critical CSS - Inline for faster FCP */
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
-    color: #f8fafc;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  
-  #root {
-    min-height: 100vh;
-  }
-  
-  /* Prevent layout shift for images */
-  img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-  }
-</style>
     
-    <!-- MOBILE PERFORMANCE: Preload critical font -->
+    <!-- ✅ CRITICAL: Preload critical font with correct attributes -->
     <link rel="preload" as="font" type="font/woff2" crossorigin 
           href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2">
     
-    <!-- MOBILE PERFORMANCE: Load font CSS asynchronously -->
+    <!-- ✅ Load font CSS with font-display: swap -->
     <link rel="preload" as="style"
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
     <link rel="stylesheet" 
@@ -88,16 +58,15 @@
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png">
     <link rel="manifest" href="/manifest.json">
-    
     <link rel="canonical" href="https://dataengineerhub.blog">
     
     <meta name="robots" content="index, follow, max-image-preview:large" />
-    
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#1e293b">
     
+    <!-- ✅ INLINE CRITICAL CSS TO PREVENT CLS -->
     <style>
       * {
         margin: 0;
@@ -120,11 +89,27 @@
         min-height: 100vh;
       }
       
+      /* ✅ PREVENT IMAGE CLS */
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      
+      /* ✅ PREVENT FONT CLS */
+      .gradient-text {
+        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 40%, #f472b6 80%, #fbbf24 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
       @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
       
+      /* ✅ MOBILE OPTIMIZATIONS */
       @media (max-width: 768px) {
         body {
           font-size: 16px;
