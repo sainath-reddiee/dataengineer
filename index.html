@@ -4,21 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
     
-    <!-- ✅ CRITICAL: Preconnect to all external domains FIRST -->
+    <!-- ✅ CRITICAL: DNS prefetch and preconnect FIRST -->
+    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    
+    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
-    
-    <!-- ✅ DNS Prefetch for other domains -->
-    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
-    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
     
     <title>DataEngineer Hub - Data Engineering Tutorials</title>
     <meta name="description" content="Learn data engineering with expert tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow & dbt." />
     
-    <!-- Schema.org structured data -->
+    <!-- ✅ Schema.org structured data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -31,20 +29,85 @@
         "url": "https://dataengineerhub.blog/logo.png",
         "width": 250,
         "height": 250
-      },
-      "sameAs": [
-        "https://twitter.com/sainath29",
-        "https://linkedin.com/company/dataengineerhub",
-        "https://github.com/dataengineerhub"
-      ]
+      }
     }
     </script>
     
-    <!-- ✅ CRITICAL: Preload critical font with correct attributes -->
+    <!-- ✅ CRITICAL: Inline critical CSS to prevent render blocking -->
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
+        color: #f8fafc;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      #root {
+        min-height: 100vh;
+      }
+      
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      
+      .gradient-text {
+        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 40%, #f472b6 80%, #fbbf24 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* Loading state - prevent CLS */
+      .loading-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
+        flex-direction: column;
+        padding: 20px;
+      }
+      
+      .loading-spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid #60a5fa;
+        border-top: 4px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      .loading-text {
+        color: #93c5fd;
+        font-weight: 500;
+        margin-top: 20px;
+        font-size: 18px;
+        text-align: center;
+      }
+    </style>
+    
+    <!-- ✅ Preload critical font - inline to avoid network request -->
     <link rel="preload" as="font" type="font/woff2" crossorigin 
           href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2">
     
-    <!-- ✅ Load font CSS with font-display: swap -->
+    <!-- ✅ Load font CSS async -->
     <link rel="preload" as="style"
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
     <link rel="stylesheet" 
@@ -61,118 +124,28 @@
     <link rel="canonical" href="https://dataengineerhub.blog">
     
     <meta name="robots" content="index, follow, max-image-preview:large" />
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#1e293b">
     
-    <!-- ✅ INLINE CRITICAL CSS TO PREVENT CLS -->
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
-        color: #f8fafc;
-        line-height: 1.6;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-      
-      #root {
-        min-height: 100vh;
-      }
-      
-      /* ✅ PREVENT IMAGE CLS */
-      img {
-        max-width: 100%;
-        height: auto;
-        display: block;
-      }
-      
-      /* ✅ PREVENT FONT CLS */
-      .gradient-text {
-        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 40%, #f472b6 80%, #fbbf24 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-      
-      /* ✅ MOBILE OPTIMIZATIONS */
-      @media (max-width: 768px) {
-        body {
-          font-size: 16px;
-        }
-      }
-      
-      @media (prefers-reduced-motion: reduce) {
-        * {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-        }
-      }
-    </style>
-    
+    <!-- ✅ Reduce motion check inline -->
     <script>
       if (typeof performance !== 'undefined' && performance.mark) {
         performance.mark('nav-start');
-      }
-      
-      if ('connection' in navigator) {
-        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        if (connection && connection.effectiveType) {
-          document.documentElement.setAttribute('data-connection', connection.effectiveType);
-        }
-      }
-      
-      if ('deviceMemory' in navigator) {
-        document.documentElement.setAttribute('data-device-memory', navigator.deviceMemory);
       }
     </script>
   </head>
   <body>
     <div id="root">
-      <div style="
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
-        flex-direction: column;
-        padding: 20px;
-      ">
-        <div style="
-          width: 48px;
-          height: 48px;
-          border: 4px solid #60a5fa;
-          border-top: 4px solid transparent;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-        "></div>
-        <p style="
-          color: #93c5fd;
-          font-weight: 500;
-          margin-top: 20px;
-          font-size: 18px;
-          text-align: center;
-        ">Loading DataEngineer Hub...</p>
+      <!-- ✅ CRITICAL: Static loading state prevents CLS -->
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Loading DataEngineer Hub...</p>
       </div>
     </div>
     
+    <!-- ✅ CRITICAL: Module script loads after HTML parsing -->
     <script type="module" src="/src/main.jsx"></script>
     
+    <!-- ✅ Performance monitoring -->
     <script>
       window.addEventListener('load', function() {
         if (typeof performance !== 'undefined' && performance.mark) {
@@ -199,7 +172,7 @@
                 });
               }
             }
-          }, 1500);
+          }, 100);
         }
       });
     </script>
