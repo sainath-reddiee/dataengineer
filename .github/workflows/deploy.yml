@@ -131,6 +131,9 @@ jobs:
           [ -f "public/sitemap.xml" ] && cp public/sitemap.xml dist/ && echo "✅ Copied sitemap.xml"
           [ -f "public/robots.txt" ] && cp public/robots.txt dist/ && echo "✅ Copied robots.txt"
           
+          # [FIXED] Add this line to copy the .htaccess file
+          [ -f "public/.htaccess" ] && cp public/.htaccess dist/ && echo "✅ Copied .htaccess"
+          
           # Copy all .txt files from public to dist
           find public -name "*.txt" -exec cp {} dist/ \; 2>/dev/null && echo "✅ Copied .txt files" || echo "⚠️ No .txt files found"
           
