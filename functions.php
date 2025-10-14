@@ -1402,4 +1402,254 @@ function get_related_posts_by_id($data) {
 
     return new WP_REST_Response($related_posts, 200);
 }
+// ✅ CRITICAL: Reduce REST API response size by limiting fields
+add_filter('rest_prepare_post', 'optimize_rest_post_response', 10, 3);
+function optimize_rest_post_response($response, $post, $request) {
+    // Check if this is a single post request (by slug)
+    $params = $request->get_params();
+    
+    // Only return minimal fields for list requests
+    if (!isset($params['slug']) || empty($params['slug'])) {
+        return $response;
+    }
+    
+    // For single post requests, ensure we have all needed data
+    $data = $response->get_data();
+    
+    // Add featured_image_url to response if not present
+    if (!isset($data['featured_image_url'])) {
+        $featured_image_id = get_post_thumbnail_id($post->ID);
+        if ($featured_image_id) {
+            $image_url = wp_get_attachment_image_url($featured_image_id, 'large');
+            $data['featured_image_url'] = $image_url ?: null;
+            $response->set_data($data);
+        }
+    }
+    
+    return $response;
+}
+
+// ✅ Enable HTTP/2 Server Push for critical assets
+add_action('template_redirect', 'enable_http2_server_push');
+function enable_http2_server_push() {
+    if (is_singular('post')) {
+        // Push critical CSS and JS
+        header('Link: </wp-content/themes/your-theme/style.css>; rel=preload; as=style', false);
+    }
+}
+
+// ✅ CRITICAL: Optimize image delivery
+add_filter('wp_get_attachment_image_src', 'optimize_image_src', 10, 4);
+function optimize_image_src($image, $attachment_id, $size, $icon) {
+    if (!$image) return $image;
+    
+    // Add width and quality parameters for better compression
+    if (is_array($image) && isset($image[0])) {
+        $url = $image[0];
+        
+        // Add optimization parameters if not already present
+        if (strpos($url, '?') === false) {
+            $image[0] = $url . '?w=' . $image[1] . '&quality=85';
+        }
+    }
+    
+    return $image;
+}
+
+// ✅ Add cache headers for REST API responses
+add_filter('rest_post_dispatch', 'add_rest_cache_headers', 10, 3);
+function add_rest_cache_headers($result, $server, $request) {
+    $route = $request->get_route();
+    
+    // Cache single post responses for 5 minutes
+    if (strpos($route, '/wp/v2/posts') !== false) {
+        $result->header('Cache-Control', 'public, max-age=300, s-maxage=600');
+        $result->header('Vary', 'Accept-Encoding');
+    }
+    
+    return $result;
+}
+
+// ✅ Preload featured images for faster loading
+add_action('wp_head', 'preload_featured_image', 1);
+function preload_featured_image() {
+    if (is_singular('post')) {
+        $post_id = get_the_ID();
+        $featured_image_id = get_post_thumbnail_id($post_id);
+        
+        if ($featured_image_id) {
+            $image_url = wp_get_attachment_image_url($featured_image_id, 'large');
+            if ($image_url) {
+                echo '<link rel="preload" as="image" href="' . esc_url($image_url) . '" fetchpriority="high">' . "\n";
+            }
+        }
+    }
+}
+
+// ✅ Optimize REST API queries
+add_filter('rest_post_query', 'optimize_rest_post_query', 10, 2);
+function optimize_rest_post_query($args, $request) {
+    // Reduce memory usage by limiting meta queries
+    $args['update_post_meta_cache'] = false;
+    $args['update_post_term_cache'] = false;
+    
+    // Only load term cache if needed
+    $params = $request->get_params();
+    if (isset($params['slug']) && !empty($params['slug'])) {
+        $args['update_post_term_cache'] = true;
+    }
+    
+    return $args;
+}
+
+// ✅ Defer non-critical scripts
+add_filter('script_loader_tag', 'defer_non_critical_scripts', 10, 3);
+function defer_non_critical_scripts($tag, $handle, $src) {
+    // List of scripts to defer
+    $defer_scripts = array(
+        'wp-embed',
+        'comment-reply'
+    );
+    
+    if (in_array($handle, $defer_scripts)) {
+        return str_replace(' src', ' defer src', $tag);
+    }
+    
+    return $tag;
+}
+
+// ✅ CRITICAL: Limit REST API response fields
+add_filter('rest_prepare_post', 'limit_rest_api_fields', 10, 3);
+function limit_rest_api_fields($response, $post, $request) {
+    $params = $request->get_params();
+    
+    // If _fields parameter is set, WordPress handles it automatically
+    if (isset($params['_fields'])) {
+        return $response;
+    }
+    
+    // For list requests (no slug), return minimal data
+    if (!isset($params['slug']) || empty($params['slug'])) {
+        $data = $response->get_data();
+        
+        // Keep only essential fields for list view
+        $minimal_data = array(
+            'id' => $data['id'],
+            'slug' => $data['slug'],
+            'title' => $data['title'],
+            'excerpt' => $data['excerpt'],
+            'date' => $data['date'],
+            'featured_image_url' => get_the_post_thumbnail_url($post->ID, 'medium'),
+            '_embedded' => isset($data['_embedded']) ? array(
+                'wp:featuredmedia' => $data['_embedded']['wp:featuredmedia'] ?? [],
+                'wp:term' => $data['_embedded']['wp:term'] ?? []
+            ) : []
+        );
+        
+        $response->set_data($minimal_data);
+    }
+    
+    return $response;
+}
+
+// ✅ Enable output buffering for better compression
+add_action('init', 'enable_output_buffering');
+function enable_output_buffering() {
+    if (!is_admin() && !defined('DOING_AJAX')) {
+        ob_start('ob_gzhandler');
+    }
+}
+
+// ✅ Remove unnecessary REST API endpoints to reduce overhead
+add_filter('rest_endpoints', 'disable_unused_rest_endpoints');
+function disable_unused_rest_endpoints($endpoints) {
+    // Remove endpoints you don't use
+    $unused_endpoints = array(
+        '/wp/v2/users',
+        '/wp/v2/comments',
+        '/wp/v2/settings',
+        '/wp/v2/themes',
+        '/wp/v2/plugins',
+        '/wp/v2/block-types',
+        '/wp/v2/block-renderer'
+    );
+    
+    foreach ($unused_endpoints as $endpoint) {
+        if (isset($endpoints[$endpoint])) {
+            unset($endpoints[$endpoint]);
+        }
+    }
+    
+    return $endpoints;
+}
+
+// ✅ Optimize database queries for REST API
+add_action('pre_get_posts', 'optimize_rest_api_queries');
+function optimize_rest_api_queries($query) {
+    // Only optimize REST API requests
+    if (!defined('REST_REQUEST') || !REST_REQUEST) {
+        return;
+    }
+    
+    // Don't load unnecessary meta data
+    $query->set('no_found_rows', false); // We need pagination
+    $query->set('cache_results', true);
+    $query->set('update_post_term_cache', true);
+    $query->set('update_post_meta_cache', false); // Skip meta cache for list views
+}
+
+// ✅ Add Expires headers for static assets
+add_action('send_headers', 'add_expires_headers');
+function add_expires_headers() {
+    if (!is_admin()) {
+        header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
+    }
+}
+
+// ✅ CRITICAL: Optimize REST API response time
+add_filter('rest_pre_serve_request', 'optimize_rest_response', 10, 4);
+function optimize_rest_response($served, $result, $request, $server) {
+    // Add timing header for debugging
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        $time = timer_stop(0, 3);
+        header('X-Response-Time: ' . $time . 's');
+    }
+    
+    return $served;
+}
+
+// ✅ Lazy load images in post content
+add_filter('the_content', 'add_lazy_loading_to_images');
+function add_lazy_loading_to_images($content) {
+    if (is_feed() || is_admin()) {
+        return $content;
+    }
+    
+    // Add loading="lazy" to all images
+    $content = preg_replace('/<img(.*?)>/', '<img$1 loading="lazy">', $content);
+    
+    return $content;
+}
+
+// ✅ CRITICAL: Reduce REST API payload size
+add_action('rest_api_init', 'register_minimal_rest_fields');
+function register_minimal_rest_fields() {
+    // Register a custom field for optimized image URLs
+    register_rest_field('post', 'optimized_image', array(
+        'get_callback' => function($post) {
+            $image_id = get_post_thumbnail_id($post['id']);
+            if (!$image_id) return null;
+            
+            return array(
+                'thumbnail' => wp_get_attachment_image_url($image_id, 'thumbnail'),
+                'medium' => wp_get_attachment_image_url($image_id, 'medium'),
+                'large' => wp_get_attachment_image_url($image_id, 'large')
+            );
+        },
+        'schema' => array(
+            'description' => 'Optimized image URLs',
+            'type' => 'object'
+        )
+    ));
+}
 ?>
