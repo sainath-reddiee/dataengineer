@@ -1216,7 +1216,7 @@ add_action('rest_api_init', 'add_custom_query_params_to_rest');
 
 /**
  * Triggers a GitHub Actions workflow when a post is published or updated.
- * This is the corrected and improved version.
+ * This is the corrected and improved version with a debounce mechanism.
  */
 function trigger_github_action_on_publish($ID, $post) {
     // Exit if this is an autosave, a revision, not a 'post', or not being published.
@@ -1224,11 +1224,27 @@ function trigger_github_action_on_publish($ID, $post) {
         return;
     }
 
+    // --- FIX: Start of the debounce logic ---
+    // Check if a transient (temporary lock) exists for this post ID.
+    $transient_key = 'github_action_triggered_' . $ID;
+    if (get_transient($transient_key)) {
+        // If the transient exists, it means we've already fired the action recently.
+        error_log('GitHub Action trigger for post ' . $ID . ' skipped: Debounce lock is active.');
+        return; // Stop execution to prevent a duplicate run.
+    }
+    // --- FIX: End of the debounce logic ---
+
+
     // Get the Personal Access Token from wp-config.php
     if (!defined('GITHUB_PAT')) {
         error_log('GitHub PAT is not defined in wp-config.php for workflow trigger.');
         return;
     }
+    
+    // --- FIX: Set the transient lock ---
+    // This will block any subsequent triggers for this post for the next 2 minutes.
+    set_transient($transient_key, true, 2 * MINUTE_IN_SECONDS);
+    // --- FIX: End of setting the lock ---
 
     $token = GITHUB_PAT;
     $repo = 'sainath-reddiee/dataengineer'; // Your GitHub username/repository
@@ -1250,16 +1266,12 @@ function trigger_github_action_on_publish($ID, $post) {
             'Authorization' => 'Bearer ' . $token,
             'User-Agent'    => 'WordPress-GitHub-Action-Trigger'
         ],
-        // Add a timeout to prevent the editor from hanging
         'timeout' => 15,
-        // IMPORTANT: Run this request in the background without waiting for a response
         'blocking' => false 
     ];
 
-    // Send the request to GitHub
     $response = wp_remote_post($url, $args);
     
-    // Log the trigger attempt for debugging purposes. You can view these logs on your server.
     if (is_wp_error($response)) {
         error_log('GitHub Action trigger failed to dispatch: ' . $response->get_error_message());
     } else {
@@ -1267,9 +1279,8 @@ function trigger_github_action_on_publish($ID, $post) {
     }
 }
 
-// Remove the old hook if it exists, to be safe.
-remove_action('transition_post_status', 'trigger_github_action_on_publish', 10, 3);
-// Use the 'save_post' hook which is reliable for both creating and updating posts.
+// Ensure the action hook is correct
+remove_action('save_post', 'trigger_github_action_on_publish', 99, 2);
 add_action('save_post', 'trigger_github_action_on_publish', 99, 2);
 // Add X-Robots-Tag to block indexing on the WordPress backend
 function add_noindex_header() {
@@ -1295,6 +1306,7 @@ function register_related_posts_endpoint() {
     ));
 }
 add_action('rest_api_init', 'register_related_posts_endpoint');
+
 // Add tags to REST API
 function add_tags_to_rest_api() {
     register_rest_field('post', 'post_tags', array(
