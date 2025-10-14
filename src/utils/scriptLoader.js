@@ -52,7 +52,7 @@ function getAdSensePublisherId() {
  */
 export function loadScriptDelayed(src, options = {}) {
   const {
-    timeout = 3000,
+    timeout = 5000,
     waitForInteraction = true,
     async = true,
     defer = false,
