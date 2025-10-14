@@ -2052,4 +2052,853 @@ function maybe_run_category_cleanup() {
         update_option('rest_api_category_cleanup_done', true);
     }
 }
+/**
+ * CERTIFICATION HUB IMPLEMENTATION
+ * Add this to your functions.php
+ * Complete certification resources management system
+ */
+
+// ============================================================================
+// 1. REGISTER CUSTOM POST TYPE
+// ============================================================================
+
+add_action('init', 'register_certification_post_type');
+function register_certification_post_type() {
+    $labels = array(
+        'name' => 'Certifications',
+        'singular_name' => 'Certification',
+        'menu_name' => 'Cert Hub',
+        'add_new' => 'Add New',
+        'add_new_item' => 'Add New Certification',
+        'edit_item' => 'Edit Certification',
+        'new_item' => 'New Certification',
+        'view_item' => 'View Certification',
+        'search_items' => 'Search Certifications',
+        'not_found' => 'No certifications found',
+        'not_found_in_trash' => 'No certifications in trash'
+    );
+
+    $args = array(
+        'labels' => $labels,
+        'public' => true,
+        'has_archive' => true,
+        'rewrite' => array('slug' => 'certifications'),
+        'show_in_rest' => true,
+        'supports' => array('title', 'editor', 'thumbnail', 'excerpt', 'custom-fields'),
+        'menu_icon' => 'dashicons-awards',
+        'menu_position' => 20,
+        'capability_type' => 'post',
+        'hierarchical' => false,
+    );
+
+    register_post_type('certification', $args);
+}
+
+// ============================================================================
+// 2. REGISTER TAXONOMIES
+// ============================================================================
+
+add_action('init', 'register_certification_taxonomies');
+function register_certification_taxonomies() {
+    // Provider taxonomy (AWS, Azure, Snowflake, etc.)
+    register_taxonomy('cert_provider', 'certification', array(
+        'label' => 'Provider',
+        'labels' => array(
+            'name' => 'Providers',
+            'singular_name' => 'Provider',
+            'add_new_item' => 'Add New Provider',
+        ),
+        'rewrite' => array('slug' => 'cert-provider'),
+        'hierarchical' => true,
+        'show_in_rest' => true,
+        'show_admin_column' => true,
+    ));
+
+    // Level taxonomy (Associate, Professional, etc.)
+    register_taxonomy('cert_level', 'certification', array(
+        'label' => 'Level',
+        'labels' => array(
+            'name' => 'Levels',
+            'singular_name' => 'Level',
+        ),
+        'rewrite' => array('slug' => 'cert-level'),
+        'hierarchical' => true,
+        'show_in_rest' => true,
+        'show_admin_column' => true,
+    ));
+
+    // Resource Type taxonomy (Cheat Sheet, Practice Questions, etc.)
+    register_taxonomy('resource_type', 'certification', array(
+        'label' => 'Resource Type',
+        'labels' => array(
+            'name' => 'Resource Types',
+            'singular_name' => 'Resource Type',
+        ),
+        'rewrite' => array('slug' => 'resource-type'),
+        'hierarchical' => false,
+        'show_in_rest' => true,
+        'show_admin_column' => true,
+    ));
+}
+
+// ============================================================================
+// 3. ADD CUSTOM META BOXES
+// ============================================================================
+
+add_action('add_meta_boxes', 'add_certification_meta_boxes');
+function add_certification_meta_boxes() {
+    add_meta_box(
+        'certification_details',
+        '🎓 Certification Details',
+        'render_certification_meta_box',
+        'certification',
+        'normal',
+        'high'
+    );
+}
+
+function render_certification_meta_box($post) {
+    wp_nonce_field('certification_meta_box', 'certification_meta_nonce');
+    
+    // Get existing values
+    $cert_code = get_post_meta($post->ID, '_cert_code', true);
+    $cert_official_name = get_post_meta($post->ID, '_cert_official_name', true);
+    $exam_cost = get_post_meta($post->ID, '_cert_exam_cost', true);
+    $duration = get_post_meta($post->ID, '_cert_duration', true);
+    $passing_score = get_post_meta($post->ID, '_cert_passing_score', true);
+    $questions_count = get_post_meta($post->ID, '_cert_questions_count', true);
+    $difficulty = get_post_meta($post->ID, '_cert_difficulty', true);
+    $download_url = get_post_meta($post->ID, '_cert_download_url', true);
+    $premium = get_post_meta($post->ID, '_cert_premium', true);
+    $featured = get_post_meta($post->ID, '_cert_featured', true);
+    
+    ?>
+    <style>
+        .cert-meta-row {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .cert-meta-row label {
+            width: 180px;
+            font-weight: 600;
+        }
+        .cert-meta-row input[type="text"],
+        .cert-meta-row select {
+            flex: 1;
+            padding: 8px;
+        }
+    </style>
+    
+    <div class="cert-meta-row">
+        <label>Certification Code:</label>
+        <input type="text" name="cert_code" value="<?php echo esc_attr($cert_code); ?>" placeholder="e.g., SAA-C03" />
+        <small style="margin-left: 10px; color: #666;">Official exam code</small>
+    </div>
+    
+    <div class="cert-meta-row">
+        <label>Official Name:</label>
+        <input type="text" name="cert_official_name" value="<?php echo esc_attr($cert_official_name); ?>" placeholder="e.g., AWS Certified Solutions Architect - Associate" />
+    </div>
+    
+    <div class="cert-meta-row">
+        <label>Exam Cost:</label>
+        <input type="text" name="cert_exam_cost" value="<?php echo esc_attr($exam_cost); ?>" placeholder="e.g., $150 USD" />
+    </div>
+    
+    <div class="cert-meta-row">
+        <label>Exam Duration:</label>
+        <input type="text" name="cert_duration" value="<?php echo esc_attr($duration); ?>" placeholder="e.g., 130 minutes" />
+    </div>
+    
+    <div class="cert-meta-row">
+        <label>Passing Score:</label>
+        <input type="text" name="cert_passing_score" value="<?php echo esc_attr($passing_score); ?>" placeholder="e.g., 720/1000" />
+    </div>
+    
+    <div class="cert-meta-row">
+        <label>Number of Questions:</label>
+        <input type="text" name="cert_questions_count" value="<?php echo esc_attr($questions_count); ?>" placeholder="e.g., 65" />
+    </div>
+    
+    <div class="cert-meta-row">
+        <label>Difficulty Level:</label>
+        <select name="cert_difficulty">
+            <option value="">Select Difficulty</option>
+            <option value="Beginner" <?php selected($difficulty, 'Beginner'); ?>>Beginner</option>
+            <option value="Intermediate" <?php selected($difficulty, 'Intermediate'); ?>>Intermediate</option>
+            <option value="Advanced" <?php selected($difficulty, 'Advanced'); ?>>Advanced</option>
+            <option value="Expert" <?php selected($difficulty, 'Expert'); ?>>Expert</option>
+        </select>
+    </div>
+    
+    <div class="cert-meta-row">
+        <label>Download URL (PDF):</label>
+        <input type="text" name="cert_download_url" value="<?php echo esc_attr($download_url); ?>" placeholder="https://..." />
+        <button type="button" class="button" onclick="document.getElementById('cert-upload').click()">Upload PDF</button>
+        <input type="file" id="cert-upload" style="display:none;" accept=".pdf" />
+    </div>
+    
+    <div class="cert-meta-row">
+        <label>
+            <input type="checkbox" name="cert_premium" value="1" <?php checked($premium, '1'); ?> />
+            Premium Content (requires subscription)
+        </label>
+    </div>
+    
+    <div class="cert-meta-row">
+        <label>
+            <input type="checkbox" name="cert_featured" value="1" <?php checked($featured, '1'); ?> />
+            Featured Certification (show on homepage)
+        </label>
+    </div>
+    
+    <div style="background: #f0f8ff; padding: 15px; border-radius: 4px; margin-top: 20px;">
+        <strong>💡 Tips:</strong>
+        <ul>
+            <li>Use the Featured Image for certification provider logo</li>
+            <li>Content editor should contain detailed overview and study tips</li>
+            <li>Add provider taxonomy (AWS, Azure, etc.)</li>
+            <li>Add resource types (Cheat Sheet, Practice Questions, etc.)</li>
+        </ul>
+    </div>
+    <?php
+}
+
+add_action('save_post', 'save_certification_meta_box');
+function save_certification_meta_box($post_id) {
+    if (!isset($_POST['certification_meta_nonce']) || !wp_verify_nonce($_POST['certification_meta_nonce'], 'certification_meta_box')) {
+        return;
+    }
+    
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+    
+    $fields = array(
+        'cert_code',
+        'cert_official_name',
+        'cert_exam_cost',
+        'cert_duration',
+        'cert_passing_score',
+        'cert_questions_count',
+        'cert_difficulty',
+        'cert_download_url',
+    );
+    
+    foreach ($fields as $field) {
+        if (isset($_POST[$field])) {
+            update_post_meta($post_id, '_' . $field, sanitize_text_field($_POST[$field]));
+        }
+    }
+    
+    // Handle checkboxes
+    update_post_meta($post_id, '_cert_premium', isset($_POST['cert_premium']) ? '1' : '0');
+    update_post_meta($post_id, '_cert_featured', isset($_POST['cert_featured']) ? '1' : '0');
+    
+    // Initialize download counter
+    if (!get_post_meta($post_id, '_cert_downloads_count', true)) {
+        update_post_meta($post_id, '_cert_downloads_count', 0);
+    }
+}
+
+// ============================================================================
+// 4. REST API ENDPOINTS
+// ============================================================================
+
+add_action('rest_api_init', 'register_certification_rest_fields');
+function register_certification_rest_fields() {
+    // Add all custom fields to REST API
+    $meta_fields = array(
+        'cert_code',
+        'cert_official_name',
+        'cert_exam_cost',
+        'cert_duration',
+        'cert_passing_score',
+        'cert_questions_count',
+        'cert_difficulty',
+        'cert_download_url',
+        'cert_premium',
+        'cert_featured',
+        'cert_downloads_count',
+    );
+    
+    foreach ($meta_fields as $field) {
+        register_rest_field('certification', $field, array(
+            'get_callback' => function($post) use ($field) {
+                return get_post_meta($post['id'], '_' . $field, true);
+            },
+            'schema' => array(
+                'description' => ucwords(str_replace('_', ' ', $field)),
+                'type' => 'string',
+            )
+        ));
+    }
+    
+    // Add provider taxonomy
+    register_rest_field('certification', 'provider', array(
+        'get_callback' => function($post) {
+            $terms = get_the_terms($post['id'], 'cert_provider');
+            if (!$terms || is_wp_error($terms)) return null;
+            return array(
+                'id' => $terms[0]->term_id,
+                'name' => $terms[0]->name,
+                'slug' => $terms[0]->slug,
+            );
+        }
+    ));
+    
+    // Add level taxonomy
+    register_rest_field('certification', 'level', array(
+        'get_callback' => function($post) {
+            $terms = get_the_terms($post['id'], 'cert_level');
+            if (!$terms || is_wp_error($terms)) return null;
+            return array(
+                'id' => $terms[0]->term_id,
+                'name' => $terms[0]->name,
+                'slug' => $terms[0]->slug,
+            );
+        }
+    ));
+    
+    // Add resource types
+    register_rest_field('certification', 'resource_types', array(
+        'get_callback' => function($post) {
+            $terms = get_the_terms($post['id'], 'resource_type');
+            if (!$terms || is_wp_error($terms)) return array();
+            return array_map(function($term) {
+                return array(
+                    'id' => $term->term_id,
+                    'name' => $term->name,
+                    'slug' => $term->slug,
+                );
+            }, $terms);
+        }
+    ));
+}
+
+// Custom REST endpoint for featured certifications
+add_action('rest_api_init', 'register_certification_endpoints');
+function register_certification_endpoints() {
+    // Get featured certifications
+    register_rest_route('wp/v2', '/certifications/featured', array(
+        'methods' => 'GET',
+        'callback' => 'get_featured_certifications',
+        'permission_callback' => '__return_true',
+    ));
+    
+    // Get certifications by provider
+    register_rest_route('wp/v2', '/certifications/provider/(?P<slug>[a-zA-Z0-9-]+)', array(
+        'methods' => 'GET',
+        'callback' => 'get_certifications_by_provider',
+        'permission_callback' => '__return_true',
+    ));
+    
+    // Track download
+    register_rest_route('wp/v2', '/certifications/(?P<id>\d+)/download', array(
+        'methods' => 'POST',
+        'callback' => 'track_certification_download',
+        'permission_callback' => '__return_true',
+    ));
+    
+    // Get certification statistics
+    register_rest_route('wp/v2', '/certifications/stats', array(
+        'methods' => 'GET',
+        'callback' => 'get_certification_stats',
+        'permission_callback' => '__return_true',
+    ));
+}
+
+function get_featured_certifications($request) {
+    $args = array(
+        'post_type' => 'certification',
+        'post_status' => 'publish',
+        'posts_per_page' => 6,
+        'meta_query' => array(
+            array(
+                'key' => '_cert_featured',
+                'value' => '1',
+            )
+        )
+    );
+    
+    $query = new WP_Query($args);
+    $certifications = array();
+    
+    foreach ($query->posts as $post) {
+        $certifications[] = prepare_certification_response($post);
+    }
+    
+    return new WP_REST_Response($certifications, 200);
+}
+
+function get_certifications_by_provider($request) {
+    $slug = $request['slug'];
+    
+    $args = array(
+        'post_type' => 'certification',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'tax_query' => array(
+            array(
+                'taxonomy' => 'cert_provider',
+                'field' => 'slug',
+                'terms' => $slug,
+            )
+        )
+    );
+    
+    $query = new WP_Query($args);
+    $certifications = array();
+    
+    foreach ($query->posts as $post) {
+        $certifications[] = prepare_certification_response($post);
+    }
+    
+    return new WP_REST_Response($certifications, 200);
+}
+
+function track_certification_download($request) {
+    $post_id = $request['id'];
+    
+    $current_count = get_post_meta($post_id, '_cert_downloads_count', true);
+    $new_count = intval($current_count) + 1;
+    update_post_meta($post_id, '_cert_downloads_count', $new_count);
+    
+    return new WP_REST_Response(array(
+        'success' => true,
+        'downloads' => $new_count
+    ), 200);
+}
+
+function get_certification_stats($request) {
+    $total = wp_count_posts('certification')->publish;
+    
+    $providers = get_terms(array(
+        'taxonomy' => 'cert_provider',
+        'hide_empty' => true,
+    ));
+    
+    $provider_stats = array();
+    foreach ($providers as $provider) {
+        $provider_stats[] = array(
+            'name' => $provider->name,
+            'slug' => $provider->slug,
+            'count' => $provider->count,
+        );
+    }
+    
+    // Get most downloaded
+    $most_downloaded = new WP_Query(array(
+        'post_type' => 'certification',
+        'posts_per_page' => 5,
+        'meta_key' => '_cert_downloads_count',
+        'orderby' => 'meta_value_num',
+        'order' => 'DESC',
+    ));
+    
+    $popular = array();
+    foreach ($most_downloaded->posts as $post) {
+        $popular[] = array(
+            'id' => $post->ID,
+            'title' => $post->post_title,
+            'downloads' => get_post_meta($post->ID, '_cert_downloads_count', true),
+        );
+    }
+    
+    return new WP_REST_Response(array(
+        'total_certifications' => $total,
+        'providers' => $provider_stats,
+        'most_popular' => $popular,
+    ), 200);
+}
+
+function prepare_certification_response($post) {
+    return array(
+        'id' => $post->ID,
+        'title' => $post->post_title,
+        'slug' => $post->post_name,
+        'excerpt' => get_the_excerpt($post->ID),
+        'content' => apply_filters('the_content', $post->post_content),
+        'featured_image' => get_the_post_thumbnail_url($post->ID, 'large'),
+        'cert_code' => get_post_meta($post->ID, '_cert_code', true),
+        'cert_official_name' => get_post_meta($post->ID, '_cert_official_name', true),
+        'exam_cost' => get_post_meta($post->ID, '_cert_exam_cost', true),
+        'duration' => get_post_meta($post->ID, '_cert_duration', true),
+        'passing_score' => get_post_meta($post->ID, '_cert_passing_score', true),
+        'questions_count' => get_post_meta($post->ID, '_cert_questions_count', true),
+        'difficulty' => get_post_meta($post->ID, '_cert_difficulty', true),
+        'download_url' => get_post_meta($post->ID, '_cert_download_url', true),
+        'premium' => get_post_meta($post->ID, '_cert_premium', true) === '1',
+        'featured' => get_post_meta($post->ID, '_cert_featured', true) === '1',
+        'downloads_count' => get_post_meta($post->ID, '_cert_downloads_count', true),
+        'provider' => get_certification_provider($post->ID),
+        'level' => get_certification_level($post->ID),
+        'resource_types' => get_certification_resource_types($post->ID),
+        'date' => $post->post_date,
+    );
+}
+
+function get_certification_provider($post_id) {
+    $terms = get_the_terms($post_id, 'cert_provider');
+    if (!$terms || is_wp_error($terms)) return null;
+    return array(
+        'id' => $terms[0]->term_id,
+        'name' => $terms[0]->name,
+        'slug' => $terms[0]->slug,
+    );
+}
+
+function get_certification_level($post_id) {
+    $terms = get_the_terms($post_id, 'cert_level');
+    if (!$terms || is_wp_error($terms)) return null;
+    return array(
+        'id' => $terms[0]->term_id,
+        'name' => $terms[0]->name,
+        'slug' => $terms[0]->slug,
+    );
+}
+
+function get_certification_resource_types($post_id) {
+    $terms = get_the_terms($post_id, 'resource_type');
+    if (!$terms || is_wp_error($terms)) return array();
+    return array_map(function($term) {
+        return array(
+            'id' => $term->term_id,
+            'name' => $term->name,
+            'slug' => $term->slug,
+        );
+    }, $terms);
+}
+
+// ============================================================================
+// 5. ADMIN DASHBOARD WIDGET
+// ============================================================================
+
+add_action('wp_dashboard_setup', 'add_certification_dashboard_widget');
+function add_certification_dashboard_widget() {
+    wp_add_dashboard_widget(
+        'certification_hub_stats',
+        '🎓 Certification Hub Statistics',
+        'render_certification_dashboard_widget'
+    );
+}
+
+function render_certification_dashboard_widget() {
+    $total = wp_count_posts('certification')->publish;
+    
+    $providers = get_terms(array(
+        'taxonomy' => 'cert_provider',
+        'hide_empty' => true,
+    ));
+    
+    // Get total downloads
+    global $wpdb;
+    $total_downloads = $wpdb->get_var("
+        SELECT SUM(meta_value) 
+        FROM {$wpdb->postmeta} 
+        WHERE meta_key = '_cert_downloads_count'
+    ");
+    
+    // Get most downloaded this month
+    $most_downloaded = new WP_Query(array(
+        'post_type' => 'certification',
+        'posts_per_page' => 1,
+        'meta_key' => '_cert_downloads_count',
+        'orderby' => 'meta_value_num',
+        'order' => 'DESC',
+    ));
+    
+    ?>
+    <style>
+        .cert-stat-box {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .cert-stat-item {
+            text-align: center;
+            flex: 1;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            margin: 0 5px;
+        }
+        .cert-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0073aa;
+        }
+        .cert-stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+    
+    <div class="cert-stat-box">
+        <div class="cert-stat-item">
+            <div class="cert-stat-value"><?php echo $total; ?></div>
+            <div class="cert-stat-label">Total Resources</div>
+        </div>
+        <div class="cert-stat-item">
+            <div class="cert-stat-value"><?php echo count($providers); ?></div>
+            <div class="cert-stat-label">Providers</div>
+        </div>
+        <div class="cert-stat-item">
+            <div class="cert-stat-value"><?php echo number_format($total_downloads); ?></div>
+            <div class="cert-stat-label">Total Downloads</div>
+        </div>
+    </div>
+    
+    <?php if ($most_downloaded->have_posts()) : ?>
+        <div style="margin-top: 15px; padding: 10px; background: #d4edda; border-radius: 4px;">
+            <strong>🔥 Most Popular:</strong>
+            <?php while ($most_downloaded->have_posts()) : $most_downloaded->the_post(); ?>
+                <div><?php the_title(); ?> (<?php echo get_post_meta(get_the_ID(), '_cert_downloads_count', true); ?> downloads)</div>
+            <?php endwhile; wp_reset_postdata(); ?>
+        </div>
+    <?php endif; ?>
+    
+    <div style="margin-top: 15px;">
+        <strong>Providers:</strong>
+        <ul style="margin: 5px 0; padding-left: 20px;">
+            <?php foreach ($providers as $provider) : ?>
+                <li><?php echo $provider->name; ?> (<?php echo $provider->count; ?> resources)</li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+    
+    <p style="margin-top: 15px;">
+        <a href="<?php echo admin_url('edit.php?post_type=certification'); ?>" class="button button-primary">
+            View All Certifications
+        </a>
+        <a href="<?php echo admin_url('post-new.php?post_type=certification'); ?>" class="button">
+            Add New
+        </a>
+    </p>
+    <?php
+}
+
+// ============================================================================
+// 6. ADMIN COLUMNS CUSTOMIZATION
+// ============================================================================
+
+add_filter('manage_certification_posts_columns', 'set_certification_columns');
+function set_certification_columns($columns) {
+    $new_columns = array();
+    $new_columns['cb'] = $columns['cb'];
+    $new_columns['title'] = 'Certification';
+    $new_columns['cert_code'] = 'Code';
+    $new_columns['provider'] = 'Provider';
+    $new_columns['level'] = 'Level';
+    $new_columns['difficulty'] = 'Difficulty';
+    $new_columns['downloads'] = 'Downloads';
+    $new_columns['premium'] = 'Premium';
+    $new_columns['featured'] = 'Featured';
+    $new_columns['date'] = 'Date';
+    
+    return $new_columns;
+}
+
+add_action('manage_certification_posts_custom_column', 'fill_certification_columns', 10, 2);
+function fill_certification_columns($column, $post_id) {
+    switch ($column) {
+        case 'cert_code':
+            echo get_post_meta($post_id, '_cert_code', true) ?: '—';
+            break;
+            
+        case 'provider':
+            $terms = get_the_terms($post_id, 'cert_provider');
+            if ($terms && !is_wp_error($terms)) {
+                $provider = $terms[0];
+                echo '<span style="background: #0073aa; color: white; padding: 3px 8px; border-radius: 3px; font-size: 11px;">' . esc_html($provider->name) . '</span>';
+            } else {
+                echo '—';
+            }
+            break;
+            
+        case 'level':
+            $terms = get_the_terms($post_id, 'cert_level');
+            if ($terms && !is_wp_error($terms)) {
+                echo esc_html($terms[0]->name);
+            } else {
+                echo '—';
+            }
+            break;
+            
+        case 'difficulty':
+            $difficulty = get_post_meta($post_id, '_cert_difficulty', true);
+            if ($difficulty) {
+                $colors = array(
+                    'Beginner' => '#4caf50',
+                    'Intermediate' => '#ff9800',
+                    'Advanced' => '#f44336',
+                    'Expert' => '#9c27b0',
+                );
+                $color = isset($colors[$difficulty]) ? $colors[$difficulty] : '#999';
+                echo '<span style="color: ' . $color . '; font-weight: bold;">⭐ ' . esc_html($difficulty) . '</span>';
+            } else {
+                echo '—';
+            }
+            break;
+            
+        case 'downloads':
+            $downloads = get_post_meta($post_id, '_cert_downloads_count', true);
+            echo '<strong>' . number_format(intval($downloads)) . '</strong>';
+            break;
+            
+        case 'premium':
+            $premium = get_post_meta($post_id, '_cert_premium', true);
+            echo $premium === '1' ? '🔒 Yes' : '🆓 Free';
+            break;
+            
+        case 'featured':
+            $featured = get_post_meta($post_id, '_cert_featured', true);
+            echo $featured === '1' ? '⭐ Yes' : '—';
+            break;
+    }
+}
+
+// Make columns sortable
+add_filter('manage_edit-certification_sortable_columns', 'make_certification_columns_sortable');
+function make_certification_columns_sortable($columns) {
+    $columns['downloads'] = 'downloads';
+    $columns['difficulty'] = 'difficulty';
+    return $columns;
+}
+
+// ============================================================================
+// 7. LINK BLOG POSTS TO CERTIFICATIONS
+// ============================================================================
+
+add_action('add_meta_boxes', 'add_related_certification_meta_box');
+function add_related_certification_meta_box() {
+    add_meta_box(
+        'related_certification',
+        '🎓 Related Certification',
+        'render_related_certification_meta_box',
+        'post',
+        'side',
+        'default'
+    );
+}
+
+function render_related_certification_meta_box($post) {
+    wp_nonce_field('related_cert_meta_box', 'related_cert_nonce');
+    
+    $related_cert = get_post_meta($post->ID, '_related_certification', true);
+    
+    // Get all certifications
+    $certifications = get_posts(array(
+        'post_type' => 'certification',
+        'posts_per_page' => -1,
+        'orderby' => 'title',
+        'order' => 'ASC',
+    ));
+    
+    echo '<select name="related_certification" style="width: 100%;">';
+    echo '<option value="">None</option>';
+    
+    foreach ($certifications as $cert) {
+        $selected = selected($related_cert, $cert->ID, false);
+        echo '<option value="' . $cert->ID . '"' . $selected . '>' . esc_html($cert->post_title) . '</option>';
+    }
+    
+    echo '</select>';
+    echo '<p style="margin-top: 10px; font-size: 12px; color: #666;">Link this article to a certification resource</p>';
+}
+
+add_action('save_post', 'save_related_certification_meta_box');
+function save_related_certification_meta_box($post_id) {
+    if (!isset($_POST['related_cert_nonce']) || !wp_verify_nonce($_POST['related_cert_nonce'], 'related_cert_meta_box')) {
+        return;
+    }
+    
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+    
+    if (isset($_POST['related_certification'])) {
+        update_post_meta($post_id, '_related_certification', sanitize_text_field($_POST['related_certification']));
+    }
+}
+
+// Add related certification to REST API for posts
+add_action('rest_api_init', 'add_related_cert_to_posts_api');
+function add_related_cert_to_posts_api() {
+    register_rest_field('post', 'related_certification', array(
+        'get_callback' => function($post) {
+            $cert_id = get_post_meta($post['id'], '_related_certification', true);
+            if (!$cert_id) return null;
+            
+            $cert = get_post($cert_id);
+            if (!$cert) return null;
+            
+            return array(
+                'id' => $cert->ID,
+                'title' => $cert->post_title,
+                'slug' => $cert->post_name,
+                'link' => get_permalink($cert->ID),
+            );
+        },
+        'schema' => array(
+            'description' => 'Related certification resource',
+            'type' => 'object',
+        )
+    ));
+}
+
+// ============================================================================
+// 8. INITIAL SETUP - CREATE DEFAULT TERMS
+// ============================================================================
+
+register_activation_hook(__FILE__, 'create_default_certification_terms');
+function create_default_certification_terms() {
+    // Create default providers
+    $providers = array('AWS', 'Azure', 'Snowflake', 'GCP', 'dbt', 'Databricks', 'Apache');
+    foreach ($providers as $provider) {
+        if (!term_exists($provider, 'cert_provider')) {
+            wp_insert_term($provider, 'cert_provider');
+        }
+    }
+    
+    // Create default levels
+    $levels = array('Associate', 'Professional', 'Specialty', 'Practitioner', 'Expert', 'Foundational');
+    foreach ($levels as $level) {
+        if (!term_exists($level, 'cert_level')) {
+            wp_insert_term($level, 'cert_level');
+        }
+    }
+    
+    // Create default resource types
+    $types = array('Cheat Sheet', 'Practice Questions', 'Study Guide', 'Exam Tips', 'Flashcards', 'Video Guide');
+    foreach ($types as $type) {
+        if (!term_exists($type, 'resource_type')) {
+            wp_insert_term($type, 'resource_type');
+        }
+    }
+}
+
+// Run on admin init as well (in case activation hook missed)
+add_action('admin_init', 'create_default_certification_terms');
+
+// ============================================================================
+// 9. ADMIN NOTICE FOR SETUP
+// ============================================================================
+
+add_action('admin_notices', 'certification_hub_setup_notice');
+function certification_hub_setup_notice() {
+    $screen = get_current_screen();
+    
+    if ($screen && $screen->post_type === 'certification') {
+        $cert_count = wp_count_posts('certification')->publish;
+        
+        if ($cert_count == 0) {
+            echo '<div class="notice notice-info">';
+            echo '<p><strong>🎓 Welcome to Certification Hub!</strong></p>';
+            echo '<p>Get started by creating your first certification resource. Add provider, level, and resource type taxonomies to organize your content.</p>';
+            echo '<p><a href="' . admin_url('post-new.php?post_type=certification') . '" class="button button-primary">Create First Certification</a></p>';
+            echo '</div>';
+        }
+    }
+}
 ?>
