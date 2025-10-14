@@ -1,4 +1,4 @@
-// src/components/AdPlacement.jsx
+// src/components/AdPlacement.jsx - FIXED VERSION WITH RESERVED SPACE
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -15,7 +15,6 @@ const AdPlacement = ({
   const [shouldRender, setShouldRender] = useState(false);
   const adInitialized = useRef(false);
 
-  // Your AdSense slot IDs from AdSense dashboard
   const AD_SLOTS = {
     'article-top': '1234567890',
     'article-middle': '0987654321',
@@ -33,58 +32,48 @@ const AdPlacement = ({
     'default': '1234567890'
   };
 
+  // ✅ CRITICAL FIX: Reserve space to prevent layout shift
+  const AD_HEIGHTS = {
+    'auto': '250px',
+    'horizontal': '90px',
+    'vertical': '600px',
+    'rectangle': '250px'
+  };
+
   const PUBLISHER_ID = import.meta.env.VITE_ADSENSE_PUBLISHER_ID || 'ca-pub-XXXXXXXXXX';
   const ADS_ENABLED = import.meta.env.VITE_ADS_ENABLED;
   const IS_DEV = import.meta.env.DEV;
   const currentSlot = AD_SLOTS[position] || AD_SLOTS['default'];
+  const reservedHeight = AD_HEIGHTS[format] || AD_HEIGHTS['auto'];
 
-  // Check if ads should be rendered
   useEffect(() => {
-    // Check environment variable (handle string values)
     if (ADS_ENABLED === 'false' || ADS_ENABLED === false) {
-      console.log('🚫 Ads disabled via VITE_ADS_ENABLED');
       setShouldRender(false);
       return;
     }
 
-    // Check development mode
-    if (IS_DEV) {
-      console.log('🚫 Ads disabled in development mode');
+    if (IS_DEV || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       setShouldRender(false);
       return;
     }
 
-    // Check localhost
-    if (typeof window !== 'undefined' && 
-        (window.location.hostname === 'localhost' || 
-         window.location.hostname === '127.0.0.1')) {
-      console.log('🚫 Ads disabled on localhost');
-      setShouldRender(false);
-      return;
-    }
-
-    // Check if publisher ID is valid
     if (!PUBLISHER_ID || PUBLISHER_ID === 'ca-pub-XXXXXXXXXX') {
-      console.warn('⚠️ AdSense Publisher ID not configured');
       setShouldRender(false);
       return;
     }
 
-    console.log('✅ Ads enabled, will render ad:', position);
     setShouldRender(true);
-  }, [ADS_ENABLED, IS_DEV, PUBLISHER_ID, position]);
+  }, [ADS_ENABLED, IS_DEV, PUBLISHER_ID]);
 
   useEffect(() => {
     if (!shouldRender) return;
 
-    // Initialize ad
     const initAd = () => {
       try {
         if (window.adsbygoogle && !adInitialized.current) {
           (window.adsbygoogle = window.adsbygoogle || []).push({});
           adInitialized.current = true;
           setAdLoaded(true);
-          console.log('✅ AdSense ad loaded:', position);
         }
       } catch (error) {
         console.error('❌ AdSense error:', error);
@@ -92,7 +81,6 @@ const AdPlacement = ({
       }
     };
 
-    // Wait for AdSense script to load
     if (window.adsbygoogle) {
       initAd();
     } else {
@@ -103,11 +91,9 @@ const AdPlacement = ({
         }
       }, 100);
 
-      // Clear interval after 10 seconds
       const timeout = setTimeout(() => {
         clearInterval(checkInterval);
         if (!adInitialized.current) {
-          console.warn('⚠️ AdSense script not loaded after 10s');
           setAdError(true);
         }
       }, 10000);
@@ -119,21 +105,17 @@ const AdPlacement = ({
     }
   }, [position, shouldRender]);
 
-  // Reset on route change (important for SPA)
   useEffect(() => {
     adInitialized.current = false;
   }, [location.pathname]);
 
-  // Don't render if ads are disabled
   if (!shouldRender) {
     if (IS_DEV) {
-      // Show placeholder in development
       return (
-        <div className={`dev-ad-placeholder my-8 p-4 border-2 border-dashed border-yellow-500 rounded-lg bg-yellow-500/10 ${className}`}>
+        <div className={`dev-ad-placeholder my-8 p-4 border-2 border-dashed border-yellow-500 rounded-lg bg-yellow-500/10 ${className}`} style={{ minHeight: reservedHeight }}>
           <div className="text-center text-yellow-300 text-sm">
             <p className="font-semibold mb-1">📢 Ad Placeholder</p>
             <p className="text-xs">Position: {position}</p>
-            <p className="text-xs opacity-75">Ads disabled in development</p>
           </div>
         </div>
       );
@@ -146,10 +128,16 @@ const AdPlacement = ({
       ref={adRef}
       className={`adsense-ad my-8 ${className}`}
       data-position={position}
+      style={{ 
+        minHeight: reservedHeight, // ✅ CRITICAL: Reserve space
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
     >
       <ins 
         className="adsbygoogle"
-        style={{ display: 'block' }}
+        style={{ display: 'block', minHeight: reservedHeight }}
         data-ad-client={PUBLISHER_ID}
         data-ad-slot={currentSlot}
         data-ad-format={format}
@@ -160,17 +148,6 @@ const AdPlacement = ({
         <div className="flex items-center justify-center py-8">
           <div className="w-6 h-6 border-2 border-gray-600 border-t-blue-500 rounded-full animate-spin" />
           <span className="ml-3 text-sm text-gray-500">Loading ad...</span>
-        </div>
-      )}
-      
-      {adError && (
-        <div className="text-center py-4 text-xs text-gray-600">
-          <p>Ad failed to load</p>
-          {IS_DEV && (
-            <p className="mt-1 text-yellow-500">
-              Check console for details
-            </p>
-          )}
         </div>
       )}
     </div>
