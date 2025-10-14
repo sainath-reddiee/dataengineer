@@ -1,4 +1,4 @@
-// src/components/LazyImage.jsx - OPTIMIZED FOR MOBILE PERFORMANCE
+// src/components/LazyImage.jsx - OPTIMIZED VERSION
 import React, { useEffect, useRef, useState } from 'react';
 import { optimizeWordPressImage, generateSrcSet } from '@/utils/imageOptimizer';
 
@@ -22,15 +22,6 @@ const LazyImage = ({
   useEffect(() => {
     if (priority) return;
 
-    // Use requestIdleCallback for better performance
-    const scheduleObserver = () => {
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(() => setupObserver(), { timeout: 2000 });
-      } else {
-        setTimeout(() => setupObserver(), 100);
-      }
-    };
-
     const setupObserver = () => {
       if (!imgRef.current) return;
 
@@ -42,7 +33,7 @@ const LazyImage = ({
           }
         },
         { 
-          rootMargin: '50px', 
+          rootMargin: '100px', // ✅ Increased from 50px for earlier loading
           threshold: 0.01 
         }
       );
@@ -51,7 +42,7 @@ const LazyImage = ({
       observerRef.current = observer;
     };
 
-    scheduleObserver();
+    setupObserver();
 
     return () => {
       if (observerRef.current) {
@@ -61,31 +52,30 @@ const LazyImage = ({
   }, [priority]);
 
   const handleLoad = (e) => {
-    // Use requestAnimationFrame to avoid forced reflow
-    requestAnimationFrame(() => {
-      setIsLoaded(true);
-      if (onLoad) onLoad(e);
-    });
+    setIsLoaded(true);
+    if (onLoad) onLoad(e);
   };
 
   const handleError = (e) => {
-    requestAnimationFrame(() => {
-      setHasError(true);
-      if (onError) onError(e);
-    });
+    setHasError(true);
+    if (onError) onError(e);
   };
 
   const optimizedSrc = optimizeWordPressImage(src, { width, quality });
-  const srcSet = generateSrcSet(src, [400, 800, 1200, 1600]);
+  const srcSet = generateSrcSet(src, [400, 800, 1200]);
 
   return (
-    <div ref={imgRef} className={`relative ${className}`}>
-      {/* Loading placeholder */}
+    <div 
+      ref={imgRef} 
+      className={`relative ${className}`}
+      style={{ 
+        minHeight: priority ? 'auto' : '200px' // ✅ Reserve space for non-priority images
+      }}
+    >
       {!isLoaded && !hasError && !priority && (
         <div className="absolute inset-0 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-pulse" />
       )}
       
-      {/* Error state */}
       {hasError && (
         <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-700 flex items-center justify-center">
           <div className="text-gray-500 text-center">
@@ -97,7 +87,6 @@ const LazyImage = ({
         </div>
       )}
       
-      {/* Actual image */}
       {(isInView || priority) && !hasError && (
         <img
           src={optimizedSrc}
@@ -113,8 +102,7 @@ const LazyImage = ({
             isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
           style={{
-            contentVisibility: 'auto',
-            containIntrinsicSize: '800px 400px'
+            contentVisibility: 'auto'
           }}
         />
       )}
