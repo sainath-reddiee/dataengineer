@@ -22,7 +22,7 @@
     RewriteBase /
 
     # Redirect Ezoic ads.txt to their server
-    RewriteRule ^ads\.txt$ https://srv.adstxtmanager.com/19390/dataengineerhub.blog [R=301,L]
+    # RewriteRule ^ads\.txt$ https://srv.adstxtmanager.com/19390/dataengineerhub.blog [R=301,L]
 
     # If the requested path is NOT a real file that exists on the server...
     RewriteCond %{REQUEST_FILENAME} !-f
