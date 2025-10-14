@@ -1,5 +1,5 @@
-// src/pages/ArticlePage.jsx - FINAL VERSION WITH READING PROGRESS BAR (NO PERCENTAGE)
-import React, { Suspense, useEffect } from 'react';
+// src/pages/ArticlePage.jsx - OPTIMIZED FOR SPEED
+import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, Clock, User, Loader, AlertCircle, RefreshCw, Tag } from 'lucide-react';
@@ -18,6 +18,26 @@ import ArticleNavigation from '@/components/ArticleNavigation';
 import ReadingProgressBar from '@/components/ReadingProgressBar';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
+
+// ✅ CRITICAL: Pre-render skeleton with exact dimensions to prevent CLS
+const ArticleSkeleton = () => (
+  <div className="container mx-auto px-6 max-w-4xl">
+    <div className="mb-4 h-10 w-32 bg-gray-800 rounded animate-pulse" />
+    
+    {/* Hero skeleton with FIXED height */}
+    <div className="relative rounded-2xl overflow-hidden mb-8" style={{ height: '384px' }}>
+      <div className="w-full h-full bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-pulse" />
+    </div>
+
+    {/* Content skeleton */}
+    <div className="space-y-4">
+      <div className="h-8 bg-gray-800 rounded w-3/4 animate-pulse" />
+      <div className="h-4 bg-gray-800 rounded w-full animate-pulse" />
+      <div className="h-4 bg-gray-800 rounded w-5/6 animate-pulse" />
+      <div className="h-4 bg-gray-800 rounded w-4/6 animate-pulse" />
+    </div>
+  </div>
+);
 
 const processWordPressContent = (content) => {
   if (!content) return '';
@@ -81,14 +101,10 @@ const ErrorDisplay = ({ error, onRetry, slug }) => {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.3 }}
           className="mb-4"
         >
-          <Button 
-            asChild 
-            variant="outline" 
-            className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm"
-          >
+          <Button asChild variant="outline" className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm">
             <Link to="/articles">
               <ArrowLeft className="mr-2 h-4 w-4" />
               All Articles
@@ -99,106 +115,35 @@ const ErrorDisplay = ({ error, onRetry, slug }) => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
+          transition={{ duration: 0.3 }}
           className="flex flex-col items-center justify-center py-20 text-center"
         >
-          <div className="mb-6">
-            <AlertCircle className="h-16 w-16 text-red-400 mx-auto mb-4" />
-            <h1 className="text-2xl md:text-3xl font-bold mb-4 text-red-400">
-              {isNotFound ? 'Article Not Found' : 'Error Loading Article'}
-            </h1>
-          </div>
+          <AlertCircle className="h-16 w-16 text-red-400 mx-auto mb-4" />
+          <h1 className="text-2xl md:text-3xl font-bold mb-4 text-red-400">
+            {isNotFound ? 'Article Not Found' : 'Error Loading Article'}
+          </h1>
           
-          <div className="max-w-md space-y-4">
-            <p className="text-gray-400 leading-relaxed">
-              {getErrorMessage(error)}
-            </p>
-            
-            {!isNotFound && (
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button 
-                  onClick={onRetry}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Try Again
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate('/articles')}
-                  className="border-gray-600 text-gray-300 hover:bg-gray-800"
-                >
-                  Browse Articles
-                </Button>
-              </div>
-            )}
-            
-            {isNotFound && (
-              <div className="space-y-3">
-                <Button 
-                  onClick={() => navigate('/articles')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  Browse All Articles
-                </Button>
-                <p className="text-sm text-gray-500">
-                  Looking for something specific? Try searching our articles.
-                </p>
-              </div>
-            )}
-          </div>
+          <p className="text-gray-400 leading-relaxed max-w-md mb-4">
+            {getErrorMessage(error)}
+          </p>
+          
+          {!isNotFound && (
+            <Button onClick={onRetry} className="bg-blue-600 hover:bg-blue-700 text-white">
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Try Again
+            </Button>
+          )}
+          
+          {isNotFound && (
+            <Button onClick={() => navigate('/articles')} className="bg-blue-600 hover:bg-blue-700 text-white">
+              Browse All Articles
+            </Button>
+          )}
         </motion.div>
       </div>
     </div>
   );
 };
-
-const LoadingDisplay = () => (
-  <div className="pt-4 pb-12">
-    <div className="container mx-auto px-6 max-w-4xl">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-4"
-      >
-        <Button 
-          asChild 
-          variant="outline" 
-          className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm"
-        >
-          <Link to="/articles">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            All Articles
-          </Link>
-        </Button>
-      </motion.div>
-      
-      <div className="flex items-center justify-center py-20">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="relative">
-            <Loader className="h-8 w-8 animate-spin text-blue-400" />
-            <div className="absolute inset-0 h-8 w-8 border-4 border-purple-400 border-b-transparent rounded-full animate-spin" 
-                 style={{ animationDirection: 'reverse', animationDuration: '1s' }}>
-            </div>
-          </div>
-          <p className="text-gray-400">Loading article...</p>
-          <div className="flex space-x-1">
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-            <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const AdSkeleton = () => (
-  <div className="h-32 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-pulse rounded-lg flex items-center justify-center my-8">
-    <span className="text-gray-500 text-sm">Advertisement</span>
-  </div>
-);
 
 const RelatedPosts = ({ currentPostId }) => {
   const { posts: relatedPosts, loading } = useRelatedPosts(currentPostId);
@@ -239,10 +184,15 @@ const RelatedPosts = ({ currentPostId }) => {
 const ArticlePage = () => {
   const { slug } = useParams();
   const { post, loading, error, refetch } = usePost(slug);
+  const [contentReady, setContentReady] = useState(false);
 
+  // ✅ CRITICAL: Start image preload immediately
   useEffect(() => {
     if (post?.image) {
-      preloadImage(post.image, { fetchpriority: 'high' });
+      const img = new Image();
+      img.src = post.image;
+      img.onload = () => setContentReady(true);
+      img.onerror = () => setContentReady(true);
     }
   }, [post?.image]);
 
@@ -274,8 +224,14 @@ const ArticlePage = () => {
     refetch();
   };
 
+  // ✅ Show skeleton immediately while loading
   if (loading) {
-    return <LoadingDisplay />;
+    return (
+      <div className="pt-4 pb-12">
+        <ReadingProgressBar />
+        <ArticleSkeleton />
+      </div>
+    );
   }
 
   if (error) {
@@ -325,7 +281,6 @@ const ArticlePage = () => {
 
   return (
     <div className="pt-4 pb-12">
-      {/* READING PROGRESS BAR - ALWAYS VISIBLE, NO PERCENTAGE */}
       <ReadingProgressBar />
       
       <MetaTags 
@@ -341,16 +296,12 @@ const ArticlePage = () => {
       
       <div className="container mx-auto px-6 max-w-4xl">
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
           className="mb-4"
         >
-          <Button 
-            asChild 
-            variant="outline" 
-            className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm"
-          >
+          <Button asChild variant="outline" className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm">
             <Link to="/articles">
               <ArrowLeft className="mr-2 h-4 w-4" />
               All Articles
@@ -359,19 +310,20 @@ const ArticlePage = () => {
         </motion.div>
 
         <motion.article
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
           className="space-y-8"
         >
-          <div className="relative rounded-2xl overflow-hidden">
+          {/* ✅ CRITICAL: Fixed height hero to prevent CLS */}
+          <div className="relative rounded-2xl overflow-hidden" style={{ height: '384px' }}>
             <LazyImage
               src={safePost.image}
               alt={safePost.title}
               width={1600}
               quality={85}
               sizes="(max-width: 768px) 100vw, 1200px"
-              className="w-full h-64 md:h-96"
+              className="w-full h-full"
               priority={true}
             />
             
@@ -401,10 +353,11 @@ const ArticlePage = () => {
             </div>
           </div>
 
-          <Suspense fallback={<AdSkeleton />}>
+          <Suspense fallback={<div className="h-32" />}>
             <AdPlacement position="article-top" />
           </Suspense>
 
+          {/* ✅ Render content immediately without waiting */}
           <div className="prose prose-invert prose-lg max-w-none">
             <div 
               dangerouslySetInnerHTML={{ __html: processWordPressContent(safePost.content) }}
@@ -419,8 +372,8 @@ const ArticlePage = () => {
 
           {safePost.tags && safePost.tags.length > 0 && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               className="my-8 p-6 bg-slate-800/50 rounded-xl border border-slate-700"
             >
               <h3 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
@@ -431,7 +384,7 @@ const ArticlePage = () => {
             </motion.div>
           )}
 
-          <Suspense fallback={<AdSkeleton />}>
+          <Suspense fallback={<div className="h-32" />}>
             <AdPlacement position="article-bottom" />
           </Suspense>
 
@@ -442,10 +395,7 @@ const ArticlePage = () => {
                 <p className="font-semibold text-white">{safePost.author}</p>
                 <p className="text-sm text-gray-500">{formatDate(safePost.date)}</p>
               </div>
-              <Button 
-                asChild 
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
+              <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
                 <Link to="/articles">
                   Read More Articles
                 </Link>
@@ -459,6 +409,7 @@ const ArticlePage = () => {
           category={safePost.category} 
         />
         
+        {/* ✅ Load related posts last - they're not critical */}
         <RelatedPosts currentPostId={safePost.id} />
       </div>
     </div>
