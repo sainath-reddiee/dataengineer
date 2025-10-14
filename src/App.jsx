@@ -1,4 +1,4 @@
-// src/App.jsx - FIXED VERSION
+// src/App.jsx - UPDATED WITH CERTIFICATION ROUTES
 import React, { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
@@ -23,6 +23,10 @@ const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
 const DisclaimerPage = lazy(() => import('./pages/DisclaimerPage'));
 const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 const TagsArchivePage = lazy(() => import('./pages/TagsArchivePage'));
+
+// ✨ NEW: Certification Hub Pages
+const CertificationHub = lazy(() => import('./pages/certifications/CertificationHub'));
+const CertificationDetail = lazy(() => import('./pages/certifications/CertificationDetail'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
@@ -69,6 +73,8 @@ function App() {
     const prefetchTimer = setTimeout(() => {
       import('./pages/AllArticlesPage');
       import('./pages/ArticlePage');
+      // ✨ Prefetch certification pages
+      import('./pages/certifications/CertificationHub');
     }, 2000);
 
     const logPerformance = () => {
@@ -108,61 +114,86 @@ function App() {
               <HomePage />
             </Suspense>
           } />
+          
           <Route path="articles" element={
             <Suspense fallback={<LoadingFallback text="Loading Articles..." />}>
               <AllArticlesPage />
             </Suspense>
           } />
+          
           <Route path="articles/:slug" element={
             <Suspense fallback={<LoadingFallback text="Loading Article..." />}>
               <ArticlePage />
             </Suspense>
           } />
+          
+          {/* ✨ NEW: Certification Hub Routes */}
+          <Route path="certifications" element={
+            <Suspense fallback={<LoadingFallback text="Loading Certification Hub..." />}>
+              <CertificationHub />
+            </Suspense>
+          } />
+          
+          <Route path="certifications/:slug" element={
+            <Suspense fallback={<LoadingFallback text="Loading Certification..." />}>
+              <CertificationDetail />
+            </Suspense>
+          } />
+          
           <Route path="category/:categoryName" element={
             <Suspense fallback={<LoadingFallback text="Loading Category..." />}>
               <CategoryPage />
             </Suspense>
           } />
+          
           <Route path="tag" element={
             <Suspense fallback={<LoadingFallback text="Loading Tags..." />}>
               <TagsArchivePage />
             </Suspense>
           } />
+          
           <Route path="tag/:tagSlug" element={
             <Suspense fallback={<LoadingFallback text="Loading Tag..." />}>
               <TagPage />
             </Suspense>
           } />
+          
           <Route path="about" element={
             <Suspense fallback={<LoadingFallback text="Loading About..." />}>
               <AboutPage />
             </Suspense>
           } />
+          
           <Route path="contact" element={
             <Suspense fallback={<LoadingFallback text="Loading Contact..." />}>
               <ContactPage />
             </Suspense>
           } />
+          
           <Route path="privacy-policy" element={
             <Suspense fallback={<LoadingFallback text="Loading Privacy Policy..." />}>
               <PrivacyPolicyPage />
             </Suspense>
           } />
+          
           <Route path="terms-of-service" element={
             <Suspense fallback={<LoadingFallback text="Loading Terms..." />}>
               <TermsOfServicePage />
             </Suspense>
           } />
+          
           <Route path="disclaimer" element={
             <Suspense fallback={<LoadingFallback text="Loading Disclaimer..." />}>
               <DisclaimerPage />
             </Suspense>
           } />
+          
           <Route path="newsletter" element={
             <Suspense fallback={<LoadingFallback text="Loading Newsletter..." />}>
               <NewsletterPage />
             </Suspense>
           } />
+          
           {debugMode && (
             <Route path="debug" element={
               <Suspense fallback={<LoadingFallback text="Loading Debug..." />}>
