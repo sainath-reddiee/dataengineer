@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Award } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles } from 'lucide-react';
 
-// Helper component for sparkle animation
+// Helper component for the "Corner Burst" sparks animation
 const Spark = ({ x, y, rotate, color }) => {
   const variants = {
     rest: { x: 0, y: 0, scale: 0, opacity: 0 },
@@ -23,7 +23,7 @@ const Spark = ({ x, y, rotate, color }) => {
   );
 };
 
-// Category icon provider
+// Category icon provider with original icons
 const getCategoryIcon = (category, className = 'h-8 w-8') => {
   const lowerCategory = category.toLowerCase();
   const iconUrls = {
@@ -39,6 +39,7 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
   
   const iconUrl = iconUrls[lowerCategory];
   
+  // Special case for SQL to ensure visibility
   if (lowerCategory === 'sql') {
     return (
       <div className={`${className} bg-slate-200 rounded-full p-1.5 flex items-center justify-center`}>
@@ -80,10 +81,12 @@ const Header = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [currentPath, setCurrentPath] = useState('/');
 
+  // Track current path for active states
   useEffect(() => {
     setCurrentPath(window.location.pathname);
   }, []);
 
+  // Check if a category group is active
   const isCategoryActive = (categoryKey) => {
     const path = currentPath.toLowerCase();
     
@@ -108,10 +111,10 @@ const Header = () => {
   };
 
   const isHomeActive = currentPath === '/';
-  const isCertActive = currentPath.includes('/certification');
   const isTagsActive = currentPath.includes('/tag');
   const isAboutActive = currentPath.includes('/about');
 
+  // Enhanced category structure
   const categories = {
     platforms: {
       title: 'Cloud & Data Platforms',
@@ -159,6 +162,7 @@ const Header = () => {
   }, [lastScrollY]);
 
   const MegaMenu = ({ category, categoryKey }) => {
+    // Generate sparks for animation
     const sparks = useMemo(() => 
       Array.from({ length: 12 }).map(() => ({
         x: Math.random() * 60 - 30,
@@ -173,6 +177,27 @@ const Header = () => {
       hover: { transition: { staggerChildren: 0.04 } },
     };
 
+    // Smart CTA text based on category
+    const getCtaText = () => {
+      if (categoryKey === 'platforms') {
+        return 'View all Cloud & Platform articles';
+      }
+      if (categoryKey === 'tools') {
+        return 'View all Orchestration & Transform articles';
+      }
+      if (categoryKey === 'languages') {
+        return 'View all Language articles';
+      }
+      return 'View all articles';
+    };
+
+    // Build filtered URL with categories
+    const getCtaUrl = () => {
+      const categoryNames = category.items.map(item => item.name.toLowerCase()).join(',');
+      // For now, just go to /articles - you can enhance this with query params later
+      return '/articles';
+    };
+
     return (
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -183,6 +208,7 @@ const Header = () => {
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(59, 130, 246, 0.1)'
         }}
       >
+        {/* Header with Icon */}
         <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-700/50">
           <div className="p-2 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg">
             <category.icon className="h-5 w-5 text-blue-400" />
@@ -193,8 +219,9 @@ const Header = () => {
           </div>
         </div>
 
+        {/* Grid Layout with Spark Animation */}
         <div className="grid grid-cols-2 gap-3">
-          {category.items.map((item) => (
+          {category.items.map((item, idx) => (
             <motion.a
               key={item.name}
               href={item.path}
@@ -202,6 +229,7 @@ const Header = () => {
               whileHover="hover"
               className="group relative p-4 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-300 overflow-hidden"
             >
+              {/* Spark emitters in each corner */}
               {[...Array(4)].map((_, i) => (
                 <motion.div
                   key={i}
@@ -212,9 +240,12 @@ const Header = () => {
                 </motion.div>
               ))}
 
+              {/* Gradient Background on Hover */}
               <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-10 rounded-xl transition-opacity duration-300`} />
               
+              {/* Content */}
               <div className="relative z-10 flex items-start gap-3">
+                {/* Original Category Icon */}
                 <div className="flex-shrink-0 mt-1">
                   {getCategoryIcon(item.name, 'h-8 w-8')}
                 </div>
@@ -229,17 +260,19 @@ const Header = () => {
                 </div>
               </div>
 
+              {/* Shine effect on hover */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700 rounded-xl" />
             </motion.a>
           ))}
         </div>
 
+        {/* Smart Footer CTA */}
         <div className="mt-4 pt-4 border-t border-slate-700/50 text-center">
           <a 
-            href="/articles"
+            href={getCtaUrl()}
             className="text-sm text-blue-400 hover:text-blue-300 font-medium inline-flex items-center gap-2 group"
           >
-            View all articles
+            {getCtaText()}
             <motion.span
               className="inline-block"
               animate={{ x: [0, 4, 0] }}
@@ -336,22 +369,6 @@ const Header = () => {
               );
             })}
 
-            {/* ✨ NEW: Certification Hub */}
-            <motion.div whileHover={{ y: -2 }}>
-              <a 
-                href="/certifications" 
-                className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
-                  isCertActive 
-                    ? 'text-blue-400' 
-                    : 'text-gray-300 hover:text-blue-400'
-                }`}
-                style={isCertActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
-              >
-                <Award className="w-4 h-4" />
-                Certifications
-              </a>
-            </motion.div>
-
             {/* Tags */}
             <motion.div whileHover={{ y: -2 }}>
               <a 
@@ -395,7 +412,7 @@ const Header = () => {
             </motion.div>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - FIXED WITH ACCESSIBILITY */}
           <div className="xl:hidden">
             <motion.button
               whileTap={{ scale: 0.9 }}
@@ -410,7 +427,7 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation - FIXED WITH ID */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
@@ -461,12 +478,6 @@ const Header = () => {
                     </AnimatePresence>
                   </div>
                 ))}
-
-                {/* ✨ NEW: Certification Hub Mobile */}
-                <a href="/certifications" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
-                  <Award className="w-5 h-5" />
-                  Certifications
-                </a>
 
                 <a href="/tag" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
                   <Tags className="w-5 h-5" />
