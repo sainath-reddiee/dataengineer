@@ -1488,4 +1488,568 @@ function categorization_admin_notice() {
         echo '</div>';
     }
 }
+add_action('admin_menu', 'add_category_checker_menu');
+function add_category_checker_menu() {
+    add_menu_page(
+        'Category Checker',
+        'Check Categories',
+        'manage_options',
+        'category-checker',
+        'render_category_checker_page',
+        'dashicons-search',
+        100
+    );
+}
+
+function render_category_checker_page() {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    
+    ?>
+    <div class="wrap">
+        <h1>🔍 Category Checker</h1>
+        
+        <style>
+            .category-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                background: white;
+            }
+            .category-table th {
+                background: #0073aa;
+                color: white;
+                padding: 12px;
+                text-align: left;
+            }
+            .category-table td {
+                padding: 12px;
+                border-bottom: 1px solid #ddd;
+            }
+            .category-table tr:hover {
+                background: #f5f5f5;
+            }
+            .badge {
+                display: inline-block;
+                padding: 4px 8px;
+                border-radius: 3px;
+                font-size: 12px;
+                margin-right: 5px;
+            }
+            .badge-success {
+                background: #4caf50;
+                color: white;
+            }
+            .badge-error {
+                background: #f44336;
+                color: white;
+            }
+            .badge-warning {
+                background: #ff9800;
+                color: white;
+            }
+            .json-box {
+                background: #f5f5f5;
+                padding: 10px;
+                border-radius: 4px;
+                font-family: monospace;
+                font-size: 12px;
+                max-height: 200px;
+                overflow-y: auto;
+            }
+        </style>
+        
+        <?php
+        // Get latest posts
+        $posts = get_posts(array(
+            'post_type' => 'post',
+            'post_status' => 'publish',
+            'posts_per_page' => 20,
+            'orderby' => 'date',
+            'order' => 'DESC'
+        ));
+        
+        echo '<h2>Latest ' . count($posts) . ' Published Posts</h2>';
+        echo '<table class="category-table">';
+        echo '<thead>';
+        echo '<tr>';
+        echo '<th>Post Title</th>';
+        echo '<th>Categories (Backend)</th>';
+        echo '<th>Category IDs</th>';
+        echo '<th>REST API Response</th>';
+        echo '<th>Status</th>';
+        echo '</tr>';
+        echo '</thead>';
+        echo '<tbody>';
+        
+        foreach ($posts as $post) {
+            $categories = get_the_category($post->ID);
+            $category_ids = wp_get_post_categories($post->ID);
+            $auto_categorized = get_post_meta($post->ID, '_auto_categorized', true);
+            
+            // Simulate REST API response
+            $rest_request = new WP_REST_Request('GET', '/wp/v2/posts/' . $post->ID);
+            $rest_request->set_param('_embed', true);
+            $rest_server = rest_get_server();
+            $rest_response = $rest_server->dispatch($rest_request);
+            $rest_data = $rest_response->get_data();
+            
+            // Get embedded categories
+            $embedded_cats = isset($rest_data['_embedded']['wp:term'][0]) ? $rest_data['_embedded']['wp:term'][0] : [];
+            
+            // Check for custom fields
+            $category_name = isset($rest_data['category_name']) ? $rest_data['category_name'] : 'NOT SET';
+            $category_slug = isset($rest_data['category_slug']) ? $rest_data['category_slug'] : 'NOT SET';
+            
+            echo '<tr>';
+            
+            // Title
+            echo '<td><strong>' . esc_html($post->post_title) . '</strong><br>';
+            echo '<small>ID: ' . $post->ID . '</small></td>';
+            
+            // Backend categories
+            echo '<td>';
+            if (empty($categories)) {
+                echo '<span class="badge badge-error">NO CATEGORIES</span>';
+            } else {
+                foreach ($categories as $cat) {
+                    $badge_class = $cat->slug === 'uncategorized' ? 'badge-warning' : 'badge-success';
+                    echo '<span class="badge ' . $badge_class . '">' . esc_html($cat->name) . '</span>';
+                }
+            }
+            echo '</td>';
+            
+            // Category IDs
+            echo '<td>' . implode(', ', $category_ids) . '</td>';
+            
+            // REST API data
+            echo '<td>';
+            echo '<strong>Custom Fields:</strong><br>';
+            echo 'category_name: <code>' . esc_html($category_name) . '</code><br>';
+            echo 'category_slug: <code>' . esc_html($category_slug) . '</code><br><br>';
+            
+            echo '<strong>Embedded Categories (' . count($embedded_cats) . '):</strong><br>';
+            if (empty($embedded_cats)) {
+                echo '<span class="badge badge-error">EMPTY!</span>';
+            } else {
+                foreach ($embedded_cats as $cat) {
+                    echo '<span class="badge badge-success">' . esc_html($cat['name']) . '</span>';
+                }
+            }
+            echo '</td>';
+            
+            // Status
+            echo '<td>';
+            if (empty($categories)) {
+                echo '<span class="badge badge-error">❌ NO CATS</span>';
+            } elseif (count($categories) === 1 && $categories[0]->slug === 'uncategorized') {
+                echo '<span class="badge badge-warning">⚠️ UNCATEGORIZED</span>';
+            } elseif (empty($embedded_cats)) {
+                echo '<span class="badge badge-error">❌ NOT IN REST</span>';
+            } elseif ($category_name === 'Uncategorized' && count($categories) > 1) {
+                echo '<span class="badge badge-warning">⚠️ WRONG DISPLAY</span>';
+            } else {
+                echo '<span class="badge badge-success">✅ OK</span>';
+            }
+            
+            if ($auto_categorized === '1') {
+                echo '<br><span class="badge badge-success">🤖 Auto</span>';
+            }
+            echo '</td>';
+            
+            echo '</tr>';
+        }
+        
+        echo '</tbody>';
+        echo '</table>';
+        
+        // Summary
+        echo '<h2>Summary</h2>';
+        $total = count($posts);
+        $uncategorized = 0;
+        $properly_categorized = 0;
+        
+        foreach ($posts as $post) {
+            $cats = get_the_category($post->ID);
+            if (empty($cats) || (count($cats) === 1 && $cats[0]->slug === 'uncategorized')) {
+                $uncategorized++;
+            } else {
+                $properly_categorized++;
+            }
+        }
+        
+        echo '<p><strong>Total Posts:</strong> ' . $total . '</p>';
+        echo '<p><strong>Properly Categorized:</strong> ' . $properly_categorized . ' (' . round(($properly_categorized/$total)*100, 1) . '%)</p>';
+        echo '<p><strong>Uncategorized:</strong> ' . $uncategorized . ' (' . round(($uncategorized/$total)*100, 1) . '%)</p>';
+        
+        // API Test Link
+        echo '<h2>Quick Tests</h2>';
+        echo '<p><a href="' . get_rest_url(null, 'wp/v2/posts?per_page=5&_embed') . '" target="_blank" class="button">View REST API Response</a></p>';
+        ?>
+        
+        <h2>Fix Actions</h2>
+        <form method="post" style="margin-top: 20px;">
+            <?php wp_nonce_field('fix_categories_action', 'fix_categories_nonce'); ?>
+            
+            <p>
+                <button type="submit" name="remove_uncategorized" class="button button-primary">
+                    🧹 Remove "Uncategorized" from Posts with Other Categories
+                </button>
+            </p>
+            
+            <p>
+                <button type="submit" name="recategorize_all" class="button button-secondary">
+                    🔄 Re-run Categorization for All Posts
+                </button>
+            </p>
+        </form>
+        
+        <?php
+        // Handle actions
+        if (isset($_POST['remove_uncategorized']) && check_admin_referer('fix_categories_action', 'fix_categories_nonce')) {
+            $fixed = 0;
+            foreach ($posts as $post) {
+                $cats = wp_get_post_categories($post->ID);
+                if (count($cats) > 1 && in_array(1, $cats)) {
+                    $cats = array_diff($cats, array(1));
+                    wp_set_post_categories($post->ID, $cats, false);
+                    $fixed++;
+                }
+            }
+            echo '<div class="notice notice-success"><p>✅ Removed Uncategorized from ' . $fixed . ' posts!</p></div>';
+            echo '<script>window.location.reload();</script>';
+        }
+        
+        if (isset($_POST['recategorize_all']) && check_admin_referer('fix_categories_action', 'fix_categories_nonce')) {
+            foreach ($posts as $post) {
+                delete_transient('processing_auto_categories_' . $post->ID);
+                enhanced_auto_assign_categories_universal($post->ID, $post, true);
+            }
+            echo '<div class="notice notice-success"><p>✅ Re-categorized all posts!</p></div>';
+            echo '<script>setTimeout(function(){ window.location.reload(); }, 2000);</script>';
+        }
+        ?>
+    </div>
+    <?php
+}
+add_filter('rest_prepare_post', 'force_categories_in_rest_response', 999, 3);
+function force_categories_in_rest_response($response, $post, $request) {
+    $data = $response->get_data();
+    
+    // Get ALL categories for this post
+    $categories = get_the_category($post->ID);
+    
+    // Log what we found
+    error_log("REST API Response for post {$post->ID}: Found " . count($categories) . " categories");
+    
+    // Filter out Uncategorized if there are other categories
+    $filtered_categories = $categories;
+    if (count($categories) > 1) {
+        $filtered_categories = array_filter($categories, function($cat) {
+            return $cat->slug !== 'uncategorized';
+        });
+        $filtered_categories = array_values($filtered_categories); // Re-index
+    }
+    
+    // Build proper category structure
+    $category_data = array();
+    foreach ($filtered_categories as $category) {
+        $category_data[] = array(
+            'id' => $category->term_id,
+            'name' => $category->name,
+            'slug' => $category->slug,
+            'link' => get_category_link($category->term_id),
+            'taxonomy' => 'category'
+        );
+    }
+    
+    // FORCE embedded data structure
+    if (!isset($data['_embedded'])) {
+        $data['_embedded'] = array();
+    }
+    
+    if (!isset($data['_embedded']['wp:term'])) {
+        $data['_embedded']['wp:term'] = array();
+    }
+    
+    // CRITICAL: Always set category data at index 0
+    $data['_embedded']['wp:term'][0] = $category_data;
+    
+    // Also add easy-access fields at root level
+    if (!empty($category_data)) {
+        $data['category_name'] = $category_data[0]['name'];
+        $data['category_slug'] = $category_data[0]['slug'];
+        $data['primary_category'] = $category_data[0];
+    } else {
+        $data['category_name'] = 'Uncategorized';
+        $data['category_slug'] = 'uncategorized';
+        $data['primary_category'] = array(
+            'id' => 1,
+            'name' => 'Uncategorized',
+            'slug' => 'uncategorized',
+            'link' => get_category_link(1)
+        );
+    }
+    
+    // Add all categories as simple array
+    $data['all_categories'] = $category_data;
+    
+    $response->set_data($data);
+    
+    return $response;
+}
+
+// ============================================================================
+// FIX 2: Ensure _embed parameter is always respected
+// ============================================================================
+
+add_filter('rest_post_query', 'ensure_embed_works', 10, 2);
+function ensure_embed_works($args, $request) {
+    // Force term cache to be loaded
+    $args['update_post_term_cache'] = true;
+    
+    return $args;
+}
+
+// ============================================================================
+// FIX 3: Add explicit category fields to REST API schema
+// ============================================================================
+
+add_action('rest_api_init', 'register_explicit_category_fields');
+function register_explicit_category_fields() {
+    // Register category_name field
+    register_rest_field('post', 'category_name', array(
+        'get_callback' => function($post) {
+            $categories = get_the_category($post['id']);
+            
+            // Filter out Uncategorized if there are other categories
+            if (count($categories) > 1) {
+                $categories = array_filter($categories, function($cat) {
+                    return $cat->slug !== 'uncategorized';
+                });
+                $categories = array_values($categories);
+            }
+            
+            if (empty($categories)) {
+                return 'Uncategorized';
+            }
+            
+            return $categories[0]->name;
+        },
+        'update_callback' => null,
+        'schema' => array(
+            'description' => 'Primary category name',
+            'type' => 'string',
+            'context' => array('view', 'edit', 'embed')
+        )
+    ));
+    
+    // Register category_slug field
+    register_rest_field('post', 'category_slug', array(
+        'get_callback' => function($post) {
+            $categories = get_the_category($post['id']);
+            
+            // Filter out Uncategorized if there are other categories
+            if (count($categories) > 1) {
+                $categories = array_filter($categories, function($cat) {
+                    return $cat->slug !== 'uncategorized';
+                });
+                $categories = array_values($categories);
+            }
+            
+            if (empty($categories)) {
+                return 'uncategorized';
+            }
+            
+            return $categories[0]->slug;
+        },
+        'update_callback' => null,
+        'schema' => array(
+            'description' => 'Primary category slug',
+            'type' => 'string',
+            'context' => array('view', 'edit', 'embed')
+        )
+    ));
+    
+    // Register all_categories array
+    register_rest_field('post', 'all_categories', array(
+        'get_callback' => function($post) {
+            $categories = get_the_category($post['id']);
+            
+            // Filter out Uncategorized if there are other categories
+            if (count($categories) > 1) {
+                $categories = array_filter($categories, function($cat) {
+                    return $cat->slug !== 'uncategorized';
+                });
+                $categories = array_values($categories);
+            }
+            
+            $result = array();
+            foreach ($categories as $cat) {
+                $result[] = array(
+                    'id' => $cat->term_id,
+                    'name' => $cat->name,
+                    'slug' => $cat->slug,
+                    'link' => get_category_link($cat->term_id)
+                );
+            }
+            
+            return $result;
+        },
+        'update_callback' => null,
+        'schema' => array(
+            'description' => 'All categories for this post',
+            'type' => 'array',
+            'context' => array('view', 'edit', 'embed')
+        )
+    ));
+}
+
+// ============================================================================
+// FIX 4: Remove Uncategorized from posts with other categories
+// ============================================================================
+
+add_action('save_post', 'auto_remove_uncategorized_if_has_others', 1000, 3);
+function auto_remove_uncategorized_if_has_others($post_id, $post, $update) {
+    if (wp_is_post_revision($post_id)) return;
+    if ($post->post_type !== 'post') return;
+    if ($post->post_status !== 'publish') return;
+    
+    $categories = wp_get_post_categories($post_id);
+    
+    // If post has multiple categories including Uncategorized (ID: 1), remove it
+    if (count($categories) > 1 && in_array(1, $categories)) {
+        error_log("🧹 Auto-removing Uncategorized from post {$post_id} (has other categories)");
+        
+        $categories = array_diff($categories, array(1));
+        
+        remove_action('save_post', 'auto_remove_uncategorized_if_has_others', 1000, 3);
+        wp_set_post_categories($post_id, $categories, false);
+        add_action('save_post', 'auto_remove_uncategorized_if_has_others', 1000, 3);
+        
+        // Clear caches
+        clear_all_caches();
+    }
+}
+
+// ============================================================================
+// FIX 5: Clear REST API cache when categories change
+// ============================================================================
+
+add_action('set_object_terms', 'clear_rest_cache_on_category_change', 10, 6);
+function clear_rest_cache_on_category_change($object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids) {
+    if ($taxonomy === 'category') {
+        // Clear all caches
+        clear_all_caches();
+        
+        // Clear REST API transients
+        delete_transient('rest_api_post_' . $object_id);
+        
+        error_log("🧹 Cleared REST cache for post {$object_id} after category change");
+    }
+}
+
+// ============================================================================
+// FIX 6: Add no-cache headers to REST API for debugging
+// ============================================================================
+
+add_filter('rest_post_dispatch', 'add_no_cache_headers_to_rest', 10, 3);
+function add_no_cache_headers_to_rest($result, $server, $request) {
+    // Add headers to prevent caching during debugging
+    $result->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    $result->header('Pragma', 'no-cache');
+    $result->header('Expires', '0');
+    
+    return $result;
+}
+
+// ============================================================================
+// FIX 7: Debug endpoint to verify what's being returned
+// ============================================================================
+
+add_action('rest_api_init', 'register_category_debug_endpoint');
+function register_category_debug_endpoint() {
+    register_rest_route('wp/v2', '/debug/categories/(?P<id>\d+)', array(
+        'methods' => 'GET',
+        'callback' => 'debug_post_categories_endpoint',
+        'permission_callback' => '__return_true',
+        'args' => array(
+            'id' => array(
+                'validate_callback' => function($param) {
+                    return is_numeric($param);
+                }
+            ),
+        ),
+    ));
+}
+
+function debug_post_categories_endpoint($data) {
+    $post_id = $data['id'];
+    $post = get_post($post_id);
+    
+    if (!$post) {
+        return new WP_Error('not_found', 'Post not found', array('status' => 404));
+    }
+    
+    $categories = get_the_category($post_id);
+    $category_ids = wp_get_post_categories($post_id);
+    
+    return array(
+        'post_id' => $post_id,
+        'post_title' => $post->post_title,
+        'post_status' => $post->post_status,
+        'category_ids' => $category_ids,
+        'categories_raw' => array_map(function($cat) {
+            return array(
+                'id' => $cat->term_id,
+                'name' => $cat->name,
+                'slug' => $cat->slug,
+                'count' => $cat->count
+            );
+        }, $categories),
+        'category_count' => count($categories),
+        'has_uncategorized' => in_array(1, $category_ids),
+        'auto_categorized' => get_post_meta($post_id, '_auto_categorized', true),
+        'categorization_mode' => get_post_meta($post_id, '_auto_categorization_mode', true),
+        'detected_categories' => get_post_meta($post_id, '_detected_categories', true)
+    );
+}
+
+// ============================================================================
+// INITIALIZATION: Run once to clean up existing posts
+// ============================================================================
+
+add_action('admin_init', 'maybe_run_category_cleanup', 1);
+function maybe_run_category_cleanup() {
+    // Only run once
+    $cleanup_done = get_option('rest_api_category_cleanup_done', false);
+    
+    if (!$cleanup_done && current_user_can('manage_options')) {
+        // Remove Uncategorized from all posts that have other categories
+        $posts = get_posts(array(
+            'post_type' => 'post',
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+            'fields' => 'ids'
+        ));
+        
+        $cleaned = 0;
+        foreach ($posts as $post_id) {
+            $cats = wp_get_post_categories($post_id);
+            if (count($cats) > 1 && in_array(1, $cats)) {
+                $cats = array_diff($cats, array(1));
+                wp_set_post_categories($post_id, $cats, false);
+                $cleaned++;
+            }
+        }
+        
+        if ($cleaned > 0) {
+            error_log("🧹 Initial cleanup: Removed Uncategorized from {$cleaned} posts");
+            clear_all_caches();
+        }
+        
+        update_option('rest_api_category_cleanup_done', true);
+    }
+}
 ?>
