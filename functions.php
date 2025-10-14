@@ -1631,7 +1631,7 @@ function add_lazy_loading_to_images($content) {
     return $content;
 }
 
-// ✅ CRITICAL: Reduce REST API payload size
+// ✅ CRITICAl: Reduce REST API payload size
 add_action('rest_api_init', 'register_minimal_rest_fields');
 function register_minimal_rest_fields() {
     // Register a custom field for optimized image URLs
