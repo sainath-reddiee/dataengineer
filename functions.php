@@ -1,10 +1,9 @@
 <?php
-// COMPLETE ENHANCED functions.php for DataEngineer Hub
-// Fixed keyword prioritization and scoring system
+// COMPLETE FINAL functions.php for DataEngineer Hub
+// All functionality preserved with categorization fixes
 
-// Enable CORS for frontend applications - CORRECTED VERSION
+// Enable CORS for frontend applications
 function handle_cors_requests() {
-    // Standard allowed origins for your development and main site
     $allowed_origins = [
         'https://dataengineerhub.blog',
         'https://app.dataengineerhub.blog',
@@ -14,16 +13,12 @@ function handle_cors_requests() {
 
     $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
 
-    // **THE FIX: Unconditionally allow all GET requests from any origin.**
-    // This is safe for public content and allows Googlebot/other crawlers to access your API.
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         header("Access-Control-Allow-Origin: *");
     } 
-    // For other methods like POST, keep your specific origin check for security.
     elseif (in_array($origin, $allowed_origins)) {
         header("Access-Control-Allow-Origin: " . $origin);
     }
-    // Handle development environments like StackBlitz, etc.
     elseif (
         strpos($origin, 'localhost') !== false ||
         strpos($origin, 'bolt.new') !== false ||
@@ -38,40 +33,33 @@ function handle_cors_requests() {
     header("Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce, Cache-Control, Pragma");
     header("Access-Control-Allow-Credentials: true");
     
-    // Handle preflight OPTIONS request and exit
     if ('OPTIONS' == $_SERVER['REQUEST_METHOD']) {
         status_header(200);
         exit();
     }
 }
 
-// Use a higher priority and remove any old hooks to be safe
 remove_action('init', 'handle_cors_requests');
 add_action('init', 'handle_cors_requests', 9);
+
 // =================================================================
 // CACHE MANAGEMENT SYSTEM
 // =================================================================
 
-// Function to clear WordPress object cache and external caches
 function clear_all_caches() {
-    // Clear WordPress object cache
     if (function_exists('wp_cache_flush')) {
         wp_cache_flush();
     }
     
-    // Clear any transients related to posts and categories
     delete_transient('category_counts');
     delete_transient('recent_posts');
     
-    // Clear database query cache
     global $wpdb;
     $wpdb->flush();
     
-    // Log cache clearing
     error_log("🧹 CACHE: All caches cleared");
 }
 
-// Hook to clear cache when posts are saved/updated
 add_action('save_post', 'clear_cache_on_post_save', 999);
 function clear_cache_on_post_save($post_id) {
     if (wp_is_post_revision($post_id)) return;
@@ -79,7 +67,6 @@ function clear_cache_on_post_save($post_id) {
     error_log("🧹 CACHE: Cleared cache after post save: $post_id");
 }
 
-// Hook to clear cache when categories are updated
 add_action('edited_category', 'clear_cache_on_category_update', 999);
 add_action('create_category', 'clear_cache_on_category_update', 999);
 function clear_cache_on_category_update($term_id) {
@@ -88,21 +75,17 @@ function clear_cache_on_category_update($term_id) {
 }
 
 // =================================================================
-// ENHANCED AUTO CATEGORY ASSIGNMENT SYSTEM WITH MANUAL CONTROL
+// ENHANCED AUTO CATEGORY ASSIGNMENT SYSTEM
 // =================================================================
 
-// Helper function to find or create category
 function get_or_create_category($category_name, $category_slug) {
-    // Try to find existing category by slug
     $category = get_term_by('slug', $category_slug, 'category');
     
     if (!$category) {
-        // Try to find by name
         $category = get_term_by('name', $category_name, 'category');
     }
     
     if (!$category) {
-        // Create the category if it doesn't exist
         $result = wp_insert_term($category_name, 'category', array(
             'slug' => $category_slug,
             'description' => $category_name . ' related content'
@@ -120,7 +103,7 @@ function get_or_create_category($category_name, $category_slug) {
     return $category;
 }
 
-// Add manual category control meta box
+add_action('add_meta_boxes', 'add_category_control_meta_box');
 function add_category_control_meta_box() {
     add_meta_box(
         'manual-category-control',
@@ -131,12 +114,10 @@ function add_category_control_meta_box() {
         'high'
     );
 }
-add_action('add_meta_boxes', 'add_category_control_meta_box');
 
 function category_control_meta_box_callback($post) {
     wp_nonce_field('category_control_meta_box', 'category_control_nonce');
     
-    // Get current settings
     $auto_categorization = get_post_meta($post->ID, '_auto_categorization_mode', true) ?: 'auto';
     $primary_category = get_post_meta($post->ID, '_primary_category', true);
     $excluded_categories = get_post_meta($post->ID, '_excluded_categories', true) ?: array();
@@ -197,7 +178,7 @@ function category_control_meta_box_callback($post) {
     <?php
 }
 
-// Save category control settings
+add_action('save_post', 'save_category_control_settings', 5);
 function save_category_control_settings($post_id) {
     if (!isset($_POST['category_control_nonce']) || !wp_verify_nonce($_POST['category_control_nonce'], 'category_control_meta_box')) {
         return;
@@ -206,7 +187,6 @@ function save_category_control_settings($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (!current_user_can('edit_post', $post_id)) return;
     
-    // Save settings
     $mode = sanitize_text_field($_POST['auto_categorization_mode'] ?? 'auto');
     $primary = sanitize_text_field($_POST['primary_category'] ?? '');
     $excluded = array_map('sanitize_text_field', $_POST['excluded_categories'] ?? array());
@@ -215,41 +195,29 @@ function save_category_control_settings($post_id) {
     update_post_meta($post_id, '_primary_category', $primary);
     update_post_meta($post_id, '_excluded_categories', $excluded);
 }
-add_action('save_post', 'save_category_control_settings', 5); // Run before auto-categorization
 
-// FIXED: Enhanced auto-categorization function with better keyword prioritization
 add_action('save_post', 'enhanced_auto_assign_categories_universal', 10, 2);
-
 function enhanced_auto_assign_categories_universal($post_id, $post) {
-    // Skip if this is an autosave or revision
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (wp_is_post_revision($post_id)) return;
-    
-    // Only process published posts
     if ($post->post_status !== 'publish') return;
-    
-    // Only process posts (not pages)
     if ($post->post_type !== 'post') return;
     
-    // Check if auto-categorization is disabled for this post
     $mode = get_post_meta($post_id, '_auto_categorization_mode', true) ?: 'auto';
     if ($mode === 'disabled') {
         error_log("🚫 Auto-categorization disabled for post: {$post->post_title}");
         return;
     }
     
-    // Avoid infinite loops
     if (get_transient('processing_auto_categories_' . $post_id)) {
         return;
     }
     set_transient('processing_auto_categories_' . $post_id, true, 30);
     
-    error_log("🤖 ENHANCED AUTO-CATEGORIZATION: Starting for post '{$post->post_title}' (ID: $post_id, Mode: $mode)");
+    error_log("🤖 AUTO-CATEGORIZATION: Starting for post '{$post->post_title}' (ID: $post_id, Mode: $mode)");
     
-    // Get excluded categories
     $excluded_categories = get_post_meta($post_id, '_excluded_categories', true) ?: array();
     
-    // Get content for analysis
     $title = strtolower($post->post_title);
     $content = strtolower(strip_tags($post->post_content));
     $excerpt = strtolower(strip_tags($post->post_excerpt));
@@ -257,12 +225,11 @@ function enhanced_auto_assign_categories_universal($post_id, $post) {
     
     error_log("🔍 Analyzing text: " . substr($combined_text, 0, 200) . "...");
     
-    // FIXED: IMPROVED CATEGORY MAPPING with priority-based keywords
     $category_mappings = array(
         array(
             'name' => 'Snowflake',
             'slug' => 'snowflake',
-            'primary_keywords' => array('snowflake'),  // High priority, unique keywords
+            'primary_keywords' => array('snowflake'),
             'secondary_keywords' => array('data warehouse', 'warehouse', 'snowpipe', 'snowsight', 'snowflake cloud')
         ),
         array(
@@ -306,14 +273,12 @@ function enhanced_auto_assign_categories_universal($post_id, $post) {
             'slug' => 'gcp',
             'primary_keywords' => array('gcp', 'google cloud'),
             'secondary_keywords' => array('bigquery', 'dataflow', 'dataproc', 'google cloud platform', 'cloud storage')
-         )
+        )
     );
     
     $detected_categories = array();
     
-    // IMPROVED scoring algorithm
     foreach ($category_mappings as $mapping) {
-        // Skip if category is excluded
         if (in_array($mapping['slug'], $excluded_categories)) {
             error_log("⭐ Skipping excluded category: {$mapping['name']}");
             continue;
@@ -324,18 +289,15 @@ function enhanced_auto_assign_categories_universal($post_id, $post) {
         $secondary_score = 0;
         $found_keywords = array();
         
-        // Check primary keywords (weighted heavily)
         foreach ($mapping['primary_keywords'] as $keyword) {
             $count = substr_count($combined_text, strtolower($keyword));
             if ($count > 0) {
-                // Primary keywords get 10x weight
-                $title_bonus = substr_count($title, strtolower($keyword)) * 5; // Extra title bonus
+                $title_bonus = substr_count($title, strtolower($keyword)) * 5;
                 $primary_score += ($count * 10) + $title_bonus;
                 $found_keywords[] = $keyword . "(primary:" . (($count * 10) + $title_bonus) . ")";
             }
         }
         
-        // Check secondary keywords (normal weight)
         foreach ($mapping['secondary_keywords'] as $keyword) {
             $count = substr_count($combined_text, strtolower($keyword));
             if ($count > 0) {
@@ -347,7 +309,6 @@ function enhanced_auto_assign_categories_universal($post_id, $post) {
         
         $total_score = $primary_score + $secondary_score;
         
-        // Only consider categories with primary keyword matches OR very high secondary scores
         if ($primary_score > 0 || $secondary_score >= 15) {
             error_log("🎯 Found keywords for {$mapping['name']}: " . implode(', ', $found_keywords) . " (primary: $primary_score, secondary: $secondary_score, total: $total_score)");
             
@@ -361,42 +322,33 @@ function enhanced_auto_assign_categories_universal($post_id, $post) {
         }
     }
     
-    // Sort by primary score first, then total score
     usort($detected_categories, function($a, $b) {
-        // First compare primary scores
         $primary_diff = $b['primary_score'] - $a['primary_score'];
         if ($primary_diff != 0) {
             return $primary_diff;
         }
-        
-        // If primary scores are equal, compare total scores
         return $b['score'] - $a['score'];
     });
     
     $categories_to_assign = array();
     $assigned_category_names = array();
     
-    // Apply categorization based on mode
     switch ($mode) {
         case 'manual':
-            // For manual mode, just log suggestions but don't auto-assign
             error_log("💡 MANUAL MODE - Detected categories: " . 
                      implode(', ', array_map(function($cat) {
                          return $cat['mapping']['name'] . " (total: {$cat['score']}, primary: {$cat['primary_score']})";
                      }, $detected_categories)));
             
-            // Store suggestions for admin interface
             update_post_meta($post_id, '_category_suggestions', $detected_categories);
             delete_transient('processing_auto_categories_' . $post_id);
             return;
             
         case 'primary':
-            // Get primary category override or use strongest match
             $primary_override = get_post_meta($post_id, '_primary_category', true);
             error_log("🔍 PRIMARY MODE: Override setting = '$primary_override'");
             
             if ($primary_override && $primary_override !== '') {
-                // Find the specific category
                 $found_override = false;
                 foreach ($detected_categories as $cat_data) {
                     if ($cat_data['mapping']['slug'] === $primary_override) {
@@ -411,7 +363,6 @@ function enhanced_auto_assign_categories_universal($post_id, $post) {
                     }
                 }
                 
-                // If override category wasn't detected, still create it
                 if (!$found_override) {
                     error_log("⚠️ PRIMARY OVERRIDE: Category '$primary_override' not detected in content, but forcing assignment");
                     $category = get_or_create_category(ucfirst($primary_override), $primary_override);
@@ -422,7 +373,6 @@ function enhanced_auto_assign_categories_universal($post_id, $post) {
                     }
                 }
             } else if (!empty($detected_categories)) {
-                // Use strongest match
                 $strongest = $detected_categories[0];
                 $category = get_or_create_category($strongest['mapping']['name'], $strongest['mapping']['slug']);
                 if ($category) {
@@ -435,8 +385,6 @@ function enhanced_auto_assign_categories_universal($post_id, $post) {
             
         case 'auto':
         default:
-            // Assign categories, but prioritize those with primary keyword matches
-            // Add debugging for auto mode
             error_log("🔄 AUTO MODE: Processing " . count($detected_categories) . " detected categories");
             
             foreach ($detected_categories as $cat_data) {
@@ -448,12 +396,10 @@ function enhanced_auto_assign_categories_universal($post_id, $post) {
                 }
             }
             
-            // SPECIAL FIX: If we're in auto mode but have categories to assign, only assign the top one if it has a clear primary keyword advantage
             if (count($detected_categories) > 1) {
                 $top_category = $detected_categories[0];
                 $second_category = $detected_categories[1];
                 
-                // If the top category has significantly higher primary score, only assign that one
                 if ($top_category['primary_score'] > 0 && $second_category['primary_score'] == 0) {
                     error_log("🎯 AUTO MODE OVERRIDE: Top category has primary keywords, others don't. Assigning only top category.");
                     $categories_to_assign = array();
@@ -481,43 +427,31 @@ function enhanced_auto_assign_categories_universal($post_id, $post) {
             break;
     }
     
-    // Assign categories if any were detected
     if (!empty($categories_to_assign)) {
-        // Remove hook to prevent infinite loop
         remove_action('save_post', 'enhanced_auto_assign_categories_universal', 10, 2);
         
-        // Clear existing categories and assign new ones
         $result = wp_set_post_categories($post_id, $categories_to_assign, false);
         
         if ($result !== false) {
             error_log("🎉 SUCCESS! Assigned categories in $mode mode: " . implode(', ', $assigned_category_names));
             
-            // Update meta
             update_post_meta($post_id, '_auto_categorized', '1');
             update_post_meta($post_id, '_detected_categories', json_encode($assigned_category_names));
             
-            // Update category counts
             wp_update_term_count_now($categories_to_assign, 'category');
-            
-            // Clear caches
             clear_all_caches();
-            
         } else {
             error_log("❌ Failed to assign categories");
         }
         
-        // Re-add hook
         add_action('save_post', 'enhanced_auto_assign_categories_universal', 10, 2);
-        
     } else {
         error_log("⚠️ No categories detected in $mode mode. Checking existing categories...");
         
-        // Get existing categories
         $existing_cats = wp_get_post_categories($post_id);
         if (empty($existing_cats) && $mode !== 'manual') {
             error_log("ℹ️ No existing categories, assigning to Uncategorized");
-            // Assign to uncategorized
-            $uncategorized = get_category(1); // ID 1 is usually uncategorized
+            $uncategorized = get_category(1);
             if ($uncategorized) {
                 remove_action('save_post', 'enhanced_auto_assign_categories_universal', 10, 2);
                 wp_set_post_categories($post_id, array($uncategorized->term_id), false);
@@ -528,11 +462,9 @@ function enhanced_auto_assign_categories_universal($post_id, $post) {
         }
     }
     
-    // Cleanup
     delete_transient('processing_auto_categories_' . $post_id);
 }
 
-// Force category count updates
 add_action('wp_insert_post', 'force_update_category_counts', 999);
 function force_update_category_counts($post_id) {
     if (wp_is_post_revision($post_id)) return;
@@ -544,9 +476,7 @@ function force_update_category_counts($post_id) {
     }
 }
 
-// Enhanced admin meta box to show detection results and manual suggestions
 add_action('add_meta_boxes', 'add_auto_category_detection_meta_box');
-
 function add_auto_category_detection_meta_box() {
     add_meta_box(
         'auto-category-detection',
@@ -565,13 +495,11 @@ function auto_category_detection_callback($post) {
     
     echo '<div style="padding: 10px;">';
     
-    // Show current mode
     $mode = get_post_meta($post->ID, '_auto_categorization_mode', true) ?: 'auto';
     echo '<div style="background: #e3f2fd; padding: 8px; border-radius: 4px; margin-bottom: 10px;">';
     echo '⚙️ <strong>Current Mode:</strong> ' . ucfirst($mode);
     echo '</div>';
     
-    // Show if already auto-categorized
     $auto_categorized = get_post_meta($post->ID, '_auto_categorized', true);
     $detected_categories = get_post_meta($post->ID, '_detected_categories', true);
     
@@ -588,7 +516,6 @@ function auto_category_detection_callback($post) {
         echo '</div>';
     }
     
-    // Show manual suggestions if in manual mode
     $suggestions = get_post_meta($post->ID, '_category_suggestions', true);
     if ($mode === 'manual' && !empty($suggestions)) {
         echo '<div style="background: #f0f8ff; padding: 10px; border-radius: 4px; margin: 10px 0;">';
@@ -609,7 +536,6 @@ function auto_category_detection_callback($post) {
         echo '</div>';
     }
     
-    // UPDATED Keyword detection preview with primary/secondary distinction
     $keyword_tests = array(
         'Snowflake' => array(
             'primary' => array('snowflake'),
@@ -642,7 +568,7 @@ function auto_category_detection_callback($post) {
         'GCP' => array(
             'primary' => array('gcp', 'google cloud'),
             'secondary' => array('bigquery', 'dataflow')
-		)
+        )
     );
     
     echo '<h4>Keyword Detection (Improved):</h4>';
@@ -654,7 +580,6 @@ function auto_category_detection_callback($post) {
         $primary_score = 0;
         $secondary_score = 0;
         
-        // Check primary keywords
         foreach ($keyword_groups['primary'] as $keyword) {
             $count = substr_count($combined_text, $keyword);
             if ($count > 0) {
@@ -663,7 +588,6 @@ function auto_category_detection_callback($post) {
             }
         }
         
-        // Check secondary keywords
         foreach ($keyword_groups['secondary'] as $keyword) {
             $count = substr_count($combined_text, $keyword);
             if ($count > 0) {
@@ -676,7 +600,7 @@ function auto_category_detection_callback($post) {
         
         if ($total_score > 0) {
             $any_detected = true;
-            $bg_color = $primary_score > 0 ? '#d4edda' : '#fff3cd'; // Green if primary, yellow if only secondary
+            $bg_color = $primary_score > 0 ? '#d4edda' : '#fff3cd';
             echo "<div style='background: $bg_color; padding: 5px; margin: 2px 0; border-radius: 3px;'>";
             echo "✅ <strong>$category</strong> (total: $total_score";
             if ($primary_score > 0) echo ", primary: $primary_score";
@@ -703,7 +627,6 @@ function auto_category_detection_callback($post) {
         echo '</div>';
     }
     
-    // Manual test button
     if ($post->ID) {
         echo '<hr style="margin: 10px 0;">';
         echo '<button type="button" onclick="testAutoCategories(' . $post->ID . ')" class="button button-primary" style="width: 100%;">🔄 Test Categorization</button>';
@@ -771,9 +694,8 @@ function auto_category_detection_callback($post) {
     echo '</div>';
 }
 
-// AJAX handler for manual categorization
+// AJAX handlers
 add_action('wp_ajax_manual_categorization', 'handle_manual_categorization');
-
 function handle_manual_categorization() {
     $post_id = intval($_POST['post_id']);
     $nonce = $_POST['nonce'];
@@ -794,17 +716,13 @@ function handle_manual_categorization() {
         return;
     }
     
-    // Clear any locks
     delete_transient('processing_auto_categories_' . $post_id);
     
-    // Trigger categorization
     enhanced_auto_assign_categories_universal($post_id, $post);
     
-    // Get results
     $categories = get_the_category($post_id);
     $category_names = array_map(function($cat) { return $cat->name; }, $categories);
     
-    // Clear all caches after manual categorization
     clear_all_caches();
     
     wp_send_json_success(array(
@@ -814,7 +732,6 @@ function handle_manual_categorization() {
     ));
 }
 
-// AJAX handler for single category assignment (for manual mode)
 add_action('wp_ajax_assign_single_category', 'handle_assign_single_category');
 function handle_assign_single_category() {
     $post_id = intval($_POST['post_id']);
@@ -831,17 +748,14 @@ function handle_assign_single_category() {
         return;
     }
     
-    // Find category by slug
     $category = get_term_by('slug', $category_slug, 'category');
     if (!$category) {
         wp_send_json_error('Category not found');
         return;
     }
     
-    // Assign only this category
     wp_set_post_categories($post_id, array($category->term_id), false);
     
-    // Update meta
     update_post_meta($post_id, '_auto_categorized', '1');
     update_post_meta($post_id, '_auto_categorization_mode', 'manual');
     delete_post_meta($post_id, '_category_suggestions');
@@ -852,9 +766,7 @@ function handle_assign_single_category() {
     wp_send_json_success("Assigned category: {$category->name}");
 }
 
-// AJAX handler for cache clearing
 add_action('wp_ajax_clear_all_caches', 'handle_clear_all_caches');
-
 function handle_clear_all_caches() {
     $nonce = $_POST['nonce'];
     
@@ -879,7 +791,7 @@ function handle_clear_all_caches() {
 // CUSTOM META FIELDS FOR POSTS
 // =================================================================
 
-// Add custom meta fields for featured and trending posts
+add_action('add_meta_boxes', 'add_custom_meta_fields');
 function add_custom_meta_fields() {
     add_meta_box(
         'post-meta-fields',
@@ -889,7 +801,6 @@ function add_custom_meta_fields() {
         'side'
     );
 }
-add_action('add_meta_boxes', 'add_custom_meta_fields');
 
 function show_custom_meta_fields($post) {
     wp_nonce_field(basename(__FILE__), 'post_meta_nonce');
@@ -910,6 +821,7 @@ function show_custom_meta_fields($post) {
     echo '</p>';
 }
 
+add_action('save_post', 'save_custom_meta_fields');
 function save_custom_meta_fields($post_id) {
     if (!isset($_POST['post_meta_nonce']) || !wp_verify_nonce($_POST['post_meta_nonce'], basename(__FILE__))) {
         return;
@@ -929,13 +841,12 @@ function save_custom_meta_fields($post_id) {
     update_post_meta($post_id, 'featured', $featured);
     update_post_meta($post_id, 'trending', $trending);
 }
-add_action('save_post', 'save_custom_meta_fields');
 
 // =================================================================
 // REST API ENHANCEMENTS
 // =================================================================
 
-// Add fields to REST API
+add_action('rest_api_init', 'add_custom_fields_to_rest_api');
 function add_custom_fields_to_rest_api() {
     register_rest_field('post', 'featured', array(
         'get_callback' => function($post) {
@@ -957,7 +868,6 @@ function add_custom_fields_to_rest_api() {
         }
     ));
     
-    // Add excerpt to REST API response
     register_rest_field('post', 'excerpt_plain', array(
         'get_callback' => function($post) {
             $excerpt = get_the_excerpt($post['id']);
@@ -965,7 +875,6 @@ function add_custom_fields_to_rest_api() {
         }
     ));
     
-    // Add featured image URL to REST API response
     register_rest_field('post', 'featured_image_url', array(
         'get_callback' => function($post) {
             $image_id = get_post_thumbnail_id($post['id']);
@@ -976,9 +885,9 @@ function add_custom_fields_to_rest_api() {
         }
     ));
 }
-add_action('rest_api_init', 'add_custom_fields_to_rest_api');
 
 // Newsletter subscription endpoint
+add_action('rest_api_init', 'register_newsletter_endpoint');
 function register_newsletter_endpoint() {
     register_rest_route('wp/v2', '/newsletter/subscribe', array(
         'methods' => 'POST',
@@ -994,7 +903,6 @@ function register_newsletter_endpoint() {
         )
     ));
 }
-add_action('rest_api_init', 'register_newsletter_endpoint');
 
 function handle_newsletter_subscription($request) {
     $email = sanitize_email($request->get_param('email'));
@@ -1003,11 +911,9 @@ function handle_newsletter_subscription($request) {
         return new WP_Error('invalid_email', 'Invalid email address', array('status' => 400));
     }
     
-    // Save to database
     global $wpdb;
     $table_name = $wpdb->prefix . 'newsletter_subscribers';
     
-    // Create table if needed
     $charset_collate = $wpdb->get_charset_collate();
     $sql = "CREATE TABLE IF NOT EXISTS $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -1034,7 +940,6 @@ function handle_newsletter_subscription($request) {
         return new WP_Error('subscription_failed', 'Failed to subscribe', array('status' => 500));
     }
     
-    // Send welcome email
     $subject = 'Welcome to DataEngineer Hub Newsletter!';
     $message = 'Thank you for subscribing to our newsletter. You will receive weekly insights and updates about data engineering.';
     wp_mail($email, $subject, $message);
@@ -1046,6 +951,7 @@ function handle_newsletter_subscription($request) {
 }
 
 // Contact form endpoint
+add_action('rest_api_init', 'register_contact_endpoint');
 function register_contact_endpoint() {
     register_rest_route('wp/v2', '/contact/submit', array(
         'methods' => 'POST',
@@ -1058,7 +964,6 @@ function register_contact_endpoint() {
         )
     ));
 }
-add_action('rest_api_init', 'register_contact_endpoint');
 
 function handle_contact_submission($request) {
     $name = sanitize_text_field($request->get_param('name'));
@@ -1069,7 +974,6 @@ function handle_contact_submission($request) {
         return new WP_Error('invalid_email', 'Invalid email address', array('status' => 400));
     }
     
-    // Send email to admin
     $admin_email = get_option('admin_email');
     $subject = 'New Contact Form Submission from ' . $name;
     $email_message = "Name: $name\nEmail: $email\n\nMessage:\n$message";
@@ -1083,7 +987,6 @@ function handle_contact_submission($request) {
         return new WP_Error('email_failed', 'Failed to send message', array('status' => 500));
     }
     
-    // Send confirmation to user
     $user_subject = 'Thank you for contacting DataEngineer Hub';
     $user_message = "Hi $name,\n\nThank you for your message. We'll get back to you shortly.\n\nBest regards,\nDataEngineer Hub Team";
     wp_mail($email, $user_subject, $user_message);
@@ -1098,10 +1001,8 @@ function handle_contact_submission($request) {
 // THEME SUPPORT & CUSTOMIZATIONS
 // =================================================================
 
-// Theme support
 add_theme_support('post-thumbnails');
 
-// Excerpt settings
 function custom_excerpt_length($length) {
     return 30;
 }
@@ -1113,6 +1014,7 @@ function custom_excerpt_more($more) {
 add_filter('excerpt_more', 'custom_excerpt_more');
 
 // Category colors
+add_action('category_edit_form_fields', 'add_category_color_field');
 function add_category_color_field($term) {
     ?>
     <tr class="form-field">
@@ -1126,16 +1028,15 @@ function add_category_color_field($term) {
     </tr>
     <?php
 }
-add_action('category_edit_form_fields', 'add_category_color_field');
 
+add_action('edited_category', 'save_category_color_field');
 function save_category_color_field($term_id) {
     if (isset($_POST['category_color'])) {
         update_term_meta($term_id, 'category_color', sanitize_hex_color($_POST['category_color']));
     }
 }
-add_action('edited_category', 'save_category_color_field');
 
-// Add category color to REST API
+add_action('rest_api_init', 'add_category_color_to_rest_api');
 function add_category_color_to_rest_api() {
     register_rest_field('category', 'color', array(
         'get_callback' => function($term) {
@@ -1143,45 +1044,22 @@ function add_category_color_to_rest_api() {
         }
     ));
 }
-add_action('rest_api_init', 'add_category_color_to_rest_api');
 
-// Ensure proper JSON response
+add_filter('rest_pre_serve_request', 'ensure_json_response', 10, 3);
 function ensure_json_response($response, $server, $request) {
     if (strpos($request->get_route(), '/wp/v2/') !== false) {
         header('Content-Type: application/json; charset=utf-8');
     }
     return $response;
 }
-add_filter('rest_pre_serve_request', 'ensure_json_response', 10, 3);
 
-// Add cache-busting headers for REST API responses
-function add_cache_busting_headers($response, $server, $request) {
-    if (strpos($request->get_route(), '/wp/v2/') !== false) {
-        $response->header('Cache-Control', 'no-cache, must-revalidate, max-age=0');
-        $response->header('Pragma', 'no-cache');
-        $response->header('Expires', 'Thu, 01 Jan 1970 00:00:00 GMT');
-    }
-    return $response;
-}
-add_filter('rest_post_dispatch', 'add_cache_busting_headers', 10, 3);
-
-// Add admin notice
-add_action('admin_notices', function() {
-    $screen = get_current_screen();
-    if ($screen && in_array($screen->id, array('post', 'edit-post'))) {
-        echo '<div class="notice notice-info is-dismissible">';
-        echo '<p><strong>Enhanced Auto-Categorization Active:</strong> You now have full control over categorization modes (Auto/Primary/Manual/Disabled) for each post. Use the "Category Control" meta box to customize behavior.</p>';
-        echo '</div>';
-    }
-});
+add_filter('rest_post_query', 'add_custom_meta_query_to_rest', 10, 2);
 function add_custom_meta_query_to_rest($args, $request) {
-    // Check if the 'is_featured' parameter is set in the request
     if (!empty($request['is_featured'])) {
         $args['meta_key'] = 'featured';
         $args['meta_value'] = '1';
     }
 
-    // Check if the 'is_trending' parameter is set in the request
     if (!empty($request['is_trending'])) {
         $args['meta_key'] = 'trending';
         $args['meta_value'] = '1';
@@ -1189,11 +1067,8 @@ function add_custom_meta_query_to_rest($args, $request) {
 
     return $args;
 }
-add_filter('rest_post_query', 'add_custom_meta_query_to_rest', 10, 2);
 
-/**
- * Register the 'is_featured' and 'is_trending' parameters so the API knows they are valid.
- */
+add_action('rest_api_init', 'add_custom_query_params_to_rest');
 function add_custom_query_params_to_rest() {
     register_rest_field('post', 'is_featured', array(
         'get_callback'    => null,
@@ -1212,42 +1087,29 @@ function add_custom_query_params_to_rest() {
         ),
     ));
 }
-add_action('rest_api_init', 'add_custom_query_params_to_rest');
 
-/**
- * Triggers a GitHub Actions workflow when a post is published or updated.
- * This is the corrected and improved version with a debounce mechanism.
- */
+// GitHub Actions trigger
+add_action('save_post', 'trigger_github_action_on_publish', 99, 2);
 function trigger_github_action_on_publish($ID, $post) {
-    // Exit if this is an autosave, a revision, not a 'post', or not being published.
     if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || wp_is_post_revision($ID) || $post->post_type !== 'post' || $post->post_status !== 'publish') {
         return;
     }
 
-    // --- FIX: Start of the debounce logic ---
-    // Check if a transient (temporary lock) exists for this post ID.
     $transient_key = 'github_action_triggered_' . $ID;
     if (get_transient($transient_key)) {
-        // If the transient exists, it means we've already fired the action recently.
         error_log('GitHub Action trigger for post ' . $ID . ' skipped: Debounce lock is active.');
-        return; // Stop execution to prevent a duplicate run.
+        return;
     }
-    // --- FIX: End of the debounce logic ---
 
-
-    // Get the Personal Access Token from wp-config.php
     if (!defined('GITHUB_PAT')) {
         error_log('GitHub PAT is not defined in wp-config.php for workflow trigger.');
         return;
     }
     
-    // --- FIX: Set the transient lock ---
-    // This will block any subsequent triggers for this post for the next 2 minutes.
     set_transient($transient_key, true, 2 * MINUTE_IN_SECONDS);
-    // --- FIX: End of setting the lock ---
 
     $token = GITHUB_PAT;
-    $repo = 'sainath-reddiee/dataengineer'; // Your GitHub username/repository
+    $repo = 'sainath-reddiee/dataengineer';
     $url = "https://api.github.com/repos/{$repo}/dispatches";
 
     $body = wp_json_encode([
@@ -1279,18 +1141,15 @@ function trigger_github_action_on_publish($ID, $post) {
     }
 }
 
-// Ensure the action hook is correct
-remove_action('save_post', 'trigger_github_action_on_publish', 99, 2);
-add_action('save_post', 'trigger_github_action_on_publish', 99, 2);
-// Add X-Robots-Tag to block indexing on the WordPress backend
+add_action('template_redirect', 'add_noindex_header');
 function add_noindex_header() {
-    // Only apply this header if the site being accessed is the WordPress backend
     if (strpos($_SERVER['HTTP_HOST'], 'app.dataengineerhub.blog') !== false) {
         header('X-Robots-Tag: noindex, nofollow', true);
     }
 }
-add_action('template_redirect', 'add_noindex_header');
 
+// Related posts endpoint
+add_action('rest_api_init', 'register_related_posts_endpoint');
 function register_related_posts_endpoint() {
     register_rest_route('wp/v2', '/posts/(?P<id>\d+)/related', array(
         'methods' => 'GET',
@@ -1305,9 +1164,8 @@ function register_related_posts_endpoint() {
         ),
     ));
 }
-add_action('rest_api_init', 'register_related_posts_endpoint');
 
-// Add tags to REST API
+add_action('rest_api_init', 'add_tags_to_rest_api');
 function add_tags_to_rest_api() {
     register_rest_field('post', 'post_tags', array(
         'get_callback' => function($post) {
@@ -1327,7 +1185,6 @@ function add_tags_to_rest_api() {
         }
     ));
 }
-add_action('rest_api_init', 'add_tags_to_rest_api');
 
 function get_related_posts_by_id($data) {
     $post_id = $data['id'];
@@ -1344,7 +1201,7 @@ function get_related_posts_by_id($data) {
         'post__not_in' => array($post_id),
         'posts_per_page' => 3,
         'ignore_sticky_posts' => 1,
-        'orderby' => 'rand', // Use 'rand' for variety or 'date' for newest
+        'orderby' => 'rand',
     );
 
     if (!empty($tags)) {
@@ -1356,8 +1213,7 @@ function get_related_posts_by_id($data) {
     $related_query = new WP_Query($args);
 
     if (!$related_query->have_posts() && !empty($cats)) {
-        // Fallback to category if no posts found by tags
-        $args['tag__in'] = null; // Unset tags
+        $args['tag__in'] = null;
         $args['category__in'] = $cats;
         $related_query = new WP_Query($args);
     }
@@ -1375,19 +1231,18 @@ function get_related_posts_by_id($data) {
         $categories = get_the_category($related_post_id);
         $primary_category = !empty($categories) ? $categories[0]->name : 'Uncategorized';
         
-        // Manually build a response that mimics the structure your frontend needs
         $post_data = array(
             'id' => $related_post_id,
             'slug' => get_post_field('post_name', $related_post_id),
             'title' => array('rendered' => get_the_title()),
             'excerpt' => array('rendered' => get_the_excerpt()),
-            'date' => get_the_date('c'), // ISO 8601 format
+            'date' => get_the_date('c'),
             '_embedded' => array(
                 'wp:featuredmedia' => array(
                     array('source_url' => $image_url)
                 ),
                 'wp:term' => array(
-                    array( // This nested array matches the structure for categories
+                    array(
                         array('name' => $primary_category)
                     )
                 ),
@@ -1402,21 +1257,21 @@ function get_related_posts_by_id($data) {
 
     return new WP_REST_Response($related_posts, 200);
 }
-// ✅ CRITICAL: Reduce REST API response size by limiting fields
+
+// =================================================================
+// PERFORMANCE OPTIMIZATIONS
+// =================================================================
+
 add_filter('rest_prepare_post', 'optimize_rest_post_response', 10, 3);
 function optimize_rest_post_response($response, $post, $request) {
-    // Check if this is a single post request (by slug)
     $params = $request->get_params();
     
-    // Only return minimal fields for list requests
     if (!isset($params['slug']) || empty($params['slug'])) {
         return $response;
     }
     
-    // For single post requests, ensure we have all needed data
     $data = $response->get_data();
     
-    // Add featured_image_url to response if not present
     if (!isset($data['featured_image_url'])) {
         $featured_image_id = get_post_thumbnail_id($post->ID);
         if ($featured_image_id) {
@@ -1429,25 +1284,20 @@ function optimize_rest_post_response($response, $post, $request) {
     return $response;
 }
 
-// ✅ Enable HTTP/2 Server Push for critical assets
 add_action('template_redirect', 'enable_http2_server_push');
 function enable_http2_server_push() {
     if (is_singular('post')) {
-        // Push critical CSS and JS
         header('Link: </wp-content/themes/your-theme/style.css>; rel=preload; as=style', false);
     }
 }
 
-// ✅ CRITICAL: Optimize image delivery
 add_filter('wp_get_attachment_image_src', 'optimize_image_src', 10, 4);
 function optimize_image_src($image, $attachment_id, $size, $icon) {
     if (!$image) return $image;
     
-    // Add width and quality parameters for better compression
     if (is_array($image) && isset($image[0])) {
         $url = $image[0];
         
-        // Add optimization parameters if not already present
         if (strpos($url, '?') === false) {
             $image[0] = $url . '?w=' . $image[1] . '&quality=85';
         }
@@ -1456,12 +1306,10 @@ function optimize_image_src($image, $attachment_id, $size, $icon) {
     return $image;
 }
 
-// ✅ Add cache headers for REST API responses
 add_filter('rest_post_dispatch', 'add_rest_cache_headers', 10, 3);
 function add_rest_cache_headers($result, $server, $request) {
     $route = $request->get_route();
     
-    // Cache single post responses for 5 minutes
     if (strpos($route, '/wp/v2/posts') !== false) {
         $result->header('Cache-Control', 'public, max-age=300, s-maxage=600');
         $result->header('Vary', 'Accept-Encoding');
@@ -1470,7 +1318,6 @@ function add_rest_cache_headers($result, $server, $request) {
     return $result;
 }
 
-// ✅ Preload featured images for faster loading
 add_action('wp_head', 'preload_featured_image', 1);
 function preload_featured_image() {
     if (is_singular('post')) {
@@ -1486,14 +1333,11 @@ function preload_featured_image() {
     }
 }
 
-// ✅ Optimize REST API queries
 add_filter('rest_post_query', 'optimize_rest_post_query', 10, 2);
 function optimize_rest_post_query($args, $request) {
-    // Reduce memory usage by limiting meta queries
     $args['update_post_meta_cache'] = false;
-    $args['update_post_term_cache'] = false;
+    $args['update_post_term_cache'] = true;
     
-    // Only load term cache if needed
     $params = $request->get_params();
     if (isset($params['slug']) && !empty($params['slug'])) {
         $args['update_post_term_cache'] = true;
@@ -1502,10 +1346,8 @@ function optimize_rest_post_query($args, $request) {
     return $args;
 }
 
-// ✅ Defer non-critical scripts
 add_filter('script_loader_tag', 'defer_non_critical_scripts', 10, 3);
 function defer_non_critical_scripts($tag, $handle, $src) {
-    // List of scripts to defer
     $defer_scripts = array(
         'wp-embed',
         'comment-reply'
@@ -1518,21 +1360,17 @@ function defer_non_critical_scripts($tag, $handle, $src) {
     return $tag;
 }
 
-// ✅ CRITICAL: Limit REST API response fields
 add_filter('rest_prepare_post', 'limit_rest_api_fields', 10, 3);
 function limit_rest_api_fields($response, $post, $request) {
     $params = $request->get_params();
     
-    // If _fields parameter is set, WordPress handles it automatically
     if (isset($params['_fields'])) {
         return $response;
     }
     
-    // For list requests (no slug), return minimal data
     if (!isset($params['slug']) || empty($params['slug'])) {
         $data = $response->get_data();
         
-        // Keep only essential fields for list view
         $minimal_data = array(
             'id' => $data['id'],
             'slug' => $data['slug'],
@@ -1552,7 +1390,6 @@ function limit_rest_api_fields($response, $post, $request) {
     return $response;
 }
 
-// ✅ Enable output buffering for better compression
 add_action('init', 'enable_output_buffering');
 function enable_output_buffering() {
     if (!is_admin() && !defined('DOING_AJAX')) {
@@ -1560,10 +1397,8 @@ function enable_output_buffering() {
     }
 }
 
-// ✅ Remove unnecessary REST API endpoints to reduce overhead
 add_filter('rest_endpoints', 'disable_unused_rest_endpoints');
 function disable_unused_rest_endpoints($endpoints) {
-    // Remove endpoints you don't use
     $unused_endpoints = array(
         '/wp/v2/users',
         '/wp/v2/comments',
@@ -1583,22 +1418,18 @@ function disable_unused_rest_endpoints($endpoints) {
     return $endpoints;
 }
 
-// ✅ Optimize database queries for REST API
 add_action('pre_get_posts', 'optimize_rest_api_queries');
 function optimize_rest_api_queries($query) {
-    // Only optimize REST API requests
     if (!defined('REST_REQUEST') || !REST_REQUEST) {
         return;
     }
     
-    // Don't load unnecessary meta data
-    $query->set('no_found_rows', false); // We need pagination
+    $query->set('no_found_rows', false);
     $query->set('cache_results', true);
     $query->set('update_post_term_cache', true);
-    $query->set('update_post_meta_cache', false); // Skip meta cache for list views
+    $query->set('update_post_meta_cache', false);
 }
 
-// ✅ Add Expires headers for static assets
 add_action('send_headers', 'add_expires_headers');
 function add_expires_headers() {
     if (!is_admin()) {
@@ -1606,10 +1437,8 @@ function add_expires_headers() {
     }
 }
 
-// ✅ CRITICAL: Optimize REST API response time
 add_filter('rest_pre_serve_request', 'optimize_rest_response', 10, 4);
 function optimize_rest_response($served, $result, $request, $server) {
-    // Add timing header for debugging
     if (defined('WP_DEBUG') && WP_DEBUG) {
         $time = timer_stop(0, 3);
         header('X-Response-Time: ' . $time . 's');
@@ -1618,23 +1447,19 @@ function optimize_rest_response($served, $result, $request, $server) {
     return $served;
 }
 
-// ✅ Lazy load images in post content
 add_filter('the_content', 'add_lazy_loading_to_images');
 function add_lazy_loading_to_images($content) {
     if (is_feed() || is_admin()) {
         return $content;
     }
     
-    // Add loading="lazy" to all images
     $content = preg_replace('/<img(.*?)>/', '<img$1 loading="lazy">', $content);
     
     return $content;
 }
 
-// ✅ CRITICAl: Reduce REST API payload size
 add_action('rest_api_init', 'register_minimal_rest_fields');
 function register_minimal_rest_fields() {
-    // Register a custom field for optimized image URLs
     register_rest_field('post', 'optimized_image', array(
         'get_callback' => function($post) {
             $image_id = get_post_thumbnail_id($post['id']);
@@ -1651,5 +1476,16 @@ function register_minimal_rest_fields() {
             'type' => 'object'
         )
     ));
+}
+
+// Add admin notice
+add_action('admin_notices', 'categorization_admin_notice');
+function categorization_admin_notice() {
+    $screen = get_current_screen();
+    if ($screen && in_array($screen->id, array('post', 'edit-post'))) {
+        echo '<div class="notice notice-info is-dismissible">';
+        echo '<p><strong>Enhanced Auto-Categorization Active:</strong> You now have full control over categorization modes (Auto/Primary/Manual/Disabled) for each post. Use the "Category Control" meta box to customize behavior.</p>';
+        echo '</div>';
+    }
 }
 ?>
