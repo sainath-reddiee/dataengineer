@@ -1,18 +1,16 @@
-// vite.config.js
+// vite.config.js - FIXED FOR FAST REFRESH
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react({
-      // Enable Fast Refresh
+      // ✅ Fast Refresh configuration
       fastRefresh: true,
-      // Optimize production build
+      jsxRuntime: 'automatic',
       babel: {
         plugins: [
-          // Remove console.log in production
           process.env.NODE_ENV === 'production' && [
             'transform-remove-console',
             { exclude: ['error', 'warn'] }
@@ -29,91 +27,85 @@ export default defineConfig({
   },
   
   build: {
-    // Optimize output
     target: 'es2015',
     minify: 'terser',
     terserOptions: {
       compress: {
         drop_console: true,
         drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug']
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        passes: 2
       }
     },
     
-    // Code splitting for better caching
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Vendor chunks
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'framer-motion': ['framer-motion'],
-          'ui-vendor': [
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-toast',
-            '@radix-ui/react-slot',
-            '@radix-ui/react-label'
-          ],
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'react-vendor';
+            }
+            if (id.includes('framer-motion')) {
+              return 'framer-motion';
+            }
+            if (id.includes('@radix-ui')) {
+              return 'ui-vendor';
+            }
+            if (id.includes('lucide-react')) {
+              return 'icons';
+            }
+            return 'vendor';
+          }
           
-          // App chunks
-          'wordpress-api': ['./src/services/wordpressApi.js', './src/hooks/useWordPress.js'],
-          'utils': ['./src/utils/analytics.js', './src/utils/performance.js', './src/utils/imageOptimizer.js']
+          if (id.includes('src/components/')) {
+            if (id.includes('PostCard') || id.includes('PostListItem')) {
+              return 'post-components';
+            }
+            if (id.includes('Ad')) {
+              return 'ads';
+            }
+          }
         },
         
-        // Clean filenames
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     },
     
-    // Chunk size warnings
-    chunkSizeWarningLimit: 1000,
-    
-    // Enable source maps for production debugging (optional)
+    chunkSizeWarningLimit: 500,
     sourcemap: false,
-    
-    // Optimize CSS
     cssCodeSplit: true,
-    
-    // Compression
     reportCompressedSize: true,
-    
-    // Asset inlining threshold
-    assetsInlineLimit: 4096 // 4kb
+    assetsInlineLimit: 2048
   },
   
-  // Optimize dependencies
   optimizeDeps: {
     include: [
       'react',
       'react-dom',
-      'react-router-dom',
-      'framer-motion',
-      '@radix-ui/react-dialog',
-      '@radix-ui/react-toast',
-      'lucide-react'
+      'react-router-dom'
     ],
-    exclude: []
+    exclude: [
+      'framer-motion'
+    ]
   },
   
-  // Server config for development
   server: {
     port: 3000,
     strictPort: true,
     host: true,
-    open: true
+    open: true,
+    // ✅ HMR configuration
+    hmr: {
+      overlay: true
+    }
   },
   
-  // Preview config for production testing
   preview: {
     port: 4173,
     strictPort: true,
     host: true,
     open: true
-  },
-  
-  // Environment variables
-  define: {
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
   }
 });
