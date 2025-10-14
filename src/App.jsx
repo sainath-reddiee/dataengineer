@@ -1,4 +1,4 @@
-// src/App.jsx - UPDATED FOR ADSENSE
+// src/App.jsx - FIXED VERSION
 import React, { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
@@ -51,9 +51,6 @@ const RouteChangeTracker = () => {
     }
 
     trackPageView(location.pathname + location.search);
-
-    // AdSense automatically refreshes on route changes
-    // No manual refresh needed unlike Ezoic
     
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [location.pathname, location.search]);
@@ -175,15 +172,9 @@ function App() {
           )}
         </Route>
       </Routes>
+      <Toaster />
     </ErrorBoundary>
   );
 }
 
-const Root = () => (
-  <HelmetProvider>
-    <App />
-    <Toaster />
-  </HelmetProvider>
-);
-
-export default Root;
+export default App;
