@@ -1,11 +1,10 @@
-// src/components/Header.jsx - FINAL VERSION
-import React, { useState, useEffect, useMemo } from 'react';
+// src/components/Header.jsx - FIXED VERSION (Ghost Hover Issue Resolved)
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles, ChefHat, FileText, FileSpreadsheet, ClipboardList, HelpCircle } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useResourceTypes } from '@/hooks/useCertifications';
 
-// ... (Spark and getCategoryIcon helper components remain the same as before) ...
 const Spark = ({ x, y, rotate, color }) => {
   const variants = {
     rest: { x: 0, y: 0, scale: 0, opacity: 0 },
@@ -84,7 +83,6 @@ const getResourceIcon = (name, className = 'h-8 w-8 text-yellow-400') => {
   return <FileText className={className} />;
 };
 
-
 const Header = () => {
   const [isMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -92,6 +90,10 @@ const Header = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const location = useLocation();
   const currentPath = location.pathname;
+  
+  // FIX: Add refs to track hover state properly
+  const dropdownTimeoutRef = useRef(null);
+  const isHoveringRef = useRef(false);
 
   const { resourceTypes } = useResourceTypes();
 
@@ -125,6 +127,33 @@ const Header = () => {
   const isHomeActive = currentPath === '/';
   const isTagsActive = currentPath.includes('/tag');
   const isAboutActive = currentPath.includes('/about');
+
+  // FIX: Better hover handlers with timeout
+  const handleMouseEnter = (key) => {
+    if (dropdownTimeoutRef.current) {
+      clearTimeout(dropdownTimeoutRef.current);
+    }
+    isHoveringRef.current = true;
+    setOpenDropdown(key);
+  };
+
+  const handleMouseLeave = () => {
+    isHoveringRef.current = false;
+    dropdownTimeoutRef.current = setTimeout(() => {
+      if (!isHoveringRef.current) {
+        setOpenDropdown(null);
+      }
+    }, 150); // Small delay to prevent flickering
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (dropdownTimeoutRef.current) {
+        clearTimeout(dropdownTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const categories = {
     platforms: {
@@ -174,6 +203,7 @@ const Header = () => {
         setIsVisible(true);
       } else if (currentScrollY > lastScrollY) {
         setIsVisible(false);
+        setOpenDropdown(null); // Close dropdowns when scrolling down
       } else {
         setIsVisible(true);
       }
@@ -216,6 +246,9 @@ const Header = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
+        transition={{ duration: 0.2 }}
+        onMouseEnter={() => handleMouseEnter(categoryKey)}
+        onMouseLeave={handleMouseLeave}
         className="absolute left-0 top-full mt-2 w-[550px] bg-gradient-to-br from-slate-800/95 via-slate-900/95 to-slate-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 p-6 z-[99999]"
         style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(59, 130, 246, 0.1)' }}
       >
@@ -332,16 +365,20 @@ const Header = () => {
             <div className="hidden xl:flex items-center justify-start flex-grow">
                 <div className="flex items-center gap-x-4 lg:gap-x-6">
                     <motion.div whileHover={{ y: -2 }}>
-                    <Link to="/" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isHomeActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isHomeActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
+                      <Link 
+                        to="/" 
+                        className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isHomeActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} 
+                        style={isHomeActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+                      >
                         <Home className="w-4 h-4" />
                         Home
-                    </Link>
+                      </Link>
                     </motion.div>
                     
                     <div 
-                    className="relative"
-                    onMouseEnter={() => setOpenDropdown('certifications')}
-                    onMouseLeave={() => setOpenDropdown(null)}
+                      className="relative"
+                      onMouseEnter={() => handleMouseEnter('certifications')}
+                      onMouseLeave={handleMouseLeave}
                     >
                         <motion.button
                             whileHover={{ y: -2 }}
@@ -360,48 +397,55 @@ const Header = () => {
                     </div>
 
                     {Object.entries(categories).map(([key, category]) => {
-                    const isActive = isCategoryActive(key);
-                    return (
+                      const isActive = isCategoryActive(key);
+                      return (
                         <div 
-                        key={key} 
-                        className="relative"
-                        onMouseEnter={() => setOpenDropdown(key)}
-                        onMouseLeave={() => setOpenDropdown(null)}
+                          key={key} 
+                          className="relative"
+                          onMouseEnter={() => handleMouseEnter(key)}
+                          onMouseLeave={handleMouseLeave}
                         >
-                        <motion.button
-                            whileHover={{ y: -2 }}
-                            className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${isActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
-                            style={isActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
-                        >
-                            <category.icon className="w-4 h-4" />
-                            {category.title.split(' ')[0]}
-                            <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdown === key ? 'rotate-180' : ''}`} />
-                        </motion.button>
-                        <AnimatePresence>
-                            {openDropdown === key && (
-                            <MegaMenu category={category} categoryKey={key} />
-                            )}
-                        </AnimatePresence>
+                          <motion.button
+                              whileHover={{ y: -2 }}
+                              className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${isActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
+                              style={isActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+                          >
+                              <category.icon className="w-4 h-4" />
+                              {category.title.split(' ')[0]}
+                              <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdown === key ? 'rotate-180' : ''}`} />
+                          </motion.button>
+                          <AnimatePresence>
+                              {openDropdown === key && (
+                                <MegaMenu category={category} categoryKey={key} />
+                              )}
+                          </AnimatePresence>
                         </div>
-                    );
+                      );
                     })}
                     
                     <motion.div whileHover={{ y: -2 }}>
-                    <Link to="/tag" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isTagsActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isTagsActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
+                      <Link 
+                        to="/tag" 
+                        className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isTagsActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} 
+                        style={isTagsActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+                      >
                         <Tags className="w-4 h-4" />
                         Tags
-                    </Link>
+                      </Link>
                     </motion.div>
 
                     <motion.div whileHover={{ y: -2 }}>
-                    <Link to="/about" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isAboutActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isAboutActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
+                      <Link 
+                        to="/about" 
+                        className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isAboutActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} 
+                        style={isAboutActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+                      >
                         <Info className="w-4 h-4" />
                         About
-                    </Link>
+                      </Link>
                     </motion.div>
                 </div>
             </div>
-
 
           {/* Mobile Menu Button */}
           <div className="xl:hidden">
@@ -433,7 +477,6 @@ const Header = () => {
                   Home
                 </Link>
                 
-                {/* Mobile Certifications Menu */}
                 <div>
                   <button
                     onClick={() => setOpenDropdown(openDropdown === 'certifications' ? null : 'certifications')}
@@ -511,7 +554,6 @@ const Header = () => {
                   <Info className="w-5 h-5" />
                   About
                 </Link>
-
               </div>
             </motion.div>
           )}
