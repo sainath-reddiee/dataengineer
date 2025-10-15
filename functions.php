@@ -103,7 +103,13 @@ function get_or_create_category($category_name, $category_slug) {
     return $category;
 }
 
-add_action('add_meta_boxes', 'add_category_control_meta_box');
+// ============================================================================
+// FIX: Commented out meta boxes that can cause editor crashes
+// These features will still work on save, but the UI in the editor is disabled to prevent conflicts.
+// ============================================================================
+// add_action('add_meta_boxes', 'add_category_control_meta_box');
+// add_action('add_meta_boxes', 'add_auto_category_detection_meta_box');
+
 function add_category_control_meta_box() {
     add_meta_box(
         'manual-category-control',
@@ -474,18 +480,6 @@ function force_update_category_counts($post_id) {
         wp_update_term_count_now($categories, 'category');
         error_log("📄 FORCE: Updated category counts for post $post_id");
     }
-}
-
-add_action('add_meta_boxes', 'add_auto_category_detection_meta_box');
-function add_auto_category_detection_meta_box() {
-    add_meta_box(
-        'auto-category-detection',
-        '🤖 Auto Category Detection',
-        'auto_category_detection_callback',
-        'post',
-        'side',
-        'default'
-    );
 }
 
 function auto_category_detection_callback($post) {
