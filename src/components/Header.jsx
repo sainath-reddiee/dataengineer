@@ -348,46 +348,47 @@ const Header = () => {
             {Object.entries(categories).map(([key, category]) => {
               const isActive = isCategoryActive(key);
               return (
-                <div key={key} className="relative group">
+                <div 
+                  key={key} 
+                  className="relative"
+                  onMouseEnter={() => setOpenDropdown(key)}
+                  onMouseLeave={() => setOpenDropdown(null)}
+                >
                   <motion.button
                     whileHover={{ y: -2 }}
-                    onMouseEnter={() => setOpenDropdown(key)}
-                    onMouseLeave={() => setOpenDropdown(null)}
                     className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${isActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
                     style={isActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
                   >
                     <category.icon className="w-4 h-4" />
                     {category.title.split(' ')[0]}
-                    <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdown === key ? 'rotate-180' : ''}`} />
                   </motion.button>
                   <AnimatePresence>
                     {openDropdown === key && (
-                      <div onMouseEnter={() => setOpenDropdown(key)} onMouseLeave={() => setOpenDropdown(null)}>
-                        <MegaMenu category={category} categoryKey={key} />
-                      </div>
+                      <MegaMenu category={category} categoryKey={key} />
                     )}
                   </AnimatePresence>
                 </div>
               );
             })}
 
-            <div className="relative group">
+            <div 
+              className="relative"
+              onMouseEnter={() => setOpenDropdown('certifications')}
+              onMouseLeave={() => setOpenDropdown(null)}
+            >
                 <motion.button
                     whileHover={{ y: -2 }}
-                    onMouseEnter={() => setOpenDropdown('certifications')}
-                    onMouseLeave={() => setOpenDropdown(null)}
                     className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${isCategoryActive('certifications') ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
                     style={isCategoryActive('certifications') ? { textShadow: '0 0 5px #60a5fa' } : undefined}
                 >
                     <Sparkles className="w-4 h-4" />
                     Certifications
-                    <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdown === 'certifications' ? 'rotate-180' : ''}`} />
                 </motion.button>
                 <AnimatePresence>
                     {openDropdown === 'certifications' && (
-                    <div onMouseEnter={() => setOpenDropdown('certifications')} onMouseLeave={() => setOpenDropdown(null)}>
                         <MegaMenu category={certificationsMenu} categoryKey="certifications" />
-                    </div>
                     )}
                 </AnimatePresence>
             </div>
