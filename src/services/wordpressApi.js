@@ -484,6 +484,18 @@ class WordPressAPI {
     const result = await this.makeRequest(endpoint);
     return result.data.map(post => this.transformCertification(post));
   }
+  
+  async getCertificationsByResourceType(resourceTypeSlug, options = {}) {
+    const endpoint = `/certifications-by-taxonomy/resource_type/${resourceTypeSlug}`;
+    const result = await this.makeRequest(endpoint, options);
+    return result.data.map(post => this.transformCertification(post));
+  }
+  
+  async getResourceTypes() {
+    const endpoint = '/resource_type?per_page=100&hide_empty=true';
+    const result = await this.makeRequest(endpoint);
+    return result.data;
+  }
 
   async getCertificationBySlug(slug) {
     const endpoint = `/certification?slug=${slug}&_embed`;
