@@ -1,8 +1,9 @@
 // src/components/Header.jsx - FINAL VERSION
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles, ChefHat } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles, ChefHat, FileText, FileSpreadsheet, ClipboardList } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useResourceTypes } from '@/hooks/useCertifications';
 
 // ... (Spark and getCategoryIcon helper components remain the same as before) ...
 const Spark = ({ x, y, rotate, color }) => {
@@ -74,6 +75,14 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
   );
 };
 
+const getResourceIcon = (name, className = 'h-8 w-8') => {
+  const lowerName = name.toLowerCase();
+  if (lowerName.includes('sheet')) return <FileSpreadsheet className={className} />;
+  if (lowerName.includes('guide')) return <ClipboardList className={className} />;
+  if (lowerName.includes('question')) return <ClipboardList className={className} />;
+  return <FileText className={className} />;
+};
+
 
 const Header = () => {
   const [isMenuOpen, setMobileMenuOpen] = useState(false);
@@ -81,6 +90,8 @@ const Header = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [currentPath, setCurrentPath] = useState('/');
+
+  const { resourceTypes } = useResourceTypes();
 
   useEffect(() => {
     setCurrentPath(window.location.pathname);
@@ -106,13 +117,16 @@ const Header = () => {
              path.includes('/category/sql');
     }
     
+    if (categoryKey === 'certifications') {
+        return path.includes('/certifications');
+    }
+
     return false;
   };
 
   const isHomeActive = currentPath === '/';
   const isTagsActive = currentPath.includes('/tag');
   const isAboutActive = currentPath.includes('/about');
-  const isCertActive = currentPath.includes('/certifications');
 
   const categories = {
     platforms: {
@@ -142,13 +156,32 @@ const Header = () => {
       ]
     }
   };
-
-  // Your new categories that are still "cooking"
-  const comingSoonCategories = {
-    databricks: { name: 'Databricks', icon: ChefHat },
-    kafka: { name: 'Kafka', icon: ChefHat },
+  
+  const certificationsMenu = {
+    title: 'Certification Hub',
+    icon: Sparkles,
+    items: [
+      {
+        name: 'All Certifications',
+        path: '/certifications',
+        color: 'from-blue-500 to-purple-500',
+        desc: 'Browse all available certifications.',
+        isResourceType: false, 
+        iconOverride: <Sparkles className="h-8 w-8 text-blue-400" />
+      },
+      ...resourceTypes.map(rt => ({
+        name: rt.name,
+        path: `/certifications/resource/${rt.slug}`,
+        color: 'from-green-500 to-teal-500',
+        desc: rt.description || `${rt.count}+ resources available.`,
+        isResourceType: true,
+      }))
+    ],
+    comingSoon: [
+        { name: 'Databricks', desc: 'Guides for Databricks certs' },
+        { name: 'Kafka', desc: 'Apache Kafka certification prep' },
+    ]
   };
-
 
   useEffect(() => {
     const controlHeader = () => {
@@ -183,16 +216,17 @@ const Header = () => {
     };
 
     const getCtaText = () => {
-      if (categoryKey === 'platforms') return 'View all Cloud & Platform articles';
-      if (categoryKey === 'tools') return 'View all Orchestration & Transform articles';
-      if (categoryKey === 'languages') return 'View all Language articles';
+      if (categoryKey === 'certifications') return 'View All Certifications';
       return 'View all articles';
     };
 
-    const getCtaUrl = () => '/articles';
+    const getCtaUrl = () => {
+      if (categoryKey === 'certifications') return '/certifications';
+      return '/articles';
+    }
 
-    // Check if there are items, otherwise show coming soon message
     const hasItems = category.items && category.items.length > 0;
+    const hasComingSoon = category.comingSoon && category.comingSoon.length > 0;
 
     return (
       <motion.div
@@ -212,7 +246,7 @@ const Header = () => {
           </div>
         </div>
 
-        {hasItems ? (
+        {(hasItems || hasComingSoon) ? (
           <>
             <div className="grid grid-cols-2 gap-3">
               {category.items.map((item, idx) => (
@@ -235,7 +269,9 @@ const Header = () => {
                   <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-10 rounded-xl transition-opacity duration-300`} />
                   <div className="relative z-10 flex items-start gap-3">
                     <div className="flex-shrink-0 mt-1">
-                      {getCategoryIcon(item.name, 'h-8 w-8')}
+                      {item.iconOverride ? item.iconOverride : 
+                       item.isResourceType ? getResourceIcon(item.name, 'h-8 w-8 text-green-400') : 
+                       getCategoryIcon(item.name, 'h-8 w-8')}
                     </div>
                     <div className="flex-1">
                       <div className="font-semibold text-white group-hover:text-blue-400 transition-colors mb-1">
@@ -248,6 +284,22 @@ const Header = () => {
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700 rounded-xl" />
                 </motion.a>
+              ))}
+              {hasComingSoon && category.comingSoon.map(item => (
+                <div key={item.name} className="group relative p-4 rounded-xl bg-slate-800/50 border border-slate-700/30 cursor-not-allowed">
+                   <div className="absolute top-2 right-2 text-xs font-bold text-purple-300 bg-purple-500/20 px-2 py-1 rounded-full">
+                     Coming Soon
+                   </div>
+                   <div className="relative z-10 flex items-start gap-3 opacity-50">
+                    <div className="flex-shrink-0 mt-1">
+                      <ChefHat className="h-8 w-8 text-purple-400" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-white mb-1">{item.name}</div>
+                      <p className="text-xs text-gray-400">{item.desc}</p>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
             <div className="mt-4 pt-4 border-t border-slate-700/50 text-center">
@@ -343,13 +395,27 @@ const Header = () => {
               );
             })}
 
-            <motion.div whileHover={{ y: -2 }}>
-              <Link to="/certifications" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isCertActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isCertActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
-                <Sparkles className="w-4 h-4" />
-                Certifications
-              </Link>
-            </motion.div>
-
+            <div className="relative group">
+                <motion.button
+                    whileHover={{ y: -2 }}
+                    onMouseEnter={() => setOpenDropdown('certifications')}
+                    onMouseLeave={() => setOpenDropdown(null)}
+                    className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${isCategoryActive('certifications') ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
+                    style={isCategoryActive('certifications') ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+                >
+                    <Sparkles className="w-4 h-4" />
+                    Certifications
+                    <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
+                </motion.button>
+                <AnimatePresence>
+                    {openDropdown === 'certifications' && (
+                    <div onMouseEnter={() => setOpenDropdown('certifications')} onMouseLeave={() => setOpenDropdown(null)}>
+                        <MegaMenu category={certificationsMenu} categoryKey="certifications" />
+                    </div>
+                    )}
+                </AnimatePresence>
+            </div>
+            
             <motion.div whileHover={{ y: -2 }}>
               <Link to="/tag" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isTagsActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isTagsActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
                 <Tags className="w-4 h-4" />
@@ -443,10 +509,36 @@ const Header = () => {
                   </div>
                 ))}
                 
-                <Link to="/certifications" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
-                  <Sparkles className="w-5 h-5" />
-                  Certifications
-                </Link>
+                {/* Mobile Certifications Menu */}
+                <div>
+                  <button
+                    onClick={() => setOpenDropdown(openDropdown === 'certifications' ? null : 'certifications')}
+                    className="w-full flex items-center justify-between text-white hover:text-blue-400 transition-colors font-medium py-3 pl-3 rounded-lg hover:bg-slate-800/50 min-h-[48px]"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Sparkles className="w-5 h-5" />
+                      Certifications
+                    </span>
+                    <ChevronDown className={`w-5 h-5 transition-transform ${openDropdown === 'certifications' ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {openDropdown === 'certifications' && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="ml-4 mt-2 space-y-1 bg-slate-800/50 rounded-lg p-2"
+                      >
+                        {certificationsMenu.items.map(item => (
+                          <Link key={item.name} to={item.path} className="block text-gray-300 hover:text-white py-3 pl-3 rounded hover:bg-slate-700/50 transition-colors min-h-[48px] flex items-center">
+                            {item.name}
+                          </Link>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
 
                 <Link to="/tag" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
                   <Tags className="w-5 h-5" />
