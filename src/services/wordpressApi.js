@@ -1,4 +1,4 @@
-// src/services/wordpressApi.js - OPTIMIZED FOR SPEED
+// src/services/wordpressApi.js - COMPLETE FINAL VERSION
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog';
 const WP_API_BASE = `${WORDPRESS_API_URL}/wp-json/wp/v2`;
 
@@ -470,6 +470,62 @@ class WordPressAPI {
       throw error;
     }
   }
+
+  // =================================================================
+  // == CERTIFICATION HUB METHODS
+  // =================================================================
+
+  async getCertifications(options = {}) {
+    const params = new URLSearchParams({
+      per_page: '100',
+      _embed: 'wp:featuredmedia,wp:term',
+      ...options,
+    });
+    const endpoint = `/certification?${params.toString()}`;
+    const result = await this.makeRequest(endpoint);
+    return result.data.map(post => this.transformCertification(post));
+  }
+
+  async getCertificationBySlug(slug) {
+    const endpoint = `/certification?slug=${slug}&_embed`;
+    const result = await this.makeRequest(endpoint);
+    if (!result.data || result.data.length === 0) {
+      throw new Error(`Certification with slug "${slug}" not found`);
+    }
+    return this.transformCertification(result.data[0]);
+  }
+
+  transformCertification(wpCert) {
+    const featuredMedia = wpCert._embedded?.['wp:featuredmedia']?.[0];
+    const terms = wpCert._embedded?.['wp:term'] || [];
+    const provider = terms[0]?.[0];
+    const level = terms[1]?.[0];
+    const resource_types = terms[2];
+    
+    return {
+      id: wpCert.id,
+      slug: wpCert.slug,
+      title: this.decodeHtmlEntities(wpCert.title.rendered),
+      excerpt: this.cleanExcerpt(wpCert.excerpt.rendered),
+      content: wpCert.content.rendered,
+      featured_image: featuredMedia?.source_url || null,
+      provider: provider ? { name: provider.name, slug: provider.slug } : null,
+      level: level ? { name: level.name, slug: level.slug } : null,
+      resource_types: resource_types ? resource_types.map(rt => ({ name: rt.name, slug: rt.slug })) : [],
+      cert_code: wpCert.cert_code,
+      cert_official_name: wpCert.cert_official_name,
+      exam_cost: wpCert.cert_exam_cost,
+      duration: wpCert.cert_duration,
+      passing_score: wpCert.cert_passing_score,
+      questions_count: wpCert.cert_questions_count,
+      difficulty: wpCert.cert_difficulty,
+      download_url: wpCert.cert_download_url,
+    };
+  }
+  
+  // =================================================================
+  // == END CERTIFICATION HUB METHODS
+  // =================================================================
 
   async getPostsByCategory(categoryId, options = {}) {
     return this.getPosts({ ...options, categoryId });
