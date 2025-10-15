@@ -15,6 +15,13 @@ import { useToast } from '@/components/ui/use-toast';
 const Footer = () => {
   const { toast } = useToast();
 
+  const handleSocialClick = (item) => {
+    toast({
+      title: "🚧 Link Coming Soon!",
+      description: `${item} isn't implemented yet—but don't worry! You can request it in your next prompt! 🚀`,
+    });
+  };
+
   const footerLinks = {
     content: [
       { name: 'Latest Articles', href: '/articles' },
@@ -23,13 +30,11 @@ const Footer = () => {
       { name: 'Azure Resources', href: '/category/azure' },
       { name: 'SQL Tips', href: '/category/sql' }
     ],
-    // ✅ NEW "Resources" SECTION
-    resources: [
-      { name: 'Certifications Hub', href: '/certifications' },
-      { name: 'Practice Questions', href: '/certifications' },
-      { name: 'Study Guides', href: '/certifications' },
+    tools: [
+      { name: 'Airflow', href: '/category/airflow' },
       { name: 'dbt', href: '/category/dbt' },
       { name: 'Python', href: '/category/python' },
+      { name: 'GCP', href: '/category/gcp' }
     ],
     company: [
       { name: 'About', href: '/about' },
@@ -98,7 +103,7 @@ const Footer = () => {
 
           {[
             { title: 'Content', links: footerLinks.content, delay: 0.1 },
-            { title: 'Resources', links: footerLinks.resources, delay: 0.2 }, // ✅ UPDATED
+            { title: 'Technologies', links: footerLinks.tools, delay: 0.2 },
             { title: 'Company', links: footerLinks.company, delay: 0.3 }
           ].map((section) => (
             <motion.div
