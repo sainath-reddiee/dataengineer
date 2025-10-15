@@ -20,5 +20,3 @@ node_modules/
 
 # Exclude local development folders
 blog-automation/
-src/pages/certifications/
-src/components/certifications/
