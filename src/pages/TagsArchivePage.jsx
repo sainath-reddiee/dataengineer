@@ -1,11 +1,31 @@
 // src/pages/TagsArchivePage.jsx - NEW FILE
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Tag, Search, ArrowRight, Loader } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useTags } from '@/hooks/useWordPress';
 import MetaTags from '@/components/SEO/MetaTags';
+
+const Spark = ({ x, y, rotate, color }) => {
+  const variants = {
+    rest: { x: 0, y: 0, scale: 0, opacity: 0 },
+    hover: {
+      x, y, scale: 1,
+      opacity: [0, 1, 0.5, 0],
+      transition: { duration: 0.7, ease: [0.25, 1, 0.5, 1] },
+    },
+  };
+  return (
+    <motion.div
+      variants={variants}
+      className="absolute top-1/2 left-1/2 h-[3px] w-[3px] rounded-full"
+      style={{ backgroundColor: color, rotate }}
+    />
+  );
+};
+
+const MotionLink = motion(Link);
 
 const TagsArchivePage = () => {
   const { tags, loading, error } = useTags();
@@ -14,6 +34,20 @@ const TagsArchivePage = () => {
   const filteredTags = tags.filter(tag =>
     tag.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const sparkContainerVariants = { 
+    rest: {}, 
+    hover: { transition: { staggerChildren: 0.04 } } 
+  };
+  
+  const sparks = useMemo(() => 
+    Array.from({ length: 12 }).map(() => ({ 
+      x: Math.random() * 50 - 25, 
+      y: Math.random() * 50 - 25, 
+      rotate: Math.random() * 360, 
+      color: ['#60a5fa', '#a78bfa', '#ffffff'][Math.floor(Math.random() * 3)] 
+    })), 
+  []);
 
   return (
     <>
@@ -103,21 +137,36 @@ const TagsArchivePage = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3, delay: index * 0.03 }}
                   >
-                    <Link
+                    <MotionLink
                       to={`/tag/${tag.slug}`}
-                      className="group inline-flex items-center gap-2 px-4 py-2 rounded-full
+                      initial="rest"
+                      whileHover="hover"
+                      className="group relative inline-flex items-center gap-2 px-4 py-2 rounded-full
                                bg-gradient-to-r from-blue-500/10 to-purple-500/10
                                border border-blue-400/20 hover:border-blue-400/50
                                hover:from-blue-500/20 hover:to-purple-500/20
-                               transition-all duration-300 hover:scale-105"
+                               transition-all duration-300 overflow-hidden"
+                      aria-label={`View articles tagged with ${tag.name}`}
                     >
-                      <span className="text-blue-300 font-medium">#{tag.name}</span>
-                      <span className="text-xs text-gray-500 bg-gray-800/50 px-2 py-0.5 rounded-full">
-                        {tag.count}
-                      </span>
-                      <ArrowRight className="h-3 w-3 text-gray-500 group-hover:text-blue-400 
-                                           group-hover:translate-x-1 transition-all" />
-                    </Link>
+                      {[...Array(4)].map((_, i) => (
+                        <motion.div 
+                          key={i} 
+                          variants={sparkContainerVariants} 
+                          className={`absolute ${i < 2 ? 'top-0' : 'bottom-0'} ${i % 2 === 0 ? 'left-0' : 'right-0'} w-12 h-12`}
+                        >
+                          {sparks.map((spark, j) => <Spark key={j} {...spark} />)}
+                        </motion.div>
+                      ))}
+
+                      <div className="relative z-10 flex items-center gap-2">
+                        <span className="text-blue-300 font-medium">#{tag.name}</span>
+                        <span className="text-xs text-gray-500 bg-gray-800/50 px-2 py-0.5 rounded-full">
+                          {tag.count}
+                        </span>
+                        <ArrowRight className="h-3 w-3 text-gray-500 group-hover:text-blue-400 
+                                             group-hover:translate-x-1 transition-all" />
+                      </div>
+                    </MotionLink>
                   </motion.div>
                 ))}
               </div>
