@@ -25,6 +25,7 @@ const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 const TagsArchivePage = lazy(() => import('./pages/TagsArchivePage'));
 const CertificationHub = lazy(() => import('./pages/certifications/CertificationHub'));
 const CertificationDetail = lazy(() => import('./pages/certifications/CertificationDetail'));
+const ResourceTypePage = lazy(() => import('./pages/certifications/ResourceTypePage'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
@@ -78,10 +79,10 @@ function App() {
         const perfData = performance.getEntriesByType('navigation')[0];
         if (perfData) {
           console.log('⚡ App Performance:', {
-            'Total Load': Math.round(perfData.loadEventEnd - perfData.fetchStart) + 'ms',
-            'DOM Ready': Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart) + 'ms',
+            'Total Load': `${Math.round(perfData.loadEventEnd - perfData.fetchStart)}ms`,
+            'DOM Ready': `${Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart)}ms`,
             'First Paint': performance.getEntriesByType('paint')[0] 
-              ? Math.round(performance.getEntriesByType('paint')[0].startTime) + 'ms' 
+              ? `${Math.round(performance.getEntriesByType('paint')[0].startTime)}ms`
               : 'N/A'
           });
         }
@@ -116,15 +117,20 @@ function App() {
             </Suspense>
           } />
           <Route path="certifications" element={
-      <Suspense fallback={<LoadingFallback text="Loading Certifications..." />}>
-        <CertificationHub />
-      </Suspense>
-    } />
-    <Route path="certifications/:slug" element={
-      <Suspense fallback={<LoadingFallback text="Loading Certification..." />}>
-        <CertificationDetail />
-      </Suspense>
-    } />
+            <Suspense fallback={<LoadingFallback text="Loading Certifications..." />}>
+              <CertificationHub />
+            </Suspense>
+          } />
+          <Route path="certifications/:slug" element={
+            <Suspense fallback={<LoadingFallback text="Loading Certification..." />}>
+              <CertificationDetail />
+            </Suspense>
+          } />
+          <Route path="certifications/resource/:resourceTypeSlug" element={
+            <Suspense fallback={<LoadingFallback text="Loading Resources..." />}>
+              <ResourceTypePage />
+            </Suspense>
+          } />
           <Route path="articles/:slug" element={
             <Suspense fallback={<LoadingFallback text="Loading Article..." />}>
               <ArticlePage />
