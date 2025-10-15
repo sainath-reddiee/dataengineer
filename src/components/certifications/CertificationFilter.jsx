@@ -1,10 +1,10 @@
-// src/components/certifications/CertificationFilter.jsx - FINAL CORRECTED VERSION
+// src/components/certifications/CertificationFilter.jsx - FINAL VERSION WITH RESOURCE TYPES
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Search } from 'lucide-react';
 
-const CertificationFilter = ({ filters, setFilters, providers, levels }) => {
+const CertificationFilter = ({ filters, setFilters, providers, levels, resourceTypes }) => {
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
@@ -39,7 +39,6 @@ const CertificationFilter = ({ filters, setFilters, providers, levels }) => {
             className="mt-2 w-full bg-slate-700/50 p-2 rounded-md border border-slate-600 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="all">All Providers</option>
-            {/* CORRECTED LOGIC: Use p.slug and p.name */}
             {providers.map(p => <option key={p.slug} value={p.slug}>{p.name}</option>)}
           </select>
         </div>
@@ -53,8 +52,21 @@ const CertificationFilter = ({ filters, setFilters, providers, levels }) => {
             className="mt-2 w-full bg-slate-700/50 p-2 rounded-md border border-slate-600 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="all">All Levels</option>
-            {/* CORRECTED LOGIC: Use l.slug and l.name */}
             {levels.map(l => <option key={l.slug} value={l.slug}>{l.name}</option>)}
+          </select>
+        </div>
+        {/* ✅ NEW: RESOURCE TYPE FILTER ADDED */}
+        <div>
+          <Label htmlFor="resource_type">Resource Type</Label>
+          <select 
+            name="resource_type" 
+            id="resource_type"
+            value={filters.resource_type}
+            onChange={handleFilterChange}
+            className="mt-2 w-full bg-slate-700/50 p-2 rounded-md border border-slate-600 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="all">All Types</option>
+            {resourceTypes.map(rt => <option key={rt.slug} value={rt.slug}>{rt.name}</option>)}
           </select>
         </div>
       </div>
