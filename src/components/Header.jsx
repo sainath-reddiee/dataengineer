@@ -216,7 +216,7 @@ const Header = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
-        className="absolute left-0 top-full mt-2 w-auto min-w-[500px] max-w-[600px] bg-gradient-to-br from-slate-800/95 via-slate-900/95 to-slate-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 p-6 z-[99999]"
+        className="absolute left-0 top-full mt-2 w-[550px] bg-gradient-to-br from-slate-800/95 via-slate-900/95 to-slate-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 p-6 z-[99999]"
         style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(59, 130, 246, 0.1)' }}
       >
         <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-700/50">
@@ -311,26 +311,26 @@ const Header = () => {
       }}
     >
       <nav className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
-        <div className="flex items-center justify-between gap-x-6">
-            <a href="/" className="flex items-center space-x-2 sm:space-x-3 z-10 flex-shrink-0">
-              <motion.div
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <div className="relative">
-                  <Database className="h-7 w-7 sm:h-8 sm:w-8 text-blue-400" />
-                  <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse" />
-                </div>
-              </motion.div>
-              <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                DataEngineer Hub
-              </span>
-            </a>
+        <div className="flex items-center justify-between">
+            <div className="flex items-center gap-x-6 lg:gap-x-10">
+                <a href="/" className="flex items-center space-x-2 sm:space-x-3 z-10 flex-shrink-0">
+                <motion.div
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                >
+                    <div className="relative">
+                    <Database className="h-7 w-7 sm:h-8 sm:w-8 text-blue-400" />
+                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse" />
+                    </div>
+                </motion.div>
+                <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    DataEngineer Hub
+                </span>
+                </a>
 
-            {/* Desktop Navigation */}
-            <div className="hidden xl:flex items-center justify-center flex-grow">
-                <div className="flex items-center gap-x-4 lg:gap-x-6">
+                {/* Desktop Navigation */}
+                <div className="hidden xl:flex items-center gap-x-4 lg:gap-x-6">
                     <motion.div whileHover={{ y: -2 }}>
                     <Link to="/" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isHomeActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isHomeActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
                         <Home className="w-4 h-4" />
