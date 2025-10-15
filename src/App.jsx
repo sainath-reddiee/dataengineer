@@ -115,6 +115,16 @@ function App() {
               <AllArticlesPage />
             </Suspense>
           } />
+          <Route path="certifications" element={
+      <Suspense fallback={<LoadingFallback text="Loading Certifications..." />}>
+        <CertificationHub />
+      </Suspense>
+    } />
+    <Route path="certifications/:slug" element={
+      <Suspense fallback={<LoadingFallback text="Loading Certification..." />}>
+        <CertificationDetail />
+      </Suspense>
+    } />
           <Route path="articles/:slug" element={
             <Suspense fallback={<LoadingFallback text="Loading Article..." />}>
               <ArticlePage />
