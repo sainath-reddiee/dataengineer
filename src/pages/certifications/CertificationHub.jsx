@@ -14,7 +14,6 @@ const CertificationHub = () => {
   const [filters, setFilters] = useState({
     provider: 'all',
     level: 'all',
-    resource_type: 'all',
     search: '',
   });
 
@@ -32,9 +31,8 @@ const CertificationHub = () => {
       const searchMatch = certTitle.toLowerCase().includes(filters.search.toLowerCase()) || certCode.toLowerCase().includes(filters.search.toLowerCase());
       const providerMatch = filters.provider === 'all' || cert.provider?.slug === filters.provider;
       const levelMatch = filters.level === 'all' || cert.level?.slug === filters.level;
-      const resourceTypeMatch = filters.resource_type === 'all' || (cert.resource_types && cert.resource_types.some(rt => rt.slug === filters.resource_type));
 
-      return searchMatch && providerMatch && levelMatch && resourceTypeMatch;
+      return searchMatch && providerMatch && levelMatch;
     });
   }, [certifications, filters]);
 
@@ -53,15 +51,8 @@ const CertificationHub = () => {
     return uniqueLevels.sort((a, b) => sortOrder.indexOf(a.name) - sortOrder.indexOf(b.name));
   }, [certifications]);
 
-  const resourceTypes = useMemo(() => {
-    if (!certifications) return [];
-    const allResourceTypes = certifications.flatMap(c => c.resource_types || []).filter(Boolean);
-    const uniqueResourceTypes = [...new Map(allResourceTypes.map(item => [item['slug'], item])).values()];
-    return uniqueResourceTypes.sort((a, b) => a.name.localeCompare(b.name));
-  }, [certifications]);
-
   // Check if any filters are active
-  const areFiltersActive = filters.provider !== 'all' || filters.level !== 'all' || filters.resource_type !== 'all' || filters.search !== '';
+  const areFiltersActive = filters.provider !== 'all' || filters.level !== 'all' || filters.search !== '';
 
   return (
     <>
@@ -84,14 +75,13 @@ const CertificationHub = () => {
               setFilters={setFilters} 
               providers={providers}
               levels={levels}
-              resourceTypes={resourceTypes}
             />
             {/* ✅ NEW: Clear Filters Button */}
             {areFiltersActive && (
               <Button 
                 variant="ghost" 
                 className="w-full mt-4 text-blue-400 hover:bg-blue-500/10"
-                onClick={() => setFilters({ provider: 'all', level: 'all', resource_type: 'all', search: '' })}
+                onClick={() => setFilters({ provider: 'all', level: 'all', search: '' })}
               >
                 Clear All Filters
               </Button>
