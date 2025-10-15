@@ -1,4 +1,4 @@
-// src/components/certifications/CertificationCard.jsx - FINAL VERSION WITH RESOURCE TYPES
+// src/components/certifications/CertificationCard.jsx - FINAL VERSION WITH MULTIPLE RESOURCE TYPES
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Star } from 'lucide-react';
@@ -6,8 +6,16 @@ import { ArrowRight, Star } from 'lucide-react';
 const CertificationCard = ({ certification }) => {
   if (!certification) return null;
 
-  // Get the first resource type to display as a primary tag
-  const primaryResourceType = certification.resource_types?.[0];
+  // ====================================================================
+  // START OF FIX: Logic to handle and display multiple resource types
+  // ====================================================================
+  const resourceTypes = certification.resource_types || [];
+  const displayLimit = 2; // Show up to 2 tags on the card
+  const displayedTypes = resourceTypes.slice(0, displayLimit);
+  const remainingCount = resourceTypes.length - displayedTypes.length;
+  // ====================================================================
+  // END OF FIX
+  // ====================================================================
 
   return (
     <motion.div 
@@ -15,7 +23,7 @@ const CertificationCard = ({ certification }) => {
       whileHover={{ y: -5 }}
       transition={{ type: 'spring', stiffness: 400, damping: 10 }}
     >
-      {certification.featured === '1' && (
+      {certification.featured && ( // Note: API sends '1' as a string for true
         <div className="absolute top-3 right-3 bg-yellow-500/20 text-yellow-300 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 z-10">
           <Star className="h-3 w-3" />
           Featured
@@ -37,23 +45,33 @@ const CertificationCard = ({ certification }) => {
         {certification.provider && (
           <span className="text-sm font-semibold text-blue-400 mb-1">{certification.provider.name}</span>
         )}
-        <h3 className="text-lg font-bold text-white mb-2 flex-grow group-hover:text-purple-400 transition-colors duration-300">
+        <h3 className="text-lg font-bold text-white mb-2 flex-grow group-hover:text-purple-400 transition-colors duration-300 line-clamp-2">
           {certification.title}
         </h3>
+        
+        {/* Excerpt now has more space if needed */}
         <p className="text-gray-400 text-xs line-clamp-2 mb-4" dangerouslySetInnerHTML={{ __html: certification.excerpt }} />
 
         <div className="mt-auto flex items-center justify-between">
             <div className="flex items-center gap-2 flex-wrap">
-                {/* ✅ NEW: Display the primary resource type */}
-                {primaryResourceType && (
-                    <span className="text-xs font-medium text-green-300 bg-green-900/50 px-2 py-1 rounded">
-                        {primaryResourceType.name}
+                {/* ✅ NEW: Loop through and display resource types */}
+                {displayedTypes.map(rt => (
+                    <span key={rt.slug} className="text-xs font-medium text-green-300 bg-green-900/50 px-2 py-1 rounded">
+                        {rt.name}
                     </span>
-                )}
+                ))}
+                
                 {certification.level && (
                     <span className="text-xs font-medium text-gray-300 bg-slate-700 px-2 py-1 rounded">
                         {certification.level.name}
                     </span>
+                )}
+
+                {/* ✅ NEW: Show a "+ more" indicator if needed */}
+                {remainingCount > 0 && (
+                  <span className="text-xs font-medium text-gray-400">
+                    +{remainingCount} more
+                  </span>
                 )}
             </div>
             <ArrowRight className="h-5 w-5 text-gray-500 group-hover:text-blue-400 group-hover:translate-x-1 transition-transform duration-300" />
