@@ -177,10 +177,6 @@ const Header = () => {
         isResourceType: true,
       }))
     ],
-    comingSoon: [
-        { name: 'Databricks', desc: 'Guides for Databricks certs' },
-        { name: 'Kafka', desc: 'Apache Kafka certification prep' },
-    ]
   };
 
   useEffect(() => {
@@ -226,7 +222,6 @@ const Header = () => {
     }
 
     const hasItems = category.items && category.items.length > 0;
-    const hasComingSoon = category.comingSoon && category.comingSoon.length > 0;
 
     return (
       <motion.div
@@ -246,7 +241,7 @@ const Header = () => {
           </div>
         </div>
 
-        {(hasItems || hasComingSoon) ? (
+        {hasItems ? (
           <>
             <div className="grid grid-cols-2 gap-3">
               {category.items.map((item, idx) => (
@@ -284,22 +279,6 @@ const Header = () => {
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700 rounded-xl" />
                 </motion.a>
-              ))}
-              {hasComingSoon && category.comingSoon.map(item => (
-                <div key={item.name} className="group relative p-4 rounded-xl bg-slate-800/50 border border-slate-700/30 cursor-not-allowed">
-                   <div className="absolute top-2 right-2 text-xs font-bold text-purple-300 bg-purple-500/20 px-2 py-1 rounded-full">
-                     Coming Soon
-                   </div>
-                   <div className="relative z-10 flex items-start gap-3 opacity-50">
-                    <div className="flex-shrink-0 mt-1">
-                      <ChefHat className="h-8 w-8 text-purple-400" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-white mb-1">{item.name}</div>
-                      <p className="text-xs text-gray-400">{item.desc}</p>
-                    </div>
-                  </div>
-                </div>
               ))}
             </div>
             <div className="mt-4 pt-4 border-t border-slate-700/50 text-center">
@@ -429,15 +408,6 @@ const Header = () => {
                 About
               </Link>
             </motion.div>
-
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                to="/newsletter"
-                className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white px-6 lg:px-8 py-2.5 rounded-full font-bold text-base shadow-lg hover:shadow-xl transition-all duration-300 inline-block"
-              >
-                Subscribe
-              </Link>
-            </motion.div>
           </div>
 
           <div className="xl:hidden">
@@ -549,12 +519,6 @@ const Header = () => {
                   About
                 </Link>
 
-                <Link
-                  to="/newsletter"
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white w-full mt-4 py-3 text-base font-bold shadow-lg rounded-full text-center min-h-[48px] flex items-center justify-center"
-                >
-                  Subscribe
-                </Link>
               </div>
             </motion.div>
           )}
