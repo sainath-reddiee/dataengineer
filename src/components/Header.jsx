@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles, ChefHat } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+// ... (Spark and getCategoryIcon helper components remain the same as before) ...
 const Spark = ({ x, y, rotate, color }) => {
   const variants = {
     rest: { x: 0, y: 0, scale: 0, opacity: 0 },
@@ -142,6 +143,7 @@ const Header = () => {
     }
   };
 
+  // Your new categories that are still "cooking"
   const comingSoonCategories = {
     databricks: { name: 'Databricks', icon: ChefHat },
     kafka: { name: 'Kafka', icon: ChefHat },
@@ -189,6 +191,7 @@ const Header = () => {
 
     const getCtaUrl = () => '/articles';
 
+    // Check if there are items, otherwise show coming soon message
     const hasItems = category.items && category.items.length > 0;
 
     return (
@@ -339,8 +342,7 @@ const Header = () => {
                 </div>
               );
             })}
-            
-            {/* ✅ NEW: CERTIFICATIONS LINK */}
+
             <motion.div whileHover={{ y: -2 }}>
               <Link to="/certifications" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isCertActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isCertActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
                 <Sparkles className="w-4 h-4" />
@@ -362,11 +364,10 @@ const Header = () => {
               </Link>
             </motion.div>
 
-            {/* ✅ UPDATED: Resized Subscribe Button */}
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/newsletter"
-                className="bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 border border-blue-400/30 px-5 py-2 rounded-full font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-300 inline-block"
+                className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white px-6 lg:px-8 py-2.5 rounded-full font-bold text-base shadow-lg hover:shadow-xl transition-all duration-300 inline-block"
               >
                 Subscribe
               </Link>
@@ -442,7 +443,6 @@ const Header = () => {
                   </div>
                 ))}
                 
-                {/* ✅ NEW: CERTIFICATIONS LINK IN MOBILE MENU */}
                 <Link to="/certifications" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
                   <Sparkles className="w-5 h-5" />
                   Certifications
