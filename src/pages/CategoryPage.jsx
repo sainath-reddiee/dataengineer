@@ -7,12 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import RecentPosts from '@/components/RecentPosts';
 import MetaTags from '@/components/SEO/MetaTags';
-import SidebarAd from '@/components/SidebarAd';
 
 // Lazy load AdPlacement
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
-// ... (Spark component and other helpers remain the same)
 // Spark component for animation
 const Spark = ({ x, y, rotate, color }) => {
   const variants = {
@@ -162,145 +160,150 @@ const CategoryPage = () => {
       />
       
       <div className="pt-1 pb-8">
-        <div className="container mx-auto px-6 grid lg:grid-cols-[240px_1fr_240px] gap-8">
-            <SidebarAd position="sidebar-left" />
+        <div className="container mx-auto px-6">
+          {/* Back Button */}
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.5 }} 
+            className="mb-6"
+          >
+            <Button 
+              asChild 
+              variant="outline" 
+              className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm"
+            >
+              <Link to="/">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Home
+              </Link>
+            </Button>
+          </motion.div>
 
-            <main className="lg:col-span-1">
-                <motion.div 
-                    initial={{ opacity: 0, y: -20 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    transition={{ duration: 0.5 }} 
-                    className="mb-6"
-                >
-                    <Button 
-                    asChild 
-                    variant="outline" 
-                    className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm"
-                    >
-                    <Link to="/">
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Home
-                    </Link>
-                    </Button>
-                </motion.div>
+          {/* Category Header */}
+          <motion.div 
+            key={`header-${categoryName}`} 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.5, delay: 0.1 }} 
+            className="text-center mb-8"
+          >
+            <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-sm border border-blue-400/30 mb-6">
+              {getCategoryIcon(categoryName, 'h-8 w-8 md:h-10 md:w-10')}
+            </div>
+            <h1 className="text-3xl md:text-4xl font-black mb-4">
+              <span className="gradient-text">{currentCategory.name} Tutorials & Articles</span>
+            </h1>
+            <p className="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
+              {currentCategory.description}
+            </p>
+            <div className="flex items-center justify-center mt-4">
+              <div className="flex items-center space-x-2 text-sm text-gray-400 bg-gray-800/30 px-4 py-2 rounded-full">
+                <Folder className="h-4 w-4" />
+                <span>Category: {currentCategory.name}</span>
+              </div>
+            </div>
+          </motion.div>
+          
+          {/* Ad after header, before posts */}
+          <Suspense fallback={null}>
+            <AdPlacement position="category-top" format="auto" responsive={true} />
+          </Suspense>
+          
+          {/* Posts Section */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <RecentPosts 
+              category={lowerCategoryName} 
+              showCategoryError={true} 
+              initialLimit={9} 
+              title={`All ${currentCategory.name} Articles`} 
+              showLoadMore={true} 
+              showViewToggle={true} 
+            />
+          </motion.div>
 
-                <motion.div 
-                    key={`header-${categoryName}`} 
-                    initial={{ opacity: 0, y: 20 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    transition={{ duration: 0.5, delay: 0.1 }} 
-                    className="text-center mb-8"
-                >
-                    <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-sm border border-blue-400/30 mb-6">
-                    {getCategoryIcon(categoryName, 'h-8 w-8 md:h-10 md:w-10')}
-                    </div>
-                    <h1 className="text-3xl md:text-4xl font-black mb-4">
-                    <span className="gradient-text">{currentCategory.name} Tutorials & Articles</span>
-                    </h1>
-                    <p className="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                    {currentCategory.description}
-                    </p>
-                    <div className="flex items-center justify-center mt-4">
-                    <div className="flex items-center space-x-2 text-sm text-gray-400 bg-gray-800/30 px-4 py-2 rounded-full">
-                        <Folder className="h-4 w-4" />
-                        <span>Category: {currentCategory.name}</span>
-                    </div>
-                    </div>
-                </motion.div>
-                
-                <Suspense fallback={null}>
-                    <AdPlacement position="category-top" format="auto" responsive={true} />
-                </Suspense>
-                
-                <motion.div 
-                    initial={{ opacity: 0, y: 20 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                    <RecentPosts 
-                    category={lowerCategoryName} 
-                    showCategoryError={true} 
-                    initialLimit={9} 
-                    title={`All ${currentCategory.name} Articles`} 
-                    showLoadMore={true} 
-                    showViewToggle={true} 
-                    />
-                </motion.div>
+          {/* Ad after posts section */}
+          <Suspense fallback={null}>
+            <AdPlacement position="category-middle" format="auto" responsive={true} />
+          </Suspense>
 
-                <Suspense fallback={null}>
-                    <AdPlacement position="category-middle" format="auto" responsive={true} />
-                </Suspense>
+          {/* Explore Other Categories Section */}
+          <motion.div 
+            key={`explore-${categoryName}`} 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.5, delay: 0.3 }} 
+            className="mt-16 p-6 bg-gradient-to-r from-blue-900/20 to-purple-900/20 backdrop-blur-sm border border-blue-400/20 rounded-2xl"
+          >
+            <div className="text-xl font-bold mb-4 text-center gradient-text">
+              Explore Other Categories
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {Object.entries(categoryConfig).map(([slug, config]) => {
+                const isActive = slug === lowerCategoryName;
+                return (
+                  <MotionLink
+                    key={slug}
+                    to={config.path}
+                    initial="rest"
+                    whileHover="hover"
+                    className={`relative p-4 rounded-xl text-center transition-all duration-300 overflow-hidden group ${
+                      isActive
+                        ? 'border-2 border-blue-400 shadow-lg shadow-blue-500/30'
+                        : 'border border-gray-700 hover:border-blue-400/50'
+                    }`}
+                    aria-label={`View ${config.name} articles`}
+                  >
+                    {/* Spark emitters in corners */}
+                    {[...Array(4)].map((_, i) => (
+                      <motion.div 
+                        key={i} 
+                        variants={sparkContainerVariants} 
+                        className={`absolute ${i < 2 ? 'top-0' : 'bottom-0'} ${i % 2 === 0 ? 'left-0' : 'right-0'} w-12 h-12`}
+                      >
+                        {sparks.map((spark, j) => <Spark key={j} {...spark} />)}
+                      </motion.div>
+                    ))}
 
-                <motion.div 
-                    key={`explore-${categoryName}`} 
-                    initial={{ opacity: 0, y: 20 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    transition={{ duration: 0.5, delay: 0.3 }} 
-                    className="mt-16 p-6 bg-gradient-to-r from-blue-900/20 to-purple-900/20 backdrop-blur-sm border border-blue-400/20 rounded-2xl"
-                >
-                    <div className="text-xl font-bold mb-4 text-center gradient-text">
-                    Explore Other Categories
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {Object.entries(categoryConfig).map(([slug, config]) => {
-                        const isActive = slug === lowerCategoryName;
-                        return (
-                        <MotionLink
-                            key={slug}
-                            to={config.path}
-                            initial="rest"
-                            whileHover="hover"
-                            className={`relative p-4 rounded-xl text-center transition-all duration-300 overflow-hidden group ${
-                            isActive
-                                ? 'border-2 border-blue-400 shadow-lg shadow-blue-500/30'
-                                : 'border border-gray-700 hover:border-blue-400/50'
-                            }`}
-                            aria-label={`View ${config.name} articles`}
-                        >
-                            {[...Array(4)].map((_, i) => (
-                            <motion.div 
-                                key={i} 
-                                variants={sparkContainerVariants} 
-                                className={`absolute ${i < 2 ? 'top-0' : 'bottom-0'} ${i % 2 === 0 ? 'left-0' : 'right-0'} w-12 h-12`}
-                            >
-                                {sparks.map((spark, j) => <Spark key={j} {...spark} />)}
-                            </motion.div>
-                            ))}
-
-                            <div className={`absolute inset-0 bg-gradient-to-br ${config.color} opacity-20 group-hover:opacity-30 transition-opacity`}></div>
-                            
-                            <div className="relative z-10 flex flex-col items-center">
-                            <div className="flex justify-center mb-2">
-                                {getCategoryIcon(slug, 'h-8 w-8 md:h-10 md:w-10')}
-                            </div>
-                            <div className={`text-sm font-medium ${isActive ? 'text-blue-300' : 'text-gray-300'}`}>
-                                {config.name}
-                            </div>
-                            </div>
-                        </MotionLink>
-                        );
-                    })}
-                    </div>
+                    {/* Gradient background on hover */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${config.color} opacity-20 group-hover:opacity-30 transition-opacity`}></div>
                     
-                    <div className="text-center mt-6">
-                    <Button 
-                        asChild 
-                        variant="outline" 
-                        className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
-                    >
-                        <Link to="/articles">View All Articles</Link>
-                    </Button>
+                    {/* Content */}
+                    <div className="relative z-10 flex flex-col items-center">
+                      <div className="flex justify-center mb-2">
+                        {getCategoryIcon(slug, 'h-8 w-8 md:h-10 md:w-10')}
+                      </div>
+                      <div className={`text-sm font-medium ${isActive ? 'text-blue-300' : 'text-gray-300'}`}>
+                        {config.name}
+                      </div>
                     </div>
-                </motion.div>
+                  </MotionLink>
+                );
+              })}
+            </div>
+            
+            {/* View All Articles Button */}
+            <div className="text-center mt-6">
+              <Button 
+                asChild 
+                variant="outline" 
+                className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
+              >
+                <Link to="/articles">View All Articles</Link>
+              </Button>
+            </div>
+          </motion.div>
 
-                <Suspense fallback={null}>
-                    <div className="mt-8">
-                    <AdPlacement position="category-bottom" format="auto" responsive={true} />
-                    </div>
-                </Suspense>
-            </main>
-
-            <SidebarAd position="sidebar-right" />
+          {/* Ad at bottom of page */}
+          <Suspense fallback={null}>
+            <div className="mt-8">
+              <AdPlacement position="category-bottom" format="auto" responsive={true} />
+            </div>
+          </Suspense>
         </div>
       </div>
     </>
