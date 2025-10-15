@@ -15,27 +15,25 @@ const CertificationHub = () => {
   });
 
   const filteredCertifications = useMemo(() => {
-    if (!certifications) return [];
     return certifications.filter(cert => {
       const searchMatch = cert.title.toLowerCase().includes(filters.search.toLowerCase()) || cert.cert_code?.toLowerCase().includes(filters.search.toLowerCase());
       const providerMatch = filters.provider === 'all' || cert.provider?.slug === filters.provider;
       const levelMatch = filters.level === 'all' || cert.level?.slug === filters.level;
+
       return searchMatch && providerMatch && levelMatch;
     });
   }, [certifications, filters]);
 
   const providers = useMemo(() => {
-    if (!certifications) return [];
-    const allProviders = certifications.map(c => c.provider).filter(Boolean);
-    const uniqueProviders = [...new Map(allProviders.map(item => [item['slug'], item])).values()];
-    return uniqueProviders.sort((a, b) => a.name.localeCompare(b.name));
+      const allProviders = certifications.map(c => c.provider).filter(Boolean);
+      const uniqueProviders = [...new Map(allProviders.map(item => [item['slug'], item])).values()];
+      return uniqueProviders.sort((a, b) => a.name.localeCompare(b.name));
   }, [certifications]);
   
   const levels = useMemo(() => {
-    if (!certifications) return [];
-    const allLevels = certifications.map(c => c.level).filter(Boolean);
-    const uniqueLevels = [...new Map(allLevels.map(item => [item['slug'], item])).values()];
-    return uniqueLevels.sort((a, b) => a.name.localeCompare(b.name));
+      const allLevels = certifications.map(c => c.level).filter(Boolean);
+      const uniqueLevels = [...new Map(allLevels.map(item => [item['slug'], item])).values()];
+      return uniqueLevels.sort((a, b) => a.name.localeCompare(b.name));
   }, [certifications]);
 
   return (
@@ -79,9 +77,9 @@ const CertificationHub = () => {
             {!loading && !error && (
               <>
                 <div className="mb-6 text-sm text-gray-400">
-                  Showing <span className="font-bold text-white">{filteredCertifications.length}</span> of <span className="font-bold text-white">{certifications?.length || 0}</span> resources.
+                  Showing <span className="font-bold text-white">{filteredCertifications.length}</span> of <span className="font-bold text-white">{certifications.length}</span> resources.
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                   {filteredCertifications.length > 0 ? (
                     filteredCertifications.map(cert => (
                       <Link to={`/certifications/${cert.slug}`} key={cert.id} className="block">
