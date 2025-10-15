@@ -107,4 +107,3 @@ const CertificationHub = () => {
 };
 
 export default CertificationHub;
-
