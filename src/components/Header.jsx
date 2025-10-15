@@ -1,7 +1,7 @@
 // src/components/Header.jsx - FINAL VERSION
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles, ChefHat, FileText, FileSpreadsheet, ClipboardList } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles, ChefHat, FileText, FileSpreadsheet, ClipboardList, HelpCircle } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useResourceTypes } from '@/hooks/useCertifications';
 
@@ -75,11 +75,12 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
   );
 };
 
-const getResourceIcon = (name, className = 'h-8 w-8') => {
+const getResourceIcon = (name, className = 'h-8 w-8 text-yellow-400') => {
   const lowerName = name.toLowerCase();
   if (lowerName.includes('sheet')) return <FileSpreadsheet className={className} />;
   if (lowerName.includes('guide')) return <ClipboardList className={className} />;
-  if (lowerName.includes('question')) return <ClipboardList className={className} />;
+  if (lowerName.includes('question')) return <HelpCircle className={className} />;
+  if (lowerName.includes('tip')) return <Sparkles className={className} />;
   return <FileText className={className} />;
 };
 
@@ -160,7 +161,7 @@ const Header = () => {
     items: resourceTypes.map(rt => ({
         name: rt.name,
         path: `/certifications/resource/${rt.slug}`,
-        color: 'from-green-500 to-teal-500',
+        color: 'from-yellow-500 to-amber-500',
         desc: rt.description || `${rt.count}+ resources available.`,
         isResourceType: true,
     })),
@@ -252,7 +253,7 @@ const Header = () => {
                   <div className="relative z-10 flex items-start gap-3">
                     <div className="flex-shrink-0 mt-1">
                       {item.iconOverride ? item.iconOverride : 
-                       item.isResourceType ? getResourceIcon(item.name, 'h-8 w-8 text-green-400') : 
+                       item.isResourceType ? getResourceIcon(item.name) : 
                        getCategoryIcon(item.name, 'h-8 w-8')}
                     </div>
                     <div className="flex-1">
@@ -311,7 +312,6 @@ const Header = () => {
     >
       <nav className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center flex-1">
             <a href="/" className="flex items-center space-x-2 sm:space-x-3 z-10">
               <motion.div
                 whileHover={{ scale: 1.1, rotate: 5 }}
@@ -328,77 +328,75 @@ const Header = () => {
               </span>
             </a>
 
-            {/* Desktop Navigation */}
-            <div className="hidden xl:flex items-center space-x-4 lg:space-x-6 ml-6 lg:ml-10">
-              <motion.div whileHover={{ y: -2 }}>
-                <Link to="/" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isHomeActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isHomeActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
-                  <Home className="w-4 h-4" />
-                  Home
-                </Link>
-              </motion.div>
-              
-              <div 
-                className="relative"
-                onMouseEnter={() => setOpenDropdown('certifications')}
-                onMouseLeave={() => setOpenDropdown(null)}
-              >
+          <div className="hidden xl:flex items-center space-x-4 lg:space-x-6">
+            <motion.div whileHover={{ y: -2 }}>
+              <Link to="/" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isHomeActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isHomeActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
+                <Home className="w-4 h-4" />
+                Home
+              </Link>
+            </motion.div>
+            
+            <div 
+              className="relative"
+              onMouseEnter={() => setOpenDropdown('certifications')}
+              onMouseLeave={() => setOpenDropdown(null)}
+            >
+                <motion.button
+                    whileHover={{ y: -2 }}
+                    className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${isCategoryActive('certifications') ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
+                    style={isCategoryActive('certifications') ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+                >
+                    <Sparkles className="w-4 h-4" />
+                    Certifications
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdown === 'certifications' ? 'rotate-180' : ''}`} />
+                </motion.button>
+                <AnimatePresence>
+                    {openDropdown === 'certifications' && (
+                        <MegaMenu category={certificationsMenu} categoryKey="certifications" />
+                    )}
+                </AnimatePresence>
+            </div>
+
+            {Object.entries(categories).map(([key, category]) => {
+              const isActive = isCategoryActive(key);
+              return (
+                <div 
+                  key={key} 
+                  className="relative"
+                  onMouseEnter={() => setOpenDropdown(key)}
+                  onMouseLeave={() => setOpenDropdown(null)}
+                >
                   <motion.button
-                      whileHover={{ y: -2 }}
-                      className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${isCategoryActive('certifications') ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
-                      style={isCategoryActive('certifications') ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+                    whileHover={{ y: -2 }}
+                    className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${isActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
+                    style={isActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
                   >
-                      <Sparkles className="w-4 h-4" />
-                      Certifications
-                      <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdown === 'certifications' ? 'rotate-180' : ''}`} />
+                    <category.icon className="w-4 h-4" />
+                    {category.title.split(' ')[0]}
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdown === key ? 'rotate-180' : ''}`} />
                   </motion.button>
                   <AnimatePresence>
-                      {openDropdown === 'certifications' && (
-                          <MegaMenu category={certificationsMenu} categoryKey="certifications" />
-                      )}
+                    {openDropdown === key && (
+                      <MegaMenu category={category} categoryKey={key} />
+                    )}
                   </AnimatePresence>
-              </div>
+                </div>
+              );
+            })}
+            
+            <motion.div whileHover={{ y: -2 }}>
+              <Link to="/tag" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isTagsActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isTagsActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
+                <Tags className="w-4 h-4" />
+                Tags
+              </Link>
+            </motion.div>
 
-              {Object.entries(categories).map(([key, category]) => {
-                const isActive = isCategoryActive(key);
-                return (
-                  <div 
-                    key={key} 
-                    className="relative"
-                    onMouseEnter={() => setOpenDropdown(key)}
-                    onMouseLeave={() => setOpenDropdown(null)}
-                  >
-                    <motion.button
-                      whileHover={{ y: -2 }}
-                      className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${isActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
-                      style={isActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
-                    >
-                      <category.icon className="w-4 h-4" />
-                      {category.title.split(' ')[0]}
-                      <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdown === key ? 'rotate-180' : ''}`} />
-                    </motion.button>
-                    <AnimatePresence>
-                      {openDropdown === key && (
-                        <MegaMenu category={category} categoryKey={key} />
-                      )}
-                    </AnimatePresence>
-                  </div>
-                );
-              })}
-              
-              <motion.div whileHover={{ y: -2 }}>
-                <Link to="/tag" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isTagsActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isTagsActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
-                  <Tags className="w-4 h-4" />
-                  Tags
-                </Link>
-              </motion.div>
-
-              <motion.div whileHover={{ y: -2 }}>
-                <Link to="/about" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isAboutActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isAboutActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
-                  <Info className="w-4 h-4" />
-                  About
-                </Link>
-              </motion.div>
-            </div>
+            <motion.div whileHover={{ y: -2 }}>
+              <Link to="/about" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isAboutActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isAboutActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
+                <Info className="w-4 h-4" />
+                About
+              </Link>
+            </motion.div>
           </div>
 
           {/* Mobile Menu Button */}
