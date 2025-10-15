@@ -311,93 +311,97 @@ const Header = () => {
     >
       <nav className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
-          <a href="/" className="flex items-center space-x-2 sm:space-x-3 z-10">
-            <motion.div
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <div className="relative">
-                <Database className="h-7 w-7 sm:h-8 sm:w-8 text-blue-400" />
-                <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse" />
-              </div>
-            </motion.div>
-            <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              DataEngineer Hub
-            </span>
-          </a>
+          <div className="flex items-center flex-1">
+            <a href="/" className="flex items-center space-x-2 sm:space-x-3 z-10">
+              <motion.div
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <div className="relative">
+                  <Database className="h-7 w-7 sm:h-8 sm:w-8 text-blue-400" />
+                  <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse" />
+                </div>
+              </motion.div>
+              <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                DataEngineer Hub
+              </span>
+            </a>
 
-          <div className="hidden xl:flex items-center space-x-4 lg:space-x-6">
-            <motion.div whileHover={{ y: -2 }}>
-              <Link to="/" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isHomeActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isHomeActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
-                <Home className="w-4 h-4" />
-                Home
-              </Link>
-            </motion.div>
+            {/* Desktop Navigation */}
+            <div className="hidden xl:flex items-center space-x-4 lg:space-x-6 ml-6 lg:ml-10">
+              <motion.div whileHover={{ y: -2 }}>
+                <Link to="/" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isHomeActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isHomeActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
+                  <Home className="w-4 h-4" />
+                  Home
+                </Link>
+              </motion.div>
 
-            {Object.entries(categories).map(([key, category]) => {
-              const isActive = isCategoryActive(key);
-              return (
-                <div 
-                  key={key} 
-                  className="relative"
-                  onMouseEnter={() => setOpenDropdown(key)}
-                  onMouseLeave={() => setOpenDropdown(null)}
-                >
-                  <motion.button
-                    whileHover={{ y: -2 }}
-                    className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${isActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
-                    style={isActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+              {Object.entries(categories).map(([key, category]) => {
+                const isActive = isCategoryActive(key);
+                return (
+                  <div 
+                    key={key} 
+                    className="relative"
+                    onMouseEnter={() => setOpenDropdown(key)}
+                    onMouseLeave={() => setOpenDropdown(null)}
                   >
-                    <category.icon className="w-4 h-4" />
-                    {category.title.split(' ')[0]}
-                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdown === key ? 'rotate-180' : ''}`} />
+                    <motion.button
+                      whileHover={{ y: -2 }}
+                      className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${isActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
+                      style={isActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+                    >
+                      <category.icon className="w-4 h-4" />
+                      {category.title.split(' ')[0]}
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdown === key ? 'rotate-180' : ''}`} />
+                    </motion.button>
+                    <AnimatePresence>
+                      {openDropdown === key && (
+                        <MegaMenu category={category} categoryKey={key} />
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+
+              <div 
+                className="relative"
+                onMouseEnter={() => setOpenDropdown('certifications')}
+                onMouseLeave={() => setOpenDropdown(null)}
+              >
+                  <motion.button
+                      whileHover={{ y: -2 }}
+                      className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${isCategoryActive('certifications') ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
+                      style={isCategoryActive('certifications') ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+                  >
+                      <Sparkles className="w-4 h-4" />
+                      Certifications
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdown === 'certifications' ? 'rotate-180' : ''}`} />
                   </motion.button>
                   <AnimatePresence>
-                    {openDropdown === key && (
-                      <MegaMenu category={category} categoryKey={key} />
-                    )}
+                      {openDropdown === 'certifications' && (
+                          <MegaMenu category={certificationsMenu} categoryKey="certifications" />
+                      )}
                   </AnimatePresence>
-                </div>
-              );
-            })}
+              </div>
+              
+              <motion.div whileHover={{ y: -2 }}>
+                <Link to="/tag" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isTagsActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isTagsActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
+                  <Tags className="w-4 h-4" />
+                  Tags
+                </Link>
+              </motion.div>
 
-            <div 
-              className="relative"
-              onMouseEnter={() => setOpenDropdown('certifications')}
-              onMouseLeave={() => setOpenDropdown(null)}
-            >
-                <motion.button
-                    whileHover={{ y: -2 }}
-                    className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${isCategoryActive('certifications') ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
-                    style={isCategoryActive('certifications') ? { textShadow: '0 0 5px #60a5fa' } : undefined}
-                >
-                    <Sparkles className="w-4 h-4" />
-                    Certifications
-                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdown === 'certifications' ? 'rotate-180' : ''}`} />
-                </motion.button>
-                <AnimatePresence>
-                    {openDropdown === 'certifications' && (
-                        <MegaMenu category={certificationsMenu} categoryKey="certifications" />
-                    )}
-                </AnimatePresence>
+              <motion.div whileHover={{ y: -2 }}>
+                <Link to="/about" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isAboutActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isAboutActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
+                  <Info className="w-4 h-4" />
+                  About
+                </Link>
+              </motion.div>
             </div>
-            
-            <motion.div whileHover={{ y: -2 }}>
-              <Link to="/tag" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isTagsActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isTagsActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
-                <Tags className="w-4 h-4" />
-                Tags
-              </Link>
-            </motion.div>
-
-            <motion.div whileHover={{ y: -2 }}>
-              <Link to="/about" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isAboutActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isAboutActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
-                <Info className="w-4 h-4" />
-                About
-              </Link>
-            </motion.div>
           </div>
 
+          {/* Mobile Menu Button */}
           <div className="xl:hidden">
             <motion.button
               whileTap={{ scale: 0.9 }}
