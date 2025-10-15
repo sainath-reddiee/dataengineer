@@ -66,4 +66,3 @@ const CertificationCard = ({ certification }) => {
 };
 
 export default CertificationCard;
-
