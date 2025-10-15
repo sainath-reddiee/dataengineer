@@ -27,8 +27,8 @@ const AdPlacement = ({
     'homepage-top': '7788990011',
     'homepage-middle': '8899001122',
     'homepage-bottom': '9900112233',
-    'sidebar-top': '5544332211',
-    'sidebar-middle': '6677889900',
+    'sidebar-left': '5544332211',
+    'sidebar-right': '6677889900',
     'default': '1234567890'
   };
 
