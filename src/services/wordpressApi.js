@@ -1,4 +1,4 @@
-// src/services/wordpressApi.js - COMPLETE FINAL VERSION
+// src/services/wordpressApi.js - OPTIMIZED FOR SPEED
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog';
 const WP_API_BASE = `${WORDPRESS_API_URL}/wp-json/wp/v2`;
 
@@ -178,7 +178,7 @@ class WordPressAPI {
   transformPost(wpPost) {
     try {
       if (!wpPost || typeof wpPost !== 'object') {
-        throw new Error('Invalid post data provided');
+        return null;
       }
 
       // ✅ Fast path for image extraction
@@ -197,24 +197,19 @@ class WordPressAPI {
 
       // ✅ Fast category extraction
       let primaryCategory = 'Uncategorized';
-      const categories = wpPost._embedded?.['wp:term']?.[0];
+      const terms = wpPost._embedded?.['wp:term'] || [];
+      const categories = terms[0] || [];
+
       if (Array.isArray(categories) && categories.length > 0) {
         const nonUncategorized = categories.find(cat => cat.name !== 'Uncategorized');
         primaryCategory = nonUncategorized?.name || categories[0]?.name || 'Uncategorized';
       }
 
       // ✅ Fast tag extraction
-      let tags = [];
-      if (wpPost.post_tags && Array.isArray(wpPost.post_tags)) {
-        tags = wpPost.post_tags;
-      } else if (wpPost._embedded?.['wp:term']?.[1]) {
-        tags = wpPost._embedded['wp:term'][1].map(tag => ({
-          id: tag.id,
-          name: tag.name,
-          slug: tag.slug,
-          link: tag.link
-        }));
-      }
+      const tagsRaw = terms[1] || wpPost.post_tags || [];
+      const tags = Array.isArray(tagsRaw) ? tagsRaw.map(tag => ({
+        id: tag.id, name: tag.name, slug: tag.slug, link: tag.link
+      })) : [];
 
       const author = wpPost._embedded?.author?.[0]?.name || 'DataEngineer Hub';
       const featured = wpPost.meta?.featured === '1' || wpPost.meta?.featured === 1;
@@ -228,12 +223,12 @@ class WordPressAPI {
       const transformedPost = {
         id: wpPost.id,
         slug: wpPost.slug || '',
-        title: this.decodeHtmlEntities(wpPost.title?.rendered || wpPost.title || 'Untitled'),
+        title: this.decodeHtmlEntities(wpPost.title?.rendered || 'Untitled'),
         excerpt: excerpt,
-        content: wpPost.content?.rendered || wpPost.content || '',
+        content: wpPost.content?.rendered || '',
         category: primaryCategory,
         tags: tags,
-        readTime: this.calculateReadTime(wpPost.content?.rendered || wpPost.content || ''),
+        readTime: this.calculateReadTime(wpPost.content?.rendered || ''),
         date: wpPost.date || new Date().toISOString(),
         image: imageUrl,
         featured: featured,
@@ -244,28 +239,81 @@ class WordPressAPI {
       return transformedPost;
 
     } catch (error) {
-      console.error('❌ Error transforming post:', error);
-      
-      return {
-        id: wpPost?.id || Math.random(),
-        slug: wpPost?.slug || '',
-        title: wpPost?.title?.rendered || 'Error Loading Post',
-        excerpt: 'There was an error loading this post content.',
-        content: '<p>There was an error loading this post content.</p>',
-        category: 'Uncategorized',
-        tags: [],
-        readTime: '1 min read',
-        date: new Date().toISOString(),
-        image: 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop',
-        featured: false,
-        trending: false,
-        author: 'DataEngineer Hub',
-      };
+      console.error('❌ Error transforming post:', error, { postData: wpPost });
+      return null;
     }
   }
 
+  // =================================================================
+  // == CERTIFICATION HUB METHODS (FINAL ROBUST VERSION)
+  // =================================================================
+  transformCertification(wpCert) {
+    if (!wpCert || typeof wpCert !== 'object') return null;
+    const embedded = wpCert._embedded || {};
+    const featuredMedia = embedded['wp:featuredmedia']?.[0];
+    const terms = embedded['wp:term'] || [];
+  
+    const findTerm = (taxonomy) => {
+        const found = terms.flat().find(term => term && term.taxonomy === taxonomy);
+        return found ? { id: found.id, name: found.name, slug: found.slug } : null;
+    };
+    
+    const findTerms = (taxonomy) => {
+        return terms.flat().filter(term => term && term.taxonomy === taxonomy).map(term => ({
+            id: term.id,
+            name: term.name,
+            slug: term.slug
+        }));
+    };
+  
+    return {
+      id: wpCert.id,
+      slug: wpCert.slug,
+      title: this.decodeHtmlEntities(wpCert.title?.rendered || ''),
+      excerpt: this.cleanExcerpt(wpCert.excerpt?.rendered || ''),
+      content: wpCert.content?.rendered || '',
+      featured_image: featuredMedia?.source_url || null,
+      provider: findTerm('cert_provider'),
+      level: findTerm('cert_level'),
+      resource_types: findTerms('resource_type'),
+      cert_code: wpCert.cert_code || '',
+      cert_official_name: wpCert.cert_official_name || '',
+      exam_cost: wpCert.cert_exam_cost || '',
+      duration: wpCert.cert_duration || '',
+      passing_score: wpCert.cert_passing_score || '',
+      questions_count: wpCert.cert_questions_count || '',
+      difficulty: wpCert.cert_difficulty || '',
+      download_url: wpCert.cert_download_url || '',
+      featured: wpCert.cert_featured,
+    };
+  }
+
+  async getCertifications(options = {}) {
+    const params = new URLSearchParams({
+      per_page: '100',
+      _embed: 'wp:featuredmedia,wp:term',
+      ...options,
+    });
+    const result = await this.makeRequest(`/certification?${params.toString()}`);
+    if (!result || !Array.isArray(result.data)) {
+        console.error('Expected an array of certifications, but received:', result);
+        return [];
+    }
+    return result.data.map(post => this.transformCertification(post)).filter(Boolean);
+  }
+
+  async getCertificationBySlug(slug) {
+    const result = await this.makeRequest(`/certification?slug=${slug}&_embed`);
+    if (!result.data || result.data.length === 0) {
+      throw new Error(`Certification with slug "${slug}" not found`);
+    }
+    return this.transformCertification(result.data[0]);
+  }
+
+
   cleanExcerpt(excerpt) {
     try {
+      if (!excerpt) return '';
       const decoded = this.decodeHtmlEntities(excerpt);
       return decoded
         .replace(/<[^>]*>/g, '')
@@ -319,8 +367,8 @@ class WordPressAPI {
       if (categoryId) params.append('categories', categoryId.toString());
       if (tag) params.append('tags', tag.toString());
       if (search && search.trim()) params.append('search', search.trim());
-      if (featured) params.append('is_featured', 'true');
-      if (trending) params.append('is_trending', 'true');
+      if (featured) params.append('meta_key', 'featured');
+      if (trending) params.append('meta_key', 'trending');
 
       const result = await this.makeRequest(`/posts?${params.toString()}`);
       
@@ -470,62 +518,6 @@ class WordPressAPI {
       throw error;
     }
   }
-
-  // =================================================================
-  // == CERTIFICATION HUB METHODS
-  // =================================================================
-
-  async getCertifications(options = {}) {
-    const params = new URLSearchParams({
-      per_page: '100',
-      _embed: 'wp:featuredmedia,wp:term',
-      ...options,
-    });
-    const endpoint = `/certification?${params.toString()}`;
-    const result = await this.makeRequest(endpoint);
-    return result.data.map(post => this.transformCertification(post));
-  }
-
-  async getCertificationBySlug(slug) {
-    const endpoint = `/certification?slug=${slug}&_embed`;
-    const result = await this.makeRequest(endpoint);
-    if (!result.data || result.data.length === 0) {
-      throw new Error(`Certification with slug "${slug}" not found`);
-    }
-    return this.transformCertification(result.data[0]);
-  }
-
-  transformCertification(wpCert) {
-    const featuredMedia = wpCert._embedded?.['wp:featuredmedia']?.[0];
-    const terms = wpCert._embedded?.['wp:term'] || [];
-    const provider = terms[0]?.[0];
-    const level = terms[1]?.[0];
-    const resource_types = terms[2];
-    
-    return {
-      id: wpCert.id,
-      slug: wpCert.slug,
-      title: this.decodeHtmlEntities(wpCert.title.rendered),
-      excerpt: this.cleanExcerpt(wpCert.excerpt.rendered),
-      content: wpCert.content.rendered,
-      featured_image: featuredMedia?.source_url || null,
-      provider: provider ? { name: provider.name, slug: provider.slug } : null,
-      level: level ? { name: level.name, slug: level.slug } : null,
-      resource_types: resource_types ? resource_types.map(rt => ({ name: rt.name, slug: rt.slug })) : [],
-      cert_code: wpCert.cert_code,
-      cert_official_name: wpCert.cert_official_name,
-      exam_cost: wpCert.cert_exam_cost,
-      duration: wpCert.cert_duration,
-      passing_score: wpCert.cert_passing_score,
-      questions_count: wpCert.cert_questions_count,
-      difficulty: wpCert.cert_difficulty,
-      download_url: wpCert.cert_download_url,
-    };
-  }
-  
-  // =================================================================
-  // == END CERTIFICATION HUB METHODS
-  // =================================================================
 
   async getPostsByCategory(categoryId, options = {}) {
     return this.getPosts({ ...options, categoryId });
