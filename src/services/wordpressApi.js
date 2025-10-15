@@ -174,7 +174,7 @@ class WordPressAPI {
     }
   }
 
-  // ✅ Simplified transform with early returns
+  // ✅ REVISED: This is the corrected function
   transformPost(wpPost) {
     try {
       if (!wpPost || typeof wpPost !== 'object') {
@@ -195,26 +195,42 @@ class WordPressAPI {
         }
       }
 
-      // ✅ Fast category extraction
-      let primaryCategory = 'Uncategorized';
-      const categories = wpPost._embedded?.['wp:term']?.[0];
-      if (Array.isArray(categories) && categories.length > 0) {
-        const nonUncategorized = categories.find(cat => cat.name !== 'Uncategorized');
-        primaryCategory = nonUncategorized?.name || categories[0]?.name || 'Uncategorized';
+      // ====================================================================
+      // START OF FIX: Robustly find categories and tags
+      // ====================================================================
+
+      let postCategories = [];
+      let postTags = [];
+      const allTerms = wpPost._embedded?.['wp:term']?.flat() || [];
+
+      if (allTerms.length > 0) {
+        postCategories = allTerms.filter(term => term && term.taxonomy === 'category');
+        postTags = allTerms.filter(term => term && term.taxonomy === 'post_tag');
       }
 
-      // ✅ Fast tag extraction
-      let tags = [];
-      if (wpPost.post_tags && Array.isArray(wpPost.post_tags)) {
-        tags = wpPost.post_tags;
-      } else if (wpPost._embedded?.['wp:term']?.[1]) {
-        tags = wpPost._embedded['wp:term'][1].map(tag => ({
-          id: tag.id,
-          name: tag.name,
-          slug: tag.slug,
-          link: tag.link
-        }));
+      // Determine primary category, excluding 'Uncategorized' if others exist
+      let primaryCategory = 'Uncategorized';
+      if (postCategories.length > 0) {
+        const nonUncategorized = postCategories.find(cat => cat.name !== 'Uncategorized');
+        primaryCategory = nonUncategorized?.name || postCategories[0]?.name || 'Uncategorized';
       }
+
+      // Map tags to the expected format
+      let tags = postTags.map(tag => ({
+        id: tag.id,
+        name: tag.name,
+        slug: tag.slug,
+        link: tag.link
+      }));
+      
+      // Fallback for older API responses where tags are on the main object
+      if (tags.length === 0 && wpPost.post_tags && Array.isArray(wpPost.post_tags)) {
+        tags = wpPost.post_tags;
+      }
+
+      // ====================================================================
+      // END OF FIX
+      // ====================================================================
 
       const author = wpPost._embedded?.author?.[0]?.name || 'DataEngineer Hub';
       const featured = wpPost.meta?.featured === '1' || wpPost.meta?.featured === 1;
@@ -232,7 +248,7 @@ class WordPressAPI {
         excerpt: excerpt,
         content: wpPost.content?.rendered || wpPost.content || '',
         category: primaryCategory,
-        tags: tags,
+        tags: tags, // Use the new robustly found tags
         readTime: this.calculateReadTime(wpPost.content?.rendered || wpPost.content || ''),
         date: wpPost.date || new Date().toISOString(),
         image: imageUrl,
@@ -244,12 +260,12 @@ class WordPressAPI {
       return transformedPost;
 
     } catch (error) {
-      console.error('❌ Error transforming post:', error);
+      console.error('❌ Error transforming post:', error, 'Post data:', wpPost); // Added post data to log for easier debugging
       
       return {
         id: wpPost?.id || Math.random(),
         slug: wpPost?.slug || '',
-        title: wpPost?.title?.rendered || 'Error Loading Post',
+        title: 'Error Loading Post',
         excerpt: 'There was an error loading this post content.',
         content: '<p>There was an error loading this post content.</p>',
         category: 'Uncategorized',
