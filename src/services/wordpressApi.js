@@ -42,7 +42,6 @@ class WordPressAPI {
       .replace(/&gt;/g, ">");
   }
 
-  // ✅ CRITICAL: Reduced timeout and improved caching
   async makeRequest(endpoint, options = {}) {
     const cacheKey = `${endpoint}_${JSON.stringify(options)}`;
     
@@ -52,7 +51,6 @@ class WordPressAPI {
       return cached;
     }
 
-    // ✅ Prevent duplicate requests
     if (this.requestQueue.has(cacheKey)) {
       console.log('⏳ Request already in progress, waiting...');
       return this.requestQueue.get(cacheKey);
@@ -63,7 +61,7 @@ class WordPressAPI {
         console.log('📡 API Request:', `${this.baseURL}${endpoint}`);
         
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000); // ✅ Reduced from 15s to 8s
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
         
         const response = await fetch(`${this.baseURL}${endpoint}`, {
           mode: 'cors',
@@ -138,7 +136,6 @@ class WordPressAPI {
     return requestPromise;
   }
 
-  // ✅ OPTIMIZED: Fetch only necessary fields
   async getPostBySlug(slug) {
     try {
       if (!slug || typeof slug !== 'string' || slug.trim() === '') {
@@ -148,7 +145,6 @@ class WordPressAPI {
       const cleanSlug = slug.trim();
       console.log('🔍 Fetching post by slug:', cleanSlug);
 
-      // ✅ CRITICAL: Only fetch required fields to reduce payload
       const result = await this.makeRequest(
         `/posts?slug=${encodeURIComponent(cleanSlug)}&_embed=wp:featuredmedia,wp:term,author&status=publish&_fields=id,slug,title,excerpt,content,date,featured_image_url,_embedded,meta,post_tags`
       );
@@ -174,14 +170,14 @@ class WordPressAPI {
     }
   }
 
-  // ✅ REVISED: This is the corrected function
+  // ✅ THIS IS THE FULLY CORRECTED FUNCTION
   transformPost(wpPost) {
     try {
       if (!wpPost || typeof wpPost !== 'object') {
         throw new Error('Invalid post data provided');
       }
 
-      // ✅ Fast path for image extraction
+      // Fast path for image extraction
       let imageUrl = 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop';
       
       if (wpPost.featured_image_url) {
@@ -196,7 +192,7 @@ class WordPressAPI {
       }
 
       // ====================================================================
-      // START OF FIX: Robustly find categories and tags
+      // START OF FIX: Robustly find categories and tags by taxonomy
       // ====================================================================
 
       let postCategories = [];
@@ -223,7 +219,7 @@ class WordPressAPI {
         link: tag.link
       }));
       
-      // Fallback for older API responses where tags are on the main object
+      // Fallback for older API responses where tags might be on the main object
       if (tags.length === 0 && wpPost.post_tags && Array.isArray(wpPost.post_tags)) {
         tags = wpPost.post_tags;
       }
@@ -248,7 +244,7 @@ class WordPressAPI {
         excerpt: excerpt,
         content: wpPost.content?.rendered || wpPost.content || '',
         category: primaryCategory,
-        tags: tags, // Use the new robustly found tags
+        tags: tags,
         readTime: this.calculateReadTime(wpPost.content?.rendered || wpPost.content || ''),
         date: wpPost.date || new Date().toISOString(),
         image: imageUrl,
@@ -260,7 +256,7 @@ class WordPressAPI {
       return transformedPost;
 
     } catch (error) {
-      console.error('❌ Error transforming post:', error, 'Post data:', wpPost); // Added post data to log for easier debugging
+      console.error('❌ Error transforming post:', error, 'Post data:', wpPost);
       
       return {
         id: wpPost?.id || Math.random(),
