@@ -1,3 +1,4 @@
+// src/pages/certifications/CertificationHub.jsx - FINAL VERSION WITH RESOURCE TYPE FILTERING
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useCertifications } from '@/hooks/useCertifications';
@@ -11,6 +12,7 @@ const CertificationHub = () => {
   const [filters, setFilters] = useState({
     provider: 'all',
     level: 'all',
+    resource_type: 'all', // ✅ NEW: Filter state
     search: '',
   });
 
@@ -19,8 +21,10 @@ const CertificationHub = () => {
       const searchMatch = cert.title.toLowerCase().includes(filters.search.toLowerCase()) || cert.cert_code?.toLowerCase().includes(filters.search.toLowerCase());
       const providerMatch = filters.provider === 'all' || cert.provider?.slug === filters.provider;
       const levelMatch = filters.level === 'all' || cert.level?.slug === filters.level;
+      // ✅ NEW: Apply resource type filter
+      const resourceTypeMatch = filters.resource_type === 'all' || cert.resource_types?.some(rt => rt.slug === filters.resource_type);
 
-      return searchMatch && providerMatch && levelMatch;
+      return searchMatch && providerMatch && levelMatch && resourceTypeMatch;
     });
   }, [certifications, filters]);
 
@@ -33,10 +37,17 @@ const CertificationHub = () => {
   const levels = useMemo(() => {
       const allLevels = certifications.map(c => c.level).filter(Boolean);
       const uniqueLevels = [...new Map(allLevels.map(item => [item['slug'], item])).values()];
-      // Custom sort order for levels
       const sortOrder = ['Foundational', 'Associate', 'Professional', 'Specialty', 'Expert'];
       return uniqueLevels.sort((a, b) => sortOrder.indexOf(a.name) - sortOrder.indexOf(b.name));
   }, [certifications]);
+
+  // ✅ NEW: Prepare unique resource types for the filter dropdown
+  const resourceTypes = useMemo(() => {
+      const allResourceTypes = certifications.flatMap(c => c.resource_types || []).filter(Boolean);
+      const uniqueResourceTypes = [...new Map(allResourceTypes.map(item => [item['slug'], item])).values()];
+      return uniqueResourceTypes.sort((a, b) => a.name.localeCompare(b.name));
+  }, [certifications]);
+
 
   return (
     <>
@@ -59,6 +70,7 @@ const CertificationHub = () => {
               setFilters={setFilters} 
               providers={providers}
               levels={levels}
+              resourceTypes={resourceTypes} // ✅ NEW: Pass data to filter
             />
           </aside>
           
