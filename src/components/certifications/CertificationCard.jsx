@@ -1,3 +1,4 @@
+// src/components/certifications/CertificationCard.jsx - FINAL VERSION WITH RESOURCE TYPES
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Star } from 'lucide-react';
@@ -5,13 +6,15 @@ import { ArrowRight, Star } from 'lucide-react';
 const CertificationCard = ({ certification }) => {
   if (!certification) return null;
 
+  // ✅ Get the first resource type to display on the card
+  const primaryResourceType = certification.resource_types?.[0];
+
   return (
     <motion.div 
       className="group relative flex flex-col h-full bg-slate-800/50 rounded-xl border border-slate-700/50 overflow-hidden transition-all duration-300 hover:border-blue-500/50 hover:shadow-2xl hover:shadow-blue-500/10"
       whileHover={{ y: -5 }}
       transition={{ type: 'spring', stiffness: 400, damping: 10 }}
     >
-      {/* Featured Badge */}
       {certification.featured === '1' && (
         <div className="absolute top-3 right-3 bg-yellow-500/20 text-yellow-300 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 z-10">
           <Star className="h-3 w-3" />
@@ -19,7 +22,6 @@ const CertificationCard = ({ certification }) => {
         </div>
       )}
       
-      {/* Image Container */}
       <div className="relative h-40 flex items-center justify-center p-4 bg-slate-900 overflow-hidden">
         {certification.featured_image && (
           <motion.img 
@@ -31,7 +33,6 @@ const CertificationCard = ({ certification }) => {
          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent"></div>
       </div>
 
-      {/* Content */}
       <div className="p-5 flex flex-col flex-grow">
         {certification.provider && (
           <span className="text-sm font-semibold text-blue-400 mb-1">{certification.provider.name}</span>
@@ -42,17 +43,18 @@ const CertificationCard = ({ certification }) => {
         <p className="text-gray-400 text-xs line-clamp-2 mb-4" dangerouslySetInnerHTML={{ __html: certification.excerpt }} />
 
         <div className="mt-auto flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+                {/* ✅ NEW: Display the primary resource type */}
+                {primaryResourceType && (
+                    <span className="text-xs font-medium text-green-300 bg-green-900/50 px-2 py-1 rounded">
+                        {primaryResourceType.name}
+                    </span>
+                )}
                 {certification.level && (
                     <span className="text-xs font-medium text-gray-300 bg-slate-700 px-2 py-1 rounded">
                         {certification.level.name}
                     </span>
                 )}
-                 {certification.difficulty && (
-                    <span className="text-xs font-medium text-gray-300 bg-slate-700 px-2 py-1 rounded">
-                        {certification.difficulty}
-                    </span>
-                 )}
             </div>
             <ArrowRight className="h-5 w-5 text-gray-500 group-hover:text-blue-400 group-hover:translate-x-1 transition-transform duration-300" />
         </div>
