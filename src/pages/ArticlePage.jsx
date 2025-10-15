@@ -16,9 +16,11 @@ import PostCard from '@/components/PostCard';
 import PostCardSkeleton from '@/components/PostCardSkeleton';
 import ArticleNavigation from '@/components/ArticleNavigation';
 import ReadingProgressBar from '@/components/ReadingProgressBar';
+import SidebarAd from '@/components/SidebarAd';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
+// ... (ArticleSkeleton, processWordPressContent, ErrorDisplay, RelatedPosts components remain the same)
 // ✅ CRITICAL: Pre-render skeleton with exact dimensions to prevent CLS
 const ArticleSkeleton = () => (
   <div className="container mx-auto px-6 max-w-4xl">
@@ -294,123 +296,126 @@ const ArticlePage = () => {
         author={safePost.author}
       />
       
-      <div className="container mx-auto px-6 max-w-4xl">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2 }}
-          className="mb-4"
-        >
-          <Button asChild variant="outline" className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm">
-            <Link to="/articles">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              All Articles
-            </Link>
-          </Button>
-        </motion.div>
+      <div className="container mx-auto px-6 grid lg:grid-cols-[240px_1fr_240px] gap-8">
+        <SidebarAd position="sidebar-left" />
 
-        <motion.article
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className="space-y-8"
-        >
-          {/* ✅ CRITICAL: Fixed height hero to prevent CLS */}
-          <div className="relative rounded-2xl overflow-hidden" style={{ height: '384px' }}>
-            <LazyImage
-              src={safePost.image}
-              alt={safePost.title}
-              width={1600}
-              quality={85}
-              sizes="(max-width: 768px) 100vw, 1200px"
-              className="w-full h-full"
-              priority={true}
-            />
-            
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex items-end p-6 md:p-8">
-              <div className="space-y-4 text-white w-full">
-                <div className="inline-block px-3 py-1 bg-blue-600/80 backdrop-blur-sm rounded-full text-sm font-medium">
-                  {safePost.category}
+        <main className="lg:col-span-1 max-w-4xl w-full mx-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+            className="mb-4"
+          >
+            <Button asChild variant="outline" className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm">
+              <Link to="/articles">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                All Articles
+              </Link>
+            </Button>
+          </motion.div>
+
+          <motion.article
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-8"
+          >
+            {/* Article content goes here... */}
+            <div className="relative rounded-2xl overflow-hidden" style={{ height: '384px' }}>
+                <LazyImage
+                src={safePost.image}
+                alt={safePost.title}
+                width={1600}
+                quality={85}
+                sizes="(max-width: 768px) 100vw, 1200px"
+                className="w-full h-full"
+                priority={true}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex items-end p-6 md:p-8">
+                <div className="space-y-4 text-white w-full">
+                    <div className="inline-block px-3 py-1 bg-blue-600/80 backdrop-blur-sm rounded-full text-sm font-medium">
+                    {safePost.category}
+                    </div>
+                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold leading-tight">
+                    {safePost.title}
+                    </h1>
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300">
+                    <div className="flex items-center gap-1">
+                        <User className="h-4 w-4" />
+                        <span>{safePost.author}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>{formatDate(safePost.date)}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        <span>{safePost.readTime}</span>
+                    </div>
+                    </div>
                 </div>
-                <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold leading-tight">
-                  {safePost.title}
-                </h1>
-                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300">
-                  <div className="flex items-center gap-1">
-                    <User className="h-4 w-4" />
-                    <span>{safePost.author}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    <span>{formatDate(safePost.date)}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    <span>{safePost.readTime}</span>
-                  </div>
                 </div>
-              </div>
             </div>
-          </div>
 
-          <Suspense fallback={<div className="h-32" />}>
-            <AdPlacement position="article-top" />
-          </Suspense>
+            <Suspense fallback={<div className="h-32" />}>
+                <AdPlacement position="article-top" />
+            </Suspense>
 
-          {/* ✅ Render content immediately without waiting */}
-          <div className="prose prose-invert prose-lg max-w-none">
-            <div 
-              dangerouslySetInnerHTML={{ __html: processWordPressContent(safePost.content) }}
-              className="article-content"
-              style={{
-                overflowWrap: 'break-word',
-                wordWrap: 'break-word',
-                minHeight: '200px'
-              }}
-            />
-          </div>
-
-          {safePost.tags && safePost.tags.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="my-8 p-6 bg-slate-800/50 rounded-xl border border-slate-700"
-            >
-              <h3 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
-                <Tag className="h-5 w-5 text-blue-400" />
-                Related Topics
-              </h3>
-              <TagsList tags={safePost.tags} showIcon={false} size="default" />
-            </motion.div>
-          )}
-
-          <Suspense fallback={<div className="h-32" />}>
-            <AdPlacement position="article-bottom" />
-          </Suspense>
-
-          <div className="border-t border-gray-800 pt-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <div className="space-y-2">
-                <p className="text-gray-400">Published by</p>
-                <p className="font-semibold text-white">{safePost.author}</p>
-                <p className="text-sm text-gray-500">{formatDate(safePost.date)}</p>
-              </div>
-              <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
-                <Link to="/articles">
-                  Read More Articles
-                </Link>
-              </Button>
+            <div className="prose prose-invert prose-lg max-w-none">
+                <div 
+                dangerouslySetInnerHTML={{ __html: processWordPressContent(safePost.content) }}
+                className="article-content"
+                style={{
+                    overflowWrap: 'break-word',
+                    wordWrap: 'break-word',
+                    minHeight: '200px'
+                }}
+                />
             </div>
-          </div>
-        </motion.article>
-        
-        <ArticleNavigation 
-          currentPostId={safePost.id} 
-          category={safePost.category} 
-        />
-        
-        {/* ✅ Load related posts last - they're not critical */}
-        <RelatedPosts currentPostId={safePost.id} />
+
+            {safePost.tags && safePost.tags.length > 0 && (
+                <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="my-8 p-6 bg-slate-800/50 rounded-xl border border-slate-700"
+                >
+                <h3 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
+                    <Tag className="h-5 w-5 text-blue-400" />
+                    Related Topics
+                </h3>
+                <TagsList tags={safePost.tags} showIcon={false} size="default" />
+                </motion.div>
+            )}
+
+            <Suspense fallback={<div className="h-32" />}>
+                <AdPlacement position="article-bottom" />
+            </Suspense>
+
+            <div className="border-t border-gray-800 pt-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div className="space-y-2">
+                    <p className="text-gray-400">Published by</p>
+                    <p className="font-semibold text-white">{safePost.author}</p>
+                    <p className="text-sm text-gray-500">{formatDate(safePost.date)}</p>
+                </div>
+                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                    <Link to="/articles">
+                    Read More Articles
+                    </Link>
+                </Button>
+                </div>
+            </div>
+          </motion.article>
+          
+          <ArticleNavigation 
+            currentPostId={safePost.id} 
+            category={safePost.category} 
+          />
+          
+          <RelatedPosts currentPostId={safePost.id} />
+        </main>
+
+        <SidebarAd position="sidebar-right" />
       </div>
     </div>
   );
