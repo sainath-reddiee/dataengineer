@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/Select'; // Import our new component
 
-const CertificationFilter = ({ filters, setFilters, providers, levels, resourceTypes }) => {
+const CertificationFilter = ({ filters, setFilters, providers, levels }) => {
   // Use a single handler for all select components
   const handleSelectChange = (name, value) => {
     setFilters(prev => ({ ...prev, [name]: value }));
@@ -66,20 +66,6 @@ const CertificationFilter = ({ filters, setFilters, providers, levels, resourceT
             <SelectContent>
               <SelectItem value="all">All Levels</SelectItem>
               {levels.map(l => <SelectItem key={l.slug} value={l.slug}>{l.name}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        {/* Resource Type Dropdown */}
-        <div>
-          <Label htmlFor="resource_type">Resource Type</Label>
-          <Select name="resource_type" value={filters.resource_type} onValueChange={(value) => handleSelectChange('resource_type', value)}>
-            <SelectTrigger id="resource_type" className="mt-2">
-              <SelectValue placeholder="All Types" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              {resourceTypes.map(rt => <SelectItem key={rt.slug} value={rt.slug}>{rt.name}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
