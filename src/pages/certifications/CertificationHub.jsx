@@ -8,7 +8,6 @@ import CertificationCardSkeleton from '@/components/certifications/Certification
 import MetaTags from '@/components/SEO/MetaTags';
 import { ServerCrash, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import SidebarAd from '@/components/SidebarAd';
 
 const CertificationHub = () => {
   const { certifications, loading, error } = useCertifications();
@@ -69,74 +68,69 @@ const CertificationHub = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-[240px_1fr_240px] gap-8">
-            <SidebarAd position="sidebar-left" />
-
-            <main className="lg:col-span-1">
-                <div className="flex flex-col lg:flex-row gap-8">
-                    <aside className="w-full lg:w-1/4 xl:w-1/5">
-                        <CertificationFilter 
-                        filters={filters} 
-                        setFilters={setFilters} 
-                        providers={providers}
-                        levels={levels}
-                        />
-                        {areFiltersActive && (
-                        <Button 
-                            variant="ghost" 
-                            className="w-full mt-4 text-blue-400 hover:bg-blue-500/10"
-                            onClick={() => setFilters({ provider: 'all', level: 'all', search: '' })}
-                        >
-                            Clear All Filters
-                        </Button>
-                        )}
-                    </aside>
-                    
-                    <div className="w-full lg:w-3/4 xl:w-4/5">
-                        {error && (
-                        <div className="bg-red-900/50 text-red-300 p-6 rounded-lg flex flex-col items-center text-center">
-                            <ServerCrash className="h-12 w-12 mb-4" />
-                            <h3 className="text-xl font-bold mb-2">Could Not Load Resources</h3>
-                            <p className="text-sm">{error}</p>
-                        </div>
-                        )}
-                        
-                        {!error && (
-                        <>
-                            <div className="mb-6 text-sm text-gray-400">
-                            {loading ? 'Loading resources...' : `Showing ${filteredCertifications.length} of ${certifications.length} resources.`}
-                            </div>
-
-                            {loading ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                                {Array.from({ length: 6 }).map((_, index) => (
-                                <CertificationCardSkeleton key={index} />
-                                ))}
-                            </div>
-                            ) : filteredCertifications.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                                {filteredCertifications.map(cert => (
-                                <Link to={`/certifications/${cert.slug}`} key={cert.id} className="block">
-                                    <CertificationCard certification={cert} />
-                                </Link>
-                                ))}
-                            </div>
-                            ) : (
-                            <div className="col-span-full text-center py-20 bg-slate-800/50 rounded-lg flex flex-col items-center">
-                                <Search className="h-12 w-12 text-gray-500 mb-4" />
-                                <h3 className="text-2xl font-bold text-gray-300">No Certifications Found</h3>
-                                <p className="text-gray-400 mt-2">
-                                {areFiltersActive ? "Try adjusting your filters or clear them to see all resources." : "Check back later for new certification guides!"}
-                                </p>
-                            </div>
-                            )}
-                        </>
-                        )}
-                    </div>
+        <div className="flex flex-col lg:flex-row gap-8">
+          <aside className="w-full lg:w-1/4 xl:w-1/5">
+            <CertificationFilter 
+              filters={filters} 
+              setFilters={setFilters} 
+              providers={providers}
+              levels={levels}
+            />
+            {/* ✅ NEW: Clear Filters Button */}
+            {areFiltersActive && (
+              <Button 
+                variant="ghost" 
+                className="w-full mt-4 text-blue-400 hover:bg-blue-500/10"
+                onClick={() => setFilters({ provider: 'all', level: 'all', search: '' })}
+              >
+                Clear All Filters
+              </Button>
+            )}
+          </aside>
+          
+          <main className="w-full lg:w-3/4 xl:w-4/5">
+            {error && (
+              <div className="bg-red-900/50 text-red-300 p-6 rounded-lg flex flex-col items-center text-center">
+                  <ServerCrash className="h-12 w-12 mb-4" />
+                  <h3 className="text-xl font-bold mb-2">Could Not Load Resources</h3>
+                  <p className="text-sm">{error}</p>
+              </div>
+            )}
+            
+            {!error && (
+              <>
+                <div className="mb-6 text-sm text-gray-400">
+                  {loading ? 'Loading resources...' : `Showing ${filteredCertifications.length} of ${certifications.length} resources.`}
                 </div>
-            </main>
 
-            <SidebarAd position="sidebar-right" />
+                {loading ? (
+                  // ✅ NEW: Skeleton Loading State
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {Array.from({ length: 6 }).map((_, index) => (
+                      <CertificationCardSkeleton key={index} />
+                    ))}
+                  </div>
+                ) : filteredCertifications.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {filteredCertifications.map(cert => (
+                      <Link to={`/certifications/${cert.slug}`} key={cert.id} className="block">
+                        <CertificationCard certification={cert} />
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  // ✅ NEW: Improved Empty State
+                  <div className="col-span-full text-center py-20 bg-slate-800/50 rounded-lg flex flex-col items-center">
+                    <Search className="h-12 w-12 text-gray-500 mb-4" />
+                    <h3 className="text-2xl font-bold text-gray-300">No Certifications Found</h3>
+                    <p className="text-gray-400 mt-2">
+                      {areFiltersActive ? "Try adjusting your filters or clear them to see all resources." : "Check back later for new certification guides!"}
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
+          </main>
         </div>
       </div>
     </>
