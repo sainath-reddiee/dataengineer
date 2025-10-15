@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles, ChefHat, FileText, FileSpreadsheet, ClipboardList } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useResourceTypes } from '@/hooks/useCertifications';
 
 // ... (Spark and getCategoryIcon helper components remain the same as before) ...
@@ -89,13 +89,10 @@ const Header = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [currentPath, setCurrentPath] = useState('/');
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   const { resourceTypes } = useResourceTypes();
-
-  useEffect(() => {
-    setCurrentPath(window.location.pathname);
-  }, []);
 
   const isCategoryActive = (categoryKey) => {
     const path = currentPath.toLowerCase();
