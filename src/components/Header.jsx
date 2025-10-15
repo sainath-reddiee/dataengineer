@@ -312,25 +312,25 @@ const Header = () => {
     >
       <nav className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
-            <div className="flex items-center gap-x-6 lg:gap-x-10">
-                <a href="/" className="flex items-center space-x-2 sm:space-x-3 z-10 flex-shrink-0">
-                <motion.div
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                >
-                    <div className="relative">
-                    <Database className="h-7 w-7 sm:h-8 sm:w-8 text-blue-400" />
-                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse" />
-                    </div>
-                </motion.div>
-                <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                    DataEngineer Hub
-                </span>
-                </a>
+            <a href="/" className="flex items-center space-x-2 sm:space-x-3 z-10 flex-shrink-0 mr-10">
+              <motion.div
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <div className="relative">
+                  <Database className="h-7 w-7 sm:h-8 sm:w-8 text-blue-400" />
+                  <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse" />
+                </div>
+              </motion.div>
+              <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                DataEngineer Hub
+              </span>
+            </a>
 
-                {/* Desktop Navigation */}
-                <div className="hidden xl:flex items-center gap-x-4 lg:gap-x-6">
+            {/* Desktop Navigation */}
+            <div className="hidden xl:flex items-center justify-start flex-1">
+                <div className="flex items-center gap-x-4 lg:gap-x-6">
                     <motion.div whileHover={{ y: -2 }}>
                     <Link to="/" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isHomeActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isHomeActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
                         <Home className="w-4 h-4" />
