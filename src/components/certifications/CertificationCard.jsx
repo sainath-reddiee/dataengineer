@@ -6,7 +6,7 @@ import { ArrowRight, Star } from 'lucide-react';
 const CertificationCard = ({ certification }) => {
   if (!certification) return null;
 
-  // ✅ Get the first resource type to display on the card
+  // Get the first resource type to display as a primary tag
   const primaryResourceType = certification.resource_types?.[0];
 
   return (
