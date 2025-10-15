@@ -157,23 +157,13 @@ const Header = () => {
   const certificationsMenu = {
     title: 'Certification Hub',
     icon: Sparkles,
-    items: [
-      {
-        name: 'All Certifications',
-        path: '/certifications',
-        color: 'from-blue-500 to-purple-500',
-        desc: 'Browse all available certifications.',
-        isResourceType: false, 
-        iconOverride: <Sparkles className="h-8 w-8 text-blue-400" />
-      },
-      ...resourceTypes.map(rt => ({
+    items: resourceTypes.map(rt => ({
         name: rt.name,
         path: `/certifications/resource/${rt.slug}`,
         color: 'from-green-500 to-teal-500',
         desc: rt.description || `${rt.count}+ resources available.`,
         isResourceType: true,
-      }))
-    ],
+    })),
   };
 
   useEffect(() => {
@@ -225,7 +215,7 @@ const Header = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
-        className="absolute left-0 top-full mt-2 w-[600px] bg-gradient-to-br from-slate-800/95 via-slate-900/95 to-slate-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 p-6 z-[99999]"
+        className="absolute left-0 top-full mt-2 w-auto min-w-[500px] max-w-[600px] bg-gradient-to-br from-slate-800/95 via-slate-900/95 to-slate-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 p-6 z-[99999]"
         style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(59, 130, 246, 0.1)' }}
       >
         <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-700/50">
@@ -298,7 +288,7 @@ const Header = () => {
           <div className="text-center py-8">
             <ChefHat className="h-12 w-12 text-purple-400 mx-auto mb-4" />
             <p className="font-semibold text-lg text-gray-300">Still Cooking!</p>
-            <p className="text-sm text-gray-400">Content for this section is coming soon.</p>
+            <p className="text-sm text-gray-400">No resources available yet.</p>
           </div>
         )}
       </motion.div>
@@ -337,7 +327,7 @@ const Header = () => {
             </span>
           </a>
 
-          <div className="hidden xl:flex items-center space-x-6 lg:space-x-8">
+          <div className="hidden xl:flex items-center space-x-4 lg:space-x-6">
             <motion.div whileHover={{ y: -2 }}>
               <Link to="/" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isHomeActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isHomeActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
                 <Home className="w-4 h-4" />
