@@ -1,11 +1,23 @@
-// src/components/certifications/CertificationFilter.jsx - FINAL VERSION WITH RESOURCE TYPES
+// src/components/certifications/CertificationFilter.jsx - FINAL VERSION WITH MODERN UI
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Search } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/Select'; // Import our new component
 
 const CertificationFilter = ({ filters, setFilters, providers, levels, resourceTypes }) => {
-  const handleFilterChange = (e) => {
+  // Use a single handler for all select components
+  const handleSelectChange = (name, value) => {
+    setFilters(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
   };
@@ -24,50 +36,52 @@ const CertificationFilter = ({ filters, setFilters, providers, levels, resourceT
               id="search"
               placeholder="e.g., SAA-C03" 
               value={filters.search}
-              onChange={handleFilterChange}
+              onChange={handleInputChange}
               className="pl-10"
             />
           </div>
         </div>
+        
+        {/* Provider Dropdown */}
         <div>
           <Label htmlFor="provider">Provider</Label>
-          <select 
-            name="provider" 
-            id="provider"
-            value={filters.provider}
-            onChange={handleFilterChange}
-            className="mt-2 w-full bg-slate-700/50 p-2 rounded-md border border-slate-600 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="all">All Providers</option>
-            {providers.map(p => <option key={p.slug} value={p.slug}>{p.name}</option>)}
-          </select>
+          <Select name="provider" value={filters.provider} onValueChange={(value) => handleSelectChange('provider', value)}>
+            <SelectTrigger id="provider" className="mt-2">
+              <SelectValue placeholder="All Providers" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Providers</SelectItem>
+              {providers.map(p => <SelectItem key={p.slug} value={p.slug}>{p.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
+
+        {/* Level Dropdown */}
         <div>
           <Label htmlFor="level">Level</Label>
-          <select 
-            name="level" 
-            id="level"
-            value={filters.level}
-            onChange={handleFilterChange}
-            className="mt-2 w-full bg-slate-700/50 p-2 rounded-md border border-slate-600 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="all">All Levels</option>
-            {levels.map(l => <option key={l.slug} value={l.slug}>{l.name}</option>)}
-          </select>
+          <Select name="level" value={filters.level} onValueChange={(value) => handleSelectChange('level', value)}>
+            <SelectTrigger id="level" className="mt-2">
+              <SelectValue placeholder="All Levels" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Levels</SelectItem>
+              {levels.map(l => <SelectItem key={l.slug} value={l.slug}>{l.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
-        {/* ✅ NEW: RESOURCE TYPE FILTER ADDED */}
+        
+        {/* Resource Type Dropdown */}
         <div>
           <Label htmlFor="resource_type">Resource Type</Label>
-          <select 
-            name="resource_type" 
-            id="resource_type"
-            value={filters.resource_type}
-            onChange={handleFilterChange}
-            className="mt-2 w-full bg-slate-700/50 p-2 rounded-md border border-slate-600 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="all">All Types</option>
-            {resourceTypes.map(rt => <option key={rt.slug} value={rt.slug}>{rt.name}</option>)}
-          </select>
+          <Select name="resource_type" value={filters.resource_type} onValueChange={(value) => handleSelectChange('resource_type', value)}>
+            <SelectTrigger id="resource_type" className="mt-2">
+              <SelectValue placeholder="All Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              {resourceTypes.map(rt => <SelectItem key={rt.slug} value={rt.slug}>{rt.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>
