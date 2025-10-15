@@ -33,7 +33,9 @@ const CertificationHub = () => {
   const levels = useMemo(() => {
       const allLevels = certifications.map(c => c.level).filter(Boolean);
       const uniqueLevels = [...new Map(allLevels.map(item => [item['slug'], item])).values()];
-      return uniqueLevels.sort((a, b) => a.name.localeCompare(b.name));
+      // Custom sort order for levels
+      const sortOrder = ['Foundational', 'Associate', 'Professional', 'Specialty', 'Expert'];
+      return uniqueLevels.sort((a, b) => sortOrder.indexOf(a.name) - sortOrder.indexOf(b.name));
   }, [certifications]);
 
   return (
