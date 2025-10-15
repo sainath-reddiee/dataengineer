@@ -494,24 +494,20 @@ class WordPressAPI {
     return this.transformCertification(result.data[0]);
   }
 
-  // ✅ THIS IS THE NEWLY CORRECTED FUNCTION FOR CERTIFICATIONS
   transformCertification(wpCert) {
     const featuredMedia = wpCert._embedded?.['wp:featuredmedia']?.[0];
-    const allTerms = wpCert._embedded?.['wp:term']?.flat() || [];
+    const allTerms = wpCert._embedded?.['wp:term']?.flat().filter(Boolean) || [];
 
-    // Robustly find taxonomies by their slug
     const findTermByTaxonomy = (taxonomy) => {
-      const terms = allTerms.filter(term => term && term.taxonomy === taxonomy);
-      return terms.length > 0 ? terms[0] : null;
+      const term = allTerms.find(t => t.taxonomy === taxonomy);
+      return term ? { name: term.name, slug: term.slug } : null;
     };
     
     const findTermsByTaxonomy = (taxonomy) => {
-      return allTerms.filter(term => term && term.taxonomy === taxonomy);
+      return allTerms
+        .filter(t => t.taxonomy === taxonomy)
+        .map(t => ({ name: t.name, slug: t.slug }));
     };
-
-    const providerTerm = findTermByTaxonomy('cert_provider');
-    const levelTerm = findTermByTaxonomy('cert_level');
-    const resourceTypeTerms = findTermsByTaxonomy('resource_type');
 
     return {
       id: wpCert.id,
@@ -520,9 +516,9 @@ class WordPressAPI {
       excerpt: this.cleanExcerpt(wpCert.excerpt.rendered),
       content: wpCert.content.rendered,
       featured_image: featuredMedia?.source_url || null,
-      provider: providerTerm ? { name: providerTerm.name, slug: providerTerm.slug } : null,
-      level: levelTerm ? { name: levelTerm.name, slug: levelTerm.slug } : null,
-      resource_types: resourceTypeTerms.map(rt => ({ name: rt.name, slug: rt.slug })),
+      provider: findTermByTaxonomy('cert_provider'),
+      level: findTermByTaxonomy('cert_level'),
+      resource_types: findTermsByTaxonomy('resource_type'),
       cert_code: wpCert.cert_code,
       cert_official_name: wpCert.cert_official_name,
       exam_cost: wpCert.cert_exam_cost,
