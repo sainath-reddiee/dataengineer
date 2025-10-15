@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Star, Award, BookOpen } from 'lucide-react';
+import { ArrowRight, Star, Award } from 'lucide-react';
 
 const CertificationCard = ({ certification }) => {
   if (!certification) return null;
@@ -11,7 +11,6 @@ const CertificationCard = ({ certification }) => {
       whileHover={{ y: -5 }}
       transition={{ type: 'spring', stiffness: 400, damping: 10 }}
     >
-      {/* Featured Badge */}
       {certification.featured === '1' && (
         <div className="absolute top-3 right-3 bg-yellow-500/20 text-yellow-300 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 z-10">
           <Star className="h-3 w-3" />
@@ -19,7 +18,6 @@ const CertificationCard = ({ certification }) => {
         </div>
       )}
       
-      {/* Image Container */}
       <div className="relative h-36 flex items-center justify-center p-4 bg-slate-900 overflow-hidden">
         {certification.featured_image ? (
           <motion.img 
@@ -33,9 +31,8 @@ const CertificationCard = ({ certification }) => {
          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
       </div>
 
-      {/* Content */}
       <div className="p-5 flex flex-col flex-grow">
-        {certification.provider && (
+        {certification.provider?.name && (
           <span className="text-xs font-semibold text-blue-400 mb-2 uppercase tracking-wider">{certification.provider.name}</span>
         )}
         <h3 className="text-md font-bold text-white mb-2 flex-grow group-hover:text-purple-400 transition-colors duration-300">
@@ -45,7 +42,7 @@ const CertificationCard = ({ certification }) => {
 
         <div className="mt-auto flex items-center justify-between">
             <div className="flex items-center gap-2">
-                {certification.level && (
+                {certification.level?.name && (
                     <span className="text-xs font-medium text-gray-300 bg-slate-700 px-2 py-1 rounded">
                         {certification.level.name}
                     </span>
