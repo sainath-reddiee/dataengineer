@@ -336,6 +336,27 @@ const Header = () => {
                   Home
                 </Link>
               </motion.div>
+              
+              <div 
+                className="relative"
+                onMouseEnter={() => setOpenDropdown('certifications')}
+                onMouseLeave={() => setOpenDropdown(null)}
+              >
+                  <motion.button
+                      whileHover={{ y: -2 }}
+                      className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${isCategoryActive('certifications') ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
+                      style={isCategoryActive('certifications') ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+                  >
+                      <Sparkles className="w-4 h-4" />
+                      Certifications
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdown === 'certifications' ? 'rotate-180' : ''}`} />
+                  </motion.button>
+                  <AnimatePresence>
+                      {openDropdown === 'certifications' && (
+                          <MegaMenu category={certificationsMenu} categoryKey="certifications" />
+                      )}
+                  </AnimatePresence>
+              </div>
 
               {Object.entries(categories).map(([key, category]) => {
                 const isActive = isCategoryActive(key);
@@ -363,27 +384,6 @@ const Header = () => {
                   </div>
                 );
               })}
-
-              <div 
-                className="relative"
-                onMouseEnter={() => setOpenDropdown('certifications')}
-                onMouseLeave={() => setOpenDropdown(null)}
-              >
-                  <motion.button
-                      whileHover={{ y: -2 }}
-                      className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${isCategoryActive('certifications') ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`}
-                      style={isCategoryActive('certifications') ? { textShadow: '0 0 5px #60a5fa' } : undefined}
-                  >
-                      <Sparkles className="w-4 h-4" />
-                      Certifications
-                      <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdown === 'certifications' ? 'rotate-180' : ''}`} />
-                  </motion.button>
-                  <AnimatePresence>
-                      {openDropdown === 'certifications' && (
-                          <MegaMenu category={certificationsMenu} categoryKey="certifications" />
-                      )}
-                  </AnimatePresence>
-              </div>
               
               <motion.div whileHover={{ y: -2 }}>
                 <Link to="/tag" className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${isTagsActive ? 'text-blue-400' : 'text-gray-300 hover:text-blue-400'}`} style={isTagsActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}>
@@ -430,6 +430,36 @@ const Header = () => {
                   <Home className="w-5 h-5" />
                   Home
                 </Link>
+                
+                {/* Mobile Certifications Menu */}
+                <div>
+                  <button
+                    onClick={() => setOpenDropdown(openDropdown === 'certifications' ? null : 'certifications')}
+                    className="w-full flex items-center justify-between text-white hover:text-blue-400 transition-colors font-medium py-3 pl-3 rounded-lg hover:bg-slate-800/50 min-h-[48px]"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Sparkles className="w-5 h-5" />
+                      Certifications
+                    </span>
+                    <ChevronDown className={`w-5 h-5 transition-transform ${openDropdown === 'certifications' ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {openDropdown === 'certifications' && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="ml-4 mt-2 space-y-1 bg-slate-800/50 rounded-lg p-2"
+                      >
+                        {certificationsMenu.items.map(item => (
+                          <Link key={item.name} to={item.path} className="block text-gray-300 hover:text-white py-3 pl-3 rounded hover:bg-slate-700/50 transition-colors min-h-[48px] flex items-center">
+                            {item.name}
+                          </Link>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
 
                 {Object.entries(categories).map(([key, category]) => (
                   <div key={key}>
@@ -470,37 +500,6 @@ const Header = () => {
                     </AnimatePresence>
                   </div>
                 ))}
-                
-                {/* Mobile Certifications Menu */}
-                <div>
-                  <button
-                    onClick={() => setOpenDropdown(openDropdown === 'certifications' ? null : 'certifications')}
-                    className="w-full flex items-center justify-between text-white hover:text-blue-400 transition-colors font-medium py-3 pl-3 rounded-lg hover:bg-slate-800/50 min-h-[48px]"
-                  >
-                    <span className="flex items-center gap-2">
-                      <Sparkles className="w-5 h-5" />
-                      Certifications
-                    </span>
-                    <ChevronDown className={`w-5 h-5 transition-transform ${openDropdown === 'certifications' ? 'rotate-180' : ''}`} />
-                  </button>
-                  <AnimatePresence>
-                    {openDropdown === 'certifications' && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="ml-4 mt-2 space-y-1 bg-slate-800/50 rounded-lg p-2"
-                      >
-                        {certificationsMenu.items.map(item => (
-                          <Link key={item.name} to={item.path} className="block text-gray-300 hover:text-white py-3 pl-3 rounded hover:bg-slate-700/50 transition-colors min-h-[48px] flex items-center">
-                            {item.name}
-                          </Link>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
 
                 <Link to="/tag" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
                   <Tags className="w-5 h-5" />
