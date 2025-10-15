@@ -1,4 +1,4 @@
-// src/services/wordpressApi.js - COMPLETE FINAL VERSION
+// src/services/wordpressApi.js - COMPLETE FINAL VERSION (Fixes Posts & Certifications)
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog';
 const WP_API_BASE = `${WORDPRESS_API_URL}/wp-json/wp/v2`;
 
@@ -6,7 +6,7 @@ class WordPressAPI {
   constructor() {
     this.baseURL = WP_API_BASE;
     this.cache = new Map();
-    this.cacheTimeout = 60 * 1000; // ✅ Increased to 60 seconds for better performance
+    this.cacheTimeout = 60 * 1000;
     this.requestQueue = new Map();
     this.prefetchedData = new Map();
   }
@@ -170,14 +170,12 @@ class WordPressAPI {
     }
   }
 
-  // ✅ THIS IS THE FULLY CORRECTED FUNCTION
   transformPost(wpPost) {
     try {
       if (!wpPost || typeof wpPost !== 'object') {
         throw new Error('Invalid post data provided');
       }
 
-      // Fast path for image extraction
       let imageUrl = 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop';
       
       if (wpPost.featured_image_url) {
@@ -191,10 +189,6 @@ class WordPressAPI {
         }
       }
 
-      // ====================================================================
-      // START OF FIX: Robustly find categories and tags by taxonomy
-      // ====================================================================
-
       let postCategories = [];
       let postTags = [];
       const allTerms = wpPost._embedded?.['wp:term']?.flat() || [];
@@ -204,14 +198,12 @@ class WordPressAPI {
         postTags = allTerms.filter(term => term && term.taxonomy === 'post_tag');
       }
 
-      // Determine primary category, excluding 'Uncategorized' if others exist
       let primaryCategory = 'Uncategorized';
       if (postCategories.length > 0) {
         const nonUncategorized = postCategories.find(cat => cat.name !== 'Uncategorized');
         primaryCategory = nonUncategorized?.name || postCategories[0]?.name || 'Uncategorized';
       }
 
-      // Map tags to the expected format
       let tags = postTags.map(tag => ({
         id: tag.id,
         name: tag.name,
@@ -219,14 +211,9 @@ class WordPressAPI {
         link: tag.link
       }));
       
-      // Fallback for older API responses where tags might be on the main object
       if (tags.length === 0 && wpPost.post_tags && Array.isArray(wpPost.post_tags)) {
         tags = wpPost.post_tags;
       }
-
-      // ====================================================================
-      // END OF FIX
-      // ====================================================================
 
       const author = wpPost._embedded?.author?.[0]?.name || 'DataEngineer Hub';
       const featured = wpPost.meta?.featured === '1' || wpPost.meta?.featured === 1;
@@ -507,13 +494,25 @@ class WordPressAPI {
     return this.transformCertification(result.data[0]);
   }
 
+  // ✅ THIS IS THE NEWLY CORRECTED FUNCTION FOR CERTIFICATIONS
   transformCertification(wpCert) {
     const featuredMedia = wpCert._embedded?.['wp:featuredmedia']?.[0];
-    const terms = wpCert._embedded?.['wp:term'] || [];
-    const provider = terms[0]?.[0];
-    const level = terms[1]?.[0];
-    const resource_types = terms[2];
+    const allTerms = wpCert._embedded?.['wp:term']?.flat() || [];
+
+    // Robustly find taxonomies by their slug
+    const findTermByTaxonomy = (taxonomy) => {
+      const terms = allTerms.filter(term => term && term.taxonomy === taxonomy);
+      return terms.length > 0 ? terms[0] : null;
+    };
     
+    const findTermsByTaxonomy = (taxonomy) => {
+      return allTerms.filter(term => term && term.taxonomy === taxonomy);
+    };
+
+    const providerTerm = findTermByTaxonomy('cert_provider');
+    const levelTerm = findTermByTaxonomy('cert_level');
+    const resourceTypeTerms = findTermsByTaxonomy('resource_type');
+
     return {
       id: wpCert.id,
       slug: wpCert.slug,
@@ -521,9 +520,9 @@ class WordPressAPI {
       excerpt: this.cleanExcerpt(wpCert.excerpt.rendered),
       content: wpCert.content.rendered,
       featured_image: featuredMedia?.source_url || null,
-      provider: provider ? { name: provider.name, slug: provider.slug } : null,
-      level: level ? { name: level.name, slug: level.slug } : null,
-      resource_types: resource_types ? resource_types.map(rt => ({ name: rt.name, slug: rt.slug })) : [],
+      provider: providerTerm ? { name: providerTerm.name, slug: providerTerm.slug } : null,
+      level: levelTerm ? { name: levelTerm.name, slug: levelTerm.slug } : null,
+      resource_types: resourceTypeTerms.map(rt => ({ name: rt.name, slug: rt.slug })),
       cert_code: wpCert.cert_code,
       cert_official_name: wpCert.cert_official_name,
       exam_cost: wpCert.cert_exam_cost,
