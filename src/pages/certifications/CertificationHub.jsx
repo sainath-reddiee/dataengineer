@@ -1,53 +1,67 @@
-// src/pages/certifications/CertificationHub.jsx - FINAL VERSION WITH RESOURCE TYPE FILTERING
+// src/pages/certifications/CertificationHub.jsx - FINAL, CORRECTED, AND IMPROVED VERSION
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useCertifications } from '@/hooks/useCertifications';
 import CertificationCard from '@/components/certifications/CertificationCard';
 import CertificationFilter from '@/components/certifications/CertificationFilter';
+import CertificationCardSkeleton from '@/components/certifications/CertificationCardSkeleton'; // Import skeleton
 import MetaTags from '@/components/SEO/MetaTags';
-import { Loader, ServerCrash, Search } from 'lucide-react';
+import { ServerCrash, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const CertificationHub = () => {
   const { certifications, loading, error } = useCertifications();
   const [filters, setFilters] = useState({
     provider: 'all',
     level: 'all',
-    resource_type: 'all', // ✅ NEW: Filter state
+    resource_type: 'all',
     search: '',
   });
 
   const filteredCertifications = useMemo(() => {
+    // If certifications haven't loaded yet, return an empty array.
+    if (!certifications || certifications.length === 0) {
+      return [];
+    }
+    
     return certifications.filter(cert => {
-      const searchMatch = cert.title.toLowerCase().includes(filters.search.toLowerCase()) || cert.cert_code?.toLowerCase().includes(filters.search.toLowerCase());
+      // Defensive checks to prevent crashes if data is missing
+      const certTitle = cert.title || '';
+      const certCode = cert.cert_code || '';
+
+      const searchMatch = certTitle.toLowerCase().includes(filters.search.toLowerCase()) || certCode.toLowerCase().includes(filters.search.toLowerCase());
       const providerMatch = filters.provider === 'all' || cert.provider?.slug === filters.provider;
       const levelMatch = filters.level === 'all' || cert.level?.slug === filters.level;
-      // ✅ NEW: Apply resource type filter
-      const resourceTypeMatch = filters.resource_type === 'all' || cert.resource_types?.some(rt => rt.slug === filters.resource_type);
+      const resourceTypeMatch = filters.resource_type === 'all' || (cert.resource_types && cert.resource_types.some(rt => rt.slug === filters.resource_type));
 
       return searchMatch && providerMatch && levelMatch && resourceTypeMatch;
     });
   }, [certifications, filters]);
 
   const providers = useMemo(() => {
-      const allProviders = certifications.map(c => c.provider).filter(Boolean);
-      const uniqueProviders = [...new Map(allProviders.map(item => [item['slug'], item])).values()];
-      return uniqueProviders.sort((a, b) => a.name.localeCompare(b.name));
+    if (!certifications) return [];
+    const allProviders = certifications.map(c => c.provider).filter(Boolean);
+    const uniqueProviders = [...new Map(allProviders.map(item => [item['slug'], item])).values()];
+    return uniqueProviders.sort((a, b) => a.name.localeCompare(b.name));
   }, [certifications]);
   
   const levels = useMemo(() => {
-      const allLevels = certifications.map(c => c.level).filter(Boolean);
-      const uniqueLevels = [...new Map(allLevels.map(item => [item['slug'], item])).values()];
-      const sortOrder = ['Foundational', 'Associate', 'Professional', 'Specialty', 'Expert'];
-      return uniqueLevels.sort((a, b) => sortOrder.indexOf(a.name) - sortOrder.indexOf(b.name));
+    if (!certifications) return [];
+    const allLevels = certifications.map(c => c.level).filter(Boolean);
+    const uniqueLevels = [...new Map(allLevels.map(item => [item['slug'], item])).values()];
+    const sortOrder = ['Foundational', 'Associate', 'Professional', 'Specialty', 'Expert'];
+    return uniqueLevels.sort((a, b) => sortOrder.indexOf(a.name) - sortOrder.indexOf(b.name));
   }, [certifications]);
 
-  // ✅ NEW: Prepare unique resource types for the filter dropdown
   const resourceTypes = useMemo(() => {
-      const allResourceTypes = certifications.flatMap(c => c.resource_types || []).filter(Boolean);
-      const uniqueResourceTypes = [...new Map(allResourceTypes.map(item => [item['slug'], item])).values()];
-      return uniqueResourceTypes.sort((a, b) => a.name.localeCompare(b.name));
+    if (!certifications) return [];
+    const allResourceTypes = certifications.flatMap(c => c.resource_types || []).filter(Boolean);
+    const uniqueResourceTypes = [...new Map(allResourceTypes.map(item => [item['slug'], item])).values()];
+    return uniqueResourceTypes.sort((a, b) => a.name.localeCompare(b.name));
   }, [certifications]);
 
+  // Check if any filters are active
+  const areFiltersActive = filters.provider !== 'all' || filters.level !== 'all' || filters.resource_type !== 'all' || filters.search !== '';
 
   return (
     <>
@@ -70,16 +84,21 @@ const CertificationHub = () => {
               setFilters={setFilters} 
               providers={providers}
               levels={levels}
-              resourceTypes={resourceTypes} // ✅ NEW: Pass data to filter
+              resourceTypes={resourceTypes}
             />
+            {/* ✅ NEW: Clear Filters Button */}
+            {areFiltersActive && (
+              <Button 
+                variant="ghost" 
+                className="w-full mt-4 text-blue-400 hover:bg-blue-500/10"
+                onClick={() => setFilters({ provider: 'all', level: 'all', resource_type: 'all', search: '' })}
+              >
+                Clear All Filters
+              </Button>
+            )}
           </aside>
           
           <main className="w-full lg:w-3/4 xl:w-4/5">
-            {loading && (
-              <div className="flex justify-center items-center h-96">
-                <Loader className="h-12 w-12 animate-spin text-blue-400" />
-              </div>
-            )}
             {error && (
               <div className="bg-red-900/50 text-red-300 p-6 rounded-lg flex flex-col items-center text-center">
                   <ServerCrash className="h-12 w-12 mb-4" />
@@ -88,26 +107,37 @@ const CertificationHub = () => {
               </div>
             )}
             
-            {!loading && !error && (
+            {!error && (
               <>
                 <div className="mb-6 text-sm text-gray-400">
-                  Showing <span className="font-bold text-white">{filteredCertifications.length}</span> of <span className="font-bold text-white">{certifications.length}</span> resources.
+                  {loading ? 'Loading resources...' : `Showing ${filteredCertifications.length} of ${certifications.length} resources.`}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {filteredCertifications.length > 0 ? (
-                    filteredCertifications.map(cert => (
+
+                {loading ? (
+                  // ✅ NEW: Skeleton Loading State
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {Array.from({ length: 6 }).map((_, index) => (
+                      <CertificationCardSkeleton key={index} />
+                    ))}
+                  </div>
+                ) : filteredCertifications.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {filteredCertifications.map(cert => (
                       <Link to={`/certifications/${cert.slug}`} key={cert.id} className="block">
                         <CertificationCard certification={cert} />
                       </Link>
-                    ))
-                  ) : (
-                    <div className="col-span-full text-center py-20 bg-slate-800/50 rounded-lg flex flex-col items-center">
-                      <Search className="h-12 w-12 text-gray-500 mb-4" />
-                      <h3 className="text-2xl font-bold text-gray-300">No Certifications Found</h3>
-                      <p className="text-gray-400 mt-2">Try adjusting your filters or check back later.</p>
-                    </div>
-                  )}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  // ✅ NEW: Improved Empty State
+                  <div className="col-span-full text-center py-20 bg-slate-800/50 rounded-lg flex flex-col items-center">
+                    <Search className="h-12 w-12 text-gray-500 mb-4" />
+                    <h3 className="text-2xl font-bold text-gray-300">No Certifications Found</h3>
+                    <p className="text-gray-400 mt-2">
+                      {areFiltersActive ? "Try adjusting your filters or clear them to see all resources." : "Check back later for new certification guides!"}
+                    </p>
+                  </div>
+                )}
               </>
             )}
           </main>
