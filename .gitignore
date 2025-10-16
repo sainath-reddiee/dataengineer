@@ -19,6 +19,6 @@ node_modules/
 !.env.example
 
 # Exclude local development folders
-# blog-automation/
-# src/pages/certifications/
-# src/components/certifications/
+blog-automation/
+src/pages/certifications/
+src/components/certifications/
