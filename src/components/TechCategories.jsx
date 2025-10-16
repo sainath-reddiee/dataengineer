@@ -18,9 +18,10 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
     dbt: 'https://docs.getdbt.com/img/dbt-logo.svg',
     python: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
     gcp: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg',
-    // ✅ NEW
-    databricks: 'https://cdn.brandfetch.io/idw382nG0m/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B',
-    salesforce: 'https://cdn.brandfetch.io/idAnr20o9L/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B'
+        // ✅ NEW: Databricks
+    databricks: 'https://upload.wikimedia.org/wikipedia/commons/6/63/Databricks_Logo.png',
+    // ✅ NEW: Salesforce  
+    salesforce: 'https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/salesforce/salesforce-original.svg'
   };
   
   const iconUrl = iconUrls[lowerCategory];
