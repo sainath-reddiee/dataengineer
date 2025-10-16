@@ -1,0 +1,16 @@
+# Core Dependencies
+anthropic>=0.5.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+Pillow>=10.0.0
+
+# Optional - Only needed if using Replicate for image generation
+# Uncomment the line below if needed:
+# replicate>=0.25.0
+
+# Development/Testing Dependencies (Optional)
+# pytest>=7.4.0
+# black>=23.0.0
+# flake8>=6.0.0
+
+google-generativeai>=0.2.2

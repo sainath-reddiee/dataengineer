@@ -18,7 +18,3 @@ node_modules/
 # Don't ignore example
 !.env.example
 
-# Exclude local development folders
-blog-automation/
-src/pages/certifications/
-src/components/certifications/
