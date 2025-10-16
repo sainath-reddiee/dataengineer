@@ -105,7 +105,10 @@ const getCategoryIcon = (category, className = 'h-10 w-10') => {
     airflow: 'https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/apacheairflow/apacheairflow-original.svg',
     dbt: 'https://docs.getdbt.com/img/dbt-logo.svg',
     python: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
-    gcp: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg'
+    gcp: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg',
+    // ✅ NEW
+    databricks: 'https://cdn.brandfetch.io/idw382nG0m/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B',
+    salesforce: 'https://cdn.brandfetch.io/idAnr20o9L/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B'
   };
   
   const iconUrl = iconUrls[lowerCategory];
