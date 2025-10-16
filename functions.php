@@ -1,14 +1,4 @@
 <?php
-function dataengineer_hub_theme_setup() {
-    // Enable featured images (post thumbnails)
-    add_theme_support('post-thumbnails');
-
-    // Define custom image sizes
-    add_image_size('featured-large', 1200, 630, true);
-    add_image_size('featured-medium', 800, 450, true);
-    add_image_size('featured-small', 400, 225, true);
-}
-add_action('after_setup_theme', 'dataengineer_hub_theme_setup');
 // COMPLETE FINAL functions.php for DataEngineer Hub
 // All functionality preserved with categorization fixes
 
@@ -1387,18 +1377,32 @@ function defer_non_critical_scripts($tag, $handle, $src) {
 
 add_filter('rest_prepare_post', 'limit_rest_api_fields', 10, 3);
 function limit_rest_api_fields($response, $post, $request) {
+    // Skip ANY admin/editor context to prevent breaking WordPress editor
+    if (is_admin() || (defined('REST_REQUEST') && REST_REQUEST)) {
+        $referer = wp_get_referer();
+        if ($referer && strpos($referer, 'wp-admin') !== false) {
+            return $response; // Don't modify response for admin requests
+        }
+    }
+    
     $params = $request->get_params();
     
-    // CRITICAL FIX: Don't limit fields when editing in WordPress admin
-    // The block editor needs full post data including content field
+    // Don't limit fields when editing in WordPress admin
     if (isset($params['context']) && $params['context'] === 'edit') {
         return $response;
     }
     
+    // Don't limit if _fields parameter is set (custom field selection)
     if (isset($params['_fields'])) {
         return $response;
     }
     
+    // Don't limit if _embed is requested (needed for featured images)
+    if (isset($params['_embed']) || $request->get_param('_embed')) {
+        return $response;
+    }
+    
+    // Only optimize for frontend list views (not single post views)
     if (!isset($params['slug']) || empty($params['slug'])) {
         $data = $response->get_data();
         
@@ -1991,16 +1995,6 @@ function clear_rest_cache_on_category_change($object_id, $terms, $tt_ids, $taxon
 // ============================================================================
 // FIX 6: Add no-cache headers to REST API for debugging
 // ============================================================================
-
-add_filter('rest_post_dispatch', 'add_no_cache_headers_to_rest', 10, 3);
-function add_no_cache_headers_to_rest($result, $server, $request) {
-    // Add headers to prevent caching during debugging
-    $result->header('Cache-Control', 'no-cache, no-store, must-revalidate');
-    $result->header('Pragma', 'no-cache');
-    $result->header('Expires', '0');
-    
-    return $result;
-}
 
 // ============================================================================
 // FIX 7: Debug endpoint to verify what's being returned
@@ -2975,4 +2969,28 @@ function certification_hub_setup_notice() {
         }
     }
 }
+// ============================================================================
+// FINAL ATTEMPT: Forcefully re-add the Featured Image box at a later priority
+// ============================================================================
+function force_add_featured_image_box() {
+    // Check if the current user has permissions to edit the post
+    if (!current_user_can('edit_post', get_the_ID())) {
+        return;
+    }
+
+    // Check if the post type supports thumbnails
+    if (post_type_supports(get_post_type(), 'thumbnail')) {
+        // Re-add the meta box
+        add_meta_box(
+            'postimagediv',             // This is the specific ID for the Featured Image box
+            __('Featured Image'),       // Title
+            'post_thumbnail_meta_box',  // Standard WordPress callback
+            'post',                     // Show on 'post' type
+            'side',                     // Position in the sidebar
+            'low'                       // Priority
+        );
+    }
+}
+// We use the 'do_meta_boxes' action which runs after most removals have already happened.
+add_action('do_meta_boxes', 'force_add_featured_image_box');
 ?>
