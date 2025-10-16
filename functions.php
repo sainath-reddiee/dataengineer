@@ -1017,7 +1017,23 @@ function handle_contact_submission($request) {
 // THEME SUPPORT & CUSTOMIZATIONS
 // =================================================================
 
-add_theme_support('post-thumbnails');
+// Add theme support for featured images (post thumbnails)
+add_action('after_setup_theme', 'dataengineer_hub_theme_setup');
+function dataengineer_hub_theme_setup() {
+    // Enable featured images for all post types
+    add_theme_support('post-thumbnails');
+    
+    // Explicitly add thumbnail support for posts
+    add_post_type_support('post', 'thumbnail');
+    
+    // Set default thumbnail size
+    set_post_thumbnail_size(1200, 630, true);
+    
+    // Add additional image sizes for different uses
+    add_image_size('featured-large', 1200, 630, true);
+    add_image_size('featured-medium', 800, 450, true);
+    add_image_size('featured-small', 400, 225, true);
+}
 
 function custom_excerpt_length($length) {
     return 30;
