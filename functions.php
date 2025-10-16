@@ -2972,25 +2972,28 @@ function certification_hub_setup_notice() {
 // ============================================================================
 // FINAL ATTEMPT: Forcefully re-add the Featured Image box at a later priority
 // ============================================================================
-function force_add_featured_image_box() {
-    // Check if the current user has permissions to edit the post
-    if (!current_user_can('edit_post', get_the_ID())) {
-        return;
-    }
 
-    // Check if the post type supports thumbnails
-    if (post_type_supports(get_post_type(), 'thumbnail')) {
-        // Re-add the meta box
-        add_meta_box(
-            'postimagediv',             // This is the specific ID for the Featured Image box
-            __('Featured Image'),       // Title
-            'post_thumbnail_meta_box',  // Standard WordPress callback
-            'post',                     // Show on 'post' type
-            'side',                     // Position in the sidebar
-            'low'                       // Priority
-        );
-    }
+// Method 1: Remove and re-add the meta box to override any conflicts
+function force_featured_image_metabox() {
+    remove_meta_box('postimagediv', 'post', 'side');
+    add_meta_box('postimagediv', __('Featured Image'), 'post_thumbnail_meta_box', 'post', 'side', 'low');
 }
-// We use the 'do_meta_boxes' action which runs after most removals have already happened.
-add_action('do_meta_boxes', 'force_add_featured_image_box');
+add_action('do_meta_boxes', 'force_featured_image_metabox', 10);
+
+// Method 2: Double-check theme support
+function ensure_featured_image_support() {
+    add_theme_support('post-thumbnails');
+    add_post_type_support('post', 'thumbnail');
+}
+add_action('after_setup_theme', 'ensure_featured_image_support', 999);
+
+// Method 3: Add admin body class to help with CSS debugging
+function add_featured_image_admin_class($classes) {
+    global $post_type;
+    if ($post_type === 'post') {
+        $classes .= ' has-featured-image-support';
+    }
+    return $classes;
+}
+add_filter('admin_body_class', 'add_featured_image_admin_class');
 ?>
