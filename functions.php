@@ -785,6 +785,28 @@ function handle_clear_all_caches() {
 // CUSTOM META FIELDS FOR POSTS
 // =================================================================
 
+// Register meta fields for block editor compatibility
+add_action('init', 'register_custom_post_meta_fields');
+function register_custom_post_meta_fields() {
+    register_post_meta('post', 'featured', array(
+        'type' => 'boolean',
+        'single' => true,
+        'show_in_rest' => true,
+        'auth_callback' => function() {
+            return current_user_can('edit_posts');
+        }
+    ));
+    
+    register_post_meta('post', 'trending', array(
+        'type' => 'boolean',
+        'single' => true,
+        'show_in_rest' => true,
+        'auth_callback' => function() {
+            return current_user_can('edit_posts');
+        }
+    ));
+}
+
 add_action('add_meta_boxes', 'add_custom_meta_fields');
 function add_custom_meta_fields() {
     add_meta_box(
