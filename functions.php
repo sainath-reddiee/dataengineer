@@ -1025,12 +1025,16 @@ function handle_contact_submission($request) {
 }
 
 // ============================================================================
-// THEME SUPPORT & CUSTOMIZATIONS
+// THEME SUPPORT & CUSTOMIZATIONS - MUST BE AT TOP
 // ============================================================================
 
-// CRITICAL: Enable featured images
-add_theme_support('post-thumbnails');
-set_post_thumbnail_size(1200, 630, true);
+// CRITICAL: Enable featured images IMMEDIATELY
+add_action('after_setup_theme', 'dataengineer_theme_setup', 1);
+function dataengineer_theme_setup() {
+    add_theme_support('post-thumbnails');
+    add_post_type_support('post', 'thumbnail');
+    set_post_thumbnail_size(1200, 630, true);
+}
 
 function custom_excerpt_length($length) {
     return 30;
