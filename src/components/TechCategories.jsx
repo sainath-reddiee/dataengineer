@@ -8,22 +8,51 @@ import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
 // Icon provider with drop-shadow for visibility
 const getCategoryIcon = (category, className = 'h-8 w-8') => {
-    const lowerCategory = category.toLowerCase();
-    const iconUrls = {
-      snowflake: 'https://cdn.brandfetch.io/idJz-fGD_q/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B',
-      aws: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg',
-      azure: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg',
-      sql: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
-      airflow: 'https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/apacheairflow/apacheairflow-original.svg',
-      dbt: 'https://docs.getdbt.com/img/dbt-logo.svg',
-      python: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
-      gcp: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg'
-    };
-    const iconUrl = iconUrls[lowerCategory];
-    if (iconUrl) {
-      return (<img src={iconUrl} alt={`${category} logo`} className={`${className} object-contain`} style={{ filter: 'drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.4))' }} onError={(e) => { e.target.style.display = 'none'; e.target.parentNode.innerHTML = `<div class="${className} bg-blue-500/20 rounded-lg flex items-center justify-center text-2xl">📁</div>`; }} />);
-    }
-    return (<svg viewBox="0 0 24 24" className={className} fill="currentColor"><path fill="#6366F1" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>);
+  const lowerCategory = category.toLowerCase();
+  const iconUrls = {
+    snowflake: 'https://cdn.brandfetch.io/idJz-fGD_q/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B',
+    aws: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg',
+    azure: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg',
+    sql: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
+    airflow: 'https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/apacheairflow/apacheairflow-original.svg',
+    dbt: 'https://docs.getdbt.com/img/dbt-logo.svg',
+    python: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+    gcp: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg',
+    // ✅ NEW
+    databricks: 'https://cdn.brandfetch.io/idw382nG0m/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B',
+    salesforce: 'https://cdn.brandfetch.io/idAnr20o9L/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B'
+  };
+  
+  const iconUrl = iconUrls[lowerCategory];
+
+  // Special case for SQL to ensure visibility
+  if (lowerCategory === 'sql') {
+    return (
+      <div className={`${className} bg-slate-200 rounded-full p-1.5 flex items-center justify-center`}>
+        <img src={iconUrls.sql} alt="SQL logo" className="h-full w-full object-contain" />
+      </div>
+    );
+  }
+  
+  if (iconUrl) {
+    return (
+      <img 
+        src={iconUrl} 
+        alt={`${category} logo`} 
+        className={`${className} object-contain`} 
+        onError={(e) => { 
+          e.target.style.display = 'none'; 
+          e.target.parentNode.innerHTML = `<div class="${className} bg-blue-500/20 rounded-lg flex items-center justify-center text-2xl">📁</div>`; 
+        }} 
+      />
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+      <path fill="#6366F1" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+    </svg>
+  );
 };
 
 const Spark = ({ x, y, rotate, color }) => {
