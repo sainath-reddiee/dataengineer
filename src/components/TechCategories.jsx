@@ -134,15 +134,18 @@ const TechCategories = () => {
   const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
 
   const categoryConfig = [
-    { name: 'AWS', description: 'Cloud data services, S3, Redshift, Glue, and more', color: 'from-orange-500 to-red-500', path: '/category/aws' },
-    { name: 'Snowflake', description: 'Modern cloud data warehouse and analytics', color: 'from-blue-500 to-cyan-500', path: '/category/snowflake' },
-    { name: 'Azure', description: 'Microsoft cloud data platform and services', color: 'from-blue-600 to-indigo-600', path: '/category/azure' },
-    { name: 'SQL', description: 'Advanced queries, optimization, and best practices', color: 'from-sky-500 to-cyan-400', path: '/category/sql' },
-    { name: 'Airflow', description: 'Workflow orchestration and data pipeline automation', color: 'from-purple-500 to-violet-500', path: '/category/airflow' },
-    { name: 'dbt', description: 'Data transformation and analytics engineering', color: 'from-pink-500 to-rose-500', path: '/category/dbt' },
-    { name: 'Python', description: 'Data engineering with Python libraries and frameworks', color: 'from-yellow-500 to-orange-500', path: '/category/python' },
-    { name: 'GCP', description: 'Google Cloud Platform services like BigQuery and Dataflow', color: 'from-green-500 to-blue-500', path: '/category/gcp' }
-  ];
+  { name: 'AWS', description: 'Cloud data services, S3, Redshift, Glue, and more', color: 'from-orange-500 to-red-500', path: '/category/aws' },
+  { name: 'Snowflake', description: 'Modern cloud data warehouse and analytics', color: 'from-blue-500 to-cyan-500', path: '/category/snowflake' },
+  { name: 'Azure', description: 'Microsoft cloud data platform and services', color: 'from-blue-600 to-indigo-600', path: '/category/azure' },
+  { name: 'SQL', description: 'Advanced queries, optimization, and best practices', color: 'from-sky-500 to-cyan-400', path: '/category/sql' },
+  { name: 'Airflow', description: 'Workflow orchestration and data pipeline automation', color: 'from-purple-500 to-violet-500', path: '/category/airflow' },
+  { name: 'dbt', description: 'Data transformation and analytics engineering', color: 'from-pink-500 to-rose-500', path: '/category/dbt' },
+  { name: 'Python', description: 'Data engineering with Python libraries and frameworks', color: 'from-yellow-500 to-orange-500', path: '/category/python' },
+  { name: 'GCP', description: 'Google Cloud Platform services like BigQuery and Dataflow', color: 'from-green-500 to-blue-500', path: '/category/gcp' },
+  // ✅ NEW
+  { name: 'Databricks', description: 'Unified analytics and lakehouse platform for big data', color: 'from-red-500 to-orange-500', path: '/category/databricks' },
+  { name: 'Salesforce', description: 'CRM data integration and Salesforce Data Cloud', color: 'from-blue-600 to-cyan-500', path: '/category/salesforce' }
+];
 
   const categories = categoryConfig.map(config => {
     const apiCategory = apiCategories.find(cat => cat.name === config.name);
