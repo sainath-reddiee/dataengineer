@@ -78,6 +78,20 @@ const categoryConfig = {
     color: 'from-green-500 to-blue-500', 
     path: '/category/gcp', 
     description: "Explore Google Cloud Platform services for data engineers, including BigQuery, Dataflow, and Dataproc."
+  },
+  // ✅ NEW
+  databricks: {
+    name: 'Databricks',
+    color: 'from-red-500 to-orange-500',
+    path: '/category/databricks',
+    description: "Databricks lakehouse platform tutorials: Delta Lake, Apache Spark, Unity Catalog, and MLflow for data engineering."
+  },
+  // ✅ NEW
+  salesforce: {
+    name: 'Salesforce',
+    color: 'from-blue-600 to-cyan-500',
+    path: '/category/salesforce',
+    description: "Salesforce data integration tutorials: CRM data, Apex, SOQL, MuleSoft, and Salesforce Data Cloud."
   }
 };
 
