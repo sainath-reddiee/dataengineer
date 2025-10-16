@@ -1260,6 +1260,11 @@ add_filter('rest_prepare_post', 'optimize_rest_post_response', 10, 3);
 function optimize_rest_post_response($response, $post, $request) {
     $params = $request->get_params();
     
+    // Skip optimization for editor context
+    if (isset($params['context']) && $params['context'] === 'edit') {
+        return $response;
+    }
+    
     if (!isset($params['slug']) || empty($params['slug'])) {
         return $response;
     }
@@ -1357,6 +1362,12 @@ function defer_non_critical_scripts($tag, $handle, $src) {
 add_filter('rest_prepare_post', 'limit_rest_api_fields', 10, 3);
 function limit_rest_api_fields($response, $post, $request) {
     $params = $request->get_params();
+    
+    // CRITICAL FIX: Don't limit fields when editing in WordPress admin
+    // The block editor needs full post data including content field
+    if (isset($params['context']) && $params['context'] === 'edit') {
+        return $response;
+    }
     
     if (isset($params['_fields'])) {
         return $response;
@@ -1729,6 +1740,13 @@ function render_category_checker_page() {
 }
 add_filter('rest_prepare_post', 'force_categories_in_rest_response', 999, 3);
 function force_categories_in_rest_response($response, $post, $request) {
+    $params = $request->get_params();
+    
+    // Skip for editor context to avoid interfering with WordPress editor
+    if (isset($params['context']) && $params['context'] === 'edit') {
+        return $response;
+    }
+    
     $data = $response->get_data();
     
     // Get ALL categories for this post
