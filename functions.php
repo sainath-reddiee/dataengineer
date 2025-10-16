@@ -103,7 +103,13 @@ function get_or_create_category($category_name, $category_slug) {
     return $category;
 }
 
-add_action('add_meta_boxes', 'add_category_control_meta_box');
+// ============================================================================
+// FIX: Commented out meta boxes that can cause editor crashes
+// These features will still work on save, but the UI in the editor is disabled to prevent conflicts.
+// ============================================================================
+// add_action('add_meta_boxes', 'add_category_control_meta_box');
+// add_action('add_meta_boxes', 'add_auto_category_detection_meta_box');
+
 function add_category_control_meta_box() {
     add_meta_box(
         'manual-category-control',
@@ -476,18 +482,6 @@ function force_update_category_counts($post_id) {
     }
 }
 
-add_action('add_meta_boxes', 'add_auto_category_detection_meta_box');
-function add_auto_category_detection_meta_box() {
-    add_meta_box(
-        'auto-category-detection',
-        '🤖 Auto Category Detection',
-        'auto_category_detection_callback',
-        'post',
-        'side',
-        'default'
-    );
-}
-
 function auto_category_detection_callback($post) {
     $title = $post->post_title;
     $content = $post->post_content;
@@ -791,6 +785,28 @@ function handle_clear_all_caches() {
 // CUSTOM META FIELDS FOR POSTS
 // =================================================================
 
+// Register meta fields for block editor compatibility
+add_action('init', 'register_custom_post_meta_fields');
+function register_custom_post_meta_fields() {
+    register_post_meta('post', 'featured', array(
+        'type' => 'boolean',
+        'single' => true,
+        'show_in_rest' => true,
+        'auth_callback' => function() {
+            return current_user_can('edit_posts');
+        }
+    ));
+    
+    register_post_meta('post', 'trending', array(
+        'type' => 'boolean',
+        'single' => true,
+        'show_in_rest' => true,
+        'auth_callback' => function() {
+            return current_user_can('edit_posts');
+        }
+    ));
+}
+
 add_action('add_meta_boxes', 'add_custom_meta_fields');
 function add_custom_meta_fields() {
     add_meta_box(
@@ -1001,7 +1017,23 @@ function handle_contact_submission($request) {
 // THEME SUPPORT & CUSTOMIZATIONS
 // =================================================================
 
-add_theme_support('post-thumbnails');
+// Add theme support for featured images (post thumbnails)
+add_action('after_setup_theme', 'dataengineer_hub_theme_setup');
+function dataengineer_hub_theme_setup() {
+    // Enable featured images for all post types
+    add_theme_support('post-thumbnails');
+    
+    // Explicitly add thumbnail support for posts
+    add_post_type_support('post', 'thumbnail');
+    
+    // Set default thumbnail size
+    set_post_thumbnail_size(1200, 630, true);
+    
+    // Add additional image sizes for different uses
+    add_image_size('featured-large', 1200, 630, true);
+    add_image_size('featured-medium', 800, 450, true);
+    add_image_size('featured-small', 400, 225, true);
+}
 
 function custom_excerpt_length($length) {
     return 30;
@@ -1266,6 +1298,11 @@ add_filter('rest_prepare_post', 'optimize_rest_post_response', 10, 3);
 function optimize_rest_post_response($response, $post, $request) {
     $params = $request->get_params();
     
+    // Skip optimization for editor context
+    if (isset($params['context']) && $params['context'] === 'edit') {
+        return $response;
+    }
+    
     if (!isset($params['slug']) || empty($params['slug'])) {
         return $response;
     }
@@ -1363,6 +1400,12 @@ function defer_non_critical_scripts($tag, $handle, $src) {
 add_filter('rest_prepare_post', 'limit_rest_api_fields', 10, 3);
 function limit_rest_api_fields($response, $post, $request) {
     $params = $request->get_params();
+    
+    // CRITICAL FIX: Don't limit fields when editing in WordPress admin
+    // The block editor needs full post data including content field
+    if (isset($params['context']) && $params['context'] === 'edit') {
+        return $response;
+    }
     
     if (isset($params['_fields'])) {
         return $response;
@@ -1735,6 +1778,13 @@ function render_category_checker_page() {
 }
 add_filter('rest_prepare_post', 'force_categories_in_rest_response', 999, 3);
 function force_categories_in_rest_response($response, $post, $request) {
+    $params = $request->get_params();
+    
+    // Skip for editor context to avoid interfering with WordPress editor
+    if (isset($params['context']) && $params['context'] === 'edit') {
+        return $response;
+    }
+    
     $data = $response->get_data();
     
     // Get ALL categories for this post
@@ -2393,6 +2443,13 @@ function register_certification_endpoints() {
         'permission_callback' => '__return_true',
     ));
     
+    // Get certifications by a specific taxonomy
+    register_rest_route('wp/v2', '/certifications-by-taxonomy/(?P<taxonomy>[a-zA-Z0-9_]+)/(?P<slug>[a-zA-Z0-9-]+)', array(
+        'methods' => 'GET',
+        'callback' => 'get_certifications_by_taxonomy',
+        'permission_callback' => '__return_true',
+    ));
+
     // Track download
     register_rest_route('wp/v2', '/certifications/(?P<id>\d+)/download', array(
         'methods' => 'POST',
@@ -2406,6 +2463,35 @@ function register_certification_endpoints() {
         'callback' => 'get_certification_stats',
         'permission_callback' => '__return_true',
     ));
+}
+
+function get_certifications_by_taxonomy($request) {
+    $taxonomy = $request['taxonomy'];
+    $slug = $request['slug'];
+
+    $args = array(
+        'post_type' => 'certification',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'tax_query' => array(
+            array(
+                'taxonomy' => $taxonomy,
+                'field'    => 'slug',
+                'terms'    => $slug,
+            ),
+        ),
+    );
+
+    $query = new WP_Query($args);
+    $controller = new WP_REST_Posts_Controller('certification');
+    $response = array();
+
+    foreach ($query->posts as $post) {
+        $data = $controller->prepare_item_for_response($post, $request);
+        $response[] = $controller->prepare_response_for_collection($data);
+    }
+
+    return new WP_REST_Response($response, 200);
 }
 
 function get_featured_certifications($request) {
