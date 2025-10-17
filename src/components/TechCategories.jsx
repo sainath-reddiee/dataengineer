@@ -116,7 +116,7 @@ const SparkleCard = ({ category }) => {
             name === 'Databricks' ? 'bg-slate-900' :  // Dark navy for Databricks red logo
             name === 'AWS' ? 'bg-white/95' :
             name === 'dbt' ? 'bg-white/95' :
-            name === 'Salesforce' ? 'bg-white/95' :
+            name === 'Salesforce' ? 'bg-slate-900' :
             `bg-gradient-to-br ${color}`
           } mb-3 sm:mb-4 md:mb-6 self-start shadow-lg`}>
             {getCategoryIcon(name, 'h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8')}
