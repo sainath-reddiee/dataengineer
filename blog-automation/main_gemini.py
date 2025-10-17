@@ -14,15 +14,16 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # Import our FREE modules
-from trend_monitor_free import TrendMonitorFree
+from trend_monitor_realtime import EnhancedTrendMonitor
 from blog_generator_free import BlogGeneratorFree
 from wordpress_publisher import WordPressPublisher
 
 # Optional: Import free image generator
 try:
     from image_generator_free import ImageGeneratorFree
+    IMAGE_GENERATOR_AVAILABLE = True
 except ImportError:
-    ImageGeneratorFree = None
+    IMAGE_GENERATOR_AVAILABLE = False
 
 
 class BlogAutomationPipelineGemini:
@@ -34,7 +35,7 @@ class BlogAutomationPipelineGemini:
         print("✅ Using Google Gemini API (NO Anthropic needed!)")
         
         # Initialize components - ALL using Gemini!
-        self.trend_monitor = TrendMonitorFree(config['gemini_api_key'])
+        self.trend_monitor = EnhancedTrendMonitor(config['gemini_api_key'])
         self.blog_generator = BlogGeneratorFree(config['gemini_api_key'])
         
         # WordPress publisher
@@ -47,7 +48,7 @@ class BlogAutomationPipelineGemini:
         # Optional: Image generator
         self.use_images = config.get('use_images', False)
         if self.use_images:
-            if ImageGeneratorFree:
+            if IMAGE_GENERATOR_AVAILABLE:
                 try:
                     self.image_generator = ImageGeneratorFree()
                     print("✅ Image generation enabled (Hugging Face - FREE)")
@@ -68,7 +69,8 @@ class BlogAutomationPipelineGemini:
         self, 
         num_posts: int = 1,
         publish_status: str = 'draft',
-        specific_topics: list = None
+        specific_topics: list = None,
+        category: str = None
     ) -> list:
         """Run the complete automation pipeline"""
         print("="*70)
@@ -85,10 +87,10 @@ class BlogAutomationPipelineGemini:
             # Step 1: Identify trending topics
             if specific_topics:
                 topics = specific_topics
-                print(f"📌 Using {len(topics)} specific topics\n")
+                print(f"📌 Using {len(topics)} specific topics provided by user\n")
             else:
                 print("🔍 STEP 1: Analyzing trending topics (using Gemini)...")
-                topics = self.trend_monitor.analyze_trends(limit=num_posts * 2)
+                topics = self.trend_monitor.analyze_trends(limit=num_posts * 2, category=category)
                 if not topics:
                     print("❌ Could not fetch trending topics. Aborting.")
                     return []
@@ -118,6 +120,8 @@ class BlogAutomationPipelineGemini:
                     
                 except Exception as e:
                     print(f"\n❌ Error processing post {idx}: {str(e)}")
+                    import traceback
+                    traceback.print_exc()
                     results.append({
                         'success': False,
                         'topic': topic['title'],
@@ -160,7 +164,7 @@ class BlogAutomationPipelineGemini:
         
         # Step 3: Handle images
         generated_images = []
-        if self.use_images and self.image_generator:
+        if self.use_images and hasattr(self, 'image_generator'):
             print("🎨 STEP 3: Generating images (Hugging Face - FREE)...")
             image_dir = post_dir / 'images'
             image_dir.mkdir(exist_ok=True)
@@ -302,7 +306,24 @@ def load_config() -> dict:
 
 def main():
     parser = argparse.ArgumentParser(
-        description='AI Blog Automation (Gemini-Only & FREE Version)'
+        description='AI Blog Automation (Gemini-Only & FREE Version)',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Automatic mode (AI finds trending topics)
+  python main_gemini.py --posts 1 --category snowflake --status draft
+  python main_gemini.py --posts 3 --category databricks --status draft
+  
+  # Manual mode (You provide topics)
+  python main_gemini.py --topics "Snowflake Time Travel Guide" --status draft
+  python main_gemini.py --topics "Topic 1" "Topic 2" --status draft
+  
+  # Mix mode (Category + multiple posts)
+  python main_gemini.py --posts 5 --category salesforce --status draft
+
+Supported Categories:
+  snowflake, aws, azure, dbt, airflow, python, sql, gcp, salesforce, databricks
+        """
     )
     parser.add_argument(
         '--posts', 
@@ -319,35 +340,42 @@ def main():
     parser.add_argument(
         '--topics',
         nargs='+',
-        help='Specific topics to write about'
+        help='Specific topics to write about (manual mode)'
     )
     parser.add_argument(
         '--category',
-        help='Focus on specific category (e.g., snowflake, aws)'
+        choices=['snowflake', 'aws', 'azure', 'dbt', 'airflow', 'python', 'sql', 'gcp', 'salesforce', 'databricks'],
+        help='Focus on specific category (automatic mode)'
     )
     
     args = parser.parse_args()
     
+    # Load configuration
     config = load_config()
+    
+    # Initialize pipeline
     pipeline = BlogAutomationPipelineGemini(config)
     
+    # Prepare specific topics if provided
     specific_topics = None
     if args.topics:
         specific_topics = [
             {'title': topic, 'category': args.category or 'general'}
             for topic in args.topics
         ]
-    elif args.category:
-        print(f"🔍 Getting trends for category: {args.category}")
-        monitor = TrendMonitorFree(config['gemini_api_key'])
-        specific_topics = monitor.get_topics_by_category(args.category, limit=args.posts)
+        num_posts = len(specific_topics)
+    else:
+        num_posts = args.posts
     
+    # Run pipeline
     results = pipeline.run_full_pipeline(
-        num_posts=args.posts if not specific_topics else len(specific_topics),
+        num_posts=num_posts,
         publish_status=args.status,
-        specific_topics=specific_topics
+        specific_topics=specific_topics,
+        category=args.category
     )
     
+    # Exit with appropriate code
     failed_count = len([r for r in results if not r.get('success')])
     sys.exit(0 if failed_count == 0 else 1)
 
