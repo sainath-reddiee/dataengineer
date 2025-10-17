@@ -132,7 +132,7 @@ class WordPressPublisher:
             }
     
     def _upload_images(self, image_files: List[Dict]) -> List[Dict]:
-        """Upload images to WordPress media library"""
+        """Upload images to WordPress media library with alt text metadata"""
         uploaded = []
         
         if not image_files:
@@ -152,14 +152,15 @@ class WordPressPublisher:
                 with open(img['local_path'], 'rb') as f:
                     image_data = f.read()
                 
-                # Get filename
+                # Get filename and determine content type
                 filename = os.path.basename(img['local_path'])
+                content_type = 'image/jpeg' if filename.endswith('.jpg') or filename.endswith('.jpeg') else 'image/png'
                 
                 # Upload to WordPress
                 headers = {
                     'Authorization': self.headers['Authorization'],
                     'Content-Disposition': f'attachment; filename="{filename}"',
-                    'Content-Type': 'image/png'
+                    'Content-Type': content_type
                 }
                 
                 response = requests.post(
@@ -170,13 +171,33 @@ class WordPressPublisher:
                 
                 if response.status_code in [200, 201]:
                     media_info = response.json()
+                    media_id = media_info['id']
+                    
+                    # ✅ NEW: Set alt text in WordPress media library
+                    alt_text = img.get('alt_text', '')
+                    if alt_text:
+                        try:
+                            alt_response = requests.post(
+                                f"{self.api_base}/media/{media_id}",
+                                headers=self.headers,
+                                json={'alt_text': alt_text}
+                            )
+                            if alt_response.status_code in [200, 201]:
+                                print(f"   ✅ Uploaded: {img['placement']} (alt text set)")
+                            else:
+                                print(f"   ✅ Uploaded: {img['placement']} (alt text failed)")
+                        except Exception as e:
+                            print(f"   ✅ Uploaded: {img['placement']} (alt text error: {str(e)[:50]})")
+                    else:
+                        print(f"   ✅ Uploaded: {img['placement']}")
+                    
                     uploaded.append({
                         **img,
-                        'id': media_info['id'],
+                        'id': media_id,
                         'url': media_info['source_url'],
-                        'wp_uploaded': True
+                        'wp_uploaded': True,
+                        'alt_text_set': bool(alt_text)
                     })
-                    print(f"   ✅ Uploaded: {img['placement']}")
                 else:
                     print(f"   ⚠️  Failed to upload {img['placement']}: {response.status_code}")
             
