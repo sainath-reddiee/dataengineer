@@ -9,11 +9,11 @@ const AboutPage = () => {
   return (
     <>
       <MetaTags 
-        title="About Us - Expert Data Engineering Team"
-        description="Meet the DataEngineer Hub team. Learn about our mission to provide high-quality data engineering tutorials and resources for professionals worldwide."
-        keywords="about data engineer hub, data engineering team, data engineering experts"
-        type="website"
-      />
+  title="About Us - Expert Data Engineering Team"
+  description="Meet the DataEngineer Hub team. Learn about our mission to provide high-quality data engineering tutorials and resources covering Snowflake, AWS, Azure, Databricks, Salesforce, and more for professionals worldwide."
+  keywords="about data engineer hub, data engineering team, data engineering experts, databricks experts, salesforce data experts"
+  type="website"
+/>
       <div className="pt-4 pb-12 overflow-hidden">
         <div className="container mx-auto px-6">
           {/* FIXED: Single H1 tag for entire page */}
@@ -27,8 +27,8 @@ const AboutPage = () => {
               About <span className="gradient-text">DataEngineer Hub</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed">
-              Your ultimate resource for mastering data engineering technologies. From AWS to dbt, we cover it all with practical insights and expert guidance.
-            </p>
+  Your go-to destination for mastering the world of data engineering. Whether it’s  Snowflake, AWS, Azure, Databricks,DBT, GCP or Salesforce, we deliver hands-on insights and expert advice to help you stay ahead.
+</p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mt-16">

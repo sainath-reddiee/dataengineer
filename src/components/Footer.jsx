@@ -23,28 +23,31 @@ const Footer = () => {
   };
 
   const footerLinks = {
-    content: [
-      { name: 'Latest Articles', href: '/articles' },
-      { name: 'AWS Tutorials', href: '/category/aws' },
-      { name: 'Snowflake Guides', href: '/category/snowflake' },
-      { name: 'Azure Resources', href: '/category/azure' },
-      { name: 'SQL Tips', href: '/category/sql' }
-    ],
-    tools: [
-      { name: 'Airflow', href: '/category/airflow' },
-      { name: 'dbt', href: '/category/dbt' },
-      { name: 'Python', href: '/category/python' },
-      { name: 'GCP', href: '/category/gcp' }
-    ],
-    company: [
-      { name: 'About', href: '/about' },
-      { name: 'Contact', href: '/contact' },
-      { name: 'Newsletter', href: '/newsletter' },
-      { name: 'Privacy Policy', href: '/privacy-policy' },
-      { name: 'Terms of Service', href: '/terms-of-service' },
-      { name: 'Disclaimer', href: '/disclaimer' }
-    ]
-  };
+  content: [
+    { name: 'Latest Articles', href: '/articles' },
+    { name: 'AWS Tutorials', href: '/category/aws' },
+    { name: 'Snowflake Guides', href: '/category/snowflake' },
+    { name: 'Azure Resources', href: '/category/azure' },
+    { name: 'SQL Tips', href: '/category/sql' }
+  ],
+  tools: [
+    { name: 'Airflow', href: '/category/airflow' },
+    { name: 'dbt', href: '/category/dbt' },
+    { name: 'Python', href: '/category/python' },
+    { name: 'GCP', href: '/category/gcp' },
+    // ✅ NEW
+    { name: 'Databricks', href: '/category/databricks' },
+    { name: 'Salesforce', href: '/category/salesforce' }
+  ],
+  company: [
+    { name: 'About', href: '/about' },
+    { name: 'Contact', href: '/contact' },
+    { name: 'Newsletter', href: '/newsletter' },
+    { name: 'Privacy Policy', href: '/privacy-policy' },
+    { name: 'Terms of Service', href: '/terms-of-service' },
+    { name: 'Disclaimer', href: '/disclaimer' }
+  ]
+};
 
   const socialLinks = [
     { name: 'GitHub', icon: Github, href: 'https://github.com/sainath-reddiee' },

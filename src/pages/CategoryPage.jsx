@@ -78,6 +78,20 @@ const categoryConfig = {
     color: 'from-green-500 to-blue-500', 
     path: '/category/gcp', 
     description: "Explore Google Cloud Platform services for data engineers, including BigQuery, Dataflow, and Dataproc."
+  },
+  // ✅ NEW
+  databricks: {
+    name: 'Databricks',
+    color: 'from-red-500 to-orange-500',
+    path: '/category/databricks',
+    description: "Databricks lakehouse platform tutorials: Delta Lake, Apache Spark, Unity Catalog, and MLflow for data engineering."
+  },
+  // ✅ NEW
+  salesforce: {
+    name: 'Salesforce',
+    color: 'from-blue-600 to-cyan-500',
+    path: '/category/salesforce',
+    description: "Salesforce data integration tutorials: CRM data, Apex, SOQL, MuleSoft, and Salesforce Data Cloud."
   }
 };
 
@@ -91,7 +105,11 @@ const getCategoryIcon = (category, className = 'h-10 w-10') => {
     airflow: 'https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/apacheairflow/apacheairflow-original.svg',
     dbt: 'https://docs.getdbt.com/img/dbt-logo.svg',
     python: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
-    gcp: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg'
+    gcp: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg',
+    // ✅ NEW: Databricks
+    databricks: 'https://cdn.brandfetch.io/idSUrLOWbH/idEHbzBDZC.svg?c=1dxbfHSJFAPEGdCLU4o5B',
+    // ✅ NEW: Salesforce  
+    salesforce: 'https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/salesforce/salesforce-original.svg'
   };
   
   const iconUrl = iconUrls[lowerCategory];

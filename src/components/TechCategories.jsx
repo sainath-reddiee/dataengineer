@@ -8,22 +8,52 @@ import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
 // Icon provider with drop-shadow for visibility
 const getCategoryIcon = (category, className = 'h-8 w-8') => {
-    const lowerCategory = category.toLowerCase();
-    const iconUrls = {
-      snowflake: 'https://cdn.brandfetch.io/idJz-fGD_q/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B',
-      aws: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg',
-      azure: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg',
-      sql: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
-      airflow: 'https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/apacheairflow/apacheairflow-original.svg',
-      dbt: 'https://docs.getdbt.com/img/dbt-logo.svg',
-      python: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
-      gcp: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg'
-    };
-    const iconUrl = iconUrls[lowerCategory];
-    if (iconUrl) {
-      return (<img src={iconUrl} alt={`${category} logo`} className={`${className} object-contain`} style={{ filter: 'drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.4))' }} onError={(e) => { e.target.style.display = 'none'; e.target.parentNode.innerHTML = `<div class="${className} bg-blue-500/20 rounded-lg flex items-center justify-center text-2xl">📁</div>`; }} />);
-    }
-    return (<svg viewBox="0 0 24 24" className={className} fill="currentColor"><path fill="#6366F1" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>);
+  const lowerCategory = category.toLowerCase();
+  const iconUrls = {
+    snowflake: 'https://cdn.brandfetch.io/idJz-fGD_q/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B',
+    aws: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg',
+    azure: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/azure/azure-original.svg',
+    sql: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
+    airflow: 'https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/apacheairflow/apacheairflow-original.svg',
+    dbt: 'https://docs.getdbt.com/img/dbt-logo.svg',
+    python: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+    gcp: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg',
+        // ✅ NEW: Databricks
+    databricks: 'https://cdn.brandfetch.io/idSUrLOWbH/idEHbzBDZC.svg?c=1dxbfHSJFAPEGdCLU4o5B',
+    // ✅ NEW: Salesforce  
+    salesforce: 'https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/salesforce/salesforce-original.svg'
+  };
+  
+  const iconUrl = iconUrls[lowerCategory];
+  
+  // Special handling for logos that need light backgrounds
+  const needsLightBg = ['databricks', 'aws', 'dbt', 'salesforce'].includes(lowerCategory);
+  
+  if (iconUrl) {
+    return (
+      <img 
+        src={iconUrl} 
+        alt={`${category} logo`} 
+        className={`${className} object-contain`}
+        style={{ 
+          maxWidth: '100%',
+          maxHeight: '100%',
+          // Add slight drop shadow for better visibility on light backgrounds
+          filter: needsLightBg ? 'drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.15))' : 'none'
+        }}
+        onError={(e) => { 
+          e.target.style.display = 'none'; 
+          e.target.parentNode.innerHTML = `<div class="${className} bg-blue-500/20 rounded-lg flex items-center justify-center text-2xl">📁</div>`; 
+        }} 
+      />
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+      <path fill="#6366F1" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+    </svg>
+  );
 };
 
 const Spark = ({ x, y, rotate, color }) => {
@@ -71,8 +101,18 @@ const SparkleCard = ({ category }) => {
         ))}
 
         <div className="flex flex-col h-full z-10">
-          {/* Small, distinct icon container at the top-left */}
-          <div className={`inline-flex p-2 sm:p-3 md:p-4 rounded-xl bg-gradient-to-br ${color} mb-3 sm:mb-4 md:mb-6 self-start shadow-lg`}>
+          {/* Small, distinct icon container at the top-left with better visibility */}
+          <div className={`inline-flex p-2 sm:p-3 md:p-4 rounded-xl ${
+            // Use appropriate backgrounds for better logo visibility
+            name === 'Databricks' ? 'bg-slate-900' :           // Dark for red logo
+            name === 'AWS' ? 'bg-white/95' :                   // White for orange logo
+            name === 'dbt' ? 'bg-white/95' :                   // White for orange logo
+            name === 'SQL' ? 'bg-white/95' :                   // White for blue/orange logo
+            name === 'Snowflake' ? 'bg-slate-900' :            // Dark for light blue logo
+            name === 'Azure' ? 'bg-white/95' :                 // White for blue logo
+            name === 'Salesforce' ? 'bg-gray-50' :            // White for blue logo (Option 1)
+            `bg-gradient-to-br ${color}`
+          } mb-3 sm:mb-4 md:mb-6 self-start shadow-lg`}>
             {getCategoryIcon(name, 'h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8')}
           </div>
 
@@ -104,15 +144,18 @@ const TechCategories = () => {
   const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
 
   const categoryConfig = [
-    { name: 'AWS', description: 'Cloud data services, S3, Redshift, Glue, and more', color: 'from-orange-500 to-red-500', path: '/category/aws' },
-    { name: 'Snowflake', description: 'Modern cloud data warehouse and analytics', color: 'from-blue-500 to-cyan-500', path: '/category/snowflake' },
-    { name: 'Azure', description: 'Microsoft cloud data platform and services', color: 'from-blue-600 to-indigo-600', path: '/category/azure' },
-    { name: 'SQL', description: 'Advanced queries, optimization, and best practices', color: 'from-sky-500 to-cyan-400', path: '/category/sql' },
-    { name: 'Airflow', description: 'Workflow orchestration and data pipeline automation', color: 'from-purple-500 to-violet-500', path: '/category/airflow' },
-    { name: 'dbt', description: 'Data transformation and analytics engineering', color: 'from-pink-500 to-rose-500', path: '/category/dbt' },
-    { name: 'Python', description: 'Data engineering with Python libraries and frameworks', color: 'from-yellow-500 to-orange-500', path: '/category/python' },
-    { name: 'GCP', description: 'Google Cloud Platform services like BigQuery and Dataflow', color: 'from-green-500 to-blue-500', path: '/category/gcp' }
-  ];
+  { name: 'AWS', description: 'Cloud data services, S3, Redshift, Glue, and more', color: 'from-orange-500 to-red-500', path: '/category/aws' },
+  { name: 'Snowflake', description: 'Modern cloud data warehouse and analytics', color: 'from-blue-500 to-cyan-500', path: '/category/snowflake' },
+  { name: 'Azure', description: 'Microsoft cloud data platform and services', color: 'from-blue-600 to-indigo-600', path: '/category/azure' },
+  { name: 'SQL', description: 'Advanced queries, optimization, and best practices', color: 'from-sky-500 to-cyan-400', path: '/category/sql' },
+  { name: 'Airflow', description: 'Workflow orchestration and data pipeline automation', color: 'from-purple-500 to-violet-500', path: '/category/airflow' },
+  { name: 'dbt', description: 'Data transformation and analytics engineering', color: 'from-pink-500 to-rose-500', path: '/category/dbt' },
+  { name: 'Python', description: 'Data engineering with Python libraries and frameworks', color: 'from-yellow-500 to-orange-500', path: '/category/python' },
+  { name: 'GCP', description: 'Google Cloud Platform services like BigQuery and Dataflow', color: 'from-green-500 to-blue-500', path: '/category/gcp' },
+  // ✅ NEW
+  { name: 'Databricks', description: 'Unified analytics and lakehouse platform for big data', color: 'from-red-500 to-orange-500', path: '/category/databricks' },
+  { name: 'Salesforce', description: 'CRM data integration and Salesforce Data Cloud', color: 'from-blue-600 to-cyan-500', path: '/category/salesforce' }
+];
 
   const categories = categoryConfig.map(config => {
     const apiCategory = apiCategories.find(cat => cat.name === config.name);

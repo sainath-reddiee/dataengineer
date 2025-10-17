@@ -62,40 +62,44 @@ function App() {
   const { debugMode } = useApiDebugger();
 
   useEffect(() => {
-    if (typeof performance !== "undefined" && performance.mark) {
-      performance.mark('app-initialized');
-    }
+  if (typeof performance !== "undefined" && performance.mark) {
+    performance.mark('app-initialized');
+  }
 
-    const prefetchTimer = setTimeout(() => {
-      import('./pages/AllArticlesPage');
-      import('./pages/ArticlePage');
-    }, 2000);
+  // Prefetch commonly accessed pages after initial load
+  const prefetchTimer = setTimeout(() => {
+    import('./pages/AllArticlesPage');
+    import('./pages/ArticlePage');
+    
+    // ✅ Prefetch popular category pages
+    import('./pages/CategoryPage'); // This covers all categories including new ones
+  }, 2000);
 
-    const logPerformance = () => {
-      if (typeof performance !== 'undefined') {
-        const perfData = performance.getEntriesByType('navigation')[0];
-        if (perfData) {
-          console.log('⚡ App Performance:', {
-            'Total Load': Math.round(perfData.loadEventEnd - perfData.fetchStart) + 'ms',
-            'DOM Ready': Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart) + 'ms',
-            'First Paint': performance.getEntriesByType('paint')[0] 
-              ? Math.round(performance.getEntriesByType('paint')[0].startTime) + 'ms' 
-              : 'N/A'
-          });
-        }
+  const logPerformance = () => {
+    if (typeof performance !== 'undefined') {
+      const perfData = performance.getEntriesByType('navigation')[0];
+      if (perfData) {
+        console.log('⚡ App Performance:', {
+          'Total Load': Math.round(perfData.loadEventEnd - perfData.fetchStart) + 'ms',
+          'DOM Ready': Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart) + 'ms',
+          'First Paint': performance.getEntriesByType('paint')[0] 
+            ? Math.round(performance.getEntriesByType('paint')[0].startTime) + 'ms' 
+            : 'N/A'
+        });
       }
-    };
+    }
+  };
 
-    trackEvent({
-      action: 'app_initialized',
-      category: 'performance',
-      label: 'App Loaded'
-    });
+  trackEvent({
+    action: 'app_initialized',
+    category: 'performance',
+    label: 'App Loaded'
+  });
 
-    setTimeout(logPerformance, 1500);
+  setTimeout(logPerformance, 1500);
 
-    return () => clearTimeout(prefetchTimer);
-  }, []);
+  return () => clearTimeout(prefetchTimer);
+}, []);
 
   return (
     <ErrorBoundary>
