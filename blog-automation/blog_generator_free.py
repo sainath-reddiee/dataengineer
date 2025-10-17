@@ -67,7 +67,7 @@ class BlogGeneratorFree:
         prompt = f"""Generate SEO metadata for this blog topic:
 
 Title: {topic['title']}
-Category: {topic['category']}
+Category: {topic.get('category', 'general')}
 Target Audience: {topic.get('target_audience', 'data engineers')}
 
 Generate:
@@ -90,16 +90,36 @@ Return as JSON ONLY (no markdown, no extra text):
   "secondary_keywords": ["...", "..."]
 }}"""
 
-        response = self.model.generate_content(prompt)
-        text = response.text.strip()
-        
-        # Clean response
-        if '```json' in text:
-            text = text.split('```json')[1].split('```')[0].strip()
-        elif '```' in text:
-            text = text.split('```')[1].split('```')[0].strip()
-        
-        return json.loads(text)
+        try:
+            response = self.model.generate_content(prompt)
+            text = response.text.strip()
+            
+            # Clean response
+            if '```json' in text:
+                text = text.split('```json')[1].split('```')[0].strip()
+            elif '```' in text:
+                text = text.split('```')[1].split('```')[0].strip()
+            
+            seo_data = json.loads(text)
+            
+            # Enforce length limits
+            if len(seo_data['title']) > 60:
+                seo_data['title'] = seo_data['title'][:57] + '...'
+            
+            if len(seo_data['meta_description']) > 160:
+                seo_data['meta_description'] = seo_data['meta_description'][:157] + '...'
+            
+            return seo_data
+            
+        except Exception as e:
+            print(f"⚠️ SEO generation error: {e}")
+            # Fallback SEO
+            return {
+                'title': topic['title'][:60],
+                'focus_keyword': topic.get('keywords', ['data engineering'])[0] if topic.get('keywords') else 'data engineering',
+                'meta_description': f"Learn about {topic['title']} in this comprehensive guide for data engineers.",
+                'secondary_keywords': topic.get('keywords', ['data engineering', 'tutorial'])[:7]
+            }
     
     def _generate_content(self, topic: Dict, seo_data: Dict) -> str:
         """Generate main blog content using FREE Gemini API"""
@@ -108,7 +128,7 @@ Return as JSON ONLY (no markdown, no extra text):
 
 TOPIC DETAILS:
 - Title: {topic['title']}
-- Category: {topic['category']}
+- Category: {topic.get('category', 'general')}
 - Focus Keyword: {seo_data['focus_keyword']}
 - Target Length: 1800-2500 words
 - Audience Level: {topic.get('level', 'intermediate')}
@@ -157,16 +177,36 @@ SEO REQUIREMENTS:
 
 Return ONLY the HTML content starting with the first <h2> tag."""
 
-        response = self.model.generate_content(prompt)
-        content_html = response.text.strip()
-        
-        # Clean markdown artifacts
-        if '```html' in content_html:
-            content_html = content_html.split('```html')[1].split('```')[0].strip()
-        elif content_html.startswith('```'):
-            content_html = content_html.split('```')[1].split('```')[0].strip()
-        
-        return content_html
+        try:
+            response = self.model.generate_content(prompt)
+            content_html = response.text.strip()
+            
+            # Clean markdown artifacts
+            if '```html' in content_html:
+                content_html = content_html.split('```html')[1].split('```')[0].strip()
+            elif content_html.startswith('```'):
+                content_html = content_html.split('```')[1].split('```')[0].strip()
+            
+            return content_html
+            
+        except Exception as e:
+            print(f"⚠️ Content generation error: {e}")
+            # Fallback content
+            return f"""<h2>Introduction to {topic['title']}</h2>
+<p>This comprehensive guide covers {seo_data['focus_keyword']} for data engineers.</p>
+
+<h2>Overview</h2>
+<p>In this article, we'll explore the key concepts and best practices for {seo_data['focus_keyword']}.</p>
+
+<h3>Key Benefits</h3>
+<ul>
+<li>Improved efficiency</li>
+<li>Better data management</li>
+<li>Enhanced performance</li>
+</ul>
+
+<h2>Getting Started</h2>
+<p>Let's dive into the fundamentals of {seo_data['focus_keyword']}.</p>"""
     
     def _generate_image_prompts(self, topic: Dict, content: str) -> List[Dict]:
         """Generate prompts for hand-drawn style images - FREE"""
@@ -174,7 +214,7 @@ Return ONLY the HTML content starting with the first <h2> tag."""
         prompt = f"""Generate 4-5 image prompts for this blog post to create hand-drawn, sketch-style illustrations.
 
 Blog Title: {topic['title']}
-Category: {topic['category']}
+Category: {topic.get('category', 'general')}
 
 Content Preview: {content[:1000]}...
 
@@ -205,15 +245,28 @@ Return as JSON array ONLY (no markdown):
   }}
 ]"""
 
-        response = self.model.generate_content(prompt)
-        text = response.text.strip()
-        
-        if '```json' in text:
-            text = text.split('```json')[1].split('```')[0].strip()
-        elif '```' in text:
-            text = text.split('```')[1].split('```')[0].strip()
+        try:
+            response = self.model.generate_content(prompt)
+            text = response.text.strip()
             
-        return json.loads(text)
+            if '```json' in text:
+                text = text.split('```json')[1].split('```')[0].strip()
+            elif '```' in text:
+                text = text.split('```')[1].split('```')[0].strip()
+            
+            return json.loads(text)
+            
+        except Exception as e:
+            print(f"⚠️ Image prompt generation error: {e}")
+            # Fallback image prompts
+            return [
+                {
+                    "placement": "hero",
+                    "prompt": f"Hand-drawn sketch illustration showing {topic['title']} concept with clean lines",
+                    "alt_text": f"{topic['title']} diagram",
+                    "caption": f"Overview of {topic['title']}"
+                }
+            ]
     
     def _generate_references(self, topic: Dict) -> List[Dict]:
         """Generate relevant external reference links - FREE"""
@@ -221,7 +274,7 @@ Return as JSON array ONLY (no markdown):
         prompt = f"""Generate 5-6 authoritative external reference links for this topic:
 
 Topic: {topic['title']}
-Category: {topic['category']}
+Category: {topic.get('category', 'general')}
 Keywords: {', '.join(topic.get('keywords', []))}
 
 For each reference:
@@ -244,15 +297,28 @@ Return as JSON array ONLY:
   }}
 ]"""
 
-        response = self.model.generate_content(prompt)
-        text = response.text.strip()
-        
-        if '```json' in text:
-            text = text.split('```json')[1].split('```')[0].strip()
-        elif '```' in text:
-            text = text.split('```')[1].split('```')[0].strip()
+        try:
+            response = self.model.generate_content(prompt)
+            text = response.text.strip()
             
-        return json.loads(text)
+            if '```json' in text:
+                text = text.split('```json')[1].split('```')[0].strip()
+            elif '```' in text:
+                text = text.split('```')[1].split('```')[0].strip()
+            
+            return json.loads(text)
+            
+        except Exception as e:
+            print(f"⚠️ References generation error: {e}")
+            # Fallback references
+            category = topic.get('category', 'general')
+            return [
+                {
+                    "title": f"Official {category.title()} Documentation",
+                    "url": f"https://docs.{category}.com",
+                    "description": f"Official documentation for {category}"
+                }
+            ]
     
     def _calculate_reading_time(self, content: str) -> int:
         """Calculate estimated reading time"""
@@ -263,6 +329,9 @@ Return as JSON array ONLY:
 
 def main():
     """Test the FREE blog generator"""
+    from dotenv import load_dotenv
+    load_dotenv()
+    
     api_key = os.getenv('GEMINI_API_KEY')
     if not api_key:
         print("❌ GEMINI_API_KEY not found!")
