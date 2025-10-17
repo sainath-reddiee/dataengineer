@@ -27,8 +27,8 @@ const AboutPage = () => {
               About <span className="gradient-text">DataEngineer Hub</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed">
-              Your ultimate resource for mastering data engineering technologies. From AWS to dbt, we cover it all with practical insights and expert guidance.
-            </p>
+  Your go-to destination for mastering the world of data engineering. Whether it’s  Snowflake, AWS, Azure, Databricks,DBT, GCP or Salesforce, we deliver hands-on insights and expert advice to help you stay ahead.
+</p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mt-16">
