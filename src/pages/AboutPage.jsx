@@ -9,11 +9,11 @@ const AboutPage = () => {
   return (
     <>
       <MetaTags 
-        title="About Us - Expert Data Engineering Team"
-        description="Meet the DataEngineer Hub team. Learn about our mission to provide high-quality data engineering tutorials and resources for professionals worldwide."
-        keywords="about data engineer hub, data engineering team, data engineering experts"
-        type="website"
-      />
+  title="About Us - Expert Data Engineering Team"
+  description="Meet the DataEngineer Hub team. Learn about our mission to provide high-quality data engineering tutorials and resources covering Snowflake, AWS, Azure, Databricks, Salesforce, and more for professionals worldwide."
+  keywords="about data engineer hub, data engineering team, data engineering experts, databricks experts, salesforce data experts"
+  type="website"
+/>
       <div className="pt-4 pb-12 overflow-hidden">
         <div className="container mx-auto px-6">
           {/* FIXED: Single H1 tag for entire page */}
