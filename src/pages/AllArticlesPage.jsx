@@ -114,10 +114,10 @@ const AllArticlesPage = () => {
   return (
     <>
       <MetaTags 
-        title="All Articles - DataEngineer Hub"
-        description="Browse all articles and tutorials on DataEngineer Hub. Find content on data engineering, Snowflake, AWS, Azure, SQL, Python, Airflow, dbt, and analytics."
-        keywords="data engineering articles, tutorials, blog posts, Snowflake, AWS, Azure, SQL, Python"
-      />
+  title="All Articles - DataEngineer Hub"
+  description="Browse all articles and tutorials on DataEngineer Hub. Find content on data engineering, Snowflake, AWS, Azure, Databricks, Salesforce, SQL, Python, Airflow, dbt, and analytics."
+  keywords="data engineering articles, tutorials, blog posts, Snowflake, AWS, Azure, Databricks, Salesforce, SQL, Python, lakehouse, delta lake, data cloud"
+/>
       <div className="pt-1 pb-6">
         <div className="container mx-auto px-6">
           {/* Header Section */}
