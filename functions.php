@@ -159,32 +159,32 @@ function category_control_meta_box_callback($post) {
         
         <h4>Primary Category Override:</h4>
         <select name="primary_category" style="width: 100%;">
-    <option value="">Auto-detect strongest match</option>
-    <option value="snowflake" <?php selected($primary_category, 'snowflake'); ?>>Snowflake</option>
-    <option value="aws" <?php selected($primary_category, 'aws'); ?>>AWS</option>
-    <option value="azure" <?php selected($primary_category, 'azure'); ?>>Azure</option>
-    <option value="sql" <?php selected($primary_category, 'sql'); ?>>SQL</option>
-    <option value="python" <?php selected($primary_category, 'python'); ?>>Python</option>
-    <option value="airflow" <?php selected($primary_category, 'airflow'); ?>>Airflow</option>
-    <option value="dbt" <?php selected($primary_category, 'dbt'); ?>>dbt</option>
-    <option value="gcp" <?php selected($primary_category, 'gcp'); ?>>GCP</option>
-    <option value="databricks" <?php selected($primary_category, 'databricks'); ?>>Databricks</option>
-    <option value="salesforce" <?php selected($primary_category, 'salesforce'); ?>>Salesforce</option>
-</select>
+            <option value="">Auto-detect strongest match</option>
+            <option value="snowflake" <?php selected($primary_category, 'snowflake'); ?>>Snowflake</option>
+            <option value="aws" <?php selected($primary_category, 'aws'); ?>>AWS</option>
+            <option value="azure" <?php selected($primary_category, 'azure'); ?>>Azure</option>
+            <option value="sql" <?php selected($primary_category, 'sql'); ?>>SQL</option>
+            <option value="python" <?php selected($primary_category, 'python'); ?>>Python</option>
+            <option value="airflow" <?php selected($primary_category, 'airflow'); ?>>Airflow</option>
+            <option value="dbt" <?php selected($primary_category, 'dbt'); ?>>dbt</option>
+            <option value="gcp" <?php selected($primary_category, 'gcp'); ?>>GCP</option>
+            <option value="databricks" <?php selected($primary_category, 'databricks'); ?>>Databricks</option>
+            <option value="salesforce" <?php selected($primary_category, 'salesforce'); ?>>Salesforce</option>
+        </select>
         
         <hr style="margin: 15px 0;">
         
         <h4>Exclude Categories:</h4>
         <div style="max-height: 100px; overflow-y: auto; border: 1px solid #ddd; padding: 5px;">
             <?php
-$categories = array('snowflake', 'aws', 'azure', 'sql', 'python', 'airflow', 'dbt', 'gcp', 'databricks', 'salesforce');
-foreach ($categories as $cat) {
-    $checked = in_array($cat, (array)$excluded_categories) ? 'checked' : '';
-    echo "<label style='display: block;'>";
-    echo "<input type='checkbox' name='excluded_categories[]' value='{$cat}' {$checked}> " . ucfirst($cat);
-    echo "</label>";
-}
-?>
+            $categories = array('snowflake', 'aws', 'azure', 'sql', 'python', 'airflow', 'dbt', 'gcp','salesforce','databricks');
+            foreach ($categories as $cat) {
+                $checked = in_array($cat, (array)$excluded_categories) ? 'checked' : '';
+                echo "<label style='display: block;'>";
+                echo "<input type='checkbox' name='excluded_categories[]' value='{$cat}' {$checked}> " . ucfirst($cat);
+                echo "</label>";
+            }
+            ?>
         </div>
     </div>
     <?php
@@ -269,49 +269,39 @@ function auto_category_detection_callback($post) {
     }
     
     $keyword_tests = array(
-    'Snowflake' => array(
-        'primary' => array('snowflake'),
-        'secondary' => array('data warehouse', 'warehouse')
-    ),
-    'AWS' => array(
-        'primary' => array('aws', 'amazon web services'),
-        'secondary' => array('s3', 'lambda')
-    ),
-    'Azure' => array(
-        'primary' => array('azure', 'microsoft azure'),
-        'secondary' => array('synapse', 'power bi')
-    ),
-    'SQL' => array(
-        'primary' => array('sql', 'query'),
-        'secondary' => array('database')
-    ),
-    'Python' => array(
-        'primary' => array('python'),
-        'secondary' => array('pandas', 'jupyter')
-    ),
-    'Airflow' => array(
-        'primary' => array('airflow'),
-        'secondary' => array('dag', 'workflow')
-    ),
-    'dbt' => array(
-        'primary' => array('dbt'),
-        'secondary' => array('transformation')
-    ),
-    'GCP' => array(
-        'primary' => array('gcp', 'google cloud'),
-        'secondary' => array('bigquery', 'dataflow')
-    ),
-    // ✅ NEW
-    'Databricks' => array(
-        'primary' => array('databricks'),
-        'secondary' => array('delta lake', 'spark', 'lakehouse')
-    ),
-    // ✅ NEW
-    'Salesforce' => array(
-        'primary' => array('salesforce', 'sfdc'),
-        'secondary' => array('crm', 'apex', 'soql')
-    )
-);
+        'Snowflake' => array(
+            'primary' => array('snowflake'),
+            'secondary' => array('data warehouse', 'warehouse')
+        ),
+        'AWS' => array(
+            'primary' => array('aws', 'amazon web services'),
+            'secondary' => array('s3', 'lambda')
+        ),
+        'Azure' => array(
+            'primary' => array('azure', 'microsoft azure'),
+            'secondary' => array('synapse', 'power bi')
+        ),
+        'SQL' => array(
+            'primary' => array('sql', 'query'),
+            'secondary' => array('database')
+        ),
+        'Python' => array(
+            'primary' => array('python'),
+            'secondary' => array('pandas', 'jupyter')
+        ),
+        'Airflow' => array(
+            'primary' => array('airflow'),
+            'secondary' => array('dag', 'workflow')
+        ),
+        'dbt' => array(
+            'primary' => array('dbt'),
+            'secondary' => array('transformation')
+        ),
+        'GCP' => array(
+            'primary' => array('gcp', 'google cloud'),
+            'secondary' => array('bigquery', 'dataflow')
+        )
+    );
     
     echo '<h4>Keyword Detection (Improved):</h4>';
     
@@ -517,21 +507,7 @@ function enhanced_auto_assign_categories_universal($post_id, $post) {
             'slug' => 'gcp',
             'primary_keywords' => array('gcp', 'google cloud'),
             'secondary_keywords' => array('bigquery', 'dataflow', 'dataproc', 'google cloud platform', 'cloud storage')
-        ),
-        // ✅ NEW: Databricks
-    array(
-        'name' => 'Databricks',
-        'slug' => 'databricks',
-        'primary_keywords' => array('databricks'),
-        'secondary_keywords' => array('delta lake', 'spark', 'lakehouse', 'unity catalog', 'databricks notebook', 'mlflow')
-    ),
-    // ✅ NEW: Salesforce
-    array(
-        'name' => 'Salesforce',
-        'slug' => 'salesforce',
-        'primary_keywords' => array('salesforce', 'sfdc'),
-        'secondary_keywords' => array('crm', 'apex', 'soql', 'salesforce data', 'salesforce integration', 'mulesoft')
-    )
+        )
     );
     
     $detected_categories = array();
