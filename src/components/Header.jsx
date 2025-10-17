@@ -327,7 +327,7 @@ const Header = () => {
           </a>
 
           {/* Desktop Navigation */}
-          <div className="hidden xl:flex items-center space-x-6 lg:space-x-8">
+          <div className="hidden lg:flex items-center space-x-6 lg:space-x-8">
             {/* Home */}
             <motion.div whileHover={{ y: -2 }}>
               <a 
@@ -420,7 +420,7 @@ const Header = () => {
           </div>
 
           {/* Mobile Menu Button - FIXED WITH ACCESSIBILITY */}
-          <div className="xl:hidden">
+          <div className="lg:hidden">
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setMobileMenuOpen(!isMenuOpen)}
