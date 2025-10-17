@@ -113,14 +113,15 @@ const SparkleCard = ({ category }) => {
           {/* Small, distinct icon container at the top-left with better visibility */}
           <div className={`inline-flex p-2 sm:p-3 md:p-4 rounded-xl ${
             // Use appropriate backgrounds for better logo visibility
-            name === 'Databricks' ? 'bg-[#0B2026]' :  // Dark navy for Databricks red logo
-            name === 'AWS' ? 'bg-white/95' :
-            name === 'dbt' ? 'bg-white/95' :
-            name === 'Salesforce' ? 'bg-slate-900' :
+            name === 'Databricks' ? 'bg-slate-900' :           // Dark for red logo
+            name === 'AWS' ? 'bg-white/95' :                   // White for orange logo
+            name === 'dbt' ? 'bg-white/95' :                   // White for orange logo
+            name === 'SQL' ? 'bg-white/95' :                   // White for blue/orange logo
+            name === 'Snowflake' ? 'bg-slate-900' :            // Dark for light blue logo
+            name === 'Azure' ? 'bg-white/95' :                 // White for blue logo
+            name === 'Salesforce' ? 'bg-white/95' :            // White for blue logo (Option 1)
             `bg-gradient-to-br ${color}`
           } mb-3 sm:mb-4 md:mb-6 self-start shadow-lg`}>
-            {getCategoryIcon(name, 'h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8')}
-          </div>
 
           <h3 className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 md:mb-4 text-white group-hover:text-blue-400 transition-colors">
             {name}
