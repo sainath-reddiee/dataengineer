@@ -113,7 +113,7 @@ const SparkleCard = ({ category }) => {
           {/* Small, distinct icon container at the top-left with better visibility */}
           <div className={`inline-flex p-2 sm:p-3 md:p-4 rounded-xl ${
             // Use appropriate backgrounds for better logo visibility
-            name === 'Databricks' ? 'bg-slate-900' :  // Dark navy for Databricks red logo
+            name === 'Databricks' ? 'bg-[#0B2026]' :  // Dark navy for Databricks red logo
             name === 'AWS' ? 'bg-white/95' :
             name === 'dbt' ? 'bg-white/95' :
             name === 'Salesforce' ? 'bg-slate-900' :
