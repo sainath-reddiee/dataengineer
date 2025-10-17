@@ -442,7 +442,7 @@ const Header = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="xl:hidden mt-4 pb-4 border-t border-slate-700/50 pt-4 bg-slate-900/95 backdrop-blur-xl rounded-xl px-4 shadow-2xl"
+              className="lg:hidden mt-4 pb-4 border-t border-slate-700/50 pt-4 bg-slate-900/95 backdrop-blur-xl rounded-xl px-4 shadow-2xl"
             >
               <div className="flex flex-col space-y-3">
                 <a href="/" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
