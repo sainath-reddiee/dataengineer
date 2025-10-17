@@ -22,11 +22,11 @@ const HomePage = () => {
   return (
     <>
       <MetaTags 
-        title="Data Engineering Tutorials - Snowflake, AWS, Azure & More"
-        description="Master data engineering with expert tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow & dbt. Practical guides for data professionals."
-        keywords="data engineering tutorials, snowflake tutorial, aws data engineering, azure data engineering, sql optimization, python data engineering, apache airflow, dbt tutorial"
-        type="website"
-      />
+  title="Data Engineering Tutorials - Snowflake, AWS, Azure, Databricks & More"
+  description="Master data engineering with expert tutorials on Snowflake, AWS, Azure, Databricks, Salesforce, SQL, Python, Airflow & dbt. Practical guides for data professionals."
+  keywords="data engineering tutorials, snowflake tutorial, aws data engineering, azure data engineering, databricks tutorial, salesforce data cloud, sql optimization, python data engineering, apache airflow, dbt tutorial, lakehouse, delta lake"
+  type="website"
+/>
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white">
         <Hero />
         
