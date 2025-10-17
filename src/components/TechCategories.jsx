@@ -25,15 +25,6 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
   };
   
   const iconUrl = iconUrls[lowerCategory];
-
-  // Special case for SQL to ensure visibility
-  if (lowerCategory === 'sql') {
-    return (
-      <div className={`${className} bg-slate-900 rounded-full p-1.5 flex items-center justify-center`}>
-        <img src={iconUrls.sql} alt="SQL logo" className="h-full w-full object-contain" />
-      </div>
-    );
-  }
   
   // Special handling for logos that need light backgrounds
   const needsLightBg = ['databricks', 'aws', 'dbt', 'salesforce'].includes(lowerCategory);
