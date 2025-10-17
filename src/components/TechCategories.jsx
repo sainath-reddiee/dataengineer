@@ -110,8 +110,15 @@ const SparkleCard = ({ category }) => {
         ))}
 
         <div className="flex flex-col h-full z-10">
-          {/* Small, distinct icon container at the top-left */}
-          <div className={`inline-flex p-2 sm:p-3 md:p-4 rounded-xl bg-gradient-to-br ${color} mb-3 sm:mb-4 md:mb-6 self-start shadow-lg`}>
+          {/* Small, distinct icon container at the top-left with better visibility */}
+          <div className={`inline-flex p-2 sm:p-3 md:p-4 rounded-xl ${
+            // Use white/light background for better logo visibility
+            name === 'Databricks' ? 'bg-white/95' :
+            name === 'AWS' ? 'bg-white/95' :
+            name === 'dbt' ? 'bg-white/95' :
+            name === 'Salesforce' ? 'bg-white/95' :
+            `bg-gradient-to-br ${color}`
+          } mb-3 sm:mb-4 md:mb-6 self-start shadow-lg`}>
             {getCategoryIcon(name, 'h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8')}
           </div>
 
