@@ -36,7 +36,7 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
     python: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
     sql: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg',
     // ✅ NEW: Databricks
-    databricks: 'https://cdn.brandfetch.io/idSUrLOWbH/theme/dark/logo.svg?c=1dxbfHSJFAPEGdCLU4o5B',
+    databricks: 'https://cdn.brandfetch.io/idSUrLOWbH/idEHbzBDZC.svg?c=1dxbfHSJFAPEGdCLU4o5B',
     // ✅ NEW: Salesforce  
     salesforce: 'https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/salesforce/salesforce-original.svg'
   };
