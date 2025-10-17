@@ -35,12 +35,21 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
     );
   }
   
+  // Special handling for logos that need light backgrounds
+  const needsLightBg = ['databricks', 'aws', 'dbt', 'salesforce'].includes(lowerCategory);
+  
   if (iconUrl) {
     return (
       <img 
         src={iconUrl} 
         alt={`${category} logo`} 
-        className={`${className} object-contain`} 
+        className={`${className} object-contain`}
+        style={{ 
+          maxWidth: '100%',
+          maxHeight: '100%',
+          // Add slight drop shadow for better visibility on light backgrounds
+          filter: needsLightBg ? 'drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.15))' : 'none'
+        }}
         onError={(e) => { 
           e.target.style.display = 'none'; 
           e.target.parentNode.innerHTML = `<div class="${className} bg-blue-500/20 rounded-lg flex items-center justify-center text-2xl">📁</div>`; 
