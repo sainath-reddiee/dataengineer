@@ -107,7 +107,7 @@ const getCategoryIcon = (category, className = 'h-10 w-10') => {
     python: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
     gcp: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg',
     // ✅ NEW: Databricks
-    databricks: 'https://upload.wikimedia.org/wikipedia/commons/6/63/Databricks_Logo.png',
+    databricks: 'https://cdn.brandfetch.io/idSUrLOWbH/theme/dark/logo.svg?c=1dxbfHSJFAPEGdCLU4o5B',
     // ✅ NEW: Salesforce  
     salesforce: 'https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/salesforce/salesforce-original.svg'
   };
