@@ -119,7 +119,7 @@ const SparkleCard = ({ category }) => {
             name === 'SQL' ? 'bg-white/95' :                   // White for blue/orange logo
             name === 'Snowflake' ? 'bg-slate-900' :            // Dark for light blue logo
             name === 'Azure' ? 'bg-white/95' :                 // White for blue logo
-            name === 'Salesforce' ? 'bg-white/95' :            // White for blue logo (Option 1)
+            name === 'Salesforce' ? 'bg-[#00A1E0]' :            // White for blue logo (Option 1)
             `bg-gradient-to-br ${color}`
           } mb-3 sm:mb-4 md:mb-6 self-start shadow-lg`}>
             {getCategoryIcon(name, 'h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8')}
