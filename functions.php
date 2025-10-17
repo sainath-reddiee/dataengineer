@@ -269,39 +269,48 @@ function auto_category_detection_callback($post) {
     }
     
     $keyword_tests = array(
-        'Snowflake' => array(
-            'primary' => array('snowflake'),
-            'secondary' => array('data warehouse', 'warehouse')
-        ),
-        'AWS' => array(
-            'primary' => array('aws', 'amazon web services'),
-            'secondary' => array('s3', 'lambda')
-        ),
-        'Azure' => array(
-            'primary' => array('azure', 'microsoft azure'),
-            'secondary' => array('synapse', 'power bi')
-        ),
-        'SQL' => array(
-            'primary' => array('sql', 'query'),
-            'secondary' => array('database')
-        ),
-        'Python' => array(
-            'primary' => array('python'),
-            'secondary' => array('pandas', 'jupyter')
-        ),
-        'Airflow' => array(
-            'primary' => array('airflow'),
-            'secondary' => array('dag', 'workflow')
-        ),
-        'dbt' => array(
-            'primary' => array('dbt'),
-            'secondary' => array('transformation')
-        ),
-        'GCP' => array(
-            'primary' => array('gcp', 'google cloud'),
-            'secondary' => array('bigquery', 'dataflow')
-        )
-    );
+    'Snowflake' => array(
+        'primary' => array('snowflake'),
+        'secondary' => array('data warehouse', 'warehouse')
+    ),
+    'AWS' => array(
+        'primary' => array('aws', 'amazon web services'),
+        'secondary' => array('s3', 'lambda')
+    ),
+    'Azure' => array(
+        'primary' => array('azure', 'microsoft azure'),
+        'secondary' => array('synapse', 'power bi')
+    ),
+    'SQL' => array(
+        'primary' => array('sql', 'query'),
+        'secondary' => array('database')
+    ),
+    'Python' => array(
+        'primary' => array('python'),
+        'secondary' => array('pandas', 'jupyter')
+    ),
+    'Airflow' => array(
+        'primary' => array('airflow'),
+        'secondary' => array('dag', 'workflow')
+    ),
+    'dbt' => array(
+        'primary' => array('dbt'),
+        'secondary' => array('transformation')
+    ),
+    'GCP' => array(
+        'primary' => array('gcp', 'google cloud'),
+        'secondary' => array('bigquery', 'dataflow')
+    ),
+    // ✅ ADD THESE:
+    'Databricks' => array(
+        'primary' => array('databricks'),
+        'secondary' => array('delta lake', 'spark', 'lakehouse')
+    ),
+    'Salesforce' => array(
+        'primary' => array('salesforce'),
+        'secondary' => array('apex', 'crm', 'lightning')
+    )
+);
     
     echo '<h4>Keyword Detection (Improved):</h4>';
     
@@ -460,55 +469,68 @@ function enhanced_auto_assign_categories_universal($post_id, $post) {
     error_log("🔍 Analyzing text: " . substr($combined_text, 0, 200) . "...");
     
     $category_mappings = array(
-        array(
-            'name' => 'Snowflake',
-            'slug' => 'snowflake',
-            'primary_keywords' => array('snowflake'),
-            'secondary_keywords' => array('data warehouse', 'warehouse', 'snowpipe', 'snowsight', 'snowflake cloud')
-        ),
-        array(
-            'name' => 'AWS', 
-            'slug' => 'aws',
-            'primary_keywords' => array('aws', 'amazon web services'),
-            'secondary_keywords' => array('s3', 'ec2', 'lambda', 'glue', 'redshift', 'amazon s3', 'aws lambda')
-        ),
-        array(
-            'name' => 'Azure',
-            'slug' => 'azure',
-            'primary_keywords' => array('azure', 'microsoft azure'),
-            'secondary_keywords' => array('synapse', 'data factory', 'power bi', 'azure synapse', 'azure sql')
-        ),
-        array(
-            'name' => 'SQL',
-            'slug' => 'sql',
-            'primary_keywords' => array('sql', 'query', 'queries'),
-            'secondary_keywords' => array('select', 'database', 'mysql', 'postgresql', 'sql server')
-        ),
-        array(
-            'name' => 'Python',
-            'slug' => 'python',
-            'primary_keywords' => array('python'),
-            'secondary_keywords' => array('pandas', 'numpy', 'jupyter', 'dataframe', 'python script', 'python code')
-        ),
-        array(
-            'name' => 'Airflow',
-            'slug' => 'airflow',
-            'primary_keywords' => array('airflow', 'apache airflow'),
-            'secondary_keywords' => array('dag', 'dags', 'workflow', 'orchestration')
-        ),
-        array(
-            'name' => 'dbt',
-            'slug' => 'dbt',
-            'primary_keywords' => array('dbt', 'data build tool'),
-            'secondary_keywords' => array('transformation', 'analytics engineering', 'dbt model', 'dbt models')
-        ),
-        array(
-            'name' => 'GCP',
-            'slug' => 'gcp',
-            'primary_keywords' => array('gcp', 'google cloud'),
-            'secondary_keywords' => array('bigquery', 'dataflow', 'dataproc', 'google cloud platform', 'cloud storage')
-        )
-    );
+    array(
+        'name' => 'Snowflake',
+        'slug' => 'snowflake',
+        'primary_keywords' => array('snowflake'),
+        'secondary_keywords' => array('data warehouse', 'warehouse', 'snowpipe', 'snowsight', 'snowflake cloud')
+    ),
+    array(
+        'name' => 'AWS', 
+        'slug' => 'aws',
+        'primary_keywords' => array('aws', 'amazon web services'),
+        'secondary_keywords' => array('s3', 'ec2', 'lambda', 'glue', 'redshift', 'amazon s3', 'aws lambda')
+    ),
+    array(
+        'name' => 'Azure',
+        'slug' => 'azure',
+        'primary_keywords' => array('azure', 'microsoft azure'),
+        'secondary_keywords' => array('synapse', 'data factory', 'power bi', 'azure synapse', 'azure sql')
+    ),
+    array(
+        'name' => 'SQL',
+        'slug' => 'sql',
+        'primary_keywords' => array('sql', 'query', 'queries'),
+        'secondary_keywords' => array('select', 'database', 'mysql', 'postgresql', 'sql server')
+    ),
+    array(
+        'name' => 'Python',
+        'slug' => 'python',
+        'primary_keywords' => array('python'),
+        'secondary_keywords' => array('pandas', 'numpy', 'jupyter', 'dataframe', 'python script', 'python code')
+    ),
+    array(
+        'name' => 'Airflow',
+        'slug' => 'airflow',
+        'primary_keywords' => array('airflow', 'apache airflow'),
+        'secondary_keywords' => array('dag', 'dags', 'workflow', 'orchestration')
+    ),
+    array(
+        'name' => 'dbt',
+        'slug' => 'dbt',
+        'primary_keywords' => array('dbt', 'data build tool'),
+        'secondary_keywords' => array('transformation', 'analytics engineering', 'dbt model', 'dbt models')
+    ),
+    array(
+        'name' => 'GCP',
+        'slug' => 'gcp',
+        'primary_keywords' => array('gcp', 'google cloud'),
+        'secondary_keywords' => array('bigquery', 'dataflow', 'dataproc', 'google cloud platform', 'cloud storage')
+    ),
+    // ✅ ADD THESE TWO MISSING CATEGORIES:
+    array(
+        'name' => 'Databricks',
+        'slug' => 'databricks',
+        'primary_keywords' => array('databricks'),
+        'secondary_keywords' => array('delta lake', 'delta', 'spark', 'apache spark', 'lakehouse', 'unity catalog', 'databricks sql')
+    ),
+    array(
+        'name' => 'Salesforce',
+        'slug' => 'salesforce',
+        'primary_keywords' => array('salesforce'),
+        'secondary_keywords' => array('apex', 'visualforce', 'lightning', 'crm', 'sfdc', 'salesforce crm', 'salesforce data cloud')
+    )
+);
     
     $detected_categories = array();
     
