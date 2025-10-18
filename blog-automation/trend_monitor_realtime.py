@@ -31,7 +31,7 @@ class EnhancedTrendMonitor:
     def __init__(self, gemini_api_key: str):
         """Initialize with FREE Gemini API"""
         genai.configure(api_key=gemini_api_key)
-        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        self.model = genai.GenerativeModel('gemini-flash-latest')
         self.session = requests.Session()
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
