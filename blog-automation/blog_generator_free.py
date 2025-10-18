@@ -23,7 +23,7 @@ class BlogGeneratorFree:
         genai.configure(api_key=api_key)
         
         # Use free tier model - gemini-1.5-flash
-        self.model = genai.GenerativeModel('gemini-flash-latest')
+        self.model = genai.GenerativeModel('gemini-1.5-flash')
         
         print("✅ Using Google Gemini (FREE tier)")
     
@@ -235,7 +235,7 @@ IMAGE TYPES:
 2-3. Section images: Key concepts or processes
 4. Diagram: Technical workflow or architecture
 
-Return as JSON array ONLY (no markdown):
+Return as JSON array ONLY (no markdown, no extra text):
 [
   {{
     "placement": "hero",
@@ -254,11 +254,25 @@ Return as JSON array ONLY (no markdown):
             elif '```' in text:
                 text = text.split('```')[1].split('```')[0].strip()
             
-            return json.loads(text)
+            # Parse and validate
+            image_prompts = json.loads(text)
+            
+            # Ensure it's a list
+            if not isinstance(image_prompts, list):
+                raise ValueError("Image prompts must be a list")
+            
+            # Validate each prompt has required fields
+            for prompt in image_prompts:
+                if not isinstance(prompt, dict):
+                    raise ValueError("Each image prompt must be a dictionary")
+                if 'placement' not in prompt or 'prompt' not in prompt:
+                    raise ValueError("Image prompt missing required fields")
+            
+            return image_prompts
             
         except Exception as e:
             print(f"⚠️ Image prompt generation error: {e}")
-            # Fallback image prompts
+            # Fallback image prompts as a list
             return [
                 {
                     "placement": "hero",
