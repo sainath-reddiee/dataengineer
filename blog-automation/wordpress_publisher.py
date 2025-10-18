@@ -246,8 +246,14 @@ class WordPressPublisher:
         if not images:
             return content
         
+        # Filter only successfully uploaded images with URLs
+        valid_images = [img for img in images if img.get('wp_uploaded') and img.get('url')]
+        
+        if not valid_images:
+            return content
+        
         # Find hero image
-        hero_img = next((img for img in images if img.get('placement') == 'hero'), None)
+        hero_img = next((img for img in valid_images if img.get('placement') == 'hero'), None)
         
         # Split content into sections (by H2 tags)
         sections = content.split('<h2>')
