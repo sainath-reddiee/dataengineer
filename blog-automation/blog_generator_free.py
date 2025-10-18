@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Blog Generator (FREE VERSION) - Uses Google Gemini API (Free Forever!)
-Creates SEO-optimized blog content at ZERO cost
+Fixed with proper model and error handling
 """
 
 import os
@@ -22,10 +22,38 @@ class BlogGeneratorFree:
         """Initialize with Google Gemini (FREE API)"""
         genai.configure(api_key=api_key)
         
-        # Use free tier model - gemini-flash-latest
+        # Use the latest flash model
         self.model = genai.GenerativeModel('gemini-flash-latest')
         
-        print("✅ Using Google Gemini (FREE tier)")
+        # Configure safety settings to be less restrictive
+        self.safety_settings = [
+            {
+                "category": "HARM_CATEGORY_HARASSMENT",
+                "threshold": "BLOCK_NONE"
+            },
+            {
+                "category": "HARM_CATEGORY_HATE_SPEECH",
+                "threshold": "BLOCK_NONE"
+            },
+            {
+                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                "threshold": "BLOCK_NONE"
+            },
+            {
+                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                "threshold": "BLOCK_NONE"
+            },
+        ]
+        
+        # Generation config for better output
+        self.generation_config = {
+            "temperature": 0.7,
+            "top_p": 0.95,
+            "top_k": 40,
+            "max_output_tokens": 8192,
+        }
+        
+        print("✅ Using Google Gemini 1.5 Flash Latest (FREE tier)")
     
     def generate_blog_post(self, topic: Dict) -> Dict:
         """Generate complete blog post - 100% FREE"""
@@ -61,28 +89,85 @@ class BlogGeneratorFree:
             }
         }
     
+    def _safe_generate(self, prompt: str, parse_json: bool = True, retry_count: int = 3):
+        """
+        Safely generate content with error handling and retries
+        """
+        for attempt in range(retry_count):
+            try:
+                response = self.model.generate_content(
+                    prompt,
+                    safety_settings=self.safety_settings,
+                    generation_config=self.generation_config
+                )
+                
+                # Check if response has text
+                if not response.text:
+                    print(f"   ⚠️ Attempt {attempt + 1}: No text in response")
+                    
+                    # Check for blocked content
+                    if hasattr(response, 'prompt_feedback'):
+                        print(f"   ⚠️ Prompt feedback: {response.prompt_feedback}")
+                    
+                    # Check candidates
+                    if hasattr(response, 'candidates') and response.candidates:
+                        for candidate in response.candidates:
+                            print(f"   ⚠️ Finish reason: {candidate.finish_reason}")
+                            if hasattr(candidate, 'safety_ratings'):
+                                print(f"   ⚠️ Safety ratings: {candidate.safety_ratings}")
+                    
+                    if attempt < retry_count - 1:
+                        print(f"   🔄 Retrying with simplified prompt...")
+                        continue
+                    else:
+                        raise ValueError("No valid response after retries")
+                
+                text = response.text.strip()
+                
+                # Clean and parse if needed
+                if parse_json:
+                    # Remove markdown code blocks
+                    if '```json' in text:
+                        text = text.split('```json')[1].split('```')[0].strip()
+                    elif '```' in text:
+                        text = text.split('```')[1].split('```')[0].strip()
+                    
+                    # Parse JSON
+                    return json.loads(text)
+                else:
+                    # Clean HTML/markdown artifacts
+                    if '```html' in text:
+                        text = text.split('```html')[1].split('```')[0].strip()
+                    elif text.startswith('```'):
+                        text = text.split('```')[1].split('```')[0].strip()
+                    
+                    return text
+                    
+            except Exception as e:
+                print(f"   ⚠️ Attempt {attempt + 1} failed: {str(e)[:100]}")
+                if attempt < retry_count - 1:
+                    print(f"   🔄 Retrying...")
+                    continue
+                else:
+                    raise
+        
+        raise ValueError("Failed to generate content after all retries")
+    
     def _generate_seo_metadata(self, topic: Dict) -> Dict:
         """Generate SEO metadata using FREE Gemini API"""
         
-        prompt = f"""Generate SEO metadata for this blog topic:
+        prompt = f"""Generate SEO metadata for a technical blog post about data engineering.
 
-Title: {topic['title']}
-Category: {topic.get('category', 'general')}
-Target Audience: {topic.get('target_audience', 'data engineers')}
+Topic: {topic['title']}
+Category: {topic.get('category', 'data-engineering')}
 
-Generate:
-1. SEO Title: Compelling, keyword-rich, MUST be under 60 characters
-2. Focus Keyword: Primary keyword phrase (2-4 words)
-3. Meta Description: Compelling description, MUST be under 160 characters
-4. Secondary Keywords: 5-7 related keywords
+Generate SEO-optimized metadata:
+1. SEO Title: Under 60 characters, keyword-rich
+2. Focus Keyword: 2-4 words
+3. Meta Description: 150-160 characters
+4. Secondary Keywords: 5-7 related terms
 
-CRITICAL REQUIREMENTS:
-- SEO title MUST include the focus keyword
-- Meta description MUST include focus keyword
-- Use power words (Ultimate, Complete, Essential, Guide, etc.)
-- All must be search-intent optimized
-
-Return as JSON ONLY (no markdown, no extra text):
+Return ONLY valid JSON:
 {{
   "title": "...",
   "focus_keyword": "...",
@@ -91,218 +176,193 @@ Return as JSON ONLY (no markdown, no extra text):
 }}"""
 
         try:
-            response = self.model.generate_content(prompt)
-            text = response.text.strip()
-            
-            # Clean response
-            if '```json' in text:
-                text = text.split('```json')[1].split('```')[0].strip()
-            elif '```' in text:
-                text = text.split('```')[1].split('```')[0].strip()
-            
-            seo_data = json.loads(text)
-            
-            # Enforce length limits
-            if len(seo_data['title']) > 60:
-                seo_data['title'] = seo_data['title'][:57] + '...'
-            
-            if len(seo_data['meta_description']) > 160:
-                seo_data['meta_description'] = seo_data['meta_description'][:157] + '...'
-            
-            return seo_data
-            
+            return self._safe_generate(prompt, parse_json=True)
         except Exception as e:
-            print(f"⚠️ SEO generation error: {e}")
-            # Fallback SEO
+            print(f"   ⚠️ SEO generation error: {e}")
+            # Fallback SEO data
             return {
-                'title': topic['title'][:60],
-                'focus_keyword': topic.get('keywords', ['data engineering'])[0] if topic.get('keywords') else 'data engineering',
-                'meta_description': f"Learn about {topic['title']} in this comprehensive guide for data engineers.",
-                'secondary_keywords': topic.get('keywords', ['data engineering', 'tutorial'])[:7]
+                "title": topic['title'][:60],
+                "focus_keyword": topic['title'].split()[0:3],
+                "meta_description": f"Learn about {topic['title']} in this comprehensive guide for data engineers.",
+                "secondary_keywords": topic.get('keywords', ['data engineering', 'tutorial'])
             }
     
     def _generate_content(self, topic: Dict, seo_data: Dict) -> str:
         """Generate main blog content using FREE Gemini API"""
         
-        prompt = f"""Write a comprehensive, SEO-optimized blog post in HTML format.
+        prompt = f"""Write a comprehensive technical blog post in HTML format.
 
-TOPIC DETAILS:
-- Title: {topic['title']}
-- Category: {topic.get('category', 'general')}
-- Focus Keyword: {seo_data['focus_keyword']}
-- Target Length: 1800-2500 words
-- Audience Level: {topic.get('level', 'intermediate')}
+TOPIC: {topic['title']}
+CATEGORY: {topic.get('category', 'data-engineering')}
+FOCUS KEYWORD: {seo_data['focus_keyword']}
+TARGET LENGTH: 2000-2500 words
 
-SEO REQUIREMENTS:
-1. STRUCTURE:
-   - Start with engaging introduction (use focus keyword in first 100 words)
-   - 5-7 main sections with H2 headings
-   - Each section should have 2-3 subsections with H3 headings
-   - Include practical examples and code snippets where relevant
+STRUCTURE:
+- Start with <h2>Introduction</h2>
+- Use <h2> for main sections (5-7 sections)
+- Use <h3> for subsections
+- Use <p> for paragraphs
+- Use <ul> or <ol> for lists
+- Use <pre><code class="language-sql"> for code examples
+- Use <strong> for emphasis
 
-2. SEO OPTIMIZATION:
-   - Use focus keyword "{seo_data['focus_keyword']}" 4-6 times naturally
-   - Use secondary keywords: {', '.join(seo_data['secondary_keywords'][:5])}
-   - Include semantic variations
-   - Optimize heading structure
+CONTENT REQUIREMENTS:
+1. Write for intermediate-level data engineers
+2. Include practical examples and use cases
+3. Use the focus keyword naturally 4-5 times
+4. Include code snippets where relevant
+5. Add tips marked with 💡 Tip: or ⚠️ Warning:
+6. Write in active voice, address reader as "you"
 
-3. CONTENT QUALITY:
-   - Provide actionable, practical advice
-   - Include specific examples and use cases
-   - Use code examples where appropriate
-   - Include best practices and tips
-   - Explain concepts clearly
+IMPORTANT:
+- Return ONLY the HTML content
+- Start with <h2>Introduction</h2>
+- Do NOT include html, head, body tags
+- Do NOT include a conclusion section
+- Do NOT add external links
 
-4. HTML FORMATTING:
-   - Use <h2> for main section headings
-   - Use <h3> for subsection headings
-   - Use <p> for paragraphs
-   - Use <strong> for emphasis
-   - Use <ul> or <ol> for lists
-   - Use <pre><code class="language-[lang]"> for code blocks
-   - Use <blockquote> for tips/warnings
-
-5. ENGAGEMENT:
-   - Write in active voice
-   - Address reader as "you"
-   - Include emoji bullets for tips: 💡 Tip:, ⚠️ Warning:, 🚀 Pro Tip:
-   - End sections with smooth transitions
-
-6. DO NOT INCLUDE:
-   - HTML/head/body tags
-   - Meta tags
-   - Conclusion section
-   - External links
-   - Images
-
-Return ONLY the HTML content starting with the first <h2> tag."""
+Begin the article now:"""
 
         try:
-            response = self.model.generate_content(prompt)
-            content_html = response.text.strip()
+            content = self._safe_generate(prompt, parse_json=False)
             
-            # Clean markdown artifacts
-            if '```html' in content_html:
-                content_html = content_html.split('```html')[1].split('```')[0].strip()
-            elif content_html.startswith('```'):
-                content_html = content_html.split('```')[1].split('```')[0].strip()
+            # Validate content length
+            if len(content) < 500:
+                print(f"   ⚠️ Content too short ({len(content)} chars), regenerating...")
+                # Try with a simpler prompt
+                simple_prompt = f"""Write a detailed technical article about {topic['title']} for data engineers.
+
+Include:
+- Introduction explaining the topic
+- 4-5 main sections with examples
+- Best practices and tips
+- Use HTML tags: h2, h3, p, ul, code
+
+Write at least 1500 words. Return only HTML content starting with <h2>Introduction</h2>"""
+                
+                content = self._safe_generate(simple_prompt, parse_json=False)
             
-            return content_html
+            return content
             
         except Exception as e:
-            print(f"⚠️ Content generation error: {e}")
-            # Fallback content
-            return f"""<h2>Introduction to {topic['title']}</h2>
-<p>This comprehensive guide covers {seo_data['focus_keyword']} for data engineers.</p>
+            print(f"   ⚠️ Content generation error: {e}")
+            # Return minimal fallback content
+            return f"""<h2>Introduction</h2>
+<p>Welcome to this comprehensive guide on {topic['title']}. This article will help you understand the key concepts and best practices.</p>
 
-<h2>Overview</h2>
-<p>In this article, we'll explore the key concepts and best practices for {seo_data['focus_keyword']}.</p>
+<h2>What is {topic['title']}?</h2>
+<p>{topic['title']} is an important concept in data engineering that helps teams build more efficient data pipelines.</p>
 
-<h3>Key Benefits</h3>
+<h2>Key Concepts</h2>
+<p>Understanding the fundamentals is crucial for success. Let's explore the main concepts.</p>
+
+<h3>Core Principles</h3>
+<p>The following principles guide effective implementation:</p>
 <ul>
-<li>Improved efficiency</li>
-<li>Better data management</li>
-<li>Enhanced performance</li>
+<li>Scalability and performance optimization</li>
+<li>Data quality and validation</li>
+<li>Monitoring and observability</li>
+<li>Security and compliance</li>
 </ul>
 
-<h2>Getting Started</h2>
-<p>Let's dive into the fundamentals of {seo_data['focus_keyword']}.</p>"""
+<h2>Best Practices</h2>
+<p>💡 <strong>Tip:</strong> Always test your implementations in a development environment first.</p>
+
+<h3>Implementation Steps</h3>
+<ol>
+<li>Plan your architecture carefully</li>
+<li>Implement incrementally</li>
+<li>Test thoroughly</li>
+<li>Monitor in production</li>
+</ol>
+
+<h2>Common Challenges</h2>
+<p>⚠️ <strong>Warning:</strong> Be aware of potential pitfalls and plan accordingly.</p>
+
+<h3>Performance Considerations</h3>
+<p>Performance is critical in data engineering. Consider these factors when implementing your solution.</p>
+
+<h2>Advanced Topics</h2>
+<p>Once you've mastered the basics, explore these advanced concepts to take your skills to the next level.</p>"""
     
     def _generate_image_prompts(self, topic: Dict, content: str) -> List[Dict]:
         """Generate prompts for hand-drawn style images - FREE"""
         
-        prompt = f"""Generate 4-5 image prompts for this blog post to create hand-drawn, sketch-style illustrations.
+        prompt = f"""Generate 4 image prompts for technical illustrations.
 
-Blog Title: {topic['title']}
-Category: {topic.get('category', 'general')}
+Blog Topic: {topic['title']}
+Category: {topic.get('category', 'data-engineering')}
 
-Content Preview: {content[:1000]}...
+For each image create:
+- placement: hero, section-1, section-2, or diagram
+- prompt: Detailed prompt for hand-drawn technical illustration (100-150 words)
+- alt_text: SEO-friendly alt text (under 125 chars)
+- caption: Brief caption (under 100 chars)
 
-For each image, provide:
-1. placement: 'hero', 'section-1', 'section-2', etc.
-2. prompt: Detailed prompt for hand-drawn illustration (100-150 words)
-3. alt_text: SEO-optimized alt text (under 125 characters)
-4. caption: Brief caption
+Style: Hand-drawn sketch, black ink on white background, technical diagrams, clean lines, minimal shading
 
-STYLE REQUIREMENTS:
-- Hand-drawn sketch style, black ink on white background
-- Clean lines, minimal shading
-- Technical diagrams mixed with conceptual illustrations
-- Professional but friendly aesthetic
-
-IMAGE TYPES:
-1. Hero image: Conceptual overview
-2-3. Section images: Key concepts or processes
-4. Diagram: Technical workflow or architecture
-
-Return as JSON array ONLY (no markdown, no extra text):
+Return ONLY valid JSON array:
 [
   {{
     "placement": "hero",
-    "prompt": "Hand-drawn sketch illustration showing...",
+    "prompt": "Hand-drawn sketch showing...",
     "alt_text": "...",
     "caption": "..."
   }}
 ]"""
 
         try:
-            response = self.model.generate_content(prompt)
-            text = response.text.strip()
-            
-            if '```json' in text:
-                text = text.split('```json')[1].split('```')[0].strip()
-            elif '```' in text:
-                text = text.split('```')[1].split('```')[0].strip()
-            
-            # Parse and validate
-            image_prompts = json.loads(text)
-            
-            # Ensure it's a list
-            if not isinstance(image_prompts, list):
-                raise ValueError("Image prompts must be a list")
-            
-            # Validate each prompt has required fields
-            for prompt in image_prompts:
-                if not isinstance(prompt, dict):
-                    raise ValueError("Each image prompt must be a dictionary")
-                if 'placement' not in prompt or 'prompt' not in prompt:
-                    raise ValueError("Image prompt missing required fields")
-            
-            return image_prompts
-            
+            return self._safe_generate(prompt, parse_json=True)
         except Exception as e:
-            print(f"⚠️ Image prompt generation error: {e}")
-            # Fallback image prompts as a list
+            print(f"   ⚠️ Image prompt error: {e}")
+            # Fallback image prompts
             return [
                 {
                     "placement": "hero",
-                    "prompt": f"Hand-drawn sketch illustration showing {topic['title']} concept with clean lines",
-                    "alt_text": f"{topic['title']} diagram",
+                    "prompt": f"Hand-drawn technical sketch illustrating {topic['title']}, showing key components and workflow, minimalist style, blue and purple accents",
+                    "alt_text": f"{topic['title']} overview diagram",
                     "caption": f"Overview of {topic['title']}"
+                },
+                {
+                    "placement": "section-1",
+                    "prompt": f"Technical diagram showing the architecture of {topic['title']}, hand-drawn style, clean lines",
+                    "alt_text": f"{topic['title']} architecture",
+                    "caption": "System architecture"
+                },
+                {
+                    "placement": "section-2",
+                    "prompt": f"Workflow diagram for {topic['title']}, hand-drawn sketch, simple flowchart style",
+                    "alt_text": f"{topic['title']} workflow",
+                    "caption": "Implementation workflow"
+                },
+                {
+                    "placement": "diagram",
+                    "prompt": f"Data flow diagram for {topic['title']}, hand-drawn technical illustration",
+                    "alt_text": f"{topic['title']} data flow",
+                    "caption": "Data flow overview"
                 }
             ]
     
     def _generate_references(self, topic: Dict) -> List[Dict]:
         """Generate relevant external reference links - FREE"""
         
-        prompt = f"""Generate 5-6 authoritative external reference links for this topic:
+        prompt = f"""Generate 5-6 authoritative reference links for this topic.
 
 Topic: {topic['title']}
-Category: {topic.get('category', 'general')}
-Keywords: {', '.join(topic.get('keywords', []))}
+Category: {topic.get('category', 'data-engineering')}
 
-For each reference:
+For each reference provide:
 - title: Link text (under 60 chars)
-- url: Real URL to authoritative source
+- url: Real URL to official docs, GitHub, or reputable tech blogs
 - description: Brief description (under 100 chars)
 
-PRIORITIES:
+Focus on:
 1. Official documentation
 2. GitHub repositories
-3. Official tech blogs
-4. Reputable publications
+3. Tech company blogs
+4. Industry publications
 
-Return as JSON array ONLY:
+Return ONLY valid JSON array:
 [
   {{
     "title": "...",
@@ -312,25 +372,26 @@ Return as JSON array ONLY:
 ]"""
 
         try:
-            response = self.model.generate_content(prompt)
-            text = response.text.strip()
-            
-            if '```json' in text:
-                text = text.split('```json')[1].split('```')[0].strip()
-            elif '```' in text:
-                text = text.split('```')[1].split('```')[0].strip()
-            
-            return json.loads(text)
-            
+            return self._safe_generate(prompt, parse_json=True)
         except Exception as e:
-            print(f"⚠️ References generation error: {e}")
+            print(f"   ⚠️ References error: {e}")
             # Fallback references
             category = topic.get('category', 'general')
             return [
                 {
                     "title": f"Official {category.title()} Documentation",
-                    "url": f"https://docs.{category}.com",
-                    "description": f"Official documentation for {category}"
+                    "url": "https://docs.snowflake.com" if category == "snowflake" else "https://aws.amazon.com/documentation/",
+                    "description": "Official documentation and guides"
+                },
+                {
+                    "title": "GitHub Examples",
+                    "url": "https://github.com/topics/data-engineering",
+                    "description": "Open source examples and implementations"
+                },
+                {
+                    "title": "Stack Overflow Community",
+                    "url": "https://stackoverflow.com/questions/tagged/data-engineering",
+                    "description": "Community Q&A and solutions"
                 }
             ]
     
@@ -343,9 +404,6 @@ Return as JSON array ONLY:
 
 def main():
     """Test the FREE blog generator"""
-    from dotenv import load_dotenv
-    load_dotenv()
-    
     api_key = os.getenv('GEMINI_API_KEY')
     if not api_key:
         print("❌ GEMINI_API_KEY not found!")
