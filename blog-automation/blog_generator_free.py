@@ -22,8 +22,8 @@ class BlogGeneratorFree:
         """Initialize with Google Gemini (FREE API)"""
         genai.configure(api_key=api_key)
         
-        # Use free tier model - gemini-1.5-flash
-        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        # Use free tier model - gemini-flash-latest
+        self.model = genai.GenerativeModel('gemini-flash-latest')
         
         print("✅ Using Google Gemini (FREE tier)")
     
