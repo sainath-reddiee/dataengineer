@@ -54,7 +54,7 @@ jobs:
           HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
           USE_IMAGES: 'false'
         run: |
-          python main_gemini.py \
+          python blog-automation/main_gemini.py \
             --posts ${{ github.event.inputs.num_posts || '1' }} \
             --category ${{ github.event.inputs.category || 'snowflake' }} \
             --status ${{ github.event.inputs.status || 'draft' }}
