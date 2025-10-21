@@ -52,21 +52,17 @@ class WordPressPublisher:
         return None
     
     def publish_blog_post(
-        self,
-        blog_data: Dict,
+        self, 
+        blog_data: Dict, 
         image_files: List[Dict],
         status: str = 'draft'
     ) -> Dict:
-        """Publish blog post with full SEO metadata - GUARANTEED NEW POST"""
+        """Publish blog post - GUARANTEED NEW POST"""
         print(f"\n{'='*70}")
-        print(f"📤 CREATING NEW POST WITH SEO METADATA")
+        print(f"📤 CREATING NEW POST (ANTI-CACHE MODE)")
         print(f"{'='*70}")
         print(f"Title: {blog_data['title']}")
         print(f"Status: {status}")
-        seo_data = blog_data.get('seo', {})
-        if seo_data:
-            print(f"Focus Keyphrase: {seo_data.get('focus_keyword', 'N/A')}")
-            print(f"Meta Description: {seo_data.get('meta_description', 'N/A')[:60]}...")
         print(f"{'='*70}\n")
         
         try:
@@ -99,10 +95,7 @@ class WordPressPublisher:
             print("   " + "-"*66)
             print(f"   Using temporary unique title to bypass cache")
             
-            # Prepare SEO metadata
-            seo_data = blog_data.get('seo', {})
-
-            # Post data with unique title and SEO metadata
+            # Post data with unique title
             post_data = {
                 'title': temp_unique_title,
                 'content': full_content,
@@ -111,14 +104,6 @@ class WordPressPublisher:
                 'comment_status': 'open',
                 'ping_status': 'open',
             }
-
-            # Add meta description if available
-            if seo_data.get('meta_description'):
-                post_data['excerpt'] = seo_data['meta_description']
-
-            # Add custom slug if available
-            if seo_data.get('slug'):
-                post_data['slug'] = seo_data['slug']
             
             if uploaded_images and 'id' in uploaded_images[0]:
                 post_data['featured_media'] = uploaded_images[0]['id']
@@ -146,17 +131,13 @@ class WordPressPublisher:
             post_id = post_info['id']
             print(f"   ✅ Post created with ID: {post_id}")
             
-            # CRITICAL: Now update the post with the REAL title and SEO metadata
-            print(f"\n   🔄 Updating post with real title and SEO data...")
+            # CRITICAL: Now update the post with the REAL title
+            print(f"\n   🔄 Updating post with real title...")
             time.sleep(1)  # Brief pause
-
+            
             update_data = {
                 'title': blog_data['title']  # Real title without unique ID
             }
-
-            # Add Yoast SEO meta fields using meta field
-            if seo_data:
-                update_data['meta'] = self._prepare_yoast_meta(seo_data)
             
             update_response = self.session.post(
                 f"{self.api_base}/posts/{post_id}",
@@ -165,16 +146,11 @@ class WordPressPublisher:
             )
             
             if update_response.status_code in [200, 201]:
-                print(f"   ✅ Title and SEO metadata updated successfully")
+                print(f"   ✅ Title updated successfully")
                 updated_info = self._normalize_response(update_response.json())
                 post_link = updated_info.get('link', f"{self.site_url}/?p={post_id}")
-
-                # Verify meta fields were set
-                if 'meta' in updated_info:
-                    print(f"   ✅ SEO meta fields applied")
             else:
-                print(f"   ⚠️  Update failed: {update_response.status_code}")
-                print(f"   Response: {update_response.text[:200]}")
+                print(f"   ⚠️  Title update failed, but post exists")
                 post_link = f"{self.site_url}/?p={post_id}"
             
             # Verify the post
@@ -215,17 +191,13 @@ class WordPressPublisher:
                 'edit_url': f"{self.site_url}/wp-admin/post.php?post={post_id}&action=edit",
                 'status': status,
                 'images_uploaded': len(uploaded_images),
-                'seo_applied': bool(seo_data),
-                'focus_keyword': seo_data.get('focus_keyword', 'N/A') if seo_data else 'N/A',
                 'published_at': datetime.now().isoformat()
             }
             
             print(f"\n{'='*70}")
-            print(f"✅ POST CREATED WITH SEO OPTIMIZATION!")
+            print(f"✅ POST CREATED!")
             print(f"{'='*70}")
             print(f"Post ID: {result['post_id']}")
-            print(f"Focus Keyword: {result['focus_keyword']}")
-            print(f"SEO Applied: {result['seo_applied']}")
             print(f"View: {result['post_url']}")
             print(f"Edit: {result['edit_url']}")
             print(f"{'='*70}")
@@ -386,27 +358,6 @@ class WordPressPublisher:
             html += f'<li><a href="{ref["url"]}" target="_blank" rel="noopener">{ref["title"]}</a> - {ref["description"]}</li>\n'
         html += '</ul>'
         return html
-
-    def _prepare_yoast_meta(self, seo_data: Dict) -> Dict:
-        """Prepare Yoast SEO metadata fields"""
-        meta = {}
-
-        # Yoast SEO fields
-        if seo_data.get('focus_keyword'):
-            meta['_yoast_wpseo_focuskw'] = seo_data['focus_keyword']
-
-        if seo_data.get('meta_description'):
-            meta['_yoast_wpseo_metadesc'] = seo_data['meta_description']
-
-        if seo_data.get('title'):
-            meta['_yoast_wpseo_title'] = seo_data['title']
-
-        # SEO keywords (secondary)
-        if seo_data.get('secondary_keywords'):
-            keywords = ', '.join(seo_data['secondary_keywords'])
-            meta['_yoast_wpseo_metakeywords'] = keywords
-
-        return meta
 
 
 if __name__ == "__main__":
