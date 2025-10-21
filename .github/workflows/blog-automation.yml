@@ -1,9 +1,6 @@
 name: Blog Automation
 
 on:
-  # Run on schedule (daily at 9 AM UTC)
-  schedule:
-    - cron: '0 9 * * *'
   
   # Allow manual trigger
   workflow_dispatch:
