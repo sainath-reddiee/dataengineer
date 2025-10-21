@@ -4,6 +4,7 @@
 ENHANCED Real-Time Trend Monitor with Official Documentation Scraping
 Uses: BeautifulSoup + Free APIs + Official Tech Docs
 Supports category-specific searches for targeted blog topics
+INCLUDES: Snowflake, AWS, Azure, dbt, Airflow, Python, SQL, GCP, Salesforce, Databricks
 """
 
 import os
@@ -15,6 +16,7 @@ from collections import Counter
 import time
 from dotenv import load_dotenv
 import re
+import argparse
 
 try:
     import google.generativeai as genai
@@ -44,10 +46,12 @@ class EnhancedTrendMonitor:
             'airflow': ['airflow', 'dataengineering', 'devops'],
             'python': ['python', 'learnpython', 'datascience', 'dataengineering'],
             'sql': ['SQL', 'database', 'dataengineering'],
-            'gcp': ['googlecloud', 'dataengineering', 'bigquery']
+            'gcp': ['googlecloud', 'dataengineering', 'bigquery'],
+            'salesforce': ['salesforce', 'salesforceadmins', 'SalesforceDeveloper', 'dataengineering'],
+            'databricks': ['databricks', 'apachespark', 'dataengineering', 'bigdata']
         }
         
-        # Official documentation URLs (EXPANDED SNOWFLAKE URLS)
+        # Official documentation URLs (EXPANDED with Salesforce & Databricks)
         self.official_docs = {
             'snowflake': {
                 'engineering_blog': 'https://www.snowflake.com/en/engineering-blog/',
@@ -83,6 +87,17 @@ class EnhancedTrendMonitor:
             'gcp': {
                 'release_notes': 'https://cloud.google.com/release-notes',
                 'blog': 'https://cloud.google.com/blog/products/data-analytics'
+            },
+            'salesforce': {
+                'release_notes': 'https://help.salesforce.com/s/articleView?id=release-notes.salesforce_release_notes.htm',
+                'developer_blog': 'https://developer.salesforce.com/blogs/',
+                'success_blog': 'https://www.salesforce.com/blog/',
+                'trailhead': 'https://trailhead.salesforce.com/en/today'
+            },
+            'databricks': {
+                'blog': 'https://www.databricks.com/blog',
+                'release_notes': 'https://docs.databricks.com/en/release-notes/index.html',
+                'engineering_blog': 'https://www.databricks.com/blog/category/engineering'
             }
         }
         
@@ -214,6 +229,18 @@ class EnhancedTrendMonitor:
                     if 'blog' in url:
                         signals.extend(self._scrape_gcp_blog(url))
                 
+                elif category == 'salesforce':
+                    if 'release-notes' in url:
+                        signals.extend(self._scrape_salesforce_release_notes(url))
+                    elif 'blog' in url:
+                        signals.extend(self._scrape_salesforce_blog(url))
+                
+                elif category == 'databricks':
+                    if 'release-notes' in url or 'release_notes' in url:
+                        signals.extend(self._scrape_databricks_release_notes(url))
+                    elif 'blog' in url:
+                        signals.extend(self._scrape_databricks_blog(url))
+                
                 time.sleep(2)  # Be respectful
                 
             except Exception as e:
@@ -229,20 +256,16 @@ class EnhancedTrendMonitor:
             if response.status_code == 200:
                 soup = BeautifulSoup(response.text, 'lxml')
                 
-                # Look for feature announcements in various structures
                 features = soup.find_all(['h2', 'h3', 'h4', 'div'], limit=15)
                 
                 for feature in features:
                     title = feature.get_text().strip()
                     
-                    # Filter out navigation/generic titles
                     if title and len(title) > 10 and not any(x in title.lower() for x in ['navigation', 'menu', 'search', 'table of contents', 'skip to', 'feedback']):
                         
-                        # Try to find associated paragraph
                         next_p = feature.find_next('p')
                         description = next_p.get_text().strip()[:200] if next_p else ''
                         
-                        # Enhanced scoring based on doc type
                         score_map = {
                             'engineering_blog': 250,
                             'openflow': 240,
@@ -272,7 +295,7 @@ class EnhancedTrendMonitor:
         except Exception as e:
             print(f"      Error scraping Snowflake docs: {str(e)[:50]}")
         
-        return signals[:8]  # Return more signals
+        return signals[:8]
     
     def _scrape_snowflake_blog(self, url: str) -> List[Dict]:
         """Scrape Snowflake official blog"""
@@ -282,7 +305,6 @@ class EnhancedTrendMonitor:
             if response.status_code == 200:
                 soup = BeautifulSoup(response.text, 'lxml')
                 
-                # Find blog post titles (adjust selectors based on actual page structure)
                 articles = soup.find_all('article', limit=8) or soup.find_all('div', class_='post', limit=8)
                 
                 for article in articles:
@@ -292,7 +314,6 @@ class EnhancedTrendMonitor:
                         link = article.find('a')
                         post_url = link.get('href', url) if link else url
                         
-                        # Make URL absolute
                         if post_url.startswith('/'):
                             post_url = f"https://www.snowflake.com{post_url}"
                         
@@ -479,6 +500,145 @@ class EnhancedTrendMonitor:
         
         return signals
     
+    def _scrape_salesforce_blog(self, url: str) -> List[Dict]:
+        """Scrape Salesforce official blogs"""
+        signals = []
+        try:
+            response = self.session.get(url, timeout=15)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'lxml')
+                
+                articles = soup.find_all('article', limit=8) or soup.find_all('div', class_='post', limit=8)
+                
+                for article in articles:
+                    title_elem = article.find(['h2', 'h3', 'a'])
+                    if title_elem:
+                        title = title_elem.get_text().strip()
+                        link = article.find('a')
+                        post_url = link.get('href', url) if link else url
+                        
+                        if post_url.startswith('/'):
+                            base_url = 'https://developer.salesforce.com' if 'developer' in url else 'https://www.salesforce.com'
+                            post_url = f"{base_url}{post_url}"
+                        
+                        signals.append({
+                            'source': 'salesforce_official/blog',
+                            'title': f"Salesforce: {title}",
+                            'score': 150,
+                            'engagement': 150,
+                            'url': post_url,
+                            'created': time.time(),
+                            'age_hours': 1,
+                            'category': 'salesforce',
+                            'type': 'official_blog'
+                        })
+        except Exception as e:
+            print(f"      Error scraping Salesforce blog: {str(e)[:50]}")
+        
+        return signals[:5]
+    
+    def _scrape_salesforce_release_notes(self, url: str) -> List[Dict]:
+        """Scrape Salesforce release notes"""
+        signals = []
+        try:
+            response = self.session.get(url, timeout=15)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'lxml')
+                
+                items = soup.find_all(['h2', 'h3', 'div'], class_=['feature', 'release'], limit=10)
+                
+                for item in items:
+                    title = item.get_text().strip()
+                    
+                    if title and len(title) > 10 and not any(x in title.lower() for x in ['navigation', 'menu', 'search']):
+                        signals.append({
+                            'source': 'salesforce_official/release_notes',
+                            'title': f"Salesforce Release: {title}",
+                            'score': 180,
+                            'engagement': 180,
+                            'url': url,
+                            'created': time.time(),
+                            'age_hours': 1,
+                            'category': 'salesforce',
+                            'type': 'official_release'
+                        })
+        except Exception as e:
+            print(f"      Error scraping Salesforce release notes: {str(e)[:50]}")
+        
+        return signals[:5]
+    
+    def _scrape_databricks_blog(self, url: str) -> List[Dict]:
+        """Scrape Databricks official blog"""
+        signals = []
+        try:
+            response = self.session.get(url, timeout=15)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'lxml')
+                
+                articles = soup.find_all('article', limit=8) or soup.find_all('div', class_='post-item', limit=8)
+                
+                for article in articles:
+                    title_elem = article.find(['h2', 'h3', 'h4', 'a'])
+                    if title_elem:
+                        title = title_elem.get_text().strip()
+                        link = article.find('a')
+                        post_url = link.get('href', url) if link else url
+                        
+                        if post_url.startswith('/'):
+                            post_url = f"https://www.databricks.com{post_url}"
+                        
+                        signals.append({
+                            'source': 'databricks_official/blog',
+                            'title': title,
+                            'score': 160,
+                            'engagement': 160,
+                            'url': post_url,
+                            'created': time.time(),
+                            'age_hours': 1,
+                            'category': 'databricks',
+                            'type': 'official_blog'
+                        })
+        except Exception as e:
+            print(f"      Error scraping Databricks blog: {str(e)[:50]}")
+        
+        return signals[:5]
+    
+    def _scrape_databricks_release_notes(self, url: str) -> List[Dict]:
+        """Scrape Databricks release notes"""
+        signals = []
+        try:
+            response = self.session.get(url, timeout=15)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'lxml')
+                
+                releases = soup.find_all(['h2', 'h3', 'div'], limit=10)
+                
+                for release in releases:
+                    title = release.get_text().strip()
+                    
+                    if title and len(title) > 10 and not any(x in title.lower() for x in ['navigation', 'menu', 'search', 'table of contents']):
+                        
+                        link = release.find('a')
+                        release_url = link.get('href', url) if link else url
+                        if release_url.startswith('/'):
+                            release_url = f"https://docs.databricks.com{release_url}"
+                        
+                        signals.append({
+                            'source': 'databricks_official/release_notes',
+                            'title': f"Databricks Release: {title}",
+                            'score': 170,
+                            'engagement': 170,
+                            'url': release_url,
+                            'created': time.time(),
+                            'age_hours': 1,
+                            'category': 'databricks',
+                            'type': 'official_release'
+                        })
+        except Exception as e:
+            print(f"      Error scraping Databricks release notes: {str(e)[:50]}")
+        
+        return signals[:5]
+    
     # ==================== CATEGORY-SPECIFIC SCRAPING ====================
     
     def _scrape_reddit_category(self, category: str) -> List[Dict]:
@@ -488,7 +648,6 @@ class EnhancedTrendMonitor:
         
         for subreddit in subreddits:
             try:
-                # Search within subreddit for category keyword
                 search_url = f"https://www.reddit.com/r/{subreddit}/search.json?q={category}&restrict_sr=1&sort=hot&t=week&limit=10"
                 response = self.session.get(search_url, timeout=15)
                 
@@ -499,7 +658,7 @@ class EnhancedTrendMonitor:
                         p = post['data']
                         engagement = p['score'] + (p['num_comments'] * 2)
                         
-                        if engagement > 20:  # Lower threshold for category-specific
+                        if engagement > 20:
                             signals.append({
                                 'source': f'reddit/r/{subreddit}',
                                 'title': p['title'],
@@ -574,7 +733,7 @@ class EnhancedTrendMonitor:
                 for q in data.get('items', [])[:8]:
                     engagement = q.get('score', 0) + q.get('answer_count', 0) * 5
                     
-                    if engagement > 3:  # Lower threshold
+                    if engagement > 3:
                         signals.append({
                             'source': f'stackoverflow/{tag}',
                             'title': q.get('title', ''),
@@ -626,7 +785,7 @@ class EnhancedTrendMonitor:
         
         return signals
     
-    # ==================== GENERIC SCRAPING (Keep original methods) ====================
+    # ==================== GENERIC SCRAPING ====================
     
     def _scrape_reddit(self) -> List[Dict]:
         """Scrape Reddit using FREE public JSON API"""
@@ -832,22 +991,18 @@ class EnhancedTrendMonitor:
     def _analyze_with_gemini(self, signals: List[Dict], limit: int, category: str = None) -> List[Dict]:
         """Analyze signals using FREE Gemini"""
         
-        # Filter recent signals (last 7 days)
         cutoff = time.time() - (7 * 24 * 60 * 60)
         recent = [s for s in signals if s.get('created', 0) > cutoff]
         
-        # Sort by engagement and prioritize official sources
         recent.sort(key=lambda x: (
-            x.get('type', '') == 'official_doc' and 300 or  # Highest priority
+            x.get('type', '') == 'official_doc' and 300 or
             x.get('type', '') == 'official_announcement' and 250 or
             x.get('type', '') == 'official_blog' and 200 or
             x.get('engagement', 0)
         ), reverse=True)
         
-        # Take top 80 signals
         top_signals = recent[:80]
         
-        # Create summary for AI
         signal_list = []
         for s in top_signals:
             signal_list.append({
@@ -911,16 +1066,13 @@ Return as JSON array ONLY (no markdown, no code blocks):
             response = self.model.generate_content(prompt)
             text = response.text.strip()
             
-            # Extract JSON
             if '```json' in text:
                 text = text.split('```json')[1].split('```')[0].strip()
             elif '```' in text:
                 text = text.split('```')[1].split('```')[0].strip()
             
-            # Remove any leading/trailing characters
             text = text.strip()
             if not text.startswith('['):
-                # Find first [ and last ]
                 start = text.find('[')
                 end = text.rfind(']') + 1
                 if start != -1 and end > start:
@@ -928,7 +1080,6 @@ Return as JSON array ONLY (no markdown, no code blocks):
             
             topics = json.loads(text)
             
-            # Add metadata
             for topic in topics:
                 topic['analyzed_at'] = datetime.now().isoformat()
                 topic['total_signals_analyzed'] = len(signals)
@@ -1003,6 +1154,30 @@ Return as JSON array ONLY (no markdown, no code blocks):
                     "content_type": "tutorial",
                     "level": "intermediate"
                 }
+            ],
+            'salesforce': [
+                {
+                    "title": "Salesforce Data Cloud: Complete Integration Guide 2025",
+                    "category": "salesforce",
+                    "keywords": ["salesforce", "data cloud", "integration", "cdp"],
+                    "trend_score": 8,
+                    "why_trending": "New Salesforce data platform",
+                    "evidence": "Salesforce release notes",
+                    "content_type": "tutorial",
+                    "level": "intermediate"
+                }
+            ],
+            'databricks': [
+                {
+                    "title": "Databricks Unity Catalog: Best Practices Guide 2025",
+                    "category": "databricks",
+                    "keywords": ["databricks", "unity catalog", "data governance"],
+                    "trend_score": 8,
+                    "why_trending": "Key governance feature",
+                    "evidence": "Databricks official blog",
+                    "content_type": "best-practices",
+                    "level": "intermediate"
+                }
             ]
         }
         
@@ -1024,13 +1199,64 @@ Return as JSON array ONLY (no markdown, no code blocks):
 
 
 def main():
-    """Enhanced main function with category support"""
+    """Enhanced main function with category support via command-line arguments"""
+    
     load_dotenv()
+    
+    parser = argparse.ArgumentParser(
+        description='Real-Time Trend Monitor for Data Engineering Topics',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python trend_monitor_realtime.py --category snowflake
+  python trend_monitor_realtime.py --category databricks --limit 5
+  python trend_monitor_realtime.py --category salesforce --output sf_trends.json
+  python trend_monitor_realtime.py  # All categories (generic)
+  
+Supported Categories:
+  snowflake   - Snowflake Data Warehouse
+  aws         - Amazon Web Services
+  azure       - Microsoft Azure
+  dbt         - dbt (data build tool)
+  airflow     - Apache Airflow
+  python      - Python Programming
+  sql         - SQL & Databases
+  gcp         - Google Cloud Platform
+  salesforce  - Salesforce Platform & Data Cloud
+  databricks  - Databricks Lakehouse Platform
+  all         - All Data Engineering Topics (generic)
+        """
+    )
+    
+    parser.add_argument(
+        '--category', '-c',
+        type=str,
+        choices=['snowflake', 'aws', 'azure', 'dbt', 'airflow', 'python', 'sql', 'gcp', 'salesforce', 'databricks', 'all'],
+        default=None,
+        help='Technology category to focus on (default: all categories)'
+    )
+    
+    parser.add_argument(
+        '--limit', '-l',
+        type=int,
+        default=10,
+        help='Number of trending topics to return (default: 10)'
+    )
+    
+    parser.add_argument(
+        '--output', '-o',
+        type=str,
+        default=None,
+        help='Output JSON file name (default: trending_topics_<category>.json)'
+    )
+    
+    args = parser.parse_args()
     
     api_key = os.getenv('GEMINI_API_KEY')
     if not api_key:
         print("❌ GEMINI_API_KEY not found!")
         print("\nGet FREE API key at: https://ai.google.dev/")
+        print("Add to .env file: GEMINI_API_KEY=your_key_here")
         return
     
     monitor = EnhancedTrendMonitor(api_key)
@@ -1039,24 +1265,14 @@ def main():
     print("🚀 ENHANCED TREND MONITOR WITH OFFICIAL DOCS")
     print("="*70)
     
-    # ==================== USAGE EXAMPLES ====================
+    category = args.category if args.category != 'all' else None
+    category_display = args.category.upper() if args.category else "ALL CATEGORIES"
     
-    # Example 1: Snowflake-specific trending topics (with expanded URLs)
-    print("\n📊 EXAMPLE 1: Snowflake Trending Topics")
+    print(f"\n📊 Analyzing: {category_display}")
+    print(f"📈 Limit: {args.limit} topics")
     print("="*70)
-    topics = monitor.analyze_trends(limit=10, category='snowflake')
     
-    # Example 2: AWS-specific trending topics
-    # print("\n📊 EXAMPLE 2: AWS Trending Topics")
-    # print("="*70)
-    # topics = monitor.analyze_trends(limit=10, category='aws')
-    
-    # Example 3: All categories (generic search)
-    # print("\n📊 EXAMPLE 3: All Categories")
-    # print("="*70)
-    # topics = monitor.analyze_trends(limit=10)
-    
-    # ==================== DISPLAY RESULTS ====================
+    topics = monitor.analyze_trends(limit=args.limit, category=category)
     
     print("\n" + "="*70)
     print(f"✅ FOUND {len(topics)} TRENDING TOPICS")
@@ -1068,26 +1284,23 @@ def main():
         print(f"   🎯 Category: {topic['category']}")
         print(f"   📝 Type: {topic['content_type']} | Level: {topic['level']}")
         
-        # Highlight official sources
         if topic.get('is_official'):
             print(f"   ⭐ OFFICIAL SOURCE - High Priority!")
         
-        print(f"   💡 Why Trending: {topic['why_trending']}")
-        print(f"   📈 Evidence: {topic['evidence']}")
+        print(f"   💡 Why Trending: {topic['why_trending'][:100]}...")
+        print(f"   📈 Evidence: {topic['evidence'][:80]}...")
         print(f"   🔑 Keywords: {', '.join(topic['keywords'][:5])}")
         print(f"   👥 Audience: {topic['target_audience']}")
         print()
     
-    # ==================== SAVE RESULTS ====================
-    
     output = {
         'analyzed_at': datetime.now().isoformat(),
-        'category_filter': topics[0].get('category_filter', 'all') if topics else 'all',
+        'category_filter': args.category or 'all',
         'method': 'Enhanced with Official Documentation',
         'cost': '$0.00 (100% FREE)',
         'topics': topics,
         'sources_used': [
-            'Official Documentation (Snowflake: 9 URLs including Engineering Blog, Release Notes, OpenFlow, etc.)',
+            'Official Documentation (Multiple sources)',
             'Reddit (category-specific)',
             'GitHub (topics)',
             'Stack Overflow (tags)',
@@ -1096,8 +1309,11 @@ def main():
         ]
     }
     
-    category_suffix = f"_{topics[0].get('category_filter', 'all')}" if topics and topics[0].get('category_filter') != 'all' else ''
-    output_file = f'trending_topics{category_suffix}.json'
+    if args.output:
+        output_file = args.output
+    else:
+        category_suffix = f"_{args.category}" if args.category else ""
+        output_file = f'trending_topics{category_suffix}.json'
     
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
@@ -1107,22 +1323,21 @@ def main():
     print("💰 Total cost: $0.00 (100% FREE!)")
     print("="*70)
     
-    # ==================== BONUS: Generate Blog Ideas ====================
-    
-    print("\n" + "="*70)
-    print("💡 BONUS: TOP BLOG POST IDEAS")
-    print("="*70 + "\n")
-    
-    for i, topic in enumerate(topics[:3], 1):
-        print(f"🎯 IDEA #{i}: {topic['title']}")
-        print(f"   Structure:")
-        print(f"   1. Introduction - What is {topic['keywords'][0]}?")
-        print(f"   2. Why it matters in 2025")
-        print(f"   3. Step-by-step tutorial/guide")
-        print(f"   4. Best practices & tips")
-        print(f"   5. Common pitfalls to avoid")
-        print(f"   6. Conclusion & next steps")
-        print()
+    if topics:
+        print("\n" + "="*70)
+        print("💡 TOP BLOG POST IDEAS")
+        print("="*70 + "\n")
+        
+        for i, topic in enumerate(topics[:3], 1):
+            print(f"🎯 IDEA #{i}: {topic['title']}")
+            print(f"   Suggested Structure:")
+            print(f"   1. Introduction - What is {topic['keywords'][0]}?")
+            print(f"   2. Why it matters in 2025")
+            print(f"   3. Step-by-step tutorial/guide")
+            print(f"   4. Best practices & tips")
+            print(f"   5. Common pitfalls to avoid")
+            print(f"   6. Conclusion & next steps")
+            print()
 
 
 if __name__ == "__main__":
