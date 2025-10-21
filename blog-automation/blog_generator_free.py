@@ -75,9 +75,6 @@ class BlogGeneratorFree:
         references = self._generate_references(topic)
         print(f"✅ References generated ({len(references)} links) (FREE)")
         
-        # Final validation: ensure keyphrase is in content
-        content_html = self._ensure_keyphrase_in_content(content_html, seo_data['focus_keyword'])
-
         return {
             'title': seo_data['title'],
             'content': content_html,
@@ -158,63 +155,46 @@ class BlogGeneratorFree:
     
     def _generate_seo_metadata(self, topic: Dict) -> Dict:
         """Generate SEO metadata using FREE Gemini API"""
-
+        
         prompt = f"""Generate SEO metadata for a technical blog post about data engineering.
 
 Topic: {topic['title']}
 Category: {topic.get('category', 'data-engineering')}
 
-Generate SEO-optimized metadata following Yoast SEO best practices:
-1. SEO Title: Must START with the focus keyphrase, under 60 characters, keyword-rich
-2. Focus Keyphrase: 2-4 words, natural language, exactly what users search for
-3. Meta Description: Must contain the focus keyphrase naturally, 150-160 characters, compelling
-4. Slug: URL-friendly version of the focus keyphrase (lowercase, hyphens)
-5. Secondary Keywords: 5-7 related terms
-
-IMPORTANT:
-- SEO Title MUST begin with the focus keyphrase
-- Meta description MUST contain the focus keyphrase
-- Slug MUST contain the focus keyphrase
-- Focus keyphrase should be search-engine friendly
+Generate SEO-optimized metadata:
+1. SEO Title: Under 60 characters, keyword-rich
+2. Focus Keyword: 2-4 words
+3. Meta Description: 150-160 characters
+4. Secondary Keywords: 5-7 related terms
 
 Return ONLY valid JSON:
 {{
-  "title": "Focus Keyphrase First - Rest of Title",
-  "focus_keyword": "exact focus keyphrase",
-  "meta_description": "Description containing focus keyphrase naturally...",
-  "slug": "focus-keyphrase-in-url",
+  "title": "...",
+  "focus_keyword": "...",
+  "meta_description": "...",
   "secondary_keywords": ["...", "..."]
 }}"""
 
         try:
-            seo_data = self._safe_generate(prompt, parse_json=True)
-
-            # Validate and fix SEO data to ensure Yoast compliance
-            seo_data = self._validate_seo_data(seo_data, topic)
-            return seo_data
-
+            return self._safe_generate(prompt, parse_json=True)
         except Exception as e:
             print(f"   ⚠️ SEO generation error: {e}")
-            # Fallback SEO data that follows Yoast rules
-            focus_kw = ' '.join(topic['title'].split()[:4]).lower()
+            # Fallback SEO data
             return {
-                "title": f"{focus_kw.title()}: {topic['title'][:40]}",
-                "focus_keyword": focus_kw,
-                "meta_description": f"Discover how {focus_kw} can transform your data engineering workflow. Learn best practices, implementation strategies, and expert tips.",
-                "slug": focus_kw.replace(' ', '-'),
+                "title": topic['title'][:60],
+                "focus_keyword": topic['title'].split()[0:3],
+                "meta_description": f"Learn about {topic['title']} in this comprehensive guide for data engineers.",
                 "secondary_keywords": topic.get('keywords', ['data engineering', 'tutorial'])
             }
     
     def _generate_content(self, topic: Dict, seo_data: Dict) -> str:
         """Generate main blog content using FREE Gemini API"""
-
-        focus_keyphrase = seo_data.get('focus_keyword', topic['title'])
-
-        prompt = f"""Write a comprehensive technical blog post in HTML format following Yoast SEO best practices.
+        
+        prompt = f"""Write a comprehensive technical blog post in HTML format.
 
 TOPIC: {topic['title']}
 CATEGORY: {topic.get('category', 'data-engineering')}
-FOCUS KEYPHRASE: {focus_keyphrase}
+FOCUS KEYWORD: {seo_data['focus_keyword']}
 TARGET LENGTH: 2000-2500 words
 
 STRUCTURE:
@@ -229,22 +209,14 @@ STRUCTURE:
 CONTENT REQUIREMENTS:
 1. Write for intermediate-level data engineers
 2. Include practical examples and use cases
-3. Include code snippets where relevant
-4. Add tips marked with 💡 Tip: or ⚠️ Warning:
-5. Write in active voice, address reader as "you"
-
-YOAST SEO CRITICAL REQUIREMENTS:
-1. The focus keyphrase "{focus_keyphrase}" MUST appear in the first paragraph of the Introduction
-2. Use the focus keyphrase naturally 4-6 times throughout the content
-3. The Introduction paragraph should be 150-200 words and clearly explain what the article covers
-4. Use the focus keyphrase in at least one <h2> heading
-5. Include the focus keyphrase in the first 10% of the content
-6. Distribute the keyphrase naturally - don't stuff it
+3. Use the focus keyword naturally 4-5 times
+4. Include code snippets where relevant
+5. Add tips marked with 💡 Tip: or ⚠️ Warning:
+6. Write in active voice, address reader as "you"
 
 IMPORTANT:
 - Return ONLY the HTML content
 - Start with <h2>Introduction</h2>
-- The FIRST paragraph after Introduction heading MUST contain the focus keyphrase "{focus_keyphrase}"
 - Do NOT include html, head, body tags
 - Do NOT include a conclusion section
 - Do NOT add external links
@@ -423,71 +395,6 @@ Return ONLY valid JSON array:
                 }
             ]
     
-    def _validate_seo_data(self, seo_data: Dict, topic: Dict) -> Dict:
-        """Validate and fix SEO data to ensure Yoast SEO compliance"""
-        focus_kw = seo_data.get('focus_keyword', '').strip()
-
-        # Ensure focus keyword exists and is reasonable length
-        if not focus_kw or len(focus_kw.split()) < 2:
-            focus_kw = ' '.join(topic['title'].split()[:4]).lower()
-            seo_data['focus_keyword'] = focus_kw
-
-        # Ensure SEO title starts with focus keyphrase
-        title = seo_data.get('title', '')
-        if not title.lower().startswith(focus_kw.lower()):
-            # Rebuild title to start with focus keyphrase
-            if len(title) > 60:
-                title = f"{focus_kw.title()} - {topic['title'][:40]}"
-            else:
-                title = f"{focus_kw.title()}: {topic['title']}"
-
-        # Limit title to 60 characters
-        if len(title) > 60:
-            title = title[:57] + '...'
-        seo_data['title'] = title
-
-        # Ensure meta description contains focus keyphrase
-        meta_desc = seo_data.get('meta_description', '')
-        if focus_kw.lower() not in meta_desc.lower():
-            meta_desc = f"Learn about {focus_kw} and discover best practices for implementing it in your data engineering workflow. Expert tips and strategies included."
-
-        # Ensure meta description is 150-160 characters
-        if len(meta_desc) < 150:
-            meta_desc = f"{meta_desc} Discover expert insights and proven techniques."
-        if len(meta_desc) > 160:
-            # Find last complete sentence within 160 chars
-            meta_desc = meta_desc[:157] + '...'
-        seo_data['meta_description'] = meta_desc
-
-        # Ensure slug contains focus keyphrase
-        slug = seo_data.get('slug', '')
-        if not slug or focus_kw.lower().replace(' ', '-') not in slug:
-            slug = focus_kw.lower().replace(' ', '-')
-        # Clean slug
-        slug = re.sub(r'[^a-z0-9-]', '', slug.lower())
-        slug = re.sub(r'-+', '-', slug).strip('-')
-        seo_data['slug'] = slug
-
-        return seo_data
-
-    def _ensure_keyphrase_in_content(self, content: str, focus_keyphrase: str) -> str:
-        """Ensure focus keyphrase appears in the introduction paragraph"""
-        # Check if keyphrase is in first 500 characters
-        if focus_keyphrase.lower() in content[:500].lower():
-            return content
-
-        # If not, insert it in the first paragraph after Introduction heading
-        intro_pattern = r'(<h2>Introduction</h2>\s*<p>)([^<]+)'
-        match = re.search(intro_pattern, content)
-
-        if match:
-            intro_text = match.group(2)
-            # Add keyphrase to the beginning of the first sentence
-            enhanced_intro = f"{focus_keyphrase.title()} is a critical concept in modern data engineering. {intro_text}"
-            content = re.sub(intro_pattern, f'{match.group(1)}{enhanced_intro}', content, count=1)
-
-        return content
-
     def _calculate_reading_time(self, content: str) -> int:
         """Calculate estimated reading time"""
         text = re.sub(r'<[^>]+>', '', content)
