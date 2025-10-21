@@ -1,15 +1,23 @@
-# Core Dependencies (Required)
-google-generativeai>=0.3.0
-beautifulsoup4>=4.12.0
-lxml>=4.9.0
+# Core Dependencies
 requests>=2.31.0
 python-dotenv>=1.0.0
 Pillow>=10.0.0
 
-# Optional - Only if you want to use the Anthropic version
-# anthropic>=0.5.0
+# Google Gemini (FREE API)
+google-generativeai>=0.3.0
+
+# SEO & Slug Generation
+python-slugify>=8.0.0
+
+# Optional: Image Generation (Free via Hugging Face)
+# Uncomment if using image_generator_free.py:
+# No additional package needed - uses requests
+
+# Optional: Web Scraping for Trend Monitor
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
 
 # Development/Testing Dependencies (Optional)
 # pytest>=7.4.0
 # black>=23.0.0
-# flake8>=6.
+# flake8>=6.0.0
