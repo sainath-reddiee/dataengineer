@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Main Orchestrator (GEMINI-ONLY VERSION)
+Main Orchestrator (GEMINI-ONLY VERSION) - FIXED
 Uses ONLY Google Gemini API - NO Anthropic needed!
-Complete Blog Automation Pipeline
+Fixed: Updated to use 'focus_keyphrase' instead of 'focus_keyword'
 """
 
 import os
@@ -159,7 +159,8 @@ class BlogAutomationPipelineGemini:
         
         print(f"✅ Content generated: {blog_data['metadata']['word_count']} words")
         print(f"   Reading time: {blog_data['metadata']['reading_time']} minutes")
-        print(f"   Focus keyword: {blog_data['seo']['focus_keyword']}")
+        # FIXED: Changed from 'focus_keyword' to 'focus_keyphrase'
+        print(f"   Focus keyphrase: {blog_data['seo']['focus_keyphrase']}")
         print(f"   Cost: {blog_data['metadata']['cost']}\n")
         
         # Step 3: Handle images
@@ -192,7 +193,7 @@ class BlogAutomationPipelineGemini:
         end_time = datetime.now()
         duration = (end_time - start_time).total_seconds()
         
-        # Compile result
+        # Compile result - FIXED: Changed from 'focus_keyword' to 'focus_keyphrase'
         result = {
             'success': publish_result.get('success', False),
             'post_number': post_num,
@@ -202,7 +203,7 @@ class BlogAutomationPipelineGemini:
                 'title': blog_data['title'],
                 'word_count': blog_data['metadata']['word_count'],
                 'reading_time': blog_data['metadata']['reading_time'],
-                'focus_keyword': blog_data['seo']['focus_keyword']
+                'focus_keyphrase': blog_data['seo']['focus_keyphrase']  # FIXED
             },
             'images': {
                 'total': len(blog_data['images']),
