@@ -1,22 +1,77 @@
-name: Blog Automation
+name: Blog Automation (Enhanced)
 
 on:
+  # Schedule: Run automatically
+  schedule:
+    # Run every Monday at 9 AM UTC (adjust to your timezone)
+    - cron: '0 9 * * 1'
   
-  # Allow manual trigger
+  # Manual trigger with topic options
   workflow_dispatch:
     inputs:
+      mode:
+        description: 'Generation Mode'
+        required: true
+        type: choice
+        options:
+          - 'automatic'  # AI finds trending topics
+          - 'manual'     # You provide specific topics
+        default: 'automatic'
+      
+      # For automatic mode
       num_posts:
-        description: 'Number of posts to generate'
+        description: 'Number of posts (automatic mode)'
         required: false
         default: '1'
+      
       category:
-        description: 'Category (snowflake, aws, azure, dbt, etc.)'
+        description: 'Category (automatic mode)'
         required: false
+        type: choice
+        options:
+          - 'snowflake'
+          - 'aws'
+          - 'azure'
+          - 'dbt'
+          - 'airflow'
+          - 'python'
+          - 'sql'
+          - 'gcp'
+          - 'databricks'
+          - 'salesforce'
         default: 'snowflake'
-      status:
-        description: 'Post status (draft or publish)'
+      
+      # For manual mode
+      topic1:
+        description: 'Topic 1 (manual mode)'
         required: false
+        default: ''
+      
+      topic2:
+        description: 'Topic 2 (manual mode)'
+        required: false
+        default: ''
+      
+      topic3:
+        description: 'Topic 3 (manual mode)'
+        required: false
+        default: ''
+      
+      # Common options
+      status:
+        description: 'Post status'
+        required: true
+        type: choice
+        options:
+          - 'draft'
+          - 'publish'
         default: 'draft'
+      
+      enable_images:
+        description: 'Generate images?'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   generate-blog-posts:
@@ -44,37 +99,98 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r blog-automation/requirements.txt
       
-      - name: Generate blog posts
+      - name: Generate blog posts (Automatic Mode)
+        if: github.event.inputs.mode == 'automatic' || github.event_name == 'schedule'
         env:
-          # Secrets from GitHub repository settings
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           WORDPRESS_URL: ${{ secrets.WORDPRESS_URL }}
           WORDPRESS_USER: ${{ secrets.WORDPRESS_USER }}
           WORDPRESS_APP_PASSWORD: ${{ secrets.WORDPRESS_APP_PASSWORD }}
           HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
-          USE_IMAGES: 'false'
+          USE_IMAGES: ${{ github.event.inputs.enable_images || 'false' }}
         run: |
+          echo "🤖 Running in AUTOMATIC mode"
+          echo "   Category: ${{ github.event.inputs.category || 'snowflake' }}"
+          echo "   Posts: ${{ github.event.inputs.num_posts || '1' }}"
+          
           python blog-automation/main_gemini.py \
             --posts ${{ github.event.inputs.num_posts || '1' }} \
             --category ${{ github.event.inputs.category || 'snowflake' }} \
+            --status ${{ github.event.inputs.status || 'draft' }}
+      
+      - name: Generate blog posts (Manual Mode)
+        if: github.event.inputs.mode == 'manual'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          WORDPRESS_URL: ${{ secrets.WORDPRESS_URL }}
+          WORDPRESS_USER: ${{ secrets.WORDPRESS_USER }}
+          WORDPRESS_APP_PASSWORD: ${{ secrets.WORDPRESS_APP_PASSWORD }}
+          HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
+          USE_IMAGES: ${{ github.event.inputs.enable_images || 'false' }}
+        run: |
+          echo "✍️  Running in MANUAL mode"
+          echo "   Topics provided:"
+          
+          TOPICS=""
+          if [ -n "${{ github.event.inputs.topic1 }}" ]; then
+            echo "   1. ${{ github.event.inputs.topic1 }}"
+            TOPICS="${TOPICS} \"${{ github.event.inputs.topic1 }}\""
+          fi
+          if [ -n "${{ github.event.inputs.topic2 }}" ]; then
+            echo "   2. ${{ github.event.inputs.topic2 }}"
+            TOPICS="${TOPICS} \"${{ github.event.inputs.topic2 }}\""
+          fi
+          if [ -n "${{ github.event.inputs.topic3 }}" ]; then
+            echo "   3. ${{ github.event.inputs.topic3 }}"
+            TOPICS="${TOPICS} \"${{ github.event.inputs.topic3 }}\""
+          fi
+          
+          if [ -z "$TOPICS" ]; then
+            echo "❌ Error: No topics provided!"
+            exit 1
+          fi
+          
+          python blog-automation/main_gemini.py \
+            --topics $TOPICS \
             --status ${{ github.event.inputs.status || 'draft' }}
       
       - name: Upload results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: blog-outputs
+          name: blog-outputs-${{ github.run_number }}
           path: blog_outputs/
           retention-days: 30
+      
+      - name: Generate summary
+        if: always()
+        run: |
+          echo "## 📊 Blog Automation Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "blog_outputs/pipeline_results.json" ]; then
+            echo "### ✅ Generation Complete" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Mode: \`${{ github.event.inputs.mode || 'automatic' }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            # Parse results (basic)
+            echo "Check the artifacts for detailed results." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ❌ Generation Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Check the logs for details." >> $GITHUB_STEP_SUMMARY
+          fi
       
       - name: Send notification on success
         if: success()
         run: |
-          echo "✅ Blog post generation completed successfully"
-          echo "Check artifacts for generated content"
+          echo "✅ Blog generation completed successfully"
+          echo "📁 Check artifacts for generated content"
+          echo "🔗 Edit posts in WordPress admin"
       
       - name: Send notification on failure
         if: failure()
         run: |
-          echo "❌ Blog post generation failed"
-          echo "Check logs for details"
+          echo "❌ Blog generation failed"
+          echo "📋 Check logs above for error details" 
