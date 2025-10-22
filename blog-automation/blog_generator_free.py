@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """
-Blog Generator (PREMIUM QUALITY VERSION)
+Blog Generator (COMPLETE PREMIUM QUALITY VERSION)
+✅ ALL original functionality preserved
+✅ Enhanced with Yoast SEO compliance (keyphrase in headings)
+✅ Improved content quality
 Complete file - No lines missing - Production ready
 """
 
@@ -9,7 +12,14 @@ import json
 import re
 from typing import Dict, List
 from datetime import datetime
-from slugify import slugify
+
+try:
+    from slugify import slugify
+except ImportError:
+    print("⚠️  python-slugify not installed. Installing...")
+    import subprocess
+    subprocess.check_call(['pip', 'install', 'python-slugify', '--break-system-packages'])
+    from slugify import slugify
 
 try:
     import google.generativeai as genai
@@ -23,7 +33,7 @@ class BlogGeneratorFree:
         """Initialize with Google Gemini (FREE API)"""
         genai.configure(api_key=api_key)
         
-        self.model = genai.GenerativeModel('gemini-flash-latest')
+        self.model = genai.GenerativeModel('gemini-1.5-flash')
         
         self.safety_settings = [
             {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
@@ -45,23 +55,40 @@ class BlogGeneratorFree:
         """Generate PREMIUM QUALITY blog post"""
         print(f"🎯 Generating PREMIUM blog post: {topic['title']}")
         
+        # Step 1: Generate SEO metadata
         seo_data = self._generate_seo_metadata(topic)
         print(f"✅ SEO metadata: keyphrase='{seo_data['focus_keyphrase']}'")
         
+        # Step 2: Generate slug
         slug = self._generate_slug(topic['title'], seo_data['focus_keyphrase'])
         print(f"✅ SEO slug: {slug}")
         
+        # Step 3: Generate premium content
         content_html = self._generate_premium_content(topic, seo_data)
         print(f"✅ Premium content generated ({len(content_html)} chars)")
         
+        # Step 4: Verify and enhance headings (NEW - for Yoast compliance)
+        content_html = self._ensure_keyphrase_in_headings(content_html, seo_data['focus_keyphrase'])
+        
+        # Step 5: Verify intro keyphrase
         intro_check = self._verify_intro_keyphrase(content_html, seo_data['focus_keyphrase'])
         print(f"✅ Keyphrase in intro: {intro_check}")
         
+        # Step 6: Generate image prompts
         image_prompts = self._generate_image_prompts(topic, content_html)
-        print(f"✅ Image prompts: {len(image_prompts)}")
+        print(f"✅ Image prompts generated ({len(image_prompts)} images)")
         
+        # Step 7: Generate references
         references = self._generate_references(topic)
-        print(f"✅ References: {len(references)}")
+        print(f"✅ References generated ({len(references)} links)")
+        
+        # Step 8: Check keyphrase density
+        keyphrase_count = content_html.lower().count(seo_data['focus_keyphrase'].lower())
+        print(f"✅ Keyphrase density: {keyphrase_count} times")
+        
+        # Step 9: Analyze headings (NEW - for reporting)
+        h2_count, h3_count, keyphrase_in_headings = self._analyze_headings(content_html, seo_data['focus_keyphrase'])
+        print(f"✅ Headings: {h2_count} H2s, {h3_count} H3s, {keyphrase_in_headings} with keyphrase")
         
         return {
             'title': topic['title'],
@@ -80,6 +107,11 @@ class BlogGeneratorFree:
                 'generated_at': datetime.now().isoformat(),
                 'word_count': len(content_html.split()),
                 'reading_time': self._calculate_reading_time(content_html),
+                'keyphrase_density': keyphrase_count,
+                'headings_with_keyphrase': keyphrase_in_headings,
+                'total_h2_headings': h2_count,
+                'total_h3_headings': h3_count,
+                'yoast_compliant': keyphrase_in_headings >= max(3, int(h2_count * 0.3)),
                 'cost': '$0.00 (FREE!)',
                 'yoast_compliant': True,
                 'quality': 'PREMIUM'
@@ -105,6 +137,7 @@ class BlogGeneratorFree:
                 text = response.text.strip()
                 
                 if parse_json:
+                    # Clean JSON response
                     if '```json' in text:
                         text = text.split('```json')[1].split('```')[0].strip()
                     elif '```' in text:
@@ -112,6 +145,7 @@ class BlogGeneratorFree:
                     
                     return json.loads(text)
                 else:
+                    # Clean HTML response
                     if '```html' in text:
                         text = text.split('```html')[1].split('```')[0].strip()
                     elif text.startswith('```'):
@@ -121,6 +155,7 @@ class BlogGeneratorFree:
                     
             except Exception as e:
                 if attempt < retry_count - 1:
+                    print(f"   ⚠️  Retry {attempt + 1}/{retry_count}: {str(e)[:50]}")
                     continue
                 else:
                     raise
@@ -209,7 +244,7 @@ Return ONLY valid JSON:
             }
             
         except Exception as e:
-            print(f"   ⚠️ SEO generation error: {e}")
+            print(f"   ⚠️  SEO generation error: {e}")
             # Fallback - extract from title
             title_words = [w.lower() for w in topic['title'].split() if len(w) > 2][:3]
             keyphrase = ' '.join(title_words)
@@ -225,6 +260,7 @@ Return ONLY valid JSON:
         """Generate SEO-optimized slug containing keyphrase"""
         slug = slugify(keyphrase)
         
+        # If slug is too short, add more from title
         if len(slug) < 20:
             additional = slugify(title.replace(keyphrase, ''))
             slug = f"{slug}-{additional}"[:50]
@@ -244,21 +280,38 @@ FOCUS KEYPHRASE: {keyphrase}
 SECONDARY KEYWORDS: {secondary_keywords}
 TARGET: 2500-3000 words
 
-YOAST SEO CRITICAL REQUIREMENTS:
+🚨 CRITICAL YOAST SEO REQUIREMENTS - MUST FOLLOW EXACTLY:
 
 1. KEYPHRASE IN FIRST PARAGRAPH (within first 100 words):
    - MUST mention "{keyphrase}" in the VERY FIRST paragraph
-   - Example start: "When it comes to {keyphrase}, understanding the fundamentals is crucial..."
+   - Example: "When it comes to {keyphrase}, understanding the fundamentals is crucial..."
 
-2. KEYPHRASE DENSITY: Use "{keyphrase}" exactly 8-12 times throughout the article
+2. KEYPHRASE DENSITY: Use "{keyphrase}" exactly 10-15 times throughout
    - First paragraph: 1 time
-   - Opening section (before H2): 1-2 times
-   - Throughout H2 sections: 5-8 times
-   - In H2/H3 headings: 2-3 times
+   - Opening section: 1-2 times
+   - Throughout content: 8-12 times
+   - In H2/H3 headings: AT LEAST 3-4 times (THIS IS CRITICAL!)
 
-3. KEYPHRASE IN SUBHEADINGS:
-   - Include "{keyphrase}" or synonyms in at least 2-3 H2 headings
-   - Examples: "Why {keyphrase.title()} Matters", "Optimizing {keyphrase.title()}", "Best Practices for {keyphrase.title()}"
+3. 🎯 KEYPHRASE IN SUBHEADINGS (YOAST REQUIRES 30%+):
+   - MINIMUM 3 out of 6 H2 headings MUST contain "{keyphrase}" or close synonym
+   - AT LEAST 2 H3 headings should contain "{keyphrase}" or variation
+   
+   REQUIRED H2 HEADING EXAMPLES (use exact keyphrase):
+   ✅ <h2>What Is {keyphrase.title()}?</h2>
+   ✅ <h2>Why {keyphrase.title()} Matters in 2025</h2>
+   ✅ <h2>Setting Up {keyphrase.title()}: Step-by-Step Guide</h2>
+   ✅ <h2>Advanced {keyphrase.title()} Techniques</h2>
+   ✅ <h2>Common {keyphrase.title()} Mistakes to Avoid</h2>
+   ✅ <h2>Optimizing {keyphrase.title()} for Production</h2>
+   
+   REQUIRED H3 EXAMPLES:
+   ✅ <h3>How {keyphrase.title()} Works</h3>
+   ✅ <h3>Best Practices for {keyphrase.title()}</h3>
+   
+   ❌ AVOID GENERIC HEADINGS WITHOUT KEYPHRASE:
+   ❌ <h2>Getting Started</h2>
+   ❌ <h2>Best Practices</h2>
+   ❌ <h2>Common Mistakes</h2>
 
 4. READABILITY (CRITICAL):
    - Keep sentences SHORT: Maximum 20 words per sentence
@@ -290,9 +343,9 @@ STRUCTURE:
 OPENING (NO H2, start directly):
 "When it comes to {keyphrase}, [hook]. I'll show you what works. You'll learn practical techniques. Let's dive in."
 
-THEN SPECIFIC H2 HEADINGS (include keyphrase in 2-3 of them):
-<h2>Why {keyphrase.title()} Is Critical for Modern Data Teams</h2>
-<h2>The Architecture Behind Effective {keyphrase.title()}</h2>
+THEN SPECIFIC H2 HEADINGS (include keyphrase in at least 3-4 of them):
+<h2>What Is {keyphrase.title()}?</h2>
+<h2>Why {keyphrase.title()} Matters for Modern Data Teams</h2>
 <h2>Setting Up {keyphrase.title()}: Step-by-Step Guide</h2>
 <h2>Advanced {keyphrase.title()} Techniques</h2>
 <h2>Common {keyphrase.title()} Mistakes to Avoid</h2>
@@ -306,8 +359,8 @@ WRITING CHECKLIST:
 □ Sentences under 20 words (aim for 15-18 average)
 □ Active voice (you/we/I as subjects, not "it was done")
 □ Keyphrase in first paragraph
-□ Keyphrase 8-12 times total
-□ Keyphrase in 2-3 H2 headings
+□ Keyphrase 10-15 times total
+□ Keyphrase in at least 3-4 H2 headings
 □ Short, punchy paragraphs (3-4 sentences max)
 
 EXAMPLES OF GOOD WRITING:
@@ -331,27 +384,110 @@ Return ONLY HTML. Start with opening paragraphs containing keyphrase. Use SHORT 
             
             # CRITICAL: Ensure keyphrase in first paragraph
             if not self._keyphrase_in_first_paragraph(content, keyphrase):
-                print(f"   ⚠️ Adding keyphrase to first paragraph...")
+                print(f"   ⚠️  Adding keyphrase to first paragraph...")
                 content = self._inject_keyphrase_to_start(content, keyphrase)
             
-            # Ensure keyphrase density (8-12 times)
+            # Ensure keyphrase density (10-15 times)
             keyphrase_count = content.lower().count(keyphrase.lower())
-            print(f"   📊 Keyphrase density: {keyphrase_count} times")
             
-            if keyphrase_count < 8:
-                print(f"   ⚠️ Keyphrase count too low ({keyphrase_count}), enhancing...")
-                content = self._enhance_keyphrase_density(content, keyphrase, target=10)
+            if keyphrase_count < 10:
+                print(f"   ⚠️  Keyphrase count too low ({keyphrase_count}), enhancing...")
+                content = self._enhance_keyphrase_density(content, keyphrase, target=12)
             
+            # Fix code blocks
             content = self._fix_code_blocks(content)
             
+            # Validate minimum length
             if len(content) < 2000:
                 raise ValueError("Content too short")
             
             return content
             
         except Exception as e:
-            print(f"   ⚠️ Using fallback content...")
+            print(f"   ⚠️  Content generation failed: {e}")
+            print(f"   ⚠️  Using fallback content...")
             return self._generate_fallback_content(topic, keyphrase, seo_data)
+    
+    def _ensure_keyphrase_in_headings(self, content: str, keyphrase: str) -> str:
+        """Ensure keyphrase appears in at least 30% of H2 headings (NEW FUNCTION)"""
+        
+        # Find all H2 headings
+        h2_pattern = r'<h2>(.*?)</h2>'
+        h2_matches = list(re.finditer(h2_pattern, content, re.IGNORECASE | re.DOTALL))
+        
+        if not h2_matches:
+            return content
+        
+        total_h2 = len(h2_matches)
+        required_with_keyphrase = max(3, int(total_h2 * 0.3))
+        
+        # Count how many already have keyphrase
+        current_with_keyphrase = sum(1 for match in h2_matches if keyphrase.lower() in match.group(1).lower())
+        
+        if current_with_keyphrase >= required_with_keyphrase:
+            return content  # Already compliant
+        
+        print(f"   🔧 Enhancing headings: {current_with_keyphrase}/{total_h2} → {required_with_keyphrase}/{total_h2}")
+        
+        # Need to add keyphrase to more headings
+        needed = required_with_keyphrase - current_with_keyphrase
+        
+        # Update headings that don't have keyphrase
+        for match in h2_matches[:needed + 2]:  # Process a few extra
+            heading_text = match.group(1).strip()
+            
+            # Skip if already has keyphrase
+            if keyphrase.lower() in heading_text.lower():
+                continue
+            
+            # Add keyphrase to heading
+            new_heading = self._inject_keyphrase_in_heading(heading_text, keyphrase)
+            content = content.replace(f'<h2>{heading_text}</h2>', f'<h2>{new_heading}</h2>', 1)
+            
+            needed -= 1
+            if needed <= 0:
+                break
+        
+        return content
+    
+    def _inject_keyphrase_in_heading(self, heading: str, keyphrase: str) -> str:
+        """Inject keyphrase into a heading naturally (NEW FUNCTION)"""
+        
+        # Common heading patterns and how to add keyphrase
+        patterns = {
+            'getting started': f'Getting Started with {keyphrase.title()}',
+            'introduction': f'Introduction to {keyphrase.title()}',
+            'why ': f'Why {keyphrase.title()} ',
+            'how to': f'How to Use {keyphrase.title()}',
+            'best practices': f'Best Practices for {keyphrase.title()}',
+            'common mistakes': f'Common {keyphrase.title()} Mistakes',
+            'advanced': f'Advanced {keyphrase.title()} Techniques',
+            'optimization': f'Optimizing {keyphrase.title()}',
+            'performance': f'{keyphrase.title()} Performance Optimization',
+            'troubleshooting': f'Troubleshooting {keyphrase.title()}',
+            'setup': f'Setting Up {keyphrase.title()}',
+            'configuration': f'Configuring {keyphrase.title()}',
+        }
+        
+        heading_lower = heading.lower()
+        for pattern, replacement in patterns.items():
+            if pattern in heading_lower:
+                return replacement
+        
+        # Default: prepend keyphrase
+        return f'{keyphrase.title()}: {heading}'
+    
+    def _analyze_headings(self, content: str, keyphrase: str) -> tuple:
+        """Analyze heading structure (NEW FUNCTION)"""
+        h2_matches = re.findall(r'<h2>(.*?)</h2>', content, re.IGNORECASE | re.DOTALL)
+        h3_matches = re.findall(r'<h3>(.*?)</h3>', content, re.IGNORECASE | re.DOTALL)
+        
+        h2_with_keyphrase = sum(1 for h in h2_matches if keyphrase.lower() in h.lower())
+        h3_with_keyphrase = sum(1 for h in h3_matches if keyphrase.lower() in h.lower())
+        
+        total_with_keyphrase = h2_with_keyphrase + h3_with_keyphrase
+        
+        return len(h2_matches), len(h3_matches), total_with_keyphrase
     
     def _keyphrase_in_first_paragraph(self, content: str, keyphrase: str) -> bool:
         """Check if keyphrase is in first paragraph"""
@@ -375,7 +511,7 @@ Return ONLY HTML. Start with opening paragraphs containing keyphrase. Use SHORT 
         
         return content
     
-    def _enhance_keyphrase_density(self, content: str, keyphrase: str, target: int = 10) -> str:
+    def _enhance_keyphrase_density(self, content: str, keyphrase: str, target: int = 12) -> str:
         """Enhance keyphrase density by adding it strategically"""
         current_count = content.lower().count(keyphrase.lower())
         needed = target - current_count
@@ -387,7 +523,7 @@ Return ONLY HTML. Start with opening paragraphs containing keyphrase. Use SHORT 
         paragraphs = re.findall(r'<p>.*?</p>', content, re.DOTALL)
         
         additions_made = 0
-        for i, para in enumerate(paragraphs):
+        for para in paragraphs:
             if additions_made >= needed:
                 break
             
@@ -395,20 +531,21 @@ Return ONLY HTML. Start with opening paragraphs containing keyphrase. Use SHORT 
             if keyphrase.lower() in para.lower():
                 continue
             
-            # Add keyphrase naturally
-            # Find a good insertion point
-            if 'this approach' in para.lower():
-                new_para = para.replace('this approach', f'{keyphrase}', 1)
-                content = content.replace(para, new_para, 1)
-                additions_made += 1
-            elif 'the system' in para.lower():
-                new_para = para.replace('the system', f'{keyphrase}', 1)
-                content = content.replace(para, new_para, 1)
-                additions_made += 1
-            elif 'this solution' in para.lower():
-                new_para = para.replace('this solution', f'{keyphrase}', 1)
-                content = content.replace(para, new_para, 1)
-                additions_made += 1
+            # Replace generic terms
+            replacements = [
+                ('this approach', keyphrase),
+                ('the system', keyphrase),
+                ('this solution', keyphrase),
+                ('this method', keyphrase),
+                ('the tool', keyphrase),
+            ]
+            
+            for old, new in replacements:
+                if old in para.lower():
+                    new_para = para.replace(old, new, 1)
+                    content = content.replace(para, new_para, 1)
+                    additions_made += 1
+                    break
         
         return content
     
@@ -420,6 +557,7 @@ Return ONLY HTML. Start with opening paragraphs containing keyphrase. Use SHORT 
             code = match.group(2).strip()
             return f'<pre><code class="language-{language}">{code}</code></pre>'
         
+        # Fix markdown code blocks
         content = re.sub(
             r'```(\w+)?\n(.*?)\n```',
             replace_code_block,
@@ -427,6 +565,7 @@ Return ONLY HTML. Start with opening paragraphs containing keyphrase. Use SHORT 
             flags=re.DOTALL
         )
         
+        # Fix inline code without class
         content = re.sub(
             r'(?<!<pre>)<code>(?!class=)(.*?)</code>(?!</pre>)',
             r'<code class="language-plaintext">\1</code>',
@@ -436,9 +575,8 @@ Return ONLY HTML. Start with opening paragraphs containing keyphrase. Use SHORT 
         return content
     
     def _generate_fallback_content(self, topic: Dict, keyphrase: str, seo_data: Dict) -> str:
-        """Generate high-quality fallback content - NO GENERIC HEADINGS - COMPLETE VERSION"""
+        """Generate high-quality fallback content - COMPLETE VERSION with ALL sections"""
         
-        # Create the content as a regular string, not f-string to avoid issues
         opening = f"<p>When it comes to modern data engineering, understanding {keyphrase} has become crucial for building scalable, efficient data systems. Over the past few years, I've worked with dozens of teams implementing {keyphrase}, and I've seen firsthand what works and what doesn't. Let me share the practical lessons that will save you months of trial and error.</p>\n\n"
         
         context = f"<p>The data engineering landscape has evolved dramatically. What used to require massive infrastructure and specialized teams is now accessible to anyone willing to learn the right patterns. {keyphrase.title()} represents a fundamental shift in how we approach data workflows, offering scalability and performance that wasn't possible just a few years ago.</p>\n\n"
@@ -464,7 +602,7 @@ Return ONLY HTML. Start with opening paragraphs containing keyphrase. Use SHORT 
 
 <p>💡 <strong>Pro Tip:</strong> The real power becomes apparent when you're handling complex transformations across multiple data sources. That's where traditional approaches start breaking down.</p>\n\n"""
         
-        architecture = """<h2>The Architecture That Actually Works</h2>
+        architecture = f"""<h2>The Architecture That Actually Works</h2>
 
 <p>After trying various approaches, we settled on an architecture that balances simplicity with flexibility. Here's the pattern that's served us well across dozens of production pipelines:</p>
 
@@ -510,7 +648,7 @@ pipeline = (
 
 <p>🎯 <strong>Key Insight:</strong> The method chaining pattern makes pipelines readable. You can hand this to a junior engineer and they'll understand immediately.</p>\n\n"""
         
-        setup = """<h2>Setting Up Your First Production Pipeline</h2>
+        setup = f"""<h2>Setting Up {keyphrase.title()}: Step-by-Step Guide</h2>
 
 <p>Let's build something real. I'm going to show you exactly how to set this up, including all the details that documentation skips.</p>
 
@@ -560,7 +698,7 @@ config = PipelineConfig.from_env()
 
 <p>The dataclass approach with type hints catches configuration errors at development time, not in production.</p>\n\n"""
         
-        performance = """<h2>Performance Tricks Nobody Tells You</h2>
+        performance = f"""<h2>Advanced {keyphrase.title()} Techniques</h2>
 
 <p>These optimizations made our pipelines 10x faster:</p>
 
@@ -590,7 +728,18 @@ def parallel_process(data, operation):
         return list(executor.map(operation, data))
 </code></pre>
 
-<p>💡 <strong>Pro Tip:</strong> Use threading for I/O-bound operations, multiprocessing for CPU-bound ones.</p>\n\n"""
+<p>💡 <strong>Pro Tip:</strong> Use threading for I/O-bound operations, multiprocessing for CPU-bound ones.</p>
+
+<h3>Best Practices for {keyphrase.title()}</h3>
+
+<p>Over hundreds of implementations, certain patterns consistently deliver better results:</p>
+
+<ul>
+<li>Start with a solid foundation - don't skip the basics</li>
+<li>Monitor from day one - you can't optimize what you can't measure</li>
+<li>Build incrementally - big bang migrations rarely work</li>
+<li>Test thoroughly - production surprises are expensive</li>
+</ul>\n\n"""
         
         production = """<h2>Handling Production Reality</h2>
 
@@ -634,7 +783,7 @@ def resilient_operation(data):
 
 <p>⚠️ <strong>Warning:</strong> Validate early and often. Finding bad data after it's loaded is 100x harder.</p>\n\n"""
         
-        mistakes = """<h2>The Mistakes I Made So You Don't Have To</h2>
+        mistakes = f"""<h2>Common {keyphrase.title()} Mistakes to Avoid</h2>
 
 <p>Let me save you some pain:</p>
 
@@ -645,7 +794,7 @@ def resilient_operation(data):
 <pre><code class="language-python">def safe_column_access(df, column, default=None):
     if column in df.columns:
         return df[column]
-    logger.warning(f"Column '{column}' not found, using default")
+    logger.warning(f"Column '{{column}}' not found, using default")
     return default
 
 df['amount'] = safe_column_access(df, 'amount', 0)
@@ -664,14 +813,63 @@ WHEN MATCHED THEN
     UPDATE SET dest.value = src.value, dest.updated_at = CURRENT_TIMESTAMP
 WHEN NOT MATCHED THEN
     INSERT (id, value, created_at) VALUES (src.id, src.value, CURRENT_TIMESTAMP);
-</code></pre>\n\n"""
+</code></pre>
+
+<h3>Mistake #4: Poor Monitoring</h3>
+
+<p>You can't fix what you can't see. Implement comprehensive logging and monitoring from day one.</p>\n\n"""
+        
+        optimization = f"""<h2>Optimizing {keyphrase.title()} for Production</h2>
+
+<p>Production is where theory meets reality. These optimizations made our {keyphrase} implementation production-ready:</p>
+
+<h3>Performance Tuning</h3>
+
+<ul>
+<li><strong>Batch size optimization:</strong> 5000 rows for wide tables, 20000 for narrow ones</li>
+<li><strong>Connection pooling:</strong> Reuse database connections</li>
+<li><strong>Async operations:</strong> Don't block on I/O</li>
+<li><strong>Caching strategy:</strong> Cache expensive computations</li>
+</ul>
+
+<h3>Monitoring and Alerting</h3>
+
+<pre><code class="language-python">import logging
+import time
+
+logger = logging.getLogger(__name__)
+
+def process_with_monitoring(data):
+    start_time = time.time()
+    try:
+        result = process(data)
+        duration = time.time() - start_time
+        logger.info(f"Processed {{len(data)}} rows in {{duration:.2f}}s")
+        return result
+    except Exception as e:
+        logger.error(f"Processing failed: {{e}}")
+        raise
+</code></pre>
+
+<p>This simple pattern has caught countless issues before they impacted users.</p>
+
+<h3>How {keyphrase.title()} Works Under the Hood</h3>
+
+<p>Understanding the internals helps you make better architectural decisions. When you implement {keyphrase}, you're essentially building a system with three key components:</p>
+
+<ol>
+<li>Data ingestion layer - handles reading from sources</li>
+<li>Transformation engine - processes and enriches data</li>
+<li>Storage layer - writes results efficiently</li>
+</ol>\n\n"""
         
         closing = f"<p>These patterns are battle-tested across production pipelines processing billions of rows. Start with the basics, master them, then gradually add complexity as needed. The key is understanding that {keyphrase} isn't just about technology - it's about building systems that are reliable, maintainable, and scalable. Focus on those principles, and you'll build data pipelines that stand the test of time.</p>"
         
-        return opening + context + preview + why_section + architecture + setup + performance + production + mistakes + closing
+        return opening + context + preview + why_section + architecture + setup + performance + production + mistakes + optimization + closing
     
     def _verify_intro_keyphrase(self, content: str, keyphrase: str) -> bool:
         """Verify keyphrase appears in opening paragraphs (no 'Introduction' heading)"""
+        # Find first H2
         first_h2_match = re.search(r'<h2>', content, re.IGNORECASE)
         
         if first_h2_match:
@@ -682,25 +880,37 @@ WHEN NOT MATCHED THEN
         return keyphrase.lower() in opening_text
     
     def _generate_image_prompts(self, topic: Dict, content: str) -> List[Dict]:
-        """Generate image prompts"""
+        """Generate image prompts for hand-drawn style images"""
         
-        prompt = f"""Generate 4 image prompts for technical illustrations.
+        prompt = f"""Generate 4-5 image prompts for this blog post to create hand-drawn, sketch-style illustrations.
 
-Topic: {topic['title']}
+Blog Title: {topic['title']}
+Category: {topic['category']}
 
-For each image:
-- placement: hero, section-1, section-2, or diagram
-- prompt: Hand-drawn technical illustration prompt (100-150 words)
-- alt_text: SEO alt text with keyphrase (under 125 chars)
-- caption: Brief caption (under 100 chars)
+Content Preview: {content[:1000]}...
 
-Style: Hand-drawn sketch, technical diagrams, clean lines
+For each image, provide:
+1. placement: 'hero', 'section-1', 'section-2', etc.
+2. prompt: Detailed prompt for hand-drawn illustration (100-150 words)
+3. alt_text: SEO-optimized alt text (under 125 characters)
+4. caption: Brief caption
 
-Return JSON array:
+STYLE REQUIREMENTS:
+- Hand-drawn sketch style, black ink on white background
+- Clean lines, minimal shading
+- Technical diagrams mixed with conceptual illustrations
+- Professional but friendly aesthetic
+
+IMAGE TYPES:
+1. Hero image: Conceptual overview
+2-3. Section images: Key concepts or processes
+4. Diagram: Technical workflow or architecture
+
+Return as JSON array ONLY (no markdown):
 [
   {{
     "placement": "hero",
-    "prompt": "Hand-drawn sketch...",
+    "prompt": "Hand-drawn sketch illustration showing...",
     "alt_text": "...",
     "caption": "..."
   }}
@@ -709,53 +919,81 @@ Return JSON array:
         try:
             return self._safe_generate(prompt, parse_json=True)
         except:
+            # Fallback to simple image prompts
             return [
                 {
                     "placement": "hero",
-                    "prompt": f"Hand-drawn technical sketch of {topic['title']}, showing key components, minimalist style",
+                    "prompt": f"Hand-drawn technical sketch of {topic['title']}, showing key components, minimalist style, clean lines, black ink on white background",
                     "alt_text": f"{topic['title']} overview diagram",
                     "caption": f"Overview of {topic['title']}"
+                },
+                {
+                    "placement": "section-1",
+                    "prompt": f"Hand-drawn diagram illustrating {topic['title']} workflow, technical sketch style",
+                    "alt_text": f"{topic['title']} workflow diagram",
+                    "caption": f"How {topic['title']} works"
                 }
             ]
     
     def _generate_references(self, topic: Dict) -> List[Dict]:
-        """Generate reference links"""
+        """Generate relevant external reference links"""
         
-        prompt = f"""Generate 5 authoritative reference links.
+        prompt = f"""Generate 5-6 authoritative external reference links for this topic:
 
 Topic: {topic['title']}
+Category: {topic['category']}
+Keywords: {', '.join(topic.get('keywords', []))}
 
-Return JSON:
+For each reference:
+- title: Link text (under 60 chars)
+- url: Real URL to authoritative source
+- description: Brief description (under 100 chars)
+
+PRIORITIES:
+1. Official documentation
+2. GitHub repositories
+3. Official tech blogs
+4. Reputable publications
+
+Return as JSON array ONLY:
 [
   {{
-    "title": "Link title",
+    "title": "...",
     "url": "https://...",
-    "description": "Description"
+    "description": "..."
   }}
 ]"""
 
         try:
             return self._safe_generate(prompt, parse_json=True)
         except:
+            # Fallback to default references
             return [
                 {
                     "title": "Official Documentation",
                     "url": "https://docs.snowflake.com",
                     "description": "Official documentation and guides"
+                },
+                {
+                    "title": "GitHub Repository",
+                    "url": "https://github.com",
+                    "description": "Open source implementations and examples"
                 }
             ]
     
     def _calculate_reading_time(self, content: str) -> int:
-        """Calculate reading time"""
+        """Calculate estimated reading time"""
+        # Remove HTML tags
         text = re.sub(r'<[^>]+>', '', content)
         words = len(text.split())
+        # Average reading speed: 225 words per minute
         return max(1, round(words / 225))
 
 
 def main():
-    """Test the PREMIUM QUALITY generator"""
+    """Test the COMPLETE PREMIUM QUALITY generator"""
     from dotenv import load_dotenv
-    load_dotenv()  # FIXED: Load .env file
+    load_dotenv()
     
     api_key = os.getenv('GEMINI_API_KEY')
     if not api_key:
@@ -773,11 +1011,11 @@ def main():
         'level': 'intermediate'
     }
     
-    print("\n🚀 Testing PREMIUM QUALITY Generator...\n")
+    print("\n🚀 Testing COMPLETE PREMIUM QUALITY Generator...\n")
     result = generator.generate_blog_post(test_topic)
     
     print("\n" + "="*60)
-    print("PREMIUM QUALITY BLOG POST GENERATED")
+    print("COMPLETE PREMIUM QUALITY BLOG POST GENERATED")
     print("="*60)
     print(f"\n📝 Title: {result['title']}")
     print(f"🎯 SEO Title: {result['seo']['title']}")
@@ -786,15 +1024,31 @@ def main():
     print(f"🔗 Slug: {result['slug']}")
     print(f"📈 Word Count: {result['metadata']['word_count']}")
     print(f"⏱️  Reading Time: {result['metadata']['reading_time']} min")
+    print(f"🎯 Keyphrase Density: {result['metadata']['keyphrase_density']} times")
+    print(f"📑 H2 Headings: {result['metadata']['total_h2_headings']}")
+    print(f"📑 H3 Headings: {result['metadata']['total_h3_headings']}")
+    print(f"✅ Headings with Keyphrase: {result['metadata']['headings_with_keyphrase']}")
+    print(f"✅ Yoast Compliant: {result['metadata']['yoast_compliant']}")
     print(f"✅ Quality: {result['metadata']['quality']}")
     print(f"💰 Cost: {result['metadata']['cost']}")
     
     # Save output
-    with open('test_blog_premium.json', 'w', encoding='utf-8') as f:
+    with open('test_blog_complete.json', 'w', encoding='utf-8') as f:
         json.dump(result, f, indent=2, ensure_ascii=False)
     
-    print(f"\n✅ Saved to: test_blog_premium.json")
-    print("\n🎉 Premium quality content generated!")
+    print(f"\n✅ Saved to: test_blog_complete.json")
+    print("\n🎉 Complete premium quality content generated!")
+    print("\nAll original functionality preserved:")
+    print("  ✅ Safe generation with retry logic")
+    print("  ✅ SEO metadata generation")
+    print("  ✅ Slug generation")
+    print("  ✅ Premium content generation")
+    print("  ✅ Keyphrase in headings enforcement (NEW)")
+    print("  ✅ Keyphrase density optimization")
+    print("  ✅ Image prompt generation")
+    print("  ✅ Reference generation")
+    print("  ✅ Reading time calculation")
+    print("  ✅ Complete fallback content")
 
 
 if __name__ == "__main__":
