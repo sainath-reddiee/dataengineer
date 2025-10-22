@@ -36,7 +36,7 @@ on:
         default: 'snowflake'
       
       topic1:
-        description: 'Topic 1 (manual mode)'
+        description: 'Topic 1 (manual mode) - Use quotes for multi-word topics'
         required: false
         default: ''
       
@@ -96,20 +96,19 @@ jobs:
           WORDPRESS_USER: ${{ secrets.WORDPRESS_USER }}
           WORDPRESS_APP_PASSWORD: ${{ secrets.WORDPRESS_APP_PASSWORD }}
           USE_IMAGES: ${{ github.event.inputs.enable_images || 'false' }}
+          TOPIC1: ${{ github.event.inputs.topic1 }}
         run: |
           echo "✍️  MANUAL mode"
-          TOPICS=""
-          if [ -n "${{ github.event.inputs.topic1 }}" ]; then
-            TOPICS="\"${{ github.event.inputs.topic1 }}\""
-          fi
+          echo "Topic: $TOPIC1"
           
-          if [ -z "$TOPICS" ]; then
-            echo "❌ No topics provided!"
+          if [ -z "$TOPIC1" ]; then
+            echo "❌ No topic provided!"
             exit 1
           fi
           
+          # Use environment variable to avoid shell word splitting
           python blog-automation/main_gemini.py \
-            --topics $TOPICS \
+            --topics "$TOPIC1" \
             --status ${{ github.event.inputs.status || 'draft' }}
       
       - name: Upload results
