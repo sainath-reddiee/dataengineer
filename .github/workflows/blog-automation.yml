@@ -1,4 +1,4 @@
-name: Blog Automation (Manual Only)
+name: Blog Automation (Manual + Auto)
 
 on:
   # REMOVED automatic schedule - only manual trigger now
