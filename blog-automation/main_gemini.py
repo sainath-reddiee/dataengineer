@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 # Import our FREE modules
 from trend_monitor_realtime import EnhancedTrendMonitor
-from blog_generator_free import BlogGeneratorFree
+from blog_generator_free import BlogGeneratorTavily
 from wordpress_publisher import WordPressPublisher
 
 # Optional: Import free image generator
@@ -36,7 +36,7 @@ class BlogAutomationPipelineGemini:
         
         # Initialize components - ALL using Gemini!
         self.trend_monitor = EnhancedTrendMonitor(config['gemini_api_key'])
-        self.blog_generator = BlogGeneratorFree(config['gemini_api_key'])
+        self.blog_generator = BlogGeneratorTavily(config['gemini_api_key'])
         
         # WordPress publisher
         self.wordpress_publisher = WordPressPublisher(
