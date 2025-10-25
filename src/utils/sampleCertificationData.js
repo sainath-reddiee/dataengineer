@@ -26,6 +26,7 @@ export const sampleResourceTypes = [
   { id: 3, name: 'Study Guide', slug: 'study-guide', description: 'Comprehensive study materials', count: 8 },
   { id: 4, name: 'Exam Tips', slug: 'exam-tips', description: 'Expert exam-taking strategies', count: 10 },
   { id: 5, name: 'Video Course', slug: 'video-course', description: 'Video tutorials', count: 5 },
+  { id: 6, name: 'Flashcards', slug: 'flashcards', description: 'Interactive study cards', count: 8 },
 ];
 
 export const sampleCertifications = [
