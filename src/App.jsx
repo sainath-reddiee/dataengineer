@@ -126,6 +126,7 @@ function App() {
               <CertificationDetail />
             </Suspense>
           } />
+          <Route path="/certifications/:slug/flashcards" element={<FlashcardPage />} />
           <Route path="certifications/resource/:resourceTypeSlug" element={
             <Suspense fallback={<LoadingFallback text="Loading Resources..." />}>
               <ResourceTypePage />
