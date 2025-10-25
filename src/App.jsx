@@ -1,10 +1,7 @@
-// src/App.jsx - FINAL VERSION with relative imports
+// src/App.jsx - FINAL VERSION (without MainLayout wrapper)
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-
-// Layout
-import MainLayout from './components/layout/MainLayout';
 
 // Pages
 import Home from './pages/Home';
@@ -35,32 +32,29 @@ function App() {
     <HelmetProvider>
       <Router>
         <Routes>
-          {/* Main Layout Routes */}
-          <Route element={<MainLayout />}>
-            {/* Home */}
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
+          {/* Home */}
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
 
-            {/* Articles */}
-            <Route path="/articles" element={<ArticleList />} />
-            <Route path="/articles/:slug" element={<ArticleDetail />} />
-            <Route path="/category/:slug" element={<CategoryPage />} />
-            <Route path="/tag/:slug" element={<TagPage />} />
+          {/* Articles */}
+          <Route path="/articles" element={<ArticleList />} />
+          <Route path="/articles/:slug" element={<ArticleDetail />} />
+          <Route path="/category/:slug" element={<CategoryPage />} />
+          <Route path="/tag/:slug" element={<TagPage />} />
 
-            {/* Certifications */}
-            <Route path="/certifications" element={<CertificationHub />} />
-            <Route path="/certifications/:slug" element={<CertificationDetail />} />
-            <Route path="/certifications/:slug/flashcards" element={<FlashcardPage />} />
-            <Route path="/resource-type/:resourceTypeSlug" element={<ResourceTypePage />} />
+          {/* Certifications */}
+          <Route path="/certifications" element={<CertificationHub />} />
+          <Route path="/certifications/:slug" element={<CertificationDetail />} />
+          <Route path="/certifications/:slug/flashcards" element={<FlashcardPage />} />
+          <Route path="/resource-type/:resourceTypeSlug" element={<ResourceTypePage />} />
 
-            {/* Tools & Resources */}
-            <Route path="/tools" element={<Tools />} />
-            <Route path="/resources" element={<Resources />} />
+          {/* Tools & Resources */}
+          <Route path="/tools" element={<Tools />} />
+          <Route path="/resources" element={<Resources />} />
 
-            {/* 404 */}
-            <Route path="*" element={<NotFound />} />
-          </Route>
+          {/* 404 */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </HelmetProvider>
