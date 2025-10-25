@@ -26,6 +26,7 @@ const TagsArchivePage = lazy(() => import('./pages/TagsArchivePage'));
 const CertificationHub = lazy(() => import('./pages/certifications/CertificationHub'));
 const CertificationDetail = lazy(() => import('./pages/certifications/CertificationDetail'));
 const ResourceTypePage = lazy(() => import('./pages/certifications/ResourceTypePage'));
+const FlashcardPage = lazy(() => import('./pages/certifications/FlashcardPage'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
