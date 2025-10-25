@@ -13,15 +13,16 @@ const CertificationCard = ({ certification }) => {
 
   // Resource type color mapping
   const getResourceTypeColor = (typeName) => {
-    const colors = {
-      'Cheat Sheet': 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-      'Practice Questions': 'bg-green-500/20 text-green-300 border-green-500/30',
-      'Study Guide': 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-      'Exam Tips': 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
-      'Video Course': 'bg-red-500/20 text-red-300 border-red-500/30',
-    };
-    return colors[typeName] || 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+  const colors = {
+    'Cheat Sheet': 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+    'Practice Questions': 'bg-green-500/20 text-green-300 border-green-500/30',
+    'Study Guide': 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+    'Exam Tips': 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
+    'Video Course': 'bg-red-500/20 text-red-300 border-red-500/30',
+    'Flashcards': 'bg-pink-500/20 text-pink-300 border-pink-500/30', // ADD THIS
   };
+  return colors[typeName] || 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+};
 
   return (
     <motion.div 
