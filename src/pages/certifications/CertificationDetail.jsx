@@ -1,10 +1,10 @@
-// src/pages/certifications/CertificationDetail.jsx - FINAL VERSION
+// src/pages/certifications/CertificationDetail.jsx - FINAL VERSION with relative imports
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useCertification } from '@/hooks/useCertifications';
-import MetaTags from '@/components/SEO/MetaTags';
+import { useCertification } from '../../hooks/useCertifications';
+import MetaTags from '../../components/SEO/MetaTags';
 import { Loader, ArrowLeft, Download, Star, BookOpen, Award, Clock, DollarSign, FileQuestion, Target } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '../../components/ui/button';
 
 const CertificationDetail = () => {
   const { slug } = useParams();
