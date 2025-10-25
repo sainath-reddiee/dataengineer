@@ -1,41 +1,45 @@
 #!/usr/bin/env python3
 """
-WordPress Publisher with FULL YOAST SEO Support
-Fixes: Meta description, focus keyphrase, SEO title, slug - all saved correctly
+WordPress Publisher - COMPLETE VERSION - NO MISSING CODE
+Handles both HTML content and Gutenberg blocks
+Includes Yoast SEO support
 """
 
 import os
 import requests
 import base64
-from typing import Dict, List
+from typing import Dict, List, Optional
 import json
 from datetime import datetime
 import traceback
 import hashlib
 import time
-import uuid
+import re
 
 class WordPressPublisher:
     def __init__(self, site_url: str, username: str, app_password: str):
-        """Initialize WordPress REST API publisher with Yoast SEO support"""
+        """
+        Initialize WordPress publisher
+        
+        Args:
+            site_url: WordPress site URL (e.g., https://yourdomain.com)
+            username: WordPress username
+            app_password: WordPress Application Password (not regular password!)
+        """
         self.site_url = site_url.rstrip('/')
         self.api_base = f"{self.site_url}/wp-json/wp/v2"
         
+        # Create authentication token
         credentials = f"{username}:{app_password}"
         token = base64.b64encode(credentials.encode()).decode('utf-8')
-        
         self.headers = {
             'Authorization': f'Basic {token}',
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
+            'Content-Type': 'application/json'
         }
         
-        self.session = requests.Session()
-        self.session.headers.update(self.headers)
-        
-        print(f"✅ WordPress Publisher with Yoast SEO Support")
+        print(f"✅ WordPress Publisher Initialized")
         print(f"   Site: {self.site_url}")
+        print(f"   API Base: {self.api_base}")
     
     def publish_blog_post(
         self, 
@@ -43,230 +47,192 @@ class WordPressPublisher:
         image_files: List[Dict],
         status: str = 'draft'
     ) -> Dict:
-        """Publish blog post with FULL Yoast SEO metadata"""
+        """
+        Publish complete blog post with images
+        
+        Args:
+            blog_data: Blog post data from BlogGenerator (supports both 'content' and 'content_blocks')
+            image_files: List of generated images with local paths
+            status: 'draft' or 'publish'
+        
+        Returns:
+            Dictionary with post URL and IDs
+        """
         print(f"\n{'='*70}")
-        print(f"📤 PUBLISHING YOAST SEO COMPLIANT POST")
+        print(f"📤 PUBLISHING BLOG POST")
         print(f"{'='*70}")
         print(f"Title: {blog_data['title']}")
-        print(f"Focus Keyphrase: {blog_data['seo']['focus_keyphrase']}")
-        print(f"SEO Title: {blog_data['seo']['title']}")
-        print(f"Slug: {blog_data['slug']}")
         print(f"Status: {status}")
-        print(f"{'='*70}\n")
         
         try:
-            # Step 1: Upload images
-            print("📷 STEP 1: Uploading images...")
+            # Step 1: Upload images to WordPress media library
+            print("\n📷 STEP 1: Uploading images...")
             uploaded_images = self._upload_images(image_files)
-            print(f"   ✅ {len(uploaded_images)}/{len(image_files)} uploaded\n")
+            print(f"   ✅ Uploaded: {len(uploaded_images)}/{len(image_files)} images")
             
-            # Step 2: Get category
-            print("📁 STEP 2: Setting up category...")
-            category_id = self._get_or_create_category(
-                blog_data.get('category', 'Uncategorized')
-            )
-            print()
+            # Step 2: Get or create category
+            print("\n📁 STEP 2: Setting up category...")
+            category_id = self._get_or_create_category(blog_data.get('category', 'Uncategorized'))
             
-            # Step 3: Prepare content
-            print("📝 STEP 3: Preparing content...")
+            # Step 3: Prepare content (HANDLES BOTH FORMATS)
+            print("\n📝 STEP 3: Preparing content...")
+            content_html = self._get_content_html(blog_data)
+            
+            # Insert images into content
             content_with_images = self._insert_images_into_content(
-                blog_data['content'],
+                content_html,
                 uploaded_images
             )
-            references_html = self._build_references_section(
-                blog_data.get('references', [])
-            )
+            
+            # Build references section
+            references_html = self._build_references_section(blog_data.get('references', []))
+            
+            # Combine everything
             full_content = content_with_images + references_html
-            print(f"   Content: {len(full_content)} chars\n")
+            print(f"   ✅ Content ready: {len(full_content)} characters")
             
-            # Step 4: Create post with ALL metadata
-            print("✍️  STEP 4: Creating post with Yoast SEO metadata...")
-            print("   " + "-"*66)
-            
-            # Build Yoast SEO meta fields
-            yoast_meta = self._build_yoast_meta(blog_data['seo'])
-            
-            # Primary post data
+            # Step 4: Create post
+            print("\n✍️  STEP 4: Creating WordPress post...")
             post_data = {
                 'title': blog_data['title'],
                 'content': full_content,
-                'slug': blog_data['slug'],  # SEO-optimized slug
                 'status': status,
+                'slug': blog_data.get('slug', ''),
                 'categories': [category_id],
-                'comment_status': 'open',
-                'ping_status': 'open',
-                'meta': yoast_meta  # CRITICAL: Yoast SEO fields
+                'meta': self._build_yoast_meta(blog_data.get('seo', {})),
+                'featured_media': uploaded_images[0]['id'] if uploaded_images and 'id' in uploaded_images[0] else None
             }
             
-            # Add featured image if available
-            if uploaded_images and 'id' in uploaded_images[0]:
-                post_data['featured_media'] = uploaded_images[0]['id']
-            
-            print(f"   📊 Yoast SEO fields to save:")
-            print(f"      - Focus Keyphrase: {blog_data['seo']['focus_keyphrase']}")
-            print(f"      - SEO Title: {blog_data['seo']['title']}")
-            print(f"      - Meta Description: {blog_data['seo']['meta_description'][:50]}...")
-            print(f"      - Slug: {blog_data['slug']}")
-            
-            # Create post
-            print(f"\n   📤 Sending to WordPress...")
-            response = self.session.post(
+            response = requests.post(
                 f"{self.api_base}/posts",
+                headers=self.headers,
                 json=post_data,
                 timeout=30
             )
             
-            print(f"   📊 Response: {response.status_code}")
-            
-            if response.status_code not in [200, 201]:
-                error_msg = self._parse_error_response(response)
-                raise Exception(f"Failed to create post: {error_msg}")
-            
-            post_info = self._normalize_response(response.json())
-            
-            if not post_info or 'id' not in post_info:
-                raise Exception("Invalid response - no post ID")
-            
-            post_id = post_info['id']
-            print(f"   ✅ Post created with ID: {post_id}")
-            
-            # Step 5: CRITICAL - Verify and re-save Yoast fields
-            print(f"\n   🔍 STEP 5: Verifying Yoast SEO metadata...")
-            time.sleep(2)  # Allow WordPress to process
-            
-            # Update post again to ensure Yoast fields are saved
-            # Some WordPress setups require a second update for custom fields
-            update_data = {
-                'meta': yoast_meta
-            }
-            
-            update_response = self.session.post(
-                f"{self.api_base}/posts/{post_id}",
-                json=update_data,
-                timeout=30
-            )
-            
-            if update_response.status_code in [200, 201]:
-                print(f"   ✅ Yoast SEO metadata confirmed")
+            if response.status_code in [200, 201]:
+                post_info = response.json()
+                result = {
+                    'success': True,
+                    'post_id': post_info['id'],
+                    'post_url': post_info['link'],
+                    'edit_url': f"{self.site_url}/wp-admin/post.php?post={post_info['id']}&action=edit",
+                    'status': status,
+                    'images_uploaded': len(uploaded_images),
+                    'yoast_seo': blog_data.get('seo', {}),
+                    'published_at': datetime.now().isoformat()
+                }
+                
+                print(f"\n{'='*70}")
+                print(f"✅ POST PUBLISHED SUCCESSFULLY!")
+                print(f"{'='*70}")
+                print(f"Post ID: {result['post_id']}")
+                print(f"View: {result['post_url']}")
+                print(f"Edit: {result['edit_url']}")
+                
+                if blog_data.get('seo'):
+                    print(f"\n📊 Yoast SEO:")
+                    print(f"   Focus Keyphrase: {blog_data['seo'].get('focus_keyphrase', 'N/A')}")
+                    print(f"   SEO Title: {blog_data['seo'].get('title', 'N/A')}")
+                    print(f"   Meta Description: {blog_data['seo'].get('meta_description', 'N/A')[:60]}...")
+                
+                print(f"{'='*70}\n")
+                
+                return result
             else:
-                print(f"   ⚠️  Yoast update returned {update_response.status_code}")
-            
-            # Step 6: Final verification
-            print(f"\n   🔍 STEP 6: Final verification...")
-            time.sleep(1)
-            
-            verify_response = self.session.get(
-                f"{self.api_base}/posts/{post_id}?context=edit",
-                timeout=10
-            )
-            
-            if verify_response.status_code == 200:
-                verify_data = self._normalize_response(verify_response.json())
-                
-                # Check meta fields
-                saved_meta = verify_data.get('meta', {})
-                
-                print(f"      ✓ Title: {verify_data.get('title', {}).get('raw', '')[:50]}...")
-                print(f"      ✓ Slug: {verify_data.get('slug', 'N/A')}")
-                print(f"      ✓ Focus Keyphrase: {saved_meta.get('_yoast_wpseo_focuskw', 'NOT SAVED')}")
-                print(f"      ✓ SEO Title: {saved_meta.get('_yoast_wpseo_title', 'NOT SAVED')[:50]}...")
-                print(f"      ✓ Meta Desc: {saved_meta.get('_yoast_wpseo_metadesc', 'NOT SAVED')[:50]}...")
-                
-                # Check if Yoast fields were saved
-                yoast_saved = all([
-                    saved_meta.get('_yoast_wpseo_focuskw'),
-                    saved_meta.get('_yoast_wpseo_title'),
-                    saved_meta.get('_yoast_wpseo_metadesc')
-                ])
-                
-                if yoast_saved:
-                    print(f"\n      ✅ All Yoast SEO fields saved successfully!")
-                else:
-                    print(f"\n      ⚠️  Some Yoast fields may not have saved")
-                    print(f"         This may be due to Yoast SEO plugin not installed/active")
-            
-            print(f"\n   " + "-"*66)
-            
-            result = {
-                'success': True,
-                'post_id': post_id,
-                'post_url': post_info.get('link', f"{self.site_url}/?p={post_id}"),
-                'edit_url': f"{self.site_url}/wp-admin/post.php?post={post_id}&action=edit",
-                'status': status,
-                'images_uploaded': len(uploaded_images),
-                'yoast_seo': {
-                    'focus_keyphrase': blog_data['seo']['focus_keyphrase'],
-                    'seo_title': blog_data['seo']['title'],
-                    'meta_description': blog_data['seo']['meta_description'],
-                    'slug': blog_data['slug']
-                },
-                'published_at': datetime.now().isoformat()
-            }
-            
-            print(f"\n{'='*70}")
-            print(f"✅ POST PUBLISHED WITH YOAST SEO!")
-            print(f"{'='*70}")
-            print(f"Post ID: {result['post_id']}")
-            print(f"View: {result['post_url']}")
-            print(f"Edit: {result['edit_url']}")
-            print(f"\n📊 Yoast SEO Status:")
-            print(f"   ✓ Focus Keyphrase: {result['yoast_seo']['focus_keyphrase']}")
-            print(f"   ✓ SEO Title: {result['yoast_seo']['seo_title']}")
-            print(f"   ✓ Meta Description: {result['yoast_seo']['meta_description'][:60]}...")
-            print(f"   ✓ Slug: {result['yoast_seo']['slug']}")
-            print(f"{'='*70}")
-            
-            return result
-            
+                error_msg = f"Failed to create post: {response.status_code} - {response.text[:200]}"
+                print(f"❌ {error_msg}")
+                return {
+                    'success': False,
+                    'error': error_msg
+                }
+        
         except Exception as e:
-            print(f"\n❌ Error: {str(e)}")
+            error_msg = f"Error publishing post: {str(e)}"
+            print(f"❌ {error_msg}")
             traceback.print_exc()
             return {
                 'success': False,
-                'error': str(e)
+                'error': error_msg
             }
     
+    def _get_content_html(self, blog_data: Dict) -> str:
+        """
+        Get HTML content - handles BOTH formats:
+        1. Gutenberg blocks (from blog_generator_free.py with Tavily)
+        2. Direct HTML string (from older generators)
+        """
+        
+        # Format 1: Gutenberg blocks
+        if 'content_blocks' in blog_data:
+            print("   📦 Format: Gutenberg blocks")
+            return self._blocks_to_html(blog_data['content_blocks'])
+        
+        # Format 2: Direct HTML
+        elif 'content' in blog_data:
+            print("   📄 Format: HTML string")
+            return blog_data['content']
+        
+        else:
+            raise Exception("No content found! Expected 'content' or 'content_blocks' in blog_data")
+    
+    def _blocks_to_html(self, blocks: List[Dict]) -> str:
+        """
+        Convert Gutenberg blocks to clean HTML
+        
+        Args:
+            blocks: List of Gutenberg block dictionaries
+        
+        Returns:
+            Clean HTML string
+        """
+        html_parts = []
+        
+        for block in blocks:
+            block_name = block.get('blockName', '')
+            content = block.get('innerContent', [''])[0]
+            
+            # Skip empty blocks
+            if not content or not content.strip():
+                continue
+            
+            # Extract clean HTML from supported block types
+            if block_name in ['core/paragraph', 'core/heading', 'core/list', 'core/code', 'core/quote', 'core/image']:
+                html_parts.append(content)
+        
+        html = '\n\n'.join(html_parts)
+        print(f"   ✅ Converted {len(blocks)} blocks → {len(html)} characters HTML")
+        return html
+    
     def _build_yoast_meta(self, seo_data: Dict) -> Dict:
-        """Build Yoast SEO meta fields for WordPress API"""
+        """
+        Build Yoast SEO meta fields
+        
+        Args:
+            seo_data: SEO data dictionary with focus_keyphrase, title, meta_description
+        
+        Returns:
+            Dictionary of Yoast meta fields
+        """
+        if not seo_data:
+            return {}
+        
         return {
-            # Yoast SEO Primary Fields
-            '_yoast_wpseo_focuskw': seo_data['focus_keyphrase'],
-            '_yoast_wpseo_title': seo_data['title'],
-            '_yoast_wpseo_metadesc': seo_data['meta_description'],
-            
-            # Additional Yoast Fields
-            '_yoast_wpseo_linkdex': '0',  # SEO score (0 = not analyzed yet)
-            '_yoast_wpseo_content_score': '0',  # Readability score
-            '_yoast_wpseo_metakeywords': ', '.join(seo_data.get('secondary_keywords', [])),
-            
-            # OpenGraph (Social Media)
-            '_yoast_wpseo_opengraph-title': seo_data['title'],
-            '_yoast_wpseo_opengraph-description': seo_data['meta_description'],
-            
-            # Twitter Card
-            '_yoast_wpseo_twitter-title': seo_data['title'],
-            '_yoast_wpseo_twitter-description': seo_data['meta_description'],
-            
-            # Canonical URL (optional - WordPress sets this automatically)
-            # '_yoast_wpseo_canonical': '',
-            
-            # Meta robots (index/follow settings)
-            '_yoast_wpseo_meta-robots-noindex': '0',  # 0 = index, 1 = noindex
-            '_yoast_wpseo_meta-robots-nofollow': '0',  # 0 = follow, 1 = nofollow
+            '_yoast_wpseo_focuskw': seo_data.get('focus_keyphrase', ''),
+            '_yoast_wpseo_title': seo_data.get('title', ''),
+            '_yoast_wpseo_metadesc': seo_data.get('meta_description', ''),
         }
     
-    def _normalize_response(self, response_data):
-        """Normalize WordPress API response"""
-        if isinstance(response_data, list):
-            if len(response_data) > 0 and isinstance(response_data[0], dict):
-                return response_data[0]
-            return None
-        elif isinstance(response_data, dict):
-            return response_data
-        return None
-    
     def _upload_images(self, image_files: List[Dict]) -> List[Dict]:
-        """Upload images to WordPress media library"""
+        """
+        Upload images to WordPress media library
+        
+        Args:
+            image_files: List of image dictionaries with local_path
+        
+        Returns:
+            List of uploaded images with WordPress IDs and URLs
+        """
         uploaded = []
         
         for idx, img in enumerate(image_files, 1):
@@ -274,28 +240,33 @@ class WordPressPublisher:
                 continue
             
             try:
+                # Check if file exists
                 if not os.path.exists(img['local_path']):
+                    print(f"   ⚠️  Image {idx}: File not found at {img['local_path']}")
                     continue
                 
+                # Read image file
                 with open(img['local_path'], 'rb') as f:
                     image_data = f.read()
                 
-                file_size = len(image_data) / 1024
+                # Get filename and create unique name
                 file_ext = os.path.splitext(img['local_path'])[1]
                 file_hash = hashlib.md5(image_data).hexdigest()[:8]
                 timestamp = int(time.time())
                 placement = img.get('placement', 'img').replace('/', '_')
                 unique_filename = f"blog_{timestamp}_{placement}_{file_hash}{file_ext}"
                 
+                # Determine content type
                 content_type = 'image/jpeg' if file_ext.lower() in ['.jpg', '.jpeg'] else 'image/png'
                 
+                # Upload to WordPress
                 headers = {
                     'Authorization': self.headers['Authorization'],
                     'Content-Disposition': f'attachment; filename="{unique_filename}"',
-                    'Content-Type': content_type,
+                    'Content-Type': content_type
                 }
                 
-                response = self.session.post(
+                response = requests.post(
                     f"{self.api_base}/media",
                     headers=headers,
                     data=image_data,
@@ -303,79 +274,99 @@ class WordPressPublisher:
                 )
                 
                 if response.status_code in [200, 201]:
-                    media_info = self._normalize_response(response.json())
-                    
-                    if media_info and 'id' in media_info:
-                        uploaded.append({
-                            **img,
-                            'id': media_info['id'],
-                            'url': media_info.get('source_url', ''),
-                            'wp_uploaded': True
-                        })
-                        print(f"   ✅ Image {idx}: ID {media_info['id']} ({file_size:.1f}KB)")
+                    media_info = response.json()
+                    uploaded.append({
+                        **img,
+                        'id': media_info['id'],
+                        'url': media_info['source_url'],
+                        'wp_uploaded': True
+                    })
+                    file_size = len(image_data) / 1024
+                    print(f"   ✅ Image {idx}: ID {media_info['id']} ({file_size:.1f} KB)")
+                else:
+                    print(f"   ⚠️  Image {idx}: Upload failed - HTTP {response.status_code}")
                 
+                # Rate limiting
                 time.sleep(0.5)
-                
+            
             except Exception as e:
-                print(f"   ❌ Image {idx}: {str(e)[:60]}")
+                print(f"   ❌ Image {idx}: Error - {str(e)[:60]}")
         
         return uploaded
     
-    def _parse_error_response(self, response) -> str:
-        """Parse error response from WordPress"""
-        try:
-            error_data = response.json()
-            if isinstance(error_data, list) and len(error_data) > 0:
-                error_data = error_data[0]
-            if isinstance(error_data, dict):
-                return error_data.get('message', str(error_data)[:200])
-            return str(error_data)[:200]
-        except:
-            return response.text[:200]
-    
     def _get_or_create_category(self, category_name: str) -> int:
-        """Get existing category or create new one"""
+        """
+        Get category ID or create if doesn't exist
+        
+        Args:
+            category_name: Name of the category
+        
+        Returns:
+            Category ID (int)
+        """
         try:
-            response = self.session.get(
+            # Search for existing category
+            response = requests.get(
                 f"{self.api_base}/categories",
+                headers=self.headers,
                 params={'search': category_name},
                 timeout=10
             )
             
             if response.status_code == 200:
                 categories = response.json()
-                if isinstance(categories, list) and len(categories) > 0:
-                    print(f"   ✅ Found: {category_name} (ID: {categories[0]['id']})")
+                if categories and len(categories) > 0:
+                    print(f"   ✅ Found category: {category_name} (ID: {categories[0]['id']})")
                     return categories[0]['id']
             
-            print(f"   📝 Creating: {category_name}")
-            response = self.session.post(
+            # Create new category
+            print(f"   📝 Creating category: {category_name}")
+            response = requests.post(
                 f"{self.api_base}/categories",
+                headers=self.headers,
                 json={'name': category_name.title()},
                 timeout=10
             )
             
             if response.status_code in [200, 201]:
-                cat_data = self._normalize_response(response.json())
-                if cat_data and 'id' in cat_data:
-                    print(f"   ✅ Created (ID: {cat_data['id']})")
-                    return cat_data['id']
-        except:
-            pass
+                cat_data = response.json()
+                print(f"   ✅ Created category (ID: {cat_data['id']})")
+                return cat_data['id']
         
-        print(f"   ℹ️  Using default (ID: 1)")
+        except Exception as e:
+            print(f"   ⚠️  Category error: {str(e)[:50]}")
+        
+        # Return default "Uncategorized" category (ID: 1)
+        print(f"   ℹ️  Using default category (ID: 1)")
         return 1
     
-    def _insert_images_into_content(self, content: str, images: List[Dict]) -> str:
-        """Insert images into content at appropriate positions"""
+    def _insert_images_into_content(
+        self, 
+        content: str, 
+        images: List[Dict]
+    ) -> str:
+        """
+        Insert images into content at appropriate positions
+        
+        Args:
+            content: HTML content string
+            images: List of uploaded images with URLs
+        
+        Returns:
+            Content with images inserted
+        """
         if not images:
             return content
         
+        # Find hero image
         hero_img = next((img for img in images if img.get('placement') == 'hero'), None)
+        
+        # Split content into sections (by H2 tags)
         sections = content.split('<h2>')
+        
         result = []
         
-        # Add hero image at top
+        # Add hero image at top if exists
         if hero_img and 'url' in hero_img:
             result.append(self._create_image_html(hero_img))
         
@@ -388,18 +379,28 @@ class WordPressPublisher:
         
         for i, section in enumerate(sections[1:], 1):
             result.append('<h2>' + section)
+            
             # Insert image after every 2 sections
             if i % 2 == 0 and section_images:
-                result.append(self._create_image_html(section_images.pop(0)))
+                img = section_images.pop(0)
+                result.append(self._create_image_html(img))
         
-        # Add remaining images
+        # Add any remaining images at the end
         for img in section_images:
             result.append(self._create_image_html(img))
         
         return '\n\n'.join(result)
     
     def _create_image_html(self, img: Dict) -> str:
-        """Create WordPress image HTML with proper figure/caption"""
+        """
+        Create WordPress image HTML with figure and caption
+        
+        Args:
+            img: Image dictionary with url, alt_text, caption, id
+        
+        Returns:
+            HTML string for the image
+        """
         return f'''
 <figure class="wp-block-image size-large">
     <img src="{img.get('url', '')}" alt="{img.get('alt_text', '')}" class="wp-image-{img.get('id', '')}"/>
@@ -408,19 +409,136 @@ class WordPressPublisher:
 '''
     
     def _build_references_section(self, references: List[Dict]) -> str:
-        """Build references section HTML"""
+        """
+        Build references section HTML
+        
+        Args:
+            references: List of reference dictionaries with title, url, description
+        
+        Returns:
+            HTML string for references section
+        """
         if not references:
             return ''
         
         html = '\n\n<h2>References and Further Reading</h2>\n<ul>\n'
+        
         for ref in references:
-            html += f'<li><a href="{ref["url"]}" target="_blank" rel="noopener">{ref["title"]}</a> - {ref["description"]}</li>\n'
+            title = ref.get('title', 'Source')
+            url = ref.get('url', '#')
+            description = ref.get('description', '')
+            
+            html += f'<li><a href="{url}" target="_blank" rel="noopener">{title}</a>'
+            if description:
+                html += f' - {description}'
+            html += '</li>\n'
+        
         html += '</ul>'
         return html
+    
+    def update_post_seo(self, post_id: int, seo_data: Dict) -> bool:
+        """
+        Update post SEO using Yoast or RankMath plugin
+        
+        Args:
+            post_id: WordPress post ID
+            seo_data: SEO data dictionary
+        
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            meta_data = {
+                '_yoast_wpseo_title': seo_data.get('title'),
+                '_yoast_wpseo_metadesc': seo_data.get('meta_description'),
+                '_yoast_wpseo_focuskw': seo_data.get('focus_keyword'),
+            }
+            
+            for key, value in meta_data.items():
+                response = requests.post(
+                    f"{self.api_base}/posts/{post_id}",
+                    headers=self.headers,
+                    json={'meta': {key: value}},
+                    timeout=10
+                )
+                
+                if response.status_code not in [200, 201]:
+                    print(f"⚠️  Failed to update SEO meta: {key}")
+                    return False
+            
+            return True
+        
+        except Exception as e:
+            print(f"❌ Error updating SEO: {str(e)}")
+            return False
+    
+    def schedule_post(self, post_id: int, publish_datetime: str) -> bool:
+        """
+        Schedule post for future publication
+        
+        Args:
+            post_id: WordPress post ID
+            publish_datetime: ISO format datetime string (e.g., "2025-10-15T10:00:00")
+        
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            response = requests.post(
+                f"{self.api_base}/posts/{post_id}",
+                headers=self.headers,
+                json={
+                    'status': 'future',
+                    'date': publish_datetime
+                },
+                timeout=10
+            )
+            
+            return response.status_code in [200, 201]
+        
+        except Exception as e:
+            print(f"❌ Error scheduling post: {str(e)}")
+            return False
+    
+    def get_post_stats(self, post_id: int) -> Dict:
+        """
+        Get post statistics
+        
+        Args:
+            post_id: WordPress post ID
+        
+        Returns:
+            Dictionary with post statistics
+        """
+        try:
+            response = requests.get(
+                f"{self.api_base}/posts/{post_id}",
+                headers=self.headers,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                post = response.json()
+                return {
+                    'id': post['id'],
+                    'title': post['title']['rendered'],
+                    'status': post['status'],
+                    'url': post['link'],
+                    'date_published': post['date'],
+                    'modified': post['modified'],
+                    'categories': post['categories'],
+                    'word_count': len(post['content']['rendered'].split())
+                }
+            
+            return {}
+        
+        except Exception as e:
+            print(f"❌ Error getting post stats: {str(e)}")
+            return {}
 
 
 def main():
-    """Test Yoast SEO publisher"""
+    """Test WordPress publisher with both content formats"""
     from dotenv import load_dotenv
     load_dotenv()
     
@@ -430,72 +548,99 @@ def main():
     
     if not all([site_url, username, app_password]):
         print("❌ Missing WordPress credentials!")
-        print("\nRequired in .env:")
-        print("- WORDPRESS_URL")
-        print("- WORDPRESS_USER")
-        print("- WORDPRESS_APP_PASSWORD")
-        exit(1)
+        print("\nPlease set environment variables:")
+        print("  - WORDPRESS_URL")
+        print("  - WORDPRESS_USER")
+        print("  - WORDPRESS_APP_PASSWORD")
+        return
     
-    print("\n" + "="*70)
-    print("WordPress Publisher - Yoast SEO Compliant")
-    print("="*70)
-    print("\nThis version saves ALL Yoast SEO metadata:")
-    print("✓ Focus keyphrase")
-    print("✓ SEO title")
-    print("✓ Meta description")
-    print("✓ SEO-optimized slug")
-    print("✓ Secondary keywords")
-    print("✓ OpenGraph & Twitter cards")
-    print("="*70 + "\n")
+    print("🔗 Testing WordPress Publisher\n")
     
     publisher = WordPressPublisher(site_url, username, app_password)
     
-    # Test with sample Yoast-compliant data
-    sample_blog = {
-        'title': 'Snowflake Data Pipeline Setup Guide',
-        'slug': 'snowflake-data-pipeline-setup-guide',
-        'content': '''<h2>Introduction</h2>
-<p>In this comprehensive guide, we'll explore <strong>snowflake data pipeline</strong> setup and how it revolutionizes modern data engineering. Understanding snowflake data pipeline is essential for building scalable, efficient data solutions.</p>
-
-<h2>Getting Started with Snowflake Data Pipeline</h2>
-<p>Let's dive into the fundamentals of setting up your snowflake data pipeline effectively.</p>''',
+    # Test 1: Gutenberg blocks format (from blog_generator_free.py)
+    print("\n" + "="*70)
+    print("TEST 1: Gutenberg Blocks Format")
+    print("="*70)
+    
+    test_blog_blocks = {
+        'title': 'Test Post - Gutenberg Blocks Format',
+        'slug': 'test-gutenberg-blocks-format',
+        'content_blocks': [
+            {
+                'blockName': 'core/paragraph',
+                'attrs': {},
+                'innerContent': ['<p>This is a test paragraph from Gutenberg blocks format.</p>']
+            },
+            {
+                'blockName': 'core/heading',
+                'attrs': {'level': 2},
+                'innerContent': ['<h2>Introduction to Testing</h2>']
+            },
+            {
+                'blockName': 'core/paragraph',
+                'attrs': {},
+                'innerContent': ['<p>Another paragraph with important information about testing.</p>']
+            }
+        ],
         'seo': {
-            'focus_keyphrase': 'snowflake data pipeline',
-            'title': 'Snowflake Data Pipeline: Complete Setup Guide 2025',
-            'meta_description': 'Master snowflake data pipeline setup with our step-by-step guide. Learn best practices, optimization tips, and real-world examples for data engineers in 2025.',
-            'secondary_keywords': ['snowflake tutorial', 'data pipeline setup', 'ETL snowflake', 'cloud data warehouse', 'snowflake best practices']
+            'focus_keyphrase': 'gutenberg blocks',
+            'title': 'Gutenberg Blocks Test 2025',
+            'meta_description': 'Testing Gutenberg blocks format with WordPress publisher to ensure compatibility.'
         },
-        'category': 'snowflake',
+        'category': 'testing',
         'references': [
             {
-                'title': 'Snowflake Official Documentation',
-                'url': 'https://docs.snowflake.com',
-                'description': 'Official Snowflake documentation and guides'
+                'title': 'WordPress Block Editor',
+                'url': 'https://wordpress.org/gutenberg/',
+                'description': 'Official Gutenberg documentation'
             }
         ]
     }
     
-    sample_images = []  # No images for this test
+    result1 = publisher.publish_blog_post(test_blog_blocks, [], status='draft')
     
-    print("\n🧪 Publishing test post...")
-    result = publisher.publish_blog_post(sample_blog, sample_images, status='draft')
-    
-    if result['success']:
-        print("\n" + "="*70)
-        print("✅ TEST SUCCESSFUL!")
-        print("="*70)
-        print(f"\nView your draft at: {result['post_url']}")
-        print(f"Edit in WordPress: {result['edit_url']}")
-        print("\nCheck in WordPress Admin:")
-        print("1. Go to the edit screen")
-        print("2. Scroll to Yoast SEO section")
-        print("3. Verify all fields are populated:")
-        print(f"   - Focus keyphrase: {result['yoast_seo']['focus_keyphrase']}")
-        print(f"   - SEO title: {result['yoast_seo']['seo_title']}")
-        print(f"   - Meta description: Present")
-        print(f"   - Slug: {result['yoast_seo']['slug']}")
+    if result1['success']:
+        print(f"\n✅ Test 1 successful!")
+        print(f"   View: {result1['post_url']}")
+        print(f"   Edit: {result1['edit_url']}")
     else:
-        print(f"\n❌ TEST FAILED: {result.get('error')}")
+        print(f"\n❌ Test 1 failed: {result1.get('error')}")
+    
+    # Test 2: HTML string format (from older generators)
+    print("\n" + "="*70)
+    print("TEST 2: HTML String Format")
+    print("="*70)
+    
+    test_blog_html = {
+        'title': 'Test Post - HTML String Format',
+        'slug': 'test-html-string-format',
+        'content': '<h2>Introduction</h2><p>This is a test post with HTML string content.</p><h2>Main Section</h2><p>More content in HTML format.</p>',
+        'seo': {
+            'focus_keyphrase': 'html format',
+            'title': 'HTML Format Test 2025',
+            'meta_description': 'Testing HTML string format with WordPress publisher to ensure backward compatibility.'
+        },
+        'category': 'testing',
+        'references': []
+    }
+    
+    result2 = publisher.publish_blog_post(test_blog_html, [], status='draft')
+    
+    if result2['success']:
+        print(f"\n✅ Test 2 successful!")
+        print(f"   View: {result2['post_url']}")
+        print(f"   Edit: {result2['edit_url']}")
+    else:
+        print(f"\n❌ Test 2 failed: {result2.get('error')}")
+    
+    print("\n" + "="*70)
+    print("TESTING COMPLETE")
+    print("="*70)
+    print("\nBoth content formats are supported:")
+    print("  ✅ Gutenberg blocks (content_blocks)")
+    print("  ✅ HTML strings (content)")
+    print("\nCheck your WordPress admin to verify the posts!")
 
 
 if __name__ == "__main__":

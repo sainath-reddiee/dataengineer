@@ -1,21 +1,59 @@
-name: Blog Automation
+name: Blog Automation (Manual + Auto)
 
 on:
   # Allow manual trigger
   workflow_dispatch:
     inputs:
+      mode:
+        description: 'Generation Mode'
+        required: true
+        type: choice
+        options:
+          - 'automatic'
+          - 'manual'
+        default: 'automatic'
+      
       num_posts:
-        description: 'Number of posts to generate'
+        description: 'Number of posts'
         required: false
         default: '1'
+      
       category:
-        description: 'Category (snowflake, aws, azure, dbt, etc.)'
+        description: 'Category (automatic mode)'
         required: false
+        type: choice
+        options:
+          - 'snowflake'
+          - 'aws'
+          - 'azure'
+          - 'dbt'
+          - 'airflow'
+          - 'python'
+          - 'sql'
+          - 'gcp'
+          - 'databricks'
+          - 'salesforce'
         default: 'snowflake'
-      status:
-        description: 'Post status (draft or publish)'
+      
+      topic1:
+        description: 'Topic 1 (manual mode) - Use quotes for multi-word topics'
         required: false
+        default: ''
+      
+      status:
+        description: 'Post status'
+        required: true
+        type: choice
+        options:
+          - 'draft'
+          - 'publish'
         default: 'draft'
+      
+      enable_images:
+        description: 'Generate images?'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   generate-blog-posts:
@@ -43,37 +81,50 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r blog-automation/requirements.txt
       
-      - name: Generate blog posts
+      - name: Generate blog posts (Automatic Mode)
+        if: github.event.inputs.mode == 'automatic'
         env:
-          # Secrets from GitHub repository settings
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
           WORDPRESS_URL: ${{ secrets.WORDPRESS_URL }}
           WORDPRESS_USER: ${{ secrets.WORDPRESS_USER }}
           WORDPRESS_APP_PASSWORD: ${{ secrets.WORDPRESS_APP_PASSWORD }}
-          HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
-          USE_IMAGES: 'false'
+          USE_IMAGES: ${{ github.event.inputs.enable_images || 'false' }}
         run: |
-          python main_gemini.py \
+          echo "🤖 AUTOMATIC mode - Will create ${{ github.event.inputs.num_posts || '1' }} post(s)"
+          python blog-automation/main_gemini.py \
             --posts ${{ github.event.inputs.num_posts || '1' }} \
             --category ${{ github.event.inputs.category || 'snowflake' }} \
+            --status ${{ github.event.inputs.status || 'draft' }}
+      
+      - name: Generate blog posts (Manual Mode)
+        if: github.event.inputs.mode == 'manual'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          WORDPRESS_URL: ${{ secrets.WORDPRESS_URL }}
+          WORDPRESS_USER: ${{ secrets.WORDPRESS_USER }}
+          WORDPRESS_APP_PASSWORD: ${{ secrets.WORDPRESS_APP_PASSWORD }}
+          USE_IMAGES: ${{ github.event.inputs.enable_images || 'false' }}
+          TOPIC1: ${{ github.event.inputs.topic1 }}
+        run: |
+          echo "✍️  MANUAL mode"
+          echo "Topic: $TOPIC1"
+          
+          if [ -z "$TOPIC1" ]; then
+            echo "❌ No topic provided!"
+            exit 1
+          fi
+          
+          # Use environment variable to avoid shell word splitting
+          python blog-automation/main_gemini.py \
+            --topics "$TOPIC1" \
             --status ${{ github.event.inputs.status || 'draft' }}
       
       - name: Upload results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: blog-outputs
+          name: blog-outputs-${{ github.run_number }}
           path: blog_outputs/
           retention-days: 30
-      
-      - name: Send notification on success
-        if: success()
-        run: |
-          echo "✅ Blog post generation completed successfully"
-          echo "Check artifacts for generated content"
-      
-      - name: Send notification on failure
-        if: failure()
-        run: |
-          echo "❌ Blog post generation failed"
-          echo "Check logs for details"
