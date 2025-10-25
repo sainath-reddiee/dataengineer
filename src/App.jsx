@@ -1,34 +1,34 @@
-// src/App.jsx - FINAL VERSION with all routes
+// src/App.jsx - FINAL VERSION with relative imports
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
 // Layout
-import MainLayout from '@/components/layout/MainLayout';
+import MainLayout from './components/layout/MainLayout';
 
 // Pages
-import Home from '@/pages/Home';
-import About from '@/pages/About';
-import Contact from '@/pages/Contact';
+import Home from './pages/Home';
+import About from './pages/About';
+import Contact from './pages/Contact';
 
 // Articles
-import ArticleList from '@/pages/articles/ArticleList';
-import ArticleDetail from '@/pages/articles/ArticleDetail';
-import CategoryPage from '@/pages/articles/CategoryPage';
-import TagPage from '@/pages/articles/TagPage';
+import ArticleList from './pages/articles/ArticleList';
+import ArticleDetail from './pages/articles/ArticleDetail';
+import CategoryPage from './pages/articles/CategoryPage';
+import TagPage from './pages/articles/TagPage';
 
 // Certifications
-import CertificationHub from '@/pages/certifications/CertificationHub';
-import CertificationDetail from '@/pages/certifications/CertificationDetail';
-import ResourceTypePage from '@/pages/certifications/ResourceTypePage';
-import FlashcardPage from '@/pages/certifications/FlashcardPage';
+import CertificationHub from './pages/certifications/CertificationHub';
+import CertificationDetail from './pages/certifications/CertificationDetail';
+import ResourceTypePage from './pages/certifications/ResourceTypePage';
+import FlashcardPage from './pages/certifications/FlashcardPage';
 
 // Tools & Resources
-import Tools from '@/pages/Tools';
-import Resources from '@/pages/Resources';
+import Tools from './pages/Tools';
+import Resources from './pages/Resources';
 
 // Error Pages
-import NotFound from '@/pages/NotFound';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
