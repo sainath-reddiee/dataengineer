@@ -8,6 +8,8 @@ export const sampleProviders = [
   { id: 4, name: 'GCP', slug: 'gcp' },
   { id: 5, name: 'Apache', slug: 'apache' },
   { id: 6, name: 'dbt Labs', slug: 'dbt-labs' },
+  { id: 7, name: 'Databricks', slug: 'databricks' },
+  { id: 8, name: 'Salesforce', slug: 'salesforce' },
 ];
 
 export const sampleLevels = [
