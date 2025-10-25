@@ -1,8 +1,8 @@
-// src/components/certifications/FlashcardViewer.jsx
+// src/components/certifications/FlashcardViewer.jsx - CORRECTED with relative imports
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, RotateCcw, Shuffle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '../ui/button';
 
 const FlashcardViewer = ({ flashcards }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -72,7 +72,8 @@ const FlashcardViewer = ({ flashcards }) => {
 
       {/* Flashcard */}
       <div 
-        className="relative w-full h-96 cursor-pointer perspective-1000"
+        className="relative w-full h-96 cursor-pointer"
+        style={{ perspective: '1000px' }}
         onClick={handleFlip}
       >
         <motion.div
@@ -97,7 +98,7 @@ const FlashcardViewer = ({ flashcards }) => {
                 {currentCard.question}
               </h3>
               <p className="mt-8 text-sm text-gray-400">
-                Click card to flip
+                Click card to flip 👆
               </p>
             </div>
           </div>
@@ -111,7 +112,7 @@ const FlashcardViewer = ({ flashcards }) => {
               transform: 'rotateY(180deg)',
             }}
           >
-            <div className="text-center">
+            <div className="text-center max-h-full overflow-y-auto">
               <div className="text-sm font-semibold text-green-300 mb-4">
                 ANSWER
               </div>
@@ -129,7 +130,7 @@ const FlashcardViewer = ({ flashcards }) => {
                 </div>
               )}
               <p className="mt-8 text-sm text-gray-400">
-                Click card to flip back
+                Click card to flip back 👆
               </p>
             </div>
           </div>
@@ -142,8 +143,8 @@ const FlashcardViewer = ({ flashcards }) => {
           variant="outline"
           size="lg"
           onClick={handlePrev}
-          disabled={currentIndex === 0}
-          className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
+          disabled={cards.length <= 1}
+          className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20 disabled:opacity-30"
         >
           <ChevronLeft className="h-5 w-5 mr-2" />
           Previous
@@ -153,7 +154,8 @@ const FlashcardViewer = ({ flashcards }) => {
           {cards.map((_, idx) => (
             <button
               key={idx}
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setCurrentIndex(idx);
                 setIsFlipped(false);
               }}
@@ -162,6 +164,7 @@ const FlashcardViewer = ({ flashcards }) => {
                   ? 'bg-blue-400 w-8'
                   : 'bg-gray-600 hover:bg-gray-500'
               }`}
+              aria-label={`Go to card ${idx + 1}`}
             />
           ))}
         </div>
@@ -170,8 +173,8 @@ const FlashcardViewer = ({ flashcards }) => {
           variant="outline"
           size="lg"
           onClick={handleNext}
-          disabled={currentIndex === cards.length - 1}
-          className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
+          disabled={cards.length <= 1}
+          className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20 disabled:opacity-30"
         >
           Next
           <ChevronRight className="h-5 w-5 ml-2" />
@@ -188,6 +191,19 @@ const FlashcardViewer = ({ flashcards }) => {
             }}
           />
         </div>
+        <p className="text-center text-sm text-gray-400 mt-2">
+          {Math.round(((currentIndex + 1) / cards.length) * 100)}% Complete
+        </p>
+      </div>
+
+      {/* Keyboard Shortcuts Hint */}
+      <div className="mt-8 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+        <p className="text-sm text-gray-400 text-center">
+          <span className="font-semibold text-white">Tip:</span> Use{' '}
+          <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">←</kbd> and{' '}
+          <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">→</kbd> arrow keys to navigate,{' '}
+          <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">Space</kbd> to flip
+        </p>
       </div>
     </div>
   );
