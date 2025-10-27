@@ -2,7 +2,7 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Clock, User, Loader, AlertCircle, RefreshCw, Tag } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Calendar, Clock, User, Loader, AlertCircle, RefreshCw, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MetaTags from '@/components/SEO/MetaTags';
 import { usePost, useRelatedPosts } from '@/hooks/useWordPress';
@@ -394,6 +394,61 @@ const ArticlePage = () => {
             />
           </div>
 
+          {/* ✅ NEW: Author Bio Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="my-12 p-6 md:p-8 bg-gradient-to-br from-blue-900/20 to-purple-900/20 border-2 border-blue-500/30 rounded-2xl backdrop-blur-sm"
+          >
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              {/* Author Avatar */}
+              <div className="flex-shrink-0">
+                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-3xl md:text-4xl font-bold text-white shadow-lg">
+                  SR
+                </div>
+              </div>
+
+              {/* Author Info */}
+              <div className="flex-1">
+                <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                  About the Author
+                  <span className="text-blue-400">✨</span>
+                </h3>
+                <p className="text-lg font-semibold text-blue-400 mb-3">
+                  Sainath Reddy
+                </p>
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  I'm a passionate Data Engineer at <span className="text-blue-400 font-medium">Anblicks</span> with over 4 years of hands-on experience in building scalable data pipelines and architecting robust data solutions. My expertise spans across modern data engineering technologies including <span className="text-purple-400">Snowflake</span>, <span className="text-orange-400">AWS</span>, <span className="text-blue-400">Azure</span>, <span className="text-red-400">Databricks</span>, and <span className="text-cyan-400">Salesforce Data Cloud</span>.
+                </p>
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  I specialize in designing end-to-end data architectures, implementing ETL/ELT workflows using tools like <span className="text-teal-400">Apache Airflow</span> and <span className="text-pink-400">dbt</span>, and optimizing data warehouses for performance and cost efficiency. My mission is to help organizations unlock the true potential of their data through innovative engineering solutions.
+                </p>
+                <p className="text-gray-400 text-sm italic">
+                  💡 "Data engineering is not just about moving data—it's about transforming raw information into actionable insights that drive business value."
+                </p>
+                
+                {/* Social Links or CTA */}
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Link 
+                    to="/about"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                  >
+                    <User className="h-4 w-4" />
+                    Learn More About Me
+                  </Link>
+                  <Link 
+                    to="/articles"
+                    className="inline-flex items-center gap-2 px-4 py-2 border border-blue-400/50 text-blue-300 hover:bg-blue-500/20 rounded-lg font-medium transition-colors"
+                  >
+                    Read More Articles
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
           {safePost.tags && safePost.tags.length > 0 && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -416,15 +471,24 @@ const ArticlePage = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div className="space-y-2">
                 <p className="text-gray-400">Published by</p>
-                <p className="font-semibold text-white">Sainath Reddy</p>
-                <p className="text-sm text-gray-500">Data Engineer at Anblicks</p>
-                <p className="text-sm text-gray-500">{formatDate(safePost.date)}</p>
+                <p className="font-semibold text-white text-lg">Sainath Reddy</p>
+                <p className="text-sm text-blue-400 font-medium">Data Engineer at Anblicks</p>
+                <p className="text-sm text-gray-500">📅 {formatDate(safePost.date)}</p>
+                <p className="text-xs text-gray-600">🎯 4+ years of Data Engineering experience</p>
               </div>
-              <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
-                <Link to="/articles">
-                  Read More Articles
-                </Link>
-              </Button>
+              <div className="flex flex-col gap-3">
+                <Button asChild className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
+                  <Link to="/articles">
+                    <ArrowRight className="mr-2 h-4 w-4" />
+                    More Articles
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20">
+                  <Link to="/contact">
+                    Get in Touch
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </motion.article>
