@@ -474,7 +474,7 @@ const ArticlePage = () => {
                 <p className="font-semibold text-white text-lg">Sainath Reddy</p>
                 <p className="text-sm text-blue-400 font-medium">Data Engineer at Anblicks</p>
                 <p className="text-sm text-gray-500">📅 {formatDate(safePost.date)}</p>
-                <p className="text-xs text-white-600">🎯 4+ years of Data Engineering experience</p>
+                <p className="text-xs text-cyan-600">🎯 4+ years of Data Engineering experience</p>
               </div>
               <div className="flex flex-col gap-3">
                 <Button asChild className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
