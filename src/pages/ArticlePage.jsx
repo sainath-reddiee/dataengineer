@@ -1,4 +1,4 @@
-// src/pages/ArticlePage.jsx - OPTIMIZED FOR SPEED
+// src/pages/ArticlePage.jsx - OPTIMIZED FOR SPEED WITH AUTHOR BYLINE
 import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -357,6 +357,30 @@ const ArticlePage = () => {
             <AdPlacement position="article-top" />
           </Suspense>
 
+          {/* ✅ NEW: Author Byline Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="mb-8 pb-6 border-b border-gray-800"
+          >
+            <p className="text-gray-400 text-base leading-relaxed">
+              By{' '}
+              <span className="text-white font-semibold">Sainath Reddy</span>
+              {' '}| Data Engineer at{' '}
+              <span className="text-blue-400 font-medium">Anblicks</span>
+              {' '}on{' '}
+              <span className="text-gray-300">{formatDate(safePost.date)}</span>
+              {' '}in{' '}
+              <Link 
+                to={`/category/${safePost.category.toLowerCase()}`}
+                className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+              >
+                {safePost.category}
+              </Link>
+            </p>
+          </motion.div>
+
           {/* ✅ Render content immediately without waiting */}
           <div className="prose prose-invert prose-lg max-w-none">
             <div 
@@ -392,7 +416,8 @@ const ArticlePage = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div className="space-y-2">
                 <p className="text-gray-400">Published by</p>
-                <p className="font-semibold text-white">{safePost.author}</p>
+                <p className="font-semibold text-white">Sainath Reddy</p>
+                <p className="text-sm text-gray-500">Data Engineer at Anblicks</p>
                 <p className="text-sm text-gray-500">{formatDate(safePost.date)}</p>
               </div>
               <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
