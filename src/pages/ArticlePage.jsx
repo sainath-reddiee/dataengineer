@@ -1,4 +1,4 @@
-// src/pages/ArticlePage.jsx - OPTIMIZED WITH COMPACT METADATA HEADER
+// src/pages/ArticlePage.jsx - ULTRA-MODERN WITH 3 DESIGN OPTIONS
 import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -141,10 +141,271 @@ const RelatedPosts = ({ currentPostId }) => {
   );
 };
 
+// ============================================================================
+// 🎨 OPTION 1: MINIMALIST AUTHOR CHIP + FLOATING ACTION (RECOMMENDED)
+// ============================================================================
+const MetadataOption1 = ({ safePost, formatDate }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-4"
+    >
+      {/* Category */}
+      <div>
+        <Link 
+          to={`/category/${safePost.category.toLowerCase()}`}
+          className="inline-flex items-center px-3 py-1.5 bg-blue-500/20 border border-blue-400/40 rounded-full text-xs font-semibold text-blue-300 hover:bg-blue-500/30 transition-all"
+        >
+          {safePost.category}
+        </Link>
+      </div>
+
+      {/* Title */}
+      <h1 className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight text-white">
+        {safePost.title}
+      </h1>
+
+      {/* 🔥 OPTION 1: AUTHOR CHIP WITH FLOATING SHARE */}
+      <div className="flex items-center justify-between pt-6 group">
+        {/* Author Chip - Clickable */}
+        <Link 
+          to="/about"
+          className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-800 hover:to-slate-700 border border-slate-600/40 hover:border-slate-500/60 transition-all backdrop-blur-sm group/chip"
+        >
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+            SR
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <span className="text-sm font-bold text-white group-hover/chip:text-blue-300">Sainath Reddy</span>
+            <span className="text-xs text-gray-400">Data Engineer</span>
+          </div>
+          <ArrowRight className="h-4 w-4 text-gray-500 group-hover/chip:text-blue-400 transition-colors" />
+        </Link>
+
+        {/* Floating Meta Badges */}
+        <div className="flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2 text-xs text-gray-400">
+            <Calendar className="h-3.5 w-3.5 text-purple-400/60" />
+            <span>{formatDate(safePost.date)}</span>
+            <span className="text-gray-600">•</span>
+            <Clock className="h-3.5 w-3.5 text-green-400/60" />
+            <span>{safePost.readTime}</span>
+          </div>
+          
+          <button 
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: safePost.title,
+                  url: window.location.href
+                }).catch(() => {});
+              }
+            }}
+            className="p-2.5 rounded-full bg-slate-800/60 hover:bg-slate-700 border border-slate-600/40 text-gray-400 hover:text-white transition-all"
+            title="Share article"
+          >
+            <Share2 className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Meta (only shows on small screens) */}
+      <div className="sm:hidden flex items-center gap-3 text-xs text-gray-400 pt-2">
+        <span className="flex items-center gap-1">
+          <Calendar className="h-3.5 w-3.5" />
+          {formatDate(safePost.date)}
+        </span>
+        <span>•</span>
+        <span className="flex items-center gap-1">
+          <Clock className="h-3.5 w-3.5" />
+          {safePost.readTime}
+        </span>
+      </div>
+    </motion.div>
+  );
+};
+
+// ============================================================================
+// 🎨 OPTION 2: SIDEBAR METADATA (Pinterest/Medium style - for wide screens)
+// ============================================================================
+const MetadataOption2 = ({ safePost, formatDate }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-4"
+    >
+      {/* Category */}
+      <div>
+        <Link 
+          to={`/category/${safePost.category.toLowerCase()}`}
+          className="inline-flex items-center px-3 py-1.5 bg-blue-500/20 border border-blue-400/40 rounded-full text-xs font-semibold text-blue-300 hover:bg-blue-500/30 transition-all"
+        >
+          {safePost.category}
+        </Link>
+      </div>
+
+      {/* Title */}
+      <h1 className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight text-white">
+        {safePost.title}
+      </h1>
+
+      {/* 🔥 OPTION 2: SIDEBAR STYLE with floating badges */}
+      <div className="relative pt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+          {/* Main content - left */}
+          <div className="lg:col-span-2 space-y-3">
+            <Link 
+              to="/about"
+              className="inline-flex items-center gap-3 group"
+            >
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                SR
+              </div>
+              <div>
+                <div className="font-bold text-white group-hover:text-blue-300 text-sm">Sainath Reddy</div>
+                <div className="text-xs text-gray-400">Data Engineer at Anblicks</div>
+              </div>
+            </Link>
+          </div>
+
+          {/* Right side - floating badges */}
+          <div className="lg:sticky lg:top-24 space-y-2">
+            <div className="inline-flex flex-col gap-2 w-full lg:w-auto">
+              {/* Experience Badge */}
+              <div className="flex items-center gap-2 px-3 py-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-xs font-semibold text-yellow-400">
+                <span>🎯</span>
+                <span>4+ Years Experience</span>
+              </div>
+
+              {/* Meta Badges Row */}
+              <div className="flex gap-2">
+                <div className="flex-1 flex items-center gap-1.5 px-3 py-2 bg-slate-800/60 border border-slate-700/40 rounded-lg text-xs text-gray-300">
+                  <Calendar className="h-3.5 w-3.5 text-purple-400" />
+                  <span className="hidden sm:inline">{formatDate(safePost.date)}</span>
+                </div>
+                <div className="flex-1 flex items-center gap-1.5 px-3 py-2 bg-slate-800/60 border border-slate-700/40 rounded-lg text-xs text-gray-300">
+                  <Clock className="h-3.5 w-3.5 text-green-400" />
+                  <span>{safePost.readTime}</span>
+                </div>
+              </div>
+
+              {/* Share Button */}
+              <button 
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: safePost.title,
+                      url: window.location.href
+                    }).catch(() => {});
+                  }
+                }}
+                className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-lg text-sm font-semibold text-white transition-all"
+              >
+                <Share2 className="h-4 w-4" />
+                Share
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// ============================================================================
+// 🎨 OPTION 3: MODERN GLASSMORPHISM OVERLAY (Ultra-sleek)
+// ============================================================================
+const MetadataOption3 = ({ safePost, formatDate }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="space-y-0"
+    >
+      {/* Category Badge - Overlay on image */}
+      <div className="absolute top-6 left-6 z-10">
+        <Link 
+          to={`/category/${safePost.category.toLowerCase()}`}
+          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600/80 to-blue-500/80 hover:from-blue-600 hover:to-blue-500 backdrop-blur-md border border-blue-400/20 rounded-full text-sm font-semibold text-white transition-all shadow-lg"
+        >
+          {safePost.category}
+        </Link>
+      </div>
+
+      {/* Gradient overlay on image */}
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent rounded-3xl z-5" />
+
+      {/* Content overlaid on image */}
+      <div className="relative space-y-6 pt-64">
+        {/* Title */}
+        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight text-white">
+          {safePost.title}
+        </h1>
+
+        {/* 🔥 OPTION 3: MODERN GLASSMORPHISM METADATA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4"
+        >
+          {/* Left: Author + Meta */}
+          <Link 
+            to="/about"
+            className="flex items-center gap-3 group"
+          >
+            <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg ring-2 ring-blue-400/30">
+              SR
+            </div>
+            <div className="space-y-1">
+              <div className="font-bold text-white group-hover:text-blue-300">Sainath Reddy</div>
+              <div className="text-xs text-gray-300 flex items-center gap-2">
+                <span>🎯 4+ yrs</span>
+                <span className="text-gray-500">•</span>
+                <span className="flex items-center gap-1">
+                  <Calendar className="h-3 w-3" />
+                  {formatDate(safePost.date)}
+                </span>
+                <span className="text-gray-500">•</span>
+                <span className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {safePost.readTime}
+                </span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Right: Share button with glassmorphism */}
+          <button 
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: safePost.title,
+                  url: window.location.href
+                }).catch(() => {});
+              }
+            }}
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-lg text-sm font-semibold text-white transition-all"
+          >
+            <Share2 className="h-4 w-4" />
+            <span className="hidden sm:inline">Share</span>
+          </button>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+};
+
 const ArticlePage = () => {
   const { slug } = useParams();
   const { post, loading, error, refetch } = usePost(slug);
   const [contentReady, setContentReady] = useState(false);
+  
+  // 🎨 CHOOSE YOUR METADATA DESIGN:
+  // Change this value: 1, 2, or 3
+  const METADATA_DESIGN = 1;
 
   useEffect(() => {
     if (post?.image) {
@@ -237,99 +498,42 @@ const ArticlePage = () => {
         </motion.div>
 
         <motion.article initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} className="space-y-8">
-          {/* Enhanced Hero Image */}
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl" style={{ height: '450px' }}>
-            <LazyImage
-              src={safePost.image}
-              alt={safePost.title}
-              width={1600}
-              quality={90}
-              sizes="(max-width: 768px) 100vw, 1200px"
-              className="w-full h-full object-cover"
-              priority={true}
-            />
-          </div>
-
-          {/* 🎨 OPTIMIZED METADATA SECTION - COMPACT SINGLE LINE */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-4"
-          >
-            {/* Category Badge */}
-            <div className="flex items-center gap-3">
-              <Link 
-                to={`/category/${safePost.category.toLowerCase()}`}
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-full text-sm font-semibold text-white transition-all shadow-lg shadow-blue-500/30"
-              >
-                {safePost.category}
-              </Link>
+          {/* Hero Image */}
+          {METADATA_DESIGN !== 3 && (
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl" style={{ height: '450px' }}>
+              <LazyImage
+                src={safePost.image}
+                alt={safePost.title}
+                width={1600}
+                quality={90}
+                sizes="(max-width: 768px) 100vw, 1200px"
+                className="w-full h-full object-cover"
+                priority={true}
+              />
             </div>
+          )}
 
-            {/* Article Title */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-white">
-              {safePost.title}
-            </h1>
-
-            {/* 🔥 OPTIMIZED - COMPACT SINGLE LINE METADATA */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-4 border-t border-b border-slate-700/50">
-              {/* Left: Author & Meta Info */}
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300">
-                {/* Author */}
-                <Link 
-                  to="/about"
-                  className="flex items-center gap-2 hover:text-blue-400 transition-colors group"
-                >
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-md">
-                    SR
-                  </div>
-                  <span className="font-semibold text-white group-hover:text-blue-400">Sainath Reddy</span>
-                  <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </Link>
-
-                {/* Divider */}
-                <span className="text-gray-600">•</span>
-
-                {/* Experience Badge - More compact */}
-                <span className="flex items-center gap-1 px-2 py-1 bg-yellow-500/10 border border-yellow-500/30 rounded-full text-xs font-semibold text-yellow-400">
-                  🎯 4+ yrs
-                </span>
-
-                {/* Divider */}
-                <span className="text-gray-600">•</span>
-
-                {/* Date & Read Time */}
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center gap-1 text-gray-400">
-                    <Calendar className="h-3.5 w-3.5 text-purple-400" />
-                    {formatDate(safePost.date)}
-                  </span>
-                  <span className="text-gray-600">•</span>
-                  <span className="flex items-center gap-1 text-gray-400 font-semibold">
-                    <Clock className="h-3.5 w-3.5 text-green-400" />
-                    {safePost.readTime}
-                  </span>
-                </div>
+          {/* Metadata Section - Choose design */}
+          {METADATA_DESIGN === 1 && <MetadataOption1 safePost={safePost} formatDate={formatDate} />}
+          {METADATA_DESIGN === 2 && <MetadataOption2 safePost={safePost} formatDate={formatDate} />}
+          
+          {/* Option 3 needs special layout with image */}
+          {METADATA_DESIGN === 3 && (
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl -mx-6" style={{ height: '600px' }}>
+              <LazyImage
+                src={safePost.image}
+                alt={safePost.title}
+                width={1600}
+                quality={90}
+                sizes="(max-width: 768px) 100vw, 1200px"
+                className="w-full h-full object-cover"
+                priority={true}
+              />
+              <div className="absolute inset-0 px-6 pb-6 flex flex-col justify-end">
+                <MetadataOption3 safePost={safePost} formatDate={formatDate} />
               </div>
-
-              {/* Right: Share Button */}
-              <button 
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({
-                      title: safePost.title,
-                      url: window.location.href
-                    }).catch(() => {});
-                  }
-                }}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-700/50 hover:bg-slate-700 rounded-lg text-sm text-gray-300 hover:text-white transition-colors font-medium whitespace-nowrap"
-              >
-                <Share2 className="h-4 w-4" />
-                <span className="hidden sm:inline">Share</span>
-              </button>
             </div>
-          </motion.div>
+          )}
 
           <Suspense fallback={<div className="h-32" />}>
             <AdPlacement position="article-top" />
