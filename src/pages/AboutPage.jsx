@@ -1,8 +1,9 @@
-// src/pages/AboutPage.jsx - ENHANCED WITH BETTER BLOCK SIZES
+// src/pages/AboutPage.jsx - ULTRA-COMPACT & SPACE-EFFICIENT
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Users, Target, Heart, Code, Database, Cloud, Briefcase, Award, BookOpen, Sparkles, Zap } from 'lucide-react';
+import { Users, Target, Heart, Code, Database, Cloud, Briefcase, Award, BookOpen, Sparkles, Zap, ArrowRight } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import { Button } from '@/components/ui/button';
 
 const AboutPage = () => {
   return (
@@ -13,300 +14,287 @@ const AboutPage = () => {
         keywords="sainath reddy, data engineer, anblicks, snowflake expert, databricks expert, aws data engineer, azure data engineer, salesforce data cloud"
         type="website"
       />
-      <div className="pt-4 pb-12 overflow-hidden">
-        <div className="container mx-auto px-6">
-          {/* Hero Section */}
+      <div className="pt-4 pb-12">
+        <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
+          
+          {/* ============================================================================
+              HERO SECTION - ULTRA COMPACT
+              ============================================================================ */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-4xl mx-auto mb-12"
+            transition={{ duration: 0.4 }}
+            className="text-center mb-6 sm:mb-8"
           >
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 px-6 py-2 rounded-full mb-6 border border-blue-500/30">
-              <Sparkles className="h-5 w-5 text-blue-400" />
-              <span className="text-blue-300 font-medium">Data Engineering Expert</span>
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 px-4 py-1.5 rounded-full mb-3 border border-blue-500/30">
+              <Sparkles className="h-4 w-4 text-blue-400" />
+              <span className="text-xs sm:text-sm font-medium text-blue-300">Data Engineering Expert</span>
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
-              Hi, I'm <span className="gradient-text">Sainath Reddy</span>
+            {/* Title */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black mb-2 leading-tight">
+              Hi, I'm <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Sainath Reddy</span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-300 mb-4 leading-relaxed">
+            {/* Subtitle - Compact */}
+            <p className="text-sm sm:text-base text-gray-300 mb-2">
               Data Engineer at <span className="text-blue-400 font-bold">Anblicks</span>
             </p>
             
-            <p className="text-lg text-gray-400 leading-relaxed max-w-3xl mx-auto">
-              Transforming raw data into business intelligence through modern data engineering. 
-              Specializing in cloud-native architectures, real-time pipelines, and scalable data solutions.
+            {/* Description - Shorter */}
+            <p className="text-sm sm:text-base text-gray-400 leading-relaxed max-w-2xl mx-auto">
+              Transforming raw data into business intelligence through modern engineering. 
+              Cloud-native architectures • Real-time pipelines • Scalable solutions.
             </p>
           </motion.div>
 
-          {/* Stats Cards - Compact */}
-          <div className="grid md:grid-cols-4 gap-4 max-w-5xl mx-auto mb-12">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
-              className="blog-card p-4 rounded-xl text-center hover:scale-105 transition-transform"
-            >
-              <div className="inline-flex p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg mb-3">
-                <Briefcase className="h-6 w-6 text-white" />
-              </div>
-              <div className="text-2xl font-bold text-white mb-1">4+ Years</div>
-              <p className="text-sm text-gray-400">Experience</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.2 }}
-              className="blog-card p-4 rounded-xl text-center hover:scale-105 transition-transform"
-            >
-              <div className="inline-flex p-3 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg mb-3">
-                <Database className="h-6 w-6 text-white" />
-              </div>
-              <div className="text-2xl font-bold text-white mb-1">10+ Tools</div>
-              <p className="text-sm text-gray-400">Technologies</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.3 }}
-              className="blog-card p-4 rounded-xl text-center hover:scale-105 transition-transform"
-            >
-              <div className="inline-flex p-3 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg mb-3">
-                <Cloud className="h-6 w-6 text-white" />
-              </div>
-              <div className="text-2xl font-bold text-white mb-1">3 Clouds</div>
-              <p className="text-sm text-gray-400">AWS, Azure, GCP</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.4 }}
-              className="blog-card p-4 rounded-xl text-center hover:scale-105 transition-transform"
-            >
-              <div className="inline-flex p-3 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg mb-3">
-                <Zap className="h-6 w-6 text-white" />
-              </div>
-              <div className="text-2xl font-bold text-white mb-1">Real-time</div>
-              <p className="text-sm text-gray-400">Data Pipelines</p>
-            </motion.div>
-          </div>
-
-          {/* Mission & Who I Am - Compact */}
-          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-12">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="blog-card p-6 rounded-xl hover:border-blue-500/50 transition-colors"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
-                  <Target className="h-5 w-5 text-white" />
-                </div>
-                <h2 className="text-xl font-bold text-white">My Mission</h2>
-              </div>
-              <p className="text-gray-300 text-sm leading-relaxed">
-                Empowering organizations with scalable data solutions that transform complex challenges 
-                into actionable insights. Building the future of data-driven decision making.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="blog-card p-6 rounded-xl hover:border-green-500/50 transition-colors"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg">
-                  <Users className="h-5 w-5 text-white" />
-                </div>
-                <h2 className="text-xl font-bold text-white">Who I Am</h2>
-              </div>
-              <p className="text-gray-300 text-sm leading-relaxed">
-                Passionate Data Engineer specializing in end-to-end architectures, ETL/ELT workflows, 
-                and performance optimization across multiple cloud platforms at Anblicks.
-              </p>
-            </motion.div>
-          </div>
-
-          {/* Technical Stack - Compact Grid */}
+          {/* ============================================================================
+              STATS SECTION - INLINE COMPACT (2x2 GRID MOBILE, 4 COLS DESKTOP)
+              ============================================================================ */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="max-w-5xl mx-auto mb-12"
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-6 sm:mb-8"
           >
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500/20 to-blue-500/20 px-5 py-2 rounded-full mb-3 border border-purple-500/30">
-                <Code className="h-4 w-4 text-purple-400" />
-                <span className="text-sm font-medium text-purple-200">Technical Arsenal</span>
+            {[
+              { icon: Briefcase, value: '4+', label: 'Years', color: 'from-blue-500 to-purple-600' },
+              { icon: Database, value: '10+', label: 'Tools', color: 'from-green-500 to-teal-500' },
+              { icon: Cloud, value: '3', label: 'Clouds', color: 'from-orange-500 to-red-500' },
+              { icon: Zap, value: 'Real-time', label: 'Pipelines', color: 'from-pink-500 to-rose-500' },
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 hover:from-slate-800 hover:to-slate-700 border border-slate-700/40 hover:border-slate-600/60 rounded-lg p-3 sm:p-4 text-center transition-all"
+              >
+                <div className={`inline-flex p-2 bg-gradient-to-br ${stat.color} rounded-lg mb-2`}>
+                  <stat.icon className="h-4 w-4 text-white" />
+                </div>
+                <div className="text-lg sm:text-xl font-bold text-white">{stat.value}</div>
+                <p className="text-xs sm:text-sm text-gray-400">{stat.label}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* ============================================================================
+              MISSION & WHO I AM - COMPACT 2-COL
+              ============================================================================ */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+            className="grid md:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8"
+          >
+            {/* Mission */}
+            <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-700/40 rounded-lg p-3 sm:p-4 hover:border-blue-500/50 transition-colors group">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+                  <Target className="h-4 w-4 text-white" />
+                </div>
+                <h3 className="text-sm sm:text-base font-bold text-white">My Mission</h3>
               </div>
-              <h2 className="text-3xl font-bold text-white">Tech Stack</h2>
+              <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                Empowering organizations with scalable data solutions that transform challenges into actionable insights.
+              </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="blog-card p-4 rounded-xl hover:border-blue-500/50 transition-colors">
+            {/* Who I Am */}
+            <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-700/40 rounded-lg p-3 sm:p-4 hover:border-green-500/50 transition-colors group">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg">
+                  <Users className="h-4 w-4 text-white" />
+                </div>
+                <h3 className="text-sm sm:text-base font-bold text-white">Who I Am</h3>
+              </div>
+              <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                Passionate Data Engineer specializing in architectures, ETL/ELT workflows, and optimization across clouds.
+              </p>
+            </div>
+          </motion.div>
+
+          {/* ============================================================================
+              TECH STACK - 2 COLUMNS COMPACT
+              ============================================================================ */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="mb-6 sm:mb-8"
+          >
+            <div className="flex items-center gap-2 mb-4 justify-center">
+              <Code className="h-5 w-5 text-purple-400" />
+              <h2 className="text-xl sm:text-2xl font-bold text-white">Tech Stack</h2>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-3">
+              {/* Cloud Platforms */}
+              <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-700/40 rounded-lg p-3 sm:p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xl">☁️</span>
-                  <h3 className="font-bold text-blue-400">Cloud Platforms</h3>
+                  <span className="text-lg">☁️</span>
+                  <h3 className="font-bold text-sm text-blue-400">Cloud Platforms</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-orange-500/20 text-orange-300 rounded-full text-xs font-medium">AWS</span>
-                  <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-medium">Azure</span>
-                  <span className="px-3 py-1 bg-red-500/20 text-red-300 rounded-full text-xs font-medium">GCP</span>
+                  {['AWS', 'Azure', 'GCP'].map(tech => (
+                    <span key={tech} className="px-2.5 py-1 bg-blue-500/20 text-blue-300 rounded text-xs font-medium">
+                      {tech}
+                    </span>
+                  ))}
                 </div>
               </div>
 
-              <div className="blog-card p-4 rounded-xl hover:border-purple-500/50 transition-colors">
+              {/* Data Warehouses */}
+              <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-700/40 rounded-lg p-3 sm:p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xl">🗄️</span>
-                  <h3 className="font-bold text-purple-400">Data Warehouses</h3>
+                  <span className="text-lg">🗄️</span>
+                  <h3 className="font-bold text-sm text-purple-400">Data Warehouses</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-medium">Snowflake</span>
-                  <span className="px-3 py-1 bg-orange-500/20 text-orange-300 rounded-full text-xs font-medium">Databricks</span>
-                  <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-xs font-medium">BigQuery</span>
+                  {['Snowflake', 'Databricks', 'BigQuery'].map(tech => (
+                    <span key={tech} className="px-2.5 py-1 bg-purple-500/20 text-purple-300 rounded text-xs font-medium">
+                      {tech}
+                    </span>
+                  ))}
                 </div>
               </div>
 
-              <div className="blog-card p-4 rounded-xl hover:border-teal-500/50 transition-colors">
+              {/* ETL/ELT */}
+              <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-700/40 rounded-lg p-3 sm:p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xl">⚙️</span>
-                  <h3 className="font-bold text-teal-400">ETL/ELT Tools</h3>
+                  <span className="text-lg">⚙️</span>
+                  <h3 className="font-bold text-sm text-teal-400">ETL/ELT Tools</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-teal-500/20 text-teal-300 rounded-full text-xs font-medium">Airflow</span>
-                  <span className="px-3 py-1 bg-pink-500/20 text-pink-300 rounded-full text-xs font-medium">dbt</span>
-                  <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">Python</span>
-                  <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-medium">SQL</span>
+                  {['Airflow', 'dbt', 'Python', 'SQL'].map(tech => (
+                    <span key={tech} className="px-2.5 py-1 bg-teal-500/20 text-teal-300 rounded text-xs font-medium">
+                      {tech}
+                    </span>
+                  ))}
                 </div>
               </div>
 
-              <div className="blog-card p-4 rounded-xl hover:border-cyan-500/50 transition-colors">
+              {/* Specialized */}
+              <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-700/40 rounded-lg p-3 sm:p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xl">🔧</span>
-                  <h3 className="font-bold text-cyan-400">Specialized</h3>
+                  <span className="text-lg">🔧</span>
+                  <h3 className="font-bold text-sm text-cyan-400">Specialized</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-full text-xs font-medium">Salesforce DC</span>
-                  <span className="px-3 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-xs font-medium">Kafka</span>
-                  <span className="px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full text-xs font-medium">Spark</span>
+                  {['Salesforce DC', 'Kafka', 'Spark'].map(tech => (
+                    <span key={tech} className="px-2.5 py-1 bg-cyan-500/20 text-cyan-300 rounded text-xs font-medium">
+                      {tech}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Core Skills - Compact 3-column */}
+          {/* ============================================================================
+              CORE SKILLS - COMPACT 3-COLUMN GRID
+              ============================================================================ */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="max-w-5xl mx-auto mb-12"
+            transition={{ duration: 0.4, delay: 0.25 }}
+            className="mb-6 sm:mb-8"
           >
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 px-5 py-2 rounded-full mb-3 border border-green-500/30">
-                <Award className="h-4 w-4 text-green-400" />
-                <span className="text-sm font-medium text-green-200">Core Competencies</span>
-              </div>
-              <h2 className="text-3xl font-bold text-white">What I Do</h2>
+            <div className="flex items-center gap-2 mb-4 justify-center">
+              <Award className="h-5 w-5 text-green-400" />
+              <h2 className="text-xl sm:text-2xl font-bold text-white">Core Skills</h2>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="blog-card p-4 rounded-xl hover:border-blue-500/50 transition-colors">
-                <div className="text-3xl mb-2">🏗️</div>
-                <h3 className="font-bold mb-2 text-white text-sm">Data Architecture</h3>
-                <p className="text-gray-400 text-xs leading-relaxed">
-                  End-to-end scalable architectures for business growth
-                </p>
-              </div>
-
-              <div className="blog-card p-4 rounded-xl hover:border-purple-500/50 transition-colors">
-                <div className="text-3xl mb-2">🔄</div>
-                <h3 className="font-bold mb-2 text-white text-sm">Pipeline Development</h3>
-                <p className="text-gray-400 text-xs leading-relaxed">
-                  Robust ETL/ELT with Airflow, dbt & Python
-                </p>
-              </div>
-
-              <div className="blog-card p-4 rounded-xl hover:border-green-500/50 transition-colors">
-                <div className="text-3xl mb-2">⚡</div>
-                <h3 className="font-bold mb-2 text-white text-sm">Performance Tuning</h3>
-                <p className="text-gray-400 text-xs leading-relaxed">
-                  Query & warehouse optimization for efficiency
-                </p>
-              </div>
-
-              <div className="blog-card p-4 rounded-xl hover:border-cyan-500/50 transition-colors">
-                <div className="text-3xl mb-2">☁️</div>
-                <h3 className="font-bold mb-2 text-white text-sm">Cloud Solutions</h3>
-                <p className="text-gray-400 text-xs leading-relaxed">
-                  Native data solutions across AWS, Azure, GCP
-                </p>
-              </div>
-
-              <div className="blog-card p-4 rounded-xl hover:border-yellow-500/50 transition-colors">
-                <div className="text-3xl mb-2">📊</div>
-                <h3 className="font-bold mb-2 text-white text-sm">Data Modeling</h3>
-                <p className="text-gray-400 text-xs leading-relaxed">
-                  Efficient schemas for analytics & reporting
-                </p>
-              </div>
-
-              <div className="blog-card p-4 rounded-xl hover:border-red-500/50 transition-colors">
-                <div className="text-3xl mb-2">🔐</div>
-                <h3 className="font-bold mb-2 text-white text-sm">Data Governance</h3>
-                <p className="text-gray-400 text-xs leading-relaxed">
-                  Quality, security & compliance frameworks
-                </p>
-              </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
+              {[
+                { emoji: '🏗️', title: 'Data Architecture', desc: 'Scalable end-to-end systems' },
+                { emoji: '🔄', title: 'Pipeline Dev', desc: 'ETL/ELT with Airflow & dbt' },
+                { emoji: '⚡', title: 'Performance', desc: 'Query & warehouse tuning' },
+                { emoji: '☁️', title: 'Cloud Solutions', desc: 'Multi-cloud data systems' },
+                { emoji: '📊', title: 'Data Modeling', desc: 'Efficient analytics schemas' },
+                { emoji: '🔐', title: 'Governance', desc: 'Quality, security, compliance' },
+              ].map((skill, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-700/40 rounded-lg p-3 hover:border-blue-500/50 transition-colors"
+                >
+                  <div className="text-2xl mb-1.5">{skill.emoji}</div>
+                  <h3 className="font-bold text-xs sm:text-sm text-white leading-tight mb-0.5">{skill.title}</h3>
+                  <p className="text-xs text-gray-400">{skill.desc}</p>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
 
-          {/* About DataEngineer Hub - Compact */}
+          {/* ============================================================================
+              ABOUT THE HUB - COMPACT CARD
+              ============================================================================ */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="max-w-4xl mx-auto mb-12"
+            transition={{ duration: 0.4, delay: 0.3 }}
+            className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-700/40 rounded-lg p-4 sm:p-5 text-center mb-6 sm:mb-8"
           >
-            <div className="blog-card p-6 rounded-xl text-center">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500/20 to-rose-500/20 px-5 py-2 rounded-full mb-4 border border-pink-500/30">
-                <BookOpen className="h-4 w-4 text-pink-400" />
-                <span className="text-sm font-medium text-pink-200">Knowledge Sharing</span>
-              </div>
-              <h2 className="text-2xl font-bold mb-3 text-white">About DataEngineer Hub</h2>
-              <p className="text-gray-300 text-sm leading-relaxed mb-4 max-w-2xl mx-auto">
-                My platform for sharing practical insights, tutorials, and best practices in modern data engineering. 
-                Helping professionals master cutting-edge technologies and advance their careers.
-              </p>
-              <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
-                <Heart className="h-4 w-4 text-pink-400" />
-                <span>Built with React • Vite • TailwindCSS • Framer Motion</span>
-              </div>
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500/20 to-rose-500/20 px-3 py-1.5 rounded-full mb-3 border border-pink-500/30">
+              <BookOpen className="h-4 w-4 text-pink-400" />
+              <span className="text-xs font-medium text-pink-300">Knowledge Sharing</span>
+            </div>
+            <h2 className="text-lg sm:text-xl font-bold mb-2 text-white">DataEngineer Hub</h2>
+            <p className="text-xs sm:text-sm text-gray-300 leading-relaxed mb-3 max-w-2xl mx-auto">
+              My platform for sharing practical tutorials, insights, and best practices in modern data engineering. 
+              Helping professionals master cutting-edge technologies.
+            </p>
+            <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
+              <Heart className="h-3.5 w-3.5 text-pink-400" />
+              <span>Built with React • Vite • TailwindCSS • Framer Motion</span>
             </div>
           </motion.div>
 
-          {/* Philosophy Quote - Compact */}
+          {/* ============================================================================
+              PHILOSOPHY QUOTE - COMPACT
+              ============================================================================ */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.7 }}
-            className="max-w-3xl mx-auto"
+            transition={{ duration: 0.4, delay: 0.35 }}
+            className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 border-2 border-blue-500/30 rounded-lg p-4 sm:p-5 text-center mb-6"
           >
-            <div className="blog-card p-6 rounded-xl text-center bg-gradient-to-br from-blue-900/20 to-purple-900/20 border-2 border-blue-500/30">
-              <div className="text-4xl mb-3">💡</div>
-              <h2 className="text-xl font-bold mb-3 text-white">My Philosophy</h2>
-              <p className="text-base text-gray-300 italic leading-relaxed mb-3">
-                "Data engineering isn't just moving data—it's transforming information into insights that drive value. 
-                Every pipeline reliable, every query optimized, every solution scalable."
-              </p>
-              <div className="text-blue-400 font-semibold">— Sainath Reddy</div>
+            <div className="text-3xl mb-2">💡</div>
+            <h3 className="text-base sm:text-lg font-bold mb-2 text-white">My Philosophy</h3>
+            <p className="text-sm text-gray-300 italic leading-relaxed mb-2">
+              "Data engineering isn't just moving data—it's transforming information into insights that drive value."
+            </p>
+            <div className="text-blue-400 font-semibold text-sm">— Sainath Reddy</div>
+          </motion.div>
+
+          {/* ============================================================================
+              CTA SECTION - CONNECT
+              ============================================================================ */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+            className="text-center"
+          >
+            <h2 className="text-lg sm:text-xl font-bold mb-3 text-white">Let's Connect</h2>
+            <p className="text-sm text-gray-300 mb-4">
+              Interested in data engineering or collaboration opportunities?
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button asChild className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold">
+                <a href="mailto:sainath@example.com">
+                  Get in Touch
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
+              </Button>
+              <Button asChild variant="outline" className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 font-semibold">
+                <a href="/articles">Read My Articles</a>
+              </Button>
             </div>
           </motion.div>
         </div>
