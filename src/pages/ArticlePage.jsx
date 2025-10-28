@@ -405,7 +405,7 @@ const ArticlePage = () => {
   
   // 🎨 CHOOSE YOUR METADATA DESIGN:
   // Change this value: 1, 2, or 3
-  const METADATA_DESIGN = 1;
+  const METADATA_DESIGN = 3;
 
   useEffect(() => {
     if (post?.image) {
