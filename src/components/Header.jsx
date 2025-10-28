@@ -151,6 +151,7 @@ const Header = () => {
   }
 };
 
+  // 🔥 FIX 1: Close dropdown on scroll with passive listener
   useEffect(() => {
     const controlHeader = () => {
       const currentScrollY = window.scrollY;
@@ -158,15 +159,33 @@ const Header = () => {
         setIsVisible(true);
       } else if (currentScrollY > lastScrollY) {
         setIsVisible(false);
+        // 🔥 CRITICAL: Close any open dropdown when scrolling down
+        setOpenDropdown(null);
       } else {
         setIsVisible(true);
       }
       setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', controlHeader);
+    window.addEventListener('scroll', controlHeader, { passive: true });
     return () => window.removeEventListener('scroll', controlHeader);
   }, [lastScrollY]);
+
+  // 🔥 FIX 2: Close dropdown on click outside (e.g., clicking article content)
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      // Don't close if clicking inside the header or its dropdowns
+      const header = document.querySelector('header');
+      if (header && !header.contains(e.target)) {
+        setOpenDropdown(null);
+      }
+    };
+
+    if (openDropdown) {
+      document.addEventListener('click', handleClickOutside, { passive: true });
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [openDropdown]);
 
   const MegaMenu = ({ category, categoryKey }) => {
     // Generate sparks for animation
@@ -304,7 +323,8 @@ const Header = () => {
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         borderBottom: '1px solid rgba(51, 65, 85, 0.3)',
-        boxShadow: '0 4px 30px rgba(0, 0, 0, 0.3)'
+        boxShadow: '0 4px 30px rgba(0, 0, 0, 0.3)',
+        pointerEvents: 'auto'
       }}
     >
       <nav className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
@@ -367,7 +387,11 @@ const Header = () => {
 
                   <AnimatePresence>
                     {openDropdown === key && (
-                      <div onMouseEnter={() => setOpenDropdown(key)} onMouseLeave={() => setOpenDropdown(null)}>
+                      <div 
+                        onMouseEnter={() => setOpenDropdown(key)} 
+                        onMouseLeave={() => setOpenDropdown(null)}
+                        className="pointer-events-auto"
+                      >
                         <MegaMenu category={category} categoryKey={key} />
                       </div>
                     )}
