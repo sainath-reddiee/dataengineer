@@ -1,8 +1,8 @@
-// src/pages/ArticlePage.jsx - OPTIMIZED FOR SPEED
+// src/pages/ArticlePage.jsx - ENHANCED WITH BETTER DESIGN
 import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Calendar, Clock, User, Loader, AlertCircle, RefreshCw, Tag } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Calendar, Clock, User, AlertCircle, RefreshCw, Tag, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MetaTags from '@/components/SEO/MetaTags';
 import { usePost, useRelatedPosts } from '@/hooks/useWordPress';
@@ -19,22 +19,15 @@ import ReadingProgressBar from '@/components/ReadingProgressBar';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
-// ✅ CRITICAL: Pre-render skeleton with exact dimensions to prevent CLS
 const ArticleSkeleton = () => (
   <div className="container mx-auto px-6 max-w-4xl">
     <div className="mb-4 h-10 w-32 bg-gray-800 rounded animate-pulse" />
-    
-    {/* Hero skeleton with FIXED height */}
-    <div className="relative rounded-2xl overflow-hidden mb-8" style={{ height: '384px' }}>
+    <div className="relative rounded-2xl overflow-hidden mb-8" style={{ height: '400px' }}>
       <div className="w-full h-full bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-pulse" />
     </div>
-
-    {/* Content skeleton */}
     <div className="space-y-4">
       <div className="h-8 bg-gray-800 rounded w-3/4 animate-pulse" />
       <div className="h-4 bg-gray-800 rounded w-full animate-pulse" />
-      <div className="h-4 bg-gray-800 rounded w-5/6 animate-pulse" />
-      <div className="h-4 bg-gray-800 rounded w-4/6 animate-pulse" />
     </div>
   </div>
 );
@@ -60,7 +53,6 @@ const processWordPressContent = (content) => {
   };
   
   let cleanContent = DOMPurify.sanitize(content, config);
-  
   cleanContent = cleanContent
     .replace(/<p>(\s|&nbsp;)*<\/p>/g, '')
     .replace(/<br\s*\/?>/g, '<br />')
@@ -79,15 +71,9 @@ const ErrorDisplay = ({ error, onRetry, slug }) => {
     if (!error) return 'An unknown error occurred';
     if (typeof error === 'string') return error;
     if (error.message) {
-      if (error.message.includes('not found')) {
-        return `Article "${slug}" was not found. It may have been moved or deleted.`;
-      }
-      if (error.message.includes('Network')) {
-        return 'Unable to connect to the server. Please check your internet connection.';
-      }
-      if (error.message.includes('timeout')) {
-        return 'The request took too long. Please try again.';
-      }
+      if (error.message.includes('not found')) return `Article "${slug}" was not found.`;
+      if (error.message.includes('Network')) return 'Unable to connect. Please check your internet connection.';
+      if (error.message.includes('timeout')) return 'Request timed out. Please try again.';
       return error.message;
     }
     return 'Failed to load the article. Please try again.';
@@ -98,42 +84,22 @@ const ErrorDisplay = ({ error, onRetry, slug }) => {
   return (
     <div className="pt-4 pb-12">
       <div className="container mx-auto px-6 max-w-4xl">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="mb-4"
-        >
-          <Button asChild variant="outline" className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm">
-            <Link to="/articles">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              All Articles
-            </Link>
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-4">
+          <Button asChild variant="outline" className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20">
+            <Link to="/articles"><ArrowLeft className="mr-2 h-4 w-4" />All Articles</Link>
           </Button>
         </motion.div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="flex flex-col items-center justify-center py-20 text-center"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center justify-center py-20 text-center">
           <AlertCircle className="h-16 w-16 text-red-400 mx-auto mb-4" />
           <h1 className="text-2xl md:text-3xl font-bold mb-4 text-red-400">
             {isNotFound ? 'Article Not Found' : 'Error Loading Article'}
           </h1>
-          
-          <p className="text-gray-400 leading-relaxed max-w-md mb-4">
-            {getErrorMessage(error)}
-          </p>
-          
+          <p className="text-gray-400 leading-relaxed max-w-md mb-4">{getErrorMessage(error)}</p>
           {!isNotFound && (
             <Button onClick={onRetry} className="bg-blue-600 hover:bg-blue-700 text-white">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Try Again
+              <RefreshCw className="mr-2 h-4 w-4" />Try Again
             </Button>
           )}
-          
           {isNotFound && (
             <Button onClick={() => navigate('/articles')} className="bg-blue-600 hover:bg-blue-700 text-white">
               Browse All Articles
@@ -155,17 +121,13 @@ const RelatedPosts = ({ currentPostId }) => {
           Related <span className="gradient-text">Articles</span>
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <PostCardSkeleton />
-          <PostCardSkeleton />
-          <PostCardSkeleton />
+          {[1, 2, 3].map(i => <PostCardSkeleton key={i} />)}
         </div>
       </div>
     );
   }
 
-  if (relatedPosts.length === 0) {
-    return null;
-  }
+  if (relatedPosts.length === 0) return null;
 
   return (
     <div className="mt-16">
@@ -173,9 +135,7 @@ const RelatedPosts = ({ currentPostId }) => {
         Related <span className="gradient-text">Articles</span>
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {relatedPosts.map(post => (
-          <PostCard key={post.id} post={post} />
-        ))}
+        {relatedPosts.map(post => <PostCard key={post.id} post={post} />)}
       </div>
     </div>
   );
@@ -186,7 +146,6 @@ const ArticlePage = () => {
   const { post, loading, error, refetch } = usePost(slug);
   const [contentReady, setContentReady] = useState(false);
 
-  // ✅ CRITICAL: Start image preload immediately
   useEffect(() => {
     if (post?.image) {
       const img = new Image();
@@ -220,11 +179,6 @@ const ArticlePage = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [post]);
 
-  const handleRetry = () => {
-    refetch();
-  };
-
-  // ✅ Show skeleton immediately while loading
   if (loading) {
     return (
       <div className="pt-4 pb-12">
@@ -234,17 +188,8 @@ const ArticlePage = () => {
     );
   }
 
-  if (error) {
-    return <ErrorDisplay error={error} onRetry={handleRetry} slug={slug} />;
-  }
-
-  if (!post) {
-    return <ErrorDisplay 
-      error={{ message: "Post not found" }}
-      onRetry={handleRetry} 
-      slug={slug} 
-    />;
-  }
+  if (error) return <ErrorDisplay error={error} onRetry={refetch} slug={slug} />;
+  if (!post) return <ErrorDisplay error={{ message: "Post not found" }} onRetry={refetch} slug={slug} />;
 
   const safePost = {
     id: post.id || 'unknown',
@@ -253,7 +198,7 @@ const ArticlePage = () => {
     content: post.content || '<p>Content not available</p>',
     category: post.category || 'Uncategorized',
     tags: post.tags || [],
-    author: 'Sainath Reddy', // ✅ FIXED: Hardcoded correct author name
+    author: 'Sainath Reddy',
     date: post.date || new Date().toISOString(),
     readTime: post.readTime || '1 min read',
     image: post.image || 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop'
@@ -262,20 +207,10 @@ const ArticlePage = () => {
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        throw new Error("Invalid date");
-      }
-      return date.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
-      });
+      if (isNaN(date.getTime())) throw new Error("Invalid date");
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     } catch (error) {
-      return new Date().toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
-      });
+      return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
   };
 
@@ -295,82 +230,80 @@ const ArticlePage = () => {
       />
       
       <div className="container mx-auto px-6 max-w-4xl">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2 }}
-          className="mb-4"
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="mb-6">
           <Button asChild variant="outline" className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm">
-            <Link to="/articles">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              All Articles
-            </Link>
+            <Link to="/articles"><ArrowLeft className="mr-2 h-4 w-4" />All Articles</Link>
           </Button>
         </motion.div>
 
-        <motion.article
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className="space-y-8"
-        >
-          {/* ✅ FIXED: Clean hero image without text overlays */}
-          <div className="relative rounded-2xl overflow-hidden mb-8" style={{ height: '384px' }}>
+        <motion.article initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} className="space-y-8">
+          {/* Enhanced Hero Image */}
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl" style={{ height: '450px' }}>
             <LazyImage
               src={safePost.image}
               alt={safePost.title}
               width={1600}
-              quality={85}
+              quality={90}
               sizes="(max-width: 768px) 100vw, 1200px"
               className="w-full h-full object-cover"
               priority={true}
             />
           </div>
 
-          {/* ✅ NEW: Article metadata below image with hyperlinked author */}
+          {/* Enhanced Metadata Section */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="space-y-4"
+            className="space-y-6"
           >
             {/* Category Badge */}
-            <div>
+            <div className="flex items-center gap-3">
               <Link 
                 to={`/category/${safePost.category.toLowerCase()}`}
-                className="inline-block px-4 py-2 bg-blue-600/80 hover:bg-blue-600 backdrop-blur-sm rounded-full text-sm font-medium text-white transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-full text-sm font-semibold text-white transition-all shadow-lg shadow-blue-500/30"
               >
                 {safePost.category}
               </Link>
             </div>
 
             {/* Article Title */}
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight text-white">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-white">
               {safePost.title}
             </h1>
 
-            {/* Author and Meta Info */}
-            <div className="flex flex-wrap items-center gap-4 text-base text-gray-300 pb-6 border-b border-gray-800">
-              <div className="flex items-center gap-2">
+            {/* Enhanced Author and Meta Info */}
+            <div className="flex flex-wrap items-center gap-4 text-base pb-6 border-b-2 border-gray-700/50">
+              <div className="flex items-center gap-2 bg-gray-800/50 px-4 py-2 rounded-full">
                 <User className="h-5 w-5 text-blue-400" />
-                <span>By</span>
+                <span className="text-gray-400">By</span>
                 <Link 
                   to="/about"
-                  className="text-white font-semibold hover:text-blue-400 transition-colors underline decoration-blue-400/50 hover:decoration-blue-400"
+                  className="text-white font-bold hover:text-blue-400 transition-colors"
                 >
                   Sainath Reddy
                 </Link>
               </div>
-              <span className="text-gray-600">•</span>
-              <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-gray-400" />
+              <div className="flex items-center gap-2 bg-gray-800/50 px-4 py-2 rounded-full text-gray-300">
+                <Calendar className="h-5 w-5 text-purple-400" />
                 <span>{formatDate(safePost.date)}</span>
               </div>
-              <span className="text-gray-600">•</span>
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-gray-400" />
-                <span>{safePost.readTime}</span>
+              <div className="flex items-center gap-2 bg-gray-800/50 px-4 py-2 rounded-full text-gray-300">
+                <Clock className="h-5 w-5 text-green-400" />
+                <span className="font-semibold">{safePost.readTime}</span>
+              </div>
+            </div>
+
+            {/* Quick Stats Bar */}
+            <div className="flex items-center gap-6 p-4 bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-xl border border-blue-500/20">
+              <div className="text-sm">
+                <span className="text-gray-400">Data Engineer at </span>
+                <span className="text-blue-400 font-bold">Anblicks</span>
+              </div>
+              <div className="h-4 w-px bg-gray-700"></div>
+              <div className="text-sm">
+                <span className="text-yellow-400 font-bold">4+ years</span>
+                <span className="text-gray-400"> experience</span>
               </div>
             </div>
           </motion.div>
@@ -379,27 +312,23 @@ const ArticlePage = () => {
             <AdPlacement position="article-top" />
           </Suspense>
 
-          {/* ✅ Render content immediately without waiting */}
-          <div className="prose prose-invert prose-lg max-w-none">
+          {/* Article Content */}
+          <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-h2:text-3xl prose-h2:font-bold prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-pink-400 prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
             <div 
               dangerouslySetInnerHTML={{ __html: processWordPressContent(safePost.content) }}
               className="article-content"
-              style={{
-                overflowWrap: 'break-word',
-                wordWrap: 'break-word',
-                minHeight: '200px'
-              }}
             />
           </div>
 
+          {/* Tags Section */}
           {safePost.tags && safePost.tags.length > 0 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="my-8 p-6 bg-slate-800/50 rounded-xl border border-slate-700"
+              className="my-8 p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl border border-slate-700/50 backdrop-blur-sm"
             >
-              <h3 className="text-lg font-semibold mb-4 text-white flex items-center gap-2">
-                <Tag className="h-5 w-5 text-blue-400" />
+              <h3 className="text-xl font-bold mb-4 text-white flex items-center gap-2">
+                <Tag className="h-6 w-6 text-blue-400" />
                 Related Topics
               </h3>
               <TagsList tags={safePost.tags} showIcon={false} size="default" />
@@ -410,30 +339,33 @@ const ArticlePage = () => {
             <AdPlacement position="article-bottom" />
           </Suspense>
 
-          {/* ✅ Author footer section with hyperlink */}
-          <div className="border-t border-gray-800 pt-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <div className="space-y-2">
-                <p className="text-gray-400">Published by</p>
+          {/* Enhanced Author Footer */}
+          <div className="border-t-2 border-gray-700/50 pt-8 mt-12">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 p-6 bg-gradient-to-r from-blue-900/10 to-purple-900/10 rounded-2xl border border-blue-500/20">
+              <div className="space-y-3">
+                <p className="text-sm text-gray-400 uppercase tracking-wider">Published by</p>
                 <Link 
                   to="/about"
-                  className="font-semibold text-white text-lg hover:text-blue-400 transition-colors inline-flex items-center gap-2 group"
+                  className="font-bold text-2xl text-white hover:text-blue-400 transition-colors inline-flex items-center gap-2 group"
                 >
                   Sainath Reddy
-                  <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ArrowRight className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
-                <p className="text-sm text-blue-400 font-medium">Data Engineer at Anblicks</p>
-                <p className="text-sm text-gray-500">📅 {formatDate(safePost.date)}</p>
-                <p className="text-xs text-gray-600">🎯 4+ years of Data Engineering experience</p>
+                <p className="text-base text-blue-400 font-semibold">Data Engineer at Anblicks</p>
+                <div className="flex items-center gap-4 text-sm">
+                  <span className="text-gray-400">📅 {formatDate(safePost.date)}</span>
+                  <span className="text-gray-700">•</span>
+                  <span className="text-yellow-400 font-semibold">🎯 4+ years experience</span>
+                </div>
               </div>
               <div className="flex flex-col gap-3">
-                <Button asChild className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
+                <Button asChild className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold shadow-lg">
                   <Link to="/articles">
-                    <ArrowRight className="mr-2 h-4 w-4" />
+                    <ArrowRight className="mr-2 h-5 w-5" />
                     More Articles
                   </Link>
                 </Button>
-                <Button asChild variant="outline" className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20">
+                <Button asChild variant="outline" className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 font-semibold">
                   <Link to="/contact">
                     Get in Touch
                   </Link>
@@ -443,12 +375,7 @@ const ArticlePage = () => {
           </div>
         </motion.article>
         
-        <ArticleNavigation 
-          currentPostId={safePost.id} 
-          category={safePost.category} 
-        />
-        
-        {/* ✅ Load related posts last - they're not critical */}
+        <ArticleNavigation currentPostId={safePost.id} category={safePost.category} />
         <RelatedPosts currentPostId={safePost.id} />
       </div>
     </div>
