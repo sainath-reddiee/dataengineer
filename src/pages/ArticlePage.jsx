@@ -1,4 +1,4 @@
-// src/pages/ArticlePage.jsx - COMPLETELY REDESIGNED WITH UNIFIED METADATA
+// src/pages/ArticlePage.jsx - OPTIMIZED WITH COMPACT METADATA HEADER
 import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -250,12 +250,12 @@ const ArticlePage = () => {
             />
           </div>
 
-          {/* 🎨 REDESIGNED METADATA SECTION - UNIFIED CARD */}
+          {/* 🎨 OPTIMIZED METADATA SECTION - COMPACT SINGLE LINE */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="space-y-6"
+            className="space-y-4"
           >
             {/* Category Badge */}
             <div className="flex items-center gap-3">
@@ -272,64 +272,62 @@ const ArticlePage = () => {
               {safePost.title}
             </h1>
 
-            {/* 🔥 UNIFIED AUTHOR CARD - All metadata in one beautiful card */}
-            <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 shadow-2xl">
-              {/* Author Info Row */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+            {/* 🔥 OPTIMIZED - COMPACT SINGLE LINE METADATA */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-4 border-t border-b border-slate-700/50">
+              {/* Left: Author & Meta Info */}
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300">
+                {/* Author */}
+                <Link 
+                  to="/about"
+                  className="flex items-center gap-2 hover:text-blue-400 transition-colors group"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-md">
                     SR
                   </div>
-                  <div>
-                    <Link 
-                      to="/about"
-                      className="text-white font-bold text-lg hover:text-blue-400 transition-colors flex items-center gap-1 group"
-                    >
-                      Sainath Reddy
-                      <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </Link>
-                    <p className="text-blue-400 text-sm font-medium">Data Engineer at Anblicks</p>
-                  </div>
-                </div>
-                
-                {/* Experience Badge */}
-                <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-full px-4 py-2">
-                  <span className="text-2xl">🎯</span>
-                  <div className="flex flex-col">
-                    <span className="text-yellow-400 font-bold text-sm">4+ Years</span>
-                    <span className="text-gray-400 text-xs">Experience</span>
-                  </div>
+                  <span className="font-semibold text-white group-hover:text-blue-400">Sainath Reddy</span>
+                  <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
+
+                {/* Divider */}
+                <span className="text-gray-600">•</span>
+
+                {/* Experience Badge - More compact */}
+                <span className="flex items-center gap-1 px-2 py-1 bg-yellow-500/10 border border-yellow-500/30 rounded-full text-xs font-semibold text-yellow-400">
+                  🎯 4+ yrs
+                </span>
+
+                {/* Divider */}
+                <span className="text-gray-600">•</span>
+
+                {/* Date & Read Time */}
+                <div className="flex items-center gap-3">
+                  <span className="flex items-center gap-1 text-gray-400">
+                    <Calendar className="h-3.5 w-3.5 text-purple-400" />
+                    {formatDate(safePost.date)}
+                  </span>
+                  <span className="text-gray-600">•</span>
+                  <span className="flex items-center gap-1 text-gray-400 font-semibold">
+                    <Clock className="h-3.5 w-3.5 text-green-400" />
+                    {safePost.readTime}
+                  </span>
                 </div>
               </div>
 
-              {/* Metadata Row */}
-              <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-700/50">
-                <div className="flex items-center gap-2 text-gray-300 text-sm">
-                  <Calendar className="h-4 w-4 text-purple-400" />
-                  <span>{formatDate(safePost.date)}</span>
-                </div>
-                <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
-                <div className="flex items-center gap-2 text-gray-300 text-sm">
-                  <Clock className="h-4 w-4 text-green-400" />
-                  <span className="font-semibold">{safePost.readTime}</span>
-                </div>
-                <div className="ml-auto">
-                  <button 
-                    onClick={() => {
-                      if (navigator.share) {
-                        navigator.share({
-                          title: safePost.title,
-                          url: window.location.href
-                        }).catch(() => {});
-                      }
-                    }}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-700/50 hover:bg-slate-700 rounded-lg text-sm text-gray-300 hover:text-white transition-colors"
-                  >
-                    <Share2 className="h-4 w-4" />
-                    <span className="hidden sm:inline">Share</span>
-                  </button>
-                </div>
-              </div>
+              {/* Right: Share Button */}
+              <button 
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: safePost.title,
+                      url: window.location.href
+                    }).catch(() => {});
+                  }
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-700/50 hover:bg-slate-700 rounded-lg text-sm text-gray-300 hover:text-white transition-colors font-medium whitespace-nowrap"
+              >
+                <Share2 className="h-4 w-4" />
+                <span className="hidden sm:inline">Share</span>
+              </button>
             </div>
           </motion.div>
 
