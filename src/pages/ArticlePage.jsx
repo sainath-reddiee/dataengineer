@@ -1,4 +1,4 @@
-// src/pages/ArticlePage.jsx - ENHANCED WITH BETTER DESIGN
+// src/pages/ArticlePage.jsx - COMPLETELY REDESIGNED WITH UNIFIED METADATA
 import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -250,7 +250,7 @@ const ArticlePage = () => {
             />
           </div>
 
-          {/* Enhanced Metadata Section */}
+          {/* 🎨 REDESIGNED METADATA SECTION - UNIFIED CARD */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -272,38 +272,63 @@ const ArticlePage = () => {
               {safePost.title}
             </h1>
 
-            {/* Enhanced Author and Meta Info */}
-            <div className="flex flex-wrap items-center gap-4 text-base pb-6 border-b-2 border-gray-700/50">
-              <div className="flex items-center gap-2 bg-gray-800/50 px-4 py-2 rounded-full">
-                <User className="h-5 w-5 text-blue-400" />
-                <span className="text-gray-400">By</span>
-                <Link 
-                  to="/about"
-                  className="text-white font-bold hover:text-blue-400 transition-colors"
-                >
-                  Sainath Reddy
-                </Link>
+            {/* 🔥 UNIFIED AUTHOR CARD - All metadata in one beautiful card */}
+            <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 shadow-2xl">
+              {/* Author Info Row */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                    SR
+                  </div>
+                  <div>
+                    <Link 
+                      to="/about"
+                      className="text-white font-bold text-lg hover:text-blue-400 transition-colors flex items-center gap-1 group"
+                    >
+                      Sainath Reddy
+                      <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </Link>
+                    <p className="text-blue-400 text-sm font-medium">Data Engineer at Anblicks</p>
+                  </div>
+                </div>
+                
+                {/* Experience Badge */}
+                <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-full px-4 py-2">
+                  <span className="text-2xl">🎯</span>
+                  <div className="flex flex-col">
+                    <span className="text-yellow-400 font-bold text-sm">4+ Years</span>
+                    <span className="text-gray-400 text-xs">Experience</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-2 bg-gray-800/50 px-4 py-2 rounded-full text-gray-300">
-                <Calendar className="h-5 w-5 text-purple-400" />
-                <span>{formatDate(safePost.date)}</span>
-              </div>
-              <div className="flex items-center gap-2 bg-gray-800/50 px-4 py-2 rounded-full text-gray-300">
-                <Clock className="h-5 w-5 text-green-400" />
-                <span className="font-semibold">{safePost.readTime}</span>
-              </div>
-            </div>
 
-            {/* Quick Stats Bar */}
-            <div className="flex items-center gap-6 p-4 bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-xl border border-blue-500/20">
-              <div className="text-sm">
-                <span className="text-gray-400">Data Engineer at </span>
-                <span className="text-blue-400 font-bold">Anblicks</span>
-              </div>
-              <div className="h-4 w-px bg-gray-700"></div>
-              <div className="text-sm">
-                <span className="text-yellow-400 font-bold">4+ years</span>
-                <span className="text-gray-400"> experience</span>
+              {/* Metadata Row */}
+              <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-700/50">
+                <div className="flex items-center gap-2 text-gray-300 text-sm">
+                  <Calendar className="h-4 w-4 text-purple-400" />
+                  <span>{formatDate(safePost.date)}</span>
+                </div>
+                <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+                <div className="flex items-center gap-2 text-gray-300 text-sm">
+                  <Clock className="h-4 w-4 text-green-400" />
+                  <span className="font-semibold">{safePost.readTime}</span>
+                </div>
+                <div className="ml-auto">
+                  <button 
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({
+                          title: safePost.title,
+                          url: window.location.href
+                        }).catch(() => {});
+                      }
+                    }}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-700/50 hover:bg-slate-700 rounded-lg text-sm text-gray-300 hover:text-white transition-colors"
+                  >
+                    <Share2 className="h-4 w-4" />
+                    <span className="hidden sm:inline">Share</span>
+                  </button>
+                </div>
               </div>
             </div>
           </motion.div>
