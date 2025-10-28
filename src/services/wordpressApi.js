@@ -1,4 +1,4 @@
-// src/services/wordpressApi.js - OPTIMIZED FOR SPEED
+// src/services/wordpressApi.js - FIXED READ TIME CALCULATION
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog';
 const WP_API_BASE = `${WORDPRESS_API_URL}/wp-json/wp/v2`;
 
@@ -6,7 +6,7 @@ class WordPressAPI {
   constructor() {
     this.baseURL = WP_API_BASE;
     this.cache = new Map();
-    this.cacheTimeout = 60 * 1000; // ✅ Increased to 60 seconds for better performance
+    this.cacheTimeout = 60 * 1000; // 60 seconds cache
     this.requestQueue = new Map();
     this.prefetchedData = new Map();
   }
@@ -42,7 +42,6 @@ class WordPressAPI {
       .replace(/&gt;/g, ">");
   }
 
-  // ✅ CRITICAL: Reduced timeout and improved caching
   async makeRequest(endpoint, options = {}) {
     const cacheKey = `${endpoint}_${JSON.stringify(options)}`;
     
@@ -52,7 +51,6 @@ class WordPressAPI {
       return cached;
     }
 
-    // ✅ Prevent duplicate requests
     if (this.requestQueue.has(cacheKey)) {
       console.log('⏳ Request already in progress, waiting...');
       return this.requestQueue.get(cacheKey);
@@ -63,7 +61,7 @@ class WordPressAPI {
         console.log('📡 API Request:', `${this.baseURL}${endpoint}`);
         
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000); // ✅ Reduced from 15s to 8s
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
         
         const response = await fetch(`${this.baseURL}${endpoint}`, {
           mode: 'cors',
@@ -138,7 +136,6 @@ class WordPressAPI {
     return requestPromise;
   }
 
-  // ✅ OPTIMIZED: Fetch only necessary fields
   async getPostBySlug(slug) {
     try {
       if (!slug || typeof slug !== 'string' || slug.trim() === '') {
@@ -148,7 +145,6 @@ class WordPressAPI {
       const cleanSlug = slug.trim();
       console.log('🔍 Fetching post by slug:', cleanSlug);
 
-      // ✅ CRITICAL: Only fetch required fields to reduce payload
       const result = await this.makeRequest(
         `/posts?slug=${encodeURIComponent(cleanSlug)}&_embed=wp:featuredmedia,wp:term,author&status=publish&_fields=id,slug,title,excerpt,content,date,featured_image_url,_embedded,meta,post_tags`
       );
@@ -165,7 +161,7 @@ class WordPressAPI {
       }
 
       const post = this.transformPost(posts[0]);
-      console.log('✅ Post loaded in', Date.now() - result.timestamp, 'ms');
+      console.log('✅ Post loaded successfully with', post.readTime);
       
       return post;
     } catch (error) {
@@ -174,14 +170,53 @@ class WordPressAPI {
     }
   }
 
-  // ✅ Simplified transform with early returns
+  // 🔥 FIXED: Proper read time calculation
+  calculateReadTime(content) {
+    try {
+      if (!content) {
+        console.warn('⚠️ No content provided for read time calculation');
+        return '1 min read';
+      }
+      
+      // Remove all HTML tags to get pure text
+      let textContent = content
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove scripts
+        .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')   // Remove styles
+        .replace(/<[^>]+>/g, ' ')                                          // Remove all HTML tags
+        .replace(/&nbsp;/g, ' ')                                           // Replace &nbsp;
+        .replace(/&[a-z]+;/gi, ' ')                                        // Replace HTML entities
+        .replace(/\s+/g, ' ')                                              // Normalize whitespace
+        .trim();
+      
+      if (textContent.length === 0) {
+        console.warn('⚠️ Content has no readable text after HTML removal');
+        return '1 min read';
+      }
+      
+      // Count actual words (split by whitespace and filter empty strings)
+      const words = textContent.split(/\s+/).filter(word => word.length > 0);
+      const wordCount = words.length;
+      
+      // Average reading speed: 200 words per minute
+      const readingSpeed = 200;
+      const minutes = Math.max(1, Math.ceil(wordCount / readingSpeed));
+      
+      console.log(`📚 Read time calculated: ${wordCount} words = ${minutes} min read`);
+      
+      return `${minutes} min read`;
+    } catch (error) {
+      console.error('❌ Error calculating read time:', error);
+      return '1 min read';
+    }
+  }
+
   transformPost(wpPost) {
     try {
       if (!wpPost || typeof wpPost !== 'object') {
         throw new Error('Invalid post data provided');
       }
 
-      // ✅ Fast path for image extraction
+      // Fast path for image extraction
       let imageUrl = 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop';
       
       if (wpPost.featured_image_url) {
@@ -195,7 +230,7 @@ class WordPressAPI {
         }
       }
 
-      // ✅ Fast category extraction
+      // Fast category extraction
       let primaryCategory = 'Uncategorized';
       const categories = wpPost._embedded?.['wp:term']?.[0];
       if (Array.isArray(categories) && categories.length > 0) {
@@ -203,7 +238,7 @@ class WordPressAPI {
         primaryCategory = nonUncategorized?.name || categories[0]?.name || 'Uncategorized';
       }
 
-      // ✅ Fast tag extraction
+      // Fast tag extraction
       let tags = [];
       if (wpPost.post_tags && Array.isArray(wpPost.post_tags)) {
         tags = wpPost.post_tags;
@@ -225,21 +260,31 @@ class WordPressAPI {
         excerpt = this.cleanExcerpt(wpPost.excerpt.rendered);
       }
 
+      // 🔥 CRITICAL: Use actual content for read time calculation
+      const content = wpPost.content?.rendered || wpPost.content || '';
+      const readTime = this.calculateReadTime(content);
+
       const transformedPost = {
         id: wpPost.id,
         slug: wpPost.slug || '',
         title: this.decodeHtmlEntities(wpPost.title?.rendered || wpPost.title || 'Untitled'),
         excerpt: excerpt,
-        content: wpPost.content?.rendered || wpPost.content || '',
+        content: content,
         category: primaryCategory,
         tags: tags,
-        readTime: this.calculateReadTime(wpPost.content?.rendered || wpPost.content || ''),
+        readTime: readTime, // Now properly calculated from actual content
         date: wpPost.date || new Date().toISOString(),
         image: imageUrl,
         featured: featured,
         trending: trending,
         author: author,
       };
+
+      console.log('✅ Transformed post:', {
+        title: transformedPost.title.substring(0, 50),
+        readTime: transformedPost.readTime,
+        contentLength: content.length
+      });
 
       return transformedPost;
 
@@ -276,22 +321,6 @@ class WordPressAPI {
     }
   }
 
-  calculateReadTime(content) {
-    try {
-      if (!content) return '1 min read';
-      
-      const textContent = content.replace(/<[^>]*>/g, '').trim();
-      if (textContent.length === 0) return '1 min read';
-      
-      const wordCount = textContent.split(/\s+/).length;
-      const minutes = Math.max(1, Math.ceil(wordCount / 200));
-      
-      return `${minutes} min read`;
-    } catch (error) {
-      return '1 min read';
-    }
-  }
-
   async getPosts(options = {}) {
     const { 
       page = 1, 
@@ -310,7 +339,7 @@ class WordPressAPI {
         page: Math.max(1, page).toString(),
         per_page: Math.min(100, Math.max(1, per_page)).toString(),
         _embed: 'wp:featuredmedia,wp:term,author',
-        _fields: 'id,slug,title,excerpt,date,featured_image_url,_embedded,meta,post_tags',
+        _fields: 'id,slug,title,excerpt,content,date,featured_image_url,_embedded,meta,post_tags',
         status: 'publish',
         orderby: orderby || 'date',
         order: order || 'desc'
@@ -506,7 +535,7 @@ class WordPressAPI {
     
     try {
       console.log(`🧠 Fetching related posts for ID: ${postId}`);
-      const result = await this.makeRequest(`/posts/${postId}/related?_fields=id,slug,title,excerpt,date,featured_image_url,_embedded`);
+      const result = await this.makeRequest(`/posts/${postId}/related?_fields=id,slug,title,excerpt,content,date,featured_image_url,_embedded`);
       
       if (!result || !Array.isArray(result.data)) {
         console.warn('⚠️ Related posts response was not an array:', result);
