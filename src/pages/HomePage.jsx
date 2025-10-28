@@ -1,9 +1,9 @@
-// src/pages/HomePage.jsx - ULTRA-COMPACT & SPACE-EFFICIENT
+// src/pages/HomePage.jsx - ULTRA-COMPACT & SPACE-EFFICIENT (WITHOUT STAT CARDS & QUICK LINKS)
 import React, { Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Hero from '../components/Hero';
 import MetaTags from '../components/SEO/MetaTags';
-import { Sparkles, TrendingUp, FileText, Code2, Zap, BookOpen } from 'lucide-react';
+import { Sparkles, TrendingUp, FileText, Zap } from 'lucide-react';
 
 const FeaturedPosts = React.lazy(() => import('../components/FeaturedPosts'));
 const TrendingPosts = React.lazy(() => import('../components/TrendingPosts'));
@@ -60,51 +60,6 @@ const SectionHeader = ({
   </motion.div>
 );
 
-// 🎯 STAT CARD - Ultra-compact inline stats
-const StatCard = ({ icon: Icon, label, value, color = 'blue' }) => {
-  const colorMap = {
-    blue: 'from-blue-500/10 to-cyan-500/10 text-blue-400 border-blue-500/20',
-    purple: 'from-purple-500/10 to-pink-500/10 text-purple-400 border-purple-500/20',
-    amber: 'from-amber-500/10 to-orange-500/10 text-amber-400 border-amber-500/20',
-    emerald: 'from-emerald-500/10 to-teal-500/10 text-emerald-400 border-emerald-500/20',
-  };
-
-  return (
-    <div className={`bg-gradient-to-br ${colorMap[color]} border rounded-lg p-3 sm:p-4 flex-1 min-w-[140px]`}>
-      <div className="flex items-center gap-2 mb-1">
-        <Icon className="w-4 h-4 flex-shrink-0" />
-        <span className="text-xs text-gray-400 truncate">{label}</span>
-      </div>
-      <p className="text-xl sm:text-2xl font-bold">{value}</p>
-    </div>
-  );
-};
-
-// 🎬 QUICK LINKS SECTION - Grid of action items
-const QuickLinks = () => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-6 sm:mb-8"
-  >
-    {[
-      { icon: BookOpen, label: 'Get Started', href: '/articles' },
-      { icon: TrendingUp, label: 'Trending', href: '/tag/trending' },
-      { icon: Code2, label: 'Tutorials', href: '/category/python' },
-      { icon: Zap, label: 'Latest', href: '/tag/2025' },
-    ].map((item, i) => (
-      <a
-        key={i}
-        href={item.href}
-        className="flex flex-col items-center justify-center gap-2 p-3 sm:p-4 bg-gradient-to-br from-slate-800/60 to-slate-700/60 hover:from-slate-800 hover:to-slate-700 border border-slate-700/40 hover:border-slate-600/60 rounded-xl transition-all group"
-      >
-        <item.icon className="w-5 h-5 text-blue-400 group-hover:text-blue-300 transition-colors" />
-        <span className="text-xs font-semibold text-gray-300 group-hover:text-white text-center">{item.label}</span>
-      </a>
-    ))}
-  </motion.div>
-);
-
 const HomePage = () => {
   return (
     <>
@@ -128,18 +83,6 @@ const HomePage = () => {
             ============================================================================ */}
         <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
           
-          {/* 🎯 QUICK STATS SECTION - Inline compact cards */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-4"
-          >
-            <StatCard icon={Sparkles} label="Total Articles" value="140+" color="blue" />
-            <StatCard icon={BookOpen} label="Tech Topics" value="12" color="purple" />
-            <StatCard icon={Zap} label="Tools Covered" value="25+" color="amber" />
-            <StatCard icon={TrendingUp} label="Monthly Views" value="50K+" color="emerald" />
-          </motion.div>
-
           {/* AD - TOP */}
           <Suspense fallback={null}>
             <AdPlacement position="homepage-top" format="auto" responsive={true} />
@@ -159,9 +102,6 @@ const HomePage = () => {
             </Suspense>
           </section>
 
-          {/* 🎬 QUICK LINKS - Navigation shortcuts */}
-          <QuickLinks />
-
           {/* 🔥 TRENDING POSTS - Compact grid */}
           <section>
             <SectionHeader 
@@ -169,7 +109,7 @@ const HomePage = () => {
               title="Trending Now" 
               subtitle="Most popular this week"
               actionText="See all"
-              actionLink="/tag/trending"
+              actionLink="/articles"
             />
             <Suspense fallback={<SectionSkeleton height="h-40" />}>
               <TrendingPosts />
@@ -184,11 +124,11 @@ const HomePage = () => {
           {/* 🛠 TECH CATEGORIES - Grid view */}
           <section>
             <SectionHeader 
-              icon={Code2}
+              icon={FileText}
               title="Technologies" 
               subtitle="Explore by tech stack"
               actionText="Browse all"
-              actionLink="/category/aws"
+              actionLink="/articles"
             />
             <Suspense fallback={<SectionSkeleton height="h-32" />}>
               <TechCategories />
