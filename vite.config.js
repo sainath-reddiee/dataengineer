@@ -1,4 +1,4 @@
-// vite.config.js - FINAL PRODUCTION VERSION (using JSDOM renderer)
+// vite.config.js - FINAL PRODUCTION VERSION (using Puppeteer renderer)
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -7,10 +7,10 @@ import path from 'path';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
-// ✅ 2. Import the CJS plugin AND the JSDOM renderer
+// ✅ 2. Import the CJS plugin AND the PUPPETEER renderer
 const prerenderPlugin = require('vite-plugin-prerender');
 const prerender = prerenderPlugin.default || prerenderPlugin;
-const JSDOMRenderer = require('@prerenderer/renderer-jsdom');
+const PuppeteerRenderer = require('@prerenderer/renderer-puppeteer');
 
 // ✅ 3. Import node-fetch for API calls
 import fetch from 'node-fetch';
@@ -105,12 +105,29 @@ export default defineConfig({
       },
 
       // ✅ 7. THIS IS THE FIX:
-      // Tell the Prerenderer to use the JSDOM renderer, NOT Puppeteer.
-      // This avoids the Chromium download error.
-      renderer: new JSDOMRenderer({
-        // Wait for 2000ms (2 seconds) for API calls to resolve.
-        // Adjust this if your pages load slower.
-        renderAfterTime: 2000,
+      // Tell the Prerenderer to use Puppeteer, but point it
+      // to the system's installed Chrome browser.
+      renderer: new PuppeteerRenderer({
+        // Wait for network to be idle, ensuring API calls finish
+        await: 'networkidle0', 
+        
+        // --- THIS IS THE KEY LINE ---
+        // Use the system's installed Chrome, not a downloaded one.
+        executablePath: '/usr/bin/google-chrome', 
+        
+        // Add args required for containerized environments
+        launchOptions: {
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+          ],
+        },
+        
+        // Inject a variable so your app knows it's being prerendered
+        inject: {
+          isPrerendering: true
+        },
       })
     }),
   ],
@@ -121,6 +138,7 @@ export default defineConfig({
     },
   },
   
+  // ... (rest of your build config, including 'terser') ...
   build: {
     target: 'es2015',
     minify: 'terser',
