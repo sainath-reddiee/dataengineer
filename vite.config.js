@@ -1,14 +1,7 @@
-// vite.config.js - FINAL CORRECTED VERSION
+// vite.config.js - FIXED: Conditional plugin loading
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-
-// --- PRERENDERING DEPENDENCIES ---
-// 
-// FIX #1: Use a default import (fixes "does not provide an export")
-import Prerenderer from 'vite-plugin-prerender'; 
-//
-import fetch from 'node-fetch'; // This now works because of Step 1
 
 // --- PRERENDERING CONFIG ---
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
@@ -54,12 +47,9 @@ const fetchAllPaginated = async (endpoint) => {
 };
 // --- END PRERENDERING CONFIG ---
 
-
-// 
-// FIX #2: Wrap export in a function to get the 'command'
-//
-export default defineConfig(({ command }) => ({
-  plugins: [
+// FIX: Use async function to conditionally load the prerender plugin
+export default defineConfig(async ({ command }) => {
+  const plugins = [
     react({
       fastRefresh: true,
       jsxRuntime: 'automatic',
@@ -71,147 +61,152 @@ export default defineConfig(({ command }) => ({
           ]
         ].filter(Boolean)
       }
-    }),
-    
-    // 
-    // FIX #3: Only run Prerenderer during 'build', not 'dev' (serve)
-    // This stops the 'require is not defined' error!
-    //
-    command === 'build' && Prerenderer({
-      staticDir: path.resolve(__dirname, 'dist'),
-      routes: async () => {
-        console.log('PRERENDER: Fetching all dynamic routes from WordPress...');
-        
-        // Fetch only the routes in your live app
-        const [posts, categories, tags] = await Promise.all([
-          fetchAllPaginated('/posts'),
-          fetchAllPaginated('/categories'),
-          fetchAllPaginated('/tags'),
-        ]);
-
-        const postRoutes = posts.map(post => `/articles/${post.slug}`);
-        const categoryRoutes = categories
-          .filter(cat => cat.slug !== 'uncategorized')
-          .map(cat => `/category/${cat.slug}`);
-        const tagRoutes = tags.map(tag => `/tag/${tag.slug}`);
-
-        // Static routes from your App.jsx (no certifications)
-        const staticRoutes = [
-          '/',
-          '/articles',
-          '/tag', 
-          '/about',
-          '/contact',
-          '/privacy-policy',
-          '/terms-of-service',
-          '/disclaimer',
-          '/newsletter',
-        ];
-
-        const allRoutes = [
-          ...staticRoutes,
-          ...postRoutes,
-          ...categoryRoutes,
-          ...tagRoutes,
-        ];
-        
-        console.log(`PRERENDER: Total routes to render: ${allRoutes.length}`);
-        return allRoutes;
-      },
-
-      rendererOptions: {
-        renderAfterTime: 2500, // Wait 2.5s for SPA to fetch data
-      },
     })
-    // --- END PLUGIN CONFIG ---
-  ],
-  
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
-  
-  // (The rest of your build config remains the same)
-  build: {
-    target: 'es2015',
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
-        passes: 2
-      }
-    },
+  ];
+
+  // Only import and use Prerenderer during build
+  if (command === 'build') {
+    const { default: Prerenderer } = await import('vite-plugin-prerender');
     
-    rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'react-vendor';
-            }
-            if (id.includes('framer-motion')) {
-              return 'framer-motion';
-            }
-            if (id.includes('@radix-ui')) {
-              return 'ui-vendor';
-            }
-            if (id.includes('lucide-react')) {
-              return 'icons';
-            }
-            return 'vendor';
-          }
+    plugins.push(
+      Prerenderer({
+        staticDir: path.resolve(process.cwd(), 'dist'),
+        routes: async () => {
+          console.log('PRERENDER: Fetching all dynamic routes from WordPress...');
           
-          if (id.includes('src/components/')) {
-            if (id.includes('PostCard') || id.includes('PostListItem')) {
-              return 'post-components';
-            }
-            if (id.includes('Ad')) {
-              return 'ads';
-            }
-          }
+          // Fetch only the routes in your live app
+          const [posts, categories, tags] = await Promise.all([
+            fetchAllPaginated('/posts'),
+            fetchAllPaginated('/categories'),
+            fetchAllPaginated('/tags'),
+          ]);
+
+          const postRoutes = posts.map(post => `/articles/${post.slug}`);
+          const categoryRoutes = categories
+            .filter(cat => cat.slug !== 'uncategorized')
+            .map(cat => `/category/${cat.slug}`);
+          const tagRoutes = tags.map(tag => `/tag/${tag.slug}`);
+
+          // Static routes from your App.jsx
+          const staticRoutes = [
+            '/',
+            '/articles',
+            '/tag', 
+            '/about',
+            '/contact',
+            '/privacy-policy',
+            '/terms-of-service',
+            '/disclaimer',
+            '/newsletter',
+          ];
+
+          const allRoutes = [
+            ...staticRoutes,
+            ...postRoutes,
+            ...categoryRoutes,
+            ...tagRoutes,
+          ];
+          
+          console.log(`PRERENDER: Total routes to render: ${allRoutes.length}`);
+          return allRoutes;
         },
-        
-        chunkFileNames: 'assets/js/[name]-[hash].js',
-        entryFileNames: 'assets/js/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
+
+        rendererOptions: {
+          renderAfterTime: 2500, // Wait 2.5s for SPA to fetch data
+        },
+      })
+    );
+  }
+
+  return {
+    plugins,
+    
+    resolve: {
+      alias: {
+        '@': path.resolve(process.cwd(), './src'),
+      },
+    },
+    
+    build: {
+      target: 'es2015',
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+          pure_funcs: ['console.log', 'console.info', 'console.debug'],
+          passes: 2
+        }
+      },
+      
+      rollupOptions: {
+        output: {
+          manualChunks: (id) => {
+            if (id.includes('node_modules')) {
+              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+                return 'react-vendor';
+              }
+              if (id.includes('framer-motion')) {
+                return 'framer-motion';
+              }
+              if (id.includes('@radix-ui')) {
+                return 'ui-vendor';
+              }
+              if (id.includes('lucide-react')) {
+                return 'icons';
+              }
+              return 'vendor';
+            }
+            
+            if (id.includes('src/components/')) {
+              if (id.includes('PostCard') || id.includes('PostListItem')) {
+                return 'post-components';
+              }
+              if (id.includes('Ad')) {
+                return 'ads';
+              }
+            }
+          },
+          
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          entryFileNames: 'assets/js/[name]-[hash].js',
+          assetFileNames: 'assets/[name]-[hash].[ext]'
+        }
+      },
+      
+      chunkSizeWarningLimit: 500,
+      sourcemap: false,
+      cssCodeSplit: true,
+      reportCompressedSize: true,
+      assetsInlineLimit: 2048
+    },
+    
+    optimizeDeps: {
+      include: [
+        'react',
+        'react-dom',
+        'react-router-dom'
+      ],
+      exclude: [
+        'framer-motion'
+      ]
+    },
+    
+    server: {
+      port: 3000,
+      strictPort: true,
+      host: true,
+      open: true,
+      hmr: {
+        overlay: true
       }
     },
     
-    chunkSizeWarningLimit: 500,
-    sourcemap: false,
-    cssCodeSplit: true,
-    reportCompressedSize: true,
-    assetsInlineLimit: 2048
-  },
-  
-  optimizeDeps: {
-    include: [
-      'react',
-      'react-dom',
-      'react-router-dom'
-    ],
-    exclude: [
-      'framer-motion'
-    ]
-  },
-  
-  server: {
-    port: 3000,
-    strictPort: true,
-    host: true,
-    open: true,
-    hmr: {
-      overlay: true
+    preview: {
+      port: 4173,
+      strictPort: true,
+      host: true,
+      open: true
     }
-  },
-  
-  preview: {
-    port: 4173,
-    strictPort: true,
-    host: true,
-    open: true
-  }
-}));
+  };
+});
