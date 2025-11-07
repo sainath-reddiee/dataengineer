@@ -4,9 +4,11 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 // --- PRERENDERING DEPENDENCIES ---
-// Use a default import (Fixes SyntaxError)
+// 
+// FIX #1: Use a default import (fixes "does not provide an export")
 import Prerenderer from 'vite-plugin-prerender'; 
-import fetch from 'node-fetch'; // This will now be found
+//
+import fetch from 'node-fetch'; // This now works because of Step 1
 
 // --- PRERENDERING CONFIG ---
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
@@ -53,7 +55,9 @@ const fetchAllPaginated = async (endpoint) => {
 // --- END PRERENDERING CONFIG ---
 
 
-// Wrap export in a function to access the 'command'
+// 
+// FIX #2: Wrap export in a function to get the 'command'
+//
 export default defineConfig(({ command }) => ({
   plugins: [
     react({
@@ -69,28 +73,29 @@ export default defineConfig(({ command }) => ({
       }
     }),
     
-    // --- CONDITIONAL PRERENDERING (Fixes 'npm run dev') ---
-    // Only run prerendering during the 'build' command
+    // 
+    // FIX #3: Only run Prerenderer during 'build', not 'dev' (serve)
+    // This stops the 'require is not defined' error!
+    //
     command === 'build' && Prerenderer({
       staticDir: path.resolve(__dirname, 'dist'),
       routes: async () => {
         console.log('PRERENDER: Fetching all dynamic routes from WordPress...');
         
-        // 1. Fetch all dynamic routes (NO certification routes)
+        // Fetch only the routes in your live app
         const [posts, categories, tags] = await Promise.all([
-          fetchAllPaginated('/posts'),           // For /articles/:slug
-          fetchAllPaginated('/categories'),      // For /category/:slug
-          fetchAllPaginated('/tags'),            // For /tag/:slug
+          fetchAllPaginated('/posts'),
+          fetchAllPaginated('/categories'),
+          fetchAllPaginated('/tags'),
         ]);
 
-        // 2. Map API data to route strings
         const postRoutes = posts.map(post => `/articles/${post.slug}`);
         const categoryRoutes = categories
           .filter(cat => cat.slug !== 'uncategorized')
           .map(cat => `/category/${cat.slug}`);
         const tagRoutes = tags.map(tag => `/tag/${tag.slug}`);
 
-        // 3. Define all your app's static routes (NO certification routes)
+        // Static routes from your App.jsx (no certifications)
         const staticRoutes = [
           '/',
           '/articles',
@@ -103,7 +108,6 @@ export default defineConfig(({ command }) => ({
           '/newsletter',
         ];
 
-        // 4. Combine and return all routes
         const allRoutes = [
           ...staticRoutes,
           ...postRoutes,
@@ -115,7 +119,6 @@ export default defineConfig(({ command }) => ({
         return allRoutes;
       },
 
-      // Puppeteer options
       rendererOptions: {
         renderAfterTime: 2500, // Wait 2.5s for SPA to fetch data
       },
