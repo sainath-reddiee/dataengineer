@@ -1,22 +1,53 @@
-// vite.config.js - FINAL PRODUCTION VERSION (using Puppeteer renderer)
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-
-// ✅ 1. Import 'createRequire' to load CJS modules in ESM
 import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
+import fetch from 'node-fetch';
+import { execSync } from 'child_process';
 
-// ✅ 2. Import the CJS plugin AND the PUPPETEER renderer
+const require = createRequire(import.meta.url);
 const prerenderPlugin = require('vite-plugin-prerender');
 const prerender = prerenderPlugin.default || prerenderPlugin;
 const PuppeteerRenderer = require('@prerenderer/renderer-puppeteer');
 
-// ✅ 3. Import node-fetch for API calls
-import fetch from 'node-fetch';
-
-// ✅ 4. Helper functions to fetch all your dynamic routes from WordPress
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
+
+// Find Chrome executable dynamically
+function findChrome() {
+  const possiblePaths = [
+    '/usr/bin/google-chrome',
+    '/usr/bin/chromium-browser',
+    '/usr/bin/chromium',
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
+  ];
+  
+  // Try to find using 'which' command
+  try {
+    const chromePath = execSync('which google-chrome || which chromium || which chromium-browser', 
+      { encoding: 'utf8' }).trim();
+    if (chromePath) return chromePath;
+  } catch (e) {
+    // Continue to check predefined paths
+  }
+  
+  // Check predefined paths
+  const fs = require('fs');
+  for (const chromePath of possiblePaths) {
+    try {
+      if (fs.existsSync(chromePath)) {
+        console.log(`✅ Found Chrome at: ${chromePath}`);
+        return chromePath;
+      }
+    } catch (e) {
+      continue;
+    }
+  }
+  
+  console.warn('⚠️  Chrome not found, prerendering may fail');
+  return undefined;
+}
 
 const fetchAllRoutes = async (endpoint, prefix) => {
   const routes = [];
@@ -28,7 +59,7 @@ const fetchAllRoutes = async (endpoint, prefix) => {
     while (hasMore) {
       const res = await fetch(`${WORDPRESS_API_URL}${endpoint}?per_page=100&page=${page}&_fields=slug`);
       if (!res.ok) {
-        if (res.status === 400) { // Bad request, probably out of pages
+        if (res.status === 400) {
           hasMore = false;
           continue;
         }
@@ -48,7 +79,7 @@ const fetchAllRoutes = async (endpoint, prefix) => {
         }
       });
       page++;
-      await new Promise(resolve => setTimeout(resolve, 50)); // Be nice to your API
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
   } catch (e) {
     console.error(`Error fetching routes for ${endpoint}:`, e.message);
@@ -57,11 +88,9 @@ const fetchAllRoutes = async (endpoint, prefix) => {
   return routes;
 };
 
-// ✅ 5. Define the full config
 export default defineConfig({
   plugins: [
     react({
-      // ✅ Fast Refresh configuration
       fastRefresh: true,
       jsxRuntime: 'automatic',
       babel: {
@@ -74,63 +103,9 @@ export default defineConfig({
       }
     }),
     
-    // ✅ 6. Add the prerender plugin
-    // This will only run during 'npm run build'
-    process.env.NODE_ENV === 'production' && prerender({
-      staticDir: path.join(__dirname, 'dist'),
-
-      routes: async () => {
-        const staticRoutes = [
-          '/',
-          '/articles',
-          '/about',
-          '/contact',
-          '/newsletter',
-          '/privacy-policy',
-          '/terms-of-service',
-          '/disclaimer',
-          '/tag',
-        ];
-        
-        const postRoutes = await fetchAllRoutes('/posts', '/articles/');
-        const categoryRoutes = await fetchAllRoutes('/categories', '/category/');
-        const tagRoutes = await fetchAllRoutes('/tags', '/tag/');
-
-        return [
-          ...staticRoutes,
-          ...postRoutes,
-          ...categoryRoutes,
-          ...tagRoutes
-        ];
-      },
-
-      // ✅ 7. THIS IS THE FIX:
-      // Tell the Prerenderer to use Puppeteer, but point it
-      // to the system's installed Chrome browser.
-      renderer: new PuppeteerRenderer({
-        // Wait for network to be idle, ensuring API calls finish
-        await: 'networkidle0', 
-        
-        // --- THIS IS THE KEY LINE ---
-        // Use the system's installed Chrome, not a downloaded one.
-        executablePath: '/usr/bin/google-chrome', 
-        
-        // Add args required for containerized environments
-        launchOptions: {
-          args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-          ],
-        },
-        
-        // Inject a variable so your app knows it's being prerendered
-        inject: {
-          isPrerendering: true
-        },
-      })
-    }),
-  ],
+    // ❌ DISABLED: Prerendering was failing - using static SEO content in index.html instead
+    // Re-enable after fixing Chrome/Puppeteer issues
+  ].filter(Boolean),
   
   resolve: {
     alias: {
@@ -138,7 +113,6 @@ export default defineConfig({
     },
   },
   
-  // ... (rest of your build config, including 'terser') ...
   build: {
     target: 'es2015',
     minify: 'terser',
