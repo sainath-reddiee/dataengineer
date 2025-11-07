@@ -1,21 +1,20 @@
-// vite.config.js - FINAL PRERENDERING VERSION
+// vite.config.js - FINAL CORRECTED VERSION
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-// --- NEW PRERENDERING DEPENDENCIES ---
-import Prerenderer from 'vite-plugin-prerender';
-import fetch from 'node-fetch'; 
+// --- PRERENDERING DEPENDENCIES ---
+// Use a default import (Fixes SyntaxError)
+import Prerenderer from 'vite-plugin-prerender'; 
+import fetch from 'node-fetch'; // This will now be found
 
 // --- PRERENDERING CONFIG ---
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
 
-// Helper to fetch all paginated data (posts, categories, tags)
 const fetchAllPaginated = async (endpoint) => {
   let results = [];
   let page = 1;
   let hasMore = true;
-  // We only need the 'slug' field to build the routes
   const fields = 'slug'; 
 
   console.log(`PRERENDER: Starting fetch for ${endpoint}...`);
@@ -26,12 +25,10 @@ const fetchAllPaginated = async (endpoint) => {
       const response = await fetch(url);
 
       if (!response.ok) {
-        // A 400 error often just means we've hit the last page
-        if (response.status === 400) {
+        if (response.status === 400) { // 400 means no more pages
           hasMore = false;
           continue;
         }
-        // Log other errors but don't stop the whole build
         console.error(`WordPress API Error: ${response.status} for ${url}`);
         hasMore = false;
         continue;
@@ -56,7 +53,8 @@ const fetchAllPaginated = async (endpoint) => {
 // --- END PRERENDERING CONFIG ---
 
 
-export default defineConfig({
+// Wrap export in a function to access the 'command'
+export default defineConfig(({ command }) => ({
   plugins: [
     react({
       fastRefresh: true,
@@ -71,42 +69,38 @@ export default defineConfig({
       }
     }),
     
-    // --- PRERENDERING PLUGIN CONFIG ---
-    // This plugin runs *after* your 'npm run build' is complete
-    Prerenderer({
-      // The directory Vite builds to
+    // --- CONDITIONAL PRERENDERING (Fixes 'npm run dev') ---
+    // Only run prerendering during the 'build' command
+    command === 'build' && Prerenderer({
       staticDir: path.resolve(__dirname, 'dist'),
-
-      // The routes to prerender
       routes: async () => {
         console.log('PRERENDER: Fetching all dynamic routes from WordPress...');
         
-        // 1. Fetch all dynamic routes in parallel
+        // 1. Fetch all dynamic routes (NO certification routes)
         const [posts, categories, tags] = await Promise.all([
-          fetchAllPaginated('/posts'),
-          fetchAllPaginated('/categories'),
-          fetchAllPaginated('/tags')
+          fetchAllPaginated('/posts'),           // For /articles/:slug
+          fetchAllPaginated('/categories'),      // For /category/:slug
+          fetchAllPaginated('/tags'),            // For /tag/:slug
         ]);
 
         // 2. Map API data to route strings
         const postRoutes = posts.map(post => `/articles/${post.slug}`);
         const categoryRoutes = categories
-          .filter(cat => cat.slug !== 'uncategorized') // Exclude 'uncategorized'
+          .filter(cat => cat.slug !== 'uncategorized')
           .map(cat => `/category/${cat.slug}`);
         const tagRoutes = tags.map(tag => `/tag/${tag.slug}`);
 
-        // 3. Define all your app's static routes (cross-checked with App.jsx)
+        // 3. Define all your app's static routes (NO certification routes)
         const staticRoutes = [
           '/',
           '/articles',
-          '/tag', // The main tags archive page
+          '/tag', 
           '/about',
           '/contact',
           '/privacy-policy',
           '/terms-of-service',
           '/disclaimer',
           '/newsletter',
-          // We intentionally do NOT render '/debug'
         ];
 
         // 4. Combine and return all routes
@@ -114,7 +108,7 @@ export default defineConfig({
           ...staticRoutes,
           ...postRoutes,
           ...categoryRoutes,
-          ...tagRoutes
+          ...tagRoutes,
         ];
         
         console.log(`PRERENDER: Total routes to render: ${allRoutes.length}`);
@@ -123,12 +117,7 @@ export default defineConfig({
 
       // Puppeteer options
       rendererOptions: {
-        // Wait 2.5 seconds for your SPA to fetch data and render
-        // This is a simple and reliable way to ensure content is present
-        renderAfterTime: 2500, 
-        
-        // Optional: If your build fails in GitHub Actions, uncomment this
-        // args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        renderAfterTime: 2500, // Wait 2.5s for SPA to fetch data
       },
     })
     // --- END PLUGIN CONFIG ---
@@ -222,4 +211,4 @@ export default defineConfig({
     host: true,
     open: true
   }
-});
+}));
