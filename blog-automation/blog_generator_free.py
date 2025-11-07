@@ -203,7 +203,7 @@ class BlogGeneratorTavily:
             },
             'images': image_prompts,
             'references': research_data['sources'],
-            'research_summary': research_data['summary'],
+            'research_summary': research_data.get('summary') or f"Guide to {topic.get('title', 'technology')} best practices",
             'category': topic.get('category', 'data-engineering'),
             'metadata': {
                 'generated_at': datetime.now().isoformat(),
@@ -317,8 +317,9 @@ class BlogGeneratorTavily:
     
     def _generate_seo_metadata(self, topic: Dict, research_data: Dict) -> Dict:
         """Generate Yoast-compliant SEO metadata"""
-        
-        research_context = research_data['summary'][:300]
+
+        summary = research_data.get('summary') or f"Guide to {topic.get('title', 'technology')} best practices"
+        research_context = summary[:300] if summary else "Guide to technology best practices"
         
         prompt = f"""Generate YOAST SEO metadata using research insights.
 
@@ -436,10 +437,11 @@ Return JSON:
         headings: List[str]
     ) -> List[Dict]:
         """Generate content as WordPress Gutenberg blocks"""
-        
+
         keyphrase = seo_data['focus_keyphrase']
-        research_summary = research_data['summary'][:400]
-        sources_text = "\n".join([f"- {s['title']}: {s['content'][:100]}" for s in research_data['sources'][:3]])
+        summary = research_data.get('summary') or f"Guide to {topic.get('title', 'technology')} best practices"
+        research_summary = summary[:400] if summary else "Guide to technology best practices"
+        sources_text = "\n".join([f"- {s['title']}: {s['content'][:100]}" for s in research_data.get('sources', [])[:3]])
         
         prompt = f"""Write a comprehensive blog post as WordPress Gutenberg blocks.
 
