@@ -1,4 +1,4 @@
-// vite.config.js - FINAL PRODUCTION VERSION (FIXED IMPORT)
+// vite.config.js - FINAL PRODUCTION VERSION (using JSDOM renderer)
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -7,11 +7,10 @@ import path from 'path';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
-// ✅ 2. THIS IS THE FIX:
-// Import the plugin using require, then get the 'default' export
-// if it's an ESM module, or use the module directly if it's CJS.
+// ✅ 2. Import the CJS plugin AND the JSDOM renderer
 const prerenderPlugin = require('vite-plugin-prerender');
 const prerender = prerenderPlugin.default || prerenderPlugin;
+const JSDOMRenderer = require('@prerenderer/renderer-jsdom');
 
 // ✅ 3. Import node-fetch for API calls
 import fetch from 'node-fetch';
@@ -75,13 +74,11 @@ export default defineConfig({
       }
     }),
     
-    // ✅ 6. Add the prerender plugin (loaded via the fixed 'prerender' const)
+    // ✅ 6. Add the prerender plugin
     // This will only run during 'npm run build'
     process.env.NODE_ENV === 'production' && prerender({
-      // The path to your built app
       staticDir: path.join(__dirname, 'dist'),
 
-      // List of all routes to prerender
       routes: async () => {
         const staticRoutes = [
           '/',
@@ -92,12 +89,12 @@ export default defineConfig({
           '/privacy-policy',
           '/terms-of-service',
           '/disclaimer',
-          '/tag', // The new tags archive page
+          '/tag',
         ];
         
         const postRoutes = await fetchAllRoutes('/posts', '/articles/');
         const categoryRoutes = await fetchAllRoutes('/categories', '/category/');
-        const tagRoutes = await fetchAllRoutes('/tags', '/tag/'); // Fetch tag page routes
+        const tagRoutes = await fetchAllRoutes('/tags', '/tag/');
 
         return [
           ...staticRoutes,
@@ -107,16 +104,14 @@ export default defineConfig({
         ];
       },
 
-      // ✅ 7. Configure the renderer (Puppeteer)
-      rendererConfig: {
-        // Wait for network to be idle, ensuring API calls finish
-        await: 'networkidle0', 
-        
-        // Inject a variable so your app knows it's being prerendered
-        inject: {
-          isPrerendering: true
-        },
-      },
+      // ✅ 7. THIS IS THE FIX:
+      // Tell the Prerenderer to use the JSDOM renderer, NOT Puppeteer.
+      // This avoids the Chromium download error.
+      renderer: new JSDOMRenderer({
+        // Wait for 2000ms (2 seconds) for API calls to resolve.
+        // Adjust this if your pages load slower.
+        renderAfterTime: 2000,
+      })
     }),
   ],
   
