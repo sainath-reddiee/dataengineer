@@ -1,4 +1,4 @@
-// vite.config.js - FINAL PRODUCTION VERSION
+// vite.config.js - FINAL PRODUCTION VERSION (FIXED IMPORT)
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -7,12 +7,13 @@ import path from 'path';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
-// ✅ 2. Use require() to import the CJS plugin
-// This is the key fix for the ESM/CJS conflict.
-const { prerender } = require('vite-plugin-prerender'); 
+// ✅ 2. THIS IS THE FIX:
+// Import the plugin using require, then get the 'default' export
+// if it's an ESM module, or use the module directly if it's CJS.
+const prerenderPlugin = require('vite-plugin-prerender');
+const prerender = prerenderPlugin.default || prerenderPlugin;
 
 // ✅ 3. Import node-fetch for API calls
-// This is in your devDependencies (package.json)
 import fetch from 'node-fetch';
 
 // ✅ 4. Helper functions to fetch all your dynamic routes from WordPress
@@ -74,7 +75,7 @@ export default defineConfig({
       }
     }),
     
-    // ✅ 6. Add the prerender plugin (loaded via 'require')
+    // ✅ 6. Add the prerender plugin (loaded via the fixed 'prerender' const)
     // This will only run during 'npm run build'
     process.env.NODE_ENV === 'production' && prerender({
       // The path to your built app
