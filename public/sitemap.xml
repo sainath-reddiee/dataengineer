@@ -43,6 +43,12 @@
     <priority>0.3</priority>
   </url>
   <url>
+    <loc>https://dataengineerhub.blog/articles/snowflake-intelligence-guide-setup-optimization</loc>
+    <lastmod>2025-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-openflow-tutorial</loc>
     <lastmod>2025-10-24</lastmod>
     <changefreq>weekly</changefreq>
