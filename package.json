@@ -38,6 +38,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@prerenderer/renderer-jsdom": "^1.1.9",
     "@types/dompurify": "^3.0.5",
     "@types/node": "^20.11.19",
     "@types/react": "^18.2.56",
