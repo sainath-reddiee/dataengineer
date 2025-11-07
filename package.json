@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/generateStaticPages.js",
+    "build:vite": "vite build",
+    "build:pages": "node scripts/generateStaticPages.js",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "sitemap:generate": "node scripts/generateSitemap.js",
@@ -17,7 +19,8 @@
     "indexnow:generate": "node scripts/generateIndexNowKey.js",
     "indexnow:test": "node scripts/testIndexNow.js",
     "prebuild": "npm run indexnow:generate && npm run sitemap:generate && npm run sitemap:validate",
-    "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'"
+    "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'",
+    "test:seo": "npm run build && node scripts/testSEO.js"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
