@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 // --- NEW PRERENDERING DEPENDENCIES ---
-import { Prerenderer } from 'vite-plugin-prerender';
+import Prerenderer from 'vite-plugin-prerender';
 import fetch from 'node-fetch'; 
 
 // --- PRERENDERING CONFIG ---
