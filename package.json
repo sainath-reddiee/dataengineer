@@ -55,8 +55,5 @@
     "tailwindcss": "^3.4.1",
     "vite": "^5.1.0",
     "vite-plugin-prerender": "^1.0.8"
-  },
-  "overrides": {
-    "@prerenderer/renderer-puppeteer": "$@prerenderer/renderer-jsdom"
   }
 }
