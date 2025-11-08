@@ -59,11 +59,12 @@
         display: block;
       }
       
-      /* ✅ CRITICAL: SEO content visible to bots */
+      /* ✅ CRITICAL: SEO content visible to bots by default */
       .seo-fallback {
         max-width: 1200px;
         margin: 0 auto;
         padding: 60px 20px;
+        display: block;
       }
       
       .seo-fallback h1 {
@@ -108,31 +109,40 @@
         color: #94a3b8;
       }
       
-      /* Hide when React loads */
-      .react-loaded .seo-fallback {
+      /* Hide fallback content only when React fully loads */
+      body.react-loaded .seo-fallback {
         display: none;
       }
       
-      .gradient-text {
-        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 40%, #f472b6 80%, #fbbf24 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-      
+      /* Loading spinner - hidden by default for SEO */
       .loading-container {
+        display: none;
         min-height: 100vh;
-        display: flex;
         align-items: center;
         justify-content: center;
         background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
         flex-direction: column;
         padding: 20px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+      }
+      
+      /* Only show loading when React is actively loading */
+      body.react-loading .loading-container {
+        display: flex;
+      }
+      
+      body.react-loading .seo-fallback {
+        display: none;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
       }
       
       .loading-spinner {
@@ -150,15 +160,6 @@
         margin-top: 20px;
         font-size: 18px;
         text-align: center;
-      }
-      
-      /* Show loading only when needed */
-      .react-loading .loading-container {
-        display: flex;
-      }
-      
-      .react-loaded .loading-container {
-        display: none;
       }
     </style>
     
@@ -184,14 +185,24 @@
     <meta name="theme-color" content="#1e293b">
     
     <script>
+      // Performance mark
       if (typeof performance !== 'undefined' && performance.mark) {
         performance.mark('nav-start');
+      }
+      
+      // Show loading state ONLY when JavaScript starts executing
+      // This ensures bots see content, but users see smooth loading
+      if (typeof document !== 'undefined') {
+        document.addEventListener('DOMContentLoaded', function() {
+          // Only add loading class if JavaScript is enabled
+          document.body.classList.add('react-loading');
+        });
       }
     </script>
   </head>
   <body>
     <div id="root">
-      <!-- ✅ CRITICAL: Static content for SEO - visible to bots BEFORE JavaScript loads -->
+      <!-- ✅ CRITICAL: Static content visible by default for SEO -->
       <div class="seo-fallback">
         <h1>DataEngineer Hub - Master Data Engineering</h1>
         
@@ -240,24 +251,22 @@
         </noscript>
       </div>
       
-      <!-- Loading spinner hidden by default, shown only during React load -->
-      <div class="loading-container" style="display: none;">
+      <!-- Loading spinner - hidden by default, shown only when React starts -->
+      <div class="loading-container">
         <div class="loading-spinner"></div>
         <p class="loading-text">Loading DataEngineer Hub...</p>
       </div>
     </div>
     
+    <!-- Load React app -->
     <script type="module" src="/src/main.jsx"></script>
     
-    <!-- Mark React as loaded to hide fallback content -->
+    <!-- Performance monitoring -->
     <script>
-      // Show loading spinner temporarily
-      document.querySelector('.loading-container').style.display = 'flex';
-      
-      // Hide fallback content once React loads
       window.addEventListener('load', function() {
-        document.body.classList.add('react-loaded');
+        // Remove loading state when fully loaded
         document.body.classList.remove('react-loading');
+        document.body.classList.add('react-loaded');
         
         if (typeof performance !== 'undefined' && performance.mark) {
           performance.mark('page-loaded');
@@ -274,14 +283,6 @@
               };
               
               console.log('📊 Performance:', metrics);
-              
-              if (typeof gtag !== 'undefined') {
-                gtag('event', 'timing_complete', {
-                  'name': 'load',
-                  'value': Math.round(perfData.loadEventEnd - perfData.fetchStart),
-                  'event_category': 'Performance'
-                });
-              }
             }
           }, 100);
         }
