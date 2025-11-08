@@ -101,28 +101,28 @@ jobs:
           VITE_ADSENSE_PUBLISHER_ID: ${{ secrets.VITE_ADSENSE_PUBLISHER_ID }}
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
 
-      - name: 📄 Generate Static Pages (Incremental)
+      - name: 📄 Generate Static Pages (Incremental - Posts Only)
         id: static_pages
         run: |
-          # Determine build flags
-          BUILD_FLAGS=""
+          # Always use --posts-only flag (categories/tags handled by React)
+          BUILD_FLAGS="--posts-only"
           
           if [ "${{ steps.changes.outputs.force_rebuild }}" == "true" ]; then
-            BUILD_FLAGS="--force"
-            echo "🔨 Force rebuilding all pages"
+            BUILD_FLAGS="--posts-only --force"
+            echo "🔨 Force rebuilding all article pages"
           elif [ "${{ github.event_name }}" == "repository_dispatch" ]; then
-            echo "📝 WordPress triggered - incremental update"
-            # No flags - incremental by default
+            echo "📝 WordPress triggered - incremental article update"
           elif [ "${{ github.event_name }}" == "schedule" ]; then
-            echo "⏰ Scheduled build - checking for changes"
-            # No flags - incremental by default
+            echo "⏰ Scheduled build - checking for changed articles"
           fi
           
-          # Run incremental build
-          npm run build:pages -- $BUILD_FLAGS
+          # Run incremental build (posts only)
+          npm run build:pages
           
           # Parse build output for statistics
           echo "build_completed=true" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "ℹ️  **Note:** Categories and tags are handled dynamically by React" >> $GITHUB_STEP_SUMMARY
 
       - name: ℹ️ Build Status
         run: |
