@@ -1,1 +1,292 @@
-.
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+    
+    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    
+    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <title>DataEngineer Hub - Data Engineering Tutorials</title>
+    <meta name="description" content="Learn data engineering with expert tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow & dbt." />
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://dataengineerhub.blog/#organization",
+      "name": "DataEngineer Hub",
+      "url": "https://dataengineerhub.blog",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://dataengineerhub.blog/logo.png",
+        "width": 250,
+        "height": 250
+      }
+    }
+    </script>
+    
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
+        color: #f8fafc;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      #root {
+        min-height: 100vh;
+      }
+      
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      
+      /* ✅ CRITICAL: SEO content visible to bots by default */
+      .seo-fallback {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 60px 20px;
+        display: block;
+      }
+      
+      .seo-fallback h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 40%, #f472b6 80%, #fbbf24 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      .seo-fallback p {
+        font-size: 1.25rem;
+        line-height: 1.8;
+        color: #cbd5e1;
+        margin-bottom: 2rem;
+      }
+      
+      .seo-fallback .topics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 3rem;
+      }
+      
+      .seo-fallback .topic-card {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .seo-fallback .topic-card h2 {
+        font-size: 1.5rem;
+        color: #60a5fa;
+        margin-bottom: 0.5rem;
+      }
+      
+      .seo-fallback .topic-card p {
+        font-size: 1rem;
+        color: #94a3b8;
+      }
+      
+      /* Hide fallback content only when React fully loads */
+      body.react-loaded .seo-fallback {
+        display: none;
+      }
+      
+      /* Loading spinner - hidden by default for SEO */
+      .loading-container {
+        display: none;
+        min-height: 100vh;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
+        flex-direction: column;
+        padding: 20px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+      }
+      
+      /* Only show loading when React is actively loading */
+      body.react-loading .loading-container {
+        display: flex;
+      }
+      
+      body.react-loading .seo-fallback {
+        display: none;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      .loading-spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid #60a5fa;
+        border-top: 4px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      .loading-text {
+        color: #93c5fd;
+        font-weight: 500;
+        margin-top: 20px;
+        font-size: 18px;
+        text-align: center;
+      }
+    </style>
+    
+    <link rel="preload" as="font" type="font/woff2" crossorigin 
+          href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2">
+    
+    <link rel="preload" as="style"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+    <link rel="stylesheet" 
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+          media="print" onload="this.media='all'; this.onload=null;">
+    <noscript>
+      <link rel="stylesheet" 
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+    </noscript>
+    
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="canonical" href="https://dataengineerhub.blog">
+    
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#1e293b">
+    
+    <script>
+      // Performance mark
+      if (typeof performance !== 'undefined' && performance.mark) {
+        performance.mark('nav-start');
+      }
+      
+      // Show loading state ONLY when JavaScript starts executing
+      // This ensures bots see content, but users see smooth loading
+      if (typeof document !== 'undefined') {
+        document.addEventListener('DOMContentLoaded', function() {
+          // Only add loading class if JavaScript is enabled
+          document.body.classList.add('react-loading');
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root">
+      <!-- ✅ CRITICAL: Static content visible by default for SEO -->
+      <div class="seo-fallback">
+        <h1>DataEngineer Hub - Master Data Engineering</h1>
+        
+        <p>
+          Welcome to DataEngineer Hub, your comprehensive resource for learning data engineering. 
+          Our expert tutorials cover everything from cloud platforms to data orchestration tools, 
+          helping you build a successful career in data engineering.
+        </p>
+        
+        <div class="topics">
+          <div class="topic-card">
+            <h2>Cloud Platforms</h2>
+            <p>Master Snowflake, AWS, Azure, and Google Cloud Platform with hands-on tutorials and best practices.</p>
+          </div>
+          
+          <div class="topic-card">
+            <h2>Data Orchestration</h2>
+            <p>Learn Apache Airflow, dbt, and modern data pipeline orchestration techniques.</p>
+          </div>
+          
+          <div class="topic-card">
+            <h2>Programming</h2>
+            <p>Deep dive into Python, SQL, and other essential programming languages for data engineering.</p>
+          </div>
+          
+          <div class="topic-card">
+            <h2>Best Practices</h2>
+            <p>Discover industry best practices, design patterns, and optimization techniques.</p>
+          </div>
+          
+          <div class="topic-card">
+            <h2>Real-world Projects</h2>
+            <p>Build production-ready data pipelines with step-by-step project tutorials.</p>
+          </div>
+          
+          <div class="topic-card">
+            <h2>Career Growth</h2>
+            <p>Get career advice, interview preparation tips, and insights into the data engineering field.</p>
+          </div>
+        </div>
+        
+        <noscript>
+          <p style="margin-top: 2rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444;">
+            <strong>JavaScript Required:</strong> Please enable JavaScript to access the full website with interactive features and all articles.
+          </p>
+        </noscript>
+      </div>
+      
+      <!-- Loading spinner - hidden by default, shown only when React starts -->
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Loading DataEngineer Hub...</p>
+      </div>
+    </div>
+    
+    <!-- Load React app -->
+    <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Performance monitoring -->
+    <script>
+      window.addEventListener('load', function() {
+        // Remove loading state when fully loaded
+        document.body.classList.remove('react-loading');
+        document.body.classList.add('react-loaded');
+        
+        if (typeof performance !== 'undefined' && performance.mark) {
+          performance.mark('page-loaded');
+          
+          setTimeout(() => {
+            const perfData = performance.getEntriesByType('navigation')[0];
+            const paintEntries = performance.getEntriesByType('paint');
+            
+            if (perfData) {
+              const metrics = {
+                'Total Load': Math.round(perfData.loadEventEnd - perfData.fetchStart) + 'ms',
+                'DOM Ready': Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart) + 'ms',
+                'FCP': paintEntries[1] ? Math.round(paintEntries[1].startTime) + 'ms' : 'N/A'
+              };
+              
+              console.log('📊 Performance:', metrics);
+            }
+          }, 100);
+        }
+      });
+    </script>
+  </body>
+</html>
