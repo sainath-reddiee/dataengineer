@@ -101,6 +101,9 @@ jobs:
           VITE_ADSENSE_PUBLISHER_ID: ${{ secrets.VITE_ADSENSE_PUBLISHER_ID }}
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
 
+      # ====================================================================
+      # ⬇️ START OF THE FIX
+      # ====================================================================
       - name: 📄 Generate Static Pages (Incremental - Posts Only)
         id: static_pages
         run: |
@@ -117,12 +120,17 @@ jobs:
           fi
           
           # Run incremental build (posts only)
-          npm run build:pages
+          # We call node directly to pass our custom flags, bypassing the npm script
+          echo "Running: node scripts/generateStaticPagesIncremental.js $BUILD_FLAGS"
+          node scripts/generateStaticPagesIncremental.js $BUILD_FLAGS
           
           # Parse build output for statistics
           echo "build_completed=true" >> $GITHUB_OUTPUT
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "ℹ️  **Note:** Categories and tags are handled dynamically by React" >> $GITHUB_STEP_SUMMARY
+      # ====================================================================
+      # ⬆️ END OF THE FIX
+      # ====================================================================
 
       - name: ℹ️ Build Status
         run: |
