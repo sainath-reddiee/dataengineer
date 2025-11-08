@@ -1,4 +1,4 @@
-// src/main.jsx - FIXED VERSION
+// src/main.jsx - FIXED VERSION (No immediate loading spinner)
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
@@ -7,12 +7,26 @@ import App from '@/App';
 import '@/index.css';
 import { initThirdPartyScripts } from '@/utils/scriptLoader';
 
+// Simple minimal loader for Suspense fallback
 const PageLoader = () => (
-  <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-    <div className="flex flex-col items-center space-y-4">
-      <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-      <p className="text-blue-300 font-medium">Loading DataEngineer Hub...</p>
-    </div>
+  <div style={{
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    gap: '1rem'
+  }}>
+    <div style={{
+      width: '32px',
+      height: '32px',
+      border: '4px solid #60a5fa',
+      borderTopColor: 'transparent',
+      borderRadius: '50%',
+      animation: 'spin 1s linear infinite'
+    }}></div>
+    <p style={{ color: '#93c5fd', fontWeight: '500' }}>Loading...</p>
   </div>
 );
 
@@ -56,45 +70,56 @@ loadFonts();
 if (typeof window !== 'undefined' && 'performance' in window) {
   window.addEventListener('load', () => {
     const perfData = performance.getEntriesByType('navigation')[0];
-    console.log('🚀 Performance Metrics:', {
-      'Load Time': `${Math.round(perfData.loadEventEnd - perfData.fetchStart)}ms`,
-      'DOMContentLoaded': `${Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart)}ms`,
-      'First Paint': `${Math.round(performance.getEntriesByType('paint')[0]?.startTime || 0)}ms`
-    });
+    if (perfData) {
+      console.log('🚀 Performance Metrics:', {
+        'Load Time': `${Math.round(perfData.loadEventEnd - perfData.fetchStart)}ms`,
+        'DOMContentLoaded': `${Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart)}ms`,
+        'First Paint': `${Math.round(performance.getEntriesByType('paint')[0]?.startTime || 0)}ms`
+      });
+    }
   });
 }
 
-// Log environment configuration
+// Log environment configuration in dev mode only
 if (import.meta.env.DEV) {
   console.log('🔧 Development Environment Configuration:', {
     MODE: import.meta.env.MODE,
     DEV: import.meta.env.DEV,
-    PROD: import.meta.env.PROD,
-    VITE_ADS_ENABLED: import.meta.env.VITE_ADS_ENABLED,
-    VITE_ADSENSE_PUBLISHER_ID: import.meta.env.VITE_ADSENSE_PUBLISHER_ID ? 
-      import.meta.env.VITE_ADSENSE_PUBLISHER_ID.slice(0, 15) + '...' : 
-      '❌ Not Set',
-    VITE_GA_MEASUREMENT_ID: import.meta.env.VITE_GA_MEASUREMENT_ID || '❌ Not Set'
+    PROD: import.meta.env.PROD
   });
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+// ✅ KEY FIX: Don't render immediately - wait for DOM
+const initApp = () => {
+  const root = ReactDOM.createRoot(document.getElementById('root'));
 
-root.render(
-  <React.StrictMode>
-    <HelmetProvider>
-      <BrowserRouter>
-        <React.Suspense fallback={<PageLoader />}>
-          <App />
-        </React.Suspense>
-      </BrowserRouter>
-    </HelmetProvider>
-  </React.StrictMode>
-);
+  root.render(
+    <React.StrictMode>
+      <HelmetProvider>
+        <BrowserRouter>
+          <React.Suspense fallback={<PageLoader />}>
+            <App />
+          </React.Suspense>
+        </BrowserRouter>
+      </HelmetProvider>
+    </React.StrictMode>
+  );
 
-// Initialize third-party scripts after app loads
-if (typeof window !== 'undefined') {
+  // Mark React as loaded after render
+  setTimeout(() => {
+    document.body.classList.remove('react-loading');
+    document.body.classList.add('react-loaded');
+  }, 100);
+
+  // Initialize third-party scripts after app loads
   setTimeout(() => {
     initThirdPartyScripts();
   }, 1000);
+};
+
+// Wait for DOM to be ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
 }
