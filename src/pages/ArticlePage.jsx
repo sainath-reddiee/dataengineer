@@ -162,7 +162,7 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
       </div>
 
       {/* Title */}
-      <h1 className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight text-white">
+      <h1 className="text-2xl md:text-3xl lg:text-4xl font-black leading-tight text-white">
         {safePost.title}
       </h1>
 
