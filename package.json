@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/generateStaticPages.js",
+    "build": "npm run build:vite && npm run build:pages",
     "build:vite": "vite build",
-    "build:pages": "node scripts/generateStaticPages.js",
+    "build:pages": "node scripts/generateStaticPagesIncremental.js",
+    "build:force": "npm run build:vite && node scripts/generateStaticPagesIncremental.js --force",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "sitemap:generate": "node scripts/generateSitemap.js",
