@@ -1,4 +1,4 @@
-name: Build and Deploy to Hostinger (Ultra-Optimized)
+name: Build and Deploy to Hostinger (Incremental)
 
 on:
   push:
@@ -15,6 +15,12 @@ on:
       - 'postcss.config.js'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
+    inputs:
+      force_rebuild:
+        description: 'Force rebuild all pages'
+        required: false
+        type: boolean
+        default: false
   schedule:
     - cron: '0 21 * * *'
   repository_dispatch:
@@ -31,15 +37,25 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: 🔍 Detect Changes
+      - name: 🔍 Detect Changes & Trigger Type
         id: changes
         run: |
+          echo "trigger=${{ github.event_name }}" >> $GITHUB_OUTPUT
+          
           if git diff --name-only HEAD^ HEAD | grep -qE '^(src/|index.html|vite.config.js|tailwind.config.js|package)'; then
             echo "code_changed=true" >> $GITHUB_OUTPUT
             echo "🔨 Code changes detected - full rebuild needed"
           else
             echo "code_changed=false" >> $GITHUB_OUTPUT
-            echo "📄 Only content/config changed - trying cache"
+            echo "📄 Only content/config changed"
+          fi
+          
+          # Determine if force rebuild is needed
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ "${{ github.event.inputs.force_rebuild }}" == "true" ]; then
+            echo "force_rebuild=true" >> $GITHUB_OUTPUT
+            echo "⚡ Manual force rebuild requested"
+          else
+            echo "force_rebuild=false" >> $GITHUB_OUTPUT
           fi
 
       - name: 💾 Restore Build Cache
@@ -51,6 +67,7 @@ jobs:
             dist
             public/sitemap.xml
             public/indexnow-key.txt
+            .build-cache.json
           key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**', 'index.html', 'vite.config.js', 'tailwind.config.js', 'postcss.config.js') }}
           restore-keys: |
             build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
@@ -75,26 +92,61 @@ jobs:
           npm run sitemap:validate || echo "⚠️ Sitemap validation skipped"
         continue-on-error: true
 
-      - name: 🏗️ Build Application
+      - name: 🏗️ Build Application (Vite)
         if: steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true'
-        run: npm run build
+        run: npm run build:vite
         env:
           NODE_ENV: production
           VITE_ADS_ENABLED: ${{ secrets.VITE_ADS_ENABLED }}
           VITE_ADSENSE_PUBLISHER_ID: ${{ secrets.VITE_ADSENSE_PUBLISHER_ID }}
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
 
+      - name: 📄 Generate Static Pages (Incremental)
+        id: static_pages
+        run: |
+          # Determine build flags
+          BUILD_FLAGS=""
+          
+          if [ "${{ steps.changes.outputs.force_rebuild }}" == "true" ]; then
+            BUILD_FLAGS="--force"
+            echo "🔨 Force rebuilding all pages"
+          elif [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            echo "📝 WordPress triggered - incremental update"
+            # No flags - incremental by default
+          elif [ "${{ github.event_name }}" == "schedule" ]; then
+            echo "⏰ Scheduled build - checking for changes"
+            # No flags - incremental by default
+          fi
+          
+          # Run incremental build
+          npm run build:pages -- $BUILD_FLAGS
+          
+          # Parse build output for statistics
+          echo "build_completed=true" >> $GITHUB_OUTPUT
+
       - name: ℹ️ Build Status
         run: |
+          echo "## 📊 Build Statistics" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
           if [ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ]; then
             if [ "${{ steps.changes.outputs.code_changed }}" == "true" ]; then
-              echo "🔨 Code changed - rebuilt anyway"
+              echo "🔨 Code changed - full rebuild performed" >> $GITHUB_STEP_SUMMARY
             else
-              echo "✅ Using cached build (saved ~50 seconds)"
-              echo "📊 FTP will only sync changed files (5-10s)"
+              echo "⚡ Using cached build + incremental pages" >> $GITHUB_STEP_SUMMARY
             fi
           else
-            echo "🆕 Fresh build completed"
+            echo "🆕 Fresh build completed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Show what triggered this build
+          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📝 WordPress Content Update" >> $GITHUB_STEP_SUMMARY
+            echo "Triggered by: Post published/updated in WordPress" >> $GITHUB_STEP_SUMMARY
+            echo "Only changed pages were regenerated!" >> $GITHUB_STEP_SUMMARY
           fi
 
       - name: 🔑 Generate IndexNow Key
@@ -125,17 +177,12 @@ jobs:
 
       - name: 📋 Prepare Files
         run: |
-          # Ensure dist directory exists
           mkdir -p dist
           
-          # Copy essential files if they exist
           [ -f "public/sitemap.xml" ] && cp public/sitemap.xml dist/ && echo "✅ Copied sitemap.xml"
           [ -f "public/robots.txt" ] && cp public/robots.txt dist/ && echo "✅ Copied robots.txt"
-          
-          # [FIXED] Add this line to copy the .htaccess file
           [ -f "public/.htaccess" ] && cp public/.htaccess dist/ && echo "✅ Copied .htaccess"
           
-          # Copy all .txt files from public to dist
           find public -name "*.txt" -exec cp {} dist/ \; 2>/dev/null && echo "✅ Copied .txt files" || echo "⚠️ No .txt files found"
           
           echo "✅ Files prepared for deployment"
@@ -163,10 +210,14 @@ jobs:
             **/.env
             **/.DS_Store
             **/Thumbs.db
+            **/.build-cache.json
 
       - name: ⏸️ Smart Wait
         run: |
-          if [ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ] && [ "${{ steps.changes.outputs.code_changed }}" != "true" ]; then
+          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            echo "⚡ WordPress update - quick wait (5s)"
+            sleep 5
+          elif [ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ]; then
             echo "⚡ Cache hit - minimal wait (3s)"
             sleep 3
           else
@@ -178,28 +229,24 @@ jobs:
         run: |
           echo "🔍 Verifying deployment..."
           
-          # Check main site
           if curl -sf -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/ | grep -q "200"; then
             echo "✅ Main site is accessible"
           else
             echo "⚠️ Main site check failed"
           fi
           
-          # Check sitemap
           if curl -sf -o /dev/null https://dataengineerhub.blog/sitemap.xml; then
             echo "✅ Sitemap is accessible"
           else
-            echo "⚠️ Sitemap not found (may not exist yet)"
+            echo "⚠️ Sitemap not found"
           fi
           
-          # Check robots.txt
           if curl -sf -o /dev/null https://dataengineerhub.blog/robots.txt; then
             echo "✅ Robots.txt is accessible"
           else
             echo "⚠️ Robots.txt not found"
           fi
           
-          # Check IndexNow key
           if [ -f "public/indexnow-key.txt" ]; then
             KEY=$(cat public/indexnow-key.txt | tr -d '[:space:]')
             if curl -sf -o /dev/null "https://dataengineerhub.blog/${KEY}.txt"; then
@@ -225,11 +272,23 @@ jobs:
           echo "## 🚀 Deployment Complete!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          if [ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ] && [ "${{ steps.changes.outputs.code_changed }}" != "true" ]; then
-            echo "⚡ **Cache Hit** - Only changed files uploaded" >> $GITHUB_STEP_SUMMARY
-            echo "⏱️ **Time Saved:** ~50 seconds" >> $GITHUB_STEP_SUMMARY
+          # Show build type
+          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            echo "### 📝 WordPress Content Update" >> $GITHUB_STEP_SUMMARY
+            echo "✅ Only changed pages were regenerated and deployed" >> $GITHUB_STEP_SUMMARY
+            echo "⏱️ **Build Type:** Incremental (Fast)" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.changes.outputs.force_rebuild }}" == "true" ]; then
+            echo "### 🔨 Force Rebuild" >> $GITHUB_STEP_SUMMARY
+            echo "✅ All pages regenerated" >> $GITHUB_STEP_SUMMARY
+            echo "⏱️ **Build Type:** Full (Forced)" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ]; then
+            echo "### ⚡ Cache Hit" >> $GITHUB_STEP_SUMMARY
+            echo "✅ Using cached build with incremental updates" >> $GITHUB_STEP_SUMMARY
+            echo "⏱️ **Time Saved:** ~50-70 seconds" >> $GITHUB_STEP_SUMMARY
           else
-            echo "🔨 **Fresh Build** - All files deployed" >> $GITHUB_STEP_SUMMARY
+            echo "### 🆕 Fresh Build" >> $GITHUB_STEP_SUMMARY
+            echo "✅ Complete build from scratch" >> $GITHUB_STEP_SUMMARY
+            echo "⏱️ **Build Type:** Full" >> $GITHUB_STEP_SUMMARY
           fi
           
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -252,6 +311,7 @@ jobs:
             dist
             public/sitemap.xml
             public/indexnow-key.txt
+            .build-cache.json
           key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**', 'index.html', 'vite.config.js', 'tailwind.config.js', 'postcss.config.js') }}
 
       - name: 💾 Upload Artifact
@@ -262,6 +322,7 @@ jobs:
           path: |
             dist/
             public/sitemap.xml
+            .build-cache.json
           retention-days: 7
         continue-on-error: true
 
