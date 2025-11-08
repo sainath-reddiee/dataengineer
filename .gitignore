@@ -1,3 +1,6 @@
+# Build cache for incremental builds
+.build-cache.json
+
 # Sitemap cache files (optional - can commit them too)
 .sitemap-cache.json
 .notification-cache.json
