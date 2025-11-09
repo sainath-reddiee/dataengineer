@@ -189,6 +189,15 @@ jobs:
           VITE_ADSENSE_PUBLISHER_ID: ${{ secrets.VITE_ADSENSE_PUBLISHER_ID }}
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
 
+      - name: 🗑️ Delete Build Cache (Force Fresh Build)
+        if: |
+          steps.changes.outputs.build_type == 'force-rebuild' || 
+          steps.changes.outputs.build_type == 'nuclear-redeploy'
+        run: |
+          rm -f .build-cache.json
+          echo "🗑️ Build cache deleted - all pages will be regenerated with unique timestamps"
+          echo "✅ This ensures FTP will detect file changes and upload them"
+
       - name: 📄 Generate Static Pages
         id: static_pages
         run: |
@@ -327,18 +336,23 @@ jobs:
           
           echo "✅ Files prepared for deployment"
 
-      - name: 🗑️ Clear FTP Sync State (For Force Rebuild)
+      - name: 🗑️ Clear FTP Sync State (Force Upload All Files)
         if: |
           steps.changes.outputs.build_type == 'force-rebuild' || 
           steps.changes.outputs.build_type == 'nuclear-redeploy'
         run: |
           echo "🗑️ Removing FTP sync state to force re-upload of all files..."
           rm -f .ftp-deploy-sync-state.json
-          echo "✅ FTP sync state cleared - all files will be uploaded"
+          echo "✅ FTP sync state cleared - ALL files will be uploaded"
+          echo ""
+          echo "This ensures that even if file timestamps are the same,"
+          echo "the FTP tool will re-upload everything because it has no"
+          echo "previous state to compare against."
           
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🔄 Force Upload Enabled" >> $GITHUB_STEP_SUMMARY
           echo "⚠️ FTP sync state cleared - all files will be re-uploaded regardless of changes" >> $GITHUB_STEP_SUMMARY
+          echo "📝 Each HTML file contains unique build timestamp to ensure file content differs" >> $GITHUB_STEP_SUMMARY
 
       - name: 🚀 Deploy to Hostinger (FTPS)
         if: steps.changes.outputs.skip_deploy != 'true'
@@ -473,7 +487,7 @@ jobs:
           elif [ "${{ steps.changes.outputs.build_type }}" == "force-rebuild" ]; then
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "### 🔨 Force Rebuild" >> $GITHUB_STEP_SUMMARY
-            echo "✅ All pages regenerated and force uploaded" >> $GITHUB_STEP_SUMMARY
+            echo "✅ All pages regenerated with unique timestamps and force uploaded" >> $GITHUB_STEP_SUMMARY
             echo "⏱️ **Build Type:** Full (Forced)" >> $GITHUB_STEP_SUMMARY
           elif [ "${{ steps.changes.outputs.build_type }}" == "full-with-categories" ]; then
             echo "" >> $GITHUB_STEP_SUMMARY
