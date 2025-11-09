@@ -75,22 +75,6 @@ function findBundleFiles(distDir) {
   return { jsFile, cssFile };
 }
 
-// Helper function to convert absolute paths to relative paths
-function makeRelativePath(fromPath, absolutePath) {
-  if (!absolutePath) return null;
-  
-  // Count directory depth (e.g., /articles/slug = 2 levels deep)
-  const depth = fromPath.split('/').filter(Boolean).length;
-  
-  // Create relative prefix (../ for each level)
-  const prefix = '../'.repeat(depth);
-  
-  // Remove leading slash from absolute path
-  const relativePath = absolutePath.replace(/^\//, '');
-  
-  return prefix + relativePath;
-}
-
 // ============================================================================
 // API FETCHING
 // ============================================================================
@@ -130,16 +114,17 @@ function stripHTML(html) {
 }
 
 // ============================================================================
-// HTML GENERATION
+// HTML GENERATION - FIXED VERSION
 // ============================================================================
 
 function generateHTML(pageData, bundleFiles) {
   const { title, description, path: pagePath, content = '' } = pageData;
   const { jsFile, cssFile } = bundleFiles;
   
-  // Convert absolute paths to relative paths for local file viewing
-  const relativeJsFile = jsFile ? makeRelativePath(pagePath, jsFile) : null;
-  const relativeCssFile = cssFile ? makeRelativePath(pagePath, cssFile) : null;
+  // 🔥 FIX: Use absolute paths (starting with /) for production
+  // These work correctly when deployed to the web server
+  const productionJsFile = jsFile || '/assets/js/index.js';
+  const productionCssFile = cssFile || '/assets/index.css';
   
   // Add a unique build timestamp comment to FORCE file content changes for FTP upload
   const buildTimestamp = new Date().toISOString();
@@ -158,7 +143,7 @@ function generateHTML(pageData, bundleFiles) {
     
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
-    ${relativeCssFile ? `<link rel="stylesheet" crossorigin href="${relativeCssFile}">` : ''}
+    ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
     
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -237,7 +222,7 @@ function generateHTML(pageData, bundleFiles) {
       </div>
       <div class="loading-indicator">Loading React app...</div>
     </div>
-    ${relativeJsFile ? `<script type="module" crossorigin src="${relativeJsFile}"></script>` : '<script type="module" src="../../src/main.jsx"></script>'}
+    ${productionJsFile ? `<script type="module" crossorigin src="${productionJsFile}"></script>` : ''}
     
     <script>
       // Log when React takes over
@@ -304,7 +289,7 @@ async function buildIncremental(options = {}) {
   const bundleFiles = findBundleFiles(distDir);
   
   if (!bundleFiles.jsFile) {
-    console.warn('⚠️  Warning: Could not detect production bundle. Pages may not load correctly.');
+    console.warn('⚠️  Warning: Could not detect production bundle. Using fallback paths.');
     console.warn('   Make sure to run "npm run build:vite" before this script.');
   }
   
@@ -650,7 +635,7 @@ Examples:
   npm run build:incremental -- --posts-only  # Only rebuild posts
 
 Features:
-  ✅ Relative paths for local file viewing
+  ✅ Absolute paths for production deployment
   ✅ Automatic bundle detection from dist/index.html
   ✅ Enhanced error logging with console messages
   ✅ Loading indicators and fallbacks
