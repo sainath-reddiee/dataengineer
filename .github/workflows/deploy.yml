@@ -26,6 +26,7 @@ on:
           - 'force-rebuild'
           - 'full-with-categories'
           - 'posts-only'
+          - 'nuclear-redeploy'
       skip_cache:
         description: 'Skip build cache?'
         required: false
@@ -97,6 +98,14 @@ jobs:
             echo "notify_search_engines=$NOTIFY_SE" >> $GITHUB_OUTPUT
             echo "dry_run=$DRY_RUN" >> $GITHUB_OUTPUT
             
+            # Set dangerous clean slate flag for nuclear option
+            if [ "$BUILD_TYPE" == "nuclear-redeploy" ]; then
+              echo "use_clean_slate=true" >> $GITHUB_OUTPUT
+              echo "☢️  NUCLEAR REDEPLOY MODE ENABLED"
+            else
+              echo "use_clean_slate=false" >> $GITHUB_OUTPUT
+            fi
+            
             echo "🎮 Manual trigger with options:"
             echo "  - Build Type: $BUILD_TYPE"
             echo "  - Skip Cache: $SKIP_CACHE"
@@ -112,11 +121,12 @@ jobs:
             echo "verify_build=true" >> $GITHUB_OUTPUT
             echo "notify_search_engines=true" >> $GITHUB_OUTPUT
             echo "dry_run=false" >> $GITHUB_OUTPUT
+            echo "use_clean_slate=false" >> $GITHUB_OUTPUT
           fi
           
           # Determine build flags
           case "${{ github.event.inputs.build_type }}" in
-            "force-rebuild")
+            "force-rebuild"|"nuclear-redeploy")
               echo "build_flags=--posts-only --force" >> $GITHUB_OUTPUT
               echo "🔨 Force rebuild all posts"
               ;;
@@ -317,6 +327,19 @@ jobs:
           
           echo "✅ Files prepared for deployment"
 
+      - name: 🗑️ Clear FTP Sync State (For Force Rebuild)
+        if: |
+          steps.changes.outputs.build_type == 'force-rebuild' || 
+          steps.changes.outputs.build_type == 'nuclear-redeploy'
+        run: |
+          echo "🗑️ Removing FTP sync state to force re-upload of all files..."
+          rm -f .ftp-deploy-sync-state.json
+          echo "✅ FTP sync state cleared - all files will be uploaded"
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔄 Force Upload Enabled" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ FTP sync state cleared - all files will be re-uploaded regardless of changes" >> $GITHUB_STEP_SUMMARY
+
       - name: 🚀 Deploy to Hostinger (FTPS)
         if: steps.changes.outputs.skip_deploy != 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -329,7 +352,7 @@ jobs:
           security: loose
           local-dir: ./dist/
           server-dir: /public_html/
-          dangerous-clean-slate: false
+          dangerous-clean-slate: ${{ steps.changes.outputs.use_clean_slate == 'true' }}
           state-name: .ftp-deploy-sync-state.json
           dry-run: ${{ steps.changes.outputs.dry_run == 'true' }}
           timeout: 300000
@@ -442,10 +465,15 @@ jobs:
             echo "### 📝 WordPress Content Update" >> $GITHUB_STEP_SUMMARY
             echo "✅ Only changed pages were regenerated and deployed" >> $GITHUB_STEP_SUMMARY
             echo "⏱️ **Build Type:** Incremental (Fast)" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.changes.outputs.build_type }}" == "nuclear-redeploy" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ☢️ Nuclear Redeploy" >> $GITHUB_STEP_SUMMARY
+            echo "✅ Complete wipe and redeploy - all files uploaded fresh" >> $GITHUB_STEP_SUMMARY
+            echo "⏱️ **Build Type:** Nuclear (Complete Reset)" >> $GITHUB_STEP_SUMMARY
           elif [ "${{ steps.changes.outputs.build_type }}" == "force-rebuild" ]; then
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "### 🔨 Force Rebuild" >> $GITHUB_STEP_SUMMARY
-            echo "✅ All pages regenerated" >> $GITHUB_STEP_SUMMARY
+            echo "✅ All pages regenerated and force uploaded" >> $GITHUB_STEP_SUMMARY
             echo "⏱️ **Build Type:** Full (Forced)" >> $GITHUB_STEP_SUMMARY
           elif [ "${{ steps.changes.outputs.build_type }}" == "full-with-categories" ]; then
             echo "" >> $GITHUB_STEP_SUMMARY
