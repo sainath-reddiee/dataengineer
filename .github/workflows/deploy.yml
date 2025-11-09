@@ -16,8 +16,38 @@ on:
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
     inputs:
-      force_rebuild:
-        description: 'Force rebuild all pages'
+      build_type:
+        description: 'Build Type'
+        required: true
+        type: choice
+        default: 'incremental'
+        options:
+          - 'incremental'
+          - 'force-rebuild'
+          - 'full-with-categories'
+          - 'posts-only'
+      skip_cache:
+        description: 'Skip build cache?'
+        required: false
+        type: boolean
+        default: false
+      skip_deploy:
+        description: 'Build only (skip deployment)?'
+        required: false
+        type: boolean
+        default: false
+      verify_build:
+        description: 'Run build verification?'
+        required: false
+        type: boolean
+        default: true
+      notify_search_engines:
+        description: 'Notify search engines?'
+        required: false
+        type: boolean
+        default: true
+      dry_run:
+        description: 'Dry run (test without actual deployment)?'
         required: false
         type: boolean
         default: false
@@ -37,11 +67,12 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: 🔍 Detect Changes & Trigger Type
+      - name: 🔍 Detect Changes & Configure Build
         id: changes
         run: |
           echo "trigger=${{ github.event_name }}" >> $GITHUB_OUTPUT
           
+          # Detect code changes
           if git diff --name-only HEAD^ HEAD | grep -qE '^(src/|index.html|vite.config.js|tailwind.config.js|package)'; then
             echo "code_changed=true" >> $GITHUB_OUTPUT
             echo "🔨 Code changes detected - full rebuild needed"
@@ -50,16 +81,62 @@ jobs:
             echo "📄 Only content/config changed"
           fi
           
-          # Determine if force rebuild is needed
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ "${{ github.event.inputs.force_rebuild }}" == "true" ]; then
-            echo "force_rebuild=true" >> $GITHUB_OUTPUT
-            echo "⚡ Manual force rebuild requested"
+          # Configure build based on trigger type and inputs
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            BUILD_TYPE="${{ github.event.inputs.build_type }}"
+            SKIP_CACHE="${{ github.event.inputs.skip_cache }}"
+            SKIP_DEPLOY="${{ github.event.inputs.skip_deploy }}"
+            VERIFY_BUILD="${{ github.event.inputs.verify_build }}"
+            NOTIFY_SE="${{ github.event.inputs.notify_search_engines }}"
+            DRY_RUN="${{ github.event.inputs.dry_run }}"
+            
+            echo "build_type=$BUILD_TYPE" >> $GITHUB_OUTPUT
+            echo "skip_cache=$SKIP_CACHE" >> $GITHUB_OUTPUT
+            echo "skip_deploy=$SKIP_DEPLOY" >> $GITHUB_OUTPUT
+            echo "verify_build=$VERIFY_BUILD" >> $GITHUB_OUTPUT
+            echo "notify_search_engines=$NOTIFY_SE" >> $GITHUB_OUTPUT
+            echo "dry_run=$DRY_RUN" >> $GITHUB_OUTPUT
+            
+            echo "🎮 Manual trigger with options:"
+            echo "  - Build Type: $BUILD_TYPE"
+            echo "  - Skip Cache: $SKIP_CACHE"
+            echo "  - Skip Deploy: $SKIP_DEPLOY"
+            echo "  - Verify Build: $VERIFY_BUILD"
+            echo "  - Notify Search Engines: $NOTIFY_SE"
+            echo "  - Dry Run: $DRY_RUN"
           else
-            echo "force_rebuild=false" >> $GITHUB_OUTPUT
+            # Default behavior for automated triggers
+            echo "build_type=incremental" >> $GITHUB_OUTPUT
+            echo "skip_cache=false" >> $GITHUB_OUTPUT
+            echo "skip_deploy=false" >> $GITHUB_OUTPUT
+            echo "verify_build=true" >> $GITHUB_OUTPUT
+            echo "notify_search_engines=true" >> $GITHUB_OUTPUT
+            echo "dry_run=false" >> $GITHUB_OUTPUT
           fi
+          
+          # Determine build flags
+          case "${{ github.event.inputs.build_type }}" in
+            "force-rebuild")
+              echo "build_flags=--posts-only --force" >> $GITHUB_OUTPUT
+              echo "🔨 Force rebuild all posts"
+              ;;
+            "full-with-categories")
+              echo "build_flags=--force" >> $GITHUB_OUTPUT
+              echo "📚 Full rebuild including categories/tags"
+              ;;
+            "posts-only")
+              echo "build_flags=--posts-only" >> $GITHUB_OUTPUT
+              echo "📄 Posts only (no force)"
+              ;;
+            *)
+              echo "build_flags=--posts-only" >> $GITHUB_OUTPUT
+              echo "⚡ Incremental build"
+              ;;
+          esac
 
       - name: 💾 Restore Build Cache
         id: cache-restore
+        if: steps.changes.outputs.skip_cache != 'true'
         uses: actions/cache/restore@v4
         with:
           path: |
@@ -79,21 +156,22 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Install Dependencies
-        if: steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true'
+        if: steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true' || steps.changes.outputs.skip_cache == 'true'
         run: npm ci --prefer-offline --no-audit
 
       - name: 🗺️ Generate & Validate Sitemap
         if: |
           steps.cache-restore.outputs.cache-hit != 'true' || 
           github.event_name == 'repository_dispatch' || 
-          github.event_name == 'schedule'
+          github.event_name == 'schedule' ||
+          steps.changes.outputs.skip_cache == 'true'
         run: |
           npm run sitemap:generate || echo "⚠️ Sitemap generation skipped"
           npm run sitemap:validate || echo "⚠️ Sitemap validation skipped"
         continue-on-error: true
 
       - name: 🏗️ Build Application (Vite)
-        if: steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true'
+        if: steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true' || steps.changes.outputs.skip_cache == 'true'
         run: npm run build:vite
         env:
           NODE_ENV: production
@@ -101,23 +179,13 @@ jobs:
           VITE_ADSENSE_PUBLISHER_ID: ${{ secrets.VITE_ADSENSE_PUBLISHER_ID }}
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
 
-      - name: 📄 Generate Static Pages (Incremental - Posts Only)
+      - name: 📄 Generate Static Pages
         id: static_pages
         run: |
-          # Always use --posts-only flag (categories/tags handled by React)
-          BUILD_FLAGS="--posts-only"
+          # Get build flags from previous step
+          BUILD_FLAGS="${{ steps.changes.outputs.build_flags }}"
           
-          if [ "${{ steps.changes.outputs.force_rebuild }}" == "true" ]; then
-            BUILD_FLAGS="--posts-only --force"
-            echo "🔨 Force rebuilding all article pages"
-          elif [ "${{ github.event_name }}" == "repository_dispatch" ]; then
-            echo "📝 WordPress triggered - incremental article update"
-          elif [ "${{ github.event_name }}" == "schedule" ]; then
-            echo "⏰ Scheduled build - checking for changed articles"
-          fi
-          
-          # Run incremental build (posts only)
-          echo "Running: node scripts/generateStaticPagesIncremental.js $BUILD_FLAGS"
+          echo "🚀 Running build with flags: $BUILD_FLAGS"
           node scripts/generateStaticPagesIncremental.js $BUILD_FLAGS
           
           # ⚠️ CRITICAL: Verify articles exist before deploying
@@ -157,18 +225,43 @@ jobs:
           
           # Add to summary
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📄 Article Pages Generated" >> $GITHUB_STEP_SUMMARY
+          echo "### 📄 Static Pages Generated" >> $GITHUB_STEP_SUMMARY
           echo "- **Total Articles:** $ARTICLE_COUNT" >> $GITHUB_STEP_SUMMARY
-          echo "- ℹ️  **Note:** Categories and tags are handled dynamically by React" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Type:** ${{ steps.changes.outputs.build_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Flags:** \`$BUILD_FLAGS\`" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "$BUILD_FLAGS" == *"--posts-only"* ]]; then
+            echo "- ℹ️  **Note:** Categories and tags are handled dynamically by React" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: 🔍 Verify Build (Optional)
+        if: steps.changes.outputs.verify_build == 'true'
+        run: |
+          echo "🔍 Running build verification..."
+          npm run build:verify || {
+            echo "⚠️ Build verification found issues but continuing..."
+            echo "Check the logs above for details"
+          }
+        continue-on-error: true
 
       - name: ℹ️ Build Status
         run: |
           echo "## 📊 Build Statistics" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "**Manual Options:**" >> $GITHUB_STEP_SUMMARY
+            echo "- Build Type: ${{ steps.changes.outputs.build_type }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Skip Cache: ${{ steps.changes.outputs.skip_cache }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Skip Deploy: ${{ steps.changes.outputs.skip_deploy }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Verify Build: ${{ steps.changes.outputs.verify_build }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Dry Run: ${{ steps.changes.outputs.dry_run }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          if [ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ]; then
+          if [ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ] && [ "${{ steps.changes.outputs.skip_cache }}" != "true" ]; then
             if [ "${{ steps.changes.outputs.code_changed }}" == "true" ]; then
               echo "🔨 Code changed - full rebuild performed" >> $GITHUB_STEP_SUMMARY
             else
@@ -225,6 +318,7 @@ jobs:
           echo "✅ Files prepared for deployment"
 
       - name: 🚀 Deploy to Hostinger (FTPS)
+        if: steps.changes.outputs.skip_deploy != 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -237,7 +331,7 @@ jobs:
           server-dir: /public_html/
           dangerous-clean-slate: false
           state-name: .ftp-deploy-sync-state.json
-          dry-run: false
+          dry-run: ${{ steps.changes.outputs.dry_run == 'true' }}
           timeout: 300000
           log-level: standard
           exclude: |
@@ -249,7 +343,15 @@ jobs:
             **/Thumbs.db
             **/.build-cache.json
 
+      - name: ⏭️ Deployment Skipped
+        if: steps.changes.outputs.skip_deploy == 'true'
+        run: |
+          echo "⏭️ Deployment skipped by user request" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Build completed successfully but was not deployed." >> $GITHUB_STEP_SUMMARY
+
       - name: ⏸️ Smart Wait
+        if: steps.changes.outputs.skip_deploy != 'true' && steps.changes.outputs.dry_run != 'true'
         run: |
           if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
             echo "⚡ WordPress update - quick wait (5s)"
@@ -263,6 +365,7 @@ jobs:
           fi
 
       - name: 🔍 Deployment Verification
+        if: steps.changes.outputs.skip_deploy != 'true' && steps.changes.outputs.dry_run != 'true'
         run: |
           echo "🔍 Verifying deployment..."
           
@@ -292,13 +395,26 @@ jobs:
               echo "⚠️ IndexNow key verification failed"
             fi
           fi
+          
+          # Verify a sample article
+          SAMPLE_ARTICLE=$(find dist/articles -name 'index.html' | head -1 | sed 's|dist||' | sed 's|/index.html||')
+          if [ ! -z "$SAMPLE_ARTICLE" ]; then
+            if curl -sf -o /dev/null "https://dataengineerhub.blog${SAMPLE_ARTICLE}"; then
+              echo "✅ Sample article is accessible: ${SAMPLE_ARTICLE}"
+            else
+              echo "⚠️ Sample article check failed: ${SAMPLE_ARTICLE}"
+            fi
+          fi
         continue-on-error: true
 
       - name: 📢 Notify Search Engines
         if: |
-          steps.cache-restore.outputs.cache-hit != 'true' || 
-          github.event_name == 'repository_dispatch' || 
-          github.event_name == 'schedule'
+          steps.changes.outputs.skip_deploy != 'true' && 
+          steps.changes.outputs.dry_run != 'true' &&
+          steps.changes.outputs.notify_search_engines == 'true' &&
+          (steps.cache-restore.outputs.cache-hit != 'true' || 
+           github.event_name == 'repository_dispatch' || 
+           github.event_name == 'schedule')
         run: |
           npm run sitemap:notify || echo "⚠️ Search engine notification queued"
         continue-on-error: true
@@ -306,23 +422,43 @@ jobs:
 
       - name: 📊 Deployment Summary
         run: |
-          echo "## 🚀 Deployment Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Deployment status
+          if [ "${{ steps.changes.outputs.dry_run }}" == "true" ]; then
+            echo "### 🧪 Dry Run Mode" >> $GITHUB_STEP_SUMMARY
+            echo "✅ Build completed successfully (no actual deployment)" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.changes.outputs.skip_deploy }}" == "true" ]; then
+            echo "### ⏭️ Build Only" >> $GITHUB_STEP_SUMMARY
+            echo "✅ Build completed successfully (deployment skipped by user)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ✅ Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          fi
           
           # Show build type
           if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
             echo "### 📝 WordPress Content Update" >> $GITHUB_STEP_SUMMARY
             echo "✅ Only changed pages were regenerated and deployed" >> $GITHUB_STEP_SUMMARY
             echo "⏱️ **Build Type:** Incremental (Fast)" >> $GITHUB_STEP_SUMMARY
-          elif [ "${{ steps.changes.outputs.force_rebuild }}" == "true" ]; then
+          elif [ "${{ steps.changes.outputs.build_type }}" == "force-rebuild" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
             echo "### 🔨 Force Rebuild" >> $GITHUB_STEP_SUMMARY
             echo "✅ All pages regenerated" >> $GITHUB_STEP_SUMMARY
             echo "⏱️ **Build Type:** Full (Forced)" >> $GITHUB_STEP_SUMMARY
-          elif [ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ]; then
+          elif [ "${{ steps.changes.outputs.build_type }}" == "full-with-categories" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📚 Full Build" >> $GITHUB_STEP_SUMMARY
+            echo "✅ All pages including categories and tags regenerated" >> $GITHUB_STEP_SUMMARY
+            echo "⏱️ **Build Type:** Complete" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ] && [ "${{ steps.changes.outputs.skip_cache }}" != "true" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
             echo "### ⚡ Cache Hit" >> $GITHUB_STEP_SUMMARY
             echo "✅ Using cached build with incremental updates" >> $GITHUB_STEP_SUMMARY
             echo "⏱️ **Time Saved:** ~50-70 seconds" >> $GITHUB_STEP_SUMMARY
           else
+            echo "" >> $GITHUB_STEP_SUMMARY
             echo "### 🆕 Fresh Build" >> $GITHUB_STEP_SUMMARY
             echo "✅ Complete build from scratch" >> $GITHUB_STEP_SUMMARY
             echo "⏱️ **Build Type:** Full" >> $GITHUB_STEP_SUMMARY
@@ -340,11 +476,17 @@ jobs:
           echo "- **Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
           
           if [ "${{ steps.static_pages.outputs.article_count }}" != "" ]; then
-            echo "- **Articles Deployed:** ${{ steps.static_pages.outputs.article_count }}" >> $GITHUB_STEP_SUMMARY
+            echo "- **Articles:** ${{ steps.static_pages.outputs.article_count }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ steps.changes.outputs.verify_build }}" == "true" ]; then
+            echo "- **Verification:** ✅ Enabled" >> $GITHUB_STEP_SUMMARY
           fi
 
       - name: 💾 Save Cache
-        if: steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true'
+        if: |
+          steps.changes.outputs.skip_cache != 'true' &&
+          (steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true')
         uses: actions/cache/save@v4
         with:
           path: |
@@ -356,7 +498,10 @@ jobs:
           key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**', 'index.html', 'vite.config.js', 'tailwind.config.js', 'postcss.config.js') }}
 
       - name: 💾 Upload Artifact
-        if: steps.cache-restore.outputs.cache-hit != 'true' || github.event_name == 'repository_dispatch'
+        if: |
+          steps.changes.outputs.skip_deploy == 'true' ||
+          steps.cache-restore.outputs.cache-hit != 'true' || 
+          github.event_name == 'repository_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ github.run_number }}
