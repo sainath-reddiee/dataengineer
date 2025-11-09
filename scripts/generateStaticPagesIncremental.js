@@ -173,7 +173,7 @@ function generateHTML(pageData) {
 // ============================================================================
 
 async function buildIncremental(options = {}) {
-  const { force = false, postsOnly = false } = options;
+  let { force = false, postsOnly = false } = options;
   
   console.log('🚀 Starting incremental static generation...');
   if (force) console.log('⚡ Force mode: Rebuilding all pages');
@@ -185,6 +185,16 @@ async function buildIncremental(options = {}) {
   if (!fs.existsSync(distDir)) {
     console.error('❌ dist/ folder not found. Run "npm run build:vite" first.');
     process.exit(1);
+  }
+  
+  // 🔥 CRITICAL SAFETY CHECK: Verify articles directory exists
+  const articlesDir = path.join(distDir, 'articles');
+  const articlesExist = fs.existsSync(articlesDir) && fs.readdirSync(articlesDir).length > 0;
+  
+  if (!articlesExist && !force) {
+    console.warn('⚠️  articles/ directory not found or empty in dist/');
+    console.log('🔨 Automatically enabling force rebuild to prevent data loss...');
+    force = true;
   }
   
   // Load cache
@@ -212,6 +222,11 @@ async function buildIncremental(options = {}) {
   try {
     const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content,modified');
     console.log(`   Found ${posts.length} posts from API`);
+    
+    if (posts.length === 0) {
+      console.warn('⚠️  No posts found from WordPress API!');
+      console.warn('   This could indicate an API issue.');
+    }
     
     for (const post of posts) {
       const pagePath = `/articles/${post.slug}`;
@@ -275,8 +290,19 @@ async function buildIncremental(options = {}) {
     const postsTime = ((Date.now() - startTime) / 1000).toFixed(2);
     console.log(`✅ Posts: ${stats.new} new, ${stats.updated} updated, ${stats.unchanged} unchanged (${postsTime}s)`);
     
+    // Final verification for posts
+    const finalArticleCount = fs.existsSync(articlesDir) ? fs.readdirSync(articlesDir).length : 0;
+    if (finalArticleCount === 0 && posts.length > 0) {
+      console.error('❌ CRITICAL: Posts were processed but no article files exist in dist/articles!');
+      console.error('   This indicates a file writing error.');
+      stats.errors++;
+    } else {
+      console.log(`   📊 Verified: ${finalArticleCount} article directories in dist/articles/`);
+    }
+    
   } catch (error) {
     console.error('❌ Error processing posts:', error.message);
+    stats.errors++;
   }
   
   // ============================================================================
@@ -466,6 +492,12 @@ async function buildIncremental(options = {}) {
     console.log(`\n💡 Performance: ${saved}% of pages were cached (saved ~${Math.round(stats.unchanged * 0.1)}s)`);
   }
   
+  // Error handling
+  if (stats.errors > 0) {
+    console.log('\n⚠️  Build completed with errors. Please review the logs above.');
+    process.exit(1);
+  }
+  
   console.log('');
 }
 
@@ -495,6 +527,12 @@ Examples:
   npm run build:incremental                  # Normal incremental build
   npm run build:incremental -- --force       # Force full rebuild
   npm run build:incremental -- --posts-only  # Only rebuild posts
+
+Safety Features:
+  - Automatically detects missing articles directory
+  - Forces rebuild if articles are missing to prevent data loss
+  - Verifies file creation after each write
+  - Reports errors without silent failures
   `);
   process.exit(0);
 }
