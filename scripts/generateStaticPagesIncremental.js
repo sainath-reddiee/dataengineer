@@ -41,6 +41,41 @@ function hashContent(content) {
 }
 
 // ============================================================================
+// BUNDLE DETECTION
+// ============================================================================
+
+function findBundleFiles(distDir) {
+  const indexHtmlPath = path.join(distDir, 'index.html');
+  
+  if (!fs.existsSync(indexHtmlPath)) {
+    console.warn('⚠️  dist/index.html not found');
+    return { jsFile: null, cssFile: null };
+  }
+  
+  const indexContent = fs.readFileSync(indexHtmlPath, 'utf8');
+  
+  // Extract JS bundle path
+  const jsMatch = indexContent.match(/src="(\/assets\/[^"]+\.js)"/);
+  const jsFile = jsMatch ? jsMatch[1] : null;
+  
+  // Extract CSS bundle path
+  const cssMatch = indexContent.match(/href="(\/assets\/[^"]+\.css)"/);
+  const cssFile = cssMatch ? cssMatch[1] : null;
+  
+  if (jsFile) {
+    console.log(`📦 Found JS bundle: ${jsFile}`);
+  } else {
+    console.warn('⚠️  Could not find JS bundle in index.html');
+  }
+  
+  if (cssFile) {
+    console.log(`🎨 Found CSS bundle: ${cssFile}`);
+  }
+  
+  return { jsFile, cssFile };
+}
+
+// ============================================================================
 // API FETCHING
 // ============================================================================
 
@@ -82,8 +117,9 @@ function stripHTML(html) {
 // HTML GENERATION
 // ============================================================================
 
-function generateHTML(pageData) {
+function generateHTML(pageData, bundleFiles) {
   const { title, description, path: pagePath, content = '' } = pageData;
+  const { jsFile, cssFile } = bundleFiles;
   
   return `<!doctype html>
 <html lang="en">
@@ -97,6 +133,7 @@ function generateHTML(pageData) {
     
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
+    ${cssFile ? `<link rel="stylesheet" crossorigin href="${cssFile}">` : ''}
     
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -155,8 +192,7 @@ function generateHTML(pageData) {
         </noscript>
       </div>
     </div>
-    
-    <script type="module" src="/src/main.jsx"></script>
+    ${jsFile ? `<script type="module" crossorigin src="${jsFile}"></script>` : '<script type="module" src="/src/main.jsx"></script>'}
     
     <script>
       window.addEventListener('load', function() {
@@ -185,6 +221,14 @@ async function buildIncremental(options = {}) {
   if (!fs.existsSync(distDir)) {
     console.error('❌ dist/ folder not found. Run "npm run build:vite" first.');
     process.exit(1);
+  }
+  
+  // Detect bundle files from dist/index.html
+  const bundleFiles = findBundleFiles(distDir);
+  
+  if (!bundleFiles.jsFile) {
+    console.warn('⚠️  Warning: Could not detect production bundle. Pages may not load correctly.');
+    console.warn('   Make sure to run "npm run build:vite" before this script.');
   }
   
   // 🔥 CRITICAL SAFETY CHECK: Verify articles directory exists
@@ -250,7 +294,7 @@ async function buildIncremental(options = {}) {
       
       if (needsRebuild) {
         try {
-          const html = generateHTML(pageData);
+          const html = generateHTML(pageData, bundleFiles);
           const filePath = path.join(distDir, pagePath, 'index.html');
           const dir = path.dirname(filePath);
           
@@ -339,7 +383,7 @@ async function buildIncremental(options = {}) {
         
         if (needsRebuild) {
           try {
-            const html = generateHTML(pageData);
+            const html = generateHTML(pageData, bundleFiles);
             const filePath = path.join(distDir, pagePath, 'index.html');
             const dir = path.dirname(filePath);
             
@@ -403,7 +447,7 @@ async function buildIncremental(options = {}) {
         
         if (needsRebuild) {
           try {
-            const html = generateHTML(pageData);
+            const html = generateHTML(pageData, bundleFiles);
             const filePath = path.join(distDir, pagePath, 'index.html');
             const dir = path.dirname(filePath);
             
@@ -533,6 +577,7 @@ Safety Features:
   - Forces rebuild if articles are missing to prevent data loss
   - Verifies file creation after each write
   - Reports errors without silent failures
+  - Auto-detects production bundle paths from dist/index.html
   `);
   process.exit(0);
 }
