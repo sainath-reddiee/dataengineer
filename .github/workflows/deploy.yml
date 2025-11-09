@@ -101,9 +101,6 @@ jobs:
           VITE_ADSENSE_PUBLISHER_ID: ${{ secrets.VITE_ADSENSE_PUBLISHER_ID }}
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
 
-      # ====================================================================
-      # ⬇️ START OF THE FIX
-      # ====================================================================
       - name: 📄 Generate Static Pages (Incremental - Posts Only)
         id: static_pages
         run: |
@@ -120,17 +117,49 @@ jobs:
           fi
           
           # Run incremental build (posts only)
-          # We call node directly to pass our custom flags, bypassing the npm script
           echo "Running: node scripts/generateStaticPagesIncremental.js $BUILD_FLAGS"
           node scripts/generateStaticPagesIncremental.js $BUILD_FLAGS
           
-          # Parse build output for statistics
+          # ⚠️ CRITICAL: Verify articles exist before deploying
+          echo ""
+          echo "🔍 Verifying article pages in dist/..."
+          
+          if [ ! -d "dist/articles" ]; then
+            echo "❌ ERROR: dist/articles directory not found!"
+            echo "🔨 Forcing complete rebuild of all pages..."
+            node scripts/generateStaticPagesIncremental.js --posts-only --force
+          fi
+          
+          # Count article pages
+          ARTICLE_COUNT=$(find dist/articles -name 'index.html' 2>/dev/null | wc -l || echo "0")
+          echo "📊 Found $ARTICLE_COUNT article pages in dist/"
+          
+          if [ "$ARTICLE_COUNT" -eq 0 ]; then
+            echo "❌ CRITICAL: No articles found in dist/articles!"
+            echo "This would cause the FTP sync to delete all articles from the server."
+            echo ""
+            echo "Attempting one final forced rebuild..."
+            node scripts/generateStaticPagesIncremental.js --posts-only --force
+            
+            # Re-check after force rebuild
+            ARTICLE_COUNT=$(find dist/articles -name 'index.html' 2>/dev/null | wc -l || echo "0")
+            
+            if [ "$ARTICLE_COUNT" -eq 0 ]; then
+              echo "❌ FATAL: Still no articles after forced rebuild!"
+              echo "Deployment aborted to prevent data loss."
+              exit 1
+            fi
+          fi
+          
+          echo "✅ Deployment ready with $ARTICLE_COUNT article pages"
+          echo "article_count=$ARTICLE_COUNT" >> $GITHUB_OUTPUT
           echo "build_completed=true" >> $GITHUB_OUTPUT
+          
+          # Add to summary
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "ℹ️  **Note:** Categories and tags are handled dynamically by React" >> $GITHUB_STEP_SUMMARY
-      # ====================================================================
-      # ⬆️ END OF THE FIX
-      # ====================================================================
+          echo "### 📄 Article Pages Generated" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Articles:** $ARTICLE_COUNT" >> $GITHUB_STEP_SUMMARY
+          echo "- ℹ️  **Note:** Categories and tags are handled dynamically by React" >> $GITHUB_STEP_SUMMARY
 
       - name: ℹ️ Build Status
         run: |
@@ -309,6 +338,10 @@ jobs:
           echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.static_pages.outputs.article_count }}" != "" ]; then
+            echo "- **Articles Deployed:** ${{ steps.static_pages.outputs.article_count }}" >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: 💾 Save Cache
         if: steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true'
