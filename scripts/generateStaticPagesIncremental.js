@@ -54,8 +54,8 @@ function findBundleFiles(distDir) {
   
   const indexContent = fs.readFileSync(indexHtmlPath, 'utf8');
   
-  // Extract JS bundle path
-  const jsMatch = indexContent.match(/src="(\/assets\/[^"]+\.js)"/);
+  // Extract JS bundle path (matches both /assets/index-*.js and /assets/js/index-*.js)
+  const jsMatch = indexContent.match(/src="(\/assets\/(?:js\/)?[^"]+\.js)"/);
   const jsFile = jsMatch ? jsMatch[1] : null;
   
   // Extract CSS bundle path
@@ -73,6 +73,22 @@ function findBundleFiles(distDir) {
   }
   
   return { jsFile, cssFile };
+}
+
+// Helper function to convert absolute paths to relative paths
+function makeRelativePath(fromPath, absolutePath) {
+  if (!absolutePath) return null;
+  
+  // Count directory depth (e.g., /articles/slug = 2 levels deep)
+  const depth = fromPath.split('/').filter(Boolean).length;
+  
+  // Create relative prefix (../ for each level)
+  const prefix = '../'.repeat(depth);
+  
+  // Remove leading slash from absolute path
+  const relativePath = absolutePath.replace(/^\//, '');
+  
+  return prefix + relativePath;
 }
 
 // ============================================================================
@@ -121,6 +137,14 @@ function generateHTML(pageData, bundleFiles) {
   const { title, description, path: pagePath, content = '' } = pageData;
   const { jsFile, cssFile } = bundleFiles;
   
+  // Convert absolute paths to relative paths for local file viewing
+  const relativeJsFile = jsFile ? makeRelativePath(pagePath, jsFile) : null;
+  const relativeCssFile = cssFile ? makeRelativePath(pagePath, cssFile) : null;
+  
+  // Add a unique build timestamp comment to FORCE file content changes for FTP upload
+  const buildTimestamp = new Date().toISOString();
+  const buildHash = crypto.randomBytes(8).toString('hex');
+  
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -130,10 +154,11 @@ function generateHTML(pageData, bundleFiles) {
     <meta name="description" content="${description}" />
     <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
     <meta name="robots" content="index, follow" />
+    <!-- Build: ${buildTimestamp} | Hash: ${buildHash} -->
     
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
-    ${cssFile ? `<link rel="stylesheet" crossorigin href="${cssFile}">` : ''}
+    ${relativeCssFile ? `<link rel="stylesheet" crossorigin href="${relativeCssFile}">` : ''}
     
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -142,6 +167,7 @@ function generateHTML(pageData, bundleFiles) {
         background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
         color: #f8fafc;
         line-height: 1.6;
+        min-height: 100vh;
       }
       
       /* SEO content visible by default */
@@ -149,6 +175,8 @@ function generateHTML(pageData, bundleFiles) {
         max-width: 800px;
         margin: 0 auto;
         padding: 60px 20px;
+        opacity: 1;
+        transition: opacity 0.3s ease;
       }
       
       .seo-content h1 {
@@ -171,11 +199,27 @@ function generateHTML(pageData, bundleFiles) {
       body.react-loaded .seo-content {
         display: none;
       }
+      
+      /* Loading indicator */
+      .loading-indicator {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #60a5fa;
+        font-size: 1.2rem;
+      }
+      
+      body.react-loading .loading-indicator {
+        display: block;
+      }
     </style>
     
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         document.body.classList.add('react-loading');
+        console.log('🚀 Page loaded, waiting for React...');
       });
     </script>
   </head>
@@ -191,13 +235,46 @@ function generateHTML(pageData, bundleFiles) {
           </p>
         </noscript>
       </div>
+      <div class="loading-indicator">Loading React app...</div>
     </div>
-    ${jsFile ? `<script type="module" crossorigin src="${jsFile}"></script>` : '<script type="module" src="/src/main.jsx"></script>'}
+    ${relativeJsFile ? `<script type="module" crossorigin src="${relativeJsFile}"></script>` : '<script type="module" src="../../src/main.jsx"></script>'}
     
     <script>
+      // Log when React takes over
+      const observer = new MutationObserver(function(mutations) {
+        const root = document.getElementById('root');
+        if (root && root.children.length > 2) {
+          console.log('✅ React app mounted successfully');
+          document.body.classList.remove('react-loading');
+          document.body.classList.add('react-loaded');
+          observer.disconnect();
+        }
+      });
+      
+      observer.observe(document.getElementById('root'), {
+        childList: true,
+        subtree: true
+      });
+      
+      // Fallback: Remove loading after window load
       window.addEventListener('load', function() {
-        document.body.classList.remove('react-loading');
-        document.body.classList.add('react-loaded');
+        setTimeout(function() {
+          if (document.body.classList.contains('react-loading')) {
+            console.log('⚠️  React may not have loaded correctly');
+          }
+          document.body.classList.remove('react-loading');
+          document.body.classList.add('react-loaded');
+        }, 2000);
+      });
+      
+      // Error handling
+      window.addEventListener('error', function(e) {
+        if (e.filename && e.filename.includes('.js')) {
+          console.error('❌ JavaScript loading error:', e.message);
+          console.error('   File:', e.filename);
+          document.querySelector('.loading-indicator').textContent = 
+            'Error loading app. Please check console.';
+        }
       });
     </script>
   </body>
@@ -572,12 +649,21 @@ Examples:
   npm run build:incremental -- --force       # Force full rebuild
   npm run build:incremental -- --posts-only  # Only rebuild posts
 
+Features:
+  ✅ Relative paths for local file viewing
+  ✅ Automatic bundle detection from dist/index.html
+  ✅ Enhanced error logging with console messages
+  ✅ Loading indicators and fallbacks
+  ✅ Safety checks for missing directories
+  ✅ Build timestamp + hash to force FTP uploads
+
 Safety Features:
   - Automatically detects missing articles directory
   - Forces rebuild if articles are missing to prevent data loss
   - Verifies file creation after each write
   - Reports errors without silent failures
   - Auto-detects production bundle paths from dist/index.html
+  - Adds unique timestamp + random hash to force file changes
   `);
   process.exit(0);
 }
