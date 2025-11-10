@@ -55,14 +55,37 @@ function findBundleFiles(distDir) {
 
   const indexContent = fs.readFileSync(indexHtmlPath, 'utf8');
 
-  const jsMatch = indexContent.match(/src="(\/assets\/(?:js\/)?[^"]+\.js)"/);
-  const jsFile = jsMatch ? jsMatch[1] : null;
+  // Match JS file - look for both /assets/js/... and /assets/index-...
+  const jsMatch = indexContent.match(/src="(\/assets\/[^"]+\.js)"/);
+  let jsFile = jsMatch ? jsMatch[1] : null;
+  
+  // CRITICAL FIX: Remove /js/ subdirectory if it exists but file doesn't
+  if (jsFile && jsFile.includes('/js/')) {
+    const jsPath = path.join(distDir, jsFile);
+    if (!fs.existsSync(jsPath)) {
+      // Try without /js/ subdirectory
+      const alternateJsFile = jsFile.replace('/assets/js/', '/assets/');
+      const alternatePath = path.join(distDir, alternateJsFile);
+      if (fs.existsSync(alternatePath)) {
+        console.log(`⚠️  JS file not found at ${jsFile}, using ${alternateJsFile}`);
+        jsFile = alternateJsFile;
+      }
+    }
+  }
 
   const cssMatch = indexContent.match(/href="(\/assets\/[^"]+\.css)"/);
   const cssFile = cssMatch ? cssMatch[1] : null;
 
   if (jsFile) console.log(`📦 Found JS bundle: ${jsFile}`);
   if (cssFile) console.log(`🎨 Found CSS bundle: ${cssFile}`);
+  
+  // Verify files actually exist
+  if (jsFile && !fs.existsSync(path.join(distDir, jsFile))) {
+    console.warn(`⚠️  JS bundle not found at: ${jsFile}`);
+  }
+  if (cssFile && !fs.existsSync(path.join(distDir, cssFile))) {
+    console.warn(`⚠️  CSS bundle not found at: ${cssFile}`);
+  }
 
   return { jsFile, cssFile };
 }
@@ -171,8 +194,9 @@ function generateFullArticleHTML(pageData, bundleFiles) {
   const depth = (pagePath.match(/\//g) || []).length - 1;
   const relativePrefix = '../'.repeat(depth);
   
-  const productionJsFile = jsFile ? `${relativePrefix}${jsFile.substring(1)}` : `${relativePrefix}assets/js/index.js`;
-  const productionCssFile = cssFile ? `${relativePrefix}${cssFile.substring(1)}` : `${relativePrefix}assets/index.css`;
+  // Remove leading slash and prepend relative prefix
+  const productionJsFile = jsFile ? `${relativePrefix}${jsFile.substring(1)}` : null;
+  const productionCssFile = cssFile ? `${relativePrefix}${cssFile.substring(1)}` : null;
 
   const buildTimestamp = new Date().toISOString();
   const buildHash = crypto.randomBytes(8).toString('hex');
@@ -201,7 +225,7 @@ function generateFullArticleHTML(pageData, bundleFiles) {
 
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
-    <link rel="stylesheet" crossorigin href="${productionCssFile}">
+    ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
 
     <style>
       /* 🎨 STYLED FOR CRAWLER VISIBILITY */
@@ -436,7 +460,7 @@ function generateFullArticleHTML(pageData, bundleFiles) {
     </div>
 
     <!-- React app loads and takes over for interactive experience -->
-    <script type="module" crossorigin src="${productionJsFile}"></script>
+    ${productionJsFile ? `<script type="module" crossorigin src="${productionJsFile}"></script>` : ''}
 
     <script>
       // 🖼️ Image lazy loading handler
@@ -487,8 +511,8 @@ function generateSimpleHTML(pageData, bundleFiles) {
   const depth = (pagePath.match(/\//g) || []).length - 1;
   const relativePrefix = '../'.repeat(depth);
   
-  const productionJsFile = jsFile ? `${relativePrefix}${jsFile.substring(1)}` : `${relativePrefix}assets/js/index.js`;
-  const productionCssFile = cssFile ? `${relativePrefix}${cssFile.substring(1)}` : `${relativePrefix}assets/index.css`;
+  const productionJsFile = jsFile ? `${relativePrefix}${jsFile.substring(1)}` : null;
+  const productionCssFile = cssFile ? `${relativePrefix}${cssFile.substring(1)}` : null;
 
   return `<!doctype html>
 <html lang="en">
