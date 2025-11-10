@@ -1,5 +1,5 @@
 // scripts/generateStaticPagesIncremental.js
-// FIXED VERSION - Generates FULL CONTENT for SEO/AdSense (not just 500 chars!)
+// FIXED VERSION - Generates FULL CONTENT for SEO/AdSense with IMAGES
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
+const WORDPRESS_BASE_URL = 'https://app.dataengineerhub.blog';
 const CACHE_FILE = path.join(__dirname, '..', '.build-cache.json');
 
 // ============================================================================
@@ -105,18 +106,79 @@ function stripHTML(html) {
 }
 
 // ============================================================================
-// 🔥 FIXED HTML GENERATION - FULL CONTENT FOR CRAWLERS
+// 🖼️ IMAGE PROCESSING - Make all image URLs absolute
+// ============================================================================
+
+function makeImagesAbsolute(content) {
+  if (!content) return '';
+  
+  // Fix relative image URLs to absolute WordPress URLs
+  let processedContent = content;
+  
+  // Pattern 1: src="/wp-content/..." -> src="https://app.dataengineerhub.blog/wp-content/..."
+  processedContent = processedContent.replace(
+    /src="(\/wp-content\/[^"]+)"/g,
+    `src="${WORDPRESS_BASE_URL}$1"`
+  );
+  
+  // Pattern 2: src="wp-content/..." -> src="https://app.dataengineerhub.blog/wp-content/..."
+  processedContent = processedContent.replace(
+    /src="(wp-content\/[^"]+)"/g,
+    `src="${WORDPRESS_BASE_URL}/$1"`
+  );
+  
+  // Pattern 3: Fix any remaining relative URLs that start with /
+  processedContent = processedContent.replace(
+    /src="(\/[^"]+\.(jpg|jpeg|png|gif|webp|svg))"/gi,
+    `src="${WORDPRESS_BASE_URL}$1"`
+  );
+  
+  // Also fix srcset attributes for responsive images
+  processedContent = processedContent.replace(
+    /srcset="([^"]+)"/g,
+    (match, srcsetValue) => {
+      const fixedSrcset = srcsetValue
+        .split(',')
+        .map(src => {
+          const trimmed = src.trim();
+          // If it starts with / or wp-content, make it absolute
+          if (trimmed.startsWith('/wp-content/')) {
+            return trimmed.replace(/^\/wp-content\//, `${WORDPRESS_BASE_URL}/wp-content/`);
+          } else if (trimmed.startsWith('wp-content/')) {
+            return trimmed.replace(/^wp-content\//, `${WORDPRESS_BASE_URL}/wp-content/`);
+          } else if (trimmed.startsWith('/')) {
+            return WORDPRESS_BASE_URL + trimmed.split(' ')[0] + ' ' + trimmed.split(' ').slice(1).join(' ');
+          }
+          return trimmed;
+        })
+        .join(', ');
+      return `srcset="${fixedSrcset}"`;
+    }
+  );
+  
+  return processedContent;
+}
+
+// ============================================================================
+// 🔥 FIXED HTML GENERATION - FULL CONTENT FOR CRAWLERS WITH IMAGES
 // ============================================================================
 
 function generateFullArticleHTML(pageData, bundleFiles) {
   const { title, description, path: pagePath, fullContent = '', slug } = pageData;
   const { jsFile, cssFile } = bundleFiles;
 
-  const productionJsFile = jsFile || '/assets/js/index.js';
-  const productionCssFile = cssFile || '/assets/index.css';
+  // 🔥 CRITICAL: Use relative paths from article subdirectory
+  const depth = (pagePath.match(/\//g) || []).length - 1;
+  const relativePrefix = '../'.repeat(depth);
+  
+  const productionJsFile = jsFile ? `${relativePrefix}${jsFile.substring(1)}` : `${relativePrefix}assets/js/index.js`;
+  const productionCssFile = cssFile ? `${relativePrefix}${cssFile.substring(1)}` : `${relativePrefix}assets/index.css`;
 
   const buildTimestamp = new Date().toISOString();
   const buildHash = crypto.randomBytes(8).toString('hex');
+  
+  // 🖼️ Process images to make them absolute
+  const processedContent = makeImagesAbsolute(fullContent);
 
   return `<!doctype html>
 <html lang="en">
@@ -139,7 +201,7 @@ function generateFullArticleHTML(pageData, bundleFiles) {
 
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
-    ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
+    <link rel="stylesheet" crossorigin href="${productionCssFile}">
 
     <style>
       /* 🎨 STYLED FOR CRAWLER VISIBILITY */
@@ -162,6 +224,7 @@ function generateFullArticleHTML(pageData, bundleFiles) {
         backdrop-filter: blur(10px);
         border-radius: 16px;
         margin-top: 40px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       }
       
       .seo-content h1 {
@@ -248,11 +311,26 @@ function generateFullArticleHTML(pageData, bundleFiles) {
         color: #cbd5e1;
       }
       
+      /* 🖼️ IMAGE STYLING - Proper display and loading */
       .seo-content .article-body img {
         max-width: 100%;
         height: auto;
         border-radius: 8px;
         margin: 1.5rem 0;
+        display: block;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+      
+      .seo-content .article-body figure {
+        margin: 1.5rem 0;
+      }
+      
+      .seo-content .article-body figcaption {
+        text-align: center;
+        font-size: 0.9rem;
+        color: #94a3b8;
+        margin-top: 0.5rem;
+        font-style: italic;
       }
       
       .seo-content .article-body table {
@@ -271,6 +349,17 @@ function generateFullArticleHTML(pageData, bundleFiles) {
       .seo-content .article-body table th {
         background: rgba(96, 165, 250, 0.2);
         font-weight: 600;
+      }
+      
+      .seo-content .article-body a {
+        color: #60a5fa;
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s;
+      }
+      
+      .seo-content .article-body a:hover {
+        border-bottom-color: #60a5fa;
       }
       
       .back-link {
@@ -292,6 +381,16 @@ function generateFullArticleHTML(pageData, bundleFiles) {
       /* Hide SEO content when React loads (for interactive experience) */
       body.react-loaded .seo-content {
         display: none;
+      }
+      
+      /* Loading state for images */
+      .seo-content .article-body img[loading="lazy"] {
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      
+      .seo-content .article-body img[loading="lazy"].loaded {
+        opacity: 1;
       }
       
       @media (max-width: 768px) {
@@ -319,12 +418,12 @@ function generateFullArticleHTML(pageData, bundleFiles) {
           <h1>${title}</h1>
           <p class="excerpt">${description}</p>
 
-          <!-- 🔥 THIS IS THE KEY: FULL HTML CONTENT, NOT JUST 500 CHARS -->
+          <!-- 🔥 THIS IS THE KEY: FULL HTML CONTENT WITH IMAGES -->
           <div class="article-body">
-            ${fullContent}
+            ${processedContent}
           </div>
           
-          <a href="/" class="back-link">← Back to Home</a>
+          <a href="${relativePrefix}" class="back-link">← Back to Home</a>
         </article>
         
         <noscript>
@@ -337,9 +436,23 @@ function generateFullArticleHTML(pageData, bundleFiles) {
     </div>
 
     <!-- React app loads and takes over for interactive experience -->
-    ${productionJsFile ? `<script type="module" crossorigin src="${productionJsFile}"></script>` : ''}
+    <script type="module" crossorigin src="${productionJsFile}"></script>
 
     <script>
+      // 🖼️ Image lazy loading handler
+      document.addEventListener('DOMContentLoaded', function() {
+        const images = document.querySelectorAll('.article-body img[loading="lazy"]');
+        images.forEach(img => {
+          img.addEventListener('load', function() {
+            this.classList.add('loaded');
+          });
+          // If already loaded (cached)
+          if (img.complete) {
+            img.classList.add('loaded');
+          }
+        });
+      });
+      
       // Gracefully transition from static to React
       window.addEventListener('load', function() {
         // Wait for React to mount
@@ -371,8 +484,11 @@ function generateSimpleHTML(pageData, bundleFiles) {
   const { title, description, path: pagePath } = pageData;
   const { jsFile, cssFile } = bundleFiles;
 
-  const productionJsFile = jsFile || '/assets/js/index.js';
-  const productionCssFile = cssFile || '/assets/index.css';
+  const depth = (pagePath.match(/\//g) || []).length - 1;
+  const relativePrefix = '../'.repeat(depth);
+  
+  const productionJsFile = jsFile ? `${relativePrefix}${jsFile.substring(1)}` : `${relativePrefix}assets/js/index.js`;
+  const productionCssFile = cssFile ? `${relativePrefix}${cssFile.substring(1)}` : `${relativePrefix}assets/index.css`;
 
   return `<!doctype html>
 <html lang="en">
@@ -382,7 +498,7 @@ function generateSimpleHTML(pageData, bundleFiles) {
     <title>${title} | DataEngineer Hub</title>
     <meta name="description" content="${description}" />
     <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
-    ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
+    <link rel="stylesheet" crossorigin href="${productionCssFile}">
   </head>
   <body>
     <div id="root">
@@ -391,7 +507,7 @@ function generateSimpleHTML(pageData, bundleFiles) {
         <p>${description}</p>
       </div>
     </div>
-    ${productionJsFile ? `<script type="module" crossorigin src="${productionJsFile}"></script>` : ''}
+    <script type="module" crossorigin src="${productionJsFile}"></script>
   </body>
 </html>`;
 }
@@ -403,8 +519,9 @@ function generateSimpleHTML(pageData, bundleFiles) {
 async function buildIncremental(options = {}) {
   let { force = false, postsOnly = false } = options;
 
-  console.log('🚀 Starting FULL CONTENT static generation…');
+  console.log('🚀 Starting FULL CONTENT static generation with images…');
   console.log('   🔥 Articles will include COMPLETE content for SEO/AdSense');
+  console.log('   🖼️  Images will be properly linked with absolute URLs');
   if (force) console.log('⚡ Force mode: Rebuilding all pages');
   console.log('');
 
@@ -439,10 +556,10 @@ async function buildIncremental(options = {}) {
   const currentPages = new Set();
 
   // ============================================================================
-  // 🔥 PROCESS POSTS - WITH FULL CONTENT
+  // 🔥 PROCESS POSTS - WITH FULL CONTENT AND IMAGES
   // ============================================================================
 
-  console.log('📄 Processing posts with FULL content…');
+  console.log('📄 Processing posts with FULL content and images…');
   const startTime = Date.now();
 
   try {
@@ -479,7 +596,7 @@ async function buildIncremental(options = {}) {
       
       if (needsRebuild) {
         try {
-          // 🔥 Use the FULL content generator
+          // 🔥 Use the FULL content generator with image processing
           const html = generateFullArticleHTML(pageData, bundleFiles);
           const filePath = path.join(distDir, pagePath, 'index.html');
           const dir = path.dirname(filePath);
@@ -670,7 +787,8 @@ async function buildIncremental(options = {}) {
   console.log(`   ⏱️  Build time:      ${totalTime}s`);
   console.log('='.repeat(60));
   console.log('\n✅ All articles now contain FULL content for crawlers!');
-  console.log('✅ AdSense/Googlebot will see complete articles, not snippets');
+  console.log('✅ AdSense/Googlebot will see complete articles with images');
+  console.log('🖼️  All image URLs converted to absolute paths');
   console.log('');
 
   if (stats.errors > 0) {
@@ -709,7 +827,9 @@ Examples:
 🔥 KEY FEATURES:
   ✅ FULL article content (not 500 char limit!)
   ✅ Complete HTML for SEO/AdSense crawlers
-  ✅ Absolute paths for production deployment
+  ✅ Absolute image URLs from WordPress
+  ✅ Relative asset paths for proper loading
+  ✅ Works when accessing /index.html directly
   ✅ Automatic bundle detection
   ✅ Enhanced error logging
   ✅ Safety checks for missing directories
@@ -718,9 +838,22 @@ Examples:
 🎯 AdSense Optimization:
   - Every article includes COMPLETE content
   - Crawlers see full HTML (20-50 KB per article)
+  - All images properly linked with absolute URLs
   - No "thin content" issues
   - Proper structured data and meta tags
   - Static content visible before JavaScript loads
+
+🖼️ Image Processing:
+  - Converts relative WordPress image URLs to absolute
+  - Handles /wp-content/uploads/... paths
+  - Fixes srcset for responsive images
+  - Images load properly from WordPress CDN
+
+🔧 Path Handling:
+  - Uses relative paths (../) for CSS/JS bundles
+  - Works when accessing /articles/slug/index.html directly
+  - No blue screen errors on direct HTML access
+  - Proper base URL resolution
 
 Safety Features:
   - Automatically detects missing articles directory
