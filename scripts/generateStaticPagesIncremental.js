@@ -55,36 +55,101 @@ function findBundleFiles(distDir) {
 
   const indexContent = fs.readFileSync(indexHtmlPath, 'utf8');
 
-  // Match JS file - look for both /assets/js/... and /assets/index-...
+  // Match CSS file - straightforward
+  const cssMatch = indexContent.match(/href="(\/assets\/[^"]+\.css)"/);
+  const cssFile = cssMatch ? cssMatch[1] : null;
+  
+  // Match JS file - can be in /assets/ or /assets/js/
   const jsMatch = indexContent.match(/src="(\/assets\/[^"]+\.js)"/);
   let jsFile = jsMatch ? jsMatch[1] : null;
   
-  // CRITICAL FIX: Remove /js/ subdirectory if it exists but file doesn't
-  if (jsFile && jsFile.includes('/js/')) {
-    const jsPath = path.join(distDir, jsFile);
-    if (!fs.existsSync(jsPath)) {
-      // Try without /js/ subdirectory
-      const alternateJsFile = jsFile.replace('/assets/js/', '/assets/');
-      const alternatePath = path.join(distDir, alternateJsFile);
-      if (fs.existsSync(alternatePath)) {
-        console.log(`⚠️  JS file not found at ${jsFile}, using ${alternateJsFile}`);
-        jsFile = alternateJsFile;
+  // 🔥 CRITICAL: Find the ACTUAL JS file location
+  if (jsFile) {
+    const directPath = path.join(distDir, jsFile);
+    
+    if (!fs.existsSync(directPath)) {
+      console.warn(`⚠️  JS file not found at expected path: ${jsFile}`);
+      
+      // Search strategy 1: Look in /assets/js/ subdirectory
+      const jsSubdirPath = path.join(distDir, 'assets', 'js');
+      if (fs.existsSync(jsSubdirPath)) {
+        const jsFiles = fs.readdirSync(jsSubdirPath);
+        const indexJsFile = jsFiles.find(f => f.startsWith('index-') && f.endsWith('.js'));
+        
+        if (indexJsFile) {
+          jsFile = `/assets/js/${indexJsFile}`;
+          console.log(`✅ Found JS in subdirectory: ${jsFile}`);
+          return { jsFile, cssFile };
+        }
+      }
+      
+      // Search strategy 2: Look directly in /assets/
+      const assetsPath = path.join(distDir, 'assets');
+      if (fs.existsSync(assetsPath)) {
+        const assetFiles = fs.readdirSync(assetsPath);
+        const indexJsFile = assetFiles.find(f => f.startsWith('index-') && f.endsWith('.js'));
+        
+        if (indexJsFile) {
+          jsFile = `/assets/${indexJsFile}`;
+          console.log(`✅ Found JS in assets root: ${jsFile}`);
+          return { jsFile, cssFile };
+        }
+      }
+      
+      console.error('❌ Could not locate JS bundle anywhere!');
+      jsFile = null;
+    }
+  } else {
+    // No JS match in index.html - try to find it manually
+    console.warn('⚠️  No JS reference found in index.html, searching manually...');
+    
+    // Check /assets/js/ first
+    const jsSubdirPath = path.join(distDir, 'assets', 'js');
+    if (fs.existsSync(jsSubdirPath)) {
+      const jsFiles = fs.readdirSync(jsSubdirPath);
+      const indexJsFile = jsFiles.find(f => f.startsWith('index-') && f.endsWith('.js'));
+      
+      if (indexJsFile) {
+        jsFile = `/assets/js/${indexJsFile}`;
+        console.log(`✅ Manually found JS: ${jsFile}`);
+        return { jsFile, cssFile };
+      }
+    }
+    
+    // Check /assets/ root
+    const assetsPath = path.join(distDir, 'assets');
+    if (fs.existsSync(assetsPath)) {
+      const assetFiles = fs.readdirSync(assetsPath);
+      const indexJsFile = assetFiles.find(f => f.startsWith('index-') && f.endsWith('.js'));
+      
+      if (indexJsFile) {
+        jsFile = `/assets/${indexJsFile}`;
+        console.log(`✅ Manually found JS: ${jsFile}`);
+        return { jsFile, cssFile };
       }
     }
   }
 
-  const cssMatch = indexContent.match(/href="(\/assets\/[^"]+\.css)"/);
-  const cssFile = cssMatch ? cssMatch[1] : null;
-
-  if (jsFile) console.log(`📦 Found JS bundle: ${jsFile}`);
-  if (cssFile) console.log(`🎨 Found CSS bundle: ${cssFile}`);
+  if (jsFile) console.log(`📦 JS bundle: ${jsFile}`);
+  if (cssFile) console.log(`🎨 CSS bundle: ${cssFile}`);
   
-  // Verify files actually exist
-  if (jsFile && !fs.existsSync(path.join(distDir, jsFile))) {
-    console.warn(`⚠️  JS bundle not found at: ${jsFile}`);
+  // Final verification
+  if (jsFile) {
+    const finalPath = path.join(distDir, jsFile);
+    if (fs.existsSync(finalPath)) {
+      console.log(`✅ Verified JS exists at: ${jsFile}`);
+    } else {
+      console.error(`❌ CRITICAL: JS bundle NOT found at ${jsFile}`);
+    }
   }
-  if (cssFile && !fs.existsSync(path.join(distDir, cssFile))) {
-    console.warn(`⚠️  CSS bundle not found at: ${cssFile}`);
+  
+  if (cssFile) {
+    const finalPath = path.join(distDir, cssFile);
+    if (fs.existsSync(finalPath)) {
+      console.log(`✅ Verified CSS exists at: ${cssFile}`);
+    } else {
+      console.error(`❌ CRITICAL: CSS bundle NOT found at ${cssFile}`);
+    }
   }
 
   return { jsFile, cssFile };
@@ -129,34 +194,39 @@ function stripHTML(html) {
 }
 
 // ============================================================================
-// 🖼️ IMAGE PROCESSING - Make all image URLs absolute
+// 🖼️ IMAGE PROCESSING - Make all image URLs absolute & fix CDN issues
 // ============================================================================
 
 function makeImagesAbsolute(content) {
   if (!content) return '';
   
-  // Fix relative image URLs to absolute WordPress URLs
   let processedContent = content;
   
-  // Pattern 1: src="/wp-content/..." -> src="https://app.dataengineerhub.blog/wp-content/..."
+  // Pattern 1: Fix data-recalc-dims (remove it - causes issues)
+  processedContent = processedContent.replace(/data-recalc-dims="1"\s*/g, '');
+  
+  // Pattern 2: Fix images with / at end before loading attribute
+  processedContent = processedContent.replace(/\s*\/\s*loading=/g, ' loading=');
+  
+  // Pattern 3: src="/wp-content/..." -> absolute URL
   processedContent = processedContent.replace(
     /src="(\/wp-content\/[^"]+)"/g,
     `src="${WORDPRESS_BASE_URL}$1"`
   );
   
-  // Pattern 2: src="wp-content/..." -> src="https://app.dataengineerhub.blog/wp-content/..."
+  // Pattern 4: src="wp-content/..." (no leading slash) -> absolute URL
   processedContent = processedContent.replace(
     /src="(wp-content\/[^"]+)"/g,
     `src="${WORDPRESS_BASE_URL}/$1"`
   );
   
-  // Pattern 3: Fix any remaining relative URLs that start with /
+  // Pattern 5: Fix any remaining relative image URLs
   processedContent = processedContent.replace(
     /src="(\/[^"]+\.(jpg|jpeg|png|gif|webp|svg))"/gi,
     `src="${WORDPRESS_BASE_URL}$1"`
   );
   
-  // Also fix srcset attributes for responsive images
+  // Pattern 6: Fix srcset attributes for responsive images
   processedContent = processedContent.replace(
     /srcset="([^"]+)"/g,
     (match, srcsetValue) => {
@@ -164,13 +234,23 @@ function makeImagesAbsolute(content) {
         .split(',')
         .map(src => {
           const trimmed = src.trim();
-          // If it starts with / or wp-content, make it absolute
+          // Already absolute (http/https)
+          if (trimmed.startsWith('http')) {
+            return trimmed;
+          }
+          // Starts with /wp-content/
           if (trimmed.startsWith('/wp-content/')) {
             return trimmed.replace(/^\/wp-content\//, `${WORDPRESS_BASE_URL}/wp-content/`);
-          } else if (trimmed.startsWith('wp-content/')) {
+          }
+          // Starts with wp-content/ (no slash)
+          if (trimmed.startsWith('wp-content/')) {
             return trimmed.replace(/^wp-content\//, `${WORDPRESS_BASE_URL}/wp-content/`);
-          } else if (trimmed.startsWith('/')) {
-            return WORDPRESS_BASE_URL + trimmed.split(' ')[0] + ' ' + trimmed.split(' ').slice(1).join(' ');
+          }
+          // Other relative URLs starting with /
+          if (trimmed.startsWith('/')) {
+            const parts = trimmed.split(' ');
+            parts[0] = WORDPRESS_BASE_URL + parts[0];
+            return parts.join(' ');
           }
           return trimmed;
         })
@@ -178,6 +258,9 @@ function makeImagesAbsolute(content) {
       return `srcset="${fixedSrcset}"`;
     }
   );
+  
+  // Pattern 7: Remove HTML entities that cause encoding issues
+  processedContent = processedContent.replace(/&#038;/g, '&');
   
   return processedContent;
 }
@@ -522,7 +605,7 @@ function generateSimpleHTML(pageData, bundleFiles) {
     <title>${title} | DataEngineer Hub</title>
     <meta name="description" content="${description}" />
     <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
-    <link rel="stylesheet" crossorigin href="${productionCssFile}">
+    ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
   </head>
   <body>
     <div id="root">
@@ -531,7 +614,7 @@ function generateSimpleHTML(pageData, bundleFiles) {
         <p>${description}</p>
       </div>
     </div>
-    <script type="module" crossorigin src="${productionJsFile}"></script>
+    ${productionJsFile ? `<script type="module" crossorigin src="${productionJsFile}"></script>` : ''}
   </body>
 </html>`;
 }
