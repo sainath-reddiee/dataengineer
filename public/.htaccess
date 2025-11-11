@@ -1,40 +1,81 @@
 # ==============================================================================
-# DATAENGINEERHUB.BLOG - COMPLETE .HTACCESS CONFIGURATION
-# Optimized for Performance, SEO, and Security
+# DATAENGINEERHUB.BLOG - SEO-OPTIMIZED .HTACCESS CONFIGURATION
+# Fixed: Redirect errors, indexing issues, and character encoding
 # ==============================================================================
 
 # ==============================================================================
-# A) REACT ROUTER & SPA CONFIGURATION
+# A) REACT ROUTER & SPA CONFIGURATION WITH STATIC ARTICLE SUPPORT
 # ==============================================================================
+
 <IfModule mod_rewrite.c>
     # Turn on the rewriting engine
     RewriteEngine On
-
-    # Redirect www to non-www for SEO
-    RewriteCond %{HTTP_HOST} ^www\.dataengineerhub\.blog [NC]
-    RewriteRule ^(.*)$ https://dataengineerhub.blog/$1 [L,R=301]
-
-    # Force HTTPS (if not already on HTTPS)
-    RewriteCond %{HTTPS} off
-    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
+    
     # Set the base for all relative paths
     RewriteBase /
-
-    # Redirect Ezoic ads.txt to their server
-    # RewriteRule ^ads\.txt$ https://srv.adstxtmanager.com/19390/dataengineerhub.blog [R=301,L]
-
-    # If the requested path is NOT a real file that exists on the server...
-    RewriteCond %{REQUEST_FILENAME} !-f
-    # AND if the requested path is NOT a real directory...
+    
+    # ========================================================================
+    # CRITICAL FIX: Proper redirect order to prevent loops
+    # ========================================================================
+    
+    # Step 1: Redirect www to non-www FIRST (both HTTP and HTTPS)
+    RewriteCond %{HTTP_HOST} ^www\.dataengineerhub\.blog [NC]
+    RewriteRule ^(.*)$ https://dataengineerhub.blog/$1 [L,R=301]
+    
+    # Step 2: Force HTTPS (only if not already HTTPS and not www)
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP_HOST} !^www\. [NC]
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # ========================================================================
+    # CRITICAL FIX: Handle trailing slashes consistently (SEO!)
+    # ========================================================================
+    
+    # Remove trailing slash from non-directory URLs (except root)
     RewriteCond %{REQUEST_FILENAME} !-d
-    # ...then rewrite the request to the /index.html file to let React handle it.
-    RewriteRule . /index.html [L]
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^(.+)/$ /$1 [R=301,L]
+    
+    # ========================================================================
+    # CRITICAL FIX: Serve static HTML for articles if it exists
+    # ========================================================================
+    
+    # For requests to /articles/slug (without trailing slash)
+    # Check if /articles/slug/index.html exists
+    RewriteCond %{REQUEST_URI} ^/articles/([^/]+)/?$
+    RewriteCond %{DOCUMENT_ROOT}/articles/%1/index.html -f
+    RewriteRule ^articles/([^/]+)/?$ /articles/$1/index.html [L]
+    
+    # ========================================================================
+    # IMPORTANT: Exclude common files from rewrite rules
+    # ========================================================================
+    
+    # Don't rewrite robots.txt, sitemap.xml, favicon.ico
+    RewriteRule ^(robots\.txt|sitemap\.xml|sitemap_index\.xml|favicon\.ico)$ - [L]
+    
+    # ========================================================================
+    # IMPORTANT: Allow real files and directories to be served directly
+    # ========================================================================
+    
+    # If the requested path IS a real file, serve it
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+    
+    # If the requested path IS a real directory, serve it
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+    
+    # ========================================================================
+    # Fallback: For everything else, serve React app (index.html)
+    # ========================================================================
+    RewriteRule ^ /index.html [L]
+
 </IfModule>
 
 # ==============================================================================
 # B) BROWSER CACHING - EXTENDED (PERFORMANCE BOOST)
 # ==============================================================================
+
 <IfModule mod_expires.c>
     ExpiresActive On
     
@@ -72,7 +113,7 @@
     ExpiresByType audio/mpeg "access plus 1 year"
     ExpiresByType audio/ogg "access plus 1 year"
     
-    # HTML - cache for 1 hour (frequently updated)
+    # HTML - SHORT cache for articles (1 hour so Googlebot gets fresh content)
     ExpiresByType text/html "access plus 1 hour"
     
     # Data files - cache for 1 hour
@@ -86,6 +127,7 @@
     
     # Default - cache for 1 day
     ExpiresDefault "access plus 1 day"
+
 </IfModule>
 
 # Cache-Control Headers (more modern than Expires)
@@ -95,7 +137,12 @@
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
     
-    # HTML files - short cache with revalidation
+    # HTML files in articles/ - shorter cache so crawlers get updates
+    <FilesMatch "^articles/.*\.html$">
+        Header set Cache-Control "public, max-age=3600, must-revalidate"
+    </FilesMatch>
+    
+    # Other HTML files - short cache with revalidation
     <FilesMatch "\.(html|htm)$">
         Header set Cache-Control "public, max-age=3600, must-revalidate"
     </FilesMatch>
@@ -108,11 +155,13 @@
     # Remove ETags (they cause caching issues with multiple servers)
     Header unset ETag
     FileETag None
+
 </IfModule>
 
 # ==============================================================================
 # C) GZIP COMPRESSION - EXTENDED (PERFORMANCE)
 # ==============================================================================
+
 <IfModule mod_deflate.c>
     # Compress HTML, CSS, JavaScript
     AddOutputFilterByType DEFLATE text/html
@@ -152,11 +201,13 @@
     BrowserMatch ^Mozilla/4\.0[678] no-gzip
     BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
     Header append Vary User-Agent
+
 </IfModule>
 
 # ==============================================================================
 # D) SECURITY HEADERS - ENHANCED
 # ==============================================================================
+
 <IfModule mod_headers.c>
     # CORS - Allow your API subdomain
     Header always set Access-Control-Allow-Origin "https://app.dataengineerhub.blog"
@@ -178,6 +229,8 @@
     # Permissions Policy (formerly Feature-Policy)
     Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
 
+</IfModule>
+
 # ==============================================================================
 # E) PERFORMANCE OPTIMIZATIONS
 # ==============================================================================
@@ -188,27 +241,31 @@ ServerSignature Off
 # Prevent directory browsing
 Options -Indexes
 
-# Prevent access to hidden files (like .git, .env)
+# Prevent access to hidden files (like .git, .env) - FIXED QUOTES
 <FilesMatch "^\.">
     Order allow,deny
     Deny from all
 </FilesMatch>
 
-# Prevent access to backup files
+# Prevent access to backup files - FIXED QUOTES
 <FilesMatch "\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist)$">
     Order allow,deny
     Deny from all
 </FilesMatch>
 
 # ==============================================================================
-# F) CUSTOM ERROR PAGES
+# F) CUSTOM ERROR PAGES - CRITICAL SEO FIX
 # ==============================================================================
-# All errors redirect to index.html (React handles 404)
-ErrorDocument 400 /index.html
-ErrorDocument 401 /index.html
-ErrorDocument 403 /index.html
-ErrorDocument 404 /index.html
-ErrorDocument 500 /index.html
+
+# IMPORTANT: Don't redirect ALL errors to index.html!
+# This makes Google think error pages are successful pages
+
+# Create proper 404 page that returns 404 status
+ErrorDocument 404 /404.html
+
+# For other errors, you can create dedicated error pages
+# or use server defaults (better for SEO than redirecting to index.html)
+# ErrorDocument 500 /500.html
 
 # ==============================================================================
 # G) ADDITIONAL PERFORMANCE TWEAKS
@@ -226,7 +283,7 @@ LimitRequestBody 10485760
 AddDefaultCharset UTF-8
 
 # ==============================================================================
-# H) FILE-SPECIFIC OPTIMIZATIONS
+# H) FILE-SPECIFIC OPTIMIZATIONS - FIXED QUOTES
 # ==============================================================================
 
 # Force download for certain file types
@@ -241,16 +298,26 @@ AddDefaultCharset UTF-8
     AddType font/ttf .ttf
     AddType font/otf .otf
     AddType application/vnd.ms-fontobject .eot
+    
+    # Additional MIME types for better compatibility
+    AddType application/json .json
+    AddType image/svg+xml .svg
+    AddType image/webp .webp
 </IfModule>
 
 # ==============================================================================
-# I) REDIRECT RULES (SEO)
+# I) SEO-SPECIFIC OPTIMIZATIONS
 # ==============================================================================
 
-# Add trailing slash to directories (optional - comment out if not needed)
-# RewriteCond %{REQUEST_FILENAME} !-f
-# RewriteCond %{REQUEST_URI} !(.*)/$
-# RewriteRule ^(.*)$ https://dataengineerhub.blog/$1/ [L,R=301]
+# Ensure XML sitemaps are served with correct MIME type
+<FilesMatch "\.(xml)$">
+    Header set Content-Type "application/xml; charset=utf-8"
+</FilesMatch>
+
+# Ensure robots.txt is served correctly
+<FilesMatch "^robots\.txt$">
+    Header set Content-Type "text/plain; charset=utf-8"
+</FilesMatch>
 
 # ==============================================================================
 # END OF CONFIGURATION
