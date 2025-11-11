@@ -37,6 +37,14 @@
     RewriteRule ^(.+)/$ /$1 [R=301,L]
     
     # ========================================================================
+    # NEW FIX: Handle /articles route - MUST be served by React app
+    # ========================================================================
+    
+    # If someone visits /articles or /articles/ (the listing page)
+    # serve it through React app, NOT as a directory
+    RewriteRule ^articles/?$ /index.html [L]
+    
+    # ========================================================================
     # CRITICAL FIX: Serve static HTML for articles if it exists
     # ========================================================================
     
