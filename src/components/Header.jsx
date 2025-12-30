@@ -117,7 +117,7 @@ const Header = () => {
   const isHomeActive = currentPath === '/';
   const isTagsActive = currentPath.includes('/tag');
   const isAboutActive = currentPath.includes('/about');
-
+  const isCertificationActive = currentPath.includes('/certification');
   // Enhanced category structure
   const categories = {
   platforms: {
@@ -415,7 +415,26 @@ const Header = () => {
                 Tags
               </a>
             </motion.div>
-
+            {/* ✅ NEW: Certification Tab */}
+            <motion.div whileHover={{ y: -2 }}>
+              <a 
+                href="/certification" 
+                className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
+                  isCertificationActive 
+                    ? 'text-blue-400' 
+                    : 'text-gray-300 hover:text-blue-400'
+                }`}
+                style={isCertificationActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+              >
+                <Award className="w-4 h-4" />
+                Certification
+                {/* Optional: Glowing Dot to indicate it's New */}
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                </span>
+              </a>
+            </motion.div>
             {/* About */}
             <motion.div whileHover={{ y: -2 }}>
               <a 
@@ -514,11 +533,15 @@ const Header = () => {
                   <Tags className="w-5 h-5" />
                   Tags
                 </a>
+                {/* ✅ NEW: Certification Tab (Mobile) */}
+                <a href="/certification" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                  <Award className="w-5 h-5" />
+                  Certification
+                </a>
                 <a href="/about" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
                   <Info className="w-5 h-5" />
                   About
                 </a>
-
                 <a
                   href="/newsletter"
                   className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white w-full mt-4 py-3 text-base font-bold shadow-lg rounded-full text-center min-h-[48px] flex items-center justify-center"
