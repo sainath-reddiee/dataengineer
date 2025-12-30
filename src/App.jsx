@@ -23,6 +23,7 @@ const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
 const DisclaimerPage = lazy(() => import('./pages/DisclaimerPage'));
 const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 const TagsArchivePage = lazy(() => import('./pages/TagsArchivePage'));
+const Certification = lazy(() => import('./pages/Certification'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
@@ -140,6 +141,11 @@ function App() {
           <Route path="about" element={
             <Suspense fallback={<LoadingFallback text="Loading About..." />}>
               <AboutPage />
+            </Suspense>
+          } />
+          <Route path="certification" element={
+            <Suspense fallback={<LoadingFallback text="Loading Certification..." />}>
+              <Certification />
             </Suspense>
           } />
           <Route path="contact" element={
