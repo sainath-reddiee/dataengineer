@@ -144,6 +144,11 @@ function App() {
               <AboutPage />
             </Suspense>
           } />
+          <Route path="certification" element={
+            <Suspense fallback={<LoadingFallback text="Loading Certification..." />}>
+              <Certification />
+            </Suspense>
+          } />
           <Route path="contact" element={
             <Suspense fallback={<LoadingFallback text="Loading Contact..." />}>
               <ContactPage />
