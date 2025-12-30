@@ -8,7 +8,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import MobileOptimization from '@/components/MobileOptimization';
 import { trackPageView, trackEvent } from '@/utils/analytics';
 import { useApiDebugger } from '@/hooks/useApiDebugger';
-import Certification from './pages/Certification';
+import Certification from '@/pages/Certification';
 
 // Lazy load pages for code splitting
 const HomePage = lazy(() => import('./pages/HomePage'));
