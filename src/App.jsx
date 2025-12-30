@@ -8,6 +8,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import MobileOptimization from '@/components/MobileOptimization';
 import { trackPageView, trackEvent } from '@/utils/analytics';
 import { useApiDebugger } from '@/hooks/useApiDebugger';
+import Certification from './pages/Certification';
 
 // Lazy load pages for code splitting
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -23,6 +24,7 @@ const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
 const DisclaimerPage = lazy(() => import('./pages/DisclaimerPage'));
 const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 const TagsArchivePage = lazy(() => import('./pages/TagsArchivePage'));
+const Certification = lazy(() => import('./pages/Certification'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
