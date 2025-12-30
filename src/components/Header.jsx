@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 // Helper component for the "Corner Burst" sparks animation
 const Spark = ({ x, y, rotate, color }) => {
