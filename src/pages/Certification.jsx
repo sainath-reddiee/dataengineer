@@ -7,7 +7,7 @@ const Certification = () => {
       
       <div className="flex-grow w-full h-full relative">
         <iframe
-          src="https://snowcertify.com/?embed=true" 
+          src="https://snowcert.streamlit.app/?embed=true" 
           title="Snowflake Certification Prep"
           width="100%"
           height="100%"
