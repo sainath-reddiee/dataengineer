@@ -10,7 +10,8 @@ import { usePost, useRelatedPosts } from '@/hooks/useWordPress';
 import { preloadImage } from '@/utils/imageOptimizer';
 import { throttle } from '@/utils/performance';
 import { trackScrollDepth, trackArticleRead } from '@/utils/analytics';
-import { generateBreadcrumbs } from '@/lib/seoConfig';
+import { generateBreadcrumbs, getFAQSchema } from '@/lib/seoConfig';
+import { extractFAQFromContent } from '@/utils/faqExtractor';
 import LazyImage from '@/components/LazyImage';
 import TagsList from '@/components/TagsList';
 import DOMPurify from 'dompurify';
@@ -193,6 +194,12 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
             <span className="text-gray-600">•</span>
             <Clock className="h-3.5 w-3.5 text-green-400/60" />
             <span>{safePost.readTime}</span>
+            {safePost.modified && safePost.modified !== safePost.date && (
+              <>
+                <span className="text-gray-600">•</span>
+                <span className="text-blue-400">Updated: {formatDate(safePost.modified)}</span>
+              </>
+            )}
           </div>
 
           <button
@@ -480,6 +487,10 @@ const ArticlePage = () => {
   // Generate breadcrumbs for SEO
   const breadcrumbs = generateBreadcrumbs(`/articles/${slug}`, safePost.title);
 
+  // Auto-extract FAQ schema from content
+  const faqs = extractFAQFromContent(safePost.content || '');
+  const faqSchema = faqs.length > 0 ? getFAQSchema(faqs) : null;
+
   return (
     <div className="pt-4 pb-12">
       <ReadingProgressBar />
@@ -494,6 +505,7 @@ const ArticlePage = () => {
         tags={safePost.tags}
         author={safePost.author}
         breadcrumbs={breadcrumbs}
+        faqSchema={faqSchema}
       />
 
       <div className="container mx-auto px-6 max-w-4xl">

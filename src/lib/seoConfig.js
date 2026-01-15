@@ -249,16 +249,31 @@ export function getCanonicalUrl(path = '') {
 
 /**
  * Format page title with template
+ * OPTIMIZED: Avoids "..." truncation which reduces CTR by 20-30%
  */
-export function formatTitle(title) {
+export function formatTitle(title, options = {}) {
+  const { includeBrand = true, maxLength = SEO_DEFAULTS.maxTitleLength } = options;
+
   if (!title) return SEO_DEFAULTS.defaultTitle;
 
-  const maxLength = SEO_DEFAULTS.maxTitleLength - SITE_CONFIG.name.length - 3; // " | "
-  const truncatedTitle = title.length > maxLength
-    ? title.substring(0, maxLength) + '...'
-    : title;
+  const brandSuffix = ` ${SEO_DEFAULTS.titleSeparator} ${SITE_CONFIG.name}`;
+  const effectiveMax = includeBrand ? maxLength - brandSuffix.length : maxLength;
 
-  return SEO_DEFAULTS.titleTemplate.replace('%s', truncatedTitle);
+  // Front-load keywords - truncate at word boundary, never use "..."
+  let formattedTitle = title;
+  if (title.length > effectiveMax) {
+    // Find last complete word before limit
+    const truncated = title.substring(0, effectiveMax);
+    const lastSpace = truncated.lastIndexOf(' ');
+    formattedTitle = lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated;
+  }
+
+  // Only add brand if space allows and requested
+  if (includeBrand && (formattedTitle.length + brandSuffix.length) <= maxLength) {
+    formattedTitle += brandSuffix;
+  }
+
+  return formattedTitle;
 }
 
 /**

@@ -43,7 +43,7 @@ async function fetchAllPosts() {
 
     while (hasMore && page <= 20) {
       const response = await fetch(
-        `${WORDPRESS_API_URL}/posts?page=${page}&per_page=100&_fields=slug,modified,date`,
+        `${WORDPRESS_API_URL}/posts?page=${page}&per_page=100&_fields=slug,modified,date,featured_media,_embedded`,
         {
           headers: {
             'Accept': 'application/json',
@@ -158,12 +158,16 @@ function generateSitemapXML(pages) {
   };
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${pages.map(page => `  <url>
     <loc>${escapeXml(page.url)}</loc>
     <lastmod>${page.lastmod}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
-    <priority>${page.priority}</priority>
+    <priority>${page.priority}</priority>${page.image ? `
+    <image:image>
+      <image:loc>${escapeXml(page.image)}</image:loc>
+    </image:image>` : ''}
   </url>`).join('\n')}
 </urlset>`;
 
@@ -219,15 +223,23 @@ async function generateSitemap() {
       });
     });
 
-    // Add blog posts with validated dates
+    // Add blog posts with validated dates and images
     console.log('📝 Adding blog posts...');
     posts.forEach(post => {
       const postDate = formatDate(post.modified || post.date || new Date());
+
+      // Extract featured image URL from _embedded if available
+      let imageUrl = null;
+      if (post._embedded && post._embedded['wp:featuredmedia'] && post._embedded['wp:featuredmedia'][0]) {
+        imageUrl = post._embedded['wp:featuredmedia'][0].source_url;
+      }
+
       sitemapEntries.push({
         url: `${SITE_URL}/articles/${post.slug}`,
         lastmod: postDate,
         changefreq: 'weekly',
         priority: 0.7,
+        image: imageUrl, // Add image URL for sitemap
       });
     });
 

@@ -59,22 +59,22 @@ export function optimizeMetaDescription({
   if (isTutorialArticle(title, tags)) {
     return generateTutorialDescription({ title, excerpt, readTime });
   }
-  
+
   // Strategy 2: For comparison/vs articles
   if (isComparisonArticle(title)) {
     return generateComparisonDescription({ title, excerpt });
   }
-  
+
   // Strategy 3: For how-to articles
   if (isHowToArticle(title)) {
     return generateHowToDescription({ title, excerpt, readTime });
   }
-  
+
   // Strategy 4: For interview/certification prep
   if (isInterviewArticle(title, tags)) {
     return generateInterviewDescription({ title, excerpt });
   }
-  
+
   // Default: Enhanced excerpt with CTA
   return generateDefaultDescription({ title, excerpt, readTime });
 }
@@ -86,8 +86,8 @@ function isTutorialArticle(title, tags) {
   const tutorialKeywords = ['tutorial', 'guide', 'learn', 'master', 'course'];
   const titleLower = title.toLowerCase();
   const tagNames = tags.map(t => (typeof t === 'string' ? t : t.name).toLowerCase());
-  
-  return tutorialKeywords.some(keyword => 
+
+  return tutorialKeywords.some(keyword =>
     titleLower.includes(keyword) || tagNames.includes(keyword)
   );
 }
@@ -115,8 +115,8 @@ function isInterviewArticle(title, tags) {
   const interviewKeywords = ['interview', 'certification', 'exam', 'questions', 'prep'];
   const titleLower = title.toLowerCase();
   const tagNames = tags.map(t => (typeof t === 'string' ? t : t.name).toLowerCase());
-  
-  return interviewKeywords.some(keyword => 
+
+  return interviewKeywords.some(keyword =>
     titleLower.includes(keyword) || tagNames.includes(keyword)
   );
 }
@@ -126,11 +126,37 @@ function isInterviewArticle(title, tags) {
  */
 function generateTutorialDescription({ title, excerpt, readTime }) {
   const cleanExcerpt = cleanText(excerpt);
-  const hook = `Master ${extractMainTopic(title)} with this comprehensive guide.`;
-  const value = `${cleanExcerpt.substring(0, 80)}...`;
+  const topic = extractMainTopic(title);
+
+  // Inject power word based on topic
+  const powerWord = selectPowerWord(topic);
+  const hook = `${powerWord} ${topic} with this comprehensive guide.`;
+  const value = `${cleanExcerpt.substring(0, 75)}...`;
   const cta = `${readTime} min read. Start learning →`;
-  
+
   return truncateToLimit(`${hook} ${value} ${cta}`, 155);
+}
+
+/**
+ * Select appropriate power word based on topic
+ */
+function selectPowerWord(topic) {
+  const topicLower = topic.toLowerCase();
+
+  if (topicLower.includes('snowflake') || topicLower.includes('databricks')) {
+    return 'Master';
+  }
+  if (topicLower.includes('aws') || topicLower.includes('azure')) {
+    return 'Build production-ready';
+  }
+  if (topicLower.includes('interview') || topicLower.includes('certification')) {
+    return 'Ace';
+  }
+  if (topicLower.includes('optimization') || topicLower.includes('performance')) {
+    return 'Optimize';
+  }
+
+  return 'Learn';
 }
 
 /**
@@ -141,7 +167,7 @@ function generateComparisonDescription({ title, excerpt }) {
   const hook = `Detailed comparison to help you choose the right solution.`;
   const value = `${cleanExcerpt.substring(0, 70)}...`;
   const cta = `See the full analysis →`;
-  
+
   return truncateToLimit(`${hook} ${value} ${cta}`, 155);
 }
 
@@ -153,7 +179,7 @@ function generateHowToDescription({ title, excerpt, readTime }) {
   const hook = `Step-by-step guide with code examples.`;
   const value = `${cleanExcerpt.substring(0, 75)}...`;
   const cta = `${readTime} min tutorial →`;
-  
+
   return truncateToLimit(`${hook} ${value} ${cta}`, 155);
 }
 
@@ -165,7 +191,7 @@ function generateInterviewDescription({ title, excerpt }) {
   const hook = `Ace your interview with expert answers and proven strategies.`;
   const value = `${cleanExcerpt.substring(0, 65)}...`;
   const cta = `Prepare now →`;
-  
+
   return truncateToLimit(`${hook} ${value} ${cta}`, 155);
 }
 
@@ -177,7 +203,7 @@ function generateDefaultDescription({ title, excerpt, readTime }) {
   const hook = `Expert insights on ${extractMainTopic(title)}.`;
   const value = `${cleanExcerpt.substring(0, 80)}...`;
   const cta = `Read more →`;
-  
+
   return truncateToLimit(`${hook} ${value} ${cta}`, 155);
 }
 
@@ -189,7 +215,7 @@ function extractMainTopic(title) {
   let topic = title
     .replace(/^(How to|Guide to|Tutorial:|Learn|Master|Build|Create|Complete Guide to)/i, '')
     .trim();
-  
+
   // Take first few words
   const words = topic.split(' ').slice(0, 4);
   return words.join(' ');
@@ -200,7 +226,7 @@ function extractMainTopic(title) {
  */
 function cleanText(text) {
   if (!text) return '';
-  
+
   return text
     .replace(/<[^>]*>/g, '') // Remove HTML tags
     .replace(/\s+/g, ' ') // Normalize spaces
@@ -213,11 +239,11 @@ function cleanText(text) {
  */
 function truncateToLimit(text, limit = 155) {
   if (text.length <= limit) return text;
-  
+
   // Find last complete word before limit
   const truncated = text.substring(0, limit);
   const lastSpace = truncated.lastIndexOf(' ');
-  
+
   return truncated.substring(0, lastSpace) + '...';
 }
 
@@ -231,7 +257,7 @@ export function addUrgency(description, type = 'trending') {
     updated: '📝 Recently updated!',
     popular: '⭐ Most popular!',
   };
-  
+
   const phrase = urgencyPhrases[type] || '';
   return `${phrase} ${description}`.trim();
 }
@@ -257,7 +283,7 @@ export function getDescriptionVariation(baseDescription, variation = 'A') {
     C: `💡 ${baseDescription}`, // With emoji
     D: baseDescription.replace('→', '✓'), // Different CTA
   };
-  
+
   return variations[variation] || baseDescription;
 }
 

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import LazyImage from './LazyImage';
 import TagsList from './TagsList';
+import FreshnessBadge from './FreshnessBadge';
 
 const isMobile = window.innerWidth <= 768;
 
@@ -37,7 +38,7 @@ const PostCard = ({ post }) => {
       transition: { duration: 0.5, ease: [0.25, 1, 0.5, 1] }
     },
   };
-  
+
   const imageVariants = {
     rest: { scale: 1 },
     hover: { scale: 1.1 },
@@ -75,7 +76,7 @@ const PostCard = ({ post }) => {
           />
         </div>
 
-        <div 
+        <div
           className="absolute inset-0"
           style={{ clipPath: 'url(#liquid-mask)' }}
         >
@@ -105,8 +106,8 @@ const PostCard = ({ post }) => {
                 cy="40%"
                 r="60"
                 variants={{
-                    rest: imageMaskVariants.rest,
-                    hover: {...imageMaskVariants.hover, transition: {...imageMaskVariants.hover.transition, delay: 0.1}}
+                  rest: imageMaskVariants.rest,
+                  hover: { ...imageMaskVariants.hover, transition: { ...imageMaskVariants.hover.transition, delay: 0.1 } }
                 }}
               />
             </g>
@@ -114,13 +115,14 @@ const PostCard = ({ post }) => {
         </svg>
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-        <div className="absolute top-4 left-4 z-10">
+        <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
           <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
             {post.category}
           </span>
+          <FreshnessBadge date={post.date} modifiedDate={post.modified} />
         </div>
       </div>
-      
+
       <div className="p-6">
         <h3 className="text-lg font-bold mb-3 group-hover:text-blue-400 transition-colors line-clamp-2">
           {post.title}
@@ -128,19 +130,19 @@ const PostCard = ({ post }) => {
         <p className="text-gray-400 text-sm mb-4 line-clamp-3">
           {post.excerpt}
         </p>
-        
+
         {/* TAGS SECTION - NEW */}
         {post.tags && post.tags.length > 0 && (
-  <div className="mb-4">
-    <TagsList 
-      tags={post.tags} 
-      limit={3} 
-      showIcon={false} 
-      size="default"  // Change from "small" to "default" for larger touch targets
-    />
-  </div>
-)}
-        
+          <div className="mb-4">
+            <TagsList
+              tags={post.tags}
+              limit={3}
+              showIcon={false}
+              size="default"  // Change from "small" to "default" for larger touch targets
+            />
+          </div>
+        )}
+
         <div className="flex items-center justify-between text-xs text-gray-500">
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-1">
