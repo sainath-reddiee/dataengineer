@@ -496,8 +496,64 @@ function generateFullArticleHTML(pageData, bundleFiles) {
         transition: opacity 0.3s;
       }
       
-      .seo-content .article-body img[loading="lazy"].loaded {
+        .seo-content .article-body img[loading="lazy"].loaded {
         opacity: 1;
+      }
+      
+      /* 🔥 BREADCRUMB STYLES */
+      .breadcrumb-nav {
+        max-width: 900px;
+        margin: 20px auto 0;
+        padding: 0 20px;
+      }
+      
+      .breadcrumb-list {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 0.875rem;
+        color: #94a3b8;
+      }
+      
+      .breadcrumb-item {
+        display: flex;
+        align-items: center;
+      }
+      
+      .breadcrumb-link {
+        color: #60a5fa;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: color 0.2s;
+      }
+      
+      .breadcrumb-link:hover {
+        color: #93c5fd;
+        text-decoration: underline;
+      }
+      
+      .breadcrumb-icon {
+        width: 16px;
+        height: 16px;
+      }
+      
+      .breadcrumb-separator {
+        margin: 0 8px;
+        color: #64748b;
+      }
+      
+      .breadcrumb-current {
+        color: #cbd5e1;
+        font-weight: 500;
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       
       @media (max-width: 768px) {
@@ -513,12 +569,42 @@ function generateFullArticleHTML(pageData, bundleFiles) {
         .seo-content .article-body {
           font-size: 1rem;
         }
+        
+        .breadcrumb-nav {
+          padding: 0 15px;
+        }
+        
+        .breadcrumb-current {
+          max-width: 150px;
+        }
       }
     </style>
   </head>
   <body>
     <!-- 🔥 ROOT DIV: React will mount here, but SEO content is visible first -->
     <div id="root">
+      <!-- 🔥 BREADCRUMBS - Visible to crawlers -->
+      <nav aria-label="Breadcrumb" class="breadcrumb-nav">
+        <ol class="breadcrumb-list">
+          <li class="breadcrumb-item">
+            <a href="https://dataengineerhub.blog" class="breadcrumb-link">
+              <svg class="breadcrumb-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+              </svg>
+              Home
+            </a>
+          </li>
+          <li class="breadcrumb-separator">›</li>
+          <li class="breadcrumb-item">
+            <a href="https://dataengineerhub.blog/articles" class="breadcrumb-link">Articles</a>
+          </li>
+          <li class="breadcrumb-separator">›</li>
+          <li class="breadcrumb-item breadcrumb-current" aria-current="page">
+            <span>${title}</span>
+          </li>
+        </ol>
+      </nav>
+
       <!-- 🔥 FULL ARTICLE CONTENT - Visible to Googlebot/AdSense crawlers -->
       <div class="seo-content">
         <article>

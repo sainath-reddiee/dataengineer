@@ -6,10 +6,12 @@ import { ArrowLeft, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import RecentPosts from '@/components/RecentPosts';
 import MetaTags from '@/components/SEO/MetaTags';
+import Breadcrumbs from '@/components/SEO/Breadcrumbs';
+import { generateBreadcrumbs } from '@/lib/seoConfig';
 
 const TagPage = () => {
   const { tagSlug } = useParams();
-  
+
   // Convert slug to readable name (e.g., "data-engineering" -> "Data Engineering")
   const tagName = tagSlug
     .split('-')
@@ -18,13 +20,13 @@ const TagPage = () => {
 
   return (
     <>
-      <MetaTags 
+      <MetaTags
         title={`${tagName} Articles`}
         description={`Browse all articles tagged with ${tagName}. Expert data engineering tutorials and guides on ${tagName}.`}
         keywords={`${tagName}, data engineering, tutorials, ${tagSlug}`}
         type="website"
       />
-      
+
       <div className="pt-4 pb-12">
         <div className="container mx-auto px-6">
           {/* Back Button */}
@@ -34,9 +36,9 @@ const TagPage = () => {
             transition={{ duration: 0.5 }}
             className="mb-6"
           >
-            <Button 
-              asChild 
-              variant="outline" 
+            <Button
+              asChild
+              variant="outline"
               className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm"
             >
               <Link to="/articles">
@@ -86,7 +88,7 @@ const TagPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <RecentPosts 
+            <RecentPosts
               tag={tagSlug}
               initialLimit={12}
               showLoadMore={true}
@@ -111,16 +113,16 @@ const TagPage = () => {
               Can't find what you're looking for? Browse all articles or explore by category.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                asChild 
+              <Button
+                asChild
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 <Link to="/articles">
                   Browse All Articles
                 </Link>
               </Button>
-              <Button 
-                asChild 
+              <Button
+                asChild
                 variant="outline"
                 className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
               >
