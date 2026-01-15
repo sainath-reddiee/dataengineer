@@ -162,27 +162,57 @@ function findBundleFiles(distDir) {
 async function fetchFromWP(endpoint, fields = '') {
   const items = [];
   let page = 1;
+  const RETRY_COUNT = 3;
+  const TIMEOUT = 15000; // 15 seconds
 
   while (true) {
-    try {
-      const url = `${WORDPRESS_API_URL}${endpoint}?per_page=100&page=${page}${fields ? `&_fields=${fields}` : ''}`;
-      const res = await fetch(url);
+    const url = `${WORDPRESS_API_URL}${endpoint}?per_page=100&page=${page}${fields ? `&_fields=${fields}` : ''}`;
 
-      if (!res.ok) {
-        if (res.status === 400) break;
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    let attempt = 0;
+    let success = false;
+    let data = null;
+
+    while (attempt < RETRY_COUNT && !success) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), TIMEOUT);
+
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          if (res.status === 400) {
+            // End of pagination
+            success = true; // Loop done
+            data = [];
+            break;
+          }
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+
+        data = await res.json();
+        success = true;
+      } catch (error) {
+        attempt++;
+        console.warn(`⚠️  Fetch failed (Attempt ${attempt}/${RETRY_COUNT}) for ${url}: ${error.message}`);
+        if (attempt < RETRY_COUNT) {
+          await new Promise(resolve => setTimeout(resolve, 2000 * attempt)); // Linear backoff
+        } else {
+          console.error(`❌ Permanent failure fetching ${url}`);
+          // If we can't fetch a page, we should likely stop the build or break the pagination loop
+          // Breaking here stops pagination, so we at least return what we have so far
+          return items;
+        }
       }
-
-      const data = await res.json();
-      if (!Array.isArray(data) || data.length === 0) break;
-
-      items.push(...data);
-      page++;
-      await new Promise(resolve => setTimeout(resolve, 100));
-    } catch (error) {
-      console.error(`Error fetching ${endpoint}:`, error.message);
-      break;
     }
+
+    if (!data || !Array.isArray(data) || data.length === 0) break;
+
+    items.push(...data);
+    page++;
+
+    // Safety break for infinite loops
+    if (page > 100) break;
   }
 
   return items;
