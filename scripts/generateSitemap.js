@@ -36,7 +36,7 @@ function formatDate(dateString) {
 async function fetchAllPosts() {
   try {
     console.log('📡 Fetching posts from WordPress...');
-    
+
     let allPosts = [];
     let page = 1;
     let hasMore = true;
@@ -51,7 +51,7 @@ async function fetchAllPosts() {
           }
         }
       );
-      
+
       if (!response.ok) {
         if (response.status === 400) {
           hasMore = false;
@@ -61,7 +61,7 @@ async function fetchAllPosts() {
       }
 
       const posts = await response.json();
-      
+
       if (!Array.isArray(posts) || posts.length === 0) {
         hasMore = false;
         break;
@@ -70,7 +70,7 @@ async function fetchAllPosts() {
       allPosts = allPosts.concat(posts);
       console.log(`✅ Fetched page ${page} (${posts.length} posts)`);
       page++;
-      
+
       await new Promise(resolve => setTimeout(resolve, 100));
     }
 
@@ -86,7 +86,7 @@ async function fetchAllPosts() {
 async function fetchAllCategories() {
   try {
     console.log('📡 Fetching categories from WordPress...');
-    
+
     const response = await fetch(
       `${WORDPRESS_API_URL}/categories?per_page=100&_fields=slug,count`,
       {
@@ -96,14 +96,14 @@ async function fetchAllCategories() {
         }
       }
     );
-    
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const categories = await response.json();
     const activeCategories = categories.filter(cat => cat.count > 0);
-    
+
     console.log(`✅ Total categories fetched: ${activeCategories.length}`);
     return activeCategories;
   } catch (error) {
@@ -116,7 +116,7 @@ async function fetchAllCategories() {
 async function fetchAllTags() {
   try {
     console.log('🏷️  Fetching tags from WordPress...');
-    
+
     const response = await fetch(
       `${WORDPRESS_API_URL}/tags?per_page=100&_fields=slug,count`,
       {
@@ -126,14 +126,14 @@ async function fetchAllTags() {
         }
       }
     );
-    
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const tags = await response.json();
     const activeTags = tags.filter(tag => tag.count > 0);
-    
+
     console.log(`✅ Total tags fetched: ${activeTags.length}`);
     return activeTags;
   } catch (error) {
@@ -173,22 +173,22 @@ ${pages.map(page => `  <url>
 // Validate sitemap
 function validateSitemap(entries) {
   const errors = [];
-  
+
   entries.forEach((entry, index) => {
     if (!entry.url.startsWith('http')) {
       errors.push(`Line ${index + 1}: Invalid URL format - ${entry.url}`);
     }
-    
+
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!dateRegex.test(entry.lastmod)) {
       errors.push(`Line ${index + 1}: Invalid date format - ${entry.lastmod}`);
     }
-    
+
     if (entry.priority < 0 || entry.priority > 1) {
       errors.push(`Line ${index + 1}: Invalid priority - ${entry.priority}`);
     }
   });
-  
+
   return errors;
 }
 
@@ -256,13 +256,13 @@ async function generateSitemap() {
     // Validate sitemap entries
     console.log('\n🔍 Validating sitemap...');
     const validationErrors = validateSitemap(sitemapEntries);
-    
+
     if (validationErrors.length > 0) {
       console.error('❌ Validation errors found:');
       validationErrors.forEach(error => console.error('  ' + error));
       throw new Error('Sitemap validation failed');
     }
-    
+
     console.log('✅ Sitemap validation passed!');
 
     // Generate XML

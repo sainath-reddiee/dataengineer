@@ -1,0 +1,19 @@
+// public/_redirects - Netlify/Vercel redirects for canonical URLs
+// This ensures all URLs redirect to canonical versions
+
+# Force HTTPS
+http://dataengineerhub.blog/* https://dataengineerhub.blog/:splat 301!
+http://www.dataengineerhub.blog/* https://dataengineerhub.blog/:splat 301!
+
+# Remove www
+https://www.dataengineerhub.blog/* https://dataengineerhub.blog/:splat 301!
+
+# Trailing slash redirects - Remove trailing slashes
+/articles/ /articles 301!
+/category/:slug/ /category/:slug 301!
+/tag/:slug/ /tag/:slug 301!
+/about/ /about 301!
+/contact/ /contact 301!
+
+# SPA fallback - Must be last
+/* /index.html 200
