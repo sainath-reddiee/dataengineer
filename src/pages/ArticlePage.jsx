@@ -18,6 +18,7 @@ import PostCard from '@/components/PostCard';
 import PostCardSkeleton from '@/components/PostCardSkeleton';
 import ArticleNavigation from '@/components/ArticleNavigation';
 import ReadingProgressBar from '@/components/ReadingProgressBar';
+import RelatedArticles from '@/components/RelatedArticles';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
@@ -617,6 +618,16 @@ const ArticlePage = () => {
             </div>
           </div>
         </motion.article>
+
+        {/* Related Articles - NEW COMPONENT FOR BETTER INTERNAL LINKING */}
+        <RelatedArticles
+          currentPost={{
+            id: safePost.id,
+            categorySlug: safePost.category?.toLowerCase().replace(/\s+/g, '-') || 'uncategorized',
+            tags: safePost.tags || [],
+          }}
+          limit={6}
+        />
 
         <ArticleNavigation currentPostId={safePost.id} category={safePost.category} />
         <RelatedPosts currentPostId={safePost.id} />
