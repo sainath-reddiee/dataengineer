@@ -17,10 +17,17 @@ export const SITE_CONFIG = {
     role: 'Data Engineer at Anblicks',
     experience: '4+ years',
     url: 'https://dataengineerhub.blog/about',
+    sameAs: [
+      'https://www.linkedin.com/in/sainath-reddy-06a97817a/',
+      'https://github.com/sainath-reddy',
+      'https://twitter.com/sainath29'
+    ]
   },
   social: {
     twitter: '@sainath29',
     twitterHandle: 'sainath29',
+    linkedin: 'https://www.linkedin.com/in/sainath-reddy-06a97817a/',
+    github: 'https://github.com/sainath-reddy'
   },
   logo: {
     url: 'https://dataengineerhub.blog/logo.png',
@@ -49,6 +56,12 @@ export const SEO_DEFAULTS = {
     'data engineering',
     'data engineering tutorials',
     'snowflake',
+    'cortex',
+    'ai',
+    'certification',
+    'snowpro',
+    'data quality',
+    'dbt',
     'aws data engineering',
     'azure data engineering',
     'databricks',
@@ -141,6 +154,7 @@ export function getArticleSchema({
       '@type': 'Person',
       name: author,
       url: SITE_CONFIG.author.url,
+      sameAs: SITE_CONFIG.author.sameAs,
     },
     publisher: {
       '@type': 'Organization',
@@ -238,12 +252,12 @@ export function getCanonicalUrl(path = '') {
  */
 export function formatTitle(title) {
   if (!title) return SEO_DEFAULTS.defaultTitle;
-  
+
   const maxLength = SEO_DEFAULTS.maxTitleLength - SITE_CONFIG.name.length - 3; // " | "
-  const truncatedTitle = title.length > maxLength 
-    ? title.substring(0, maxLength) + '...' 
+  const truncatedTitle = title.length > maxLength
+    ? title.substring(0, maxLength) + '...'
     : title;
-  
+
   return SEO_DEFAULTS.titleTemplate.replace('%s', truncatedTitle);
 }
 
@@ -252,7 +266,7 @@ export function formatTitle(title) {
  */
 export function formatDescription(description) {
   if (!description) return SEO_DEFAULTS.defaultDescription;
-  
+
   return description.length > SEO_DEFAULTS.maxDescriptionLength
     ? description.substring(0, SEO_DEFAULTS.maxDescriptionLength - 3) + '...'
     : description;
@@ -263,15 +277,15 @@ export function formatDescription(description) {
  */
 export function generateKeywords(tags = [], category = null) {
   const baseKeywords = [...SEO_DEFAULTS.defaultKeywords];
-  
+
   if (category) {
     baseKeywords.push(category.toLowerCase());
   }
-  
+
   const tagNames = Array.isArray(tags)
     ? tags.map(tag => (typeof tag === 'string' ? tag : tag.name)).filter(Boolean)
     : [];
-  
+
   return [...new Set([...baseKeywords, ...tagNames])].join(', ');
 }
 
@@ -280,7 +294,7 @@ export function generateKeywords(tags = [], category = null) {
  */
 export function formatDate(date) {
   if (!date) return null;
-  
+
   try {
     const d = new Date(date);
     return isNaN(d.getTime()) ? null : d.toISOString();
@@ -296,15 +310,15 @@ export function generateBreadcrumbs(pathname, title = null) {
   const breadcrumbs = [
     { name: 'Home', url: SITE_CONFIG.url },
   ];
-  
+
   const parts = pathname.split('/').filter(Boolean);
-  
+
   parts.forEach((part, index) => {
     const path = '/' + parts.slice(0, index + 1).join('/');
-    
+
     // Determine name based on path segment
     let name = part.charAt(0).toUpperCase() + part.slice(1);
-    
+
     if (part === 'articles') {
       name = 'Articles';
     } else if (part === 'category') {
@@ -315,13 +329,13 @@ export function generateBreadcrumbs(pathname, title = null) {
       // Last segment - use provided title if available
       name = title;
     }
-    
+
     breadcrumbs.push({
       name: name.replace(/-/g, ' '),
       url: getCanonicalUrl(path),
     });
   });
-  
+
   return breadcrumbs;
 }
 
