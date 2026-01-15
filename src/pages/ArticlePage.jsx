@@ -1,14 +1,16 @@
-// src/pages/ArticlePage.jsx - ULTRA-MODERN WITH 3 DESIGN OPTIONS
+// src/pages/ArticlePage.jsx - ENHANCED WITH BREADCRUMBS AND SEO
 import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Calendar, Clock, User, AlertCircle, RefreshCw, Tag, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MetaTags from '@/components/SEO/MetaTags';
+import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import { usePost, useRelatedPosts } from '@/hooks/useWordPress';
 import { preloadImage } from '@/utils/imageOptimizer';
 import { throttle } from '@/utils/performance';
 import { trackScrollDepth, trackArticleRead } from '@/utils/analytics';
+import { generateBreadcrumbs } from '@/lib/seoConfig';
 import LazyImage from '@/components/LazyImage';
 import TagsList from '@/components/TagsList';
 import DOMPurify from 'dompurify';
@@ -34,7 +36,7 @@ const ArticleSkeleton = () => (
 
 const processWordPressContent = (content) => {
   if (!content) return '';
-  
+
   const config = {
     ALLOWED_TAGS: [
       'p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
@@ -51,7 +53,7 @@ const processWordPressContent = (content) => {
     ALLOW_DATA_ATTR: true,
     KEEP_CONTENT: true
   };
-  
+
   let cleanContent = DOMPurify.sanitize(content, config);
   cleanContent = cleanContent
     .replace(/<p>(\s|&nbsp;)*<\/p>/g, '')
@@ -60,13 +62,13 @@ const processWordPressContent = (content) => {
     .replace(/<iframe/g, '<div class="iframe-wrapper"><iframe')
     .replace(/<\/iframe>/g, '</iframe></div>')
     .replace(/\n\n/g, '</p><p>');
-  
+
   return cleanContent;
 };
 
 const ErrorDisplay = ({ error, onRetry, slug }) => {
   const navigate = useNavigate();
-  
+
   const getErrorMessage = (error) => {
     if (!error) return 'An unknown error occurred';
     if (typeof error === 'string') return error;
@@ -153,7 +155,7 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
     >
       {/* Category */}
       <div>
-        <Link 
+        <Link
           to={`/category/${safePost.category.toLowerCase()}`}
           className="inline-flex items-center px-3 py-1.5 bg-blue-500/20 border border-blue-400/40 rounded-full text-xs font-semibold text-blue-300 hover:bg-blue-500/30 transition-all"
         >
@@ -169,7 +171,7 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
       {/* 🔥 OPTION 1: AUTHOR CHIP WITH FLOATING SHARE */}
       <div className="flex items-center justify-between pt-6 group">
         {/* Author Chip - Clickable */}
-        <Link 
+        <Link
           to="/about"
           className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-800 hover:to-slate-700 border border-slate-600/40 hover:border-slate-500/60 transition-all backdrop-blur-sm group/chip"
         >
@@ -192,14 +194,14 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
             <Clock className="h-3.5 w-3.5 text-green-400/60" />
             <span>{safePost.readTime}</span>
           </div>
-          
-          <button 
+
+          <button
             onClick={() => {
               if (navigator.share) {
                 navigator.share({
                   title: safePost.title,
                   url: window.location.href
-                }).catch(() => {});
+                }).catch(() => { });
               }
             }}
             className="p-2.5 rounded-full bg-slate-800/60 hover:bg-slate-700 border border-slate-600/40 text-gray-400 hover:text-white transition-all"
@@ -238,7 +240,7 @@ const MetadataOption2 = ({ safePost, formatDate }) => {
     >
       {/* Category */}
       <div>
-        <Link 
+        <Link
           to={`/category/${safePost.category.toLowerCase()}`}
           className="inline-flex items-center px-3 py-1.5 bg-blue-500/20 border border-blue-400/40 rounded-full text-xs font-semibold text-blue-300 hover:bg-blue-500/30 transition-all"
         >
@@ -256,7 +258,7 @@ const MetadataOption2 = ({ safePost, formatDate }) => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           {/* Main content - left */}
           <div className="lg:col-span-2 space-y-3">
-            <Link 
+            <Link
               to="/about"
               className="inline-flex items-center gap-3 group"
             >
@@ -292,13 +294,13 @@ const MetadataOption2 = ({ safePost, formatDate }) => {
               </div>
 
               {/* Share Button */}
-              <button 
+              <button
                 onClick={() => {
                   if (navigator.share) {
                     navigator.share({
                       title: safePost.title,
                       url: window.location.href
-                    }).catch(() => {});
+                    }).catch(() => { });
                   }
                 }}
                 className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-lg text-sm font-semibold text-white transition-all"
@@ -326,7 +328,7 @@ const MetadataOption3 = ({ safePost, formatDate }) => {
     >
       {/* Category Badge - Overlay on image */}
       <div className="absolute top-6 left-6 z-10">
-        <Link 
+        <Link
           to={`/category/${safePost.category.toLowerCase()}`}
           className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600/80 to-blue-500/80 hover:from-blue-600 hover:to-blue-500 backdrop-blur-md border border-blue-400/20 rounded-full text-sm font-semibold text-white transition-all shadow-lg"
         >
@@ -352,7 +354,7 @@ const MetadataOption3 = ({ safePost, formatDate }) => {
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4"
         >
           {/* Left: Author + Meta */}
-          <Link 
+          <Link
             to="/about"
             className="flex items-center gap-3 group"
           >
@@ -378,13 +380,13 @@ const MetadataOption3 = ({ safePost, formatDate }) => {
           </Link>
 
           {/* Right: Share button with glassmorphism */}
-          <button 
+          <button
             onClick={() => {
               if (navigator.share) {
                 navigator.share({
                   title: safePost.title,
                   url: window.location.href
-                }).catch(() => {});
+                }).catch(() => { });
               }
             }}
             className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-lg text-sm font-semibold text-white transition-all"
@@ -402,7 +404,7 @@ const ArticlePage = () => {
   const { slug } = useParams();
   const { post, loading, error, refetch } = usePost(slug);
   const [contentReady, setContentReady] = useState(false);
-  
+
   // 🎨 CHOOSE YOUR METADATA DESIGN:
   // Change this value: 1, 2, or 3
   const METADATA_DESIGN = 1;
@@ -427,7 +429,7 @@ const ArticlePage = () => {
       const scrollPercentage = Math.round(
         (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
       );
-      
+
       if (scrollPercentage > maxDepth) {
         maxDepth = scrollPercentage;
         if ([25, 50, 75, 100].includes(scrollPercentage)) {
@@ -475,11 +477,14 @@ const ArticlePage = () => {
     }
   };
 
+  // Generate breadcrumbs for SEO
+  const breadcrumbs = generateBreadcrumbs(`/articles/${slug}`, safePost.title);
+
   return (
     <div className="pt-4 pb-12">
       <ReadingProgressBar />
-      
-      <MetaTags 
+
+      <MetaTags
         title={safePost.title}
         description={safePost.excerpt}
         image={safePost.image}
@@ -488,9 +493,20 @@ const ArticlePage = () => {
         category={safePost.category}
         tags={safePost.tags}
         author={safePost.author}
+        breadcrumbs={breadcrumbs}
       />
-      
+
       <div className="container mx-auto px-6 max-w-4xl">
+        {/* Breadcrumbs */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+          className="mb-4"
+        >
+          <Breadcrumbs breadcrumbs={breadcrumbs} />
+        </motion.div>
+
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="mb-6">
           <Button asChild variant="outline" className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm">
             <Link to="/articles"><ArrowLeft className="mr-2 h-4 w-4" />All Articles</Link>
@@ -516,7 +532,7 @@ const ArticlePage = () => {
           {/* Metadata Section - Choose design */}
           {METADATA_DESIGN === 1 && <MetadataOption1 safePost={safePost} formatDate={formatDate} />}
           {METADATA_DESIGN === 2 && <MetadataOption2 safePost={safePost} formatDate={formatDate} />}
-          
+
           {/* Option 3 needs special layout with image */}
           {METADATA_DESIGN === 3 && (
             <div className="relative rounded-3xl overflow-hidden shadow-2xl -mx-6" style={{ height: '600px' }}>
@@ -541,7 +557,7 @@ const ArticlePage = () => {
 
           {/* Article Content */}
           <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-h2:text-3xl prose-h2:font-bold prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-pink-400 prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
-            <div 
+            <div
               dangerouslySetInnerHTML={{ __html: processWordPressContent(safePost.content) }}
               className="article-content"
             />
@@ -571,7 +587,7 @@ const ArticlePage = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 p-6 bg-gradient-to-r from-blue-900/10 to-purple-900/10 rounded-2xl border border-blue-500/20">
               <div className="space-y-3">
                 <p className="text-sm text-gray-400 uppercase tracking-wider">Published by</p>
-                <Link 
+                <Link
                   to="/about"
                   className="font-bold text-2xl text-white hover:text-blue-400 transition-colors inline-flex items-center gap-2 group"
                 >
@@ -601,7 +617,7 @@ const ArticlePage = () => {
             </div>
           </div>
         </motion.article>
-        
+
         <ArticleNavigation currentPostId={safePost.id} category={safePost.category} />
         <RelatedPosts currentPostId={safePost.id} />
       </div>

@@ -1,37 +1,48 @@
-# public/robots.txt
-# Optimized robots.txt for DataEngineer Hub
+# robots.txt - Optimized for DataEngineer Hub
+# Last updated: 2026-01-15
 
+# Default crawling rules for all bots
 User-agent: *
 Allow: /
+
+# Block admin and API endpoints
 Disallow: /api/
 Disallow: /admin/
-# REMOVED: Disallow: /*.json$  <-- This was blocking manifest.json
-Disallow: /*?*debug*
 Disallow: /debug
 
-# Allow crawling of important resources
-Allow: /*.css
-Allow: /*.js
-Allow: /*.jpg
-Allow: /*.jpeg
-Allow: /*.png
-Allow: /*.webp
-Allow: /*.svg
-Allow: /*.gif
-Allow: /manifest.json  # Explicitly allowing manifest just in case
+# Allow all static assets (CSS, JS, Images)
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.webp$
+Allow: /*.svg$
+Allow: /*.gif$
+Allow: /*.woff$
+Allow: /*.woff2$
 
-# Sitemap
+# Explicitly allow important files
+Allow: /manifest.json
+Allow: /sitemap.xml
+Allow: /robots.txt
+
+# Sitemap location
 Sitemap: https://dataengineerhub.blog/sitemap.xml
 
-# Block bad bots
+# Crawl rate optimization for aggressive bots
 User-agent: AhrefsBot
 Crawl-delay: 10
 
 User-agent: SemrushBot
 Crawl-delay: 10
 
+# Block known bad bots
 User-agent: MJ12bot
 Disallow: /
 
 User-agent: DotBot
+Disallow: /
+
+User-agent: BLEXBot
 Disallow: /

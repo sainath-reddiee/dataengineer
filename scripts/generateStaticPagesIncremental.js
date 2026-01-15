@@ -58,70 +58,70 @@ function findBundleFiles(distDir) {
   // Match CSS file - straightforward
   const cssMatch = indexContent.match(/href="(\/assets\/[^"]+\.css)"/);
   const cssFile = cssMatch ? cssMatch[1] : null;
-  
+
   // Match JS file - can be in /assets/ or /assets/js/
   const jsMatch = indexContent.match(/src="(\/assets\/[^"]+\.js)"/);
   let jsFile = jsMatch ? jsMatch[1] : null;
-  
+
   // 🔥 CRITICAL: Find the ACTUAL JS file location
   if (jsFile) {
     const directPath = path.join(distDir, jsFile);
-    
+
     if (!fs.existsSync(directPath)) {
       console.warn(`⚠️  JS file not found at expected path: ${jsFile}`);
-      
+
       // Search strategy 1: Look in /assets/js/ subdirectory
       const jsSubdirPath = path.join(distDir, 'assets', 'js');
       if (fs.existsSync(jsSubdirPath)) {
         const jsFiles = fs.readdirSync(jsSubdirPath);
         const indexJsFile = jsFiles.find(f => f.startsWith('index-') && f.endsWith('.js'));
-        
+
         if (indexJsFile) {
           jsFile = `/assets/js/${indexJsFile}`;
           console.log(`✅ Found JS in subdirectory: ${jsFile}`);
           return { jsFile, cssFile };
         }
       }
-      
+
       // Search strategy 2: Look directly in /assets/
       const assetsPath = path.join(distDir, 'assets');
       if (fs.existsSync(assetsPath)) {
         const assetFiles = fs.readdirSync(assetsPath);
         const indexJsFile = assetFiles.find(f => f.startsWith('index-') && f.endsWith('.js'));
-        
+
         if (indexJsFile) {
           jsFile = `/assets/${indexJsFile}`;
           console.log(`✅ Found JS in assets root: ${jsFile}`);
           return { jsFile, cssFile };
         }
       }
-      
+
       console.error('❌ Could not locate JS bundle anywhere!');
       jsFile = null;
     }
   } else {
     // No JS match in index.html - try to find it manually
     console.warn('⚠️  No JS reference found in index.html, searching manually...');
-    
+
     // Check /assets/js/ first
     const jsSubdirPath = path.join(distDir, 'assets', 'js');
     if (fs.existsSync(jsSubdirPath)) {
       const jsFiles = fs.readdirSync(jsSubdirPath);
       const indexJsFile = jsFiles.find(f => f.startsWith('index-') && f.endsWith('.js'));
-      
+
       if (indexJsFile) {
         jsFile = `/assets/js/${indexJsFile}`;
         console.log(`✅ Manually found JS: ${jsFile}`);
         return { jsFile, cssFile };
       }
     }
-    
+
     // Check /assets/ root
     const assetsPath = path.join(distDir, 'assets');
     if (fs.existsSync(assetsPath)) {
       const assetFiles = fs.readdirSync(assetsPath);
       const indexJsFile = assetFiles.find(f => f.startsWith('index-') && f.endsWith('.js'));
-      
+
       if (indexJsFile) {
         jsFile = `/assets/${indexJsFile}`;
         console.log(`✅ Manually found JS: ${jsFile}`);
@@ -132,7 +132,7 @@ function findBundleFiles(distDir) {
 
   if (jsFile) console.log(`📦 JS bundle: ${jsFile}`);
   if (cssFile) console.log(`🎨 CSS bundle: ${cssFile}`);
-  
+
   // Final verification
   if (jsFile) {
     const finalPath = path.join(distDir, jsFile);
@@ -142,7 +142,7 @@ function findBundleFiles(distDir) {
       console.error(`❌ CRITICAL: JS bundle NOT found at ${jsFile}`);
     }
   }
-  
+
   if (cssFile) {
     const finalPath = path.join(distDir, cssFile);
     if (fs.existsSync(finalPath)) {
@@ -172,10 +172,10 @@ async function fetchFromWP(endpoint, fields = '') {
         if (res.status === 400) break;
         throw new Error(`HTTP ${res.status}: ${res.statusText}`);
       }
-      
+
       const data = await res.json();
       if (!Array.isArray(data) || data.length === 0) break;
-      
+
       items.push(...data);
       page++;
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -199,33 +199,33 @@ function stripHTML(html) {
 
 function makeImagesAbsolute(content) {
   if (!content) return '';
-  
+
   let processedContent = content;
-  
+
   // Pattern 1: Fix data-recalc-dims (remove it - causes issues)
   processedContent = processedContent.replace(/data-recalc-dims="1"\s*/g, '');
-  
+
   // Pattern 2: Fix images with / at end before loading attribute
   processedContent = processedContent.replace(/\s*\/\s*loading=/g, ' loading=');
-  
+
   // Pattern 3: src="/wp-content/..." -> absolute URL
   processedContent = processedContent.replace(
     /src="(\/wp-content\/[^"]+)"/g,
     `src="${WORDPRESS_BASE_URL}$1"`
   );
-  
+
   // Pattern 4: src="wp-content/..." (no leading slash) -> absolute URL
   processedContent = processedContent.replace(
     /src="(wp-content\/[^"]+)"/g,
     `src="${WORDPRESS_BASE_URL}/$1"`
   );
-  
+
   // Pattern 5: Fix any remaining relative image URLs
   processedContent = processedContent.replace(
     /src="(\/[^"]+\.(jpg|jpeg|png|gif|webp|svg))"/gi,
     `src="${WORDPRESS_BASE_URL}$1"`
   );
-  
+
   // Pattern 6: Fix srcset attributes for responsive images
   processedContent = processedContent.replace(
     /srcset="([^"]+)"/g,
@@ -258,10 +258,10 @@ function makeImagesAbsolute(content) {
       return `srcset="${fixedSrcset}"`;
     }
   );
-  
+
   // Pattern 7: Remove HTML entities that cause encoding issues
   processedContent = processedContent.replace(/&#038;/g, '&');
-  
+
   return processedContent;
 }
 
@@ -276,14 +276,14 @@ function generateFullArticleHTML(pageData, bundleFiles) {
   // 🔥 CRITICAL: Use relative paths from article subdirectory
   const depth = (pagePath.match(/\//g) || []).length - 1;
   const relativePrefix = '../'.repeat(depth);
-  
+
   // Remove leading slash and prepend relative prefix
   const productionJsFile = jsFile ? `${relativePrefix}${jsFile.substring(1)}` : null;
   const productionCssFile = cssFile ? `${relativePrefix}${cssFile.substring(1)}` : null;
 
   const buildTimestamp = new Date().toISOString();
   const buildHash = crypto.randomBytes(8).toString('hex');
-  
+
   // 🖼️ Process images to make them absolute
   const processedContent = makeImagesAbsolute(fullContent);
 
@@ -542,6 +542,91 @@ function generateFullArticleHTML(pageData, bundleFiles) {
       </div>
     </div>
 
+    <!-- 🔥 STRUCTURED DATA - Article Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "${title}",
+      "description": "${description}",
+      "image": {
+        "@type": "ImageObject",
+        "url": "https://dataengineerhub.blog/og-image.jpg",
+        "width": 1200,
+        "height": 630
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Sainath Reddy",
+        "url": "https://dataengineerhub.blog/about"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "DataEngineer Hub",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://dataengineerhub.blog/logo.png",
+          "width": 250,
+          "height": 250
+        }
+      },
+      "datePublished": "${buildTimestamp}",
+      "dateModified": "${buildTimestamp}",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://dataengineerhub.blog${pagePath}"
+      }
+    }
+    </script>
+
+    <!-- 🔥 STRUCTURED DATA - BreadcrumbList Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://dataengineerhub.blog"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Articles",
+          "item": "https://dataengineerhub.blog/articles"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "${title}",
+          "item": "https://dataengineerhub.blog${pagePath}"
+        }
+      ]
+    }
+    </script>
+
+    <!-- 🔥 STRUCTURED DATA - Organization Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://dataengineerhub.blog/#organization",
+      "name": "DataEngineer Hub",
+      "url": "https://dataengineerhub.blog",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://dataengineerhub.blog/logo.png",
+        "width": 250,
+        "height": 250
+      },
+      "sameAs": [
+        "https://twitter.com/sainath29"
+      ]
+    }
+    </script>
+
     <!-- React app loads and takes over for interactive experience -->
     ${productionJsFile ? `<script type="module" crossorigin src="${productionJsFile}"></script>` : ''}
 
@@ -593,7 +678,7 @@ function generateSimpleHTML(pageData, bundleFiles) {
 
   const depth = (pagePath.match(/\//g) || []).length - 1;
   const relativePrefix = '../'.repeat(depth);
-  
+
   const productionJsFile = jsFile ? `${relativePrefix}${jsFile.substring(1)}` : null;
   const productionCssFile = cssFile ? `${relativePrefix}${cssFile.substring(1)}` : null;
 
@@ -681,13 +766,13 @@ async function buildIncremental(options = {}) {
     for (const post of posts) {
       const pagePath = `/articles/${post.slug}`;
       currentPages.add(pagePath);
-      
-      const description = stripHTML(post.excerpt.rendered).substring(0, 160) || 
-                          'Read this article on DataEngineer Hub';
-      
+
+      const description = stripHTML(post.excerpt.rendered).substring(0, 160) ||
+        'Read this article on DataEngineer Hub';
+
       // 🔥 KEY FIX: Use FULL content, not just 500 chars!
       const fullContent = post.content.rendered; // Complete HTML content
-      
+
       const pageData = {
         title: stripHTML(post.title.rendered),
         description,
@@ -696,28 +781,28 @@ async function buildIncremental(options = {}) {
         slug: post.slug,
         modified: post.modified
       };
-      
+
       const contentHash = hashContent(pageData);
       const cachedPage = cache.pages[pagePath];
       const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
-      
+
       if (needsRebuild) {
         try {
           // 🔥 Use the FULL content generator with image processing
           const html = generateFullArticleHTML(pageData, bundleFiles);
           const filePath = path.join(distDir, pagePath, 'index.html');
           const dir = path.dirname(filePath);
-          
+
           if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
           }
-          
+
           fs.writeFileSync(filePath, html);
-          
+
           // Verify file was created and has content
           const fileStats = fs.statSync(filePath);
           const fileSizeKB = (fileStats.size / 1024).toFixed(2);
-          
+
           if (cachedPage) {
             stats.updated++;
             if (stats.updated <= 5) {
@@ -736,7 +821,7 @@ async function buildIncremental(options = {}) {
       } else {
         stats.unchanged++;
       }
-      
+
       newCache.pages[pagePath] = {
         hash: contentHash,
         modified: post.modified,
@@ -769,29 +854,29 @@ async function buildIncremental(options = {}) {
       for (const cat of categories) {
         const pagePath = `/category/${cat.slug}`;
         currentPages.add(pagePath);
-        
+
         const pageData = {
           title: `Category: ${cat.name}`,
           description: stripHTML(cat.description).substring(0, 160) || `Browse ${cat.name} articles`,
           path: pagePath
         };
-        
+
         const contentHash = hashContent(pageData);
         const cachedPage = cache.pages[pagePath];
         const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
-        
+
         if (needsRebuild) {
           try {
             const html = generateSimpleHTML(pageData, bundleFiles);
             const filePath = path.join(distDir, pagePath, 'index.html');
             const dir = path.dirname(filePath);
-            
+
             if (!fs.existsSync(dir)) {
               fs.mkdirSync(dir, { recursive: true });
             }
-            
+
             fs.writeFileSync(filePath, html);
-            
+
             if (cachedPage) {
               stats.updated++;
             } else {
@@ -804,7 +889,7 @@ async function buildIncremental(options = {}) {
         } else {
           stats.unchanged++;
         }
-        
+
         newCache.pages[pagePath] = {
           hash: contentHash,
           built: needsRebuild ? new Date().toISOString() : cachedPage.built,
@@ -824,29 +909,29 @@ async function buildIncremental(options = {}) {
       for (const tag of tags) {
         const pagePath = `/tag/${tag.slug}`;
         currentPages.add(pagePath);
-        
+
         const pageData = {
           title: `Tag: ${tag.name}`,
           description: stripHTML(tag.description).substring(0, 160) || `Browse ${tag.name} articles`,
           path: pagePath
         };
-        
+
         const contentHash = hashContent(pageData);
         const cachedPage = cache.pages[pagePath];
         const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
-        
+
         if (needsRebuild) {
           try {
             const html = generateSimpleHTML(pageData, bundleFiles);
             const filePath = path.join(distDir, pagePath, 'index.html');
             const dir = path.dirname(filePath);
-            
+
             if (!fs.existsSync(dir)) {
               fs.mkdirSync(dir, { recursive: true });
             }
-            
+
             fs.writeFileSync(filePath, html);
-            
+
             if (cachedPage) {
               stats.updated++;
             } else {
@@ -859,7 +944,7 @@ async function buildIncremental(options = {}) {
         } else {
           stats.unchanged++;
         }
-        
+
         newCache.pages[pagePath] = {
           hash: contentHash,
           built: needsRebuild ? new Date().toISOString() : cachedPage.built,
