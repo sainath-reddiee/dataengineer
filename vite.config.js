@@ -4,6 +4,14 @@ import path from 'path';
 import { createRequire } from 'module';
 import fetch from 'node-fetch';
 import { execSync } from 'child_process';
+import crypto from 'node:crypto';
+
+// Polyfill crypto.hash if missing (fixes "crypto.hash is not a function" error)
+if (!crypto.hash) {
+  crypto.hash = (algorithm, data, outputEncoding) => {
+    return crypto.createHash(algorithm).update(data).digest(outputEncoding);
+  };
+}
 
 const require = createRequire(import.meta.url);
 const prerenderPlugin = require('vite-plugin-prerender');
@@ -22,16 +30,16 @@ function findChrome() {
     'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
     'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
   ];
-  
+
   // Try to find using 'which' command
   try {
-    const chromePath = execSync('which google-chrome || which chromium || which chromium-browser', 
+    const chromePath = execSync('which google-chrome || which chromium || which chromium-browser',
       { encoding: 'utf8' }).trim();
     if (chromePath) return chromePath;
   } catch (e) {
     // Continue to check predefined paths
   }
-  
+
   // Check predefined paths
   const fs = require('fs');
   for (const chromePath of possiblePaths) {
@@ -44,7 +52,7 @@ function findChrome() {
       continue;
     }
   }
-  
+
   console.warn('⚠️  Chrome not found, prerendering may fail');
   return undefined;
 }
@@ -65,7 +73,7 @@ const fetchAllRoutes = async (endpoint, prefix) => {
         }
         throw new Error(`Failed to fetch ${endpoint}: ${res.statusText}`);
       }
-      
+
       const items = await res.json();
 
       if (!Array.isArray(items) || items.length === 0) {
@@ -102,17 +110,17 @@ export default defineConfig({
         ].filter(Boolean)
       }
     }),
-    
+
     // ❌ DISABLED: Prerendering was failing - using static SEO content in index.html instead
     // Re-enable after fixing Chrome/Puppeteer issues
   ].filter(Boolean),
-  
+
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
-  
+
   build: {
     target: 'es2015',
     minify: 'terser',
@@ -124,7 +132,7 @@ export default defineConfig({
         passes: 2
       }
     },
-    
+
     rollupOptions: {
       output: {
         manualChunks: (id) => {
@@ -143,7 +151,7 @@ export default defineConfig({
             }
             return 'vendor';
           }
-          
+
           if (id.includes('src/components/')) {
             if (id.includes('PostCard') || id.includes('PostListItem')) {
               return 'post-components';
@@ -153,20 +161,20 @@ export default defineConfig({
             }
           }
         },
-        
+
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     },
-    
+
     chunkSizeWarningLimit: 500,
     sourcemap: false,
     cssCodeSplit: true,
     reportCompressedSize: true,
     assetsInlineLimit: 2048
   },
-  
+
   server: {
     port: 3000,
     strictPort: true,
@@ -176,7 +184,7 @@ export default defineConfig({
       overlay: true
     }
   },
-  
+
   preview: {
     port: 4173,
     strictPort: true,
