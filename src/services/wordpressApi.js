@@ -26,13 +26,13 @@ class WordPressAPI {
 
   decodeHtmlEntities(text) {
     if (!text || typeof text !== 'string') return '';
-    
+
     if (typeof window !== 'undefined') {
       const textarea = document.createElement('textarea');
       textarea.innerHTML = text;
       return textarea.value;
     }
-    
+
     return text
       .replace(/&#8217;/g, "'")
       .replace(/&amp;/g, "&")
@@ -44,7 +44,7 @@ class WordPressAPI {
 
   async makeRequest(endpoint, options = {}) {
     const cacheKey = `${endpoint}_${JSON.stringify(options)}`;
-    
+
     const cached = this.cache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
       console.log('📦 Cache hit:', endpoint);
@@ -59,10 +59,10 @@ class WordPressAPI {
     const requestPromise = (async () => {
       try {
         console.log('📡 API Request:', `${this.baseURL}${endpoint}`);
-        
+
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 8000);
-        
+
         const response = await fetch(`${this.baseURL}${endpoint}`, {
           mode: 'cors',
           headers: {
@@ -79,7 +79,7 @@ class WordPressAPI {
         if (!response.ok) {
           const errorText = await response.text().catch(() => 'Unknown error');
           console.error('❌ API Error Response:', response.status, errorText);
-          
+
           if (response.status === 404) {
             throw new Error('Content not found');
           } else if (response.status >= 500) {
@@ -96,15 +96,15 @@ class WordPressAPI {
           console.error('❌ Failed to parse JSON response:', jsonError);
           throw new Error('Invalid response format from server');
         }
-        
+
         if (data === null || data === undefined) {
           console.error('❌ Received null/undefined data from API');
           throw new Error('No data received from server');
         }
-        
+
         const totalPosts = parseInt(response.headers.get('X-WP-Total') || '0');
         const totalPages = parseInt(response.headers.get('X-WP-TotalPages') || '1');
-        
+
         const result = {
           data,
           totalPosts,
@@ -117,15 +117,15 @@ class WordPressAPI {
 
       } catch (error) {
         console.error('❌ API Request failed:', endpoint, error);
-        
+
         if (error.name === 'AbortError') {
           throw new Error('Request timed out - please check your connection');
         }
-        
+
         if (error.message.includes('fetch')) {
           throw new Error('Network error - please check your internet connection');
         }
-        
+
         throw error;
       } finally {
         this.requestQueue.delete(cacheKey);
@@ -146,11 +146,11 @@ class WordPressAPI {
       console.log('🔍 Fetching post by slug:', cleanSlug);
 
       const result = await this.makeRequest(
-        `/posts?slug=${encodeURIComponent(cleanSlug)}&_embed=wp:featuredmedia,wp:term,author&status=publish&_fields=id,slug,title,excerpt,content,date,featured_image_url,_embedded,meta,post_tags`
+        `/posts?slug=${encodeURIComponent(cleanSlug)}&_embed=wp:featuredmedia,wp:term,author&status=publish&_fields=id,slug,title,excerpt,content,date,modified,featured_image_url,_embedded,meta,post_tags`
       );
-      
+
       const posts = result.data;
-      
+
       if (!Array.isArray(posts)) {
         console.error('❌ Posts response is not an array:', posts);
         throw new Error('Invalid response from server');
@@ -162,7 +162,7 @@ class WordPressAPI {
 
       const post = this.transformPost(posts[0]);
       console.log('✅ Post loaded successfully with', post.readTime);
-      
+
       return post;
     } catch (error) {
       console.error('❌ Error in getPostBySlug:', error);
@@ -177,7 +177,7 @@ class WordPressAPI {
         console.warn('⚠️ No content provided for read time calculation');
         return '1 min read';
       }
-      
+
       // Remove all HTML tags to get pure text
       let textContent = content
         .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove scripts
@@ -187,22 +187,22 @@ class WordPressAPI {
         .replace(/&[a-z]+;/gi, ' ')                                        // Replace HTML entities
         .replace(/\s+/g, ' ')                                              // Normalize whitespace
         .trim();
-      
+
       if (textContent.length === 0) {
         console.warn('⚠️ Content has no readable text after HTML removal');
         return '1 min read';
       }
-      
+
       // Count actual words (split by whitespace and filter empty strings)
       const words = textContent.split(/\s+/).filter(word => word.length > 0);
       const wordCount = words.length;
-      
+
       // Average reading speed: 200 words per minute
       const readingSpeed = 200;
       const minutes = Math.max(1, Math.ceil(wordCount / readingSpeed));
-      
+
       console.log(`📚 Read time calculated: ${wordCount} words = ${minutes} min read`);
-      
+
       return `${minutes} min read`;
     } catch (error) {
       console.error('❌ Error calculating read time:', error);
@@ -218,15 +218,15 @@ class WordPressAPI {
 
       // Fast path for image extraction
       let imageUrl = 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop';
-      
+
       if (wpPost.featured_image_url) {
         imageUrl = wpPost.featured_image_url;
       } else {
         const featuredMedia = wpPost._embedded?.['wp:featuredmedia']?.[0];
         if (featuredMedia?.source_url) {
-          imageUrl = featuredMedia.media_details?.sizes?.large?.source_url || 
-                     featuredMedia.media_details?.sizes?.medium_large?.source_url || 
-                     featuredMedia.source_url;
+          imageUrl = featuredMedia.media_details?.sizes?.large?.source_url ||
+            featuredMedia.media_details?.sizes?.medium_large?.source_url ||
+            featuredMedia.source_url;
         }
       }
 
@@ -254,7 +254,7 @@ class WordPressAPI {
       const author = wpPost._embedded?.author?.[0]?.name || 'DataEngineer Hub';
       const featured = wpPost.meta?.featured === '1' || wpPost.meta?.featured === 1;
       const trending = wpPost.meta?.trending === '1' || wpPost.meta?.trending === 1;
-      
+
       let excerpt = '';
       if (wpPost.excerpt?.rendered) {
         excerpt = this.cleanExcerpt(wpPost.excerpt.rendered);
@@ -274,6 +274,7 @@ class WordPressAPI {
         tags: tags,
         readTime: readTime, // Now properly calculated from actual content
         date: wpPost.date || new Date().toISOString(),
+        modified: wpPost.modified || wpPost.date || new Date().toISOString(),
         image: imageUrl,
         featured: featured,
         trending: trending,
@@ -290,7 +291,7 @@ class WordPressAPI {
 
     } catch (error) {
       console.error('❌ Error transforming post:', error);
-      
+
       return {
         id: wpPost?.id || Math.random(),
         slug: wpPost?.slug || '',
@@ -322,9 +323,9 @@ class WordPressAPI {
   }
 
   async getPosts(options = {}) {
-    const { 
-      page = 1, 
-      per_page = 10, 
+    const {
+      page = 1,
+      per_page = 10,
       categoryId = null,
       tag = null,
       search = null,
@@ -339,7 +340,7 @@ class WordPressAPI {
         page: Math.max(1, page).toString(),
         per_page: Math.min(100, Math.max(1, per_page)).toString(),
         _embed: 'wp:featuredmedia,wp:term,author',
-        _fields: 'id,slug,title,excerpt,content,date,featured_image_url,_embedded,meta,post_tags',
+        _fields: 'id,slug,title,excerpt,content,date,modified,featured_image_url,_embedded,meta,post_tags',
         status: 'publish',
         orderby: orderby || 'date',
         order: order || 'desc'
@@ -352,21 +353,21 @@ class WordPressAPI {
       if (trending) params.append('is_trending', 'true');
 
       const result = await this.makeRequest(`/posts?${params.toString()}`);
-      
+
       if (!result || typeof result !== 'object') {
         console.error('❌ Invalid API response structure:', result);
         return { posts: [], totalPages: 1, totalPosts: 0 };
       }
-      
+
       const posts = result.data;
-      
+
       if (!Array.isArray(posts)) {
         console.error('❌ Expected array of posts, got:', typeof posts);
         return { posts: [], totalPages: 1, totalPosts: 0 };
       }
 
       const transformedPosts = this.transformPosts(posts);
-      
+
       return {
         posts: transformedPosts,
         totalPages: result.totalPages || 1,
@@ -399,10 +400,10 @@ class WordPressAPI {
   async getCategories() {
     try {
       console.log('📂 Fetching categories...');
-      
+
       const result = await this.makeRequest('/categories?per_page=100&hide_empty=false&_fields=id,name,slug,count,description');
       const categories = result.data;
-      
+
       if (!Array.isArray(categories)) {
         console.warn('Categories response is not an array:', categories);
         return [];
@@ -424,10 +425,10 @@ class WordPressAPI {
   async getTags() {
     try {
       console.log('🏷️ Fetching tags...');
-      
+
       const result = await this.makeRequest('/tags?per_page=100&hide_empty=false&_fields=id,name,slug,count,description');
       const tags = result.data;
-      
+
       if (!Array.isArray(tags)) {
         console.warn('Tags response is not an array:', tags);
         return [];
@@ -453,10 +454,10 @@ class WordPressAPI {
       }
 
       console.log('🔍 Looking for tag slug:', tagSlug);
-      
+
       const tags = await this.getTags();
-      const tag = tags.find(t => 
-        t.slug.toLowerCase() === tagSlug.toLowerCase() || 
+      const tag = tags.find(t =>
+        t.slug.toLowerCase() === tagSlug.toLowerCase() ||
         t.name.toLowerCase() === tagSlug.toLowerCase()
       );
 
@@ -480,10 +481,10 @@ class WordPressAPI {
       }
 
       console.log('🔍 Looking for category slug:', categorySlug);
-      
+
       const categories = await this.getCategories();
-      const category = categories.find(cat => 
-        cat.slug.toLowerCase() === categorySlug.toLowerCase() || 
+      const category = categories.find(cat =>
+        cat.slug.toLowerCase() === categorySlug.toLowerCase() ||
         cat.name.toLowerCase() === categorySlug.toLowerCase()
       );
 
@@ -532,11 +533,11 @@ class WordPressAPI {
 
   async getRelatedPosts(postId) {
     if (!postId) return [];
-    
+
     try {
       console.log(`🧠 Fetching related posts for ID: ${postId}`);
       const result = await this.makeRequest(`/posts/${postId}/related?_fields=id,slug,title,excerpt,content,date,featured_image_url,_embedded`);
-      
+
       if (!result || !Array.isArray(result.data)) {
         console.warn('⚠️ Related posts response was not an array:', result);
         return [];

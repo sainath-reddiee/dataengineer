@@ -43,7 +43,7 @@ async function fetchAllPosts() {
 
     while (hasMore && page <= 20) {
       const response = await fetch(
-        `${WORDPRESS_API_URL}/posts?page=${page}&per_page=100&_fields=slug,modified,date,featured_media,_embedded`,
+        `${WORDPRESS_API_URL}/posts?page=${page}&per_page=100&_embed`,
         {
           headers: {
             'Accept': 'application/json',
