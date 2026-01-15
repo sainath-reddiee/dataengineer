@@ -1,4 +1,4 @@
-// src/components/SEO/MetaTags.jsx - ENHANCED WITH CENTRALIZED CONFIG
+// src/components/SEO/MetaTags.jsx - ENHANCED WITH CTR OPTIMIZATION
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import {
@@ -14,6 +14,7 @@ import {
   getWebSiteSchema,
   getBreadcrumbSchema,
 } from '@/lib/seoConfig';
+import { optimizeMetaDescription } from '@/lib/metaDescriptionOptimizer';
 
 const MetaTags = ({
   title,
@@ -31,10 +32,27 @@ const MetaTags = ({
   breadcrumbs = null,
   faqSchema = null,
   howToSchema = null,
+  readTime, // NEW: for meta description optimization
+  optimizeDescription = true, // NEW: enable/disable optimization
 }) => {
-  // Format title and description
+  // Format title
   const fullTitle = formatTitle(title);
-  const fullDescription = formatDescription(description);
+
+  // Optimize description for better CTR
+  let fullDescription;
+  if (optimizeDescription && type === 'article' && title) {
+    // Use smart optimizer for articles
+    fullDescription = optimizeMetaDescription({
+      title,
+      excerpt: description,
+      category,
+      tags,
+      readTime: readTime || 5,
+    });
+  } else {
+    // Use standard formatting for other pages
+    fullDescription = formatDescription(description);
+  }
 
   // Generate canonical URL
   const currentUrl = url ? ensureAbsoluteUrl(url) : (typeof window !== 'undefined' ? window.location.href : SITE_CONFIG.url);
