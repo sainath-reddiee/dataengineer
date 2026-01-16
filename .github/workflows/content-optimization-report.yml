@@ -1,0 +1,116 @@
+name: Weekly Content Optimization Report
+
+on:
+  # Run every Monday at 9 AM UTC
+  schedule:
+    - cron: '0 9 * * 1'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  generate-optimization-report:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Generate optimization report
+        run: npm run optimize-citations
+        continue-on-error: true
+      
+      - name: Check if report was generated
+        id: check_report
+        run: |
+          if [ -f "citation-optimization-report.json" ]; then
+            echo "report_exists=true" >> $GITHUB_OUTPUT
+            # Extract summary stats
+            TOTAL=$(jq '.summary.totalArticles' citation-optimization-report.json)
+            AVG_SCORE=$(jq '.summary.averageScore' citation-optimization-report.json)
+            NEEDS_WORK=$(jq '.summary.articlesNeedingWork' citation-optimization-report.json)
+            echo "total_articles=$TOTAL" >> $GITHUB_OUTPUT
+            echo "avg_score=$AVG_SCORE" >> $GITHUB_OUTPUT
+            echo "needs_work=$NEEDS_WORK" >> $GITHUB_OUTPUT
+          else
+            echo "report_exists=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Commit and push report
+        if: steps.check_report.outputs.report_exists == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add citation-optimization-report.json
+          git diff --staged --quiet || git commit -m "chore: update content optimization report [skip ci]"
+          git push
+      
+      - name: Extract top priorities
+        if: steps.check_report.outputs.report_exists == 'true'
+        id: extract_priorities
+        run: |
+          # Get top 5 articles needing work
+          TOP_5=$(jq -r '.topPriorities[:5] | map("**\(.title)** (Score: \(.score)/100)\n- \(.topRecommendations[0].action)") | join("\n\n")' citation-optimization-report.json)
+          echo "top_priorities<<EOF" >> $GITHUB_OUTPUT
+          echo "$TOP_5" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      
+      - name: Create GitHub Issue
+        if: steps.check_report.outputs.report_exists == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const totalArticles = '${{ steps.check_report.outputs.total_articles }}';
+            const avgScore = '${{ steps.check_report.outputs.avg_score }}';
+            const needsWork = '${{ steps.check_report.outputs.needs_work }}';
+            const topPriorities = `${{ steps.extract_priorities.outputs.top_priorities }}`;
+            
+            const issueBody = `## 📊 Weekly Content Optimization Report
+            
+            **Generated:** ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            
+            ### Summary
+            - **Total Articles:** ${totalArticles}
+            - **Average Score:** ${avgScore}/100
+            - **Articles Needing Work:** ${needsWork}
+            
+            ### 🎯 Top 5 Priority Articles
+            
+            ${topPriorities}
+            
+            ### 📋 Next Steps
+            1. Review the full report: \`citation-optimization-report.json\`
+            2. Start with the top priority articles listed above
+            3. Focus on HIGH priority recommendations first
+            4. Re-run analysis after updates to track progress
+            
+            ### 🔗 Resources
+            - [View Full Report](../blob/main/citation-optimization-report.json)
+            - [Content Optimizer Dashboard](/admin/content-optimizer)
+            
+            ---
+            *This issue was automatically created by the Weekly Content Optimization workflow.*`;
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `📊 Weekly Content Optimization Report - ${new Date().toLocaleDateString()}`,
+              body: issueBody,
+              labels: ['content-optimization', 'automated']
+            });
+      
+      - name: Report generation failed
+        if: steps.check_report.outputs.report_exists == 'false'
+        run: |
+          echo "::warning::Content optimization report was not generated. Check the logs above for errors."

@@ -35,6 +35,7 @@ const SchemaPage = lazy(() => import('./pages/admin/SchemaPage'));
 const SerpPreviewPage = lazy(() => import('./pages/admin/SerpPreviewPage'));
 const AISuitePage = lazy(() => import('./pages/admin/AISuitePage'));
 const ChecklistPage = lazy(() => import('./pages/admin/ChecklistPage'));
+const ContentOptimizerPage = lazy(() => import('./pages/admin/ContentOptimizerPage'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
@@ -207,6 +208,7 @@ function App() {
           <Route path="serp" element={<Suspense fallback={<LoadingFallback />}><SerpPreviewPage /></Suspense>} />
           <Route path="ai-suite" element={<Suspense fallback={<LoadingFallback />}><AISuitePage /></Suspense>} />
           <Route path="checklist" element={<Suspense fallback={<LoadingFallback />}><ChecklistPage /></Suspense>} />
+          <Route path="content-optimizer" element={<Suspense fallback={<LoadingFallback />}><ContentOptimizerPage /></Suspense>} />
         </Route>
       </Routes>
       <Toaster />

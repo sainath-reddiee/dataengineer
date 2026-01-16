@@ -25,6 +25,7 @@ export class GEOAnalyzer {
         this.article = article;
         const content = article.content || '';
 
+        // Existing checks
         this.checkAIReadability(content);
         this.checkStructuredData(content);
         this.checkEntityOptimization(content);
@@ -33,6 +34,14 @@ export class GEOAnalyzer {
         this.checkCitationWorthiness(content);
         this.checkContentComprehensiveness(content);
         this.checkClearDefinitions(content);
+
+        // Phase 1: New AI Citation Checks
+        this.checkTLDRSummary(content);
+        this.checkDataTables(content);
+        this.checkStatistics(content);
+        this.checkLastUpdated(content);
+        this.checkFirstAnswerLength(content);
+        this.checkExternalCitations(content);
 
         this.calculateScore();
         return this.getReport();
@@ -184,6 +193,252 @@ export class GEOAnalyzer {
             this.addCheck('Clear Definitions', GEO_CATEGORIES.AI_READABILITY, SEVERITY.INFO, `${definitions} definition(s)`, 'Add more "X is Y" definitions');
         } else {
             this.addCheck('Clear Definitions', GEO_CATEGORIES.AI_READABILITY, SEVERITY.INFO, 'No clear definitions', 'Define key terms explicitly');
+        }
+    }
+
+    // ============================================================================
+    // PHASE 1: AI CITATION OPTIMIZATION CHECKS
+    // ============================================================================
+
+    checkTLDRSummary(content) {
+        // Check for TL;DR or summary at beginning
+        const hasTLDR = /(?:^|\n|<p>)(TL;?DR|Summary|Key Takeaways?|In Brief)[:;.\s]/i.test(content);
+        const firstParagraph = content.match(/<p[^>]*>([^<]+)<\/p>/i);
+        const hasOpeningSummary = firstParagraph && firstParagraph[1].split('.').length >= 2;
+
+        if (hasTLDR) {
+            this.addCheck(
+                'TL;DR Summary',
+                GEO_CATEGORIES.AI_READABILITY,
+                SEVERITY.GOOD,
+                'TL;DR/Summary found - AI can extract key points',
+                null,
+                { hasTLDR: true }
+            );
+        } else if (hasOpeningSummary) {
+            this.addCheck(
+                'TL;DR Summary',
+                GEO_CATEGORIES.AI_READABILITY,
+                SEVERITY.INFO,
+                'Opening summary exists but no TL;DR label',
+                'Add "TL;DR:" or "Key Takeaways:" label at start for better AI extraction'
+            );
+        } else {
+            this.addCheck(
+                'TL;DR Summary',
+                GEO_CATEGORIES.AI_READABILITY,
+                SEVERITY.WARNING,
+                'Missing TL;DR summary',
+                'Add 2-3 sentence summary at article start with "TL;DR:" label'
+            );
+        }
+    }
+
+    checkDataTables(content) {
+        const tables = (content.match(/<table/gi) || []).length;
+        const hasTableHeaders = /<th/i.test(content);
+
+        if (tables >= 1 && hasTableHeaders) {
+            this.addCheck(
+                'Data Tables',
+                GEO_CATEGORIES.STRUCTURED_DATA,
+                SEVERITY.GOOD,
+                `${tables} structured table(s) - AI can cite tabular data`,
+                null,
+                { tableCount: tables, hasHeaders: true }
+            );
+        } else if (tables >= 1) {
+            this.addCheck(
+                'Data Tables',
+                GEO_CATEGORIES.STRUCTURED_DATA,
+                SEVERITY.INFO,
+                `${tables} table(s) found but missing headers`,
+                'Add <th> headers to tables for better AI understanding'
+            );
+        } else {
+            this.addCheck(
+                'Data Tables',
+                GEO_CATEGORIES.STRUCTURED_DATA,
+                SEVERITY.INFO,
+                'No data tables found',
+                'Add comparison/data tables for AI citation (e.g., tool comparisons, benchmarks)'
+            );
+        }
+    }
+
+    checkStatistics(content) {
+        // Match percentages, large numbers, and measurements
+        const statPatterns = [
+            /\d+(?:\.\d+)?%/g,  // Percentages: 40%, 3.5%
+            /\d+(?:,\d{3})*(?:\.\d+)?\s*(?:million|billion|thousand|MB|GB|TB|ms|seconds?|minutes?|hours?)/gi,  // Large numbers with units
+            /\$\d+(?:,\d{3})*(?:\.\d+)?(?:\s*(?:million|billion|thousand|k|M|B))?/gi  // Money amounts
+        ];
+
+        let allStats = [];
+        statPatterns.forEach(pattern => {
+            const matches = content.match(pattern) || [];
+            allStats = allStats.concat(matches);
+        });
+
+        // Remove duplicates
+        const uniqueStats = [...new Set(allStats)];
+
+        if (uniqueStats.length >= 5) {
+            this.addCheck(
+                'Statistics & Data',
+                GEO_CATEGORIES.AUTHORITY,
+                SEVERITY.GOOD,
+                `${uniqueStats.length} statistics found - highly citable`,
+                null,
+                { count: uniqueStats.length, examples: uniqueStats.slice(0, 5) }
+            );
+        } else if (uniqueStats.length >= 2) {
+            this.addCheck(
+                'Statistics & Data',
+                GEO_CATEGORIES.AUTHORITY,
+                SEVERITY.INFO,
+                `${uniqueStats.length} statistics found`,
+                'Add more specific numbers, percentages, or benchmarks for AI citation',
+                { count: uniqueStats.length }
+            );
+        } else {
+            this.addCheck(
+                'Statistics & Data',
+                GEO_CATEGORIES.AUTHORITY,
+                SEVERITY.WARNING,
+                'Few or no statistics',
+                'Add specific numbers, percentages, benchmarks (e.g., "40% faster", "$30K/month")'
+            );
+        }
+    }
+
+    checkLastUpdated(content) {
+        // Check for visible last updated date
+        const hasVisibleDate = /(?:last |recently )?updated:?\s*(?:on\s*)?(?:\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\w+\s+\d{1,2},?\s+\d{4}|\d{4}-\d{2}-\d{2})/i.test(content);
+        // Check for schema dateModified
+        const hasSchemaDate = /dateModified|datePublished/i.test(content);
+
+        if (hasVisibleDate && hasSchemaDate) {
+            this.addCheck(
+                'Freshness Signals',
+                GEO_CATEGORIES.AUTHORITY,
+                SEVERITY.GOOD,
+                'Last updated date visible + schema markup',
+                null,
+                { visible: true, schema: true }
+            );
+        } else if (hasVisibleDate || hasSchemaDate) {
+            this.addCheck(
+                'Freshness Signals',
+                GEO_CATEGORIES.AUTHORITY,
+                SEVERITY.INFO,
+                hasVisibleDate ? 'Date visible but no schema' : 'Schema date but not visible',
+                hasVisibleDate ? 'Add dateModified to Article schema' : 'Add visible "Last Updated: [DATE]" on page'
+            );
+        } else {
+            this.addCheck(
+                'Freshness Signals',
+                GEO_CATEGORIES.AUTHORITY,
+                SEVERITY.WARNING,
+                'No freshness signals',
+                'Add visible "Last Updated: [DATE]" and dateModified schema property'
+            );
+        }
+    }
+
+    checkFirstAnswerLength(content) {
+        // Find question headings followed by paragraphs
+        const questionPattern = /<h[2-3][^>]*>([^<]*\?[^<]*)<\/h[2-3]>\s*<p[^>]*>([^<]+)<\/p>/gi;
+        const matches = [...content.matchAll(questionPattern)];
+
+        if (matches.length === 0) {
+            this.addCheck(
+                'Answer Format',
+                GEO_CATEGORIES.AI_READABILITY,
+                SEVERITY.INFO,
+                'No question-answer format detected',
+                'Use question headings ("What is X?") followed by direct answers'
+            );
+            return;
+        }
+
+        // Check first answer length
+        const firstAnswer = matches[0][2];
+        const wordCount = firstAnswer.trim().split(/\s+/).length;
+
+        if (wordCount >= 40 && wordCount <= 80) {
+            this.addCheck(
+                'Answer Format',
+                GEO_CATEGORIES.AI_READABILITY,
+                SEVERITY.GOOD,
+                `Perfect answer length (${wordCount} words) - ideal for AI snippets`,
+                null,
+                { wordCount, questionCount: matches.length }
+            );
+        } else if (wordCount < 40) {
+            this.addCheck(
+                'Answer Format',
+                GEO_CATEGORIES.AI_READABILITY,
+                SEVERITY.INFO,
+                `Answer may be too brief (${wordCount} words)`,
+                'Expand first answer to 40-60 words for better AI extraction',
+                { wordCount }
+            );
+        } else {
+            this.addCheck(
+                'Answer Format',
+                GEO_CATEGORIES.AI_READABILITY,
+                SEVERITY.INFO,
+                `Answer may be too long (${wordCount} words)`,
+                'Keep first answer concise (40-60 words), then elaborate below',
+                { wordCount }
+            );
+        }
+    }
+
+    checkExternalCitations(content) {
+        // Find external links (not to own domain)
+        const externalLinks = content.match(/<a[^>]+href=["']https?:\/\/(?!dataengineerhub)[^"']+["']/gi) || [];
+
+        // Check for authority domains
+        const authorityDomains = externalLinks.filter(link =>
+            /docs\.snowflake|aws\.amazon|cloud\.google|microsoft\.com|github\.com|wikipedia\.org|arxiv\.org|medium\.com|towardsdatascience/i.test(link)
+        );
+
+        if (authorityDomains.length >= 3) {
+            this.addCheck(
+                'Source Citations',
+                GEO_CATEGORIES.AUTHORITY,
+                SEVERITY.GOOD,
+                `${authorityDomains.length} authority citations - builds trust`,
+                null,
+                { total: externalLinks.length, authority: authorityDomains.length }
+            );
+        } else if (authorityDomains.length >= 1) {
+            this.addCheck(
+                'Source Citations',
+                GEO_CATEGORIES.AUTHORITY,
+                SEVERITY.INFO,
+                `${authorityDomains.length} authority citation(s)`,
+                'Add more links to official docs, research papers, or trusted sources',
+                { authority: authorityDomains.length }
+            );
+        } else if (externalLinks.length >= 1) {
+            this.addCheck(
+                'Source Citations',
+                GEO_CATEGORIES.AUTHORITY,
+                SEVERITY.INFO,
+                `${externalLinks.length} external link(s) but no authority sources`,
+                'Link to official documentation (Snowflake docs, AWS, etc.)'
+            );
+        } else {
+            this.addCheck(
+                'Source Citations',
+                GEO_CATEGORIES.AUTHORITY,
+                SEVERITY.WARNING,
+                'No external citations',
+                'Add links to official documentation, research, or trusted sources'
+            );
         }
     }
 

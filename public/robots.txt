@@ -29,6 +29,41 @@ Allow: /robots.txt
 
 # Sitemap location
 Sitemap: https://dataengineerhub.blog/sitemap.xml
+Sitemap: https://dataengineerhub.blog/llm-sitemap.json
+
+# ============================================================================
+# AI CRAWLERS - Allow for AI Citations & Training
+# ============================================================================
+# OpenAI ChatGPT
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Google Gemini & AI Overviews
+User-agent: Google-Extended
+Allow: /
+
+# Common Crawl (used by many AI models)
+User-agent: CCBot
+Allow: /
+
+# Anthropic Claude
+User-agent: anthropic-ai
+Allow: /
+User-agent: Claude-Web
+Allow: /
+
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+
+# Cohere AI
+User-agent: cohere-ai
+Allow: /
+
+# ============================================================================
 
 # Crawl rate optimization for aggressive bots
 User-agent: AhrefsBot
