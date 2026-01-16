@@ -8,7 +8,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
     LayoutDashboard, Search, Layers, GitCompare,
-    Code2, Eye, Sparkles, LogOut, ChevronLeft, CheckSquare, Calendar
+    Code2, Eye, Sparkles, LogOut, ChevronLeft, CheckSquare
 } from 'lucide-react';
 import { AdminAuth, useAdminAuth } from './AdminAuth';
 
@@ -21,7 +21,6 @@ const navItems = [
     { path: '/admin/serp', icon: Eye, label: 'SERP Preview' },
     { path: '/admin/ai-suite', icon: Sparkles, label: 'AI Suite' },
     { path: '/admin/checklist', icon: CheckSquare, label: 'Checklist' },
-    { path: '/admin/schedule', icon: Calendar, label: 'Scheduled Scans' },
 ];
 
 function AdminNav() {
