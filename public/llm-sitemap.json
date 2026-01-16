@@ -1,0 +1,1238 @@
+{
+  "site": "dataengineerhub.blog",
+  "description": "Expert tutorials and guides on Snowflake, dbt, Airflow, data engineering, and analytics engineering",
+  "audience": "Data Engineers, Analytics Engineers, Data Architects, Data Scientists",
+  "topics": [
+    "Snowflake",
+    "dbt",
+    "Airflow",
+    "Data Engineering",
+    "Analytics Engineering",
+    "Data Warehousing",
+    "ETL/ELT"
+  ],
+  "lastUpdated": "2026-01-16",
+  "totalArticles": 54,
+  "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-streams-tasks-pipeline-guide",
+      "title": "Snowflake Streams and Tasks: Complete Guide to Building Data Pipelines with SCD2",
+      "summary": "The Night Everything Broke (And How Streams Saved Me) It was 2 AM on a Tuesday. My phone was buzzing non-stop. Our nightly ETL job had failed—again. This time, it&#8230;",
+      "keyFacts": [
+        "5 million",
+        "10 minutes",
+        "5 MINUTE",
+        "This time, it crashed after processing 6 hours of data, and we had to start over from scratch",
+        "What Are Streams and Tasks"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "What Are Streams and Tasks? (The Simple Explanation)",
+      "lastUpdated": "2026-01-14",
+      "published": "2026-01-14",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 3017
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/how-i-passed-snowpro-gen-ai-certification-guide",
+      "title": "How I passed the “SnowPro® Specialty: Gen AI” certification exam 2026",
+      "summary": "Let’s be real for a second. When Snowflake announced the SnowPro Specialty: Generative AI (GES-C01) certification, I knew I had to take it. GenAI isn’t just a buzzword anymore; it’s&#8230;",
+      "keyFacts": [
+        "115 Minutes",
+        "26%",
+        "40%",
+        "The documentation is vast, the features are brand new (Cortex, anyone",
+        "If you are a Data Engineer, Architect, or AI enthusiast looking to slap that prestigious &#8220; SnowPro Gen AI &#8221; badge on your LinkedIn, this guide is for you"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "How I passed the “SnowPro® Specialty: Gen AI” certification exam 2026",
+      "lastUpdated": "2026-01-14",
+      "published": "2026-01-14",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 954
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/build-a-simple-rag-application-in-snowflake-using-streamlit-and-snowflake-cortex",
+      "title": "Build a Simple RAG Application in Snowflake Using Streamlit and Snowflake Cortex",
+      "summary": "I built this while experimenting with Snowflake Cortex over a weekend. The problem was simple: our team had hours of meeting notes scattered across documents, and nobody could find answers&#8230;",
+      "keyFacts": [
+        "5MB",
+        "5MB",
+        "I built this while experimenting with Snowflake Cortex over a weekend",
+        "This isn’t a theoretical exercise"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "python"
+      ],
+      "questionAnswered": "How to build a simple rag application in snowflake using streamlit and snowflake cortex",
+      "lastUpdated": "2026-01-14",
+      "published": "2026-01-08",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Python",
+      "wordCount": 1501
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-cost-optimization-techniques-2026",
+      "title": "Snowflake Cost Optimization: 12 Proven Techniques to Cut Your Bill by 40% in 2026",
+      "summary": "Why Snowflake Costs Spiral Out of Control If your Snowflake bill jumped 200% last quarter while data volume only grew 30%, you&#8217;re not alone. I&#8217;ve audited dozens of Snowflake environments&#8230;",
+      "keyFacts": [
+        "200%",
+        "30%",
+        "60%",
+        "Between warehouse sprawl, inefficient queries, and hidden serverless costs, most environments are bleeding credits",
+        "With the December 2025 Snowpipe pricing changes adding new cost dimensions, optimization is no longer optional"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "tableau",
+        "dbt",
+        "airflow",
+        "azure",
+        "aws"
+      ],
+      "questionAnswered": "How to snowflake cost optimization: 12 proven techniques to cut your bill by 40% in 2026",
+      "lastUpdated": "2026-01-02",
+      "published": "2026-01-02",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2527
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-query-optimization-guide-2026",
+      "title": "Snowflake Query Optimization: What Actually Works in 2026",
+      "summary": "I’ve been working with Snowflake for the past three years, and honestly, query optimization used to keep me up at night. Our monthly bills were climbing, queries were timing out,&#8230;",
+      "keyFacts": [
+        "40%",
+        "2 billion",
+        "45 seconds",
+        "Let me share what I’ve learned through trial and error, some expensive mistakes, and eventually figuring out what actually moves the needle",
+        "Why Your Queries Are Probably Slower (and More Expensive) Than They Should Be Last month, I was debugging a dashboard that was taking forever to load"
+      ],
+      "entities": [
+        "snowflake"
+      ],
+      "questionAnswered": "How to snowflake query optimization: what actually works in 2026",
+      "lastUpdated": "2026-01-02",
+      "published": "2026-01-02",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 1241
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-interview-questions-answers-2026",
+      "title": "10 Snowflake Interview Questions and Answers 2026 (Real Questions Asked)",
+      "summary": "Last year, I interviewed for a Senior Data Engineer role at three different companies. All three used Snowflake heavily. All three asked completely different questions. The first interview? They grilled&#8230;",
+      "keyFacts": [
+        "15 minutes",
+        "60%",
+        "1MB",
+        "This guide is the result",
+        "These are real questions from actual 2025-2026 interviews, organized by difficulty and topic, with detailed answers that actually help you understand the concepts"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "azure",
+        "aws"
+      ],
+      "questionAnswered": "Question 1: Explain Snowflake’s architecture in simple terms. What makes it different from traditional databases?",
+      "lastUpdated": "2026-01-02",
+      "published": "2026-01-02",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 3529
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-cortex-ai-complete-guide-2026",
+      "title": "Snowflake Cortex AI: Complete Guide for 2026",
+      "summary": "Why I Started Exploring Snowflake Cortex AI Three months ago, I was sitting in a meeting where someone asked, “Can we analyze sentiment in these 50,000 customer reviews?” My immediate&#8230;",
+      "keyFacts": [
+        "2GB",
+        "32GB",
+        "1TB",
+        "This guide is everything I wish someone had shown me when I started",
+        "What is Snowflake Cortex AI"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "python"
+      ],
+      "questionAnswered": "What is Snowflake Cortex AI? (The Real Story)",
+      "lastUpdated": "2026-01-02",
+      "published": "2026-01-02",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 5960
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/meeting-notes-rag-snowflake-ai-assistant",
+      "title": "Build a Meeting Notes RAG in Snowflake: AI-Powered Meeting Intelligence System",
+      "summary": "The Problem We All Face (And Nobody Talks About) You know that feeling when someone asks “What did we decide about the API redesign?” and you’re frantically scrolling through three&#8230;",
+      "keyFacts": [
+        "5 minute",
+        "1 minute",
+        "1 minute",
+        "” and you realize those decisions are buried across 47 different meeting transcripts scattered in Google Docs, Notion, and email threads",
+        "Not just “here are 50 documents mentioning PostgreSQL” but an actual synthesized answer with context"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "kubernetes"
+      ],
+      "questionAnswered": "Why Snowflake for This?",
+      "lastUpdated": "2026-01-04",
+      "published": "2026-01-01",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 5892
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/build-rag-snowflake-documentation",
+      "title": "How to Build a RAG System Using Snowflake Documentation (Step-by-Step Guide)",
+      "summary": "The Problem That Started Everything You know what’s frustrating? Having 500+ pages of Snowflake documentation and still spending 20 minutes hunting for that one specific syntax example you need. That&#8230;",
+      "keyFacts": [
+        "20 minutes",
+        "5 minutes",
+        "5 MINUTE",
+        "RAG solves this by letting the model “look things up” in your specific documentation before answering",
+        "You can always scale up if needed, and honestly, I never needed more than that for this project"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "kubernetes",
+        "python"
+      ],
+      "questionAnswered": "How to Build a RAG System Using Snowflake Documentation (Step-by-Step Guide)",
+      "lastUpdated": "2025-12-30",
+      "published": "2025-12-30",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 3039
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowpro-specialty-gen-ai-practice-exams",
+      "title": "Snowflake’s New GenAI Cert is Here—And I’ve Built Something to Help You Pass",
+      "summary": "Prepare for the Snowflake GES-C01 exam with realistic practice questions. Master Snowflake Cortex, LLMs, and RAG pipelines to get certified in 2025.",
+      "keyFacts": [
+        "If you’ve been following the Snowflake ecosystem lately, you know things are moving at a breakneck pace",
+        "But let’s be honest: specialized exams like this are a different beast"
+      ],
+      "entities": [
+        "snowflake"
+      ],
+      "questionAnswered": "How to snowflake’s new genai cert is here—and i’ve built something to help you pass",
+      "lastUpdated": "2025-12-26",
+      "published": "2025-12-26",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 374
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-openflow-ai-data-ingestion-guide",
+      "title": "Snowflake OpenFlow: Revolutionizing Data Ingestion with AI-Powered Workflows",
+      "summary": "I’ll be honest &#8211; when I first saw the OpenFlow announcement at Snowflake BUILD, my initial reaction was “Great, another data pipeline tool.” We already have dbt, Airflow, Fivetran, and&#8230;",
+      "keyFacts": [
+        "60%",
+        "15 minutes",
+        "23%",
+        "After migrating three of our most complex data pipelines to OpenFlow, I’m convinced this is the direction modern data engineering is heading",
+        "What is Snowflake OpenFlow"
+      ],
+      "entities": [
+        "snowflake",
+        "dbt",
+        "airflow",
+        "python",
+        "kafka",
+        "sql"
+      ],
+      "questionAnswered": "What is Snowflake OpenFlow?",
+      "lastUpdated": "2025-11-11",
+      "published": "2025-11-11",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 5214
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/build-rag-snowflake-cortex-search-guide",
+      "title": "Build RAG in Snowflake: Complete Cortex Search Guide 2025",
+      "summary": "When I first heard about building Retrieval-Augmented Generation (RAG) systems directly in Snowflake, I’ll admit I was skeptical. Could a data warehouse really handle AI workloads this seamlessly? After spending&#8230;",
+      "keyFacts": [
+        "100GB",
+        "1TB",
+        "20%",
+        "Could a data warehouse really handle AI workloads this seamlessly",
+        "In this comprehensive guide, I’ll walk you through everything you need to know about building a production-ready RAG application using Snowflake Cortex Search"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "python"
+      ],
+      "questionAnswered": "What is RAG and Why Should You Care?",
+      "lastUpdated": "2025-11-10",
+      "published": "2025-11-10",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Python",
+      "wordCount": 5758
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-cortex-aisql-query-optimization-guide",
+      "title": "Snowflake Cortex AISQL Query Optimization: 7 Proven Strategies to Cut Costs &amp; Boost Performance",
+      "summary": "Modern data architectures are evolving rapidly, and Snowflake Cortex AISQL is at the forefront of this change. It lets you query unstructured data—files, images, and text—directly using SQL enhanced with&#8230;",
+      "keyFacts": [
+        "Modern data architectures are evolving rapidly , and Snowflake Cortex AISQL is at the forefront of this change",
+        "This guide walks you through practical strategies to get the most out of Cortex AISQL while keeping your warehouse credits in check"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "How to snowflake cortex aisql query optimization: 7 proven strategies to cut costs &amp; boost performance",
+      "lastUpdated": "2025-11-08",
+      "published": "2025-11-08",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 1422
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-intelligence-guide-setup-optimization",
+      "title": "Snowflake Intelligence Guide: Setup, Optimization &amp; Real SQL Examples",
+      "summary": "I&#8217;ve spent the last few days working with Snowflake Intelligence, and I want to share what actually works—not just the marketing pitch. If you&#8217;re tired of being the bottleneck for&#8230;",
+      "keyFacts": [
+        "1 million",
+        "I&#8217;ve spent the last few days working with Snowflake Intelligence, and I want to share what actually works—not just the marketing pitch",
+        "If you&#8217;re tired of being the bottleneck for every data request in your organization, this might be exactly what you need"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "dbt"
+      ],
+      "questionAnswered": "How to snowflake intelligence guide: setup, optimization &amp; real sql examples",
+      "lastUpdated": "2025-11-08",
+      "published": "2025-11-07",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 1221
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-openflow-tutorial",
+      "title": "Snowflake Openflow Tutorial Guide 2025",
+      "summary": "Obviously, snowflake has revolutionized cloud data warehousing for years. Consequently, the demands for streamlined data ingestion grew significantly. When it comes to the snowflake openflow tutorial, understanding this new paradigm&#8230;",
+      "keyFacts": [
+        "30 MINUTES",
+        "When it comes to the snowflake openflow tutorial , understanding this new paradigm is absolutely essential",
+        "This groundbreaking tool promises to simplify data engineering tasks dramatically"
+      ],
+      "entities": [
+        "snowflake",
+        "dbt",
+        "sql"
+      ],
+      "questionAnswered": "How to snowflake openflow tutorial guide 2025",
+      "lastUpdated": "2025-10-24",
+      "published": "2025-10-24",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "dbt",
+      "wordCount": 1321
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-performance",
+      "title": "A Data Engineer&#8217;s Handbook to Snowflake Performance and SQL Improvements 2025",
+      "summary": "Data Engineers today face immense pressure to deliver speed and efficiency. Optimizing snowflake performance is no longer a luxury; it is a fundamental requirement. Furthermore, mastering these concepts separates efficient&#8230;",
+      "keyFacts": [
+        "80%",
+        "50 MB",
+        "500 MB",
+        "Optimizing snowflake performance is no longer a luxury; it is a fundamental requirement",
+        "In this comprehensive handbook, we provide the 2025 deep dive into modern Snowflake optimization"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "How to a data engineer&#8217;s handbook to snowflake performance and sql improvements 2025",
+      "lastUpdated": "2025-10-22",
+      "published": "2025-10-22",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2183
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-native-dbt-integration-2025-guide",
+      "title": "Snowflake Native dbt Integration: Complete 2025 Guide",
+      "summary": "Run dbt Core Directly in Snowflake Without Infrastructure Snowflake native dbt integration announced at Summit 2025 eliminates the need for separate containers or VMs to run dbt Core. Data teams&#8230;",
+      "keyFacts": [
+        "60%",
+        "40%",
+        "This breakthrough simplifies data pipeline architecture and reduces operational overhead significantly",
+        "What Is Snowflake Native dbt Integration"
+      ],
+      "entities": [
+        "dbt",
+        "snowflake",
+        "sql",
+        "python",
+        "aws"
+      ],
+      "questionAnswered": "What Is Snowflake Native dbt Integration?",
+      "lastUpdated": "2025-10-17",
+      "published": "2025-10-17",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "dbt",
+      "wordCount": 1277
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/salesforce-copilot-custom-action-guide",
+      "title": "Your First Salesforce Copilot Action : A 5-Step Guide",
+      "summary": "The era of AI in CRM is here, and its name is Salesforce Copilot. It&#8217;s more than just a chatbot that answers questions; in fact, it&#8217;s an intelligent assistant designed&#8230;",
+      "keyFacts": [
+        "The era of AI in CRM is here, and its name is Salesforce Copilot",
+        "But its true power is unlocked when you teach it to perform custom tasks specific to your business"
+      ],
+      "entities": [],
+      "questionAnswered": "How to your first salesforce copilot action : a 5-step guide",
+      "lastUpdated": "2025-10-17",
+      "published": "2025-10-17",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Salesforce",
+      "wordCount": 976
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/build-databricks-ai-agent-gpt5-guide",
+      "title": "Build a Databricks AI Agent with GPT-5",
+      "summary": "The age of AI chatbots is evolving into the era of AI doers. Instead of just answering questions, modern AI can now execute tasks, interact with systems, and solve multi-step&#8230;",
+      "keyFacts": [
+        "The age of AI chatbots is evolving into the era of AI doers",
+        "At the forefront of this revolution on the Databricks platform is the Mosaic AI Agent Framework"
+      ],
+      "entities": [
+        "databricks",
+        "spark",
+        "sql",
+        "python"
+      ],
+      "questionAnswered": "How to build a databricks ai agent with gpt-5",
+      "lastUpdated": "2025-10-17",
+      "published": "2025-10-17",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Databricks",
+      "wordCount": 927
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/salesforce-agentforce-complete-guide-2025",
+      "title": "Salesforce Agentforce: Complete 2025 Guide &amp; Examples",
+      "summary": "Autonomous AI Agents That Transform Customer Engagement Salesforce Agentforce represents the most significant CRM innovation of 2025, marking the shift from generative AI to truly autonomous agents. Unveiled at Dreamforce&#8230;",
+      "keyFacts": [
+        "58%",
+        "35%",
+        "80%",
+        "This comprehensive guide explores how enterprises leverage these intelligent agents to revolutionize customer relationships and operational efficiency",
+        "What Is Salesforce Agentforce"
+      ],
+      "entities": [],
+      "questionAnswered": "What Is Salesforce Agentforce?",
+      "lastUpdated": "2025-10-17",
+      "published": "2025-10-17",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Salesforce",
+      "wordCount": 1263
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-unique-aggregations-hidden-functions",
+      "title": "Snowflake&#8217;s Unique Aggregation Functions You Need to Know",
+      "summary": "When you think of aggregation functions in SQL, SUM(), COUNT(), and AVG() likely come to mind first. These are the workhorses of data analysis, undoubtedly. However, Snowflake, a titan in&#8230;",
+      "keyFacts": [
+        "100%",
+        "These are the workhorses of data analysis, undoubtedly",
+        "These functions aren&#8217;t just novelties; they are powerful tools that can simplify complex analytical problems and provide insights you might otherwise struggle to extract"
+      ],
+      "entities": [
+        "sql",
+        "snowflake"
+      ],
+      "questionAnswered": "How to snowflake&#8217;s unique aggregation functions you need to know",
+      "lastUpdated": "2025-10-16",
+      "published": "2025-10-16",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 947
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/build-a-snowflake-agent-in-10-minutes",
+      "title": "Build a Snowflake Agent in 10 Minutes",
+      "summary": "The world of data is buzzing with the promise of Large Language Models (LLMs), but how do you move them from simple chat interfaces to intelligent actors that can do&#8230;",
+      "keyFacts": [
+        "The world of data is buzzing with the promise of Large Language Models (LLMs), but how do you move them from simple chat interfaces to intelligent actors that can do things",
+        "This guide will show you how to build your very first Snowflake Agent in minutes, creating a powerful assistant that can understand your data and write its own SQL"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "How to build a snowflake agent in 10 minutes",
+      "lastUpdated": "2025-10-16",
+      "published": "2025-10-16",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 883
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-dynamic-tables-complete-guide-2025",
+      "title": "Snowflake Dynamic Tables: Complete 2025 Guide &amp; Examples",
+      "summary": "Revolutionary Declarative Data Pipelines That Transform ETL In 2025, Snowflake Dynamic Tables have become the most powerful way to build automated data pipelines. This comprehensive guide covers everything from target&#8230;",
+      "keyFacts": [
+        "5 MINUTE",
+        "5 minutes",
+        "80%",
+        "The impact is remarkable: pipelines that previously required hundreds of lines of procedural code now need just a single CREATE DYNAMIC TABLE statement",
+        "What Are Snowflake Dynamic Tables and Why They Matter Snowflake Dynamic Tables are specialized tables that automatically maintain query results through intelligent refresh processes"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "dbt",
+        "databricks",
+        "python",
+        "aws",
+        "azure",
+        "gcp"
+      ],
+      "questionAnswered": "How to snowflake dynamic tables: complete 2025 guide &amp; examples",
+      "lastUpdated": "2025-10-16",
+      "published": "2025-10-14",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 3146
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-hybrid-tables-unify-transactional-analytical-data",
+      "title": "Snowflake Hybrid Tables: End of the ETL Era?",
+      "summary": "Snowflake Hybrid Tables: Is This the End of the ETL Era? For decades, the data world has been split in two. On one side, you have transactional (OLTP) databases—the fast,&#8230;",
+      "keyFacts": [
+        "100%",
+        "Snowflake Hybrid Tables: Is This the End of the ETL Era",
+        "Ultimately , this is the promise of Snowflake Hybrid Tables , and it’s a revolution in the making"
+      ],
+      "entities": [
+        "snowflake",
+        "airflow"
+      ],
+      "questionAnswered": "How to snowflake hybrid tables: end of the etl era?",
+      "lastUpdated": "2025-10-14",
+      "published": "2025-10-13",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 771
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-sql-tutorial-2025-complete-guide",
+      "title": "Snowflake SQL Tutorial: Master MERGE ALL BY NAME in 2025",
+      "summary": "Revolutionary SQL Features That Transform data engineering In 2025, Snowflake has introduced groundbreaking improvements that fundamentally change how data engineers write queries. This Snowflake SQL tutorial covers the latest features&#8230;",
+      "keyFacts": [
+        "90%",
+        "5 minutes",
+        "30 minutes",
+        "This Snowflake SQL tutorial covers the latest features including MERGE ALL BY NAME, UNION BY NAME, and Cortex AISQL",
+        "This Snowflake SQL tutorial will show you how this single feature can transform a 50-line MERGE statement into just 5 lines"
+      ],
+      "entities": [
+        "sql",
+        "snowflake",
+        "python"
+      ],
+      "questionAnswered": "How to snowflake sql tutorial: master merge all by name in 2025",
+      "lastUpdated": "2025-10-16",
+      "published": "2025-10-13",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 3571
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-optima-automatic-query-optimization-guide",
+      "title": "Snowflake Optima: 15x Faster Queries at Zero Cost",
+      "summary": "Revolutionary Performance Without Lifting a Finger On October 8, 2025, Snowflake unveiled Snowflake Optima—a groundbreaking optimization engine that fundamentally changes how data warehouses handle performance. Unlike traditional optimization that requires&#8230;",
+      "keyFacts": [
+        "17.36 seconds",
+        "1.17 seconds",
+        "17.36 seconds",
+        "Moreover, this isn&#8217;t just about faster queries—it&#8217;s about effortless performance",
+        "Snowflake Optima represents a paradigm shift where speed is simply an outcome of using Snowflake, not a goal that requires constant engineering effort"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "How to snowflake optima: 15x faster queries at zero cost",
+      "lastUpdated": "2025-10-16",
+      "published": "2025-10-12",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 3241
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/open-semantic-interchange-snowflake-ai-problem-solved",
+      "title": "Open Semantic Interchange: Solving AI&#8217;s $1T Problem",
+      "summary": "Breaking: Tech Giants Unite to Solve AI&#8217;s Biggest Bottleneck The Open Semantic Interchange was announced by Snowflake in their official blog On September 23, 2025, something unprecedented happened in the&#8230;",
+      "keyFacts": [
+        "80%",
+        "35%",
+        "90%",
+        "This isn&#8217;t just another tech announcement",
+        "For decades, every software vendor has defined business metrics differently"
+      ],
+      "entities": [
+        "snowflake",
+        "dbt",
+        "sql",
+        "tableau",
+        "python",
+        "databricks"
+      ],
+      "questionAnswered": "How to open semantic interchange: solving ai&#8217;s $1t problem",
+      "lastUpdated": "2025-10-14",
+      "published": "2025-10-09",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 3267
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/synapse-to-fabric-migration-adx-eventhouse-guide",
+      "title": "Synapse to Fabric: Your ADX Migration Guide 2025",
+      "summary": "The clock is ticking for Azure Synapse Data Explorer (ADX). With its retirement announced, a strategic Synapse to Fabric migration is now a critical task for data teams. This move&#8230;",
+      "keyFacts": [
+        "The clock is ticking for Azure Synapse Data Explorer (ADX)",
+        "With its retirement announced, a strategic Synapse to Fabric migration is now a critical task for data teams"
+      ],
+      "entities": [
+        "azure",
+        "power bi",
+        "sql"
+      ],
+      "questionAnswered": "How to synapse to fabric: your adx migration guide 2025",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-10-08",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Azure",
+      "wordCount": 958
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/build-snowflake-cortex-ai-agent-guide",
+      "title": "AI Data Agent Guide 2025: Snowflake Cortex Tutorial",
+      "summary": "The world of data analytics is changing. For years, accessing insights required writing complex SQL queries. However, the industry is now shifting towards a more intuitive, conversational approach. At the&#8230;",
+      "keyFacts": [
+        "0 seconds",
+        "The world of data analytics is changing",
+        "However, the industry is now shifting towards a more intuitive, conversational approach"
+      ],
+      "entities": [
+        "sql",
+        "snowflake"
+      ],
+      "questionAnswered": "How to ai data agent guide 2025: snowflake cortex tutorial",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-10-08",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 1237
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/mastering-real-time-etl-with-google-cloud-dataflow",
+      "title": "Mastering Real-Time ETL with Google Cloud Dataflow: A Comprehensive Tutorial",
+      "summary": "In the fast-paced world of data engineering, mastering real-time ETL with Google Cloud Dataflow is a game-changer for businesses needing instant insights. Extract, Transform, Load (ETL) processes are evolving from&#8230;",
+      "keyFacts": [
+        "40%",
+        "In the fast-paced world of data engineering , mastering real-time ETL with Google Cloud Dataflow is a game-changer for businesses needing instant insights",
+        "Extract, Transform, Load (ETL) processes are evolving from batch to real-time, and Google Cloud Dataflow stands out as a powerful, serverless solution for building streaming data pipelines"
+      ],
+      "entities": [
+        "gcp",
+        "bigquery",
+        "python",
+        "sql"
+      ],
+      "questionAnswered": "How to mastering real-time etl with google cloud dataflow: a comprehensive tutorial",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-10-07",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "GCP",
+      "wordCount": 857
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/star-schema-vs-snowflake-schema-comparison",
+      "title": "Star Schema vs Snowflake Schema:Key Differences &amp; Use Cases",
+      "summary": "In the realm of data warehousing, choosing the right schema design is crucial for efficient data management, querying, and analysis. Two of the most popular multidimensional schemas are the star&#8230;",
+      "keyFacts": [
+        "70%",
+        "30%",
+        "In the realm of data warehousing, choosing the right schema design is crucial for efficient data management, querying, and analysis",
+        "Two of the most popular multidimensional schemas are the star schema and the snowflake schema"
+      ],
+      "entities": [
+        "snowflake",
+        "tableau",
+        "power bi",
+        "aws",
+        "bigquery",
+        "dbt"
+      ],
+      "questionAnswered": "How to star schema vs snowflake schema:key differences &amp; use cases",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-10-07",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 1043
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/data-pipelines-python",
+      "title": "Mastering Python Data Pipelines: Extract from APIs &amp; Databases, Load to S3 &amp; Snowflake",
+      "summary": "Introduction to Data Pipelines in Python In today&#8217;s data-driven world, creating robust data pipelines solutions is essential for businesses to handle large volumes of information efficiently. Whether you&#8217;re pulling data&#8230;",
+      "keyFacts": [
+        "Introduction to Data Pipelines in Python In today&#8217;s data-driven world, creating robust data pipelines solutions is essential for businesses to handle large volumes of information efficiently",
+        "Whether you&#8217;re pulling data from RESTful APIs or external databases, the goal is to extract, transform, and load (ETL) it reliably"
+      ],
+      "entities": [
+        "python",
+        "snowflake",
+        "airflow",
+        "aws"
+      ],
+      "questionAnswered": "How to mastering python data pipelines: extract from apis &amp; databases, load to s3 &amp; snowflake",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-10-07",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Python",
+      "wordCount": 933
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-cortex-ai-financial-services",
+      "title": "Revolutionizing Finance: A Deep Dive into Snowflake&#8217;s Cortex AI",
+      "summary": "The financial services industry is in the midst of a technological revolution. At the heart of this change lies Artificial Intelligence. Consequently, financial institutions are constantly seeking new ways to&#8230;",
+      "keyFacts": [
+        "The financial services industry is in the midst of a technological revolution",
+        "At the heart of this change lies Artificial Intelligence"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "How to revolutionizing finance: a deep dive into snowflake&#8217;s cortex ai",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-10-07",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 804
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-data-science-agent-automate-ml-2025",
+      "title": "Snowflake Data Science Agent: Automate ML Workflows 2025",
+      "summary": "The 60–80% Problem Killing Data Science Productivity Data science productivity is being crushed by the 60–80% problem. Despite powerful platforms like Snowflake and cutting-edge ML tools, data scientists still spend&#8230;",
+      "keyFacts": [
+        "80%",
+        "80%",
+        "15 minutes",
+        "The 60–80% Problem Killing Data Science Productivity Data science productivity is being crushed by the 60–80% problem",
+        "This bottleneck is stalling innovation and delaying insights that drive business value"
+      ],
+      "entities": [
+        "snowflake",
+        "python",
+        "sql",
+        "databricks",
+        "aws"
+      ],
+      "questionAnswered": "Why Choose Snowflake Data Science Agent?",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-10-06",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2624
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-mcp-server-agentic-ai-guide-2025",
+      "title": "Enterprise AI 2025: Snowflake MCP Links Agents to Data",
+      "summary": "Introduction: The Dawn of Context-Aware AI in Enterprise Data Enterprise AI is experiencing a fundamental shift in October 2025. Organizations are no longer satisfied with isolated AI tools that operate&#8230;",
+      "keyFacts": [
+        "Introduction: The Dawn of Context-Aware AI in Enterprise Data Enterprise AI is experiencing a fundamental shift in October 2025",
+        "Organizations are no longer satisfied with isolated AI tools that operate in silos"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "dbt",
+        "tableau"
+      ],
+      "questionAnswered": "What is the Model Context Protocol (MCP)?",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-10-06",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2251
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-query-optimization-2025",
+      "title": "Snowflake Query Optimization in 2025",
+      "summary": "Snowflake is renowned for its incredible performance, but as data scales into terabytes and petabytes, no platform is immune to a slow-running query. For a data engineer, mastering Snowflake query&#8230;",
+      "keyFacts": [
+        "100TB",
+        "50%",
+        "0.01%",
+        "Snowflake is renowned for its incredible performance, but as data scales into terabytes and petabytes, no platform is immune to a slow-running query",
+        "For a data engineer, mastering Snowflake query optimization is the difference between building an efficient, cost-effective data platform and one that burns through credits and frustrates users"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "How to snowflake query optimization in 2025",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-10-04",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 888
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-merge-optimization-techniques",
+      "title": "5 Advanced Techniques for Optimizing Snowflake MERGE Queries",
+      "summary": "Snowflake MERGE statements are powerful tools for upserting data, but poor optimization can lead to massive performance bottlenecks. If your MERGE queries are taking hours instead of minutes, you&#8217;re not&#8230;",
+      "keyFacts": [
+        "500MB",
+        "30 seconds",
+        "5 minutes",
+        "Snowflake MERGE statements are powerful tools for upserting data, but poor optimization can lead to massive performance bottlenecks",
+        "If your MERGE queries are taking hours instead of minutes, you&#8217;re not alone"
+      ],
+      "entities": [
+        "snowflake"
+      ],
+      "questionAnswered": "How to 5 advanced techniques for optimizing snowflake merge queries",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-10-01",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 1524
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/what-is-incremental-data-processing-a-data-engineers-guide",
+      "title": "What is Incremental Data Processing? A Data Engineer&#8217;s Guide",
+      "summary": "As a data engineer, your goal is to build pipelines that are not just accurate, but also efficient, scalable, and cost-effective. One of the biggest challenges in achieving this is&#8230;",
+      "keyFacts": [
+        "As a data engineer, your goal is to build pipelines that are not just accurate, but also efficient, scalable, and cost-effective",
+        "One of the biggest challenges in achieving this is handling ever-growing datasets"
+      ],
+      "entities": [
+        "sql",
+        "kafka"
+      ],
+      "questionAnswered": "What is Incremental Data Processing? A Data Engineer&#8217;s Guide",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-30",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "SQL",
+      "wordCount": 649
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/data-modeling-modern-data-warehouse",
+      "title": "Data Modeling for the Modern Data Warehouse: A Guide",
+      "summary": "&nbsp;In the world of&nbsp;data engineering, it&#8217;s easy to get excited about the latest tools and technologies. But before you can build powerful pipelines and insightful dashboards, you need a solid&#8230;",
+      "keyFacts": [
+        "&#8221; Data modeling is the process of structuring your data to be stored in a database",
+        "For a&nbsp;modern data warehouse, the goal is not just to store data, but to store it in a way that is optimized for fast and intuitive&nbsp;analytical queries"
+      ],
+      "entities": [],
+      "questionAnswered": "How to data modeling for the modern data warehouse: a guide",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-30",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "SQL",
+      "wordCount": 676
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/dynamic-data-masking-snowflake",
+      "title": "How to Implement Dynamic Data Masking in Snowflake",
+      "summary": "In today&#8217;s data-driven world, providing access to data is undoubtedly crucial. However, what happens when that data contains sensitive Personally Identifiable Information (PII) like emails, phone numbers, or credit card&#8230;",
+      "keyFacts": [
+        "In today&#8217;s data-driven world, providing access to data is undoubtedly crucial",
+        "For this reason , dynamic data masking in Snowflake becomes an essential tool for modern data governance"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "How to Implement Dynamic Data Masking in Snowflake",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-30",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 715
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-data-sharing-governance",
+      "title": "Snowflake Data Sharing and Governance",
+      "summary": "&nbsp;In the final part of our&nbsp;Snowflake&nbsp;guide, we move beyond the technical implementation and into one of the most powerful strategic advantages of the platform:&nbsp;governance and secure data sharing. So far,&#8230;",
+      "keyFacts": [
+        "Now, we&#8217;ll learn how to control, secure, and share that data",
+        "Snowflake&#8217;s approach to this is built on two core pillars: robust,&nbsp;role-based access control&nbsp;and a revolutionary feature called&nbsp;Secure Data Sharing"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "How to snowflake data sharing and governance",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-29",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 710
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/querying-data-in-snowflake",
+      "title": "Querying data in snowflake: A Guide to JSON and Time Travel",
+      "summary": "In Part 1 of our guide, we explored Snowflake&#8217;s unique architecture, and in Part 2, we learned how to load data. Now comes the most important part: turning that raw&#8230;",
+      "keyFacts": [
+        "50TB",
+        "50TB",
+        "5 minutes",
+        "The primary way we do this is by querying data in Snowflake",
+        "This guide will cover the fundamentals of querying, how to handle semi-structured data like JSON, and introduce two of Snowflake’s most celebrated features: Zero-Copy Cloning and Time Travel"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "How to querying data in snowflake: a guide to json and time travel",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-29",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 811
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/load-data-into-snowflake",
+      "title": "How to Load Data into Snowflake: Guide to Warehouse, Stages and File Format",
+      "summary": "&nbsp;In&nbsp;Part 1&nbsp;of our guide, we covered the revolutionary architecture of&nbsp;Snowflake. Now, it&#8217;s time to get hands-on. A data platform is only as good as the data within it, so understanding&#8230;",
+      "keyFacts": [
+        "A data platform is only as good as the data within it, so understanding how to efficiently&nbsp; load data into Snowflake &nbsp;is a fundamental skill for any data professional",
+        "In Snowflake, this is handled by a&nbsp; Virtual Warehouse"
+      ],
+      "entities": [
+        "snowflake",
+        "aws",
+        "azure",
+        "airflow",
+        "sql"
+      ],
+      "questionAnswered": "How to Load Data into Snowflake: Guide to Warehouse, Stages and File Format",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-29",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 843
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/what-is-snowflake-guide",
+      "title": "What is Snowflake? A Beginners Guide to the Cloud Data Platform",
+      "summary": "If you work in the world of data, you’ve undoubtedly heard the name Snowflake. It has rapidly become one of the most dominant platforms in the cloud data ecosystem. But what is&#8230;",
+      "keyFacts": [
+        "But what is Snowflake, exactly",
+        "Is it just another database"
+      ],
+      "entities": [
+        "snowflake",
+        "aws",
+        "azure",
+        "sql"
+      ],
+      "questionAnswered": "What is Snowflake? A Beginners Guide to the Cloud Data Platform",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-29",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 715
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/loading-data-from-s3-to-snowflake",
+      "title": "Loading Data from S3 to Snowflake",
+      "summary": "For any data engineer working in the modern data stack, loading data from a data lake like Amazon S3 into a cloud data platform like Snowflake is a daily reality. While it seems straightforward,&#8230;",
+      "keyFacts": [
+        "10 MB",
+        "5 GB",
+        "100 MB",
+        "For any data engineer working in the modern data stack, loading data from a data lake like Amazon S3 into a cloud data platform like Snowflake is a daily reality",
+        "Simply getting the data in is not enough"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "aws"
+      ],
+      "questionAnswered": "How to loading data from s3 to snowflake",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-29",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 812
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/aws-data-pipeline-cost-optimization-strategies",
+      "title": "AWS Data Pipeline Cost Optimization Strategies",
+      "summary": "Building a powerful data pipeline on AWS is one thing. Building one that doesn&#8217;t burn a hole in your company&#8217;s budget is another. As data volumes grow, the costs associated&#8230;",
+      "keyFacts": [
+        "90%",
+        "75%",
+        "80%",
+        "Building a powerful data pipeline on AWS is one thing",
+        "Building one that doesn&#8217;t burn a hole in your company&#8217;s budget is another"
+      ],
+      "entities": [
+        "aws",
+        "spark",
+        "airflow",
+        "kubernetes",
+        "redshift",
+        "python"
+      ],
+      "questionAnswered": "How to aws data pipeline cost optimization strategies",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-29",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "AWS",
+      "wordCount": 985
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-performance-tuning-techniques",
+      "title": "Snowflake Performance Tuning Techniques",
+      "summary": "Snowflake is incredibly fast out of the box, but as your data and query complexity grow, even the most powerful engine needs a tune-up. Slow-running queries not only frustrate users but also lead&#8230;",
+      "keyFacts": [
+        "Snowflake is incredibly fast out of the box, but as your data and query complexity grow, even the most powerful engine needs a tune-up",
+        "The good news is that most performance issues can be solved with a few key techniques"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "How to snowflake performance tuning techniques",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-29",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 953
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/advanced-snowflake-interview-questions-experienced",
+      "title": "Advanced Snowflake Interview Questions for Experienced",
+      "summary": "Stop memorizing the difference between a VARCHAR and a TEXT field. If you&#8217;re an experienced data engineer, you know that real Snowflake interviews go much deeper. Hiring managers aren&#8217;t just looking for someone who knows the syntax;&#8230;",
+      "keyFacts": [
+        "30%",
+        "80%",
+        "50TB",
+        "Yet, most online resources are flooded with basic, entry-level questions that don&#8217;t prepare you for a senior-level discussion",
+        "This guide is different"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "How to advanced snowflake interview questions for experienced",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-28",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 1215
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/automated-etl-airflow-python",
+      "title": "Automated ETL with Airflow and Python: A Practical Guide",
+      "summary": "In the world of data, consistency is king. Manually running scripts to fetch and process data is not just tedious; it&#8217;s prone to errors, delays, and gaps in your analytics&#8230;.",
+      "keyFacts": [
+        "In the world of data, consistency is king",
+        "Manually running scripts to fetch and process data is not just tedious; it&#8217;s prone to errors, delays, and gaps in your analytics"
+      ],
+      "entities": [
+        "airflow",
+        "python",
+        "snowflake",
+        "bigquery",
+        "sql"
+      ],
+      "questionAnswered": "How to automated etl with airflow and python: a practical guide",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-28",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Airflow",
+      "wordCount": 855
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/sql-window-functions-guide",
+      "title": "SQL Window Functions: The Ultimate Guide for Data Analysts",
+      "summary": "Every data professional knows the power of GROUP BY. It’s the trusty tool we all learn first, allowing us to aggregate data and calculate metrics like total sales per category or&#8230;",
+      "keyFacts": [
+        "What are the top 3 best-selling products within each category",
+        "How does this month&#8217;s revenue compare to last month&#8217;s for each department"
+      ],
+      "entities": [
+        "sql"
+      ],
+      "questionAnswered": "What Are Window Functions, Really?",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-28",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "SQL",
+      "wordCount": 749
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/build-data-lakehouse-on-azure",
+      "title": "How to Build a Data Lakehouse on Azure",
+      "summary": "For years, data teams have faced a difficult choice: the structured, high-performance world of the data warehouse, or the flexible, low-cost scalability of the data lake. But what if you could have&#8230;",
+      "keyFacts": [
+        "The Lakehouse architecture solves this dilemma",
+        "This architecture is designed to handle everything from raw data ingestion and large-scale ETL to interactive analytics and machine learning"
+      ],
+      "entities": [
+        "azure",
+        "databricks",
+        "power bi",
+        "spark",
+        "sql"
+      ],
+      "questionAnswered": "How to Build a Data Lakehouse on Azure",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-27",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Azure",
+      "wordCount": 986
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/serverless-data-pipeline-aws",
+      "title": "Building a Serverless Data Pipeline on AWS: A Step-by-Step Guide",
+      "summary": "&nbsp;For&nbsp;data engineers, the dream is to build pipelines that are robust, scalable, and cost-effective. For years, this meant managing complex clusters and servers. But with the power of the cloud,&#8230;",
+      "keyFacts": [
+        "&nbsp;For&nbsp;data engineers, the dream is to build pipelines that are robust, scalable, and cost-effective",
+        "For years, this meant managing complex clusters and servers"
+      ],
+      "entities": [
+        "aws",
+        "spark",
+        "sql",
+        "python"
+      ],
+      "questionAnswered": "How to building a serverless data pipeline on aws: a step-by-step guide",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-26",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "AWS",
+      "wordCount": 1085
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/dbt-projects-snowflake-structure",
+      "title": "Structuring dbt Projects in Snowflake: The Definitive Guide",
+      "summary": "If you’ve ever inherited a dbt project, you know there are two kinds: the clean, logical, and easy-to-navigate project, and the other kind—a tangled mess of models that makes you&#8230;",
+      "keyFacts": [
+        "While dbt and Snowflake are a technical match made in heaven, simply putting them together doesn&#8217;t guarantee success",
+        "This guide provides a battle-tested blueprint for structuring dbt projects in Snowflake"
+      ],
+      "entities": [
+        "dbt",
+        "snowflake",
+        "sql",
+        "tableau",
+        "power bi"
+      ],
+      "questionAnswered": "How to structuring dbt projects in snowflake: the definitive guide",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-25",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "dbt",
+      "wordCount": 1111
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-architecture",
+      "title": "Snowflake Architecture Explained: A Simple Breakdown",
+      "summary": "In the world of data, Snowflake&#8217;s rapid rise to a leader in the cloud data space is a well-known story. However, what’s the secret behind its success? The answer isn&#8217;t&#8230;",
+      "keyFacts": [
+        "500MB",
+        "In the world of data, Snowflake&#8217;s rapid rise to a leader in the cloud data space is a well-known story",
+        "Specifically , this unique three-layer design makes it fundamentally different from traditional data warehouses and is the key to its powerful performance and scalability"
+      ],
+      "entities": [
+        "snowflake",
+        "gcp",
+        "sql"
+      ],
+      "questionAnswered": "How to snowflake architecture explained: a simple breakdown",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-09-23",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 679
+    }
+  ]
+}
