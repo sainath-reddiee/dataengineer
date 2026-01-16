@@ -116,7 +116,10 @@ export function BulkScanPage() {
                     topIssues
                 });
 
-                setResults([...newResults]);
+                // Batch UI updates every 5 scans for better performance
+                if (i % 5 === 0 || i === articles.length - 1) {
+                    setResults([...newResults]);
+                }
             } catch (err) {
                 console.error(`Failed to analyze ${article.title}:`, err);
                 newResults.push({

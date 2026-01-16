@@ -55,21 +55,36 @@ export function ScannerPage() {
                     if (!response.ok) throw new Error(`HTTP ${response.status}`);
                     html = await response.text();
                 } catch (fetchError) {
-                    setError(
-                        `❌ Cannot scan external URL due to CORS restrictions.\n\n` +
-                        `💡 Solutions:\n` +
-                        `1. Click "Scan Current Page" to analyze this page\n` +
-                        `2. For your blog articles, navigate to the article and scan it\n` +
-                        `3. Use Bulk Scan to analyze all articles at once`
-                    );
-                    setLoading(false);
-                    return;
+                    // Fallback to CORS proxy
+                    try {
+                        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(finalUrl)}`;
+                        const response = await fetch(proxyUrl);
+                        if (!response.ok) throw new Error('Proxy failed');
+                        html = await response.text();
+                    } catch (proxyError) {
+                        setError(
+                            `❌ Cannot scan external URL due to CORS restrictions.\n\n` +
+                            `💡 Solutions:\n` +
+                            `1. Click "Scan Current Page" to analyze this page\n` +
+                            `2. For your blog articles, navigate to the article and scan it\n` +
+                            `3. Use Bulk Scan to analyze all articles at once`
+                        );
+                        setLoading(false);
+                        return;
+                    }
                 }
             }
 
             const scanner = new SEOScanner();
             const result = await scanner.analyze(finalUrl, html);
             setReport(result);
+
+            // Save to history
+            scanHistoryService.addScan(finalUrl, result.score, {
+                critical: result.summary.critical,
+                warning: result.summary.warning,
+                good: result.summary.good
+            });
         } catch (err) {
             setError(`Failed to scan: ${err.message}`);
         } finally {
