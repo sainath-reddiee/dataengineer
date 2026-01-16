@@ -531,6 +531,26 @@ class WordPressAPI {
     return { success: true };
   }
 
+  // Helper method for SEO analysis - fetch all posts with full content
+  async getAllPosts(page = 1, perPage = 100) {
+    try {
+      console.log(`📚 Fetching all posts (page ${page}, ${perPage} per page)...`);
+
+      const result = await this.getPosts({
+        page,
+        per_page: perPage,
+        orderby: 'date',
+        order: 'desc'
+      });
+
+      console.log(`✅ Fetched ${result.posts.length} posts`);
+      return result;
+    } catch (error) {
+      console.error('❌ Error fetching all posts:', error);
+      throw error;
+    }
+  }
+
   async getRelatedPosts(postId) {
     if (!postId) return [];
 

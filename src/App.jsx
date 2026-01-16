@@ -25,6 +25,18 @@ const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 const TagsArchivePage = lazy(() => import('./pages/TagsArchivePage'));
 const Certification = lazy(() => import('./pages/Certification'));
 
+// Admin Pages (SEO Toolkit)
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
+const SEODashboard = lazy(() => import('./pages/admin/SEODashboard'));
+const ScannerPage = lazy(() => import('./pages/admin/ScannerPage'));
+const BulkScanPage = lazy(() => import('./pages/admin/BulkScanPage'));
+const ComparePage = lazy(() => import('./pages/admin/ComparePage'));
+const SchemaPage = lazy(() => import('./pages/admin/SchemaPage'));
+const SerpPreviewPage = lazy(() => import('./pages/admin/SerpPreviewPage'));
+const AISuitePage = lazy(() => import('./pages/admin/AISuitePage'));
+const ChecklistPage = lazy(() => import('./pages/admin/ChecklistPage'));
+const ScheduledScansPage = lazy(() => import('./pages/admin/ScheduledScansPage'));
+
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
     <div className="flex flex-col items-center space-y-4">
@@ -35,8 +47,8 @@ const LoadingFallback = ({ text = "Loading..." }) => (
       <p className="text-blue-300 font-medium text-lg">{text}</p>
       <div className="flex space-x-2">
         <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
-        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-        <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+        <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
       </div>
     </div>
   </div>
@@ -52,7 +64,7 @@ const RouteChangeTracker = () => {
     }
 
     trackPageView(location.pathname + location.search);
-    
+
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [location.pathname, location.search]);
 
@@ -63,44 +75,44 @@ function App() {
   const { debugMode } = useApiDebugger();
 
   useEffect(() => {
-  if (typeof performance !== "undefined" && performance.mark) {
-    performance.mark('app-initialized');
-  }
-
-  // Prefetch commonly accessed pages after initial load
-  const prefetchTimer = setTimeout(() => {
-    import('./pages/AllArticlesPage');
-    import('./pages/ArticlePage');
-    
-    // ✅ Prefetch popular category pages
-    import('./pages/CategoryPage'); // This covers all categories including new ones
-  }, 2000);
-
-  const logPerformance = () => {
-    if (typeof performance !== 'undefined') {
-      const perfData = performance.getEntriesByType('navigation')[0];
-      if (perfData) {
-        console.log('⚡ App Performance:', {
-          'Total Load': Math.round(perfData.loadEventEnd - perfData.fetchStart) + 'ms',
-          'DOM Ready': Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart) + 'ms',
-          'First Paint': performance.getEntriesByType('paint')[0] 
-            ? Math.round(performance.getEntriesByType('paint')[0].startTime) + 'ms' 
-            : 'N/A'
-        });
-      }
+    if (typeof performance !== "undefined" && performance.mark) {
+      performance.mark('app-initialized');
     }
-  };
 
-  trackEvent({
-    action: 'app_initialized',
-    category: 'performance',
-    label: 'App Loaded'
-  });
+    // Prefetch commonly accessed pages after initial load
+    const prefetchTimer = setTimeout(() => {
+      import('./pages/AllArticlesPage');
+      import('./pages/ArticlePage');
 
-  setTimeout(logPerformance, 1500);
+      // ✅ Prefetch popular category pages
+      import('./pages/CategoryPage'); // This covers all categories including new ones
+    }, 2000);
 
-  return () => clearTimeout(prefetchTimer);
-}, []);
+    const logPerformance = () => {
+      if (typeof performance !== 'undefined') {
+        const perfData = performance.getEntriesByType('navigation')[0];
+        if (perfData) {
+          console.log('⚡ App Performance:', {
+            'Total Load': Math.round(perfData.loadEventEnd - perfData.fetchStart) + 'ms',
+            'DOM Ready': Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart) + 'ms',
+            'First Paint': performance.getEntriesByType('paint')[0]
+              ? Math.round(performance.getEntriesByType('paint')[0].startTime) + 'ms'
+              : 'N/A'
+          });
+        }
+      }
+    };
+
+    trackEvent({
+      action: 'app_initialized',
+      category: 'performance',
+      label: 'App Loaded'
+    });
+
+    setTimeout(logPerformance, 1500);
+
+    return () => clearTimeout(prefetchTimer);
+  }, []);
 
   return (
     <ErrorBoundary>
@@ -180,6 +192,23 @@ function App() {
               </Suspense>
             } />
           )}
+        </Route>
+
+        {/* Admin Routes - SEO Toolkit (outside Layout) */}
+        <Route path="/admin" element={
+          <Suspense fallback={<LoadingFallback text="Loading Dashboard..." />}>
+            <AdminLayout />
+          </Suspense>
+        }>
+          <Route index element={<Suspense fallback={<LoadingFallback />}><SEODashboard /></Suspense>} />
+          <Route path="scanner" element={<Suspense fallback={<LoadingFallback />}><ScannerPage /></Suspense>} />
+          <Route path="bulk" element={<Suspense fallback={<LoadingFallback />}><BulkScanPage /></Suspense>} />
+          <Route path="compare" element={<Suspense fallback={<LoadingFallback />}><ComparePage /></Suspense>} />
+          <Route path="schema" element={<Suspense fallback={<LoadingFallback />}><SchemaPage /></Suspense>} />
+          <Route path="serp" element={<Suspense fallback={<LoadingFallback />}><SerpPreviewPage /></Suspense>} />
+          <Route path="ai-suite" element={<Suspense fallback={<LoadingFallback />}><AISuitePage /></Suspense>} />
+          <Route path="checklist" element={<Suspense fallback={<LoadingFallback />}><ChecklistPage /></Suspense>} />
+          <Route path="schedule" element={<Suspense fallback={<LoadingFallback />}><ScheduledScansPage /></Suspense>} />
         </Route>
       </Routes>
       <Toaster />
