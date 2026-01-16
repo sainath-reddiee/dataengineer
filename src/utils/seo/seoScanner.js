@@ -32,6 +32,7 @@ export class SEOScanner {
     this.checks = [];
     this.score = 0;
     this.maxScore = 100;
+    this.wordCount = 0;
   }
 
   /**
@@ -42,7 +43,7 @@ export class SEOScanner {
   async analyze(url, doc) {
     this.checks = [];
     this.url = url;
-    
+
     // Parse document if string
     if (typeof doc === 'string') {
       const parser = new DOMParser();
@@ -110,7 +111,7 @@ export class SEOScanner {
 
   checkTitleTag() {
     const title = this.doc.querySelector('title')?.textContent?.trim();
-    
+
     if (!title) {
       this.addCheck(
         'Title Tag',
@@ -123,7 +124,7 @@ export class SEOScanner {
     }
 
     const length = title.length;
-    
+
     if (length < 30) {
       this.addCheck(
         'Title Tag',
@@ -156,7 +157,7 @@ export class SEOScanner {
 
   checkMetaDescription() {
     const desc = this.doc.querySelector('meta[name="description"]')?.content?.trim();
-    
+
     if (!desc) {
       this.addCheck(
         'Meta Description',
@@ -169,7 +170,7 @@ export class SEOScanner {
     }
 
     const length = desc.length;
-    
+
     if (length < 120) {
       this.addCheck(
         'Meta Description',
@@ -202,7 +203,7 @@ export class SEOScanner {
 
   checkRobotsMeta() {
     const robots = this.doc.querySelector('meta[name="robots"]')?.content?.toLowerCase();
-    
+
     if (!robots) {
       this.addCheck(
         'Robots Meta',
@@ -246,7 +247,7 @@ export class SEOScanner {
 
   checkMetaKeywords() {
     const keywords = this.doc.querySelector('meta[name="keywords"]')?.content;
-    
+
     if (keywords) {
       this.addCheck(
         'Meta Keywords',
@@ -266,7 +267,7 @@ export class SEOScanner {
   checkH1Structure() {
     const h1s = this.doc.querySelectorAll('h1');
     const count = h1s.length;
-    
+
     if (count === 0) {
       this.addCheck(
         'H1 Structure',
@@ -514,7 +515,7 @@ export class SEOScanner {
   checkImageOptimization() {
     const images = this.doc.querySelectorAll('img');
     const totalImages = images.length;
-    
+
     if (totalImages === 0) {
       this.addCheck(
         'Image Optimization',
@@ -596,7 +597,7 @@ export class SEOScanner {
     } else {
       const width = parseInt(ogWidth);
       const height = parseInt(ogHeight);
-      
+
       if (width >= 1200 && height >= 630) {
         this.addCheck(
           'Social Image Size',
@@ -625,7 +626,7 @@ export class SEOScanner {
 
   checkSchemaMarkup() {
     const schemas = this.doc.querySelectorAll('script[type="application/ld+json"]');
-    
+
     if (schemas.length === 0) {
       this.addCheck(
         'Schema Markup',
@@ -661,7 +662,7 @@ export class SEOScanner {
 
   checkCanonicalUrl() {
     const canonical = this.doc.querySelector('link[rel="canonical"]')?.href;
-    
+
     if (!canonical) {
       this.addCheck(
         'Canonical URL',
@@ -674,9 +675,9 @@ export class SEOScanner {
     }
 
     // Check if self-referential
-    const isSelfRef = canonical === this.url || 
-                      canonical === this.url.replace(/\/$/, '') ||
-                      canonical + '/' === this.url;
+    const isSelfRef = canonical === this.url ||
+      canonical === this.url.replace(/\/$/, '') ||
+      canonical + '/' === this.url;
 
     if (isSelfRef) {
       this.addCheck(
@@ -701,7 +702,7 @@ export class SEOScanner {
 
   checkViewport() {
     const viewport = this.doc.querySelector('meta[name="viewport"]')?.content;
-    
+
     if (!viewport) {
       this.addCheck(
         'Mobile Viewport',
@@ -736,7 +737,7 @@ export class SEOScanner {
 
   checkSSL() {
     const isHttps = this.url.startsWith('https://');
-    
+
     if (isHttps) {
       this.addCheck(
         'SSL/HTTPS',
@@ -760,7 +761,7 @@ export class SEOScanner {
     const html = this.doc.documentElement;
     // Check for HTML5 doctype (DOMParser doesn't preserve doctype well)
     const hasProperDoctype = html?.getAttribute('lang') || html?.querySelectorAll('*').length > 0;
-    
+
     this.addCheck(
       'HTML Doctype',
       CATEGORIES.TECHNICAL,
@@ -772,8 +773,8 @@ export class SEOScanner {
 
   checkCharEncoding() {
     const charset = this.doc.querySelector('meta[charset]')?.getAttribute('charset') ||
-                    this.doc.querySelector('meta[http-equiv="Content-Type"]')?.content;
-    
+      this.doc.querySelector('meta[http-equiv="Content-Type"]')?.content;
+
     if (!charset) {
       this.addCheck(
         'Character Encoding',
@@ -803,7 +804,7 @@ export class SEOScanner {
 
   checkLanguageAttribute() {
     const lang = this.doc.documentElement?.getAttribute('lang');
-    
+
     if (!lang) {
       this.addCheck(
         'Language Attribute',
@@ -826,7 +827,7 @@ export class SEOScanner {
 
   checkHreflang() {
     const hreflangs = this.doc.querySelectorAll('link[rel="alternate"][hreflang]');
-    
+
     if (hreflangs.length > 0) {
       const langs = Array.from(hreflangs).map(l => l.getAttribute('hreflang'));
       this.addCheck(
@@ -844,7 +845,7 @@ export class SEOScanner {
   checkFavicon() {
     const favicon = this.doc.querySelector('link[rel="icon"], link[rel="shortcut icon"]');
     const appleTouchIcon = this.doc.querySelector('link[rel="apple-touch-icon"]');
-    
+
     if (!favicon) {
       this.addCheck(
         'Favicon',
@@ -867,8 +868,8 @@ export class SEOScanner {
 
   checkLazyLoading() {
     const images = this.doc.querySelectorAll('img');
-    const lazyImages = Array.from(images).filter(img => 
-      img.getAttribute('loading') === 'lazy' || 
+    const lazyImages = Array.from(images).filter(img =>
+      img.getAttribute('loading') === 'lazy' ||
       img.getAttribute('data-src') ||
       img.classList.contains('lazy')
     );
@@ -945,7 +946,7 @@ export class SEOScanner {
   checkTwitterCards() {
     const card = this.doc.querySelector('meta[name="twitter:card"]')?.content;
     const title = this.doc.querySelector('meta[name="twitter:title"]')?.content;
-    
+
     if (!card) {
       this.addCheck(
         'Twitter Cards',
@@ -987,6 +988,7 @@ export class SEOScanner {
     const text = mainContent?.textContent || '';
     const words = text.trim().split(/\s+/).filter(w => w.length > 0);
     const wordCount = words.length;
+    this.wordCount = wordCount; // Store for report
 
     if (wordCount < 300) {
       this.addCheck(
@@ -1019,7 +1021,7 @@ export class SEOScanner {
 
     // Check readability (simple sentence length check)
     const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-    const avgSentenceLength = sentences.length > 0 ? 
+    const avgSentenceLength = sentences.length > 0 ?
       words.length / sentences.length : 0;
 
     if (avgSentenceLength > 25) {
@@ -1045,7 +1047,7 @@ export class SEOScanner {
   checkKeywordsInUrl() {
     const title = this.doc.querySelector('title')?.textContent?.toLowerCase() || '';
     const urlPath = new URL(this.url).pathname.toLowerCase();
-    
+
     // Extract potential keywords from title (2+ char words)
     const titleWords = title.split(/\s+/).filter(w => w.length > 2);
     const urlContainsKeyword = titleWords.some(word => urlPath.includes(word));
@@ -1071,13 +1073,13 @@ export class SEOScanner {
 
   checkContentFreshness() {
     const modified = this.doc.querySelector('meta[property="article:modified_time"]')?.content ||
-                     this.doc.querySelector('meta[name="last-modified"]')?.content;
+      this.doc.querySelector('meta[name="last-modified"]')?.content;
     const published = this.doc.querySelector('meta[property="article:published_time"]')?.content;
 
     if (modified) {
       const modDate = new Date(modified);
       const daysSinceModified = (Date.now() - modDate.getTime()) / (1000 * 60 * 60 * 24);
-      
+
       if (daysSinceModified > 365) {
         this.addCheck(
           'Content Freshness',
@@ -1275,6 +1277,7 @@ export class SEOScanner {
       url: this.url,
       score: this.score,
       maxScore: this.maxScore,
+      wordCount: this.wordCount,
       grade: this.getGrade(),
       summary: {
         total: this.checks.length,
@@ -1321,12 +1324,12 @@ export class SEOScanner {
  */
 export async function scanUrl(url) {
   const scanner = new SEOScanner();
-  
+
   try {
     // Fetch the URL
     const response = await fetch(url);
     const html = await response.text();
-    
+
     return await scanner.analyze(url, html);
   } catch (error) {
     throw new Error(`Failed to scan URL: ${error.message}`);

@@ -70,6 +70,14 @@ export function ComparePage() {
         ];
     };
 
+    const getWinner = (metric) => {
+        if (!results) return 0;
+        const { report1, report2 } = results;
+        if (report1.score > report2.score) return 1;
+        if (report2.score > report1.score) return 2;
+        return 0;
+    };
+
     const details = results ? getComparisonDetails() : [];
 
     return (

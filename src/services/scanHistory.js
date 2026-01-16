@@ -24,8 +24,25 @@ class ScanHistoryService {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(this.history));
         } catch (e) {
-            console.error('Failed to save SEO history', e);
+            if (e.name === 'QuotaExceededError') {
+                console.warn('localStorage quota exceeded, cleaning up old data...');
+                this._cleanup();
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.history));
+                } catch (retryError) {
+                    console.error('Storage full even after cleanup', retryError);
+                }
+            } else {
+                console.error('Failed to save SEO history', e);
+            }
         }
+    }
+
+    _cleanup() {
+        // Keep only last 5 scans per URL instead of 10
+        Object.keys(this.history).forEach(key => {
+            this.history[key] = this.history[key].slice(0, 5);
+        });
     }
 
     /**
@@ -85,7 +102,8 @@ class ScanHistoryService {
         const latest = history[0];
 
         // If we just saved the current score, compare with the one before it
-        if (latest.score === currentScore && Math.abs(latest.timestamp - Date.now()) < 5000) {
+        // Increased time window to 10s to handle processing delays
+        if (latest.score === currentScore && Math.abs(latest.timestamp - Date.now()) < 10000) {
             return history.length > 1 ? currentScore - history[1].score : 0;
         }
 
