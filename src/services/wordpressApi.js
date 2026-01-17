@@ -566,7 +566,7 @@ class WordPressAPI {
 
     try {
       console.log(`🧠 Fetching related posts for ID: ${postId}`);
-      const result = await this.makeRequest(`/posts/${postId}/related?_fields=id,slug,title,excerpt,content,date,featured_image_url,_embedded`);
+      const result = await this.makeRequest(`/posts/${postId}/related?_embed=wp:featuredmedia,wp:term,author`);
 
       if (!result || !Array.isArray(result.data)) {
         console.warn('⚠️ Related posts response was not an array:', result);
