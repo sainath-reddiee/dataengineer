@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Search, TrendingUp, AlertCircle, CheckCircle, Clock, FileText, Sparkles, Target, Zap, Link as LinkIcon } from 'lucide-react';
+import { Search, TrendingUp, AlertCircle, CheckCircle, Clock, FileText, Sparkles, Target, Zap, Link as LinkIcon, Download } from 'lucide-react';
 import contentOptimizerService from '../../services/contentOptimizerService';
+import pdfExportService from '../../services/pdfExportService';
 
 const ContentOptimizerPage = () => {
     const [url, setUrl] = useState('');
@@ -54,6 +55,12 @@ const ContentOptimizerPage = () => {
             LOW: 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/50'
         };
         return colors[priority] || colors.MEDIUM;
+    };
+
+    const handleExportPDF = () => {
+        if (!result) return;
+        const filename = `seo-analysis-${new URL(result.url).hostname}-${Date.now()}.pdf`;
+        pdfExportService.exportSingleAnalysis(result, filename);
     };
 
     return (
@@ -164,6 +171,93 @@ const ContentOptimizerPage = () => {
                                 ))}
                             </div>
                         </div>
+
+                        {/* AI Visibility Score */}
+                        {result.aiVisibility && (
+                            <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 backdrop-blur-xl rounded-2xl p-6 border-2 border-purple-500/30 shadow-2xl">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div>
+                                        <h3 className="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+                                            <Sparkles className="w-7 h-7 text-purple-400" />
+                                            AI Visibility Score
+                                        </h3>
+                                        <p className="text-gray-400 text-sm">Probability of AI citation</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-5xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                                            {result.aiVisibility.score}%
+                                        </div>
+                                        <div className={`text-sm font-bold mt-1 ${result.aiVisibility.citationProbability === 'Very High' ? 'text-green-400' :
+                                            result.aiVisibility.citationProbability === 'High' ? 'text-blue-400' :
+                                                result.aiVisibility.citationProbability === 'Medium' ? 'text-yellow-400' :
+                                                    'text-red-400'
+                                            }`}>
+                                            {result.aiVisibility.citationProbability} Citation Probability
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {result.aiVisibility.factors.map((factor, idx) => (
+                                        <div key={idx} className={`flex items-center justify-between px-4 py-2 rounded-lg ${factor.status === 'good' ? 'bg-green-900/20 border border-green-500/30' :
+                                            factor.status === 'moderate' ? 'bg-yellow-900/20 border border-yellow-500/30' :
+                                                'bg-red-900/20 border border-red-500/30'
+                                            }`}>
+                                            <span className={`text-sm font-medium ${factor.status === 'good' ? 'text-green-300' :
+                                                factor.status === 'moderate' ? 'text-yellow-300' :
+                                                    'text-red-300'
+                                                }`}>
+                                                {factor.factor}
+                                            </span>
+                                            <span className={`text-xs font-bold ${factor.status === 'good' ? 'text-green-400' :
+                                                factor.status === 'moderate' ? 'text-yellow-400' :
+                                                    'text-red-400'
+                                                }`}>
+                                                {factor.impact}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Competitor Suggestions */}
+                        {result.competitorSuggestions && result.competitorSuggestions.length > 0 && (
+                            <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-6">
+                                <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+                                    <div className="p-2 bg-purple-500/20 rounded-lg">
+                                        <Target className="w-6 h-6 text-purple-400" />
+                                    </div>
+                                    Suggested Competitors to Analyze
+                                </h3>
+                                <p className="text-gray-400 mb-4 text-sm">
+                                    Based on your content keywords: <span className="text-purple-400 font-semibold">{result.keywords.slice(0, 5).join(', ')}</span>
+                                </p>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    {result.competitorSuggestions.map((suggestion, idx) => (
+                                        <a
+                                            key={idx}
+                                            href={suggestion.searchUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="group bg-gradient-to-br from-gray-900/50 to-gray-800/50 rounded-xl p-4 border border-gray-700/50 hover:border-purple-500/50 transition-all hover:shadow-lg hover:shadow-purple-500/20"
+                                        >
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <LinkIcon className="w-5 h-5 text-purple-400" />
+                                                <span className="font-bold text-white group-hover:text-purple-400 transition-colors">
+                                                    {suggestion.domain}
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-gray-400 mb-3">{suggestion.reason}</p>
+                                            <div className="flex items-center gap-1 text-xs text-purple-400 font-semibold">
+                                                <Search className="w-4 h-4" />
+                                                Find similar articles →
+                                            </div>
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Strengths */}
                         {result.strengths.length > 0 && (

@@ -5,8 +5,9 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { GitCompare, Loader2, Globe, Trophy, ArrowRight, TrendingUp, TrendingDown, Minus, Link as LinkIcon } from 'lucide-react';
+import { GitCompare, Loader2, Globe, Trophy, ArrowRight, TrendingUp, TrendingDown, Minus, Link as LinkIcon, Download } from 'lucide-react';
 import contentOptimizerService from '../../services/contentOptimizerService';
+import pdfExportService from '../../services/pdfExportService';
 
 export function ComparePage() {
     const [url1, setUrl1] = useState('');
@@ -60,6 +61,12 @@ export function ComparePage() {
         if (diff > 0) return { icon: TrendingUp, color: 'text-green-400', text: `+${diff}` };
         if (diff < 0) return { icon: TrendingDown, color: 'text-red-400', text: `${diff}` };
         return { icon: Minus, color: 'text-gray-400', text: '0' };
+    };
+
+    const handleExportPDF = () => {
+        if (!results) return;
+        const filename = `seo-comparison-${Date.now()}.pdf`;
+        pdfExportService.exportComparison(results.report1, results.report2, filename);
     };
 
     return (
@@ -151,8 +158,8 @@ export function ComparePage() {
                         {/* Winner Banner */}
                         {results.report1.score !== results.report2.score && (
                             <div className={`rounded-2xl p-6 text-center backdrop-blur-xl ${results.report1.score > results.report2.score
-                                    ? 'bg-gradient-to-r from-green-900/30 to-emerald-900/30 border-2 border-green-500/50'
-                                    : 'bg-gradient-to-r from-purple-900/30 to-pink-900/30 border-2 border-purple-500/50'
+                                ? 'bg-gradient-to-r from-green-900/30 to-emerald-900/30 border-2 border-green-500/50'
+                                : 'bg-gradient-to-r from-purple-900/30 to-pink-900/30 border-2 border-purple-500/50'
                                 }`}>
                                 <Trophy className="w-12 h-12 mx-auto mb-3 text-yellow-400" />
                                 <h2 className="text-2xl font-bold text-white mb-2">
@@ -268,8 +275,8 @@ export function ComparePage() {
                                         <div key={idx} className="bg-gray-900/50 rounded-lg p-4 border border-gray-700/50">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <span className={`px-2 py-1 rounded text-xs font-bold ${rec.priority === 'HIGH' ? 'bg-red-500/20 text-red-300' :
-                                                        rec.priority === 'MEDIUM' ? 'bg-yellow-500/20 text-yellow-300' :
-                                                            'bg-blue-500/20 text-blue-300'
+                                                    rec.priority === 'MEDIUM' ? 'bg-yellow-500/20 text-yellow-300' :
+                                                        'bg-blue-500/20 text-blue-300'
                                                     }`}>
                                                     {rec.priority}
                                                 </span>

@@ -42,6 +42,152 @@ class ContentOptimizerService {
         }
     }
 
+    // Extract keywords from content
+    extractKeywords(content) {
+        // Remove common words and extract meaningful keywords
+        const commonWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been', 'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'what', 'which', 'who', 'when', 'where', 'why', 'how']);
+
+        const words = content.toLowerCase()
+            .replace(/[^a-z0-9\s]/g, ' ')
+            .split(/\s+/)
+            .filter(w => w.length > 3 && !commonWords.has(w));
+
+        // Count frequency
+        const freq = {};
+        words.forEach(w => freq[w] = (freq[w] || 0) + 1);
+
+        // Get top 10 keywords
+        return Object.entries(freq)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10)
+            .map(([word]) => word);
+    }
+
+    // Generate competitor suggestions
+    generateCompetitorSuggestions(keywords, currentUrl) {
+        const domain = this.getDomain(currentUrl);
+        const suggestions = [];
+
+        // Common competitor domains for different niches
+        const competitorDomains = {
+            'data': ['towardsdatascience.com', 'kdnuggets.com', 'analyticsvidhya.com'],
+            'snowflake': ['medium.com', 'dev.to', 'hashnode.dev'],
+            'engineering': ['stackoverflow.blog', 'dev.to', 'hackernoon.com'],
+            'tutorial': ['freecodecamp.org', 'digitalocean.com', 'css-tricks.com'],
+            'guide': ['smashingmagazine.com', 'sitepoint.com', 'webdev.com']
+        };
+
+        // Find relevant competitor domains based on keywords
+        const relevantDomains = new Set();
+        keywords.forEach(keyword => {
+            Object.entries(competitorDomains).forEach(([topic, domains]) => {
+                if (keyword.includes(topic)) {
+                    domains.forEach(d => relevantDomains.add(d));
+                }
+            });
+        });
+
+        // If no specific matches, use general tech domains
+        if (relevantDomains.size === 0) {
+            ['medium.com', 'dev.to', 'hashnode.dev'].forEach(d => relevantDomains.add(d));
+        }
+
+        // Generate search URLs
+        const topKeywords = keywords.slice(0, 3).join(' ');
+        Array.from(relevantDomains).slice(0, 3).forEach(domain => {
+            suggestions.push({
+                domain,
+                searchUrl: `https://www.google.com/search?q=site:${domain}+${encodeURIComponent(topKeywords)}`,
+                reason: `Similar content about "${topKeywords}"`
+            });
+        });
+
+        return suggestions;
+    }
+
+    // Calculate AI Visibility Score (0-100)
+    calculateAIVisibility(analysis) {
+        let visibility = 0;
+        const factors = [];
+
+        // Factor 1: Has TL;DR (20 points)
+        if (analysis.hasTLDR) {
+            visibility += 20;
+            factors.push({ factor: 'TL;DR Summary', impact: '+20%', status: 'good' });
+        } else {
+            factors.push({ factor: 'TL;DR Summary', impact: '-20%', status: 'missing' });
+        }
+
+        // Factor 2: Question format (15 points)
+        if (analysis.questions >= 3) {
+            visibility += 15;
+            factors.push({ factor: 'Q&A Format', impact: '+15%', status: 'good' });
+        } else {
+            factors.push({ factor: 'Q&A Format', impact: '-15%', status: 'weak' });
+        }
+
+        // Factor 3: Statistics (15 points)
+        if (analysis.statistics >= 5) {
+            visibility += 15;
+            factors.push({ factor: 'Data & Statistics', impact: '+15%', status: 'good' });
+        } else if (analysis.statistics >= 3) {
+            visibility += 8;
+            factors.push({ factor: 'Data & Statistics', impact: '+8%', status: 'moderate' });
+        } else {
+            factors.push({ factor: 'Data & Statistics', impact: '-15%', status: 'weak' });
+        }
+
+        // Factor 4: Authority links (15 points)
+        if (analysis.authorityLinks >= 3) {
+            visibility += 15;
+            factors.push({ factor: 'Authority Citations', impact: '+15%', status: 'good' });
+        } else if (analysis.authorityLinks > 0) {
+            visibility += 7;
+            factors.push({ factor: 'Authority Citations', impact: '+7%', status: 'moderate' });
+        } else {
+            factors.push({ factor: 'Authority Citations', impact: '-15%', status: 'missing' });
+        }
+
+        // Factor 5: Freshness (10 points)
+        if (analysis.hasLastUpdated) {
+            visibility += 10;
+            factors.push({ factor: 'Freshness Signal', impact: '+10%', status: 'good' });
+        } else {
+            factors.push({ factor: 'Freshness Signal', impact: '-10%', status: 'missing' });
+        }
+
+        // Factor 6: Content depth (10 points)
+        if (analysis.wordCount >= 1500) {
+            visibility += 10;
+            factors.push({ factor: 'Content Depth', impact: '+10%', status: 'good' });
+        } else if (analysis.wordCount >= 800) {
+            visibility += 5;
+            factors.push({ factor: 'Content Depth', impact: '+5%', status: 'moderate' });
+        } else {
+            factors.push({ factor: 'Content Depth', impact: '-10%', status: 'weak' });
+        }
+
+        // Factor 7: Structured data (10 points)
+        if (analysis.tables > 0) {
+            visibility += 10;
+            factors.push({ factor: 'Structured Data', impact: '+10%', status: 'good' });
+        } else {
+            factors.push({ factor: 'Structured Data', impact: '-10%', status: 'missing' });
+        }
+
+        // Factor 8: Code examples for technical content (5 points)
+        if (analysis.codeBlocks >= 3) {
+            visibility += 5;
+            factors.push({ factor: 'Code Examples', impact: '+5%', status: 'good' });
+        }
+
+        return {
+            score: Math.min(100, visibility),
+            factors,
+            citationProbability: visibility >= 80 ? 'Very High' : visibility >= 60 ? 'High' : visibility >= 40 ? 'Medium' : 'Low'
+        };
+    }
+
     // Analyze content for AI citation optimization
     analyzeContent(html, url) {
         const plainContent = this.stripHTML(html);
@@ -245,10 +391,113 @@ class ContentOptimizerService {
             strengths.push(`${codeBlocks} code examples`);
         }
 
+        // 🆕 UNIQUE CHECK 1: Snippet-Worthy Sentences
+        const snippetPatterns = [
+            /^[A-Z][^.!?]{20,150}[.!?]$/gm,  // Clear, concise sentences
+            /(?:is|are|means|refers to|defined as)[^.]{10,100}\./gi  // Definition sentences
+        ];
+        let snippetSentences = 0;
+        snippetPatterns.forEach(pattern => {
+            const matches = plainContent.match(pattern) || [];
+            snippetSentences += matches.length;
+        });
+
+        if (snippetSentences < 5) {
+            score -= 5;
+            issues.push('Few snippet-worthy sentences');
+            recommendations.push({
+                priority: 'MEDIUM',
+                type: '🎯 Snippet Optimization',
+                issue: `Only ${snippetSentences} clear, quotable sentences found`,
+                action: 'Add 5-10 concise, definitive sentences (20-150 chars) that directly answer questions',
+                impact: 'AI extracts clear, standalone sentences for answers - 40% more likely to be cited'
+            });
+        } else {
+            strengths.push(`${snippetSentences} snippet-worthy sentences`);
+        }
+
+        // 🆕 UNIQUE CHECK 2: Voice Search Optimization
+        const voiceSearchPhrases = plainContent.match(/(?:how to|what is|why does|when should|where can|who is)[^.?]{10,80}[.?]/gi) || [];
+        if (voiceSearchPhrases.length < 3) {
+            score -= 5;
+            issues.push('Not optimized for voice search');
+            recommendations.push({
+                priority: 'LOW',
+                type: '🎤 Voice Search',
+                issue: `Only ${voiceSearchPhrases.length} voice-search-friendly phrases`,
+                action: 'Add natural language questions as headings: "How to...", "What is...", "Why does..."',
+                impact: 'Voice assistants prefer conversational content - growing 30% YoY'
+            });
+        } else {
+            strengths.push(`${voiceSearchPhrases.length} voice-search phrases`);
+        }
+
+        // 🆕 UNIQUE CHECK 3: Featured Snippet Potential
+        const listItems = (html.match(/<li>/gi) || []).length;
+        const hasNumberedSteps = /(?:step \d|\d\.|first|second|third|finally)/gi.test(plainContent);
+        const hasDefinition = /(?:is defined as|refers to|means that|is a)/gi.test(plainContent);
+
+        let snippetScore = 0;
+        if (listItems >= 3) snippetScore++;
+        if (hasNumberedSteps) snippetScore++;
+        if (hasDefinition) snippetScore++;
+        if (tables > 0) snippetScore++;
+
+        if (snippetScore < 2) {
+            score -= 7;
+            issues.push('Low featured snippet potential');
+            recommendations.push({
+                priority: 'HIGH',
+                type: '⭐ Featured Snippet',
+                issue: 'Content not structured for featured snippets',
+                action: 'Add: (1) Clear definition paragraph, (2) Numbered list of steps, (3) Comparison table',
+                impact: 'Featured snippets get 35% CTR - AI heavily favors this format'
+            });
+        } else {
+            strengths.push('Featured snippet ready');
+        }
+
+        // 🆕 UNIQUE CHECK 4: Conversational Tone
+        const conversationalMarkers = plainContent.match(/(?:you can|you should|you'll|let's|here's|we'll|imagine|think about)/gi) || [];
+        const questionMarks = (plainContent.match(/\?/g) || []).length;
+        const conversationScore = conversationalMarkers.length + questionMarks;
+
+        if (conversationScore < 5) {
+            score -= 4;
+            issues.push('Formal tone (not AI-friendly)');
+            recommendations.push({
+                priority: 'LOW',
+                type: '💬 Conversational Tone',
+                issue: 'Content is too formal or academic',
+                action: 'Use "you", "we", "let\'s" - write like you\'re explaining to a colleague',
+                impact: 'AI prefers conversational content that matches how people ask questions'
+            });
+        } else {
+            strengths.push('Conversational tone');
+        }
+
+        // 🆕 UNIQUE CHECK 5: Semantic Keyword Clustering
+        const keywords = this.extractKeywords(plainContent);
+        const hasSemanticVariations = keywords.length >= 8;
+
+        if (!hasSemanticVariations) {
+            score -= 5;
+            issues.push('Limited semantic keywords');
+            recommendations.push({
+                priority: 'MEDIUM',
+                type: '🔍 Semantic SEO',
+                issue: `Only ${keywords.length} unique topic keywords found`,
+                action: 'Add related terms, synonyms, and variations of your main topic (aim for 10+)',
+                impact: 'AI understands context through semantic relationships - improves topic authority'
+            });
+        } else {
+            strengths.push(`${keywords.length} semantic keywords`);
+        }
+
         // Calculate final score (0-100)
         score = Math.max(0, Math.min(100, score));
 
-        return {
+        const analysis = {
             url,
             score,
             wordCount,
@@ -268,6 +517,17 @@ class ContentOptimizerService {
                 return priority[a.priority] - priority[b.priority];
             })
         };
+
+        // Calculate AI Visibility Score
+        const aiVisibility = this.calculateAIVisibility(analysis);
+        analysis.aiVisibility = aiVisibility;
+
+        // Generate competitor suggestions
+        const competitorSuggestions = this.generateCompetitorSuggestions(keywords, url);
+        analysis.competitorSuggestions = competitorSuggestions;
+        analysis.keywords = keywords;
+
+        return analysis;
     }
 
     // Fetch and analyze URL with fallback proxies

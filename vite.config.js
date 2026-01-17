@@ -111,6 +111,17 @@ export default defineConfig({
       }
     }),
 
+    // Custom plugin to handle jsPDF optional dependencies
+    {
+      name: 'suppress-jspdf-warnings',
+      resolveId(id) {
+        // Suppress resolution of jsPDF optional peer dependencies
+        if (id === 'canvg' || id === 'html2canvas' || id === 'dompurify') {
+          return { id, external: true };
+        }
+      }
+    },
+
     // ❌ DISABLED: Prerendering was failing - using static SEO content in index.html instead
     // Re-enable after fixing Chrome/Puppeteer issues
   ].filter(Boolean),
@@ -119,6 +130,15 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+
+  optimizeDeps: {
+    exclude: [
+      // Exclude jsPDF optional peer dependencies from optimization
+      'canvg',
+      'html2canvas',
+      'dompurify'
+    ]
   },
 
   build: {
@@ -134,6 +154,12 @@ export default defineConfig({
     },
 
     rollupOptions: {
+      external: [
+        // jsPDF optional peer dependencies - externalize to avoid build errors
+        'canvg',
+        'html2canvas',
+        'dompurify'
+      ],
       output: {
         manualChunks: (id) => {
           if (id.includes('node_modules')) {
@@ -148,6 +174,9 @@ export default defineConfig({
             }
             if (id.includes('lucide-react')) {
               return 'icons';
+            }
+            if (id.includes('jspdf')) {
+              return 'pdf-vendor';
             }
             return 'vendor';
           }
