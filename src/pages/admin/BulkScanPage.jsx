@@ -299,7 +299,10 @@ export function BulkScanPage() {
             await new Promise(r => setTimeout(r, 100));
         }
 
-        setQueueStatus('completed');
+        // Only mark as completed if we actually finished all items
+        if (scanningRef.current && !pausedRef.current) {
+            setQueueStatus('completed');
+        }
         scanningRef.current = false;
     };
 
@@ -463,8 +466,8 @@ export function BulkScanPage() {
                     categories={getCategories()}
                 />
 
-                {/* Article Selector */}
-                {scanSource === 'wordpress' && !loading && (
+                {/* Article Selector - Show for all sources */}
+                {!loading && getCurrentArticles().length > 0 && (
                     <ArticleSelector
                         articles={getFilteredArticles()}
                         selected={selectedArticles}

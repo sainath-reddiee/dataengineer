@@ -198,15 +198,22 @@ async function fetchFromWP(endpoint, fields = '') {
         if (attempt < RETRY_COUNT) {
           await new Promise(resolve => setTimeout(resolve, 2000 * attempt)); // Linear backoff
         } else {
-          console.error(`❌ Permanent failure fetching ${url}`);
-          // If we can't fetch a page, we should likely stop the build or break the pagination loop
-          // Breaking here stops pagination, so we at least return what we have so far
-          return items;
+          // After all retries failed, log error but continue with empty data
+          console.error(`❌ Error fetching ${endpoint}: ${error.message}`);
+          console.log(`ℹ️  Continuing build with empty data for ${endpoint}`);
+          return items; // Return whatever we have so far (might be empty)
         }
       }
     }
 
-    if (!data || !Array.isArray(data) || data.length === 0) break;
+    if (!success || !data) {
+      // If we couldn't fetch this page, stop pagination
+      break;
+    }
+
+    if (!Array.isArray(data) || data.length === 0) {
+      break; // No more pages
+    }
 
     items.push(...data);
     page++;
