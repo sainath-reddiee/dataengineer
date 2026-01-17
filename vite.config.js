@@ -116,7 +116,7 @@ export default defineConfig({
       name: 'suppress-jspdf-warnings',
       resolveId(id) {
         // Suppress resolution of jsPDF optional peer dependencies
-        if (id === 'canvg' || id === 'html2canvas' || id === 'dompurify') {
+        if (id === 'canvg' || id === 'html2canvas') {
           return { id, external: true };
         }
       }
@@ -136,8 +136,7 @@ export default defineConfig({
     exclude: [
       // Exclude jsPDF optional peer dependencies from optimization
       'canvg',
-      'html2canvas',
-      'dompurify'
+      'html2canvas'
     ]
   },
 
@@ -157,8 +156,7 @@ export default defineConfig({
       external: [
         // jsPDF optional peer dependencies - externalize to avoid build errors
         'canvg',
-        'html2canvas',
-        'dompurify'
+        'html2canvas'
       ],
       output: {
         manualChunks: (id) => {
