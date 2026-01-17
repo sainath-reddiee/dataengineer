@@ -3,13 +3,21 @@
 
 class ContentOptimizerService {
     constructor() {
-        this.corsProxy = 'https://api.allorigins.win/raw?url=';
+        // Use a more reliable CORS proxy
+        this.corsProxies = [
+            'https://api.allorigins.win/raw?url=',
+            'https://corsproxy.io/?',
+            'https://api.codetabs.com/v1/proxy?quest='
+        ];
+        this.currentProxyIndex = 0;
     }
 
     // Strip HTML tags
     stripHTML(html) {
         if (!html) return '';
         return html
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ' ')
+            .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, ' ')
             .replace(/<[^>]+>/g, ' ')
             .replace(/&nbsp;/g, ' ')
             .replace(/&amp;/g, '&')
@@ -24,6 +32,16 @@ class ContentOptimizerService {
             .trim();
     }
 
+    // Extract domain from URL
+    getDomain(url) {
+        try {
+            const urlObj = new URL(url);
+            return urlObj.hostname;
+        } catch {
+            return '';
+        }
+    }
+
     // Analyze content for AI citation optimization
     analyzeContent(html, url) {
         const plainContent = this.stripHTML(html);
@@ -31,6 +49,8 @@ class ContentOptimizerService {
         const issues = [];
         const strengths = [];
         let score = 100;
+
+        const currentDomain = this.getDomain(url);
 
         // 1. Check for TL;DR / Summary
         const hasTLDR = /(?:^|\n|<p>)(TL;?DR|Summary|Key Takeaways?|In Brief)[:;.\s]/i.test(html);
@@ -101,7 +121,7 @@ class ContentOptimizerService {
                 priority: 'HIGH',
                 type: 'Freshness',
                 issue: 'No visible "Last Updated" date',
-                action: 'Add "Last Updated: January 16, 2026" at the top or bottom of article',
+                action: 'Add "Last Updated: January 17, 2026" at the top or bottom of article',
                 impact: 'Recent content gets 2x more AI citations - freshness is critical'
             });
         } else {
@@ -136,13 +156,33 @@ class ContentOptimizerService {
             strengths.push(`${questionCount} question headings`);
         }
 
-        // 6. Check for external authority links
-        const externalLinks = html.match(/<a[^>]+href=["']https?:\/\/(?!dataengineerhub)[^"']+["']/gi) || [];
-        const authorityDomains = externalLinks.filter(link =>
-            /docs\.snowflake|aws\.amazon|cloud\.google|microsoft\.com|github\.com|wikipedia\.org|arxiv\.org/i.test(link)
-        );
+        // 6. Check for external and internal links
+        const allLinks = html.match(/<a[^>]+href=["']([^"']+)["']/gi) || [];
 
-        if (authorityDomains.length === 0) {
+        let internalLinks = 0;
+        let externalLinks = 0;
+        let authorityLinks = 0;
+
+        allLinks.forEach(link => {
+            const hrefMatch = link.match(/href=["']([^"']+)["']/i);
+            if (hrefMatch) {
+                const href = hrefMatch[1];
+                const linkDomain = this.getDomain(href);
+
+                if (linkDomain === currentDomain || href.startsWith('/') || href.startsWith('#')) {
+                    internalLinks++;
+                } else if (linkDomain) {
+                    externalLinks++;
+
+                    // Check if it's an authority domain
+                    if (/docs\.snowflake|aws\.amazon|cloud\.google|microsoft\.com|github\.com|wikipedia\.org|arxiv\.org|medium\.com/i.test(linkDomain)) {
+                        authorityLinks++;
+                    }
+                }
+            }
+        });
+
+        if (authorityLinks === 0) {
             score -= 10;
             issues.push('No authority citations');
             recommendations.push({
@@ -152,15 +192,29 @@ class ContentOptimizerService {
                 action: 'Add 2-3 links to official documentation or research',
                 impact: 'E-E-A-T signals - builds trust with AI systems'
             });
-        } else if (authorityDomains.length < 3) {
+        } else if (authorityLinks < 3) {
             score -= 5;
-            issues.push(`Only ${authorityDomains.length} authority link(s)`);
+            issues.push(`Only ${authorityLinks} authority link(s)`);
         } else {
-            strengths.push(`${authorityDomains.length} authority citations`);
+            strengths.push(`${authorityLinks} authority citations`);
+        }
+
+        if (internalLinks < 3) {
+            score -= 5;
+            issues.push(`Only ${internalLinks} internal link(s)`);
+            recommendations.push({
+                priority: 'LOW',
+                type: 'Internal Links',
+                issue: `Only ${internalLinks} internal links found`,
+                action: 'Add 3-5 internal links to related articles',
+                impact: 'Helps AI understand site structure and topic relationships'
+            });
+        } else {
+            strengths.push(`${internalLinks} internal links`);
         }
 
         // 7. Check content length
-        const wordCount = plainContent.split(/\s+/).length;
+        const wordCount = plainContent.split(/\s+/).filter(w => w.length > 0).length;
         if (wordCount < 800) {
             score -= 10;
             issues.push('Content too short');
@@ -201,8 +255,9 @@ class ContentOptimizerService {
             statistics: uniqueStats.length,
             tables,
             questions: questionCount,
-            externalLinks: externalLinks.length,
-            authorityLinks: authorityDomains.length,
+            internalLinks,
+            externalLinks,
+            authorityLinks,
             codeBlocks,
             hasTLDR,
             hasLastUpdated,
@@ -215,7 +270,7 @@ class ContentOptimizerService {
         };
     }
 
-    // Fetch and analyze URL
+    // Fetch and analyze URL with fallback proxies
     async analyzeURL(url) {
         try {
             // Validate URL
@@ -223,15 +278,45 @@ class ContentOptimizerService {
                 throw new Error('Invalid URL. Please enter a valid HTTP/HTTPS URL.');
             }
 
-            // Fetch content (with CORS proxy for external URLs)
-            const fetchUrl = url.includes('dataengineerhub.blog') ? url : `${this.corsProxy}${encodeURIComponent(url)}`;
+            // Try direct fetch first for same-origin URLs
+            let html;
+            let fetchUrl = url;
 
-            const response = await fetch(fetchUrl);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch URL: ${response.status} ${response.statusText}`);
+            // If it's an external URL, use CORS proxy
+            if (!url.includes(window.location.hostname)) {
+                fetchUrl = `${this.corsProxies[this.currentProxyIndex]}${encodeURIComponent(url)}`;
             }
 
-            const html = await response.text();
+            try {
+                const response = await fetch(fetchUrl, {
+                    headers: {
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    },
+                    mode: 'cors'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                html = await response.text();
+
+                // Check if we got actual HTML content
+                if (!html || html.length < 100 || !html.includes('<')) {
+                    throw new Error('Invalid HTML content received');
+                }
+            } catch (proxyError) {
+                // Try next proxy
+                this.currentProxyIndex = (this.currentProxyIndex + 1) % this.corsProxies.length;
+
+                if (this.currentProxyIndex === 0) {
+                    // We've tried all proxies
+                    throw new Error(`Failed to fetch URL. The page may be blocking automated access. Error: ${proxyError.message}`);
+                }
+
+                // Retry with next proxy
+                return this.analyzeURL(url);
+            }
 
             // Analyze content
             const analysis = this.analyzeContent(html, url);

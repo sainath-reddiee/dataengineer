@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, TrendingUp, AlertCircle, CheckCircle, Clock, FileText, Sparkles, Target, Zap } from 'lucide-react';
+import { Search, TrendingUp, AlertCircle, CheckCircle, Clock, FileText, Sparkles, Target, Zap, Link as LinkIcon } from 'lucide-react';
 import contentOptimizerService from '../../services/contentOptimizerService';
 
 const ContentOptimizerPage = () => {
@@ -30,50 +30,50 @@ const ContentOptimizerPage = () => {
     };
 
     const getScoreGradient = (score) => {
-        if (score >= 85) return 'from-green-500 to-emerald-600';
-        if (score >= 70) return 'from-yellow-500 to-orange-500';
-        return 'from-red-500 to-pink-600';
+        if (score >= 85) return 'from-green-400 to-emerald-500';
+        if (score >= 70) return 'from-yellow-400 to-orange-400';
+        return 'from-red-400 to-pink-500';
     };
 
     const getScoreBg = (score) => {
-        if (score >= 85) return 'bg-gradient-to-br from-green-50 to-emerald-50';
-        if (score >= 70) return 'bg-gradient-to-br from-yellow-50 to-orange-50';
-        return 'bg-gradient-to-br from-red-50 to-pink-50';
+        if (score >= 85) return 'bg-gradient-to-br from-green-900/20 to-emerald-900/20';
+        if (score >= 70) return 'bg-gradient-to-br from-yellow-900/20 to-orange-900/20';
+        return 'bg-gradient-to-br from-red-900/20 to-pink-900/20';
     };
 
     const getScoreBorder = (score) => {
-        if (score >= 85) return 'border-green-300';
-        if (score >= 70) return 'border-yellow-300';
-        return 'border-red-300';
+        if (score >= 85) return 'border-green-500/30';
+        if (score >= 70) return 'border-yellow-500/30';
+        return 'border-red-500/30';
     };
 
     const getPriorityBadge = (priority) => {
         const colors = {
-            HIGH: 'bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-lg shadow-red-200',
-            MEDIUM: 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg shadow-yellow-200',
-            LOW: 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-200'
+            HIGH: 'bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-lg shadow-red-500/50',
+            MEDIUM: 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg shadow-yellow-500/50',
+            LOW: 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/50'
         };
         return colors[priority] || colors.MEDIUM;
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 p-6">
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <div className="mb-8 text-center">
                     <div className="inline-flex items-center gap-2 mb-4">
-                        <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                        <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg shadow-blue-500/50">
                             <Sparkles className="w-8 h-8 text-white" />
                         </div>
                     </div>
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent mb-2">
                         Content Optimizer
                     </h1>
-                    <p className="text-gray-600 text-lg">Analyze any URL for AI citation optimization</p>
+                    <p className="text-gray-400 text-lg">Analyze any URL for AI citation optimization</p>
                 </div>
 
                 {/* URL Input Card */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 mb-8 backdrop-blur-sm bg-white/90">
+                <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-8 mb-8">
                     <div className="flex gap-4">
                         <div className="flex-1 relative">
                             <input
@@ -82,14 +82,14 @@ const ContentOptimizerPage = () => {
                                 onChange={(e) => setUrl(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && handleAnalyze()}
                                 placeholder="https://example.com/article"
-                                className="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all text-lg"
+                                className="w-full px-6 py-4 bg-gray-900/50 border-2 border-gray-600 rounded-xl focus:ring-4 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-lg text-white placeholder-gray-500"
                                 disabled={loading}
                             />
                         </div>
                         <button
                             onClick={handleAnalyze}
                             disabled={loading}
-                            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed flex items-center gap-3 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none font-semibold text-lg"
+                            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed flex items-center gap-3 transition-all shadow-lg shadow-blue-500/50 hover:shadow-xl hover:shadow-blue-500/60 transform hover:scale-105 disabled:transform-none font-semibold text-lg"
                         >
                             {loading ? (
                                 <>
@@ -108,13 +108,13 @@ const ContentOptimizerPage = () => {
 
                 {/* Error Message */}
                 {error && (
-                    <div className="bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-2xl p-6 mb-8 flex items-start gap-4 shadow-lg animate-shake">
-                        <div className="p-2 bg-red-100 rounded-lg">
-                            <AlertCircle className="w-6 h-6 text-red-600" />
+                    <div className="bg-gradient-to-r from-red-900/30 to-pink-900/30 border-2 border-red-500/50 rounded-2xl p-6 mb-8 flex items-start gap-4 shadow-lg shadow-red-500/20 animate-shake backdrop-blur-xl">
+                        <div className="p-2 bg-red-500/20 rounded-lg">
+                            <AlertCircle className="w-6 h-6 text-red-400" />
                         </div>
                         <div>
-                            <h3 className="font-bold text-red-900 text-lg mb-1">Error</h3>
-                            <p className="text-red-700">{error}</p>
+                            <h3 className="font-bold text-red-300 text-lg mb-1">Error</h3>
+                            <p className="text-red-200">{error}</p>
                         </div>
                     </div>
                 )}
@@ -123,14 +123,14 @@ const ContentOptimizerPage = () => {
                 {result && (
                     <div className="space-y-6 animate-fadeIn">
                         {/* Score Card */}
-                        <div className={`${getScoreBg(result.score)} rounded-2xl p-8 border-2 ${getScoreBorder(result.score)} shadow-2xl`}>
+                        <div className={`${getScoreBg(result.score)} backdrop-blur-xl rounded-2xl p-8 border-2 ${getScoreBorder(result.score)} shadow-2xl`}>
                             <div className="flex items-center justify-between mb-6">
                                 <div>
-                                    <h2 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-                                        <Target className="w-8 h-8" />
+                                    <h2 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                                        <Target className="w-8 h-8 text-blue-400" />
                                         Optimization Score
                                     </h2>
-                                    <p className="text-gray-600 text-sm truncate max-w-md">{result.url}</p>
+                                    <p className="text-gray-400 text-sm truncate max-w-md">{result.url}</p>
                                 </div>
                                 <div className={`text-7xl font-black bg-gradient-to-r ${getScoreGradient(result.score)} bg-clip-text text-transparent`}>
                                     {result.score}
@@ -139,7 +139,7 @@ const ContentOptimizerPage = () => {
                             </div>
 
                             {/* Progress Bar */}
-                            <div className="w-full bg-gray-200 rounded-full h-4 mb-6 overflow-hidden shadow-inner">
+                            <div className="w-full bg-gray-700/50 rounded-full h-4 mb-6 overflow-hidden shadow-inner">
                                 <div
                                     className={`h-4 rounded-full transition-all duration-1000 ease-out bg-gradient-to-r ${getScoreGradient(result.score)} shadow-lg`}
                                     style={{ width: `${result.score}%` }}
@@ -147,17 +147,19 @@ const ContentOptimizerPage = () => {
                             </div>
 
                             {/* Quick Stats */}
-                            <div className="grid grid-cols-4 gap-4">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {[
                                     { label: 'Words', value: result.wordCount, icon: FileText },
                                     { label: 'Statistics', value: result.statistics, icon: TrendingUp },
                                     { label: 'Questions', value: result.questions, icon: Sparkles },
-                                    { label: 'Authority Links', value: result.authorityLinks, icon: Zap }
+                                    { label: 'Authority Links', value: result.authorityLinks, icon: Zap },
+                                    { label: 'Internal Links', value: result.internalLinks || 0, icon: LinkIcon },
+                                    { label: 'External Links', value: result.externalLinks, icon: LinkIcon }
                                 ].map((stat, idx) => (
-                                    <div key={idx} className="bg-white/60 backdrop-blur-sm rounded-xl p-4 text-center border border-white shadow-md">
-                                        <stat.icon className="w-6 h-6 mx-auto mb-2 text-gray-600" />
-                                        <div className="text-3xl font-bold text-gray-900">{stat.value}</div>
-                                        <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
+                                    <div key={idx} className="bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 text-center border border-gray-700/50 shadow-md">
+                                        <stat.icon className="w-6 h-6 mx-auto mb-2 text-gray-400" />
+                                        <div className="text-3xl font-bold text-white">{stat.value}</div>
+                                        <div className="text-sm text-gray-400 font-medium">{stat.label}</div>
                                     </div>
                                 ))}
                             </div>
@@ -165,16 +167,16 @@ const ContentOptimizerPage = () => {
 
                         {/* Strengths */}
                         {result.strengths.length > 0 && (
-                            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 backdrop-blur-sm bg-white/90">
-                                <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-3">
-                                    <div className="p-2 bg-green-100 rounded-lg">
-                                        <CheckCircle className="w-6 h-6 text-green-600" />
+                            <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-6">
+                                <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+                                    <div className="p-2 bg-green-500/20 rounded-lg">
+                                        <CheckCircle className="w-6 h-6 text-green-400" />
                                     </div>
                                     Strengths ({result.strengths.length})
                                 </h3>
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     {result.strengths.map((strength, index) => (
-                                        <div key={index} className="flex items-center gap-3 text-green-700 bg-gradient-to-r from-green-50 to-emerald-50 px-4 py-3 rounded-xl border border-green-200 shadow-sm">
+                                        <div key={index} className="flex items-center gap-3 text-green-300 bg-gradient-to-r from-green-900/30 to-emerald-900/30 px-4 py-3 rounded-xl border border-green-500/30 shadow-sm">
                                             <CheckCircle className="w-5 h-5 flex-shrink-0" />
                                             <span className="text-sm font-medium">{strength}</span>
                                         </div>
@@ -185,16 +187,16 @@ const ContentOptimizerPage = () => {
 
                         {/* Issues */}
                         {result.issues.length > 0 && (
-                            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 backdrop-blur-sm bg-white/90">
-                                <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-3">
-                                    <div className="p-2 bg-red-100 rounded-lg">
-                                        <AlertCircle className="w-6 h-6 text-red-600" />
+                            <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-6">
+                                <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+                                    <div className="p-2 bg-red-500/20 rounded-lg">
+                                        <AlertCircle className="w-6 h-6 text-red-400" />
                                     </div>
                                     Issues Found ({result.issues.length})
                                 </h3>
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     {result.issues.map((issue, index) => (
-                                        <div key={index} className="flex items-center gap-3 text-red-700 bg-gradient-to-r from-red-50 to-pink-50 px-4 py-3 rounded-xl border border-red-200 shadow-sm">
+                                        <div key={index} className="flex items-center gap-3 text-red-300 bg-gradient-to-r from-red-900/30 to-pink-900/30 px-4 py-3 rounded-xl border border-red-500/30 shadow-sm">
                                             <AlertCircle className="w-5 h-5 flex-shrink-0" />
                                             <span className="text-sm font-medium">{issue}</span>
                                         </div>
@@ -205,32 +207,32 @@ const ContentOptimizerPage = () => {
 
                         {/* Recommendations */}
                         {result.recommendations.length > 0 && (
-                            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 backdrop-blur-sm bg-white/90">
-                                <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-3">
-                                    <div className="p-2 bg-blue-100 rounded-lg">
-                                        <TrendingUp className="w-6 h-6 text-blue-600" />
+                            <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-6">
+                                <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+                                    <div className="p-2 bg-blue-500/20 rounded-lg">
+                                        <TrendingUp className="w-6 h-6 text-blue-400" />
                                     </div>
                                     Recommendations ({result.recommendations.length})
                                 </h3>
                                 <div className="space-y-4">
                                     {result.recommendations.map((rec, index) => (
-                                        <div key={index} className="border-2 border-gray-100 rounded-xl p-5 hover:border-blue-300 hover:shadow-lg transition-all bg-gradient-to-br from-white to-gray-50">
+                                        <div key={index} className="border-2 border-gray-700/50 rounded-xl p-5 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/20 transition-all bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm">
                                             <div className="flex items-start justify-between mb-3">
                                                 <div className="flex items-center gap-3">
                                                     <span className={`px-3 py-1 rounded-lg text-xs font-bold ${getPriorityBadge(rec.priority)}`}>
                                                         {rec.priority}
                                                     </span>
-                                                    <span className="font-bold text-gray-900 text-lg">{rec.type}</span>
+                                                    <span className="font-bold text-white text-lg">{rec.type}</span>
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <p className="text-sm text-gray-700">
-                                                    <strong className="text-gray-900">Issue:</strong> {rec.issue}
+                                                <p className="text-sm text-gray-300">
+                                                    <strong className="text-white">Issue:</strong> {rec.issue}
                                                 </p>
-                                                <p className="text-sm text-gray-700">
-                                                    <strong className="text-gray-900">Action:</strong> {rec.action}
+                                                <p className="text-sm text-gray-300">
+                                                    <strong className="text-white">Action:</strong> {rec.action}
                                                 </p>
-                                                <p className="text-sm text-blue-700 bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-2 rounded-lg border border-blue-200">
+                                                <p className="text-sm text-blue-300 bg-gradient-to-r from-blue-900/30 to-indigo-900/30 px-4 py-2 rounded-lg border border-blue-500/30">
                                                     <strong>Impact:</strong> {rec.impact}
                                                 </p>
                                             </div>
@@ -244,21 +246,23 @@ const ContentOptimizerPage = () => {
 
                 {/* Empty State */}
                 {!result && !error && !loading && (
-                    <div className="bg-white rounded-2xl p-16 text-center border-2 border-dashed border-gray-300 shadow-xl backdrop-blur-sm bg-white/90">
-                        <div className="inline-flex p-6 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl mb-6">
-                            <FileText className="w-20 h-20 text-blue-600" />
+                    <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl p-16 text-center border-2 border-dashed border-gray-600 shadow-2xl">
+                        <div className="inline-flex p-6 bg-gradient-to-br from-blue-900/50 to-indigo-900/50 rounded-2xl mb-6">
+                            <FileText className="w-20 h-20 text-blue-400" />
                         </div>
-                        <h3 className="text-3xl font-bold text-gray-900 mb-3">Ready to Analyze</h3>
-                        <p className="text-gray-600 mb-6 text-lg">Enter a URL above to get AI citation optimization insights</p>
-                        <div className="grid grid-cols-2 gap-4 max-w-md mx-auto text-left">
+                        <h3 className="text-3xl font-bold text-white mb-3">Ready to Analyze</h3>
+                        <p className="text-gray-400 mb-6 text-lg">Enter a URL above to get AI citation optimization insights</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto text-left">
                             {[
                                 'Checks for TL;DR summaries',
                                 'Analyzes statistics and data',
                                 'Detects FAQ opportunities',
-                                'Validates freshness signals'
+                                'Validates freshness signals',
+                                'Counts internal & external links',
+                                'Measures content depth'
                             ].map((feature, idx) => (
-                                <div key={idx} className="flex items-center gap-2 text-gray-700 bg-gray-50 px-4 py-2 rounded-lg">
-                                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                                <div key={idx} className="flex items-center gap-2 text-gray-300 bg-gray-700/30 px-4 py-2 rounded-lg border border-gray-600/50">
+                                    <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
                                     <span className="text-sm font-medium">{feature}</span>
                                 </div>
                             ))}
