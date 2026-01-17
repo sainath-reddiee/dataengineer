@@ -146,7 +146,7 @@ class WordPressAPI {
       console.log('🔍 Fetching post by slug:', cleanSlug);
 
       const result = await this.makeRequest(
-        `/posts?slug=${encodeURIComponent(cleanSlug)}&_embed=wp:featuredmedia,wp:term,author&status=publish&_fields=id,slug,title,excerpt,content,date,modified,featured_image_url,_embedded,meta,post_tags`
+        `/posts?slug=${encodeURIComponent(cleanSlug)}&_embed=wp:featuredmedia,wp:term,author&status=publish`
       );
 
       const posts = result.data;
@@ -260,8 +260,18 @@ class WordPressAPI {
         excerpt = this.cleanExcerpt(wpPost.excerpt.rendered);
       }
 
-      // 🔥 CRITICAL: Use actual content for read time calculation
-      const content = wpPost.content?.rendered || wpPost.content || '';
+      // 🔥 CRITICAL FIX: Handle missing content field gracefully
+      let content = '';
+      if (wpPost.content?.rendered) {
+        content = wpPost.content.rendered;
+      } else if (wpPost.content) {
+        content = typeof wpPost.content === 'string' ? wpPost.content : '';
+      } else {
+        // Content field is completely missing - use excerpt as fallback
+        console.warn('⚠️ Content field missing from API response, using excerpt as fallback');
+        content = wpPost.excerpt?.rendered || wpPost.excerpt || '<p>Content not available. Please contact support.</p>';
+      }
+
       const readTime = this.calculateReadTime(content);
 
       const transformedPost = {
@@ -272,7 +282,7 @@ class WordPressAPI {
         content: content,
         category: primaryCategory,
         tags: tags,
-        readTime: readTime, // Now properly calculated from actual content
+        readTime: readTime,
         date: wpPost.date || new Date().toISOString(),
         modified: wpPost.modified || wpPost.date || new Date().toISOString(),
         image: imageUrl,
@@ -284,7 +294,8 @@ class WordPressAPI {
       console.log('✅ Transformed post:', {
         title: transformedPost.title.substring(0, 50),
         readTime: transformedPost.readTime,
-        contentLength: content.length
+        contentLength: content.length,
+        hasContent: !!content
       });
 
       return transformedPost;
@@ -340,7 +351,6 @@ class WordPressAPI {
         page: Math.max(1, page).toString(),
         per_page: Math.min(100, Math.max(1, per_page)).toString(),
         _embed: 'wp:featuredmedia,wp:term,author',
-        _fields: 'id,slug,title,excerpt,content,date,modified,featured_image_url,_embedded,meta,post_tags',
         status: 'publish',
         orderby: orderby || 'date',
         order: order || 'desc'
