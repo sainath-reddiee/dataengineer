@@ -79,7 +79,8 @@ export function AISuitePage() {
                 content: doc.body?.innerHTML || '',
                 excerpt: doc.querySelector('meta[name="description"]')?.content || '',
                 category: doc.querySelector('meta[property="article:section"]')?.content || '',
-                tags: [],
+                tags: Array.from(doc.querySelectorAll('meta[property="article:tag"]')).map(tag => ({ name: tag.content })),
+                date: doc.querySelector('meta[property="article:published_time"]')?.content || '',
                 slug: new URL(finalUrl).pathname.split('/').pop() || ''
             };
 
