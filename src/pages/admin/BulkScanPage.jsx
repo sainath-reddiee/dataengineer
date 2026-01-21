@@ -149,7 +149,7 @@ export function BulkScanPage() {
         return items.map((a, i) => ({
             id: a.id || a.url || i,
             title: a.title || 'Untitled',
-            url: a.url || `https://dataengineerhub.blog/articles/${a.slug}`,
+            url: a.url || `${window.location.origin}/articles/${a.slug}`,
             slug: a.slug,
             content: a.content || '',
             category: a.category,
@@ -617,7 +617,7 @@ export function BulkScanPage() {
                                                     Open
                                                 </a>
                                                 <a
-                                                    href={`/admin/content-optimizer?url=${encodeURIComponent(result.url || `https://dataengineerhub.blog/articles/${result.slug}`)}`}
+                                                    href={`/admin/content-optimizer?url=${encodeURIComponent(result.url || `${window.location.origin}/articles/${result.slug}`)}`}
                                                     onClick={(e) => e.stopPropagation()}
                                                     className="text-blue-400 hover:text-blue-300 text-sm font-medium"
                                                 >

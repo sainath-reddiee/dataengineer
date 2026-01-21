@@ -542,40 +542,49 @@ class ContentOptimizerService {
             let html;
             let fetchUrl = url;
 
-            // If it's an external URL, use CORS proxy
-            if (!url.includes(window.location.hostname)) {
-                fetchUrl = `${this.corsProxies[this.currentProxyIndex]}${encodeURIComponent(url)}`;
+            // Check if scanning current page (bypass fetch/CORS)
+            if (url === window.location.href || url === 'current') {
+                html = document.documentElement.outerHTML;
             }
+            // If it's an external URL, use CORS proxy
+            else if (!url.includes(window.location.hostname)) {
+                fetchUrl = `${this.corsProxies[this.currentProxyIndex]}${encodeURIComponent(url)}`;
 
-            try {
-                const response = await fetch(fetchUrl, {
-                    headers: {
-                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                    },
-                    mode: 'cors'
-                });
+                try {
+                    const response = await fetch(fetchUrl, {
+                        headers: {
+                            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                        },
+                        mode: 'cors'
+                    });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    html = await response.text();
+
+                    // Check if we got actual HTML content
+                    if (!html || html.length < 100 || !html.includes('<')) {
+                        throw new Error('Invalid HTML content received');
+                    }
+                } catch (proxyError) {
+                    // Try next proxy
+                    this.currentProxyIndex = (this.currentProxyIndex + 1) % this.corsProxies.length;
+
+                    if (this.currentProxyIndex === 0) {
+                        // We've tried all proxies
+                        throw new Error(`Failed to fetch URL. The page may be blocking automated access. Error: ${proxyError.message}`);
+                    }
+
+                    // Retry with next proxy
+                    return this.analyzeURL(url);
                 }
-
+            } else {
+                // Same origin fetch
+                const response = await fetch(fetchUrl);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 html = await response.text();
-
-                // Check if we got actual HTML content
-                if (!html || html.length < 100 || !html.includes('<')) {
-                    throw new Error('Invalid HTML content received');
-                }
-            } catch (proxyError) {
-                // Try next proxy
-                this.currentProxyIndex = (this.currentProxyIndex + 1) % this.corsProxies.length;
-
-                if (this.currentProxyIndex === 0) {
-                    // We've tried all proxies
-                    throw new Error(`Failed to fetch URL. The page may be blocking automated access. Error: ${proxyError.message}`);
-                }
-
-                // Retry with next proxy
-                return this.analyzeURL(url);
             }
 
             // Analyze content

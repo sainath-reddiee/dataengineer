@@ -200,7 +200,7 @@ export function SEODashboard() {
                                                 Open →
                                             </a>
                                             <Link
-                                                to={`/admin/scanner?url=${encodeURIComponent(`http://localhost:3000/articles/${article.slug}`)}`}
+                                                to={`/admin/scanner?url=${encodeURIComponent(`${window.location.origin}/articles/${article.slug}`)}`}
                                                 className="text-blue-400 hover:text-blue-300 text-sm font-medium"
                                             >
                                                 Scan

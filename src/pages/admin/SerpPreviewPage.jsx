@@ -28,7 +28,7 @@ export function SerpPreviewPage() {
             let finalUrl = url.trim();
             if (!finalUrl.startsWith('http')) finalUrl = 'https://' + finalUrl;
 
-            const proxyUrl = finalUrl.includes('dataengineerhub.blog')
+            const proxyUrl = finalUrl.includes(window.location.hostname)
                 ? finalUrl
                 : `https://api.allorigins.win/raw?url=${encodeURIComponent(finalUrl)}`;
 
