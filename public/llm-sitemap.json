@@ -11,9 +11,32 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-01-17",
-  "totalArticles": 54,
+  "lastUpdated": "2026-01-21",
+  "totalArticles": 55,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-cortex-cost-comparison",
+      "title": "Snowflake Cortex Cost Comparison 2026: Complete Pricing Guide",
+      "summary": "Snowflake Cortex AI matured significantly between 2023-2026, expanding from simple LLM functions to a comprehensive AI platform with AISQL, Cortex Search, Cortex Analyst, Document AI, and Agents. As adoption accelerates,&#8230;",
+      "keyFacts": [
+        "50GB",
+        "50GB",
+        "98%",
+        "As adoption accelerates, controlling costs becomes critical—not because Cortex is expensive, but because its pricing model differs fundamentally from traditional Snowflake compute",
+        "This guide breaks down exactly how Snowflake charges for Cortex, compares pricing models, provides real cost scenarios, and shares optimization strategies based on 2026 current rates"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "What is Snowflake Cortex AI? (2026 Overview)",
+      "lastUpdated": "2026-01-21",
+      "published": "2026-01-21",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2116
+    },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-streams-tasks-pipeline-guide",
       "title": "Snowflake Streams and Tasks: Complete Guide to Building Data Pipelines with SCD2",

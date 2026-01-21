@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- PSEO Comparison Hub -->
+  <url>
+    <loc>https://dataengineerhub.blog/compare</loc>
+    <lastmod>2026-01-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Orchestration Comparisons -->
+  <url>
+    <loc>https://dataengineerhub.blog/compare/airflow-vs-prefect</loc>
+    <lastmod>2026-01-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Data Warehousing Comparisons -->
+  <url>
+    <loc>https://dataengineerhub.blog/compare/snowflake-vs-bigquery</loc>
+    <lastmod>2026-01-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Data Transformation Comparisons -->
+  <url>
+    <loc>https://dataengineerhub.blog/compare/dbt-vs-dataform</loc>
+    <lastmod>2026-01-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>

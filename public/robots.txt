@@ -1,7 +1,7 @@
-# robots.txt - Optimized for DataEngineer Hub
-# Last updated: 2026-01-15
+# robots.txt - DataEngineer Hub
+# Last updated: 2026-01-22
 
-# Default crawling rules for all bots
+# Default crawling rules
 User-agent: *
 Allow: /
 
@@ -10,7 +10,7 @@ Disallow: /api/
 Disallow: /admin/
 Disallow: /debug
 
-# Allow all static assets (CSS, JS, Images)
+# Allow static assets
 Allow: /*.css$
 Allow: /*.js$
 Allow: /*.jpg$
@@ -27,45 +27,45 @@ Allow: /manifest.json
 Allow: /sitemap.xml
 Allow: /robots.txt
 
-# Sitemap location
-Sitemap: https://dataengineerhub.blog/sitemap.xml
+# =============================================================================
+# SITEMAPS - Google will discover all sub-sitemaps via sitemap-index.xml
+# =============================================================================
+# Primary entry point (references all other sitemaps)
+Sitemap: https://dataengineerhub.blog/sitemap-index.xml
+
+# LLM/AI-specific sitemap (for AI crawlers)
 Sitemap: https://dataengineerhub.blog/llm-sitemap.json
 
-# ============================================================================
+# =============================================================================
 # AI CRAWLERS - Allow for AI Citations & Training
-# ============================================================================
-# OpenAI ChatGPT
+# =============================================================================
 User-agent: GPTBot
 Allow: /
 
 User-agent: ChatGPT-User
 Allow: /
 
-# Google Gemini & AI Overviews
 User-agent: Google-Extended
 Allow: /
 
-# Common Crawl (used by many AI models)
 User-agent: CCBot
 Allow: /
 
-# Anthropic Claude
 User-agent: anthropic-ai
 Allow: /
+
 User-agent: Claude-Web
 Allow: /
 
-# Perplexity AI
 User-agent: PerplexityBot
 Allow: /
 
-# Cohere AI
 User-agent: cohere-ai
 Allow: /
 
-# ============================================================================
-
-# Crawl rate optimization for aggressive bots
+# =============================================================================
+# RATE LIMITING - Aggressive crawlers
+# =============================================================================
 User-agent: AhrefsBot
 Crawl-delay: 10
 

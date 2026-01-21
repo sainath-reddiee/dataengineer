@@ -1,11 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { 
-  Database, 
-  Github, 
-  Twitter, 
-  Linkedin, 
+import {
+  Database,
+  Github,
+  Twitter,
+  Linkedin,
   Mail,
   Heart,
   ExternalLink
@@ -23,31 +23,33 @@ const Footer = () => {
   };
 
   const footerLinks = {
-  content: [
-    { name: 'Latest Articles', href: '/articles' },
-    { name: 'AWS Tutorials', href: '/category/aws' },
-    { name: 'Snowflake Guides', href: '/category/snowflake' },
-    { name: 'Azure Resources', href: '/category/azure' },
-    { name: 'SQL Tips', href: '/category/sql' }
-  ],
-  tools: [
-    { name: 'Airflow', href: '/category/airflow' },
-    { name: 'dbt', href: '/category/dbt' },
-    { name: 'Python', href: '/category/python' },
-    { name: 'GCP', href: '/category/gcp' },
-    // ✅ NEW
-    { name: 'Databricks', href: '/category/databricks' },
-    { name: 'Salesforce', href: '/category/salesforce' }
-  ],
-  company: [
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' },
-    { name: 'Newsletter', href: '/newsletter' },
-    { name: 'Privacy Policy', href: '/privacy-policy' },
-    { name: 'Terms of Service', href: '/terms-of-service' },
-    { name: 'Disclaimer', href: '/disclaimer' }
-  ]
-};
+    content: [
+      { name: 'Latest Articles', href: '/articles' },
+      { name: 'AWS Tutorials', href: '/category/aws' },
+      { name: 'Snowflake Guides', href: '/category/snowflake' },
+      { name: 'Azure Resources', href: '/category/azure' },
+      { name: 'SQL Tips', href: '/category/sql' },
+      { name: 'Glossary', href: '/glossary' },
+      { name: 'Comparisons', href: '/compare' }
+    ],
+    tools: [
+      { name: 'Airflow', href: '/category/airflow' },
+      { name: 'dbt', href: '/category/dbt' },
+      { name: 'Python', href: '/category/python' },
+      { name: 'GCP', href: '/category/gcp' },
+      // ✅ NEW
+      { name: 'Databricks', href: '/category/databricks' },
+      { name: 'Salesforce', href: '/category/salesforce' }
+    ],
+    company: [
+      { name: 'About', href: '/about' },
+      { name: 'Contact', href: '/contact' },
+      { name: 'Newsletter', href: '/newsletter' },
+      { name: 'Privacy Policy', href: '/privacy-policy' },
+      { name: 'Terms of Service', href: '/terms-of-service' },
+      { name: 'Disclaimer', href: '/disclaimer' }
+    ]
+  };
 
   const socialLinks = [
     { name: 'GitHub', icon: Github, href: 'https://github.com/sainath-reddiee' },
@@ -80,7 +82,7 @@ const Footer = () => {
               <span className="text-2xl font-bold gradient-text">DataEngineer Hub</span>
             </Link>
             <p className="text-gray-400 mb-6 leading-relaxed">
-              Your ultimate resource for mastering data engineering technologies. 
+              Your ultimate resource for mastering data engineering technologies.
               From AWS to dbt, we cover it all with practical insights and expert guidance.
             </p>
             <div className="flex space-x-4">
@@ -143,7 +145,7 @@ const Footer = () => {
         >
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-gray-400 text-sm flex items-center">
-              © 2025 DataEngineer Hub. Made with 
+              © 2025 DataEngineer Hub. Made with
               <Heart className="h-4 w-4 text-red-400 mx-1 animate-pulse" />
               for data engineers worldwide.
             </p>

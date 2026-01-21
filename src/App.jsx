@@ -25,6 +25,12 @@ const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 const TagsArchivePage = lazy(() => import('./pages/TagsArchivePage'));
 const Certification = lazy(() => import('./pages/Certification'));
 
+// PSEO Pages (Programmatic SEO)
+const GlossaryHubPage = lazy(() => import('./pages/GlossaryHubPage'));
+const GlossaryPage = lazy(() => import('./pages/GlossaryPage'));
+const ComparisonHubPage = lazy(() => import('./pages/ComparisonHubPage'));
+const ComparisonPage = lazy(() => import('./pages/ComparisonPage'));
+
 // Admin Pages (SEO Toolkit)
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
 const SEODashboard = lazy(() => import('./pages/admin/SEODashboard'));
@@ -148,6 +154,27 @@ function App() {
           <Route path="tag/:tagSlug" element={
             <Suspense fallback={<LoadingFallback text="Loading Tag..." />}>
               <TagPage />
+            </Suspense>
+          } />
+          {/* PSEO Routes */}
+          <Route path="glossary" element={
+            <Suspense fallback={<LoadingFallback text="Loading Glossary..." />}>
+              <GlossaryHubPage />
+            </Suspense>
+          } />
+          <Route path="glossary/:term" element={
+            <Suspense fallback={<LoadingFallback text="Loading Term..." />}>
+              <GlossaryPage />
+            </Suspense>
+          } />
+          <Route path="compare" element={
+            <Suspense fallback={<LoadingFallback text="Loading Comparisons..." />}>
+              <ComparisonHubPage />
+            </Suspense>
+          } />
+          <Route path="compare/:slug" element={
+            <Suspense fallback={<LoadingFallback text="Loading Comparison..." />}>
+              <ComparisonPage />
             </Suspense>
           } />
           <Route path="about" element={
