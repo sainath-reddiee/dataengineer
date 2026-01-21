@@ -52,6 +52,36 @@ on:
         required: false
         type: boolean
         default: false
+      # PSEO Auto-Generation Options
+      generate_pseo:
+        description: 'Generate PSEO content before build?'
+        required: false
+        type: boolean
+        default: false
+      pseo_type:
+        description: 'PSEO content type to generate'
+        required: false
+        type: choice
+        default: 'glossary'
+        options:
+          - 'glossary'
+          - 'comparison'
+      pseo_count:
+        description: 'Number of PSEO pages to generate (1-10)'
+        required: false
+        type: choice
+        default: '3'
+        options:
+          - '1'
+          - '2'
+          - '3'
+          - '5'
+          - '10'
+      pseo_category:
+        description: 'PSEO category filter (comma-separated, e.g., snowflake,etl)'
+        required: false
+        type: string
+        default: ''
   schedule:
     - cron: '0 21 * * *'
   repository_dispatch:
@@ -168,6 +198,48 @@ jobs:
       - name: 📦 Install Dependencies
         if: steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true' || steps.changes.outputs.skip_cache == 'true'
         run: npm ci --prefer-offline --no-audit
+
+      - name: 🤖 Generate PSEO Content (AI-Powered)
+        if: github.event.inputs.generate_pseo == 'true'
+        env:
+          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
+        run: |
+          echo "═══════════════════════════════════════════════════════"
+          echo "  🤖 PSEO Auto-Generation"
+          echo "═══════════════════════════════════════════════════════"
+          echo ""
+          echo "📋 Configuration:"
+          echo "  - Type: ${{ github.event.inputs.pseo_type }}"
+          echo "  - Count: ${{ github.event.inputs.pseo_count }}"
+          echo "  - Category: ${{ github.event.inputs.pseo_category || 'all' }}"
+          echo ""
+          
+          # Build the command (--ci flag for non-interactive mode)
+          PSEO_CMD="node scripts/pseo-generate.js --ci --type ${{ github.event.inputs.pseo_type }} --count ${{ github.event.inputs.pseo_count }}"
+          
+          # Add category filter if specified
+          if [ -n "${{ github.event.inputs.pseo_category }}" ]; then
+            PSEO_CMD="$PSEO_CMD --category ${{ github.event.inputs.pseo_category }}"
+          fi
+          
+          echo "🚀 Running: $PSEO_CMD"
+          echo ""
+          
+          # Run PSEO generation
+          $PSEO_CMD
+          
+          echo ""
+          echo "✅ PSEO content generation complete!"
+          
+          # Add to summary
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🤖 PSEO Content Generated" >> $GITHUB_STEP_SUMMARY
+          echo "- **Type:** ${{ github.event.inputs.pseo_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Count:** ${{ github.event.inputs.pseo_count }} pages" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ github.event.inputs.pseo_category }}" ]; then
+            echo "- **Category:** ${{ github.event.inputs.pseo_category }}" >> $GITHUB_STEP_SUMMARY
+          fi
+        continue-on-error: true
 
       - name: 🗺️ Generate & Validate Sitemap
         if: |

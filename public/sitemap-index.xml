@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Main sitemap: Articles, categories, tags, static pages -->
-  <!-- This is the file YOU update when publishing new posts -->
   <sitemap>
     <loc>https://dataengineerhub.blog/sitemap.xml</loc>
-    <lastmod>2026-01-22</lastmod>
+    <lastmod>2026-01-21</lastmod>
   </sitemap>
   
-  <!-- PSEO: Glossary Terms (63 terms) -->
+  <!-- PSEO: Glossary Terms -->
   <sitemap>
     <loc>https://dataengineerhub.blog/sitemap-glossary.xml</loc>
-    <lastmod>2026-01-22</lastmod>
+    <lastmod>2026-01-21</lastmod>
   </sitemap>
   
-  <!-- PSEO: Tool Comparisons (3 comparisons) -->
+  <!-- PSEO: Tool Comparisons -->
   <sitemap>
     <loc>https://dataengineerhub.blog/sitemap-comparisons.xml</loc>
-    <lastmod>2026-01-22</lastmod>
+    <lastmod>2026-01-21</lastmod>
   </sitemap>
 </sitemapindex>

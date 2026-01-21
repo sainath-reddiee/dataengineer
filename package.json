@@ -29,7 +29,9 @@
     "prebuild": "npm run indexnow:generate && npm run sitemap:generate && npm run llm-sitemap && npm run sitemap:validate",
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'",
     "test:seo": "npm run build && node scripts/testSEO.js",
-    "test:build": "npm run build && npm run build:verify"
+    "test:build": "npm run build && npm run build:verify",
+    "pseo:generate": "node scripts/pseo-generate.js",
+    "pseo:sitemaps": "node scripts/lib/sitemap-generator.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -61,6 +63,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.17",
     "baseline-browser-mapping": "^2.9.14",
+    "dotenv": "^17.2.3",
     "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
