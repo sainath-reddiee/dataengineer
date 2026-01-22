@@ -30,7 +30,6 @@
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'",
     "test:seo": "npm run build && node scripts/testSEO.js",
     "test:build": "npm run build && npm run build:verify",
-    "pseo:generate": "node scripts/pseo-generate.js",
     "pseo:sitemaps": "node scripts/lib/sitemap-generator.js"
   },
   "dependencies": {
