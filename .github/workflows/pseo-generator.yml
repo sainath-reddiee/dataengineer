@@ -1,0 +1,203 @@
+name: 🤖 PSEO Content Generator
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: '🎯 What would you like to do?'
+        required: true
+        type: choice
+        default: 'generate-glossary'
+        options:
+          - 'generate-glossary'
+          - 'generate-comparisons'
+          - 'regenerate-sitemaps'
+          - 'generate-and-deploy'
+      count:
+        description: '📊 Number of pages to generate'
+        required: true
+        type: choice
+        default: '3'
+        options:
+          - '1'
+          - '2'
+          - '3'
+          - '5'
+          - '10'
+      category:
+        description: '🏷️ Category filter (optional, e.g., snowflake,etl,data-warehousing)'
+        required: false
+        type: string
+        default: ''
+      auto_deploy:
+        description: '🚀 Auto-deploy after generation?'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
+
+jobs:
+  pseo-generate:
+    name: Generate PSEO Content
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🔑 Check API Key
+        run: |
+          if [ -z "$VITE_GEMINI_API_KEY" ]; then
+            echo "❌ VITE_GEMINI_API_KEY secret not found!"
+            echo "Please add it in: Settings → Secrets → Actions"
+            exit 1
+          fi
+          echo "✅ Gemini API key configured"
+
+      # =========================================
+      # GENERATE GLOSSARY TERMS
+      # =========================================
+      - name: 📚 Generate Glossary Terms
+        if: github.event.inputs.action == 'generate-glossary' || github.event.inputs.action == 'generate-and-deploy'
+        run: |
+          echo "════════════════════════════════════════════════════════════"
+          echo "  📚 Generating Glossary Terms"
+          echo "════════════════════════════════════════════════════════════"
+          echo ""
+          echo "📋 Configuration:"
+          echo "  → Count: ${{ github.event.inputs.count }}"
+          echo "  → Category: ${{ github.event.inputs.category || 'all categories' }}"
+          echo ""
+          
+          CMD="node scripts/pseo-generate.js --ci --type glossary --count ${{ github.event.inputs.count }}"
+          
+          if [ -n "${{ github.event.inputs.category }}" ]; then
+            CMD="$CMD --category ${{ github.event.inputs.category }}"
+          fi
+          
+          echo "🚀 Running: $CMD"
+          echo ""
+          $CMD
+          
+          echo ""
+          echo "### 📚 Glossary Generation" >> $GITHUB_STEP_SUMMARY
+          echo "- **Count:** ${{ github.event.inputs.count }} terms" >> $GITHUB_STEP_SUMMARY
+          echo "- **Category:** ${{ github.event.inputs.category || 'all' }}" >> $GITHUB_STEP_SUMMARY
+
+      # =========================================
+      # GENERATE COMPARISONS
+      # =========================================
+      - name: ⚔️ Generate Comparisons
+        if: github.event.inputs.action == 'generate-comparisons'
+        run: |
+          echo "════════════════════════════════════════════════════════════"
+          echo "  ⚔️ Generating Tool Comparisons"
+          echo "════════════════════════════════════════════════════════════"
+          echo ""
+          echo "📋 Configuration:"
+          echo "  → Count: ${{ github.event.inputs.count }}"
+          echo ""
+          
+          node scripts/pseo-generate.js --ci --type comparison --count ${{ github.event.inputs.count }}
+          
+          echo ""
+          echo "### ⚔️ Comparison Generation" >> $GITHUB_STEP_SUMMARY
+          echo "- **Count:** ${{ github.event.inputs.count }} comparisons" >> $GITHUB_STEP_SUMMARY
+
+      # =========================================
+      # REGENERATE SITEMAPS
+      # =========================================
+      - name: 🗺️ Regenerate Sitemaps
+        if: github.event.inputs.action == 'regenerate-sitemaps' || github.event.inputs.action != 'regenerate-sitemaps'
+        run: |
+          echo "════════════════════════════════════════════════════════════"
+          echo "  🗺️ Regenerating Sitemaps"
+          echo "════════════════════════════════════════════════════════════"
+          echo ""
+          
+          node scripts/lib/sitemap-generator.js
+          
+          echo ""
+          echo "### 🗺️ Sitemaps Updated" >> $GITHUB_STEP_SUMMARY
+
+      # =========================================
+      # COMMIT CHANGES
+      # =========================================
+      - name: 💾 Commit Generated Content
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Check if there are changes
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "ℹ️ No changes to commit"
+            exit 0
+          fi
+          
+          git add src/data/glossaryData.js src/data/comparisonData.js public/sitemap*.xml
+          
+          COMMIT_MSG="🤖 Auto-generated PSEO content
+
+          Action: ${{ github.event.inputs.action }}
+          Count: ${{ github.event.inputs.count }}
+          Category: ${{ github.event.inputs.category || 'all' }}
+          
+          Generated by GitHub Actions"
+          
+          git commit -m "$COMMIT_MSG" || echo "Nothing to commit"
+          git push || echo "Nothing to push"
+          
+          echo ""
+          echo "### 💾 Changes Committed" >> $GITHUB_STEP_SUMMARY
+          echo "Content has been committed to the repository." >> $GITHUB_STEP_SUMMARY
+
+      # =========================================
+      # TRIGGER DEPLOY (OPTIONAL)
+      # =========================================
+      - name: 🚀 Trigger Deploy
+        if: github.event.inputs.auto_deploy == 'true' || github.event.inputs.action == 'generate-and-deploy'
+        run: |
+          echo "════════════════════════════════════════════════════════════"
+          echo "  🚀 Triggering Deployment"
+          echo "════════════════════════════════════════════════════════════"
+          echo ""
+          echo "The deploy workflow will be triggered by the commit push."
+          echo ""
+          echo "### 🚀 Deployment Triggered" >> $GITHUB_STEP_SUMMARY
+          echo "The main deploy workflow will run automatically." >> $GITHUB_STEP_SUMMARY
+
+      # =========================================
+      # SUMMARY
+      # =========================================
+      - name: 📊 Job Summary
+        if: always()
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "## 📊 PSEO Generation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Setting | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Action** | \`${{ github.event.inputs.action }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Count** | ${{ github.event.inputs.count }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Category** | ${{ github.event.inputs.category || 'all' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Auto Deploy** | ${{ github.event.inputs.auto_deploy }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Quick Links" >> $GITHUB_STEP_SUMMARY
+          echo "- [📚 Glossary Hub](https://dataengineerhub.blog/glossary)" >> $GITHUB_STEP_SUMMARY
+          echo "- [⚔️ Comparisons Hub](https://dataengineerhub.blog/compare)" >> $GITHUB_STEP_SUMMARY
+          echo "- [🗺️ Sitemap Index](https://dataengineerhub.blog/sitemap-index.xml)" >> $GITHUB_STEP_SUMMARY
