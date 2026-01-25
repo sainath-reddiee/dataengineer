@@ -99,7 +99,7 @@ async function confirm(question) {
 // CONTENT GENERATION
 // =============================================================================
 
-async function generateGlossaryTerms(ai, count, category = null) {
+async function generateGlossaryTerms(ai, count) {
     const existingSlugs = getExistingGlossarySlugs();
     const existingTerms = existingSlugs.slice(0, 20);
 
@@ -277,7 +277,6 @@ async function main() {
 
     const typeArg = getArg('type');
     const countArg = parseInt(getArg('count')) || null;
-    const categoryArg = getArg('category');
 
     // Interactive mode if no args
     let contentType = typeArg;

@@ -165,6 +165,7 @@ async function fetchFromWP(endpoint, fields = '') {
   const RETRY_COUNT = 3;
   const TIMEOUT = 15000; // 15 seconds
 
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     const url = `${WORDPRESS_API_URL}${endpoint}?per_page=100&page=${page}${fields ? `&_fields=${fields}` : ''}`;
 

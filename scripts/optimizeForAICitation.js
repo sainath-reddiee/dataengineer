@@ -172,7 +172,7 @@ function analyzeArticle(post) {
     }
 
     // 4. Check for "Last Updated" date
-    const hasLastUpdated = /(?:last |recently )?updated:?\s*(?:on\s*)?(?:\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\w+\s+\d{1,2},?\s+\d{4}|\d{4}-\d{2}-\d{2})/i.test(content);
+    const hasLastUpdated = /(?:last |recently )?updated:?\s*(?:on\s*)?(?:\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|\w+\s+\d{1,2},?\s+\d{4}|\d{4}-\d{2}-\d{2})/i.test(content);
     if (!hasLastUpdated) {
         score -= 12;
         issues.push('Missing "Last Updated" date');
@@ -189,7 +189,6 @@ function analyzeArticle(post) {
     }
 
     // 5. Check for FAQ section or Q&A format
-    const hasQuestions = /<h[2-3][^>]*>[^<]*\?[^<]*<\/h[2-3]>/gi.test(content);
     const questionCount = (content.match(/<h[2-3][^>]*>[^<]*\?[^<]*<\/h[2-3]>/gi) || []).length;
 
     if (questionCount === 0) {
