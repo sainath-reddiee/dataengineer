@@ -1,0 +1,131 @@
+[
+  {
+    "id": "dbt",
+    "term": "dbt (Data Build Tool)",
+    "slug": "dbt",
+    "category": "etl-elt",
+    "shortDefinition": "An open-source transformation tool that enables data analysts and engineers to transform data in their warehouse using SQL and software engineering best practices.",
+    "fullDefinition": "dbt (Data Build Tool) represents a critical data integration pattern that every data engineer must understand and implement effectively.\n\n## What is dbt (Data Build Tool)?\n\nAn open-source transformation tool that enables data analysts and engineers to transform data in their warehouse using SQL and software engineering best practices.\n\n## The Evolution of Data Integration\n\nData integration has evolved significantly over the decades:\n\n### Traditional ETL\nIn the past, ETL (Extract, Transform, Load) was the standard:\n- Extract data from sources\n- Transform in a staging area\n- Load into the destination\n\n### Modern ELT\nCloud data warehouses enabled ELT (Extract, Load, Transform):\n- Extract data from sources\n- Load raw data into the warehouse\n- Transform using SQL in the warehouse\n\n## Core Components\n\n### Data Extraction\nThe first step involves connecting to and reading from data sources:\n\n- **Databases**: PostgreSQL, MySQL, SQL Server, Oracle\n- **APIs**: REST, GraphQL, webhooks\n- **Files**: CSV, JSON, Parquet, Avro\n- **SaaS Applications**: Salesforce, HubSpot, Stripe\n- **Streams**: Kafka, Kinesis, Pub/Sub\n\n### Data Transformation\nTransformations convert raw data into analytics-ready format:\n\n- **Cleansing**: Handle nulls, duplicates, invalid values\n- **Standardization**: Consistent formats, naming, units\n- **Enrichment**: Add calculated fields, lookups\n- **Aggregation**: Summarize at different grains\n- **Modeling**: Create facts and dimensions\n\n### Data Loading\nLoading strategies depend on requirements:\n\n- **Full Load**: Complete refresh each run\n- **Incremental Load**: Only new/changed records\n- **CDC (Change Data Capture)**: Real-time changes\n- **Micro-batch**: Small, frequent batches\n\n## Best Practices\n\n### Reliability\n- Implement idempotent operations\n- Add comprehensive error handling\n- Create data quality checkpoints\n- Build alerting for failures\n\n### Performance\n- Parallelize where possible\n- Use bulk loading operations\n- Optimize transformation queries\n- Cache frequently accessed data\n\n### Maintainability\n- Version control your pipelines\n- Document dependencies\n- Use modular, reusable components\n- Test transformations thoroughly\n\n## Tools and Technologies\n\nPopular tools for implementing these patterns include:\n- **Apache Airflow**: Workflow orchestration\n- **dbt**: SQL-based transformations\n- **Fivetran/Airbyte**: Managed data connectors\n- **Spark/Databricks**: Large-scale processing\n- **Dagster/Prefect**: Modern orchestration\n\n## Advanced Integration Patterns\n\n### Incremental Processing Strategies\nProcess only changed data for maximum efficiency:\n- Track high watermarks using timestamps or sequential IDs\n- Leverage CDC (Change Data Capture) for real-time incremental loads\n- Implement merge operations to update existing tables\n- Handle late-arriving data with grace period windows\n\n### Comprehensive Data Validation\nEnsure data quality throughout the pipeline:\n- Schema validation on ingestion to catch structural issues early\n- Business rule checks during transformation phases\n- Referential integrity verification across related datasets\n- Anomaly detection systems for identifying data drift\n\n### Resilient Error Recovery\nBuild fault-tolerant pipelines that recover gracefully:\n- Dead letter queues for capturing and analyzing failed records\n- Checkpoint mechanisms enabling restart from last known good state\n- Automatic retry logic with exponential backoff\n- Escalation workflows for manual intervention when needed\n\n## Orchestration and Monitoring\n\n### Dependency Management Patterns\nHandle complex inter-pipeline dependencies:\n- DAG-based scheduling using tools like Airflow or Dagster\n- Event-driven triggers responding to upstream completions\n- Sensor-based polling for external conditions\n- Cross-pipeline coordination for enterprise workflows\n\n### Observability and Alerting\nMaintain visibility into pipeline health:\n- Track success and failure rates with detailed metrics\n- Monitor data freshness against defined SLAs\n- Configure intelligent alerting for anomalies and delays\n- Build operational dashboards for team visibility\n",
+    "keyPoints": [
+      "SQL-first transformation tool for data warehouses",
+      "Follows ELT pattern (transform after loading)",
+      "Built-in testing framework for data quality",
+      "Auto-generated documentation from code",
+      "Git-based workflow for version control"
+    ],
+    "faqs": [
+      {
+        "question": "What is dbt used for?",
+        "answer": "dbt is used for transforming raw data in a data warehouse into analytics-ready datasets. It allows data teams to write modular SQL, test data quality, and generate documentation—all using software engineering best practices."
+      },
+      {
+        "question": "Is dbt ETL or ELT?",
+        "answer": "dbt is an ELT tool. It focuses only on the T (Transform) step, assuming data has already been Extracted and Loaded into your warehouse by other tools like Fivetran or Airbyte."
+      },
+      {
+        "question": "Is dbt free to use?",
+        "answer": "dbt Core is 100% free and open-source. dbt Cloud offers a free tier for individuals, with paid plans for teams that need scheduling, IDE, and collaboration features."
+      },
+      {
+        "question": "What databases does dbt support?",
+        "answer": "dbt supports all major cloud data warehouses including Snowflake, BigQuery, Redshift, Databricks, and many others through community-maintained adapters."
+      }
+    ],
+    "relatedTerms": [
+      "snowflake",
+      "data-warehouse",
+      "etl",
+      "data-modeling",
+      "sql"
+    ],
+    "relatedTools": [
+      "Snowflake",
+      "BigQuery",
+      "Redshift",
+      "Fivetran",
+      "Airbyte"
+    ],
+    "externalLinks": [
+      {
+        "title": "dbt Documentation",
+        "url": "https://docs.getdbt.com/"
+      },
+      {
+        "title": "dbt Learn (Free Courses)",
+        "url": "https://courses.getdbt.com/"
+      }
+    ],
+    "keywords": [
+      "dbt",
+      "data build tool",
+      "dbt tutorial",
+      "dbt vs etl",
+      "dbt testing"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "etl",
+    "term": "ETL (Extract, Transform, Load)",
+    "slug": "etl",
+    "category": "etl-elt",
+    "shortDefinition": "A data integration process that extracts data from source systems, transforms it into a suitable format, and loads it into a target data warehouse or database.",
+    "fullDefinition": "ETL (Extract, Transform, Load) represents a critical data integration pattern that every data engineer must understand and implement effectively.\n\n## What is ETL (Extract, Transform, Load)?\n\nA data integration process that extracts data from source systems, transforms it into a suitable format, and loads it into a target data warehouse or database.\n\n## The Evolution of Data Integration\n\nData integration has evolved significantly over the decades:\n\n### Traditional ETL\nIn the past, ETL (Extract, Transform, Load) was the standard:\n- Extract data from sources\n- Transform in a staging area\n- Load into the destination\n\n### Modern ELT\nCloud data warehouses enabled ELT (Extract, Load, Transform):\n- Extract data from sources\n- Load raw data into the warehouse\n- Transform using SQL in the warehouse\n\n## Core Components\n\n### Data Extraction\nThe first step involves connecting to and reading from data sources:\n\n- **Databases**: PostgreSQL, MySQL, SQL Server, Oracle\n- **APIs**: REST, GraphQL, webhooks\n- **Files**: CSV, JSON, Parquet, Avro\n- **SaaS Applications**: Salesforce, HubSpot, Stripe\n- **Streams**: Kafka, Kinesis, Pub/Sub\n\n### Data Transformation\nTransformations convert raw data into analytics-ready format:\n\n- **Cleansing**: Handle nulls, duplicates, invalid values\n- **Standardization**: Consistent formats, naming, units\n- **Enrichment**: Add calculated fields, lookups\n- **Aggregation**: Summarize at different grains\n- **Modeling**: Create facts and dimensions\n\n### Data Loading\nLoading strategies depend on requirements:\n\n- **Full Load**: Complete refresh each run\n- **Incremental Load**: Only new/changed records\n- **CDC (Change Data Capture)**: Real-time changes\n- **Micro-batch**: Small, frequent batches\n\n## Best Practices\n\n### Reliability\n- Implement idempotent operations\n- Add comprehensive error handling\n- Create data quality checkpoints\n- Build alerting for failures\n\n### Performance\n- Parallelize where possible\n- Use bulk loading operations\n- Optimize transformation queries\n- Cache frequently accessed data\n\n### Maintainability\n- Version control your pipelines\n- Document dependencies\n- Use modular, reusable components\n- Test transformations thoroughly\n\n## Tools and Technologies\n\nPopular tools for implementing these patterns include:\n- **Apache Airflow**: Workflow orchestration\n- **dbt**: SQL-based transformations\n- **Fivetran/Airbyte**: Managed data connectors\n- **Spark/Databricks**: Large-scale processing\n- **Dagster/Prefect**: Modern orchestration\n\n## Advanced Integration Patterns\n\n### Incremental Processing Strategies\nProcess only changed data for maximum efficiency:\n- Track high watermarks using timestamps or sequential IDs\n- Leverage CDC (Change Data Capture) for real-time incremental loads\n- Implement merge operations to update existing tables\n- Handle late-arriving data with grace period windows\n\n### Comprehensive Data Validation\nEnsure data quality throughout the pipeline:\n- Schema validation on ingestion to catch structural issues early\n- Business rule checks during transformation phases\n- Referential integrity verification across related datasets\n- Anomaly detection systems for identifying data drift\n\n### Resilient Error Recovery\nBuild fault-tolerant pipelines that recover gracefully:\n- Dead letter queues for capturing and analyzing failed records\n- Checkpoint mechanisms enabling restart from last known good state\n- Automatic retry logic with exponential backoff\n- Escalation workflows for manual intervention when needed\n\n## Orchestration and Monitoring\n\n### Dependency Management Patterns\nHandle complex inter-pipeline dependencies:\n- DAG-based scheduling using tools like Airflow or Dagster\n- Event-driven triggers responding to upstream completions\n- Sensor-based polling for external conditions\n- Cross-pipeline coordination for enterprise workflows\n\n### Observability and Alerting\nMaintain visibility into pipeline health:\n- Track success and failure rates with detailed metrics\n- Monitor data freshness against defined SLAs\n- Configure intelligent alerting for anomalies and delays\n- Build operational dashboards for team visibility\n",
+    "keyPoints": [
+      "Three-step process: Extract, Transform, Load",
+      "Foundational process for data warehousing",
+      "Modern alternative is ELT (transform in warehouse)",
+      "Key tools: Fivetran, Airbyte, dbt",
+      "Enables single source of truth for analytics"
+    ],
+    "faqs": [
+      {
+        "question": "What is ETL in simple terms?",
+        "answer": "ETL is a process that pulls data from various sources (Extract), cleans and transforms it into a usable format (Transform), and stores it in a data warehouse for analysis (Load)."
+      },
+      {
+        "question": "What is the difference between ETL and ELT?",
+        "answer": "In ETL, data is transformed before loading into the target. In ELT, raw data is loaded first, then transformed inside the data warehouse. ELT is preferred for cloud warehouses with powerful compute."
+      },
+      {
+        "question": "What tools are used for ETL?",
+        "answer": "Popular ETL tools include Fivetran, Airbyte, Stitch, Talend, Informatica, and Apache NiFi. For the transformation layer, dbt is widely used in modern data stacks."
+      },
+      {
+        "question": "Why is ETL important?",
+        "answer": "ETL ensures that data from different sources is cleaned, standardized, and integrated into a single repository. This enables accurate reporting, analytics, and data-driven decision making."
+      }
+    ],
+    "relatedTerms": [
+      "data-warehouse",
+      "dbt",
+      "data-pipeline",
+      "data-integration"
+    ],
+    "relatedTools": [
+      "Fivetran",
+      "Airbyte",
+      "dbt",
+      "Stitch",
+      "Talend"
+    ],
+    "externalLinks": [
+      {
+        "title": "ETL Explained - IBM",
+        "url": "https://www.ibm.com/topics/etl"
+      },
+      {
+        "title": "ETL vs ELT - Fivetran",
+        "url": "https://www.fivetran.com/blog/etl-vs-elt"
+      }
+    ],
+    "keywords": [
+      "etl",
+      "extract transform load",
+      "etl vs elt",
+      "etl tools",
+      "etl process"
+    ],
+    "lastUpdated": "2026-01-27"
+  }
+]

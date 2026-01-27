@@ -1,0 +1,44 @@
+[
+  {
+    "id": "airflow-vs-dagster",
+    "slug": "airflow-vs-dagster",
+    "title": "Apache Airflow vs Dagster",
+    "subtitle": "Complete orchestration platform comparison for 2025",
+    "tool1": {
+      "name": "Apache Airflow",
+      "logo": "🌪️"
+    },
+    "tool2": {
+      "name": "Dagster",
+      "logo": "🔷"
+    },
+    "verdict": "Airflow for mature production pipelines, Dagster for modern data assets",
+    "comparisonPoints": [
+      {
+        "aspect": "Architecture",
+        "tool1": "DAG-based task scheduling",
+        "tool2": "Asset-based software-defined pipelines",
+        "winner": "dagster"
+      },
+      {
+        "aspect": "Local Development",
+        "tool1": "Challenging setup",
+        "tool2": "Excellent local testing",
+        "winner": "dagster"
+      },
+      {
+        "aspect": "Community",
+        "tool1": "Massive ecosystem",
+        "tool2": "Growing rapidly",
+        "winner": "airflow"
+      },
+      {
+        "aspect": "Learning Curve",
+        "tool1": "Steeper",
+        "tool2": "Developer-friendly",
+        "winner": "dagster"
+      }
+    ],
+    "lastUpdated": "2026-01-27"
+  }
+]

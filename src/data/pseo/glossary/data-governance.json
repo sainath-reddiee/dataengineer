@@ -1,0 +1,227 @@
+[
+  {
+    "id": "data-governance",
+    "term": "Data Governance",
+    "slug": "data-governance",
+    "category": "data-governance",
+    "shortDefinition": "A framework of policies, processes, and standards for managing data assets across an organization, ensuring data is secure, compliant, and properly used.",
+    "fullDefinition": "Data Governance is essential for ensuring data quality, security, and compliance across the organization's data ecosystem.\n\n## What is Data Governance?\n\nA framework of policies, processes, and standards for managing data assets across an organization, ensuring data is secure, compliant, and properly used.\n\n## The Importance of Data Governance\n\nIn today's data-driven organizations, proper governance is critical:\n\n### Business Value\n- Trusted data leads to better decisions\n- Reduced risk of compliance violations\n- Improved operational efficiency\n- Enhanced data democratization\n\n### Technical Benefits\n- Clear data ownership and accountability\n- Standardized data formats and definitions\n- Automated policy enforcement\n- Comprehensive audit capabilities\n\n## Core Pillars\n\n### Data Quality\nEnsuring data is accurate, complete, and timely:\n\n- **Accuracy**: Data reflects reality correctly\n- **Completeness**: All required fields are populated\n- **Consistency**: Values align across systems\n- **Timeliness**: Data is current and available when needed\n- **Validity**: Data conforms to business rules\n\n### Data Security\nProtecting sensitive information:\n\n- **Access Control**: Who can see and modify data\n- **Encryption**: Protect data at rest and in transit\n- **Masking**: Hide sensitive values in non-production\n- **Auditing**: Track all data access and changes\n\n### Data Cataloging\nMaking data discoverable:\n\n- **Metadata Management**: Technical and business metadata\n- **Data Dictionary**: Definitions and documentation\n- **Lineage Tracking**: Understanding data flow\n- **Search and Discovery**: Finding relevant datasets\n\n## Implementation Framework\n\n### People\n- Establish data stewards for each domain\n- Create a data governance council\n- Define roles and responsibilities\n- Provide training and education\n\n### Process\n- Define data policies and standards\n- Create approval workflows\n- Implement review cycles\n- Establish escalation procedures\n\n### Technology\n- Deploy data cataloging tools\n- Implement automated quality checks\n- Set up monitoring and alerting\n- Enable self-service access\n\n## Best Practices\n\n### Start Small\nBegin with high-impact data domains and expand gradually.\n\n### Automate\nUse tools to enforce policies automatically rather than relying on manual processes.\n\n### Measure\nTrack metrics like data quality scores, policy violations, and time to access.\n\n### Iterate\nContinuously improve based on feedback and changing requirements.\n\n## Enterprise Governance Capabilities\n\n### Data Classification Framework\nSystematically categorize data by sensitivity level:\n- Define tiers: public, internal, confidential, restricted\n- Implement automated classification using ML models\n- Apply policy-based handling rules for each classification\n- Map classifications to regulatory compliance requirements\n\n### Privacy and Compliance Management\nHandle personal and sensitive data correctly:\n- Ensure GDPR and CCPA compliance with automated controls\n- Implement right to deletion workflows\n- Manage consent across data subjects effectively\n- Streamline data subject access request fulfillment\n\n### Data Lifecycle and Retention\nManage the complete data lifecycle:\n- Define retention policies by data type and regulation\n- Automate archival and secure deletion processes\n- Implement legal hold capabilities for litigation\n- Optimize costs through intelligent storage tiering\n\n## Modern Governance Platforms\n\nLeading data governance tools in the market:\n- **Collibra**: Enterprise data intelligence and governance\n- **Alation**: Data catalog with governance capabilities\n- **Atlan**: Active metadata management platform\n- **Microsoft Purview**: Unified governance for Azure\n- **DataHub**: Open-source metadata platform by LinkedIn\n\nThese platforms provide centralized governance with automation, collaboration features, and built-in compliance capabilities for modern enterprises.\n",
+    "keyPoints": [
+      "Framework for managing data across the organization",
+      "Defines ownership, policies, and standards",
+      "Essential for compliance (GDPR, HIPAA, SOX)",
+      "Includes data quality, security, and privacy",
+      "Enabled by data catalogs and governance platforms"
+    ],
+    "faqs": [
+      {
+        "question": "What is data governance in simple terms?",
+        "answer": "Data governance is a set of rules and processes that define who can access what data, how data should be managed, and who is responsible for data quality and security. Think of it as the \"government\" for your data."
+      },
+      {
+        "question": "Why is data governance important?",
+        "answer": "Data governance ensures data is accurate, secure, and compliant with regulations. Without it, organizations face risks like data breaches, compliance fines, poor decisions from bad data, and inefficient operations."
+      },
+      {
+        "question": "What is the difference between data governance and data management?",
+        "answer": "Data governance defines the \"what\" and \"why\" (policies, standards, ownership). Data management is the \"how\" (actual implementation of storage, processing, and delivery of data). Governance is strategic; management is operational."
+      },
+      {
+        "question": "What is a data steward?",
+        "answer": "A data steward is responsible for the day-to-day management and quality of specific data domains. They ensure data meets quality standards, maintain documentation, and act as a point of contact for data-related questions."
+      }
+    ],
+    "relatedTerms": [
+      "data-quality",
+      "data-catalog",
+      "data-lineage",
+      "metadata"
+    ],
+    "relatedTools": [
+      "Atlan",
+      "Alation",
+      "Collibra",
+      "Databricks Unity Catalog",
+      "Monte Carlo"
+    ],
+    "externalLinks": [
+      {
+        "title": "Data Governance - Gartner",
+        "url": "https://www.gartner.com/en/information-technology/glossary/data-governance"
+      },
+      {
+        "title": "Data Governance Framework - DAMA",
+        "url": "https://www.dama.org/cpages/body-of-knowledge"
+      }
+    ],
+    "keywords": [
+      "data governance",
+      "data governance framework",
+      "data steward",
+      "data governance tools",
+      "enterprise data governance"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "data-lineage",
+    "term": "Data Lineage",
+    "slug": "data-lineage",
+    "category": "data-governance",
+    "shortDefinition": "The documentation and visualization of data as it flows from source to destination, showing transformations, dependencies, and ownership at each step.",
+    "fullDefinition": "Data Lineage is essential for ensuring data quality, security, and compliance across the organization's data ecosystem.\n\n## What is Data Lineage?\n\nThe documentation and visualization of data as it flows from source to destination, showing transformations, dependencies, and ownership at each step.\n\n## The Importance of Data Lineage\n\nIn today's data-driven organizations, proper governance is critical:\n\n### Business Value\n- Trusted data leads to better decisions\n- Reduced risk of compliance violations\n- Improved operational efficiency\n- Enhanced data democratization\n\n### Technical Benefits\n- Clear data ownership and accountability\n- Standardized data formats and definitions\n- Automated policy enforcement\n- Comprehensive audit capabilities\n\n## Core Pillars\n\n### Data Quality\nEnsuring data is accurate, complete, and timely:\n\n- **Accuracy**: Data reflects reality correctly\n- **Completeness**: All required fields are populated\n- **Consistency**: Values align across systems\n- **Timeliness**: Data is current and available when needed\n- **Validity**: Data conforms to business rules\n\n### Data Security\nProtecting sensitive information:\n\n- **Access Control**: Who can see and modify data\n- **Encryption**: Protect data at rest and in transit\n- **Masking**: Hide sensitive values in non-production\n- **Auditing**: Track all data access and changes\n\n### Data Cataloging\nMaking data discoverable:\n\n- **Metadata Management**: Technical and business metadata\n- **Data Dictionary**: Definitions and documentation\n- **Lineage Tracking**: Understanding data flow\n- **Search and Discovery**: Finding relevant datasets\n\n## Implementation Framework\n\n### People\n- Establish data stewards for each domain\n- Create a data governance council\n- Define roles and responsibilities\n- Provide training and education\n\n### Process\n- Define data policies and standards\n- Create approval workflows\n- Implement review cycles\n- Establish escalation procedures\n\n### Technology\n- Deploy data cataloging tools\n- Implement automated quality checks\n- Set up monitoring and alerting\n- Enable self-service access\n\n## Best Practices\n\n### Start Small\nBegin with high-impact data domains and expand gradually.\n\n### Automate\nUse tools to enforce policies automatically rather than relying on manual processes.\n\n### Measure\nTrack metrics like data quality scores, policy violations, and time to access.\n\n### Iterate\nContinuously improve based on feedback and changing requirements.\n\n## Enterprise Governance Capabilities\n\n### Data Classification Framework\nSystematically categorize data by sensitivity level:\n- Define tiers: public, internal, confidential, restricted\n- Implement automated classification using ML models\n- Apply policy-based handling rules for each classification\n- Map classifications to regulatory compliance requirements\n\n### Privacy and Compliance Management\nHandle personal and sensitive data correctly:\n- Ensure GDPR and CCPA compliance with automated controls\n- Implement right to deletion workflows\n- Manage consent across data subjects effectively\n- Streamline data subject access request fulfillment\n\n### Data Lifecycle and Retention\nManage the complete data lifecycle:\n- Define retention policies by data type and regulation\n- Automate archival and secure deletion processes\n- Implement legal hold capabilities for litigation\n- Optimize costs through intelligent storage tiering\n\n## Modern Governance Platforms\n\nLeading data governance tools in the market:\n- **Collibra**: Enterprise data intelligence and governance\n- **Alation**: Data catalog with governance capabilities\n- **Atlan**: Active metadata management platform\n- **Microsoft Purview**: Unified governance for Azure\n- **DataHub**: Open-source metadata platform by LinkedIn\n\nThese platforms provide centralized governance with automation, collaboration features, and built-in compliance capabilities for modern enterprises.\n",
+    "keyPoints": [
+      "Documents data flow from source to destination",
+      "Shows transformations and dependencies",
+      "Essential for impact analysis and debugging",
+      "Required for compliance and audits",
+      "Captured via SQL parsing, APIs, or manual documentation"
+    ],
+    "faqs": [
+      {
+        "question": "What is data lineage in simple terms?",
+        "answer": "Data lineage is a map showing where your data comes from, how it changes as it moves through systems, and where it ends up. It answers \"where did this number in my dashboard come from?\""
+      },
+      {
+        "question": "Why is data lineage important?",
+        "answer": "Data lineage helps you understand data origin for trust, trace issues to their source for debugging, assess impact of changes, and demonstrate compliance for audits. Without lineage, you are flying blind."
+      },
+      {
+        "question": "How do you implement data lineage?",
+        "answer": "Data lineage can be implemented through SQL parsing tools, data catalog platforms like Atlan or Alation, open standards like OpenLineage, or tools like dbt that track lineage automatically for transformations."
+      },
+      {
+        "question": "What is the difference between data lineage and data provenance?",
+        "answer": "Data lineage shows the flow and transformation of data. Data provenance focuses on the origin and history of a specific data point, including who created it and when. Provenance is a subset of lineage."
+      }
+    ],
+    "relatedTerms": [
+      "data-governance",
+      "data-catalog",
+      "metadata",
+      "dbt"
+    ],
+    "relatedTools": [
+      "Atlan",
+      "Alation",
+      "OpenLineage",
+      "dbt",
+      "DataHub"
+    ],
+    "externalLinks": [
+      {
+        "title": "OpenLineage",
+        "url": "https://openlineage.io/"
+      },
+      {
+        "title": "Data Lineage - Atlan",
+        "url": "https://atlan.com/data-lineage/"
+      }
+    ],
+    "keywords": [
+      "data lineage",
+      "data lineage tools",
+      "data lineage diagram",
+      "data provenance",
+      "data flow"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "data-catalog",
+    "term": "Data Catalog",
+    "slug": "data-catalog",
+    "category": "data-governance",
+    "shortDefinition": "A centralized inventory of data assets in an organization, providing metadata, documentation, search capabilities, and lineage to enable data discovery and governance.",
+    "fullDefinition": "Data Catalog is essential for ensuring data quality, security, and compliance across the organization's data ecosystem.\n\n## What is Data Catalog?\n\nA centralized inventory of data assets in an organization, providing metadata, documentation, search capabilities, and lineage to enable data discovery and governance.\n\n## The Importance of Data Catalog\n\nIn today's data-driven organizations, proper governance is critical:\n\n### Business Value\n- Trusted data leads to better decisions\n- Reduced risk of compliance violations\n- Improved operational efficiency\n- Enhanced data democratization\n\n### Technical Benefits\n- Clear data ownership and accountability\n- Standardized data formats and definitions\n- Automated policy enforcement\n- Comprehensive audit capabilities\n\n## Core Pillars\n\n### Data Quality\nEnsuring data is accurate, complete, and timely:\n\n- **Accuracy**: Data reflects reality correctly\n- **Completeness**: All required fields are populated\n- **Consistency**: Values align across systems\n- **Timeliness**: Data is current and available when needed\n- **Validity**: Data conforms to business rules\n\n### Data Security\nProtecting sensitive information:\n\n- **Access Control**: Who can see and modify data\n- **Encryption**: Protect data at rest and in transit\n- **Masking**: Hide sensitive values in non-production\n- **Auditing**: Track all data access and changes\n\n### Data Cataloging\nMaking data discoverable:\n\n- **Metadata Management**: Technical and business metadata\n- **Data Dictionary**: Definitions and documentation\n- **Lineage Tracking**: Understanding data flow\n- **Search and Discovery**: Finding relevant datasets\n\n## Implementation Framework\n\n### People\n- Establish data stewards for each domain\n- Create a data governance council\n- Define roles and responsibilities\n- Provide training and education\n\n### Process\n- Define data policies and standards\n- Create approval workflows\n- Implement review cycles\n- Establish escalation procedures\n\n### Technology\n- Deploy data cataloging tools\n- Implement automated quality checks\n- Set up monitoring and alerting\n- Enable self-service access\n\n## Best Practices\n\n### Start Small\nBegin with high-impact data domains and expand gradually.\n\n### Automate\nUse tools to enforce policies automatically rather than relying on manual processes.\n\n### Measure\nTrack metrics like data quality scores, policy violations, and time to access.\n\n### Iterate\nContinuously improve based on feedback and changing requirements.\n\n## Enterprise Governance Capabilities\n\n### Data Classification Framework\nSystematically categorize data by sensitivity level:\n- Define tiers: public, internal, confidential, restricted\n- Implement automated classification using ML models\n- Apply policy-based handling rules for each classification\n- Map classifications to regulatory compliance requirements\n\n### Privacy and Compliance Management\nHandle personal and sensitive data correctly:\n- Ensure GDPR and CCPA compliance with automated controls\n- Implement right to deletion workflows\n- Manage consent across data subjects effectively\n- Streamline data subject access request fulfillment\n\n### Data Lifecycle and Retention\nManage the complete data lifecycle:\n- Define retention policies by data type and regulation\n- Automate archival and secure deletion processes\n- Implement legal hold capabilities for litigation\n- Optimize costs through intelligent storage tiering\n\n## Modern Governance Platforms\n\nLeading data governance tools in the market:\n- **Collibra**: Enterprise data intelligence and governance\n- **Alation**: Data catalog with governance capabilities\n- **Atlan**: Active metadata management platform\n- **Microsoft Purview**: Unified governance for Azure\n- **DataHub**: Open-source metadata platform by LinkedIn\n\nThese platforms provide centralized governance with automation, collaboration features, and built-in compliance capabilities for modern enterprises.\n",
+    "keyPoints": [
+      "Centralized inventory of data assets",
+      "Enables data discovery and self-service",
+      "Stores technical, business, and operational metadata",
+      "Integrates lineage and governance features",
+      "Key tools: Atlan, Alation, DataHub, Unity Catalog"
+    ],
+    "faqs": [
+      {
+        "question": "What is a data catalog?",
+        "answer": "A data catalog is a centralized inventory of an organization's data assets. It provides search, metadata, documentation, and lineage to help users find, understand, and trust data without asking engineers."
+      },
+      {
+        "question": "Why do organizations need a data catalog?",
+        "answer": "Data catalogs enable self-service data discovery, reduce time finding data, improve governance through documented ownership, and build trust by showing data quality and lineage."
+      },
+      {
+        "question": "What is the difference between a data catalog and a data dictionary?",
+        "answer": "A data dictionary focuses on technical definitions (column names, types). A data catalog is broader, including business context, ownership, lineage, quality metrics, and social features like ratings and comments."
+      },
+      {
+        "question": "What are the best data catalog tools?",
+        "answer": "Popular data catalog tools include Atlan (modern, collaborative), Alation (enterprise), Collibra (governance), DataHub (open-source), and Databricks Unity Catalog (for Databricks users)."
+      }
+    ],
+    "relatedTerms": [
+      "data-governance",
+      "data-lineage",
+      "metadata",
+      "data-discovery"
+    ],
+    "relatedTools": [
+      "Atlan",
+      "Alation",
+      "DataHub",
+      "Collibra",
+      "Unity Catalog"
+    ],
+    "externalLinks": [
+      {
+        "title": "What is a Data Catalog? - Atlan",
+        "url": "https://atlan.com/what-is-a-data-catalog/"
+      },
+      {
+        "title": "DataHub Open Source",
+        "url": "https://datahubproject.io/"
+      }
+    ],
+    "keywords": [
+      "data catalog",
+      "data catalog tools",
+      "data discovery",
+      "metadata management",
+      "enterprise data catalog"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "data-mesh",
+    "term": "Data Mesh",
+    "slug": "data-mesh",
+    "category": "data-governance",
+    "shortDefinition": "A decentralized sociotechnical approach to sharing, accessing, and managing analytical data in complex and large-scale environments.",
+    "fullDefinition": "Data Mesh is essential for ensuring data quality, security, and compliance across the organization's data ecosystem.\n\n## What is Data Mesh?\n\nA decentralized sociotechnical approach to sharing, accessing, and managing analytical data in complex and large-scale environments.\n\n## The Importance of Data Mesh\n\nIn today's data-driven organizations, proper governance is critical:\n\n### Business Value\n- Trusted data leads to better decisions\n- Reduced risk of compliance violations\n- Improved operational efficiency\n- Enhanced data democratization\n\n### Technical Benefits\n- Clear data ownership and accountability\n- Standardized data formats and definitions\n- Automated policy enforcement\n- Comprehensive audit capabilities\n\n## Core Pillars\n\n### Data Quality\nEnsuring data is accurate, complete, and timely:\n\n- **Accuracy**: Data reflects reality correctly\n- **Completeness**: All required fields are populated\n- **Consistency**: Values align across systems\n- **Timeliness**: Data is current and available when needed\n- **Validity**: Data conforms to business rules\n\n### Data Security\nProtecting sensitive information:\n\n- **Access Control**: Who can see and modify data\n- **Encryption**: Protect data at rest and in transit\n- **Masking**: Hide sensitive values in non-production\n- **Auditing**: Track all data access and changes\n\n### Data Cataloging\nMaking data discoverable:\n\n- **Metadata Management**: Technical and business metadata\n- **Data Dictionary**: Definitions and documentation\n- **Lineage Tracking**: Understanding data flow\n- **Search and Discovery**: Finding relevant datasets\n\n## Implementation Framework\n\n### People\n- Establish data stewards for each domain\n- Create a data governance council\n- Define roles and responsibilities\n- Provide training and education\n\n### Process\n- Define data policies and standards\n- Create approval workflows\n- Implement review cycles\n- Establish escalation procedures\n\n### Technology\n- Deploy data cataloging tools\n- Implement automated quality checks\n- Set up monitoring and alerting\n- Enable self-service access\n\n## Best Practices\n\n### Start Small\nBegin with high-impact data domains and expand gradually.\n\n### Automate\nUse tools to enforce policies automatically rather than relying on manual processes.\n\n### Measure\nTrack metrics like data quality scores, policy violations, and time to access.\n\n### Iterate\nContinuously improve based on feedback and changing requirements.\n\n## Enterprise Governance Capabilities\n\n### Data Classification Framework\nSystematically categorize data by sensitivity level:\n- Define tiers: public, internal, confidential, restricted\n- Implement automated classification using ML models\n- Apply policy-based handling rules for each classification\n- Map classifications to regulatory compliance requirements\n\n### Privacy and Compliance Management\nHandle personal and sensitive data correctly:\n- Ensure GDPR and CCPA compliance with automated controls\n- Implement right to deletion workflows\n- Manage consent across data subjects effectively\n- Streamline data subject access request fulfillment\n\n### Data Lifecycle and Retention\nManage the complete data lifecycle:\n- Define retention policies by data type and regulation\n- Automate archival and secure deletion processes\n- Implement legal hold capabilities for litigation\n- Optimize costs through intelligent storage tiering\n\n## Modern Governance Platforms\n\nLeading data governance tools in the market:\n- **Collibra**: Enterprise data intelligence and governance\n- **Alation**: Data catalog with governance capabilities\n- **Atlan**: Active metadata management platform\n- **Microsoft Purview**: Unified governance for Azure\n- **DataHub**: Open-source metadata platform by LinkedIn\n\nThese platforms provide centralized governance with automation, collaboration features, and built-in compliance capabilities for modern enterprises.\n",
+    "keyPoints": [
+      "Decentralization",
+      "Domain Ownership",
+      "Data Product"
+    ],
+    "relatedTerms": [
+      "data-governance",
+      "microservices"
+    ],
+    "relatedTools": [
+      "Datahub",
+      "Amundsen"
+    ],
+    "externalLinks": [
+      {
+        "title": "Data Mesh Principles",
+        "url": "https://martinfowler.com/articles/data-mesh-principles.html"
+      }
+    ],
+    "keywords": [
+      "data mesh",
+      "decentralization",
+      "data architecture"
+    ],
+    "lastUpdated": "2026-01-27"
+  }
+]

@@ -8,36 +8,37 @@ const SITE_URL = 'https://dataengineerhub.blog';
 const SITEMAP_URL = `${SITE_URL}/sitemap.xml`;
 
 // Only search engines that still support ping
-const SEARCH_ENGINES = [
-  {
-    name: 'IndexNow (Bing, Yandex, etc.)',
-    url: null, // Requires API key
-    manual: 'https://www.bing.com/indexnow'
-  }
-];
+// Only search engines that still support ping
+// const SEARCH_ENGINES = [
+//   {
+//     name: 'IndexNow (Bing, Yandex, etc.)',
+//     url: null, // Requires API key
+//     manual: 'https://www.bing.com/indexnow'
+//   }
+// ];
 
 // Make HTTP request with timeout
 function makeRequest(url, timeout = 15000) {
   return new Promise((resolve, reject) => {
     const protocol = url.startsWith('https') ? https : http;
-    
+
     const timer = setTimeout(() => {
       reject(new Error('Request timeout after 15 seconds'));
     }, timeout);
-    
+
     const req = protocol.get(url, (res) => {
       clearTimeout(timer);
       let data = '';
-      
+
       res.on('data', (chunk) => {
         data += chunk;
       });
-      
+
       res.on('end', () => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
-          resolve({ 
-            success: true, 
-            status: res.statusCode, 
+          resolve({
+            success: true,
+            status: res.statusCode,
             data,
             message: `Success (HTTP ${res.statusCode})`
           });
@@ -46,17 +47,17 @@ function makeRequest(url, timeout = 15000) {
         }
       });
     });
-    
+
     req.on('error', (err) => {
       clearTimeout(timer);
       reject(new Error(`Network error: ${err.message}`));
     });
-    
+
     req.on('timeout', () => {
       req.destroy();
       reject(new Error('Request timeout'));
     });
-    
+
     req.setTimeout(timeout);
   });
 }
@@ -65,28 +66,28 @@ function makeRequest(url, timeout = 15000) {
 async function verifySitemap() {
   console.log('🔍 Verifying sitemap accessibility...');
   console.log(`   URL: ${SITEMAP_URL}`);
-  
+
   try {
     const response = await makeRequest(SITEMAP_URL, 10000);
     console.log('✅ Sitemap is accessible');
     console.log(`   Status: ${response.status}`);
     console.log(`   Size: ${response.data.length} bytes`);
-    
+
     // Basic XML validation
     if (!response.data.includes('<?xml') || !response.data.includes('<urlset')) {
       console.warn('⚠️  Warning: Sitemap might not be valid XML');
       return false;
     }
-    
+
     // Count URLs
     const urlCount = (response.data.match(/<url>/g) || []).length;
     console.log(`   URLs found: ${urlCount}`);
-    
+
     if (urlCount === 0) {
       console.warn('⚠️  Warning: No URLs found in sitemap');
       return false;
     }
-    
+
     return true;
   } catch (error) {
     console.error('❌ Sitemap is not accessible');
@@ -103,10 +104,10 @@ async function verifySitemap() {
 async function checkRobotsTxt() {
   console.log('\n🤖 Checking robots.txt...');
   const robotsUrl = `${SITE_URL}/robots.txt`;
-  
+
   try {
     const response = await makeRequest(robotsUrl, 10000);
-    
+
     if (response.data.includes('Sitemap:') && response.data.includes(SITEMAP_URL)) {
       console.log('✅ robots.txt correctly references sitemap');
       return true;
@@ -133,7 +134,7 @@ async function checkRobotsTxt() {
 // Main submission function
 async function submitSitemap() {
   console.log('🚀 Sitemap Submission Tool (2025)');
-  console.log('=' .repeat(60));
+  console.log('='.repeat(60));
   console.log(`📅 Date: ${new Date().toISOString()}`);
   console.log(`📍 Sitemap URL: ${SITEMAP_URL}\n`);
 
@@ -159,7 +160,7 @@ async function submitSitemap() {
   console.log('3. Discovers and indexes your content');
   console.log('4. No ping needed!\n');
 
-  console.log('=' .repeat(60));
+  console.log('='.repeat(60));
   console.log('✅ REQUIRED ONE-TIME SETUP');
   console.log('='.repeat(60));
 
@@ -183,7 +184,7 @@ async function submitSitemap() {
   console.log('   2. Add key to your site root');
   console.log('   3. Submit URLs instantly when published\n');
 
-  console.log('=' .repeat(60));
+  console.log('='.repeat(60));
   console.log('📊 VERIFICATION CHECKLIST');
   console.log('='.repeat(60));
   console.log('✅ Sitemap exists and is accessible');
@@ -195,7 +196,7 @@ async function submitSitemap() {
   console.log('⏳ Submit to Google Search Console (do this once)');
   console.log('⏳ Submit to Bing Webmaster Tools (do this once)\n');
 
-  console.log('=' .repeat(60));
+  console.log('='.repeat(60));
   console.log('🎯 ONGOING MAINTENANCE');
   console.log('='.repeat(60));
   console.log('\nAfter initial setup, you DON\'T need to resubmit manually!');
@@ -212,7 +213,7 @@ async function submitSitemap() {
   console.log('   - Let search engines discover changes automatically');
   console.log('   - Monitor Google Search Console for indexing status\n');
 
-  console.log('=' .repeat(60));
+  console.log('='.repeat(60));
   console.log('✅ ALL DONE!');
   console.log('='.repeat(60));
   console.log('\nYour sitemap is ready. Complete the one-time setup above,');

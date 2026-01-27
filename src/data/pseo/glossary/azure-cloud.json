@@ -1,0 +1,284 @@
+[
+  {
+    "id": "azure-data-factory",
+    "term": "Azure Data Factory",
+    "slug": "azure-data-factory",
+    "category": "azure-cloud",
+    "shortDefinition": "A fully managed, serverless data integration service for building ETL, ELT, and data integration pipelines.",
+    "fullDefinition": "Azure Data Factory is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Azure Data Factory?\n\nA fully managed, serverless data integration service for building ETL, ELT, and data integration pipelines.\n\n## Why Azure Data Factory Matters\n\nUnderstanding Azure Data Factory is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAzure Data Factory typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAzure Data Factory integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Azure Data Factory effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Cloud ETL",
+      "Visual orchestration",
+      "SSIS Lift-and-shift"
+    ],
+    "relatedTerms": [
+      "etl",
+      "orchestration",
+      "ssis"
+    ],
+    "relatedTools": [
+      "SSIS",
+      "Informatica",
+      "Talend"
+    ],
+    "externalLinks": [
+      {
+        "title": "ADF Documentation",
+        "url": "https://learn.microsoft.com/en-us/azure/data-factory/"
+      }
+    ],
+    "keywords": [
+      "azure data factory",
+      "adf",
+      "etl",
+      "data pipelines"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "azure-synapse-analytics",
+    "term": "Azure Synapse Analytics",
+    "slug": "azure-synapse-analytics",
+    "category": "azure-cloud",
+    "shortDefinition": "An enterprise analytics service that brings together data integration, enterprise data warehousing, and big data analytics.",
+    "fullDefinition": "Azure Synapse Analytics is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Azure Synapse Analytics?\n\nAn enterprise analytics service that brings together data integration, enterprise data warehousing, and big data analytics.\n\n## Why Azure Synapse Analytics Matters\n\nUnderstanding Azure Synapse Analytics is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAzure Synapse Analytics typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAzure Synapse Analytics integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Azure Synapse Analytics effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Unified Analytics",
+      "SQL + Spark",
+      "Integrated Power BI"
+    ],
+    "relatedTerms": [
+      "data-warehouse",
+      "apache-spark",
+      "big-data",
+      "power-bi"
+    ],
+    "relatedTools": [
+      "Databricks",
+      "Snowflake"
+    ],
+    "externalLinks": [
+      {
+        "title": "Synapse Documentation",
+        "url": "https://learn.microsoft.com/en-us/azure/synapse-analytics/"
+      }
+    ],
+    "keywords": [
+      "synapse",
+      "azure dw",
+      "analytics",
+      "spark"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "azure-blob-storage",
+    "term": "Azure Blob Storage",
+    "slug": "azure-blob-storage",
+    "category": "azure-cloud",
+    "shortDefinition": "Massively scalable and secure object storage for cloud-native workloads, archives, high-performance computing, and machine learning.",
+    "fullDefinition": "Azure Blob Storage is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Azure Blob Storage?\n\nMassively scalable and secure object storage for cloud-native workloads, archives, high-performance computing, and machine learning.\n\n## Why Azure Blob Storage Matters\n\nUnderstanding Azure Blob Storage is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAzure Blob Storage typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAzure Blob Storage integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Azure Blob Storage effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Object Storage",
+      "Data Lake Gen2",
+      "HDFS Compatibility"
+    ],
+    "relatedTerms": [
+      "data-lake",
+      "object-storage",
+      "hdfs"
+    ],
+    "relatedTools": [
+      "Amazon S3",
+      "Google Cloud Storage"
+    ],
+    "externalLinks": [
+      {
+        "title": "Blob Storage Documentation",
+        "url": "https://learn.microsoft.com/en-us/azure/storage/blobs/"
+      }
+    ],
+    "keywords": [
+      "azure blob",
+      "object storage",
+      "adls",
+      "data lake"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "azure-cosmos-db",
+    "term": "Azure Cosmos DB",
+    "slug": "azure-cosmos-db",
+    "category": "azure-cloud",
+    "shortDefinition": "A fully managed NoSQL and relational database for modern app development.",
+    "fullDefinition": "Azure Cosmos DB is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Azure Cosmos DB?\n\nA fully managed NoSQL and relational database for modern app development.\n\n## Why Azure Cosmos DB Matters\n\nUnderstanding Azure Cosmos DB is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAzure Cosmos DB typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAzure Cosmos DB integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Azure Cosmos DB effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Multi-model",
+      "Global Distribution",
+      "Single-digit latency"
+    ],
+    "relatedTerms": [
+      "nosql",
+      "database",
+      "mongodb",
+      "cassandra"
+    ],
+    "relatedTools": [
+      "DynamoDB",
+      "MongoDB Atlas"
+    ],
+    "externalLinks": [
+      {
+        "title": "Cosmos DB Documentation",
+        "url": "https://learn.microsoft.com/en-us/azure/cosmos-db/"
+      }
+    ],
+    "keywords": [
+      "cosmos db",
+      "nosql",
+      "multi-model database"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "azure-event-hubs",
+    "term": "Azure Event Hubs",
+    "slug": "azure-event-hubs",
+    "category": "azure-cloud",
+    "shortDefinition": "A big data streaming platform and event ingestion service.",
+    "fullDefinition": "Azure Event Hubs is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Azure Event Hubs?\n\nA big data streaming platform and event ingestion service.\n\n## Why Azure Event Hubs Matters\n\nUnderstanding Azure Event Hubs is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAzure Event Hubs typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAzure Event Hubs integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Azure Event Hubs effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Event Ingestion",
+      "Kafka Compatibility",
+      "Real-time"
+    ],
+    "relatedTerms": [
+      "apache-kafka",
+      "streaming",
+      "real-time"
+    ],
+    "relatedTools": [
+      "Kafka",
+      "Kinesis"
+    ],
+    "externalLinks": [
+      {
+        "title": "Event Hubs Documentation",
+        "url": "https://learn.microsoft.com/en-us/azure/event-hubs/"
+      }
+    ],
+    "keywords": [
+      "event hubs",
+      "streaming",
+      "kafka",
+      "azure streaming"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "azure-stream-analytics",
+    "term": "Azure Stream Analytics",
+    "slug": "azure-stream-analytics",
+    "category": "azure-cloud",
+    "shortDefinition": "A fully managed real-time analytics service designed to process millions of events per second.",
+    "fullDefinition": "Azure Stream Analytics is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Azure Stream Analytics?\n\nA fully managed real-time analytics service designed to process millions of events per second.\n\n## Why Azure Stream Analytics Matters\n\nUnderstanding Azure Stream Analytics is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAzure Stream Analytics typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAzure Stream Analytics integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Azure Stream Analytics effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Stream Processing",
+      "SQL Syntax",
+      "Real-time Dashboards"
+    ],
+    "relatedTerms": [
+      "streaming",
+      "sql",
+      "real-time"
+    ],
+    "relatedTools": [
+      "Flink",
+      "Spark Streaming"
+    ],
+    "externalLinks": [
+      {
+        "title": "Stream Analytics Documentation",
+        "url": "https://learn.microsoft.com/en-us/azure/stream-analytics/"
+      }
+    ],
+    "keywords": [
+      "stream analytics",
+      "asa",
+      "real-time sql"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "azure-hdinsight",
+    "term": "Azure HDInsight",
+    "slug": "azure-hdinsight",
+    "category": "azure-cloud",
+    "shortDefinition": "A managed, full-spectrum, open-source analytics service in the cloud for enterprises.",
+    "fullDefinition": "Azure HDInsight is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Azure HDInsight?\n\nA managed, full-spectrum, open-source analytics service in the cloud for enterprises.\n\n## Why Azure HDInsight Matters\n\nUnderstanding Azure HDInsight is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAzure HDInsight typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAzure HDInsight integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Azure HDInsight effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Managed Hadoop",
+      "Open Source Ecosystem",
+      "Enterprise Security"
+    ],
+    "relatedTerms": [
+      "hadoop",
+      "spark",
+      "kafka",
+      "big-data"
+    ],
+    "relatedTools": [
+      "EMR",
+      "Dataproc"
+    ],
+    "externalLinks": [
+      {
+        "title": "HDInsight Documentation",
+        "url": "https://learn.microsoft.com/en-us/azure/hdinsight/"
+      }
+    ],
+    "keywords": [
+      "hdinsight",
+      "hadoop",
+      "spark",
+      "azure big data"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "microsoft-purview",
+    "term": "Microsoft Purview",
+    "slug": "microsoft-purview",
+    "category": "azure-cloud",
+    "shortDefinition": "A comprehensive family of data governance, risk, and compliance solutions.",
+    "fullDefinition": "Microsoft Purview is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Microsoft Purview?\n\nA comprehensive family of data governance, risk, and compliance solutions.\n\n## Why Microsoft Purview Matters\n\nUnderstanding Microsoft Purview is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nMicrosoft Purview typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nMicrosoft Purview integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Microsoft Purview effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Data Governance",
+      "Data Catalog",
+      "Lineage"
+    ],
+    "relatedTerms": [
+      "data-governance",
+      "data-catalog",
+      "data-lineage"
+    ],
+    "relatedTools": [
+      "Atlan",
+      "Alation"
+    ],
+    "externalLinks": [
+      {
+        "title": "Purview Documentation",
+        "url": "https://learn.microsoft.com/en-us/purview/"
+      }
+    ],
+    "keywords": [
+      "purview",
+      "governance",
+      "catalog",
+      "lineage"
+    ],
+    "lastUpdated": "2026-01-27"
+  }
+]

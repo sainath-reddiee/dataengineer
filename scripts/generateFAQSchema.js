@@ -68,7 +68,7 @@ function extractQAPairs(content) {
 
     // Pattern 1: H2/H3 questions followed by paragraphs
     const questionPattern = /<h[2-3][^>]*>([^<]*\?[^<]*)<\/h[2-3]>\s*<p[^>]*>([^<]+(?:<[^>]+>[^<]*<\/[^>]+>[^<]*)*?)<\/p>/gi;
-    let match;
+    let match; // This 'match' variable is used in the while loop condition below.
 
     while ((match = questionPattern.exec(content)) !== null) {
         const question = stripHTML(match[1]).trim();
@@ -129,14 +129,6 @@ function stripHTML(html) {
 }
 
 // Escape JSON strings
-function escapeJSON(str) {
-    return str
-        .replace(/\\/g, '\\\\')
-        .replace(/"/g, '\\"')
-        .replace(/\n/g, '\\n')
-        .replace(/\r/g, '\\r')
-        .replace(/\t/g, '\\t');
-}
 
 // Generate FAQPage schema
 function generateFAQSchema(qaPairs) {

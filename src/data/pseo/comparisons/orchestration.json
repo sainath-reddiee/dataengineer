@@ -1,0 +1,66 @@
+[
+  {
+    "id": "airflow-vs-prefect",
+    "slug": "airflow-vs-prefect",
+    "toolA": "Apache Airflow",
+    "toolB": "Prefect",
+    "category": "Orchestration",
+    "winner": "It Depends",
+    "shortVerdict": "Choose Airflow for enterprise-scale, static dependencies. Choose Prefect for modern, dynamic workflows and easier developer experience.",
+    "intro": "Apache Airflow has been the industry standard for code-based data orchestration for years. However, Prefect has emerged as a strong \"modern\" contender, fixing many of Airflow's pain points like scheduling latency and complex deployment.\n\nThis comparison breaks down the key differences to help you decide which orchestrator fits your data stack.",
+    "features": [
+      {
+        "name": "Scheduling Logic",
+        "toolAValue": "Interval-based (DAG runs at set times)",
+        "toolBValue": "Event-driven & negative engineering (handles failure logic)",
+        "winner": "Prefect"
+      },
+      {
+        "name": "Dynamic Workflows",
+        "toolAValue": "Difficult (requires Dynamic DAG generation)",
+        "toolBValue": "Native (Python code *is* the workflow)",
+        "winner": "Prefect"
+      },
+      {
+        "name": "Ecosystem & Community",
+        "toolAValue": "Huge (standard for years)",
+        "toolBValue": "Growing rapidly",
+        "winner": "Airflow"
+      },
+      {
+        "name": "Ease of Setup",
+        "toolAValue": "Complex (Scheduler, Webserver, Meta DB)",
+        "toolBValue": "Simple (Pip install & start)",
+        "winner": "Prefect"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Massive community support",
+        " extensive provider library",
+        "Battle-tested at scale"
+      ],
+      "toolB": [
+        "Pythonic developer experience",
+        "Dynamic topology support",
+        "Hybrid execution model"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Scheduling latency",
+        "Complex local testing",
+        "Steep learning curve"
+      ],
+      "toolB": [
+        "Smaller community",
+        "Enterprise features behind paywall (Cloud)"
+      ]
+    },
+    "finalVerdict": "**Choose Apache Airflow if:**\n- You need a battle-tested solution for a large enterprise.\n- You rely heavily on existing operators (Salesforce, SAP, etc.).\n- Your team is already experienced with it.\n\n**Choose Prefect if:**\n- You want a better developer experience (native Python).\n- You need dynamic workflows (runtime parameterization).\n- You are building a modern data stack from scratch.",
+    "relatedComparisons": [
+      "dbt-vs-dataform"
+    ],
+    "lastUpdated": "2026-01-21"
+  }
+]

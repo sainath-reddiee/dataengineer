@@ -1,8 +1,8 @@
-// src/lib/pseo/index.js
 /**
- * PSEO (Programmatic SEO) Module
- * Exports all PSEO utilities for glossary and future comparison pages
+ * PSEO Library Entry Point
  */
 
-export * from './metadataFactory';
-export * from './schemaFactory';
+export * from './linkingEngine.js';
+export * from './metadataFactory.js';
+export * from './schemaFactory.js';
+export * from './contentValidator.js';

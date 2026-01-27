@@ -1,0 +1,193 @@
+[
+  {
+    "id": "data-quality",
+    "term": "Data Quality",
+    "slug": "data-quality",
+    "category": "data-quality",
+    "shortDefinition": "The measure of how well data meets the requirements for its intended use, encompassing accuracy, completeness, consistency, timeliness, and validity.",
+    "fullDefinition": "Data Quality is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Data Quality?\n\nThe measure of how well data meets the requirements for its intended use, encompassing accuracy, completeness, consistency, timeliness, and validity.\n\n## Why Data Quality Matters\n\nUnderstanding Data Quality is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nData Quality typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nData Quality integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Data Quality effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Measures fitness of data for intended use",
+      "Six dimensions: accuracy, completeness, consistency, timeliness, validity, uniqueness",
+      "Critical for reliable analytics and compliance",
+      "Requires ongoing monitoring and governance",
+      "Modern tools: Great Expectations, dbt tests, Monte Carlo"
+    ],
+    "faqs": [
+      {
+        "question": "What is data quality in simple terms?",
+        "answer": "Data quality is a measure of how good your data is for its intended purpose. High-quality data is accurate, complete, consistent, and available when needed. Poor data quality leads to wrong decisions and wasted resources."
+      },
+      {
+        "question": "How do you measure data quality?",
+        "answer": "Data quality is measured across dimensions like accuracy (correctness), completeness (no missing values), consistency (uniform across systems), timeliness (up-to-date), and validity (correct format). Tools like Great Expectations and dbt tests automate these checks."
+      },
+      {
+        "question": "What causes poor data quality?",
+        "answer": "Common causes include manual data entry errors, system integration issues, lack of validation rules, outdated information, duplicate records, and missing governance processes."
+      },
+      {
+        "question": "What is the difference between data quality and data integrity?",
+        "answer": "Data quality focuses on the overall fitness of data for use (accuracy, completeness). Data integrity ensures data remains unchanged and consistent throughout its lifecycle, often through constraints and transaction controls."
+      }
+    ],
+    "relatedTerms": [
+      "data-governance",
+      "data-observability",
+      "great-expectations",
+      "data-testing"
+    ],
+    "relatedTools": [
+      "Great Expectations",
+      "dbt",
+      "Monte Carlo",
+      "Soda",
+      "Atlan"
+    ],
+    "externalLinks": [
+      {
+        "title": "Data Quality - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Data_quality"
+      },
+      {
+        "title": "Great Expectations Documentation",
+        "url": "https://docs.greatexpectations.io/"
+      }
+    ],
+    "keywords": [
+      "data quality",
+      "data quality dimensions",
+      "data quality management",
+      "data quality tools",
+      "data accuracy"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "data-contracts",
+    "term": "Data Contracts",
+    "slug": "data-contracts",
+    "category": "data-quality",
+    "shortDefinition": "Formal agreements between data producers and consumers that define the structure, semantics, and quality expectations of data, enabling reliable data collaboration.",
+    "fullDefinition": "Data Contracts is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Data Contracts?\n\nFormal agreements between data producers and consumers that define the structure, semantics, and quality expectations of data, enabling reliable data collaboration.\n\n## Why Data Contracts Matters\n\nUnderstanding Data Contracts is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nData Contracts typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nData Contracts integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Data Contracts effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Formal agreements between data producers and consumers",
+      "Define schema, semantics, and quality SLAs",
+      "Prevent breaking changes and unclear ownership",
+      "Validated automatically in CI/CD pipelines",
+      "Part of Data Mesh and modern data architectures"
+    ],
+    "faqs": [
+      {
+        "question": "What is a data contract?",
+        "answer": "A data contract is a formal agreement between data producers and consumers that specifies the expected schema, quality guarantees, and change management process for a dataset. It makes implicit expectations explicit."
+      },
+      {
+        "question": "Why are data contracts important?",
+        "answer": "Data contracts prevent breaking changes, establish clear ownership, define quality SLAs, and enable reliable data collaboration. They shift quality left by validating data at the source."
+      },
+      {
+        "question": "How do data contracts relate to Data Mesh?",
+        "answer": "Data contracts are a core principle of Data Mesh architecture. They enable domain teams to publish reliable data products that other teams can consume with confidence, treating data as a product."
+      },
+      {
+        "question": "What tools support data contracts?",
+        "answer": "Tools supporting data contracts include Soda, Great Expectations, dbt (model contracts), Datacontract.com (open standard), and Monte Carlo for SLA monitoring."
+      }
+    ],
+    "relatedTerms": [
+      "data-quality",
+      "data-mesh",
+      "schema",
+      "data-governance"
+    ],
+    "relatedTools": [
+      "Soda",
+      "Great Expectations",
+      "dbt",
+      "Monte Carlo"
+    ],
+    "externalLinks": [
+      {
+        "title": "Data Contracts - Datacontract.com",
+        "url": "https://datacontract.com/"
+      },
+      {
+        "title": "Data Contracts Explained",
+        "url": "https://www.dataengineeringweekly.com/p/data-contracts"
+      }
+    ],
+    "keywords": [
+      "data contracts",
+      "data contract specification",
+      "data mesh contracts",
+      "schema contracts",
+      "data SLA"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "great-expectations",
+    "term": "Great Expectations",
+    "slug": "great-expectations",
+    "category": "data-quality",
+    "shortDefinition": "An open-source Python framework for defining, documenting, and validating data quality expectations against datasets in data pipelines.",
+    "fullDefinition": "Great Expectations is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Great Expectations?\n\nAn open-source Python framework for defining, documenting, and validating data quality expectations against datasets in data pipelines.\n\n## Why Great Expectations Matters\n\nUnderstanding Great Expectations is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nGreat Expectations typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nGreat Expectations integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Great Expectations effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Open-source Python library for data testing",
+      "Define \"expectations\" as assertions about data",
+      "Auto-generates data documentation (Data Docs)",
+      "Integrates with Airflow, dbt, Spark, and more",
+      "GX Cloud offers hosted management and alerting"
+    ],
+    "faqs": [
+      {
+        "question": "What is Great Expectations used for?",
+        "answer": "Great Expectations is used for testing and validating data quality in pipelines. It lets you define expectations (assertions) about your data and automatically validate them, catching issues before they impact downstream systems."
+      },
+      {
+        "question": "Is Great Expectations free?",
+        "answer": "Yes, Great Expectations (GX Core) is open-source and free. GX Cloud is a commercial product that adds hosted management, collaboration, and alerting features."
+      },
+      {
+        "question": "How does Great Expectations compare to dbt tests?",
+        "answer": "dbt tests are simpler and SQL-based, great for basic checks. Great Expectations offers more advanced expectations, profiling, auto-documentation, and works with any data source beyond SQL warehouses."
+      },
+      {
+        "question": "What is an Expectation Suite?",
+        "answer": "An Expectation Suite is a collection of expectations (tests) for a specific dataset. For example, an \"orders\" suite might include expectations for non-null order_id, valid status values, and reasonable amounts."
+      }
+    ],
+    "relatedTerms": [
+      "data-quality",
+      "data-testing",
+      "dbt",
+      "data-observability"
+    ],
+    "relatedTools": [
+      "dbt",
+      "Soda",
+      "Monte Carlo",
+      "Apache Airflow",
+      "Pandas"
+    ],
+    "externalLinks": [
+      {
+        "title": "Great Expectations Documentation",
+        "url": "https://docs.greatexpectations.io/"
+      },
+      {
+        "title": "GX GitHub",
+        "url": "https://github.com/great-expectations/great_expectations"
+      }
+    ],
+    "keywords": [
+      "great expectations",
+      "great expectations python",
+      "data testing",
+      "data validation",
+      "gx cloud"
+    ],
+    "lastUpdated": "2026-01-27"
+  }
+]

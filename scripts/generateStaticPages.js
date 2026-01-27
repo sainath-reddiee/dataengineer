@@ -11,20 +11,21 @@ const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
 async function fetchFromWP(endpoint, fields = '') {
   const items = [];
   let page = 1;
-  
+
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
       const url = `${WORDPRESS_API_URL}${endpoint}?per_page=100&page=${page}${fields ? `&_fields=${fields}` : ''}`;
       const res = await fetch(url);
-      
+
       if (!res.ok) {
         if (res.status === 400) break;
         throw new Error(`HTTP ${res.status}: ${res.statusText}`);
       }
-      
+
       const data = await res.json();
       if (!Array.isArray(data) || data.length === 0) break;
-      
+
       items.push(...data);
       page++;
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -33,7 +34,7 @@ async function fetchFromWP(endpoint, fields = '') {
       break;
     }
   }
-  
+
   return items;
 }
 
@@ -43,7 +44,7 @@ function stripHTML(html) {
 
 function generateHTML(pageData) {
   const { title, description, path: pagePath, content = '' } = pageData;
-  
+
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -115,50 +116,50 @@ function generateHTML(pageData) {
 async function generatePages() {
   console.log('🚀 Generating static pages for article posts only...\n');
   console.log('ℹ️  Categories and tags will be handled by React dynamically.\n');
-  
+
   const distDir = path.join(__dirname, '..', 'dist');
-  
+
   if (!fs.existsSync(distDir)) {
     console.error('❌ dist/ folder not found. Run "npm run build:vite" first.');
     process.exit(1);
   }
-  
+
   // Only generate pages for posts (articles)
   console.log('📄 Fetching posts...');
   const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content');
-  
+
   console.log(`✅ Found ${posts.length} posts\n`);
   console.log('💾 Writing HTML files...');
-  
+
   let generated = 0;
-  
+
   for (const post of posts) {
     const description = stripHTML(post.excerpt.rendered).substring(0, 160);
     const contentPreview = stripHTML(post.content.rendered).substring(0, 500);
-    
+
     const pageData = {
       title: stripHTML(post.title.rendered),
       description,
       path: `/articles/${post.slug}`,
       content: `<p>${contentPreview}...</p>`
     };
-    
+
     const html = generateHTML(pageData);
     const filePath = path.join(distDir, pageData.path, 'index.html');
     const dir = path.dirname(filePath);
-    
+
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    
+
     fs.writeFileSync(filePath, html);
     generated++;
-    
+
     if (generated % 50 === 0) {
       console.log(`  Generated ${generated}/${posts.length} pages...`);
     }
   }
-  
+
   console.log(`\n✅ Successfully generated ${generated} static HTML pages!`);
   console.log('\n📊 What was generated:');
   console.log(`   ✅ Article posts: ${posts.length}`);

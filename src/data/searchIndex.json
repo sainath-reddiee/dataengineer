@@ -1,0 +1,518 @@
+{
+  "version": "2026-01-27T18:16:04.710Z",
+  "glossary": [
+    {
+      "term": "ACID Transactions",
+      "slug": "acid",
+      "category": "data-modeling",
+      "shortDefinition": "A set of properties of database transactions intended to guarantee data validity despite errors, power failures, and other mishaps."
+    },
+    {
+      "term": "Airbyte",
+      "slug": "airbyte",
+      "category": "data-integration",
+      "shortDefinition": "An open-source data integration platform with 300+ connectors for syncing data from APIs, databases, and files to data warehouses and lakes."
+    },
+    {
+      "term": "Amazon Athena",
+      "slug": "amazon-athena",
+      "category": "aws-cloud",
+      "shortDefinition": "A serverless, interactive analytics service built on open-source frameworks, supporting open-table and file formats."
+    },
+    {
+      "term": "Amazon DynamoDB",
+      "slug": "amazon-dynamodb",
+      "category": "aws-cloud",
+      "shortDefinition": "A serverless, NoSQL, fully managed database with single-digit millisecond performance at any scale."
+    },
+    {
+      "term": "Amazon EMR",
+      "slug": "amazon-emr",
+      "category": "aws-cloud",
+      "shortDefinition": "A cloud big data platform for running large-scale distributed data processing jobs, interactive SQL queries, and machine learning applications using open-source analytics frameworks."
+    },
+    {
+      "term": "Amazon Kinesis",
+      "slug": "amazon-kinesis",
+      "category": "aws-cloud",
+      "shortDefinition": "A managed service for processing and analyzing real-time streaming data."
+    },
+    {
+      "term": "Amazon Redshift",
+      "slug": "amazon-redshift",
+      "category": "aws-cloud",
+      "shortDefinition": "A fully managed, petabyte-scale cloud data warehouse service in the cloud."
+    },
+    {
+      "term": "Amazon S3",
+      "slug": "amazon-s3",
+      "category": "aws-cloud",
+      "shortDefinition": "Amazon Simple Storage Service (S3) is an object storage service offering industry-leading scalability, data availability, security, and performance."
+    },
+    {
+      "term": "Apache Airflow",
+      "slug": "apache-airflow",
+      "category": "data-orchestration",
+      "shortDefinition": "An open-source platform to programmatically author, schedule, and monitor workflows, commonly used for orchestrating data pipelines and ETL jobs."
+    },
+    {
+      "term": "Apache Flink",
+      "slug": "apache-flink",
+      "category": "streaming",
+      "shortDefinition": "A distributed stream processing framework that provides high-throughput, low-latency data streaming with exactly-once semantics."
+    },
+    {
+      "term": "Apache Hudi",
+      "slug": "apache-hudi",
+      "category": "data-warehousing",
+      "shortDefinition": "An open-source data lake platform that provides record-level insert, update, and delete capabilities with incremental data processing."
+    },
+    {
+      "term": "Apache Iceberg",
+      "slug": "apache-iceberg",
+      "category": "data-warehousing",
+      "shortDefinition": "An open table format for large analytic datasets that provides reliable, performant table operations including schema evolution and time travel."
+    },
+    {
+      "term": "Apache Kafka",
+      "slug": "apache-kafka",
+      "category": "streaming",
+      "shortDefinition": "A distributed event streaming platform used for building real-time data pipelines and streaming applications, handling trillions of events per day."
+    },
+    {
+      "term": "Apache Spark",
+      "slug": "apache-spark",
+      "category": "analytics",
+      "shortDefinition": "A unified analytics engine for large-scale data processing, providing high-level APIs for batch processing, streaming, machine learning, and graph computation."
+    },
+    {
+      "term": "Apache Superset",
+      "slug": "apache-superset",
+      "category": "analytics",
+      "shortDefinition": "An open-source data exploration and visualization platform that supports rich SQL querying and interactive dashboard creation."
+    },
+    {
+      "term": "AWS Glue",
+      "slug": "aws-glue",
+      "category": "aws-cloud",
+      "shortDefinition": "A serverless data integration service that makes it easy to discover, prepare, and combine data for analytics, machine learning, and application development."
+    },
+    {
+      "term": "AWS IAM",
+      "slug": "aws-iam",
+      "category": "aws-cloud",
+      "shortDefinition": "Identity and Access Management (IAM) securely manages access to AWS services and resources."
+    },
+    {
+      "term": "AWS Lake Formation",
+      "slug": "aws-lake-formation",
+      "category": "aws-cloud",
+      "shortDefinition": "A service to set up, secure, and manage data lakes composed of data in Amazon S3."
+    },
+    {
+      "term": "AWS Lambda",
+      "slug": "aws-lambda",
+      "category": "aws-cloud",
+      "shortDefinition": "A serverless, event-driven compute service that lets you run code for virtually any type of application or backend service without provisioning or managing servers."
+    },
+    {
+      "term": "Azure Blob Storage",
+      "slug": "azure-blob-storage",
+      "category": "azure-cloud",
+      "shortDefinition": "Massively scalable and secure object storage for cloud-native workloads, archives, high-performance computing, and machine learning."
+    },
+    {
+      "term": "Azure Cosmos DB",
+      "slug": "azure-cosmos-db",
+      "category": "azure-cloud",
+      "shortDefinition": "A fully managed NoSQL and relational database for modern app development."
+    },
+    {
+      "term": "Azure Data Factory",
+      "slug": "azure-data-factory",
+      "category": "azure-cloud",
+      "shortDefinition": "A fully managed, serverless data integration service for building ETL, ELT, and data integration pipelines."
+    },
+    {
+      "term": "Azure Event Hubs",
+      "slug": "azure-event-hubs",
+      "category": "azure-cloud",
+      "shortDefinition": "A big data streaming platform and event ingestion service."
+    },
+    {
+      "term": "Azure HDInsight",
+      "slug": "azure-hdinsight",
+      "category": "azure-cloud",
+      "shortDefinition": "A managed, full-spectrum, open-source analytics service in the cloud for enterprises."
+    },
+    {
+      "term": "Azure Stream Analytics",
+      "slug": "azure-stream-analytics",
+      "category": "azure-cloud",
+      "shortDefinition": "A fully managed real-time analytics service designed to process millions of events per second."
+    },
+    {
+      "term": "Azure Synapse Analytics",
+      "slug": "azure-synapse-analytics",
+      "category": "azure-cloud",
+      "shortDefinition": "An enterprise analytics service that brings together data integration, enterprise data warehousing, and big data analytics."
+    },
+    {
+      "term": "CAP Theorem",
+      "slug": "cap-theorem",
+      "category": "data-modeling",
+      "shortDefinition": "A theorem stating that a distributed data store can only guarantee two of the three: Consistency, Availability, and Partition Tolerance."
+    },
+    {
+      "term": "Change Data Capture (CDC)",
+      "slug": "cdc",
+      "category": "data-integration",
+      "shortDefinition": "A technique for identifying and capturing changes made to data in a database, enabling real-time or near-real-time data replication to other systems."
+    },
+    {
+      "term": "Columnar Storage",
+      "slug": "columnar-storage",
+      "category": "data-warehousing",
+      "shortDefinition": "A database management system that stores data in columns rather than rows, optimized for analytics."
+    },
+    {
+      "term": "Confluent",
+      "slug": "confluent",
+      "category": "streaming",
+      "shortDefinition": "A data streaming platform built on Apache Kafka that provides enterprise features for real-time data pipelines and streaming applications."
+    },
+    {
+      "term": "Dagster",
+      "slug": "dagster",
+      "category": "data-orchestration",
+      "shortDefinition": "A data orchestrator for machine learning, analytics, and ETL that enables local development and testing with production-grade deployment."
+    },
+    {
+      "term": "Data Catalog",
+      "slug": "data-catalog",
+      "category": "data-governance",
+      "shortDefinition": "A centralized inventory of data assets in an organization, providing metadata, documentation, search capabilities, and lineage to enable data discovery and governance."
+    },
+    {
+      "term": "Data Contracts",
+      "slug": "data-contracts",
+      "category": "data-quality",
+      "shortDefinition": "Formal agreements between data producers and consumers that define the structure, semantics, and quality expectations of data, enabling reliable data collaboration."
+    },
+    {
+      "term": "Data Governance",
+      "slug": "data-governance",
+      "category": "data-governance",
+      "shortDefinition": "A framework of policies, processes, and standards for managing data assets across an organization, ensuring data is secure, compliant, and properly used."
+    },
+    {
+      "term": "Data Lake",
+      "slug": "data-lake",
+      "category": "data-warehousing",
+      "shortDefinition": "A centralized storage repository that holds vast amounts of raw data in its native format until needed for analysis, supporting structured, semi-structured, and unstructured data."
+    },
+    {
+      "term": "Data Lineage",
+      "slug": "data-lineage",
+      "category": "data-governance",
+      "shortDefinition": "The documentation and visualization of data as it flows from source to destination, showing transformations, dependencies, and ownership at each step."
+    },
+    {
+      "term": "Data Mesh",
+      "slug": "data-mesh",
+      "category": "data-governance",
+      "shortDefinition": "A decentralized sociotechnical approach to sharing, accessing, and managing analytical data in complex and large-scale environments."
+    },
+    {
+      "term": "Data Modeling",
+      "slug": "data-modeling",
+      "category": "data-modeling",
+      "shortDefinition": "The process of creating a visual representation of data structures and relationships, defining how data is stored, organized, and accessed in databases and warehouses."
+    },
+    {
+      "term": "Data Observability",
+      "slug": "data-observability",
+      "category": "data-observability",
+      "shortDefinition": "The ability to understand the health and state of data in your systems by monitoring data quality, freshness, volume, schema changes, and lineage in real-time."
+    },
+    {
+      "term": "Data Quality",
+      "slug": "data-quality",
+      "category": "data-quality",
+      "shortDefinition": "The measure of how well data meets the requirements for its intended use, encompassing accuracy, completeness, consistency, timeliness, and validity."
+    },
+    {
+      "term": "Data Warehouse",
+      "slug": "data-warehouse",
+      "category": "data-warehousing",
+      "shortDefinition": "A centralized repository designed to store, integrate, and analyze large volumes of structured data from multiple sources for business intelligence and reporting."
+    },
+    {
+      "term": "Databricks",
+      "slug": "databricks",
+      "category": "cloud-platforms",
+      "shortDefinition": "A unified data analytics platform that combines data engineering, data science, and machine learning on a lakehouse architecture, built on Apache Spark."
+    },
+    {
+      "term": "dbt (Data Build Tool)",
+      "slug": "dbt",
+      "category": "etl-elt",
+      "shortDefinition": "An open-source transformation tool that enables data analysts and engineers to transform data in their warehouse using SQL and software engineering best practices."
+    },
+    {
+      "term": "Delta Lake",
+      "slug": "delta-lake",
+      "category": "data-warehousing",
+      "shortDefinition": "An open-source storage layer that brings ACID transactions, scalable metadata handling, and data versioning to Apache Spark and big data workloads."
+    },
+    {
+      "term": "dlt (Data Load Tool)",
+      "slug": "dlt",
+      "category": "data-integration",
+      "shortDefinition": "An open-source Python library for building data pipelines that automatically handles schema inference, data normalization, and incremental loading."
+    },
+    {
+      "term": "ETL (Extract, Transform, Load)",
+      "slug": "etl",
+      "category": "etl-elt",
+      "shortDefinition": "A data integration process that extracts data from source systems, transforms it into a suitable format, and loads it into a target data warehouse or database."
+    },
+    {
+      "term": "Fivetran",
+      "slug": "fivetran",
+      "category": "data-integration",
+      "shortDefinition": "A fully managed data integration platform that automatically syncs data from hundreds of sources to data warehouses and lakes with minimal configuration."
+    },
+    {
+      "term": "Google BigQuery",
+      "slug": "google-bigquery",
+      "category": "gcp-cloud",
+      "shortDefinition": "A serverless, highly scalable, and cost-effective multi-cloud data warehouse designed for business agility."
+    },
+    {
+      "term": "Google Cloud Bigtable",
+      "slug": "google-cloud-bigtable",
+      "category": "gcp-cloud",
+      "shortDefinition": "A fully managed, wide-column and key-value NoSQL database service for large analytical and operational workloads."
+    },
+    {
+      "term": "Google Cloud Composer",
+      "slug": "google-cloud-composer",
+      "category": "gcp-cloud",
+      "shortDefinition": "A fully managed workflow orchestration service built on Apache Airflow."
+    },
+    {
+      "term": "Google Cloud Dataflow",
+      "slug": "google-cloud-dataflow",
+      "category": "gcp-cloud",
+      "shortDefinition": "Unified stream and batch data processing that's serverless, fast, and cost-effective."
+    },
+    {
+      "term": "Google Cloud Dataproc",
+      "slug": "google-cloud-dataproc",
+      "category": "gcp-cloud",
+      "shortDefinition": "A fully managed and highly scalable service for running Apache Spark, Apache Flink, Presto, and 30+ open source tools and frameworks."
+    },
+    {
+      "term": "Google Cloud Functions",
+      "slug": "google-cloud-functions",
+      "category": "gcp-cloud",
+      "shortDefinition": "A serverless execution environment for building and connecting cloud services."
+    },
+    {
+      "term": "Google Cloud Pub/Sub",
+      "slug": "google-cloud-pubsub",
+      "category": "gcp-cloud",
+      "shortDefinition": "A scalable, durable, and secure ingestion service for event streaming and analytics."
+    },
+    {
+      "term": "Google Cloud Storage",
+      "slug": "google-cloud-storage",
+      "category": "gcp-cloud",
+      "shortDefinition": "Managed, secure, and scalable object storage for all your unstructured data needs."
+    },
+    {
+      "term": "Great Expectations",
+      "slug": "great-expectations",
+      "category": "data-quality",
+      "shortDefinition": "An open-source Python framework for defining, documenting, and validating data quality expectations against datasets in data pipelines."
+    },
+    {
+      "term": "Looker",
+      "slug": "looker",
+      "category": "analytics",
+      "shortDefinition": "A business intelligence and data analytics platform acquired by Google that uses LookML for semantic modeling and self-service analytics."
+    },
+    {
+      "term": "Mage",
+      "slug": "mage",
+      "category": "data-orchestration",
+      "shortDefinition": "An open-source data pipeline tool for transforming and integrating data, designed as a modern alternative to Airflow with a visual interface."
+    },
+    {
+      "term": "Matillion",
+      "slug": "matillion",
+      "category": "data-integration",
+      "shortDefinition": "A cloud-native data transformation platform that provides low-code ELT for cloud data warehouses like Snowflake, BigQuery, and Redshift."
+    },
+    {
+      "term": "Metabase",
+      "slug": "metabase",
+      "category": "analytics",
+      "shortDefinition": "An open-source business intelligence tool that allows users to ask questions about data and embed analytics in applications."
+    },
+    {
+      "term": "Microsoft Purview",
+      "slug": "microsoft-purview",
+      "category": "azure-cloud",
+      "shortDefinition": "A comprehensive family of data governance, risk, and compliance solutions."
+    },
+    {
+      "term": "Prefect",
+      "slug": "prefect",
+      "category": "data-orchestration",
+      "shortDefinition": "A modern workflow orchestration tool that provides a Pythonic way to build, schedule, and monitor data pipelines with dynamic workflows."
+    },
+    {
+      "term": "Redpanda",
+      "slug": "redpanda",
+      "category": "streaming",
+      "shortDefinition": "A Kafka-compatible streaming data platform written in C++ that eliminates ZooKeeper and provides faster performance with lower latency."
+    },
+    {
+      "term": "Reverse ETL",
+      "slug": "reverse-etl",
+      "category": "data-integration",
+      "shortDefinition": "The process of moving data from a data warehouse back into operational systems (SaaS tools) used for business."
+    },
+    {
+      "term": "Slowly Changing Dimensions (SCD)",
+      "slug": "scd",
+      "category": "data-warehousing",
+      "shortDefinition": "A concept in data warehousing to manage how data that changes slowly over time is stored and tracked."
+    },
+    {
+      "term": "Snowflake",
+      "slug": "snowflake",
+      "category": "data-warehousing",
+      "shortDefinition": "A cloud-native data warehouse platform that separates storage and compute, enabling elastic scaling and pay-per-use pricing."
+    },
+    {
+      "term": "Stitch",
+      "slug": "stitch",
+      "category": "data-integration",
+      "shortDefinition": "A cloud-based ETL service acquired by Talend that provides simple data integration from hundreds of sources to data warehouses."
+    }
+  ],
+  "comparisons": [
+    {
+      "title": "Apache Airflow vs Dagster",
+      "slug": "airflow-vs-dagster",
+      "toolA": "Apache Airflow",
+      "toolB": "Dagster",
+      "shortVerdict": "Airflow for mature production pipelines, Dagster for modern data assets"
+    },
+    {
+      "title": "Apache Airflow vs Prefect",
+      "slug": "airflow-vs-prefect",
+      "category": "Orchestration",
+      "toolA": "Apache Airflow",
+      "toolB": "Prefect",
+      "shortVerdict": "Choose Airflow for enterprise-scale, static dependencies. Choose Prefect for modern, dynamic workflows and easier developer experience."
+    },
+    {
+      "title": "Apache Kafka vs Redpanda",
+      "slug": "kafka-vs-redpanda",
+      "toolA": "Apache Kafka",
+      "toolB": "Redpanda",
+      "shortVerdict": "Kafka for ecosystem maturity, Redpanda for performance"
+    },
+    {
+      "title": "dbt vs Dataform",
+      "slug": "dbt-vs-dataform",
+      "category": "Data Transformation",
+      "toolA": "dbt",
+      "toolB": "Dataform",
+      "shortVerdict": "dbt is the industry standard for analytics engineering with broad support. Dataform is a strong alternative specifically for BigQuery users."
+    },
+    {
+      "title": "Delta Lake vs Apache Iceberg",
+      "slug": "delta-lake-vs-iceberg",
+      "toolA": "Delta Lake",
+      "toolB": "Apache Iceberg",
+      "shortVerdict": "Delta for Databricks, Iceberg for multi-engine flexibility"
+    },
+    {
+      "title": "Fivetran vs Airbyte",
+      "slug": "fivetran-vs-airbyte",
+      "toolA": "Fivetran",
+      "toolB": "Airbyte",
+      "shortVerdict": "Fivetran for enterprise reliability, Airbyte for cost and flexibility"
+    },
+    {
+      "title": "Snowflake vs Google BigQuery",
+      "slug": "snowflake-vs-bigquery",
+      "category": "Data Warehousing",
+      "toolA": "Snowflake",
+      "toolB": "Google BigQuery",
+      "shortVerdict": "Snowflake offers multi-cloud flexibility and zero-maintenance performance. BigQuery offers effortless serverless scaling and deep GCP integration."
+    }
+  ],
+  "categories": [
+    {
+      "id": "data-warehousing",
+      "name": "Data Warehousing",
+      "icon": "🏢"
+    },
+    {
+      "id": "etl-elt",
+      "name": "ETL & ELT",
+      "icon": "🔄"
+    },
+    {
+      "id": "data-orchestration",
+      "name": "Data Orchestration",
+      "icon": "🎯"
+    },
+    {
+      "id": "data-modeling",
+      "name": "Data Modeling",
+      "icon": "📐"
+    },
+    {
+      "id": "cloud-platforms",
+      "name": "Cloud Platforms",
+      "icon": "☁️"
+    },
+    {
+      "id": "data-governance",
+      "name": "Data Governance",
+      "icon": "🛡️"
+    },
+    {
+      "id": "data-quality",
+      "name": "Data Quality",
+      "icon": "✅"
+    },
+    {
+      "id": "data-observability",
+      "name": "Data Observability",
+      "icon": "👁️"
+    },
+    {
+      "id": "streaming",
+      "name": "Real-time & Streaming",
+      "icon": "⚡"
+    },
+    {
+      "id": "analytics",
+      "name": "Analytics & BI",
+      "icon": "📊"
+    },
+    {
+      "id": "data-integration",
+      "name": "Data Integration",
+      "icon": "🔗"
+    }
+  ]
+}

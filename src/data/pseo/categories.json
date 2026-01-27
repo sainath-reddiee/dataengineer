@@ -1,0 +1,57 @@
+[
+  {
+    "id": "data-warehousing",
+    "name": "Data Warehousing",
+    "icon": "🏢"
+  },
+  {
+    "id": "etl-elt",
+    "name": "ETL & ELT",
+    "icon": "🔄"
+  },
+  {
+    "id": "data-orchestration",
+    "name": "Data Orchestration",
+    "icon": "🎯"
+  },
+  {
+    "id": "data-modeling",
+    "name": "Data Modeling",
+    "icon": "📐"
+  },
+  {
+    "id": "cloud-platforms",
+    "name": "Cloud Platforms",
+    "icon": "☁️"
+  },
+  {
+    "id": "data-governance",
+    "name": "Data Governance",
+    "icon": "🛡️"
+  },
+  {
+    "id": "data-quality",
+    "name": "Data Quality",
+    "icon": "✅"
+  },
+  {
+    "id": "data-observability",
+    "name": "Data Observability",
+    "icon": "👁️"
+  },
+  {
+    "id": "streaming",
+    "name": "Real-time & Streaming",
+    "icon": "⚡"
+  },
+  {
+    "id": "analytics",
+    "name": "Analytics & BI",
+    "icon": "📊"
+  },
+  {
+    "id": "data-integration",
+    "name": "Data Integration",
+    "icon": "🔗"
+  }
+]

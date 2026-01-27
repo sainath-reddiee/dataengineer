@@ -1,0 +1,66 @@
+[
+  {
+    "id": "data-observability",
+    "term": "Data Observability",
+    "slug": "data-observability",
+    "category": "data-observability",
+    "shortDefinition": "The ability to understand the health and state of data in your systems by monitoring data quality, freshness, volume, schema changes, and lineage in real-time.",
+    "fullDefinition": "Data Observability is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Data Observability?\n\nThe ability to understand the health and state of data in your systems by monitoring data quality, freshness, volume, schema changes, and lineage in real-time.\n\n## Why Data Observability Matters\n\nUnderstanding Data Observability is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nData Observability typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nData Observability integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Data Observability effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Applies software observability principles to data",
+      "Five pillars: freshness, volume, schema, distribution, lineage",
+      "Proactive anomaly detection vs reactive quality checks",
+      "Enables faster incident resolution with lineage",
+      "Key tools: Monte Carlo, Bigeye, Great Expectations"
+    ],
+    "faqs": [
+      {
+        "question": "What is data observability?",
+        "answer": "Data observability is the ability to monitor and understand the health of your data in real-time. It tracks freshness, volume, schema changes, and data quality anomalies across your entire data platform."
+      },
+      {
+        "question": "How is data observability different from data quality?",
+        "answer": "Data quality focuses on whether data meets defined standards (accuracy, completeness). Data observability monitors the entire data system health including pipeline performance, freshness, and automatic anomaly detection."
+      },
+      {
+        "question": "What tools are used for data observability?",
+        "answer": "Popular data observability tools include Monte Carlo, Bigeye, Acceldata, and Great Expectations. Some data platforms like Databricks and Snowflake also offer built-in observability features."
+      },
+      {
+        "question": "What is data downtime?",
+        "answer": "Data downtime refers to periods when data is missing, incorrect, or stale. Similar to application downtime, data downtime impacts business operations and can lead to wrong decisions. Data observability helps minimize data downtime."
+      }
+    ],
+    "relatedTerms": [
+      "data-quality",
+      "data-lineage",
+      "data-pipeline",
+      "monte-carlo"
+    ],
+    "relatedTools": [
+      "Monte Carlo",
+      "Bigeye",
+      "Great Expectations",
+      "Acceldata",
+      "Datadog"
+    ],
+    "externalLinks": [
+      {
+        "title": "What is Data Observability? - Monte Carlo",
+        "url": "https://www.montecarlodata.com/data-observability/"
+      },
+      {
+        "title": "Data Observability - Gartner",
+        "url": "https://www.gartner.com/en/documents/4009814"
+      }
+    ],
+    "keywords": [
+      "data observability",
+      "data observability tools",
+      "data monitoring",
+      "data freshness",
+      "data downtime"
+    ],
+    "lastUpdated": "2026-01-27"
+  }
+]

@@ -1,0 +1,378 @@
+[
+  {
+    "id": "amazon-s3",
+    "term": "Amazon S3",
+    "slug": "amazon-s3",
+    "category": "aws-cloud",
+    "shortDefinition": "Amazon Simple Storage Service (S3) is an object storage service offering industry-leading scalability, data availability, security, and performance.",
+    "fullDefinition": "Amazon S3 is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Amazon S3?\n\nAmazon Simple Storage Service (S3) is an object storage service offering industry-leading scalability, data availability, security, and performance.\n\n## Why Amazon S3 Matters\n\nUnderstanding Amazon S3 is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAmazon S3 typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAmazon S3 integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Amazon S3 effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "11 9s Durability",
+      "Infinite Scalability",
+      "Integration with all AWS data tools",
+      "Lifecycle policies"
+    ],
+    "faqs": [
+      {
+        "question": "What is an S3 Bucket?",
+        "answer": "A bucket is a container for objects stored in Amazon S3. Every object is contained in a bucket."
+      },
+      {
+        "question": "What is the difference between S3 and EBS?",
+        "answer": "S3 is object storage (files, metadata) accessible via API over the web. EBS is block storage (like a hard drive) attached to EC2 instances."
+      }
+    ],
+    "relatedTerms": [
+      "data-lake",
+      "aws-glue",
+      "amazon-athena",
+      "object-storage"
+    ],
+    "relatedTools": [
+      "AWS CLI",
+      "Boto3",
+      "Terraform"
+    ],
+    "externalLinks": [
+      {
+        "title": "Amazon S3 Documentation",
+        "url": "https://docs.aws.amazon.com/s3/"
+      }
+    ],
+    "keywords": [
+      "s3",
+      "aws s3",
+      "object storage",
+      "data lake",
+      "storage tiers"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "amazon-redshift",
+    "term": "Amazon Redshift",
+    "slug": "amazon-redshift",
+    "category": "aws-cloud",
+    "shortDefinition": "A fully managed, petabyte-scale cloud data warehouse service in the cloud.",
+    "fullDefinition": "Amazon Redshift is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Amazon Redshift?\n\nA fully managed, petabyte-scale cloud data warehouse service in the cloud.\n\n## Why Amazon Redshift Matters\n\nUnderstanding Amazon Redshift is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAmazon Redshift typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAmazon Redshift integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Amazon Redshift effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "MPP Architecture",
+      "Columnar Storage",
+      "SQL Interface",
+      "Integration with S3 via Spectrum"
+    ],
+    "relatedTerms": [
+      "data-warehouse",
+      "olap",
+      "snowflake",
+      "mpp"
+    ],
+    "relatedTools": [
+      "dbt",
+      "Tableau",
+      "QuickSight"
+    ],
+    "externalLinks": [
+      {
+        "title": "Redshift Documentation",
+        "url": "https://docs.aws.amazon.com/redshift/"
+      }
+    ],
+    "keywords": [
+      "redshift",
+      "data warehouse",
+      "aws dw",
+      "olap"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "aws-glue",
+    "term": "AWS Glue",
+    "slug": "aws-glue",
+    "category": "aws-cloud",
+    "shortDefinition": "A serverless data integration service that makes it easy to discover, prepare, and combine data for analytics, machine learning, and application development.",
+    "fullDefinition": "AWS Glue is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is AWS Glue?\n\nA serverless data integration service that makes it easy to discover, prepare, and combine data for analytics, machine learning, and application development.\n\n## Why AWS Glue Matters\n\nUnderstanding AWS Glue is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAWS Glue typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAWS Glue integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement AWS Glue effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Serverless ETL",
+      "Centralized Data Catalog",
+      "Automatic Schema Discovery",
+      "Apache Spark under the hood"
+    ],
+    "relatedTerms": [
+      "etl",
+      "apache-spark",
+      "meta-store",
+      "schema-registry"
+    ],
+    "relatedTools": [
+      "Apache Spark",
+      "Athena",
+      "EMR"
+    ],
+    "externalLinks": [
+      {
+        "title": "AWS Glue Documentation",
+        "url": "https://docs.aws.amazon.com/glue/"
+      }
+    ],
+    "keywords": [
+      "aws glue",
+      "etl",
+      "serverless",
+      "data catalog",
+      "glue crawler"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "amazon-emr",
+    "term": "Amazon EMR",
+    "slug": "amazon-emr",
+    "category": "aws-cloud",
+    "shortDefinition": "A cloud big data platform for running large-scale distributed data processing jobs, interactive SQL queries, and machine learning applications using open-source analytics frameworks.",
+    "fullDefinition": "Amazon EMR is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Amazon EMR?\n\nA cloud big data platform for running large-scale distributed data processing jobs, interactive SQL queries, and machine learning applications using open-source analytics frameworks.\n\n## Why Amazon EMR Matters\n\nUnderstanding Amazon EMR is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAmazon EMR typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAmazon EMR integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Amazon EMR effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Managed Hadoop/Spark",
+      "Cost-effective with Spot Instances",
+      " decoupling of storage (S3) and compute"
+    ],
+    "relatedTerms": [
+      "apache-spark",
+      "hadoop",
+      "hive",
+      "big-data"
+    ],
+    "relatedTools": [
+      "Apache Spark",
+      "Hadoop",
+      "Presto"
+    ],
+    "externalLinks": [
+      {
+        "title": "Amazon EMR Documentation",
+        "url": "https://docs.aws.amazon.com/emr/"
+      }
+    ],
+    "keywords": [
+      "emr",
+      "hadoop",
+      "spark",
+      "big data cluster"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "amazon-athena",
+    "term": "Amazon Athena",
+    "slug": "amazon-athena",
+    "category": "aws-cloud",
+    "shortDefinition": "A serverless, interactive analytics service built on open-source frameworks, supporting open-table and file formats.",
+    "fullDefinition": "Amazon Athena is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Amazon Athena?\n\nA serverless, interactive analytics service built on open-source frameworks, supporting open-table and file formats.\n\n## Why Amazon Athena Matters\n\nUnderstanding Amazon Athena is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAmazon Athena typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAmazon Athena integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Amazon Athena effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Serverless SQL",
+      "Query S3 directly",
+      "Pay-per-query",
+      "Presto engine"
+    ],
+    "relatedTerms": [
+      "sql",
+      "data-lake",
+      "presto",
+      "trino",
+      "amazon-s3"
+    ],
+    "relatedTools": [
+      "QuickSight",
+      "Tableau"
+    ],
+    "externalLinks": [
+      {
+        "title": "Amazon Athena Documentation",
+        "url": "https://docs.aws.amazon.com/athena/"
+      }
+    ],
+    "keywords": [
+      "athena",
+      "serverless sql",
+      "query s3",
+      "presto"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "aws-lambda",
+    "term": "AWS Lambda",
+    "slug": "aws-lambda",
+    "category": "aws-cloud",
+    "shortDefinition": "A serverless, event-driven compute service that lets you run code for virtually any type of application or backend service without provisioning or managing servers.",
+    "fullDefinition": "AWS Lambda is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is AWS Lambda?\n\nA serverless, event-driven compute service that lets you run code for virtually any type of application or backend service without provisioning or managing servers.\n\n## Why AWS Lambda Matters\n\nUnderstanding AWS Lambda is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAWS Lambda typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAWS Lambda integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement AWS Lambda effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Serverless Compute",
+      "Event-driven",
+      "15-minute execution limit",
+      "Pay per request/duration"
+    ],
+    "relatedTerms": [
+      "serverless",
+      "event-driven",
+      "microservices"
+    ],
+    "relatedTools": [
+      "Serverless Framework",
+      "SAM"
+    ],
+    "externalLinks": [
+      {
+        "title": "AWS Lambda Documentation",
+        "url": "https://docs.aws.amazon.com/lambda/"
+      }
+    ],
+    "keywords": [
+      "lambda",
+      "serverless",
+      "faas",
+      "compute"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "amazon-kinesis",
+    "term": "Amazon Kinesis",
+    "slug": "amazon-kinesis",
+    "category": "aws-cloud",
+    "shortDefinition": "A managed service for processing and analyzing real-time streaming data.",
+    "fullDefinition": "Amazon Kinesis is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Amazon Kinesis?\n\nA managed service for processing and analyzing real-time streaming data.\n\n## Why Amazon Kinesis Matters\n\nUnderstanding Amazon Kinesis is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAmazon Kinesis typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAmazon Kinesis integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Amazon Kinesis effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Real-time streaming",
+      "Managed service",
+      "Integration with Redshift/S3"
+    ],
+    "relatedTerms": [
+      "streaming",
+      "apache-kafka",
+      "real-time"
+    ],
+    "relatedTools": [
+      "Kafka",
+      "Spark Streaming"
+    ],
+    "externalLinks": [
+      {
+        "title": "Amazon Kinesis Documentation",
+        "url": "https://docs.aws.amazon.com/kinesis/"
+      }
+    ],
+    "keywords": [
+      "kinesis",
+      "streaming data",
+      "real-time analytics"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "amazon-dynamodb",
+    "term": "Amazon DynamoDB",
+    "slug": "amazon-dynamodb",
+    "category": "aws-cloud",
+    "shortDefinition": "A serverless, NoSQL, fully managed database with single-digit millisecond performance at any scale.",
+    "fullDefinition": "Amazon DynamoDB is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Amazon DynamoDB?\n\nA serverless, NoSQL, fully managed database with single-digit millisecond performance at any scale.\n\n## Why Amazon DynamoDB Matters\n\nUnderstanding Amazon DynamoDB is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAmazon DynamoDB typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAmazon DynamoDB integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Amazon DynamoDB effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "NoSQL",
+      "Key-Value",
+      "Single-digit ms latency",
+      "Infinite scaling"
+    ],
+    "relatedTerms": [
+      "nosql",
+      "database",
+      "key-value store"
+    ],
+    "relatedTools": [
+      "MongoDB",
+      "Cassandra"
+    ],
+    "externalLinks": [
+      {
+        "title": "DynamoDB Documentation",
+        "url": "https://docs.aws.amazon.com/dynamodb/"
+      }
+    ],
+    "keywords": [
+      "dynamodb",
+      "nosql",
+      "key-value",
+      "aws database"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "aws-iam",
+    "term": "AWS IAM",
+    "slug": "aws-iam",
+    "category": "aws-cloud",
+    "shortDefinition": "Identity and Access Management (IAM) securely manages access to AWS services and resources.",
+    "fullDefinition": "AWS IAM is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is AWS IAM?\n\nIdentity and Access Management (IAM) securely manages access to AWS services and resources.\n\n## Why AWS IAM Matters\n\nUnderstanding AWS IAM is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAWS IAM typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAWS IAM integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement AWS IAM effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Access Control",
+      "Least Privilege Principle",
+      "Role-based Access Control (RBAC)"
+    ],
+    "relatedTerms": [
+      "security",
+      "data-governance",
+      "rbac"
+    ],
+    "relatedTools": [
+      "Okta",
+      "Active Directory"
+    ],
+    "externalLinks": [
+      {
+        "title": "AWS IAM Documentation",
+        "url": "https://docs.aws.amazon.com/iam/"
+      }
+    ],
+    "keywords": [
+      "iam",
+      "aws security",
+      "permissions",
+      "access control"
+    ],
+    "lastUpdated": "2026-01-27"
+  },
+  {
+    "id": "aws-lake-formation",
+    "term": "AWS Lake Formation",
+    "slug": "aws-lake-formation",
+    "category": "aws-cloud",
+    "shortDefinition": "A service to set up, secure, and manage data lakes composed of data in Amazon S3.",
+    "fullDefinition": "AWS Lake Formation is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is AWS Lake Formation?\n\nA service to set up, secure, and manage data lakes composed of data in Amazon S3.\n\n## Why AWS Lake Formation Matters\n\nUnderstanding AWS Lake Formation is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nAWS Lake Formation typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nAWS Lake Formation integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement AWS Lake Formation effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "keyPoints": [
+      "Data Lake Security",
+      "Simplified Management",
+      "Fine-grained access control"
+    ],
+    "relatedTerms": [
+      "data-lake",
+      "data-governance",
+      "security"
+    ],
+    "relatedTools": [
+      "Ranger",
+      "Sentry"
+    ],
+    "externalLinks": [
+      {
+        "title": "Lake Formation Documentation",
+        "url": "https://docs.aws.amazon.com/lake-formation/"
+      }
+    ],
+    "keywords": [
+      "lake formation",
+      "data lake security",
+      "governance"
+    ],
+    "lastUpdated": "2026-01-27"
+  }
+]

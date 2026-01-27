@@ -5,15 +5,24 @@ import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Swords, ChevronRight, ArrowRight, Scale } from 'lucide-react';
 
-// Data
-import { getAllComparisons } from '@/data/comparisonData';
+// Data - Use searchIndex for all comparisons (includes pSEO additions)
+import searchIndex from '@/data/searchIndex.json';
 
 // SEO Factories
 import { generateComparisonHubMeta, generateComparisonCanonical } from '@/lib/pseo/metadataFactory';
 import { generateGlossaryHubSchema } from '@/lib/pseo/schemaFactory'; // Reusing collection schema for now, or could create specific one
 
 export function ComparisonHubPage() {
-    const comparisons = getAllComparisons();
+    // Use searchIndex comparisons (has all 7 including pSEO additions)
+    const comparisons = searchIndex.comparisons.map(comp => ({
+        id: comp.slug,
+        slug: comp.slug,
+        toolA: comp.toolA,
+        toolB: comp.toolB,
+        category: comp.category || 'Data Engineering',
+        shortVerdict: comp.shortVerdict,
+        winner: 'View Details' // Generic since searchIndex doesn't have winner
+    }));
     const meta = generateComparisonHubMeta();
     const canonical = generateComparisonCanonical();
     // Using glossary hub schema structure as a base for collection
@@ -102,8 +111,8 @@ export function ComparisonHubPage() {
                                     <div className="flex items-center gap-2 text-sm text-gray-500 bg-slate-900/50 w-fit px-3 py-1 rounded-full border border-slate-700/50">
                                         <span>Winner:</span>
                                         <span className={`font-bold ${comparison.winner === 'It Depends' || comparison.winner === 'Tie'
-                                                ? 'text-yellow-400'
-                                                : 'text-green-400'
+                                            ? 'text-yellow-400'
+                                            : 'text-green-400'
                                             }`}>
                                             {comparison.winner}
                                         </span>

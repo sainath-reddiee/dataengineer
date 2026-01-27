@@ -18,19 +18,22 @@ import {
     X,
 } from 'lucide-react';
 
-// Data
-import { getAllTerms, GLOSSARY_CATEGORIES, getTermsByCategory } from '@/data/glossaryData';
+// Data - Use searchIndex for efficient search
+import searchIndex from '@/data/searchIndex.json';
+import { GLOSSARY_CATEGORIES } from '@/data/glossaryData';
 
 // PSEO utilities
 import { generateGlossaryHubMeta, generateGlossaryCanonical } from '@/lib/pseo/metadataFactory';
 import { generateGlossaryHubSchema, generateBreadcrumbSchema } from '@/lib/pseo/schemaFactory';
 import { SITE_CONFIG } from '@/lib/seoConfig';
 
+
 export function GlossaryHubPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState(null);
 
-    const allTerms = getAllTerms();
+    // Use lightweight searchIndex instead of full glossaryData
+    const allTerms = searchIndex.glossary;
 
     // Filter terms based on search and category
     const filteredTerms = useMemo(() => {
@@ -45,13 +48,13 @@ export function GlossaryHubPage() {
             terms = terms.filter(
                 (term) =>
                     term.term.toLowerCase().includes(query) ||
-                    term.shortDefinition.toLowerCase().includes(query) ||
-                    term.keywords?.some((k) => k.toLowerCase().includes(query))
+                    term.shortDefinition.toLowerCase().includes(query)
             );
         }
 
         return terms;
     }, [allTerms, searchQuery, selectedCategory]);
+
 
     // Group terms by category for display
     const termsByCategory = useMemo(() => {
@@ -169,8 +172,8 @@ export function GlossaryHubPage() {
                             <button
                                 onClick={() => setSelectedCategory(null)}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${!selectedCategory
-                                        ? 'bg-purple-500 text-white'
-                                        : 'bg-slate-700/50 text-gray-300 hover:bg-slate-700'
+                                    ? 'bg-purple-500 text-white'
+                                    : 'bg-slate-700/50 text-gray-300 hover:bg-slate-700'
                                     }`}
                             >
                                 All Categories
@@ -182,8 +185,8 @@ export function GlossaryHubPage() {
                                         setSelectedCategory(selectedCategory === category.id ? null : category.id)
                                     }
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${selectedCategory === category.id
-                                            ? 'bg-purple-500 text-white'
-                                            : 'bg-slate-700/50 text-gray-300 hover:bg-slate-700'
+                                        ? 'bg-purple-500 text-white'
+                                        : 'bg-slate-700/50 text-gray-300 hover:bg-slate-700'
                                         }`}
                                 >
                                     <span>{category.icon}</span>
@@ -242,18 +245,11 @@ export function GlossaryHubPage() {
                                                     <p className="text-gray-400 text-sm mt-2 line-clamp-2">
                                                         {term.shortDefinition}
                                                     </p>
-                                                    {term.keywords?.slice(0, 3).length > 0 && (
-                                                        <div className="flex flex-wrap gap-1 mt-3">
-                                                            {term.keywords.slice(0, 3).map((keyword, idx) => (
-                                                                <span
-                                                                    key={idx}
-                                                                    className="text-xs px-2 py-0.5 bg-slate-700/50 text-gray-400 rounded"
-                                                                >
-                                                                    {keyword}
-                                                                </span>
-                                                            ))}
-                                                        </div>
-                                                    )}
+                                                    <div className="flex flex-wrap gap-1 mt-3">
+                                                        <span className="text-xs px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded">
+                                                            {GLOSSARY_CATEGORIES.find(c => c.id === term.category)?.name || term.category}
+                                                        </span>
+                                                    </div>
                                                 </Link>
                                             ))}
                                         </div>
@@ -263,6 +259,7 @@ export function GlossaryHubPage() {
                         </div>
                     )}
                 </div>
+
 
                 {/* CTA Section */}
                 <div className="max-w-6xl mx-auto px-4 pb-16">

@@ -1,0 +1,17 @@
+[
+  {
+    "id": "orchestration",
+    "name": "Orchestration",
+    "count": 1
+  },
+  {
+    "id": "data-warehousing",
+    "name": "Data Warehousing",
+    "count": 1
+  },
+  {
+    "id": "data-transformation",
+    "name": "Data Transformation",
+    "count": 1
+  }
+]
