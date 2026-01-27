@@ -1,0 +1,280 @@
+[
+  {
+    "id": "google-bigquery",
+    "term": "Google BigQuery",
+    "slug": "google-bigquery",
+    "category": "gcp-cloud",
+    "shortDefinition": "A serverless, highly scalable, and cost-effective multi-cloud data warehouse designed for business agility.",
+    "fullDefinition": "BigQuery is Google's fully managed, serverless data warehouse that enables scalable analysis over petabytes of data.\n\n## Key Features\n- **Serverless**: No infrastructure to manage\n- **Separation of Compute and Storage**: Scale independently\n- **BigQuery ML**: Create and run ML models using SQL\n- **Omni**: Analyze data across clouds (AWS, Azure) without moving it",
+    "keyPoints": [
+      "Serverless DW",
+      "SQL Interface",
+      "Machine Learning via SQL",
+      "Real-time ingestion"
+    ],
+    "relatedTerms": [
+      "data-warehouse",
+      "sql",
+      "ml",
+      "serverless"
+    ],
+    "relatedTools": [
+      "Snowflake",
+      "Redshift"
+    ],
+    "externalLinks": [
+      {
+        "title": "BigQuery Documentation",
+        "url": "https://cloud.google.com/bigquery/"
+      }
+    ],
+    "keywords": [
+      "bigquery",
+      "gcp dw",
+      "analytics",
+      "serverless"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "google-cloud-storage",
+    "term": "Google Cloud Storage",
+    "slug": "google-cloud-storage",
+    "category": "gcp-cloud",
+    "shortDefinition": "Managed, secure, and scalable object storage for all your unstructured data needs.",
+    "fullDefinition": "Google Cloud Storage (GCS) is a RESTful online file storage web service for storing and accessing data on Google Cloud Platform infrastructure.\n\n## Classes\n- **Standard**: High frequency access\n- **Nearline**: Access once a month\n- **Coldline**: Access once a quarter\n- **Archive**: Access once a year",
+    "keyPoints": [
+      "Object Storage",
+      "Global Consistency",
+      "Lifecycle Management"
+    ],
+    "relatedTerms": [
+      "object-storage",
+      "data-lake"
+    ],
+    "relatedTools": [
+      "Amazon S3",
+      "Azure Blob"
+    ],
+    "externalLinks": [
+      {
+        "title": "Cloud Storage Documentation",
+        "url": "https://cloud.google.com/storage/"
+      }
+    ],
+    "keywords": [
+      "gcs",
+      "cloud storage",
+      "object storage"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "google-cloud-dataflow",
+    "term": "Google Cloud Dataflow",
+    "slug": "google-cloud-dataflow",
+    "category": "gcp-cloud",
+    "shortDefinition": "Unified stream and batch data processing that's serverless, fast, and cost-effective.",
+    "fullDefinition": "Dataflow is a fully managed service for executing Apache Beam pipelines within the Google Cloud Platform ecosystem.\n\n## Features\n- **Unified Model**: Same code for batch and stream\n- **Autoscaling**: Horizontal autoscaling of worker resources\n- **Exact-once processing**: Reliable data processing",
+    "keyPoints": [
+      "Apache Beam",
+      "Unified Batch/Stream",
+      "Serverless"
+    ],
+    "relatedTerms": [
+      "streaming",
+      "batch-processing",
+      "etl"
+    ],
+    "relatedTools": [
+      "Apache Beam",
+      "Spark",
+      "Flink"
+    ],
+    "externalLinks": [
+      {
+        "title": "Dataflow Documentation",
+        "url": "https://cloud.google.com/dataflow/"
+      }
+    ],
+    "keywords": [
+      "dataflow",
+      "apache beam",
+      "streaming",
+      "etl"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "google-cloud-dataproc",
+    "term": "Google Cloud Dataproc",
+    "slug": "google-cloud-dataproc",
+    "category": "gcp-cloud",
+    "shortDefinition": "A fully managed and highly scalable service for running Apache Spark, Apache Flink, Presto, and 30+ open source tools and frameworks.",
+    "fullDefinition": "Dataproc is a managed Spark and Hadoop service that lets you take advantage of open source data tools for batch processing, querying, streaming, and machine learning.\n\n## Benefits\n- **Fast Startup**: Clusters start in seconds\n- **Cost**: Per-second billing\n- **Integration**: Native connectors for GCS, Bigtable, BigQuery",
+    "keyPoints": [
+      "Managed Hadoop/Spark",
+      "Fast Spin-up",
+      "Open Source Ecosystem"
+    ],
+    "relatedTerms": [
+      "hadoop",
+      "spark",
+      "hive"
+    ],
+    "relatedTools": [
+      "EMR",
+      "HDInsight"
+    ],
+    "externalLinks": [
+      {
+        "title": "Dataproc Documentation",
+        "url": "https://cloud.google.com/dataproc/"
+      }
+    ],
+    "keywords": [
+      "dataproc",
+      "spark",
+      "hadoop",
+      "gcp big data"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "google-cloud-pubsub",
+    "term": "Google Cloud Pub/Sub",
+    "slug": "google-cloud-pubsub",
+    "category": "gcp-cloud",
+    "shortDefinition": "A scalable, durable, and secure ingestion service for event streaming and analytics.",
+    "fullDefinition": "Pub/Sub is an asynchronous messaging service that decouples services that produce events from services that process events.\n\n## Concepts\n- **Topic**: Feed of messages\n- **Subscription**: Receive messages from topic\n- **Message**: The data itself",
+    "keyPoints": [
+      "Global Messaging",
+      "Asynchronous",
+      "Decoupled Architecture"
+    ],
+    "relatedTerms": [
+      "messaging",
+      "streaming",
+      "event-driven"
+    ],
+    "relatedTools": [
+      "Kafka",
+      "Kinesis"
+    ],
+    "externalLinks": [
+      {
+        "title": "Pub/Sub Documentation",
+        "url": "https://cloud.google.com/pubsub/"
+      }
+    ],
+    "keywords": [
+      "pub/sub",
+      "messaging",
+      "queue",
+      "streaming"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "google-cloud-composer",
+    "term": "Google Cloud Composer",
+    "slug": "google-cloud-composer",
+    "category": "gcp-cloud",
+    "shortDefinition": "A fully managed workflow orchestration service built on Apache Airflow.",
+    "fullDefinition": "Cloud Composer is a managed version of Apache Airflow. It helps you create, schedule, monitor, and manage workflows.\n\n## Features\n- **Managed Airflow**: Google handles the infrastructure\n- **Python**: Write DAGs in Python\n- **Integration**: Deep hooks into BigQuery, Dataflow, Dataproc",
+    "keyPoints": [
+      "Managed Airflow",
+      "Orchestration",
+      "Python DAGs"
+    ],
+    "relatedTerms": [
+      "apache-airflow",
+      "orchestration",
+      "etl"
+    ],
+    "relatedTools": [
+      "Apache Airflow",
+      "Prefect",
+      "Dagster"
+    ],
+    "externalLinks": [
+      {
+        "title": "Composer Documentation",
+        "url": "https://cloud.google.com/composer/"
+      }
+    ],
+    "keywords": [
+      "composer",
+      "airflow",
+      "orchestration"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "google-cloud-functions",
+    "term": "Google Cloud Functions",
+    "slug": "google-cloud-functions",
+    "category": "gcp-cloud",
+    "shortDefinition": "A serverless execution environment for building and connecting cloud services.",
+    "fullDefinition": "Cloud Functions is a lightweight compute solution for developers to create single-purpose, stand-alone functions that respond to cloud events.\n\n## Use Cases\n- Data processing via triggers (GCS uploads)\n- Webhooks\n- Lightweight APIs",
+    "keyPoints": [
+      "Serverless",
+      "Event-driven",
+      "FaaS"
+    ],
+    "relatedTerms": [
+      "serverless",
+      "faas"
+    ],
+    "relatedTools": [
+      "AWS Lambda",
+      "Azure Functions"
+    ],
+    "externalLinks": [
+      {
+        "title": "Cloud Functions Documentation",
+        "url": "https://cloud.google.com/functions/"
+      }
+    ],
+    "keywords": [
+      "cloud functions",
+      "serverless",
+      "compute"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "google-cloud-bigtable",
+    "term": "Google Cloud Bigtable",
+    "slug": "google-cloud-bigtable",
+    "category": "gcp-cloud",
+    "shortDefinition": "A fully managed, wide-column and key-value NoSQL database service for large analytical and operational workloads.",
+    "fullDefinition": "Bigtable is the same database that powers Google Search, Analytics, Maps, and Gmail. It is designed for high throughput and low latency.\n\n## Best For\n- Time-series data\n- Marketing data\n- IoT data\n- Financial data history",
+    "keyPoints": [
+      "NoSQL",
+      "Wide-column",
+      "Petabyte scale"
+    ],
+    "relatedTerms": [
+      "nosql",
+      "big-data",
+      "hbase"
+    ],
+    "relatedTools": [
+      "HBase",
+      "Cassandra"
+    ],
+    "externalLinks": [
+      {
+        "title": "Bigtable Documentation",
+        "url": "https://cloud.google.com/bigtable/"
+      }
+    ],
+    "keywords": [
+      "bigtable",
+      "nosql",
+      "wide-column"
+    ],
+    "lastUpdated": "2026-01-21"
+  }
+]

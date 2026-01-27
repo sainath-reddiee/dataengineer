@@ -1,0 +1,231 @@
+[
+  {
+    "id": "fivetran",
+    "term": "Fivetran",
+    "slug": "fivetran",
+    "category": "data-integration",
+    "shortDefinition": "A fully managed data integration platform that automatically syncs data from hundreds of sources to data warehouses and lakes with minimal configuration.",
+    "fullDefinition": "Fivetran is a fully managed ELT (Extract, Load) platform that automates data replication from SaaS applications, databases, and other sources to data warehouses and lakes. It handles the E and L, leaving the T to tools like dbt.\n\n## How Fivetran Works\n\n1. **Connect**: Select a source (e.g., Salesforce, PostgreSQL)\n2. **Configure**: Provide credentials and select tables\n3. **Sync**: Fivetran automatically extracts and loads data\n4. **Transform**: Use dbt or SQL for transformations\n\n## Key Features\n\n- **Automated Schema Migration**: Handles source changes automatically\n- **Incremental Updates**: Syncs only new/changed data\n- **300+ Connectors**: Pre-built integrations to popular sources\n- **Normalized Schemas**: Standardized table structures\n- **Transformations**: Built-in dbt Core for basic transforms\n\n## Popular Connectors\n\n| Category | Sources |\n|----------|---------|\n| CRM | Salesforce, HubSpot |\n| Marketing | Google Ads, Facebook Ads |\n| Databases | PostgreSQL, MySQL, MongoDB |\n| SaaS | Stripe, Zendesk, Jira |\n| Files | Google Sheets, S3 |\n\n## Fivetran vs Alternatives\n\n- **vs Airbyte**: Fivetran is managed, Airbyte is open-source\n- **vs Stitch**: Similar but Fivetran has more enterprise features\n- **vs Custom Code**: Fivetran eliminates maintenance overhead\n\n## Pricing Model\n\nFivetran uses Monthly Active Rows (MAR) pricing:\n- Pay based on rows updated each month\n- Predictable costs for stable datasets\n- Can be expensive for high-change data",
+    "keyPoints": [
+      "Fully managed data integration platform",
+      "300+ pre-built connectors to sources",
+      "Handles schema changes automatically",
+      "Syncs to Snowflake, BigQuery, Redshift, Databricks",
+      "Monthly Active Rows (MAR) pricing model"
+    ],
+    "faqs": [
+      {
+        "question": "What is Fivetran used for?",
+        "answer": "Fivetran is used for automatically syncing data from various sources (SaaS apps, databases) to data warehouses. It handles the Extract and Load steps, letting you focus on transformations with tools like dbt."
+      },
+      {
+        "question": "Is Fivetran an ETL tool?",
+        "answer": "Fivetran is an EL (Extract, Load) or ELT tool. It extracts and loads data to your warehouse, but transformations happen after loading using tools like dbt, not before loading like traditional ETL."
+      },
+      {
+        "question": "How does Fivetran pricing work?",
+        "answer": "Fivetran uses Monthly Active Rows (MAR) pricing. You pay based on the number of unique rows that are updated or inserted each month, not total data volume."
+      },
+      {
+        "question": "Fivetran vs Airbyte: which is better?",
+        "answer": "Fivetran is fully managed with enterprise support and more polished connectors. Airbyte is open-source and cheaper but requires self-hosting. Choose Fivetran for reliability; Airbyte for cost savings."
+      }
+    ],
+    "relatedTerms": [
+      "etl",
+      "airbyte",
+      "dbt",
+      "data-warehouse",
+      "data-integration"
+    ],
+    "relatedTools": [
+      "Airbyte",
+      "Stitch",
+      "dbt",
+      "Snowflake",
+      "BigQuery"
+    ],
+    "externalLinks": [
+      {
+        "title": "Fivetran Documentation",
+        "url": "https://fivetran.com/docs"
+      },
+      {
+        "title": "Fivetran Connectors",
+        "url": "https://fivetran.com/connectors"
+      }
+    ],
+    "keywords": [
+      "fivetran",
+      "fivetran connectors",
+      "fivetran vs airbyte",
+      "data integration",
+      "managed etl"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "airbyte",
+    "term": "Airbyte",
+    "slug": "airbyte",
+    "category": "data-integration",
+    "shortDefinition": "An open-source data integration platform with 300+ connectors for syncing data from APIs, databases, and files to data warehouses and lakes.",
+    "fullDefinition": "Airbyte is an open-source data integration platform that moves data from sources (databases, APIs, SaaS apps) to destinations (data warehouses, lakes). It's the leading open-source alternative to Fivetran.\n\n## Deployment Options\n\n1. **Self-Hosted (OSS)**: Free, deploy on your infrastructure\n2. **Airbyte Cloud**: Managed SaaS version\n3. **Airbyte Enterprise**: Self-hosted with enterprise features\n\n## Key Features\n\n- **300+ Connectors**: Community and Airbyte-maintained\n- **Connector Builder**: Create custom connectors without code\n- **Incremental Sync**: Only sync new/changed data\n- **Schema Normalization**: Optional data normalization\n- **CDC Support**: Change Data Capture for databases\n- **Airbyte Protocol**: Open standard for connectors\n\n## Why Teams Choose Airbyte\n\n- **Cost**: Self-hosted version is free\n- **Flexibility**: Deploy anywhere, customize everything\n- **Community**: Active open-source community\n- **Transparency**: Know exactly how data is moved\n- **Extensibility**: Build custom connectors easily\n\n## Airbyte Architecture\n\n```\nSources → Airbyte Workers → Destinations\n           (Docker)\n             ↓\n         Connector\n        (Singer, etc.)\n```\n\n## Airbyte vs Fivetran\n\n| Aspect | Airbyte | Fivetran |\n|--------|---------|----------|\n| Pricing | Free (OSS) or Cloud | MAR-based |\n| Hosting | Self or Cloud | Managed only |\n| Connectors | 300+ (community) | 300+ (maintained) |\n| Support | Community + Enterprise | Enterprise |",
+    "keyPoints": [
+      "Open-source data integration platform",
+      "300+ connectors maintained by community",
+      "Self-hosted (free) or Airbyte Cloud options",
+      "Connector Builder for custom integrations",
+      "Leading open-source alternative to Fivetran"
+    ],
+    "faqs": [
+      {
+        "question": "What is Airbyte?",
+        "answer": "Airbyte is an open-source data integration platform that syncs data from sources (APIs, databases, SaaS apps) to destinations (data warehouses, data lakes). It is a popular free alternative to Fivetran."
+      },
+      {
+        "question": "Is Airbyte free?",
+        "answer": "Airbyte Core (self-hosted) is free and open-source. Airbyte Cloud is a paid managed service. Airbyte Enterprise adds commercial features to self-hosted deployments."
+      },
+      {
+        "question": "How does Airbyte compare to Fivetran?",
+        "answer": "Airbyte is open-source and can be self-hosted for free. Fivetran is fully managed with more polished connectors. Choose Airbyte for cost savings and control; Fivetran for reliability and support."
+      },
+      {
+        "question": "What is the Airbyte Connector Builder?",
+        "answer": "The Connector Builder is a no-code tool for creating custom Airbyte connectors. You can define API sources visually without writing code, then use them like any other connector."
+      }
+    ],
+    "relatedTerms": [
+      "fivetran",
+      "etl",
+      "data-integration",
+      "dbt",
+      "cdc"
+    ],
+    "relatedTools": [
+      "Fivetran",
+      "Stitch",
+      "dbt",
+      "Snowflake",
+      "BigQuery"
+    ],
+    "externalLinks": [
+      {
+        "title": "Airbyte Documentation",
+        "url": "https://docs.airbyte.com/"
+      },
+      {
+        "title": "Airbyte GitHub",
+        "url": "https://github.com/airbytehq/airbyte"
+      }
+    ],
+    "keywords": [
+      "airbyte",
+      "airbyte connectors",
+      "airbyte vs fivetran",
+      "open source etl",
+      "data integration"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "cdc",
+    "term": "Change Data Capture (CDC)",
+    "slug": "cdc",
+    "category": "data-integration",
+    "shortDefinition": "A technique for identifying and capturing changes made to data in a database, enabling real-time or near-real-time data replication to other systems.",
+    "fullDefinition": "Change Data Capture (CDC) is a technique that identifies and captures changes (inserts, updates, deletes) made to data in a database. Instead of copying entire tables, CDC streams only the changes, enabling efficient real-time data replication.\n\n## Why CDC Matters\n\nTraditional batch extraction is inefficient:\n- **Full loads**: Copy entire tables repeatedly\n- **Timestamp-based**: Misses deletes, requires modification tracking\n- **Performance impact**: Heavy queries on source systems\n\nCDC solves these issues by capturing changes at the source.\n\n## CDC Methods\n\n1. **Log-Based CDC**: Read database transaction logs (most efficient)\n2. **Trigger-Based CDC**: Database triggers capture changes\n3. **Timestamp-Based**: Query for recently modified rows (not true CDC)\n4. **Diff-Based**: Compare snapshots (resource intensive)\n\n## Log-Based CDC Flow\n\n```\nSource DB → Transaction Log → CDC Tool → Target System\n(MySQL,      (binlog, WAL)    (Debezium)   (Kafka, DW)\n Postgres)\n```\n\n## Popular CDC Tools\n\n| Tool | Type | Best For |\n|------|------|----------|\n| Debezium | Open Source | Kafka integration |\n| Fivetran | Managed | Easy setup |\n| Airbyte | Open Source | Self-hosted |\n| AWS DMS | Cloud | AWS ecosystems |\n| Striim | Enterprise | Complex transforms |\n\n## CDC Use Cases\n\n- **Data Warehousing**: Near-real-time warehouse updates\n- **Microservices**: Sync data between services\n- **Event Sourcing**: Capture all state changes\n- **Cache Invalidation**: Update caches on data change\n- **Search Indexing**: Keep Elasticsearch in sync",
+    "keyPoints": [
+      "Captures database changes (insert, update, delete) in real-time",
+      "More efficient than full table extracts",
+      "Log-based CDC reads transaction logs directly",
+      "Enables near-real-time data replication",
+      "Key tools: Debezium, Fivetran, Airbyte, AWS DMS"
+    ],
+    "faqs": [
+      {
+        "question": "What is Change Data Capture (CDC)?",
+        "answer": "CDC is a technique for capturing changes made to data in a database (inserts, updates, deletes) and streaming them to other systems. It enables real-time data replication without copying entire tables."
+      },
+      {
+        "question": "Why is CDC better than batch extraction?",
+        "answer": "CDC is more efficient because it only transfers changed data, not entire tables. It captures deletes (which timestamp methods miss), has lower impact on source systems, and enables near-real-time data freshness."
+      },
+      {
+        "question": "What is Debezium?",
+        "answer": "Debezium is an open-source CDC platform that reads database transaction logs and streams changes to Apache Kafka. It supports MySQL, PostgreSQL, MongoDB, SQL Server, and other databases."
+      },
+      {
+        "question": "What is log-based CDC?",
+        "answer": "Log-based CDC reads the database transaction log (binlog in MySQL, WAL in PostgreSQL) to capture changes. This is the most efficient CDC method as it does not query the database directly."
+      }
+    ],
+    "relatedTerms": [
+      "data-replication",
+      "kafka",
+      "debezium",
+      "etl",
+      "streaming"
+    ],
+    "relatedTools": [
+      "Debezium",
+      "Fivetran",
+      "Airbyte",
+      "AWS DMS",
+      "Kafka"
+    ],
+    "externalLinks": [
+      {
+        "title": "Debezium Documentation",
+        "url": "https://debezium.io/documentation/"
+      },
+      {
+        "title": "CDC Explained - Confluent",
+        "url": "https://www.confluent.io/learn/change-data-capture/"
+      }
+    ],
+    "keywords": [
+      "change data capture",
+      "cdc",
+      "cdc database",
+      "debezium",
+      "log-based cdc",
+      "data replication"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "reverse-etl",
+    "term": "Reverse ETL",
+    "slug": "reverse-etl",
+    "category": "data-integration",
+    "shortDefinition": "The process of moving data from a data warehouse back into operational systems (SaaS tools) used for business.",
+    "fullDefinition": "Reverse ETL operationalizes data by syncing it from the Data Warehouse to tools like Salesforce, HubSpot, or Marketo.\n\n## Why?\n- **Operational Analytics**: Give sales teams data where they work\n- **Personalization**: Push customer segments to marketing tools",
+    "keyPoints": [
+      "Warehouse to App",
+      "Operational Analytics",
+      "Data Activation"
+    ],
+    "relatedTerms": [
+      "etl",
+      "data-warehouse"
+    ],
+    "relatedTools": [
+      "Census",
+      "Hightouch"
+    ],
+    "externalLinks": [
+      {
+        "title": "What is Reverse ETL?",
+        "url": "https://hightouch.com/blog/reverse-etl"
+      }
+    ],
+    "keywords": [
+      "reverse etl",
+      "data activation",
+      "operational analytics"
+    ],
+    "lastUpdated": "2026-01-21"
+  }
+]

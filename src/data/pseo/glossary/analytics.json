@@ -1,0 +1,67 @@
+[
+  {
+    "id": "apache-spark",
+    "term": "Apache Spark",
+    "slug": "apache-spark",
+    "category": "analytics",
+    "shortDefinition": "A unified analytics engine for large-scale data processing, providing high-level APIs for batch processing, streaming, machine learning, and graph computation.",
+    "fullDefinition": "Apache Spark is a unified analytics engine designed for large-scale data processing. It provides high-level APIs in Python, Scala, Java, and R, along with an optimized engine that supports general execution graphs. Spark can run on clusters of thousands of machines.\n\n## Why Spark?\n\nSpark was created to address limitations of Hadoop MapReduce:\n- **Speed**: 100x faster than Hadoop for in-memory processing\n- **Ease of Use**: Rich APIs vs low-level MapReduce code\n- **Unified Platform**: Batch, streaming, ML, and graph in one engine\n- **Versatility**: Works with any data source and storage system\n\n## Core Components\n\n### 1. Spark Core\nThe foundation providing:\n- Distributed task dispatching and scheduling\n- Memory management\n- Fault recovery\n- I/O operations\n\n### 2. Spark SQL\nQuery structured data using SQL or DataFrames:\n```python\ndf = spark.read.parquet(\"s3://data/users\")\ndf.filter(df.age > 21).groupBy(\"city\").count().show()\n```\n\n### 3. Spark Streaming (Structured Streaming)\nProcess real-time data streams:\n```python\nstream_df = spark.readStream.format(\"kafka\").load()\nquery = stream_df.writeStream.format(\"console\").start()\n```\n\n### 4. MLlib\nMachine learning at scale:\n- Classification, regression, clustering\n- Feature engineering pipelines\n- Model persistence\n\n### 5. GraphX\nGraph computation for:\n- Social network analysis\n- Fraud detection\n- Recommendation engines\n\n## Spark Ecosystem\n\n- **PySpark**: Python API (most popular)\n- **Spark on Databricks**: Managed Spark with collaboration features\n- **Spark on EMR**: AWS managed clusters\n- **Spark on Kubernetes**: Cloud-native deployment\n\n## Common Use Cases\n\n1. **ETL at Scale**: Process terabytes of data\n2. **Data Lake Processing**: Transform raw lake data\n3. **Real-time Analytics**: Stream processing pipelines\n4. **Machine Learning**: Train models on big data\n5. **Log Analysis**: Process application and server logs",
+    "keyPoints": [
+      "Unified engine for batch, streaming, ML, and graph processing",
+      "100x faster than Hadoop MapReduce for in-memory tasks",
+      "APIs available in Python (PySpark), Scala, Java, and R",
+      "Can process petabytes of data across clusters",
+      "Foundation for Databricks and many cloud platforms"
+    ],
+    "faqs": [
+      {
+        "question": "What is Apache Spark used for?",
+        "answer": "Apache Spark is used for processing large-scale data. Common use cases include ETL pipelines, real-time stream processing, machine learning, data lake transformations, and big data analytics."
+      },
+      {
+        "question": "Is Apache Spark better than Hadoop?",
+        "answer": "For most modern use cases, yes. Spark is faster (especially for iterative tasks), easier to program, and more versatile. However, Hadoop ecosystem components like HDFS and YARN are still used alongside Spark."
+      },
+      {
+        "question": "What is PySpark?",
+        "answer": "PySpark is the Python API for Apache Spark. It allows data engineers and scientists to write Spark jobs in Python, which is the most popular language for Spark development."
+      },
+      {
+        "question": "Is Spark free to use?",
+        "answer": "Yes, Apache Spark is open-source and free. Commercial platforms like Databricks offer managed Spark with additional features and support."
+      }
+    ],
+    "relatedTerms": [
+      "databricks",
+      "pyspark",
+      "hadoop",
+      "data-lake",
+      "etl"
+    ],
+    "relatedTools": [
+      "Databricks",
+      "AWS EMR",
+      "Google Dataproc",
+      "Azure HDInsight",
+      "Apache Hadoop"
+    ],
+    "externalLinks": [
+      {
+        "title": "Apache Spark Documentation",
+        "url": "https://spark.apache.org/docs/latest/"
+      },
+      {
+        "title": "PySpark Tutorial - Databricks",
+        "url": "https://docs.databricks.com/spark/latest/spark-sql/index.html"
+      }
+    ],
+    "keywords": [
+      "apache spark",
+      "pyspark",
+      "spark sql",
+      "spark streaming",
+      "spark vs hadoop"
+    ],
+    "lastUpdated": "2026-01-21"
+  }
+]

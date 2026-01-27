@@ -1,0 +1,65 @@
+[
+  {
+    "id": "snowflake-vs-bigquery",
+    "slug": "snowflake-vs-bigquery",
+    "toolA": "Snowflake",
+    "toolB": "Google BigQuery",
+    "category": "Data Warehousing",
+    "winner": "It Depends",
+    "shortVerdict": "Snowflake offers multi-cloud flexibility and zero-maintenance performance. BigQuery offers effortless serverless scaling and deep GCP integration.",
+    "intro": "The two titans of cloud data warehousing. Snowflake brought the cloud-native separated storage/compute model to the masses. BigQuery is Google's serverless powerhouse. Both are excellent, but they serve slightly different needs.",
+    "features": [
+      {
+        "name": "Cloud Infrastructure",
+        "toolAValue": "Multi-cloud (AWS, Azure, GCP)",
+        "toolBValue": "GCP Native (mostly)",
+        "winner": "Snowflake"
+      },
+      {
+        "name": "Pricing Model",
+        "toolAValue": "Pay for Warehouse uptime (per second)",
+        "toolBValue": "Pay per query (bytes scanned) or slots",
+        "winner": "Tie"
+      },
+      {
+        "name": "Maintenance",
+        "toolAValue": "Near Zero (Auto-suspend/resume)",
+        "toolBValue": "Zero (Serverless)",
+        "winner": "BigQuery"
+      },
+      {
+        "name": "Performance",
+        "toolAValue": "Excellent (with tuning)",
+        "toolBValue": "Excellent (brute force parallelism)",
+        "winner": "Tie"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Cloud agnostic (no vendor lock-in)",
+        "Data Sharing capabilities",
+        "Zero-copy cloning"
+      ],
+      "toolB": [
+        "True serverless (no sizing needed)",
+        "Integrated ML (BigQuery ML)",
+        "Free tier available"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Costs can spiral if not monitored",
+        "Not truly \"serverless\" (need to manage WH sizes)"
+      ],
+      "toolB": [
+        "GCP lock-in",
+        "Slot contention in rigid flat-rate pricing"
+      ]
+    },
+    "finalVerdict": "**Choose Snowflake if:**\n- You want a multi-cloud strategy.\n- You need robust data sharing features.\n- You value predictable performance via Warehouse sizing.\n\n**Choose BigQuery if:**\n- You are already on GCP.\n- You possess \"bursty\" workloads (perfect for pay-per-query).\n- You want to do Machine Learning directly in SQL.",
+    "relatedComparisons": [
+      "airflow-vs-prefect"
+    ],
+    "lastUpdated": "2026-01-21"
+  }
+]

@@ -1,0 +1,138 @@
+[
+  {
+    "id": "data-modeling",
+    "term": "Data Modeling",
+    "slug": "data-modeling",
+    "category": "data-modeling",
+    "shortDefinition": "The process of creating a visual representation of data structures and relationships, defining how data is stored, organized, and accessed in databases and warehouses.",
+    "fullDefinition": "Data modeling is the process of creating a visual representation of how data is structured, stored, and accessed in a system. It defines entities, attributes, relationships, and constraints—serving as the blueprint for databases and data warehouses.\n\n## Types of Data Models\n\n### 1. Conceptual Model\nHigh-level business view:\n- Entities and relationships\n- No technical details\n- Understood by business stakeholders\n\n### 2. Logical Model\nDetailed structure without platform specifics:\n- Attributes and data types\n- Primary and foreign keys\n- Normalization rules\n\n### 3. Physical Model\nImplementation-ready design:\n- Table definitions with exact data types\n- Indexes and partitions\n- Platform-specific optimizations\n\n## Data Modeling Techniques\n\n### Dimensional Modeling (Kimball)\nOptimized for analytics and BI:\n- **Fact Tables**: Metrics and measurements\n- **Dimension Tables**: Descriptive attributes\n- **Star Schema**: Fact table surrounded by dimensions\n- **Snowflake Schema**: Normalized dimensions\n\n### Data Vault\nScalable, auditable modeling:\n- **Hubs**: Business keys\n- **Links**: Relationships\n- **Satellites**: Descriptive data with history\n\n### One Big Table (OBT)\nModern, denormalized approach:\n- Single wide table with all data\n- Optimized for cloud warehouses\n- Simple, fast queries\n\n## Best Practices\n\n1. **Start with Business Questions**: Model for how data will be used\n2. **Document Everything**: Maintain a data dictionary\n3. **Think About Change**: Design for schema evolution\n4. **Test with Real Queries**: Validate performance early\n5. **Use dbt for Implementation**: Transform raw to modeled data\n\n## Common Mistakes\n\n- Over-normalization for analytical workloads\n- Ignoring query performance during design\n- Not involving business stakeholders\n- Skipping documentation",
+    "keyPoints": [
+      "Blueprint for database and warehouse design",
+      "Three levels: Conceptual, Logical, Physical",
+      "Dimensional modeling (Kimball) popular for analytics",
+      "Data Vault provides scalability and auditability",
+      "Modern trend: simpler, denormalized \"One Big Table\""
+    ],
+    "faqs": [
+      {
+        "question": "What is data modeling in simple terms?",
+        "answer": "Data modeling is designing how data is organized and stored. It defines what data exists (entities), what properties it has (attributes), and how pieces relate to each other (relationships)."
+      },
+      {
+        "question": "What are the types of data models?",
+        "answer": "The three main types are: Conceptual (business view), Logical (detailed structure), and Physical (implementation-ready). Additionally, there are methodologies like Dimensional Modeling and Data Vault."
+      },
+      {
+        "question": "What is a star schema?",
+        "answer": "A star schema is a dimensional modeling design where a central fact table (containing metrics) is surrounded by dimension tables (containing descriptive attributes). It resembles a star shape and is optimized for BI queries."
+      },
+      {
+        "question": "What tools are used for data modeling?",
+        "answer": "Popular tools include dbt (for transformation modeling), Erwin, Lucidchart, dbdiagram.io, SqlDBM, and Draw.io. In modern stacks, dbt is often used to define and document models as code."
+      }
+    ],
+    "relatedTerms": [
+      "data-warehouse",
+      "dbt",
+      "star-schema",
+      "fact-table",
+      "dimension-table"
+    ],
+    "relatedTools": [
+      "dbt",
+      "Erwin",
+      "Lucidchart",
+      "dbdiagram.io",
+      "SqlDBM"
+    ],
+    "externalLinks": [
+      {
+        "title": "Dimensional Modeling - Kimball Group",
+        "url": "https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/"
+      },
+      {
+        "title": "Data Modeling with dbt",
+        "url": "https://docs.getdbt.com/docs/build/models"
+      }
+    ],
+    "keywords": [
+      "data modeling",
+      "star schema",
+      "dimensional modeling",
+      "data vault",
+      "data model design"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "cap-theorem",
+    "term": "CAP Theorem",
+    "slug": "cap-theorem",
+    "category": "data-modeling",
+    "shortDefinition": "A theorem stating that a distributed data store can only guarantee two of the three: Consistency, Availability, and Partition Tolerance.",
+    "fullDefinition": "The CAP theorem is fundamental to understanding distributed systems and NoSQL databases.\n\n## The Three Properties\n- **Consistency**: Every read receives the most recent write or an error.\n- **Availability**: Every request receives a (non-error) response, without the guarantee that it contains the most recent write.\n- **Partition Tolerance**: The system continues to operate despite an arbitrary number of messages being dropped/delayed by the network.\n\n**Rule**: In a distributed system (P), you must choose between C and A.",
+    "keyPoints": [
+      "Distributed Systems",
+      "Trade-offs",
+      "NoSQL Design"
+    ],
+    "relatedTerms": [
+      "nosql",
+      "acid",
+      "base"
+    ],
+    "relatedTools": [
+      "Cassandra",
+      "DynamoDB",
+      "MongoDB"
+    ],
+    "externalLinks": [
+      {
+        "title": "CAP Theorem Explained",
+        "url": "https://en.wikipedia.org/wiki/CAP_theorem"
+      }
+    ],
+    "keywords": [
+      "cap theorem",
+      "distributed systems",
+      "consistency",
+      "availability"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "acid",
+    "term": "ACID Transactions",
+    "slug": "acid",
+    "category": "data-modeling",
+    "shortDefinition": "A set of properties of database transactions intended to guarantee data validity despite errors, power failures, and other mishaps.",
+    "fullDefinition": "ACID stands for Atomicity, Consistency, Isolation, Durability. These properties ensure reliable processing of database transactions.\n\n## The Properties\n- **Atomicity**: All or nothing.\n- **Consistency**: Data remains valid before and after.\n- **Isolation**: Concurrent transactions don't interfere.\n- **Durability**: Committed data is saved permanently.",
+    "keyPoints": [
+      "Transaction Integrity",
+      "Relational Databases",
+      "Data Validity"
+    ],
+    "relatedTerms": [
+      "database",
+      "sql",
+      "oltp"
+    ],
+    "relatedTools": [
+      "PostgreSQL",
+      "MySQL",
+      "Oracle"
+    ],
+    "externalLinks": [
+      {
+        "title": "ACID Properties",
+        "url": "https://en.wikipedia.org/wiki/ACID"
+      }
+    ],
+    "keywords": [
+      "acid",
+      "transactions",
+      "database properties"
+    ],
+    "lastUpdated": "2026-01-21"
+  }
+]

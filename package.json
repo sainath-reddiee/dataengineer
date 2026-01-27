@@ -30,7 +30,13 @@
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'",
     "test:seo": "npm run build && node scripts/testSEO.js",
     "test:build": "npm run build && npm run build:verify",
-    "pseo:sitemaps": "node scripts/lib/sitemap-generator.js"
+    "pseo:sitemaps": "node scripts/lib/sitemap-generator.js",
+    "pseo:migrate": "node scripts/migrate-pseo-data.js",
+    "pseo:sync-articles": "node scripts/sync-articles-for-linking.js",
+    "pseo:search-index": "node scripts/generate-search-index.js",
+    "pseo:deploy": "npm run pseo:sync-articles && npm run pseo:search-index && node scripts/deploy-pseo.js",
+    "pseo:deploy:dry-run": "node scripts/deploy-pseo.js --dry-run",
+    "pseo:deploy:force": "npm run pseo:sync-articles && npm run pseo:search-index && node scripts/deploy-pseo.js --force"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -55,6 +61,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.975.0",
     "@types/dompurify": "^3.0.5",
     "@types/node": "^20.11.19",
     "@types/react": "^18.2.56",

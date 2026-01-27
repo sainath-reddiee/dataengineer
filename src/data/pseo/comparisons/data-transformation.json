@@ -1,0 +1,60 @@
+[
+  {
+    "id": "dbt-vs-dataform",
+    "slug": "dbt-vs-dataform",
+    "toolA": "dbt",
+    "toolB": "Dataform",
+    "category": "Data Transformation",
+    "winner": "dbt",
+    "shortVerdict": "dbt is the industry standard for analytics engineering with broad support. Dataform is a strong alternative specifically for BigQuery users.",
+    "intro": "dbt (data build tool) revolutionized data transformation by bringing software engineering practices to SQL. Dataform (acquired by Google) offers a similar value prop but deeply integrated into the BigQuery ecosystem.",
+    "features": [
+      {
+        "name": "Platform Support",
+        "toolAValue": "Universal (Snowflake, BQ, Redshift, Postgres, Spark)",
+        "toolBValue": "BigQuery Only (mostly)",
+        "winner": "dbt"
+      },
+      {
+        "name": "Language",
+        "toolAValue": "Jinja + SQL",
+        "toolBValue": "JavaScript + SQL",
+        "winner": "Tie"
+      },
+      {
+        "name": "Pricing",
+        "toolAValue": "Open Core (Free CLI) + Cloud SaaS",
+        "toolBValue": "Free (part of GCP)",
+        "winner": "Dataform"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Universal standard",
+        "Massive package ecosystem",
+        "Great documentation"
+      ],
+      "toolB": [
+        "Free usage",
+        "Fast compilation",
+        "Golden path for BigQuery"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Complex project structure at scale",
+        "Cloud pricing can be high"
+      ],
+      "toolB": [
+        "Limited to GCP",
+        "Smaller community",
+        "Uncertain roadmap post-acquisition"
+      ]
+    },
+    "finalVerdict": "**Choose dbt if:**\n- You want the industry standard skill set.\n- You use Snowflake, Redshift, or Databricks.\n- You value community packages.\n\n**Choose Dataform if:**\n- You are 100% on BigQuery.\n- You want a free, fully managed transformation tool.\n- You prefer JavaScript over Jinja for templating.",
+    "relatedComparisons": [
+      "snowflake-vs-bigquery"
+    ],
+    "lastUpdated": "2026-01-21"
+  }
+]

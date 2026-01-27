@@ -1,0 +1,693 @@
+[
+  {
+    "slug": "snowflake-cortex-cost-comparison",
+    "title": "Snowflake Cortex Cost Comparison 2026: Complete Pricing Guide",
+    "keywords": [
+      "cortex",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "snowflake-streams-tasks-pipeline-guide",
+    "title": "Snowflake Streams and Tasks: Complete Guide to Building Data Pipelines with SCD2",
+    "keywords": [
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "how-i-passed-snowpro-gen-ai-certification-guide",
+    "title": "How I passed the “SnowPro® Specialty: Gen AI” certification exam 2026",
+    "keywords": [
+      "snowflake"
+    ],
+    "categories": [
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "build-a-simple-rag-application-in-snowflake-using-streamlit-and-snowflake-cortex",
+    "title": "Build a Simple RAG Application in Snowflake Using Streamlit and Snowflake Cortex",
+    "keywords": [
+      "Snowflake"
+    ],
+    "categories": [
+      "python",
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "snowflake-cost-optimization-techniques-2026",
+    "title": "Snowflake Cost Optimization: 12 Proven Techniques to Cut Your Bill by 40% in 2026",
+    "keywords": [
+      "data-warehouse",
+      "optimization",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "snowflake-query-optimization-guide-2026",
+    "title": "Snowflake Query Optimization: What Actually Works in 2026",
+    "keywords": [
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "snowflake-interview-questions-answers-2026",
+    "title": "10 Snowflake Interview Questions and Answers 2026 (Real Questions Asked)",
+    "keywords": [
+      "interview",
+      "snowflake",
+      "sql",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "snowflake-cortex-ai-complete-guide-2026",
+    "title": "Snowflake Cortex AI: Complete Guide for 2026",
+    "keywords": [
+      "Snowflake Cortex AI: Complete Guide for 2026",
+      "cortex",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "meeting-notes-rag-snowflake-ai-assistant",
+    "title": "Build a Meeting Notes RAG in Snowflake: AI-Powered Meeting Intelligence System",
+    "keywords": [
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "build-rag-snowflake-documentation",
+    "title": "How to Build a RAG System Using Snowflake Documentation (Step-by-Step Guide)",
+    "keywords": [
+      "rag",
+      "snowflake",
+      "Build a RAG System Using Snowflake Documentation",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "snowpro-specialty-gen-ai-practice-exams",
+    "title": "Snowflake’s New GenAI Cert is Here—And I’ve Built Something to Help You Pass",
+    "keywords": [
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "snowflake-openflow-ai-data-ingestion-guide",
+    "title": "Snowflake OpenFlow: Revolutionizing Data Ingestion with AI-Powered Workflows",
+    "keywords": [
+      "cortex",
+      "openflow",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "build-rag-snowflake-cortex-search-guide",
+    "title": "Build RAG in Snowflake: Complete Cortex Search Guide 2025",
+    "keywords": [
+      "cortex",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "python",
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "snowflake-cortex-aisql-query-optimization-guide",
+    "title": "Snowflake Cortex AISQL Query Optimization: 7 Proven Strategies to Cut Costs & Boost Performance",
+    "keywords": [
+      "cortex",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "snowflake-intelligence-guide-setup-optimization",
+    "title": "Snowflake Intelligence Guide: Setup, Optimization & Real SQL Examples",
+    "keywords": [
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "snowflake-openflow-tutorial",
+    "title": "Snowflake Openflow Tutorial Guide 2025",
+    "keywords": [
+      "Snowflake Openflow Tutorial Guide 2025",
+      "openflow",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "dbt",
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "snowflake-performance",
+    "title": "A Data Engineer's Handbook to Snowflake Performance and SQL Improvements 2025",
+    "keywords": [
+      "data-warehouse",
+      "snowflake",
+      "sql",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "snowflake-native-dbt-integration-2025-guide",
+    "title": "Snowflake Native dbt Integration: Complete 2025 Guide",
+    "keywords": [
+      "data-warehouse",
+      "dbt",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "dbt",
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "salesforce-copilot-custom-action-guide",
+    "title": "Your First Salesforce Copilot Action : A 5-Step Guide",
+    "keywords": [
+      "copilot",
+      "salesforce"
+    ],
+    "categories": [
+      "salesforce"
+    ]
+  },
+  {
+    "slug": "build-databricks-ai-agent-gpt5-guide",
+    "title": "Build a Databricks AI Agent with GPT-5",
+    "keywords": [
+      "Build a Databricks AI Agent with GPT-5",
+      "databricks",
+      "Databricks"
+    ],
+    "categories": [
+      "databricks"
+    ]
+  },
+  {
+    "slug": "salesforce-agentforce-complete-guide-2025",
+    "title": "Salesforce Agentforce: Complete 2025 Guide & Examples",
+    "keywords": [
+      "salesforce"
+    ],
+    "categories": [
+      "salesforce"
+    ]
+  },
+  {
+    "slug": "snowflake-unique-aggregations-hidden-functions",
+    "title": "Snowflake's Unique Aggregation Functions You Need to Know",
+    "keywords": [
+      "snowflake",
+      "sql",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "build-a-snowflake-agent-in-10-minutes",
+    "title": "Build a Snowflake Agent in 10 Minutes",
+    "keywords": [
+      "Build a Snowflake Agent in 10 Minutes",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "snowflake-dynamic-tables-complete-guide-2025",
+    "title": "Snowflake Dynamic Tables: Complete 2025 Guide & Examples",
+    "keywords": [
+      "snowflake",
+      "sql",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "snowflake-hybrid-tables-unify-transactional-analytical-data",
+    "title": "Snowflake Hybrid Tables: End of the ETL Era?",
+    "keywords": [
+      "Snowflake Hybrid Tables: End of the ETL Era?",
+      "etl",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "snowflake-sql-tutorial-2025-complete-guide",
+    "title": "Snowflake SQL Tutorial: Master MERGE ALL BY NAME in 2025",
+    "keywords": [
+      "snowflake",
+      "sql",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "snowflake-optima-automatic-query-optimization-guide",
+    "title": "Snowflake Optima: 15x Faster Queries at Zero Cost",
+    "keywords": [
+      "Snowflake Optima: 15x Faster Queries at Zero Cost",
+      "data-engineering",
+      "data-warehouse",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "open-semantic-interchange-snowflake-ai-problem-solved",
+    "title": "Open Semantic Interchange: Solving AI's $1T Problem",
+    "keywords": [
+      "osi",
+      "snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "synapse-to-fabric-migration-adx-eventhouse-guide",
+    "title": "Synapse to Fabric: Your ADX Migration Guide 2025",
+    "keywords": [
+      "Synapse to Fabric: Your ADX Migration Guide 2025",
+      "azure",
+      "migration",
+      "synapse"
+    ],
+    "categories": [
+      "azure"
+    ]
+  },
+  {
+    "slug": "build-snowflake-cortex-ai-agent-guide",
+    "title": "AI Data Agent Guide 2025: Snowflake Cortex Tutorial",
+    "keywords": [
+      "cortex",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "mastering-real-time-etl-with-google-cloud-dataflow",
+    "title": "Mastering Real-Time ETL with Google Cloud Dataflow: A Comprehensive Tutorial",
+    "keywords": [
+      "etl",
+      "gcp"
+    ],
+    "categories": [
+      "gcp"
+    ]
+  },
+  {
+    "slug": "star-schema-vs-snowflake-schema-comparison",
+    "title": "Star Schema vs Snowflake Schema:Key Differences & Use Cases",
+    "keywords": [
+      "data-warehouse",
+      "snowflake",
+      "Schema vs Snowflake",
+      "Schema",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "data-pipelines-python",
+    "title": "Mastering Python Data Pipelines: Extract from APIs & Databases, Load to S3 & Snowflake",
+    "keywords": [
+      "data-engineering",
+      "etl",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "python"
+    ]
+  },
+  {
+    "slug": "snowflake-cortex-ai-financial-services",
+    "title": "Revolutionizing Finance: A Deep Dive into Snowflake's Cortex AI",
+    "keywords": [
+      "cortex",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "snowflake-data-science-agent-automate-ml-2025",
+    "title": "Snowflake Data Science Agent: Automate ML Workflows 2025",
+    "keywords": [
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "snowflake-mcp-server-agentic-ai-guide-2025",
+    "title": "Enterprise AI 2025: Snowflake MCP Links Agents to Data",
+    "keywords": [
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "snowflake-query-optimization-2025",
+    "title": "Snowflake Query Optimization in 2025",
+    "keywords": [
+      "Snowflake Query Optimization in 2025",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "snowflake-merge-optimization-techniques",
+    "title": "5 Advanced Techniques for Optimizing Snowflake MERGE Queries",
+    "keywords": [
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "what-is-incremental-data-processing-a-data-engineers-guide",
+    "title": "What is Incremental Data Processing? A Data Engineer's Guide",
+    "keywords": [
+      "data-engineering",
+      "sql",
+      "Incremental Data Processing"
+    ],
+    "categories": [
+      "sql"
+    ]
+  },
+  {
+    "slug": "data-modeling-modern-data-warehouse",
+    "title": "Data Modeling for the Modern Data Warehouse: A Guide",
+    "keywords": [
+      "data-engineering",
+      "data-modeling",
+      "data-warehouse"
+    ],
+    "categories": [
+      "sql"
+    ]
+  },
+  {
+    "slug": "dynamic-data-masking-snowflake",
+    "title": "How to Implement Dynamic Data Masking in Snowflake",
+    "keywords": [
+      "How to Implement Dynamic Data Masking in Snowflake",
+      "data-masking",
+      "data-warehouse",
+      "snowflake",
+      "Implement Dynamic Data Masking in Snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "snowflake-data-sharing-governance",
+    "title": "Snowflake Data Sharing and Governance",
+    "keywords": [
+      "Snowflake Data Sharing and Governance",
+      "data-warehouse",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "querying-data-in-snowflake",
+    "title": "Querying data in snowflake: A Guide to JSON and Time Travel",
+    "keywords": [
+      "data-engineering",
+      "data-warehouse",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "load-data-into-snowflake",
+    "title": "How to Load Data into Snowflake: Guide to Warehouse, Stages and File Format",
+    "keywords": [
+      "data-engineering",
+      "etl",
+      "snowflake",
+      "Load Data into Snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "what-is-snowflake-guide",
+    "title": "What is Snowflake? A Beginners Guide to the Cloud Data Platform",
+    "keywords": [
+      "data-engineering",
+      "data-warehouse",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "loading-data-from-s3-to-snowflake",
+    "title": "Loading Data from S3 to Snowflake",
+    "keywords": [
+      "Loading Data from S3 to Snowflake",
+      "data-engineering",
+      "etl",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "aws-data-pipeline-cost-optimization-strategies",
+    "title": "AWS Data Pipeline Cost Optimization Strategies",
+    "keywords": [
+      "AWS Data Pipeline Cost Optimization Strategies",
+      "aws",
+      "data-engineering",
+      "optimization"
+    ],
+    "categories": [
+      "aws"
+    ]
+  },
+  {
+    "slug": "snowflake-performance-tuning-techniques",
+    "title": "Snowflake Performance Tuning Techniques",
+    "keywords": [
+      "Snowflake Performance Tuning Techniques",
+      "data-engineering",
+      "data-warehouse",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "advanced-snowflake-interview-questions-experienced",
+    "title": "Advanced Snowflake Interview Questions for Experienced",
+    "keywords": [
+      "interview",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "automated-etl-airflow-python",
+    "title": "Automated ETL with Airflow and Python: A Practical Guide",
+    "keywords": [
+      "airflow",
+      "data-engineering",
+      "etl",
+      "Airflow"
+    ],
+    "categories": [
+      "airflow"
+    ]
+  },
+  {
+    "slug": "sql-window-functions-guide",
+    "title": "SQL Window Functions: The Ultimate Guide for Data Analysts",
+    "keywords": [
+      "data-engineering",
+      "sql"
+    ],
+    "categories": [
+      "sql"
+    ]
+  },
+  {
+    "slug": "build-data-lakehouse-on-azure",
+    "title": "How to Build a Data Lakehouse on Azure",
+    "keywords": [
+      "How to Build a Data Lakehouse on Azure",
+      "azure",
+      "etl",
+      "Build a Data Lakehouse on Azure"
+    ],
+    "categories": [
+      "azure"
+    ]
+  },
+  {
+    "slug": "serverless-data-pipeline-aws",
+    "title": "Building a Serverless Data Pipeline on AWS: A Step-by-Step Guide",
+    "keywords": [
+      "aws",
+      "data-engineering",
+      "etl"
+    ],
+    "categories": [
+      "aws"
+    ]
+  },
+  {
+    "slug": "dbt-projects-snowflake-structure",
+    "title": "Structuring dbt Projects in Snowflake: The Definitive Guide",
+    "keywords": [
+      "data-engineering",
+      "dbt",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "dbt"
+    ]
+  },
+  {
+    "slug": "snowflake-architecture",
+    "title": "Snowflake Architecture Explained: A Simple Breakdown",
+    "keywords": [
+      "data-warehouse",
+      "etl",
+      "snowflake",
+      "Snowflake"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "id": "apache-airflow",
+    "term": "Apache Airflow",
+    "slug": "apache-airflow",
+    "category": "data-orchestration",
+    "shortDefinition": "An open-source platform to programmatically author, schedule, and monitor workflows, commonly used for orchestrating data pipelines and ETL jobs.",
+    "fullDefinition": "Apache Airflow is an open-source workflow orchestration platform created at Airbnb and now maintained by the Apache Software Foundation. It allows you to define, schedule, and monitor complex data workflows as code.\n\n## Core Concepts\n\n### DAGs (Directed Acyclic Graphs)\nWorkflows in Airflow are defined as DAGs—collections of tasks with dependencies. The \"acyclic\" property ensures no circular dependencies.\n\n```python\nfrom airflow import DAG\nfrom airflow.operators.python import PythonOperator\nfrom datetime import datetime\n\nwith DAG('my_etl_dag', start_date=datetime(2024, 1, 1), schedule='@daily') as dag:\n    extract = PythonOperator(task_id='extract', python_callable=extract_data)\n    transform = PythonOperator(task_id='transform', python_callable=transform_data)\n    load = PythonOperator(task_id='load', python_callable=load_data)\n    \n    extract >> transform >> load\n```\n\n### Operators\nPre-built task types for common operations:\n- **PythonOperator**: Run Python functions\n- **BashOperator**: Execute shell commands\n- **SQLOperator**: Run SQL queries\n- **S3/GCS Operators**: Interact with cloud storage\n- **Provider Operators**: Snowflake, BigQuery, dbt, etc.\n\n### Executors\nHow Airflow runs tasks:\n- **SequentialExecutor**: One task at a time (development)\n- **LocalExecutor**: Parallel on single machine\n- **CeleryExecutor**: Distributed across workers\n- **KubernetesExecutor**: Pods per task for isolation\n\n## Key Features\n\n- **Workflows as Code**: Version control your pipelines\n- **Rich UI**: Visual DAG graph, logs, retry handling\n- **Extensible**: Build custom operators and sensors\n- **Integrations**: 1000+ provider packages\n- **Backfills**: Re-run historical data processing\n\n## Airflow vs Alternatives\n\n| Tool | Strength | Best For |\n|------|----------|----------|\n| Airflow | Flexibility, ecosystem | Complex custom workflows |\n| Prefect | Python-native, cloud-first | Modern data apps |\n| Dagster | Software-defined assets | Data platform teams |\n| dbt Cloud | SQL transformations | Analytics engineering |\n\n## Common Use Cases\n\n1. **ETL/ELT Pipelines**: Orchestrate data movement and transformation\n2. **ML Workflows**: Training, validation, deployment pipelines\n3. **Reporting**: Schedule automated report generation\n4. **Data Quality**: Trigger validation checks on new data",
+    "keyPoints": [
+      "Workflow orchestration platform written in Python",
+      "Defines pipelines as DAGs (Directed Acyclic Graphs)",
+      "Rich ecosystem with 1000+ integration providers",
+      "Web UI for monitoring and troubleshooting",
+      "Created at Airbnb, now Apache project"
+    ],
+    "faqs": [
+      {
+        "question": "What is Apache Airflow used for?",
+        "answer": "Apache Airflow is used for orchestrating complex workflows, particularly data pipelines. It schedules tasks, manages dependencies, handles retries, and provides monitoring through a web interface."
+      },
+      {
+        "question": "Is Airflow an ETL tool?",
+        "answer": "Airflow is an orchestration tool, not an ETL tool. It schedules and monitors ETL jobs but does not extract, transform, or load data itself. You use Airflow to coordinate tools like dbt, Python scripts, or SQL queries."
+      },
+      {
+        "question": "What is a DAG in Airflow?",
+        "answer": "A DAG (Directed Acyclic Graph) is a collection of tasks with defined dependencies. It represents a complete workflow where each task runs after its upstream dependencies complete successfully."
+      },
+      {
+        "question": "Is Airflow free to use?",
+        "answer": "Yes, Apache Airflow is 100% free and open-source. Managed versions like Astronomer, MWAA (AWS), and Cloud Composer (Google) offer paid hosting with additional features."
+      }
+    ],
+    "relatedTerms": [
+      "etl",
+      "data-pipeline",
+      "dbt",
+      "data-orchestration"
+    ],
+    "relatedTools": [
+      "Prefect",
+      "Dagster",
+      "dbt Cloud",
+      "AWS MWAA",
+      "Astronomer"
+    ],
+    "externalLinks": [
+      {
+        "title": "Apache Airflow Documentation",
+        "url": "https://airflow.apache.org/docs/"
+      },
+      {
+        "title": "Airflow Tutorial - Astronomer",
+        "url": "https://docs.astronomer.io/learn"
+      }
+    ],
+    "keywords": [
+      "apache airflow",
+      "airflow dag",
+      "airflow tutorial",
+      "airflow vs prefect",
+      "workflow orchestration"
+    ],
+    "lastUpdated": "2026-01-21"
+  }
+]

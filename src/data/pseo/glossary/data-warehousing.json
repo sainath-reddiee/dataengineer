@@ -1,0 +1,267 @@
+[
+  {
+    "id": "snowflake",
+    "term": "Snowflake",
+    "slug": "snowflake",
+    "category": "data-warehousing",
+    "shortDefinition": "A cloud-native data warehouse platform that separates storage and compute, enabling elastic scaling and pay-per-use pricing.",
+    "fullDefinition": "Snowflake is a cloud-native data warehouse platform built for the modern data stack. Unlike traditional data warehouses, Snowflake was designed from the ground up for the cloud, offering unique architecture that separates storage and compute resources.\n\n## Key Architecture Features\n\nSnowflake uses a **multi-cluster shared data architecture** that consists of three layers:\n\n1. **Database Storage Layer**: Data is stored in a compressed, columnar format in cloud object storage (AWS S3, Azure Blob, or Google Cloud Storage). This layer is fully managed and automatically optimized.\n\n2. **Query Processing Layer (Virtual Warehouses)**: Compute clusters that execute queries independent of storage. You can spin up multiple warehouses of different sizes without affecting each other.\n\n3. **Cloud Services Layer**: Handles authentication, infrastructure management, metadata, query optimization, and access control.\n\n## Why Data Engineers Choose Snowflake\n\n- **Zero Management**: No indexes to tune, no partitions to manage\n- **Instant Elasticity**: Scale compute up/down in seconds\n- **Concurrency**: Multiple workloads without resource contention\n- **Time Travel**: Query historical data up to 90 days back\n- **Data Sharing**: Share live data across organizations securely\n- **Semi-structured Data**: Native support for JSON, Avro, Parquet\n\n## Snowflake vs Traditional Data Warehouses\n\nTraditional on-premise solutions like Teradata or Oracle require significant hardware investment and maintenance. Snowflake eliminates this with its SaaS model, offering true pay-per-second pricing and automatic performance optimization.\n\n## Common Use Cases\n\n- **Data Lakes**: Combine structured and semi-structured data\n- **Data Engineering**: Build scalable ETL/ELT pipelines\n- **Data Science**: Run ML workloads with Snowpark\n- **Business Intelligence**: Power dashboards with fast queries",
+    "keyPoints": [
+      "Cloud-native architecture separating storage and compute",
+      "Pay-per-second pricing model",
+      "Zero-maintenance with automatic optimization",
+      "Time Travel feature for historical data access",
+      "Native support for semi-structured data (JSON, Parquet)"
+    ],
+    "faqs": [
+      {
+        "question": "What is Snowflake used for?",
+        "answer": "Snowflake is primarily used as a cloud data warehouse for storing, processing, and analyzing large volumes of structured and semi-structured data. It supports data engineering, analytics, data science, and data sharing use cases."
+      },
+      {
+        "question": "Is Snowflake a database or data warehouse?",
+        "answer": "Snowflake is a cloud data warehouse, not a traditional transactional database. It is optimized for analytical workloads (OLAP) rather than transactional operations (OLTP). However, it can store and query data like a database."
+      },
+      {
+        "question": "How does Snowflake pricing work?",
+        "answer": "Snowflake uses a consumption-based pricing model. You pay separately for storage (per TB/month) and compute (per credit consumed). Compute is charged per-second with a 60-second minimum, so you only pay when queries are running."
+      },
+      {
+        "question": "What is Snowflake Time Travel?",
+        "answer": "Time Travel is a Snowflake feature that lets you access historical data at any point within a defined retention period (up to 90 days). You can query, clone, or restore data as it existed at a specific timestamp."
+      }
+    ],
+    "relatedTerms": [
+      "data-warehouse",
+      "snowpark",
+      "dbt",
+      "etl",
+      "data-lake"
+    ],
+    "relatedTools": [
+      "dbt",
+      "Fivetran",
+      "Airbyte",
+      "Tableau",
+      "Power BI"
+    ],
+    "externalLinks": [
+      {
+        "title": "Snowflake Official Documentation",
+        "url": "https://docs.snowflake.com/"
+      },
+      {
+        "title": "Snowflake Architecture Overview",
+        "url": "https://docs.snowflake.com/en/user-guide/intro-key-concepts"
+      }
+    ],
+    "keywords": [
+      "snowflake",
+      "cloud data warehouse",
+      "snowflake data platform",
+      "snowflake architecture",
+      "snowflake pricing"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "data-warehouse",
+    "term": "Data Warehouse",
+    "slug": "data-warehouse",
+    "category": "data-warehousing",
+    "shortDefinition": "A centralized repository designed to store, integrate, and analyze large volumes of structured data from multiple sources for business intelligence and reporting.",
+    "fullDefinition": "A data warehouse is a centralized repository that stores integrated data from multiple sources, optimized for analytical queries and reporting. Unlike operational databases designed for transactions (OLTP), data warehouses are built for analysis (OLAP).\n\n## Key Characteristics\n\n1. **Subject-Oriented**: Organized around business subjects (customers, products, sales) rather than applications\n\n2. **Integrated**: Data from disparate sources is cleansed, transformed, and unified into a consistent format\n\n3. **Time-Variant**: Historical data is preserved, enabling trend analysis over time\n\n4. **Non-Volatile**: Once data enters the warehouse, it's stable and doesn't change (unlike operational systems)\n\n## Data Warehouse Architecture\n\nModern data warehouses typically follow a layered architecture:\n\n- **Raw/Staging Layer**: Stores data as-is from source systems\n- **Integration Layer**: Cleaned and transformed data\n- **Presentation Layer**: Business-ready datasets for reporting and analytics\n- **Semantic Layer**: Business definitions and metrics\n\n## Cloud Data Warehouses\n\nThe industry has shifted from on-premise solutions to cloud-native platforms:\n\n| Platform | Provider | Key Feature |\n|----------|----------|-------------|\n| Snowflake | Independent | Separate storage/compute |\n| BigQuery | Google Cloud | Serverless, pay-per-query |\n| Redshift | AWS | Tight AWS integration |\n| Synapse | Azure | Unified analytics |\n| Databricks | Independent | Lakehouse architecture |\n\n## Data Warehouse vs Data Lake\n\n- **Data Warehouse**: Structured data, schema-on-write, optimized for BI\n- **Data Lake**: All data types, schema-on-read, optimized for data science\n- **Data Lakehouse**: Combines benefits of both (e.g., Databricks, Snowflake)\n\n## Benefits for Organizations\n\n- **Single Source of Truth**: Unified view across business domains\n- **Historical Analysis**: Track trends and patterns over time\n- **Performance**: Optimized for complex analytical queries\n- **Governance**: Centralized security and access control",
+    "keyPoints": [
+      "Centralized repository for analytical data",
+      "Optimized for OLAP (analytical) workloads",
+      "Stores historical data for trend analysis",
+      "Integrates data from multiple source systems",
+      "Cloud options include Snowflake, BigQuery, Redshift"
+    ],
+    "faqs": [
+      {
+        "question": "What is the purpose of a data warehouse?",
+        "answer": "A data warehouse serves as a central repository for integrated data from multiple sources, enabling organizations to run complex analytical queries, generate reports, and make data-driven decisions."
+      },
+      {
+        "question": "What is the difference between a database and a data warehouse?",
+        "answer": "Databases (OLTP) are optimized for transactional operations like inserts and updates. Data warehouses (OLAP) are optimized for analytical queries across large datasets. Warehouses store historical data; databases typically store current state."
+      },
+      {
+        "question": "What is ETL in data warehousing?",
+        "answer": "ETL stands for Extract, Transform, Load—the process of pulling data from source systems, transforming it into a consistent format, and loading it into the data warehouse for analysis."
+      },
+      {
+        "question": "Is Snowflake a data warehouse?",
+        "answer": "Yes, Snowflake is a cloud-native data warehouse platform. It provides all traditional data warehouse capabilities with modern features like separation of storage and compute, and native support for semi-structured data."
+      }
+    ],
+    "relatedTerms": [
+      "snowflake",
+      "etl",
+      "data-lake",
+      "olap",
+      "data-modeling"
+    ],
+    "relatedTools": [
+      "Snowflake",
+      "BigQuery",
+      "Redshift",
+      "Azure Synapse",
+      "Databricks"
+    ],
+    "externalLinks": [
+      {
+        "title": "What is a Data Warehouse? - AWS",
+        "url": "https://aws.amazon.com/data-warehouse/"
+      },
+      {
+        "title": "Data Warehouse Concepts - Google Cloud",
+        "url": "https://cloud.google.com/learn/what-is-a-data-warehouse"
+      }
+    ],
+    "keywords": [
+      "data warehouse",
+      "data warehousing",
+      "cloud data warehouse",
+      "data warehouse vs data lake"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "data-lake",
+    "term": "Data Lake",
+    "slug": "data-lake",
+    "category": "data-warehousing",
+    "shortDefinition": "A centralized storage repository that holds vast amounts of raw data in its native format until needed for analysis, supporting structured, semi-structured, and unstructured data.",
+    "fullDefinition": "A data lake is a centralized repository designed to store, process, and secure large volumes of data in any format—structured, semi-structured, or unstructured. Unlike data warehouses that require data to be structured before storage, data lakes accept raw data as-is.\n\n## Data Lake vs Data Warehouse\n\n| Aspect | Data Lake | Data Warehouse |\n|--------|-----------|----------------|\n| Data Format | Raw, any format | Structured only |\n| Schema | Schema-on-read | Schema-on-write |\n| Users | Data scientists, engineers | Analysts, business users |\n| Processing | Batch and streaming | Primarily batch |\n| Cost | Lower storage cost | Higher, optimized storage |\n| Query Performance | Variable | Optimized for BI |\n\n## Data Lake Architecture\n\n### Zones\nModern data lakes organize data into zones:\n\n1. **Raw/Bronze Zone**: Data exactly as received from sources\n2. **Cleansed/Silver Zone**: Validated, deduplicated, standardized data\n3. **Curated/Gold Zone**: Business-ready, aggregated datasets\n\n### Data Lakehouse\nA new architecture combining data lake flexibility with warehouse performance:\n- **Delta Lake** (Databricks): ACID transactions on data lakes\n- **Apache Iceberg**: Open table format for huge datasets\n- **Apache Hudi**: Incremental data processing\n\n## Cloud Data Lake Platforms\n\n- **AWS**: S3 + Glue + Athena + EMR\n- **Azure**: Data Lake Storage + Synapse + Databricks\n- **Google Cloud**: GCS + Dataproc + BigQuery\n\n## Common Use Cases\n\n1. **Machine Learning**: Store training data in any format\n2. **Data Archival**: Cost-effective long-term storage\n3. **Data Exploration**: Analyze raw data before structuring\n4. **IoT Data**: Ingest high-volume sensor data\n5. **Log Analytics**: Store and analyze application logs\n\n## Challenges and Solutions\n\n- **Data Swamp**: Without governance, lakes become unusable → Use data catalogs\n- **Query Performance**: Raw files are slow → Use table formats (Delta, Iceberg)\n- **Security**: Sensitive data exposure → Implement row/column level security",
+    "keyPoints": [
+      "Stores raw data in any format (structured, unstructured)",
+      "Schema-on-read approach (define structure at query time)",
+      "Lower cost than data warehouses for storage",
+      "Lakehouse architecture combines lake + warehouse benefits",
+      "Key platforms: S3, Azure Data Lake, Google Cloud Storage"
+    ],
+    "faqs": [
+      {
+        "question": "What is a data lake in simple terms?",
+        "answer": "A data lake is a large storage system that holds raw data in its original format until you need to analyze it. Think of it as a \"dump\" for all your data—structured or unstructured—that can be processed later."
+      },
+      {
+        "question": "What is the difference between data lake and data warehouse?",
+        "answer": "Data warehouses store structured, processed data ready for BI. Data lakes store raw data in any format for flexible analysis. Warehouses are faster for queries; lakes are cheaper for storage."
+      },
+      {
+        "question": "What is a data lakehouse?",
+        "answer": "A data lakehouse combines the low-cost, flexible storage of a data lake with the performance and ACID transactions of a data warehouse. Technologies like Delta Lake, Iceberg, and Hudi enable this architecture."
+      },
+      {
+        "question": "What are the benefits of a data lake?",
+        "answer": "Benefits include: storing any data type, lower storage costs, flexibility for data science, scalability, and the ability to keep raw data for future use cases you have not yet defined."
+      }
+    ],
+    "relatedTerms": [
+      "data-warehouse",
+      "snowflake",
+      "databricks",
+      "delta-lake",
+      "s3"
+    ],
+    "relatedTools": [
+      "AWS S3",
+      "Azure Data Lake",
+      "Databricks",
+      "Delta Lake",
+      "Apache Iceberg"
+    ],
+    "externalLinks": [
+      {
+        "title": "What is a Data Lake? - AWS",
+        "url": "https://aws.amazon.com/big-data/datalakes-and-analytics/what-is-a-data-lake/"
+      },
+      {
+        "title": "Data Lake vs Lakehouse - Databricks",
+        "url": "https://www.databricks.com/glossary/data-lakehouse"
+      }
+    ],
+    "keywords": [
+      "data lake",
+      "data lakehouse",
+      "data lake vs data warehouse",
+      "delta lake",
+      "data lake architecture"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "scd",
+    "term": "Slowly Changing Dimensions (SCD)",
+    "slug": "scd",
+    "category": "data-warehousing",
+    "shortDefinition": "A concept in data warehousing to manage how data that changes slowly over time is stored and tracked.",
+    "fullDefinition": "SCDs are used to track historical data in dimension tables.\n\n## Common Types\n- **Type 0**: Fixed (No changes allowed)\n- **Type 1**: Overwrite (No history)\n- **Type 2**: Add new row (Full history with validity dates)\n- **Type 3**: Add new column (Limited history)",
+    "keyPoints": [
+      "History Tracking",
+      "Dimensional Modeling",
+      "Data Warehousing"
+    ],
+    "relatedTerms": [
+      "data-warehouse",
+      "data-modeling",
+      "star-schema"
+    ],
+    "relatedTools": [
+      "dbt",
+      "Informatica"
+    ],
+    "externalLinks": [
+      {
+        "title": "SCD Types",
+        "url": "https://en.wikipedia.org/wiki/Slowly_changing_dimension"
+      }
+    ],
+    "keywords": [
+      "scd",
+      "slowly changing dimensions",
+      "type 2 dimension"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "columnar-storage",
+    "term": "Columnar Storage",
+    "slug": "columnar-storage",
+    "category": "data-warehousing",
+    "shortDefinition": "A database management system that stores data in columns rather than rows, optimized for analytics.",
+    "fullDefinition": "Columnar storage saves data by column rather than by row. This is highly efficient for analytical queries (OLAP) which typically aggregate a few columns over many rows.\n\n## Benefits\n- **Compression**: Similar data types in columns compress very well (10x-50x).\n- **IO Efficiency**: Only read usage columns, ignore the rest.",
+    "keyPoints": [
+      "OLAP optimization",
+      "Compression",
+      "Analytics"
+    ],
+    "relatedTerms": [
+      "olap",
+      "data-warehouse",
+      "row-oriented"
+    ],
+    "relatedTools": [
+      "Snowflake",
+      "Redshift",
+      "BigQuery",
+      "Parquet"
+    ],
+    "externalLinks": [
+      {
+        "title": "Columnar Database",
+        "url": "https://en.wikipedia.org/wiki/Column-oriented_DBMS"
+      }
+    ],
+    "keywords": [
+      "columnar",
+      "olap",
+      "compression",
+      "parquet"
+    ],
+    "lastUpdated": "2026-01-21"
+  }
+]

@@ -1,0 +1,193 @@
+[
+  {
+    "id": "data-quality",
+    "term": "Data Quality",
+    "slug": "data-quality",
+    "category": "data-quality",
+    "shortDefinition": "The measure of how well data meets the requirements for its intended use, encompassing accuracy, completeness, consistency, timeliness, and validity.",
+    "fullDefinition": "Data quality refers to the overall fitness of data for its intended purpose. High-quality data is accurate, complete, consistent, timely, and valid. Poor data quality can lead to flawed analytics, bad business decisions, and compliance issues.\n\n## Key Dimensions of Data Quality\n\n1. **Accuracy**: Data correctly represents the real-world entity or event\n2. **Completeness**: All required data is present without gaps\n3. **Consistency**: Data is uniform across different systems and datasets\n4. **Timeliness**: Data is available when needed and reflects current state\n5. **Validity**: Data conforms to defined formats, types, and business rules\n6. **Uniqueness**: No duplicate records exist\n\n## Why Data Quality Matters\n\n- **Business Decisions**: 40% of business initiatives fail due to poor data quality\n- **Compliance**: Regulations like GDPR require accurate data handling\n- **Customer Trust**: Incorrect data damages relationships\n- **Operational Efficiency**: Clean data reduces manual corrections\n\n## Data Quality Management Process\n\n1. **Assessment**: Measure current data quality levels\n2. **Profiling**: Analyze data patterns and anomalies\n3. **Cleansing**: Correct or remove erroneous data\n4. **Monitoring**: Continuously track quality metrics\n5. **Governance**: Establish policies and ownership\n\n## Modern Data Quality Tools\n\n- **Great Expectations**: Open-source Python framework for data testing\n- **dbt tests**: Built-in data quality assertions\n- **Monte Carlo**: Data observability platform\n- **Soda**: Data quality checks for data pipelines\n- **Atlan**: Data governance and quality platform",
+    "keyPoints": [
+      "Measures fitness of data for intended use",
+      "Six dimensions: accuracy, completeness, consistency, timeliness, validity, uniqueness",
+      "Critical for reliable analytics and compliance",
+      "Requires ongoing monitoring and governance",
+      "Modern tools: Great Expectations, dbt tests, Monte Carlo"
+    ],
+    "faqs": [
+      {
+        "question": "What is data quality in simple terms?",
+        "answer": "Data quality is a measure of how good your data is for its intended purpose. High-quality data is accurate, complete, consistent, and available when needed. Poor data quality leads to wrong decisions and wasted resources."
+      },
+      {
+        "question": "How do you measure data quality?",
+        "answer": "Data quality is measured across dimensions like accuracy (correctness), completeness (no missing values), consistency (uniform across systems), timeliness (up-to-date), and validity (correct format). Tools like Great Expectations and dbt tests automate these checks."
+      },
+      {
+        "question": "What causes poor data quality?",
+        "answer": "Common causes include manual data entry errors, system integration issues, lack of validation rules, outdated information, duplicate records, and missing governance processes."
+      },
+      {
+        "question": "What is the difference between data quality and data integrity?",
+        "answer": "Data quality focuses on the overall fitness of data for use (accuracy, completeness). Data integrity ensures data remains unchanged and consistent throughout its lifecycle, often through constraints and transaction controls."
+      }
+    ],
+    "relatedTerms": [
+      "data-governance",
+      "data-observability",
+      "great-expectations",
+      "data-testing"
+    ],
+    "relatedTools": [
+      "Great Expectations",
+      "dbt",
+      "Monte Carlo",
+      "Soda",
+      "Atlan"
+    ],
+    "externalLinks": [
+      {
+        "title": "Data Quality - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Data_quality"
+      },
+      {
+        "title": "Great Expectations Documentation",
+        "url": "https://docs.greatexpectations.io/"
+      }
+    ],
+    "keywords": [
+      "data quality",
+      "data quality dimensions",
+      "data quality management",
+      "data quality tools",
+      "data accuracy"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "data-contracts",
+    "term": "Data Contracts",
+    "slug": "data-contracts",
+    "category": "data-quality",
+    "shortDefinition": "Formal agreements between data producers and consumers that define the structure, semantics, and quality expectations of data, enabling reliable data collaboration.",
+    "fullDefinition": "Data contracts are formal agreements between data producers (teams generating data) and data consumers (teams using data). They define what data will look like, its quality guarantees, and how changes will be communicated.\n\n## What Data Contracts Include\n\n1. **Schema Definition**: Column names, types, constraints\n2. **Semantic Meaning**: Business definitions and context\n3. **Quality SLAs**: Freshness, completeness, accuracy guarantees\n4. **Ownership**: Who is responsible for the data\n5. **Change Management**: How breaking changes are handled\n\n## Why Data Contracts Matter\n\nTraditional data pipelines are fragile:\n- Upstream changes break downstream systems\n- No clear ownership or accountability\n- Quality issues discovered too late\n- Implicit expectations cause confusion\n\nData contracts solve this by making expectations explicit.\n\n## Data Contract Example\n\n```yaml\nname: orders\nversion: 1.0.0\nowner: commerce-team\nschema:\n  - name: order_id\n    type: string\n    required: true\n  - name: total_amount\n    type: decimal\n    required: true\nquality:\n  freshness: 1 hour\n  completeness: 99%\n```\n\n## Implementing Data Contracts\n\n1. **Define Standards**: Create a contract template\n2. **Identify Critical Data**: Start with key datasets\n3. **Negotiate Terms**: Producers and consumers agree\n4. **Validate Automatically**: Check contracts in CI/CD\n5. **Monitor Compliance**: Track SLA adherence\n\n## Data Contract Tools\n\n- **Soda**: Data quality with contracts\n- **Great Expectations**: Contract-like expectations\n- **dbt Contracts**: Schema contracts in dbt\n- **Datacontract.com**: Open standard and CLI\n- **Monte Carlo**: SLA monitoring",
+    "keyPoints": [
+      "Formal agreements between data producers and consumers",
+      "Define schema, semantics, and quality SLAs",
+      "Prevent breaking changes and unclear ownership",
+      "Validated automatically in CI/CD pipelines",
+      "Part of Data Mesh and modern data architectures"
+    ],
+    "faqs": [
+      {
+        "question": "What is a data contract?",
+        "answer": "A data contract is a formal agreement between data producers and consumers that specifies the expected schema, quality guarantees, and change management process for a dataset. It makes implicit expectations explicit."
+      },
+      {
+        "question": "Why are data contracts important?",
+        "answer": "Data contracts prevent breaking changes, establish clear ownership, define quality SLAs, and enable reliable data collaboration. They shift quality left by validating data at the source."
+      },
+      {
+        "question": "How do data contracts relate to Data Mesh?",
+        "answer": "Data contracts are a core principle of Data Mesh architecture. They enable domain teams to publish reliable data products that other teams can consume with confidence, treating data as a product."
+      },
+      {
+        "question": "What tools support data contracts?",
+        "answer": "Tools supporting data contracts include Soda, Great Expectations, dbt (model contracts), Datacontract.com (open standard), and Monte Carlo for SLA monitoring."
+      }
+    ],
+    "relatedTerms": [
+      "data-quality",
+      "data-mesh",
+      "schema",
+      "data-governance"
+    ],
+    "relatedTools": [
+      "Soda",
+      "Great Expectations",
+      "dbt",
+      "Monte Carlo"
+    ],
+    "externalLinks": [
+      {
+        "title": "Data Contracts - Datacontract.com",
+        "url": "https://datacontract.com/"
+      },
+      {
+        "title": "Data Contracts Explained",
+        "url": "https://www.dataengineeringweekly.com/p/data-contracts"
+      }
+    ],
+    "keywords": [
+      "data contracts",
+      "data contract specification",
+      "data mesh contracts",
+      "schema contracts",
+      "data SLA"
+    ],
+    "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "great-expectations",
+    "term": "Great Expectations",
+    "slug": "great-expectations",
+    "category": "data-quality",
+    "shortDefinition": "An open-source Python framework for defining, documenting, and validating data quality expectations against datasets in data pipelines.",
+    "fullDefinition": "Great Expectations (GX) is an open-source Python library for data testing, documentation, and profiling. It helps data teams define \"expectations\" about their data and validate those expectations automatically in pipelines.\n\n## Core Concepts\n\n1. **Expectations**: Assertions about data (e.g., \"column A should not be null\")\n2. **Expectation Suites**: Collections of expectations for a dataset\n3. **Data Sources**: Connections to your data (Pandas, Spark, SQL)\n4. **Checkpoints**: Validation runbooks that execute expectations\n5. **Data Docs**: Auto-generated documentation of expectations and results\n\n## Example Expectations\n\n```python\nimport great_expectations as gx\n\n# Create a Data Source\ncontext = gx.get_context()\nvalidator = context.sources.add_pandas(\"my_data\").read_dataframe(df)\n\n# Define Expectations\nvalidator.expect_column_values_to_not_be_null(\"user_id\")\nvalidator.expect_column_values_to_be_in_set(\"status\", [\"active\", \"inactive\"])\nvalidator.expect_column_mean_to_be_between(\"order_total\", 50, 200)\n```\n\n## Why Teams Use Great Expectations\n\n- **Catch Issues Early**: Validate data before it reaches downstream\n- **Documentation**: Auto-generate data quality docs\n- **Collaboration**: Share expectations across teams\n- **Integration**: Works with Airflow, dbt, Spark, and more\n- **Open Source**: Free to use with commercial support\n\n## Great Expectations GX Cloud\n\nThe SaaS version adds:\n- Hosted expectation management\n- Collaboration features\n- Alerting and notifications\n- Metrics and dashboards\n\n## Integration with Data Tools\n\n- **Airflow**: GX operators for pipeline validation\n- **dbt**: Run GX after dbt models\n- **Spark**: Validate large-scale data\n- **Prefect/Dagster**: Native integrations",
+    "keyPoints": [
+      "Open-source Python library for data testing",
+      "Define \"expectations\" as assertions about data",
+      "Auto-generates data documentation (Data Docs)",
+      "Integrates with Airflow, dbt, Spark, and more",
+      "GX Cloud offers hosted management and alerting"
+    ],
+    "faqs": [
+      {
+        "question": "What is Great Expectations used for?",
+        "answer": "Great Expectations is used for testing and validating data quality in pipelines. It lets you define expectations (assertions) about your data and automatically validate them, catching issues before they impact downstream systems."
+      },
+      {
+        "question": "Is Great Expectations free?",
+        "answer": "Yes, Great Expectations (GX Core) is open-source and free. GX Cloud is a commercial product that adds hosted management, collaboration, and alerting features."
+      },
+      {
+        "question": "How does Great Expectations compare to dbt tests?",
+        "answer": "dbt tests are simpler and SQL-based, great for basic checks. Great Expectations offers more advanced expectations, profiling, auto-documentation, and works with any data source beyond SQL warehouses."
+      },
+      {
+        "question": "What is an Expectation Suite?",
+        "answer": "An Expectation Suite is a collection of expectations (tests) for a specific dataset. For example, an \"orders\" suite might include expectations for non-null order_id, valid status values, and reasonable amounts."
+      }
+    ],
+    "relatedTerms": [
+      "data-quality",
+      "data-testing",
+      "dbt",
+      "data-observability"
+    ],
+    "relatedTools": [
+      "dbt",
+      "Soda",
+      "Monte Carlo",
+      "Apache Airflow",
+      "Pandas"
+    ],
+    "externalLinks": [
+      {
+        "title": "Great Expectations Documentation",
+        "url": "https://docs.greatexpectations.io/"
+      },
+      {
+        "title": "GX GitHub",
+        "url": "https://github.com/great-expectations/great_expectations"
+      }
+    ],
+    "keywords": [
+      "great expectations",
+      "great expectations python",
+      "data testing",
+      "data validation",
+      "gx cloud"
+    ],
+    "lastUpdated": "2026-01-21"
+  }
+]

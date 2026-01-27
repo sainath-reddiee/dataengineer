@@ -1,0 +1,66 @@
+[
+  {
+    "id": "data-observability",
+    "term": "Data Observability",
+    "slug": "data-observability",
+    "category": "data-observability",
+    "shortDefinition": "The ability to understand the health and state of data in your systems by monitoring data quality, freshness, volume, schema changes, and lineage in real-time.",
+    "fullDefinition": "Data observability is an organization's ability to fully understand the health of data across their data systems. Inspired by software observability principles, it applies monitoring, alerting, and root cause analysis to data pipelines and datasets.\n\n## The Five Pillars of Data Observability\n\n1. **Freshness**: Is the data up-to-date? When was it last updated?\n2. **Volume**: Is the expected amount of data present?\n3. **Schema**: Has the structure of data changed unexpectedly?\n4. **Distribution**: Are values within expected ranges?\n5. **Lineage**: Where did this data come from and what depends on it?\n\n## Why Data Observability Matters\n\nTraditional data quality checks run after problems occur. Data observability provides:\n- **Proactive Detection**: Catch issues before they impact dashboards\n- **Faster Resolution**: Trace problems to their source quickly\n- **Reduced Downtime**: Alert on anomalies automatically\n- **Trust**: Stakeholders can rely on data availability\n\n## Data Observability vs Data Quality\n\n| Aspect | Data Quality | Data Observability |\n|--------|--------------|-------------------|\n| Focus | Data content (accuracy, completeness) | System health and behavior |\n| Timing | Often batch/scheduled checks | Real-time monitoring |\n| Scope | Individual datasets | End-to-end pipelines |\n| Approach | Rule-based tests | Anomaly detection + rules |\n\n## Data Observability Tools\n\n- **Monte Carlo**: Leading data observability platform\n- **Bigeye**: Automated data quality monitoring\n- **Acceldata**: Data observability for enterprises\n- **Datadog**: Extending APM to data pipelines\n- **Great Expectations**: Open-source data testing\n\n## Implementing Data Observability\n\n1. **Instrument Pipelines**: Add monitoring to key data flows\n2. **Establish Baselines**: Understand normal patterns\n3. **Set Alerts**: Notify teams of anomalies\n4. **Build Lineage**: Map dependencies between datasets\n5. **Create Runbooks**: Document resolution procedures",
+    "keyPoints": [
+      "Applies software observability principles to data",
+      "Five pillars: freshness, volume, schema, distribution, lineage",
+      "Proactive anomaly detection vs reactive quality checks",
+      "Enables faster incident resolution with lineage",
+      "Key tools: Monte Carlo, Bigeye, Great Expectations"
+    ],
+    "faqs": [
+      {
+        "question": "What is data observability?",
+        "answer": "Data observability is the ability to monitor and understand the health of your data in real-time. It tracks freshness, volume, schema changes, and data quality anomalies across your entire data platform."
+      },
+      {
+        "question": "How is data observability different from data quality?",
+        "answer": "Data quality focuses on whether data meets defined standards (accuracy, completeness). Data observability monitors the entire data system health including pipeline performance, freshness, and automatic anomaly detection."
+      },
+      {
+        "question": "What tools are used for data observability?",
+        "answer": "Popular data observability tools include Monte Carlo, Bigeye, Acceldata, and Great Expectations. Some data platforms like Databricks and Snowflake also offer built-in observability features."
+      },
+      {
+        "question": "What is data downtime?",
+        "answer": "Data downtime refers to periods when data is missing, incorrect, or stale. Similar to application downtime, data downtime impacts business operations and can lead to wrong decisions. Data observability helps minimize data downtime."
+      }
+    ],
+    "relatedTerms": [
+      "data-quality",
+      "data-lineage",
+      "data-pipeline",
+      "monte-carlo"
+    ],
+    "relatedTools": [
+      "Monte Carlo",
+      "Bigeye",
+      "Great Expectations",
+      "Acceldata",
+      "Datadog"
+    ],
+    "externalLinks": [
+      {
+        "title": "What is Data Observability? - Monte Carlo",
+        "url": "https://www.montecarlodata.com/data-observability/"
+      },
+      {
+        "title": "Data Observability - Gartner",
+        "url": "https://www.gartner.com/en/documents/4009814"
+      }
+    ],
+    "keywords": [
+      "data observability",
+      "data observability tools",
+      "data monitoring",
+      "data freshness",
+      "data downtime"
+    ],
+    "lastUpdated": "2026-01-21"
+  }
+]

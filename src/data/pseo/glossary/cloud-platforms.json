@@ -1,0 +1,67 @@
+[
+  {
+    "id": "databricks",
+    "term": "Databricks",
+    "slug": "databricks",
+    "category": "cloud-platforms",
+    "shortDefinition": "A unified data analytics platform that combines data engineering, data science, and machine learning on a lakehouse architecture, built on Apache Spark.",
+    "fullDefinition": "Databricks is a unified data analytics platform founded by the creators of Apache Spark. It combines data engineering, data science, and machine learning capabilities on a lakehouse architecture—merging the best of data lakes and data warehouses.\n\n## What Makes Databricks Unique\n\n### Lakehouse Architecture\nDatabricks pioneered the \"lakehouse\" concept:\n- **Open Data Lake**: Store data in open formats (Delta Lake, Parquet)\n- **Warehouse Performance**: ACID transactions, fast SQL queries\n- **Unified Platform**: Same data for BI, ML, and streaming\n\n### Delta Lake\nDatabricks' open-source storage layer:\n- ACID transactions on data lakes\n- Time travel (query historical data)\n- Schema enforcement and evolution\n- Optimized for Spark performance\n\n## Key Components\n\n### 1. Databricks SQL\n- Run SQL queries on lakehouse data\n- Connect BI tools (Tableau, Power BI)\n- Serverless SQL warehouses\n\n### 2. Databricks Notebooks\n- Interactive coding in Python, SQL, Scala, R\n- Collaboration features (comments, versions)\n- Scheduled job execution\n\n### 3. MLflow\n- Track ML experiments\n- Package and deploy models\n- Model registry for governance\n\n### 4. Unity Catalog\n- Centralized governance for data and AI\n- Fine-grained access control\n- Data lineage tracking\n\n## Databricks vs Snowflake\n\n| Feature | Databricks | Snowflake |\n|---------|------------|-----------|\n| Architecture | Lakehouse | Cloud DW |\n| ML/AI | Built-in (MLflow, AutoML) | Limited |\n| Streaming | Native Spark Streaming | Limited |\n| Open Formats | Delta Lake, Parquet | Proprietary |\n| SQL Performance | Good | Excellent |\n| Data Science | Excellent | Basic |\n\n## Common Use Cases\n\n1. **Unified Data Platform**: Single platform for all data workloads\n2. **ML at Scale**: Train models on large datasets\n3. **Real-time Analytics**: Process streaming data\n4. **Data Lakehouse**: Query lake data with warehouse performance\n5. **Collaborative Data Science**: Team notebooks and experiments",
+    "keyPoints": [
+      "Unified platform for data engineering, science, and ML",
+      "Built on Apache Spark with Lakehouse architecture",
+      "Delta Lake provides ACID transactions on data lakes",
+      "Includes MLflow for ML lifecycle management",
+      "Founded by the creators of Apache Spark"
+    ],
+    "faqs": [
+      {
+        "question": "What is Databricks used for?",
+        "answer": "Databricks is used for unified data analytics—combining data engineering, data science, and machine learning on one platform. It is particularly strong for large-scale data processing, ML workflows, and lakehouse architecture."
+      },
+      {
+        "question": "Is Databricks a data warehouse?",
+        "answer": "Databricks is a data lakehouse, not a traditional data warehouse. It combines data lake flexibility with warehouse features like ACID transactions and fast SQL queries, enabled by Delta Lake."
+      },
+      {
+        "question": "Is Databricks the same as Spark?",
+        "answer": "Databricks is built on Apache Spark but adds a managed cloud platform, collaboration features, Delta Lake, MLflow, and Unity Catalog. Think of it as \"Spark++\" with enterprise features."
+      },
+      {
+        "question": "Databricks vs Snowflake: which is better?",
+        "answer": "Snowflake excels at SQL analytics and is simpler to use. Databricks is better for data science, ML, and when you need open formats and advanced Spark capabilities. Many organizations use both."
+      }
+    ],
+    "relatedTerms": [
+      "apache-spark",
+      "delta-lake",
+      "data-lake",
+      "snowflake",
+      "mlflow"
+    ],
+    "relatedTools": [
+      "Apache Spark",
+      "Delta Lake",
+      "MLflow",
+      "Snowflake",
+      "AWS EMR"
+    ],
+    "externalLinks": [
+      {
+        "title": "Databricks Documentation",
+        "url": "https://docs.databricks.com/"
+      },
+      {
+        "title": "Delta Lake Documentation",
+        "url": "https://docs.delta.io/"
+      }
+    ],
+    "keywords": [
+      "databricks",
+      "databricks vs snowflake",
+      "delta lake",
+      "databricks tutorial",
+      "data lakehouse"
+    ],
+    "lastUpdated": "2026-01-21"
+  }
+]

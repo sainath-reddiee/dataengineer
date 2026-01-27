@@ -1,0 +1,67 @@
+[
+  {
+    "id": "kafka",
+    "term": "Apache Kafka",
+    "slug": "apache-kafka",
+    "category": "streaming",
+    "shortDefinition": "A distributed event streaming platform used for building real-time data pipelines and streaming applications, handling trillions of events per day.",
+    "fullDefinition": "Apache Kafka is a distributed event streaming platform capable of handling trillions of events per day. Originally developed at LinkedIn, Kafka is now used by thousands of companies for real-time data pipelines, streaming analytics, and event-driven architectures.\n\n## Core Concepts\n\n### Topics\nData streams are organized into **topics**—named feeds of messages:\n- Producers write to topics\n- Consumers read from topics\n- Topics can have multiple partitions for parallelism\n\n### Partitions\nTopics are split into partitions for scalability:\n- Each partition is an ordered, immutable sequence of records\n- Consumers can read partitions in parallel\n- Partition count determines parallelism\n\n### Consumer Groups\nConsumers form groups to divide work:\n- Each partition is consumed by exactly one consumer in the group\n- Allows horizontal scaling of consumers\n- Multiple groups can read the same topic independently\n\n## Kafka Architecture\n\n```\nProducers → [Topic: orders] → Consumers\n                  │\n            ┌─────┴─────┐\n            │ Partition │\n            │     0     │\n            ├───────────┤\n            │ Partition │\n            │     1     │\n            ├───────────┤\n            │ Partition │\n            │     2     │\n            └───────────┘\n```\n\n## Key Features\n\n- **High Throughput**: Millions of messages per second\n- **Low Latency**: Sub-millisecond message delivery\n- **Durability**: Data replicated across brokers\n- **Scalability**: Add brokers without downtime\n- **Fault Tolerance**: Automatic leader election\n\n## Kafka Ecosystem\n\n- **Kafka Connect**: Pre-built connectors to data sources/sinks\n- **Kafka Streams**: Stream processing library\n- **ksqlDB**: SQL interface for stream processing\n- **Schema Registry**: Manage message schemas\n\n## Kafka Use Cases\n\n1. **Event Sourcing**: Store all state changes as events\n2. **Change Data Capture (CDC)**: Capture database changes\n3. **Microservices Communication**: Async event-driven messaging\n4. **Real-time Analytics**: Process events as they arrive\n5. **Log Aggregation**: Collect logs from distributed systems",
+    "keyPoints": [
+      "Distributed event streaming platform",
+      "Handles millions of messages per second with low latency",
+      "Core concepts: Topics, Partitions, Consumer Groups",
+      "Foundation for real-time data pipelines",
+      "Ecosystem includes Connect, Streams, and ksqlDB"
+    ],
+    "faqs": [
+      {
+        "question": "What is Apache Kafka used for?",
+        "answer": "Kafka is used for building real-time data pipelines and streaming applications. Common use cases include event sourcing, log aggregation, change data capture (CDC), and microservices communication."
+      },
+      {
+        "question": "Is Kafka a message queue?",
+        "answer": "Kafka can function as a message queue, but it is more accurately an event log. Unlike traditional queues, Kafka retains messages after consumption, allowing replay and multiple consumer groups."
+      },
+      {
+        "question": "What is a Kafka topic?",
+        "answer": "A topic is a named stream of events in Kafka. Producers write events to topics, and consumers subscribe to topics to read events. Topics are divided into partitions for parallelism."
+      },
+      {
+        "question": "Is Kafka difficult to learn?",
+        "answer": "Kafka basic concepts can be learned quickly, but mastering it takes time. Key challenges include understanding partitioning, consumer groups, replication, and operational best practices."
+      }
+    ],
+    "relatedTerms": [
+      "streaming",
+      "event-driven",
+      "data-pipeline",
+      "apache-spark",
+      "cdc"
+    ],
+    "relatedTools": [
+      "Confluent",
+      "AWS MSK",
+      "Redpanda",
+      "Apache Pulsar",
+      "RabbitMQ"
+    ],
+    "externalLinks": [
+      {
+        "title": "Apache Kafka Documentation",
+        "url": "https://kafka.apache.org/documentation/"
+      },
+      {
+        "title": "Confluent Developer Tutorials",
+        "url": "https://developer.confluent.io/tutorials/"
+      }
+    ],
+    "keywords": [
+      "apache kafka",
+      "kafka streaming",
+      "kafka topics",
+      "kafka vs rabbitmq",
+      "kafka tutorial"
+    ],
+    "lastUpdated": "2026-01-21"
+  }
+]

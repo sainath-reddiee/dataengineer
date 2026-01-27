@@ -9,6 +9,174 @@ import { comparisons } from '@/data/comparisonData';
 import { SITE_CONFIG } from '@/lib/seoConfig';
 
 // =============================================================================
+// DYNAMIC ARTICLES (Auto-synced from WordPress)
+// =============================================================================
+
+/**
+ * Articles are auto-synced from WordPress via:
+ *   node scripts/sync-articles-for-linking.js
+ * 
+ * The sync runs as part of the pSEO build process and generates:
+ *   src/data/pseo/articles.json
+ * 
+ * Format:
+ *   { slug, title, keywords, categories }
+ */
+
+// Try to load synced articles, fallback to empty array
+let SYNCED_ARTICLES = [];
+try {
+    // Dynamic import for build-time
+    const articlesPath = new URL('../data/pseo/articles.json', import.meta.url);
+    const articlesModule = await import(articlesPath, { assert: { type: 'json' } });
+    SYNCED_ARTICLES = articlesModule.default || [];
+} catch {
+    // articles.json doesn't exist yet - run sync-articles-for-linking.js
+    console.warn('⚠️  articles.json not found. Run: node scripts/sync-articles-for-linking.js');
+}
+
+/**
+ * Export for use in templates. Combines synced articles with any manual overrides.
+ */
+export const MANUAL_ARTICLES = [
+    ...SYNCED_ARTICLES,
+    // Add manual overrides below if needed (these take priority)
+    // { slug: 'special-article', title: 'My Special Article', keywords: ['special'] },
+];
+
+// =============================================================================
+// INTERNAL LINK INJECTION ENGINE
+// =============================================================================
+
+/**
+ * Escape special regex characters in a string
+ */
+function escapeRegex(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Check if a keyword appears inside an existing HTML tag or anchor
+ * @param {string} html - The HTML content
+ * @param {string} keyword - The keyword to check
+ * @returns {boolean} - True if already linked or inside a tag
+ */
+function isAlreadyLinked(html, keyword) {
+    // Check if keyword is inside an <a> tag
+    const anchorRegex = new RegExp(`<a[^>]*>[^<]*${escapeRegex(keyword)}[^<]*</a>`, 'i');
+    if (anchorRegex.test(html)) return true;
+
+    // Check if keyword is part of an HTML attribute
+    const attrRegex = new RegExp(`<[^>]*${escapeRegex(keyword)}[^>]*>`, 'i');
+    if (attrRegex.test(html)) return true;
+
+    return false;
+}
+
+/**
+ * Inject internal links from pSEO content to Manual Articles.
+ * Used during R2 build to create SEO link equity flow from programmatic pages
+ * to high-value WordPress articles.
+ * 
+ * Rules:
+ * - Only replaces the FIRST occurrence of each keyword
+ * - Does NOT link if keyword is already inside an <a> tag
+ * - Does NOT break existing HTML tags
+ * - Each article's keywords are processed in order (first match wins)
+ * 
+ * @param {string} htmlContent - The HTML content to process
+ * @param {string} excludeSlug - Optional slug to exclude (current page)
+ * @returns {string} - HTML with internal links injected
+ */
+export function injectInternalLinks(htmlContent, excludeSlug = '') {
+    if (!htmlContent || typeof htmlContent !== 'string') {
+        return htmlContent;
+    }
+
+    let result = htmlContent;
+    const linkedKeywords = new Set(); // Track what we've already linked
+
+    for (const article of MANUAL_ARTICLES) {
+        // Skip if this is the current page
+        if (article.slug === excludeSlug) continue;
+
+        for (const keyword of article.keywords) {
+            // Skip if we've already linked this keyword
+            if (linkedKeywords.has(keyword.toLowerCase())) continue;
+
+            // Skip if keyword is already linked in the content
+            if (isAlreadyLinked(result, keyword)) continue;
+
+            // Build regex to match keyword NOT inside HTML tags
+            // Negative lookbehind: not preceded by < without closing >
+            // Negative lookahead: not followed by > without opening <
+            // Word boundary matching for cleaner matches
+            const regex = new RegExp(
+                `(?<!<[^>]*)\\b(${escapeRegex(keyword)})\\b(?![^<]*>)`,
+                'i'
+            );
+
+            const match = result.match(regex);
+            if (match) {
+                // Replace first occurrence with anchor tag
+                const anchor = `<a href="/articles/${article.slug}" class="internal-link" title="${article.title}">${match[1]}</a>`;
+                result = result.replace(regex, anchor);
+                linkedKeywords.add(keyword.toLowerCase());
+
+                // Only link one keyword per article to avoid over-optimization
+                break;
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Inject cross-links between glossary terms within content.
+ * Links glossary terms mentioned in the content to their respective pages.
+ * 
+ * @param {string} htmlContent - The HTML content to process
+ * @param {string} currentSlug - The current term's slug (to exclude self-linking)
+ * @param {number} maxLinks - Maximum number of term links to inject
+ * @returns {string} - HTML with glossary cross-links injected
+ */
+export function injectGlossaryCrossLinks(htmlContent, currentSlug = '', maxLinks = 5) {
+    if (!htmlContent || typeof htmlContent !== 'string') {
+        return htmlContent;
+    }
+
+    let result = htmlContent;
+    let linkCount = 0;
+
+    // Sort terms by length (descending) to match longer phrases first
+    const sortedTerms = [...glossaryTerms]
+        .filter(t => t.slug !== currentSlug)
+        .sort((a, b) => b.term.length - a.term.length);
+
+    for (const term of sortedTerms) {
+        if (linkCount >= maxLinks) break;
+
+        // Skip if term is already linked
+        if (isAlreadyLinked(result, term.term)) continue;
+
+        const regex = new RegExp(
+            `(?<!<[^>]*)\\b(${escapeRegex(term.term)})\\b(?![^<]*>)`,
+            'i'
+        );
+
+        const match = result.match(regex);
+        if (match) {
+            const anchor = `<a href="/glossary/${term.slug}" class="glossary-link" title="${term.shortDefinition?.substring(0, 100) || term.term}">${match[1]}</a>`;
+            result = result.replace(regex, anchor);
+            linkCount++;
+        }
+    }
+
+    return result;
+}
+
+// =============================================================================
 // RELATED PAGES ENGINE
 // =============================================================================
 
