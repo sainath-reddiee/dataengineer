@@ -260,11 +260,16 @@ function generateGlossaryHTML(term, categories) {
     <meta property="og:url" content="${SITE_URL}/glossary/${term.slug}">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="DataEngineer Hub">
+    <meta property="og:image" content="${SITE_URL}/og-glossary.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="${term.term} - Data Engineering Glossary">
     
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="${term.term} - Data Engineering Glossary">
     <meta name="twitter:description" content="${term.shortDefinition}">
+    <meta name="twitter:image" content="${SITE_URL}/og-glossary.png">
     
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -441,17 +446,53 @@ function generateComparisonHTML(comparison) {
     <link rel="canonical" href="${SITE_URL}/compare/${comparison.slug}">
     <meta name="robots" content="index, follow">
     
-    <meta property="og:title" content="${comparison.toolA} vs ${comparison.toolB}">
+    <!-- Open Graph -->
+    <meta property="og:title" content="${comparison.toolA} vs ${comparison.toolB} - Comparison">
     <meta property="og:description" content="${comparison.shortVerdict}">
     <meta property="og:url" content="${SITE_URL}/compare/${comparison.slug}">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="DataEngineer Hub">
+    <meta property="og:image" content="${SITE_URL}/og-comparison.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="${comparison.toolA} vs ${comparison.toolB}">
     
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="${comparison.toolA} vs ${comparison.toolB}">
+    <meta name="twitter:description" content="${comparison.shortVerdict}">
+    <meta name="twitter:image" content="${SITE_URL}/og-comparison.png">
+    
+    <!-- Article Schema -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "Article",
-        "headline": "${comparison.toolA} vs ${comparison.toolB}",
+        "headline": "${comparison.toolA} vs ${comparison.toolB}: Complete Comparison",
         "description": "${comparison.shortVerdict}",
-        "author": {"@type": "Organization", "name": "DataEngineer Hub"}
+        "author": {"@type": "Organization", "name": "DataEngineer Hub", "url": "${SITE_URL}"},
+        "publisher": {
+            "@type": "Organization",
+            "name": "DataEngineer Hub",
+            "url": "${SITE_URL}",
+            "logo": {"@type": "ImageObject", "url": "${SITE_URL}/logo.png"}
+        },
+        "datePublished": "${new Date().toISOString().split('T')[0]}",
+        "dateModified": "${new Date().toISOString().split('T')[0]}",
+        "mainEntityOfPage": {"@type": "WebPage", "@id": "${SITE_URL}/compare/${comparison.slug}"}
+    }
+    </script>
+    
+    <!-- Breadcrumb Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "${SITE_URL}"},
+            {"@type": "ListItem", "position": 2, "name": "Comparisons", "item": "${SITE_URL}/compare"},
+            {"@type": "ListItem", "position": 3, "name": "${comparison.toolA} vs ${comparison.toolB}", "item": "${SITE_URL}/compare/${comparison.slug}"}
+        ]
     }
     </script>
     
