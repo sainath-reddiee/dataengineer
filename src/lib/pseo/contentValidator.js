@@ -4,7 +4,7 @@
  */
 
 // Configuration constants
-const MIN_WORD_COUNT = 300;
+const MIN_WORD_COUNT = 400;
 const MIN_FAQ_COUNT = 3;
 const SIMILARITY_THRESHOLD = 0.8; // 80% similarity warning
 

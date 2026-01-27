@@ -23,7 +23,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, ListObjectsV2Command, DeleteObjectsCommand } from '@aws-sdk/client-s3';
 import dotenv from 'dotenv';
 
 // Load environment variables
@@ -40,12 +40,17 @@ const MAX_URLS_PER_SITEMAP = 25000;
 const DRY_RUN = process.argv.includes('--dry-run');
 const FORCE_ALL = process.argv.includes('--force');
 
+// AdSense Configuration (set in .env or leave empty to disable ads)
+const ADSENSE_PUB_ID = process.env.ADSENSE_PUBLISHER_ID || '';
+const ENABLE_ADS = ADSENSE_PUB_ID.length > 0;
+
 // =============================================================================
 // INCREMENTAL CACHE MANAGEMENT
 // =============================================================================
 
 let contentCache = {};
 let cacheStats = { skipped: 0, uploaded: 0 };
+let uploadedKeys = new Set(); // Track all keys in current build for orphan cleanup
 
 function loadCache() {
     if (FORCE_ALL) {
@@ -135,6 +140,9 @@ function initR2Client() {
 const newHashes = {};
 
 async function uploadToR2(key, content, contentType = 'text/html', forceUpload = false) {
+    // Track this key as part of current build
+    uploadedKeys.add(key);
+
     // Check if content changed (incremental upload)
     if (!forceUpload) {
         const { upload, hash } = shouldUpload(key, content);
@@ -166,6 +174,84 @@ async function uploadToR2(key, content, contentType = 'text/html', forceUpload =
     } catch (error) {
         console.error(`   ❌ Failed to upload ${key}:`, error.message);
         return { success: false, skipped: false };
+    }
+}
+
+// =============================================================================
+// R2 CLEANUP - Delete orphaned files
+// =============================================================================
+
+async function listR2Objects() {
+    if (DRY_RUN || !r2Client) return [];
+
+    const bucketName = process.env.R2_BUCKET_NAME || 'dataengineerhub-pseo';
+    const allObjects = [];
+    let continuationToken = undefined;
+
+    try {
+        do {
+            const response = await r2Client.send(new ListObjectsV2Command({
+                Bucket: bucketName,
+                ContinuationToken: continuationToken,
+            }));
+
+            if (response.Contents) {
+                allObjects.push(...response.Contents.map(obj => obj.Key));
+            }
+
+            continuationToken = response.IsTruncated ? response.NextContinuationToken : undefined;
+        } while (continuationToken);
+
+        return allObjects;
+    } catch (error) {
+        console.error('   ⚠️  Failed to list R2 objects:', error.message);
+        return [];
+    }
+}
+
+async function cleanupOrphanedFiles() {
+    if (DRY_RUN) {
+        console.log('\n🧹 [DRY RUN] Would check for orphaned files...');
+        return { deleted: 0 };
+    }
+
+    console.log('\n🧹 Checking for orphaned files in R2...');
+
+    const existingKeys = await listR2Objects();
+    const orphanedKeys = existingKeys.filter(key => !uploadedKeys.has(key));
+
+    if (orphanedKeys.length === 0) {
+        console.log('   ✅ No orphaned files found');
+        return { deleted: 0 };
+    }
+
+    console.log(`   Found ${orphanedKeys.length} orphaned files to delete:`);
+    orphanedKeys.slice(0, 10).forEach(key => console.log(`      - ${key}`));
+    if (orphanedKeys.length > 10) {
+        console.log(`      ... and ${orphanedKeys.length - 10} more`);
+    }
+
+    const bucketName = process.env.R2_BUCKET_NAME || 'dataengineerhub-pseo';
+
+    try {
+        // Delete in batches of 1000 (S3/R2 limit)
+        const batchSize = 1000;
+        for (let i = 0; i < orphanedKeys.length; i += batchSize) {
+            const batch = orphanedKeys.slice(i, i + batchSize);
+            await r2Client.send(new DeleteObjectsCommand({
+                Bucket: bucketName,
+                Delete: {
+                    Objects: batch.map(Key => ({ Key })),
+                    Quiet: true,
+                },
+            }));
+        }
+
+        console.log(`   🗑️  Deleted ${orphanedKeys.length} orphaned files`);
+        return { deleted: orphanedKeys.length };
+    } catch (error) {
+        console.error('   ❌ Failed to delete orphaned files:', error.message);
+        return { deleted: 0, error: error.message };
     }
 }
 
@@ -300,6 +386,9 @@ function generateGlossaryHTML(term, categories) {
     }
     </script>
     
+    ${ENABLE_ADS ? `<!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB_ID}" crossorigin="anonymous"></script>` : ''}
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -369,6 +458,22 @@ function generateGlossaryHTML(term, categories) {
         .back-link { display: inline-block; margin-top: 40px; color: #60a5fa; text-decoration: none; }
         .back-link:hover { text-decoration: underline; }
         .last-updated { font-size: 0.85rem; color: #94a3b8; margin-top: 40px; }
+        /* Ad Container Styles */
+        .ad-container { margin: 24px 0; padding: 16px 0; min-height: 100px; text-align: center; }
+        .ad-container ins { display: block; }
+        /* Footer Styles */
+        .site-footer { 
+            margin-top: 60px; 
+            padding: 24px 0; 
+            border-top: 1px solid rgba(255,255,255,0.1); 
+            text-align: center; 
+            font-size: 0.85rem; 
+            color: #94a3b8; 
+        }
+        .site-footer a { color: #60a5fa; text-decoration: none; margin: 0 12px; }
+        .site-footer a:hover { text-decoration: underline; }
+        .footer-links { margin-bottom: 12px; }
+        .footer-copy { color: #64748b; }
     </style>
 </head>
 <body>
@@ -385,11 +490,23 @@ function generateGlossaryHTML(term, categories) {
             ${term.shortDefinition}
         </div>
         
+        ${ENABLE_ADS ? `<!-- Ad Slot 1: After Definition -->
+        <div class="ad-container">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="${ADSENSE_PUB_ID}" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>` : ''}
+        
         <div class="content">
             <p>${fullDefinitionHTML}</p>
         </div>
         
         ${keyPointsHTML ? `<section><h2>Key Points</h2>${keyPointsHTML}</section>` : ''}
+        
+        ${ENABLE_ADS ? `<!-- Ad Slot 2: After Key Points -->
+        <div class="ad-container">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="${ADSENSE_PUB_ID}" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>` : ''}
         
         ${faqsHTML ? `<section itemscope itemtype="https://schema.org/FAQPage"><h2>Frequently Asked Questions</h2>${faqsHTML}</section>` : ''}
         
@@ -397,9 +514,27 @@ function generateGlossaryHTML(term, categories) {
         
         ${externalLinksHTML}
         
+        ${ENABLE_ADS ? `<!-- Ad Slot 3: Before Related Links -->
+        <div class="ad-container">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="${ADSENSE_PUB_ID}" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>` : ''}
+        
         <a href="/glossary" class="back-link">← Back to Glossary</a>
         
         ${term.lastUpdated ? `<p class="last-updated">Last updated: ${term.lastUpdated}</p>` : ''}
+        
+        <!-- Site Footer -->
+        <footer class="site-footer">
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+                <a href="/privacy-policy">Privacy Policy</a>
+                <a href="/terms">Terms of Service</a>
+            </div>
+            <div class="footer-copy">© ${new Date().getFullYear()} DataEngineer Hub. All rights reserved.</div>
+        </footer>
     </div>
 </body>
 </html>`;
@@ -496,6 +631,9 @@ function generateComparisonHTML(comparison) {
     }
     </script>
     
+    ${ENABLE_ADS ? `<!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB_ID}" crossorigin="anonymous"></script>` : ''}
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -536,6 +674,23 @@ function generateComparisonHTML(comparison) {
         .cons h3 { color: #f59e0b; }
         .verdict { background: rgba(0,0,0,0.2); padding: 24px; border-radius: 12px; margin: 32px 0; }
         .back-link { display: inline-block; margin-top: 40px; color: #60a5fa; text-decoration: none; }
+        /* Ad Container Styles */
+        .ad-container { margin: 24px 0; padding: 16px 0; min-height: 100px; text-align: center; }
+        .ad-container ins { display: block; }
+        /* Footer Styles */
+        .site-footer { 
+            margin-top: 60px; 
+            padding: 24px 0; 
+            border-top: 1px solid rgba(255,255,255,0.1); 
+            text-align: center; 
+            font-size: 0.85rem; 
+            color: #94a3b8; 
+        }
+        .site-footer a { color: #60a5fa; text-decoration: none; margin: 0 12px; }
+        .site-footer a:hover { text-decoration: underline; }
+        .footer-links { margin-bottom: 12px; }
+        .footer-copy { color: #64748b; }
+        @media (max-width: 768px) { .pros-cons { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -551,6 +706,12 @@ function generateComparisonHTML(comparison) {
             <div class="winner">Winner: ${comparison.winner || 'It Depends'}</div>
             <p style="margin-top: 8px; color: #cbd5e1;">${comparison.shortVerdict}</p>
         </div>
+        
+        ${ENABLE_ADS ? `<!-- Ad Slot 1: After Verdict -->
+        <div class="ad-container">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="${ADSENSE_PUB_ID}" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>` : ''}
         
         <section>
             <h2>Introduction</h2>
@@ -574,6 +735,12 @@ function generateComparisonHTML(comparison) {
         </section>
         ` : ''}
         
+        ${ENABLE_ADS ? `<!-- Ad Slot 2: After Feature Table -->
+        <div class="ad-container">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="${ADSENSE_PUB_ID}" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>` : ''}
+        
         ${prosConsHTML}
         
         <section class="verdict">
@@ -581,7 +748,25 @@ function generateComparisonHTML(comparison) {
             <div style="white-space: pre-line; color: #e2e8f0;">${comparison.finalVerdict || ''}</div>
         </section>
         
+        ${ENABLE_ADS ? `<!-- Ad Slot 3: After Verdict -->
+        <div class="ad-container">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="${ADSENSE_PUB_ID}" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>` : ''}
+        
         <a href="/compare" class="back-link">← Back to Comparisons</a>
+        
+        <!-- Site Footer -->
+        <footer class="site-footer">
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+                <a href="/privacy-policy">Privacy Policy</a>
+                <a href="/terms">Terms of Service</a>
+            </div>
+            <div class="footer-copy">© ${new Date().getFullYear()} DataEngineer Hub. All rights reserved.</div>
+        </footer>
     </div>
 </body>
 </html>`;
@@ -788,13 +973,17 @@ async function main() {
         // Build sitemaps (always force upload - they change every build)
         const sitemapCount = await buildSitemaps(allUrls);
 
-        const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-
         // Calculate totals
         const totalUploaded = glossaryResult.uploaded + comparisonResult.uploaded;
         const totalSkipped = glossaryResult.skipped + comparisonResult.skipped;
         const totalFailed = glossaryResult.failed + comparisonResult.failed;
         const totalPages = allUrls.length;
+
+        // Cleanup orphaned files (run after all uploads tracked)
+        const cleanupResult = await cleanupOrphanedFiles();
+
+        const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+
 
         // Summary
         console.log('\n╔══════════════════════════════════════════════════════════════╗');
@@ -806,6 +995,7 @@ async function main() {
         console.log('╠══════════════════════════════════════════════════════════════╣');
         console.log(`║  ⬆️  Uploaded (changed): ${String(totalUploaded).padStart(5)}                           ║`);
         console.log(`║  ⏭️  Skipped (same):     ${String(totalSkipped).padStart(5)}                           ║`);
+        console.log(`║  🗑️  Deleted (orphan):   ${String(cleanupResult.deleted).padStart(5)}                           ║`);
         console.log(`║  ❌ Failed:             ${String(totalFailed).padStart(5)}                           ║`);
         console.log('╠══════════════════════════════════════════════════════════════╣');
         console.log(`║  Sitemap Files:        ${String(sitemapCount).padStart(6)}                           ║`);
@@ -825,6 +1015,9 @@ async function main() {
             if (totalSkipped > 0) {
                 console.log(`\n💡 Incremental deploy: ${totalSkipped} unchanged files were skipped.`);
                 console.log('   Use --force to re-upload all files.');
+            }
+            if (cleanupResult.deleted > 0) {
+                console.log(`\n🧹 Cleaned up ${cleanupResult.deleted} orphaned files from R2.`);
             }
         }
 

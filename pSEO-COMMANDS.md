@@ -57,12 +57,13 @@ npm run pseo:sync-articles
 
 ---
 
-## ⚡ Incremental Uploads
+## ⚡ Incremental Uploads & Sync
 
 The deploy script uses **content hashing** to skip unchanged files:
 
 - **First run**: Uploads ALL files, creates `.pseo-cache.json`
 - **Subsequent runs**: Only uploads files that changed
+- **Orphan Cleanup**: Automatically deletes files in R2 that are no longer in the build
 - **Use `--force`**: Re-upload everything (ignore cache)
 
 **Example output:**
@@ -70,9 +71,20 @@ The deploy script uses **content hashing** to skip unchanged files:
 ╔═══════════════════════════════════════════╗
 ║  ⬆️  Uploaded (changed):    3             ║
 ║  ⏭️  Skipped (same):       52             ║
+║  🗑️  Deleted (orphan):      1             ║
 ║  ❌ Failed:                 0             ║
 ╚═══════════════════════════════════════════╝
 ```
+
+### What Gets Deleted?
+- Old glossary pages for removed terms
+- Renamed files (old name deleted automatically)
+- Old comparison pages that no longer exist
+
+### What Stays Safe?
+- Only files the script manages (glossary/, compare/, sitemap-pseo-*)
+- Your WordPress content is NOT affected
+
 
 ---
 

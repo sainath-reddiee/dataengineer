@@ -1,0 +1,44 @@
+[
+  {
+    "id": "fivetran-vs-airbyte",
+    "slug": "fivetran-vs-airbyte",
+    "title": "Fivetran vs Airbyte",
+    "subtitle": "ETL/ELT connector platform comparison",
+    "tool1": {
+      "name": "Fivetran",
+      "logo": "🔌"
+    },
+    "tool2": {
+      "name": "Airbyte",
+      "logo": "🌊"
+    },
+    "verdict": "Fivetran for enterprise reliability, Airbyte for cost and flexibility",
+    "comparisonPoints": [
+      {
+        "aspect": "Pricing",
+        "tool1": "Usage-based (expensive)",
+        "tool2": "Open-source option",
+        "winner": "airbyte"
+      },
+      {
+        "aspect": "Connectors",
+        "tool1": "300+ managed",
+        "tool2": "350+ community",
+        "winner": "tie"
+      },
+      {
+        "aspect": "Self-Hosted",
+        "tool1": "No",
+        "tool2": "Yes",
+        "winner": "airbyte"
+      },
+      {
+        "aspect": "Enterprise Support",
+        "tool1": "Excellent",
+        "tool2": "Growing",
+        "winner": "fivetran"
+      }
+    ],
+    "lastUpdated": "2026-01-27"
+  }
+]

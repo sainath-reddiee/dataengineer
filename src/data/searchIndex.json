@@ -1,5 +1,5 @@
 {
-  "version": "2026-01-27T12:59:49.549Z",
+  "version": "2026-01-27T18:16:04.710Z",
   "glossary": [
     {
       "term": "ACID Transactions",
@@ -56,6 +56,24 @@
       "shortDefinition": "An open-source platform to programmatically author, schedule, and monitor workflows, commonly used for orchestrating data pipelines and ETL jobs."
     },
     {
+      "term": "Apache Flink",
+      "slug": "apache-flink",
+      "category": "streaming",
+      "shortDefinition": "A distributed stream processing framework that provides high-throughput, low-latency data streaming with exactly-once semantics."
+    },
+    {
+      "term": "Apache Hudi",
+      "slug": "apache-hudi",
+      "category": "data-warehousing",
+      "shortDefinition": "An open-source data lake platform that provides record-level insert, update, and delete capabilities with incremental data processing."
+    },
+    {
+      "term": "Apache Iceberg",
+      "slug": "apache-iceberg",
+      "category": "data-warehousing",
+      "shortDefinition": "An open table format for large analytic datasets that provides reliable, performant table operations including schema evolution and time travel."
+    },
+    {
       "term": "Apache Kafka",
       "slug": "apache-kafka",
       "category": "streaming",
@@ -66,6 +84,12 @@
       "slug": "apache-spark",
       "category": "analytics",
       "shortDefinition": "A unified analytics engine for large-scale data processing, providing high-level APIs for batch processing, streaming, machine learning, and graph computation."
+    },
+    {
+      "term": "Apache Superset",
+      "slug": "apache-superset",
+      "category": "analytics",
+      "shortDefinition": "An open-source data exploration and visualization platform that supports rich SQL querying and interactive dashboard creation."
     },
     {
       "term": "AWS Glue",
@@ -152,6 +176,18 @@
       "shortDefinition": "A database management system that stores data in columns rather than rows, optimized for analytics."
     },
     {
+      "term": "Confluent",
+      "slug": "confluent",
+      "category": "streaming",
+      "shortDefinition": "A data streaming platform built on Apache Kafka that provides enterprise features for real-time data pipelines and streaming applications."
+    },
+    {
+      "term": "Dagster",
+      "slug": "dagster",
+      "category": "data-orchestration",
+      "shortDefinition": "A data orchestrator for machine learning, analytics, and ETL that enables local development and testing with production-grade deployment."
+    },
+    {
       "term": "Data Catalog",
       "slug": "data-catalog",
       "category": "data-governance",
@@ -224,6 +260,18 @@
       "shortDefinition": "An open-source transformation tool that enables data analysts and engineers to transform data in their warehouse using SQL and software engineering best practices."
     },
     {
+      "term": "Delta Lake",
+      "slug": "delta-lake",
+      "category": "data-warehousing",
+      "shortDefinition": "An open-source storage layer that brings ACID transactions, scalable metadata handling, and data versioning to Apache Spark and big data workloads."
+    },
+    {
+      "term": "dlt (Data Load Tool)",
+      "slug": "dlt",
+      "category": "data-integration",
+      "shortDefinition": "An open-source Python library for building data pipelines that automatically handles schema inference, data normalization, and incremental loading."
+    },
+    {
       "term": "ETL (Extract, Transform, Load)",
       "slug": "etl",
       "category": "etl-elt",
@@ -290,10 +338,46 @@
       "shortDefinition": "An open-source Python framework for defining, documenting, and validating data quality expectations against datasets in data pipelines."
     },
     {
+      "term": "Looker",
+      "slug": "looker",
+      "category": "analytics",
+      "shortDefinition": "A business intelligence and data analytics platform acquired by Google that uses LookML for semantic modeling and self-service analytics."
+    },
+    {
+      "term": "Mage",
+      "slug": "mage",
+      "category": "data-orchestration",
+      "shortDefinition": "An open-source data pipeline tool for transforming and integrating data, designed as a modern alternative to Airflow with a visual interface."
+    },
+    {
+      "term": "Matillion",
+      "slug": "matillion",
+      "category": "data-integration",
+      "shortDefinition": "A cloud-native data transformation platform that provides low-code ELT for cloud data warehouses like Snowflake, BigQuery, and Redshift."
+    },
+    {
+      "term": "Metabase",
+      "slug": "metabase",
+      "category": "analytics",
+      "shortDefinition": "An open-source business intelligence tool that allows users to ask questions about data and embed analytics in applications."
+    },
+    {
       "term": "Microsoft Purview",
       "slug": "microsoft-purview",
       "category": "azure-cloud",
       "shortDefinition": "A comprehensive family of data governance, risk, and compliance solutions."
+    },
+    {
+      "term": "Prefect",
+      "slug": "prefect",
+      "category": "data-orchestration",
+      "shortDefinition": "A modern workflow orchestration tool that provides a Pythonic way to build, schedule, and monitor data pipelines with dynamic workflows."
+    },
+    {
+      "term": "Redpanda",
+      "slug": "redpanda",
+      "category": "streaming",
+      "shortDefinition": "A Kafka-compatible streaming data platform written in C++ that eliminates ZooKeeper and provides faster performance with lower latency."
     },
     {
       "term": "Reverse ETL",
@@ -312,9 +396,22 @@
       "slug": "snowflake",
       "category": "data-warehousing",
       "shortDefinition": "A cloud-native data warehouse platform that separates storage and compute, enabling elastic scaling and pay-per-use pricing."
+    },
+    {
+      "term": "Stitch",
+      "slug": "stitch",
+      "category": "data-integration",
+      "shortDefinition": "A cloud-based ETL service acquired by Talend that provides simple data integration from hundreds of sources to data warehouses."
     }
   ],
   "comparisons": [
+    {
+      "title": "Apache Airflow vs Dagster",
+      "slug": "airflow-vs-dagster",
+      "toolA": "Apache Airflow",
+      "toolB": "Dagster",
+      "shortVerdict": "Airflow for mature production pipelines, Dagster for modern data assets"
+    },
     {
       "title": "Apache Airflow vs Prefect",
       "slug": "airflow-vs-prefect",
@@ -324,12 +421,33 @@
       "shortVerdict": "Choose Airflow for enterprise-scale, static dependencies. Choose Prefect for modern, dynamic workflows and easier developer experience."
     },
     {
+      "title": "Apache Kafka vs Redpanda",
+      "slug": "kafka-vs-redpanda",
+      "toolA": "Apache Kafka",
+      "toolB": "Redpanda",
+      "shortVerdict": "Kafka for ecosystem maturity, Redpanda for performance"
+    },
+    {
       "title": "dbt vs Dataform",
       "slug": "dbt-vs-dataform",
       "category": "Data Transformation",
       "toolA": "dbt",
       "toolB": "Dataform",
       "shortVerdict": "dbt is the industry standard for analytics engineering with broad support. Dataform is a strong alternative specifically for BigQuery users."
+    },
+    {
+      "title": "Delta Lake vs Apache Iceberg",
+      "slug": "delta-lake-vs-iceberg",
+      "toolA": "Delta Lake",
+      "toolB": "Apache Iceberg",
+      "shortVerdict": "Delta for Databricks, Iceberg for multi-engine flexibility"
+    },
+    {
+      "title": "Fivetran vs Airbyte",
+      "slug": "fivetran-vs-airbyte",
+      "toolA": "Fivetran",
+      "toolB": "Airbyte",
+      "shortVerdict": "Fivetran for enterprise reliability, Airbyte for cost and flexibility"
     },
     {
       "title": "Snowflake vs Google BigQuery",

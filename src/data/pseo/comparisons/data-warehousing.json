@@ -61,5 +61,47 @@
       "airflow-vs-prefect"
     ],
     "lastUpdated": "2026-01-21"
+  },
+  {
+    "id": "delta-lake-vs-iceberg",
+    "slug": "delta-lake-vs-iceberg",
+    "title": "Delta Lake vs Apache Iceberg",
+    "subtitle": "Open table format comparison for lakehouses",
+    "tool1": {
+      "name": "Delta Lake",
+      "logo": "🔺"
+    },
+    "tool2": {
+      "name": "Apache Iceberg",
+      "logo": "🧊"
+    },
+    "verdict": "Delta for Databricks, Iceberg for multi-engine flexibility",
+    "comparisonPoints": [
+      {
+        "aspect": "Engine Support",
+        "tool1": "Best with Spark/Databricks",
+        "tool2": "Multi-engine (Spark, Trino, Flink)",
+        "winner": "iceberg"
+      },
+      {
+        "aspect": "Schema Evolution",
+        "tool1": "Good",
+        "tool2": "Excellent",
+        "winner": "iceberg"
+      },
+      {
+        "aspect": "Databricks Integration",
+        "tool1": "Native",
+        "tool2": "Supported",
+        "winner": "delta-lake"
+      },
+      {
+        "aspect": "Community Momentum",
+        "tool1": "Strong",
+        "tool2": "Growing faster",
+        "winner": "iceberg"
+      }
+    ],
+    "lastUpdated": "2026-01-27"
   }
 ]

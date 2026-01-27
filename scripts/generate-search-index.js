@@ -86,18 +86,23 @@ function generateComparisonsIndex() {
         const comparisons = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 
         for (const comp of comparisons) {
+            // Handle both naming conventions (tool1/tool2 and toolA/toolB)
+            const toolA = comp.tool1?.name || comp.toolA || comp.title?.split(' vs ')[0] || 'Unknown';
+            const toolB = comp.tool2?.name || comp.toolB || comp.title?.split(' vs ')[1] || 'Unknown';
+
             comparisonsIndex.push({
-                title: `${comp.toolA} vs ${comp.toolB}`,
+                title: comp.title || `${toolA} vs ${toolB}`,
                 slug: comp.slug,
                 category: comp.category,
-                toolA: comp.toolA,
-                toolB: comp.toolB,
-                shortVerdict: comp.shortVerdict || ''
+                toolA: toolA,
+                toolB: toolB,
+                shortVerdict: comp.shortVerdict || comp.verdict || ''
             });
         }
 
         console.log(`   ✅ ${file}: ${comparisons.length} comparisons`);
     }
+
 
     // Sort alphabetically by title
     comparisonsIndex.sort((a, b) => a.title.localeCompare(b.title));
@@ -179,13 +184,8 @@ async function main() {
 
         if (parseFloat(estimatedAt100k) > 10) {
             console.log('   ⚠️  Consider chunking by first letter for progressive loading');
-        } else {
-            console.log('   ✅ Size is acceptable for single-file loading');
         }
 
-        console.log('\n📍 Next Steps:');
-        console.log('   1. Update frontend to use searchIndex.json');
-        console.log('   2. Run: npm run pseo:deploy (when ready)');
 
     } catch (error) {
         console.error('\n❌ Failed to generate search index:', error.message);

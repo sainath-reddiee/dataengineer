@@ -1,0 +1,44 @@
+[
+  {
+    "id": "kafka-vs-redpanda",
+    "slug": "kafka-vs-redpanda",
+    "title": "Apache Kafka vs Redpanda",
+    "subtitle": "Event streaming platform comparison",
+    "tool1": {
+      "name": "Apache Kafka",
+      "logo": "📨"
+    },
+    "tool2": {
+      "name": "Redpanda",
+      "logo": "🐼"
+    },
+    "verdict": "Kafka for ecosystem maturity, Redpanda for performance",
+    "comparisonPoints": [
+      {
+        "aspect": "Performance",
+        "tool1": "High throughput",
+        "tool2": "10x lower latency",
+        "winner": "redpanda"
+      },
+      {
+        "aspect": "Operations",
+        "tool1": "Complex (ZooKeeper)",
+        "tool2": "No ZooKeeper needed",
+        "winner": "redpanda"
+      },
+      {
+        "aspect": "Ecosystem",
+        "tool1": "Massive",
+        "tool2": "Kafka-compatible",
+        "winner": "kafka"
+      },
+      {
+        "aspect": "Resource Usage",
+        "tool1": "JVM overhead",
+        "tool2": "C++ efficient",
+        "winner": "redpanda"
+      }
+    ],
+    "lastUpdated": "2026-01-27"
+  }
+]
