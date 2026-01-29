@@ -2,43 +2,71 @@
   {
     "id": "kafka-vs-redpanda",
     "slug": "kafka-vs-redpanda",
-    "title": "Apache Kafka vs Redpanda",
-    "subtitle": "Event streaming platform comparison",
-    "tool1": {
-      "name": "Apache Kafka",
-      "logo": "📨"
-    },
-    "tool2": {
-      "name": "Redpanda",
-      "logo": "🐼"
-    },
-    "verdict": "Kafka for ecosystem maturity, Redpanda for performance",
-    "comparisonPoints": [
+    "toolA": "Apache Kafka",
+    "toolB": "Redpanda",
+    "category": "Streaming",
+    "winner": "Redpanda",
+    "shortVerdict": "Kafka is the Java-based ecosystem king. Redpanda is the C++ drop-in replacement that is 10x faster and simpler to operations.",
+    "intro": "### The Streaming Standard vs. The Speed Demon\n\n**Apache Kafka** birthed the modern era of event streaming. It is robust, scalable, and used by virtually every tech giant. However, it is built on the JVM (Java) and notoriously requires **ZooKeeper** (though KRaft is changing this) to manage cluster state. This makes it heavy and complex to operate.\n\n**Redpanda** is a modern rewrite of the Kafka protocol in **C++**. It uses a thread-per-core architecture to squeeze maximum performance out of modern hardware. Crucially, it compiles to a **single binary** with zero external dependencies (no ZooKeeper!). It is \"Kafka API Compatible,\" meaning existing Kafka clients work with Redpanda out of the box.",
+    "features": [
       {
-        "aspect": "Performance",
-        "tool1": "High throughput",
-        "tool2": "10x lower latency",
-        "winner": "redpanda"
+        "name": "Language",
+        "toolAValue": "Java / Scala (JVM)",
+        "toolBValue": "C++",
+        "winner": "Redpanda"
       },
       {
-        "aspect": "Operations",
-        "tool1": "Complex (ZooKeeper)",
-        "tool2": "No ZooKeeper needed",
-        "winner": "redpanda"
+        "name": "Dependencies",
+        "toolAValue": "ZooKeeper (Historically), KRaft (New)",
+        "toolBValue": "None (Single Binary)",
+        "winner": "Redpanda"
       },
       {
-        "aspect": "Ecosystem",
-        "tool1": "Massive",
-        "tool2": "Kafka-compatible",
-        "winner": "kafka"
+        "name": "Performance",
+        "toolAValue": "High Throughput, Higher Latency",
+        "toolBValue": "Extreme Throughput, Micro-second Latency",
+        "winner": "Redpanda"
       },
       {
-        "aspect": "Resource Usage",
-        "tool1": "JVM overhead",
-        "tool2": "C++ efficient",
-        "winner": "redpanda"
+        "name": "Simplicity",
+        "toolAValue": "Low (Many moving parts)",
+        "toolBValue": "High (One binary)",
+        "winner": "Redpanda"
+      },
+      {
+        "name": "Ecosystem",
+        "toolAValue": "The entire streaming world",
+        "toolBValue": "Compatible with Kafka ecosystem",
+        "winner": "Tie"
       }
     ],
-    "lastUpdated": "2026-01-27"
+    "pros": {
+      "toolA": [
+        "The default standard for 10+ years",
+        "Massive knowledge base and talent pool",
+        "Battle-hardened in the largest companies"
+      ],
+      "toolB": [
+        "No JVM garbage collection pauses",
+        "Hardware efficient (cheaper TCO)",
+        "WASM Transforms inline (transform data in the broker)",
+        "Developer friendly single-binary local run"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Operational complexity (ZooKeeper + JVM tuning)",
+        "Hungry for resources (RAM)",
+        "Long tail latency spikes"
+      ],
+      "toolB": [
+        "Newer technology (less battle time than Kafka)",
+        "Community is smaller (but growing)",
+        "Tiered storage implementation differs"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Kafka if:**\n*   You are a pure Java shop comfortable with JVM tuning.\n*   You need absolute assurance of 10+ years of production history.\n*   You are using managed Kafka (Confluent/MSK) and don't care about the backend.\n\n**Choose Redpanda if:**\n*   You manage your own infrastructure and hate ZooKeeper.\n*   You need extreme low latency (fintech, gaming, adtech).\n*   You want to reduce your cloud hardware bill (Redpanda is more efficient).\n*   You want a simple local development experience.",
+    "relatedComparisons": [],
+    "lastUpdated": "2026-01-29"
   }
 ]

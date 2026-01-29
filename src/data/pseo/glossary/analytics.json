@@ -5,7 +5,7 @@
     "slug": "apache-spark",
     "category": "analytics",
     "shortDefinition": "A unified analytics engine for large-scale data processing, providing high-level APIs for batch processing, streaming, machine learning, and graph computation.",
-    "fullDefinition": "Apache Spark is a fundamental concept in data engineering that plays a crucial role in modern data infrastructure.\n\n## What is Apache Spark?\n\nA unified analytics engine for large-scale data processing, providing high-level APIs for batch processing, streaming, machine learning, and graph computation.\n\n## Why Apache Spark Matters\n\nUnderstanding Apache Spark is essential for data engineers because:\n\n### Business Impact\n- Enables data-driven decision making\n- Improves operational efficiency\n- Reduces costs and time-to-insight\n- Supports compliance and governance\n\n### Technical Benefits\n- Scalable data processing\n- Improved reliability and performance\n- Better data quality and consistency\n- Enhanced integration capabilities\n\n## Core Concepts\n\n### Architecture\nApache Spark typically involves these architectural considerations:\n\n1. **Data Sources**: Where data originates (databases, APIs, files, streams)\n2. **Processing**: How data is transformed and enriched\n3. **Storage**: Where processed data is persisted\n4. **Access**: How users and applications consume data\n\n### Key Components\nModern implementations include:\n\n- Ingestion pipelines for data collection\n- Processing engines for transformation\n- Storage systems for persistence\n- Query interfaces for access\n- Monitoring tools for observability\n\n## Implementation Best Practices\n\n### Design Principles\n- Design for scalability from the start\n- Implement idempotent operations\n- Use declarative configurations\n- Embrace automation\n\n### Reliability\n- Build in redundancy and failover\n- Implement comprehensive monitoring\n- Create runbooks for common issues\n- Test disaster recovery procedures\n\n### Performance\n- Optimize for common access patterns\n- Use appropriate caching strategies\n- Parallelize where possible\n- Monitor and tune regularly\n\n### Security\n- Follow least-privilege principle\n- Encrypt sensitive data\n- Audit all access and changes\n- Regular security reviews\n\n## Common Patterns\n\n### Batch Processing\nProcess large volumes of data on a schedule, typically for historical analysis and reporting.\n\n### Stream Processing\nHandle data in real-time as it arrives, enabling immediate insights and actions.\n\n### Hybrid Approach\nCombine batch and stream processing using the Lambda or Kappa architecture patterns.\n\n## Integration with Modern Data Stack\n\nApache Spark integrates with:\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (Delta Lake, Apache Iceberg)\n- Orchestration (Airflow, Prefect, Dagster)\n- BI tools (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Apache Spark effectively:\n\n1. **Assess Requirements**: Understand data volumes, latency needs, and use cases\n2. **Choose Tools**: Select appropriate technologies for your stack\n3. **Design Architecture**: Plan for scalability and reliability\n4. **Implement Gradually**: Start simple and iterate\n5. **Monitor and Improve**: Track performance and optimize",
+    "fullDefinition": "Apache Spark is a unified analytics engine designed for large-scale data processing. It provides high-level APIs in Python, Scala, Java, and R, along with an optimized engine that supports general execution graphs. Spark can run on clusters of thousands of machines.\n\n## Why Spark?\n\nSpark was created to address limitations of Hadoop MapReduce:\n- **Speed**: 100x faster than Hadoop for in-memory processing\n- **Ease of Use**: Rich APIs vs low-level MapReduce code\n- **Unified Platform**: Batch, streaming, ML, and graph in one engine\n- **Versatility**: Works with any data source and storage system\n\n## Core Components\n\n### 1. Spark Core\nThe foundation providing:\n- Distributed task dispatching and scheduling\n- Memory management\n- Fault recovery\n- I/O operations\n\n### 2. Spark SQL\nQuery structured data using SQL or DataFrames:\n```python\ndf = spark.read.parquet(\"s3://data/users\")\ndf.filter(df.age > 21).groupBy(\"city\").count().show()\n```\n\n### 3. Spark Streaming (Structured Streaming)\nProcess real-time data streams:\n```python\nstream_df = spark.readStream.format(\"kafka\").load()\nquery = stream_df.writeStream.format(\"console\").start()\n```\n\n### 4. MLlib\nMachine learning at scale:\n- Classification, regression, clustering\n- Feature engineering pipelines\n- Model persistence\n\n### 5. GraphX\nGraph computation for:\n- Social network analysis\n- Fraud detection\n- Recommendation engines\n\n## Spark Ecosystem\n\n- **PySpark**: Python API (most popular)\n- **Spark on Databricks**: Managed Spark with collaboration features\n- **Spark on EMR**: AWS managed clusters\n- **Spark on Kubernetes**: Cloud-native deployment\n\n## Common Use Cases\n\n1. **ETL at Scale**: Process terabytes of data\n2. **Data Lake Processing**: Transform raw lake data\n3. **Real-time Analytics**: Stream processing pipelines\n4. **Machine Learning**: Train models on big data\n5. **Log Analysis**: Process application and server logs",
     "keyPoints": [
       "Unified engine for batch, streaming, ML, and graph processing",
       "100x faster than Hadoop MapReduce for in-memory tasks",
@@ -62,117 +62,6 @@
       "spark streaming",
       "spark vs hadoop"
     ],
-    "lastUpdated": "2026-01-27"
-  },
-  {
-    "id": "looker",
-    "term": "Looker",
-    "slug": "looker",
-    "shortDefinition": "A business intelligence and data analytics platform acquired by Google that uses LookML for semantic modeling and self-service analytics.",
-    "category": "analytics",
-    "fullDefinition": "Looker is a critical technology in the modern data engineering stack, widely adopted by organizations building scalable data infrastructure.\n\n## What is Looker?\n\nA business intelligence and data analytics platform acquired by Google that uses LookML for semantic modeling and self-service analytics.\n\n## Key Features and Capabilities\n\nLooker provides several powerful features for data engineering teams:\n\n### Core Architecture\n- Designed for cloud-native and distributed environments\n- Built for scalability and high availability\n- Integrates with popular data tools and platforms\n- Provides comprehensive APIs and SDKs\n\n### Data Processing\n- Supports both batch and streaming workloads\n- Optimized for large-scale data operations\n- Native support for common data formats\n- Efficient resource utilization\n\n### Enterprise Features\n- Role-based access control and security\n- Audit logging and compliance support\n- Monitoring and observability built-in\n- High availability and disaster recovery\n\n## Why Data Engineers Choose Looker\n\nLooker has become popular for several key reasons:\n\n1. **Reliability**: Production-grade stability for mission-critical workloads\n2. **Performance**: Optimized for speed and efficiency at scale\n3. **Flexibility**: Adapts to various use cases and architectures\n4. **Ecosystem**: Rich integration with modern data tools\n5. **Community**: Active development and comprehensive documentation\n\n## Common Use Cases\n\n### Data Pipelines\nBuild reliable data pipelines that process data at scale with proper error handling and monitoring.\n\n### Analytics Infrastructure\nPower business intelligence and analytics workloads with consistent, reliable data access.\n\n### Real-time Processing\nEnable streaming analytics and real-time data processing for operational use cases.\n\n### Machine Learning\nPrepare and serve data for ML model training and inference at scale.\n\n## Best Practices\n\nWhen implementing Looker, consider these recommendations:\n\n- **Start Simple**: Begin with basic configurations and scale up\n- **Monitor Everything**: Set up comprehensive observability from day one\n- **Plan for Growth**: Design architecture for anticipated scale\n- **Automate Operations**: Use infrastructure as code and CI/CD\n- **Document Thoroughly**: Maintain clear documentation for team knowledge\n\n## Integration Ecosystem\n\nLooker integrates with the modern data stack:\n\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (S3, GCS, Azure Blob)\n- Orchestration tools (Airflow, Dagster, Prefect)\n- BI platforms (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Looker effectively:\n\n1. **Evaluate Requirements**: Understand your specific use case needs\n2. **Set Up Development**: Create a local or sandbox environment\n3. **Build Incrementally**: Start with a pilot project\n4. **Validate Performance**: Test at realistic scale\n5. **Deploy Production**: Roll out with proper monitoring",
-    "keyPoints": [
-      "Looker provides enterprise-grade reliability",
-      "Designed for scalability and performance",
-      "Rich integration with modern data tools",
-      "Active community and ecosystem",
-      "Comprehensive documentation and support"
-    ],
-    "faqs": [
-      {
-        "question": "What is Looker used for?",
-        "answer": "A business intelligence and data analytics platform acquired by Google that uses LookML for semantic modeling and self-service analytics."
-      },
-      {
-        "question": "Is Looker open source?",
-        "answer": "Looker is available with various licensing options. Check the official documentation for current licensing details."
-      },
-      {
-        "question": "How does Looker compare to alternatives?",
-        "answer": "Looker offers unique advantages in its category. The best choice depends on your specific requirements, existing infrastructure, and team expertise."
-      }
-    ],
-    "relatedTerms": [],
-    "relatedTools": [],
-    "externalLinks": [],
-    "keywords": [
-      "looker",
-      "looker"
-    ],
-    "lastUpdated": "2026-01-27"
-  },
-  {
-    "id": "metabase",
-    "term": "Metabase",
-    "slug": "metabase",
-    "shortDefinition": "An open-source business intelligence tool that allows users to ask questions about data and embed analytics in applications.",
-    "category": "analytics",
-    "fullDefinition": "Metabase is a critical technology in the modern data engineering stack, widely adopted by organizations building scalable data infrastructure.\n\n## What is Metabase?\n\nAn open-source business intelligence tool that allows users to ask questions about data and embed analytics in applications.\n\n## Key Features and Capabilities\n\nMetabase provides several powerful features for data engineering teams:\n\n### Core Architecture\n- Designed for cloud-native and distributed environments\n- Built for scalability and high availability\n- Integrates with popular data tools and platforms\n- Provides comprehensive APIs and SDKs\n\n### Data Processing\n- Supports both batch and streaming workloads\n- Optimized for large-scale data operations\n- Native support for common data formats\n- Efficient resource utilization\n\n### Enterprise Features\n- Role-based access control and security\n- Audit logging and compliance support\n- Monitoring and observability built-in\n- High availability and disaster recovery\n\n## Why Data Engineers Choose Metabase\n\nMetabase has become popular for several key reasons:\n\n1. **Reliability**: Production-grade stability for mission-critical workloads\n2. **Performance**: Optimized for speed and efficiency at scale\n3. **Flexibility**: Adapts to various use cases and architectures\n4. **Ecosystem**: Rich integration with modern data tools\n5. **Community**: Active development and comprehensive documentation\n\n## Common Use Cases\n\n### Data Pipelines\nBuild reliable data pipelines that process data at scale with proper error handling and monitoring.\n\n### Analytics Infrastructure\nPower business intelligence and analytics workloads with consistent, reliable data access.\n\n### Real-time Processing\nEnable streaming analytics and real-time data processing for operational use cases.\n\n### Machine Learning\nPrepare and serve data for ML model training and inference at scale.\n\n## Best Practices\n\nWhen implementing Metabase, consider these recommendations:\n\n- **Start Simple**: Begin with basic configurations and scale up\n- **Monitor Everything**: Set up comprehensive observability from day one\n- **Plan for Growth**: Design architecture for anticipated scale\n- **Automate Operations**: Use infrastructure as code and CI/CD\n- **Document Thoroughly**: Maintain clear documentation for team knowledge\n\n## Integration Ecosystem\n\nMetabase integrates with the modern data stack:\n\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (S3, GCS, Azure Blob)\n- Orchestration tools (Airflow, Dagster, Prefect)\n- BI platforms (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Metabase effectively:\n\n1. **Evaluate Requirements**: Understand your specific use case needs\n2. **Set Up Development**: Create a local or sandbox environment\n3. **Build Incrementally**: Start with a pilot project\n4. **Validate Performance**: Test at realistic scale\n5. **Deploy Production**: Roll out with proper monitoring",
-    "keyPoints": [
-      "Metabase provides enterprise-grade reliability",
-      "Designed for scalability and performance",
-      "Rich integration with modern data tools",
-      "Active community and ecosystem",
-      "Comprehensive documentation and support"
-    ],
-    "faqs": [
-      {
-        "question": "What is Metabase used for?",
-        "answer": "An open-source business intelligence tool that allows users to ask questions about data and embed analytics in applications."
-      },
-      {
-        "question": "Is Metabase open source?",
-        "answer": "Metabase is available with various licensing options. Check the official documentation for current licensing details."
-      },
-      {
-        "question": "How does Metabase compare to alternatives?",
-        "answer": "Metabase offers unique advantages in its category. The best choice depends on your specific requirements, existing infrastructure, and team expertise."
-      }
-    ],
-    "relatedTerms": [],
-    "relatedTools": [],
-    "externalLinks": [],
-    "keywords": [
-      "metabase",
-      "metabase"
-    ],
-    "lastUpdated": "2026-01-27"
-  },
-  {
-    "id": "superset",
-    "term": "Apache Superset",
-    "slug": "apache-superset",
-    "shortDefinition": "An open-source data exploration and visualization platform that supports rich SQL querying and interactive dashboard creation.",
-    "category": "analytics",
-    "fullDefinition": "Apache Superset is a critical technology in the modern data engineering stack, widely adopted by organizations building scalable data infrastructure.\n\n## What is Apache Superset?\n\nAn open-source data exploration and visualization platform that supports rich SQL querying and interactive dashboard creation.\n\n## Key Features and Capabilities\n\nApache Superset provides several powerful features for data engineering teams:\n\n### Core Architecture\n- Designed for cloud-native and distributed environments\n- Built for scalability and high availability\n- Integrates with popular data tools and platforms\n- Provides comprehensive APIs and SDKs\n\n### Data Processing\n- Supports both batch and streaming workloads\n- Optimized for large-scale data operations\n- Native support for common data formats\n- Efficient resource utilization\n\n### Enterprise Features\n- Role-based access control and security\n- Audit logging and compliance support\n- Monitoring and observability built-in\n- High availability and disaster recovery\n\n## Why Data Engineers Choose Apache Superset\n\nApache Superset has become popular for several key reasons:\n\n1. **Reliability**: Production-grade stability for mission-critical workloads\n2. **Performance**: Optimized for speed and efficiency at scale\n3. **Flexibility**: Adapts to various use cases and architectures\n4. **Ecosystem**: Rich integration with modern data tools\n5. **Community**: Active development and comprehensive documentation\n\n## Common Use Cases\n\n### Data Pipelines\nBuild reliable data pipelines that process data at scale with proper error handling and monitoring.\n\n### Analytics Infrastructure\nPower business intelligence and analytics workloads with consistent, reliable data access.\n\n### Real-time Processing\nEnable streaming analytics and real-time data processing for operational use cases.\n\n### Machine Learning\nPrepare and serve data for ML model training and inference at scale.\n\n## Best Practices\n\nWhen implementing Apache Superset, consider these recommendations:\n\n- **Start Simple**: Begin with basic configurations and scale up\n- **Monitor Everything**: Set up comprehensive observability from day one\n- **Plan for Growth**: Design architecture for anticipated scale\n- **Automate Operations**: Use infrastructure as code and CI/CD\n- **Document Thoroughly**: Maintain clear documentation for team knowledge\n\n## Integration Ecosystem\n\nApache Superset integrates with the modern data stack:\n\n- Data warehouses (Snowflake, BigQuery, Redshift)\n- Data lakes (S3, GCS, Azure Blob)\n- Orchestration tools (Airflow, Dagster, Prefect)\n- BI platforms (Tableau, Looker, Power BI)\n- ML platforms (MLflow, Kubeflow, SageMaker)\n\n## Getting Started\n\nTo implement Apache Superset effectively:\n\n1. **Evaluate Requirements**: Understand your specific use case needs\n2. **Set Up Development**: Create a local or sandbox environment\n3. **Build Incrementally**: Start with a pilot project\n4. **Validate Performance**: Test at realistic scale\n5. **Deploy Production**: Roll out with proper monitoring",
-    "keyPoints": [
-      "Apache Superset provides enterprise-grade reliability",
-      "Designed for scalability and performance",
-      "Rich integration with modern data tools",
-      "Active community and ecosystem",
-      "Comprehensive documentation and support"
-    ],
-    "faqs": [
-      {
-        "question": "What is Apache Superset used for?",
-        "answer": "An open-source data exploration and visualization platform that supports rich SQL querying and interactive dashboard creation."
-      },
-      {
-        "question": "Is Apache Superset open source?",
-        "answer": "Apache Superset is available with various licensing options. Check the official documentation for current licensing details."
-      },
-      {
-        "question": "How does Apache Superset compare to alternatives?",
-        "answer": "Apache Superset offers unique advantages in its category. The best choice depends on your specific requirements, existing infrastructure, and team expertise."
-      }
-    ],
-    "relatedTerms": [],
-    "relatedTools": [],
-    "externalLinks": [],
-    "keywords": [
-      "apache superset",
-      "apache-superset"
-    ],
-    "lastUpdated": "2026-01-27"
+    "lastUpdated": "2026-01-21"
   }
 ]

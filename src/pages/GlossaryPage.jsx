@@ -9,7 +9,7 @@
  * - SEO optimized metadata
  */
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 
 // Data
-import { getTermBySlug, getCategoryById } from '@/data/glossaryData';
+import { getGlossaryTerm, getCategoryById } from '@/lib/pseo/glossaryLoader';
 
 // PSEO utilities
 import {
@@ -108,37 +108,78 @@ const renderMarkdown = (content) => {
 export function GlossaryPage() {
     const { term: termSlug } = useParams();
     const navigate = useNavigate();
+    const [term, setTerm] = useState(null);
+    const [derivedData, setDerivedData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Get term data
-    const term = getTermBySlug(termSlug);
-
-    // If term not found, redirect to hub
     useEffect(() => {
-        if (!term && termSlug) {
-            navigate('/glossary', { replace: true });
-        }
-    }, [term, termSlug, navigate]);
+        const loadData = async () => {
+            try {
+                setLoading(true);
+                const data = await getGlossaryTerm(termSlug);
 
-    if (!term) {
+                if (!data) {
+                    navigate('/glossary', { replace: true });
+                    return;
+                }
+
+                // Calculate derived data SAFELY inside try-catch
+                const meta = generateGlossaryMeta(data);
+                const breadcrumbs = generateGlossaryBreadcrumbs(data);
+                const canonical = generateGlossaryCanonical(data.slug);
+                const schemas = generateAllGlossarySchemas(data, breadcrumbs);
+                const category = getCategoryById(data.category);
+                const relatedTerms = getRelatedGlossaryTerms(data.slug, 5);
+
+                setTerm(data);
+                setDerivedData({
+                    meta,
+                    breadcrumbs,
+                    canonical,
+                    schemas,
+                    category,
+                    relatedTerms
+                });
+
+            } catch (err) {
+                console.error("Failed to load glossary term:", err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (termSlug) loadData();
+    }, [termSlug, navigate]);
+
+    if (error) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold text-white mb-4">Term not found</h1>
-                    <Link to="/glossary" className="text-purple-400 hover:text-purple-300">
-                        ← Back to Glossary
-                    </Link>
+            <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+                <div className="bg-red-500/10 border border-red-500 rounded-lg p-6 max-w-md">
+                    <h2 className="text-red-400 text-xl font-bold mb-2">Error Loading Page</h2>
+                    <p className="text-gray-300">Something went wrong while loading the content.</p>
+                    <p className="text-xs text-gray-500 mt-4 font-mono">{error}</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="mt-6 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                    >
+                        Retry
+                    </button>
                 </div>
             </div>
         );
     }
 
-    // Generate SEO data
-    const meta = generateGlossaryMeta(term);
-    const breadcrumbs = generateGlossaryBreadcrumbs(term);
-    const canonical = generateGlossaryCanonical(term.slug);
-    const schemas = generateAllGlossarySchemas(term, breadcrumbs);
-    const category = getCategoryById(term.category);
-    const relatedTerms = getRelatedGlossaryTerms(term.slug, 5);
+    if (loading || !term || !derivedData) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+            </div>
+        );
+    }
+
+    const { meta, breadcrumbs, canonical, schemas, category, relatedTerms } = derivedData;
 
     return (
         <>
