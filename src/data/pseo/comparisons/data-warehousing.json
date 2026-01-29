@@ -6,8 +6,8 @@
     "toolB": "Google BigQuery",
     "category": "Data Warehousing",
     "winner": "It Depends",
-    "shortVerdict": "Snowflake offers multi-cloud flexibility and zero-maintenance performance. BigQuery offers effortless serverless scaling and deep GCP integration.",
-    "intro": "The two titans of cloud data warehousing. Snowflake brought the cloud-native separated storage/compute model to the masses. BigQuery is Google's serverless powerhouse. Both are excellent, but they serve slightly different needs.",
+    "shortVerdict": "Snowflake offers superior multi-cloud flexibility and zero-maintenance performance. BigQuery offers effortless serverless scaling and deep integration if you are already on Google Cloud.",
+    "intro": "### The Cloud Data Warehouse Battle\n\nSnowflake and Google BigQuery are arguably the two most important data platforms of the last decade. They both solved the core problem of \"Big Data\": decoupling storage from compute to allow infinite scaling. However, they approached it from different angles.\n\n**Snowflake** built a product that could run on ANY cloud (AWS, Azure, GCP), effectively becoming the \"Switzerland\" of data. It focuses heavily on \"Data Sharing\" and ease of use.\n**BigQuery** was Google opening up its internal Dremel technology to the world. It is a true serverless powerhouse that can chew through petabytes of data in seconds with zero configuration.\n\n### Architecture Comparison\n\n*   **Snowflake:** Uses a virtual warehouse model. You spin up \"Introduction\" or \"X-Large\" warehouses. They run for a specific time, and you pay for the seconds they are active. Storage is separate.\n*   **BigQuery:** Truly serverless. There are no \"nodes\" or \"clusters\" to manage. You submit a query, and Google allocates thousands of slots (workers) to execute it. You pay for the bytes scanned (in the on-demand model) or buy slots (in the edition model).",
     "features": [
       {
         "name": "Cloud Infrastructure",
@@ -17,8 +17,8 @@
       },
       {
         "name": "Pricing Model",
-        "toolAValue": "Pay for Warehouse uptime (per second)",
-        "toolBValue": "Pay per query (bytes scanned) or slots",
+        "toolAValue": "Time-based (Credit usage per second)",
+        "toolBValue": "Usage-based (Bytes scanned) or Capacity (Slots)",
         "winner": "Tie"
       },
       {
@@ -29,79 +29,119 @@
       },
       {
         "name": "Performance",
-        "toolAValue": "Excellent (with tuning)",
-        "toolBValue": "Excellent (brute force parallelism)",
+        "toolAValue": "Excellent (Micro-partitions & caching)",
+        "toolBValue": "Excellent (Brute force parallelism)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Data Sharing",
+        "toolAValue": "Native, cross-region, cross-cloud sharing",
+        "toolBValue": "Analytics Hub (Good, but GCP only)",
+        "winner": "Snowflake"
+      },
+      {
+        "name": "Unstructured Data",
+        "toolAValue": "Snowpark (Java/Python/Scala) support",
+        "toolBValue": "BigLake & Object Tables",
         "winner": "Tie"
       }
     ],
     "pros": {
       "toolA": [
-        "Cloud agnostic (no vendor lock-in)",
-        "Data Sharing capabilities",
-        "Zero-copy cloning"
+        "Cloud agnostic (Avoid vendor lock-in)",
+        "Zero-copy cloning is a killer feature for testing",
+        "Snowpark enables Python/ML workloads directly on data",
+        "Excellent handling of semi-structured data (VARIANT)"
       ],
       "toolB": [
-        "True serverless (no sizing needed)",
-        "Integrated ML (BigQuery ML)",
-        "Free tier available"
+        "True serverless (No sizing or warming up clusters)",
+        "Integrated ML (BigQuery ML) allows models in SQL",
+        "Integration with other Google services (GA4, Ads) is flawless",
+        "Real-time streaming ingestion API is robust"
       ]
     },
     "cons": {
       "toolA": [
-        "Costs can spiral if not monitored",
-        "Not truly \"serverless\" (need to manage WH sizes)"
+        "Costs can spiral if warehouses are not sized correctly",
+        "Not *instant* scaling (warehouses need to spin up/resize)",
+        "Snowpipe configuration for streaming can be complex"
       ],
       "toolB": [
-        "GCP lock-in",
-        "Slot contention in rigid flat-rate pricing"
+        "GCP Lock-in (mostly)",
+        "On-demand pricing can be unpredictable (\"The $1000 query\")",
+        "Partitioning and clustering limits can be restrictive"
       ]
     },
-    "finalVerdict": "**Choose Snowflake if:**\n- You want a multi-cloud strategy.\n- You need robust data sharing features.\n- You value predictable performance via Warehouse sizing.\n\n**Choose BigQuery if:**\n- You are already on GCP.\n- You possess \"bursty\" workloads (perfect for pay-per-query).\n- You want to do Machine Learning directly in SQL.",
+    "finalVerdict": "### Verdict\n\n**Choose Snowflake if:**\n*   You want a multi-cloud strategy or might change clouds later.\n*   You need robust \"Data Sharing\" to share live data with partners/customers.\n*   You want predictable performance via warehouse sizing.\n*   You rely heavily on semi-structured data (JSON).\n\n**Choose BigQuery if:**\n*   Your infrastructure is already on Google Cloud Platform.\n*   You have \"bursty\" workloads (BigQuery scales to zero perfectly).\n*   You want to democratize Machine Learning using SQL (BQML).\n*   You need to ingest real-time streaming data at massive scale.",
     "relatedComparisons": [
-      "airflow-vs-prefect"
+      "delta-lake-vs-iceberg",
+      "dbt-vs-dataform"
     ],
-    "lastUpdated": "2026-01-21"
+    "lastUpdated": "2026-01-29"
   },
   {
     "id": "delta-lake-vs-iceberg",
     "slug": "delta-lake-vs-iceberg",
-    "title": "Delta Lake vs Apache Iceberg",
-    "subtitle": "Open table format comparison for lakehouses",
-    "tool1": {
-      "name": "Delta Lake",
-      "logo": "🔺"
-    },
-    "tool2": {
-      "name": "Apache Iceberg",
-      "logo": "🧊"
-    },
-    "verdict": "Delta for Databricks, Iceberg for multi-engine flexibility",
-    "comparisonPoints": [
+    "toolA": "Delta Lake",
+    "toolB": "Apache Iceberg",
+    "category": "Data Warehousing",
+    "winner": "Tie",
+    "shortVerdict": "Delta Lake is the default for Databricks users. Apache Iceberg is winning the \"Open Ecosystem\" war with support from Snowflake, AWS, and Netflix.",
+    "intro": "### The Battle for the Data Lakehouse\n\nData Lakes (S3/GCS) used to be swamps—dirty, unvalidated data with no transactions. Then came **Table Formats**.\n\n**Delta Lake** (created by Databricks) and **Apache Iceberg** (created by Netflix) both solve the same problem: adding ACID transactions, time travel, and schema enforcement to files sitting in a data lake.\n\nFor a while, Delta was superior in performance but less \"open\" (controlled by Databricks). Iceberg was slower but truly community-driven. Today, both are fully open source, and feature parity is close. The choice is largely political and ecosystem-driven.",
+    "features": [
       {
-        "aspect": "Engine Support",
-        "tool1": "Best with Spark/Databricks",
-        "tool2": "Multi-engine (Spark, Trino, Flink)",
-        "winner": "iceberg"
+        "name": "Ecosystem Bias",
+        "toolAValue": "Databricks / Spark Centric",
+        "toolBValue": "Engine Agnostic (Trino, Snowflake, Spark)",
+        "winner": "Iceberg"
       },
       {
-        "aspect": "Schema Evolution",
-        "tool1": "Good",
-        "tool2": "Excellent",
-        "winner": "iceberg"
+        "name": "Performance",
+        "toolAValue": "Excellent (Optimized heavily by Databricks)",
+        "toolBValue": "Great (Improving rapidly)",
+        "winner": "Delta Lake"
       },
       {
-        "aspect": "Databricks Integration",
-        "tool1": "Native",
-        "tool2": "Supported",
-        "winner": "delta-lake"
+        "name": "Governance",
+        "toolAValue": "Unity Catalog",
+        "toolBValue": "Open Standard (Rest Catalog)",
+        "winner": "Tie"
       },
       {
-        "aspect": "Community Momentum",
-        "tool1": "Strong",
-        "tool2": "Growing faster",
-        "winner": "iceberg"
+        "name": "DML Support",
+        "toolAValue": "Full Merge/Update/Delete support",
+        "toolBValue": "Full Merge/Update/Delete support",
+        "winner": "Tie"
       }
     ],
-    "lastUpdated": "2026-01-27"
+    "pros": {
+      "toolA": [
+        "Z-Order clustering is highly optimized",
+        "Simplest experience if you use Databricks",
+        "Liquid Clustering (new feature) is powerful",
+        "Mature ecosystem"
+      ],
+      "toolB": [
+        "True vendor neutrality",
+        "Adopted by Snowflake, AWS, Google as their standard",
+        "Hidden Partitioning (evolution is easier)",
+        "Massive community momentum"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Perception of being \"Databricks controlled\"",
+        "Some features roll out to Databricks first, Open Source later"
+      ],
+      "toolB": [
+        "Write path can be more complex to tune",
+        "Compaction/Maintenance tooling is fragmented"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Delta Lake if:**\n*   You are a Databricks shop. Period. It is the native format and works perfectly there.\n*   You run almost exclusively Spark workloads.\n\n**Choose Apache Iceberg if:**\n*   You use a mix of engines (Snowflake, Trino, Flink, Spark).\n*   You want to avoid being tied to the Databricks ecosystem.\n*   You are building on AWS (Athena/Glue love Iceberg).",
+    "relatedComparisons": [
+      "snowflake-vs-bigquery"
+    ],
+    "lastUpdated": "2026-01-29"
   }
 ]

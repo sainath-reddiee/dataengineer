@@ -23,6 +23,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 import { S3Client, PutObjectCommand, ListObjectsV2Command, DeleteObjectsCommand } from '@aws-sdk/client-s3';
 import dotenv from 'dotenv';
 
@@ -920,10 +921,31 @@ async function buildSitemaps(allUrls) {
         console.log(`   ✅ ${filename} (${chunks[i].length} URLs)`);
     }
 
-    // Generate sitemap index
-    const sitemapIndexXML = generateSitemapIndex(chunks.length);
-    await uploadToR2('sitemap-pseo-index.xml', sitemapIndexXML, 'application/xml');
-    console.log(`   ✅ sitemap-pseo-index.xml`);
+    // GENERATE MASTER SITEMAP INDEX
+    // This replaces any existing sitemap-index.xml with a clean version
+    // containing both the WP sitemap and all pSEO chunks.
+    const today = new Date().toISOString().split('T')[0];
+    let sitemapIndexXML = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- WordPress Main Sitemap -->
+  <sitemap>
+    <loc>${SITE_URL}/sitemap.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>`;
+
+    // Append pSEO chunks
+    for (let i = 0; i < chunks.length; i++) {
+        sitemapIndexXML += `
+  <sitemap>
+    <loc>${SITE_URL}/sitemap-pseo-${i + 1}.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>`;
+    }
+
+    sitemapIndexXML += `\n</sitemapindex>`;
+
+    await uploadToR2('sitemap-index.xml', sitemapIndexXML, 'application/xml');
+    console.log(`   ✅ sitemap-index.xml (Master) updated with 1 WP sitemap and ${chunks.length} pSEO sitemaps`);
 
     return chunks.length;
 }

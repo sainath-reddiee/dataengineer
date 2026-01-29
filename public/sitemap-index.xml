@@ -3,12 +3,18 @@
   <!-- Main sitemap: Articles, categories, tags, static pages -->
   <sitemap>
     <loc>https://dataengineerhub.blog/sitemap.xml</loc>
-    <lastmod>2026-01-27</lastmod>
+    <lastmod>2026-01-29</lastmod>
   </sitemap>
   
-  <!-- PSEO: Glossary + Comparisons (served from R2) -->
+  <!-- PSEO: Glossary Terms -->
   <sitemap>
-    <loc>https://dataengineerhub.blog/sitemap-pseo-index.xml</loc>
-    <lastmod>2026-01-27</lastmod>
+    <loc>https://dataengineerhub.blog/sitemap-glossary.xml</loc>
+    <lastmod>2026-01-29</lastmod>
+  </sitemap>
+  
+  <!-- PSEO: Tool Comparisons -->
+  <sitemap>
+    <loc>https://dataengineerhub.blog/sitemap-comparisons.xml</loc>
+    <lastmod>2026-01-29</lastmod>
   </sitemap>
 </sitemapindex>
