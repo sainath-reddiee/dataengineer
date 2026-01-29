@@ -36,7 +36,8 @@
     "pseo:search-index": "node scripts/generate-search-index.js",
     "pseo:deploy": "npm run pseo:sync-articles && npm run pseo:search-index && node scripts/deploy-pseo.js",
     "pseo:deploy:dry-run": "node scripts/deploy-pseo.js --dry-run",
-    "pseo:deploy:force": "npm run pseo:sync-articles && npm run pseo:search-index && node scripts/deploy-pseo.js --force"
+    "pseo:deploy:force": "npm run pseo:sync-articles && npm run pseo:search-index && node scripts/deploy-pseo.js --force",
+    "pseo:watch": "node scripts/watch-pseo.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

@@ -20,7 +20,10 @@ import {
 
 // Data - Use searchIndex for efficient search
 import searchIndex from '@/data/searchIndex.json';
-import { GLOSSARY_CATEGORIES } from '@/data/glossaryData';
+import categories from '@/data/pseo/categories.json';
+
+// Make GLOSSARY_CATEGORIES available from the JSON
+const GLOSSARY_CATEGORIES = categories;
 
 // PSEO utilities
 import { generateGlossaryHubMeta, generateGlossaryCanonical } from '@/lib/pseo/metadataFactory';

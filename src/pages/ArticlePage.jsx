@@ -23,7 +23,7 @@ import ReadingProgressBar from '@/components/ReadingProgressBar';
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
 const ArticleSkeleton = () => (
-  <div className="container mx-auto px-6 max-w-4xl">
+  <div className="container mx-auto px-6 max-w-7xl">
     <div className="mb-4 h-10 w-32 bg-gray-800 rounded animate-pulse" />
     <div className="relative rounded-2xl overflow-hidden mb-8" style={{ height: '400px' }}>
       <div className="w-full h-full bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-pulse" />
@@ -86,7 +86,7 @@ const ErrorDisplay = ({ error, onRetry, slug }) => {
 
   return (
     <div className="pt-4 pb-12">
-      <div className="container mx-auto px-6 max-w-4xl">
+      <div className="container mx-auto px-6 max-w-7xl">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-4">
           <Button asChild variant="outline" className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20">
             <Link to="/articles"><ArrowLeft className="mr-2 h-4 w-4" />All Articles</Link>
@@ -508,7 +508,7 @@ const ArticlePage = () => {
         faqSchema={faqSchema}
       />
 
-      <div className="container mx-auto px-6 max-w-4xl">
+      <div className="container mx-auto px-6 max-w-7xl">
         {/* Breadcrumbs */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -567,8 +567,8 @@ const ArticlePage = () => {
             <AdPlacement position="article-top" />
           </Suspense>
 
-          {/* Article Content */}
-          <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-h2:text-3xl prose-h2:font-bold prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-pink-400 prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
+          {/* Article Content - PROSE-XL ADDED */}
+          <div className="prose prose-invert prose-lg md:prose-xl max-w-none prose-headings:text-white prose-h2:text-3xl prose-h2:font-bold prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-pink-400 prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
             <div
               dangerouslySetInnerHTML={{ __html: processWordPressContent(safePost.content) }}
               className="article-content"

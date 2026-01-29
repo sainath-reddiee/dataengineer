@@ -7,11 +7,26 @@
   {
     "id": "data-warehousing",
     "name": "Data Warehousing",
-    "count": 1
+    "count": 2
   },
   {
     "id": "data-transformation",
     "name": "Data Transformation",
+    "count": 1
+  },
+  {
+    "id": "data-orchestration",
+    "name": "Data Orchestration",
+    "count": 1
+  },
+  {
+    "id": "streaming",
+    "name": "Streaming",
+    "count": 1
+  },
+  {
+    "id": "data-integration",
+    "name": "Data Integration",
     "count": 1
   }
 ]

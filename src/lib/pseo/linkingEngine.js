@@ -27,8 +27,8 @@ import { SITE_CONFIG } from '@/lib/seoConfig';
 let SYNCED_ARTICLES = [];
 try {
     // Dynamic import for build-time
-    const articlesPath = new URL('../data/pseo/articles.json', import.meta.url);
-    const articlesModule = await import(articlesPath, { assert: { type: 'json' } });
+    const articlesPath = new URL('../../data/pseo/articles.json', import.meta.url).href;
+    const articlesModule = await import(/* @vite-ignore */ articlesPath, { assert: { type: 'json' } });
     SYNCED_ARTICLES = articlesModule.default || [];
 } catch {
     // articles.json doesn't exist yet - run sync-articles-for-linking.js
@@ -150,7 +150,7 @@ export function injectGlossaryCrossLinks(htmlContent, currentSlug = '', maxLinks
     let linkCount = 0;
 
     // Sort terms by length (descending) to match longer phrases first
-    const sortedTerms = [...glossaryTerms]
+    const sortedTerms = [...(glossaryTerms || [])]
         .filter(t => t.slug !== currentSlug)
         .sort((a, b) => b.term.length - a.term.length);
 
@@ -189,12 +189,12 @@ export function injectGlossaryCrossLinks(htmlContent, currentSlug = '', maxLinks
  * @returns {Array} - Array of related term objects { slug, term, category }
  */
 export const getRelatedGlossaryTerms = (currentSlug, limit = 5) => {
-    const currentTerm = glossaryTerms.find(t => t.slug === currentSlug);
+    const currentTerm = (glossaryTerms || []).find(t => t.slug === currentSlug);
     if (!currentTerm) return [];
 
     // First, get explicitly defined related terms
     const explicitRelated = (currentTerm.relatedTerms || [])
-        .map(slug => glossaryTerms.find(t => t.slug === slug))
+        .map(slug => (glossaryTerms || []).find(t => t.slug === slug))
         .filter(Boolean)
         .slice(0, limit);
 
@@ -254,8 +254,9 @@ export const getRelatedComparisons = (currentSlug, limit = 3) => {
     if (!currentComparison) return [];
 
     // First, get explicitly defined related comparisons
+    const safeComparisons = comparisons || [];
     const explicitRelated = (currentComparison.relatedComparisons || [])
-        .map(slug => comparisons.find(c => c.slug === slug))
+        .map(slug => safeComparisons.find(c => c.slug === slug))
         .filter(Boolean);
 
     if (explicitRelated.length >= limit) {
@@ -268,7 +269,7 @@ export const getRelatedComparisons = (currentSlug, limit = 3) => {
     }
 
     // Fill with same-category comparisons
-    const sameCategory = comparisons
+    const sameCategory = safeComparisons
         .filter(c =>
             c.slug !== currentSlug &&
             c.category === currentComparison.category &&
@@ -296,7 +297,7 @@ export const getRelatedComparisons = (currentSlug, limit = 3) => {
 export const getGlossaryTermsForTool = (toolName, limit = 3) => {
     const normalizedTool = toolName.toLowerCase();
 
-    return glossaryTerms
+    return (glossaryTerms || [])
         .filter(t => {
             const inKeywords = (t.keywords || []).some(k =>
                 k.toLowerCase().includes(normalizedTool)
@@ -388,7 +389,7 @@ export const findLinkableTerms = (text, excludeSlug = '') => {
 
     const normalizedText = text.toLowerCase();
 
-    return glossaryTerms
+    return (glossaryTerms || [])
         .filter(t => t.slug !== excludeSlug)
         .filter(t => {
             const termLower = t.term.toLowerCase();

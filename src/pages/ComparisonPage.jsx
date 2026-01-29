@@ -1,5 +1,5 @@
 // src/pages/ComparisonPage.jsx
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 // Data
-import { getComparisonBySlug, getAllComparisons } from '@/data/comparisonData';
+import { getComparison } from '../lib/pseo/comparisonLoader';
 
 // SEO Factories
 import { generateComparisonMeta, generateComparisonCanonical } from '@/lib/pseo/metadataFactory';
@@ -34,23 +34,76 @@ const renderMarkdown = (content) => {
     return <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }} />;
 };
 
-export function ComparisonPage() {
+const ComparisonPage = () => {
     const { slug } = useParams();
     const navigate = useNavigate();
-    const comparison = getComparisonBySlug(slug);
+    const [comparison, setComparison] = useState(null);
+    const [derivedData, setDerivedData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!comparison && slug) {
-            navigate('/glossary', { replace: true }); // Fallback to glossary for now
-        }
-    }, [comparison, slug, navigate]);
+        const loadData = async () => {
+            try {
+                setLoading(true);
+                const data = await getComparison(slug);
+                if (!data) {
+                    navigate('/compare', { replace: true });
+                    return;
+                }
 
-    if (!comparison) return null;
+                // Calculate derived data SAFELY inside try-catch
+                const meta = generateComparisonMeta(data);
+                const canonical = generateComparisonCanonical(slug);
+                const schema = generateComparisonSchema(data);
 
-    // SEO Data
-    const meta = generateComparisonMeta(comparison);
-    const canonical = generateComparisonCanonical(slug);
-    const schema = generateComparisonSchema(comparison);
+                setComparison(data);
+                setDerivedData({ meta, canonical, schema });
+
+            } catch (err) {
+                console.error("Error loading comparison:", err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (slug) loadData();
+    }, [slug, navigate]);
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+                <div className="bg-red-500/10 border border-red-500 rounded-lg p-6 max-w-md">
+                    <h2 className="text-red-400 text-xl font-bold mb-2">Error Loading Comparison</h2>
+                    <p className="text-gray-300">Something went wrong while loading the content.</p>
+                    <p className="text-xs text-gray-500 mt-4 font-mono">{error}</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="mt-6 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                    >
+                        Retry
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    if (loading || !comparison || !derivedData) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+            </div>
+        );
+    }
+
+    const {
+        toolA, toolB, category, winner,
+        shortVerdict, features, pros, cons,
+        finalVerdict, intro, lastUpdated
+    } = comparison;
+
+    const { meta, canonical, schema } = derivedData;
 
     return (
         <>
@@ -72,7 +125,7 @@ export function ComparisonPage() {
                         <nav className="flex items-center gap-2 text-sm">
                             <Link to="/" className="text-gray-400 hover:text-white transition-colors">Home</Link>
                             <ChevronRight className="w-4 h-4 text-gray-600" />
-                            <Link to="/glossary" className="text-gray-400 hover:text-white transition-colors">Comparisons</Link>
+                            <Link to="/compare" className="text-gray-400 hover:text-white transition-colors">Comparisons</Link>
                             <ChevronRight className="w-4 h-4 text-gray-600" />
                             <span className="text-white font-medium">{comparison.toolA} vs {comparison.toolB}</span>
                         </nav>
@@ -80,7 +133,7 @@ export function ComparisonPage() {
                 </div>
 
                 <div className="max-w-6xl mx-auto px-4 py-12">
-                    <Link to="/glossary" className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 mb-8 transition-colors">
+                    <Link to="/compare" className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 mb-8 transition-colors">
                         <ArrowLeft className="w-4 h-4" />
                         Back to Hub
                     </Link>
