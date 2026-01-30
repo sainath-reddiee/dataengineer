@@ -1,5 +1,5 @@
 {
-  "lastBuild": "2026-01-29T13:23:06.344Z",
+  "lastBuild": "2026-01-30T13:25:59.715Z",
   "version": "1.0",
   "hashes": {
     "glossary/apache-spark/index.html": "c83d1824cd4167ba962ff222884bee16",
@@ -54,14 +54,14 @@
     "glossary/google-cloud-functions/index.html": "9a832066daea6feab78160e54de727a1",
     "glossary/google-cloud-bigtable/index.html": "4d470a1a90e412aa013e3f4e7634ad6f",
     "glossary/apache-kafka/index.html": "524260482c1ab95ba9bd80e1e96d42a8",
-    "compare/fivetran-vs-airbyte/index.html": "17503f41b6810a2d1a2c5939e3a6e728",
-    "compare/airflow-vs-dagster/index.html": "57be4c2a1e3abf6081d05be4c249d95f",
-    "compare/dbt-vs-dataform/index.html": "2001741470fdfb16c8266cdd6f94df38",
-    "compare/snowflake-vs-bigquery/index.html": "1fc7735b10cf50265aa24d2cfb4bd2e7",
-    "compare/delta-lake-vs-iceberg/index.html": "29ca4cf280345899383329a64fd824d0",
-    "compare/airflow-vs-prefect/index.html": "3d584d8925fbf936479d72a7d290813f",
-    "compare/kafka-vs-redpanda/index.html": "c148e7f62594355880777bb064bb693e",
-    "sitemap-pseo-1.xml": "2b6b28351ca92a28e2387a1150bb9993",
-    "sitemap-index.xml": "9016eff8c7ad0bc95a7be04146d5058a"
+    "compare/fivetran-vs-airbyte/index.html": "78f458042f383b28b852c2a0859ec42e",
+    "compare/airflow-vs-dagster/index.html": "ac5cf0422a33e9bd53e8e743793f9594",
+    "compare/dbt-vs-dataform/index.html": "eb4689482b34e4ccf895c9985617db03",
+    "compare/snowflake-vs-bigquery/index.html": "40c7491e65ed4ca60fcdea77ef88e38a",
+    "compare/delta-lake-vs-iceberg/index.html": "bd1e6a0afa72d19e11305cd90741c00c",
+    "compare/airflow-vs-prefect/index.html": "ecae1b46304193a8ac431404f099172d",
+    "compare/kafka-vs-redpanda/index.html": "0dbb27090b6c1577f4115f6544f9d41c",
+    "sitemap-pseo-1.xml": "b4ae959aec0d8cff0219a254f190ab2c",
+    "sitemap-index.xml": "a0065c74f72fdb9ed0f5d52c7ebd8a6d"
   }
 }
