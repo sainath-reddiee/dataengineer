@@ -1,5 +1,5 @@
 {
-  "lastBuild": "2026-01-30T13:25:59.715Z",
+  "lastBuild": "2026-01-30T13:43:13.630Z",
   "version": "1.0",
   "hashes": {
     "glossary/apache-spark/index.html": "c83d1824cd4167ba962ff222884bee16",
@@ -62,6 +62,6 @@
     "compare/airflow-vs-prefect/index.html": "ecae1b46304193a8ac431404f099172d",
     "compare/kafka-vs-redpanda/index.html": "0dbb27090b6c1577f4115f6544f9d41c",
     "sitemap-pseo-1.xml": "b4ae959aec0d8cff0219a254f190ab2c",
-    "sitemap-index.xml": "a0065c74f72fdb9ed0f5d52c7ebd8a6d"
+    "sitemap-index.xml": "80c613dc4ae94f46cdca59edd45e5281"
   }
 }
