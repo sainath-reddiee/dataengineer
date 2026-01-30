@@ -113,40 +113,6 @@ export async function generateComparisonsSitemap() {
 }
 
 // =============================================================================
-// UPDATE SITEMAP INDEX
-// =============================================================================
-
-export async function updateSitemapIndex() {
-  const today = new Date().toISOString().split('T')[0];
-
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Main sitemap: Articles, categories, tags, static pages -->
-  <sitemap>
-    <loc>${SITE_URL}/sitemap.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  
-  <!-- PSEO: Glossary Terms -->
-  <sitemap>
-    <loc>${SITE_URL}/sitemap-glossary.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  
-  <!-- PSEO: Tool Comparisons -->
-  <sitemap>
-    <loc>${SITE_URL}/sitemap-comparisons.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-</sitemapindex>`;
-
-  const outputPath = path.join(PUBLIC_DIR, 'sitemap-index.xml');
-  fs.writeFileSync(outputPath, xml, 'utf-8');
-
-  console.log('✅ Updated sitemap-index.xml');
-}
-
-// =============================================================================
 // REGENERATE ALL
 // =============================================================================
 
@@ -155,9 +121,8 @@ export async function regenerateAllSitemaps() {
 
   const glossaryCount = await generateGlossarySitemap();
   const comparisonsCount = await generateComparisonsSitemap();
-  await updateSitemapIndex();
 
-  console.log(`\n✨ Done! Total URLs: ${glossaryCount + comparisonsCount}`);
+  console.log(`\n✨ Done! Total pSEO URLs: ${glossaryCount + comparisonsCount}`);
 
   return { glossaryCount, comparisonsCount };
 }

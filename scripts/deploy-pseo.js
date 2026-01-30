@@ -113,9 +113,15 @@ function initR2Client() {
         return null;
     }
 
-    const endpoint = process.env.R2_ENDPOINT;
+    let endpoint = process.env.R2_ENDPOINT;
     const accessKeyId = process.env.R2_ACCESS_KEY_ID;
     const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
+
+    // Strip trailing bucket name if user included it in endpoint
+    const bucketInEnv = process.env.R2_BUCKET_NAME || 'dataengineerhub-pseo';
+    if (endpoint && endpoint.endsWith(`/${bucketInEnv}`)) {
+        endpoint = endpoint.replace(`/${bucketInEnv}`, '');
+    }
 
     if (!endpoint || !accessKeyId || !secretAccessKey) {
         console.error('❌ Missing R2 credentials!');
@@ -164,12 +170,17 @@ async function uploadToR2(key, content, contentType = 'text/html', forceUpload =
     const bucketName = process.env.R2_BUCKET_NAME || 'dataengineerhub-pseo';
 
     try {
+        // Use no-cache for sitemaps so they update immediately
+        const cacheControl = key.includes('sitemap')
+            ? 'public, max-age=0, must-revalidate'
+            : 'public, max-age=86400';
+
         await r2Client.send(new PutObjectCommand({
             Bucket: bucketName,
             Key: key,
             Body: content,
             ContentType: contentType,
-            CacheControl: 'public, max-age=86400', // 1 day cache
+            CacheControl: cacheControl,
         }));
         return { success: true, skipped: false };
     } catch (error) {
@@ -942,8 +953,14 @@ async function buildSitemaps(glossaryUrls, comparisonUrls) {
 
     sitemapIndexXML += `\n</sitemapindex>`;
 
+    // 1. Upload Master Index to R2
     await uploadToR2('sitemap-index.xml', sitemapIndexXML, 'application/xml');
-    console.log(`   ✅ sitemap-index.xml (Master) updated with WP sitemap and ${chunks.length} pSEO chunk(s)`);
+
+    // 2. ALSO save to local public/ directory for Git/Hostinger deployment
+    const publicPath = path.join(__dirname, '..', 'public', 'sitemap-index.xml');
+    fs.writeFileSync(publicPath, sitemapIndexXML, 'utf-8');
+
+    console.log(`   ✅ sitemap-index.xml (Master) updated in R2 and locally at ${publicPath}`);
 
     return chunks.length;
 }
