@@ -928,8 +928,15 @@ async function buildSitemaps(glossaryUrls, comparisonUrls) {
     for (let i = 0; i < chunks.length; i++) {
         const sitemapXML = generateSitemapXML(chunks[i]);
         const filename = `sitemap-pseo-${i + 1}.xml`;
+
+        // 1. Upload to R2
         await uploadToR2(filename, sitemapXML, 'application/xml');
-        console.log(`   ✅ ${filename} (${chunks[i].length} URLs)`);
+
+        // 2. Save locally for Git/Hostinger deployment
+        const chunkPublicPath = path.join(__dirname, '..', 'public', filename);
+        fs.writeFileSync(chunkPublicPath, sitemapXML, 'utf-8');
+
+        console.log(`   ✅ ${filename} (${chunks[i].length} URLs) saved locally and to R2`);
     }
 
     // GENERATE MASTER SITEMAP INDEX
