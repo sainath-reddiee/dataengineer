@@ -893,47 +893,45 @@ async function buildComparisons() {
     return { urls, uploaded: totalUploaded, skipped: totalSkipped, failed: totalFailed };
 }
 
-async function buildSitemaps(allUrls) {
-    console.log('\n🗺️  Generating Sitemaps...\n');
+async function buildSitemaps(glossaryUrls, comparisonUrls) {
+    console.log('\n🗺️  Generating Sitemaps (Chunked)...\n');
 
-    // Add hub pages
-    const urls = [
+    // Combine all pSEO URLs + hub pages
+    const allPseoUrls = [
         `${SITE_URL}/glossary`,
         `${SITE_URL}/compare`,
-        ...allUrls
+        ...glossaryUrls,
+        ...comparisonUrls
     ];
 
-    // Chunk URLs if needed
+    // Chunk URLs based on MAX_URLS_PER_SITEMAP (25,000)
     const chunks = [];
-    for (let i = 0; i < urls.length; i += MAX_URLS_PER_SITEMAP) {
-        chunks.push(urls.slice(i, i + MAX_URLS_PER_SITEMAP));
+    for (let i = 0; i < allPseoUrls.length; i += MAX_URLS_PER_SITEMAP) {
+        chunks.push(allPseoUrls.slice(i, i + MAX_URLS_PER_SITEMAP));
     }
 
-    console.log(`   Total URLs: ${urls.length}`);
+    console.log(`   Total pSEO URLs: ${allPseoUrls.length}`);
     console.log(`   Sitemaps needed: ${chunks.length}`);
 
-    // Generate and upload each sitemap
+    // Generate and upload each pSEO chunk
     for (let i = 0; i < chunks.length; i++) {
         const sitemapXML = generateSitemapXML(chunks[i]);
         const filename = `sitemap-pseo-${i + 1}.xml`;
-
         await uploadToR2(filename, sitemapXML, 'application/xml');
         console.log(`   ✅ ${filename} (${chunks[i].length} URLs)`);
     }
 
     // GENERATE MASTER SITEMAP INDEX
-    // This replaces any existing sitemap-index.xml with a clean version
-    // containing both the WP sitemap and all pSEO chunks.
     const today = new Date().toISOString().split('T')[0];
     let sitemapIndexXML = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- WordPress Main Sitemap -->
+  <!-- WordPress Main Sitemap (Dynamically managed by API) -->
   <sitemap>
     <loc>${SITE_URL}/sitemap.xml</loc>
     <lastmod>${today}</lastmod>
   </sitemap>`;
 
-    // Append pSEO chunks
+    // Append pSEO chunks to the index
     for (let i = 0; i < chunks.length; i++) {
         sitemapIndexXML += `
   <sitemap>
@@ -945,7 +943,7 @@ async function buildSitemaps(allUrls) {
     sitemapIndexXML += `\n</sitemapindex>`;
 
     await uploadToR2('sitemap-index.xml', sitemapIndexXML, 'application/xml');
-    console.log(`   ✅ sitemap-index.xml (Master) updated with 1 WP sitemap and ${chunks.length} pSEO sitemaps`);
+    console.log(`   ✅ sitemap-index.xml (Master) updated with WP sitemap and ${chunks.length} pSEO chunk(s)`);
 
     return chunks.length;
 }
@@ -990,16 +988,15 @@ async function main() {
         const startTime = Date.now();
         const glossaryResult = await buildGlossary(categories);
         const comparisonResult = await buildComparisons();
-        const allUrls = [...glossaryResult.urls, ...comparisonResult.urls];
 
         // Build sitemaps (always force upload - they change every build)
-        const sitemapCount = await buildSitemaps(allUrls);
+        const sitemapCount = await buildSitemaps(glossaryResult.urls, comparisonResult.urls);
 
         // Calculate totals
         const totalUploaded = glossaryResult.uploaded + comparisonResult.uploaded;
         const totalSkipped = glossaryResult.skipped + comparisonResult.skipped;
         const totalFailed = glossaryResult.failed + comparisonResult.failed;
-        const totalPages = allUrls.length;
+        const totalPages = glossaryResult.urls.length + comparisonResult.urls.length;
 
         // Cleanup orphaned files (run after all uploads tracked)
         const cleanupResult = await cleanupOrphanedFiles();

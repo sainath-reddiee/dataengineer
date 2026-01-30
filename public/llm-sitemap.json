@@ -11,9 +11,33 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-01-25",
-  "totalArticles": 55,
+  "lastUpdated": "2026-01-30",
+  "totalArticles": 56,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-parse-document-complete-guide-2026",
+      "title": "Snowflake AI_PARSE_DOCUMENT: Complete End-to-End Guide for Document Processing 2026",
+      "summary": "Why Document Processing Matters in 2026 Enterprises store approximately 80-90% of their business data in unstructured formats—PDFs, Word documents, scanned images, contracts, invoices, and reports. Yet most enterprise data warehouses,&#8230;",
+      "keyFacts": [
+        "90%",
+        "90%",
+        "97%",
+        "What is AI_PARSE_DOCUMENT",
+        "AI_PARSE_DOCUMENT is a fully managed SQL function that transforms unstructured documents into AI-ready structured data"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "azure"
+      ],
+      "questionAnswered": "What is AI_PARSE_DOCUMENT?",
+      "lastUpdated": "2026-01-28",
+      "published": "2026-01-28",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2372
+    },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-cortex-cost-comparison",
       "title": "Snowflake Cortex Cost Comparison 2026: Complete Pricing Guide",

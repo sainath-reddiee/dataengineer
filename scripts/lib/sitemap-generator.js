@@ -18,21 +18,21 @@ const SITE_URL = 'https://dataengineerhub.blog';
 // =============================================================================
 
 export async function generateGlossarySitemap() {
-    // Dynamically import the data file
-    const glossaryPath = path.join(DATA_DIR, 'glossaryData.js');
-    const content = fs.readFileSync(glossaryPath, 'utf-8');
+  // Dynamically import the data file
+  const glossaryPath = path.join(DATA_DIR, 'glossaryData.js');
+  const content = fs.readFileSync(glossaryPath, 'utf-8');
 
-    // Extract slugs and dates using regex (avoiding ESM import issues)
-    const terms = [];
-    const regex = /{\s*id:\s*['"]([^'"]+)['"][\s\S]*?slug:\s*['"]([^'"]+)['"][\s\S]*?lastUpdated:\s*['"]([^'"]+)['"]/g;
-    let match;
-    while ((match = regex.exec(content)) !== null) {
-        terms.push({ slug: match[2], lastUpdated: match[3] });
-    }
+  // Extract slugs and dates using regex (avoiding ESM import issues)
+  const terms = [];
+  const regex = /{\s*id:\s*['"]([^'"]+)['"][\s\S]*?slug:\s*['"]([^'"]+)['"][\s\S]*?lastUpdated:\s*['"]([^'"]+)['"]/g;
+  let match;
+  while ((match = regex.exec(content)) !== null) {
+    terms.push({ slug: match[2], lastUpdated: match[3] });
+  }
 
-    const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0];
 
-    let xml = `<?xml version="1.0" encoding="UTF-8"?>
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- PSEO Glossary Hub -->
   <url>
@@ -43,24 +43,24 @@ export async function generateGlossarySitemap() {
   </url>
 `;
 
-    for (const term of terms) {
-        xml += `  <url>
+  for (const term of terms) {
+    xml += `  <url>
     <loc>${SITE_URL}/glossary/${term.slug}</loc>
     <lastmod>${term.lastUpdated || today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 `;
-    }
+  }
 
-    xml += `</urlset>`;
+  xml += `</urlset>`;
 
-    // Write to file
-    const outputPath = path.join(PUBLIC_DIR, 'sitemap-glossary.xml');
-    fs.writeFileSync(outputPath, xml, 'utf-8');
+  // Write to file
+  const outputPath = path.join(PUBLIC_DIR, 'sitemap-glossary.xml');
+  fs.writeFileSync(outputPath, xml, 'utf-8');
 
-    console.log(`✅ Generated sitemap-glossary.xml with ${terms.length + 1} URLs`);
-    return terms.length + 1;
+  console.log(`✅ Generated sitemap-glossary.xml with ${terms.length + 1} URLs`);
+  return terms.length + 1;
 }
 
 // =============================================================================
@@ -68,20 +68,20 @@ export async function generateGlossarySitemap() {
 // =============================================================================
 
 export async function generateComparisonsSitemap() {
-    const comparisonsPath = path.join(DATA_DIR, 'comparisonData.js');
-    const content = fs.readFileSync(comparisonsPath, 'utf-8');
+  const comparisonsPath = path.join(DATA_DIR, 'comparisonData.js');
+  const content = fs.readFileSync(comparisonsPath, 'utf-8');
 
-    // Extract slugs and dates
-    const comparisons = [];
-    const regex = /slug:\s*['"]([^'"]+)['"][\s\S]*?lastUpdated:\s*['"]([^'"]+)['"]/g;
-    let match;
-    while ((match = regex.exec(content)) !== null) {
-        comparisons.push({ slug: match[1], lastUpdated: match[2] });
-    }
+  // Extract slugs and dates
+  const comparisons = [];
+  const regex = /slug:\s*['"]([^'"]+)['"][\s\S]*?lastUpdated:\s*['"]([^'"]+)['"]/g;
+  let match;
+  while ((match = regex.exec(content)) !== null) {
+    comparisons.push({ slug: match[1], lastUpdated: match[2] });
+  }
 
-    const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0];
 
-    let xml = `<?xml version="1.0" encoding="UTF-8"?>
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- PSEO Comparison Hub -->
   <url>
@@ -92,24 +92,24 @@ export async function generateComparisonsSitemap() {
   </url>
 `;
 
-    for (const comp of comparisons) {
-        xml += `  <url>
+  for (const comp of comparisons) {
+    xml += `  <url>
     <loc>${SITE_URL}/compare/${comp.slug}</loc>
     <lastmod>${comp.lastUpdated || today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 `;
-    }
+  }
 
-    xml += `</urlset>`;
+  xml += `</urlset>`;
 
-    // Write to file
-    const outputPath = path.join(PUBLIC_DIR, 'sitemap-comparisons.xml');
-    fs.writeFileSync(outputPath, xml, 'utf-8');
+  // Write to file
+  const outputPath = path.join(PUBLIC_DIR, 'sitemap-comparisons.xml');
+  fs.writeFileSync(outputPath, xml, 'utf-8');
 
-    console.log(`✅ Generated sitemap-comparisons.xml with ${comparisons.length + 1} URLs`);
-    return comparisons.length + 1;
+  console.log(`✅ Generated sitemap-comparisons.xml with ${comparisons.length + 1} URLs`);
+  return comparisons.length + 1;
 }
 
 // =============================================================================
@@ -117,9 +117,9 @@ export async function generateComparisonsSitemap() {
 // =============================================================================
 
 export async function updateSitemapIndex() {
-    const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0];
 
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Main sitemap: Articles, categories, tags, static pages -->
   <sitemap>
@@ -140,10 +140,10 @@ export async function updateSitemapIndex() {
   </sitemap>
 </sitemapindex>`;
 
-    const outputPath = path.join(PUBLIC_DIR, 'sitemap-index.xml');
-    fs.writeFileSync(outputPath, xml, 'utf-8');
+  const outputPath = path.join(PUBLIC_DIR, 'sitemap-index.xml');
+  fs.writeFileSync(outputPath, xml, 'utf-8');
 
-    console.log('✅ Updated sitemap-index.xml');
+  console.log('✅ Updated sitemap-index.xml');
 }
 
 // =============================================================================
@@ -151,18 +151,18 @@ export async function updateSitemapIndex() {
 // =============================================================================
 
 export async function regenerateAllSitemaps() {
-    console.log('\n📍 Regenerating PSEO Sitemaps...\n');
+  console.log('\n📍 Regenerating PSEO Sitemaps...\n');
 
-    const glossaryCount = await generateGlossarySitemap();
-    const comparisonsCount = await generateComparisonsSitemap();
-    await updateSitemapIndex();
+  const glossaryCount = await generateGlossarySitemap();
+  const comparisonsCount = await generateComparisonsSitemap();
+  await updateSitemapIndex();
 
-    console.log(`\n✨ Done! Total URLs: ${glossaryCount + comparisonsCount}`);
+  console.log(`\n✨ Done! Total URLs: ${glossaryCount + comparisonsCount}`);
 
-    return { glossaryCount, comparisonsCount };
+  return { glossaryCount, comparisonsCount };
 }
 
 // Run directly if executed as script
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-    regenerateAllSitemaps();
+  regenerateAllSitemaps();
 }
