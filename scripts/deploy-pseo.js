@@ -929,14 +929,11 @@ async function buildSitemaps(glossaryUrls, comparisonUrls) {
         const sitemapXML = generateSitemapXML(chunks[i]);
         const filename = `sitemap-pseo-${i + 1}.xml`;
 
-        // 1. Upload to R2
-        await uploadToR2(filename, sitemapXML, 'application/xml');
-
-        // 2. Save locally for Git/Hostinger deployment
+        // Save locally for Git/Hostinger deployment (bypassing R2 for sitemaps)
         const chunkPublicPath = path.join(__dirname, '..', 'public', filename);
         fs.writeFileSync(chunkPublicPath, sitemapXML, 'utf-8');
 
-        console.log(`   ✅ ${filename} (${chunks[i].length} URLs) saved locally and to R2`);
+        console.log(`   ✅ ${filename} (${chunks[i].length} URLs) saved to public/`);
     }
 
     // GENERATE MASTER SITEMAP INDEX
@@ -960,14 +957,11 @@ async function buildSitemaps(glossaryUrls, comparisonUrls) {
 
     sitemapIndexXML += `\n</sitemapindex>`;
 
-    // 1. Upload Master Index to R2
-    await uploadToR2('sitemap-index.xml', sitemapIndexXML, 'application/xml');
-
-    // 2. ALSO save to local public/ directory for Git/Hostinger deployment
+    // Save to local public/ directory for Git/Hostinger deployment (bypassing R2)
     const publicPath = path.join(__dirname, '..', 'public', 'sitemap-index.xml');
     fs.writeFileSync(publicPath, sitemapIndexXML, 'utf-8');
 
-    console.log(`   ✅ sitemap-index.xml (Master) updated in R2 and locally at ${publicPath}`);
+    console.log(`   ✅ sitemap-index.xml (Master) saved to public/`);
 
     return chunks.length;
 }
