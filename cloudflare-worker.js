@@ -4,8 +4,7 @@
  * Routes:
  * - /glossary/* → R2 (pSEO glossary pages)
  * - /compare/* → R2 (pSEO comparison pages)  
- * - /sitemap-pseo* → R2 (pSEO sitemaps)
- * - Everything else → Origin (Hostinger)
+ * - Everything else → Origin (Hostinger) - including sitemaps
  * 
  * Required Bindings:
  * - R2_BUCKET: R2 bucket named 'dataengineerhub-pseo'
@@ -16,15 +15,13 @@ export default {
         const url = new URL(request.url);
         const path = url.pathname;
 
-        // R2 key prefix (matches deploy script output structure)
-        const PREFIX = 'dataengineerhub-pseo/';
+        // R2 keys match the deploy script output structure (no prefix needed)
 
         // Debug endpoint
         if (path === '/debug') {
             return new Response(JSON.stringify({
                 hasR2: !!env.R2_BUCKET,
                 path: path,
-                prefix: PREFIX,
                 timestamp: new Date().toISOString()
             }, null, 2), {
                 headers: { 'Content-Type': 'application/json' }
@@ -34,22 +31,18 @@ export default {
         // Handle glossary pages → R2
         if (path.startsWith('/glossary/') && path !== '/glossary/' && path !== '/glossary') {
             const slug = path.replace('/glossary/', '').replace(/\/$/, '');
-            const key = PREFIX + `glossary/${slug}/index.html`;
+            const key = `glossary/${slug}/index.html`;
             return fetchFromR2(env, key, 'text/html');
         }
 
         // Handle comparison pages → R2
         if (path.startsWith('/compare/') && path !== '/compare/' && path !== '/compare') {
             const slug = path.replace('/compare/', '').replace(/\/$/, '');
-            const key = PREFIX + `compare/${slug}/index.html`;
+            const key = `compare/${slug}/index.html`;
             return fetchFromR2(env, key, 'text/html');
         }
 
-        // Handle pSEO sitemaps → R2
-        if (path.match(/^\/sitemap-pseo/)) {
-            const key = PREFIX + path.slice(1);
-            return fetchFromR2(env, key, 'application/xml');
-        }
+        // Sitemaps are served directly from Hostinger (no R2 routing needed)
 
         // Everything else → Origin (Hostinger)
         return fetch(request);
