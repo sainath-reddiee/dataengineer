@@ -176,6 +176,16 @@ export default defineConfig({
             if (id.includes('jspdf')) {
               return 'pdf-vendor';
             }
+            // Heavy libraries used only on specific pages
+            if (id.includes('@google/generative-ai')) {
+              return 'ai-vendor';
+            }
+            if (id.includes('react-helmet-async')) {
+              return 'helmet';
+            }
+            if (id.includes('marked') || id.includes('dompurify')) {
+              return 'markdown';
+            }
             return 'vendor';
           }
 

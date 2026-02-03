@@ -3,13 +3,24 @@ import React, { useEffect } from 'react';
 // Mobile-specific optimization component
 const MobileOptimization = () => {
   useEffect(() => {
-    // Detect mobile device
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const isSmallScreen = window.innerWidth <= 768;
-    
-    if (isMobile || isSmallScreen) {
-      // Apply mobile-specific optimizations
-      optimizeForMobile();
+    // Defer optimizations to avoid blocking FCP
+    const applyOptimizations = () => {
+      // Detect mobile device
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isSmallScreen = window.innerWidth <= 768;
+
+      if (isMobile || isSmallScreen) {
+        // Apply mobile-specific optimizations
+        optimizeForMobile();
+      }
+    };
+
+    // Run after paint to avoid blocking FCP/LCP
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(applyOptimizations, { timeout: 2000 });
+    } else {
+      // Fallback for Safari
+      setTimeout(applyOptimizations, 100);
     }
 
     // Listen for orientation changes and resize events
@@ -38,11 +49,11 @@ const MobileOptimization = () => {
         // Add loading="lazy" for better performance
         img.loading = 'lazy';
         img.decoding = 'async';
-        
+
         // Add mobile-specific classes
         img.classList.add('mobile-optimized');
         img.dataset.optimized = 'true';
-        
+
         // Optimize image URLs if they contain size parameters
         if (img.src && img.src.includes('w=')) {
           const mobileUrl = img.src
@@ -56,7 +67,7 @@ const MobileOptimization = () => {
 
     // Disable heavy animations on mobile
     document.body.classList.add('mobile-optimized');
-    
+
     // Reduce backdrop-filter blur on mobile for better performance
     const elements = document.querySelectorAll('.glass-effect, .blog-card, .tech-card');
     elements.forEach(el => {
@@ -69,7 +80,7 @@ const MobileOptimization = () => {
 
   const optimizeForDesktop = () => {
     document.body.classList.remove('mobile-optimized');
-    
+
     // Restore full backdrop-filter blur on desktop
     const elements = document.querySelectorAll('.glass-effect, .blog-card, .tech-card');
     elements.forEach(el => {
@@ -100,7 +111,7 @@ const MobileOptimization = () => {
       link.type = 'font/woff2';
       link.crossOrigin = 'anonymous';
       link.href = `https://fonts.gstatic.com/s/inter/v12/${font}`;
-      
+
       if (!document.querySelector(`link[href="${link.href}"]`)) {
         document.head.appendChild(link);
       }

@@ -30,41 +30,8 @@ const PageLoader = () => (
   </div>
 );
 
-// Preload critical font
-const preloadFont = () => {
-  const link = document.createElement('link');
-  link.rel = 'preload';
-  link.as = 'font';
-  link.type = 'font/woff2';
-  link.crossOrigin = 'anonymous';
-  link.href = 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2';
-  document.head.appendChild(link);
-};
-
-// Load fonts efficiently
-const loadFonts = () => {
-  const preconnectGoogle = document.createElement('link');
-  preconnectGoogle.rel = 'preconnect';
-  preconnectGoogle.href = 'https://fonts.googleapis.com';
-  document.head.appendChild(preconnectGoogle);
-
-  const preconnectGstatic = document.createElement('link');
-  preconnectGstatic.rel = 'preconnect';
-  preconnectGstatic.href = 'https://fonts.gstatic.com';
-  preconnectGstatic.crossOrigin = 'anonymous';
-  document.head.appendChild(preconnectGstatic);
-
-  const fontLink = document.createElement('link');
-  fontLink.rel = 'stylesheet';
-  fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap';
-  fontLink.media = 'all';
-  document.head.appendChild(fontLink);
-
-  preloadFont();
-};
-
-// Initialize fonts
-loadFonts();
+// Note: Font preloading is handled in index.html with proper preload tags
+// This avoids duplicate requests and improves FCP
 
 // Performance monitoring
 if (typeof window !== 'undefined' && 'performance' in window) {

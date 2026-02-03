@@ -85,13 +85,17 @@ function App() {
     }
 
     // Prefetch commonly accessed pages after initial load
+    // Delay increased to 4s to avoid network contention on mobile
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    const prefetchDelay = isMobile ? 5000 : 3000;
+
     const prefetchTimer = setTimeout(() => {
       import('./pages/AllArticlesPage');
       import('./pages/ArticlePage');
 
       // ✅ Prefetch popular category pages
       import('./pages/CategoryPage'); // This covers all categories including new ones
-    }, 2000);
+    }, prefetchDelay);
 
     const logPerformance = () => {
       if (typeof performance !== 'undefined') {
