@@ -1,0 +1,75 @@
+[
+    {
+        "id": "iceberg-vs-hudi",
+        "slug": "iceberg-vs-hudi",
+        "toolA": "Apache Iceberg",
+        "toolB": "Apache Hudi",
+        "category": "Data Warehousing",
+        "winner": "It Depends",
+        "shortVerdict": "Iceberg is the champion of engine-neutral table formats. Hudi is the veteran winner for high-scale, low-latency upserts and incremental processing.",
+        "intro": "### The Foundation of the Lakehouse\n\nTo build a Data Lakehouse, you need a **Table Format** to manage files in S3. **Apache Iceberg** and **Apache Hudi** (Hadoop Upserts Deletes and Incrementals) are the two battle-hardened open standards.\n\n**Apache Iceberg** (from Netflix) was built for massive datasets and engine neutrality. It focuses on correctness and preventing the problems of Hive (like slow metadata listing). It's winning the adoption war with support from Snowflake and AWS.\n\n**Apache Hudi** (from Uber) was built for a specific, difficult problem: high-volume incremental updates (upserts). It offers unique features like 'Merge on Read' (MoR) and 'Copy on Write' (CoW) to balance write and read performance for streaming data.",
+        "features": [
+            {
+                "name": "Core Focus",
+                "toolAValue": "Reliability & Engine Independence",
+                "toolBValue": "High-freq Upserts & Incremental Processing",
+                "winner": "Apache Hudi"
+            },
+            {
+                "name": "Integration",
+                "toolAValue": "Trino, Snowflake, Spark, Athena",
+                "toolBValue": "Spark, Flink, Presto",
+                "winner": "Apache Iceberg"
+            },
+            {
+                "name": "Schema Evolution",
+                "toolAValue": "Full (Add, Drop, Rename, Reorder)",
+                "toolBValue": "Excellent (but some engines vary)",
+                "winner": "Apache Iceberg"
+            },
+            {
+                "name": "Complexity",
+                "toolAValue": "Low (Simple metadata approach)",
+                "toolBValue": "High (Many knobs for MoR/CoW)",
+                "winner": "Apache Iceberg"
+            },
+            {
+                "name": "Query Speed",
+                "toolAValue": "Excellent for analytical scans",
+                "toolBValue": "Excellent for incremental/point queries",
+                "winner": "Tie"
+            }
+        ],
+        "pros": {
+            "toolA": [
+                "The standard for 'Open Data Architecture'",
+                "Hidden partitioning—users don't need to know how data is stored",
+                "Snapshot isolation ensures fast, correct time travel",
+                "Massive ecosystem momentum in 2024-2025"
+            ],
+            "toolB": [
+                "The best tool for handling CDC (Change Data Capture) feeds",
+                "Native support for incremental processing (only process new data)",
+                "Excellent concurrency control (Multi-Writer)",
+                "Best for super-low latency 'fresh' data"
+            ]
+        },
+        "cons": {
+            "toolA": [
+                "Historically slower for high-frequency row-level updates",
+                "Partition evolution can sometimes confuse older engines",
+                "Implementation varies slightly between cloud providers"
+            ],
+            "toolB": [
+                "Steep learning curve due to configurational complexity",
+                "Historically perceived as 'Spark-heavy'",
+                "Metadata management can become heavy for millions of small files"
+            ]
+        },
+        "finalVerdict": "### Verdict\n\n**Choose Apache Iceberg if:**\n*   You want a future-proof, engine-agnostic data lakehouse.\n*   You use multiple query engines (Snowflake, Trino, Athena).\n*   Your primary use case is large-scale analytical scanning.\n\n**Choose Apache Hudi if:**\n*   You are building a real-time CDC pipeline from a database.\n*   You need to process data incrementally (The 'Incremental Data Lake' vision).\n*   You have high-frequency updates and deletes in your data lake.",
+        "relatedComparisons": [
+            "delta-lake-vs-iceberg"
+        ],
+        "lastUpdated": "2026-02-05"
+    }
+]

@@ -1,0 +1,76 @@
+[
+    {
+        "id": "flink-vs-spark-streaming",
+        "slug": "flink-vs-spark-streaming",
+        "toolA": "Apache Flink",
+        "toolB": "Spark Streaming",
+        "category": "Real-time & Streaming",
+        "winner": "Apache Flink",
+        "shortVerdict": "Flink is for true 'sub-second' streaming with complex state. Spark (Structured Streaming) is the choice for unified batch/stream processing with existing Spark talent.",
+        "intro": "### The Streaming Purity Test\n\nIn the world of real-time data, there is a fundamental split: **Native Streaming** vs. **Micro-batching**.\n\n**Apache Flink** is a native streaming engine. It processes every single event as it arrives. This allows for ultra-low latency (milliseconds) and sophisticated \"stateful\" processing (e.g., tracking a user's session over hours in real-time).\n\n**Apache Spark (Structured Streaming)** uses a micro-batch model. It collects data for a few seconds and then processes it like a tiny batch job. While this is slightly slower (latencies of 1s+), it benefits from the massive Spark ecosystem and a unified API that works for both batch and streaming.",
+        "features": [
+            {
+                "name": "Core Model",
+                "toolAValue": "Native Streaming (Event-by-event)",
+                "toolBValue": "Micro-batching",
+                "winner": "Apache Flink"
+            },
+            {
+                "name": "Latency",
+                "toolAValue": "Milliseconds (Ultra-low)",
+                "toolBValue": "Seconds (Usually 1s+)",
+                "winner": "Apache Flink"
+            },
+            {
+                "name": "State Management",
+                "toolAValue": "Excellent (Native state backend)",
+                "toolBValue": "Good (but more complex for long-lived state)",
+                "winner": "Apache Flink"
+            },
+            {
+                "name": "Ease of Use",
+                "toolAValue": "Lower (Steep learning curve)",
+                "toolBValue": "High (Unified Spark API)",
+                "winner": "Spark Streaming"
+            },
+            {
+                "name": "Community Support",
+                "toolAValue": "Growing (Strong in China/US Enterprise)",
+                "toolBValue": "Massive (De-facto standard)",
+                "winner": "Spark Streaming"
+            }
+        ],
+        "pros": {
+            "toolA": [
+                "Truly sub-second latency for critical apps",
+                "Superior windowing (Session, Sliding, Tumbling)",
+                "Exact-once processing guarantees are robust",
+                "Excellent handling of 'out-of-order' data"
+            ],
+            "toolB": [
+                "Unifies batch and streaming logic into one codebase",
+                "Massive library support (MLlib, GraphX)",
+                "Easier to hire and find documentation for",
+                "Better integration with Data Lakes (Delta Lake)"
+            ]
+        },
+        "cons": {
+            "toolA": [
+                "Harder to manage and monitor in production",
+                "Less integration with the broader data ecosystem",
+                "Requires dedicated streaming expertise"
+            ],
+            "toolB": [
+                "Micro-batching can lead to higher infra costs",
+                "Latency is fundamentally limited",
+                "State management can become a bottleneck at scale"
+            ]
+        },
+        "finalVerdict": "### Verdict\n\n**Choose Apache Flink if:**\n*   Your use case is truly 'real-time' (fraud detection, ad-bidding, sensors).\n*   You have complex stateful logic spanning long time windows.\n*   Latency requirements are consistently under 500ms.\n\n**Choose Spark Streaming if:**\n*   You already use Spark for batch processing and want to reuse logic.\n*   Human-scale latency (1-10 seconds) is acceptable.\n*   You want a unified platform for Analytics and Streaming.",
+        "relatedComparisons": [
+            "kafka-vs-redpanda",
+            "snowflake-vs-databricks"
+        ],
+        "lastUpdated": "2026-02-05"
+    }
+]

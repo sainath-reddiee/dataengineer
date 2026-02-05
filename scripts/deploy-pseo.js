@@ -473,6 +473,31 @@ function generateGlossaryHTML(term, categories) {
         /* Ad Container Styles */
         .ad-container { margin: 24px 0; padding: 16px 0; min-height: 100px; text-align: center; }
         .ad-container ins { display: block; }
+        /* Author Box Styles */
+        .author-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 40px 0;
+        }
+        .author-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #60a5fa;
+            flex-shrink: 0;
+        }
+        .author-info h4 { font-size: 1.1rem; margin-bottom: 4px; color: #f8fafc; }
+        .author-title { font-size: 0.85rem; color: #a5b4fc; margin-bottom: 8px; }
+        .author-bio { font-size: 0.9rem; color: #cbd5e1; line-height: 1.5; }
+        .author-links { margin-top: 12px; display: flex; gap: 12px; }
+        .author-links a { color: #60a5fa; text-decoration: none; font-size: 0.85rem; }
+        .author-links a:hover { text-decoration: underline; }
         /* Footer Styles */
         .site-footer { 
             margin-top: 60px; 
@@ -486,6 +511,10 @@ function generateGlossaryHTML(term, categories) {
         .site-footer a:hover { text-decoration: underline; }
         .footer-links { margin-bottom: 12px; }
         .footer-copy { color: #64748b; }
+        @media (max-width: 768px) {
+            .author-box { flex-direction: column; align-items: center; text-align: center; }
+            .author-links { justify-content: center; }
+        }
     </style>
 </head>
 <body>
@@ -535,6 +564,22 @@ function generateGlossaryHTML(term, categories) {
         <a href="/glossary" class="back-link">← Back to Glossary</a>
         
         ${term.lastUpdated ? `<p class="last-updated">Last updated: ${term.lastUpdated}</p>` : ''}
+        
+        <!-- Author Info Box -->
+        <section class="author-box" itemscope itemtype="https://schema.org/Person">
+            <img src="${SITE_URL}/author-avatar.jpg" alt="Satyasai Nath Reddy" class="author-avatar" itemprop="image" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 80 80%22><rect fill=%22%234a5568%22 width=%2280%22 height=%2280%22/><text x=%2250%%22 y=%2258%%22 text-anchor=%22middle%22 fill=%22%23fff%22 font-size=%2232%22>SR</text></svg>'">
+            <div class="author-info">
+                <h4 itemprop="name">Written by Satyasai Nath Reddy</h4>
+                <div class="author-title" itemprop="jobTitle">Senior Data Engineer</div>
+                <p class="author-bio" itemprop="description">
+                    Data Engineering professional with 5+ years of experience building scalable data pipelines and analytics platforms.
+                </p>
+                <div class="author-links">
+                    <a href="/about" itemprop="url">About Me</a>
+                    <a href="https://linkedin.com/in/satyasainath" target="_blank" rel="noopener" itemprop="sameAs">LinkedIn</a>
+                </div>
+            </div>
+        </section>
         
         <!-- Site Footer -->
         <footer class="site-footer">
@@ -617,14 +662,19 @@ function generateComparisonHTML(comparison) {
         "@type": "Article",
         "headline": "${comparison.toolA} vs ${comparison.toolB}: Complete Comparison",
         "description": "${comparison.shortVerdict}",
-        "author": {"@type": "Organization", "name": "DataEngineer Hub", "url": "${SITE_URL}"},
+        "author": {
+            "@type": "Person",
+            "name": "Satyasai Nath Reddy",
+            "url": "${SITE_URL}/about",
+            "jobTitle": "Senior Data Engineer"
+        },
         "publisher": {
             "@type": "Organization",
             "name": "DataEngineer Hub",
             "url": "${SITE_URL}",
             "logo": {"@type": "ImageObject", "url": "${SITE_URL}/logo.png"}
         },
-        "datePublished": "${new Date().toISOString().split('T')[0]}",
+        "datePublished": "${comparison.lastUpdated || new Date().toISOString().split('T')[0]}",
         "dateModified": "${new Date().toISOString().split('T')[0]}",
         "mainEntityOfPage": {"@type": "WebPage", "@id": "${SITE_URL}/compare/${comparison.slug}"}
     }
@@ -689,6 +739,51 @@ function generateComparisonHTML(comparison) {
         /* Ad Container Styles */
         .ad-container { margin: 24px 0; padding: 16px 0; min-height: 100px; text-align: center; }
         .ad-container ins { display: block; }
+        /* Author Box Styles */
+        .author-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 40px 0;
+        }
+        .author-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #60a5fa;
+            flex-shrink: 0;
+        }
+        .author-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+            color: #f8fafc;
+        }
+        .author-title {
+            font-size: 0.85rem;
+            color: #a5b4fc;
+            margin-bottom: 8px;
+        }
+        .author-bio {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+        .author-links {
+            margin-top: 12px;
+            display: flex;
+            gap: 12px;
+        }
+        .author-links a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+        .author-links a:hover { text-decoration: underline; }
         /* Footer Styles */
         .site-footer { 
             margin-top: 60px; 
@@ -702,7 +797,11 @@ function generateComparisonHTML(comparison) {
         .site-footer a:hover { text-decoration: underline; }
         .footer-links { margin-bottom: 12px; }
         .footer-copy { color: #64748b; }
-        @media (max-width: 768px) { .pros-cons { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { 
+            .pros-cons { grid-template-columns: 1fr; }
+            .author-box { flex-direction: column; align-items: center; text-align: center; }
+            .author-links { justify-content: center; }
+        }
     </style>
 </head>
 <body>
@@ -767,6 +866,25 @@ function generateComparisonHTML(comparison) {
         </div>` : ''}
         
         <a href="/compare" class="back-link">← Back to Comparisons</a>
+        
+        <!-- Author Info Box -->
+        <section class="author-box" itemscope itemtype="https://schema.org/Person">
+            <img src="${SITE_URL}/author-avatar.jpg" alt="Satyasai Nath Reddy" class="author-avatar" itemprop="image" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 80 80%22><rect fill=%22%234a5568%22 width=%2280%22 height=%2280%22/><text x=%2250%%22 y=%2258%%22 text-anchor=%22middle%22 fill=%22%23fff%22 font-size=%2232%22>SR</text></svg>'">
+            <div class="author-info">
+                <h4 itemprop="name">Written by Satyasai Nath Reddy</h4>
+                <div class="author-title" itemprop="jobTitle">Senior Data Engineer</div>
+                <p class="author-bio" itemprop="description">
+                    Data Engineering professional with 5+ years of experience building scalable data pipelines and analytics platforms. 
+                    Specializing in Snowflake, Databricks, dbt, and modern cloud architectures. 
+                    Passionate about sharing knowledge and helping others navigate the data engineering landscape.
+                </p>
+                <div class="author-links">
+                    <a href="/about" itemprop="url">About Me</a>
+                    <a href="https://linkedin.com/in/satyasainath" target="_blank" rel="noopener" itemprop="sameAs">LinkedIn</a>
+                    <a href="https://github.com/sainath-reddy" target="_blank" rel="noopener" itemprop="sameAs">GitHub</a>
+                </div>
+            </div>
+        </section>
         
         <!-- Site Footer -->
         <footer class="site-footer">

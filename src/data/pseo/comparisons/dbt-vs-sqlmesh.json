@@ -1,0 +1,76 @@
+[
+    {
+        "id": "dbt-vs-sqlmesh",
+        "slug": "dbt-vs-sqlmesh",
+        "toolA": "dbt",
+        "toolB": "SQLMesh",
+        "category": "Data Transformation",
+        "winner": "It Depends",
+        "shortVerdict": "dbt is the undisputed industry standard for analytics engineering. SQLMesh is the innovative newcomer focusing on semantic awareness, performance, and correctness.",
+        "intro": "### The Transformation Evolution\n\n**dbt (Data Build Tool)** revolutionized the data industry by bringing software engineering best practices—version control, testing, and documentation—to SQL. It turned analysts into \"Analytics Engineers.\"\n\n**SQLMesh** is a newer entrant that argues dbt’s \"text-based\" approach to SQL is limited. SQLMesh uses a **Semantic SQL** engine that actually understands the SQL grammar, enabling features like Virtual Environments, automatic column-level lineage, and faster incremental builds without the complexity of dbt’s Jinja templates.",
+        "features": [
+            {
+                "name": "Core Language",
+                "toolAValue": "SQL + Jinja Templates",
+                "toolBValue": "SQL + Python (Semantic Awareness)",
+                "winner": "SQLMesh"
+            },
+            {
+                "name": "Lineage",
+                "toolAValue": "Table-level (Manual via ref tags)",
+                "toolBValue": "Column-level (Automatic via SQL parsing)",
+                "winner": "SQLMesh"
+            },
+            {
+                "name": "Environments",
+                "toolAValue": "Separate schemas/databases (Expensive)",
+                "toolBValue": "Virtual Environments (Zero-copy views)",
+                "winner": "SQLMesh"
+            },
+            {
+                "name": "Maturity",
+                "toolAValue": "Extremely High (Standard)",
+                "toolBValue": "Medium (Rapidly growing)",
+                "winner": "dbt"
+            },
+            {
+                "name": "Community / Talent",
+                "toolAValue": "Massive (dbt Slack, 100k+ users)",
+                "toolBValue": "Niche but passionate",
+                "winner": "dbt"
+            }
+        ],
+        "pros": {
+            "toolA": [
+                "Huge library of community packages (dbt_utils, etc.)",
+                "Supported by every modern data platform",
+                "Easiest to hire for (highly desired skill)",
+                "Simple to learn for anyone who knows SQL"
+            ],
+            "toolB": [
+                "Semantic understanding prevents many common SQL errors",
+                "Virtual environments make testing significantly cheaper",
+                "Better incremental model management",
+                "Native Python support is more powerful than dbt's implementation"
+            ]
+        },
+        "cons": {
+            "toolA": [
+                "Jinja can become a \"ref/macro soup\" that's hard to debug",
+                "Lack of true column-level lineage out of the box",
+                "Multi-project coordination (dbt Mesh) is still maturing"
+            ],
+            "toolB": [
+                "Steeper learning curve due to new concepts",
+                "Smaller ecosystem of pre-built models/macros",
+                "Less documentation and community troubleshooting"
+            ]
+        },
+        "finalVerdict": "### Verdict\n\n**Choose dbt if:**\n*   You want to follow the industry standard and find it easy to hire talent.\n*   You need a tool that \"just works\" with a massive ecosystem of plugins.\n*   You are migrating from a legacy system and want a low barrier to entry.\n\n**Choose SQLMesh if:**\n*   You are building a high-scale data platform and want better performance.\n*   Data correctness and column-level lineage are mission-critical for you.\n*   You want to use modern concepts like Virtual Data Environments to save on cloud costs.",
+        "relatedComparisons": [
+            "dbt-vs-dataform",
+            "airflow-vs-dagster"
+        ],
+        "lastUpdated": "2026-02-05"
+    }
+]

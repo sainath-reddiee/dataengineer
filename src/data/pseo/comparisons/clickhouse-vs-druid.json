@@ -1,0 +1,75 @@
+[
+    {
+        "id": "clickhouse-vs-druid",
+        "slug": "clickhouse-vs-druid",
+        "toolA": "ClickHouse",
+        "toolB": "Apache Druid",
+        "category": "Analytics & BI",
+        "winner": "It Depends",
+        "shortVerdict": "ClickHouse is the performance beast for general-purpose analytics. Druid is the specialized engine for ultra-high-concurrency real-time apps.",
+        "intro": "### The OLAP Performance Kings\n\nWhen standard databases (Postgres, MySQL) can't handle your analytics queries anymore, you move to an **OLAP (Online Analytical Processing)** database. **ClickHouse** and **Apache Druid** are the two industry leaders for lightning-fast queries on billions of rows.\n\n**ClickHouse** (originated at Yandex) is a columnar database designed to be extremely fast on a single server or a cluster. It is famed for its query performance and hardware efficiency. It handles batch and streaming data with ease.\n\n**Apache Druid** was designed for a specific use case: real-time ingestion and ultra-high-concurrency queries (thousands of users at once). It uses a unique architecture that combines indexing, columnar storage, and pre-aggregation (rollups).",
+        "features": [
+            {
+                "name": "Architecture",
+                "toolAValue": "Coupled (Compute/Storage on nodes)",
+                "toolBValue": "Decoupled (Deep storage + Compute nodes)",
+                "winner": "Apache Druid"
+            },
+            {
+                "name": "Query Speed",
+                "toolAValue": "Exceptional (Fastest raw SQL execution)",
+                "toolBValue": "Very Fast (Optimized for indexes/rollups)",
+                "winner": "ClickHouse"
+            },
+            {
+                "name": "Concurrency",
+                "toolAValue": "High (but limited by hardware)",
+                "toolBValue": "Extreme (Scale-out for thousands of users)",
+                "winner": "Apache Druid"
+            },
+            {
+                "name": "Operational Setup",
+                "toolAValue": "Simple (Single binary / cluster)",
+                "toolBValue": "Complex (Many microservices + ZooKeeper)",
+                "winner": "ClickHouse"
+            },
+            {
+                "name": "SQL Support",
+                "toolAValue": "Very Comprehensive (Full SQL dialect)",
+                "toolBValue": "Medium (Focused on analytics subsets)",
+                "winner": "ClickHouse"
+            }
+        ],
+        "pros": {
+            "toolA": [
+                "Incredible raw performance on single-node setups",
+                "Superior compression (Lower storage costs)",
+                "Easy to manage compared to other big data tools",
+                "Strong community and thriving ecosystem"
+            ],
+            "toolB": [
+                "Native real-time ingestion from Kafka/Kinesis",
+                "Automatic rollups can drastically reduce data size",
+                "Best for user-facing dashboards with high concurrency",
+                "Decoupled storage makes it more resilient to node failure"
+            ]
+        },
+        "cons": {
+            "toolA": [
+                "Updating/Deleting data is complex and resource-heavy",
+                "Joins are historically difficult to scale (though improving)",
+                "Scaling a cluster requires more manual effort than Druid"
+            ],
+            "toolB": [
+                "Very high operational complexity (many moving parts)",
+                "Data ingestion must be carefully tuned (segments/indexing)",
+                "Hardware requirements are generally higher"
+            ]
+        },
+        "finalVerdict": "### Verdict\n\n**Choose ClickHouse if:**\n*   You want the absolute fastest query performance for ad-hoc internal analytics.\n*   You want a tool that's easy to start with (no JVM/ZooKeeper bloat).\n*   You need to process a mix of batch and streaming data efficiently.\n\n**Choose Apache Druid if:**\n*   You are building a user-facing dashboard for thousands of concurrent users.\n*   You need millisecond real-time ingestion from Kafka.\n*   You want an architecture where storage and compute are decoupled for reliability.",
+        "relatedComparisons": [
+            "snowflake-vs-bigquery"
+        ],
+        "lastUpdated": "2026-02-05"
+    }
+]
