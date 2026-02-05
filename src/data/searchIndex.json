@@ -1,5 +1,5 @@
 {
-  "version": "2026-02-03T16:54:34.363Z",
+  "version": "2026-02-05T03:36:59.408Z",
   "glossary": [
     {
       "term": "ACID Transactions",
@@ -290,10 +290,28 @@
       "shortDefinition": "An open-source Python framework for defining, documenting, and validating data quality expectations against datasets in data pipelines."
     },
     {
+      "term": "Infrastructure as Code (IaC)",
+      "slug": "iac",
+      "category": "cloud-platforms",
+      "shortDefinition": "The practice of managing and provisioning infrastructure through machine-readable definition files, rather than physical hardware configuration or interactive configuration tools."
+    },
+    {
+      "term": "Lakehouse Architecture",
+      "slug": "lakehouse",
+      "category": "data-warehousing",
+      "shortDefinition": "A modern data architecture that combines the performance and governance of data warehouses with the low-cost and flexibility of data lakes."
+    },
+    {
       "term": "Microsoft Purview",
       "slug": "microsoft-purview",
       "category": "azure-cloud",
       "shortDefinition": "A comprehensive family of data governance, risk, and compliance solutions."
+    },
+    {
+      "term": "OLAP (Online Analytical Processing)",
+      "slug": "olap",
+      "category": "analytics",
+      "shortDefinition": "A category of software tools that provide analysis of data stored in a database, typically for multi-dimensional business reporting."
     },
     {
       "term": "Reverse ETL",
@@ -312,9 +330,37 @@
       "slug": "snowflake",
       "category": "data-warehousing",
       "shortDefinition": "A cloud-native data warehouse platform that separates storage and compute, enabling elastic scaling and pay-per-use pricing."
+    },
+    {
+      "term": "Stateful Processing",
+      "slug": "stateful-processing",
+      "category": "streaming",
+      "shortDefinition": "A stream processing technique where the application remembers information across multiple events in time."
+    },
+    {
+      "term": "Table Format",
+      "slug": "table-format",
+      "category": "data-warehousing",
+      "shortDefinition": "A layer that organizes files in a data lake into a structured table, enabling SQL-like features like ACID and time-travel."
     }
   ],
   "comparisons": [
+    {
+      "title": "Airbyte vs Meltano",
+      "slug": "airbyte-vs-meltano",
+      "category": "Data Integration",
+      "toolA": "Airbyte",
+      "toolB": "Meltano",
+      "shortVerdict": "Airbyte is the UI-first, ubiquity-focused leader. Meltano is the CLI-first, DevOps-focused engineer's choice."
+    },
+    {
+      "title": "Amazon Redshift vs Snowflake",
+      "slug": "redshift-vs-snowflake",
+      "category": "Data Warehousing",
+      "toolA": "Amazon Redshift",
+      "toolB": "Snowflake",
+      "shortVerdict": "Redshift is the choice for AWS-heavy environments needing deep integration. Snowflake is the multi-cloud champion of simplicity and concurrency."
+    },
     {
       "title": "Apache Airflow vs Dagster",
       "slug": "airflow-vs-dagster",
@@ -332,6 +378,22 @@
       "shortVerdict": "Choose Airflow for huge enterprise systems where stability is paramount. Choose Prefect for modern Python stacks, dynamic workflows, and superior developer experience."
     },
     {
+      "title": "Apache Flink vs Spark Streaming",
+      "slug": "flink-vs-spark-streaming",
+      "category": "Real-time & Streaming",
+      "toolA": "Apache Flink",
+      "toolB": "Spark Streaming",
+      "shortVerdict": "Flink is for true 'sub-second' streaming with complex state. Spark (Structured Streaming) is the choice for unified batch/stream processing with existing Spark talent."
+    },
+    {
+      "title": "Apache Iceberg vs Apache Hudi",
+      "slug": "iceberg-vs-hudi",
+      "category": "Data Warehousing",
+      "toolA": "Apache Iceberg",
+      "toolB": "Apache Hudi",
+      "shortVerdict": "Iceberg is the champion of engine-neutral table formats. Hudi is the veteran winner for high-scale, low-latency upserts and incremental processing."
+    },
+    {
       "title": "Apache Kafka vs Redpanda",
       "slug": "kafka-vs-redpanda",
       "category": "Streaming",
@@ -340,12 +402,36 @@
       "shortVerdict": "Kafka is the Java-based ecosystem king. Redpanda is the C++ drop-in replacement that is 10x faster and simpler to operations."
     },
     {
+      "title": "AWS Glue vs AWS Lambda",
+      "slug": "aws-glue-vs-lambda",
+      "category": "AWS Cloud",
+      "toolA": "AWS Glue",
+      "toolB": "AWS Lambda",
+      "shortVerdict": "Glue is for heavy-duty, long-running ETL. Lambda is for lightweight, event-driven, or short-burst data processing."
+    },
+    {
+      "title": "ClickHouse vs Apache Druid",
+      "slug": "clickhouse-vs-druid",
+      "category": "Analytics & BI",
+      "toolA": "ClickHouse",
+      "toolB": "Apache Druid",
+      "shortVerdict": "ClickHouse is the performance beast for general-purpose analytics. Druid is the specialized engine for ultra-high-concurrency real-time apps."
+    },
+    {
       "title": "dbt vs Dataform",
       "slug": "dbt-vs-dataform",
       "category": "Data Transformation",
       "toolA": "dbt",
       "toolB": "Dataform",
       "shortVerdict": "dbt is the undisputed industry standard for analytics engineering. Dataform is a fantastic, free alternative specifically for BigQuery shops."
+    },
+    {
+      "title": "dbt vs SQLMesh",
+      "slug": "dbt-vs-sqlmesh",
+      "category": "Data Transformation",
+      "toolA": "dbt",
+      "toolB": "SQLMesh",
+      "shortVerdict": "dbt is the undisputed industry standard for analytics engineering. SQLMesh is the innovative newcomer focusing on semantic awareness, performance, and correctness."
     },
     {
       "title": "Delta Lake vs Apache Iceberg",
@@ -364,12 +450,36 @@
       "shortVerdict": "Fivetran is the \"Apple\" of ELT—expensive but it just works. Airbyte is the \"Android/Linux\"—open, flexible, and ubiquitous."
     },
     {
+      "title": "Fivetran vs Stitch",
+      "slug": "fivetran-vs-stitch",
+      "category": "Data Integration",
+      "toolA": "Fivetran",
+      "toolB": "Stitch",
+      "shortVerdict": "Fivetran is the premium, 'set and forget' leader. Stitch is the developer-friendly, more affordable alternative for standard SaaS data."
+    },
+    {
+      "title": "Snowflake vs Databricks",
+      "slug": "snowflake-vs-databricks",
+      "category": "Data Warehousing",
+      "toolA": "Snowflake",
+      "toolB": "Databricks",
+      "shortVerdict": "Snowflake is the king of ease-of-use and SQL-based analytics. Databricks is the powerhouse for Spark-based data engineering and machine learning on a Lakehouse."
+    },
+    {
       "title": "Snowflake vs Google BigQuery",
       "slug": "snowflake-vs-bigquery",
       "category": "Data Warehousing",
       "toolA": "Snowflake",
       "toolB": "Google BigQuery",
       "shortVerdict": "Snowflake offers superior multi-cloud flexibility and zero-maintenance performance. BigQuery offers effortless serverless scaling and deep integration if you are already on Google Cloud."
+    },
+    {
+      "title": "Terraform vs Pulumi",
+      "slug": "terraform-vs-pulumi",
+      "category": "Cloud Platforms",
+      "toolA": "Terraform",
+      "toolB": "Pulumi",
+      "shortVerdict": "Terraform is the YAML/HCL standard for infrastructure. Pulumi is the 'Infrastructure as Code' tool that lets you use real programming languages (Python, Go, JS)."
     }
   ],
   "categories": [
