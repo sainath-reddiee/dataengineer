@@ -1,5 +1,5 @@
 {
-  "version": "2026-02-05T03:36:59.408Z",
+  "version": "2026-02-05T03:55:29.118Z",
   "glossary": [
     {
       "term": "ACID Transactions",
@@ -12,42 +12,6 @@
       "slug": "airbyte",
       "category": "data-integration",
       "shortDefinition": "An open-source data integration platform with 300+ connectors for syncing data from APIs, databases, and files to data warehouses and lakes."
-    },
-    {
-      "term": "Amazon Athena",
-      "slug": "amazon-athena",
-      "category": "aws-cloud",
-      "shortDefinition": "A serverless, interactive analytics service built on open-source frameworks, supporting open-table and file formats."
-    },
-    {
-      "term": "Amazon DynamoDB",
-      "slug": "amazon-dynamodb",
-      "category": "aws-cloud",
-      "shortDefinition": "A serverless, NoSQL, fully managed database with single-digit millisecond performance at any scale."
-    },
-    {
-      "term": "Amazon EMR",
-      "slug": "amazon-emr",
-      "category": "aws-cloud",
-      "shortDefinition": "A cloud big data platform for running large-scale distributed data processing jobs, interactive SQL queries, and machine learning applications using open-source analytics frameworks."
-    },
-    {
-      "term": "Amazon Kinesis",
-      "slug": "amazon-kinesis",
-      "category": "aws-cloud",
-      "shortDefinition": "A managed service for processing and analyzing real-time streaming data."
-    },
-    {
-      "term": "Amazon Redshift",
-      "slug": "amazon-redshift",
-      "category": "aws-cloud",
-      "shortDefinition": "A fully managed, petabyte-scale cloud data warehouse service in the cloud."
-    },
-    {
-      "term": "Amazon S3",
-      "slug": "amazon-s3",
-      "category": "aws-cloud",
-      "shortDefinition": "Amazon Simple Storage Service (S3) is an object storage service offering industry-leading scalability, data availability, security, and performance."
     },
     {
       "term": "Apache Airflow",
@@ -66,72 +30,6 @@
       "slug": "apache-spark",
       "category": "analytics",
       "shortDefinition": "A unified analytics engine for large-scale data processing, providing high-level APIs for batch processing, streaming, machine learning, and graph computation."
-    },
-    {
-      "term": "AWS Glue",
-      "slug": "aws-glue",
-      "category": "aws-cloud",
-      "shortDefinition": "A serverless data integration service that makes it easy to discover, prepare, and combine data for analytics, machine learning, and application development."
-    },
-    {
-      "term": "AWS IAM",
-      "slug": "aws-iam",
-      "category": "aws-cloud",
-      "shortDefinition": "Identity and Access Management (IAM) securely manages access to AWS services and resources."
-    },
-    {
-      "term": "AWS Lake Formation",
-      "slug": "aws-lake-formation",
-      "category": "aws-cloud",
-      "shortDefinition": "A service to set up, secure, and manage data lakes composed of data in Amazon S3."
-    },
-    {
-      "term": "AWS Lambda",
-      "slug": "aws-lambda",
-      "category": "aws-cloud",
-      "shortDefinition": "A serverless, event-driven compute service that lets you run code for virtually any type of application or backend service without provisioning or managing servers."
-    },
-    {
-      "term": "Azure Blob Storage",
-      "slug": "azure-blob-storage",
-      "category": "azure-cloud",
-      "shortDefinition": "Massively scalable and secure object storage for cloud-native workloads, archives, high-performance computing, and machine learning."
-    },
-    {
-      "term": "Azure Cosmos DB",
-      "slug": "azure-cosmos-db",
-      "category": "azure-cloud",
-      "shortDefinition": "A fully managed NoSQL and relational database for modern app development."
-    },
-    {
-      "term": "Azure Data Factory",
-      "slug": "azure-data-factory",
-      "category": "azure-cloud",
-      "shortDefinition": "A fully managed, serverless data integration service for building ETL, ELT, and data integration pipelines."
-    },
-    {
-      "term": "Azure Event Hubs",
-      "slug": "azure-event-hubs",
-      "category": "azure-cloud",
-      "shortDefinition": "A big data streaming platform and event ingestion service."
-    },
-    {
-      "term": "Azure HDInsight",
-      "slug": "azure-hdinsight",
-      "category": "azure-cloud",
-      "shortDefinition": "A managed, full-spectrum, open-source analytics service in the cloud for enterprises."
-    },
-    {
-      "term": "Azure Stream Analytics",
-      "slug": "azure-stream-analytics",
-      "category": "azure-cloud",
-      "shortDefinition": "A fully managed real-time analytics service designed to process millions of events per second."
-    },
-    {
-      "term": "Azure Synapse Analytics",
-      "slug": "azure-synapse-analytics",
-      "category": "azure-cloud",
-      "shortDefinition": "An enterprise analytics service that brings together data integration, enterprise data warehousing, and big data analytics."
     },
     {
       "term": "CAP Theorem",
@@ -236,54 +134,6 @@
       "shortDefinition": "A fully managed data integration platform that automatically syncs data from hundreds of sources to data warehouses and lakes with minimal configuration."
     },
     {
-      "term": "Google BigQuery",
-      "slug": "google-bigquery",
-      "category": "gcp-cloud",
-      "shortDefinition": "A serverless, highly scalable, and cost-effective multi-cloud data warehouse designed for business agility."
-    },
-    {
-      "term": "Google Cloud Bigtable",
-      "slug": "google-cloud-bigtable",
-      "category": "gcp-cloud",
-      "shortDefinition": "A fully managed, wide-column and key-value NoSQL database service for large analytical and operational workloads."
-    },
-    {
-      "term": "Google Cloud Composer",
-      "slug": "google-cloud-composer",
-      "category": "gcp-cloud",
-      "shortDefinition": "A fully managed workflow orchestration service built on Apache Airflow."
-    },
-    {
-      "term": "Google Cloud Dataflow",
-      "slug": "google-cloud-dataflow",
-      "category": "gcp-cloud",
-      "shortDefinition": "Unified stream and batch data processing that's serverless, fast, and cost-effective."
-    },
-    {
-      "term": "Google Cloud Dataproc",
-      "slug": "google-cloud-dataproc",
-      "category": "gcp-cloud",
-      "shortDefinition": "A fully managed and highly scalable service for running Apache Spark, Apache Flink, Presto, and 30+ open source tools and frameworks."
-    },
-    {
-      "term": "Google Cloud Functions",
-      "slug": "google-cloud-functions",
-      "category": "gcp-cloud",
-      "shortDefinition": "A serverless execution environment for building and connecting cloud services."
-    },
-    {
-      "term": "Google Cloud Pub/Sub",
-      "slug": "google-cloud-pubsub",
-      "category": "gcp-cloud",
-      "shortDefinition": "A scalable, durable, and secure ingestion service for event streaming and analytics."
-    },
-    {
-      "term": "Google Cloud Storage",
-      "slug": "google-cloud-storage",
-      "category": "gcp-cloud",
-      "shortDefinition": "Managed, secure, and scalable object storage for all your unstructured data needs."
-    },
-    {
       "term": "Great Expectations",
       "slug": "great-expectations",
       "category": "data-quality",
@@ -300,12 +150,6 @@
       "slug": "lakehouse",
       "category": "data-warehousing",
       "shortDefinition": "A modern data architecture that combines the performance and governance of data warehouses with the low-cost and flexibility of data lakes."
-    },
-    {
-      "term": "Microsoft Purview",
-      "slug": "microsoft-purview",
-      "category": "azure-cloud",
-      "shortDefinition": "A comprehensive family of data governance, risk, and compliance solutions."
     },
     {
       "term": "OLAP (Online Analytical Processing)",
@@ -370,17 +214,9 @@
       "shortVerdict": "Airflow is the task-based standard. Dagster is the asset-based challenger that brings data awareness to the orchestration layer."
     },
     {
-      "title": "Apache Airflow vs Prefect",
-      "slug": "airflow-vs-prefect",
-      "category": "Orchestration",
-      "toolA": "Apache Airflow",
-      "toolB": "Prefect",
-      "shortVerdict": "Choose Airflow for huge enterprise systems where stability is paramount. Choose Prefect for modern Python stacks, dynamic workflows, and superior developer experience."
-    },
-    {
       "title": "Apache Flink vs Spark Streaming",
       "slug": "flink-vs-spark-streaming",
-      "category": "Real-time & Streaming",
+      "category": "streaming",
       "toolA": "Apache Flink",
       "toolB": "Spark Streaming",
       "shortVerdict": "Flink is for true 'sub-second' streaming with complex state. Spark (Structured Streaming) is the choice for unified batch/stream processing with existing Spark talent."
@@ -402,36 +238,12 @@
       "shortVerdict": "Kafka is the Java-based ecosystem king. Redpanda is the C++ drop-in replacement that is 10x faster and simpler to operations."
     },
     {
-      "title": "AWS Glue vs AWS Lambda",
-      "slug": "aws-glue-vs-lambda",
-      "category": "AWS Cloud",
-      "toolA": "AWS Glue",
-      "toolB": "AWS Lambda",
-      "shortVerdict": "Glue is for heavy-duty, long-running ETL. Lambda is for lightweight, event-driven, or short-burst data processing."
-    },
-    {
       "title": "ClickHouse vs Apache Druid",
       "slug": "clickhouse-vs-druid",
-      "category": "Analytics & BI",
+      "category": "analytics",
       "toolA": "ClickHouse",
       "toolB": "Apache Druid",
       "shortVerdict": "ClickHouse is the performance beast for general-purpose analytics. Druid is the specialized engine for ultra-high-concurrency real-time apps."
-    },
-    {
-      "title": "dbt vs Dataform",
-      "slug": "dbt-vs-dataform",
-      "category": "Data Transformation",
-      "toolA": "dbt",
-      "toolB": "Dataform",
-      "shortVerdict": "dbt is the undisputed industry standard for analytics engineering. Dataform is a fantastic, free alternative specifically for BigQuery shops."
-    },
-    {
-      "title": "dbt vs SQLMesh",
-      "slug": "dbt-vs-sqlmesh",
-      "category": "Data Transformation",
-      "toolA": "dbt",
-      "toolB": "SQLMesh",
-      "shortVerdict": "dbt is the undisputed industry standard for analytics engineering. SQLMesh is the innovative newcomer focusing on semantic awareness, performance, and correctness."
     },
     {
       "title": "Delta Lake vs Apache Iceberg",

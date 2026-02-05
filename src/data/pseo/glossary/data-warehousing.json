@@ -263,5 +263,31 @@
       "parquet"
     ],
     "lastUpdated": "2026-01-21"
+  },
+  {
+    "term": "Lakehouse Architecture",
+    "slug": "lakehouse",
+    "category": "data-warehousing",
+    "shortDefinition": "A modern data architecture that combines the performance and governance of data warehouses with the low-cost and flexibility of data lakes.",
+    "fullDefinition": "The Lakehouse architecture is an attempt to merge the best of both worlds: the structure and ACID compliance of a Data Warehouse with the scalability and cost-efficiency of a Data Lake. It usually sits on top of open table formats like Delta Lake or Apache Iceberg.",
+    "keyPoints": [
+      "ACID transactions on object storage (S3/GCS)",
+      "Supports both BI (SQL) and AI/ML (Python/Spark)",
+      "Eliminates data silos by having one source of truth",
+      "Low-cost storage with high-performance query engines"
+    ]
+  },
+  {
+    "term": "Table Format",
+    "slug": "table-format",
+    "category": "data-warehousing",
+    "shortDefinition": "A layer that organizes files in a data lake into a structured table, enabling SQL-like features like ACID and time-travel.",
+    "fullDefinition": "Table formats like Iceberg, Hudi, and Delta Lake sit on top of Parquet files to provide metadata. This metadata allows query engines to know which files belong to a table, enabling ACID transactions and hidden partitioning.",
+    "keyPoints": [
+      "Enables ACID compliance on S3/GCS",
+      "Supports Schema Evolution and Time Travel",
+      "Engine agnostic (usually)",
+      "Replaces the legacy Hive Metastore approach"
+    ]
   }
 ]

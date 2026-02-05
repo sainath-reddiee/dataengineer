@@ -478,25 +478,41 @@ function generateGlossaryHTML(term, categories) {
             display: flex;
             align-items: flex-start;
             gap: 20px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(30, 58, 138, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
             border-radius: 16px;
             padding: 24px;
             margin: 40px 0;
         }
         .author-avatar {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #60a5fa;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
             flex-shrink: 0;
+            border: 3px solid rgba(59, 130, 246, 0.3);
         }
-        .author-info h4 { font-size: 1.1rem; margin-bottom: 4px; color: #f8fafc; }
-        .author-title { font-size: 0.85rem; color: #a5b4fc; margin-bottom: 8px; }
-        .author-bio { font-size: 0.9rem; color: #cbd5e1; line-height: 1.5; }
-        .author-links { margin-top: 12px; display: flex; gap: 12px; }
-        .author-links a { color: #60a5fa; text-decoration: none; font-size: 0.85rem; }
+        .author-info h4 { font-size: 1.4rem; margin-bottom: 4px; color: #f8fafc; }
+        .author-title { font-size: 0.95rem; font-weight: 600; color: #60a5fa; margin-bottom: 8px; }
+        .author-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+        .author-exp {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+        .author-links { margin-top: 15px; display: flex; gap: 15px; }
+        .author-links a { color: #60a5fa; text-decoration: none; font-size: 0.85rem; font-weight: 600; }
         .author-links a:hover { text-decoration: underline; }
         /* Footer Styles */
         .site-footer { 
@@ -567,15 +583,16 @@ function generateGlossaryHTML(term, categories) {
         
         <!-- Author Info Box -->
         <section class="author-box" itemscope itemtype="https://schema.org/Person">
-            <img src="${SITE_URL}/author-avatar.jpg" alt="Satyasai Nath Reddy" class="author-avatar" itemprop="image" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 80 80%22><rect fill=%22%234a5568%22 width=%2280%22 height=%2280%22/><text x=%2250%%22 y=%2258%%22 text-anchor=%22middle%22 fill=%22%23fff%22 font-size=%2232%22>SR</text></svg>'">
+            <div class="author-avatar" itemprop="image">SR</div>
             <div class="author-info">
-                <h4 itemprop="name">Written by Satyasai Nath Reddy</h4>
-                <div class="author-title" itemprop="jobTitle">Senior Data Engineer</div>
-                <p class="author-bio" itemprop="description">
-                    Data Engineering professional with 5+ years of experience building scalable data pipelines and analytics platforms.
-                </p>
+                <p style="text-sm text-gray-400 uppercase tracking-wider mb-2">Published by</p>
+                <h4 itemprop="name">Sainath Reddy</h4>
+                <div class="author-title" itemprop="jobTitle">Data Engineer at Anblicks</div>
+                <div class="author-meta">
+                    <span class="author-exp">🎯 4+ years experience</span>
+                </div>
                 <div class="author-links">
-                    <a href="/about" itemprop="url">About Me</a>
+                    <a href="/about" itemprop="url">About Me →</a>
                     <a href="https://linkedin.com/in/satyasainath" target="_blank" rel="noopener" itemprop="sameAs">LinkedIn</a>
                 </div>
             </div>
@@ -664,9 +681,9 @@ function generateComparisonHTML(comparison) {
         "description": "${comparison.shortVerdict}",
         "author": {
             "@type": "Person",
-            "name": "Satyasai Nath Reddy",
+            "name": "Sainath Reddy",
             "url": "${SITE_URL}/about",
-            "jobTitle": "Senior Data Engineer"
+            "jobTitle": "Data Engineer"
         },
         "publisher": {
             "@type": "Organization",
@@ -744,39 +761,52 @@ function generateComparisonHTML(comparison) {
             display: flex;
             align-items: flex-start;
             gap: 20px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(30, 58, 138, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
             border-radius: 16px;
             padding: 24px;
             margin: 40px 0;
         }
         .author-avatar {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #60a5fa;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
             flex-shrink: 0;
+            border: 3px solid rgba(59, 130, 246, 0.3);
         }
         .author-info h4 {
-            font-size: 1.1rem;
+            font-size: 1.4rem;
             margin-bottom: 4px;
             color: #f8fafc;
         }
         .author-title {
-            font-size: 0.85rem;
-            color: #a5b4fc;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #60a5fa;
             margin-bottom: 8px;
         }
-        .author-bio {
-            font-size: 0.9rem;
-            color: #cbd5e1;
-            line-height: 1.5;
-        }
-        .author-links {
-            margin-top: 12px;
+        .author-meta {
             display: flex;
             gap: 12px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+        .author-exp {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+        .author-links {
+            margin-top: 15px;
+            display: flex;
+            gap: 15px;
         }
         .author-links a {
             color: #60a5fa;
@@ -869,19 +899,18 @@ function generateComparisonHTML(comparison) {
         
         <!-- Author Info Box -->
         <section class="author-box" itemscope itemtype="https://schema.org/Person">
-            <img src="${SITE_URL}/author-avatar.jpg" alt="Satyasai Nath Reddy" class="author-avatar" itemprop="image" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 80 80%22><rect fill=%22%234a5568%22 width=%2280%22 height=%2280%22/><text x=%2250%%22 y=%2258%%22 text-anchor=%22middle%22 fill=%22%23fff%22 font-size=%2232%22>SR</text></svg>'">
+            <div class="author-avatar" itemprop="image">SR</div>
             <div class="author-info">
-                <h4 itemprop="name">Written by Satyasai Nath Reddy</h4>
-                <div class="author-title" itemprop="jobTitle">Senior Data Engineer</div>
-                <p class="author-bio" itemprop="description">
-                    Data Engineering professional with 5+ years of experience building scalable data pipelines and analytics platforms. 
-                    Specializing in Snowflake, Databricks, dbt, and modern cloud architectures. 
-                    Passionate about sharing knowledge and helping others navigate the data engineering landscape.
-                </p>
+                <p style="text-sm text-gray-400 uppercase tracking-wider mb-2">Published by</p>
+                <h4 itemprop="name">Sainath Reddy</h4>
+                <div class="author-title" itemprop="jobTitle">Data Engineer at Anblicks</div>
+                <div class="author-meta">
+                    <span class="author-exp">🎯 4+ years experience</span>
+                    <span>📍 Global</span>
+                </div>
                 <div class="author-links">
-                    <a href="/about" itemprop="url">About Me</a>
-                    <a href="https://linkedin.com/in/satyasainath" target="_blank" rel="noopener" itemprop="sameAs">LinkedIn</a>
-                    <a href="https://github.com/sainath-reddy" target="_blank" rel="noopener" itemprop="sameAs">GitHub</a>
+                    <a href="/about" itemprop="url" style="color: #60a5fa; text-decoration: none; font-weight: 600;">About Me →</a>
+                    <a href="https://linkedin.com/in/satyasainath" target="_blank" rel="noopener" itemprop="sameAs" style="color: #60a5fa; text-decoration: none;">LinkedIn</a>
                 </div>
             </div>
         </section>

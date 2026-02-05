@@ -143,5 +143,226 @@
       "snowflake-vs-bigquery"
     ],
     "lastUpdated": "2026-01-29"
+  },
+  {
+    "id": "iceberg-vs-hudi",
+    "slug": "iceberg-vs-hudi",
+    "toolA": "Apache Iceberg",
+    "toolB": "Apache Hudi",
+    "category": "Data Warehousing",
+    "winner": "It Depends",
+    "shortVerdict": "Iceberg is the champion of engine-neutral table formats. Hudi is the veteran winner for high-scale, low-latency upserts and incremental processing.",
+    "intro": "### The Foundation of the Lakehouse\n\nTo build a Data Lakehouse, you need a **Table Format** to manage files in S3. **Apache Iceberg** and **Apache Hudi** (Hadoop Upserts Deletes and Incrementals) are the two battle-hardened open standards.\n\n**Apache Iceberg** (from Netflix) was built for massive datasets and engine neutrality. It focuses on correctness and preventing the problems of Hive (like slow metadata listing). It's winning the adoption war with support from Snowflake and AWS.\n\n**Apache Hudi** (from Uber) was built for a specific, difficult problem: high-volume incremental updates (upserts). It offers unique features like 'Merge on Read' (MoR) and 'Copy on Write' (CoW) to balance write and read performance for streaming data.",
+    "features": [
+      {
+        "name": "Core Focus",
+        "toolAValue": "Reliability & Engine Independence",
+        "toolBValue": "High-freq Upserts & Incremental Processing",
+        "winner": "Apache Hudi"
+      },
+      {
+        "name": "Integration",
+        "toolAValue": "Trino, Snowflake, Spark, Athena",
+        "toolBValue": "Spark, Flink, Presto",
+        "winner": "Apache Iceberg"
+      },
+      {
+        "name": "Schema Evolution",
+        "toolAValue": "Full (Add, Drop, Rename, Reorder)",
+        "toolBValue": "Excellent (but some engines vary)",
+        "winner": "Apache Iceberg"
+      },
+      {
+        "name": "Complexity",
+        "toolAValue": "Low (Simple metadata approach)",
+        "toolBValue": "High (Many knobs for MoR/CoW)",
+        "winner": "Apache Iceberg"
+      },
+      {
+        "name": "Query Speed",
+        "toolAValue": "Excellent for analytical scans",
+        "toolBValue": "Excellent for incremental/point queries",
+        "winner": "Tie"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "The standard for 'Open Data Architecture'",
+        "Hidden partitioning—users don't need to know how data is stored",
+        "Snapshot isolation ensures fast, correct time travel",
+        "Massive ecosystem momentum in 2024-2025"
+      ],
+      "toolB": [
+        "The best tool for handling CDC (Change Data Capture) feeds",
+        "Native support for incremental processing (only process new data)",
+        "Excellent concurrency control (Multi-Writer)",
+        "Best for super-low latency 'fresh' data"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Historically slower for high-frequency row-level updates",
+        "Partition evolution can sometimes confuse older engines",
+        "Implementation varies slightly between cloud providers"
+      ],
+      "toolB": [
+        "Steep learning curve due to configurational complexity",
+        "Historically perceived as 'Spark-heavy'",
+        "Metadata management can become heavy for millions of small files"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Apache Iceberg if:**\n*   You want a future-proof, engine-agnostic data lakehouse.\n*   You use multiple query engines (Snowflake, Trino, Athena).\n*   Your primary use case is large-scale analytical scanning.\n\n**Choose Apache Hudi if:**\n*   You are building a real-time CDC pipeline from a database.\n*   You need to process data incrementally (The 'Incremental Data Lake' vision).\n*   You have high-frequency updates and deletes in your data lake.",
+    "relatedComparisons": [
+      "delta-lake-vs-iceberg"
+    ],
+    "lastUpdated": "2026-02-05"
+  },
+  {
+    "id": "redshift-vs-snowflake",
+    "slug": "redshift-vs-snowflake",
+    "toolA": "Amazon Redshift",
+    "toolB": "Snowflake",
+    "category": "Data Warehousing",
+    "winner": "It Depends",
+    "shortVerdict": "Redshift is the choice for AWS-heavy environments needing deep integration. Snowflake is the multi-cloud champion of simplicity and concurrency.",
+    "intro": "### The Heavyweights of Cloud Analytics\n\n**Amazon Redshift** was the first major player to make cloud data warehousing accessible. It is built on a modified PostgreSQL core and is deeply integrated into the AWS ecosystem (S3, IAM, Glue). \n\n**Snowflake** disrupted the market by being the first to truly separate storage and compute, allowing them to scale independently. Unlike Redshift, which was originally cluster-based, Snowflake was born as a multi-tenant SaaS service that requires virtually no performance tuning from the user.\n\nWith **Redshift Serverless**, AWS has bridged much of the gap, but the performance characteristics and management philosophies remain distinct.",
+    "features": [
+      {
+        "name": "Cloud Strategy",
+        "toolAValue": "AWS Only",
+        "toolBValue": "Multi-cloud (AWS, Azure, GCP)",
+        "winner": "Snowflake"
+      },
+      {
+        "name": "Storage / Compute",
+        "toolAValue": "Decoupled (Serverless) / Tied (RA3 Nodes)",
+        "toolBValue": "Fully Decoupled",
+        "winner": "Snowflake"
+      },
+      {
+        "name": "Ease of Use",
+        "toolAValue": "Medium (Configuration required)",
+        "toolBValue": "High (Zero Management)",
+        "winner": "Snowflake"
+      },
+      {
+        "name": "Cost Predictability",
+        "toolAValue": "High (Fixed node costs)",
+        "toolBValue": "Variable (Consumption-based credits)",
+        "winner": "Amazon Redshift"
+      },
+      {
+        "name": "Concurrency",
+        "toolAValue": "Good (via Concurrency Scaling)",
+        "toolBValue": "Excellent (Multi-cluster Warehouses)",
+        "winner": "Snowflake"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Flawless integration with AWS S3, IAM, and VPC",
+        "Cheapest for very predictable, high-uptime workloads",
+        "Redshift Spectrum allows querying S3 without loading",
+        "Integration with AWS Lake Formation for security"
+      ],
+      "toolB": [
+        "Market-leading data sharing and marketplace",
+        "Zero-copy cloning makes dev/testing effortless",
+        "Supports huge variations in workload via instant scaling",
+        "No maintenance required (No vacuuming/sorting)"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Can be complex to tune (Distribution/Sort keys)",
+        "Scaling can take minutes/hours compared to Snowflake's seconds",
+        "Vacuuming and maintenance tasks still exist on Provisioned clusters"
+      ],
+      "toolB": [
+        "Variable pricing can lead to unexpected high bills",
+        "Proprietary storage format creates vendor lock-in",
+        "Data egress costs when moving data between regions"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Amazon Redshift if:**\n*   Your entire stack is already in AWS and you want deep integration.\n*   You have a very predictable workload and want to optimize for lowest monthly cost.\n*   You need to query massive amounts of raw data in S3 directly (Spectrum).\n\n**Choose Snowflake if:**\n*   You want a multi-cloud or cloud-agnostic data strategy.\n*   You have high concurrency (many users querying at once).\n*   You want a tool that requires zero performance tuning or maintenance.\n*   You value speed of scaling and ease of data sharing.",
+    "relatedComparisons": [
+      "snowflake-vs-bigquery",
+      "snowflake-vs-databricks"
+    ],
+    "lastUpdated": "2026-02-05"
+  },
+  {
+    "id": "snowflake-vs-databricks",
+    "slug": "snowflake-vs-databricks",
+    "toolA": "Snowflake",
+    "toolB": "Databricks",
+    "category": "Data Warehousing",
+    "winner": "It Depends",
+    "shortVerdict": "Snowflake is the king of ease-of-use and SQL-based analytics. Databricks is the powerhouse for Spark-based data engineering and machine learning on a Lakehouse.",
+    "intro": "### The Battle for the Modern Data Stack\n\nFor years, **Snowflake** and **Databricks** were complementary tools: Snowflake for the warehouse, Databricks for the data science. Today, they are in a head-to-head war. Snowflake is expanding into data engineering with **Snowpark**, while Databricks is aggressively pursuing the data warehouse market with **Databricks SQL** and its **Serverless** offerings.\n\n**Snowflake** began as a cloud-native data warehouse. Its brilliance lies in its simplicity—everything is SQL, and there are virtually no knobs to turn. It pioneered the separation of storage and compute.\n\n**Databricks** was founded by the creators of Apache Spark. It pioneered the **Data Lakehouse** architecture—the idea that you can get data warehouse performance directly on top of your low-cost data lake (S3/ADLS/GCS) using open formats like Delta Lake.",
+    "features": [
+      {
+        "name": "Architecture",
+        "toolAValue": "Cloud Data Warehouse (Proprietary)",
+        "toolBValue": "Data Lakehouse (Open Formats - Delta Lake)",
+        "winner": "Databricks"
+      },
+      {
+        "name": "Ease of Use",
+        "toolAValue": "High (SaaS, Zero Management)",
+        "toolBValue": "Medium (Requires more configuration)",
+        "winner": "Snowflake"
+      },
+      {
+        "name": "SQL Performance",
+        "toolAValue": "Excellent (Optimized heavily for BI)",
+        "toolBValue": "Excellent (with Databricks SQL)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Machine Learning",
+        "toolAValue": "Good (Snowpark)",
+        "toolBValue": "Best-in-Class (MLflow, managed Spark)",
+        "winner": "Databricks"
+      },
+      {
+        "name": "Governance",
+        "toolAValue": "Native but proprietary",
+        "toolBValue": "Unity Catalog (Cross-platform)",
+        "winner": "Databricks"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Near-zero maintenance and configuration",
+        "Superior multi-cloud data sharing (Marketplace)",
+        "Excellent support for semi-structured data (JSON)",
+        "Predictable performance with virtual warehouses"
+      ],
+      "toolB": [
+        "Truly open data formats (No vendor lock-in for storage)",
+        "Ideal for massive-scale data engineering (Spark native)",
+        "Unified platform for BI, AI, and SQL",
+        "Generally more cost-effective for large-scale ETL"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Storage format is proprietary (Hard to leave)",
+        "Costs can be higher than Databricks for heavy processing",
+        "Limited support for custom specialized libraries compared to Spark"
+      ],
+      "toolB": [
+        "Steeper learning curve for non-engineers",
+        "Maintenance can be complex (Cluster tuning)",
+        "Historically slower BI performance (though closing the gap)"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Snowflake if:**\n*   Your team is 100% SQL-focused and wants a \"it just works\" experience.\n*   You need to share data easily with external organizations.\n*   You want a proven, stable enterprise warehouse with zero operational overhead.\n\n**Choose Databricks if:**\n*   You are building a modern Lakehouse and want to avoid proprietary storage.\n*   Machine Learning and complex Data Science are core to your business.\n*   You have high-volume data engineering tasks where Spark performance is critical.\n*   You want a single platform for both data engineering and analytics.",
+    "relatedComparisons": [
+      "snowflake-vs-bigquery",
+      "delta-lake-vs-iceberg"
+    ],
+    "lastUpdated": "2026-02-05"
   }
 ]

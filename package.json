@@ -34,9 +34,10 @@
     "pseo:migrate": "node scripts/migrate-pseo-data.js",
     "pseo:sync-articles": "node scripts/sync-articles-for-linking.js",
     "pseo:search-index": "node scripts/generate-search-index.js",
-    "pseo:deploy": "npm run pseo:sync-articles && npm run pseo:search-index && node scripts/deploy-pseo.js",
+    "pseo:merge": "node scripts/merge-pseo-data.js",
+    "pseo:deploy": "npm run pseo:merge && npm run pseo:sync-articles && npm run pseo:search-index && node scripts/deploy-pseo.js",
     "pseo:deploy:dry-run": "node scripts/deploy-pseo.js --dry-run",
-    "pseo:deploy:force": "npm run pseo:sync-articles && npm run pseo:search-index && node scripts/deploy-pseo.js --force",
+    "pseo:deploy:force": "npm run pseo:merge && npm run pseo:sync-articles && npm run pseo:search-index && node scripts/deploy-pseo.js --force",
     "pseo:watch": "node scripts/watch-pseo.js"
   },
   "dependencies": {

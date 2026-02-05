@@ -63,5 +63,18 @@
       "spark vs hadoop"
     ],
     "lastUpdated": "2026-01-21"
+  },
+  {
+    "term": "OLAP (Online Analytical Processing)",
+    "slug": "olap",
+    "category": "analytics",
+    "shortDefinition": "A category of software tools that provide analysis of data stored in a database, typically for multi-dimensional business reporting.",
+    "fullDefinition": "OLAP databases are optimized for 'Reads'. They are designed to aggregate millions or billions of rows in seconds. Unlike OLTP (Postgres), they usually store data in columns to optimize for wide-scanning queries.",
+    "keyPoints": [
+      "Columnar storage optimization",
+      "Heavy use of compression",
+      "Designed for complex aggregation queries",
+      "Examples: ClickHouse, Pinot, StarRocks"
+    ]
   }
 ]

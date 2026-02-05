@@ -63,5 +63,18 @@
       "kafka tutorial"
     ],
     "lastUpdated": "2026-01-21"
+  },
+  {
+    "term": "Stateful Processing",
+    "slug": "stateful-processing",
+    "category": "streaming",
+    "shortDefinition": "A stream processing technique where the application remembers information across multiple events in time.",
+    "fullDefinition": "In streaming, 'stateless' operations just look at one event. 'Stateful' operations (like a running sum or tracking a user session) require the engine to keep local state. Flink is famous for its robust state management.",
+    "keyPoints": [
+      "Crucial for windowing and joins",
+      "Requires high-performance local storage (RocksDB)",
+      "Complex to scale and recover from failure",
+      "The 'holy grail' of real-time engineering"
+    ]
   }
 ]

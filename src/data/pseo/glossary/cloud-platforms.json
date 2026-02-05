@@ -63,5 +63,18 @@
       "data lakehouse"
     ],
     "lastUpdated": "2026-01-21"
+  },
+  {
+    "term": "Infrastructure as Code (IaC)",
+    "slug": "iac",
+    "category": "cloud-platforms",
+    "shortDefinition": "The practice of managing and provisioning infrastructure through machine-readable definition files, rather than physical hardware configuration or interactive configuration tools.",
+    "fullDefinition": "IaC allows data engineers to treat their infrastructure (S3 buckets, EC2 nodes, Snowflake warehouses) exactly like their application code. This enables version control, automated testing, and repeatable deployments.",
+    "keyPoints": [
+      "Repeatability and Consistency",
+      "Version Control (Git) support",
+      "Automated scaling and management",
+      "Tools include Terraform, Pulumi, and AWS CDK"
+    ]
   }
 ]
