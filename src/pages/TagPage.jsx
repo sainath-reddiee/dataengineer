@@ -25,6 +25,7 @@ const TagPage = () => {
         description={`Browse all articles tagged with ${tagName}. Expert data engineering tutorials and guides on ${tagName}.`}
         keywords={`${tagName}, data engineering, tutorials, ${tagSlug}`}
         type="website"
+        noindex={true}
       />
 
       <div className="pt-4 pb-12">

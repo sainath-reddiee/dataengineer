@@ -181,6 +181,7 @@ const CategoryPage = () => {
         keywords={`${lowerCategoryName}, data engineering, ${currentCategory.name} tutorials`}
         type="website"
         breadcrumbs={breadcrumbs}
+        noindex={true}
       />
 
       <div className="pt-1 pb-8">
@@ -286,8 +287,8 @@ const CategoryPage = () => {
                     initial="rest"
                     whileHover="hover"
                     className={`relative p-4 rounded-xl text-center transition-all duration-300 overflow-hidden group ${isActive
-                        ? 'border-2 border-blue-400 shadow-lg shadow-blue-500/30'
-                        : 'border border-gray-700 hover:border-blue-400/50'
+                      ? 'border-2 border-blue-400 shadow-lg shadow-blue-500/30'
+                      : 'border border-gray-700 hover:border-blue-400/50'
                       }`}
                     aria-label={`View ${config.name} articles`}
                   >

@@ -201,12 +201,8 @@ async function generateSitemap() {
   console.log('🚀 Starting sitemap generation...\n');
 
   try {
-    // Fetch data - ✅ NOW INCLUDING TAGS
-    const [posts, categories, tags] = await Promise.all([
-      fetchAllPosts(),
-      fetchAllCategories(),
-      fetchAllTags() // ✅ NEW
-    ]);
+    // Fetch posts only - category/tag pages are noindex so excluded from sitemap
+    const posts = await fetchAllPosts();
 
     // Build sitemap entries
     const sitemapEntries = [];
@@ -243,27 +239,7 @@ async function generateSitemap() {
       });
     });
 
-    // Add category pages
-    console.log('📝 Adding category pages...');
-    categories.forEach(category => {
-      sitemapEntries.push({
-        url: `${SITE_URL}/category/${category.slug}`,
-        lastmod: today,
-        changefreq: 'weekly',
-        priority: 0.7,
-      });
-    });
-
-    // ✅ NEW: Add tag pages
-    console.log('🏷️  Adding tag pages...');
-    tags.forEach(tag => {
-      sitemapEntries.push({
-        url: `${SITE_URL}/tag/${tag.slug}`,
-        lastmod: today,
-        changefreq: 'weekly',
-        priority: 0.6, // Slightly lower priority than categories
-      });
-    });
+    // NOTE: Category and tag pages are excluded from sitemap (they are noindex)
 
     // Validate sitemap entries
     console.log('\n🔍 Validating sitemap...');
@@ -295,8 +271,6 @@ async function generateSitemap() {
     console.log(`📊 Total URLs: ${sitemapEntries.length}`);
     console.log(`   - Static pages: ${STATIC_PAGES.length}`);
     console.log(`   - Blog posts: ${posts.length}`);
-    console.log(`   - Categories: ${categories.length}`);
-    console.log(`   - Tags: ${tags.length}`); // ✅ NEW
     console.log(`\n💡 Next steps:`);
     console.log(`   1. Validate sitemap: https://www.xml-sitemaps.com/validate-xml-sitemap.html`);
     console.log(`   2. Test locally: Open ${sitemapPath} in browser`);

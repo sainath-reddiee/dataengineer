@@ -17,13 +17,14 @@ const TagsArchivePage = () => {
 
   return (
     <>
-      <MetaTags 
+      <MetaTags
         title="Browse All Tags - DataEngineer Hub"
         description="Explore all tags on DataEngineer Hub. Find articles by topic including data engineering, cloud platforms, databases, and more."
         keywords="tags, topics, data engineering, cloud, databases, tutorials"
         type="website"
+        noindex={true}
       />
-      
+
       <div className="pt-4 pb-12">
         <div className="container mx-auto px-6">
           {/* Header */}
