@@ -1,5 +1,5 @@
 {
-  "lastBuild": "2026-02-05T03:55:30.107Z",
+  "lastBuild": "2026-02-20T12:58:08.796Z",
   "version": "1.0",
   "hashes": {
     "glossary/apache-spark/index.html": "554ad4403a8b2cfe16f1e6f18418382c",
@@ -33,18 +33,19 @@
     "glossary/etl/index.html": "0260a57cfbb4e7e77a2b4bb3ad06497e",
     "glossary/apache-kafka/index.html": "5b00968692f4b4bcb9a0ba01bfa18f9f",
     "glossary/stateful-processing/index.html": "5058503089b9a642f74935223abeafbc",
-    "compare/clickhouse-vs-druid/index.html": "41492a5389af3a2be08d9c99df3096fb",
-    "compare/terraform-vs-pulumi/index.html": "1911ef433f5a6ab6672e4df131bc67fc",
-    "compare/fivetran-vs-airbyte/index.html": "11b2b5f203696e8c0a7b68f26963a2a5",
-    "compare/airbyte-vs-meltano/index.html": "9c1681868cc405a66c7ed243170a8f2b",
-    "compare/fivetran-vs-stitch/index.html": "f5eac8c806c80f7db7f062b34dc74077",
-    "compare/airflow-vs-dagster/index.html": "0a561009acb8877ea72ab740d8498bf8",
-    "compare/snowflake-vs-bigquery/index.html": "ac64ffa214840b43bf22b9d766b6024e",
-    "compare/delta-lake-vs-iceberg/index.html": "a8cacf675e66cfb42166ac4b32bd70c8",
-    "compare/iceberg-vs-hudi/index.html": "39b877fbe30d2336b2190566dc0526da",
-    "compare/redshift-vs-snowflake/index.html": "81cdea24ad46e512f83f7bc4d5db84da",
-    "compare/snowflake-vs-databricks/index.html": "78dda72219b3c6607f9a2d6892ef5636",
-    "compare/kafka-vs-redpanda/index.html": "a61eda78e249c34c653f267a88fd5628",
-    "compare/flink-vs-spark-streaming/index.html": "320f8a901e97bc668998ac286345d344"
+    "compare/clickhouse-vs-druid/index.html": "2b274e4e6df097682a778bc06f8d664b",
+    "compare/terraform-vs-pulumi/index.html": "681bdc88386aab32f32c6e619adcffa1",
+    "compare/fivetran-vs-airbyte/index.html": "02d487641df4610222ff0400d9f10c03",
+    "compare/airbyte-vs-meltano/index.html": "7e5ad918d405ab56c44270c84565d96b",
+    "compare/fivetran-vs-stitch/index.html": "069db6cd3664e8cb763f7632a736c935",
+    "compare/airflow-vs-dagster/index.html": "23f8f499e26873679a311894682c7f97",
+    "compare/dbt-vs-dataform/index.html": "c190130bcbce67db46dda1b44c4fcb8d",
+    "compare/snowflake-vs-bigquery/index.html": "290ce2971d6e94b35ed16849696bd121",
+    "compare/delta-lake-vs-iceberg/index.html": "219d1b57b7c564b0a1720d89d2489a02",
+    "compare/iceberg-vs-hudi/index.html": "8b5af6b9b64b012625e684ea24d601de",
+    "compare/redshift-vs-snowflake/index.html": "ab7f9d6671773336080d0f2a39c704e6",
+    "compare/snowflake-vs-databricks/index.html": "c5a28370509431f3ba6253d271ffa462",
+    "compare/kafka-vs-redpanda/index.html": "352b52aeebb8ae1a8b778df841438b00",
+    "compare/flink-vs-spark-streaming/index.html": "6e9b46a298fe77248a9ecef13a7a3a77"
   }
 }

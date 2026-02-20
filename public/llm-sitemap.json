@@ -11,9 +11,37 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-01-30",
-  "totalArticles": 56,
+  "lastUpdated": "2026-02-20",
+  "totalArticles": 57,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-managed-iceberg-tables-complete-guide-2026",
+      "title": "Snowflake Managed Iceberg Tables 2026",
+      "summary": "⚡ TL;DR (Too Long; Didn&#8217;t Read) What it is: Snowflake Managed Iceberg Tables store data in your cloud storage (S3, GCS, Azure) instead of Snowflake&#8217;s storage, while Snowflake manages the&#8230;",
+      "keyFacts": [
+        "1TB",
+        "100GB",
+        "15 minutes",
+        "Otherwise, native tables are fine",
+        "This article is a comprehensive guide to understanding, implementing, and optimizing Snowflake Managed Iceberg Tables —based on official Snowflake documentation and real-world best practices"
+      ],
+      "entities": [
+        "snowflake",
+        "azure",
+        "spark",
+        "dbt",
+        "aws",
+        "databricks",
+        "sql"
+      ],
+      "questionAnswered": "What is Apache Iceberg?",
+      "lastUpdated": "2026-02-02",
+      "published": "2026-02-02",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2559
+    },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-parse-document-complete-guide-2026",
       "title": "Snowflake AI_PARSE_DOCUMENT: Complete End-to-End Guide for Document Processing 2026",

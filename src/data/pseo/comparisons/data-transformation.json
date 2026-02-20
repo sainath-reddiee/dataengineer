@@ -1,0 +1,76 @@
+[
+    {
+        "id": "dbt-vs-dataform",
+        "slug": "dbt-vs-dataform",
+        "toolA": "dbt",
+        "toolB": "Dataform",
+        "category": "Data Transformation",
+        "winner": "dbt",
+        "shortVerdict": "dbt is the undisputed industry standard for analytics engineering. Dataform is a fantastic, free alternative specifically for BigQuery shops.",
+        "intro": "### The SQL Framework Wars\n\nBefore **dbt (data build tool)**, data transformation was often a mess of stored procedures and unversioned SQL scripts. dbt changed the world by bringing software engineering best practices—version control, testing, documentation, and CI/CD—to SQL.\n\n**Dataform** was a direct competitor that offered similar functionality with a slightly different flavor (JavaScript for config instead of YAML). Google acquired Dataform in 2020 and has integrated it directly into BigQuery as a native, free service.\n\n### The Core Difference\n\nThe biggest differentiator is **portability**. dbt can run on Snowflake, BigQuery, Redshift, Databricks, Postgres, and more. Learning dbt is a transferable skill. Dataform is now effectively a Google Cloud product. It is optimized specifically for BigQuery and runs entirely within that ecosystem.",
+        "features": [
+            {
+                "name": "Platform Support",
+                "toolAValue": "Universal (Any major warehouse)",
+                "toolBValue": "BigQuery Only (Legacy support deprecated)",
+                "winner": "dbt"
+            },
+            {
+                "name": "Templating Language",
+                "toolAValue": "Jinja (Python-like) + SQL",
+                "toolBValue": "JavaScript + SQLX",
+                "winner": "Tie"
+            },
+            {
+                "name": "Pricing",
+                "toolAValue": "Open Core (Free) vs dbt Cloud (Paid)",
+                "toolBValue": "Free (Included in GCP)",
+                "winner": "Dataform"
+            },
+            {
+                "name": "Development Environment",
+                "toolAValue": "Local IDE (VS Code) or dbt Cloud IDE",
+                "toolBValue": "Web-based IDE in GCP Console",
+                "winner": "dbt"
+            },
+            {
+                "name": "Dependency Management",
+                "toolAValue": "ref() function",
+                "toolBValue": "ref() or dependencies config",
+                "winner": "Tie"
+            }
+        ],
+        "pros": {
+            "toolA": [
+                "Universal standard: Hiring dbt developers is easy",
+                "Massive package ecosystem (dbt_utils, auditers, etc.)",
+                "Excellent documentation and community",
+                "Flexibility to run locally or in any orchestrator"
+            ],
+            "toolB": [
+                "Completely free (no SaaS license fees)",
+                "Zero setup: It is just there in the BigQuery console",
+                "Fast compilation (JavaScript based)",
+                "Real-time error checking in the web IDE"
+            ]
+        },
+        "cons": {
+            "toolA": [
+                "Complex project structure can become unwieldy",
+                "Jinja whitespace handling can be annoying",
+                "dbt Cloud pricing has increased over time"
+            ],
+            "toolB": [
+                "Vendor lock-in to Google Cloud",
+                "Smaller community and fewer packages",
+                "Uncertain roadmap post-acquisition (seems stable now)"
+            ]
+        },
+        "finalVerdict": "### Verdict\n\n**Choose dbt if:**\n*   You want the industry standard skill set and toolchain.\n*   You use Snowflake, Databricks, Redshift, or a mix of warehouses.\n*   You value open-source packages and community support.\n*   You want your transformations to be portable.\n\n**Choose Dataform if:**\n*   You are 100% committed to Google BigQuery.\n*   You want a fully managed, serverless transformation tool for free.\n*   You prefer JavaScript over Python/Jinja for advanced logic.\n*   You want to get started immediately without setting up local environments.",
+        "relatedComparisons": [
+            "snowflake-vs-bigquery",
+            "airflow-vs-dagster"
+        ],
+        "lastUpdated": "2026-02-20"
+    }
+]
