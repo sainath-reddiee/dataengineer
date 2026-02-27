@@ -71,5 +71,89 @@
       "aws-glue-vs-lambda"
     ],
     "lastUpdated": "2026-02-05"
+  },
+  {
+    "slug": "databricks-vs-bigquery",
+    "toolA": "Databricks",
+    "toolB": "Google BigQuery",
+    "category": "cloud-platforms",
+    "winner": "Depends",
+    "shortVerdict": "Databricks is the unified Lakehouse platform for engineering-heavy workloads with Spark, ML, and Delta Lake. BigQuery is the serverless analytics warehouse that just works — load data, write SQL, get answers.",
+    "intro": "### The Lakehouse Platform vs. The Serverless Warehouse\n\n**Databricks** is a unified data analytics platform built around Apache Spark. It combines a data lakehouse architecture (Delta Lake), collaborative notebooks, MLflow for ML lifecycle, and Unity Catalog for governance. Databricks excels at **complex engineering workloads** — ETL pipelines, ML training, streaming, and large-scale data processing.\n\n**Google BigQuery** is a fully serverless, petabyte-scale data warehouse. There's nothing to provision, no clusters to manage, and no indexes to create. Load your data, write SQL, and BigQuery handles the rest. It's the simplest path from raw data to business insights.\n\n**The core trade-off:** Databricks gives you a complete data platform with maximum flexibility. BigQuery gives you the fastest path to analytics with minimum operational burden.",
+    "features": [
+      {
+        "name": "Architecture",
+        "toolAValue": "Lakehouse (Delta Lake on cloud storage)",
+        "toolBValue": "Serverless warehouse (Dremel engine)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Ease of Use",
+        "toolAValue": "Complex — clusters, notebooks, jobs, catalogs",
+        "toolBValue": "Simple — no infrastructure, just SQL",
+        "winner": "BigQuery"
+      },
+      {
+        "name": "Programming Languages",
+        "toolAValue": "Python, Scala, R, SQL, Java",
+        "toolBValue": "SQL (+ Python/Java via BigQuery ML and UDFs)",
+        "winner": "Databricks"
+      },
+      {
+        "name": "ML/AI",
+        "toolAValue": "MLflow, AutoML, Feature Store, GPU clusters",
+        "toolBValue": "BigQuery ML (SQL-based), Vertex AI integration",
+        "winner": "Databricks"
+      },
+      {
+        "name": "Streaming",
+        "toolAValue": "Structured Streaming (Spark native)",
+        "toolBValue": "BigQuery Streaming API + Dataflow integration",
+        "winner": "Databricks"
+      },
+      {
+        "name": "Administration",
+        "toolAValue": "Cluster management, workspace configuration",
+        "toolBValue": "Zero administration — fully managed",
+        "winner": "BigQuery"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Unified platform: ETL + ML + Analytics + Streaming",
+        "Best-in-class notebook experience for data teams",
+        "Open format (Delta Lake/Iceberg) avoids vendor lock-in",
+        "Advanced ML capabilities with GPUs and MLflow",
+        "Multi-cloud: runs on AWS, Azure, and GCP"
+      ],
+      "toolB": [
+        "True serverless — zero infrastructure management",
+        "Fastest time-to-insight: load data → write SQL → done",
+        "Pay-per-query pricing for sporadic/unpredictable workloads",
+        "BigQuery ML: train models using just SQL",
+        "Massive parallel processing with automatic optimization"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Steep learning curve for Spark and platform concepts",
+        "Cluster management overhead (sizing, auto-scaling policies)",
+        "More expensive for simple SQL analytics workloads",
+        "DBU pricing model can be complex to estimate"
+      ],
+      "toolB": [
+        "Limited to SQL (not ideal for complex ETL or ML training)",
+        "Costs can spike with poorly optimized queries",
+        "GCP-only (no multi-cloud option)",
+        "Less flexible than a full Lakehouse for engineering teams"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Databricks if:**\n*   You need a unified platform for ETL, ML, and analytics\n*   Your team includes data engineers who code in Python/Scala\n*   You have streaming workloads alongside batch processing\n*   You want open data formats and multi-cloud flexibility\n\n**Choose BigQuery if:**\n*   Your primary need is SQL-based analytics and reporting\n*   You want zero infrastructure management\n*   You're on GCP and want the tightest integration\n*   You prefer pay-per-query pricing for unpredictable workloads",
+    "relatedComparisons": [
+      "snowflake-vs-databricks",
+      "snowflake-vs-bigquery",
+      "bigquery-vs-redshift"
+    ],
+    "lastUpdated": "2026-02-27"
   }
 ]

@@ -1,76 +1,159 @@
 [
-    {
-        "id": "dbt-vs-dataform",
-        "slug": "dbt-vs-dataform",
-        "toolA": "dbt",
-        "toolB": "Dataform",
-        "category": "Data Transformation",
-        "winner": "dbt",
-        "shortVerdict": "dbt is the undisputed industry standard for analytics engineering. Dataform is a fantastic, free alternative specifically for BigQuery shops.",
-        "intro": "### The SQL Framework Wars\n\nBefore **dbt (data build tool)**, data transformation was often a mess of stored procedures and unversioned SQL scripts. dbt changed the world by bringing software engineering best practices—version control, testing, documentation, and CI/CD—to SQL.\n\n**Dataform** was a direct competitor that offered similar functionality with a slightly different flavor (JavaScript for config instead of YAML). Google acquired Dataform in 2020 and has integrated it directly into BigQuery as a native, free service.\n\n### The Core Difference\n\nThe biggest differentiator is **portability**. dbt can run on Snowflake, BigQuery, Redshift, Databricks, Postgres, and more. Learning dbt is a transferable skill. Dataform is now effectively a Google Cloud product. It is optimized specifically for BigQuery and runs entirely within that ecosystem.",
-        "features": [
-            {
-                "name": "Platform Support",
-                "toolAValue": "Universal (Any major warehouse)",
-                "toolBValue": "BigQuery Only (Legacy support deprecated)",
-                "winner": "dbt"
-            },
-            {
-                "name": "Templating Language",
-                "toolAValue": "Jinja (Python-like) + SQL",
-                "toolBValue": "JavaScript + SQLX",
-                "winner": "Tie"
-            },
-            {
-                "name": "Pricing",
-                "toolAValue": "Open Core (Free) vs dbt Cloud (Paid)",
-                "toolBValue": "Free (Included in GCP)",
-                "winner": "Dataform"
-            },
-            {
-                "name": "Development Environment",
-                "toolAValue": "Local IDE (VS Code) or dbt Cloud IDE",
-                "toolBValue": "Web-based IDE in GCP Console",
-                "winner": "dbt"
-            },
-            {
-                "name": "Dependency Management",
-                "toolAValue": "ref() function",
-                "toolBValue": "ref() or dependencies config",
-                "winner": "Tie"
-            }
-        ],
-        "pros": {
-            "toolA": [
-                "Universal standard: Hiring dbt developers is easy",
-                "Massive package ecosystem (dbt_utils, auditers, etc.)",
-                "Excellent documentation and community",
-                "Flexibility to run locally or in any orchestrator"
-            ],
-            "toolB": [
-                "Completely free (no SaaS license fees)",
-                "Zero setup: It is just there in the BigQuery console",
-                "Fast compilation (JavaScript based)",
-                "Real-time error checking in the web IDE"
-            ]
-        },
-        "cons": {
-            "toolA": [
-                "Complex project structure can become unwieldy",
-                "Jinja whitespace handling can be annoying",
-                "dbt Cloud pricing has increased over time"
-            ],
-            "toolB": [
-                "Vendor lock-in to Google Cloud",
-                "Smaller community and fewer packages",
-                "Uncertain roadmap post-acquisition (seems stable now)"
-            ]
-        },
-        "finalVerdict": "### Verdict\n\n**Choose dbt if:**\n*   You want the industry standard skill set and toolchain.\n*   You use Snowflake, Databricks, Redshift, or a mix of warehouses.\n*   You value open-source packages and community support.\n*   You want your transformations to be portable.\n\n**Choose Dataform if:**\n*   You are 100% committed to Google BigQuery.\n*   You want a fully managed, serverless transformation tool for free.\n*   You prefer JavaScript over Python/Jinja for advanced logic.\n*   You want to get started immediately without setting up local environments.",
-        "relatedComparisons": [
-            "snowflake-vs-bigquery",
-            "airflow-vs-dagster"
-        ],
-        "lastUpdated": "2026-02-20"
-    }
+  {
+    "id": "dbt-vs-dataform",
+    "slug": "dbt-vs-dataform",
+    "toolA": "dbt",
+    "toolB": "Dataform",
+    "category": "Data Transformation",
+    "winner": "dbt",
+    "shortVerdict": "dbt is the undisputed industry standard for analytics engineering. Dataform is a fantastic, free alternative specifically for BigQuery shops.",
+    "intro": "### The SQL Framework Wars\n\nBefore **dbt (data build tool)**, data transformation was often a mess of stored procedures and unversioned SQL scripts. dbt changed the world by bringing software engineering best practices—version control, testing, documentation, and CI/CD—to SQL.\n\n**Dataform** was a direct competitor that offered similar functionality with a slightly different flavor (JavaScript for config instead of YAML). Google acquired Dataform in 2020 and has integrated it directly into BigQuery as a native, free service.\n\n### The Core Difference\n\nThe biggest differentiator is **portability**. dbt can run on Snowflake, BigQuery, Redshift, Databricks, Postgres, and more. Learning dbt is a transferable skill. Dataform is now effectively a Google Cloud product. It is optimized specifically for BigQuery and runs entirely within that ecosystem.",
+    "features": [
+      {
+        "name": "Platform Support",
+        "toolAValue": "Universal (Any major warehouse)",
+        "toolBValue": "BigQuery Only (Legacy support deprecated)",
+        "winner": "dbt"
+      },
+      {
+        "name": "Templating Language",
+        "toolAValue": "Jinja (Python-like) + SQL",
+        "toolBValue": "JavaScript + SQLX",
+        "winner": "Tie"
+      },
+      {
+        "name": "Pricing",
+        "toolAValue": "Open Core (Free) vs dbt Cloud (Paid)",
+        "toolBValue": "Free (Included in GCP)",
+        "winner": "Dataform"
+      },
+      {
+        "name": "Development Environment",
+        "toolAValue": "Local IDE (VS Code) or dbt Cloud IDE",
+        "toolBValue": "Web-based IDE in GCP Console",
+        "winner": "dbt"
+      },
+      {
+        "name": "Dependency Management",
+        "toolAValue": "ref() function",
+        "toolBValue": "ref() or dependencies config",
+        "winner": "Tie"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Universal standard: Hiring dbt developers is easy",
+        "Massive package ecosystem (dbt_utils, auditers, etc.)",
+        "Excellent documentation and community",
+        "Flexibility to run locally or in any orchestrator"
+      ],
+      "toolB": [
+        "Completely free (no SaaS license fees)",
+        "Zero setup: It is just there in the BigQuery console",
+        "Fast compilation (JavaScript based)",
+        "Real-time error checking in the web IDE"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Complex project structure can become unwieldy",
+        "Jinja whitespace handling can be annoying",
+        "dbt Cloud pricing has increased over time"
+      ],
+      "toolB": [
+        "Vendor lock-in to Google Cloud",
+        "Smaller community and fewer packages",
+        "Uncertain roadmap post-acquisition (seems stable now)"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose dbt if:**\n*   You want the industry standard skill set and toolchain.\n*   You use Snowflake, Databricks, Redshift, or a mix of warehouses.\n*   You value open-source packages and community support.\n*   You want your transformations to be portable.\n\n**Choose Dataform if:**\n*   You are 100% committed to Google BigQuery.\n*   You want a fully managed, serverless transformation tool for free.\n*   You prefer JavaScript over Python/Jinja for advanced logic.\n*   You want to get started immediately without setting up local environments.",
+    "relatedComparisons": [
+      "snowflake-vs-bigquery",
+      "airflow-vs-dagster"
+    ],
+    "lastUpdated": "2026-02-20"
+  },
+  {
+    "slug": "dbt-vs-sqlmesh",
+    "toolA": "dbt",
+    "toolB": "SQLMesh",
+    "category": "data-transformation",
+    "winner": "Depends",
+    "shortVerdict": "dbt is the industry standard with unmatched community and ecosystem. SQLMesh is the performance-focused challenger with built-in column-level lineage, incremental-by-default models, and virtual environments that eliminate warehouse costs during development.",
+    "intro": "### The Transformation Layer: Standard vs. Next-Gen\n\nBoth tools transform raw data into analytics-ready models using SQL, but they take very different technical approaches.\n\n**dbt (data build tool)** is the undisputed king of SQL transformation. With 40,000+ companies using it, dbt Core (open-source) and dbt Cloud provide a proven framework for building, testing, and documenting data models. Its strength is simplicity — write SELECT statements, define dependencies, and dbt compiles and runs them in the correct order.\n\n**SQLMesh** is a next-generation framework built by former data leaders at Airbnb and Netflix. It addresses dbt's biggest pain points: slow development cycles, wasteful warehouse compute during testing, and lack of column-level lineage. SQLMesh introduces **Virtual Environments** (preview changes without running queries), **automatic incremental models**, and **plan-based deployment** (like a `git diff` for your data warehouse).\n\n**The core tension:** dbt has the ecosystem; SQLMesh has the technology.",
+    "features": [
+      {
+        "name": "Column-Level Lineage",
+        "toolAValue": "Not built-in (requires dbt Cloud or third-party tools)",
+        "toolBValue": "Built-in, automatic column-level lineage",
+        "winner": "SQLMesh"
+      },
+      {
+        "name": "Development Environments",
+        "toolAValue": "Dev schemas (run all models = expensive)",
+        "toolBValue": "Virtual Environments (zero warehouse cost to preview)",
+        "winner": "SQLMesh"
+      },
+      {
+        "name": "Incremental Models",
+        "toolAValue": "Manual configuration required (merge, append)",
+        "toolBValue": "Automatic incremental by default",
+        "winner": "SQLMesh"
+      },
+      {
+        "name": "Community & Ecosystem",
+        "toolAValue": "40,000+ companies, 200+ packages, massive Slack community",
+        "toolBValue": "Growing but small community",
+        "winner": "dbt"
+      },
+      {
+        "name": "Learning Resources",
+        "toolAValue": "Extensive docs, courses, certifications, conferences",
+        "toolBValue": "Good documentation, fewer external resources",
+        "winner": "dbt"
+      },
+      {
+        "name": "Change Management",
+        "toolAValue": "Run → Check → Merge (CI/CD based)",
+        "toolBValue": "Plan → Validate → Apply (like Terraform for data)",
+        "winner": "SQLMesh"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Industry standard — hiring and knowledge base are easy",
+        "Massive package ecosystem (dbt Hub)",
+        "dbt Cloud adds lineage, semantic layer, and CI/CD",
+        "Active community with conferences and certifications",
+        "Integrates with every major warehouse and BI tool"
+      ],
+      "toolB": [
+        "Virtual environments save massive warehouse compute costs",
+        "Built-in column-level lineage without paid tools",
+        "Automatic incremental models reduce boilerplate",
+        "Plan-based deployment shows exactly what will change before running",
+        "Backward compatible with dbt projects (can migrate incrementally)"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Development cycles can be slow (full model refresh during dev)",
+        "Incremental models require careful manual configuration",
+        "Column-level lineage requires dbt Cloud (paid)",
+        "No built-in way to preview changes without running queries"
+      ],
+      "toolB": [
+        "Much smaller community and ecosystem",
+        "Fewer integrations and packages",
+        "Fewer learning resources and certifications",
+        "Risk of choosing a less adopted standard"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose dbt if:**\n*   You want the safest, most widely adopted choice\n*   Your team already knows dbt\n*   You need the massive package ecosystem\n*   You value community support and easy hiring\n\n**Choose SQLMesh if:**\n*   Development speed and cost savings are priorities\n*   You need column-level lineage without paying for premium tools\n*   You want Terraform-style plan/apply for your data warehouse\n*   You're starting a new project and can choose freely\n*   You want to migrate from dbt gradually (SQLMesh supports dbt projects)",
+    "relatedComparisons": [
+      "dbt-vs-dataform",
+      "snowflake-vs-databricks"
+    ],
+    "lastUpdated": "2026-02-27"
+  }
 ]

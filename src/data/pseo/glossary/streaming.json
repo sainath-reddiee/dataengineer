@@ -76,5 +76,68 @@
       "Complex to scale and recover from failure",
       "The 'holy grail' of real-time engineering"
     ]
+  },
+  {
+    "term": "Apache Flink",
+    "slug": "apache-flink",
+    "category": "streaming",
+    "shortDefinition": "A distributed stream processing framework that processes data event-by-event with millisecond latency, built for stateful computations over unbounded data streams.",
+    "fullDefinition": "**Apache Flink** is a distributed processing engine for stateful computations over both bounded (batch) and unbounded (streaming) data. Unlike Spark's micro-batch approach, Flink processes each event individually as it arrives, achieving true **millisecond-level latency**.\n\n## Architecture\n\n```\n┌─────────────────────────────────────────────┐\n│              Flink Cluster                  │\n│  ┌──────────┐   ┌────────────────────────┐  │\n│  │JobManager│──→│     TaskManagers       │  │\n│  │(Master)  │   │ ┌──────┐ ┌──────┐     │  │\n│  │          │   │ │Slot 1│ │Slot 2│ ... │  │\n│  └──────────┘   │ └──────┘ └──────┘     │  │\n│                  └────────────────────────┘  │\n└─────────────────────────────────────────────┘\n```\n\n## Core Concepts\n\n### Event Time vs Processing Time\nFlink distinguishes between:\n- **Event Time**: When the event actually occurred (embedded in the data)\n- **Processing Time**: When Flink processes the event\n- **Ingestion Time**: When the event enters Flink\n\nThis matters for handling **late-arriving data** correctly.\n\n### State Management\nFlink's killer feature is its state management:\n- **Keyed State**: State partitioned by key (e.g., per-user counters)\n- **Operator State**: State per parallel operator instance\n- **State Backends**: RocksDB (disk) or HashMaps (memory)\n- **Checkpointing**: Automatic, consistent snapshots for fault tolerance\n\n### Windowing\nGroup events into time-based or count-based windows:\n- **Tumbling Windows**: Fixed-size, non-overlapping (every 5 minutes)\n- **Sliding Windows**: Fixed-size, overlapping (5-min window every 1 minute)\n- **Session Windows**: Dynamic, gap-based (close after 30min idle)\n- **Global Windows**: Custom trigger logic\n\n## Flink APIs (High to Low Level)\n\n| API | Level | Use Case |\n|-----|-------|----------|\n| Flink SQL | Highest | SQL queries on streams |\n| Table API | High | Relational operations |\n| DataStream API | Low | Custom stream processing |\n| ProcessFunction | Lowest | Full control over time and state |\n\n## Use Cases\n\n1. **Fraud Detection**: Sub-second pattern matching on transactions\n2. **Real-time Recommendations**: Update user profiles in real-time\n3. **IoT Analytics**: Process millions of sensor events per second\n4. **CDC Processing**: React to database changes instantly\n5. **Ad-tech Bidding**: Make bid decisions in milliseconds",
+    "keyPoints": [
+      "True event-by-event stream processing with millisecond latency",
+      "Best-in-class stateful processing with RocksDB state backend",
+      "Advanced windowing: tumbling, sliding, session, and global windows",
+      "Handles late-arriving and out-of-order data via event time processing",
+      "Unified batch and streaming with a single API"
+    ],
+    "faqs": [
+      {
+        "question": "What is Apache Flink used for?",
+        "answer": "Flink is used for real-time stream processing applications that require low latency and stateful computations — such as fraud detection, real-time recommendations, IoT analytics, and event-driven microservices."
+      },
+      {
+        "question": "Is Apache Flink better than Spark?",
+        "answer": "For true real-time streaming with sub-second latency, Flink is superior. For batch processing and unified analytics workloads, Spark has a larger ecosystem. Many organizations use both."
+      },
+      {
+        "question": "What is stateful processing in Flink?",
+        "answer": "Stateful processing means Flink remembers information across events — like running totals, user sessions, or pattern matching. Flink manages this state with automatic checkpointing and exactly-once guarantees."
+      },
+      {
+        "question": "Is Flink hard to learn?",
+        "answer": "Flink SQL is easy for SQL-proficient users. The DataStream API has a steeper learning curve, especially concepts like watermarks, state management, and windowing. Starting with Flink SQL is recommended."
+      }
+    ],
+    "relatedTerms": [
+      "apache-kafka",
+      "apache-spark",
+      "stateful-processing",
+      "cdc"
+    ],
+    "relatedTools": [
+      "Apache Kafka",
+      "Confluent",
+      "Amazon Kinesis",
+      "Databricks",
+      "Ververica"
+    ],
+    "externalLinks": [
+      {
+        "title": "Apache Flink Documentation",
+        "url": "https://nightlies.apache.org/flink/flink-docs-stable/"
+      },
+      {
+        "title": "Flink Training Exercises",
+        "url": "https://github.com/apache/flink-training"
+      }
+    ],
+    "keywords": [
+      "apache flink",
+      "flink streaming",
+      "flink vs spark",
+      "flink stateful processing",
+      "flink tutorial"
+    ],
+    "lastUpdated": "2026-02-27"
   }
 ]

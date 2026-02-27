@@ -134,5 +134,65 @@
       "database properties"
     ],
     "lastUpdated": "2026-01-21"
+  },
+  {
+    "term": "Star Schema",
+    "slug": "star-schema",
+    "category": "data-modeling",
+    "shortDefinition": "A data warehouse modeling technique that organizes data into a central fact table surrounded by dimension tables, optimized for fast analytical queries and BI reporting.",
+    "fullDefinition": "The **Star Schema** is the most widely used data modeling pattern in data warehousing. Named for its star-like shape, it places a central **fact table** (containing measurable events) surrounded by **dimension tables** (containing descriptive attributes).\n\n## Star Schema Structure\n\n```\n           ┌──────────┐\n           │ dim_date │\n           └────┬─────┘\n                │\n┌──────────┐   │   ┌─────────────┐\n│dim_product├──→ fact_sales ←──┤ dim_customer │\n└──────────┘   │   └─────────────┘\n                │\n           ┌────┴──────┐\n           │ dim_store │\n           └───────────┘\n```\n\n## Key Components\n\n### Fact Tables\nStore **measurable, quantitative data** (events that happened):\n- `fact_sales`: revenue, quantity, discount\n- `fact_orders`: order_amount, shipping_cost\n- `fact_web_events`: page_views, session_duration\n\n**Types of facts:**\n- **Additive**: Can be summed across all dimensions (revenue)\n- **Semi-additive**: Can be summed across some dimensions (account balance)\n- **Non-additive**: Cannot be summed (ratios, percentages)\n\n### Dimension Tables\nStore **descriptive, categorical data** (context for facts):\n- `dim_customer`: name, email, segment, region\n- `dim_product`: name, category, brand, price_tier\n- `dim_date`: date, month, quarter, year, is_holiday\n\n## Star Schema Example\n\n```sql\n-- \"Total revenue by product category and quarter\"\nSELECT\n    d.quarter,\n    p.category,\n    SUM(f.revenue) AS total_revenue\nFROM fact_sales f\nJOIN dim_date d ON f.date_key = d.date_key\nJOIN dim_product p ON f.product_key = p.product_key\nGROUP BY d.quarter, p.category\nORDER BY d.quarter, total_revenue DESC;\n```\n\n## Star Schema vs Snowflake Schema\n\n| Aspect | Star Schema | Snowflake Schema |\n|--------|------------|------------------|\n| Dimension Tables | **Denormalized** (flat) | **Normalized** (split into sub-tables) |\n| Query Performance | Faster (fewer joins) | Slower (more joins) |\n| Storage | More (redundant data) | Less (normalized) |\n| Complexity | Simple to understand | More complex relationships |\n| Best For | BI/Analytics queries | Storage-constrained environments |\n\n## Best Practices\n\n1. **Use Surrogate Keys**: Integer keys in facts, not natural keys\n2. **Denormalize Dimensions**: Flatten hierarchies for query speed\n3. **Add a Date Dimension**: Always include a dedicated date table\n4. **Keep Facts Narrow**: Only keys and measures in fact tables\n5. **Use Conformed Dimensions**: Share dimension tables across fact tables",
+    "keyPoints": [
+      "Central fact table surrounded by denormalized dimension tables",
+      "Optimized for analytical queries with minimal joins",
+      "Fact tables store measurable events; dimensions provide context",
+      "Simpler and faster than snowflake schema for most BI workloads",
+      "Foundation of Kimball dimensional modeling methodology"
+    ],
+    "faqs": [
+      {
+        "question": "What is a star schema in a data warehouse?",
+        "answer": "A star schema is a data modeling pattern where a central fact table (containing measurable data like sales amounts) is connected to multiple dimension tables (containing descriptive data like product names, dates, and customers) via foreign keys."
+      },
+      {
+        "question": "What is the difference between star schema and snowflake schema?",
+        "answer": "In a star schema, dimension tables are denormalized (flat). In a snowflake schema, dimensions are normalized into sub-tables. Star schema is faster for queries but uses more storage; snowflake schema saves storage but requires more joins."
+      },
+      {
+        "question": "When should I use a star schema?",
+        "answer": "Use a star schema when you need fast query performance for BI dashboards and reports. It's the default choice for most data warehouses (Snowflake, BigQuery, Redshift) and works well with tools like Looker, Tableau, and Power BI."
+      },
+      {
+        "question": "What is a fact table vs dimension table?",
+        "answer": "A fact table stores quantitative, measurable data (revenue, quantity, clicks). A dimension table stores descriptive, categorical data that provides context (product name, customer region, date). Facts are joined to dimensions via keys."
+      }
+    ],
+    "relatedTerms": [
+      "data-modeling",
+      "data-warehouse",
+      "olap",
+      "medallion-architecture",
+      "etl"
+    ],
+    "relatedTools": [
+      "dbt",
+      "Snowflake",
+      "Looker",
+      "Tableau",
+      "Power BI"
+    ],
+    "externalLinks": [
+      {
+        "title": "Kimball Group Design Tips",
+        "url": "https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/"
+      }
+    ],
+    "keywords": [
+      "star schema",
+      "star schema data warehouse",
+      "star schema vs snowflake schema",
+      "fact table vs dimension table",
+      "star schema example"
+    ],
+    "lastUpdated": "2026-02-27"
   }
 ]

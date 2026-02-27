@@ -1,5 +1,5 @@
 {
-  "version": "2026-02-05T03:55:29.118Z",
+  "version": "2026-02-27T05:11:05.272Z",
   "glossary": [
     {
       "term": "ACID Transactions",
@@ -18,6 +18,18 @@
       "slug": "apache-airflow",
       "category": "data-orchestration",
       "shortDefinition": "An open-source platform to programmatically author, schedule, and monitor workflows, commonly used for orchestrating data pipelines and ETL jobs."
+    },
+    {
+      "term": "Apache Flink",
+      "slug": "apache-flink",
+      "category": "streaming",
+      "shortDefinition": "A distributed stream processing framework that processes data event-by-event with millisecond latency, built for stateful computations over unbounded data streams."
+    },
+    {
+      "term": "Apache Iceberg",
+      "slug": "apache-iceberg",
+      "category": "data-warehousing",
+      "shortDefinition": "An open table format for huge analytic datasets that brings warehouse-like features (ACID transactions, time travel, schema evolution) to data lakes."
     },
     {
       "term": "Apache Kafka",
@@ -62,6 +74,12 @@
       "shortDefinition": "Formal agreements between data producers and consumers that define the structure, semantics, and quality expectations of data, enabling reliable data collaboration."
     },
     {
+      "term": "Data Fabric",
+      "slug": "data-fabric",
+      "category": "data-governance",
+      "shortDefinition": "An architecture that uses AI and metadata to automatically discover, integrate, and govern data across distributed environments — making data accessible regardless of where it lives."
+    },
+    {
       "term": "Data Governance",
       "slug": "data-governance",
       "category": "data-governance",
@@ -98,6 +116,12 @@
       "shortDefinition": "The ability to understand the health and state of data in your systems by monitoring data quality, freshness, volume, schema changes, and lineage in real-time."
     },
     {
+      "term": "Data Pipeline",
+      "slug": "data-pipeline",
+      "category": "data-integration",
+      "shortDefinition": "An automated series of steps that extracts data from sources, transforms it, and loads it into a destination — the backbone of every data-driven organization."
+    },
+    {
       "term": "Data Quality",
       "slug": "data-quality",
       "category": "data-quality",
@@ -122,10 +146,22 @@
       "shortDefinition": "An open-source transformation tool that enables data analysts and engineers to transform data in their warehouse using SQL and software engineering best practices."
     },
     {
+      "term": "DuckDB",
+      "slug": "duckdb",
+      "category": "analytics",
+      "shortDefinition": "An in-process analytical database (OLAP) that runs inside your application — think SQLite but for analytics. It processes data locally with zero infrastructure."
+    },
+    {
       "term": "ETL (Extract, Transform, Load)",
       "slug": "etl",
       "category": "etl-elt",
       "shortDefinition": "A data integration process that extracts data from source systems, transforms it into a suitable format, and loads it into a target data warehouse or database."
+    },
+    {
+      "term": "Feature Store",
+      "slug": "feature-store",
+      "category": "analytics",
+      "shortDefinition": "A centralized platform for storing, managing, and serving ML features — ensuring consistency between model training and real-time inference."
     },
     {
       "term": "Fivetran",
@@ -152,6 +188,12 @@
       "shortDefinition": "A modern data architecture that combines the performance and governance of data warehouses with the low-cost and flexibility of data lakes."
     },
     {
+      "term": "Medallion Architecture",
+      "slug": "medallion-architecture",
+      "category": "data-warehousing",
+      "shortDefinition": "A data design pattern that organizes data into three layers — Bronze (raw), Silver (cleaned), and Gold (business-ready) — to progressively improve data quality in a lakehouse."
+    },
+    {
       "term": "OLAP (Online Analytical Processing)",
       "slug": "olap",
       "category": "analytics",
@@ -176,6 +218,12 @@
       "shortDefinition": "A cloud-native data warehouse platform that separates storage and compute, enabling elastic scaling and pay-per-use pricing."
     },
     {
+      "term": "Star Schema",
+      "slug": "star-schema",
+      "category": "data-modeling",
+      "shortDefinition": "A data warehouse modeling technique that organizes data into a central fact table surrounded by dimension tables, optimized for fast analytical queries and BI reporting."
+    },
+    {
       "term": "Stateful Processing",
       "slug": "stateful-processing",
       "category": "streaming",
@@ -186,6 +234,12 @@
       "slug": "table-format",
       "category": "data-warehousing",
       "shortDefinition": "A layer that organizes files in a data lake into a structured table, enabling SQL-like features like ACID and time-travel."
+    },
+    {
+      "term": "Vector Database",
+      "slug": "vector-database",
+      "category": "analytics",
+      "shortDefinition": "A database optimized for storing and searching high-dimensional vectors (embeddings), enabling semantic search, RAG pipelines, and AI-powered applications."
     }
   ],
   "comparisons": [
@@ -196,6 +250,14 @@
       "toolA": "Airbyte",
       "toolB": "Meltano",
       "shortVerdict": "Airbyte is the UI-first, ubiquity-focused leader. Meltano is the CLI-first, DevOps-focused engineer's choice."
+    },
+    {
+      "title": "Amazon MWAA vs Google Cloud Composer",
+      "slug": "mwaa-vs-cloud-composer",
+      "category": "data-orchestration",
+      "toolA": "Amazon MWAA",
+      "toolB": "Google Cloud Composer",
+      "shortVerdict": "Both are managed Apache Airflow services. MWAA wins for AWS-native workloads with simpler pricing. Cloud Composer wins for GCP-native workloads and supports Airflow 2.x features earlier."
     },
     {
       "title": "Amazon Redshift vs Snowflake",
@@ -212,6 +274,14 @@
       "toolA": "Apache Airflow",
       "toolB": "Dagster",
       "shortVerdict": "Airflow is the task-based standard. Dagster is the asset-based challenger that brings data awareness to the orchestration layer."
+    },
+    {
+      "title": "Apache Airflow vs Prefect",
+      "slug": "airflow-vs-prefect",
+      "category": "data-orchestration",
+      "toolA": "Apache Airflow",
+      "toolB": "Prefect",
+      "shortVerdict": "Airflow is the battle-tested industry standard with massive adoption. Prefect is the modern Pythonic alternative built to fix Airflow's pain points — with native dynamic tasks, better error handling, and a developer-first experience."
     },
     {
       "title": "Apache Flink vs Spark Streaming",
@@ -246,12 +316,52 @@
       "shortVerdict": "ClickHouse is the performance beast for general-purpose analytics. Druid is the specialized engine for ultra-high-concurrency real-time apps."
     },
     {
+      "title": "Dagster vs Prefect",
+      "slug": "dagster-vs-prefect",
+      "category": "data-orchestration",
+      "toolA": "Dagster",
+      "toolB": "Prefect",
+      "shortVerdict": "Dagster is the 'Software-Defined Assets' platform focused on data lineage and testing. Prefect is the 'just decorate your Python' orchestrator focused on simplicity and developer velocity."
+    },
+    {
+      "title": "Databricks vs Google BigQuery",
+      "slug": "databricks-vs-bigquery",
+      "category": "cloud-platforms",
+      "toolA": "Databricks",
+      "toolB": "Google BigQuery",
+      "shortVerdict": "Databricks is the unified Lakehouse platform for engineering-heavy workloads with Spark, ML, and Delta Lake. BigQuery is the serverless analytics warehouse that just works — load data, write SQL, get answers."
+    },
+    {
+      "title": "dbt vs Dataform",
+      "slug": "dbt-vs-dataform",
+      "category": "Data Transformation",
+      "toolA": "dbt",
+      "toolB": "Dataform",
+      "shortVerdict": "dbt is the undisputed industry standard for analytics engineering. Dataform is a fantastic, free alternative specifically for BigQuery shops."
+    },
+    {
+      "title": "dbt vs SQLMesh",
+      "slug": "dbt-vs-sqlmesh",
+      "category": "data-transformation",
+      "toolA": "dbt",
+      "toolB": "SQLMesh",
+      "shortVerdict": "dbt is the industry standard with unmatched community and ecosystem. SQLMesh is the performance-focused challenger with built-in column-level lineage, incremental-by-default models, and virtual environments that eliminate warehouse costs during development."
+    },
+    {
       "title": "Delta Lake vs Apache Iceberg",
       "slug": "delta-lake-vs-iceberg",
       "category": "Data Warehousing",
       "toolA": "Delta Lake",
       "toolB": "Apache Iceberg",
       "shortVerdict": "Delta Lake is the default for Databricks users. Apache Iceberg is winning the \"Open Ecosystem\" war with support from Snowflake, AWS, and Netflix."
+    },
+    {
+      "title": "DuckDB vs Polars",
+      "slug": "duckdb-vs-polars",
+      "category": "analytics",
+      "toolA": "DuckDB",
+      "toolB": "Polars",
+      "shortVerdict": "DuckDB is the SQL-first embedded OLAP engine for querying files. Polars is the DataFrame-first library for blazing-fast data manipulation. Both are lightning fast — the choice comes down to SQL vs. DataFrame APIs."
     },
     {
       "title": "Fivetran vs Airbyte",
@@ -268,6 +378,38 @@
       "toolA": "Fivetran",
       "toolB": "Stitch",
       "shortVerdict": "Fivetran is the premium, 'set and forget' leader. Stitch is the developer-friendly, more affordable alternative for standard SaaS data."
+    },
+    {
+      "title": "Google BigQuery vs Amazon Redshift",
+      "slug": "bigquery-vs-redshift",
+      "category": "data-warehousing",
+      "toolA": "Google BigQuery",
+      "toolB": "Amazon Redshift",
+      "shortVerdict": "BigQuery's serverless architecture and separation of storage/compute make it simpler and more cost-effective for most workloads. Redshift offers more control and tighter AWS integration, but requires more operational overhead."
+    },
+    {
+      "title": "Looker vs Power BI",
+      "slug": "looker-vs-power-bi",
+      "category": "analytics",
+      "toolA": "Looker",
+      "toolB": "Power BI",
+      "shortVerdict": "Power BI is the enterprise BI king with unmatched Excel/Microsoft integration and lower cost. Looker is the developer-first, governed analytics platform with its unique semantic modeling layer (LookML)."
+    },
+    {
+      "title": "Pandas vs Polars",
+      "slug": "pandas-vs-polars",
+      "category": "analytics",
+      "toolA": "Pandas",
+      "toolB": "Polars",
+      "shortVerdict": "Pandas is the universal standard with the largest ecosystem. Polars is 10-100x faster with better memory efficiency and modern API design — the future of DataFrame processing in Python."
+    },
+    {
+      "title": "Snowflake vs Azure Synapse Analytics",
+      "slug": "snowflake-vs-synapse",
+      "category": "data-warehousing",
+      "toolA": "Snowflake",
+      "toolB": "Azure Synapse Analytics",
+      "shortVerdict": "Snowflake delivers superior ease of use, performance consistency, and multi-cloud flexibility. Synapse wins for organizations deeply embedded in the Microsoft/Azure ecosystem that want a unified analytics workspace."
     },
     {
       "title": "Snowflake vs Databricks",

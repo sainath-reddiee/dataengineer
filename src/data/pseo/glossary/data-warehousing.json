@@ -289,5 +289,133 @@
       "Engine agnostic (usually)",
       "Replaces the legacy Hive Metastore approach"
     ]
+  },
+  {
+    "term": "Medallion Architecture",
+    "slug": "medallion-architecture",
+    "category": "data-warehousing",
+    "shortDefinition": "A data design pattern that organizes data into three layers — Bronze (raw), Silver (cleaned), and Gold (business-ready) — to progressively improve data quality in a lakehouse.",
+    "fullDefinition": "The **Medallion Architecture** (also called Multi-Hop Architecture) is the most popular design pattern for organizing data in a **Data Lakehouse**. Popularized by Databricks, it divides your data pipeline into three distinct quality layers:\n\n## The Three Layers\n\n### 🥉 Bronze Layer (Raw)\nThe landing zone for raw, unprocessed data:\n- **What goes here**: Exact copies of source data — JSON payloads, CDC logs, CSV dumps\n- **Format**: Usually stored as-is, with added metadata (ingestion timestamp, source system)\n- **Purpose**: Single source of truth; you can always replay from bronze\n- **Example**: Raw Salesforce API responses, Kafka event streams, database replication logs\n\n### 🥈 Silver Layer (Cleansed)\nData that has been validated, deduplicated, and conformedData:\n- **What happens here**: Schema enforcement, null handling, deduplication, type casting\n- **Format**: Strongly typed, partitioned, stored in columnar format (Parquet/Delta)\n- **Purpose**: Enterprise-wide \"clean\" data that is usable across teams\n- **Example**: A unified `customers` table combining Salesforce + Stripe + internal DB records\n\n### 🥇 Gold Layer (Business-Ready)\nAggregated, enriched data tailored for specific business use cases:\n- **What goes here**: Business metrics, KPI tables, feature stores, ML training sets\n- **Format**: Star/snowflake schemas optimized for BI tools\n- **Purpose**: Powers dashboards, reports, and ML models directly\n- **Example**: `daily_revenue_by_region`, `customer_lifetime_value`, `churn_predictions`\n\n## Why It Works\n\n```\nSource Systems → [Bronze] → [Silver] → [Gold] → BI / ML\n                   Raw        Clean      Aggregated\n                   Append     Validated   Business Logic\n                   Replay     Conformed   Star Schema\n```\n\n## Key Benefits\n\n- **Incremental Processing**: Each layer only processes what changed\n- **Debuggability**: When something breaks, trace it back through the layers\n- **Reusability**: Silver layer serves multiple Gold-layer consumers\n- **Governance**: Apply access controls at the appropriate layer\n\n## Medallion Architecture Tools\n\n| Layer | Common Tools |\n|-------|-------------|\n| Bronze | Fivetran, Airbyte, Kafka Connect, AWS Glue |\n| Silver | dbt, Spark, Snowflake Tasks, Dataform |\n| Gold | dbt, Looker, Power BI, Tableau |\n\n## Anti-Patterns to Avoid\n\n1. **Skipping Silver**: Going directly from Bronze to Gold creates fragile pipelines\n2. **Too Many Layers**: Some teams add Platinum, Diamond — keep it simple\n3. **No Schema Enforcement**: Silver should enforce schemas strictly\n4. **Ignoring Bronze Retention**: Bronze is your backup; don't delete it too aggressively",
+    "keyPoints": [
+      "Three-layer data quality pattern: Bronze → Silver → Gold",
+      "Bronze stores raw data as-is for replayability",
+      "Silver cleanses, deduplicates, and conforms data",
+      "Gold provides business-ready aggregated datasets",
+      "Popularized by Databricks for lakehouse architectures"
+    ],
+    "faqs": [
+      {
+        "question": "What is the Medallion Architecture?",
+        "answer": "The Medallion Architecture is a data design pattern that organizes data into three progressive quality layers — Bronze (raw), Silver (cleansed), and Gold (business-ready) — in a lakehouse environment."
+      },
+      {
+        "question": "What is the difference between Bronze Silver and Gold layers?",
+        "answer": "Bronze stores raw unprocessed data exactly as ingested. Silver cleans, validates, and deduplicates that data. Gold applies business logic to create aggregated, analytics-ready datasets."
+      },
+      {
+        "question": "Is Medallion Architecture only for Databricks?",
+        "answer": "No. While Databricks popularized it, the Medallion Architecture works on any platform — Snowflake, BigQuery, Azure Synapse, or open-source tools like dbt + Apache Iceberg."
+      },
+      {
+        "question": "Can I use Medallion Architecture with Snowflake?",
+        "answer": "Yes. You can implement it using Snowflake databases or schemas for each layer (e.g., RAW_DB, CLEAN_DB, ANALYTICS_DB) and use dbt or Snowflake Tasks for transformations."
+      }
+    ],
+    "relatedTerms": [
+      "data-warehouse",
+      "lakehouse",
+      "etl",
+      "data-modeling",
+      "dbt"
+    ],
+    "relatedTools": [
+      "Databricks",
+      "dbt",
+      "Snowflake",
+      "Apache Iceberg",
+      "Delta Lake"
+    ],
+    "externalLinks": [
+      {
+        "title": "Databricks Medallion Architecture Guide",
+        "url": "https://www.databricks.com/glossary/medallion-architecture"
+      },
+      {
+        "title": "Implementing Medallion with dbt",
+        "url": "https://docs.getdbt.com/best-practices"
+      }
+    ],
+    "keywords": [
+      "medallion architecture",
+      "bronze silver gold data",
+      "medallion architecture databricks",
+      "data lakehouse layers",
+      "multi-hop architecture"
+    ],
+    "lastUpdated": "2026-02-27"
+  },
+  {
+    "term": "Apache Iceberg",
+    "slug": "apache-iceberg",
+    "category": "data-warehousing",
+    "shortDefinition": "An open table format for huge analytic datasets that brings warehouse-like features (ACID transactions, time travel, schema evolution) to data lakes.",
+    "fullDefinition": "**Apache Iceberg** is an open table format designed for petabyte-scale analytic datasets. Created at Netflix, it solves the fundamental problems that made data lakes unreliable — by bringing **ACID transactions**, **time travel**, **schema evolution**, and **partition evolution** to files sitting in object storage (S3, GCS, ADLS).\n\n## The Problem Iceberg Solves\n\nTraditional data lakes stored data as raw files (Parquet/ORC) with a Hive Metastore tracking partitions. This architecture had critical flaws:\n\n- **No ACID**: Concurrent writes could corrupt data\n- **Partition Lock-in**: Changing partition schemes required rewriting all data\n- **No Time Travel**: Can't query historical states\n- **Schema Rigidity**: Adding columns was painful\n- **Small File Problem**: Too many small files destroyed performance\n\nIceberg fixes ALL of these.\n\n## How Iceberg Works\n\n```\nQuery Engine (Spark/Trino/Flink)\n        │\n        ▼\n┌─────────────────┐\n│  Iceberg Catalog │ (Where is the latest table state?)\n│  (REST/Glue/Nessie)│\n└────────┬────────┘\n         │\n┌────────▼────────┐\n│ Metadata Layer  │ (Manifest files + Manifest Lists)\n│  - Snapshots    │\n│  - Manifests    │\n│  - Statistics   │\n└────────┬────────┘\n         │\n┌────────▼────────┐\n│  Data Files     │ (Parquet/ORC/Avro in S3/GCS/ADLS)\n└─────────────────┘\n```\n\n## Key Features\n\n### ACID Transactions\n- Atomic commits: writes either fully succeed or fully fail\n- Snapshot isolation for concurrent reads and writes\n- No more corrupted tables from failed jobs\n\n### Time Travel\n```sql\n-- Query data as it was 24 hours ago\nSELECT * FROM orders\nFOR SYSTEM_TIME AS OF TIMESTAMP '2026-02-26 09:00:00';\n\n-- Roll back to a previous snapshot\nALTER TABLE orders ROLLBACK TO SNAPSHOT 12345;\n```\n\n### Schema Evolution\n- Add, drop, rename, or reorder columns without rewriting data\n- Type promotion (int → long, float → double) is safe\n- No downtime for schema changes\n\n### Partition Evolution\n- Change partition schemes without rewriting data\n- Start with daily partitions, switch to hourly — Iceberg handles it\n- Hidden partitioning: users don't need to know partition columns\n\n### Engine Compatibility\nIceberg tables can be read/written by multiple engines simultaneously:\n- Apache Spark, Trino/Presto, Flink, Snowflake, BigQuery, Dremio, StarRocks\n\n## Iceberg vs Delta Lake vs Hudi\n\n| Feature | Iceberg | Delta Lake | Hudi |\n|---------|---------|------------|------|\n| Governance | Apache Foundation | Databricks | Apache Foundation |\n| Engine Lock-in | None | Spark-first | Spark-first |\n| Partition Evolution | ✅ Best-in-class | ❌ | Partial |\n| Catalog Options | REST, Glue, Nessie, Polaris | Unity Catalog | Hive Metastore |\n| Adoption Trend | 📈 Fastest growing | 📈 Strong (Databricks) | ➡️ Stable |",
+    "keyPoints": [
+      "Open table format for petabyte-scale analytics on data lakes",
+      "ACID transactions, time travel, schema evolution, partition evolution",
+      "Engine-agnostic: works with Spark, Trino, Flink, Snowflake, BigQuery",
+      "Solves the reliability problems of traditional Hive-based data lakes",
+      "Created at Netflix, now an Apache Foundation project"
+    ],
+    "faqs": [
+      {
+        "question": "What is Apache Iceberg used for?",
+        "answer": "Apache Iceberg is used to manage large analytical datasets in data lakes. It provides warehouse-like features (ACID transactions, time travel, schema evolution) to files stored in S3, GCS, or ADLS."
+      },
+      {
+        "question": "Is Apache Iceberg better than Delta Lake?",
+        "answer": "Iceberg is more engine-agnostic and has superior partition evolution. Delta Lake is tightly integrated with Databricks and Spark. The best choice depends on your stack — Iceberg for multi-engine environments, Delta for Databricks shops."
+      },
+      {
+        "question": "Does Snowflake support Apache Iceberg?",
+        "answer": "Yes. Snowflake supports Iceberg Tables natively, allowing you to query and manage Iceberg-formatted data in S3/GCS/ADLS directly from Snowflake. This is a core part of Snowflake's open data strategy."
+      },
+      {
+        "question": "What is the difference between Iceberg and Parquet?",
+        "answer": "Parquet is a file format (how data is stored). Iceberg is a table format (how files are organized and managed). Iceberg typically uses Parquet files underneath but adds metadata, transactions, and versioning on top."
+      }
+    ],
+    "relatedTerms": [
+      "table-format",
+      "lakehouse",
+      "data-lake",
+      "columnar-storage",
+      "data-warehouse"
+    ],
+    "relatedTools": [
+      "Snowflake",
+      "Databricks",
+      "Trino",
+      "Apache Spark",
+      "Nessie"
+    ],
+    "externalLinks": [
+      {
+        "title": "Apache Iceberg Documentation",
+        "url": "https://iceberg.apache.org/docs/latest/"
+      },
+      {
+        "title": "Iceberg Spec",
+        "url": "https://iceberg.apache.org/spec/"
+      }
+    ],
+    "keywords": [
+      "apache iceberg",
+      "iceberg table format",
+      "iceberg vs delta lake",
+      "iceberg snowflake",
+      "what is apache iceberg"
+    ],
+    "lastUpdated": "2026-02-27"
   }
 ]

@@ -76,5 +76,189 @@
       "Designed for complex aggregation queries",
       "Examples: ClickHouse, Pinot, StarRocks"
     ]
+  },
+  {
+    "term": "DuckDB",
+    "slug": "duckdb",
+    "category": "analytics",
+    "shortDefinition": "An in-process analytical database (OLAP) that runs inside your application — think SQLite but for analytics. It processes data locally with zero infrastructure.",
+    "fullDefinition": "**DuckDB** is an open-source, in-process SQL OLAP database management system. While SQLite is the embedded database for transactional (OLTP) workloads, DuckDB is designed for **analytical (OLAP)** workloads — running complex aggregations, joins, and window functions on large datasets without needing a server.\n\n## Why DuckDB is Revolutionary\n\n### The Problem It Solves\nBefore DuckDB, analyzing even moderate datasets required:\n- Setting up a cloud warehouse (Snowflake, BigQuery)\n- Loading data into a database\n- Paying for compute time\n- Waiting for query results over the network\n\nDuckDB says: **Why not just analyze the data right where it is?**\n\n```python\nimport duckdb\n\n# Query a Parquet file directly — no loading, no server\nresult = duckdb.sql(\"\"\"\n    SELECT department, AVG(salary) as avg_salary\n    FROM 'employees.parquet'\n    WHERE hire_date > '2024-01-01'\n    GROUP BY department\n    ORDER BY avg_salary DESC\n\"\"\").fetchall()\n```\n\n## Key Features\n\n### Zero Infrastructure\n- No server process to manage\n- Runs inside Python, R, Node.js, Java, or any application\n- `pip install duckdb` and you're done\n\n### Direct File Querying\n- Query Parquet, CSV, JSON files directly\n- Read from S3, GCS, Azure Blob without downloading\n- Join across multiple file formats in a single query\n\n### Columnar Execution\n- Vectorized query engine processes data in batches\n- Automatic parallelism across CPU cores\n- Handles datasets much larger than RAM\n\n### Full SQL Support\n- Window functions, CTEs, subqueries\n- ASOF joins for time-series\n- Advanced aggregations (GROUPING SETS, CUBE, ROLLUP)\n\n## DuckDB Use Cases\n\n1. **Data Exploration**: Quickly explore datasets without loading into a warehouse\n2. **CI/CD Data Testing**: Run data quality checks in your pipeline\n3. **Local Development**: Prototype queries before deploying to production warehouse\n4. **Embedded Analytics**: Add SQL analytics to any application\n5. **File Format Conversion**: Transform between Parquet, CSV, JSON efficiently\n\n## When NOT to Use DuckDB\n\n- **Concurrent Users**: DuckDB is single-process; use a real warehouse for multi-user workloads\n- **Transactional Workloads**: Use PostgreSQL or SQLite for OLTP\n- **Massive Scale**: 100GB+ datasets are better served by distributed systems",
+    "keyPoints": [
+      "In-process OLAP database — like SQLite but for analytics",
+      "Zero infrastructure: runs inside Python, R, or any application",
+      "Queries Parquet, CSV, JSON files directly without loading",
+      "Vectorized columnar engine with automatic parallelism",
+      "Perfect for data exploration, local development, and embedded analytics"
+    ],
+    "faqs": [
+      {
+        "question": "What is DuckDB used for?",
+        "answer": "DuckDB is used for analytical queries (aggregations, joins, window functions) on local datasets. It's ideal for data exploration, prototyping, CI/CD data testing, and embedding SQL analytics into applications."
+      },
+      {
+        "question": "Is DuckDB a replacement for Snowflake?",
+        "answer": "No. DuckDB is for single-user, local analytics. Snowflake is for enterprise-scale, multi-user, cloud-based warehousing. However, DuckDB is excellent for local development and prototyping before deploying to Snowflake."
+      },
+      {
+        "question": "Can DuckDB handle large datasets?",
+        "answer": "DuckDB can efficiently handle datasets larger than RAM (up to ~100GB) using its out-of-core processing. For larger datasets, a distributed system like Snowflake or Spark is recommended."
+      },
+      {
+        "question": "Is DuckDB free?",
+        "answer": "Yes. DuckDB is completely free and open-source under the MIT license. There is a commercial entity (DuckDB Labs / MotherDuck) that offers a managed cloud service."
+      }
+    ],
+    "relatedTerms": [
+      "olap",
+      "columnar-storage",
+      "apache-spark",
+      "data-warehouse"
+    ],
+    "relatedTools": [
+      "MotherDuck",
+      "Snowflake",
+      "ClickHouse",
+      "Polars",
+      "Apache Arrow"
+    ],
+    "externalLinks": [
+      {
+        "title": "DuckDB Official Documentation",
+        "url": "https://duckdb.org/docs/"
+      },
+      {
+        "title": "DuckDB Python API",
+        "url": "https://duckdb.org/docs/api/python/overview"
+      }
+    ],
+    "keywords": [
+      "duckdb",
+      "duckdb tutorial",
+      "duckdb vs sqlite",
+      "duckdb python",
+      "duckdb parquet query"
+    ],
+    "lastUpdated": "2026-02-27"
+  },
+  {
+    "term": "Vector Database",
+    "slug": "vector-database",
+    "category": "analytics",
+    "shortDefinition": "A database optimized for storing and searching high-dimensional vectors (embeddings), enabling semantic search, RAG pipelines, and AI-powered applications.",
+    "fullDefinition": "A **Vector Database** is a specialized database designed to store, index, and query **high-dimensional vectors** (also called embeddings). These vectors are numerical representations of unstructured data — text, images, audio — generated by AI models. Vector databases power the retrieval layer of AI applications like **RAG (Retrieval-Augmented Generation)**, semantic search, and recommendation engines.\n\n## How Vector Databases Work\n\n```\n1. EMBED: Convert data to vectors using AI models\n   \"Snowflake Architecture\" → [0.23, -0.45, 0.78, ...] (768 dimensions)\n\n2. STORE: Index vectors for fast similarity search\n   Vector DB stores millions of vectors with metadata\n\n3. QUERY: Find similar vectors using distance metrics\n   \"cloud data warehouse\" → Find top 10 most similar documents\n```\n\n## Why Vectors Matter\n\nTraditional databases search by **exact match** (WHERE name = 'John'). Vector databases search by **similarity** — finding items that are conceptually close, even if they share no keywords.\n\n| Traditional Search | Vector Search |\n|---|---|\n| WHERE title LIKE '%snowflake%' | Find articles about cloud data warehousing |\n| Exact keyword matching | Semantic meaning matching |\n| Misses synonyms and context | Understands intent and relationships |\n\n## Key Concepts\n\n### Embeddings\nNumerical vectors that capture the semantic meaning of data:\n- **Text**: Generated by models like OpenAI Ada, Cohere, Snowflake Arctic\n- **Images**: Generated by CLIP, ResNet\n- **Dimensions**: Typically 256 to 1536 floating-point numbers\n\n### Similarity Metrics\n- **Cosine Similarity**: Angle between vectors (most common for text)\n- **Euclidean Distance**: Straight-line distance\n- **Dot Product**: Combination of direction and magnitude\n\n### Indexing Algorithms\n- **HNSW** (Hierarchical Navigable Small World): Fast, accurate, memory-intensive\n- **IVF** (Inverted File Index): Good balance of speed and memory\n- **PQ** (Product Quantization): Compressed vectors for huge datasets\n\n## Popular Vector Databases\n\n| Database | Type | Best For |\n|----------|------|----------|\n| Pinecone | Managed SaaS | Production RAG, zero-ops |\n| Weaviate | Open Source | Hybrid search (vector + keyword) |\n| Milvus | Open Source | Massive scale (billions of vectors) |\n| Qdrant | Open Source | Rust-based performance |\n| Chroma | Open Source | Local development, prototyping |\n| pgvector | PostgreSQL Extension | Adding vectors to existing Postgres |\n| Snowflake Cortex | Integrated | Snowflake-native RAG |\n\n## Use Cases\n\n1. **RAG (Retrieval-Augmented Generation)**: Feed relevant context to LLMs\n2. **Semantic Search**: Find results by meaning, not keywords\n3. **Recommendation Engines**: Suggest similar products/content\n4. **Image Search**: Find visually similar images\n5. **Anomaly Detection**: Identify data points far from normal patterns",
+    "keyPoints": [
+      "Stores and searches high-dimensional vector embeddings",
+      "Enables semantic (meaning-based) search instead of keyword matching",
+      "Powers RAG pipelines, recommendation engines, and AI applications",
+      "Uses algorithms like HNSW and IVF for approximate nearest neighbor search",
+      "Popular options: Pinecone, Weaviate, Milvus, Qdrant, pgvector"
+    ],
+    "faqs": [
+      {
+        "question": "What is a vector database in simple terms?",
+        "answer": "A vector database stores data as numerical arrays (vectors) that represent the meaning of text, images, or other content. It finds similar items by comparing these vectors, enabling AI-powered search that understands context and meaning."
+      },
+      {
+        "question": "Why do you need a vector database for AI?",
+        "answer": "LLMs have limited context windows and can hallucinate. Vector databases store your organization's knowledge as embeddings, allowing you to retrieve relevant context and feed it to the LLM (RAG pattern), producing accurate, grounded responses."
+      },
+      {
+        "question": "What is the difference between a vector database and a regular database?",
+        "answer": "Regular databases find exact matches (WHERE id = 5). Vector databases find similar items using mathematical distance between high-dimensional vectors. They answer 'what is most similar to X?' rather than 'what exactly matches X?'"
+      },
+      {
+        "question": "Can Snowflake be used as a vector database?",
+        "answer": "Yes. Snowflake Cortex Search provides built-in vector search capabilities, and you can store embeddings in ARRAY columns with VECTOR_COSINE_SIMILARITY functions for similarity search."
+      }
+    ],
+    "relatedTerms": [
+      "data-warehouse",
+      "apache-spark",
+      "olap"
+    ],
+    "relatedTools": [
+      "Pinecone",
+      "Weaviate",
+      "Milvus",
+      "Qdrant",
+      "Snowflake Cortex"
+    ],
+    "externalLinks": [
+      {
+        "title": "Pinecone Learning Center",
+        "url": "https://www.pinecone.io/learn/"
+      },
+      {
+        "title": "Vector Database Comparison",
+        "url": "https://benchmark.vectorview.ai/"
+      }
+    ],
+    "keywords": [
+      "vector database",
+      "vector database for RAG",
+      "what is a vector database",
+      "pinecone vs weaviate",
+      "embedding database"
+    ],
+    "lastUpdated": "2026-02-27"
+  },
+  {
+    "term": "Feature Store",
+    "slug": "feature-store",
+    "category": "analytics",
+    "shortDefinition": "A centralized platform for storing, managing, and serving ML features — ensuring consistency between model training and real-time inference.",
+    "fullDefinition": "A **Feature Store** is a centralized repository for storing, versioning, and serving machine learning features. It bridges the gap between data engineering and ML engineering by providing a single source of truth for feature definitions, ensuring that the features used during model training are identical to those used during real-time inference.\n\n## The Problem Feature Stores Solve\n\n```\nWithout Feature Store:\n  Training: SQL query → Pandas → feature engineering → model.fit()\n  Serving:  API request → different code → different features → SKEW!\n\nWith Feature Store:\n  Training: feature_store.get_historical('user_features') → model.fit()\n  Serving:  feature_store.get_online('user_features') → model.predict()\n  Result:   SAME features, ZERO skew\n```\n\n### Training-Serving Skew\nThe #1 problem in ML production: features computed differently during training vs. inference, causing model performance degradation.\n\n## Core Components\n\n### Offline Store\n- **Purpose**: Store historical feature values for model training\n- **Storage**: Data warehouse (Snowflake, BigQuery) or data lake (S3 + Iceberg)\n- **Access Pattern**: Batch reads, point-in-time lookups\n- **Example**: \"What was this user's 30-day purchase count on March 1, 2025?\"\n\n### Online Store\n- **Purpose**: Serve latest feature values for real-time inference\n- **Storage**: Low-latency databases (Redis, DynamoDB, Bigtable)\n- **Access Pattern**: Single-key lookups in <10ms\n- **Example**: \"What is this user's current session count right now?\"\n\n### Feature Registry\n- **Purpose**: Catalog and document all features\n- **Contains**: Feature definitions, owners, data types, descriptions\n- **Enables**: Feature discovery and reuse across teams\n\n## Popular Feature Stores\n\n| Tool | Type | Best For |\n|------|------|----------|\n| Feast | Open Source | Simple, flexible, Kubernetes-native |\n| Tecton | Managed | Enterprise real-time ML |\n| Databricks Feature Store | Integrated | Databricks/MLflow users |\n| SageMaker Feature Store | Managed | AWS-native ML workflows |\n| Hopsworks | Open Source | Feature pipelines + serving |\n| Snowflake (Cortex) | Integrated | Snowflake-native ML |\n\n## Use Cases\n\n1. **Fraud Detection**: Real-time features (transaction velocity, device fingerprint)\n2. **Recommendations**: User behavior features served in <10ms\n3. **Credit Scoring**: Consistent features across training and scoring\n4. **Search Ranking**: Real-time query + user features for personalization\n5. **Dynamic Pricing**: Market signals as features for pricing models",
+    "keyPoints": [
+      "Centralized repository for ML features used in training and serving",
+      "Solves training-serving skew — ensures feature consistency",
+      "Two stores: offline (batch training) and online (real-time inference)",
+      "Feature registry enables discovery and reuse across teams",
+      "Popular tools: Feast, Tecton, Databricks Feature Store, SageMaker"
+    ],
+    "faqs": [
+      {
+        "question": "What is a feature store in machine learning?",
+        "answer": "A feature store is a centralized platform that stores, manages, and serves ML features. It ensures the same feature definitions and computations are used during both model training and real-time prediction, preventing training-serving skew."
+      },
+      {
+        "question": "Why do you need a feature store?",
+        "answer": "Without a feature store, teams often compute features differently during training vs. serving, causing model degradation. A feature store provides a single source of truth, enables feature reuse across teams, and handles both batch and real-time serving."
+      },
+      {
+        "question": "What is the difference between offline and online feature stores?",
+        "answer": "The offline store holds historical feature values for batch model training. The online store holds the latest feature values for real-time inference (<10ms latency). A feature store typically syncs data between both."
+      }
+    ],
+    "relatedTerms": [
+      "data-pipeline",
+      "data-warehouse",
+      "data-quality",
+      "apache-spark"
+    ],
+    "relatedTools": [
+      "Feast",
+      "Tecton",
+      "Databricks",
+      "SageMaker",
+      "Snowflake Cortex"
+    ],
+    "externalLinks": [
+      {
+        "title": "Feast Documentation",
+        "url": "https://docs.feast.dev/"
+      },
+      {
+        "title": "Feature Store for ML (Google)",
+        "url": "https://cloud.google.com/vertex-ai/docs/featurestore/"
+      }
+    ],
+    "keywords": [
+      "feature store",
+      "feature store ML",
+      "feast feature store",
+      "what is a feature store",
+      "ml feature engineering"
+    ],
+    "lastUpdated": "2026-02-27"
   }
 ]

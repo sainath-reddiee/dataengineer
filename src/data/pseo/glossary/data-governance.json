@@ -223,5 +223,60 @@
       "data architecture"
     ],
     "lastUpdated": "2026-01-21"
+  },
+  {
+    "term": "Data Fabric",
+    "slug": "data-fabric",
+    "category": "data-governance",
+    "shortDefinition": "An architecture that uses AI and metadata to automatically discover, integrate, and govern data across distributed environments — making data accessible regardless of where it lives.",
+    "fullDefinition": "**Data Fabric** is an architectural approach that simplifies data access across an organization by intelligently connecting disparate data sources, formats, and environments. Unlike traditional approaches that move data to a central warehouse, Data Fabric creates a **virtual layer** that makes data accessible in place.\n\n## How Data Fabric Works\n\n```\n    ┌──────────────────────────────────────┐\n    │         AI/ML Metadata Layer         │\n    │    (Auto-discovery, Cataloging,      │\n    │     Lineage, Recommendations)        │\n    └───┬──────────┬──────────┬────────────┘\n        │          │          │\n   ┌────▼───┐ ┌───▼────┐ ┌───▼────┐\n   │ Cloud  │ │On-Prem │ │  SaaS  │\n   │  DW    │ │  DB    │ │  Apps  │\n   └────────┘ └────────┘ └────────┘\n```\n\n## Core Pillars\n\n### 1. Active Metadata\nData Fabric continuously collects and analyzes metadata to understand:\n- What data exists and where\n- How data is used and by whom\n- Data quality and freshness\n- Relationships between datasets\n\n### 2. Knowledge Graph\nA semantic layer that maps relationships between data assets:\n- Automatic schema discovery\n- Cross-system lineage tracking\n- Impact analysis for changes\n\n### 3. AI-Augmented Integration\nML models that recommend and automate:\n- Data pipeline creation\n- Query optimization\n- Access control policies\n- Data quality rules\n\n## Data Fabric vs. Data Mesh\n\n| Aspect | Data Fabric | Data Mesh |\n|--------|------------|----------|\n| Approach | Technology-driven | Organization-driven |\n| Control | Centralized automation | Decentralized ownership |\n| Focus | Connecting all data | Domain-oriented data products |\n| Implementation | Platform team builds fabric | Domain teams build products |\n| Best For | Complex, sprawling data estates | Organizations with strong domain teams |\n\n## Key Benefits\n\n- **Reduced Integration Time**: AI automates discovery and mapping\n- **Self-Service Access**: Users find and access data without IT tickets\n- **Consistent Governance**: Policies applied uniformly across all sources\n- **Hybrid/Multi-Cloud**: Works across any environment",
+    "keyPoints": [
+      "Architecture that connects distributed data sources via metadata and AI",
+      "Uses active metadata and knowledge graphs for auto-discovery",
+      "Enables self-service data access without centralizing data",
+      "Gartner's #1 data management trend since 2022",
+      "Complements or competes with Data Mesh approaches"
+    ],
+    "faqs": [
+      {
+        "question": "What is a Data Fabric in simple terms?",
+        "answer": "Data Fabric is an architecture that uses AI and metadata to automatically connect, manage, and govern data across all your systems — cloud, on-premise, and SaaS — so users can access any data without knowing where it lives."
+      },
+      {
+        "question": "What is the difference between Data Fabric and Data Mesh?",
+        "answer": "Data Fabric is a technology-centric approach using AI to centrally automate data management. Data Mesh is an organizational approach that decentralizes data ownership to domain teams. They can be complementary."
+      },
+      {
+        "question": "What are examples of Data Fabric tools?",
+        "answer": "Popular Data Fabric platforms include Informatica IDMC, IBM Cloud Pak for Data, Denodo, Talend, and Atlan. Cloud providers also offer components like AWS Glue DataBrew and Azure Purview."
+      }
+    ],
+    "relatedTerms": [
+      "data-mesh",
+      "data-governance",
+      "data-catalog",
+      "data-lineage"
+    ],
+    "relatedTools": [
+      "Informatica",
+      "IBM Cloud Pak",
+      "Denodo",
+      "Atlan",
+      "Azure Purview"
+    ],
+    "externalLinks": [
+      {
+        "title": "Gartner on Data Fabric",
+        "url": "https://www.gartner.com/en/information-technology/glossary/data-fabric"
+      }
+    ],
+    "keywords": [
+      "data fabric",
+      "data fabric architecture",
+      "data fabric vs data mesh",
+      "data fabric tools",
+      "what is data fabric"
+    ],
+    "lastUpdated": "2026-02-27"
   }
 ]

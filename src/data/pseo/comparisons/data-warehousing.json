@@ -364,5 +364,176 @@
       "delta-lake-vs-iceberg"
     ],
     "lastUpdated": "2026-02-05"
+  },
+  {
+    "slug": "bigquery-vs-redshift",
+    "toolA": "Google BigQuery",
+    "toolB": "Amazon Redshift",
+    "category": "data-warehousing",
+    "winner": "BigQuery",
+    "shortVerdict": "BigQuery's serverless architecture and separation of storage/compute make it simpler and more cost-effective for most workloads. Redshift offers more control and tighter AWS integration, but requires more operational overhead.",
+    "intro": "### Serverless Simplicity vs. Provisioned Power\n\nThe two largest cloud data warehouses after Snowflake face off: **Google BigQuery** vs. **Amazon Redshift**.\n\n**Google BigQuery** is a fully serverless, petabyte-scale data warehouse. There are no clusters to provision, no indexes to create, no vacuuming to schedule. You load data, write SQL, and pay per query (or flat-rate). BigQuery automatically handles storage optimization, query distribution, and scaling.\n\n**Amazon Redshift** is a managed columnar data warehouse that runs on provisioned clusters. While Redshift Serverless exists, the platform's DNA is cluster-based — you choose instance types, manage node counts, run VACUUM and ANALYZE commands, and optimize distribution and sort keys. In return, you get predictable performance and deep AWS ecosystem integration.\n\n**The core trade-off:** BigQuery is easier to manage but less tunable. Redshift gives more control but demands more expertise.",
+    "features": [
+      {
+        "name": "Architecture",
+        "toolAValue": "Fully Serverless (Dremel engine)",
+        "toolBValue": "Provisioned Clusters (+ Serverless option)",
+        "winner": "BigQuery"
+      },
+      {
+        "name": "Pricing Model",
+        "toolAValue": "Pay per query ($6.25/TB) or flat-rate slots",
+        "toolBValue": "Pay per hour (cluster uptime) or RA3 storage-separated",
+        "winner": "BigQuery"
+      },
+      {
+        "name": "Administration",
+        "toolAValue": "Zero admin — no vacuuming, no index tuning",
+        "toolBValue": "Requires VACUUM, ANALYZE, distribution key tuning",
+        "winner": "BigQuery"
+      },
+      {
+        "name": "ML Integration",
+        "toolAValue": "BigQuery ML (train models with SQL)",
+        "toolBValue": "Redshift ML (SageMaker integration)",
+        "winner": "BigQuery"
+      },
+      {
+        "name": "Ecosystem",
+        "toolAValue": "Deep GCP integration (Looker, Dataflow, Vertex AI)",
+        "toolBValue": "Deep AWS integration (S3, Glue, Lambda, SageMaker)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Semi-Structured Data",
+        "toolAValue": "Native JSON, ARRAY, STRUCT types",
+        "toolBValue": "SUPER type (semi-structured), but less mature",
+        "winner": "BigQuery"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "True serverless — zero infrastructure management",
+        "Scales instantly from bytes to petabytes",
+        "Pay-per-query model is cost-effective for sporadic workloads",
+        "BigQuery ML enables machine learning with SQL",
+        "Built-in BI Engine for sub-second dashboard queries"
+      ],
+      "toolB": [
+        "Predictable performance with provisioned clusters",
+        "Deep AWS integration across the entire ecosystem",
+        "Mature Redshift Spectrum for S3 data lake queries",
+        "Better for consistent, high-concurrency workloads",
+        "More control over performance tuning (sort keys, dist keys)"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Costs can spike with poorly optimized queries (full table scans)",
+        "Less control over query performance tuning",
+        "GCP market share is smaller than AWS (fewer engineers)",
+        "Slot-based pricing can be confusing"
+      ],
+      "toolB": [
+        "Cluster management overhead (resizing, VACUUM, node types)",
+        "Fixed capacity — must provision for peak usage",
+        "Cold start times when scaling up",
+        "Serverless option is more expensive than provisioned"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose BigQuery if:**\n*   You want zero infrastructure management\n*   Your query patterns are sporadic or unpredictable\n*   You're already on GCP or want the simplest cloud warehouse\n*   You want built-in ML training with SQL (BigQuery ML)\n\n**Choose Redshift if:**\n*   You're deeply invested in the AWS ecosystem\n*   You need predictable, consistent query performance\n*   Your workloads are steady and high-concurrency\n*   You want maximum control over performance tuning",
+    "relatedComparisons": [
+      "snowflake-vs-bigquery",
+      "redshift-vs-snowflake",
+      "snowflake-vs-databricks"
+    ],
+    "lastUpdated": "2026-02-27"
+  },
+  {
+    "slug": "snowflake-vs-synapse",
+    "toolA": "Snowflake",
+    "toolB": "Azure Synapse Analytics",
+    "category": "data-warehousing",
+    "winner": "Snowflake",
+    "shortVerdict": "Snowflake delivers superior ease of use, performance consistency, and multi-cloud flexibility. Synapse wins for organizations deeply embedded in the Microsoft/Azure ecosystem that want a unified analytics workspace.",
+    "intro": "### Cloud-Native Simplicity vs. Microsoft Ecosystem Power\n\n**Snowflake** is a purpose-built cloud data warehouse known for its separation of storage and compute, automatic performance optimization, and cross-cloud support (AWS, Azure, GCP). It dominates in simplicity — there's no infrastructure tuning, no index management, and queries scale elastically.\n\n**Azure Synapse Analytics** (formerly SQL Data Warehouse) is Microsoft's unified analytics platform that combines data warehousing, big data, and data integration into a single workspace. It provides both **Dedicated SQL Pools** (provisioned Snowflake-like compute) and **Serverless SQL Pools** (pay-per-query), plus built-in Spark, Power BI integration, and Azure Data Factory.\n\n**The fundamental trade-off:** Snowflake is the better standalone data warehouse. Synapse is the better option if you want a single Azure-native platform for everything.",
+    "features": [
+      {
+        "name": "Architecture",
+        "toolAValue": "Fully separated storage/compute, auto-scaling",
+        "toolBValue": "Dedicated pools + serverless pools + Spark pools",
+        "winner": "Snowflake"
+      },
+      {
+        "name": "Performance Tuning",
+        "toolAValue": "Zero-tuning (automatic optimization)",
+        "toolBValue": "Requires distribution keys, partitioning, statistics",
+        "winner": "Snowflake"
+      },
+      {
+        "name": "Multi-Cloud",
+        "toolAValue": "AWS, Azure, GCP (with cross-cloud replication)",
+        "toolBValue": "Azure only",
+        "winner": "Snowflake"
+      },
+      {
+        "name": "Data Sharing",
+        "toolAValue": "Snowflake Marketplace + Secure Data Sharing",
+        "toolBValue": "Azure Data Share (separate service)",
+        "winner": "Snowflake"
+      },
+      {
+        "name": "Microsoft Integration",
+        "toolAValue": "Works with Power BI, ADF (via connectors)",
+        "toolBValue": "Native: Power BI, ADF, Azure ML, Purview, Entra ID",
+        "winner": "Azure Synapse"
+      },
+      {
+        "name": "Unified Analytics",
+        "toolAValue": "SQL warehouse only (ML via Cortex, Snowpark)",
+        "toolBValue": "SQL + Spark + Pipelines + Power BI in one workspace",
+        "winner": "Azure Synapse"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Zero infrastructure tuning — queries just work fast",
+        "Instant, elastic scaling of compute (multi-cluster warehouses)",
+        "Cross-cloud deployment and data replication",
+        "Snowflake Marketplace for third-party data sharing",
+        "Time Travel and Fail-safe for data recovery",
+        "Massive community and ecosystem (dbt, Fivetran, etc.)"
+      ],
+      "toolB": [
+        "Single Azure workspace for SQL, Spark, pipelines, and Power BI",
+        "Native integration with all Microsoft services (Entra ID, Purview)",
+        "Serverless SQL pool for ad-hoc queries (pay-per-query)",
+        "Built-in Apache Spark pools for big data processing",
+        "Familiar T-SQL syntax for Microsoft SQL Server teams",
+        "Enterprise licensing bundles (can be cheaper with EA agreements)"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Not part of the Microsoft ecosystem (separate vendor)",
+        "No built-in Spark (Snowpark is Python/Java on Snowflake compute)",
+        "Credit-based pricing can be unpredictable",
+        "Requires separate tools for data integration (Fivetran, ADF)"
+      ],
+      "toolB": [
+        "Dedicated SQL pools require manual tuning for optimal performance",
+        "Complex pricing model (multiple pool types, DWUs, storage)",
+        "Azure-only — no multi-cloud flexibility",
+        "Serverless pool has limitations (no materialized views, limited DML)",
+        "Spark pools can be slow to start (cold start delays)"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Snowflake if:**\n*   You want the best standalone data warehouse experience\n*   Zero-tuning performance and elastic scaling matter most\n*   You need multi-cloud or cross-cloud deployment\n*   Your team prioritizes simplicity over platform unification\n\n**Choose Azure Synapse if:**\n*   Your organization is deeply invested in Microsoft/Azure\n*   You want SQL + Spark + Pipelines in a single workspace\n*   You need native Power BI and Entra ID integration\n*   Your Enterprise Agreement makes Synapse cost-effective\n*   You have existing T-SQL expertise from SQL Server",
+    "relatedComparisons": [
+      "redshift-vs-snowflake",
+      "snowflake-vs-bigquery",
+      "snowflake-vs-databricks"
+    ],
+    "lastUpdated": "2026-02-27"
   }
 ]

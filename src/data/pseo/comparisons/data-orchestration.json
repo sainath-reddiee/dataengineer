@@ -71,5 +71,255 @@
       "dbt-vs-dataform"
     ],
     "lastUpdated": "2026-01-29"
+  },
+  {
+    "slug": "airflow-vs-prefect",
+    "toolA": "Apache Airflow",
+    "toolB": "Prefect",
+    "category": "data-orchestration",
+    "winner": "Depends",
+    "shortVerdict": "Airflow is the battle-tested industry standard with massive adoption. Prefect is the modern Pythonic alternative built to fix Airflow's pain points — with native dynamic tasks, better error handling, and a developer-first experience.",
+    "intro": "### The Orchestration Showdown: Legacy King vs. Modern Challenger\n\n**Apache Airflow** dominates data orchestration with 10+ years of production use at thousands of companies. It defines workflows as DAGs (Directed Acyclic Graphs) using Python code and runs them on a schedule. However, Airflow was built in an era before cloud-native tooling, and its architecture shows its age — complex deployment, rigid DAG definitions, and poor local development experience.\n\n**Prefect** was explicitly built to fix these frustrations. Created by former Airflow users, Prefect takes a \"code-first\" approach where any Python function can become a task with a simple `@task` decorator. It supports dynamic workflows, has built-in retries with exponential backoff, and offers both a managed cloud service (Prefect Cloud) and a self-hosted option (Prefect Server).\n\nThe choice between them often comes down to: **Do you value ecosystem maturity and community size (Airflow), or developer experience and modern architecture (Prefect)?**",
+    "features": [
+      {
+        "name": "DAG Definition",
+        "toolAValue": "Explicit DAG structure required upfront",
+        "toolBValue": "Dynamic flows — any Python function, no DAG boilerplate",
+        "winner": "Prefect"
+      },
+      {
+        "name": "Dynamic Tasks",
+        "toolAValue": "Limited (Dynamic Task Mapping in Airflow 2.3+)",
+        "toolBValue": "First-class support — map over lists, conditionals, etc.",
+        "winner": "Prefect"
+      },
+      {
+        "name": "Local Development",
+        "toolAValue": "Requires Docker or full Airflow setup",
+        "toolBValue": "Run flows locally with `python my_flow.py`",
+        "winner": "Prefect"
+      },
+      {
+        "name": "Community & Ecosystem",
+        "toolAValue": "2,000+ providers, massive community, abundant documentation",
+        "toolBValue": "Growing ecosystem, 200+ integrations",
+        "winner": "Apache Airflow"
+      },
+      {
+        "name": "Managed Service",
+        "toolAValue": "MWAA (AWS), Cloud Composer (GCP), Astronomer",
+        "toolBValue": "Prefect Cloud (native managed service)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Error Handling",
+        "toolAValue": "Basic retries, email alerts",
+        "toolBValue": "Built-in retries, exponential backoff, automations, notifications",
+        "winner": "Prefect"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Industry standard with the largest community and talent pool",
+        "2,000+ pre-built providers for integrations",
+        "Battle-tested at companies like Airbnb, Lyft, and Netflix",
+        "Multiple managed service options across all major clouds",
+        "Extensive documentation and Stack Overflow answers"
+      ],
+      "toolB": [
+        "Pythonic — decorate functions with @task and @flow, no boilerplate",
+        "Dynamic task mapping and conditional execution out of the box",
+        "Superior local development — run flows with plain Python",
+        "Modern UI with real-time flow run visualization",
+        "Built-in caching, retries with backoff, and concurrency limits"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Complex deployment (scheduler, webserver, workers, database, Redis)",
+        "DAGs must be defined statically (limited dynamic capabilities)",
+        "Local development experience is painful",
+        "Testing workflows requires significant setup"
+      ],
+      "toolB": [
+        "Smaller community and fewer available integrations",
+        "Fewer battle-tested production deployments at massive scale",
+        "Breaking changes between Prefect 1.x and 2.x caused trust issues",
+        "Less third-party documentation and tutorials"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Airflow if:**\n*   You need the largest ecosystem and community support\n*   Your team already has Airflow expertise\n*   You want a managed service from a major cloud provider (MWAA, Cloud Composer)\n*   You have complex, stable workflows that don't change frequently\n\n**Choose Prefect if:**\n*   Developer experience is a top priority for your team\n*   You need dynamic, data-dependent workflows\n*   You want to run flows locally during development without Docker\n*   You're building a new team and want a modern, growing platform\n*   You value Pythonic simplicity over configuration",
+    "relatedComparisons": [
+      "dagster-vs-prefect",
+      "airflow-vs-dagster"
+    ],
+    "lastUpdated": "2026-02-27"
+  },
+  {
+    "slug": "dagster-vs-prefect",
+    "toolA": "Dagster",
+    "toolB": "Prefect",
+    "category": "data-orchestration",
+    "winner": "Depends",
+    "shortVerdict": "Dagster is the 'Software-Defined Assets' platform focused on data lineage and testing. Prefect is the 'just decorate your Python' orchestrator focused on simplicity and developer velocity.",
+    "intro": "### Two Modern Orchestrators, Two Different Philosophies\n\nBoth **Dagster** and **Prefect** were built as modern alternatives to Apache Airflow, but they take fundamentally different approaches:\n\n**Dagster** is an **asset-centric** orchestration platform. Instead of defining tasks and dependencies, you define the **data assets** (tables, files, ML models) that your pipelines produce. Dagster tracks the lineage between assets, knows when assets are stale, and provides built-in testing, type checking, and observability. It's the choice for teams that want a strongly-opinionated, data-aware platform.\n\n**Prefect** is a **task-centric** orchestration platform. You write normal Python functions, add `@task` and `@flow` decorators, and Prefect handles scheduling, retries, observability, and concurrency. It's deliberately minimal in opinion — it orchestrates your existing code without requiring you to restructure your codebase.\n\nThe choice often reduces to: **Do you want a comprehensive data platform with built-in lineage and testing (Dagster), or a lightweight orchestration layer that stays out of your way (Prefect)?**",
+    "features": [
+      {
+        "name": "Core Abstraction",
+        "toolAValue": "Software-Defined Assets (data-centric)",
+        "toolBValue": "Tasks and Flows (execution-centric)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Data Lineage",
+        "toolAValue": "Built-in, first-class asset lineage graph",
+        "toolBValue": "Not built-in (requires external tooling)",
+        "winner": "Dagster"
+      },
+      {
+        "name": "Testing",
+        "toolAValue": "First-class: unit test assets with type checking",
+        "toolBValue": "Standard Python testing (pytest)",
+        "winner": "Dagster"
+      },
+      {
+        "name": "Learning Curve",
+        "toolAValue": "Steeper — new concepts (Assets, IO Managers, Resources)",
+        "toolBValue": "Gentle — just Python decorators",
+        "winner": "Prefect"
+      },
+      {
+        "name": "Adoption Speed",
+        "toolAValue": "More setup, but pays off long-term",
+        "toolBValue": "Immediate — decorate and deploy",
+        "winner": "Prefect"
+      },
+      {
+        "name": "Partitioning",
+        "toolAValue": "Native partition support for assets",
+        "toolBValue": "Manual via task mapping",
+        "winner": "Dagster"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Asset-centric model naturally produces data lineage",
+        "Built-in testing framework with type checking",
+        "Knows when assets are stale and need refreshing",
+        "Partition-aware scheduling for incremental processing",
+        "Excellent documentation with interactive tutorials"
+      ],
+      "toolB": [
+        "Lowest friction to get started — decorate any Python function",
+        "Dynamic workflows with runtime-determined structure",
+        "Run locally with zero infrastructure setup",
+        "Managed cloud service with generous free tier",
+        "Less opinionated — fits into existing codebases easily"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Higher learning curve with new concepts",
+        "Requires restructuring code around assets",
+        "Smaller community than both Airflow and Prefect",
+        "Can feel over-engineered for simple workflows"
+      ],
+      "toolB": [
+        "No built-in data lineage or asset tracking",
+        "Less structure can lead to inconsistent patterns across teams",
+        "Version migrations (1.x → 2.x) broke backward compatibility",
+        "Limited built-in data quality and testing features"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Dagster if:**\n*   Data quality, lineage, and testing are priorities\n*   You're building a new data platform from scratch\n*   You want the system to understand your data assets and their dependencies\n*   Your team embraces the software-defined assets paradigm\n\n**Choose Prefect if:**\n*   You want the fastest path from code to production\n*   You're adding orchestration to an existing codebase\n*   Your workflows are dynamic and data-dependent\n*   You prefer minimal abstractions and maximum flexibility",
+    "relatedComparisons": [
+      "airflow-vs-prefect",
+      "airflow-vs-dagster"
+    ],
+    "lastUpdated": "2026-02-27"
+  },
+  {
+    "slug": "mwaa-vs-cloud-composer",
+    "toolA": "Amazon MWAA",
+    "toolB": "Google Cloud Composer",
+    "category": "data-orchestration",
+    "winner": "Depends",
+    "shortVerdict": "Both are managed Apache Airflow services. MWAA wins for AWS-native workloads with simpler pricing. Cloud Composer wins for GCP-native workloads and supports Airflow 2.x features earlier.",
+    "intro": "### Managed Airflow: AWS vs. GCP\n\nBoth **Amazon MWAA (Managed Workflows for Apache Airflow)** and **Google Cloud Composer** provide fully managed Apache Airflow environments — eliminating the pain of running Airflow's scheduler, webserver, workers, and metadata database yourself.\n\n**Amazon MWAA** launched in 2020 and provides a straightforward managed Airflow experience. Your DAG files live in S3, requirements are installed automatically, and MWAA handles scaling workers. It integrates natively with AWS services (S3, Redshift, Glue, Lambda, EMR) and uses VPC for networking.\n\n**Google Cloud Composer** (based on Airflow running on GKE) was the first managed Airflow offering (2018) and is generally ahead on Airflow version support. It integrates natively with GCP services (BigQuery, Dataflow, GCS, Vertex AI) and offers both Composer 1 (Classic) and Composer 2 (Autopilot, with better scaling).\n\n**Choosing between them is almost always determined by which cloud you're on.**",
+    "features": [
+      {
+        "name": "Underlying Infrastructure",
+        "toolAValue": "AWS Fargate (containers)",
+        "toolBValue": "Google Kubernetes Engine (GKE)",
+        "winner": "Tie"
+      },
+      {
+        "name": "DAG Storage",
+        "toolAValue": "S3 bucket",
+        "toolBValue": "GCS bucket",
+        "winner": "Tie"
+      },
+      {
+        "name": "Auto-Scaling",
+        "toolAValue": "Worker auto-scaling (min/max workers)",
+        "toolBValue": "Composer 2 Autopilot (GKE-based auto-scaling)",
+        "winner": "Cloud Composer"
+      },
+      {
+        "name": "Airflow Version Support",
+        "toolAValue": "Slightly behind on latest Airflow versions",
+        "toolBValue": "Generally ahead on version support",
+        "winner": "Cloud Composer"
+      },
+      {
+        "name": "Pricing Simplicity",
+        "toolAValue": "Environment class-based (simple tiers)",
+        "toolBValue": "Component-based (compute + database + storage)",
+        "winner": "MWAA"
+      },
+      {
+        "name": "Cloud Integration",
+        "toolAValue": "S3, Redshift, Glue, Lambda, EMR, SageMaker",
+        "toolBValue": "BigQuery, Dataflow, GCS, Vertex AI, Pub/Sub",
+        "winner": "Tie"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Simpler pricing model based on environment class",
+        "VPC networking for secure private DAGs",
+        "Native integration with AWS services",
+        "Plugins folder in S3 for custom operators",
+        "Straightforward setup with minimal configuration"
+      ],
+      "toolB": [
+        "First to market — more mature managed Airflow offering",
+        "Composer 2 Autopilot provides better auto-scaling",
+        "Generally faster Airflow version adoption",
+        "GKE-based: can customize Kubernetes resources",
+        "Triggerer support for deferrable operators"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Can be slow to adopt latest Airflow features",
+        "Limited customization compared to self-hosted",
+        "Environment updates can require recreation",
+        "Worker scaling can be slow during burst workloads"
+      ],
+      "toolB": [
+        "More complex pricing (many individual components)",
+        "Composer 1 is being deprecated (migration needed)",
+        "GKE underlying complexity sometimes leaks through",
+        "Environment creation is slow (15-30 minutes)"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose MWAA if:**\n*   Your data infrastructure is on AWS\n*   You want the simplest managed Airflow experience\n*   Your DAGs use AWS services (S3, Redshift, Glue, EMR)\n*   You prefer simpler, predictable pricing\n\n**Choose Cloud Composer if:**\n*   Your data infrastructure is on GCP\n*   You want the latest Airflow features first\n*   Your DAGs use GCP services (BigQuery, Dataflow, GCS)\n*   You need better auto-scaling (Composer 2 Autopilot)\n\n**Note:** If you're considering alternatives to managed Airflow entirely, evaluate [Astronomer](https://www.astronomer.io/) (cloud-agnostic managed Airflow) or modern orchestrators like Prefect and Dagster.",
+    "relatedComparisons": [
+      "airflow-vs-prefect",
+      "airflow-vs-dagster",
+      "dagster-vs-prefect"
+    ],
+    "lastUpdated": "2026-02-27"
   }
 ]

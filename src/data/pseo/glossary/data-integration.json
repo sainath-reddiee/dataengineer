@@ -227,5 +227,65 @@
       "operational analytics"
     ],
     "lastUpdated": "2026-01-21"
+  },
+  {
+    "term": "Data Pipeline",
+    "slug": "data-pipeline",
+    "category": "data-integration",
+    "shortDefinition": "An automated series of steps that extracts data from sources, transforms it, and loads it into a destination — the backbone of every data-driven organization.",
+    "fullDefinition": "A **Data Pipeline** is an automated workflow that moves and transforms data from source systems to destination systems. It is the foundational infrastructure of data engineering — without pipelines, data stays trapped in operational systems and never reaches analysts, dashboards, or ML models.\n\n## How Data Pipelines Work\n\n```\n┌──────────┐    ┌───────────┐    ┌──────────┐    ┌──────────────┐\n│  Sources │──→ │  Extract  │──→ │Transform │──→ │    Load      │\n│          │    │           │    │          │    │              │\n│ Databases│    │ APIs      │    │ Clean    │    │ Data         │\n│ APIs     │    │ CDC       │    │ Validate │    │ Warehouse    │\n│ Files    │    │ Streaming │    │ Enrich   │    │ Data Lake    │\n│ SaaS     │    │           │    │ Aggregate│    │ Feature Store│\n└──────────┘    └───────────┘    └──────────┘    └──────────────┘\n```\n\n## Types of Data Pipelines\n\n### Batch Pipelines\n- Process data in scheduled intervals (hourly, daily)\n- Best for: Reports, analytics, historical analysis\n- Tools: Airflow, dbt, Spark, AWS Glue\n\n### Streaming Pipelines\n- Process data in real-time as it arrives\n- Best for: Fraud detection, real-time dashboards, alerts\n- Tools: Kafka, Flink, Spark Streaming, Kinesis\n\n### Hybrid Pipelines (Lambda/Kappa)\n- Combine batch and streaming for different latency needs\n- Lambda: Separate batch + speed layers\n- Kappa: Single streaming layer serves all needs\n\n## Pipeline Patterns\n\n### ETL (Extract, Transform, Load)\nTransform data **before** loading into the warehouse:\n```\nSource → Transform (staging) → Load (warehouse)\n```\nBest when you need data quality guarantees before loading.\n\n### ELT (Extract, Load, Transform)\nLoad raw data first, transform **inside** the warehouse:\n```\nSource → Load (warehouse raw) → Transform (warehouse clean)\n```\nBest when your warehouse has powerful compute (Snowflake, BigQuery).\n\n### Reverse ETL\nMove data **from** the warehouse **back to** operational tools:\n```\nWarehouse → CRM, Marketing tools, Product databases\n```\n\n## Key Infrastructure Components\n\n| Component | Purpose | Tools |\n|-----------|---------|-------|\n| Ingestion | Extract data from sources | Fivetran, Airbyte, Kafka Connect |\n| Orchestration | Schedule and monitor pipelines | Airflow, Dagster, Prefect |\n| Transformation | Clean and model data | dbt, Spark, Dataform |\n| Storage | Store processed data | Snowflake, BigQuery, S3 + Iceberg |\n| Quality | Validate data integrity | Great Expectations, dbt tests, Soda |\n| Observability | Monitor pipeline health | Monte Carlo, Datadog, Atlan |\n\n## Best Practices\n\n1. **Idempotency**: Running a pipeline twice produces the same result\n2. **Incremental Processing**: Only process new/changed data\n3. **Schema Evolution**: Handle schema changes gracefully\n4. **Testing**: Unit test transforms, integration test end-to-end\n5. **Alerting**: Get notified on failures, delays, and data quality issues\n6. **Documentation**: Document data lineage and business logic",
+    "keyPoints": [
+      "Automated workflow that moves and transforms data from sources to destinations",
+      "Two main types: batch (scheduled) and streaming (real-time)",
+      "Key patterns: ETL, ELT, and Reverse ETL",
+      "Requires orchestration, transformation, quality, and observability layers",
+      "Foundation of every data-driven organization's infrastructure"
+    ],
+    "faqs": [
+      {
+        "question": "What is a data pipeline?",
+        "answer": "A data pipeline is an automated series of steps that extracts data from source systems (databases, APIs, files), transforms it (cleans, validates, enriches), and loads it into a destination (data warehouse, data lake, or other system)."
+      },
+      {
+        "question": "What is the difference between ETL and ELT?",
+        "answer": "ETL transforms data before loading into the warehouse (transform in staging). ELT loads raw data first, then transforms inside the warehouse using its compute power. ELT is more common with modern cloud warehouses like Snowflake and BigQuery."
+      },
+      {
+        "question": "What tools are used to build data pipelines?",
+        "answer": "Common tools include: Airflow/Dagster/Prefect for orchestration, Fivetran/Airbyte for ingestion, dbt/Spark for transformation, and Snowflake/BigQuery for storage. The specific stack depends on your requirements."
+      },
+      {
+        "question": "What is the difference between batch and streaming pipelines?",
+        "answer": "Batch pipelines process data in scheduled intervals (e.g., every hour). Streaming pipelines process data in real-time as it arrives. Batch is simpler and cheaper; streaming provides lower latency but is more complex."
+      }
+    ],
+    "relatedTerms": [
+      "etl",
+      "cdc",
+      "apache-airflow",
+      "data-quality",
+      "data-observability"
+    ],
+    "relatedTools": [
+      "Apache Airflow",
+      "dbt",
+      "Fivetran",
+      "Apache Kafka",
+      "Snowflake"
+    ],
+    "externalLinks": [
+      {
+        "title": "Fundamentals of Data Engineering (O'Reilly)",
+        "url": "https://www.oreilly.com/library/view/fundamentals-of-data/9781098108298/"
+      }
+    ],
+    "keywords": [
+      "data pipeline",
+      "data pipeline architecture",
+      "ETL vs ELT",
+      "data pipeline tools",
+      "how to build a data pipeline"
+    ],
+    "lastUpdated": "2026-02-27"
   }
 ]

@@ -71,5 +71,255 @@
       "snowflake-vs-bigquery"
     ],
     "lastUpdated": "2026-02-05"
+  },
+  {
+    "slug": "duckdb-vs-polars",
+    "toolA": "DuckDB",
+    "toolB": "Polars",
+    "category": "analytics",
+    "winner": "Depends",
+    "shortVerdict": "DuckDB is the SQL-first embedded OLAP engine for querying files. Polars is the DataFrame-first library for blazing-fast data manipulation. Both are lightning fast — the choice comes down to SQL vs. DataFrame APIs.",
+    "intro": "### The Battle of the Local Analytics Giants\n\nBoth **DuckDB** and **Polars** represent a revolution in local data processing, challenging the dominance of cloud-based solutions for datasets that don't need a full warehouse.\n\n**DuckDB** is an in-process OLAP database that runs inside your application. It speaks SQL natively and can query Parquet, CSV, and JSON files directly. Think of it as **SQLite for analytics** — zero infrastructure, just SQL.\n\n**Polars** is a DataFrame library written in Rust (with Python bindings) designed as a modern replacement for Pandas. It uses Apache Arrow for memory layout, a lazy evaluation engine for query optimization, and multi-threaded execution for performance. Think of it as **Pandas, but 10-100x faster**.\n\nBoth can process datasets much larger than RAM, both are incredibly fast, and both run locally. The key difference: **DuckDB is SQL-first, Polars is DataFrame-first.**",
+    "features": [
+      {
+        "name": "Primary Interface",
+        "toolAValue": "SQL (with Python/R/JS bindings)",
+        "toolBValue": "DataFrame API (Python/Rust/Node.js)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Language",
+        "toolAValue": "C++ (embedded database)",
+        "toolBValue": "Rust (library with Python bindings)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Query Optimization",
+        "toolAValue": "Full SQL optimizer with predicate pushdown",
+        "toolBValue": "Lazy evaluation with query plan optimization",
+        "winner": "Tie"
+      },
+      {
+        "name": "File Format Support",
+        "toolAValue": "Parquet, CSV, JSON, Excel, SQLite, PostgreSQL",
+        "toolBValue": "Parquet, CSV, JSON, IPC/Arrow, Avro",
+        "winner": "DuckDB"
+      },
+      {
+        "name": "Integration",
+        "toolAValue": "Works with Pandas, Arrow, Polars, and any SQL tool",
+        "toolBValue": "Works with Pandas, Arrow, and most Python libraries",
+        "winner": "DuckDB"
+      },
+      {
+        "name": "Streaming Processing",
+        "toolAValue": "Limited — batch-oriented SQL",
+        "toolBValue": "Lazy frames enable streaming for out-of-core data",
+        "winner": "Polars"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "SQL is universally known — zero learning curve for analysts",
+        "Queries files directly without importing (S3, GCS, local)",
+        "Works as a database with persistence and transactions",
+        "Integrates with BI tools, dbt, and SQL-based workflows",
+        "Can join across Parquet files, Postgres tables, and CSVs in one query"
+      ],
+      "toolB": [
+        "10-100x faster than Pandas for DataFrame operations",
+        "Lazy evaluation optimizes entire query plans before execution",
+        "Intuitive method-chaining API familiar to Pandas users",
+        "Expression-based API is more composable than SQL for complex transforms",
+        "First-class support for time-series operations"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "SQL is less ergonomic for complex data transformations",
+        "Single-process — can't distribute across machines",
+        "No DataFrame API for users who prefer Pandas-style coding"
+      ],
+      "toolB": [
+        "Requires learning a new API (not drop-in Pandas replacement)",
+        "No SQL interface for analysts who prefer SQL",
+        "Less mature than Pandas for edge-case data types",
+        "Library only — no database features (no persistence, no ACID)"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose DuckDB if:**\n*   Your team is SQL-proficient\n*   You need to query files directly in S3/GCS without downloading\n*   You want database features (persistence, views, transactions)\n*   You're integrating with BI tools or dbt\n\n**Choose Polars if:**\n*   You prefer DataFrame APIs over SQL\n*   You're doing complex multi-step data transformations\n*   You want maximum performance for Python data pipelines\n*   You're replacing Pandas in existing Python codebases\n\n**Choose Both:** Many teams use Polars for data transformation pipelines and DuckDB for ad-hoc SQL analysis — they complement each other perfectly.",
+    "relatedComparisons": [
+      "snowflake-vs-databricks",
+      "clickhouse-vs-druid"
+    ],
+    "lastUpdated": "2026-02-27"
+  },
+  {
+    "slug": "looker-vs-power-bi",
+    "toolA": "Looker",
+    "toolB": "Power BI",
+    "category": "analytics",
+    "winner": "Depends",
+    "shortVerdict": "Power BI is the enterprise BI king with unmatched Excel/Microsoft integration and lower cost. Looker is the developer-first, governed analytics platform with its unique semantic modeling layer (LookML).",
+    "intro": "### Enterprise BI Powerhouse vs. Developer-First Governed Analytics\n\n**Power BI** is Microsoft's business intelligence platform, used by over 10 million users worldwide. With drag-and-drop visualization, natural language queries (Q&A), DAX for calculations, and deep integration with Excel, Microsoft 365, and Azure, it's the most widely adopted BI tool globally — especially in enterprises already on the Microsoft stack.\n\n**Looker** (now part of Google Cloud) takes a fundamentally different approach. Instead of drag-and-drop dashboards, Looker defines a **semantic modeling layer** called **LookML** — a version-controlled, code-based definition of all business metrics. This ensures every team calculates \"revenue\" the same way. Looker is the choice for organizations that prioritize **data governance** and **consistent metrics** over ease of self-service.\n\nThe trade-off: **Power BI is easier for non-technical users. Looker provides stronger data governance.**",
+    "features": [
+      {
+        "name": "User Experience",
+        "toolAValue": "Code-first (LookML), then explore data",
+        "toolBValue": "Drag-and-drop, Excel-like, natural language Q&A",
+        "winner": "Power BI"
+      },
+      {
+        "name": "Semantic Layer",
+        "toolAValue": "LookML — version-controlled, code-based metrics",
+        "toolBValue": "DAX measures in datasets (not version-controlled)",
+        "winner": "Looker"
+      },
+      {
+        "name": "Data Governance",
+        "toolAValue": "Strong — single source of truth via LookML",
+        "toolBValue": "Moderate — relies on organizational discipline",
+        "winner": "Looker"
+      },
+      {
+        "name": "Pricing",
+        "toolAValue": "$5K+/month (enterprise pricing)",
+        "toolBValue": "$10/user/month (Pro), $20/user/month (Premium)",
+        "winner": "Power BI"
+      },
+      {
+        "name": "Microsoft Integration",
+        "toolAValue": "Limited",
+        "toolBValue": "Native: Excel, Teams, SharePoint, Azure, Entra ID",
+        "winner": "Power BI"
+      },
+      {
+        "name": "Embedded Analytics",
+        "toolAValue": "Strong embed API with SSO and row-level security",
+        "toolBValue": "Power BI Embedded (strong, but complex licensing)",
+        "winner": "Tie"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "LookML semantic layer ensures metrics consistency across the org",
+        "Version-controlled logic (Git integration)",
+        "Excellent embedded analytics and API",
+        "Query any database directly (no data import required)",
+        "Strong data governance and access control"
+      ],
+      "toolB": [
+        "10x cheaper per user than Looker",
+        "Intuitive drag-and-drop interface for business users",
+        "Natural language Q&A for ad-hoc questions",
+        "Deep integration with Microsoft ecosystem",
+        "Massive community (10M+ users, extensive templates)"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Expensive — enterprise pricing starts at ~$5K/month",
+        "Steep learning curve (LookML is a new language)",
+        "Less intuitive for non-technical users",
+        "Google Cloud dependency (acquisition concerns)"
+      ],
+      "toolB": [
+        "DAX is complex for advanced calculations",
+        "Import mode can lead to stale data",
+        "Governance is weaker without organizational discipline",
+        "Desktop-first development workflow",
+        "File-based (.pbix) makes collaboration harder than code"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Looker if:**\n*   Data governance and consistent metrics are your top priority\n*   You want a code-based, version-controlled analytics layer\n*   You're on Google Cloud and want native integration\n*   You need strong embedded analytics for customer-facing products\n\n**Choose Power BI if:**\n*   Budget is a consideration (10x cheaper per user)\n*   Your organization runs on Microsoft 365/Azure\n*   Business users need self-service without learning code\n*   You want the largest BI community and template library",
+    "relatedComparisons": [
+      "snowflake-vs-bigquery",
+      "snowflake-vs-databricks"
+    ],
+    "lastUpdated": "2026-02-27"
+  },
+  {
+    "slug": "pandas-vs-polars",
+    "toolA": "Pandas",
+    "toolB": "Polars",
+    "category": "analytics",
+    "winner": "Polars",
+    "shortVerdict": "Pandas is the universal standard with the largest ecosystem. Polars is 10-100x faster with better memory efficiency and modern API design — the future of DataFrame processing in Python.",
+    "intro": "### The DataFrame Standard vs. The Rust-Powered Future\n\n**Pandas** is the most widely used data analysis library in Python, with 15+ years of history and integration with virtually every data tool. It's the default choice for data scientists, analysts, and engineers — tutorials, Stack Overflow answers, and job postings all assume Pandas knowledge.\n\n**Polars** is a modern DataFrame library written in Rust with Python bindings. It was built from scratch to address Pandas' performance limitations: single-threaded execution, eager evaluation, memory inefficiency, and confusing API inconsistencies. Polars uses Apache Arrow for its memory layout, lazy evaluation for query optimization, and multi-threaded execution for parallel processing.\n\n**The result:** Polars is consistently **10-100x faster** than Pandas on real workloads, uses significantly less memory, and has a more consistent API. But Pandas has an ecosystem that Polars may never match.",
+    "features": [
+      {
+        "name": "Performance",
+        "toolAValue": "Single-threaded, eager evaluation",
+        "toolBValue": "Multi-threaded, lazy evaluation with optimization",
+        "winner": "Polars"
+      },
+      {
+        "name": "Memory Efficiency",
+        "toolAValue": "High memory usage (copies data frequently)",
+        "toolBValue": "Low memory usage (Arrow-based, zero-copy)",
+        "winner": "Polars"
+      },
+      {
+        "name": "API Consistency",
+        "toolAValue": "Inconsistent (axis, inplace, chained indexing issues)",
+        "toolBValue": "Consistent expression-based API",
+        "winner": "Polars"
+      },
+      {
+        "name": "Ecosystem",
+        "toolAValue": "Integrates with everything (scikit-learn, matplotlib, etc.)",
+        "toolBValue": "Growing, but many libraries expect Pandas input",
+        "winner": "Pandas"
+      },
+      {
+        "name": "Learning Resources",
+        "toolAValue": "Millions of tutorials, Stack Overflow answers, books",
+        "toolBValue": "Growing documentation, fewer external resources",
+        "winner": "Pandas"
+      },
+      {
+        "name": "Large Dataset Handling",
+        "toolAValue": "Struggles with datasets > RAM",
+        "toolBValue": "Lazy evaluation handles out-of-core datasets",
+        "winner": "Polars"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Universal standard — every Python data library integrates with it",
+        "Massive learning resources and community support",
+        "Required for most data science job interviews",
+        "15+ years of battle-tested production usage",
+        "Jupyter Notebook integration is seamless"
+      ],
+      "toolB": [
+        "10-100x faster than Pandas on real workloads",
+        "Lazy evaluation optimizes entire query plans",
+        "Automatic multi-threaded parallel execution",
+        "Consistent, expressive API with no confusing gotchas",
+        "Handles datasets larger than RAM via streaming",
+        "No GIL limitations (Rust-powered)"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Single-threaded — doesn't use multiple CPU cores",
+        "High memory usage with large datasets",
+        "Confusing API patterns (SettingWithCopyWarning, axis parameter)",
+        "Performance degrades significantly with large data"
+      ],
+      "toolB": [
+        "Not a drop-in Pandas replacement (different API)",
+        "Many ML/visualization libraries expect Pandas DataFrames",
+        "Fewer Stack Overflow answers and tutorials",
+        "Still evolving — API changes between versions"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Pandas if:**\n*   You need maximum library compatibility (scikit-learn, matplotlib)\n*   Your datasets fit comfortably in RAM (<1GB)\n*   Your team already knows Pandas\n*   You're doing exploratory analysis in Jupyter notebooks\n\n**Choose Polars if:**\n*   Performance is critical (large datasets, production pipelines)\n*   You're building new data pipelines from scratch\n*   You want a modern, consistent API without Pandas' gotchas\n*   You process datasets larger than available RAM\n\n**Migration tip:** You can use Polars and convert to Pandas only when needed: `polars_df.to_pandas()` for library compatibility.",
+    "relatedComparisons": [
+      "duckdb-vs-polars",
+      "snowflake-vs-databricks"
+    ],
+    "lastUpdated": "2026-02-27"
   }
 ]
