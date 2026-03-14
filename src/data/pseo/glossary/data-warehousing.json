@@ -417,5 +417,257 @@
       "what is apache iceberg"
     ],
     "lastUpdated": "2026-02-27"
+  },
+  {
+    "term": "Apache Hudi",
+    "slug": "apache-hudi",
+    "category": "data-warehousing",
+    "shortDefinition": "An open-source data lakehouse platform that provides ACID transactions, record-level insert/update/delete, and incremental data processing on data lakes.",
+    "fullDefinition": "**Apache Hudi** (Hadoop Upserts Deletes and Incrementals) is an open-source data lakehouse storage framework that brings database-like capabilities to data lakes. Originally created at Uber to solve their massive-scale incremental data processing challenges, Hudi enables efficient upserts, deletes, and incremental queries on data stored in cloud storage like S3 or GCS.\n\n## Why Apache Hudi?\n\nTraditional data lakes store immutable files (Parquet, ORC). To update a single record, you must rewrite entire partitions — an expensive and slow operation. Hudi solves this by introducing:\n\n- **Record-level operations**: Insert, update, and delete individual records efficiently\n- **ACID transactions**: Ensure data consistency during concurrent reads and writes\n- **Incremental processing**: Process only changed data since the last query\n- **Time travel**: Query data at any point in time\n\n## Core Table Types\n\n### Copy on Write (CoW)\n- Stores data in columnar Parquet files\n- Updates rewrite entire files on write\n- Best for: Read-heavy workloads, fewer updates\n- Trade-off: Faster reads, slower writes\n\n### Merge on Read (MoR)\n- Stores updates in row-based log files, periodically compacts\n- Best for: Write-heavy workloads, frequent updates\n- Trade-off: Faster writes, slightly slower reads (until compaction)\n\n## Key Features\n\n1. **Upsert Support**: Native INSERT, UPDATE, DELETE at record level\n2. **Incremental Queries**: Read only new/changed data since a timestamp\n3. **Compaction**: Background process to optimize read performance\n4. **Metadata Table**: Fast file listing for large datasets (millions of files)\n5. **Multi-Engine Support**: Works with Spark, Flink, Presto, Trino, Hive\n\n## Hudi vs Iceberg vs Delta Lake\n\n| Feature | Hudi | Iceberg | Delta Lake |\n|---------|------|---------|------------|\n| Origin | Uber | Netflix | Databricks |\n| Upsert Performance | Excellent | Good | Good |\n| Read Performance | Good | Excellent | Excellent |\n| Engine Support | Broad | Broadest | Spark-centric |\n| Incremental Processing | Native | Via snapshots | Via CDF |\n\n## Common Use Cases\n\n1. **CDC Ingestion**: Stream database changes into the data lake\n2. **GDPR Compliance**: Delete specific user records efficiently\n3. **Near Real-Time Analytics**: Process streaming data with low latency\n4. **Data Pipeline Deduplication**: Handle late-arriving and duplicate data\n5. **Incremental ETL**: Process only changed data to reduce compute costs",
+    "keyPoints": [
+      "Record-level insert, update, and delete on data lakes",
+      "Two table types: Copy on Write (read-optimized) and Merge on Read (write-optimized)",
+      "Native incremental query support for processing only changed data",
+      "ACID transactions ensure data consistency",
+      "Created at Uber, now an Apache top-level project"
+    ],
+    "faqs": [
+      {
+        "question": "What is Apache Hudi used for?",
+        "answer": "Apache Hudi is used for building data lakehouses — bringing database-like capabilities (upserts, deletes, ACID transactions) to data lakes. It's particularly valued for CDC ingestion, GDPR compliance (record deletion), and incremental data processing."
+      },
+      {
+        "question": "What is the difference between Apache Hudi and Apache Iceberg?",
+        "answer": "Both are table formats for data lakes. Hudi excels at write-heavy workloads with native upsert and incremental processing. Iceberg focuses on read performance and engine-agnostic design. Hudi was created at Uber; Iceberg was created at Netflix."
+      },
+      {
+        "question": "Is Apache Hudi free?",
+        "answer": "Yes. Apache Hudi is 100% free and open-source under the Apache 2.0 license. Commercial managed versions are available through platforms like AWS (EMR, Glue) and Onehouse."
+      },
+      {
+        "question": "Does Hudi work with Snowflake?",
+        "answer": "Hudi tables stored in cloud storage can be queried by Snowflake through external tables. However, Snowflake has stronger native support for Apache Iceberg as its preferred open table format."
+      }
+    ],
+    "relatedTerms": [
+      "apache-iceberg",
+      "delta-lake",
+      "data-lake",
+      "lakehouse",
+      "table-format"
+    ],
+    "relatedTools": [
+      "Apache Spark",
+      "AWS EMR",
+      "Onehouse",
+      "Apache Flink",
+      "Presto"
+    ],
+    "externalLinks": [
+      {
+        "title": "Apache Hudi Documentation",
+        "url": "https://hudi.apache.org/docs/overview/"
+      },
+      {
+        "title": "Hudi GitHub Repository",
+        "url": "https://github.com/apache/hudi"
+      }
+    ],
+    "keywords": [
+      "apache hudi",
+      "hudi vs iceberg",
+      "hudi vs delta lake",
+      "hudi table format",
+      "hudi upsert"
+    ],
+    "lastUpdated": "2026-03-14"
+  },
+  {
+    "term": "Delta Lake",
+    "slug": "delta-lake",
+    "category": "data-warehousing",
+    "shortDefinition": "An open-source storage layer that brings ACID transactions, scalable metadata handling, and unified batch/streaming processing to data lakes.",
+    "fullDefinition": "**Delta Lake** is an open-source storage layer created by Databricks that brings reliability and performance to data lakes. It sits on top of existing cloud storage (S3, ADLS, GCS) and adds ACID transactions, schema enforcement, time travel, and unified batch/streaming processing — transforming raw data lakes into production-grade data lakehouses.\n\n## Why Delta Lake?\n\nData lakes without a table format suffer from:\n- **Data corruption**: Concurrent writes can create inconsistent state\n- **No schema enforcement**: Bad data enters the lake silently\n- **No transactions**: Partial writes leave data in broken state\n- **Slow metadata**: Listing millions of files in S3 is slow\n\nDelta Lake solves all of these with a transaction log that tracks every change.\n\n## How Delta Lake Works\n\n### Transaction Log (_delta_log)\nEvery operation (write, update, delete) creates a JSON commit file in the `_delta_log/` directory. This log provides:\n- **Atomicity**: Commits are all-or-nothing\n- **Versioning**: Every change is numbered sequentially\n- **Time Travel**: Read data at any previous version\n\n```python\n# Write data as Delta\ndf.write.format(\"delta\").save(\"s3://my-bucket/sales\")\n\n# Time Travel - read version 5\nspark.read.format(\"delta\").option(\"versionAsOf\", 5).load(\"s3://my-bucket/sales\")\n\n# Time Travel - read data as it was yesterday\nspark.read.format(\"delta\").option(\"timestampAsOf\", \"2025-01-01\").load(\"s3://my-bucket/sales\")\n```\n\n## Key Features\n\n1. **ACID Transactions**: Serializable isolation for concurrent readers and writers\n2. **Schema Enforcement**: Reject writes that don't match the table schema\n3. **Schema Evolution**: Safely add new columns without breaking existing queries\n4. **Time Travel**: Query, restore, or clone any previous version\n5. **Unified Batch & Streaming**: Same table for both batch and streaming workloads\n6. **Z-Order Clustering**: Co-locate related data for faster queries\n7. **Liquid Clustering**: Automatic, incremental data layout optimization (new)\n\n## Delta Lake in the Ecosystem\n\n- **Databricks**: Delta Lake is the native format — everything runs on Delta\n- **Apache Spark**: Full read/write support via `delta-spark` connector\n- **Trino/Presto**: Read support for federated queries\n- **Flink**: Delta connector for streaming workflows\n- **Rust/Python**: `delta-rs` library for non-Spark environments\n\n## Common Use Cases\n\n1. **Data Lakehouse**: Replace traditional DW with Delta on cloud storage\n2. **Streaming ETL**: Combine real-time and batch in one pipeline\n3. **GDPR/CCPA**: Delete/update individual records for compliance\n4. **ML Feature Tables**: Versioned, transactional feature storage\n5. **Data Sharing**: Share Delta tables via Delta Sharing protocol",
+    "keyPoints": [
+      "Open-source storage layer adding ACID transactions to data lakes",
+      "Transaction log tracks every change for versioning and time travel",
+      "Schema enforcement and evolution protect data quality",
+      "Unified batch and streaming processing on the same table",
+      "Native format for Databricks, created by Databricks"
+    ],
+    "faqs": [
+      {
+        "question": "What is Delta Lake in simple terms?",
+        "answer": "Delta Lake is a technology layer that adds database-like features (transactions, versioning, schema protection) to files stored in cloud data lakes like S3. It turns a messy data lake into a reliable data lakehouse."
+      },
+      {
+        "question": "Is Delta Lake the same as Databricks?",
+        "answer": "No. Delta Lake is an open-source project created by Databricks. It can run outside Databricks on any Spark cluster, and even without Spark using the delta-rs library. However, Databricks provides the best optimized experience for Delta Lake."
+      },
+      {
+        "question": "What is the difference between Delta Lake and Apache Iceberg?",
+        "answer": "Both are open table formats for data lakes. Delta Lake is optimized for Databricks/Spark ecosystems with features like Z-Order and Liquid Clustering. Iceberg is more engine-agnostic with broader support from Snowflake, AWS, and other engines."
+      },
+      {
+        "question": "Is Delta Lake free?",
+        "answer": "Yes. Delta Lake is fully open-source under the Apache 2.0 license. You can use it for free with Apache Spark. Databricks offers a commercial managed platform with additional optimizations."
+      }
+    ],
+    "relatedTerms": [
+      "apache-iceberg",
+      "apache-hudi",
+      "lakehouse",
+      "data-lake",
+      "table-format"
+    ],
+    "relatedTools": [
+      "Databricks",
+      "Apache Spark",
+      "Delta Sharing",
+      "delta-rs",
+      "Trino"
+    ],
+    "externalLinks": [
+      {
+        "title": "Delta Lake Documentation",
+        "url": "https://docs.delta.io/latest/index.html"
+      },
+      {
+        "title": "Delta Lake GitHub",
+        "url": "https://github.com/delta-io/delta"
+      }
+    ],
+    "keywords": [
+      "delta lake",
+      "delta lake vs iceberg",
+      "delta lake tutorial",
+      "delta lake spark",
+      "what is delta lake"
+    ],
+    "lastUpdated": "2026-03-14"
+  },
+  {
+    "term": "Data Lakehouse",
+    "slug": "data-lakehouse",
+    "category": "data-warehousing",
+    "shortDefinition": "A modern data architecture that combines the low-cost, flexible storage of data lakes with the performance, ACID transactions, and governance of data warehouses.",
+    "fullDefinition": "A **Data Lakehouse** is a modern data architecture that merges the best features of data lakes and data warehouses into a single unified platform. Instead of maintaining separate systems for raw data storage (lake) and structured analytics (warehouse), a lakehouse provides both capabilities on a single copy of data.\n\n## The Evolution of Data Architecture\n\n```\n1990s: Data Warehouse (structured, expensive, governed)\n  ↓\n2010s: Data Lake (cheap, flexible, ungoverned \"data swamp\")\n  ↓\n2020s: Data Lakehouse (cheap + flexible + governed + fast)\n```\n\n## How a Lakehouse Works\n\nA lakehouse stores data in open file formats (Parquet, ORC) on cheap cloud object storage (S3, GCS, ADLS), but adds a **metadata/transaction layer** that provides warehouse-like features:\n\n| Layer | Technology |\n|-------|------------|\n| Storage | Cloud object storage (S3, GCS, ADLS) |\n| Table Format | Delta Lake, Apache Iceberg, Apache Hudi |\n| Query Engine | Spark, Trino, Presto, Snowflake, DuckDB |\n| Governance | Unity Catalog, AWS Glue, Hive Metastore |\n\n## Key Benefits\n\n### From Data Lakes\n- **Low-cost storage**: Cloud object storage at ~$0.023/GB/month\n- **Open formats**: No vendor lock-in (Parquet, ORC, Avro)\n- **All data types**: Structured, semi-structured, unstructured\n- **Scalability**: Exabyte-scale with elastic compute\n\n### From Data Warehouses\n- **ACID transactions**: Concurrent reads and writes safely\n- **Schema enforcement**: Reject bad data at write time\n- **Fast SQL queries**: Optimized for BI and analytics\n- **Data governance**: Access control, lineage, auditing\n\n## Lakehouse Implementations\n\n| Platform | Table Format | Key Feature |\n|----------|-------------|-------------|\n| Databricks | Delta Lake | Unity Catalog, Photon engine |\n| Snowflake | Iceberg Tables | Managed Iceberg, Unistore |\n| AWS | Iceberg on S3 | Athena, Glue, EMR integration |\n| Google Cloud | BigLake | Cross-cloud analytics |\n| Dremio | Iceberg | Open lakehouse, Arrow-based |\n\n## Common Use Cases\n\n1. **Unified Analytics**: BI, ML, and streaming on one platform\n2. **Cost Reduction**: Eliminate expensive warehouse storage duplication\n3. **Real-Time + Batch**: Single architecture for both workloads\n4. **Data Democratization**: SQL access to all data for all teams\n5. **Multi-Cloud Strategy**: Open formats enable cloud portability",
+    "keyPoints": [
+      "Combines data lake flexibility with data warehouse performance and governance",
+      "Built on open table formats: Delta Lake, Apache Iceberg, Apache Hudi",
+      "Stores data in cheap cloud object storage with ACID transactions",
+      "Supports BI, ML, and streaming workloads on a single platform",
+      "Key platforms: Databricks, Snowflake Iceberg, AWS, Dremio"
+    ],
+    "faqs": [
+      {
+        "question": "What is a data lakehouse?",
+        "answer": "A data lakehouse is a modern data architecture that combines the cheap, flexible storage of a data lake with the performance, transactions, and governance features of a data warehouse. It uses open table formats like Delta Lake or Iceberg to achieve this."
+      },
+      {
+        "question": "What is the difference between a data lakehouse and a data warehouse?",
+        "answer": "A data warehouse stores data in proprietary formats optimized for SQL queries. A lakehouse stores data in open formats on cheap cloud storage but adds warehouse features (ACID, schema enforcement, fast queries) through table formats like Delta Lake or Iceberg."
+      },
+      {
+        "question": "Is Databricks a data lakehouse?",
+        "answer": "Yes. Databricks pioneered the lakehouse concept. Their platform uses Delta Lake as the table format, Photon as the query engine, and Unity Catalog for governance — providing a complete lakehouse architecture."
+      },
+      {
+        "question": "Is Snowflake a data lakehouse?",
+        "answer": "Snowflake started as a cloud data warehouse but has evolved toward lakehouse capabilities with Snowflake Iceberg Tables, allowing customers to store data in open Iceberg format on their own cloud storage."
+      }
+    ],
+    "relatedTerms": [
+      "data-warehouse",
+      "data-lake",
+      "delta-lake",
+      "apache-iceberg",
+      "medallion-architecture"
+    ],
+    "relatedTools": [
+      "Databricks",
+      "Snowflake",
+      "Apache Iceberg",
+      "Delta Lake",
+      "Dremio"
+    ],
+    "externalLinks": [
+      {
+        "title": "Lakehouse: A New Generation of Open Platforms (Databricks)",
+        "url": "https://www.databricks.com/glossary/data-lakehouse"
+      },
+      {
+        "title": "What is a Data Lakehouse? - AWS",
+        "url": "https://aws.amazon.com/big-data/datalakes-and-analytics/data-lakehouse/"
+      }
+    ],
+    "keywords": [
+      "data lakehouse",
+      "data lakehouse vs data warehouse",
+      "lakehouse architecture",
+      "what is a data lakehouse",
+      "databricks lakehouse"
+    ],
+    "lastUpdated": "2026-03-14"
+  },
+  {
+    "term": "Data Warehouse Automation",
+    "slug": "dw-automation",
+    "category": "data-warehousing",
+    "shortDefinition": "The use of tools and methodologies to automate the design, development, deployment, and management of data warehouses, reducing manual coding and accelerating delivery.",
+    "fullDefinition": "**Data Warehouse Automation (DWA)** refers to the practice of using specialized tools and frameworks to automate the repetitive, manual tasks involved in building and maintaining data warehouses. Instead of hand-coding ETL jobs, writing DDL scripts, and manually managing schema changes, DWA tools generate code, enforce best practices, and accelerate delivery from months to days.\n\n## Why Automate Data Warehousing?\n\nTraditional data warehouse development is painfully slow:\n\n- **Manual DDL**: Writing CREATE TABLE statements for hundreds of tables\n- **Hand-coded ETL**: Building extraction and loading scripts one by one\n- **Schema Management**: Tracking changes across environments manually\n- **Documentation**: Keeping data dictionaries up to date\n- **Testing**: Writing test cases for every transformation\n\nDWA tools automate all of these, letting engineers focus on business logic instead of boilerplate.\n\n## Key Automation Areas\n\n### 1. Schema Generation\n- Automatically generate warehouse schemas from source metadata\n- Implement standard patterns (Star Schema, Data Vault, SCD Type 2)\n- Handle schema evolution and migration scripts\n\n### 2. ETL/ELT Code Generation\n- Generate extraction, loading, and transformation code\n- Produce optimized SQL or platform-specific code (Snowflake, BigQuery)\n- Handle incremental loading patterns automatically\n\n### 3. Data Vault Automation\n- Auto-generate Hubs, Links, and Satellites from source schemas\n- Enforce Data Vault 2.0 standards consistently\n- Accelerate raw vault loading from weeks to hours\n\n### 4. Testing & Validation\n- Auto-generate data quality tests\n- Validate row counts, null checks, referential integrity\n- Regression testing across deployments\n\n## Popular DWA Tools\n\n| Tool | Approach | Best For |\n|------|----------|----------|\n| dbt | SQL-first transformation | Analytics engineering, ELT |\n| WhereScape | Full automation platform | Enterprise DW projects |\n| Coalesce | Visual + code DW automation | Snowflake-centric teams |\n| TimeXtender | Low-code DW automation | Microsoft/Azure ecosystem |\n| Matillion | Cloud-native ELT | Cloud DW loading + transformation |\n| SQLMesh | Virtual environments + CI/CD | Modern analytics engineering |\n\n## Common Use Cases\n\n1. **Accelerated DW Development**: Reduce delivery from months to weeks\n2. **Standardization**: Enforce consistent patterns across all projects\n3. **Data Vault Implementation**: Automate complex Data Vault modeling\n4. **Migration Projects**: Automate on-premise to cloud DW migration\n5. **CI/CD for Data**: Automated testing and deployment of DW changes",
+    "keyPoints": [
+      "Automates repetitive DW tasks: schema design, ETL code, testing",
+      "Reduces delivery time from months to days or weeks",
+      "Enforces consistent patterns (Star Schema, Data Vault)",
+      "Popular tools: dbt, WhereScape, Coalesce, TimeXtender",
+      "Enables CI/CD practices for data warehouse development"
+    ],
+    "faqs": [
+      {
+        "question": "What is data warehouse automation?",
+        "answer": "Data warehouse automation uses tools to generate ETL code, schema DDL, and data quality tests automatically instead of hand-coding them. It accelerates data warehouse development and enforces consistent design patterns."
+      },
+      {
+        "question": "Is dbt a data warehouse automation tool?",
+        "answer": "dbt automates the transformation layer of the data warehouse using SQL models, tests, and documentation. While it doesn't automate the full DW lifecycle (like schema generation or extraction), it is the most popular tool for automating the T in ELT."
+      },
+      {
+        "question": "What is Data Vault automation?",
+        "answer": "Data Vault automation tools (like WhereScape or Datavault Builder) automatically generate Hub, Link, and Satellite tables from source metadata, implement loading patterns, and enforce Data Vault 2.0 standards — reducing manual modeling effort significantly."
+      }
+    ],
+    "relatedTerms": [
+      "data-warehouse",
+      "dbt",
+      "etl",
+      "data-modeling",
+      "star-schema"
+    ],
+    "relatedTools": [
+      "dbt",
+      "WhereScape",
+      "Coalesce",
+      "TimeXtender",
+      "Matillion"
+    ],
+    "externalLinks": [
+      {
+        "title": "What is Data Warehouse Automation? - Gartner",
+        "url": "https://www.gartner.com/en/information-technology/glossary/data-warehouse-automation"
+      },
+      {
+        "title": "Coalesce - Data Warehouse Automation for Snowflake",
+        "url": "https://coalesce.io/"
+      }
+    ],
+    "keywords": [
+      "data warehouse automation",
+      "dw automation tools",
+      "data vault automation",
+      "automated data warehouse",
+      "data warehouse development"
+    ],
+    "lastUpdated": "2026-03-14"
   }
 ]

@@ -287,5 +287,133 @@
       "how to build a data pipeline"
     ],
     "lastUpdated": "2026-02-27"
+  },
+  {
+    "term": "Apache NiFi",
+    "slug": "apache-nifi",
+    "category": "data-integration",
+    "shortDefinition": "An open-source data integration platform that provides a visual drag-and-drop interface for automating data flow between systems, with built-in data provenance and back-pressure handling.",
+    "fullDefinition": "**Apache NiFi** is an open-source data integration and dataflow automation platform originally developed by the NSA (National Security Agency) and later donated to the Apache Software Foundation. It provides a web-based, drag-and-drop interface for designing data pipelines that move, transform, and route data between diverse systems in real-time.\n\n## Why Apache NiFi?\n\nNiFi was designed to solve the hard problem of **automated dataflow management** — moving data reliably between systems with different speeds, formats, and protocols. Unlike code-based tools (Airflow, Spark), NiFi takes a visual, flow-based programming approach.\n\n## Core Concepts\n\n### FlowFiles\nThe fundamental unit of data in NiFi:\n- **Content**: The actual data payload (file, record, message)\n- **Attributes**: Key-value metadata (filename, timestamp, source)\n- **Provenance**: Complete history of what happened to the data\n\n### Processors\nBuilding blocks that perform actions on FlowFiles:\n- **GetFile/PutFile**: Read/write local files\n- **ConsumeKafka/PublishKafka**: Kafka integration\n- **ExecuteSQL/PutDatabaseRecord**: Database operations\n- **InvokeHTTP**: REST API calls\n- **ConvertRecord**: Transform between formats (JSON, CSV, Avro)\n- **200+ built-in processors** for common operations\n\n### Process Groups\n- Organize related processors into logical groups\n- Enable hierarchical flow design\n- Support templates for reusable patterns\n\n## Key Features\n\n1. **Visual Flow Design**: Drag-and-drop web UI for building pipelines\n2. **Data Provenance**: Track every piece of data through the entire flow\n3. **Back-Pressure**: Automatic flow control when downstream is slow\n4. **Guaranteed Delivery**: Write-ahead log ensures no data loss\n5. **Security**: TLS encryption, RBAC, data-at-rest encryption\n6. **Clustering**: Scale horizontally across multiple nodes\n7. **MiNiFi**: Lightweight agent for edge/IoT data collection\n\n## NiFi vs Other Tools\n\n| Tool | Approach | Best For |\n|------|----------|----------|\n| NiFi | Visual flow-based | Real-time data routing and transformation |\n| Airflow | Code-based DAGs | Batch workflow orchestration |\n| Kafka Connect | Connector-based | Streaming source/sink integration |\n| Fivetran | Managed SaaS | SaaS-to-warehouse replication |\n\n## Common Use Cases\n\n1. **IoT Data Collection**: Ingest sensor data from thousands of devices\n2. **Log Aggregation**: Collect, parse, and route application logs\n3. **Data Routing**: Route data to different destinations based on content\n4. **API Integration**: Pull data from REST APIs on schedule\n5. **File Transfer**: Reliable, monitored file movement between systems",
+    "keyPoints": [
+      "Visual drag-and-drop interface for building data pipelines",
+      "Complete data provenance — track every piece of data's journey",
+      "Back-pressure handling for reliable data flow at any speed",
+      "200+ built-in processors for diverse system integration",
+      "Originally developed by the NSA, now an Apache project"
+    ],
+    "faqs": [
+      {
+        "question": "What is Apache NiFi used for?",
+        "answer": "Apache NiFi is used for automating data flows between systems. Common use cases include IoT data collection, log aggregation, real-time data routing, API integration, and file transfer. It provides a visual interface for building and monitoring these flows."
+      },
+      {
+        "question": "Is Apache NiFi an ETL tool?",
+        "answer": "NiFi can perform ETL tasks, but it's primarily a dataflow automation platform. Unlike Airflow (orchestration) or dbt (transformation), NiFi focuses on real-time data movement and routing between systems with visual flow design."
+      },
+      {
+        "question": "Apache NiFi vs Apache Airflow — what's the difference?",
+        "answer": "Airflow orchestrates batch workflows using Python code (DAGs). NiFi handles real-time dataflow with a visual UI. Airflow is better for scheduling batch jobs; NiFi is better for continuous, real-time data movement and routing."
+      },
+      {
+        "question": "Is NiFi free?",
+        "answer": "Yes. Apache NiFi is fully open-source and free. Commercial distributions are available from Cloudera (Cloudera DataFlow) with enterprise features like monitoring and support."
+      }
+    ],
+    "relatedTerms": [
+      "data-pipeline",
+      "etl",
+      "apache-kafka",
+      "cdc",
+      "data-integration"
+    ],
+    "relatedTools": [
+      "Apache Kafka",
+      "Apache Airflow",
+      "Fivetran",
+      "Cloudera DataFlow",
+      "StreamSets"
+    ],
+    "externalLinks": [
+      {
+        "title": "Apache NiFi Documentation",
+        "url": "https://nifi.apache.org/docs.html"
+      },
+      {
+        "title": "NiFi Getting Started Guide",
+        "url": "https://nifi.apache.org/docs/nifi-docs/html/getting-started.html"
+      }
+    ],
+    "keywords": [
+      "apache nifi",
+      "nifi tutorial",
+      "nifi vs airflow",
+      "nifi data pipeline",
+      "nifi processors"
+    ],
+    "lastUpdated": "2026-03-14"
+  },
+  {
+    "term": "Data Virtualization",
+    "slug": "data-virtualization",
+    "category": "data-integration",
+    "shortDefinition": "A data integration approach that provides a unified, real-time view of data from multiple sources without physically moving or replicating the data.",
+    "fullDefinition": "**Data Virtualization** is a data integration technique that allows users to access, query, and combine data from multiple heterogeneous sources through a single virtual layer — without physically moving, copying, or transforming the data into a centralized repository.\n\n## How It Works\n\n```\nTraditional ETL:\n  Source A → [Extract] → [Transform] → [Load] → Data Warehouse → Query\n  Source B → [Extract] → [Transform] → [Load] → Data Warehouse → Query\n  (Hours/days of latency, data duplication)\n\nData Virtualization:\n  Source A ──┐\n             ├── Virtual Layer → Query (real-time, no duplication)\n  Source B ──┘\n```\n\n## Key Concepts\n\n### Virtual Views\n- Define logical tables that map to physical data sources\n- Users query virtual views as if they were local tables\n- The virtualization layer translates queries to source-native formats\n\n### Query Federation\n- Execute a single SQL query across multiple databases\n- The engine pushes filters and aggregations to source systems (pushdown)\n- Results are combined and returned to the user\n\n### Semantic Layer\n- Define business-friendly names and relationships\n- Abstract away technical details of source systems\n- Enforce consistent calculations and metrics\n\n## Benefits\n\n1. **Real-Time Access**: Query current data without waiting for ETL loads\n2. **No Data Duplication**: Reduce storage costs and governance complexity\n3. **Faster Time to Value**: Skip the ETL pipeline — query data immediately\n4. **Single Access Point**: One SQL interface for all data sources\n5. **Reduced Complexity**: Fewer ETL pipelines to build and maintain\n\n## Limitations\n\n- **Performance**: Complex joins across sources can be slow\n- **Source Dependency**: If a source is down, virtual queries fail\n- **Not for Heavy Analytics**: High-volume BI workloads still need a warehouse\n- **Caching Needed**: Frequently accessed data may need materialization\n\n## Popular Tools\n\n| Tool | Type | Best For |\n|------|------|----------|\n| Denodo | Enterprise platform | Large enterprise data fabric |\n| Dremio | Open lakehouse | Data lake virtualization |\n| Trino (PrestoSQL) | Open source query engine | Federated SQL across sources |\n| Starburst | Managed Trino | Enterprise query federation |\n| TIBCO Data Virtualization | Enterprise | Hybrid/multi-cloud integration |\n| Snowflake (External Tables) | Cloud DW | Querying external data sources |\n\n## Common Use Cases\n\n1. **Data Fabric**: Unified access across on-premise and cloud data\n2. **Real-Time Dashboards**: BI on live operational data\n3. **Data Exploration**: Query new sources without building ETL first\n4. **Regulatory Reporting**: Access audit-ready data from source systems\n5. **API Layer**: Serve data to applications via virtual SQL views",
+    "keyPoints": [
+      "Unified view of data from multiple sources without physical data movement",
+      "Real-time access to current data — no ETL latency",
+      "Query federation allows SQL across heterogeneous databases",
+      "Reduces data duplication and storage costs",
+      "Popular tools: Denodo, Dremio, Trino/Starburst"
+    ],
+    "faqs": [
+      {
+        "question": "What is data virtualization?",
+        "answer": "Data virtualization is a technology that provides real-time access to data from multiple sources (databases, APIs, files) through a single virtual layer, without physically copying or moving the data. Users query the virtual layer as if all data were in one place."
+      },
+      {
+        "question": "What is the difference between data virtualization and ETL?",
+        "answer": "ETL physically moves and transforms data into a central warehouse (batch process, hours of latency). Data virtualization queries source data in real-time without moving it. ETL is better for heavy analytics; virtualization is better for real-time access and exploration."
+      },
+      {
+        "question": "Is Trino a data virtualization tool?",
+        "answer": "Yes. Trino (formerly PrestoSQL) is an open-source distributed query engine that federates queries across multiple data sources (S3, PostgreSQL, MongoDB, Kafka) — functioning as a data virtualization layer."
+      },
+      {
+        "question": "When should I use data virtualization vs a data warehouse?",
+        "answer": "Use virtualization for real-time access, data exploration, and lightweight queries across sources. Use a data warehouse for heavy BI workloads, complex aggregations, and historical analysis. Many organizations use both together."
+      }
+    ],
+    "relatedTerms": [
+      "data-warehouse",
+      "etl",
+      "data-fabric",
+      "data-mesh",
+      "data-catalog"
+    ],
+    "relatedTools": [
+      "Denodo",
+      "Dremio",
+      "Trino",
+      "Starburst",
+      "Snowflake"
+    ],
+    "externalLinks": [
+      {
+        "title": "What is Data Virtualization? - Denodo",
+        "url": "https://www.denodo.com/en/data-virtualization/overview"
+      },
+      {
+        "title": "Trino Documentation",
+        "url": "https://trino.io/docs/current/"
+      }
+    ],
+    "keywords": [
+      "data virtualization",
+      "data virtualization vs ETL",
+      "data virtualization tools",
+      "query federation",
+      "data fabric virtualization"
+    ],
+    "lastUpdated": "2026-03-14"
   }
 ]

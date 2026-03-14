@@ -189,5 +189,69 @@
       "gx cloud"
     ],
     "lastUpdated": "2026-01-21"
+  },
+  {
+    "term": "Soda Core",
+    "slug": "soda-core",
+    "category": "data-quality",
+    "shortDefinition": "An open-source data quality testing framework that uses a simple YAML-based language (SodaCL) to define data quality checks and integrates with any data source.",
+    "fullDefinition": "**Soda Core** is an open-source data quality framework that enables data engineers to write data quality checks using a simple, human-readable YAML-based language called **SodaCL (Soda Checks Language)**. Unlike code-heavy alternatives, Soda is designed to make data quality testing accessible to anyone who understands the data — not just engineers.\n\n## Why Soda?\n\nData quality issues are the #1 source of broken dashboards, failed ML models, and lost trust in data. Soda makes it easy to:\n\n- **Define checks in YAML**: No Python or SQL expertise required\n- **Run anywhere**: CLI, CI/CD, Airflow, or Soda Cloud\n- **Cover all sources**: Snowflake, BigQuery, Postgres, Spark, Dask, and more\n- **Alert immediately**: Get Slack/email alerts when checks fail\n\n## SodaCL Check Examples\n\n```yaml\n# checks for orders table\nchecks for orders:\n  # Row count should be positive\n  - row_count > 0\n  \n  # No null values in critical columns\n  - missing_count(order_id) = 0\n  - missing_count(customer_id) = 0\n  \n  # Revenue should be positive\n  - min(revenue) >= 0\n  \n  # Freshness — data should be recent\n  - freshness(created_at) < 1d\n  \n  # Duplicate check\n  - duplicate_count(order_id) = 0\n  \n  # Schema validation\n  - schema:\n      fail:\n        when required column missing: [order_id, customer_id, revenue]\n```\n\n## Key Features\n\n1. **SodaCL**: Human-readable YAML checks language\n2. **Multi-Source**: 20+ data source connectors\n3. **CI/CD Integration**: Run checks in GitHub Actions, GitLab CI\n4. **Distribution Checks**: Detect anomalies in data patterns\n5. **Schema Monitoring**: Alert on unexpected schema changes\n6. **Freshness Checks**: Ensure data is up-to-date\n7. **Reference Checks**: Validate referential integrity across tables\n\n## Soda Core vs Soda Cloud\n\n- **Soda Core**: Free, open-source CLI tool for running checks locally\n- **Soda Cloud**: Commercial SaaS with dashboards, alerting, collaboration, and incident management\n\n## Soda vs Great Expectations\n\n| Feature | Soda Core | Great Expectations |\n|---------|-----------|--------------------|\n| Language | YAML (SodaCL) | Python |\n| Learning Curve | Low (YAML) | Medium (Python) |\n| Setup | Simple CLI | More configuration |\n| Non-Engineer Friendly | Yes | Limited |\n| Anomaly Detection | Built-in | Via plugins |\n| Enterprise Features | Soda Cloud | GX Cloud |\n\n## Common Use Cases\n\n1. **Pipeline Quality Gates**: Fail pipelines when data quality drops\n2. **Schema Monitoring**: Detect unexpected column changes\n3. **Freshness Monitoring**: Alert when data stops arriving\n4. **Data Contracts**: Validate producer SLAs on data quality\n5. **CI/CD for Data**: Run quality checks on every dbt model change",
+    "keyPoints": [
+      "YAML-based data quality checks using SodaCL language",
+      "Simple, human-readable — accessible to non-engineers",
+      "Supports 20+ data sources including Snowflake, BigQuery, Postgres",
+      "Built-in anomaly detection and freshness monitoring",
+      "Open-source core with commercial Soda Cloud option"
+    ],
+    "faqs": [
+      {
+        "question": "What is Soda Core?",
+        "answer": "Soda Core is an open-source data quality framework that lets you write data quality checks in YAML (SodaCL). You define checks like 'row_count > 0' or 'missing_count(email) = 0' and run them against any data source to catch quality issues early."
+      },
+      {
+        "question": "Is Soda better than Great Expectations?",
+        "answer": "Soda is simpler and more accessible with its YAML-based approach — great for teams where non-engineers need to define checks. Great Expectations offers more flexibility with Python but has a steeper learning curve. The choice depends on your team's technical profile."
+      },
+      {
+        "question": "Is Soda Core free?",
+        "answer": "Yes. Soda Core is free and open-source. Soda Cloud (the commercial SaaS product) adds dashboards, alerting, collaboration, and anomaly detection features on top."
+      },
+      {
+        "question": "How does Soda integrate with dbt?",
+        "answer": "Soda integrates with dbt by running quality checks after dbt models complete. You can run Soda checks in your CI/CD pipeline alongside dbt tests, or use Soda Cloud to monitor dbt models continuously."
+      }
+    ],
+    "relatedTerms": [
+      "data-quality",
+      "data-contracts",
+      "great-expectations",
+      "data-observability",
+      "dbt"
+    ],
+    "relatedTools": [
+      "Great Expectations",
+      "Monte Carlo",
+      "dbt tests",
+      "Datafold",
+      "Elementary"
+    ],
+    "externalLinks": [
+      {
+        "title": "Soda Core Documentation",
+        "url": "https://docs.soda.io/soda-core/overview.html"
+      },
+      {
+        "title": "SodaCL Reference",
+        "url": "https://docs.soda.io/soda-cl/soda-cl-overview.html"
+      }
+    ],
+    "keywords": [
+      "soda core",
+      "soda data quality",
+      "sodacl",
+      "soda vs great expectations",
+      "data quality testing"
+    ],
+    "lastUpdated": "2026-03-14"
   }
 ]

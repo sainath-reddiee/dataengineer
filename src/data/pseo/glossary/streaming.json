@@ -139,5 +139,69 @@
       "flink tutorial"
     ],
     "lastUpdated": "2026-02-27"
+  },
+  {
+    "term": "Stream Processing",
+    "slug": "stream-processing",
+    "category": "streaming",
+    "shortDefinition": "A data processing paradigm that continuously ingests, processes, and analyzes data in real-time as it arrives, rather than waiting for batch collection.",
+    "fullDefinition": "**Stream Processing** is a data processing paradigm where data is processed continuously, record-by-record or in micro-batches, as it arrives — rather than being collected into batches and processed later. This enables real-time analytics, instant reactions to events, and sub-second data freshness.\n\n## Batch vs Stream Processing\n\n| Aspect | Batch Processing | Stream Processing |\n|--------|-----------------|-------------------|\n| Latency | Minutes to hours | Milliseconds to seconds |\n| Data | Bounded (finite datasets) | Unbounded (infinite streams) |\n| Processing | Process all data at once | Process one event at a time |\n| Example | Nightly ETL job | Real-time fraud detection |\n| Tools | Spark Batch, dbt | Kafka, Flink, Spark Streaming |\n\n## Core Concepts\n\n### Events\nThe fundamental unit of data in streaming:\n- An event is an immutable fact that something happened\n- Events have a timestamp, key, and value\n- Examples: user clicked, order placed, sensor reading\n\n### Windowing\nGrouping events by time for aggregation:\n- **Tumbling Window**: Fixed-size, non-overlapping (every 5 minutes)\n- **Sliding Window**: Fixed-size, overlapping (5 min window, sliding every 1 min)\n- **Session Window**: Dynamic, gap-based (group events within 30 min of activity)\n\n### Watermarks\nHandling late-arriving data:\n- A watermark is a timestamp that says 'all events before this time have arrived'\n- Allows the system to close windows and emit results\n- Late data can still be handled through allowed lateness\n\n### Exactly-Once Semantics\nGuaranteeing each event is processed exactly once:\n- **At-most-once**: Fire and forget (may lose data)\n- **At-least-once**: Retry on failure (may duplicate)\n- **Exactly-once**: Most difficult, guaranteed no loss or duplication\n\n## Stream Processing Frameworks\n\n| Framework | Language | Key Strength |\n|-----------|----------|-------------|\n| Apache Kafka Streams | Java | Lightweight, embedded in apps |\n| Apache Flink | Java/Python | True streaming, stateful processing |\n| Spark Structured Streaming | Python/Scala | Unified batch + streaming |\n| Apache Beam | Multi | Portable across runners |\n| Redpanda | C++ | Kafka-compatible, fast |\n| Amazon Kinesis | Managed | AWS-native streaming |\n| Materialize | SQL | Streaming SQL materializations |\n\n## Common Use Cases\n\n1. **Fraud Detection**: Score transactions in real-time\n2. **IoT Analytics**: Process sensor data as it arrives\n3. **Real-Time Dashboards**: Live business metrics\n4. **Event-Driven Architecture**: React to business events instantly\n5. **CDC Processing**: Stream database changes to downstream systems\n6. **Personalization**: Real-time user behavior for recommendations",
+    "keyPoints": [
+      "Processes data continuously in real-time as it arrives",
+      "Sub-second latency vs minutes/hours for batch processing",
+      "Key concepts: windowing, watermarks, exactly-once semantics",
+      "Major frameworks: Kafka Streams, Flink, Spark Streaming",
+      "Used for fraud detection, IoT, real-time dashboards, CDC"
+    ],
+    "faqs": [
+      {
+        "question": "What is stream processing?",
+        "answer": "Stream processing is continuously processing data as it arrives, rather than collecting it into batches. It enables real-time analytics, fraud detection, and instant reactions to events with sub-second latency."
+      },
+      {
+        "question": "What is the difference between batch and stream processing?",
+        "answer": "Batch processing collects data over time and processes it all at once (e.g., nightly ETL). Stream processing handles each event as it arrives in real-time. Batch has higher latency but simpler logic; streaming has lower latency but more complexity."
+      },
+      {
+        "question": "What is windowing in stream processing?",
+        "answer": "Windowing groups streaming events into time-based buckets for aggregation. Tumbling windows are fixed and non-overlapping, sliding windows overlap, and session windows group events by user activity gaps."
+      },
+      {
+        "question": "Apache Flink vs Spark Streaming — which is better?",
+        "answer": "Flink is true event-by-event streaming with lower latency and better stateful processing. Spark Structured Streaming uses micro-batches and is better if you already use Spark for batch. Flink wins on latency; Spark wins on unified batch+stream."
+      }
+    ],
+    "relatedTerms": [
+      "apache-kafka",
+      "apache-flink",
+      "stateful-processing",
+      "cdc",
+      "data-pipeline"
+    ],
+    "relatedTools": [
+      "Apache Kafka",
+      "Apache Flink",
+      "Spark Streaming",
+      "Redpanda",
+      "Amazon Kinesis"
+    ],
+    "externalLinks": [
+      {
+        "title": "Stream Processing with Apache Flink (O'Reilly)",
+        "url": "https://www.oreilly.com/library/view/stream-processing-with/9781491974285/"
+      },
+      {
+        "title": "Kafka Streams Documentation",
+        "url": "https://kafka.apache.org/documentation/streams/"
+      }
+    ],
+    "keywords": [
+      "stream processing",
+      "stream processing vs batch",
+      "real-time data processing",
+      "stream processing frameworks",
+      "kafka stream processing"
+    ],
+    "lastUpdated": "2026-03-14"
   }
 ]

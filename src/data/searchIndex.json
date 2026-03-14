@@ -1,5 +1,5 @@
 {
-  "version": "2026-02-27T05:26:42.094Z",
+  "version": "2026-03-14T10:46:23.669Z",
   "glossary": [
     {
       "term": "ACID Transactions",
@@ -26,6 +26,12 @@
       "shortDefinition": "A distributed stream processing framework that processes data event-by-event with millisecond latency, built for stateful computations over unbounded data streams."
     },
     {
+      "term": "Apache Hudi",
+      "slug": "apache-hudi",
+      "category": "data-warehousing",
+      "shortDefinition": "An open-source data lakehouse platform that provides ACID transactions, record-level insert/update/delete, and incremental data processing on data lakes."
+    },
+    {
       "term": "Apache Iceberg",
       "slug": "apache-iceberg",
       "category": "data-warehousing",
@@ -36,6 +42,12 @@
       "slug": "apache-kafka",
       "category": "streaming",
       "shortDefinition": "A distributed event streaming platform used for building real-time data pipelines and streaming applications, handling trillions of events per day."
+    },
+    {
+      "term": "Apache NiFi",
+      "slug": "apache-nifi",
+      "category": "data-integration",
+      "shortDefinition": "An open-source data integration platform that provides a visual drag-and-drop interface for automating data flow between systems, with built-in data provenance and back-pressure handling."
     },
     {
       "term": "Apache Spark",
@@ -92,6 +104,12 @@
       "shortDefinition": "A centralized storage repository that holds vast amounts of raw data in its native format until needed for analysis, supporting structured, semi-structured, and unstructured data."
     },
     {
+      "term": "Data Lakehouse",
+      "slug": "data-lakehouse",
+      "category": "data-warehousing",
+      "shortDefinition": "A modern data architecture that combines the low-cost, flexible storage of data lakes with the performance, ACID transactions, and governance of data warehouses."
+    },
+    {
       "term": "Data Lineage",
       "slug": "data-lineage",
       "category": "data-governance",
@@ -128,10 +146,22 @@
       "shortDefinition": "The measure of how well data meets the requirements for its intended use, encompassing accuracy, completeness, consistency, timeliness, and validity."
     },
     {
+      "term": "Data Virtualization",
+      "slug": "data-virtualization",
+      "category": "data-integration",
+      "shortDefinition": "A data integration approach that provides a unified, real-time view of data from multiple sources without physically moving or replicating the data."
+    },
+    {
       "term": "Data Warehouse",
       "slug": "data-warehouse",
       "category": "data-warehousing",
       "shortDefinition": "A centralized repository designed to store, integrate, and analyze large volumes of structured data from multiple sources for business intelligence and reporting."
+    },
+    {
+      "term": "Data Warehouse Automation",
+      "slug": "dw-automation",
+      "category": "data-warehousing",
+      "shortDefinition": "The use of tools and methodologies to automate the design, development, deployment, and management of data warehouses, reducing manual coding and accelerating delivery."
     },
     {
       "term": "Databricks",
@@ -144,6 +174,18 @@
       "slug": "dbt",
       "category": "etl-elt",
       "shortDefinition": "An open-source transformation tool that enables data analysts and engineers to transform data in their warehouse using SQL and software engineering best practices."
+    },
+    {
+      "term": "Delta Lake",
+      "slug": "delta-lake",
+      "category": "data-warehousing",
+      "shortDefinition": "An open-source storage layer that brings ACID transactions, scalable metadata handling, and unified batch/streaming processing to data lakes."
+    },
+    {
+      "term": "Dimensional Modeling",
+      "slug": "dimensional-modeling",
+      "category": "data-modeling",
+      "shortDefinition": "A data modeling technique optimized for data warehousing and BI, organizing data into fact tables (measurements) and dimension tables (context) for fast analytical queries."
     },
     {
       "term": "DuckDB",
@@ -218,6 +260,18 @@
       "shortDefinition": "A cloud-native data warehouse platform that separates storage and compute, enabling elastic scaling and pay-per-use pricing."
     },
     {
+      "term": "Snowpark",
+      "slug": "snowpark",
+      "category": "cloud-platforms",
+      "shortDefinition": "Snowflake's developer framework that enables data engineers and data scientists to write data pipelines, ML models, and UDFs in Python, Java, or Scala — all executing directly inside Snowflake."
+    },
+    {
+      "term": "Soda Core",
+      "slug": "soda-core",
+      "category": "data-quality",
+      "shortDefinition": "An open-source data quality testing framework that uses a simple YAML-based language (SodaCL) to define data quality checks and integrates with any data source."
+    },
+    {
       "term": "Star Schema",
       "slug": "star-schema",
       "category": "data-modeling",
@@ -228,6 +282,12 @@
       "slug": "stateful-processing",
       "category": "streaming",
       "shortDefinition": "A stream processing technique where the application remembers information across multiple events in time."
+    },
+    {
+      "term": "Stream Processing",
+      "slug": "stream-processing",
+      "category": "streaming",
+      "shortDefinition": "A data processing paradigm that continuously ingests, processes, and analyzes data in real-time as it arrives, rather than waiting for batch collection."
     },
     {
       "term": "Table Format",
@@ -243,6 +303,146 @@
     }
   ],
   "comparisons": [
+    {
+      "title": "[object Object] vs [object Object]",
+      "slug": "tableau-vs-looker",
+      "category": "analytics",
+      "toolA": {
+        "name": "Tableau",
+        "logo": ""
+      },
+      "toolB": {
+        "name": "Looker",
+        "logo": ""
+      },
+      "shortVerdict": "Tableau leads in visual exploration and self-service analytics. Looker leads in governed, code-based semantic modeling. Choose Tableau for visual power users; choose Looker for data-team-governed analytics."
+    },
+    {
+      "title": "[object Object] vs [object Object]",
+      "slug": "trino-vs-presto",
+      "category": "analytics",
+      "toolA": {
+        "name": "Trino",
+        "logo": ""
+      },
+      "toolB": {
+        "name": "PrestoDB",
+        "logo": ""
+      },
+      "shortVerdict": "Trino (the community fork) has won with faster development, larger community, and richer features. PrestoDB (the Meta fork) is still used at Meta scale. Choose Trino for most use cases; choose PrestoDB only if you're deeply integrated with the Meta ecosystem."
+    },
+    {
+      "title": "[object Object] vs [object Object]",
+      "slug": "databricks-vs-emr",
+      "category": "cloud-platforms",
+      "toolA": {
+        "name": "Databricks",
+        "logo": ""
+      },
+      "toolB": {
+        "name": "Amazon EMR",
+        "logo": ""
+      },
+      "shortVerdict": "Databricks offers a premium, unified lakehouse platform with superior developer experience. EMR offers cheaper, more flexible managed Spark on AWS. Choose Databricks for productivity; choose EMR for cost optimization and AWS control."
+    },
+    {
+      "title": "[object Object] vs [object Object]",
+      "slug": "fivetran-vs-matillion",
+      "category": "data-integration",
+      "toolA": {
+        "name": "Fivetran",
+        "logo": ""
+      },
+      "toolB": {
+        "name": "Matillion",
+        "logo": ""
+      },
+      "shortVerdict": "Fivetran excels at automated EL (extract-load) with zero maintenance. Matillion combines ELT extraction and transformation in one platform. Choose Fivetran for pure data ingestion; choose Matillion for combined ingestion + transformation."
+    },
+    {
+      "title": "[object Object] vs [object Object]",
+      "slug": "airflow-vs-luigi",
+      "category": "data-orchestration",
+      "toolA": {
+        "name": "Apache Airflow",
+        "logo": ""
+      },
+      "toolB": {
+        "name": "Luigi",
+        "logo": ""
+      },
+      "shortVerdict": "Airflow has won the orchestration war with its massive ecosystem, rich UI, and active development. Luigi was pioneering but is now in maintenance mode. Choose Airflow for any new project."
+    },
+    {
+      "title": "[object Object] vs [object Object]",
+      "slug": "great-expectations-vs-soda",
+      "category": "data-quality",
+      "toolA": {
+        "name": "Great Expectations",
+        "logo": ""
+      },
+      "toolB": {
+        "name": "Soda",
+        "logo": ""
+      },
+      "shortVerdict": "Great Expectations offers deep Python customization for data engineers. Soda offers simple YAML-based checks accessible to all. Choose GX for complex, programmatic validation; choose Soda for simplicity and team-wide adoption."
+    },
+    {
+      "title": "[object Object] vs [object Object]",
+      "slug": "dbt-core-vs-dbt-cloud",
+      "category": "data-transformation",
+      "toolA": {
+        "name": "dbt Core",
+        "logo": ""
+      },
+      "toolB": {
+        "name": "dbt Cloud",
+        "logo": ""
+      },
+      "shortVerdict": "dbt Core is free and fully customizable. dbt Cloud adds IDE, scheduling, CI/CD, and governance. Choose Core for cost-conscious teams with DevOps skills; choose Cloud for productivity and enterprise features."
+    },
+    {
+      "title": "[object Object] vs [object Object]",
+      "slug": "snowflake-vs-motherduck",
+      "category": "data-warehousing",
+      "toolA": {
+        "name": "Snowflake",
+        "logo": ""
+      },
+      "toolB": {
+        "name": "MotherDuck",
+        "logo": ""
+      },
+      "shortVerdict": "Snowflake is the enterprise cloud DW standard. MotherDuck brings DuckDB to the cloud for fast, local-first analytics. Choose Snowflake for enterprise scale; choose MotherDuck for developer-friendly, cost-effective analytics."
+    },
+    {
+      "title": "[object Object] vs [object Object]",
+      "slug": "kafka-vs-pulsar",
+      "category": "streaming",
+      "toolA": {
+        "name": "Apache Kafka",
+        "logo": ""
+      },
+      "toolB": {
+        "name": "Apache Pulsar",
+        "logo": ""
+      },
+      "shortVerdict": "Kafka dominates in ecosystem and adoption. Pulsar offers superior multi-tenancy and geo-replication. Choose Kafka for proven reliability; choose Pulsar for complex multi-tenant architectures."
+    },
+    {
+      "title": "[object Object] vs [object Object]",
+      "slug": "kafka-vs-kinesis",
+      "category": "streaming",
+      "toolA": {
+        "name": "Apache Kafka",
+        "logo": ""
+      },
+      "toolB": {
+        "name": "Amazon Kinesis",
+        "logo": ""
+      },
+      "shortVerdict": "Kafka gives you full control, portability, and the richest ecosystem. Kinesis gives you zero ops on AWS. Choose Kafka for multi-cloud or complex streaming; choose Kinesis for simple AWS-native streaming."
+    },
     {
       "title": "Airbyte vs Meltano",
       "slug": "airbyte-vs-meltano",

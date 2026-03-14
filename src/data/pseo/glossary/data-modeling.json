@@ -194,5 +194,69 @@
       "star schema example"
     ],
     "lastUpdated": "2026-02-27"
+  },
+  {
+    "term": "Dimensional Modeling",
+    "slug": "dimensional-modeling",
+    "category": "data-modeling",
+    "shortDefinition": "A data modeling technique optimized for data warehousing and BI, organizing data into fact tables (measurements) and dimension tables (context) for fast analytical queries.",
+    "fullDefinition": "**Dimensional Modeling** is a data modeling technique created by Ralph Kimball specifically for data warehouses and business intelligence. It organizes data into **fact tables** (quantitative measurements) and **dimension tables** (descriptive context), making data intuitive for business users and optimized for analytical queries.\n\n## Core Components\n\n### Fact Tables\nStore the quantitative measurements of a business process:\n- **Rows**: One per event/transaction (an order, a click, a payment)\n- **Columns**: Foreign keys to dimensions + numeric measures\n- **Grain**: The level of detail (e.g., one row per order line item)\n\n```sql\n-- Example: sales_fact\norder_id | date_key | product_key | customer_key | quantity | revenue | discount\n```\n\n### Dimension Tables\nProvide descriptive context for facts:\n- **Rows**: One per business entity (a product, a customer, a date)\n- **Columns**: Descriptive attributes (name, category, address)\n- **Denormalized**: Flatten hierarchies for query performance\n\n```sql\n-- Example: dim_product\nproduct_key | product_name | category | subcategory | brand | color | size | price\n```\n\n## Schema Designs\n\n### Star Schema\n- Fact table in the center, dimension tables around it\n- Dimensions are denormalized (no further joins needed)\n- **Best for**: Most data warehouse use cases\n\n### Snowflake Schema\n- Dimensions are normalized (broken into sub-dimensions)\n- Saves storage but requires more joins\n- **Best for**: When storage is expensive or data changes frequently\n\n### Galaxy Schema (Fact Constellation)\n- Multiple fact tables sharing dimensions\n- **Best for**: Complex businesses with multiple business processes\n\n## Kimball's Four-Step Process\n\n1. **Select the Business Process**: What are you measuring? (Sales, clicks)\n2. **Declare the Grain**: What does one row represent? (One order line)\n3. **Identify the Dimensions**: Who, what, when, where, why (5 Ws)\n4. **Identify the Facts**: What numeric measurements to capture\n\n## Types of Fact Tables\n\n| Type | Description | Example |\n|------|-------------|--------|\n| Transaction | One row per event | Individual sales |\n| Periodic Snapshot | One row per time period | Daily account balance |\n| Accumulating Snapshot | One row per lifecycle | Order fulfillment stages |\n| Factless | No measures, just events | Student attendance |\n\n## Slowly Changing Dimensions (SCDs)\n\n- **Type 1**: Overwrite old values (lose history)\n- **Type 2**: Add new rows with effective dates (keep history)\n- **Type 3**: Add columns for old/new values (limited history)\n\n## Common Use Cases\n\n1. **Enterprise BI**: Build the analytical layer for dashboards\n2. **dbt Models**: Implement dimensional models as dbt transforms\n3. **Self-Service Analytics**: Business users query intuitive structures\n4. **Data Marts**: Department-specific analytical datasets\n5. **Metrics Layer**: Define consistent business metrics",
+    "keyPoints": [
+      "Organizing data into fact tables (measures) and dimension tables (context)",
+      "Star schema is the most common pattern: denormalized dimensions around facts",
+      "Created by Ralph Kimball for data warehousing and BI",
+      "Four-step process: business process → grain → dimensions → facts",
+      "Slowly Changing Dimensions handle historical attribute changes"
+    ],
+    "faqs": [
+      {
+        "question": "What is dimensional modeling?",
+        "answer": "Dimensional modeling is a data modeling approach for data warehouses that organizes data into fact tables (numeric measurements like revenue, quantity) and dimension tables (descriptive context like product name, customer, date). It's optimized for fast analytical queries and intuitive for business users."
+      },
+      {
+        "question": "What is the difference between dimensional modeling and normalized modeling?",
+        "answer": "Normalized models (3NF) minimize redundancy and are used for operational databases. Dimensional models denormalize data for query performance and user-friendliness in analytics. Dimensional models are slower for writes but much faster for reads."
+      },
+      {
+        "question": "What is a star schema?",
+        "answer": "A star schema is the most common dimensional model pattern. It has a central fact table connected to denormalized dimension tables, forming a star shape. It's optimized for BI queries and is the default design for most data warehouses."
+      },
+      {
+        "question": "Is dimensional modeling still relevant?",
+        "answer": "Yes. Despite newer approaches like Data Vault, dimensional modeling remains the standard for analytics and BI. Modern tools like dbt make it easy to implement dimensional models in cloud warehouses like Snowflake and BigQuery."
+      }
+    ],
+    "relatedTerms": [
+      "star-schema",
+      "data-modeling",
+      "data-warehouse",
+      "scd",
+      "dbt"
+    ],
+    "relatedTools": [
+      "dbt",
+      "Snowflake",
+      "BigQuery",
+      "Looker",
+      "Power BI"
+    ],
+    "externalLinks": [
+      {
+        "title": "Kimball Dimensional Modeling Techniques",
+        "url": "https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/"
+      },
+      {
+        "title": "The Data Warehouse Toolkit (Book)",
+        "url": "https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/books/data-warehouse-dw-toolkit/"
+      }
+    ],
+    "keywords": [
+      "dimensional modeling",
+      "kimball dimensional modeling",
+      "fact table vs dimension table",
+      "star schema vs snowflake schema",
+      "dimensional modeling tutorial"
+    ],
+    "lastUpdated": "2026-03-14"
   }
 ]

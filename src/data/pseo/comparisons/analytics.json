@@ -321,5 +321,215 @@
       "snowflake-vs-databricks"
     ],
     "lastUpdated": "2026-02-27"
+  },
+  {
+    "slug": "tableau-vs-looker",
+    "toolA": "Tableau",
+    "toolB": "Looker",
+    "category": "analytics",
+    "winner": "depends",
+    "shortVerdict": "Tableau leads in visual exploration and self-service analytics. Looker leads in governed, code-based semantic modeling. Choose Tableau for visual power users; choose Looker for data-team-governed analytics.",
+    "intro": "Tableau and Looker are two of the most popular business intelligence platforms, but they embody fundamentally different philosophies. **Tableau** (now part of Salesforce) excels at visual, interactive data exploration — empowering business users to create stunning dashboards with drag-and-drop. **Looker** (now part of Google Cloud) takes a code-first, governed approach where data teams define metrics in LookML, ensuring everyone uses the same definitions.",
+    "features": [
+      {
+        "name": "Approach",
+        "toolAValue": "Visual-first, drag-and-drop",
+        "toolBValue": "Code-first, semantic layer (LookML)",
+        "winner": "Tie"
+      },
+      {
+        "name": "User Experience",
+        "toolAValue": "Rich desktop + web client",
+        "toolBValue": "Web-only, explore interface",
+        "winner": "Tie"
+      },
+      {
+        "name": "Data Modeling",
+        "toolAValue": "In-tool data blending and prep",
+        "toolBValue": "LookML (Git-based, version controlled)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Governance",
+        "toolAValue": "Dashboard-level permissions",
+        "toolBValue": "Centralized LookML model governance",
+        "winner": "Tie"
+      },
+      {
+        "name": "Visualization",
+        "toolAValue": "Best-in-class (maps, charts, animations)",
+        "toolBValue": "Good but more limited than Tableau",
+        "winner": "Tie"
+      },
+      {
+        "name": "Embedded Analytics",
+        "toolAValue": "Tableau Embedded",
+        "toolBValue": "Strong embedded offering (powered by Google)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Deployment",
+        "toolAValue": "Desktop + Tableau Cloud/Server",
+        "toolBValue": "Cloud-only (Google Cloud)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Pricing",
+        "toolAValue": "Per user (Creator, Explorer, Viewer tiers)",
+        "toolBValue": "Per user (Standard, Developer tiers)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Parent Company",
+        "toolAValue": "Salesforce",
+        "toolBValue": "Google Cloud",
+        "winner": "Tie"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Best-in-class visualization and dashboard design",
+        "Intuitive drag-and-drop for non-technical users",
+        "Desktop app for local development and offline access",
+        "Massive community (Tableau Public, forums, user groups)",
+        "Connects to virtually any data source",
+        "Rich map visualizations and geospatial analysis"
+      ],
+      "toolB": [
+        "LookML ensures consistent metric definitions across the org",
+        "Version-controlled data models (Git-based)",
+        "Strong data governance — less risk of conflicting dashboards",
+        "Modern SQL-push-down architecture (fast queries on big data)",
+        "Excellent embedded analytics for products",
+        "Tight Google Cloud / BigQuery integration"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Governance can be challenging — duplicate/conflicting dashboards",
+        "Desktop app is Windows/Mac only (no Linux)",
+        "Per-user pricing gets expensive at scale",
+        "Data modeling is less structured than LookML",
+        "Salesforce integration push may not suit all orgs"
+      ],
+      "toolB": [
+        "LookML learning curve for data teams",
+        "Less visual flexibility than Tableau",
+        "No desktop app — cloud-only",
+        "Business users are more dependent on data teams",
+        "Google Cloud lock-in (best experience on GCP + BigQuery)",
+        "Fewer community resources than Tableau"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Tableau if:**\n*   Your business users need to build their own dashboards\n*   Visual richness and design flexibility are priorities\n*   You want a desktop app for local development\n*   You have diverse data sources beyond Google Cloud\n*   You're a Salesforce shop\n\n**Choose Looker if:**\n*   Data governance and consistent metrics are critical\n*   Your data team wants version-controlled data modeling\n*   You're on Google Cloud / BigQuery\n*   You need strong embedded analytics\n*   You prefer a code-first, governed approach to analytics",
+    "relatedComparisons": [
+      "looker-vs-power-bi",
+      "snowflake-vs-bigquery"
+    ],
+    "lastUpdated": "2026-03-14",
+    "id": "tableau-vs-looker"
+  },
+  {
+    "slug": "trino-vs-presto",
+    "toolA": "Trino",
+    "toolB": "PrestoDB",
+    "category": "analytics",
+    "winner": "toolA",
+    "shortVerdict": "Trino (the community fork) has won with faster development, larger community, and richer features. PrestoDB (the Meta fork) is still used at Meta scale. Choose Trino for most use cases; choose PrestoDB only if you're deeply integrated with the Meta ecosystem.",
+    "intro": "Trino and PrestoDB share the same origin — the Presto distributed SQL query engine created at Facebook (now Meta). In 2019, the original Presto creators left Facebook and forked the project, renaming it **Trino** to continue community-driven development. Facebook's internal team continued developing **PrestoDB** as a separate project under the Linux Foundation. The two have diverged significantly since the split.",
+    "features": [
+      {
+        "name": "Origin",
+        "toolAValue": "Fork by original Presto creators (2019)",
+        "toolBValue": "Continued by Meta engineering team",
+        "winner": "Tie"
+      },
+      {
+        "name": "Governance",
+        "toolAValue": "Community-driven (Trino Software Foundation)",
+        "toolBValue": "Linux Foundation (Meta-influenced)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Development Pace",
+        "toolAValue": "Fast (weekly releases, 800+ contributors)",
+        "toolBValue": "Slower (Meta's internal priorities drive roadmap)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Connectors",
+        "toolAValue": "40+ connectors (Iceberg, Delta, Hudi, etc.)",
+        "toolBValue": "30+ connectors",
+        "winner": "Tie"
+      },
+      {
+        "name": "Fault Tolerance",
+        "toolAValue": "Task-level retry + exchange spooling",
+        "toolBValue": "Query-level recovery",
+        "winner": "Tie"
+      },
+      {
+        "name": "Security",
+        "toolAValue": "Ranger, OPA, built-in access control",
+        "toolBValue": "Basic security features",
+        "winner": "Tie"
+      },
+      {
+        "name": "Managed Service",
+        "toolAValue": "Starburst (Enterprise + Galaxy)",
+        "toolBValue": "Ahana (less prominent)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Community",
+        "toolAValue": "Large (14K+ GitHub stars, active Slack)",
+        "toolBValue": "Smaller (Meta-centric)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Table Format Support",
+        "toolAValue": "Excellent (Iceberg, Delta, Hudi — first-class)",
+        "toolBValue": "Good (growing support)",
+        "winner": "Tie"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Faster development with weekly releases",
+        "Larger and more active community",
+        "First-class support for modern table formats (Iceberg, Delta, Hudi)",
+        "Starburst Enterprise for commercial support",
+        "Better fault tolerance and query reliability",
+        "More connectors and broader ecosystem"
+      ],
+      "toolB": [
+        "Battle-tested at Meta's extreme scale (exabytes)",
+        "Optimized for Meta's internal data infrastructure",
+        "Linux Foundation governance (vendor-neutral on paper)",
+        "Some unique features driven by Meta's requirements",
+        "Strong optimization for ORC file format"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Name change from Presto to Trino caused community confusion",
+        "Starburst Enterprise can be expensive",
+        "Self-hosted Trino requires cluster management expertise"
+      ],
+      "toolB": [
+        "Slower feature development outside Meta's priorities",
+        "Smaller community and fewer contributors",
+        "Less momentum in the broader data ecosystem",
+        "Fewer managed service options",
+        "Lagging behind Trino in modern table format support"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Trino if:**\n*   You want the most active, community-driven distributed SQL engine\n*   You need first-class support for Iceberg, Delta Lake, or Hudi\n*   You want commercial support via Starburst\n*   You're building a data mesh or data lakehouse architecture\n*   You need federated queries across diverse data sources\n\n**Choose PrestoDB if:**\n*   You're already using PrestoDB and it meets your needs\n*   You operate at Meta-like scale with ORC-heavy workloads\n*   You have specific Meta-ecosystem integrations\n\n**Note:** For most new projects, Trino is the clear choice due to its larger community, faster development, and broader ecosystem support.",
+    "relatedComparisons": [
+      "clickhouse-vs-druid",
+      "snowflake-vs-databricks"
+    ],
+    "lastUpdated": "2026-03-14",
+    "id": "trino-vs-presto"
   }
 ]

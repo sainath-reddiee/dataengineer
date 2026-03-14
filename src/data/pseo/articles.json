@@ -1,5 +1,22 @@
 [
   {
+    "slug": "snowflake-cortex-code-dbt-optimization-guide",
+    "title": "Snowflake Cortex Code for dbt: Cut Build Time 48% | 2026 Guide",
+    "keywords": [
+      "cortex",
+      "snowflake",
+      "Snowflake",
+      "dbt"
+    ],
+    "categories": [
+      "airflow",
+      "dbt",
+      "python",
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
     "slug": "snowflake-managed-iceberg-tables-complete-guide-2026",
     "title": "Snowflake Managed Iceberg Tables 2026",
     "keywords": [

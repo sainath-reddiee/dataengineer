@@ -535,5 +535,112 @@
       "snowflake-vs-databricks"
     ],
     "lastUpdated": "2026-02-27"
+  },
+  {
+    "slug": "snowflake-vs-motherduck",
+    "toolA": "Snowflake",
+    "toolB": "MotherDuck",
+    "category": "data-warehousing",
+    "winner": "depends",
+    "shortVerdict": "Snowflake is the enterprise cloud DW standard. MotherDuck brings DuckDB to the cloud for fast, local-first analytics. Choose Snowflake for enterprise scale; choose MotherDuck for developer-friendly, cost-effective analytics.",
+    "intro": "Snowflake and MotherDuck represent two very different philosophies in data warehousing. **Snowflake** is the dominant enterprise cloud data warehouse with elastic scaling, governance, and multi-cloud support. **MotherDuck** is a serverless cloud service built on DuckDB — bringing the speed and simplicity of an in-process analytical database to the cloud with a unique 'dual execution' model that runs queries locally and in the cloud simultaneously.",
+    "features": [
+      {
+        "name": "Architecture",
+        "toolAValue": "Cloud-native SaaS (compute + storage separated)",
+        "toolBValue": "Hybrid local + cloud (DuckDB-based)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Query Engine",
+        "toolAValue": "Proprietary SQL engine (columnar, vectorized)",
+        "toolBValue": "DuckDB (embedded OLAP engine)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Scaling",
+        "toolAValue": "Elastic virtual warehouses (XS to 6XL)",
+        "toolBValue": "Auto-scaling serverless + local processing",
+        "winner": "Tie"
+      },
+      {
+        "name": "Pricing",
+        "toolAValue": "Credit-based (compute) + storage per TB",
+        "toolBValue": "Free tier + usage-based (much cheaper for small-mid)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Setup Time",
+        "toolAValue": "Minutes (account creation + config)",
+        "toolBValue": "Seconds (pip install + connect)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Local Development",
+        "toolAValue": "Cloud-only (no local option)",
+        "toolBValue": "DuckDB runs locally, syncs to cloud",
+        "winner": "Tie"
+      },
+      {
+        "name": "Data Sharing",
+        "toolAValue": "Snowflake Data Marketplace, Secure Shares",
+        "toolBValue": "Share databases via URL",
+        "winner": "Tie"
+      },
+      {
+        "name": "Governance",
+        "toolAValue": "Enterprise (RBAC, masking, lineage, tagging)",
+        "toolBValue": "Basic (growing)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Ecosystem",
+        "toolAValue": "Massive (dbt, Fivetran, Looker, 1000+ partners)",
+        "toolBValue": "Growing (Python, dbt, Jupyter integration)",
+        "winner": "Tie"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Enterprise-grade security, governance, and compliance",
+        "Massive ecosystem (dbt, Fivetran, Looker, etc.)",
+        "Multi-cloud (AWS, Azure, GCP)",
+        "Elastic scaling for any workload size",
+        "Data Marketplace for third-party data access",
+        "Proven at petabyte scale"
+      ],
+      "toolB": [
+        "Dramatically cheaper for small-to-medium workloads",
+        "Sub-second startup — no warehouse warm-up time",
+        "Local-first development with DuckDB",
+        "Dual execution: query local + cloud data together",
+        "Python-native — install with pip, use in Jupyter",
+        "Generous free tier for individual developers"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Expensive for small teams or exploratory workloads",
+        "Cold start on paused warehouses",
+        "No local development option",
+        "Credit-based pricing can be unpredictable",
+        "Complex for simple analytical use cases"
+      ],
+      "toolB": [
+        "Not enterprise-ready (limited governance, RBAC)",
+        "Smaller ecosystem — fewer integrations",
+        "Newer — less battle-tested at enterprise scale",
+        "Limited multi-cloud (primarily AWS for now)",
+        "Not suitable for massive concurrent user workloads"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Snowflake if:**\n*   You need enterprise governance, security, and compliance\n*   You're processing petabytes of data with many concurrent users\n*   You need the massive partner ecosystem (dbt, Fivetran, Looker)\n*   Multi-cloud deployment is a requirement\n*   You need Data Marketplace or data sharing at scale\n\n**Choose MotherDuck if:**\n*   You want fast, cheap analytics for small-to-medium datasets\n*   You love DuckDB and want to extend it to the cloud\n*   Local-first development is important to your workflow\n*   You're an individual developer or small team\n*   You want to query local files and cloud data together",
+    "relatedComparisons": [
+      "snowflake-vs-bigquery",
+      "snowflake-vs-databricks",
+      "duckdb-vs-polars"
+    ],
+    "lastUpdated": "2026-03-14",
+    "id": "snowflake-vs-motherduck"
   }
 ]

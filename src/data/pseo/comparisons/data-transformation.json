@@ -155,5 +155,110 @@
       "snowflake-vs-databricks"
     ],
     "lastUpdated": "2026-02-27"
+  },
+  {
+    "slug": "dbt-core-vs-dbt-cloud",
+    "toolA": "dbt Core",
+    "toolB": "dbt Cloud",
+    "category": "data-transformation",
+    "winner": "depends",
+    "shortVerdict": "dbt Core is free and fully customizable. dbt Cloud adds IDE, scheduling, CI/CD, and governance. Choose Core for cost-conscious teams with DevOps skills; choose Cloud for productivity and enterprise features.",
+    "intro": "dbt (data build tool) comes in two flavors: **dbt Core** (free, open-source CLI) and **dbt Cloud** (commercial SaaS platform by dbt Labs). Both use the same SQL-based transformation engine, but dbt Cloud adds a web IDE, job scheduling, CI/CD, documentation hosting, and enterprise governance features on top. The choice is essentially: build your own tooling around Core, or pay for Cloud's integrated experience.",
+    "features": [
+      {
+        "name": "Cost",
+        "toolAValue": "Free and open-source",
+        "toolBValue": "Free tier + paid plans ($100+/seat/month)",
+        "winner": "Tie"
+      },
+      {
+        "name": "IDE",
+        "toolAValue": "Use any editor (VS Code, vim)",
+        "toolBValue": "Built-in web IDE with autocomplete",
+        "winner": "Tie"
+      },
+      {
+        "name": "Scheduling",
+        "toolAValue": "DIY (Airflow, cron, GitHub Actions)",
+        "toolBValue": "Built-in job scheduler",
+        "winner": "Tie"
+      },
+      {
+        "name": "CI/CD",
+        "toolAValue": "DIY (GitHub Actions, GitLab CI)",
+        "toolBValue": "Built-in Slim CI (test only changed models)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Documentation",
+        "toolAValue": "Self-hosted (dbt docs generate + serve)",
+        "toolBValue": "Auto-hosted documentation site",
+        "winner": "Tie"
+      },
+      {
+        "name": "Column-Level Lineage",
+        "toolAValue": "Not available",
+        "toolBValue": "Enterprise plan only",
+        "winner": "Tie"
+      },
+      {
+        "name": "Semantic Layer",
+        "toolAValue": "Not available",
+        "toolBValue": "dbt Semantic Layer (MetricFlow)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Environment Management",
+        "toolAValue": "Manual (profiles.yml, env vars)",
+        "toolBValue": "Built-in environment management",
+        "winner": "Tie"
+      },
+      {
+        "name": "SSO / RBAC",
+        "toolAValue": "Not applicable",
+        "toolBValue": "Enterprise plan (SSO, RBAC, audit logs)",
+        "winner": "Tie"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Completely free — no per-seat licensing costs",
+        "Full control over infrastructure and deployment",
+        "Use any IDE, any CI/CD system, any scheduler",
+        "No vendor dependency — pure open source",
+        "Can be containerized and deployed anywhere"
+      ],
+      "toolB": [
+        "Built-in web IDE with SQL autocomplete and preview",
+        "One-click job scheduling without Airflow or cron",
+        "Slim CI automatically tests only changed models",
+        "Auto-hosted documentation with search",
+        "Column-level lineage and semantic layer (Enterprise)",
+        "Easier onboarding for non-DevOps teams"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Need to build your own CI/CD, scheduling, and hosting",
+        "No web IDE — requires local setup for each developer",
+        "No column-level lineage",
+        "Documentation requires manual hosting",
+        "More DevOps burden on data engineering teams"
+      ],
+      "toolB": [
+        "Per-seat pricing gets expensive for large teams",
+        "Enterprise features (lineage, RBAC) require expensive plans",
+        "Vendor lock-in to dbt Labs platform",
+        "Web IDE can feel limiting for power users",
+        "Some features lag behind Core CLI releases"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose dbt Core if:**\n*   Budget is a primary concern (it's free!)\n*   Your team has strong DevOps skills (CI/CD, Airflow, Docker)\n*   You want full control over your deployment environment\n*   You already have scheduling infrastructure (Airflow, Dagster)\n*   You prefer working in VS Code or your favorite editor\n\n**Choose dbt Cloud if:**\n*   You want an integrated experience without building tooling\n*   Your team is analytics-focused (not DevOps-heavy)\n*   You need built-in scheduling, CI/CD, and documentation\n*   Column-level lineage or semantic layer is important\n*   You want the fastest onboarding for new team members",
+    "relatedComparisons": [
+      "dbt-vs-dataform",
+      "dbt-vs-sqlmesh"
+    ],
+    "lastUpdated": "2026-03-14",
+    "id": "dbt-core-vs-dbt-cloud"
   }
 ]

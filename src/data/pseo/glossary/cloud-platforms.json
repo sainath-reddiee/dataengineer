@@ -76,5 +76,69 @@
       "Automated scaling and management",
       "Tools include Terraform, Pulumi, and AWS CDK"
     ]
+  },
+  {
+    "term": "Snowpark",
+    "slug": "snowpark",
+    "category": "cloud-platforms",
+    "shortDefinition": "Snowflake's developer framework that enables data engineers and data scientists to write data pipelines, ML models, and UDFs in Python, Java, or Scala — all executing directly inside Snowflake.",
+    "fullDefinition": "**Snowpark** is Snowflake's developer framework that allows you to write data processing logic in **Python, Java, or Scala** that executes natively inside Snowflake's compute engine. Instead of extracting data to an external cluster (like Spark), Snowpark brings the code to the data — eliminating data movement and leveraging Snowflake's elastic compute.\n\n## Why Snowpark?\n\nBefore Snowpark, working with Snowflake meant:\n- **SQL only**: Complex transformations were difficult in pure SQL\n- **External processing**: Move data to Spark/Python, process, move back\n- **Data movement costs**: Egress fees + latency + security risks\n\nSnowpark says: **Write Python/Java/Scala code that runs inside Snowflake.**\n\n```python\nfrom snowflake.snowpark import Session\nfrom snowflake.snowpark.functions import col, avg\n\nsession = Session.builder.configs(connection_params).create()\n\n# DataFrame API — runs inside Snowflake\ndf = session.table('sales')\nresult = df.filter(col('year') == 2025) \\\n           .group_by('region') \\\n           .agg(avg('revenue').alias('avg_revenue'))\nresult.show()\n```\n\n## Key Components\n\n### Snowpark DataFrames\n- Lazy evaluation — operations build a query plan\n- Optimized by Snowflake's SQL optimizer\n- Similar API to PySpark DataFrames\n- Zero data movement — everything runs in Snowflake\n\n### Snowpark Python UDFs\n- Write custom Python functions, deploy as UDFs\n- Import Python packages (pandas, scikit-learn, xgboost)\n- Vectorized UDFs for high-performance batch processing\n\n### Snowpark ML\n- Train ML models inside Snowflake\n- Feature engineering with Snowpark DataFrames\n- Model registry for versioning and deployment\n- Inference at scale without data movement\n\n### Stored Procedures\n- Write complex logic in Python/Java/Scala\n- Schedule with Snowflake Tasks\n- Handle orchestration natively\n\n## Snowpark vs PySpark\n\n| Feature | Snowpark | PySpark |\n|---------|----------|---------|\n| Compute | Snowflake warehouses | Spark clusters |\n| Data Location | In Snowflake | In data lake/cluster |\n| Infrastructure | Zero (serverless) | Cluster management |\n| Language | Python, Java, Scala | Python, Java, Scala, R |\n| Best For | Snowflake-native workloads | Data lake processing |\n\n## Common Use Cases\n\n1. **ML in Snowflake**: Train and deploy models without moving data\n2. **Complex ETL**: Python-based transformations beyond SQL capabilities\n3. **Feature Engineering**: Build ML features using DataFrame API\n4. **Data Apps**: Build data applications with Streamlit in Snowflake\n5. **UDF Libraries**: Create reusable Python functions across the org",
+    "keyPoints": [
+      "Write Python, Java, or Scala code that executes inside Snowflake",
+      "DataFrame API similar to PySpark, optimized by Snowflake's engine",
+      "Zero data movement — code runs where the data lives",
+      "Includes ML capabilities: training, feature engineering, model registry",
+      "Supports Python UDFs, stored procedures, and Streamlit apps"
+    ],
+    "faqs": [
+      {
+        "question": "What is Snowpark used for?",
+        "answer": "Snowpark enables data engineers and data scientists to write Python, Java, or Scala code that runs directly inside Snowflake. It's used for complex data transformations, ML model training, feature engineering, and building data applications — all without moving data out of Snowflake."
+      },
+      {
+        "question": "Is Snowpark the same as PySpark?",
+        "answer": "Snowpark has a similar DataFrame API to PySpark, but the code runs inside Snowflake's compute engine instead of on a Spark cluster. Snowpark is specifically for Snowflake, while PySpark runs on any Spark-compatible platform."
+      },
+      {
+        "question": "Is Snowpark free?",
+        "answer": "Snowpark itself is free to use, but you pay for the Snowflake compute (virtual warehouse credits) consumed when running Snowpark code. There's no separate Snowpark license fee."
+      },
+      {
+        "question": "Can Snowpark replace Apache Spark?",
+        "answer": "For workloads where data is already in Snowflake, yes — Snowpark can replace Spark by eliminating data movement. For data lake processing, multi-engine workflows, or non-Snowflake data sources, Spark remains the better choice."
+      }
+    ],
+    "relatedTerms": [
+      "snowflake",
+      "apache-spark",
+      "data-warehouse",
+      "etl",
+      "data-pipeline"
+    ],
+    "relatedTools": [
+      "Snowflake",
+      "Apache Spark",
+      "PySpark",
+      "dbt",
+      "Streamlit"
+    ],
+    "externalLinks": [
+      {
+        "title": "Snowpark Developer Guide",
+        "url": "https://docs.snowflake.com/en/developer-guide/snowpark/index"
+      },
+      {
+        "title": "Snowpark Python API Reference",
+        "url": "https://docs.snowflake.com/en/developer-guide/snowpark/reference/python/index"
+      }
+    ],
+    "keywords": [
+      "snowpark",
+      "snowpark python",
+      "snowpark vs pyspark",
+      "snowflake snowpark tutorial",
+      "snowpark ml"
+    ],
+    "lastUpdated": "2026-03-14"
   }
 ]

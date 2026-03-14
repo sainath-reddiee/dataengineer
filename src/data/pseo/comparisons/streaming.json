@@ -142,5 +142,211 @@
       "snowflake-vs-databricks"
     ],
     "lastUpdated": "2026-02-05"
+  },
+  {
+    "slug": "kafka-vs-pulsar",
+    "toolA": "Apache Kafka",
+    "toolB": "Apache Pulsar",
+    "category": "streaming",
+    "winner": "depends",
+    "shortVerdict": "Kafka dominates in ecosystem and adoption. Pulsar offers superior multi-tenancy and geo-replication. Choose Kafka for proven reliability; choose Pulsar for complex multi-tenant architectures.",
+    "intro": "Apache Kafka and Apache Pulsar are both distributed messaging and streaming platforms, but they take fundamentally different architectural approaches. Kafka, created at LinkedIn, uses a partition-based log storage model. Pulsar, created at Yahoo!, separates compute (brokers) from storage (Apache BookKeeper), enabling independent scaling of each layer.",
+    "features": [
+      {
+        "name": "Architecture",
+        "toolAValue": "Unified broker + storage (partition log)",
+        "toolBValue": "Separated compute (broker) + storage (BookKeeper)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Multi-Tenancy",
+        "toolAValue": "Limited (separate clusters per tenant)",
+        "toolBValue": "Native (namespaces, isolation policies)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Geo-Replication",
+        "toolAValue": "MirrorMaker 2 (complex setup)",
+        "toolBValue": "Built-in, bi-directional",
+        "winner": "Tie"
+      },
+      {
+        "name": "Message Model",
+        "toolAValue": "Pub/sub + consumer groups",
+        "toolBValue": "Pub/sub + exclusive + shared + failover subscriptions",
+        "winner": "Tie"
+      },
+      {
+        "name": "Tiered Storage",
+        "toolAValue": "KIP-405 (newer, maturing)",
+        "toolBValue": "Built-in from the start",
+        "winner": "Tie"
+      },
+      {
+        "name": "Schema Registry",
+        "toolAValue": "Confluent Schema Registry (separate)",
+        "toolBValue": "Built-in schema registry",
+        "winner": "Tie"
+      },
+      {
+        "name": "Ecosystem",
+        "toolAValue": "Massive (Connect, Streams, ksqlDB)",
+        "toolBValue": "Growing (Pulsar Functions, IO connectors)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Managed Services",
+        "toolAValue": "Confluent Cloud, MSK, Redpanda",
+        "toolBValue": "StreamNative Cloud, limited options",
+        "winner": "Tie"
+      },
+      {
+        "name": "Community",
+        "toolAValue": "Huge — industry standard",
+        "toolBValue": "Smaller but growing",
+        "winner": "Tie"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Industry standard — massive ecosystem and community",
+        "Kafka Connect for 200+ source/sink connectors",
+        "ksqlDB and Kafka Streams for stream processing",
+        "Multiple managed options (Confluent, MSK, Redpanda)",
+        "Proven at extreme scale (trillions of messages/day)"
+      ],
+      "toolB": [
+        "Native multi-tenancy with namespace isolation",
+        "Built-in geo-replication (active-active across regions)",
+        "Separate scaling of compute and storage",
+        "Multiple subscription modes (exclusive, shared, key-shared, failover)",
+        "Built-in schema registry and tiered storage"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Multi-tenancy requires separate clusters",
+        "Geo-replication is complex (MirrorMaker 2)",
+        "Storage is coupled to brokers (harder to scale independently)",
+        "Rebalancing partitions can be slow and disruptive"
+      ],
+      "toolB": [
+        "Much smaller ecosystem and community",
+        "Fewer managed service options",
+        "BookKeeper adds operational complexity",
+        "Harder to hire experienced Pulsar engineers",
+        "Fewer integrations with the broader data ecosystem"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Apache Kafka if:**\n*   You want the industry standard with the largest ecosystem\n*   You need Kafka Connect, ksqlDB, or Kafka Streams\n*   You prefer abundant managed options (Confluent, MSK)\n*   Your team has existing Kafka expertise\n*   You want the easiest path to hiring and support\n\n**Choose Apache Pulsar if:**\n*   You need native multi-tenancy (many teams on one cluster)\n*   Geo-replication across regions is a core requirement\n*   You want to scale compute and storage independently\n*   You need multiple subscription modes (shared, key-shared)\n*   You're building a new platform and can invest in Pulsar's learning curve",
+    "relatedComparisons": [
+      "kafka-vs-redpanda",
+      "flink-vs-spark-streaming"
+    ],
+    "lastUpdated": "2026-03-14",
+    "id": "kafka-vs-pulsar"
+  },
+  {
+    "slug": "kafka-vs-kinesis",
+    "toolA": "Apache Kafka",
+    "toolB": "Amazon Kinesis",
+    "category": "streaming",
+    "winner": "depends",
+    "shortVerdict": "Kafka gives you full control, portability, and the richest ecosystem. Kinesis gives you zero ops on AWS. Choose Kafka for multi-cloud or complex streaming; choose Kinesis for simple AWS-native streaming.",
+    "intro": "Apache Kafka and Amazon Kinesis both solve the same core problem — real-time data streaming — but take opposite approaches. Kafka is an open-source platform you can run anywhere, with a massive ecosystem of tools. Kinesis is a fully managed AWS service that requires zero infrastructure management but locks you into AWS.",
+    "features": [
+      {
+        "name": "Deployment",
+        "toolAValue": "Self-managed or managed (Confluent, MSK)",
+        "toolBValue": "Fully managed AWS service",
+        "winner": "Tie"
+      },
+      {
+        "name": "Operation",
+        "toolAValue": "You manage clusters (or pay for managed)",
+        "toolBValue": "Zero ops — AWS handles everything",
+        "winner": "Tie"
+      },
+      {
+        "name": "Data Retention",
+        "toolAValue": "Unlimited (configurable)",
+        "toolBValue": "1-365 days (default 24h)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Throughput",
+        "toolAValue": "Virtually unlimited (add brokers/partitions)",
+        "toolBValue": "Shard-based (1MB/s write, 2MB/s read per shard)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Ecosystem",
+        "toolAValue": "Connect, Streams, ksqlDB, Schema Registry",
+        "toolBValue": "Kinesis Analytics, Firehose, Data Streams",
+        "winner": "Tie"
+      },
+      {
+        "name": "Pricing",
+        "toolAValue": "Infrastructure costs (compute + storage)",
+        "toolBValue": "Pay per shard-hour + per PUT payload",
+        "winner": "Tie"
+      },
+      {
+        "name": "Portability",
+        "toolAValue": "Run anywhere (cloud, on-prem, edge)",
+        "toolBValue": "AWS only",
+        "winner": "Tie"
+      },
+      {
+        "name": "Latency",
+        "toolAValue": "Sub-millisecond",
+        "toolBValue": "~200ms (shard-based)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Consumer Model",
+        "toolAValue": "Consumer groups with partition assignment",
+        "toolBValue": "Enhanced fan-out or shared throughput",
+        "winner": "Tie"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Run anywhere — no cloud vendor lock-in",
+        "Massive ecosystem (Connect, Streams, ksqlDB)",
+        "Unlimited retention and replay capability",
+        "Sub-millisecond latency at scale",
+        "Largest community and hiring pool"
+      ],
+      "toolB": [
+        "Zero infrastructure management",
+        "Seamless AWS integration (Lambda, S3, Redshift)",
+        "Kinesis Firehose for zero-code delivery to S3/Redshift",
+        "Pay-per-use pricing for variable workloads",
+        "Automatic scaling with on-demand mode"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "Operational overhead for self-managed clusters",
+        "Managed Kafka (MSK) is more expensive than Kinesis",
+        "Requires expertise to tune and operate at scale",
+        "ZooKeeper dependency (being removed in KRaft mode)"
+      ],
+      "toolB": [
+        "AWS vendor lock-in — no portability",
+        "Shard-based throughput limits (requires resharding)",
+        "Limited ecosystem compared to Kafka",
+        "Higher latency (~200ms vs sub-ms for Kafka)",
+        "Limited retention (max 365 days vs unlimited for Kafka)"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Apache Kafka if:**\n*   You need multi-cloud or hybrid deployments\n*   You require the rich Kafka ecosystem (Connect, Streams, ksqlDB)\n*   Sub-millisecond latency is critical\n*   You need unlimited data retention\n*   You have (or want to build) Kafka expertise\n\n**Choose Amazon Kinesis if:**\n*   You are 100% on AWS and want zero operational overhead\n*   Your streaming use cases are straightforward (logs to S3, events to Lambda)\n*   You want Kinesis Firehose for zero-code data delivery\n*   Pay-per-use pricing fits your variable workload patterns\n*   Your team doesn't have Kafka expertise",
+    "relatedComparisons": [
+      "kafka-vs-redpanda",
+      "kafka-vs-pulsar"
+    ],
+    "lastUpdated": "2026-03-14",
+    "id": "kafka-vs-kinesis"
   }
 ]

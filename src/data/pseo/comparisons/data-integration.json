@@ -213,5 +213,109 @@
       "fivetran-vs-airbyte"
     ],
     "lastUpdated": "2026-02-05"
+  },
+  {
+    "slug": "fivetran-vs-matillion",
+    "toolA": "Fivetran",
+    "toolB": "Matillion",
+    "category": "data-integration",
+    "winner": "depends",
+    "shortVerdict": "Fivetran excels at automated EL (extract-load) with zero maintenance. Matillion combines ELT extraction and transformation in one platform. Choose Fivetran for pure data ingestion; choose Matillion for combined ingestion + transformation.",
+    "intro": "Fivetran and Matillion are both popular data integration platforms, but they solve different parts of the ELT puzzle. **Fivetran** focuses purely on the EL (Extract-Load) — automatically syncing data from 500+ sources to your cloud warehouse with zero pipeline maintenance. **Matillion** takes a broader approach, combining data extraction AND in-warehouse transformation (the T in ELT) in a single visual platform.",
+    "features": [
+      {
+        "name": "Primary Focus",
+        "toolAValue": "Extract-Load (EL) automation",
+        "toolBValue": "Extract-Load-Transform (ELT) platform",
+        "winner": "Tie"
+      },
+      {
+        "name": "Connectors",
+        "toolAValue": "500+ managed connectors",
+        "toolBValue": "200+ connectors + custom components",
+        "winner": "Tie"
+      },
+      {
+        "name": "Transformation",
+        "toolAValue": "No (pair with dbt for T)",
+        "toolBValue": "Built-in visual transformation engine",
+        "winner": "Tie"
+      },
+      {
+        "name": "Interface",
+        "toolAValue": "Configuration-based (minimal UI needed)",
+        "toolBValue": "Visual drag-and-drop pipeline builder",
+        "winner": "Tie"
+      },
+      {
+        "name": "Maintenance",
+        "toolAValue": "Zero — Fivetran handles schema changes automatically",
+        "toolBValue": "Low — some maintenance for custom pipelines",
+        "winner": "Tie"
+      },
+      {
+        "name": "Pricing",
+        "toolAValue": "Per Monthly Active Row (MAR)",
+        "toolBValue": "Per credit (compute-based)",
+        "winner": "Tie"
+      },
+      {
+        "name": "Target Warehouses",
+        "toolAValue": "Snowflake, BigQuery, Redshift, Databricks",
+        "toolBValue": "Snowflake, BigQuery, Redshift, Azure Synapse",
+        "winner": "Tie"
+      },
+      {
+        "name": "Orchestration",
+        "toolAValue": "Basic (schedule + Airflow trigger)",
+        "toolBValue": "Built-in orchestration engine",
+        "winner": "Tie"
+      },
+      {
+        "name": "CDC Support",
+        "toolAValue": "Automatic for supported databases",
+        "toolBValue": "Available via specific components",
+        "winner": "Tie"
+      }
+    ],
+    "pros": {
+      "toolA": [
+        "Truly zero-maintenance — Fivetran handles schema evolution automatically",
+        "500+ managed connectors with guaranteed reliability",
+        "Industry-leading automatic CDC for databases",
+        "Pairs perfectly with dbt for modular EL + T",
+        "Fastest time-to-data for SaaS source connectors"
+      ],
+      "toolB": [
+        "Combined extraction AND transformation in one platform",
+        "Visual drag-and-drop pipeline builder — less code needed",
+        "Pushdown ELT runs SQL in your warehouse (cost-effective)",
+        "Built-in orchestration — no need for separate Airflow",
+        "Custom components for complex or unique data sources"
+      ]
+    },
+    "cons": {
+      "toolA": [
+        "No transformation — need dbt or another T tool",
+        "MAR pricing can be expensive for high-volume sources",
+        "Less customization — connectors are opinionated",
+        "If a connector doesn't exist, limited customization options"
+      ],
+      "toolB": [
+        "Fewer connectors than Fivetran (200 vs 500+)",
+        "More maintenance than Fivetran's fully managed approach",
+        "Visual interface can be cumbersome for complex logic",
+        "Smaller community and fewer learning resources",
+        "Less automatic handling of schema changes"
+      ]
+    },
+    "finalVerdict": "### Verdict\n\n**Choose Fivetran if:**\n*   You want the most hands-off data ingestion possible\n*   You already use dbt for transformations (Fivetran + dbt is The Modern Data Stack)\n*   You need 500+ connectors with guaranteed schema handling\n*   Your team is small and can't afford to maintain EL pipelines\n\n**Choose Matillion if:**\n*   You want extraction AND transformation in a single platform\n*   Your team prefers visual, low-code pipeline building\n*   You need built-in orchestration without adding Airflow\n*   You have complex transformations that benefit from a visual UI\n*   Budget is a concern and you want to avoid separate EL + T tool costs",
+    "relatedComparisons": [
+      "fivetran-vs-airbyte",
+      "fivetran-vs-stitch",
+      "airbyte-vs-meltano"
+    ],
+    "lastUpdated": "2026-03-14",
+    "id": "fivetran-vs-matillion"
   }
 ]
