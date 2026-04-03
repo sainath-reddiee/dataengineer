@@ -53,11 +53,6 @@ on:
         required: false
         type: boolean
         default: false
-      deploy_pseo:
-        description: 'Deploy pSEO pages to R2?'
-        required: false
-        type: boolean
-        default: false
   schedule:
     - cron: '0 21 * * *'
   repository_dispatch:
@@ -595,64 +590,6 @@ jobs:
             .build-cache.json
           retention-days: 7
         continue-on-error: true
-
-  # =============================================================================
-  # PSEO DEPLOYMENT TO CLOUDFLARE R2
-  # =============================================================================
-  deploy-pseo:
-    runs-on: ubuntu-latest
-    needs: build-and-deploy
-    if: |
-      github.event.inputs.deploy_pseo == 'true' ||
-      (github.event_name == 'push' && contains(github.event.head_commit.modified, 'src/data/glossaryData.js')) ||
-      (github.event_name == 'push' && contains(github.event.head_commit.modified, 'src/data/comparisonData.js'))
-    
-    steps:
-      - name: 📥 Checkout Code
-        uses: actions/checkout@v4
-
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: 📦 Install Dependencies
-        run: npm ci --prefer-offline --no-audit
-
-      - name: 🔄 Sync WordPress Articles
-        run: node scripts/sync-articles-for-linking.js
-
-      - name: 📊 Migrate pSEO Data
-        run: node scripts/migrate-pseo-data.js
-
-      - name: 🔍 Generate Search Index
-        run: node scripts/generate-search-index.js
-
-      - name: 🚀 Deploy pSEO to R2
-        env:
-          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
-        run: |
-          if [ -z "$R2_ENDPOINT" ] || [ -z "$R2_ACCESS_KEY_ID" ]; then
-            echo "⚠️ R2 credentials not configured - running dry-run"
-            node scripts/deploy-pseo.js --dry-run
-          else
-            node scripts/deploy-pseo.js
-          fi
-
-      - name: 📊 pSEO Deployment Summary
-        run: |
-          echo "## 🗂️ pSEO Deployment" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ pSEO pages deployed to Cloudflare R2" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🔗 pSEO Links" >> $GITHUB_STEP_SUMMARY
-          echo "- [Glossary Hub](https://dataengineerhub.blog/glossary)" >> $GITHUB_STEP_SUMMARY
-          echo "- [Comparisons Hub](https://dataengineerhub.blog/compare)" >> $GITHUB_STEP_SUMMARY
-          echo "- [pSEO Sitemap](https://dataengineerhub.blog/sitemap-pseo-index.xml)" >> $GITHUB_STEP_SUMMARY
 
   validate-sitemap:
     runs-on: ubuntu-latest

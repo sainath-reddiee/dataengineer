@@ -203,4 +203,4 @@ mergeItems('comparisons', COMPARISON_SOURCE_FILES, COMPARISON_MERGE_MAP);
 
 updateSearchIndex();
 
-console.log('\n✅ Done! Now run: npm run build && node scripts/deploy-pseo.js');
+console.log('\n✅ Done! Now run: npm run build:full');

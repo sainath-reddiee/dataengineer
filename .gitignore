@@ -1,5 +1,7 @@
 # Build cache for incremental builds
 .build-cache.json
+.pseo-cache.json
+.articles-cache.json
 
 # Sitemap cache files (optional - can commit them too)
 .sitemap-cache.json
