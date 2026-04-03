@@ -1497,6 +1497,229 @@ function markdownToHTML(md) {
 }
 
 // ============================================================================
+// GLOSSARY HUB PAGE HTML - Listing page for all glossary terms (/glossary)
+// ============================================================================
+
+function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
+  var jsFile = bundleFiles.jsFile;
+  var cssFile = bundleFiles.cssFile;
+
+  var productionJsFile = jsFile ? '.' + jsFile : null;
+  var productionCssFile = cssFile ? '.' + cssFile : null;
+
+  var buildTimestamp = new Date().toISOString();
+
+  // Group terms by category
+  var categoryMap = {};
+  for (var i = 0; i < allGlossaryTerms.length; i++) {
+    var term = allGlossaryTerms[i];
+    var cat = term.category || 'general';
+    if (!categoryMap[cat]) {
+      categoryMap[cat] = [];
+    }
+    categoryMap[cat].push(term);
+  }
+
+  // Sort categories alphabetically
+  var categoryKeys = Object.keys(categoryMap).sort();
+
+  // Format category name for display
+  function formatCategoryName(key) {
+    return key.replace(/-/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+  }
+
+  // Build the category sections HTML
+  var categorySectionsHTML = '';
+  var categoryNavHTML = '';
+  var totalTerms = allGlossaryTerms.length;
+
+  for (var c = 0; c < categoryKeys.length; c++) {
+    var catKey = categoryKeys[c];
+    var catTerms = categoryMap[catKey];
+    var catDisplayName = formatCategoryName(catKey);
+
+    // Sort terms alphabetically within each category
+    catTerms.sort(function(a, b) {
+      return a.term.localeCompare(b.term);
+    });
+
+    categoryNavHTML += '<a href="#glossary-' + catKey + '" style="display: inline-block; padding: 6px 14px; background: rgba(96,165,250,0.12); color: #93c5fd; text-decoration: none; border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(96,165,250,0.25); margin: 4px;">' + catDisplayName + ' (' + catTerms.length + ')</a>';
+
+    categorySectionsHTML += '<div id="glossary-' + catKey + '" style="margin-top: 2.5rem;">';
+    categorySectionsHTML += '<h2 style="color: #93c5fd; font-size: 1.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(147,197,253,0.2);">' + catDisplayName + '</h2>';
+    categorySectionsHTML += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">';
+
+    for (var t = 0; t < catTerms.length; t++) {
+      var glossaryTerm = catTerms[t];
+      var shortDef = glossaryTerm.shortDefinition || '';
+      if (shortDef.length > 150) {
+        shortDef = shortDef.substring(0, 147) + '...';
+      }
+
+      categorySectionsHTML += '<a href="https://dataengineerhub.blog/glossary/' + glossaryTerm.slug + '" style="display: block; padding: 1.2rem; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); text-decoration: none; transition: border-color 0.2s;">';
+      categorySectionsHTML += '<h3 style="color: #f1f5f9; font-size: 1.1rem; margin-bottom: 0.4rem; font-weight: 600;">' + glossaryTerm.term + '</h3>';
+      categorySectionsHTML += '<p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.5; margin: 0;">' + shortDef + '</p>';
+      categorySectionsHTML += '</a>';
+    }
+
+    categorySectionsHTML += '</div>';
+    categorySectionsHTML += '</div>';
+  }
+
+  var html = '<!doctype html>\n';
+  html += '<html lang="en">\n';
+  html += '  <head>\n';
+  html += '    <meta charset="UTF-8" />\n';
+  html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
+  html += '    <title>Data Engineering Glossary | ' + totalTerms + ' Key Terms Explained | DataEngineer Hub</title>\n';
+  html += '    <meta name="description" content="Comprehensive data engineering glossary with ' + totalTerms + ' key terms explained. Learn about ETL, data warehousing, streaming, orchestration, cloud platforms, and more." />\n';
+  html += '    <link rel="canonical" href="https://dataengineerhub.blog/glossary" />\n';
+  html += '    <meta name="robots" content="index, follow" />\n';
+  html += '\n';
+  html += '    <meta property="og:type" content="website" />\n';
+  html += '    <meta property="og:url" content="https://dataengineerhub.blog/glossary" />\n';
+  html += '    <meta property="og:title" content="Data Engineering Glossary | ' + totalTerms + ' Key Terms Explained" />\n';
+  html += '    <meta property="og:description" content="Comprehensive glossary covering ' + totalTerms + ' essential data engineering terms across ' + categoryKeys.length + ' categories." />\n';
+  html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
+  html += '\n';
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728" crossorigin="anonymous"></script>\n';
+  html += '\n';
+  html += '    <!-- Build: ' + buildTimestamp + ' -->\n';
+  html += '\n';
+  html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
+  html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
+  html += (productionCssFile ? '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n' : '');
+  html += '\n';
+  html += '    <style>\n';
+  html += '      * { margin: 0; padding: 0; box-sizing: border-box; }\n';
+  html += '      body {\n';
+  html += '        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n';
+  html += '        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);\n';
+  html += '        color: #f8fafc;\n';
+  html += '        line-height: 1.6;\n';
+  html += '        min-height: 100vh;\n';
+  html += '      }\n';
+  html += '      .seo-content {\n';
+  html += '        max-width: 1000px;\n';
+  html += '        margin: 0 auto;\n';
+  html += '        padding: 40px 20px;\n';
+  html += '        background: rgba(255, 255, 255, 0.05);\n';
+  html += '        backdrop-filter: blur(10px);\n';
+  html += '        border-radius: 16px;\n';
+  html += '        margin-top: 40px;\n';
+  html += '        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);\n';
+  html += '      }\n';
+  html += '      .seo-content h1 {\n';
+  html += '        font-size: 2.5rem;\n';
+  html += '        margin-bottom: 1rem;\n';
+  html += '        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);\n';
+  html += '        -webkit-background-clip: text;\n';
+  html += '        -webkit-text-fill-color: transparent;\n';
+  html += '        background-clip: text;\n';
+  html += '        line-height: 1.2;\n';
+  html += '      }\n';
+  html += '      .seo-content h2 { color: #93c5fd; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
+  html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
+  html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
+  html += '      .seo-content a:hover { text-decoration: underline; }\n';
+  html += '      body.react-loaded .seo-content { display: none; }\n';
+  html += '      body.react-loaded .breadcrumb-nav { display: none; }\n';
+  html += '      .breadcrumb-nav { max-width: 1000px; margin: 20px auto 0; padding: 0 20px; }\n';
+  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
+  html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
+  html += '      .breadcrumb-link { color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
+  html += '      .breadcrumb-link:hover { color: #93c5fd; text-decoration: underline; }\n';
+  html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
+  html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
+  html += '      @media (max-width: 768px) {\n';
+  html += '        .seo-content { padding: 20px 15px; margin-top: 20px; }\n';
+  html += '        .seo-content h1 { font-size: 1.8rem; }\n';
+  html += '      }\n';
+  html += '    </style>\n';
+  html += '  </head>\n';
+  html += '  <body>\n';
+  html += '    <div id="root">\n';
+  html += '      <nav aria-label="Breadcrumb" class="breadcrumb-nav">\n';
+  html += '        <ol class="breadcrumb-list">\n';
+  html += '          <li class="breadcrumb-item"><a href="https://dataengineerhub.blog" class="breadcrumb-link">Home</a></li>\n';
+  html += '          <li class="breadcrumb-separator">\u203A</li>\n';
+  html += '          <li class="breadcrumb-item breadcrumb-current" aria-current="page"><span>Glossary</span></li>\n';
+  html += '        </ol>\n';
+  html += '      </nav>\n';
+  html += '\n';
+  html += '      <div class="seo-content">\n';
+  html += '        <h1>Data Engineering Glossary</h1>\n';
+  html += '        <p>\n';
+  html += '          Welcome to the DataEngineer Hub glossary \u2014 a comprehensive reference of <strong>' + totalTerms + ' essential data engineering terms</strong>\n';
+  html += '          organized across ' + categoryKeys.length + ' categories. Whether you are preparing for interviews, studying for certifications,\n';
+  html += '          or looking up unfamiliar concepts in documentation, this glossary provides clear, practical definitions\n';
+  html += '          written by experienced data engineers.\n';
+  html += '        </p>\n';
+  html += '        <p>\n';
+  html += '          Each term includes a concise definition, key points, frequently asked questions, and links to related concepts.\n';
+  html += '          Topics span the full data engineering landscape: ETL/ELT pipelines, data warehousing, real-time streaming,\n';
+  html += '          cloud platforms, data orchestration, data quality, governance, observability, and analytics engines.\n';
+  html += '        </p>\n';
+  html += '\n';
+  html += '        <h2>Browse by Category</h2>\n';
+  html += '        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 1rem;">\n';
+  html += '          ' + categoryNavHTML + '\n';
+  html += '        </div>\n';
+  html += '\n';
+  html += categorySectionsHTML;
+  html += '\n';
+  html += '        <div style="margin-top: 2.5rem; padding: 1.5rem; background: rgba(96,165,250,0.1); border-radius: 12px; border: 1px solid rgba(96,165,250,0.2);">\n';
+  html += '          <h2 style="font-size: 1.3rem; margin-top: 0;">Explore More</h2>\n';
+  html += '          <p style="margin-bottom: 0.5rem;">\n';
+  html += '            Looking for side-by-side tool comparisons? Check out our <a href="https://dataengineerhub.blog/compare">Data Engineering Comparisons</a> hub\n';
+  html += '            to see how popular tools like Snowflake, Databricks, Spark, Kafka, and more stack up against each other.\n';
+  html += '          </p>\n';
+  html += '          <p style="margin-bottom: 0;">\n';
+  html += '            For hands-on tutorials and in-depth guides, browse our <a href="https://dataengineerhub.blog/articles">full article library</a>.\n';
+  html += '          </p>\n';
+  html += '        </div>\n';
+  html += '\n';
+  html += '        <a href="https://dataengineerhub.blog" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 Back to Home</a>\n';
+  html += '      </div>\n';
+  html += '    </div>\n';
+  html += '\n';
+  html += '    <script type="application/ld+json">\n';
+  html += '    {\n';
+  html += '      "@context": "https://schema.org",\n';
+  html += '      "@type": "CollectionPage",\n';
+  html += '      "name": "Data Engineering Glossary",\n';
+  html += '      "description": "Comprehensive glossary of ' + totalTerms + ' data engineering terms and concepts",\n';
+  html += '      "url": "https://dataengineerhub.blog/glossary",\n';
+  html += '      "numberOfItems": ' + totalTerms + ',\n';
+  html += '      "publisher": {\n';
+  html += '        "@type": "Organization",\n';
+  html += '        "name": "DataEngineer Hub",\n';
+  html += '        "url": "https://dataengineerhub.blog"\n';
+  html += '      }\n';
+  html += '    }\n';
+  html += '    </script>\n';
+  html += '\n';
+  html += (productionJsFile ? '    <script type="module" crossorigin src="' + productionJsFile + '"></script>\n' : '');
+  html += '\n';
+  html += '    <script>\n';
+  html += '      window.addEventListener("load", function() {\n';
+  html += '        var checkReactMount = setInterval(function() {\n';
+  html += '          var root = document.getElementById("root");\n';
+  html += '          if (root && root.children.length > 2) {\n';
+  html += '            document.body.classList.add("react-loaded");\n';
+  html += '            clearInterval(checkReactMount);\n';
+  html += '          }\n';
+  html += '        }, 100);\n';
+  html += '        setTimeout(function() { clearInterval(checkReactMount); }, 3000);\n';
+  html += '      });\n';
+  html += '    </script>\n';
+  html += '  </body>\n';
+  html += '</html>';
+
+  return html;
+}
+
+// ============================================================================
 // GLOSSARY PAGE HTML GENERATION - Rich definition pages for pSEO
 // ============================================================================
 
@@ -1729,6 +1952,238 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles) {
   html += '        setTimeout(function() { clearInterval(checkReactMount); }, 3000);\n';
   html += '      });\n';
   html += '    <\/script>\n';
+  html += '  </body>\n';
+  html += '</html>';
+
+  return html;
+}
+
+// ============================================================================
+// COMPARE HUB PAGE HTML - Listing page for all comparisons (/compare)
+// ============================================================================
+
+function generateCompareHubPageHTML(allComparisons, bundleFiles) {
+  var jsFile = bundleFiles.jsFile;
+  var cssFile = bundleFiles.cssFile;
+
+  var productionJsFile = jsFile ? '.' + jsFile : null;
+  var productionCssFile = cssFile ? '.' + cssFile : null;
+
+  var buildTimestamp = new Date().toISOString();
+
+  // Group comparisons by category
+  var categoryMap = {};
+  for (var i = 0; i < allComparisons.length; i++) {
+    var comp = allComparisons[i];
+    var cat = comp.category || 'general';
+    if (!categoryMap[cat]) {
+      categoryMap[cat] = [];
+    }
+    categoryMap[cat].push(comp);
+  }
+
+  // Sort categories alphabetically
+  var categoryKeys = Object.keys(categoryMap).sort();
+
+  // Format category name for display
+  function formatCategoryName(key) {
+    return key.replace(/-/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+  }
+
+  // Build the category sections HTML
+  var categorySectionsHTML = '';
+  var categoryNavHTML = '';
+  var totalComparisons = allComparisons.length;
+
+  for (var c = 0; c < categoryKeys.length; c++) {
+    var catKey = categoryKeys[c];
+    var catComps = categoryMap[catKey];
+    var catDisplayName = formatCategoryName(catKey);
+
+    // Sort comparisons alphabetically by toolA
+    catComps.sort(function(a, b) {
+      var nameA = a.toolA + ' vs ' + a.toolB;
+      var nameB = b.toolA + ' vs ' + b.toolB;
+      return nameA.localeCompare(nameB);
+    });
+
+    categoryNavHTML += '<a href="#compare-' + catKey + '" style="display: inline-block; padding: 6px 14px; background: rgba(167,139,250,0.12); color: #c4b5fd; text-decoration: none; border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(167,139,250,0.25); margin: 4px;">' + catDisplayName + ' (' + catComps.length + ')</a>';
+
+    categorySectionsHTML += '<div id="compare-' + catKey + '" style="margin-top: 2.5rem;">';
+    categorySectionsHTML += '<h2 style="color: #c4b5fd; font-size: 1.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(196,181,253,0.2);">' + catDisplayName + '</h2>';
+    categorySectionsHTML += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">';
+
+    for (var t = 0; t < catComps.length; t++) {
+      var comparison = catComps[t];
+      var shortVerdict = comparison.shortVerdict || '';
+      if (shortVerdict.length > 160) {
+        shortVerdict = shortVerdict.substring(0, 157) + '...';
+      }
+
+      var winnerBadge = '';
+      if (comparison.winner && comparison.winner !== 'It Depends') {
+        winnerBadge = '<span style="display: inline-block; padding: 2px 8px; background: rgba(74,222,128,0.15); color: #4ade80; border-radius: 4px; font-size: 0.8rem; margin-top: 0.5rem;">Winner: ' + comparison.winner + '</span>';
+      } else {
+        winnerBadge = '<span style="display: inline-block; padding: 2px 8px; background: rgba(250,204,21,0.15); color: #facc15; border-radius: 4px; font-size: 0.8rem; margin-top: 0.5rem;">It Depends</span>';
+      }
+
+      categorySectionsHTML += '<a href="https://dataengineerhub.blog/compare/' + comparison.slug + '" style="display: block; padding: 1.2rem; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); text-decoration: none; transition: border-color 0.2s;">';
+      categorySectionsHTML += '<h3 style="color: #f1f5f9; font-size: 1.1rem; margin-bottom: 0.4rem; font-weight: 600;">' + comparison.toolA + ' vs ' + comparison.toolB + '</h3>';
+      categorySectionsHTML += '<p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.5; margin: 0 0 0.3rem 0;">' + shortVerdict + '</p>';
+      categorySectionsHTML += winnerBadge;
+      categorySectionsHTML += '</a>';
+    }
+
+    categorySectionsHTML += '</div>';
+    categorySectionsHTML += '</div>';
+  }
+
+  var html = '<!doctype html>\n';
+  html += '<html lang="en">\n';
+  html += '  <head>\n';
+  html += '    <meta charset="UTF-8" />\n';
+  html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
+  html += '    <title>Data Engineering Tool Comparisons | ' + totalComparisons + ' Head-to-Head Guides | DataEngineer Hub</title>\n';
+  html += '    <meta name="description" content="Compare ' + totalComparisons + ' popular data engineering tools side by side. Detailed feature comparisons for data warehousing, streaming, orchestration, analytics, and more." />\n';
+  html += '    <link rel="canonical" href="https://dataengineerhub.blog/compare" />\n';
+  html += '    <meta name="robots" content="index, follow" />\n';
+  html += '\n';
+  html += '    <meta property="og:type" content="website" />\n';
+  html += '    <meta property="og:url" content="https://dataengineerhub.blog/compare" />\n';
+  html += '    <meta property="og:title" content="Data Engineering Tool Comparisons | ' + totalComparisons + ' Head-to-Head Guides" />\n';
+  html += '    <meta property="og:description" content="Side-by-side comparisons of ' + totalComparisons + ' data engineering tools across ' + categoryKeys.length + ' categories." />\n';
+  html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
+  html += '\n';
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728" crossorigin="anonymous"></script>\n';
+  html += '\n';
+  html += '    <!-- Build: ' + buildTimestamp + ' -->\n';
+  html += '\n';
+  html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
+  html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
+  html += (productionCssFile ? '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n' : '');
+  html += '\n';
+  html += '    <style>\n';
+  html += '      * { margin: 0; padding: 0; box-sizing: border-box; }\n';
+  html += '      body {\n';
+  html += '        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n';
+  html += '        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);\n';
+  html += '        color: #f8fafc;\n';
+  html += '        line-height: 1.6;\n';
+  html += '        min-height: 100vh;\n';
+  html += '      }\n';
+  html += '      .seo-content {\n';
+  html += '        max-width: 1000px;\n';
+  html += '        margin: 0 auto;\n';
+  html += '        padding: 40px 20px;\n';
+  html += '        background: rgba(255, 255, 255, 0.05);\n';
+  html += '        backdrop-filter: blur(10px);\n';
+  html += '        border-radius: 16px;\n';
+  html += '        margin-top: 40px;\n';
+  html += '        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);\n';
+  html += '      }\n';
+  html += '      .seo-content h1 {\n';
+  html += '        font-size: 2.5rem;\n';
+  html += '        margin-bottom: 1rem;\n';
+  html += '        background: linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #60a5fa 100%);\n';
+  html += '        -webkit-background-clip: text;\n';
+  html += '        -webkit-text-fill-color: transparent;\n';
+  html += '        background-clip: text;\n';
+  html += '        line-height: 1.2;\n';
+  html += '      }\n';
+  html += '      .seo-content h2 { color: #c4b5fd; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
+  html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
+  html += '      .seo-content a { color: #a78bfa; text-decoration: none; }\n';
+  html += '      .seo-content a:hover { text-decoration: underline; }\n';
+  html += '      body.react-loaded .seo-content { display: none; }\n';
+  html += '      body.react-loaded .breadcrumb-nav { display: none; }\n';
+  html += '      .breadcrumb-nav { max-width: 1000px; margin: 20px auto 0; padding: 0 20px; }\n';
+  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
+  html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
+  html += '      .breadcrumb-link { color: #a78bfa; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
+  html += '      .breadcrumb-link:hover { color: #c4b5fd; text-decoration: underline; }\n';
+  html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
+  html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
+  html += '      @media (max-width: 768px) {\n';
+  html += '        .seo-content { padding: 20px 15px; margin-top: 20px; }\n';
+  html += '        .seo-content h1 { font-size: 1.8rem; }\n';
+  html += '      }\n';
+  html += '    </style>\n';
+  html += '  </head>\n';
+  html += '  <body>\n';
+  html += '    <div id="root">\n';
+  html += '      <nav aria-label="Breadcrumb" class="breadcrumb-nav">\n';
+  html += '        <ol class="breadcrumb-list">\n';
+  html += '          <li class="breadcrumb-item"><a href="https://dataengineerhub.blog" class="breadcrumb-link">Home</a></li>\n';
+  html += '          <li class="breadcrumb-separator">\u203A</li>\n';
+  html += '          <li class="breadcrumb-item breadcrumb-current" aria-current="page"><span>Comparisons</span></li>\n';
+  html += '        </ol>\n';
+  html += '      </nav>\n';
+  html += '\n';
+  html += '      <div class="seo-content">\n';
+  html += '        <h1>Data Engineering Tool Comparisons</h1>\n';
+  html += '        <p>\n';
+  html += '          Choosing the right tool is one of the most impactful decisions a data engineer makes. Our <strong>' + totalComparisons + ' head-to-head comparison guides</strong>\n';
+  html += '          break down the differences between popular data engineering tools across features, performance, pricing,\n';
+  html += '          and real-world use cases so you can make informed decisions for your stack.\n';
+  html += '        </p>\n';
+  html += '        <p>\n';
+  html += '          Each comparison includes a detailed feature matrix, an honest verdict on which tool wins for different scenarios,\n';
+  html += '          and practical recommendations based on team size, budget, and use case. Categories span data warehousing,\n';
+  html += '          streaming platforms, orchestration tools, analytics engines, data quality, and cloud platforms.\n';
+  html += '        </p>\n';
+  html += '\n';
+  html += '        <h2>Browse by Category</h2>\n';
+  html += '        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 1rem;">\n';
+  html += '          ' + categoryNavHTML + '\n';
+  html += '        </div>\n';
+  html += '\n';
+  html += categorySectionsHTML;
+  html += '\n';
+  html += '        <div style="margin-top: 2.5rem; padding: 1.5rem; background: rgba(167,139,250,0.1); border-radius: 12px; border: 1px solid rgba(167,139,250,0.2);">\n';
+  html += '          <h2 style="font-size: 1.3rem; margin-top: 0;">Explore More</h2>\n';
+  html += '          <p style="margin-bottom: 0.5rem;">\n';
+  html += '            Need to understand a specific concept before comparing tools? Visit our <a href="https://dataengineerhub.blog/glossary">Data Engineering Glossary</a>\n';
+  html += '            for clear definitions of key terms and technologies.\n';
+  html += '          </p>\n';
+  html += '          <p style="margin-bottom: 0;">\n';
+  html += '            For hands-on tutorials and implementation guides, browse our <a href="https://dataengineerhub.blog/articles">full article library</a>.\n';
+  html += '          </p>\n';
+  html += '        </div>\n';
+  html += '\n';
+  html += '        <a href="https://dataengineerhub.blog" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 Back to Home</a>\n';
+  html += '      </div>\n';
+  html += '    </div>\n';
+  html += '\n';
+  html += '    <script type="application/ld+json">\n';
+  html += '    {\n';
+  html += '      "@context": "https://schema.org",\n';
+  html += '      "@type": "CollectionPage",\n';
+  html += '      "name": "Data Engineering Tool Comparisons",\n';
+  html += '      "description": "Side-by-side comparisons of ' + totalComparisons + ' popular data engineering tools",\n';
+  html += '      "url": "https://dataengineerhub.blog/compare",\n';
+  html += '      "numberOfItems": ' + totalComparisons + ',\n';
+  html += '      "publisher": {\n';
+  html += '        "@type": "Organization",\n';
+  html += '        "name": "DataEngineer Hub",\n';
+  html += '        "url": "https://dataengineerhub.blog"\n';
+  html += '      }\n';
+  html += '    }\n';
+  html += '    </script>\n';
+  html += '\n';
+  html += (productionJsFile ? '    <script type="module" crossorigin src="' + productionJsFile + '"></script>\n' : '');
+  html += '\n';
+  html += '    <script>\n';
+  html += '      window.addEventListener("load", function() {\n';
+  html += '        var checkReactMount = setInterval(function() {\n';
+  html += '          var root = document.getElementById("root");\n';
+  html += '          if (root && root.children.length > 2) {\n';
+  html += '            document.body.classList.add("react-loaded");\n';
+  html += '            clearInterval(checkReactMount);\n';
+  html += '          }\n';
+  html += '        }, 100);\n';
+  html += '        setTimeout(function() { clearInterval(checkReactMount); }, 3000);\n';
+  html += '      });\n';
+  html += '    </script>\n';
   html += '  </body>\n';
   html += '</html>';
 
@@ -2815,6 +3270,39 @@ async function buildIncremental(options = {}) {
       }
 
       console.log(`   ✅ Glossary pages complete: ${allGlossaryTerms.length} terms processed`);
+
+      // Generate glossary hub page (/glossary)
+      const glossaryHubPath = '/glossary';
+      currentPages.add(glossaryHubPath);
+      const glossaryHubHash = hashContent({ type: 'glossary-hub', count: allGlossaryTerms.length, terms: allGlossaryTerms.map(t => t.slug).join(',') });
+      const cachedGlossaryHub = cache.pages[glossaryHubPath];
+      const needsGlossaryHub = force || !cachedGlossaryHub || cachedGlossaryHub.hash !== glossaryHubHash;
+
+      if (needsGlossaryHub) {
+        try {
+          const hubHtml = generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles);
+          const hubOutputPath = path.join(distDir, 'glossary', 'index.html');
+          const hubDir = path.dirname(hubOutputPath);
+          if (!fs.existsSync(hubDir)) {
+            fs.mkdirSync(hubDir, { recursive: true });
+          }
+          fs.writeFileSync(hubOutputPath, hubHtml);
+          const hubStats = fs.statSync(hubOutputPath);
+          console.log(`   ✓ Glossary hub page (${(hubStats.size / 1024).toFixed(2)} KB)`);
+          if (cachedGlossaryHub) { stats.updated++; } else { stats.new++; }
+        } catch (err) {
+          console.error(`   ❌ Error generating glossary hub page:`, err.message);
+          stats.errors++;
+        }
+      } else {
+        stats.unchanged++;
+      }
+      newCache.pages[glossaryHubPath] = {
+        hash: glossaryHubHash,
+        built: needsGlossaryHub ? new Date().toISOString() : cachedGlossaryHub.built,
+        type: 'glossary-hub'
+      };
+
     } catch (error) {
       console.error('❌ Error processing glossary pages:', error.message);
       stats.errors++;
@@ -2885,6 +3373,39 @@ async function buildIncremental(options = {}) {
       }
 
       console.log(`   ✅ Comparison pages complete: ${allComparisons.length} comparisons processed`);
+
+      // Generate compare hub page (/compare)
+      const compareHubPath = '/compare';
+      currentPages.add(compareHubPath);
+      const compareHubHash = hashContent({ type: 'compare-hub', count: allComparisons.length, slugs: allComparisons.map(c => c.slug).join(',') });
+      const cachedCompareHub = cache.pages[compareHubPath];
+      const needsCompareHub = force || !cachedCompareHub || cachedCompareHub.hash !== compareHubHash;
+
+      if (needsCompareHub) {
+        try {
+          const hubHtml = generateCompareHubPageHTML(allComparisons, bundleFiles);
+          const hubOutputPath = path.join(distDir, 'compare', 'index.html');
+          const hubDir = path.dirname(hubOutputPath);
+          if (!fs.existsSync(hubDir)) {
+            fs.mkdirSync(hubDir, { recursive: true });
+          }
+          fs.writeFileSync(hubOutputPath, hubHtml);
+          const hubStats = fs.statSync(hubOutputPath);
+          console.log(`   ✓ Compare hub page (${(hubStats.size / 1024).toFixed(2)} KB)`);
+          if (cachedCompareHub) { stats.updated++; } else { stats.new++; }
+        } catch (err) {
+          console.error(`   ❌ Error generating compare hub page:`, err.message);
+          stats.errors++;
+        }
+      } else {
+        stats.unchanged++;
+      }
+      newCache.pages[compareHubPath] = {
+        hash: compareHubHash,
+        built: needsCompareHub ? new Date().toISOString() : cachedCompareHub.built,
+        type: 'compare-hub'
+      };
+
     } catch (error) {
       console.error('❌ Error processing comparison pages:', error.message);
       stats.errors++;

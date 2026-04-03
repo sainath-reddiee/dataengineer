@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles, Award, Search } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles, Award, Search, BookOpen, GitCompareArrows } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
 
 // Helper component for the "Corner Burst" sparks animation
@@ -132,6 +132,8 @@ const Header = () => {
   const isTagsActive = currentPath.includes('/tag');
   const isAboutActive = currentPath.includes('/about');
   const isCertificationActive = currentPath.includes('/certification');
+  const isGlossaryActive = currentPath.startsWith('/glossary');
+  const isCompareActive = currentPath.startsWith('/compare');
   // Enhanced category structure
   const categories = {
   platforms: {
@@ -429,6 +431,36 @@ const Header = () => {
                 Tags
               </a>
             </motion.div>
+            {/* Glossary */}
+            <motion.div whileHover={{ y: -2 }}>
+              <a 
+                href="/glossary" 
+                className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
+                  isGlossaryActive 
+                    ? 'text-blue-400' 
+                    : 'text-gray-300 hover:text-blue-400'
+                }`}
+                style={isGlossaryActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+              >
+                <BookOpen className="w-4 h-4" />
+                Glossary
+              </a>
+            </motion.div>
+            {/* Comparisons */}
+            <motion.div whileHover={{ y: -2 }}>
+              <a 
+                href="/compare" 
+                className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
+                  isCompareActive 
+                    ? 'text-blue-400' 
+                    : 'text-gray-300 hover:text-blue-400'
+                }`}
+                style={isCompareActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+              >
+                <GitCompareArrows className="w-4 h-4" />
+                Compare
+              </a>
+            </motion.div>
             {/* ✅ NEW: Certification Tab */}
             <motion.div whileHover={{ y: -2 }}>
               <a 
@@ -560,6 +592,14 @@ const Header = () => {
                 <a href="/tag" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
                   <Tags className="w-5 h-5" />
                   Tags
+                </a>
+                <a href="/glossary" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                  <BookOpen className="w-5 h-5" />
+                  Glossary
+                </a>
+                <a href="/compare" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                  <GitCompareArrows className="w-5 h-5" />
+                  Comparisons
                 </a>
                 {/* ✅ NEW: Certification Tab (Mobile) */}
                 <a href="/certification" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
