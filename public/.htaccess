@@ -91,6 +91,16 @@
     RewriteCond %{DOCUMENT_ROOT}/tag/%1/index.html -f
     RewriteRule ^tag/([^/]+)/?$ /tag/$1/index.html [L]
     
+    # For requests to /glossary/slug - serve pre-rendered HTML if it exists
+    RewriteCond %{REQUEST_URI} ^/glossary/([^/]+)/?$
+    RewriteCond %{DOCUMENT_ROOT}/glossary/%1/index.html -f
+    RewriteRule ^glossary/([^/]+)/?$ /glossary/$1/index.html [L]
+    
+    # For requests to /compare/slug - serve pre-rendered HTML if it exists
+    RewriteCond %{REQUEST_URI} ^/compare/([^/]+)/?$
+    RewriteCond %{DOCUMENT_ROOT}/compare/%1/index.html -f
+    RewriteRule ^compare/([^/]+)/?$ /compare/$1/index.html [L]
+    
     # ========================================================================
     # IMPORTANT: Exclude common files from rewrite rules
     # ========================================================================
