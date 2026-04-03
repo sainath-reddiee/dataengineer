@@ -10,17 +10,8 @@ import {
   Heart,
   ExternalLink
 } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
 
 const Footer = () => {
-  const { toast } = useToast();
-
-  const handleSocialClick = (item) => {
-    toast({
-      title: "🚧 Link Coming Soon!",
-      description: `${item} isn't implemented yet—but don't worry! You can request it in your next prompt! 🚀`,
-    });
-  };
 
   const footerLinks = {
     content: [
@@ -145,7 +136,7 @@ const Footer = () => {
         >
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-gray-400 text-sm flex items-center">
-              © 2025 DataEngineer Hub. Made with
+              © {new Date().getFullYear()} DataEngineer Hub. Made with
               <Heart className="h-4 w-4 text-red-400 mx-1 animate-pulse" />
               for data engineers worldwide.
             </p>

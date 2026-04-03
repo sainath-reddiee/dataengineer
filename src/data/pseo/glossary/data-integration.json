@@ -201,32 +201,64 @@
     "slug": "reverse-etl",
     "category": "data-integration",
     "shortDefinition": "The process of moving data from a data warehouse back into operational systems (SaaS tools) used for business.",
-    "fullDefinition": "Reverse ETL operationalizes data by syncing it from the Data Warehouse to tools like Salesforce, HubSpot, or Marketo.\n\n## Why?\n- **Operational Analytics**: Give sales teams data where they work\n- **Personalization**: Push customer segments to marketing tools",
+    "fullDefinition": "**Reverse ETL** is the process of moving data from a data warehouse or data lake back into operational business tools — CRMs, marketing platforms, support tools, and product applications. While traditional ETL moves data into the warehouse for analysis, Reverse ETL moves the results of that analysis back out to where business teams can act on it.\n\n## Why Reverse ETL Exists\n\nOrganizations spent years centralizing data in warehouses. But the insights stay trapped there — accessible only via dashboards. Business teams work in tools like Salesforce, HubSpot, and Zendesk. Reverse ETL bridges this gap by pushing warehouse data directly into those tools.\n\n```\nTraditional ETL:\n  Sources → [Extract] → [Transform] → [Load] → Data Warehouse → Dashboards\n  (Data goes IN, insights stay locked)\n\nReverse ETL:\n  Data Warehouse → [Sync] → Salesforce, HubSpot, Marketo, Zendesk\n  (Insights go OUT to where teams work)\n```\n\n## How Reverse ETL Works\n\n1. **Model**: Define the data you want to sync (a dbt model, SQL query, or warehouse table)\n2. **Map**: Connect warehouse columns to destination fields (e.g., `ltv_score` → Salesforce `Lead Score`)\n3. **Sync**: The Reverse ETL tool detects changes and pushes only new/updated records\n4. **Schedule**: Run syncs on a schedule (every 15 minutes, hourly, daily)\n\n## Common Use Cases\n\n| Use Case | Source (Warehouse) | Destination | Business Impact |\n|----------|-------------------|-------------|----------------|\n| Lead scoring | ML model output | Salesforce | Sales prioritizes high-value leads |\n| Customer segmentation | Behavioral cohorts | HubSpot/Braze | Marketing sends targeted campaigns |\n| Account health | Usage metrics | Zendesk/Intercom | Support proactively reaches at-risk accounts |\n| Product personalization | User preferences | Application DB | Product shows relevant content |\n| Ad targeting | Customer audiences | Google/Facebook Ads | Marketing reduces ad spend waste |\n\n## Reverse ETL Tools\n\n| Tool | Type | Key Strength |\n|------|------|-------------|\n| Census | Managed | Largest connector library, dbt integration |\n| Hightouch | Managed | Visual audience builder, Salesforce focus |\n| Polytomic | Managed | Multi-directional sync |\n| dbt + webhooks | DIY | Free, built into existing dbt workflow |\n| Airbyte (reverse mode) | Open Source | Cost-effective, self-hosted option |\n\n## Reverse ETL in the Modern Data Stack\n\n```\nSources → Fivetran/Airbyte → Snowflake → dbt → Reverse ETL → SaaS Tools\n  (Extract)    (Load)       (Store)  (Transform) (Activate)   (Act)\n```\n\nReverse ETL is often called **Data Activation** — it activates warehouse data by making it actionable in business tools.\n\n## Challenges\n\n- **API rate limits**: Destination APIs (Salesforce, HubSpot) have rate limits that throttle sync speed\n- **Data freshness**: Most Reverse ETL syncs run on schedules (15min+), not real-time\n- **Schema mapping**: Warehouse column names rarely match destination field names exactly\n- **Sync conflicts**: If the same field is edited in both the warehouse and the destination, which wins?",
     "keyPoints": [
-      "Warehouse to App",
-      "Operational Analytics",
-      "Data Activation"
+      "Moves data FROM the warehouse TO operational SaaS tools like Salesforce, HubSpot, and Zendesk",
+      "Enables 'data activation' — making warehouse insights actionable where business teams work",
+      "Works by syncing dbt models or SQL queries to destination APIs on a schedule",
+      "Key tools include Census, Hightouch, and Polytomic",
+      "Completes the modern data stack loop: ingest → store → transform → activate"
+    ],
+    "faqs": [
+      {
+        "question": "What is Reverse ETL in simple terms?",
+        "answer": "Reverse ETL sends data from your data warehouse back into the business tools your teams use daily (Salesforce, HubSpot, Zendesk). Instead of asking sales to check a dashboard for lead scores, Reverse ETL pushes those scores directly into Salesforce where they already work."
+      },
+      {
+        "question": "What is the difference between ETL and Reverse ETL?",
+        "answer": "ETL moves data INTO a warehouse for analysis (Extract from sources → Transform → Load into warehouse). Reverse ETL moves data OUT of the warehouse back into operational tools. ETL centralizes data; Reverse ETL activates the centralized insights."
+      },
+      {
+        "question": "Why not just use APIs directly?",
+        "answer": "You can, but Reverse ETL tools handle change detection (only sync new/updated records), API rate limiting, error handling, retries, field mapping, and scheduling. Building all of this from scratch for each destination is expensive to maintain."
+      },
+      {
+        "question": "Is Reverse ETL the same as data activation?",
+        "answer": "Yes, they refer to the same concept. 'Data activation' is the marketing term for Reverse ETL — making warehouse data actionable by syncing it to business tools where teams can use it directly."
+      }
     ],
     "relatedTerms": [
       "etl",
-      "data-warehouse"
+      "data-warehouse",
+      "data-pipeline",
+      "dbt",
+      "cdc"
     ],
     "relatedTools": [
       "Census",
-      "Hightouch"
+      "Hightouch",
+      "Polytomic",
+      "dbt",
+      "Airbyte"
     ],
     "externalLinks": [
       {
-        "title": "What is Reverse ETL?",
+        "title": "What is Reverse ETL? - Hightouch",
         "url": "https://hightouch.com/blog/reverse-etl"
+      },
+      {
+        "title": "Census Documentation",
+        "url": "https://docs.getcensus.com/"
       }
     ],
     "keywords": [
       "reverse etl",
       "data activation",
+      "reverse etl tools",
+      "reverse etl vs etl",
       "operational analytics"
     ],
-    "lastUpdated": "2026-01-21"
+    "lastUpdated": "2026-04-03"
   },
   {
     "term": "Data Pipeline",

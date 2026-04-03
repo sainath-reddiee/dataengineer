@@ -199,33 +199,64 @@
     "slug": "scd",
     "category": "data-warehousing",
     "shortDefinition": "A concept in data warehousing to manage how data that changes slowly over time is stored and tracked.",
-    "fullDefinition": "SCDs are used to track historical data in dimension tables.\n\n## Common Types\n- **Type 0**: Fixed (No changes allowed)\n- **Type 1**: Overwrite (No history)\n- **Type 2**: Add new row (Full history with validity dates)\n- **Type 3**: Add new column (Limited history)",
+    "fullDefinition": "**Slowly Changing Dimensions (SCD)** are a set of techniques for tracking historical changes in dimension tables within a data warehouse. When attributes of business entities change over time — a customer moves to a new city, an employee gets a new title, a product changes its price tier — you need a strategy for how the warehouse reflects those changes.\n\n## Why SCDs Matter\n\nWithout SCD strategies, your warehouse loses historical context:\n- **Analytics break**: 'Revenue by region' changes retroactively if you just overwrite\n- **Audit requirements**: Regulators may require you to show what data looked like at a point in time\n- **ML models**: Training data needs point-in-time accuracy to avoid data leakage\n\n## SCD Types Explained\n\n### Type 0 — Retain Original\nThe attribute value never changes in the warehouse, even if it changes in the source.\n- **Use when**: The value should remain as it was at the time of initial load (e.g., original sign-up date)\n- **Pros**: Simple, no logic needed\n- **Cons**: Warehouse diverges from source\n\n### Type 1 — Overwrite\nReplace the old value with the new value. No history is kept.\n```sql\nUPDATE dim_customer\nSET city = 'Bangalore'\nWHERE customer_id = 101;\n```\n- **Use when**: Historical values are not needed (e.g., correcting a typo)\n- **Pros**: Simple, no extra storage\n- **Cons**: Loses all history\n\n### Type 2 — Add New Row (Most Common)\nInsert a new row for each change, with validity dates to track history.\n```sql\n-- Before\n| customer_id | name  | city       | valid_from | valid_to   | is_current |\n|-------------|-------|------------|------------|------------|------------|\n| 101         | Rahul | Hyderabad  | 2024-01-01 | 9999-12-31 | true       |\n\n-- After city change\n| customer_id | name  | city       | valid_from | valid_to   | is_current |\n|-------------|-------|------------|------------|------------|------------|\n| 101         | Rahul | Hyderabad  | 2024-01-01 | 2026-03-15 | false      |\n| 101         | Rahul | Bangalore  | 2026-03-15 | 9999-12-31 | true       |\n```\n- **Use when**: Full history tracking is required\n- **Pros**: Complete audit trail, point-in-time queries\n- **Cons**: Table grows over time, joins need valid_from/valid_to logic\n\n### Type 3 — Add New Column\nKeep the previous value in a separate column.\n```sql\n| customer_id | name  | current_city | previous_city |\n|-------------|-------|-------------|---------------|\n| 101         | Rahul | Bangalore   | Hyderabad     |\n```\n- **Use when**: You only need one level of history\n- **Pros**: Simple to query\n- **Cons**: Only tracks one prior value\n\n### Type 4 — History Table\nKeep the current record in the main dimension and store all historical changes in a separate history table.\n- **Use when**: You want fast lookups on current data while keeping full history accessible\n\n### Type 6 — Hybrid (1 + 2 + 3)\nCombines Type 1, 2, and 3: add new rows (Type 2), keep a current-value column updated across all rows (Type 1), and store previous values (Type 3).\n- **Use when**: You need both historical and current values easily accessible\n\n## Implementing SCD Type 2 in dbt\n\ndbt has a built-in `snapshot` feature for SCD Type 2:\n```yaml\n# models/snapshots/customer_snapshot.sql\n{% snapshot customer_snapshot %}\n  {{ config(\n    target_schema='snapshots',\n    unique_key='customer_id',\n    strategy='timestamp',\n    updated_at='updated_at'\n  ) }}\n  SELECT * FROM {{ source('raw', 'customers') }}\n{% endsnapshot %}\n```\n\n## Choosing the Right SCD Type\n\n| Requirement | Recommended Type |\n|---|---|\n| No history needed | Type 1 |\n| Full audit trail | Type 2 |\n| Only previous value | Type 3 |\n| Fast current lookups + history | Type 4 or Type 6 |\n| Immutable attributes | Type 0 |",
     "keyPoints": [
-      "History Tracking",
-      "Dimensional Modeling",
-      "Data Warehousing"
+      "Techniques for tracking historical changes in dimension tables",
+      "Type 1 overwrites values (no history), Type 2 adds rows (full history)",
+      "Type 2 is the most common, using valid_from/valid_to date columns",
+      "dbt provides built-in snapshot support for SCD Type 2 implementation",
+      "Choice of SCD type depends on audit, analytics, and storage requirements"
+    ],
+    "faqs": [
+      {
+        "question": "What is SCD Type 2 in a data warehouse?",
+        "answer": "SCD Type 2 inserts a new row in the dimension table every time an attribute changes, with valid_from and valid_to date columns to track when each version was current. This preserves complete history and enables point-in-time queries."
+      },
+      {
+        "question": "When should I use SCD Type 1 vs Type 2?",
+        "answer": "Use Type 1 when history doesn't matter (e.g., fixing typos or when only the current value is needed). Use Type 2 when you need full historical tracking for audit trails, compliance, or accurate point-in-time analytics."
+      },
+      {
+        "question": "How do you implement SCD in dbt?",
+        "answer": "dbt provides a built-in 'snapshot' feature that implements SCD Type 2 automatically. You define the unique key and change detection strategy (timestamp or check columns), and dbt manages the historical row creation."
+      },
+      {
+        "question": "What is SCD Type 6?",
+        "answer": "SCD Type 6 is a hybrid combining Types 1, 2, and 3. It adds new rows for each change (Type 2), updates a current-value column across all rows (Type 1), and keeps a previous-value column (Type 3). This provides both historical and current views easily."
+      }
     ],
     "relatedTerms": [
       "data-warehouse",
       "data-modeling",
-      "star-schema"
+      "star-schema",
+      "dimensional-modeling",
+      "dbt"
     ],
     "relatedTools": [
       "dbt",
-      "Informatica"
+      "Informatica",
+      "Snowflake",
+      "BigQuery",
+      "Apache Spark"
     ],
     "externalLinks": [
       {
-        "title": "SCD Types",
+        "title": "Slowly Changing Dimension - Wikipedia",
         "url": "https://en.wikipedia.org/wiki/Slowly_changing_dimension"
+      },
+      {
+        "title": "dbt Snapshots Documentation",
+        "url": "https://docs.getdbt.com/docs/build/snapshots"
       }
     ],
     "keywords": [
       "scd",
       "slowly changing dimensions",
-      "type 2 dimension"
+      "scd type 2",
+      "scd type 1 vs type 2",
+      "scd in dbt"
     ],
-    "lastUpdated": "2026-01-21"
+    "lastUpdated": "2026-04-03"
   },
   {
     "id": "columnar-storage",
@@ -233,62 +264,191 @@
     "slug": "columnar-storage",
     "category": "data-warehousing",
     "shortDefinition": "A database management system that stores data in columns rather than rows, optimized for analytics.",
-    "fullDefinition": "Columnar storage saves data by column rather than by row. This is highly efficient for analytical queries (OLAP) which typically aggregate a few columns over many rows.\n\n## Benefits\n- **Compression**: Similar data types in columns compress very well (10x-50x).\n- **IO Efficiency**: Only read usage columns, ignore the rest.",
+    "fullDefinition": "**Columnar Storage** (column-oriented storage) is a database storage format that organizes data by columns rather than by rows. While row-oriented databases (PostgreSQL, MySQL) store all values of a single row together on disk, columnar databases store all values of a single column together. This difference is fundamental to why analytical databases are orders of magnitude faster than transactional ones for aggregation queries.\n\n## Row vs Column Storage\n\n```\nRow-Oriented (PostgreSQL, MySQL):\nRow 1: [Alice, 28, NYC, 75000]\nRow 2: [Bob,   32, SF,  92000]\nRow 3: [Carol, 25, LA,  68000]\n\nColumnar (Snowflake, Redshift, Parquet):\nName:   [Alice, Bob, Carol]\nAge:    [28, 32, 25]\nCity:   [NYC, SF, LA]\nSalary: [75000, 92000, 68000]\n```\n\n## Why Columnar Storage is Faster for Analytics\n\n### 1. I/O Efficiency\nAnalytical queries typically read a few columns across millions of rows:\n```sql\nSELECT AVG(salary) FROM employees WHERE city = 'NYC';\n```\n- **Row store**: Must read ALL columns (name, age, city, salary, ...) for every row, even though you only need `city` and `salary`\n- **Column store**: Reads ONLY the `city` and `salary` columns, skipping everything else\n- **Result**: 10-100x less I/O for typical analytics queries\n\n### 2. Compression\nSimilar values in a column compress dramatically:\n- **Run-length encoding**: `[NYC, NYC, NYC, NYC]` → `NYC x 4`\n- **Dictionary encoding**: Map repeated strings to small integers\n- **Bit-packing**: Store small integers in minimal bits\n- **Typical compression ratios**: 10x-50x (a 1TB dataset becomes 20-100GB)\n\n### 3. Vectorized Execution\nModern columnar engines process data in batches (vectors) instead of row-by-row:\n- CPU cache-friendly: column data fits neatly in L1/L2 cache\n- SIMD instructions: Process multiple values in a single CPU operation\n- Result: 5-10x faster computation per column scan\n\n## Columnar File Formats\n\n| Format | Creator | Use Case |\n|--------|---------|----------|\n| **Apache Parquet** | Twitter/Cloudera | Most popular analytics format, used by Spark, Snowflake, BigQuery |\n| **Apache ORC** | Hortonworks | Optimized for Hive, strong compression |\n| **Apache Arrow** | Apache | In-memory columnar format for zero-copy data exchange |\n\n## Columnar Databases\n\n| Database | Type | Best For |\n|----------|------|----------|\n| Snowflake | Cloud DW | General analytics |\n| BigQuery | Serverless | Ad-hoc analytics |\n| Redshift | Cloud DW | AWS ecosystem |\n| ClickHouse | OLAP | Real-time analytics |\n| DuckDB | Embedded | Local analytics |\n\n## When NOT to Use Columnar\n\n- **OLTP workloads**: Row-level inserts/updates are slow in columnar stores\n- **Point lookups**: Fetching a single complete row is faster in row stores\n- **Narrow tables**: Tables with few columns benefit less from columnar format\n- **Write-heavy**: Frequent single-row writes are inefficient",
     "keyPoints": [
-      "OLAP optimization",
-      "Compression",
-      "Analytics"
+      "Stores data by column instead of by row, dramatically reducing I/O for analytics",
+      "Achieves 10x-50x compression through run-length, dictionary, and bit-packing encoding",
+      "Enables vectorized execution for CPU-efficient batch processing",
+      "Key file formats: Apache Parquet, ORC, Arrow",
+      "Powers all major cloud data warehouses: Snowflake, BigQuery, Redshift"
+    ],
+    "faqs": [
+      {
+        "question": "What is columnar storage in simple terms?",
+        "answer": "Columnar storage organizes data by columns instead of rows. When you query 'average salary', it reads only the salary column and skips everything else. This makes analytical queries dramatically faster since you typically only need a few columns out of many."
+      },
+      {
+        "question": "Why is columnar storage faster for analytics?",
+        "answer": "Three reasons: (1) I/O efficiency — only reads columns you need, (2) compression — similar values in a column compress 10-50x better, and (3) vectorized execution — processes batches of column values using CPU SIMD instructions."
+      },
+      {
+        "question": "What is the difference between Parquet and CSV?",
+        "answer": "CSV is a row-oriented text format — every row is stored as a line. Parquet is a columnar binary format — data is organized by column with compression and metadata. Parquet is typically 10-100x smaller and 10-100x faster to query than equivalent CSV files."
+      },
+      {
+        "question": "Is Snowflake a columnar database?",
+        "answer": "Yes. Snowflake stores data in a proprietary columnar format internally. When you load data into Snowflake, it automatically converts it to compressed, columnar micro-partitions optimized for analytical queries."
+      }
     ],
     "relatedTerms": [
       "olap",
       "data-warehouse",
-      "row-oriented"
+      "apache-iceberg",
+      "snowflake"
     ],
     "relatedTools": [
       "Snowflake",
       "Redshift",
       "BigQuery",
-      "Parquet"
+      "ClickHouse",
+      "Apache Parquet"
     ],
     "externalLinks": [
       {
-        "title": "Columnar Database",
+        "title": "Column-oriented DBMS - Wikipedia",
         "url": "https://en.wikipedia.org/wiki/Column-oriented_DBMS"
+      },
+      {
+        "title": "Apache Parquet Documentation",
+        "url": "https://parquet.apache.org/documentation/latest/"
       }
     ],
     "keywords": [
-      "columnar",
-      "olap",
-      "compression",
-      "parquet"
+      "columnar storage",
+      "columnar vs row storage",
+      "parquet file format",
+      "olap columnar database",
+      "column-oriented database"
     ],
-    "lastUpdated": "2026-01-21"
+    "lastUpdated": "2026-04-03"
   },
   {
     "term": "Lakehouse Architecture",
     "slug": "lakehouse",
     "category": "data-warehousing",
     "shortDefinition": "A modern data architecture that combines the performance and governance of data warehouses with the low-cost and flexibility of data lakes.",
-    "fullDefinition": "The Lakehouse architecture is an attempt to merge the best of both worlds: the structure and ACID compliance of a Data Warehouse with the scalability and cost-efficiency of a Data Lake. It usually sits on top of open table formats like Delta Lake or Apache Iceberg.",
+    "fullDefinition": "The **Lakehouse Architecture** is a modern data platform design that unifies the best of data warehouses (ACID transactions, governance, fast SQL) with the best of data lakes (low-cost storage, open formats, support for ML/AI workloads). It emerged because organizations were tired of maintaining two separate systems and copying data between them.\n\n## Why the Lakehouse Emerged\n\n### The Two-System Problem\n```\nTraditional Architecture:\n  Sources → Data Lake (cheap, messy) → Data Warehouse (expensive, clean)\n                                          ↑ ETL copies data\n\nLakehouse Architecture:\n  Sources → Lakehouse (cheap storage + warehouse features)\n             One system, no data copying\n```\n\nData lakes were cheap but unreliable (no ACID, no schema enforcement — the 'data swamp' problem). Data warehouses were reliable but expensive and locked to proprietary formats. The lakehouse combines both by adding a **metadata and transaction layer** on top of cheap object storage.\n\n## How It Works\n\nThe lakehouse architecture sits on three layers:\n\n1. **Object Storage**: Cheap cloud storage (S3, GCS, ADLS) holds all data in open file formats (Parquet)\n2. **Table Format Layer**: Delta Lake, Apache Iceberg, or Apache Hudi adds ACID transactions, schema enforcement, and time travel on top of the files\n3. **Compute Engines**: Multiple engines (Spark, Trino, Flink, Snowflake) can read/write the same data\n\n## Lakehouse vs Data Warehouse vs Data Lake\n\n| Feature | Data Warehouse | Data Lake | Lakehouse |\n|---------|---------------|-----------|----------|\n| Storage Cost | High | Low | Low |\n| ACID Transactions | Yes | No | Yes |\n| Schema Enforcement | Yes | No | Yes |\n| Open Formats | No (proprietary) | Yes | Yes |\n| ML/AI Support | Limited | Good | Good |\n| SQL Performance | Excellent | Poor | Good |\n| Data Types | Structured only | All types | All types |\n| Governance | Strong | Weak | Strong |\n\n## Key Enabling Technologies\n\n- **Delta Lake**: Databricks' open-source storage layer — most mature for Spark\n- **Apache Iceberg**: Engine-agnostic table format — best for multi-engine environments\n- **Apache Hudi**: Strong for incremental processing and CDC use cases\n\n## Major Lakehouse Platforms\n\n| Platform | Table Format | Key Strength |\n|----------|-------------|-------------|\n| Databricks | Delta Lake | ML + engineering unified |\n| Snowflake | Iceberg Tables | SQL performance + ease of use |\n| Google BigQuery | BigLake (Iceberg) | Serverless + multi-format |\n| AWS | Iceberg on S3 + Athena | Native AWS integration |\n\n## Benefits\n\n- **Single source of truth**: No data duplication between lake and warehouse\n- **Cost savings**: Store data on cheap object storage instead of expensive warehouse storage\n- **Open formats**: No vendor lock-in, data is accessible by any engine\n- **Unified workloads**: BI, ML, and streaming on the same data",
     "keyPoints": [
-      "ACID transactions on object storage (S3/GCS)",
-      "Supports both BI (SQL) and AI/ML (Python/Spark)",
-      "Eliminates data silos by having one source of truth",
-      "Low-cost storage with high-performance query engines"
-    ]
+      "Combines data warehouse reliability (ACID, governance) with data lake economics (cheap, open)",
+      "Enabled by open table formats: Delta Lake, Apache Iceberg, Apache Hudi",
+      "Eliminates the need to copy data between separate lake and warehouse systems",
+      "Supports all workloads — BI, ML, streaming — on a single platform",
+      "Major platforms: Databricks, Snowflake, BigQuery, AWS Athena"
+    ],
+    "faqs": [
+      {
+        "question": "What is a data lakehouse in simple terms?",
+        "answer": "A data lakehouse is a single data platform that stores data cheaply like a data lake but provides the reliability and performance of a data warehouse. It uses open table formats (Delta Lake, Iceberg) to add transactions and governance to files stored in cloud object storage."
+      },
+      {
+        "question": "What is the difference between a lakehouse and a data warehouse?",
+        "answer": "A data warehouse stores data in proprietary formats with high storage costs but excellent SQL performance. A lakehouse stores data in open formats on cheap object storage while providing similar ACID transactions and query performance through table format technology."
+      },
+      {
+        "question": "Is Snowflake a lakehouse?",
+        "answer": "Snowflake supports lakehouse capabilities through Iceberg Tables, which allow you to store data in open Iceberg format on your own cloud storage while querying it with Snowflake's engine. However, Snowflake's core architecture is still a cloud data warehouse."
+      },
+      {
+        "question": "Do I need a lakehouse or a data warehouse?",
+        "answer": "If you primarily need SQL analytics and BI, a data warehouse like Snowflake is simpler. If you also need ML workloads, open data formats, or want to avoid vendor lock-in, a lakehouse architecture (Databricks, Iceberg on S3) is the better choice."
+      }
+    ],
+    "relatedTerms": [
+      "data-warehouse",
+      "data-lake",
+      "apache-iceberg",
+      "delta-lake",
+      "table-format"
+    ],
+    "relatedTools": [
+      "Databricks",
+      "Snowflake",
+      "Apache Iceberg",
+      "Delta Lake",
+      "Apache Hudi"
+    ],
+    "externalLinks": [
+      {
+        "title": "What is a Data Lakehouse? - Databricks",
+        "url": "https://www.databricks.com/glossary/data-lakehouse"
+      },
+      {
+        "title": "Lakehouse Architecture - Snowflake",
+        "url": "https://www.snowflake.com/guides/data-lakehouse/"
+      }
+    ],
+    "keywords": [
+      "data lakehouse",
+      "lakehouse architecture",
+      "lakehouse vs data warehouse",
+      "data lakehouse vs data lake",
+      "databricks lakehouse"
+    ],
+    "lastUpdated": "2026-04-03"
   },
   {
     "term": "Table Format",
     "slug": "table-format",
     "category": "data-warehousing",
     "shortDefinition": "A layer that organizes files in a data lake into a structured table, enabling SQL-like features like ACID and time-travel.",
-    "fullDefinition": "Table formats like Iceberg, Hudi, and Delta Lake sit on top of Parquet files to provide metadata. This metadata allows query engines to know which files belong to a table, enabling ACID transactions and hidden partitioning.",
+    "fullDefinition": "A **Table Format** is a metadata layer that sits on top of data files (like Parquet) in a data lake, organizing them into logical tables with warehouse-like capabilities. Without a table format, a 'table' in a data lake is just a folder of files with no transactional guarantees. Table formats solve this by tracking which files belong to a table, enabling ACID transactions, time travel, and schema evolution.\n\n## File Format vs Table Format\n\nThis distinction is critical and often confused:\n\n| Concept | Example | What It Does |\n|---------|---------|-------------|\n| **File Format** | Parquet, ORC, Avro | How individual data files are encoded (columnar vs row, compression) |\n| **Table Format** | Iceberg, Delta Lake, Hudi | How files are organized into tables (metadata, transactions, versioning) |\n\nParquet tells you how to read one file. Iceberg tells you which Parquet files make up a table and tracks changes across them.\n\n## How Table Formats Work\n\n```\nQuery Engine (Spark, Trino, Flink)\n        ↓\nTable Format Metadata Layer\n  - Snapshot: list of all data files in current version\n  - Manifest: statistics about each data file\n  - Schema: column names, types, evolution history\n        ↓\nData Files (Parquet/ORC on S3/GCS/ADLS)\n```\n\nEvery write creates a new **snapshot** pointing to a new set of files. Old snapshots remain accessible for time travel.\n\n## Key Features All Table Formats Provide\n\n- **ACID Transactions**: Writes either fully succeed or fully fail — no corrupt partial states\n- **Time Travel**: Query data as it existed at any previous snapshot\n- **Schema Evolution**: Add, drop, rename columns without rewriting data\n- **Partition Evolution**: Change partitioning strategy without rewriting data (Iceberg)\n- **Concurrent Writes**: Multiple writers can safely write simultaneously\n\n## The Big Three: Iceberg vs Delta Lake vs Hudi\n\n| Feature | Apache Iceberg | Delta Lake | Apache Hudi |\n|---------|---------------|------------|-------------|\n| Created by | Netflix | Databricks | Uber |\n| Engine Support | Spark, Trino, Flink, Snowflake, BigQuery | Spark (best), Trino, Flink | Spark, Trino, Flink |\n| Partition Evolution | Yes (hidden) | No (requires rewrite) | Partial |\n| Catalog Options | REST, Glue, Hive, Nessie | Unity Catalog, Hive | Hive |\n| Best For | Multi-engine, open ecosystem | Databricks shops | CDC + incremental |\n| Schema Evolution | Excellent | Good | Good |\n| Community Momentum | Highest (2024-2026) | Strong (Databricks) | Moderate |\n\n## Choosing a Table Format\n\n- **Apache Iceberg**: Best default choice — widest engine support, best partition evolution, adopted by Snowflake, BigQuery, AWS, and Databricks\n- **Delta Lake**: Best if you are all-in on Databricks — tight Spark integration, Unity Catalog governance\n- **Apache Hudi**: Best if your primary use case is CDC / incremental upserts from databases",
     "keyPoints": [
-      "Enables ACID compliance on S3/GCS",
-      "Supports Schema Evolution and Time Travel",
-      "Engine agnostic (usually)",
-      "Replaces the legacy Hive Metastore approach"
-    ]
+      "Metadata layer that organizes data files into logical tables with ACID guarantees",
+      "Different from file formats — Parquet is how files are encoded, Iceberg is how files are organized",
+      "Enables time travel, schema evolution, and concurrent writes on data lakes",
+      "Three major formats: Apache Iceberg, Delta Lake, Apache Hudi",
+      "Apache Iceberg has the widest engine support and strongest community momentum"
+    ],
+    "faqs": [
+      {
+        "question": "What is a table format in a data lake?",
+        "answer": "A table format is a metadata layer that organizes raw data files (Parquet, ORC) into structured tables. It tracks which files belong to a table, manages schema and versions, and enables ACID transactions — turning a folder of files into a reliable, queryable table."
+      },
+      {
+        "question": "What is the difference between Parquet and Iceberg?",
+        "answer": "Parquet is a file format that defines how data is stored within a single file (columnar encoding, compression). Iceberg is a table format that organizes multiple Parquet files into a versioned, transactional table with metadata, snapshots, and schema tracking."
+      },
+      {
+        "question": "Should I use Iceberg or Delta Lake?",
+        "answer": "If you use Databricks exclusively, Delta Lake offers the tightest integration. For multi-engine environments (Spark + Trino + Snowflake + Flink), Apache Iceberg is the better choice due to its engine-agnostic design and wider adoption."
+      },
+      {
+        "question": "Do I need a table format for my data lake?",
+        "answer": "If your data lake has any writes, updates, or concurrent access, yes. Without a table format, you risk data corruption from concurrent writes, cannot do time travel or rollbacks, and lack schema enforcement. Table formats are now considered essential for production data lakes."
+      }
+    ],
+    "relatedTerms": [
+      "apache-iceberg",
+      "delta-lake",
+      "lakehouse",
+      "data-lake",
+      "columnar-storage"
+    ],
+    "relatedTools": [
+      "Apache Iceberg",
+      "Delta Lake",
+      "Apache Hudi",
+      "Nessie",
+      "Unity Catalog"
+    ],
+    "externalLinks": [
+      {
+        "title": "Apache Iceberg Documentation",
+        "url": "https://iceberg.apache.org/docs/latest/"
+      },
+      {
+        "title": "Delta Lake Documentation",
+        "url": "https://docs.delta.io/latest/"
+      }
+    ],
+    "keywords": [
+      "table format",
+      "iceberg vs delta lake",
+      "open table format",
+      "table format data lake",
+      "iceberg vs delta lake vs hudi"
+    ],
+    "lastUpdated": "2026-04-03"
   },
   {
     "term": "Medallion Architecture",

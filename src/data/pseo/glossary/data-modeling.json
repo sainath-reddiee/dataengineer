@@ -70,35 +70,63 @@
     "slug": "cap-theorem",
     "category": "data-modeling",
     "shortDefinition": "A theorem stating that a distributed data store can only guarantee two of the three: Consistency, Availability, and Partition Tolerance.",
-    "fullDefinition": "The CAP theorem is fundamental to understanding distributed systems and NoSQL databases.\n\n## The Three Properties\n- **Consistency**: Every read receives the most recent write or an error.\n- **Availability**: Every request receives a (non-error) response, without the guarantee that it contains the most recent write.\n- **Partition Tolerance**: The system continues to operate despite an arbitrary number of messages being dropped/delayed by the network.\n\n**Rule**: In a distributed system (P), you must choose between C and A.",
+    "fullDefinition": "The **CAP Theorem** (also known as Brewer's Theorem) states that any distributed data system can only guarantee two of three properties simultaneously: **Consistency**, **Availability**, and **Partition Tolerance**. Since network partitions are unavoidable in distributed systems, the practical choice is between consistency and availability during a partition.\n\n## The Three Properties\n\n### Consistency (C)\nEvery read receives the most recent write or an error. All nodes see the same data at the same time.\n- **Example**: After updating a user's email, every server immediately returns the new email\n- **Tradeoff**: May need to block requests until all nodes agree\n\n### Availability (A)\nEvery request receives a non-error response, without guarantee that it contains the most recent write.\n- **Example**: Every server always responds to queries, even if its data might be slightly stale\n- **Tradeoff**: May return outdated data during network issues\n\n### Partition Tolerance (P)\nThe system continues operating despite network partitions (messages being lost or delayed between nodes).\n- **Example**: If the network between two data centers fails, both continue serving requests\n- **Tradeoff**: Must choose between C and A when a partition occurs\n\n## The Real Choice: CP vs AP\n\nIn practice, network partitions **will** happen. So the real question is:\n\n| Choice | Behavior During Partition | Example Databases |\n|--------|--------------------------|-------------------|\n| **CP** (Consistent + Partition-tolerant) | Refuses some requests to ensure consistency | MongoDB, HBase, Redis Cluster, etcd |\n| **AP** (Available + Partition-tolerant) | Serves all requests but may return stale data | Cassandra, DynamoDB, CouchDB, Riak |\n| **CA** (Consistent + Available) | Not possible in distributed systems (only single-node like PostgreSQL) | PostgreSQL (single node), MySQL (single node) |\n\n## CAP in Practice: Data Engineering Examples\n\n- **Metadata catalog** (e.g., Hive Metastore): Needs **CP** — inconsistent metadata causes wrong query results\n- **User session store** (e.g., Redis): Usually **CP** — stale sessions cause auth issues\n- **Event log** (e.g., Kafka): **AP** — better to accept events during partitions than reject them\n- **Shopping cart** (e.g., DynamoDB): **AP** — availability matters more than perfect consistency\n\n## PACELC: Extending CAP\n\nThe PACELC theorem extends CAP: even when there is **no** partition, there is still a tradeoff between **Latency** and **Consistency**.\n\n```\nIf Partition → choose A or C\nElse → choose L (Latency) or C (Consistency)\n```\n\nExample: DynamoDB is PA/EL (Available during partitions, Low latency normally). MongoDB is PC/EC (Consistent always, even at higher latency).",
     "keyPoints": [
-      "Distributed Systems",
-      "Trade-offs",
-      "NoSQL Design"
+      "Distributed systems can only guarantee two of three: Consistency, Availability, Partition Tolerance",
+      "Network partitions are inevitable, so the real choice is between CP and AP",
+      "CP databases prioritize correctness (MongoDB, HBase); AP databases prioritize uptime (Cassandra, DynamoDB)",
+      "Single-node databases like PostgreSQL can be CA but are not distributed",
+      "PACELC theorem extends CAP to include latency vs consistency tradeoffs without partitions"
+    ],
+    "faqs": [
+      {
+        "question": "What is the CAP theorem in simple terms?",
+        "answer": "The CAP theorem says a distributed database can only guarantee two of three things: all nodes see the same data (Consistency), every request gets a response (Availability), and the system works despite network failures (Partition Tolerance). Since network failures happen, you must choose between consistency and availability."
+      },
+      {
+        "question": "Is Kafka CP or AP?",
+        "answer": "Kafka is configurable. With acks=all and min.insync.replicas, Kafka behaves as CP — it refuses writes if not enough replicas are available. With acks=1, it behaves more like AP — it accepts writes even if some replicas are down."
+      },
+      {
+        "question": "Why can't a distributed system have all three CAP properties?",
+        "answer": "During a network partition, a node that receives a write must either wait for confirmation from other nodes (sacrificing availability) or accept the write locally (sacrificing consistency). You cannot guarantee both simultaneously when nodes cannot communicate."
+      },
+      {
+        "question": "Does the CAP theorem matter for data engineering?",
+        "answer": "Yes. When choosing databases for pipelines — a metadata store (CP for correctness), an event bus (AP for throughput), a cache layer (CP or AP depending on use case) — understanding CAP helps you pick the right tool for each role."
+      }
     ],
     "relatedTerms": [
-      "nosql",
       "acid",
-      "base"
+      "data-warehouse",
+      "apache-kafka",
+      "data-modeling"
     ],
     "relatedTools": [
       "Cassandra",
       "DynamoDB",
-      "MongoDB"
+      "MongoDB",
+      "Apache Kafka",
+      "Redis"
     ],
     "externalLinks": [
       {
-        "title": "CAP Theorem Explained",
+        "title": "CAP Theorem - Wikipedia",
         "url": "https://en.wikipedia.org/wiki/CAP_theorem"
+      },
+      {
+        "title": "You Can't Sacrifice Partition Tolerance - Coda Hale",
+        "url": "https://codahale.com/you-cant-sacrifice-partition-tolerance/"
       }
     ],
     "keywords": [
       "cap theorem",
-      "distributed systems",
-      "consistency",
-      "availability"
+      "cap theorem explained",
+      "consistency availability partition tolerance",
+      "cp vs ap database",
+      "distributed systems cap"
     ],
-    "lastUpdated": "2026-01-21"
+    "lastUpdated": "2026-04-03"
   },
   {
     "id": "acid",
@@ -106,34 +134,63 @@
     "slug": "acid",
     "category": "data-modeling",
     "shortDefinition": "A set of properties of database transactions intended to guarantee data validity despite errors, power failures, and other mishaps.",
-    "fullDefinition": "ACID stands for Atomicity, Consistency, Isolation, Durability. These properties ensure reliable processing of database transactions.\n\n## The Properties\n- **Atomicity**: All or nothing.\n- **Consistency**: Data remains valid before and after.\n- **Isolation**: Concurrent transactions don't interfere.\n- **Durability**: Committed data is saved permanently.",
+    "fullDefinition": "**ACID** stands for **Atomicity, Consistency, Isolation, Durability** — four properties that guarantee database transactions are processed reliably. ACID compliance is what makes relational databases trustworthy for financial systems, and it is now a key feature that table formats (Delta Lake, Iceberg) bring to data lakes.\n\n## The Four Properties\n\n### Atomicity — All or Nothing\nA transaction either completes entirely or has no effect. If any part fails, the entire transaction is rolled back.\n```sql\n-- Transfer $100 from Account A to Account B\nBEGIN TRANSACTION;\n  UPDATE accounts SET balance = balance - 100 WHERE id = 'A';\n  UPDATE accounts SET balance = balance + 100 WHERE id = 'B';\nCOMMIT;\n-- If either UPDATE fails, BOTH are rolled back\n```\n\n### Consistency — Valid State Transitions\nA transaction moves the database from one valid state to another. Constraints (primary keys, foreign keys, CHECK constraints) are enforced.\n- **Before**: Account A has $500, Account B has $200 (total $700)\n- **After**: Account A has $400, Account B has $300 (total still $700)\n\n### Isolation — Concurrent Safety\nMultiple transactions running simultaneously don't interfere with each other. Each transaction sees a consistent view of the data.\n\n**Isolation Levels** (from weakest to strongest):\n\n| Level | Dirty Reads | Non-Repeatable Reads | Phantom Reads |\n|-------|------------|---------------------|---------------|\n| Read Uncommitted | Possible | Possible | Possible |\n| Read Committed | Prevented | Possible | Possible |\n| Repeatable Read | Prevented | Prevented | Possible |\n| Serializable | Prevented | Prevented | Prevented |\n\nMost databases default to Read Committed. Snowflake uses Snapshot Isolation (between Repeatable Read and Serializable).\n\n### Durability — Permanent Commits\nOnce a transaction is committed, the data survives any subsequent crash, power failure, or hardware fault. Databases achieve this through write-ahead logs (WAL).\n\n## ACID vs BASE\n\n| Property | ACID | BASE |\n|----------|------|------|\n| Full Name | Atomicity, Consistency, Isolation, Durability | Basically Available, Soft state, Eventual consistency |\n| Consistency | Immediate (strong) | Eventual (weak) |\n| Use Case | Financial, transactional | High-throughput, distributed |\n| Databases | PostgreSQL, MySQL, Snowflake | Cassandra, DynamoDB, MongoDB |\n| Tradeoff | Higher latency, stronger guarantees | Lower latency, weaker guarantees |\n\n## ACID in Data Engineering\n\nACID is no longer just for OLTP databases. Modern data engineering relies on ACID guarantees:\n\n- **Delta Lake**: ACID transactions on S3/GCS data lakes\n- **Apache Iceberg**: Snapshot isolation for concurrent reads and writes\n- **Apache Hudi**: ACID upserts for CDC pipelines\n- **Snowflake**: Full ACID compliance for all operations\n- **dbt**: Runs transformations as atomic transactions in the warehouse\n\nWithout ACID on data lakes, concurrent Spark jobs can produce corrupted tables — a problem that table formats solved.",
     "keyPoints": [
-      "Transaction Integrity",
-      "Relational Databases",
-      "Data Validity"
+      "Four properties ensuring reliable database transactions: Atomicity, Consistency, Isolation, Durability",
+      "Atomicity means all-or-nothing — partial failures are fully rolled back",
+      "Isolation levels control how concurrent transactions interact (Read Committed to Serializable)",
+      "ACID vs BASE represents the tradeoff between strong consistency and high availability",
+      "Delta Lake, Iceberg, and Hudi bring ACID guarantees to data lakes, preventing corruption from concurrent writes"
+    ],
+    "faqs": [
+      {
+        "question": "What is ACID in databases?",
+        "answer": "ACID is a set of four properties (Atomicity, Consistency, Isolation, Durability) that guarantee database transactions are processed reliably. If a transaction fails partway, atomicity ensures everything is rolled back. Durability ensures committed data survives crashes."
+      },
+      {
+        "question": "What is the difference between ACID and BASE?",
+        "answer": "ACID prioritizes strong consistency and immediate data validity, used by relational databases like PostgreSQL. BASE prioritizes high availability and accepts eventual consistency, used by distributed NoSQL databases like Cassandra and DynamoDB."
+      },
+      {
+        "question": "Why does ACID matter for data lakes?",
+        "answer": "Without ACID, concurrent Spark or Airflow jobs writing to the same data lake table can corrupt data. Table formats like Delta Lake and Apache Iceberg add ACID transactions to data lakes, ensuring writes are atomic and concurrent reads see consistent snapshots."
+      },
+      {
+        "question": "What are database isolation levels?",
+        "answer": "Isolation levels control how much one transaction sees changes from other concurrent transactions. From weakest to strongest: Read Uncommitted, Read Committed, Repeatable Read, Serializable. Higher isolation means fewer concurrency anomalies but potentially slower performance."
+      }
     ],
     "relatedTerms": [
-      "database",
-      "sql",
-      "oltp"
+      "cap-theorem",
+      "data-warehouse",
+      "apache-iceberg",
+      "data-modeling"
     ],
     "relatedTools": [
       "PostgreSQL",
       "MySQL",
-      "Oracle"
+      "Snowflake",
+      "Delta Lake",
+      "Apache Iceberg"
     ],
     "externalLinks": [
       {
-        "title": "ACID Properties",
+        "title": "ACID Properties - Wikipedia",
         "url": "https://en.wikipedia.org/wiki/ACID"
+      },
+      {
+        "title": "Transaction Isolation in Snowflake",
+        "url": "https://docs.snowflake.com/en/sql-reference/transactions"
       }
     ],
     "keywords": [
-      "acid",
-      "transactions",
-      "database properties"
+      "acid transactions",
+      "acid database properties",
+      "acid vs base",
+      "database isolation levels",
+      "acid data lake"
     ],
-    "lastUpdated": "2026-01-21"
+    "lastUpdated": "2026-04-03"
   },
   {
     "term": "Star Schema",

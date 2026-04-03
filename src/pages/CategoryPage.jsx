@@ -242,7 +242,7 @@ const CategoryPage = () => {
 
           {/* Ad after header, before posts */}
           <Suspense fallback={null}>
-            <AdPlacement position="category-top" format="auto" responsive={true} />
+            <AdPlacement />
           </Suspense>
 
           {/* Posts Section */}
@@ -263,7 +263,7 @@ const CategoryPage = () => {
 
           {/* Ad after posts section */}
           <Suspense fallback={null}>
-            <AdPlacement position="category-middle" format="auto" responsive={true} />
+            <AdPlacement />
           </Suspense>
 
           {/* Explore Other Categories Section */}
@@ -335,7 +335,7 @@ const CategoryPage = () => {
           {/* Ad at bottom of page */}
           <Suspense fallback={null}>
             <div className="mt-8">
-              <AdPlacement position="category-bottom" format="auto" responsive={true} />
+              <AdPlacement />
             </div>
           </Suspense>
         </div>

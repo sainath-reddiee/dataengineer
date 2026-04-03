@@ -19,6 +19,7 @@ import PostCard from '@/components/PostCard';
 import PostCardSkeleton from '@/components/PostCardSkeleton';
 import ArticleNavigation from '@/components/ArticleNavigation';
 import ReadingProgressBar from '@/components/ReadingProgressBar';
+import TableOfContents, { extractHeadings, injectHeadingIds } from '@/components/TableOfContents';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
@@ -56,6 +57,7 @@ const processWordPressContent = (content) => {
   };
 
   let cleanContent = DOMPurify.sanitize(content, config);
+  cleanContent = injectHeadingIds(cleanContent);
   cleanContent = cleanContent
     .replace(/<p>(\s|&nbsp;)*<\/p>/g, '')
     .replace(/<br\s*\/?>/g, '<br />')
@@ -564,16 +566,38 @@ const ArticlePage = () => {
           )}
 
           <Suspense fallback={<div className="h-32" />}>
-            <AdPlacement position="article-top" />
+            <AdPlacement />
           </Suspense>
 
-          {/* Article Content - PROSE-XL ADDED */}
-          <div className="prose prose-invert prose-lg md:prose-xl max-w-none prose-headings:text-white prose-h2:text-3xl prose-h2:font-bold prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-pink-400 prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
-            <div
-              dangerouslySetInnerHTML={{ __html: processWordPressContent(safePost.content) }}
-              className="article-content"
-            />
-          </div>
+          {/* Article Content with Table of Contents */}
+          {(() => {
+            const processedHtml = processWordPressContent(safePost.content);
+            const headings = extractHeadings(processedHtml);
+            return (
+              <>
+                {/* Mobile ToC (above content) — hidden on xl where sidebar TOC shows */}
+                <div className="xl:hidden">
+                  <TableOfContents headings={headings} />
+                </div>
+
+                {/* Desktop: 2-column grid with sidebar ToC */}
+                <div className="flex gap-8">
+                  <div className="flex-1 min-w-0">
+                    <div className="prose prose-invert prose-lg md:prose-xl max-w-none prose-headings:text-white prose-h2:text-3xl prose-h2:font-bold prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-pink-400 prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
+                      <div
+                        dangerouslySetInnerHTML={{ __html: processedHtml }}
+                        className="article-content"
+                      />
+                    </div>
+                  </div>
+                  {/* Desktop ToC sidebar */}
+                  <div className="hidden xl:block w-64 shrink-0">
+                    <TableOfContents headings={headings} />
+                  </div>
+                </div>
+              </>
+            );
+          })()}
 
           {/* Tags Section */}
           {safePost.tags && safePost.tags.length > 0 && (
@@ -591,7 +615,7 @@ const ArticlePage = () => {
           )}
 
           <Suspense fallback={<div className="h-32" />}>
-            <AdPlacement position="article-bottom" />
+            <AdPlacement />
           </Suspense>
 
           {/* Enhanced Author Footer */}

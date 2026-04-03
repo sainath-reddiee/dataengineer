@@ -11,9 +11,61 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-02-27",
-  "totalArticles": 57,
+  "lastUpdated": "2026-04-03",
+  "totalArticles": 59,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-cortex-code-guide-real-examples",
+      "title": "How I Taught Myself Snowflake Cortex Code (And What I Found)",
+      "summary": "Nobody told me to do this. No manager pinged me. No sprint ticket had &#8220;explore Cortex Code&#8221; written on it. I stumbled across it one evening while clicking around Snowsight&#8230;",
+      "keyFacts": [
+        "45 minutes",
+        "14 minutes",
+        "14 minutes",
+        "I run this blog because I genuinely love poking around the parts of Snowflake that most people scroll past",
+        "Cortex Code is not a SQL function you call"
+      ],
+      "entities": [
+        "dbt",
+        "snowflake",
+        "sql",
+        "python"
+      ],
+      "questionAnswered": "How I Taught Myself Snowflake Cortex Code (And What I Found)",
+      "lastUpdated": "2026-04-03",
+      "published": "2026-04-03",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2073
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide",
+      "title": "Snowflake Cortex Code for dbt: Cut Build Time 48% | 2026 Guide",
+      "summary": "The Moment Everything Changed It was a Tuesday morning when I finally snapped. My dbt project had grown to 147 models, and the daily run was taking 2 hours and&#8230;",
+      "keyFacts": [
+        "47 minutes",
+        "45 minutes",
+        "23 minutes",
+        "This isn&#8217;t a tutorial about how Cortex Code might help you",
+        "This is the real story of how it actually transformed my day-to-day work as a data engineer, with specific examples, exact prompts I use, and honest numbers about what works and what doesn&#8217;t"
+      ],
+      "entities": [
+        "dbt",
+        "airflow",
+        "snowflake",
+        "sql",
+        "python",
+        "tableau"
+      ],
+      "questionAnswered": "Part 1: What Is Snowflake Cortex Code? (The Simple Truth)",
+      "lastUpdated": "2026-03-08",
+      "published": "2026-03-08",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Airflow",
+      "wordCount": 5026
+    },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-managed-iceberg-tables-complete-guide-2026",
       "title": "Snowflake Managed Iceberg Tables 2026",

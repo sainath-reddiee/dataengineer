@@ -7,6 +7,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import MobileOptimization from '@/components/MobileOptimization';
 import { trackPageView, trackEvent } from '@/utils/analytics';
 import { useApiDebugger } from '@/hooks/useApiDebugger';
+import CookieConsent from '@/components/CookieConsent';
 
 // Lazy load pages for code splitting
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -29,6 +30,9 @@ const GlossaryHubPage = lazy(() => import('./pages/GlossaryHubPage'));
 const GlossaryPage = lazy(() => import('./pages/GlossaryPage'));
 const ComparisonHubPage = lazy(() => import('./pages/ComparisonHubPage'));
 const ComparisonPage = lazy(() => import('./pages/ComparisonPage'));
+
+// Not Found Page
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 // Admin Pages (SEO Toolkit)
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
@@ -222,6 +226,11 @@ function App() {
               </Suspense>
             } />
           )}
+          <Route path="*" element={
+            <Suspense fallback={<LoadingFallback text="Loading..." />}>
+              <NotFoundPage />
+            </Suspense>
+          } />
         </Route>
 
         {/* Admin Routes - SEO Toolkit (outside Layout) */}
@@ -242,6 +251,7 @@ function App() {
         </Route>
       </Routes>
       <Toaster />
+      <CookieConsent />
     </ErrorBoundary>
   );
 }

@@ -19,8 +19,6 @@ const Newsletter = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    console.log('Form submitted with email:', email);
-    
     if (!email.trim()) {
       toast({
         title: "Email Required",
@@ -87,12 +85,6 @@ const Newsletter = () => {
     }
   };
 
-  const handleButtonClick = (e) => {
-    e.preventDefault();
-    console.log('Button clicked!');
-    handleSubmit(e);
-  };
-
   return (
     <section ref={ref} className="py-16 relative overflow-hidden">
       <div className="absolute inset-0">
@@ -134,7 +126,7 @@ const Newsletter = () => {
                   transition={{ duration: 0.6, delay: 0.3 }}
                   className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed"
                 >
-                  Join 25,000+ data professionals who get weekly insights, tutorials, and industry updates 
+                  Join our growing community of data professionals who get weekly insights, tutorials, and industry updates 
                   delivered straight to their inbox. No spam, just pure data engineering gold.
                 </motion.p>
 
@@ -166,7 +158,6 @@ const Newsletter = () => {
                     </div>
                     <button
                       type="submit"
-                      onClick={handleButtonClick}
                       disabled={isSubscribed || loading}
                       className={`px-8 py-4 rounded-full font-bold transition-all duration-300 flex items-center justify-center shadow-xl ${
                         isSubscribed 
@@ -202,7 +193,7 @@ const Newsletter = () => {
                 >
                   <div className="flex items-center space-x-2">
                     <Users className="h-4 w-4 text-blue-400" />
-                    <span>25K+ subscribers</span>
+                    <span>Growing community</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Sparkles className="h-4 w-4 text-yellow-400" />

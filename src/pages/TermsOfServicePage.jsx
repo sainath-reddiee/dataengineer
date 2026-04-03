@@ -39,7 +39,7 @@ const TermsOfServicePage = () => {
 
           <h2 className="text-xl font-bold text-white mt-8">5. GOVERNING LAW</h2>
           <p>
-            These Terms shall be governed by and defined following the laws of [Your Country/State]. DataEngineer Hub and yourself irrevocably consent that the courts of [Your City, Country/State] shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these terms.
+            These Terms shall be governed by and defined following the laws of India. DataEngineer Hub and yourself irrevocably consent that the courts of Hyderabad, Telangana, India shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these terms.
           </p>
 
           <h2 className="text-xl font-bold text-white mt-8">6. DISCLAIMER</h2>

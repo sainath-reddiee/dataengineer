@@ -2,6 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Star } from 'lucide-react';
+import DOMPurify from 'dompurify';
 
 const CertificationCard = ({ certification }) => {
   if (!certification) return null;
@@ -50,7 +51,7 @@ const CertificationCard = ({ certification }) => {
         </h3>
         
         {/* Excerpt now has more space if needed */}
-        <p className="text-gray-400 text-xs line-clamp-2 mb-4" dangerouslySetInnerHTML={{ __html: certification.excerpt }} />
+        <p className="text-gray-400 text-xs line-clamp-2 mb-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(certification.excerpt) }} />
 
         <div className="mt-auto flex items-center justify-between">
             <div className="flex items-center gap-2 flex-wrap">

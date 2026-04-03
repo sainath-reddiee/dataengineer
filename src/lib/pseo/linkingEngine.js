@@ -141,7 +141,7 @@ export function injectInternalLinks(htmlContent, excludeSlug = '') {
  * @param {number} maxLinks - Maximum number of term links to inject
  * @returns {string} - HTML with glossary cross-links injected
  */
-export function injectGlossaryCrossLinks(htmlContent, currentSlug = '', maxLinks = 5) {
+export function injectGlossaryCrossLinks(htmlContent, currentSlug = '', maxLinks = 5, { terms = null } = {}) {
     if (!htmlContent || typeof htmlContent !== 'string') {
         return htmlContent;
     }
@@ -149,8 +149,10 @@ export function injectGlossaryCrossLinks(htmlContent, currentSlug = '', maxLinks
     let result = htmlContent;
     let linkCount = 0;
 
+    const allTerms = terms || glossaryTerms || [];
+
     // Sort terms by length (descending) to match longer phrases first
-    const sortedTerms = [...(glossaryTerms || [])]
+    const sortedTerms = [...allTerms]
         .filter(t => t.slug !== currentSlug)
         .sort((a, b) => b.term.length - a.term.length);
 
@@ -188,13 +190,14 @@ export function injectGlossaryCrossLinks(htmlContent, currentSlug = '', maxLinks
  * @param {number} limit - Maximum number of related terms to return
  * @returns {Array} - Array of related term objects { slug, term, category }
  */
-export const getRelatedGlossaryTerms = (currentSlug, limit = 5) => {
-    const currentTerm = (glossaryTerms || []).find(t => t.slug === currentSlug);
+export const getRelatedGlossaryTerms = (currentSlug, limit = 5, { terms = null } = {}) => {
+    const allTerms = terms || glossaryTerms || [];
+    const currentTerm = allTerms.find(t => t.slug === currentSlug);
     if (!currentTerm) return [];
 
     // First, get explicitly defined related terms
     const explicitRelated = (currentTerm.relatedTerms || [])
-        .map(slug => (glossaryTerms || []).find(t => t.slug === slug))
+        .map(slug => allTerms.find(t => t.slug === slug))
         .filter(Boolean)
         .slice(0, limit);
 
@@ -210,7 +213,7 @@ export const getRelatedGlossaryTerms = (currentSlug, limit = 5) => {
     // Fill remaining with category-based matches
     const currentKeywords = new Set((currentTerm.keywords || []).map(k => k.toLowerCase()));
 
-    const scored = glossaryTerms
+    const scored = allTerms
         .filter(t => t.slug !== currentSlug && !explicitRelated.some(r => r.slug === t.slug))
         .map(t => {
             let score = 0;
@@ -249,14 +252,14 @@ export const getRelatedGlossaryTerms = (currentSlug, limit = 5) => {
  * @param {number} limit - Maximum number of related comparisons
  * @returns {Array} - Array of related comparison objects
  */
-export const getRelatedComparisons = (currentSlug, limit = 3) => {
-    const currentComparison = comparisons.find(c => c.slug === currentSlug);
+export const getRelatedComparisons = (currentSlug, limit = 3, { comparisons: comps = null } = {}) => {
+    const allComparisons = comps || comparisons || [];
+    const currentComparison = allComparisons.find(c => c.slug === currentSlug);
     if (!currentComparison) return [];
 
     // First, get explicitly defined related comparisons
-    const safeComparisons = comparisons || [];
     const explicitRelated = (currentComparison.relatedComparisons || [])
-        .map(slug => safeComparisons.find(c => c.slug === slug))
+        .map(slug => allComparisons.find(c => c.slug === slug))
         .filter(Boolean);
 
     if (explicitRelated.length >= limit) {
@@ -269,7 +272,7 @@ export const getRelatedComparisons = (currentSlug, limit = 3) => {
     }
 
     // Fill with same-category comparisons
-    const sameCategory = safeComparisons
+    const sameCategory = allComparisons
         .filter(c =>
             c.slug !== currentSlug &&
             c.category === currentComparison.category &&
@@ -294,10 +297,11 @@ export const getRelatedComparisons = (currentSlug, limit = 3) => {
  * @param {number} limit - Maximum number of terms
  * @returns {Array} - Related glossary entries
  */
-export const getGlossaryTermsForTool = (toolName, limit = 3) => {
+export const getGlossaryTermsForTool = (toolName, limit = 3, { terms = null } = {}) => {
     const normalizedTool = toolName.toLowerCase();
+    const allTerms = terms || glossaryTerms || [];
 
-    return (glossaryTerms || [])
+    return allTerms
         .filter(t => {
             const inKeywords = (t.keywords || []).some(k =>
                 k.toLowerCase().includes(normalizedTool)
@@ -384,12 +388,13 @@ export const generateBreadcrumbs = (pageType, pageData = null) => {
  * @param {string} excludeSlug - Slug to exclude (current page)
  * @returns {Array} - Terms found { term, slug, positions }
  */
-export const findLinkableTerms = (text, excludeSlug = '') => {
+export const findLinkableTerms = (text, excludeSlug = '', { terms = null } = {}) => {
     if (!text) return [];
 
     const normalizedText = text.toLowerCase();
+    const allTerms = terms || glossaryTerms || [];
 
-    return (glossaryTerms || [])
+    return allTerms
         .filter(t => t.slug !== excludeSlug)
         .filter(t => {
             const termLower = t.term.toLowerCase();

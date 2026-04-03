@@ -69,13 +69,63 @@
     "slug": "olap",
     "category": "analytics",
     "shortDefinition": "A category of software tools that provide analysis of data stored in a database, typically for multi-dimensional business reporting.",
-    "fullDefinition": "OLAP databases are optimized for 'Reads'. They are designed to aggregate millions or billions of rows in seconds. Unlike OLTP (Postgres), they usually store data in columns to optimize for wide-scanning queries.",
+    "fullDefinition": "**OLAP (Online Analytical Processing)** is a category of database technology optimized for complex analytical queries — aggregations, groupings, window functions, and multi-dimensional analysis across large datasets. OLAP systems are designed to answer questions like 'What was total revenue by region and product category last quarter?' in seconds, even over billions of rows.\n\n## OLAP vs OLTP\n\n| Aspect | OLAP (Analytical) | OLTP (Transactional) |\n|--------|-------------------|---------------------|\n| Purpose | Analysis and reporting | Day-to-day transactions |\n| Queries | Complex aggregations, joins | Simple CRUD (insert, update) |\n| Data Volume | Billions of rows | Thousands of concurrent rows |\n| Optimization | Read-heavy (scans) | Write-heavy (point lookups) |\n| Storage | Columnar | Row-oriented |\n| Examples | Snowflake, ClickHouse, BigQuery | PostgreSQL, MySQL, Oracle |\n| Users | Analysts, data scientists | Application users |\n\n## OLAP Concepts\n\n### Multi-Dimensional Analysis\nOLAP enables analyzing data across multiple dimensions simultaneously:\n- **Dimensions**: Category axes (time, geography, product, customer)\n- **Measures**: Numeric values to aggregate (revenue, quantity, profit)\n- **Cubes**: Logical structures combining dimensions and measures\n\n### OLAP Operations\n- **Roll-up**: Aggregate to a higher level (daily → monthly → yearly)\n- **Drill-down**: Go to a more detailed level (country → state → city)\n- **Slice**: Fix one dimension (show only Q1 2026 data)\n- **Dice**: Fix multiple dimensions (Q1 2026 + North America + Electronics)\n- **Pivot**: Rotate the view (swap rows and columns)\n\n## Types of OLAP\n\n| Type | How It Works | Best For |\n|------|-------------|----------|\n| **MOLAP** (Multidimensional) | Pre-computed cubes stored in specialized format | Fastest queries, smaller datasets |\n| **ROLAP** (Relational) | Queries run on relational tables at query time | Flexibility, large datasets |\n| **HOLAP** (Hybrid) | Combines MOLAP for summaries + ROLAP for details | Balance of speed and flexibility |\n\nModern cloud OLAP engines (Snowflake, ClickHouse, BigQuery) are essentially ROLAP with columnar storage, making pre-computed cubes less necessary.\n\n## Modern OLAP Engines\n\n| Engine | Type | Key Strength |\n|--------|------|-------------|\n| Snowflake | Cloud DW | General-purpose analytics |\n| BigQuery | Serverless | Ad-hoc queries at scale |\n| ClickHouse | Column store | Real-time analytics, sub-second queries |\n| Apache Druid | Real-time OLAP | Event data, high concurrency |\n| Apache Pinot | Real-time OLAP | User-facing analytics |\n| DuckDB | Embedded | Local/embedded analytics |\n\n## OLAP SQL Example\n\n```sql\n-- Multi-dimensional analysis: revenue by region, category, quarter\nSELECT\n    d.quarter,\n    c.region,\n    p.category,\n    SUM(f.revenue) AS total_revenue,\n    COUNT(DISTINCT f.customer_id) AS unique_customers,\n    SUM(f.revenue) / COUNT(DISTINCT f.customer_id) AS revenue_per_customer\nFROM fact_sales f\nJOIN dim_date d ON f.date_key = d.date_key\nJOIN dim_customer c ON f.customer_key = c.customer_key\nJOIN dim_product p ON f.product_key = p.product_key\nWHERE d.year = 2026\nGROUP BY ROLLUP(d.quarter, c.region, p.category)\nORDER BY total_revenue DESC;\n```",
     "keyPoints": [
-      "Columnar storage optimization",
-      "Heavy use of compression",
-      "Designed for complex aggregation queries",
-      "Examples: ClickHouse, Pinot, StarRocks"
-    ]
+      "Database technology optimized for complex analytical queries over large datasets",
+      "Designed for read-heavy aggregation workloads, not transactional writes",
+      "Uses columnar storage for efficient compression and fast scans",
+      "Supports multi-dimensional analysis: roll-up, drill-down, slice, dice, pivot",
+      "Modern engines include Snowflake, ClickHouse, BigQuery, Druid, and DuckDB"
+    ],
+    "faqs": [
+      {
+        "question": "What is OLAP in simple terms?",
+        "answer": "OLAP is a type of database designed for answering analytical questions fast — like 'total sales by region last quarter.' Unlike transactional databases (PostgreSQL) that handle individual transactions, OLAP databases aggregate millions of rows in seconds using columnar storage."
+      },
+      {
+        "question": "What is the difference between OLAP and OLTP?",
+        "answer": "OLTP databases (PostgreSQL, MySQL) handle day-to-day transactions — inserts, updates, point lookups. OLAP databases (Snowflake, ClickHouse) handle analytical queries — aggregations, joins, scans over billions of rows. OLTP is optimized for writes; OLAP is optimized for reads."
+      },
+      {
+        "question": "Is Snowflake an OLAP database?",
+        "answer": "Yes. Snowflake is a cloud-based OLAP system that uses columnar storage and is optimized for analytical queries. It is not designed for OLTP workloads like application backends, though Snowflake Hybrid Tables add limited transactional capabilities."
+      },
+      {
+        "question": "What is an OLAP cube?",
+        "answer": "An OLAP cube is a data structure that pre-aggregates measures across multiple dimensions for fast querying. For example, a sales cube might pre-compute revenue totals by time, region, and product. Modern columnar engines make cubes less necessary since they can aggregate raw data fast enough."
+      }
+    ],
+    "relatedTerms": [
+      "data-warehouse",
+      "columnar-storage",
+      "star-schema",
+      "data-modeling"
+    ],
+    "relatedTools": [
+      "Snowflake",
+      "ClickHouse",
+      "BigQuery",
+      "Apache Druid",
+      "DuckDB"
+    ],
+    "externalLinks": [
+      {
+        "title": "OLAP - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Online_analytical_processing"
+      },
+      {
+        "title": "ClickHouse Documentation",
+        "url": "https://clickhouse.com/docs"
+      }
+    ],
+    "keywords": [
+      "olap",
+      "olap vs oltp",
+      "online analytical processing",
+      "olap database",
+      "olap cube"
+    ],
+    "lastUpdated": "2026-04-03"
   },
   {
     "term": "DuckDB",

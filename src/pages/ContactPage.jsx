@@ -30,10 +30,12 @@ const ContactPage = () => {
       return;
     }
     
-    toast({
-      title: "📬 Message Sent!",
-      description: "Thanks for reaching out! We'll get back to you shortly.",
-    });
+    const subject = encodeURIComponent(`Contact from ${formData.name} via DataEngineer Hub`);
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+    );
+    window.location.href = `mailto:sainath@dataengineerhub.blog?subject=${subject}&body=${body}`;
+    
     setFormData({ name: '', email: '', message: '' });
   };
 
@@ -98,7 +100,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <div className="text-xl font-semibold">Location</div>
-                    <p className="text-gray-400">123 Data Avenue, Hyderabad</p>
+                    <p className="text-gray-400">Hyderabad, Telangana, India</p>
                   </div>
                 </div>
               </div>

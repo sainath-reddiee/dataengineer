@@ -65,6 +65,18 @@
     ],
     "rewrites": [
         {
+            "source": "/articles/:slug",
+            "destination": "/articles/:slug/index.html"
+        },
+        {
+            "source": "/category/:slug",
+            "destination": "/category/:slug/index.html"
+        },
+        {
+            "source": "/tag/:slug",
+            "destination": "/tag/:slug/index.html"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }

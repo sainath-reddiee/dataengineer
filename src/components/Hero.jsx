@@ -152,12 +152,16 @@ const Hero = () => {
                   <span className="font-semibold">{totalCategories}+</span>
                   <span className="text-gray-400">Technologies</span>
                 </div>
-                <div className="h-4 w-px bg-gray-700 hidden sm:block"></div>
-                <div className="flex items-center gap-2 text-gray-300">
-                  <Users className="h-4 w-4 text-green-400" />
-                  <span className="font-semibold">{totalReaders}</span>
-                  <span className="text-gray-400">Readers</span>
-                </div>
+                {totalReaders && (
+                  <>
+                    <div className="h-4 w-px bg-gray-700 hidden sm:block"></div>
+                    <div className="flex items-center gap-2 text-gray-300">
+                      <Users className="h-4 w-4 text-green-400" />
+                      <span className="font-semibold">{totalReaders}</span>
+                      <span className="text-gray-400">Readers</span>
+                    </div>
+                  </>
+                )}
                 <div className="h-4 w-px bg-gray-700 hidden sm:block"></div>
                 <div className="flex items-center gap-2 text-gray-300">
                   <Sparkles className="h-4 w-4 text-orange-400" />

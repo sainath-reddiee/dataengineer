@@ -3,6 +3,7 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useCertification } from '@/hooks/useCertifications';
 import MetaTags from '@/components/SEO/MetaTags';
+import DOMPurify from 'dompurify';
 import { Loader, ArrowLeft, Download, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -78,7 +79,7 @@ const CertificationDetail = () => {
           </div>
         )}
 
-        <div className="prose prose-invert max-w-none article-content" dangerouslySetInnerHTML={{ __html: certification.content }} />
+        <div className="prose prose-invert max-w-none article-content" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(certification.content) }} />
       </div>
     </>
   );

@@ -185,7 +185,7 @@ const AllArticlesPage = () => {
           {/* Ad after search, before featured posts */}
           {currentPage === 1 && !activeSearch && (
             <Suspense fallback={null}>
-              <AdPlacement position="article-list-top" format="auto" responsive={true} />
+              <AdPlacement />
             </Suspense>
           )}
           
@@ -359,7 +359,7 @@ const AllArticlesPage = () => {
 
               {/* Ad after posts grid, before pagination */}
               <Suspense fallback={null}>
-                <AdPlacement position="article-list-bottom" format="auto" responsive={true} />
+                <AdPlacement />
               </Suspense>
 
               {/* Pagination */}

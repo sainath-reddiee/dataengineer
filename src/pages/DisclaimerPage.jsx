@@ -35,7 +35,7 @@ const DisclaimerPage = () => {
           
           <h2 className="text-xl font-bold text-white mt-8">Affiliate Disclaimer</h2>
           <p>
-            This Site may contain links to affiliate websites, and we receive an affiliate commission for any purchases made by you on the affiliate website using such links. Our affiliates include [List any affiliate programs you are a part of, e.g., Amazon Associates, etc.].
+            This Site may contain links to affiliate websites, and we may receive an affiliate commission for any purchases made by you on the affiliate website using such links. We are currently not part of any affiliate programs. This section will be updated if and when we join any affiliate programs in the future.
           </p>
 
           <h2 className="text-xl font-bold text-white mt-8">Errors and Omissions Disclaimer</h2>

@@ -69,13 +69,63 @@
     "slug": "iac",
     "category": "cloud-platforms",
     "shortDefinition": "The practice of managing and provisioning infrastructure through machine-readable definition files, rather than physical hardware configuration or interactive configuration tools.",
-    "fullDefinition": "IaC allows data engineers to treat their infrastructure (S3 buckets, EC2 nodes, Snowflake warehouses) exactly like their application code. This enables version control, automated testing, and repeatable deployments.",
+    "fullDefinition": "**Infrastructure as Code (IaC)** is the practice of defining, provisioning, and managing cloud infrastructure through code files rather than manual point-and-click configuration. For data engineers, IaC means your Snowflake warehouses, S3 buckets, Airflow clusters, and IAM roles are defined in version-controlled files that can be reviewed, tested, and deployed like application code.\n\n## Why IaC Matters for Data Engineering\n\nWithout IaC, data infrastructure is configured manually:\n- **Snowflake warehouses** created through the UI — no record of what settings were used\n- **S3 bucket policies** configured by clicking through AWS console — no audit trail\n- **Airflow clusters** set up differently in dev vs prod — bugs only found in production\n\nWith IaC:\n```hcl\n# Terraform: Snowflake warehouse defined as code\nresource \"snowflake_warehouse\" \"etl_wh\" {\n  name           = \"ETL_WH\"\n  warehouse_size = \"MEDIUM\"\n  auto_suspend   = 60\n  auto_resume    = true\n  comment        = \"Warehouse for ETL pipelines\"\n}\n```\n\n## Declarative vs Imperative\n\n| Approach | How It Works | Example |\n|----------|-------------|----------|\n| **Declarative** | You describe the desired end state; the tool figures out how to get there | Terraform, CloudFormation, Pulumi (most modes) |\n| **Imperative** | You write step-by-step instructions for what to create | AWS CLI scripts, Python boto3, Ansible |\n\nDeclarative is preferred because the tool handles changes, deletions, and dependencies automatically.\n\n## IaC Tools Compared\n\n| Tool | Language | Provider Support | Best For |\n|------|----------|-----------------|----------|\n| **Terraform** | HCL | All clouds + Snowflake, Databricks | Multi-cloud, data platform infra |\n| **Pulumi** | Python, TS, Go | All clouds | Teams who prefer real programming languages |\n| **AWS CDK** | Python, TS | AWS only | AWS-only shops |\n| **CloudFormation** | YAML/JSON | AWS only | Native AWS, no extra tooling |\n| **Bicep** | Bicep | Azure only | Azure-native teams |\n\n## IaC Workflow\n\n```\n1. WRITE: Define infrastructure in code (Terraform .tf files)\n2. PLAN:  Preview changes (terraform plan shows what will change)\n3. REVIEW: Code review via Git pull request\n4. APPLY: Deploy changes (terraform apply)\n5. STATE: Tool tracks what exists vs. what's defined\n```\n\n## Data Engineering IaC Examples\n\n- **Snowflake**: Databases, schemas, warehouses, roles, grants, resource monitors\n- **AWS**: S3 buckets, Glue jobs, Redshift clusters, IAM roles, Step Functions\n- **Airflow**: MWAA environments, connections, variables\n- **Databricks**: Clusters, jobs, notebooks, Unity Catalog\n- **Kafka**: Topics, ACLs, connectors\n\n## Benefits\n\n- **Reproducibility**: Spin up identical environments for dev, staging, prod\n- **Version control**: Git history shows who changed what and when\n- **Disaster recovery**: Recreate entire infrastructure from code in minutes\n- **Code review**: Infrastructure changes go through PR review like application code\n- **Environment parity**: Dev and prod are configured identically",
     "keyPoints": [
-      "Repeatability and Consistency",
-      "Version Control (Git) support",
-      "Automated scaling and management",
-      "Tools include Terraform, Pulumi, and AWS CDK"
-    ]
+      "Manages cloud infrastructure through version-controlled code files instead of manual configuration",
+      "Terraform is the most popular tool, supporting all clouds plus Snowflake and Databricks",
+      "Declarative approach: define desired state, tool handles creating/updating/deleting resources",
+      "Enables reproducible environments, disaster recovery, and auditable infrastructure changes",
+      "Essential for data engineering: defines warehouses, buckets, clusters, roles, and pipelines as code"
+    ],
+    "faqs": [
+      {
+        "question": "What is Infrastructure as Code in simple terms?",
+        "answer": "IaC means writing code files that describe your cloud infrastructure (servers, databases, storage, permissions) instead of creating them manually through a web console. Tools like Terraform read these files and create/update the infrastructure automatically."
+      },
+      {
+        "question": "What is Terraform used for in data engineering?",
+        "answer": "Terraform provisions and manages data infrastructure: Snowflake warehouses and roles, S3 buckets and policies, Airflow environments, Databricks clusters, and IAM permissions. It ensures dev and prod environments are identical and all changes are version-controlled."
+      },
+      {
+        "question": "Terraform vs Pulumi: which should I use?",
+        "answer": "Terraform uses its own language (HCL) and has the largest provider ecosystem. Pulumi lets you use Python, TypeScript, or Go — better if your team prefers real programming languages. Terraform is the safer default choice for most data teams due to broader community support."
+      },
+      {
+        "question": "Do I need IaC for a small data team?",
+        "answer": "Even small teams benefit from IaC for disaster recovery and environment consistency. Start simple — define your Snowflake warehouses, S3 buckets, and IAM roles in Terraform. You can incrementally add more as your infrastructure grows."
+      }
+    ],
+    "relatedTerms": [
+      "data-pipeline",
+      "data-governance",
+      "snowflake",
+      "databricks"
+    ],
+    "relatedTools": [
+      "Terraform",
+      "Pulumi",
+      "AWS CDK",
+      "CloudFormation",
+      "Ansible"
+    ],
+    "externalLinks": [
+      {
+        "title": "Terraform Documentation",
+        "url": "https://developer.hashicorp.com/terraform/docs"
+      },
+      {
+        "title": "Terraform Snowflake Provider",
+        "url": "https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest"
+      }
+    ],
+    "keywords": [
+      "infrastructure as code",
+      "terraform data engineering",
+      "iac tools",
+      "terraform vs pulumi",
+      "terraform snowflake"
+    ],
+    "lastUpdated": "2026-04-03"
   },
   {
     "term": "Snowpark",

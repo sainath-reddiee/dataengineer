@@ -6,7 +6,7 @@ export const useStats = () => {
   const [stats, setStats] = useState({
     totalArticles: 0,
     totalCategories: 0,
-    totalReaders: '10K+', // Static placeholder - change this value anytime!
+    totalReaders: null,
     updateFrequency: 'Weekly',
     loading: true,
     error: null
@@ -31,9 +31,8 @@ export const useStats = () => {
           cat => cat.name !== 'Uncategorized' && cat.count > 0
         ).length;
 
-        // Static reader count (MANUAL - update this value whenever you want!)
-        // Examples: '5K+', '10K+', '25K+', '50K+', '100K+', '1M+'
-        const totalReaders = '10K+'; // ← CHANGE THIS VALUE TO UPDATE READER COUNT
+        // Reader count omitted — only show verifiable metrics
+        const totalReaders = null;
 
         // Determine update frequency based on recent posts (DYNAMIC)
         const updateFrequency = await determineUpdateFrequency();

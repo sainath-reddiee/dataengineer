@@ -94,7 +94,7 @@ const HomePage = () => {
 
           {/* AD - TOP */}
           <Suspense fallback={null}>
-            <AdPlacement position="homepage-top" format="auto" responsive={true} />
+            <AdPlacement />
           </Suspense>
 
           {/* 🌟 FEATURED POSTS - Optimized section */}
@@ -127,7 +127,7 @@ const HomePage = () => {
 
           {/* AD - MIDDLE */}
           <Suspense fallback={null}>
-            <AdPlacement position="homepage-middle" format="auto" responsive={true} />
+            <AdPlacement />
           </Suspense>
 
           {/* 🛠 TECH CATEGORIES - Grid view */}
@@ -166,7 +166,7 @@ const HomePage = () => {
 
           {/* AD - BOTTOM */}
           <Suspense fallback={null}>
-            <AdPlacement position="homepage-bottom" format="auto" responsive={true} />
+            <AdPlacement />
           </Suspense>
 
           {/* 📧 NEWSLETTER - Compact */}

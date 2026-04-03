@@ -20,6 +20,8 @@ import {
 
 // Data
 import { getComparison } from '../lib/pseo/comparisonLoader';
+import { getAllComparisons } from '../lib/pseo/comparisonLoader';
+import { getAllGlossaryTerms } from '@/lib/pseo/glossaryLoader';
 
 // SEO Factories
 import { generateComparisonMeta, generateComparisonCanonical } from '@/lib/pseo/metadataFactory';
@@ -57,8 +59,18 @@ const ComparisonPage = () => {
                 const canonical = generateComparisonCanonical(slug);
                 const schema = generateComparisonSchema(data);
 
+                // Load all data for linking engine
+                const [allComparisons, allTerms] = await Promise.all([
+                    getAllComparisons(),
+                    getAllGlossaryTerms()
+                ]);
+                const relatedComparisons = getRelatedComparisons(slug, 3, { comparisons: allComparisons });
+                const toolATerms = getGlossaryTermsForTool(data.toolA, 2, { terms: allTerms });
+                const toolBTerms = getGlossaryTermsForTool(data.toolB, 2, { terms: allTerms });
+                const crossLinkedTerms = [...toolATerms, ...toolBTerms].filter((t, i, arr) => arr.findIndex(x => x.slug === t.slug) === i);
+
                 setComparison(data);
-                setDerivedData({ meta, canonical, schema });
+                setDerivedData({ meta, canonical, schema, relatedComparisons, crossLinkedTerms });
 
             } catch (err) {
                 console.error("Error loading comparison:", err);
@@ -290,56 +302,46 @@ const ComparisonPage = () => {
                     </article>
 
                     {/* Related Comparisons - Internal Linking */}
-                    {(() => {
-                        const related = getRelatedComparisons(slug, 3);
-                        if (related.length === 0) return null;
-                        return (
-                            <div className="mb-16">
-                                <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                                    <Swords className="w-6 h-6 text-purple-400" />
-                                    Related Comparisons
-                                </h2>
-                                <div className="grid md:grid-cols-3 gap-4">
-                                    {related.map((comp) => (
-                                        <Link
-                                            key={comp.slug}
-                                            to={`/compare/${comp.slug}`}
-                                            className="bg-slate-800/50 border border-slate-700 hover:border-purple-500/50 rounded-xl p-4 transition-all hover:scale-105"
-                                        >
-                                            <span className="text-purple-400 text-xs font-medium">{comp.category}</span>
-                                            <h3 className="text-white font-semibold mt-1">
-                                                {comp.toolA} vs {comp.toolB}
-                                            </h3>
-                                        </Link>
-                                    ))}
-                                </div>
+                    {derivedData.relatedComparisons?.length > 0 && (
+                        <div className="mb-16">
+                            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                                <Swords className="w-6 h-6 text-purple-400" />
+                                Related Comparisons
+                            </h2>
+                            <div className="grid md:grid-cols-3 gap-4">
+                                {derivedData.relatedComparisons.map((comp) => (
+                                    <Link
+                                        key={comp.slug}
+                                        to={`/compare/${comp.slug}`}
+                                        className="bg-slate-800/50 border border-slate-700 hover:border-purple-500/50 rounded-xl p-4 transition-all hover:scale-105"
+                                    >
+                                        <span className="text-purple-400 text-xs font-medium">{comp.category}</span>
+                                        <h3 className="text-white font-semibold mt-1">
+                                            {comp.toolA} vs {comp.toolB}
+                                        </h3>
+                                    </Link>
+                                ))}
                             </div>
-                        );
-                    })()}
+                        </div>
+                    )}
 
                     {/* Related Glossary Terms - Cross Linking */}
-                    {(() => {
-                        const toolATerms = getGlossaryTermsForTool(comparison.toolA, 2);
-                        const toolBTerms = getGlossaryTermsForTool(comparison.toolB, 2);
-                        const allTerms = [...toolATerms, ...toolBTerms].filter((t, i, arr) => arr.findIndex(x => x.slug === t.slug) === i);
-                        if (allTerms.length === 0) return null;
-                        return (
-                            <div className="mb-16">
-                                <h2 className="text-2xl font-bold text-white mb-6">📚 Learn More in the Glossary</h2>
-                                <div className="flex flex-wrap gap-3">
-                                    {allTerms.map((t) => (
-                                        <Link
-                                            key={t.slug}
-                                            to={`/glossary/${t.slug}`}
-                                            className="px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-full text-blue-300 text-sm hover:bg-blue-500/20 transition-colors"
-                                        >
-                                            {t.term}
-                                        </Link>
-                                    ))}
-                                </div>
+                    {derivedData.crossLinkedTerms?.length > 0 && (
+                        <div className="mb-16">
+                            <h2 className="text-2xl font-bold text-white mb-6">📚 Learn More in the Glossary</h2>
+                            <div className="flex flex-wrap gap-3">
+                                {derivedData.crossLinkedTerms.map((t) => (
+                                    <Link
+                                        key={t.slug}
+                                        to={`/glossary/${t.slug}`}
+                                        className="px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-full text-blue-300 text-sm hover:bg-blue-500/20 transition-colors"
+                                    >
+                                        {t.term}
+                                    </Link>
+                                ))}
                             </div>
-                        );
-                    })()}
+                        </div>
+                    )}
 
                     {/* Disclaimer */}
                     <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-4 flex items-start gap-3">

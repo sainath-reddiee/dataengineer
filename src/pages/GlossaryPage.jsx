@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 
 // Data
-import { getGlossaryTerm, getCategoryById } from '@/lib/pseo/glossaryLoader';
+import { getGlossaryTerm, getCategoryById, getAllGlossaryTerms } from '@/lib/pseo/glossaryLoader';
 
 // PSEO utilities
 import {
@@ -130,7 +130,8 @@ export function GlossaryPage() {
                 const canonical = generateGlossaryCanonical(data.slug);
                 const schemas = generateAllGlossarySchemas(data, breadcrumbs);
                 const category = getCategoryById(data.category);
-                const relatedTerms = getRelatedGlossaryTerms(data.slug, 5);
+                const allTerms = await getAllGlossaryTerms();
+                const relatedTerms = getRelatedGlossaryTerms(data.slug, 5, { terms: allTerms });
 
                 setTerm(data);
                 setDerivedData({

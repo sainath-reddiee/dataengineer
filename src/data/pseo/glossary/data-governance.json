@@ -197,32 +197,63 @@
     "slug": "data-mesh",
     "category": "data-governance",
     "shortDefinition": "A decentralized sociotechnical approach to sharing, accessing, and managing analytical data in complex and large-scale environments.",
-    "fullDefinition": "Data Mesh is an organizational and architectural shift that challenges the centralized monolithic data lake/warehouse paradigm.\n\n## Four Principles\n1. **Domain-oriented ownership**: Teams own their data\n2. **Data as a product**: Treat data with product thinking\n3. **Self-serve data infrastructure**: Platform for domains to build on\n4. **Federated computational governance**: Global standards, local ownership",
+    "fullDefinition": "**Data Mesh** is a decentralized approach to data architecture and organizational design, introduced by Zhamak Dehghani in 2019. It challenges the traditional model where a central data team owns all data infrastructure, and instead distributes data ownership to the domain teams that produce and understand the data best.\n\n## The Problem Data Mesh Solves\n\nCentralized data teams become bottlenecks in large organizations:\n- Domain teams request data pipelines, then wait weeks for the central team to build them\n- Central team lacks domain knowledge, producing pipelines that miss business nuances\n- Data quality suffers because the people who understand the data don't own it\n- The central data lake/warehouse becomes a monolith that's hard to maintain\n\n## The Four Principles\n\n### 1. Domain-Oriented Ownership\nEach business domain (payments, marketing, logistics) owns its analytical data end-to-end:\n- The payments team owns payments data, not the central data team\n- Domain teams build, maintain, and serve their own data products\n- Ownership includes data quality, SLAs, and documentation\n\n### 2. Data as a Product\nTreat analytical data with the same rigor as a software product:\n- **Discoverable**: Easy to find in a catalog\n- **Addressable**: Has a stable, unique identifier (URI)\n- **Trustworthy**: Documented quality, freshness SLAs\n- **Self-describing**: Schema, documentation, sample queries included\n- **Interoperable**: Standard formats and interfaces\n- **Secure**: Access controls defined by the domain\n\n### 3. Self-Serve Data Infrastructure\nA platform team provides shared tools so domains don't reinvent infrastructure:\n- Managed data storage and compute\n- CI/CD for data pipelines\n- Monitoring, observability, and alerting\n- Data catalog and discovery tools\n- Standardized APIs for publishing and consuming data\n\n### 4. Federated Computational Governance\nGlobal standards enforced automatically, with local autonomy:\n- Organization-wide policies (naming conventions, privacy compliance, quality standards)\n- Automated enforcement via the platform (not manual review)\n- Each domain decides how to implement within the guardrails\n\n## Data Mesh vs Centralized Data Team\n\n| Aspect | Centralized | Data Mesh |\n|--------|------------|----------|\n| Data Ownership | Central data team | Domain teams |\n| Pipeline Building | Central team builds all | Domains build their own |\n| Domain Knowledge | Low (generalists) | High (domain experts) |\n| Scaling | Bottleneck as org grows | Scales with org |\n| Governance | Centrally enforced | Federated |\n| Best For | Small/medium orgs | Large orgs with many domains |\n\n## Data Mesh vs Data Fabric\n\n| Aspect | Data Mesh | Data Fabric |\n|--------|----------|-------------|\n| Approach | Organizational (people) | Technological (AI/ML) |\n| Control | Decentralized to domains | Centralized via metadata |\n| Focus | Data products owned by domains | Connected data across sources |\n| Implementation | Change org structure + platform | Deploy fabric technology |\n\n## Common Misconceptions\n\n- **\"Data Mesh means no central team\"** — False. You still need a platform team providing shared infrastructure\n- **\"Every team needs its own warehouse\"** — False. Shared infrastructure with domain-level namespaces\n- **\"Data Mesh is just microservices for data\"** — Partial truth, but Data Mesh is fundamentally about organizational change, not just technical architecture",
     "keyPoints": [
-      "Decentralization",
-      "Domain Ownership",
-      "Data Product"
+      "Decentralizes data ownership from a central team to domain teams who understand the data best",
+      "Four principles: domain ownership, data as a product, self-serve infrastructure, federated governance",
+      "Treats analytical data as a product with SLAs, documentation, and quality guarantees",
+      "Requires a platform team to provide shared self-serve infrastructure for domains",
+      "Best suited for large organizations with multiple domains where central teams become bottlenecks"
+    ],
+    "faqs": [
+      {
+        "question": "What is Data Mesh in simple terms?",
+        "answer": "Data Mesh is an approach where domain teams (payments, marketing, etc.) own their own data and make it available as products, instead of having one central data team manage everything. A platform team provides shared tools, and global standards are enforced automatically."
+      },
+      {
+        "question": "What is the difference between Data Mesh and Data Fabric?",
+        "answer": "Data Mesh is an organizational approach — it changes who owns data (domain teams). Data Fabric is a technology approach — it uses AI and metadata to automatically connect and manage data. Data Mesh reorganizes your people; Data Fabric upgrades your tools."
+      },
+      {
+        "question": "Does Data Mesh work for small teams?",
+        "answer": "Generally no. Data Mesh is designed for large organizations where a central data team becomes a bottleneck. Small teams (fewer than 50 engineers) typically don't have enough domains or scale to justify the overhead of decentralized data ownership."
+      },
+      {
+        "question": "What tools support Data Mesh?",
+        "answer": "No single tool 'implements' Data Mesh, but supporting tools include: Databricks Unity Catalog (governance), Atlan or DataHub (catalog and discovery), dbt (domain-level transformations), and Kubernetes-based platforms for self-serve infrastructure."
+      }
     ],
     "relatedTerms": [
       "data-governance",
-      "microservices"
+      "data-fabric",
+      "data-catalog",
+      "data-lineage"
     ],
     "relatedTools": [
-      "Datahub",
-      "Amundsen"
+      "Databricks Unity Catalog",
+      "Atlan",
+      "DataHub",
+      "dbt",
+      "Snowflake"
     ],
     "externalLinks": [
       {
-        "title": "Data Mesh Principles",
+        "title": "Data Mesh Principles - Zhamak Dehghani",
         "url": "https://martinfowler.com/articles/data-mesh-principles.html"
+      },
+      {
+        "title": "How to Move Beyond a Monolithic Data Lake - Dehghani",
+        "url": "https://martinfowler.com/articles/data-monolith-to-mesh.html"
       }
     ],
     "keywords": [
       "data mesh",
-      "decentralization",
-      "data architecture"
+      "data mesh architecture",
+      "data mesh vs data fabric",
+      "data mesh principles",
+      "decentralized data ownership"
     ],
-    "lastUpdated": "2026-01-21"
+    "lastUpdated": "2026-04-03"
   },
   {
     "term": "Data Fabric",
