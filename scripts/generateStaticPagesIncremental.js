@@ -1305,7 +1305,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <title>' + category.name + ' - Data Engineering Articles | DataEngineer Hub</title>\n';
   html += '    <meta name="description" content="' + descriptionMeta + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta name="robots" content="index, follow" />\n\n';
+  html += '    <meta name="robots" content="' + (categoryArticles.length === 0 ? 'noindex, follow' : 'index, follow') + '" />\n\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
   html += '    <meta property="og:title" content="' + category.name + ' Articles | DataEngineer Hub" />\n';
@@ -1374,6 +1374,141 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '      "@type": "CollectionPage",\n';
   html += '      "name": "' + category.name + ' Articles",\n';
   html += '      "description": "Browse ' + categoryArticles.length + ' articles about ' + category.name + ' on DataEngineer Hub",\n';
+  html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
+  html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" }\n';
+  html += '    }\n';
+  html += '    <\/script>\n\n';
+  if (productionJsFile) {
+    html += '    <script type="module" crossorigin src="' + productionJsFile + '"><\/script>\n\n';
+  }
+  html += '    <script>\n';
+  html += '      window.addEventListener("load", function() {\n';
+  html += '        var checkReactMount = setInterval(function() {\n';
+  html += '          var root = document.getElementById("root");\n';
+  html += '          if (root && root.children.length > 2) {\n';
+  html += '            document.body.classList.add("react-loaded");\n';
+  html += '            clearInterval(checkReactMount);\n';
+  html += '          }\n';
+  html += '        }, 100);\n';
+  html += '        setTimeout(function() { clearInterval(checkReactMount); }, 3000);\n';
+  html += '      });\n';
+  html += '    <\/script>\n';
+  html += '  </body>\n';
+  html += '</html>';
+
+  return html;
+}
+
+// ============================================================================
+// TAG PAGE HTML GENERATION - Rich content with article listings
+// ============================================================================
+
+function generateTagPageHTML(tag, tagArticles, bundleFiles) {
+  const { jsFile, cssFile } = bundleFiles;
+  const pagePath = '/tag/' + tag.slug;
+
+  const depth = (pagePath.match(/\//g) || []).length - 1;
+  const relativePrefix = '../'.repeat(depth);
+
+  const productionJsFile = jsFile ? relativePrefix + jsFile.substring(1) : null;
+  const productionCssFile = cssFile ? relativePrefix + cssFile.substring(1) : null;
+
+  const buildTimestamp = new Date().toISOString();
+  const tagDescription = stripHTML(tag.description || '').trim();
+
+  // Build article list HTML
+  var articleListHTML = '';
+  for (var i = 0; i < tagArticles.length; i++) {
+    var article = tagArticles[i];
+    articleListHTML += '\n              <li style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08);">';
+    articleListHTML += '\n                <a href="https://dataengineerhub.blog/articles/' + article.slug + '" style="color: #f1f5f9; text-decoration: none; font-size: 1.15rem; font-weight: 600; line-height: 1.4;">' + article.title + '</a>';
+    if (article.excerpt) {
+      articleListHTML += '\n                <p style="color: #94a3b8; font-size: 0.95rem; margin-top: 0.5rem; line-height: 1.6;">' + article.excerpt + '</p>';
+    }
+    articleListHTML += '\n              </li>';
+  }
+
+  var descriptionMeta = tagDescription || 'Browse ' + tagArticles.length + ' articles tagged with ' + tag.name + ' on DataEngineer Hub. In-depth tutorials and guides for data engineers.';
+
+  // Build the HTML using string concatenation to avoid template literal issues
+  var html = '<!doctype html>\n<html lang="en">\n  <head>\n';
+  html += '    <meta charset="UTF-8" />\n';
+  html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
+  html += '    <title>' + tag.name + ' - Tagged Articles | DataEngineer Hub</title>\n';
+  html += '    <meta name="description" content="' + descriptionMeta + '" />\n';
+  html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
+  html += '    <meta name="robots" content="' + (tagArticles.length === 0 ? 'noindex, follow' : 'index, follow') + '" />\n\n';
+  html += '    <meta property="og:type" content="website" />\n';
+  html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
+  html += '    <meta property="og:title" content="' + tag.name + ' Articles | DataEngineer Hub" />\n';
+  html += '    <meta property="og:description" content="Browse ' + tagArticles.length + ' ' + tag.name + ' tutorials and guides for data engineers." />\n';
+  html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n\n';
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728" crossorigin="anonymous"><\/script>\n\n';
+  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
+  html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
+  html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
+  if (productionCssFile) {
+    html += '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n';
+  }
+  html += '\n    <style>\n';
+  html += '      * { margin: 0; padding: 0; box-sizing: border-box; }\n';
+  html += '      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%); color: #f8fafc; line-height: 1.6; min-height: 100vh; }\n';
+  html += '      .seo-content { max-width: 900px; margin: 0 auto; padding: 40px 20px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 16px; margin-top: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }\n';
+  html += '      .seo-content h1 { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }\n';
+  html += '      .seo-content h2 { color: #93c5fd; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
+  html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
+  html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
+  html += '      .seo-content a:hover { text-decoration: underline; }\n';
+  html += '      body.react-loaded .seo-content { display: none; }\n';
+  html += '      body.react-loaded .breadcrumb-nav { display: none; }\n';
+  html += '      .breadcrumb-nav { max-width: 900px; margin: 20px auto 0; padding: 0 20px; }\n';
+  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
+  html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
+  html += '      .breadcrumb-link { color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
+  html += '      .breadcrumb-link:hover { color: #93c5fd; text-decoration: underline; }\n';
+  html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
+  html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
+  html += '      @media (max-width: 768px) { .seo-content { padding: 20px 15px; margin-top: 20px; } .seo-content h1 { font-size: 1.8rem; } }\n';
+  html += '    </style>\n';
+  html += '  </head>\n';
+  html += '  <body>\n';
+  html += '    <div id="root">\n';
+  html += '      <nav aria-label="Breadcrumb" class="breadcrumb-nav">\n';
+  html += '        <ol class="breadcrumb-list">\n';
+  html += '          <li class="breadcrumb-item"><a href="https://dataengineerhub.blog" class="breadcrumb-link">Home</a></li>\n';
+  html += '          <li class="breadcrumb-separator">&#8250;</li>\n';
+  html += '          <li class="breadcrumb-item"><a href="https://dataengineerhub.blog/articles" class="breadcrumb-link">Articles</a></li>\n';
+  html += '          <li class="breadcrumb-separator">&#8250;</li>\n';
+  html += '          <li class="breadcrumb-item breadcrumb-current" aria-current="page"><span>' + tag.name + '</span></li>\n';
+  html += '        </ol>\n';
+  html += '      </nav>\n\n';
+  html += '      <div class="seo-content">\n';
+  html += '        <h1>Articles Tagged: ' + tag.name + '</h1>\n';
+  html += '        <p>\n';
+  html += '          ' + (tagDescription ? tagDescription + ' ' : '') + 'Explore our collection of <strong>' + tagArticles.length + ' in-depth articles</strong> tagged with ' + tag.name + '\n';
+  html += '          on DataEngineer Hub. Each tutorial provides practical, hands-on guidance with real-world examples\n';
+  html += '          to help you master ' + tag.name + ' concepts and best practices in data engineering.\n';
+  html += '        </p>\n\n';
+  if (tagArticles.length > 0) {
+    html += '        <h2>All ' + tag.name + ' Articles (' + tagArticles.length + ')</h2>\n';
+    html += '        <ul style="list-style: none; padding: 0;">\n';
+    html += '          ' + articleListHTML + '\n';
+    html += '        </ul>\n\n';
+  } else {
+    html += '        <p style="color: #94a3b8; font-style: italic;">New articles about ' + tag.name + ' are coming soon. Check back for the latest tutorials and guides.</p>\n\n';
+  }
+  html += '        <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">\n';
+  html += '          <a href="https://dataengineerhub.blog/articles" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">Browse All Articles</a>\n';
+  html += '          <a href="https://dataengineerhub.blog" style="display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; border: 1px solid rgba(255,255,255,0.2);">&#8592; Back to Home</a>\n';
+  html += '        </div>\n';
+  html += '      </div>\n';
+  html += '    </div>\n\n';
+  html += '    <script type="application/ld+json">\n';
+  html += '    {\n';
+  html += '      "@context": "https://schema.org",\n';
+  html += '      "@type": "CollectionPage",\n';
+  html += '      "name": "' + tag.name + ' Articles",\n';
+  html += '      "description": "Browse ' + tagArticles.length + ' articles tagged with ' + tag.name + ' on DataEngineer Hub",\n';
   html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
   html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" }\n';
   html += '    }\n';
@@ -1678,8 +1813,8 @@ async function buildIncremental(options = {}) {
   let allArticleSummaries = [];
 
   try {
-    // 🔥 CRITICAL: Fetch with _embed to get full content + categories for mapping
-    const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content,modified,categories');
+    // 🔥 CRITICAL: Fetch with _embed to get full content + categories + tags for mapping
+    const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content,modified,categories,tags');
     console.log(`   Found ${posts.length} posts from API`);
 
     // Build article list for "More Articles" section and listing pages
@@ -1687,7 +1822,8 @@ async function buildIncremental(options = {}) {
       slug: p.slug,
       title: stripHTML(p.title.rendered),
       excerpt: stripHTML(p.excerpt.rendered).substring(0, 200),
-      categories: p.categories || []
+      categories: p.categories || [],
+      tags: p.tags || []
     }));
 
     if (posts.length === 0) {
@@ -1969,28 +2105,25 @@ async function buildIncremental(options = {}) {
       stats.errors++;
     }
 
-    console.log('\n🏷️  Processing tags…');
+    console.log('\n🏷️  Processing tags with article listings…');
     try {
-      const tags = await fetchFromWP('/tags', 'slug,name,description');
+      const tags = await fetchFromWP('/tags', 'id,slug,name,description');
       console.log(`   Found ${tags.length} tags from API`);
 
       for (const tag of tags) {
         const pagePath = `/tag/${tag.slug}`;
         currentPages.add(pagePath);
 
-        const pageData = {
-          title: `Tag: ${tag.name}`,
-          description: stripHTML(tag.description).substring(0, 160) || `Browse ${tag.name} articles`,
-          path: pagePath
-        };
+        // Find articles belonging to this tag
+        const tagArticles = allArticleSummaries.filter(a => a.tags.includes(tag.id));
 
-        const contentHash = hashContent(pageData);
+        const contentHash = hashContent({ tag, articleCount: tagArticles.length, articles: tagArticles.map(a => a.slug) });
         const cachedPage = cache.pages[pagePath];
         const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
 
         if (needsRebuild) {
           try {
-            const html = generateSimpleHTML(pageData, bundleFiles);
+            const html = generateTagPageHTML(tag, tagArticles, bundleFiles);
             const filePath = path.join(distDir, pagePath, 'index.html');
             const dir = path.dirname(filePath);
 
@@ -1999,6 +2132,10 @@ async function buildIncremental(options = {}) {
             }
 
             fs.writeFileSync(filePath, html);
+
+            const fileStats = fs.statSync(filePath);
+            const fileSizeKB = (fileStats.size / 1024).toFixed(2);
+            console.log(`   ${cachedPage ? '↻' : '✓'} ${tag.name}: ${tagArticles.length} articles (${fileSizeKB} KB)`);
 
             if (cachedPage) {
               stats.updated++;
