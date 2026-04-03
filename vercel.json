@@ -77,6 +77,26 @@
             "destination": "/tag/:slug/index.html"
         },
         {
+            "source": "/about",
+            "destination": "/about/index.html"
+        },
+        {
+            "source": "/contact",
+            "destination": "/contact/index.html"
+        },
+        {
+            "source": "/privacy-policy",
+            "destination": "/privacy-policy/index.html"
+        },
+        {
+            "source": "/terms-of-service",
+            "destination": "/terms-of-service/index.html"
+        },
+        {
+            "source": "/disclaimer",
+            "destination": "/disclaimer/index.html"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }
