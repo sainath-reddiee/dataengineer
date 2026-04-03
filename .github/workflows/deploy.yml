@@ -145,8 +145,8 @@ jobs:
               echo "📄 Posts only (no force)"
               ;;
             *)
-              echo "build_flags=--posts-only" >> $GITHUB_OUTPUT
-              echo "⚡ Incremental build"
+              echo "build_flags=" >> $GITHUB_OUTPUT
+              echo "📚 Full build (including categories/tags/articles listing)"
               ;;
           esac
 

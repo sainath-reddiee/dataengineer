@@ -37,12 +37,13 @@
     RewriteRule ^(.+)/$ /$1 [R=301,L]
     
     # ========================================================================
-    # NEW FIX: Handle /articles route - MUST be served by React app
+    # NEW FIX: Handle /articles route - serve pre-rendered listing if exists
     # ========================================================================
     
     # If someone visits /articles or /articles/ (the listing page)
-    # serve it through React app, NOT as a directory
-    RewriteRule ^articles/?$ /index.html [L]
+    # serve pre-rendered HTML if it exists, otherwise React app
+    RewriteCond %{DOCUMENT_ROOT}/articles/index.html -f
+    RewriteRule ^articles/?$ /articles/index.html [L]
     
     # ========================================================================
     # CRITICAL FIX: Serve static HTML for articles if it exists
@@ -75,6 +76,20 @@
     
     RewriteCond %{DOCUMENT_ROOT}/disclaimer/index.html -f
     RewriteRule ^disclaimer/?$ /disclaimer/index.html [L]
+    
+    # ========================================================================
+    # CATEGORY PAGES: Serve pre-rendered static HTML for category pages
+    # ========================================================================
+    
+    # For requests to /category/slug - serve pre-rendered HTML if it exists
+    RewriteCond %{REQUEST_URI} ^/category/([^/]+)/?$
+    RewriteCond %{DOCUMENT_ROOT}/category/%1/index.html -f
+    RewriteRule ^category/([^/]+)/?$ /category/$1/index.html [L]
+    
+    # For requests to /tag/slug - serve pre-rendered HTML if it exists
+    RewriteCond %{REQUEST_URI} ^/tag/([^/]+)/?$
+    RewriteCond %{DOCUMENT_ROOT}/tag/%1/index.html -f
+    RewriteRule ^tag/([^/]+)/?$ /tag/$1/index.html [L]
     
     # ========================================================================
     # IMPORTANT: Exclude common files from rewrite rules
