@@ -55,6 +55,28 @@
     RewriteRule ^articles/([^/]+)/?$ /articles/$1/index.html [L]
     
     # ========================================================================
+    # ESSENTIAL PAGES: Serve pre-rendered static HTML for SEO
+    # (About, Contact, Privacy Policy, Terms of Service, Disclaimer)
+    # ========================================================================
+    
+    # For requests to /about, /contact, /privacy-policy, /terms-of-service, /disclaimer
+    # Check if /{page}/index.html exists and serve it directly
+    RewriteCond %{DOCUMENT_ROOT}/about/index.html -f
+    RewriteRule ^about/?$ /about/index.html [L]
+    
+    RewriteCond %{DOCUMENT_ROOT}/contact/index.html -f
+    RewriteRule ^contact/?$ /contact/index.html [L]
+    
+    RewriteCond %{DOCUMENT_ROOT}/privacy-policy/index.html -f
+    RewriteRule ^privacy-policy/?$ /privacy-policy/index.html [L]
+    
+    RewriteCond %{DOCUMENT_ROOT}/terms-of-service/index.html -f
+    RewriteRule ^terms-of-service/?$ /terms-of-service/index.html [L]
+    
+    RewriteCond %{DOCUMENT_ROOT}/disclaimer/index.html -f
+    RewriteRule ^disclaimer/?$ /disclaimer/index.html [L]
+    
+    # ========================================================================
     # IMPORTANT: Exclude common files from rewrite rules
     # ========================================================================
     

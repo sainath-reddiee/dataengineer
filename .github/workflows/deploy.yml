@@ -13,6 +13,7 @@ on:
       - 'vite.config.js'
       - 'tailwind.config.js'
       - 'postcss.config.js'
+      - 'scripts/**'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
     inputs:
@@ -249,6 +250,18 @@ jobs:
           
           echo "✅ Deployment ready with $ARTICLE_COUNT article pages"
           
+          # Verify essential pages were generated
+          ESSENTIAL_COUNT=0
+          for PAGE in about contact privacy-policy terms-of-service disclaimer; do
+            if [ -f "dist/${PAGE}/index.html" ]; then
+              ESSENTIAL_COUNT=$((ESSENTIAL_COUNT + 1))
+              echo "  ✅ dist/${PAGE}/index.html exists"
+            else
+              echo "  ⚠️ dist/${PAGE}/index.html MISSING"
+            fi
+          done
+          echo "📊 Found $ESSENTIAL_COUNT/5 essential pages in dist/"
+          
           # Generate FAQ schemas for articles
           echo ""
           echo "📋 Generating FAQ schemas..."
@@ -451,6 +464,16 @@ jobs:
               echo "⚠️ IndexNow key verification failed"
             fi
           fi
+          
+          # Verify essential pages (About, Contact, Privacy, Terms, Disclaimer)
+          for PAGE in about contact privacy-policy terms-of-service disclaimer; do
+            STATUS=$(curl -sf -o /dev/null -w "%{http_code}" "https://dataengineerhub.blog/${PAGE}" || echo "000")
+            if [ "$STATUS" == "200" ]; then
+              echo "✅ Essential page /${PAGE} is accessible"
+            else
+              echo "⚠️ Essential page /${PAGE} returned status: $STATUS"
+            fi
+          done
           
           # Verify a sample article
           SAMPLE_ARTICLE=$(find dist/articles -name 'index.html' | head -1 | sed 's|dist||' | sed 's|/index.html||')
