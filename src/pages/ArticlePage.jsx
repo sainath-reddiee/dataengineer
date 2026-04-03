@@ -20,6 +20,8 @@ import PostCardSkeleton from '@/components/PostCardSkeleton';
 import ArticleNavigation from '@/components/ArticleNavigation';
 import ReadingProgressBar from '@/components/ReadingProgressBar';
 import TableOfContents, { extractHeadings, injectHeadingIds } from '@/components/TableOfContents';
+import ShareButtons from '@/components/ShareButtons';
+import useCopyCodeButtons from '@/hooks/useCopyCodeButtons';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
@@ -451,6 +453,9 @@ const ArticlePage = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [post]);
 
+  // Inject copy buttons on code blocks after content renders
+  useCopyCodeButtons(post?.content);
+
   if (loading) {
     return (
       <div className="pt-4 pb-12">
@@ -495,7 +500,8 @@ const ArticlePage = () => {
 
   return (
     <div className="pt-4 pb-12">
-      <ReadingProgressBar />
+      <ReadingProgressBar readTime={safePost.readTime} />
+      <ShareButtons title={safePost.title} url={typeof window !== 'undefined' ? window.location.href : ''} />
 
       <MetaTags
         title={safePost.title}

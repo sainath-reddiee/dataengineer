@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import MetaTags from '@/components/SEO/MetaTags';
+import ScrollToTop from '@/components/ScrollToTop';
 
 const Layout = () => {
   return (
@@ -20,6 +21,7 @@ const Layout = () => {
         </main>
         <Footer />
         <Toaster />
+        <ScrollToTop />
       </div>
     </>
   );

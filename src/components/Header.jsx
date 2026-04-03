@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles, Award } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles, Award, Search } from 'lucide-react';
+import SearchModal from '@/components/SearchModal';
 
 // Helper component for the "Corner Burst" sparks animation
 const Spark = ({ x, y, rotate, color }) => {
@@ -84,6 +85,19 @@ const Header = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [currentPath, setCurrentPath] = useState('/');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // Ctrl+K / Cmd+K to open search
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsSearchOpen(true);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Track current path for active states
   useEffect(() => {
@@ -451,6 +465,20 @@ const Header = () => {
               </a>
             </motion.div>
 
+            {/* Search Button */}
+            <motion.div whileHover={{ y: -2 }}>
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="flex items-center gap-2 text-gray-300 hover:text-blue-400 transition-all duration-200 font-medium text-base"
+                title="Search (Ctrl+K)"
+              >
+                <Search className="w-4 h-4" />
+                <span className="hidden xl:inline text-sm text-gray-500 bg-slate-800/60 border border-slate-700/50 rounded-md px-2 py-0.5">
+                  Ctrl+K
+                </span>
+              </button>
+            </motion.div>
+
             {/* Subscribe Button */}
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <a
@@ -542,6 +570,13 @@ const Header = () => {
                   <Info className="w-5 h-5" />
                   About
                 </a>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); setIsSearchOpen(true); }}
+                  className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px] w-full text-left"
+                >
+                  <Search className="w-5 h-5" />
+                  Search
+                </button>
                 <a
                   href="/newsletter"
                   className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white w-full mt-4 py-3 text-base font-bold shadow-lg rounded-full text-center min-h-[48px] flex items-center justify-center"
@@ -553,6 +588,7 @@ const Header = () => {
           )}
         </AnimatePresence>
       </nav>
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </motion.header>
   );
 };
