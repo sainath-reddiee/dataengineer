@@ -498,7 +498,7 @@ function makeImagesAbsolute(content) {
 // 🔥 FIXED HTML GENERATION - FULL CONTENT FOR CRAWLERS WITH IMAGES
 // ============================================================================
 
-function generateFullArticleHTML(pageData, bundleFiles) {
+function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const { title, description, path: pagePath, fullContent = '', slug } = pageData;
   const { jsFile, cssFile } = bundleFiles;
 
@@ -845,6 +845,15 @@ function generateFullArticleHTML(pageData, bundleFiles) {
             ${processedContent}
           </div>
           
+          ${relatedArticles.length > 0 ? `
+          <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+            <h2 style="color: #93c5fd; font-size: 1.4rem; margin-bottom: 1rem;">More Articles</h2>
+            <ul style="list-style: none; padding: 0;">
+              ${relatedArticles.map(a => `<li style="margin-bottom: 0.8rem;"><a href="/articles/${a.slug}" style="color: #60a5fa; text-decoration: none; font-weight: 500;">${a.title}</a></li>`).join('\n              ')}
+            </ul>
+          </div>
+          ` : ''}
+
           <a href="${relativePrefix}" class="back-link">← Back to Home</a>
         </article>
         
@@ -1299,6 +1308,12 @@ async function buildIncremental(options = {}) {
     const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content,modified');
     console.log(`   Found ${posts.length} posts from API`);
 
+    // Build article list for "More Articles" section on each article page
+    const allArticleSummaries = posts.map(p => ({
+      slug: p.slug,
+      title: stripHTML(p.title.rendered)
+    }));
+
     if (posts.length === 0) {
       console.warn('⚠️  No posts found from WordPress API!');
     }
@@ -1329,7 +1344,8 @@ async function buildIncremental(options = {}) {
       if (needsRebuild) {
         try {
           // 🔥 Use the FULL content generator with image processing
-          const html = generateFullArticleHTML(pageData, bundleFiles);
+          const relatedArticles = allArticleSummaries.filter(a => a.slug !== post.slug).slice(0, 10);
+          const html = generateFullArticleHTML(pageData, bundleFiles, relatedArticles);
           const filePath = path.join(distDir, pagePath, 'index.html');
           const dir = path.dirname(filePath);
 
@@ -1441,65 +1457,6 @@ async function buildIncremental(options = {}) {
   }
 
   console.log(`✅ Essential pages processed: ${ESSENTIAL_PAGES.length} pages`);
-
-  // ============================================================================
-  // ENHANCE HOMEPAGE - Inject recent article links into dist/index.html
-  // ============================================================================
-
-  console.log('\n🏠 Enhancing homepage with recent article links…');
-
-  try {
-    const indexHtmlPath = path.join(distDir, 'index.html');
-    let indexHtml = fs.readFileSync(indexHtmlPath, 'utf8');
-
-    // Fetch recent posts for homepage enhancement
-    const recentPosts = await fetchFromWP('/posts', 'slug,title,excerpt');
-    const top10 = recentPosts.slice(0, 10);
-
-    if (top10.length > 0) {
-      const articleLinksHTML = top10.map(post => {
-        const postTitle = post.title.rendered.replace(/&amp;/g, '&').replace(/&#8217;/g, "'").replace(/&#8211;/g, '-').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-        const excerpt = post.excerpt.rendered.replace(/<[^>]*>/g, '').substring(0, 120).trim();
-        return `<li style="margin-bottom: 1rem;"><a href="/articles/${post.slug}" style="color: #60a5fa; text-decoration: none; font-size: 1.1rem; font-weight: 500;">${postTitle}</a><p style="color: #94a3b8; font-size: 0.9rem; margin-top: 0.3rem;">${excerpt}…</p></li>`;
-      }).join('\n            ');
-
-      const homepageEnhancement = `
-      <!-- SEO: Recent articles for homepage uniqueness -->
-      <div class="seo-content" style="max-width: 900px; margin: 40px auto; padding: 40px 20px; background: rgba(255,255,255,0.05); border-radius: 16px;">
-        <h2 style="color: #93c5fd; font-size: 1.8rem; margin-bottom: 1.5rem;">Latest Data Engineering Articles</h2>
-        <ul style="list-style: none; padding: 0;">
-            ${articleLinksHTML}
-        </ul>
-        <a href="/articles" style="display: inline-block; margin-top: 1.5rem; padding: 10px 20px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">Browse All Articles →</a>
-      </div>`;
-
-      // Insert before the closing </div> of the seo-fallback section
-      if (indexHtml.includes('class="seo-fallback"')) {
-        // Insert the article links inside the seo-fallback div, before its closing tag
-        const fallbackClosePattern = /(class="seo-fallback"[\s\S]*?)(<\/div>\s*<\/div>\s*<!--\s*End SEO)/;
-        const simpleInsertPattern = /(class="seo-fallback"[\s\S]*?)(<!-- End SEO|<\/div>\s*<\/div>\s*<script)/;
-        
-        if (fallbackClosePattern.test(indexHtml)) {
-          indexHtml = indexHtml.replace(fallbackClosePattern, `$1${homepageEnhancement}\n      $2`);
-        } else if (simpleInsertPattern.test(indexHtml)) {
-          indexHtml = indexHtml.replace(simpleInsertPattern, `$1${homepageEnhancement}\n      $2`);
-        } else {
-          // Fallback: insert before </body>
-          indexHtml = indexHtml.replace('</body>', `${homepageEnhancement}\n  </body>`);
-        }
-      } else {
-        // No seo-fallback div found, insert before </body>
-        indexHtml = indexHtml.replace('</body>', `${homepageEnhancement}\n  </body>`);
-      }
-
-      fs.writeFileSync(indexHtmlPath, indexHtml);
-      console.log(`   ✓ Homepage enhanced with ${top10.length} recent article links`);
-    } else {
-      console.log('   ⚠️  No posts found for homepage enhancement');
-    }
-  } catch (error) {
-    console.error('   ❌ Error enhancing homepage:', error.message);
-  }
 
   // ============================================================================
   // PROCESS CATEGORIES & TAGS (if not postsOnly)
