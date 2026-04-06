@@ -190,7 +190,7 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
             <span className="text-sm font-bold text-white group-hover/chip:text-blue-300">Sainath Reddy</span>
             <span className="text-xs text-gray-400">Data Engineer</span>
           </div>
-          <ArrowRight className="h-4 w-4 text-gray-500 group-hover/chip:text-blue-400 transition-colors" />
+          <ArrowRight className="h-4 w-4 text-gray-400 group-hover/chip:text-blue-400 transition-colors" />
         </Link>
 
         {/* Floating Meta Badges */}
@@ -198,12 +198,12 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
           <div className="hidden sm:flex items-center gap-2 text-xs text-gray-400">
             <Calendar className="h-3.5 w-3.5 text-purple-400/60" />
             <span>{formatDate(safePost.date)}</span>
-            <span className="text-gray-500">•</span>
+            <span className="text-gray-400">•</span>
             <Clock className="h-3.5 w-3.5 text-green-400/60" />
             <span>{safePost.readTime}</span>
             {safePost.modified && safePost.modified !== safePost.date && (
               <>
-                <span className="text-gray-500">•</span>
+                <span className="text-gray-400">•</span>
                 <span className="text-blue-400">Updated: {formatDate(safePost.modified)}</span>
               </>
             )}
