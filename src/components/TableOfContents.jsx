@@ -126,8 +126,12 @@ const TableOfContents = ({ headings = [] }) => {
                       href={`#${id}`}
                       onClick={(e) => {
                         e.preventDefault();
-                        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         setIsCollapsed(true);
+                        // Delay scroll until after collapse animation completes,
+                        // otherwise layout reflow cancels the smooth scroll
+                        setTimeout(() => {
+                          document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 350);
                       }}
                       className={`block text-sm py-1.5 text-gray-400 hover:text-blue-400 transition-colors ${
                         level === 3 ? 'pl-4' : 'pl-0'
