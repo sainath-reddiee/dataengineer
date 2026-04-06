@@ -83,38 +83,71 @@ const ShareButtons = ({ title, url }) => {
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          className="fixed left-4 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col gap-2"
-        >
-          {shareLinks.map((link) => (
-            <motion.a
-              key={link.name}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
+        <>
+          {/* Desktop: Left sidebar */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="fixed left-4 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col gap-2"
+          >
+            {shareLinks.map((link) => (
+              <motion.a
+                key={link.name}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.15 }}
+                whileTap={{ scale: 0.95 }}
+                className={`p-2.5 rounded-full border border-slate-700/50 ${link.bg} ${link.color} text-gray-400 transition-all duration-200 shadow-lg backdrop-blur-sm`}
+                aria-label={`Share on ${link.name}`}
+              >
+                <link.icon className="h-4 w-4" />
+              </motion.a>
+            ))}
+            <motion.button
               whileHover={{ scale: 1.15 }}
               whileTap={{ scale: 0.95 }}
-              className={`p-2.5 rounded-full border border-slate-700/50 ${link.bg} ${link.color} text-gray-400 transition-all duration-200 shadow-lg backdrop-blur-sm`}
-              title={`Share on ${link.name}`}
+              onClick={handleCopy}
+              className={`p-2.5 rounded-full border border-slate-700/50 bg-slate-800/80 transition-all duration-200 shadow-lg backdrop-blur-sm ${
+                copied ? 'text-green-400 border-green-500/50' : 'text-gray-400 hover:bg-blue-600 hover:text-white'
+              }`}
+              aria-label={copied ? 'Link copied' : 'Copy link'}
             >
-              <link.icon className="h-4 w-4" />
-            </motion.a>
-          ))}
-          <motion.button
-            whileHover={{ scale: 1.15 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleCopy}
-            className={`p-2.5 rounded-full border border-slate-700/50 bg-slate-800/80 transition-all duration-200 shadow-lg backdrop-blur-sm ${
-              copied ? 'text-green-400 border-green-500/50' : 'text-gray-400 hover:bg-blue-600 hover:text-white'
-            }`}
-            title={copied ? 'Copied!' : 'Copy link'}
+              {copied ? <Check className="h-4 w-4" /> : <Link2 className="h-4 w-4" />}
+            </motion.button>
+          </motion.div>
+
+          {/* Mobile: Bottom bar */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex lg:hidden gap-3 px-4 py-2.5 rounded-full bg-slate-800/95 border border-slate-700/50 shadow-2xl backdrop-blur-sm"
           >
-            {copied ? <Check className="h-4 w-4" /> : <Link2 className="h-4 w-4" />}
-          </motion.button>
-        </motion.div>
+            {shareLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`p-2 rounded-full ${link.bg} ${link.color} text-gray-400 transition-all duration-200`}
+                aria-label={`Share on ${link.name}`}
+              >
+                <link.icon className="h-4 w-4" />
+              </a>
+            ))}
+            <button
+              onClick={handleCopy}
+              className={`p-2 rounded-full bg-slate-800/80 transition-all duration-200 ${
+                copied ? 'text-green-400' : 'text-gray-400 hover:bg-blue-600 hover:text-white'
+              }`}
+              aria-label={copied ? 'Link copied' : 'Copy link'}
+            >
+              {copied ? <Check className="h-4 w-4" /> : <Link2 className="h-4 w-4" />}
+            </button>
+          </motion.div>
+        </>
       )}
     </AnimatePresence>
   );

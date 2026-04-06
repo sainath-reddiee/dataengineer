@@ -3,6 +3,14 @@ import { Link } from 'react-router-dom';
 
 const CONSENT_KEY = 'cookie_consent';
 
+/**
+ * Returns 'accepted', 'declined', or null (not yet decided)
+ */
+export const getConsentStatus = () => {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(CONSENT_KEY);
+};
+
 const CookieConsent = () => {
   const [visible, setVisible] = useState(false);
 
@@ -16,11 +24,13 @@ const CookieConsent = () => {
   const handleAccept = () => {
     localStorage.setItem(CONSENT_KEY, 'accepted');
     setVisible(false);
+    window.dispatchEvent(new CustomEvent('consentChanged', { detail: 'accepted' }));
   };
 
   const handleDecline = () => {
     localStorage.setItem(CONSENT_KEY, 'declined');
     setVisible(false);
+    window.dispatchEvent(new CustomEvent('consentChanged', { detail: 'declined' }));
   };
 
   if (!visible) return null;

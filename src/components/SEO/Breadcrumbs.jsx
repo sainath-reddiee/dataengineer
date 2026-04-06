@@ -34,7 +34,7 @@ const Breadcrumbs = ({ breadcrumbs, className = '' }) => {
                         return (
                             <li key={crumb.url} className="flex items-center">
                                 {index > 0 && (
-                                    <ChevronRight className="h-4 w-4 text-gray-500 mx-2" aria-hidden="true" />
+                                    <ChevronRight className="h-4 w-4 text-gray-400 mx-2" aria-hidden="true" />
                                 )}
 
                                 {isLast ? (

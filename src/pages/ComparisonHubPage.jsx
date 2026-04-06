@@ -97,18 +97,18 @@ export function ComparisonHubPage() {
                                             <Swords className="w-4 h-4" />
                                             {comparison.category}
                                         </div>
-                                        <ArrowRight className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors transform group-hover:translate-x-1" />
+                                        <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors transform group-hover:translate-x-1" />
                                     </div>
 
                                     <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
-                                        {comparison.toolA} <span className="text-gray-500 text-lg mx-1">vs</span> {comparison.toolB}
+                                        {comparison.toolA} <span className="text-gray-400 text-lg mx-1">vs</span> {comparison.toolB}
                                     </h3>
 
                                     <p className="text-gray-400 line-clamp-2 mb-4 group-hover:text-gray-300 transition-colors">
                                         {comparison.shortVerdict}
                                     </p>
 
-                                    <div className="flex items-center gap-2 text-sm text-gray-500 bg-slate-900/50 w-fit px-3 py-1 rounded-full border border-slate-700/50">
+                                    <div className="flex items-center gap-2 text-sm text-gray-400 bg-slate-900/50 w-fit px-3 py-1 rounded-full border border-slate-700/50">
                                         <span>Winner:</span>
                                         <span className={`font-bold ${comparison.winner === 'It Depends' || comparison.winner === 'Tie'
                                             ? 'text-yellow-400'

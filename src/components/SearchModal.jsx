@@ -143,7 +143,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                   placeholder="Search articles..."
                   className="flex-1 bg-transparent text-white text-lg placeholder-gray-500 outline-none"
                 />
-                <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-500 bg-slate-800 border border-slate-700 rounded-md">
+                <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-400 bg-slate-800 border border-slate-700 rounded-md">
                   ESC
                 </kbd>
               </div>
@@ -186,7 +186,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                               </span>
                             )}
                             {post.readTime && (
-                              <span className="text-xs text-gray-500 flex items-center gap-1">
+                              <span className="text-xs text-gray-400 flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
                                 {post.readTime}
                               </span>
@@ -203,16 +203,16 @@ const SearchModal = ({ isOpen, onClose }) => {
 
                 {!loading && query.trim().length < 2 && (
                   <div className="px-4 py-8 text-center">
-                    <Command className="h-8 w-8 text-gray-600 mx-auto mb-2" />
-                    <p className="text-gray-500 text-sm">Type at least 2 characters to search</p>
-                    <p className="text-gray-600 text-xs mt-1">Use arrow keys to navigate, Enter to select</p>
+                    <Command className="h-8 w-8 text-gray-500 mx-auto mb-2" />
+                    <p className="text-gray-400 text-sm">Type at least 2 characters to search</p>
+                    <p className="text-gray-500 text-xs mt-1">Use arrow keys to navigate, Enter to select</p>
                   </div>
                 )}
               </div>
 
               {/* Footer */}
               {results.length > 0 && (
-                <div className="px-4 py-2 border-t border-slate-700/50 flex items-center justify-between text-xs text-gray-500">
+                <div className="px-4 py-2 border-t border-slate-700/50 flex items-center justify-between text-xs text-gray-400">
                   <span>{results.length} result{results.length !== 1 ? 's' : ''}</span>
                   <div className="flex items-center gap-2">
                     <kbd className="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px]">&uarr;&darr;</kbd>

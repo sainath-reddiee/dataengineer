@@ -115,7 +115,7 @@ const ArticleNavigation = ({ currentPostId, category }) => {
               <p className="text-sm text-gray-400 mb-4 line-clamp-2">
                 {prevPost.excerpt}
               </p>
-              <div className="flex items-center gap-4 text-xs text-gray-500">
+              <div className="flex items-center gap-4 text-xs text-gray-400">
                 <div className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   <span>{formatDate(prevPost.date)}</span>
@@ -151,7 +151,7 @@ const ArticleNavigation = ({ currentPostId, category }) => {
               <p className="text-sm text-gray-400 mb-4 line-clamp-2 text-right">
                 {nextPost.excerpt}
               </p>
-              <div className="flex items-center justify-end gap-4 text-xs text-gray-500">
+              <div className="flex items-center justify-end gap-4 text-xs text-gray-400">
                 <div className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   <span>{formatDate(nextPost.date)}</span>

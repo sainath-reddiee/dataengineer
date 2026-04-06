@@ -1,5 +1,5 @@
 // src/App.jsx - FIXED VERSION
-import { Suspense, lazy, useEffect } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import Layout from '@/components/Layout';
@@ -63,8 +63,8 @@ const LoadingFallback = ({ text = "Loading..." }) => (
   </div>
 );
 
-// Combined Route Change Tracker for Analytics
-const RouteChangeTracker = () => {
+// Combined Route Change Tracker for Analytics + Accessibility
+const RouteChangeTracker = ({ onRouteChange }) => {
   const location = useLocation();
 
   useEffect(() => {
@@ -75,6 +75,21 @@ const RouteChangeTracker = () => {
     trackPageView(location.pathname + location.search);
 
     window.scrollTo({ top: 0, behavior: 'instant' });
+
+    // Move focus to main content for keyboard/screen-reader users
+    const main = document.getElementById('main-content');
+    if (main) {
+      main.focus({ preventScroll: true });
+    }
+
+    // Announce page change to screen readers after a short delay
+    // so the new page title has time to render
+    const timer = setTimeout(() => {
+      const pageTitle = document.title || 'Page';
+      onRouteChange(pageTitle);
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [location.pathname, location.search]);
 
   return null;
@@ -82,6 +97,7 @@ const RouteChangeTracker = () => {
 
 function App() {
   const { debugMode } = useApiDebugger();
+  const [routeAnnouncement, setRouteAnnouncement] = useState('');
 
   useEffect(() => {
     if (typeof performance !== "undefined" && performance.mark) {
@@ -130,7 +146,15 @@ function App() {
   return (
     <ErrorBoundary>
       <MobileOptimization />
-      <RouteChangeTracker />
+      <RouteChangeTracker onRouteChange={setRouteAnnouncement} />
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {routeAnnouncement}
+      </div>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={

@@ -94,7 +94,7 @@ const RelatedArticles = ({ currentPost, limit = 6 }) => {
                                 </p>
 
                                 {/* Meta Info */}
-                                <div className="flex items-center justify-between text-xs text-gray-500">
+                                <div className="flex items-center justify-between text-xs text-gray-400">
                                     <div className="flex items-center gap-1">
                                         <Clock className="h-3 w-3" />
                                         <span>{post.readTime}</span>

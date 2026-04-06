@@ -89,7 +89,7 @@ const ComparisonPage = () => {
                 <div className="bg-red-500/10 border border-red-500 rounded-lg p-6 max-w-md">
                     <h2 className="text-red-400 text-xl font-bold mb-2">Error Loading Comparison</h2>
                     <p className="text-gray-300">Something went wrong while loading the content.</p>
-                    <p className="text-xs text-gray-500 mt-4 font-mono">{error}</p>
+                    <p className="text-xs text-gray-400 mt-4 font-mono">{error}</p>
                     <button
                         onClick={() => window.location.reload()}
                         className="mt-6 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
@@ -136,9 +136,9 @@ const ComparisonPage = () => {
                     <div className="max-w-6xl mx-auto px-4 py-3">
                         <nav className="flex items-center gap-2 text-sm">
                             <Link to="/" className="text-gray-400 hover:text-white transition-colors">Home</Link>
-                            <ChevronRight className="w-4 h-4 text-gray-600" />
+                            <ChevronRight className="w-4 h-4 text-gray-500" />
                             <Link to="/compare" className="text-gray-400 hover:text-white transition-colors">Comparisons</Link>
-                            <ChevronRight className="w-4 h-4 text-gray-600" />
+                            <ChevronRight className="w-4 h-4 text-gray-500" />
                             <span className="text-white font-medium">{comparison.toolA} vs {comparison.toolB}</span>
                         </nav>
                     </div>

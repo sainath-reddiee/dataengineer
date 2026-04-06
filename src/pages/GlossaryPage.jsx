@@ -160,7 +160,7 @@ export function GlossaryPage() {
                 <div className="bg-red-500/10 border border-red-500 rounded-lg p-6 max-w-md">
                     <h2 className="text-red-400 text-xl font-bold mb-2">Error Loading Page</h2>
                     <p className="text-gray-300">Something went wrong while loading the content.</p>
-                    <p className="text-xs text-gray-500 mt-4 font-mono">{error}</p>
+                    <p className="text-xs text-gray-400 mt-4 font-mono">{error}</p>
                     <button
                         onClick={() => window.location.reload()}
                         className="mt-6 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
@@ -217,11 +217,11 @@ export function GlossaryPage() {
                             <Link to="/" className="text-gray-400 hover:text-white transition-colors">
                                 Home
                             </Link>
-                            <ChevronRight className="w-4 h-4 text-gray-600" />
+                            <ChevronRight className="w-4 h-4 text-gray-500" />
                             <Link to="/glossary" className="text-gray-400 hover:text-white transition-colors">
                                 Glossary
                             </Link>
-                            <ChevronRight className="w-4 h-4 text-gray-600" />
+                            <ChevronRight className="w-4 h-4 text-gray-500" />
                             <span className="text-white font-medium">{term.term}</span>
                         </nav>
                     </div>
@@ -262,7 +262,7 @@ export function GlossaryPage() {
                             </p>
 
                             {/* Meta Info */}
-                            <div className="flex items-center gap-4 mt-6 text-sm text-gray-500">
+                            <div className="flex items-center gap-4 mt-6 text-sm text-gray-400">
                                 <div className="flex items-center gap-1">
                                     <Calendar className="w-4 h-4" />
                                     <span>Updated {term.lastUpdated}</span>
@@ -384,7 +384,7 @@ export function GlossaryPage() {
                                             rel="noopener noreferrer"
                                             className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors group"
                                         >
-                                            <ExternalLink className="w-4 h-4 text-gray-500 group-hover:text-purple-400" />
+                                            <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-purple-400" />
                                             <span className="group-hover:underline">{link.title}</span>
                                         </a>
                                     ))}
@@ -396,9 +396,9 @@ export function GlossaryPage() {
                         {term.keywords?.length > 0 && (
                             <div className="mt-12 pt-8 border-t border-slate-700">
                                 <div className="flex items-center gap-2 flex-wrap">
-                                    <Tag className="w-4 h-4 text-gray-500" />
+                                    <Tag className="w-4 h-4 text-gray-400" />
                                     {term.keywords.map((keyword, idx) => (
-                                        <span key={idx} className="text-sm text-gray-500">
+                                        <span key={idx} className="text-sm text-gray-400">
                                             {keyword}
                                             {idx < term.keywords.length - 1 && ','}
                                         </span>

@@ -116,7 +116,7 @@ export function GlossaryHubPage() {
                             <Link to="/" className="text-gray-400 hover:text-white transition-colors">
                                 Home
                             </Link>
-                            <ChevronRight className="w-4 h-4 text-gray-600" />
+                            <ChevronRight className="w-4 h-4 text-gray-500" />
                             <span className="text-white font-medium">Glossary</span>
                         </nav>
                     </div>
@@ -204,7 +204,7 @@ export function GlossaryHubPage() {
                 <div className="max-w-6xl mx-auto px-4 py-12">
                     {Object.keys(termsByCategory).length === 0 ? (
                         <div className="text-center py-12">
-                            <Search className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+                            <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                             <p className="text-gray-400 text-lg">No terms found matching "{searchQuery}"</p>
                             <button
                                 onClick={() => {
@@ -229,7 +229,7 @@ export function GlossaryHubPage() {
                                         <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
                                             <span className="text-3xl">{category.icon}</span>
                                             {category.name}
-                                            <span className="text-sm font-normal text-gray-500">
+                                            <span className="text-sm font-normal text-gray-400">
                                                 ({termsByCategory[category.id]?.length || 0} terms)
                                             </span>
                                         </h2>
@@ -243,7 +243,7 @@ export function GlossaryHubPage() {
                                                 >
                                                     <h3 className="text-lg font-semibold text-white group-hover:text-purple-400 transition-colors flex items-center justify-between">
                                                         {term.term}
-                                                        <ChevronRight className="w-5 h-5 text-gray-500 group-hover:text-purple-400 group-hover:translate-x-1 transition-all" />
+                                                        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-purple-400 group-hover:translate-x-1 transition-all" />
                                                     </h3>
                                                     <p className="text-gray-400 text-sm mt-2 line-clamp-2">
                                                         {term.shortDefinition}

@@ -1,13 +1,21 @@
 // src/utils/analytics.js
 // Enhanced Google Analytics 4 Integration
 
+import { getConsentStatus } from '../components/CookieConsent';
+
 export const GA_MEASUREMENT_ID = 'G-MTMNP6EV9C';
 
 let isInitialized = false;
 
-// Initialize Google Analytics (only once)
+// Initialize Google Analytics (only once, and only if consent is given)
 export const initGA = () => {
   if (typeof window === 'undefined' || isInitialized) return;
+
+  // GDPR: Only initialize if user has accepted cookies
+  if (getConsentStatus() !== 'accepted') {
+    console.log('⏸️ GA init deferred — waiting for cookie consent');
+    return;
+  }
   
   // Check if gtag is already loaded from index.html
   if (typeof window.gtag !== 'undefined') {
@@ -243,11 +251,18 @@ export const trackTiming = (category, variable, value, label) => {
 };
 
 // Initialize on import (safe for SSR)
+// GA will only actually init if consent is 'accepted' (checked inside initGA)
 if (typeof window !== 'undefined') {
-  // Wait for DOM to be ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initGA);
   } else {
     initGA();
   }
+
+  // Re-attempt init when user grants consent later
+  window.addEventListener('consentChanged', (e) => {
+    if (e.detail === 'accepted') {
+      initGA();
+    }
+  });
 }

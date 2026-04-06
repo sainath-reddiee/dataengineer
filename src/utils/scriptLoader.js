@@ -1,6 +1,8 @@
 // src/utils/scriptLoader.js
 // Load third-party scripts efficiently with environment awareness
 
+import { getConsentStatus } from '../components/CookieConsent';
+
 /**
  * Check if ads are enabled based on environment
  */
@@ -115,6 +117,12 @@ export function loadScriptDelayed(src, options = {}) {
  * Load AdSense with environment checks
  */
 export function loadAdSense() {
+  // GDPR: Only load if user has accepted cookies
+  if (getConsentStatus() !== 'accepted') {
+    console.log('⏸️ AdSense loading deferred — waiting for cookie consent');
+    return Promise.resolve();
+  }
+
   // Check if ads should be loaded
   if (!areAdsEnabled()) {
     console.log('🚫 AdSense loading skipped - ads disabled');
@@ -168,6 +176,12 @@ export function loadAdSense() {
  * Load Google Analytics after interaction
  */
 export function loadGoogleAnalytics(measurementId) {
+  // GDPR: Only load if user has accepted cookies
+  if (getConsentStatus() !== 'accepted') {
+    console.log('⏸️ GA loading deferred — waiting for cookie consent');
+    return Promise.resolve();
+  }
+
   if (!measurementId) {
     console.warn('⚠️ Google Analytics Measurement ID not provided');
     return Promise.resolve();
@@ -242,23 +256,37 @@ export function initThirdPartyScripts() {
   });
   
   if (typeof window !== 'undefined') {
-    // Always preconnect to analytics
-    preconnectDomain('https://www.googletagmanager.com');
-    
-    // Load Google Analytics
-    const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID;
-    if (gaId) {
-      loadGoogleAnalytics(gaId).catch(err => 
-        console.error('Failed to load Google Analytics:', err)
-      );
-    }
-    
-    // Load AdSense only if enabled
-    if (areAdsEnabled()) {
-      loadAdSense().catch(err => 
-        console.error('Failed to load AdSense:', err)
-      );
-    }
+    const loadConsentedScripts = () => {
+      if (getConsentStatus() !== 'accepted') {
+        console.log('⏸️ Third-party scripts deferred — waiting for cookie consent');
+        return;
+      }
+
+      preconnectDomain('https://www.googletagmanager.com');
+      
+      const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+      if (gaId) {
+        loadGoogleAnalytics(gaId).catch(err => 
+          console.error('Failed to load Google Analytics:', err)
+        );
+      }
+      
+      if (areAdsEnabled()) {
+        loadAdSense().catch(err => 
+          console.error('Failed to load AdSense:', err)
+        );
+      }
+    };
+
+    // Attempt now (skips if no consent yet)
+    loadConsentedScripts();
+
+    // Re-attempt when user grants consent
+    window.addEventListener('consentChanged', (e) => {
+      if (e.detail === 'accepted') {
+        loadConsentedScripts();
+      }
+    });
   }
 }
 

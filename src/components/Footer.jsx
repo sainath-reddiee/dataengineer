@@ -7,8 +7,7 @@ import {
   Twitter,
   Linkedin,
   Mail,
-  Heart,
-  ExternalLink
+  Heart
 } from 'lucide-react';
 
 const Footer = () => {
@@ -35,7 +34,7 @@ const Footer = () => {
     company: [
       { name: 'About', href: '/about' },
       { name: 'Contact', href: '/contact' },
-      { name: 'Newsletter', href: '/newsletter' },
+      { name: 'All Articles', href: '/articles' },
       { name: 'Privacy Policy', href: '/privacy-policy' },
       { name: 'Terms of Service', href: '/terms-of-service' },
       { name: 'Disclaimer', href: '/disclaimer' }
@@ -118,7 +117,7 @@ const Footer = () => {
                       className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group"
                     >
                       {link.name}
-                      <ExternalLink className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
                     </Link>
                   </li>
                 ))}
@@ -140,7 +139,7 @@ const Footer = () => {
               <Heart className="h-4 w-4 text-red-400 mx-1 animate-pulse" />
               for data engineers worldwide.
             </p>
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-400 text-sm">
               Empowering the next generation of data professionals
             </p>
           </div>

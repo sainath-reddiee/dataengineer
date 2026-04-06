@@ -113,10 +113,10 @@ const TagsArchivePage = () => {
                                transition-all duration-300 hover:scale-105"
                     >
                       <span className="text-blue-300 font-medium">#{tag.name}</span>
-                      <span className="text-xs text-gray-500 bg-gray-800/50 px-2 py-0.5 rounded-full">
+                      <span className="text-xs text-gray-400 bg-gray-800/50 px-2 py-0.5 rounded-full">
                         {tag.count}
                       </span>
-                      <ArrowRight className="h-3 w-3 text-gray-500 group-hover:text-blue-400 
+                      <ArrowRight className="h-3 w-3 text-gray-400 group-hover:text-blue-400 
                                            group-hover:translate-x-1 transition-all" />
                     </Link>
                   </motion.div>

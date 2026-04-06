@@ -10,8 +10,9 @@ import { usePost, useRelatedPosts } from '@/hooks/useWordPress';
 import { preloadImage } from '@/utils/imageOptimizer';
 import { throttle } from '@/utils/performance';
 import { trackScrollDepth, trackArticleRead } from '@/utils/analytics';
-import { generateBreadcrumbs, getFAQSchema } from '@/lib/seoConfig';
+import { generateBreadcrumbs, getFAQSchema, getHowToSchema } from '@/lib/seoConfig';
 import { extractFAQFromContent } from '@/utils/faqExtractor';
+import { extractHowToSteps } from '@/utils/howToExtractor';
 import LazyImage from '@/components/LazyImage';
 import TagsList from '@/components/TagsList';
 import DOMPurify from 'dompurify';
@@ -21,6 +22,7 @@ import ArticleNavigation from '@/components/ArticleNavigation';
 import ReadingProgressBar from '@/components/ReadingProgressBar';
 import TableOfContents, { extractHeadings, injectHeadingIds } from '@/components/TableOfContents';
 import ShareButtons from '@/components/ShareButtons';
+import GiscusComments from '@/components/GiscusComments';
 import useCopyCodeButtons from '@/hooks/useCopyCodeButtons';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
@@ -195,12 +197,12 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
           <div className="hidden sm:flex items-center gap-2 text-xs text-gray-400">
             <Calendar className="h-3.5 w-3.5 text-purple-400/60" />
             <span>{formatDate(safePost.date)}</span>
-            <span className="text-gray-600">•</span>
+            <span className="text-gray-500">•</span>
             <Clock className="h-3.5 w-3.5 text-green-400/60" />
             <span>{safePost.readTime}</span>
             {safePost.modified && safePost.modified !== safePost.date && (
               <>
-                <span className="text-gray-600">•</span>
+                <span className="text-gray-500">•</span>
                 <span className="text-blue-400">Updated: {formatDate(safePost.modified)}</span>
               </>
             )}
@@ -376,12 +378,12 @@ const MetadataOption3 = ({ safePost, formatDate }) => {
               <div className="font-bold text-white group-hover:text-blue-300">Sainath Reddy</div>
               <div className="text-xs text-gray-300 flex items-center gap-2">
                 <span>🎯 4+ yrs</span>
-                <span className="text-gray-500">•</span>
+                <span className="text-gray-400">•</span>
                 <span className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   {formatDate(safePost.date)}
                 </span>
-                <span className="text-gray-500">•</span>
+                <span className="text-gray-400">•</span>
                 <span className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {safePost.readTime}
@@ -477,6 +479,7 @@ const ArticlePage = () => {
     tags: post.tags || [],
     author: 'Sainath Reddy',
     date: post.date || new Date().toISOString(),
+    modified: post.modified || post.date || new Date().toISOString(),
     readTime: post.readTime || '1 min read',
     image: post.image || 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop'
   };
@@ -494,27 +497,40 @@ const ArticlePage = () => {
   // Generate breadcrumbs for SEO
   const breadcrumbs = generateBreadcrumbs(`/articles/${slug}`, safePost.title);
 
-  // Auto-extract FAQ schema from content
-  const faqs = extractFAQFromContent(safePost.content || '');
-  const faqSchema = faqs.length > 0 ? getFAQSchema(faqs) : null;
+    // Auto-extract FAQ schema from content
+    const faqs = extractFAQFromContent(safePost.content || '');
+    const faqSchema = faqs.length > 0 ? getFAQSchema(faqs) : null;
 
-  return (
+    // Auto-extract HowTo schema from step-based content
+    const howToSteps = extractHowToSteps(safePost.content || '');
+    const howToSchema = howToSteps.length > 0
+      ? getHowToSchema({
+          name: safePost.title,
+          description: safePost.excerpt,
+          steps: howToSteps,
+          image: safePost.image,
+        })
+      : null;
+
+    return (
     <div className="pt-4 pb-12">
       <ReadingProgressBar readTime={safePost.readTime} />
       <ShareButtons title={safePost.title} url={typeof window !== 'undefined' ? window.location.href : ''} />
 
-      <MetaTags
-        title={safePost.title}
-        description={safePost.excerpt}
-        image={safePost.image}
-        type="article"
-        publishedTime={safePost.date}
-        category={safePost.category}
-        tags={safePost.tags}
-        author={safePost.author}
-        breadcrumbs={breadcrumbs}
-        faqSchema={faqSchema}
-      />
+        <MetaTags
+          title={safePost.title}
+          description={safePost.excerpt}
+          image={safePost.image}
+          type="article"
+          publishedTime={safePost.date}
+          modifiedTime={safePost.modified}
+          category={safePost.category}
+          tags={safePost.tags}
+          author={safePost.author}
+          breadcrumbs={breadcrumbs}
+          faqSchema={faqSchema}
+          howToSchema={howToSchema}
+        />
 
       <div className="container mx-auto px-6 max-w-7xl">
         {/* Breadcrumbs */}
@@ -659,6 +675,8 @@ const ArticlePage = () => {
             </div>
           </div>
         </motion.article>
+
+        <GiscusComments />
 
         <ArticleNavigation currentPostId={safePost.id} category={safePost.category} />
         <RelatedPosts currentPostId={safePost.id} />

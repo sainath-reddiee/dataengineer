@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles, Award, Search, BookOpen, GitCompareArrows } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
@@ -59,16 +60,20 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
   
   if (iconUrl) {
     return (
-      <img 
-        src={iconUrl} 
-        alt={`${category} logo`} 
-        className={`${className} object-contain`}
-        style={{ filter: 'drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.4))' }}
-        onError={(e) => {
-          e.target.style.display = 'none';
-          e.target.parentNode.innerHTML = `<div class="${className} bg-blue-500/20 rounded-lg flex items-center justify-center text-2xl">📁</div>`;
-        }}
-      />
+      <span className={`${className} relative inline-flex items-center justify-center`}>
+        <svg viewBox="0 0 24 24" className="absolute inset-0 w-full h-full" fill="currentColor">
+          <path fill="#6366F1" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+        </svg>
+        <img 
+          src={iconUrl} 
+          alt={`${category} logo`} 
+          className="relative w-full h-full object-contain"
+          style={{ filter: 'drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.4))' }}
+          onError={(e) => {
+            e.target.style.display = 'none';
+          }}
+        />
+      </span>
     );
   }
   
@@ -84,7 +89,8 @@ const Header = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [currentPath, setCurrentPath] = useState('/');
+  const location = useLocation();
+  const currentPath = location.pathname;
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   // Ctrl+K / Cmd+K to open search
@@ -97,11 +103,6 @@ const Header = () => {
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  // Track current path for active states
-  useEffect(() => {
-    setCurrentPath(window.location.pathname);
   }, []);
 
   // Check if a category group is active
@@ -264,13 +265,16 @@ const Header = () => {
         {/* Grid Layout with Spark Animation */}
         <div className="grid grid-cols-2 gap-3">
           {category.items.map((item, idx) => (
-            <motion.a
+            <motion.div
               key={item.name}
-              href={item.path}
               initial="rest"
               whileHover="hover"
-              className="group relative p-4 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-300 overflow-hidden"
+              className="group relative"
             >
+              <Link
+                to={item.path}
+                className="block p-4 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/30 hover:border-slate-600/50 transition-all duration-300 overflow-hidden relative"
+              >
               {/* Spark emitters in each corner */}
               {[...Array(4)].map((_, i) => (
                 <motion.div
@@ -304,14 +308,15 @@ const Header = () => {
 
               {/* Shine effect on hover */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700 rounded-xl" />
-            </motion.a>
+              </Link>
+            </motion.div>
           ))}
         </div>
 
         {/* Smart Footer CTA */}
         <div className="mt-4 pt-4 border-t border-slate-700/50 text-center">
-          <a 
-            href={getCtaUrl()}
+          <Link 
+            to={getCtaUrl()}
             className="text-sm text-blue-400 hover:text-blue-300 font-medium inline-flex items-center gap-2 group"
           >
             {getCtaText()}
@@ -322,7 +327,7 @@ const Header = () => {
             >
               →
             </motion.span>
-          </a>
+          </Link>
         </div>
       </motion.div>
     );
@@ -346,7 +351,7 @@ const Header = () => {
       <nav className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <a href="/" className="flex items-center space-x-2 sm:space-x-3 z-10">
+          <Link to="/" className="flex items-center space-x-2 sm:space-x-3 z-10">
             <motion.div
               whileHover={{ scale: 1.1, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
@@ -360,14 +365,14 @@ const Header = () => {
             <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               DataEngineer Hub
             </span>
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-6 lg:space-x-8">
             {/* Home */}
             <motion.div whileHover={{ y: -2 }}>
-              <a 
-                href="/" 
+              <Link 
+                to="/" 
                 className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
                   isHomeActive 
                     ? 'text-blue-400' 
@@ -377,7 +382,7 @@ const Header = () => {
               >
                 <Home className="w-4 h-4" />
                 Home
-              </a>
+              </Link>
             </motion.div>
 
             {/* Mega Menus */}
@@ -418,8 +423,8 @@ const Header = () => {
 
             {/* Tags */}
             <motion.div whileHover={{ y: -2 }}>
-              <a 
-                href="/tag" 
+              <Link 
+                to="/tag" 
                 className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
                   isTagsActive 
                     ? 'text-blue-400' 
@@ -429,12 +434,12 @@ const Header = () => {
               >
                 <Tags className="w-4 h-4" />
                 Tags
-              </a>
+              </Link>
             </motion.div>
             {/* Glossary */}
             <motion.div whileHover={{ y: -2 }}>
-              <a 
-                href="/glossary" 
+              <Link 
+                to="/glossary" 
                 className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
                   isGlossaryActive 
                     ? 'text-blue-400' 
@@ -444,12 +449,12 @@ const Header = () => {
               >
                 <BookOpen className="w-4 h-4" />
                 Glossary
-              </a>
+              </Link>
             </motion.div>
             {/* Comparisons */}
             <motion.div whileHover={{ y: -2 }}>
-              <a 
-                href="/compare" 
+              <Link 
+                to="/compare" 
                 className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
                   isCompareActive 
                     ? 'text-blue-400' 
@@ -459,12 +464,12 @@ const Header = () => {
               >
                 <GitCompareArrows className="w-4 h-4" />
                 Compare
-              </a>
+              </Link>
             </motion.div>
             {/* ✅ NEW: Certification Tab */}
             <motion.div whileHover={{ y: -2 }}>
-              <a 
-                href="/certification" 
+              <Link 
+                to="/certification" 
                 className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
                   isCertificationActive 
                     ? 'text-blue-400' 
@@ -479,12 +484,12 @@ const Header = () => {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                 </span>
-              </a>
+              </Link>
             </motion.div>
             {/* About */}
             <motion.div whileHover={{ y: -2 }}>
-              <a 
-                href="/about" 
+              <Link 
+                to="/about" 
                 className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
                   isAboutActive 
                     ? 'text-blue-400' 
@@ -494,7 +499,7 @@ const Header = () => {
               >
                 <Info className="w-4 h-4" />
                 About
-              </a>
+              </Link>
             </motion.div>
 
             {/* Search Button */}
@@ -505,20 +510,20 @@ const Header = () => {
                 title="Search (Ctrl+K)"
               >
                 <Search className="w-4 h-4" />
-                <span className="hidden xl:inline text-sm text-gray-500 bg-slate-800/60 border border-slate-700/50 rounded-md px-2 py-0.5">
+                <span className="hidden xl:inline text-sm text-gray-400 bg-slate-800/60 border border-slate-700/50 rounded-md px-2 py-0.5">
                   Ctrl+K
                 </span>
               </button>
             </motion.div>
 
-            {/* Subscribe Button */}
+            {/* Explore Button */}
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <a
-                href="/newsletter"
+              <Link
+                to="/articles"
                 className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white px-6 lg:px-8 py-2.5 rounded-full font-bold text-base shadow-lg hover:shadow-xl transition-all duration-300 inline-block"
               >
-                Subscribe
-              </a>
+                Explore
+              </Link>
             </motion.div>
           </div>
 
@@ -548,10 +553,10 @@ const Header = () => {
               className="lg:hidden mt-4 pb-4 border-t border-slate-700/50 pt-4 bg-slate-900/95 backdrop-blur-xl rounded-xl px-4 shadow-2xl"
             >
               <div className="flex flex-col space-y-3">
-                <a href="/" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                <Link to="/" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
                   <Home className="w-5 h-5" />
                   Home
-                </a>
+                </Link>
 
                 {/* Mobile Dropdowns */}
                 {Object.entries(categories).map(([key, category]) => (
@@ -575,13 +580,13 @@ const Header = () => {
                           className="ml-4 mt-2 space-y-1 bg-slate-800/50 rounded-lg p-2"
                         >
                           {category.items.map(item => (
-                            <a
+                            <Link
                               key={item.name}
-                              href={item.path}
+                              to={item.path}
                               className="block text-gray-300 hover:text-white py-3 pl-3 rounded hover:bg-slate-700/50 transition-colors min-h-[48px] flex items-center"
                             >
                               {item.name}
-                            </a>
+                            </Link>
                           ))}
                         </motion.div>
                       )}
@@ -589,27 +594,27 @@ const Header = () => {
                   </div>
                 ))}
 
-                <a href="/tag" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                <Link to="/tag" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
                   <Tags className="w-5 h-5" />
                   Tags
-                </a>
-                <a href="/glossary" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                </Link>
+                <Link to="/glossary" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
                   <BookOpen className="w-5 h-5" />
                   Glossary
-                </a>
-                <a href="/compare" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                </Link>
+                <Link to="/compare" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
                   <GitCompareArrows className="w-5 h-5" />
                   Comparisons
-                </a>
+                </Link>
                 {/* ✅ NEW: Certification Tab (Mobile) */}
-                <a href="/certification" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                <Link to="/certification" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
                   <Award className="w-5 h-5" />
                   Certification
-                </a>
-                <a href="/about" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                </Link>
+                <Link to="/about" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
                   <Info className="w-5 h-5" />
                   About
-                </a>
+                </Link>
                 <button
                   onClick={() => { setMobileMenuOpen(false); setIsSearchOpen(true); }}
                   className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px] w-full text-left"
@@ -617,12 +622,12 @@ const Header = () => {
                   <Search className="w-5 h-5" />
                   Search
                 </button>
-                <a
-                  href="/newsletter"
+                <Link
+                  to="/articles"
                   className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white w-full mt-4 py-3 text-base font-bold shadow-lg rounded-full text-center min-h-[48px] flex items-center justify-center"
                 >
-                  Subscribe
-                </a>
+                  Explore Articles
+                </Link>
               </div>
             </motion.div>
           )}

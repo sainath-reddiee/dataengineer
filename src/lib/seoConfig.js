@@ -96,6 +96,8 @@ export function getOrganizationSchema() {
     },
     sameAs: [
       `https://twitter.com/${SITE_CONFIG.social.twitterHandle}`,
+      SITE_CONFIG.social.linkedin,
+      SITE_CONFIG.social.github,
     ],
   };
 }

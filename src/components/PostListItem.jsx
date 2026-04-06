@@ -129,7 +129,7 @@ const PostListItem = ({ post }) => {
           <p className="text-gray-400 text-sm mb-4 line-clamp-2">
             {post.excerpt}
           </p>
-          <div className="flex items-center space-x-4 text-xs text-gray-500">
+          <div className="flex items-center space-x-4 text-xs text-gray-400">
             <div className="flex items-center space-x-1">
               <Calendar className="h-3 w-3" />
               <span>{new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
@@ -142,7 +142,7 @@ const PostListItem = ({ post }) => {
         </div>
 
         <div className="hidden sm:block ml-auto self-center">
-            <ArrowRight className="h-6 w-6 text-gray-500 group-hover:text-blue-400 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="h-6 w-6 text-gray-400 group-hover:text-blue-400 group-hover:translate-x-1 transition-transform" />
         </div>
       </div>
     </MotionLink>

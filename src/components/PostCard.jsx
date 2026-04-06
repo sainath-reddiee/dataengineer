@@ -143,7 +143,7 @@ const PostCard = ({ post }) => {
           </div>
         )}
 
-        <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="flex items-center justify-between text-xs text-gray-400">
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-1">
               <Calendar className="h-3 w-3" />
