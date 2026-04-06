@@ -56,13 +56,13 @@ const Footer = () => {
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8 mb-12">
+        <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-2 gap-8 mb-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="lg:col-span-1"
+            className="col-span-2 lg:col-span-1"
           >
             <Link to="/" className="flex items-center space-x-3 mb-6">
               <div className="relative">
