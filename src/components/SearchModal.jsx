@@ -1,5 +1,6 @@
 // src/components/SearchModal.jsx
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Clock, ArrowRight, FileText, Command } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
@@ -11,6 +12,7 @@ const SearchModal = ({ isOpen, onClose }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef(null);
   const debounceRef = useRef(null);
+  const navigate = useNavigate();
 
   // Focus input when modal opens
   useEffect(() => {
@@ -104,7 +106,7 @@ const SearchModal = ({ isOpen, onClose }) => {
 
   const navigateToResult = (post) => {
     onClose();
-    window.location.href = `/articles/${post.slug}`;
+    navigate(`/articles/${post.slug}`);
   };
 
   if (!isOpen) return null;

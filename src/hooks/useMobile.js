@@ -4,24 +4,26 @@
 import { useState, useEffect } from 'react';
 
 export const useMobile = (breakpoint = 768) => {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth <= breakpoint
+  );
 
   useEffect(() => {
-    // Check if window is defined (for SSR safety)
     if (typeof window === 'undefined') return;
 
+    let timeoutId;
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= breakpoint);
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setIsMobile(window.innerWidth <= breakpoint);
+      }, 150);
     };
 
-    // Initial check
-    checkMobile();
-
-    // Add resize listener
     window.addEventListener('resize', checkMobile);
-
-    // Cleanup
-    return () => window.removeEventListener('resize', checkMobile);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', checkMobile);
+    };
   }, [breakpoint]);
 
   return isMobile;

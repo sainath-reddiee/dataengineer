@@ -35,8 +35,7 @@
       "apache-spark",
       "delta-lake",
       "data-lake",
-      "snowflake",
-      "mlflow"
+      "snowflake"
     ],
     "relatedTools": [
       "Apache Spark",

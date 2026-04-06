@@ -34,8 +34,7 @@
     "relatedTerms": [
       "data-quality",
       "data-lineage",
-      "data-pipeline",
-      "monte-carlo"
+      "data-pipeline"
     ],
     "relatedTools": [
       "Monte Carlo",

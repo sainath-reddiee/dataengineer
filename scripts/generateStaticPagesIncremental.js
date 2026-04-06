@@ -8,6 +8,33 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
 const WORDPRESS_BASE_URL = 'https://app.dataengineerhub.blog';
+
+// ============================================================================
+// 🛡️ XSS PREVENTION HELPERS
+// ============================================================================
+
+/** Escape a string for safe embedding inside HTML content and attributes. */
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/** Escape a string for safe embedding inside a JSON-LD <script> block value. */
+function escapeJsonLd(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r');
+}
 const CACHE_FILE = path.join(__dirname, '..', '.build-cache.json');
 
 // ============================================================================
@@ -499,8 +526,14 @@ function makeImagesAbsolute(content) {
 // ============================================================================
 
 function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
-  const { title, description, path: pagePath, fullContent = '', slug } = pageData;
+  const { title: rawTitle, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified } = pageData;
   const { jsFile, cssFile } = bundleFiles;
+
+  // 🛡️ Sanitize user-supplied strings from WordPress
+  const title = escapeHtml(rawTitle);
+  const description = escapeHtml(rawDescription);
+  const titleJsonLd = escapeJsonLd(rawTitle);
+  const descriptionJsonLd = escapeJsonLd(rawDescription);
 
   // 🔥 CRITICAL: Use relative paths from article subdirectory
   const depth = (pagePath.match(/\//g) || []).length - 1;
@@ -871,8 +904,8 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": "${title}",
-      "description": "${description}",
+      "headline": "${titleJsonLd}",
+      "description": "${descriptionJsonLd}",
       "image": {
         "@type": "ImageObject",
         "url": "https://dataengineerhub.blog/og-image.jpg",
@@ -894,8 +927,8 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
           "height": 250
         }
       },
-      "datePublished": "${buildTimestamp}",
-      "dateModified": "${buildTimestamp}",
+      "datePublished": "${postDate || buildTimestamp}",
+      "dateModified": "${postModified || buildTimestamp}",
       "mainEntityOfPage": {
         "@type": "WebPage",
         "@id": "https://dataengineerhub.blog${pagePath}"
@@ -924,7 +957,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
         {
           "@type": "ListItem",
           "position": 3,
-          "name": "${title}",
+          "name": "${titleJsonLd}",
           "item": "https://dataengineerhub.blog${pagePath}"
         }
       ]
@@ -997,8 +1030,12 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
 
 // Simplified HTML for categories/tags (they don't need full content)
 function generateSimpleHTML(pageData, bundleFiles) {
-  const { title, description, path: pagePath } = pageData;
+  const { title: rawTitle, description: rawDescription, path: pagePath } = pageData;
   const { jsFile, cssFile } = bundleFiles;
+
+  // 🛡️ Sanitize user-supplied strings
+  const title = escapeHtml(rawTitle);
+  const description = escapeHtml(rawDescription);
 
   const depth = (pagePath.match(/\//g) || []).length - 1;
   const relativePrefix = '../'.repeat(depth);
@@ -1277,6 +1314,10 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   const { jsFile, cssFile } = bundleFiles;
   const pagePath = `/category/${category.slug}`;
 
+  // 🛡️ Sanitize WordPress-sourced category name
+  const safeName = escapeHtml(category.name);
+  const safeNameJsonLd = escapeJsonLd(category.name);
+
   const depth = (pagePath.match(/\//g) || []).length - 1;
   const relativePrefix = '../'.repeat(depth);
 
@@ -1289,27 +1330,29 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   // Build article list HTML
   let articleListHTML = '';
   for (const article of categoryArticles) {
+    const safeTitle = escapeHtml(article.title);
+    const safeExcerpt = escapeHtml(article.excerpt);
     articleListHTML += `
               <li style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08);">
-                <a href="https://dataengineerhub.blog/articles/${article.slug}" style="color: #f1f5f9; text-decoration: none; font-size: 1.15rem; font-weight: 600; line-height: 1.4;">${article.title}</a>
-                ${article.excerpt ? `<p style="color: #94a3b8; font-size: 0.95rem; margin-top: 0.5rem; line-height: 1.6;">${article.excerpt}</p>` : ''}
+                <a href="https://dataengineerhub.blog/articles/${article.slug}" style="color: #f1f5f9; text-decoration: none; font-size: 1.15rem; font-weight: 600; line-height: 1.4;">${safeTitle}</a>
+                ${article.excerpt ? `<p style="color: #94a3b8; font-size: 0.95rem; margin-top: 0.5rem; line-height: 1.6;">${safeExcerpt}</p>` : ''}
               </li>`;
   }
 
-  const descriptionMeta = catDescription || 'Browse ' + categoryArticles.length + ' articles about ' + category.name + ' on DataEngineer Hub. In-depth tutorials and guides for data engineers.';
+  const descriptionMeta = catDescription || 'Browse ' + categoryArticles.length + ' articles about ' + safeName + ' on DataEngineer Hub. In-depth tutorials and guides for data engineers.';
 
   // Build the HTML using string concatenation to avoid template literal issues
   let html = '<!doctype html>\n<html lang="en">\n  <head>\n';
   html += '    <meta charset="UTF-8" />\n';
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
-  html += '    <title>' + category.name + ' - Data Engineering Articles | DataEngineer Hub</title>\n';
+  html += '    <title>' + safeName + ' - Data Engineering Articles | DataEngineer Hub</title>\n';
   html += '    <meta name="description" content="' + descriptionMeta + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
   html += '    <meta name="robots" content="' + (categoryArticles.length === 0 ? 'noindex, follow' : 'index, follow') + '" />\n\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta property="og:title" content="' + category.name + ' Articles | DataEngineer Hub" />\n';
-  html += '    <meta property="og:description" content="Browse ' + categoryArticles.length + ' ' + category.name + ' tutorials and guides for data engineers." />\n';
+  html += '    <meta property="og:title" content="' + safeName + ' Articles | DataEngineer Hub" />\n';
+  html += '    <meta property="og:description" content="Browse ' + categoryArticles.length + ' ' + safeName + ' tutorials and guides for data engineers." />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n\n';
   html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728" crossorigin="anonymous"><\/script>\n\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
@@ -1345,17 +1388,17 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '        <ol class="breadcrumb-list">\n';
   html += '          <li class="breadcrumb-item"><a href="https://dataengineerhub.blog" class="breadcrumb-link">Home</a></li>\n';
   html += '          <li class="breadcrumb-separator">&#8250;</li>\n';
-  html += '          <li class="breadcrumb-item breadcrumb-current" aria-current="page"><span>' + category.name + '</span></li>\n';
+  html += '          <li class="breadcrumb-item breadcrumb-current" aria-current="page"><span>' + safeName + '</span></li>\n';
   html += '        </ol>\n';
   html += '      </nav>\n\n';
   html += '      <div class="seo-content">\n';
-  html += '        <h1>' + category.name + ' Articles</h1>\n';
+  html += '        <h1>' + safeName + ' Articles</h1>\n';
   html += '        <p>\n';
-  html += '          ' + (catDescription ? catDescription + ' ' : '') + 'Explore our collection of <strong>' + categoryArticles.length + ' in-depth articles</strong> about ' + category.name + '\n';
+  html += '          ' + (catDescription ? catDescription + ' ' : '') + 'Explore our collection of <strong>' + categoryArticles.length + ' in-depth articles</strong> about ' + safeName + '\n';
   html += '          on DataEngineer Hub. Each tutorial provides practical, hands-on guidance with real-world examples\n';
-  html += '          to help you master ' + category.name + ' concepts and best practices.\n';
+  html += '          to help you master ' + safeName + ' concepts and best practices.\n';
   html += '        </p>\n\n';
-  html += '        <h2>All ' + category.name + ' Articles (' + categoryArticles.length + ')</h2>\n';
+  html += '        <h2>All ' + safeName + ' Articles (' + categoryArticles.length + ')</h2>\n';
   html += '        <ul style="list-style: none; padding: 0;">\n';
   html += '          ' + articleListHTML + '\n';
   html += '        </ul>\n\n';
@@ -1372,8 +1415,8 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    {\n';
   html += '      "@context": "https://schema.org",\n';
   html += '      "@type": "CollectionPage",\n';
-  html += '      "name": "' + category.name + ' Articles",\n';
-  html += '      "description": "Browse ' + categoryArticles.length + ' articles about ' + category.name + ' on DataEngineer Hub",\n';
+  html += '      "name": "' + safeNameJsonLd + ' Articles",\n';
+  html += '      "description": "Browse ' + categoryArticles.length + ' articles about ' + safeNameJsonLd + ' on DataEngineer Hub",\n';
   html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
   html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" }\n';
   html += '    }\n';
@@ -2583,8 +2626,14 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
 // ============================================================================
 
 function generateEssentialPageHTML(pageData, bundleFiles) {
-  const { title, description, path: pagePath, content } = pageData;
+  const { title: rawTitle, description: rawDescription, path: pagePath, content } = pageData;
   const { jsFile, cssFile } = bundleFiles;
+
+  // 🛡️ Sanitize user-supplied strings
+  const title = escapeHtml(rawTitle);
+  const description = escapeHtml(rawDescription);
+  const titleJsonLd = escapeJsonLd(rawTitle);
+  const descriptionJsonLd = escapeJsonLd(rawDescription);
 
   // Essential pages are at root level (depth = 0), so no relative prefix needed
   const depth = (pagePath.match(/\//g) || []).length - 1;
@@ -2772,8 +2821,8 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
     {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      "name": "${title}",
-      "description": "${description}",
+      "name": "${titleJsonLd}",
+      "description": "${descriptionJsonLd}",
       "url": "https://dataengineerhub.blog${pagePath}",
       "publisher": {
         "@type": "Organization",
@@ -2890,6 +2939,7 @@ async function buildIncremental(options = {}) {
         path: pagePath,
         fullContent: fullContent, // 🔥 FULL content for crawlers
         slug: post.slug,
+        date: post.date,
         modified: post.modified
       };
 

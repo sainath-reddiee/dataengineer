@@ -34,8 +34,7 @@
     "relatedTerms": [
       "data-governance",
       "data-observability",
-      "great-expectations",
-      "data-testing"
+      "great-expectations"
     ],
     "relatedTools": [
       "Great Expectations",
@@ -98,7 +97,6 @@
     "relatedTerms": [
       "data-quality",
       "data-mesh",
-      "schema",
       "data-governance"
     ],
     "relatedTools": [
@@ -160,7 +158,6 @@
     ],
     "relatedTerms": [
       "data-quality",
-      "data-testing",
       "dbt",
       "data-observability"
     ],

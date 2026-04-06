@@ -55,6 +55,12 @@ function escapeRegex(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+/** Escape a string for use in an HTML attribute value. */
+function escapeHtmlAttr(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 /**
  * Check if a keyword appears inside an existing HTML tag or anchor
  * @param {string} html - The HTML content
@@ -107,20 +113,23 @@ export function injectInternalLinks(htmlContent, excludeSlug = '') {
             // Skip if keyword is already linked in the content
             if (isAlreadyLinked(result, keyword)) continue;
 
-            // Build regex to match keyword NOT inside HTML tags
-            // Negative lookbehind: not preceded by < without closing >
-            // Negative lookahead: not followed by > without opening <
-            // Word boundary matching for cleaner matches
-            const regex = new RegExp(
-                `(?<!<[^>]*)\\b(${escapeRegex(keyword)})\\b(?![^<]*>)`,
-                'i'
-            );
+            // Match keyword outside HTML tags (Safari-compatible - no lookbehind)
+            // Strategy: split on HTML tags, only match in text nodes
+            const keywordPattern = new RegExp(`\\b(${escapeRegex(keyword)})\\b`, 'i');
+            const parts = result.split(/(<[^>]*>)/);
+            let matched = false;
+            for (let i = 0; i < parts.length; i++) {
+                // Even indices are text nodes, odd indices are HTML tags
+                if (i % 2 === 0 && keywordPattern.test(parts[i])) {
+                    const anchor = `<a href="/articles/${article.slug}" class="internal-link" title="${escapeHtmlAttr(article.title)}">${parts[i].match(keywordPattern)[1]}</a>`;
+                    parts[i] = parts[i].replace(keywordPattern, anchor);
+                    matched = true;
+                    break;
+                }
+            }
 
-            const match = result.match(regex);
-            if (match) {
-                // Replace first occurrence with anchor tag
-                const anchor = `<a href="/articles/${article.slug}" class="internal-link" title="${article.title}">${match[1]}</a>`;
-                result = result.replace(regex, anchor);
+            if (matched) {
+                result = parts.join('');
                 linkedKeywords.add(keyword.toLowerCase());
 
                 // Only link one keyword per article to avoid over-optimization

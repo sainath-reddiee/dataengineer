@@ -34,8 +34,7 @@
     "relatedTerms": [
       "data-quality",
       "data-catalog",
-      "data-lineage",
-      "metadata"
+      "data-lineage"
     ],
     "relatedTools": [
       "Atlan",
@@ -98,7 +97,6 @@
     "relatedTerms": [
       "data-governance",
       "data-catalog",
-      "metadata",
       "dbt"
     ],
     "relatedTools": [
@@ -161,9 +159,7 @@
     ],
     "relatedTerms": [
       "data-governance",
-      "data-lineage",
-      "metadata",
-      "data-discovery"
+      "data-lineage"
     ],
     "relatedTools": [
       "Atlan",

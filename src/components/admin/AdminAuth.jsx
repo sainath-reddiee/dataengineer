@@ -2,9 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Lock, User, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
-// Admin credentials - in production, these would be env variables
-const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME || 'admin';
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'seo-toolkit-2025';
+// SHA-256 hashes of credentials - plaintext never stored in the bundle.
+// To update: run in browser console:
+//   crypto.subtle.digest('SHA-256', new TextEncoder().encode('your-value'))
+//     .then(b => console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')))
+const ADMIN_USER_HASH = import.meta.env.VITE_ADMIN_USER_HASH || '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'; // sha256('admin')
+const ADMIN_PASS_HASH = import.meta.env.VITE_ADMIN_PASS_HASH || 'a0eac1b8e4d1e8c6c3f07db3e0d2a5c4f5b6a7e8d9c0b1a2f3e4d5c6b7a8e9d0'; // fallback disabled - won't match anything
+
+async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(x => x.toString(16).padStart(2, '0')).join('');
+}
 
 const AUTH_KEY = 'seo_admin_auth';
 
@@ -20,8 +28,9 @@ export function useAdminAuth() {
         setIsLoading(false);
     }, []);
 
-    const login = (username, password) => {
-        if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    const login = async (username, password) => {
+        const [userHash, passHash] = await Promise.all([sha256(username), sha256(password)]);
+        if (userHash === ADMIN_USER_HASH && passHash === ADMIN_PASS_HASH) {
             sessionStorage.setItem(AUTH_KEY, 'true');
             setIsAuthenticated(true);
             return true;
@@ -44,9 +53,9 @@ export function AdminAuth({ children }) {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (login(username, password)) {
+        if (await login(username, password)) {
             setError('');
         } else {
             setError('Invalid credentials');

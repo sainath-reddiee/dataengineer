@@ -306,7 +306,7 @@
     {
       "title": "Airbyte vs Meltano",
       "slug": "airbyte-vs-meltano",
-      "category": "Data Integration",
+      "category": "data-integration",
       "toolA": "Airbyte",
       "toolB": "Meltano",
       "shortVerdict": "Airbyte is the UI-first, ubiquity-focused leader. Meltano is the CLI-first, DevOps-focused engineer's choice."
@@ -322,7 +322,7 @@
     {
       "title": "Amazon Redshift vs Snowflake",
       "slug": "redshift-vs-snowflake",
-      "category": "Data Warehousing",
+      "category": "data-warehousing",
       "toolA": "Amazon Redshift",
       "toolB": "Snowflake",
       "shortVerdict": "Redshift is the choice for AWS-heavy environments needing deep integration. Snowflake is the multi-cloud champion of simplicity and concurrency."
@@ -330,7 +330,7 @@
     {
       "title": "Apache Airflow vs Dagster",
       "slug": "airflow-vs-dagster",
-      "category": "Data Orchestration",
+      "category": "data-orchestration",
       "toolA": "Apache Airflow",
       "toolB": "Dagster",
       "shortVerdict": "Airflow is the task-based standard. Dagster is the asset-based challenger that brings data awareness to the orchestration layer."
@@ -362,7 +362,7 @@
     {
       "title": "Apache Iceberg vs Apache Hudi",
       "slug": "iceberg-vs-hudi",
-      "category": "Data Warehousing",
+      "category": "data-warehousing",
       "toolA": "Apache Iceberg",
       "toolB": "Apache Hudi",
       "shortVerdict": "Iceberg is the champion of engine-neutral table formats. Hudi is the veteran winner for high-scale, low-latency upserts and incremental processing."
@@ -386,7 +386,7 @@
     {
       "title": "Apache Kafka vs Redpanda",
       "slug": "kafka-vs-redpanda",
-      "category": "Streaming",
+      "category": "streaming",
       "toolA": "Apache Kafka",
       "toolB": "Redpanda",
       "shortVerdict": "Kafka is the Java-based ecosystem king. Redpanda is the C++ drop-in replacement that is 10x faster and simpler to operations."
@@ -434,7 +434,7 @@
     {
       "title": "dbt vs Dataform",
       "slug": "dbt-vs-dataform",
-      "category": "Data Transformation",
+      "category": "data-transformation",
       "toolA": "dbt",
       "toolB": "Dataform",
       "shortVerdict": "dbt is the undisputed industry standard for analytics engineering. Dataform is a fantastic, free alternative specifically for BigQuery shops."
@@ -450,7 +450,7 @@
     {
       "title": "Delta Lake vs Apache Iceberg",
       "slug": "delta-lake-vs-iceberg",
-      "category": "Data Warehousing",
+      "category": "data-warehousing",
       "toolA": "Delta Lake",
       "toolB": "Apache Iceberg",
       "shortVerdict": "Delta Lake is the default for Databricks users. Apache Iceberg is winning the \"Open Ecosystem\" war with support from Snowflake, AWS, and Netflix."
@@ -466,7 +466,7 @@
     {
       "title": "Fivetran vs Airbyte",
       "slug": "fivetran-vs-airbyte",
-      "category": "Data Integration",
+      "category": "data-integration",
       "toolA": "Fivetran",
       "toolB": "Airbyte",
       "shortVerdict": "Fivetran is the \"Apple\" of ELT—expensive but it just works. Airbyte is the \"Android/Linux\"—open, flexible, and ubiquitous."
@@ -482,7 +482,7 @@
     {
       "title": "Fivetran vs Stitch",
       "slug": "fivetran-vs-stitch",
-      "category": "Data Integration",
+      "category": "data-integration",
       "toolA": "Fivetran",
       "toolB": "Stitch",
       "shortVerdict": "Fivetran is the premium, 'set and forget' leader. Stitch is the developer-friendly, more affordable alternative for standard SaaS data."
@@ -530,7 +530,7 @@
     {
       "title": "Snowflake vs Databricks",
       "slug": "snowflake-vs-databricks",
-      "category": "Data Warehousing",
+      "category": "data-warehousing",
       "toolA": "Snowflake",
       "toolB": "Databricks",
       "shortVerdict": "Snowflake is the king of ease-of-use and SQL-based analytics. Databricks is the powerhouse for Spark-based data engineering and machine learning on a Lakehouse."
@@ -538,7 +538,7 @@
     {
       "title": "Snowflake vs Google BigQuery",
       "slug": "snowflake-vs-bigquery",
-      "category": "Data Warehousing",
+      "category": "data-warehousing",
       "toolA": "Snowflake",
       "toolB": "Google BigQuery",
       "shortVerdict": "Snowflake offers superior multi-cloud flexibility and zero-maintenance performance. BigQuery offers effortless serverless scaling and deep integration if you are already on Google Cloud."
@@ -562,7 +562,7 @@
     {
       "title": "Terraform vs Pulumi",
       "slug": "terraform-vs-pulumi",
-      "category": "Cloud Platforms",
+      "category": "cloud-platforms",
       "toolA": "Terraform",
       "toolB": "Pulumi",
       "shortVerdict": "Terraform is the YAML/HCL standard for infrastructure. Pulumi is the 'Infrastructure as Code' tool that lets you use real programming languages (Python, Go, JS)."

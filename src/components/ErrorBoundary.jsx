@@ -40,7 +40,7 @@ class ErrorBoundary extends React.Component {
     }
 
     // Log to console with more details in development
-    if (typeof __DEV__ !== 'undefined' && __DEV__) {
+    if (import.meta.env.DEV) {
       console.group('🔍 Error Details');
       console.error('Error:', error);
       console.error('Error Info:', errorInfo);
@@ -182,7 +182,7 @@ class ErrorBoundary extends React.Component {
             </div>
 
             {/* Error Details for Development */}
-            {typeof __DEV__ !== 'undefined' && __DEV__ && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <details className="text-left bg-gray-900/50 rounded-lg p-4 mt-8">
                 <summary className="cursor-pointer text-yellow-400 font-medium flex items-center">
                   <Bug className="mr-2 h-4 w-4" />
@@ -218,7 +218,7 @@ class ErrorBoundary extends React.Component {
             )}
 
             {/* Error ID for support */}
-            {(typeof __DEV__ === 'undefined' || !__DEV__) && (
+            {!import.meta.env.DEV && (
               <div className="text-xs text-gray-600 mt-6">
                 Error ID: {Date.now().toString(36).toUpperCase()}
               </div>

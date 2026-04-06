@@ -35,8 +35,7 @@
       "snowflake",
       "data-warehouse",
       "etl",
-      "data-modeling",
-      "sql"
+      "data-modeling"
     ],
     "relatedTools": [
       "Snowflake",
@@ -100,7 +99,7 @@
       "data-warehouse",
       "dbt",
       "data-pipeline",
-      "data-integration"
+      "cdc"
     ],
     "relatedTools": [
       "Fivetran",

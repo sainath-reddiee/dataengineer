@@ -35,8 +35,7 @@
       "data-warehouse",
       "dbt",
       "star-schema",
-      "fact-table",
-      "dimension-table"
+      "dimensional-modeling"
     ],
     "relatedTools": [
       "dbt",

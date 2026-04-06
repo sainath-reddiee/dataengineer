@@ -165,7 +165,7 @@
       "snowflake",
       "databricks",
       "delta-lake",
-      "s3"
+      "columnar-storage"
     ],
     "relatedTools": [
       "AWS S3",

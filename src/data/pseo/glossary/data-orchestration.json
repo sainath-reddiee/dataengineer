@@ -34,8 +34,7 @@
     "relatedTerms": [
       "etl",
       "data-pipeline",
-      "dbt",
-      "data-orchestration"
+      "dbt"
     ],
     "relatedTools": [
       "Prefect",

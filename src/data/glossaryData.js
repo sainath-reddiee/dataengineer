@@ -185,7 +185,7 @@ dbt build        # Run + test in dependency order
                 answer: 'dbt supports all major cloud data warehouses including Snowflake, BigQuery, Redshift, Databricks, and many others through community-maintained adapters.',
             },
         ],
-        relatedTerms: ['snowflake', 'data-warehouse', 'etl', 'data-modeling', 'sql'],
+        relatedTerms: ['snowflake', 'data-warehouse', 'etl', 'data-modeling'],
         relatedTools: ['Snowflake', 'BigQuery', 'Redshift', 'Fivetran', 'Airbyte'],
         externalLinks: [
             { title: 'dbt Documentation', url: 'https://docs.getdbt.com/' },
@@ -367,7 +367,7 @@ Modern data stacks often use **ELT**: load raw data first, then transform using 
                 answer: 'ETL ensures that data from different sources is cleaned, standardized, and integrated into a single repository. This enables accurate reporting, analytics, and data-driven decision making.',
             },
         ],
-        relatedTerms: ['data-warehouse', 'dbt', 'data-pipeline', 'data-integration'],
+        relatedTerms: ['data-warehouse', 'dbt', 'data-pipeline', 'cdc'],
         relatedTools: ['Fivetran', 'Airbyte', 'dbt', 'Stitch', 'Talend'],
         externalLinks: [
             { title: 'ETL Explained - IBM', url: 'https://www.ibm.com/topics/etl' },
@@ -467,7 +467,7 @@ How Airflow runs tasks:
                 answer: 'Yes, Apache Airflow is 100% free and open-source. Managed versions like Astronomer, MWAA (AWS), and Cloud Composer (Google) offer paid hosting with additional features.',
             },
         ],
-        relatedTerms: ['etl', 'data-pipeline', 'dbt', 'data-orchestration'],
+        relatedTerms: ['etl', 'data-pipeline', 'dbt'],
         relatedTools: ['Prefect', 'Dagster', 'dbt Cloud', 'AWS MWAA', 'Astronomer'],
         externalLinks: [
             { title: 'Apache Airflow Documentation', url: 'https://airflow.apache.org/docs/' },
@@ -556,7 +556,7 @@ A new architecture combining data lake flexibility with warehouse performance:
                 answer: 'Benefits include: storing any data type, lower storage costs, flexibility for data science, scalability, and the ability to keep raw data for future use cases you have not yet defined.',
             },
         ],
-        relatedTerms: ['data-warehouse', 'snowflake', 'databricks', 'delta-lake', 's3'],
+        relatedTerms: ['data-warehouse', 'snowflake', 'databricks', 'delta-lake', 'columnar-storage'],
         relatedTools: ['AWS S3', 'Azure Data Lake', 'Databricks', 'Delta Lake', 'Apache Iceberg'],
         externalLinks: [
             { title: 'What is a Data Lake? - AWS', url: 'https://aws.amazon.com/big-data/datalakes-and-analytics/what-is-a-data-lake/' },
@@ -657,7 +657,7 @@ Graph computation for:
                 answer: 'Yes, Apache Spark is open-source and free. Commercial platforms like Databricks offer managed Spark with additional features and support.',
             },
         ],
-        relatedTerms: ['databricks', 'pyspark', 'hadoop', 'data-lake', 'etl'],
+        relatedTerms: ['databricks', 'data-lake', 'etl'],
         relatedTools: ['Databricks', 'AWS EMR', 'Google Dataproc', 'Azure HDInsight', 'Apache Hadoop'],
         externalLinks: [
             { title: 'Apache Spark Documentation', url: 'https://spark.apache.org/docs/latest/' },
@@ -756,7 +756,7 @@ Databricks' open-source storage layer:
                 answer: 'Snowflake excels at SQL analytics and is simpler to use. Databricks is better for data science, ML, and when you need open formats and advanced Spark capabilities. Many organizations use both.',
             },
         ],
-        relatedTerms: ['apache-spark', 'delta-lake', 'data-lake', 'snowflake', 'mlflow'],
+        relatedTerms: ['apache-spark', 'delta-lake', 'data-lake', 'snowflake'],
         relatedTools: ['Apache Spark', 'Delta Lake', 'MLflow', 'Snowflake', 'AWS EMR'],
         externalLinks: [
             { title: 'Databricks Documentation', url: 'https://docs.databricks.com/' },
@@ -859,7 +859,7 @@ Producers → [Topic: orders] → Consumers
                 answer: 'Kafka basic concepts can be learned quickly, but mastering it takes time. Key challenges include understanding partitioning, consumer groups, replication, and operational best practices.',
             },
         ],
-        relatedTerms: ['streaming', 'event-driven', 'data-pipeline', 'apache-spark', 'cdc'],
+        relatedTerms: ['stream-processing', 'data-pipeline', 'apache-spark', 'cdc'],
         relatedTools: ['Confluent', 'AWS MSK', 'Redpanda', 'Apache Pulsar', 'RabbitMQ'],
         externalLinks: [
             { title: 'Apache Kafka Documentation', url: 'https://kafka.apache.org/documentation/' },
@@ -958,7 +958,7 @@ Modern, denormalized approach:
                 answer: 'Popular tools include dbt (for transformation modeling), Erwin, Lucidchart, dbdiagram.io, SqlDBM, and Draw.io. In modern stacks, dbt is often used to define and document models as code.',
             },
         ],
-        relatedTerms: ['data-warehouse', 'dbt', 'star-schema', 'fact-table', 'dimension-table'],
+        relatedTerms: ['data-warehouse', 'dbt', 'star-schema', 'dimensional-modeling'],
         relatedTools: ['dbt', 'Erwin', 'Lucidchart', 'dbdiagram.io', 'SqlDBM'],
         externalLinks: [
             { title: 'Dimensional Modeling - Kimball Group', url: 'https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/' },
@@ -1034,7 +1034,7 @@ Data quality refers to the overall fitness of data for its intended purpose. Hig
                 answer: 'Data quality focuses on the overall fitness of data for use (accuracy, completeness). Data integrity ensures data remains unchanged and consistent throughout its lifecycle, often through constraints and transaction controls.',
             },
         ],
-        relatedTerms: ['data-governance', 'data-observability', 'great-expectations', 'data-testing'],
+        relatedTerms: ['data-governance', 'data-observability', 'great-expectations'],
         relatedTools: ['Great Expectations', 'dbt', 'Monte Carlo', 'Soda', 'Atlan'],
         externalLinks: [
             { title: 'Data Quality - Wikipedia', url: 'https://en.wikipedia.org/wiki/Data_quality' },
@@ -1117,7 +1117,7 @@ Data governance is the framework that defines who can take what actions, on what
                 answer: 'A data steward is responsible for the day-to-day management and quality of specific data domains. They ensure data meets quality standards, maintain documentation, and act as a point of contact for data-related questions.',
             },
         ],
-        relatedTerms: ['data-quality', 'data-catalog', 'data-lineage', 'metadata'],
+        relatedTerms: ['data-quality', 'data-catalog', 'data-lineage'],
         relatedTools: ['Atlan', 'Alation', 'Collibra', 'Databricks Unity Catalog', 'Monte Carlo'],
         externalLinks: [
             { title: 'Data Governance - Gartner', url: 'https://www.gartner.com/en/information-technology/glossary/data-governance' },
@@ -1201,7 +1201,7 @@ Traditional data quality checks run after problems occur. Data observability pro
                 answer: 'Data downtime refers to periods when data is missing, incorrect, or stale. Similar to application downtime, data downtime impacts business operations and can lead to wrong decisions. Data observability helps minimize data downtime.',
             },
         ],
-        relatedTerms: ['data-quality', 'data-lineage', 'data-pipeline', 'monte-carlo'],
+        relatedTerms: ['data-quality', 'data-lineage', 'data-pipeline'],
         relatedTools: ['Monte Carlo', 'Bigeye', 'Great Expectations', 'Acceldata', 'Datadog'],
         externalLinks: [
             { title: 'What is Data Observability? - Monte Carlo', url: 'https://www.montecarlodata.com/data-observability/' },
@@ -1283,7 +1283,7 @@ Data lineage is the complete lifecycle of data from origin to consumption. It do
                 answer: 'Data lineage shows the flow and transformation of data. Data provenance focuses on the origin and history of a specific data point, including who created it and when. Provenance is a subset of lineage.',
             },
         ],
-        relatedTerms: ['data-governance', 'data-catalog', 'metadata', 'dbt'],
+        relatedTerms: ['data-governance', 'data-catalog', 'dbt'],
         relatedTools: ['Atlan', 'Alation', 'OpenLineage', 'dbt', 'DataHub'],
         externalLinks: [
             { title: 'OpenLineage', url: 'https://openlineage.io/' },
@@ -1367,7 +1367,7 @@ A data catalog is like a search engine for your organization's data. It provides
                 answer: 'Popular data catalog tools include Atlan (modern, collaborative), Alation (enterprise), Collibra (governance), DataHub (open-source), and Databricks Unity Catalog (for Databricks users).',
             },
         ],
-        relatedTerms: ['data-governance', 'data-lineage', 'metadata', 'data-discovery'],
+        relatedTerms: ['data-governance', 'data-lineage'],
         relatedTools: ['Atlan', 'Alation', 'DataHub', 'Collibra', 'Unity Catalog'],
         externalLinks: [
             { title: 'What is a Data Catalog? - Atlan', url: 'https://atlan.com/what-is-a-data-catalog/' },
@@ -1462,7 +1462,7 @@ quality:
                 answer: 'Tools supporting data contracts include Soda, Great Expectations, dbt (model contracts), Datacontract.com (open standard), and Monte Carlo for SLA monitoring.',
             },
         ],
-        relatedTerms: ['data-quality', 'data-mesh', 'schema', 'data-governance'],
+        relatedTerms: ['data-quality', 'data-mesh', 'data-governance'],
         relatedTools: ['Soda', 'Great Expectations', 'dbt', 'Monte Carlo'],
         externalLinks: [
             { title: 'Data Contracts - Datacontract.com', url: 'https://datacontract.com/' },
@@ -1551,7 +1551,7 @@ The SaaS version adds:
                 answer: 'An Expectation Suite is a collection of expectations (tests) for a specific dataset. For example, an "orders" suite might include expectations for non-null order_id, valid status values, and reasonable amounts.',
             },
         ],
-        relatedTerms: ['data-quality', 'data-testing', 'dbt', 'data-observability'],
+        relatedTerms: ['data-quality', 'dbt', 'data-observability'],
         relatedTools: ['dbt', 'Soda', 'Monte Carlo', 'Apache Airflow', 'Pandas'],
         externalLinks: [
             { title: 'Great Expectations Documentation', url: 'https://docs.greatexpectations.io/' },
@@ -1632,7 +1632,7 @@ Fivetran uses Monthly Active Rows (MAR) pricing:
                 answer: 'Fivetran is fully managed with enterprise support and more polished connectors. Airbyte is open-source and cheaper but requires self-hosting. Choose Fivetran for reliability; Airbyte for cost savings.',
             },
         ],
-        relatedTerms: ['etl', 'airbyte', 'dbt', 'data-warehouse', 'data-integration'],
+        relatedTerms: ['etl', 'airbyte', 'dbt', 'data-warehouse', 'cdc'],
         relatedTools: ['Airbyte', 'Stitch', 'dbt', 'Snowflake', 'BigQuery'],
         externalLinks: [
             { title: 'Fivetran Documentation', url: 'https://fivetran.com/docs' },
@@ -1717,7 +1717,7 @@ Sources → Airbyte Workers → Destinations
                 answer: 'The Connector Builder is a no-code tool for creating custom Airbyte connectors. You can define API sources visually without writing code, then use them like any other connector.',
             },
         ],
-        relatedTerms: ['fivetran', 'etl', 'data-integration', 'dbt', 'cdc'],
+        relatedTerms: ['fivetran', 'etl', 'cdc', 'dbt'],
         relatedTools: ['Fivetran', 'Stitch', 'dbt', 'Snowflake', 'BigQuery'],
         externalLinks: [
             { title: 'Airbyte Documentation', url: 'https://docs.airbyte.com/' },
@@ -1802,7 +1802,7 @@ Source DB → Transaction Log → CDC Tool → Target System
                 answer: 'Log-based CDC reads the database transaction log (binlog in MySQL, WAL in PostgreSQL) to capture changes. This is the most efficient CDC method as it does not query the database directly.',
             },
         ],
-        relatedTerms: ['data-replication', 'kafka', 'debezium', 'etl', 'streaming'],
+        relatedTerms: ['fivetran', 'apache-kafka', 'airbyte', 'etl', 'stream-processing'],
         relatedTools: ['Debezium', 'Fivetran', 'Airbyte', 'AWS DMS', 'Kafka'],
         externalLinks: [
             { title: 'Debezium Documentation', url: 'https://debezium.io/documentation/' },

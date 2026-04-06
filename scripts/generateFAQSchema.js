@@ -157,9 +157,9 @@ function injectFAQSchema(htmlPath, faqSchema) {
 
         // Check if FAQ schema already exists
         if (html.includes('"@type": "FAQPage"') || html.includes('"@type":"FAQPage"')) {
-            // Remove existing FAQ schema
+            // Remove existing FAQ schema ([\s\S]*? handles nested JSON with braces)
             html = html.replace(
-                /<script type="application\/ld\+json">\s*\{[^}]*"@type"\s*:\s*"FAQPage"[^<]*<\/script>\s*/gi,
+                /<script type="application\/ld\+json">\s*\{[\s\S]*?"@type"\s*:\s*"FAQPage"[\s\S]*?\}\s*<\/script>\s*/gi,
                 ''
             );
         }

@@ -93,7 +93,14 @@ const useCopyCodeButtons = (dependency) => {
       });
     }, 200);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      // Clean up injected buttons to prevent leaks on re-render
+      const container = document.querySelector('.article-content');
+      if (container) {
+        container.querySelectorAll('.copy-code-btn').forEach(btn => btn.remove());
+      }
+    };
   }, [dependency]);
 };
 

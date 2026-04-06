@@ -26,6 +26,12 @@ function stripHTML(html) {
     return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+function getMimeType(url) {
+    const ext = url.split('.').pop().toLowerCase().split('?')[0];
+    const types = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml' };
+    return types[ext] || 'image/jpeg';
+}
+
 async function fetchAllPosts() {
     try {
         console.log('Fetching posts for RSS feed...');
@@ -109,7 +115,7 @@ function buildRSSFeed(posts) {
       <description>${escapeXml(excerpt.substring(0, 500))}</description>
       <pubDate>${pubDate}</pubDate>
       <dc:creator>${escapeXml(authorName)}</dc:creator>
-${categories}${imageUrl ? `\n      <enclosure url="${escapeXml(imageUrl)}" type="image/jpeg" />` : ''}
+${categories}${imageUrl ? `\n      <enclosure url="${escapeXml(imageUrl)}" type="${getMimeType(imageUrl)}" />` : ''}
     </item>`;
     });
 

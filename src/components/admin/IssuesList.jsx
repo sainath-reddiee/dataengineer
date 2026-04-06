@@ -27,7 +27,7 @@ function IssueItem({ check }) {
 
     const handleFixWithAI = async () => {
         if (!geminiService.isEnabled) {
-            alert('Gemini API key not configured. Please add VITE_GEMINI_API_KEY to GitHub Secrets for production, or to your .env file for local development.');
+            alert('Gemini API key not configured. Enter your API key in the admin panel settings.');
             return;
         }
 

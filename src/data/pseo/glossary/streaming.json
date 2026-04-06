@@ -32,8 +32,7 @@
       }
     ],
     "relatedTerms": [
-      "streaming",
-      "event-driven",
+      "stream-processing",
       "data-pipeline",
       "apache-spark",
       "cdc"

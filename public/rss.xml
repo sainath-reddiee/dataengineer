@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 06 Apr 2026 11:14:19 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 06 Apr 2026 15:35:25 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -93,7 +93,7 @@
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
       <category>SQL</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/images.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/images.png" type="image/png" />
     </item>
     <item>
       <title>Build a Simple RAG Application in Snowflake Using Streamlit and Snowflake Cortex</title>
@@ -105,7 +105,7 @@
       <category>Python</category>
       <category>Snowflake</category>
       <category>SQL</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/IMG_8382.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/IMG_8382.png" type="image/png" />
     </item>
     <item>
       <title>Snowflake Cost Optimization: 12 Proven Techniques to Cut Your Bill by 40% in 2026</title>
@@ -177,7 +177,7 @@
       <pubDate>Fri, 26 Dec 2025 11:05:31 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/12/img_8225.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/12/img_8225.png" type="image/png" />
     </item>
     <item>
       <title>Snowflake OpenFlow: Revolutionizing Data Ingestion with AI-Powered Workflows</title>
@@ -220,7 +220,7 @@
       <pubDate>Thu, 06 Nov 2025 21:18:37 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/11/Copilot_20251107_080501.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/11/Copilot_20251107_080501.png" type="image/png" />
     </item>
     <item>
       <title>Snowflake Openflow Tutorial Guide 2025</title>
@@ -316,7 +316,7 @@
       <pubDate>Mon, 13 Oct 2025 23:06:23 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/resizefile_Designer.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/resizefile_Designer.png" type="image/png" />
     </item>
     <item>
       <title>Snowflake Hybrid Tables: End of the ETL Era?</title>
@@ -459,7 +459,7 @@
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
       <category>SQL</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/featured.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/featured.png" type="image/png" />
     </item>
     <item>
       <title>What is Incremental Data Processing? A Data Engineer&amp;#8217;s Guide</title>
@@ -469,7 +469,7 @@
       <pubDate>Tue, 30 Sep 2025 12:34:01 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>SQL</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/incre.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/incre.png" type="image/png" />
     </item>
     <item>
       <title>Data Modeling for the Modern Data Warehouse: A Guide</title>
@@ -479,7 +479,7 @@
       <pubDate>Tue, 30 Sep 2025 06:57:44 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>SQL</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/fact.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/fact.png" type="image/png" />
     </item>
     <item>
       <title>How to Implement Dynamic Data Masking in Snowflake</title>
@@ -489,7 +489,7 @@
       <pubDate>Tue, 30 Sep 2025 05:55:29 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/Dynamic.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/Dynamic.png" type="image/png" />
     </item>
     <item>
       <title>Snowflake Data Sharing and Governance</title>
@@ -499,7 +499,7 @@
       <pubDate>Mon, 29 Sep 2025 01:48:23 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/New-1.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/New-1.png" type="image/png" />
     </item>
     <item>
       <title>Querying data in snowflake: A Guide to JSON and Time Travel</title>
@@ -509,7 +509,7 @@
       <pubDate>Mon, 29 Sep 2025 01:36:15 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/New.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/New.png" type="image/png" />
     </item>
     <item>
       <title>How to Load Data into Snowflake: Guide to Warehouse, Stages and File Format</title>
@@ -519,7 +519,7 @@
       <pubDate>Mon, 29 Sep 2025 01:19:16 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/Snowflake-3.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/Snowflake-3.png" type="image/png" />
     </item>
     <item>
       <title>What is Snowflake? A Beginners Guide to the Cloud Data Platform</title>
@@ -529,7 +529,7 @@
       <pubDate>Mon, 29 Sep 2025 01:09:23 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image.png" type="image/png" />
     </item>
     <item>
       <title>Loading Data from S3 to Snowflake</title>
@@ -539,7 +539,7 @@
       <pubDate>Mon, 29 Sep 2025 00:48:54 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/Snowflake-1.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/Snowflake-1.png" type="image/png" />
     </item>
     <item>
       <title>AWS Data Pipeline Cost Optimization Strategies</title>
@@ -549,7 +549,7 @@
       <pubDate>Mon, 29 Sep 2025 00:22:53 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>AWS</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/AWS.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/AWS.png" type="image/png" />
     </item>
     <item>
       <title>Snowflake Performance Tuning Techniques</title>
@@ -559,7 +559,7 @@
       <pubDate>Mon, 29 Sep 2025 00:11:07 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-4.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-4.png" type="image/png" />
     </item>
     <item>
       <title>Advanced Snowflake Interview Questions for Experienced</title>
@@ -569,7 +569,7 @@
       <pubDate>Sun, 28 Sep 2025 11:20:46 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-3.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-3.png" type="image/png" />
     </item>
     <item>
       <title>Automated ETL with Airflow and Python: A Practical Guide</title>
@@ -579,7 +579,7 @@
       <pubDate>Sat, 27 Sep 2025 21:49:27 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Airflow</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-2.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-2.png" type="image/png" />
     </item>
     <item>
       <title>SQL Window Functions: The Ultimate Guide for Data Analysts</title>
@@ -589,7 +589,7 @@
       <pubDate>Sat, 27 Sep 2025 21:35:45 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>SQL</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/Featured-image.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/Featured-image.png" type="image/png" />
     </item>
     <item>
       <title>How to Build a Data Lakehouse on Azure</title>
@@ -599,7 +599,7 @@
       <pubDate>Fri, 26 Sep 2025 22:11:17 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Azure</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/img_6639.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/img_6639.png" type="image/png" />
     </item>
     <item>
       <title>Building a Serverless Data Pipeline on AWS: A Step-by-Step Guide</title>
@@ -609,7 +609,7 @@
       <pubDate>Fri, 26 Sep 2025 09:17:13 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>AWS</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-1.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-1.png" type="image/png" />
     </item>
     <item>
       <title>Structuring dbt Projects in Snowflake: The Definitive Guide</title>
@@ -619,7 +619,7 @@
       <pubDate>Thu, 25 Sep 2025 05:56:39 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>dbt</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/dbt_featured.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/dbt_featured.png" type="image/png" />
     </item>
     <item>
       <title>Snowflake Architecture Explained: A Simple Breakdown</title>
@@ -629,7 +629,7 @@
       <pubDate>Tue, 23 Sep 2025 04:59:16 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image.png" type="image/jpeg" />
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image.png" type="image/png" />
     </item>
   </channel>
 </rss>

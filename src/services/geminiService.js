@@ -1,14 +1,32 @@
 /**
  * Gemini AI Service for SEO Toolkit
  * Uses Google Generative AI REST API to avoid dependency issues
+ *
+ * API key is NOT bundled - admin enters it at runtime via setApiKey().
  */
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+
+const SESSION_KEY = 'gemini_api_key';
 
 class GeminiService {
     constructor() {
-        this.isEnabled = !!API_KEY;
+        // Restore from sessionStorage if the admin already entered it this session
+        this._apiKey = sessionStorage.getItem(SESSION_KEY) || '';
+    }
+
+    get isEnabled() {
+        return !!this._apiKey;
+    }
+
+    /** Let the admin provide the key at runtime (stored only in sessionStorage). */
+    setApiKey(key) {
+        this._apiKey = key || '';
+        if (key) {
+            sessionStorage.setItem(SESSION_KEY, key);
+        } else {
+            sessionStorage.removeItem(SESSION_KEY);
+        }
     }
 
     /**
@@ -18,7 +36,7 @@ class GeminiService {
      */
     async generateSuggestion(prompt, context = '') {
         if (!this.isEnabled) {
-            throw new Error('Gemini API Key is missing. Please set VITE_GEMINI_API_KEY in your environment.');
+            throw new Error('Gemini API Key is missing. Use the API key input in the admin panel to configure it.');
         }
 
         try {
@@ -32,7 +50,7 @@ class GeminiService {
                 Output: Provide a concise, actionable, and direct answer. No fluff.
             `;
 
-            const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+            const response = await fetch(`${API_URL}?key=${this._apiKey}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

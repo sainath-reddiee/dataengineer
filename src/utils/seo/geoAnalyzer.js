@@ -23,6 +23,7 @@ export class GEOAnalyzer {
     analyze(article, doc = null) {
         this.checks = [];
         this.article = article;
+        this.doc = doc || (typeof document !== 'undefined' ? document : null);
         const content = article.content || '';
 
         // Existing checks
@@ -73,6 +74,14 @@ export class GEOAnalyzer {
 
     checkStructuredData(content) {
         const schemaTypes = [];
+        // Check JSON-LD in document head (where MetaTags/Helmet injects it)
+        let schemaText = '';
+        if (this.doc) {
+            const scripts = this.doc.querySelectorAll('script[type="application/ld+json"]');
+            scripts.forEach(s => { schemaText += s.textContent + ' '; });
+        }
+        // Fallback: also check article content
+        const searchText = schemaText || content;
         const patterns = [
             { type: 'Article', pattern: /"@type"\s*:\s*"Article"/i },
             { type: 'FAQPage', pattern: /FAQPage/i },
@@ -82,7 +91,7 @@ export class GEOAnalyzer {
         ];
 
         patterns.forEach(({ type, pattern }) => {
-            if (pattern.test(content)) schemaTypes.push(type);
+            if (pattern.test(searchText)) schemaTypes.push(type);
         });
 
         if (schemaTypes.length >= 2) {
@@ -117,14 +126,16 @@ export class GEOAnalyzer {
     }
 
     checkSemanticHTML(content) {
+        // Check the full page DOM for semantic elements (they wrap the content, not inside it)
+        const searchTarget = this.doc ? this.doc.documentElement.innerHTML : content;
         const semanticElements = {
-            article: /<article/i.test(content),
-            section: /<section/i.test(content),
-            header: /<header/i.test(content),
-            nav: /<nav/i.test(content),
-            main: /<main/i.test(content),
-            aside: /<aside/i.test(content),
-            figure: /<figure/i.test(content),
+            article: /<article/i.test(searchTarget),
+            section: /<section/i.test(searchTarget),
+            header: /<header/i.test(searchTarget),
+            nav: /<nav/i.test(searchTarget),
+            main: /<main/i.test(searchTarget),
+            aside: /<aside/i.test(searchTarget),
+            figure: /<figure/i.test(content), // figures are typically in post content
         };
         const count = Object.values(semanticElements).filter(Boolean).length;
 
@@ -313,10 +324,18 @@ export class GEOAnalyzer {
     }
 
     checkLastUpdated(content) {
-        // Check for visible last updated date
+        // Check for visible last updated date in article content
         const hasVisibleDate = /(?:last |recently )?updated:?\s*(?:on\s*)?(?:\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\w+\s+\d{1,2},?\s+\d{4}|\d{4}-\d{2}-\d{2})/i.test(content);
-        // Check for schema dateModified
-        const hasSchemaDate = /dateModified|datePublished/i.test(content);
+        // Check for schema dateModified in document JSON-LD (not article content)
+        let hasSchemaDate = false;
+        if (this.doc) {
+            const scripts = this.doc.querySelectorAll('script[type="application/ld+json"]');
+            scripts.forEach(s => {
+                if (/dateModified|datePublished/i.test(s.textContent)) hasSchemaDate = true;
+            });
+        } else {
+            hasSchemaDate = /dateModified|datePublished/i.test(content);
+        }
 
         if (hasVisibleDate && hasSchemaDate) {
             this.addCheck(

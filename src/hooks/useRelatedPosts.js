@@ -40,7 +40,7 @@ export function useRelatedPosts({ category, tags = [], excludeId, limit = 6 }) {
                 if (tagSlugs.length > 0 && category) {
                     // Fetch posts with same category
                     const categoryResponse = await fetch(
-                        `${API_BASE_URL}/wp/v2/posts?categories=${category}&per_page=${limit * 2}&_embed`
+                        `${API_BASE_URL}/posts?categories=${category}&per_page=${limit * 2}&_embed`
                     );
 
                     if (categoryResponse.ok) {
@@ -62,7 +62,7 @@ export function useRelatedPosts({ category, tags = [], excludeId, limit = 6 }) {
                 // Strategy 2: If not enough posts, get more from same category
                 if (relatedPosts.length < limit && category) {
                     const categoryResponse = await fetch(
-                        `${API_BASE_URL}/wp/v2/posts?categories=${category}&per_page=${limit}&_embed&exclude=${excludeId}`
+                        `${API_BASE_URL}/posts?categories=${category}&per_page=${limit}&_embed&exclude=${excludeId}`
                     );
 
                     if (categoryResponse.ok) {
@@ -80,7 +80,7 @@ export function useRelatedPosts({ category, tags = [], excludeId, limit = 6 }) {
                 // Strategy 3: If still not enough, get recent posts
                 if (relatedPosts.length < 3) {
                     const recentResponse = await fetch(
-                        `${API_BASE_URL}/wp/v2/posts?per_page=${limit}&_embed&exclude=${excludeId}`
+                        `${API_BASE_URL}/posts?per_page=${limit}&_embed&exclude=${excludeId}`
                     );
 
                     if (recentResponse.ok) {

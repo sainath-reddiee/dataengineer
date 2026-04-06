@@ -54,8 +54,10 @@ const MetaTags = ({
     fullDescription = formatDescription(description);
   }
 
-  // Generate canonical URL
-  const currentUrl = url ? ensureAbsoluteUrl(url) : (typeof window !== 'undefined' ? window.location.href : SITE_CONFIG.url);
+  // Generate canonical URL (strip query params to avoid duplicate content)
+  const currentUrl = url
+    ? ensureAbsoluteUrl(url)
+    : (typeof window !== 'undefined' ? window.location.origin + window.location.pathname : SITE_CONFIG.url);
 
   // Get image URL
   const fullImage = getImageUrl(image);

@@ -1,5 +1,5 @@
 // src/pages/ArticlePage.jsx - ENHANCED WITH BREADCRUMBS AND SEO
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Calendar, Clock, User, AlertCircle, RefreshCw, Tag, Share2 } from 'lucide-react';
@@ -53,7 +53,7 @@ const processWordPressContent = (content) => {
       'iframe', 'video', 'audio', 'source', 'dl', 'dt', 'dd'
     ],
     ALLOWED_ATTR: [
-      'href', 'src', 'alt', 'title', 'class', 'id', 'style',
+      'href', 'src', 'alt', 'title', 'class', 'id',
       'width', 'height', 'target', 'rel', 'colspan', 'rowspan',
       'data-*', 'frameborder', 'allowfullscreen', 'loading'
     ],
@@ -61,7 +61,29 @@ const processWordPressContent = (content) => {
     KEEP_CONTENT: true
   };
 
+  // Restrict iframe src to trusted embed domains
+  const TRUSTED_IFRAME_HOSTS = [
+    'www.youtube.com', 'youtube.com', 'www.youtube-nocookie.com',
+    'player.vimeo.com', 'open.spotify.com',
+    'codepen.io', 'codesandbox.io',
+    'app.dataengineerhub.blog'
+  ];
+
+  DOMPurify.addHook('uponSanitizeAttribute', (node, data) => {
+    if (node.tagName === 'IFRAME' && data.attrName === 'src') {
+      try {
+        const url = new URL(data.attrValue);
+        if (!TRUSTED_IFRAME_HOSTS.includes(url.hostname)) {
+          data.attrValue = 'about:blank';
+        }
+      } catch {
+        data.attrValue = 'about:blank';
+      }
+    }
+  });
+
   let cleanContent = DOMPurify.sanitize(content, config);
+  DOMPurify.removeHook('uponSanitizeAttribute');
   cleanContent = injectHeadingIds(cleanContent);
   cleanContent = cleanContent
     .replace(/<p>(\s|&nbsp;)*<\/p>/g, '')
@@ -210,12 +232,14 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
           </div>
 
           <button
-            onClick={() => {
+            onClick={async () => {
               if (navigator.share) {
                 navigator.share({
                   title: safePost.title,
                   url: window.location.href
                 }).catch(() => { });
+              } else {
+                try { await navigator.clipboard.writeText(window.location.href); } catch { /* ignore */ }
               }
             }}
             className="p-2.5 rounded-full bg-slate-800/60 hover:bg-slate-700 border border-slate-600/40 text-gray-400 hover:text-white transition-all"
@@ -309,12 +333,14 @@ const MetadataOption2 = ({ safePost, formatDate }) => {
 
               {/* Share Button */}
               <button
-                onClick={() => {
+                onClick={async () => {
                   if (navigator.share) {
                     navigator.share({
                       title: safePost.title,
                       url: window.location.href
                     }).catch(() => { });
+                  } else {
+                    try { await navigator.clipboard.writeText(window.location.href); } catch { /* ignore */ }
                   }
                 }}
                 className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-lg text-sm font-semibold text-white transition-all"
@@ -395,12 +421,14 @@ const MetadataOption3 = ({ safePost, formatDate }) => {
 
           {/* Right: Share button with glassmorphism */}
           <button
-            onClick={() => {
+            onClick={async () => {
               if (navigator.share) {
                 navigator.share({
                   title: safePost.title,
                   url: window.location.href
                 }).catch(() => { });
+              } else {
+                try { await navigator.clipboard.writeText(window.location.href); } catch { /* ignore */ }
               }
             }}
             className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-lg text-sm font-semibold text-white transition-all"
@@ -417,18 +445,15 @@ const MetadataOption3 = ({ safePost, formatDate }) => {
 const ArticlePage = () => {
   const { slug } = useParams();
   const { post, loading, error, refetch } = usePost(slug);
-  const [contentReady, setContentReady] = useState(false);
-
   // 🎨 CHOOSE YOUR METADATA DESIGN:
   // Change this value: 1, 2, or 3
   const METADATA_DESIGN = 1;
 
+  // Preload hero image into browser cache
   useEffect(() => {
     if (post?.image) {
       const img = new Image();
       img.src = post.image;
-      img.onload = () => setContentReady(true);
-      img.onerror = () => setContentReady(true);
     }
   }, [post?.image]);
 
@@ -439,16 +464,19 @@ const ArticlePage = () => {
     trackArticleRead(post.title, post.category, readTimeMinutes);
 
     let maxDepth = 0;
+    const milestones = [25, 50, 75, 100];
     const handleScroll = throttle(() => {
       const scrollPercentage = Math.round(
         (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
       );
 
       if (scrollPercentage > maxDepth) {
-        maxDepth = scrollPercentage;
-        if ([25, 50, 75, 100].includes(scrollPercentage)) {
-          trackScrollDepth(post.title, scrollPercentage);
+        for (const milestone of milestones) {
+          if (maxDepth < milestone && scrollPercentage >= milestone) {
+            trackScrollDepth(post.title, milestone);
+          }
         }
+        maxDepth = scrollPercentage;
       }
     }, 1000);
 
@@ -512,6 +540,9 @@ const ArticlePage = () => {
           image: safePost.image,
         })
       : null;
+
+    const processedHtml = useMemo(() => processWordPressContent(safePost.content), [safePost.content]);
+    const headings = useMemo(() => extractHeadings(processedHtml), [processedHtml]);
 
     return (
     <div className="pt-4 pb-12">
@@ -593,34 +624,26 @@ const ArticlePage = () => {
           </Suspense>
 
           {/* Article Content with Table of Contents */}
-          {(() => {
-            const processedHtml = processWordPressContent(safePost.content);
-            const headings = extractHeadings(processedHtml);
-            return (
-              <>
-                {/* Mobile ToC (above content) — hidden on xl where sidebar TOC shows */}
-                <div className="xl:hidden">
+              {/* Mobile ToC (above content) — hidden on xl where sidebar TOC shows */}
+              <div className="xl:hidden">
+                <TableOfContents headings={headings} />
+              </div>
+
+              {/* Desktop: 2-column grid with sidebar ToC */}
+              <div className="flex gap-8">
+                <div className="flex-1 min-w-0">
+                  <div className="prose prose-invert prose-lg md:prose-xl max-w-none prose-headings:text-white prose-h2:text-3xl prose-h2:font-bold prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-pink-400 prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
+                    <div
+                      dangerouslySetInnerHTML={{ __html: processedHtml }}
+                      className="article-content"
+                    />
+                  </div>
+                </div>
+                {/* Desktop ToC sidebar */}
+                <div className="hidden xl:block w-64 shrink-0">
                   <TableOfContents headings={headings} />
                 </div>
-
-                {/* Desktop: 2-column grid with sidebar ToC */}
-                <div className="flex gap-8">
-                  <div className="flex-1 min-w-0">
-                    <div className="prose prose-invert prose-lg md:prose-xl max-w-none prose-headings:text-white prose-h2:text-3xl prose-h2:font-bold prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-pink-400 prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
-                      <div
-                        dangerouslySetInnerHTML={{ __html: processedHtml }}
-                        className="article-content"
-                      />
-                    </div>
-                  </div>
-                  {/* Desktop ToC sidebar */}
-                  <div className="hidden xl:block w-64 shrink-0">
-                    <TableOfContents headings={headings} />
-                  </div>
-                </div>
-              </>
-            );
-          })()}
+              </div>
 
           {/* Tags Section */}
           {safePost.tags && safePost.tags.length > 0 && (

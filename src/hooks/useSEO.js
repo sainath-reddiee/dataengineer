@@ -6,12 +6,11 @@ export const useSEO = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Scroll to top on route change
-    window.scrollTo(0, 0);
+    // Note: scroll-to-top is handled in App.jsx route change handler
 
     // Update page view for analytics
     if (window.gtag) {
-      window.gtag('config', 'GA_MEASUREMENT_ID', {
+      window.gtag('config', import.meta.env.VITE_GA_MEASUREMENT_ID, {
         page_path: location.pathname,
       });
     }
@@ -37,6 +36,7 @@ export const useStructuredData = (data) => {
 // Hook for preloading critical resources
 export const usePreloadResources = (resources = []) => {
   useEffect(() => {
+    const links = [];
     resources.forEach(resource => {
       const link = document.createElement('link');
       link.rel = 'preload';
@@ -44,6 +44,13 @@ export const usePreloadResources = (resources = []) => {
       link.as = resource.as;
       if (resource.type) link.type = resource.type;
       document.head.appendChild(link);
+      links.push(link);
     });
+
+    return () => {
+      links.forEach(link => {
+        if (link.parentNode) link.parentNode.removeChild(link);
+      });
+    };
   }, [resources]);
 };

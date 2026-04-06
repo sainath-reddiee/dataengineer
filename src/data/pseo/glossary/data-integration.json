@@ -36,7 +36,7 @@
       "airbyte",
       "dbt",
       "data-warehouse",
-      "data-integration"
+      "cdc"
     ],
     "relatedTools": [
       "Airbyte",
@@ -99,9 +99,8 @@
     "relatedTerms": [
       "fivetran",
       "etl",
-      "data-integration",
-      "dbt",
-      "cdc"
+      "cdc",
+      "dbt"
     ],
     "relatedTools": [
       "Fivetran",
@@ -162,11 +161,11 @@
       }
     ],
     "relatedTerms": [
-      "data-replication",
-      "kafka",
-      "debezium",
+      "fivetran",
+      "apache-kafka",
+      "airbyte",
       "etl",
-      "streaming"
+      "stream-processing"
     ],
     "relatedTools": [
       "Debezium",
@@ -355,8 +354,7 @@
       "data-pipeline",
       "etl",
       "apache-kafka",
-      "cdc",
-      "data-integration"
+      "cdc"
     ],
     "relatedTools": [
       "Apache Kafka",
