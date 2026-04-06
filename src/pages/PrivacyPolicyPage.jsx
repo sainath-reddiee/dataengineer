@@ -15,7 +15,7 @@ const PrivacyPolicyPage = () => {
         </h1>
         
         <div className="prose prose-invert max-w-none text-gray-300">
-          <p className="text-gray-400">Last Updated: September 24, 2025</p>
+          <p className="text-gray-400">Last Updated: April 6, 2026</p>
 
           <p>
             Welcome to DataEngineer Hub ("we," "us," or "our"). We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about this privacy notice, or our practices with regards to your personal information, please contact us.
@@ -42,6 +42,9 @@ const PrivacyPolicyPage = () => {
           <h2 className="text-xl font-bold text-white mt-8">4. DO WE USE COOKIES AND OTHER TRACKING TECHNOLOGIES?</h2>
           <p>
             We may use cookies and similar tracking technologies (like web beacons and pixels) to access or store information. Specific information about how we use such technologies and how you can refuse certain cookies is set out in our Cookie Policy.
+          </p>
+          <p>
+            When you first visit our website, a cookie consent banner is displayed at the bottom of the page. No tracking cookies or advertising scripts (including Google Analytics and Google AdSense) are loaded until you explicitly accept cookies through this banner. If you decline, only essential cookies required for the website to function are used. You can change your cookie preferences at any time by clearing your browser cookies and revisiting the site.
           </p>
 
           <h2 className="text-xl font-bold text-white mt-8">5. HOW DO WE KEEP YOUR INFORMATION SAFE?</h2>

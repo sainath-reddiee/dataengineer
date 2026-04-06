@@ -23,6 +23,7 @@ import ReadingProgressBar from '@/components/ReadingProgressBar';
 import TableOfContents, { extractHeadings, injectHeadingIds } from '@/components/TableOfContents';
 import ShareButtons from '@/components/ShareButtons';
 import GiscusComments from '@/components/GiscusComments';
+import InArticleCTA from '@/components/InArticleCTA';
 import useCopyCodeButtons from '@/hooks/useCopyCodeButtons';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
@@ -675,6 +676,8 @@ const ArticlePage = () => {
             </div>
           </div>
         </motion.article>
+
+        <InArticleCTA />
 
         <GiscusComments />
 

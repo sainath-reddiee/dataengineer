@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Users, Target, Heart, Code, Database, Cloud, Briefcase, Award, BookOpen, Sparkles, Zap, ArrowRight } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import { getPersonSchema } from '@/lib/seoConfig';
 import { Button } from '@/components/ui/button';
 
 const AboutPage = () => {
@@ -14,6 +15,12 @@ const AboutPage = () => {
         keywords="sainath reddy, data engineer, anblicks, snowflake expert, databricks expert, aws data engineer, azure data engineer, salesforce data cloud"
         type="website"
       />
+
+      {/* Person Structured Data for E-E-A-T */}
+      <script type="application/ld+json">
+        {JSON.stringify(getPersonSchema())}
+      </script>
+
       <div className="pt-4 pb-12">
         <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
           

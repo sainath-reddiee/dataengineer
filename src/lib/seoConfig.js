@@ -103,6 +103,38 @@ export function getOrganizationSchema() {
 }
 
 /**
+ * Generate Person schema for author page (E-E-A-T signal)
+ */
+export function getPersonSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': `${SITE_CONFIG.url}/#author`,
+    name: SITE_CONFIG.author.name,
+    url: SITE_CONFIG.author.url,
+    jobTitle: SITE_CONFIG.author.role,
+    worksFor: {
+      '@type': 'Organization',
+      name: 'Anblicks',
+    },
+    sameAs: SITE_CONFIG.author.sameAs,
+    knowsAbout: [
+      'Data Engineering',
+      'Snowflake',
+      'AWS',
+      'Azure',
+      'Databricks',
+      'Apache Airflow',
+      'dbt',
+      'ETL/ELT Pipelines',
+      'Data Warehousing',
+      'Cloud Architecture',
+    ],
+    description: 'Data Engineer with 4+ years of experience specializing in cloud-native data architectures, ETL/ELT pipelines, and modern data stack technologies.',
+  };
+}
+
+/**
  * Generate WebSite schema with search action
  */
 export function getWebSiteSchema() {
