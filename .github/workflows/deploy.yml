@@ -128,8 +128,8 @@ jobs:
           # Determine build flags
           case "${{ github.event.inputs.build_type }}" in
             "force-rebuild"|"nuclear-redeploy")
-              echo "build_flags=--posts-only --force" >> $GITHUB_OUTPUT
-              echo "🔨 Force rebuild all posts"
+              echo "build_flags=--force" >> $GITHUB_OUTPUT
+              echo "🔨 Force rebuild all pages"
               ;;
             "full-with-categories")
               echo "build_flags=--force" >> $GITHUB_OUTPUT

@@ -9,6 +9,7 @@ const NewsletterPage = () => {
       <MetaTags 
         title="Newsletter - DataEngineer Hub"
         description="Subscribe to the DataEngineer Hub newsletter for the latest in data engineering."
+        noindex={true}
       />
       <div className="pt-4 pb-12">
         <motion.div

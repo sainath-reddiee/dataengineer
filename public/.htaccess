@@ -114,7 +114,7 @@
     # ========================================================================
     
     # Don't rewrite robots.txt, sitemap.xml, favicon.ico
-    RewriteRule ^(robots\.txt|sitemap\.xml|sitemap_index\.xml|favicon\.ico)$ - [L]
+    RewriteRule ^(robots\.txt|sitemap\.xml|sitemap-index\.xml|sitemap-pseo-1\.xml|favicon\.ico)$ - [L]
     
     # ========================================================================
     # IMPORTANT: Allow real files and directories to be served directly
