@@ -266,6 +266,22 @@ async function generateSitemap() {
 
     fs.writeFileSync(sitemapPath, sitemapXML, 'utf8');
 
+    // Also update sitemap-index.xml with current date
+    const sitemapIndexXML = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- WordPress Main Sitemap (Dynamically managed by API) -->
+  <sitemap>
+    <loc>https://dataengineerhub.blog/sitemap.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://dataengineerhub.blog/sitemap-pseo-1.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+</sitemapindex>`;
+    const sitemapIndexPath = path.join(publicDir, 'sitemap-index.xml');
+    fs.writeFileSync(sitemapIndexPath, sitemapIndexXML, 'utf8');
+
     console.log(`\n✅ Sitemap generated successfully!`);
     console.log(`📍 Location: ${sitemapPath}`);
     console.log(`📊 Total URLs: ${sitemapEntries.length}`);

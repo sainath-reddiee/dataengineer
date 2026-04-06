@@ -60,20 +60,33 @@ async function fetchAllPosts() {
     }
 }
 
-// Extract key facts from content
+// Extract key facts from content - returns contextual sentences, not raw numbers
 function extractKeyFacts(content) {
     const facts = [];
+    const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 30 && s.trim().length < 250);
 
-    // Extract statistics
-    const stats = content.match(/\d+(?:\.\d+)?%|\d+(?:,\d{3})*(?:\.\d+)?\s*(?:million|billion|thousand|MB|GB|TB|ms|seconds?|minutes?)/gi) || [];
-    facts.push(...stats.slice(0, 3));
+    // 1. Sentences containing statistics WITH their context
+    const statSentences = sentences.filter(s =>
+        /\d+(?:\.\d+)?%|\d+(?:,\d{3})+|\d+x\b/i.test(s) &&
+        /(?:reduce|improve|increase|save|cut|boost|faster|slower|more|less|compared|versus|over|under)/i.test(s)
+    );
+    facts.push(...statSentences.slice(0, 2).map(s => s.trim()));
 
-    // Extract strong statements (sentences with "is", "are", "means")
-    const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 20 && s.trim().length < 200);
-    const definitions = sentences.filter(s => /(?:is|are|means?|refers? to)\s+/i.test(s)).slice(0, 2);
-    facts.push(...definitions.map(d => d.trim()));
+    // 2. Definitional sentences (what something IS)
+    const definitions = sentences.filter(s =>
+        /(?:^|\s)(?:is a|is an|is the|are the|refers to|means|defined as|essentially)\s/i.test(s) &&
+        !facts.includes(s.trim())
+    );
+    facts.push(...definitions.slice(0, 2).map(s => s.trim()));
 
-    return facts.slice(0, 5); // Max 5 facts
+    // 3. Key recommendation sentences
+    const recommendations = sentences.filter(s =>
+        /(?:best practice|recommend|should|always|never|important|critical|key takeaway|pro tip)/i.test(s) &&
+        !facts.includes(s.trim())
+    );
+    facts.push(...recommendations.slice(0, 1).map(s => s.trim()));
+
+    return facts.slice(0, 5);
 }
 
 // Extract entities (technologies, tools, brands)
@@ -92,21 +105,48 @@ function extractEntities(content) {
     return [...new Set(entities.map(e => e.toLowerCase()))].slice(0, 10);
 }
 
-// Extract first question from content
+// Extract the primary question this article answers
 function extractQuestionAnswered(title, content) {
-    // Check if title is a question
+    // Check if title is already a question
     if (/^(?:what|why|how|when|where|who|can|is|are|do|does)\s/i.test(title)) {
         return title;
     }
 
-    // Find first H2/H3 question
+    // Find first H2/H3 that is a question
     const questionMatch = content.match(/<h[2-3][^>]*>([^<]*\?[^<]*)<\/h[2-3]>/i);
     if (questionMatch) {
         return questionMatch[1].replace(/<[^>]+>/g, '').trim();
     }
 
-    // Generate from title
-    return `How to ${title.toLowerCase()}`;
+    // Generate a natural question from the title based on content type
+    const cleanTitle = title.toLowerCase().trim();
+
+    // Tutorial/guide patterns
+    if (/guide|tutorial|getting started|introduction|intro\b/i.test(cleanTitle)) {
+        return `What is ${title.replace(/[-:]?\s*(?:complete |ultimate |comprehensive )?(?:guide|tutorial|intro\w*)\s*(?:for\s+)?\d{0,4}\s*$/i, '').trim()} and how do you use it?`;
+    }
+
+    // "How to" patterns
+    if (/how to|setup|configure|install|implement|build|create|deploy/i.test(cleanTitle)) {
+        return title.endsWith('?') ? title : `${title}?`;
+    }
+
+    // "vs" comparison patterns
+    if (/\bvs\.?\b|\bversus\b|\bcompared?\b/i.test(cleanTitle)) {
+        return `${title} - which should you choose?`;
+    }
+
+    // Certification/exam patterns
+    if (/certif|exam|pass/i.test(cleanTitle)) {
+        return `How do you prepare for and pass the ${title.replace(/[-:]?\s*(?:guide|tips)\s*\d{0,4}\s*$/i, '').trim()}?`;
+    }
+
+    // Default: wrap as "What is" or "How does X work"
+    if (/optimization|tuning|techniques|best practices|tips/i.test(cleanTitle)) {
+        return `What are the best ${title.replace(/\d{4}\s*$/,'').trim().toLowerCase()}?`;
+    }
+
+    return `What is ${title.replace(/\d{4}\s*$/,'').trim()} and how does it work?`;
 }
 
 // Strip HTML tags

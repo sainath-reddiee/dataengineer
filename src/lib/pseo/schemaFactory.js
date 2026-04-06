@@ -207,6 +207,32 @@ export const generateComparisonSchema = (comparison) => {
     };
 };
 
+/**
+ * Generate ItemList schema for hub pages (glossary hub, comparison hub)
+ * Helps search engines and AI systems understand the collection of child pages
+ * @param {Object} options - { name, description, url, items: [{name, url, description, position}] }
+ * @returns {Object} JSON-LD ItemList schema
+ */
+export const generateItemListSchema = ({ name, description, url, items }) => {
+    if (!items?.length) return null;
+
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: name,
+        description: description,
+        url: url,
+        numberOfItems: items.length,
+        itemListElement: items.map((item, index) => ({
+            '@type': 'ListItem',
+            position: item.position || index + 1,
+            name: item.name,
+            url: item.url,
+            ...(item.description && { description: item.description }),
+        })),
+    };
+};
+
 export default {
     generateDefinedTermSchema,
     generateFAQSchema,
@@ -214,5 +240,6 @@ export default {
     generateBreadcrumbSchema,
     generateGlossaryHubSchema,
     generateAllGlossarySchemas,
-    generateComparisonSchema
+    generateComparisonSchema,
+    generateItemListSchema,
 };

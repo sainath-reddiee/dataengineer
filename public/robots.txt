@@ -26,6 +26,9 @@ Allow: /*.woff2$
 Allow: /manifest.json
 Allow: /sitemap.xml
 Allow: /robots.txt
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /rss.xml
 
 # =============================================================================
 # SITEMAPS - Google will discover all sub-sitemaps via sitemap-index.xml

@@ -10,7 +10,7 @@ import searchIndex from '@/data/searchIndex.json';
 
 // SEO Factories
 import { generateComparisonHubMeta, generateComparisonCanonical } from '@/lib/pseo/metadataFactory';
-import { generateGlossaryHubSchema } from '@/lib/pseo/schemaFactory'; // Reusing collection schema for now, or could create specific one
+import { generateGlossaryHubSchema, generateItemListSchema } from '@/lib/pseo/schemaFactory'; // Reusing collection schema for now, or could create specific one
 
 export function ComparisonHubPage() {
     // Use searchIndex comparisons (has all 7 including pSEO additions)
@@ -33,6 +33,17 @@ export function ComparisonHubPage() {
         url: canonical,
         '@id': canonical
     };
+    const itemListSchema = generateItemListSchema({
+        name: 'Data Tool Comparisons',
+        description: 'Unbiased, in-depth comparisons of the top data engineering tools.',
+        url: canonical,
+        items: comparisons.map((comp, idx) => ({
+            name: `${comp.toolA} vs ${comp.toolB}`,
+            url: `https://dataengineerhub.blog/compare/${comp.slug}`,
+            description: comp.shortVerdict,
+            position: idx + 1,
+        })),
+    });
 
     return (
         <>
@@ -45,6 +56,7 @@ export function ComparisonHubPage() {
                 <meta property="og:description" content={meta.description} />
                 <meta property="og:type" content="website" />
                 <script type="application/ld+json">{JSON.stringify(schema)}</script>
+                {itemListSchema && <script type="application/ld+json">{JSON.stringify(itemListSchema)}</script>}
             </Helmet>
 
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">

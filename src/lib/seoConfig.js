@@ -68,7 +68,7 @@ export const SEO_DEFAULTS = {
     'sql',
     'python',
     'airflow',
-    'dbt',
+    'etl elt pipelines',
   ],
   locale: 'en_US',
   type: 'website',
@@ -212,6 +212,10 @@ export function getArticleSchema({
         ? tags.map(t => (typeof t === 'string' ? t : t.name)).filter(Boolean).join(', ')
         : tags,
     }),
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['.article-summary', '.key-takeaways', 'h1', 'h2', '.tldr'],
+    },
   };
 }
 

@@ -27,7 +27,7 @@ const GLOSSARY_CATEGORIES = categories;
 
 // PSEO utilities
 import { generateGlossaryHubMeta, generateGlossaryCanonical } from '@/lib/pseo/metadataFactory';
-import { generateGlossaryHubSchema, generateBreadcrumbSchema } from '@/lib/pseo/schemaFactory';
+import { generateGlossaryHubSchema, generateBreadcrumbSchema, generateItemListSchema } from '@/lib/pseo/schemaFactory';
 import { SITE_CONFIG } from '@/lib/seoConfig';
 
 
@@ -83,6 +83,17 @@ export function GlossaryHubPage() {
         { name: 'Home', url: SITE_CONFIG.url },
         { name: 'Glossary', url: `${SITE_CONFIG.url}/glossary` },
     ]);
+    const itemListSchema = generateItemListSchema({
+        name: 'Data Engineering Glossary',
+        description: 'Comprehensive glossary of data engineering terms, tools, and concepts.',
+        url: `${SITE_CONFIG.url}/glossary`,
+        items: allTerms.map((term, idx) => ({
+            name: term.term,
+            url: `${SITE_CONFIG.url}/glossary/${term.slug}`,
+            description: term.shortDefinition,
+            position: idx + 1,
+        })),
+    });
 
     return (
         <>
@@ -106,6 +117,7 @@ export function GlossaryHubPage() {
                 {/* Structured Data */}
                 <script type="application/ld+json">{JSON.stringify(hubSchema)}</script>
                 <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+                {itemListSchema && <script type="application/ld+json">{JSON.stringify(itemListSchema)}</script>}
             </Helmet>
 
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
