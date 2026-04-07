@@ -89,6 +89,35 @@ function extractFAQsFromContent(html) {
   }
   return faqs;
 }
+
+/**
+ * Smart title truncation: omit " | DataEngineer Hub" suffix if combined
+ * title exceeds 60 chars (Google's typical SERP truncation point).
+ */
+function smartTitle(title) {
+  const suffix = ' | DataEngineer Hub';
+  return (title.length + suffix.length) > 60 ? title : title + suffix;
+}
+
+/**
+ * Normalize heading hierarchy in WordPress content.
+ * If no <h2> exists but <h3> tags do, promote all headings up one level
+ * (h3→h2, h4→h3, h5→h4, h6→h5) to avoid hierarchy gaps.
+ */
+function normalizeHeadings(html) {
+  if (!html) return html;
+  const hasH2 = /<h2[\s>]/i.test(html);
+  const hasH3 = /<h3[\s>]/i.test(html);
+  if (!hasH2 && hasH3) {
+    // Promote each level up by one: h6→h5, h5→h4, h4→h3, h3→h2
+    // Process from highest to lowest to avoid double-promotion
+    html = html.replace(/<(\/?)h6([\s>])/gi, '<$1h5$2');
+    html = html.replace(/<(\/?)h5([\s>])/gi, '<$1h4$2');
+    html = html.replace(/<(\/?)h4([\s>])/gi, '<$1h3$2');
+    html = html.replace(/<(\/?)h3([\s>])/gi, '<$1h2$2');
+  }
+  return html;
+}
 const CACHE_FILE = path.join(__dirname, '..', '.build-cache.json');
 
 // ============================================================================
@@ -622,13 +651,16 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const buildHash = crypto.randomBytes(8).toString('hex');
 
   // 🖼️ Process images to make them absolute
-  const processedContent = makeImagesAbsolute(fullContent);
+  const absoluteContent = makeImagesAbsolute(fullContent);
+
+  // 📐 Normalize heading hierarchy (h3→h2 etc. when h2 is missing)
+  const processedContent = normalizeHeadings(absoluteContent);
 
   // 🖼️ Determine OG image: use featured image or fallback to default
   const ogImageUrl = featuredImage || 'https://dataengineerhub.blog/og-image.jpg';
 
   // 🔥 Extract FAQ-style Q&A from article content for FAQPage schema
-  const articleFaqs = extractFAQsFromContent(fullContent);
+  const articleFaqs = extractFAQsFromContent(processedContent);
   let faqSchemaBlock = '';
   if (articleFaqs.length > 0) {
     const faqItems = articleFaqs.map(faq =>
@@ -650,7 +682,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${title} | DataEngineer Hub</title>
+    <title>${smartTitle(title)}</title>
     <meta name="description" content="${description}" />
     <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
@@ -1192,7 +1224,7 @@ function generateSimpleHTML(pageData, bundleFiles) {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${title} | DataEngineer Hub</title>
+    <title>${smartTitle(title)}</title>
     <meta name="description" content="${description}" />
     <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
     ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
@@ -2783,7 +2815,7 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${title} | DataEngineer Hub</title>
+    <title>${smartTitle(title)}</title>
     <meta name="description" content="${description}" />
     <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
     <meta name="robots" content="index, follow" />
