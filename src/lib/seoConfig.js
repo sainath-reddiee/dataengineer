@@ -273,6 +273,64 @@ export function getHowToSchema({ name, description, steps, image }) {
   };
 }
 
+/**
+ * Generate VideoObject schema for embedded videos
+ */
+export function getVideoSchema(videos) {
+  if (!videos || videos.length === 0) return null;
+  if (videos.length === 1) {
+    return videos[0];
+  }
+  return videos;
+}
+
+/**
+ * Extract YouTube/Vimeo videos from HTML content
+ */
+export function extractVideosFromContent(html, articleTitle, articleDescription, articleThumbnail) {
+  if (!html) return [];
+  const videos = [];
+  const seen = new Set();
+
+  // Match YouTube iframes
+  const ytRegex = /src=["'](?:https?:)?\/\/(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})[^"']*["']/gi;
+  let match;
+  while ((match = ytRegex.exec(html)) !== null) {
+    const videoId = match[1];
+    if (seen.has(videoId)) continue;
+    seen.add(videoId);
+    videos.push({
+      '@context': 'https://schema.org',
+      '@type': 'VideoObject',
+      name: articleTitle,
+      description: articleDescription,
+      thumbnailUrl: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+      uploadDate: new Date().toISOString().split('T')[0],
+      embedUrl: `https://www.youtube.com/embed/${videoId}`,
+      contentUrl: `https://www.youtube.com/watch?v=${videoId}`,
+    });
+  }
+
+  // Match Vimeo iframes
+  const vimeoRegex = /src=["'](?:https?:)?\/\/player\.vimeo\.com\/video\/(\d+)[^"']*["']/gi;
+  while ((match = vimeoRegex.exec(html)) !== null) {
+    const videoId = match[1];
+    if (seen.has(`vimeo-${videoId}`)) continue;
+    seen.add(`vimeo-${videoId}`);
+    videos.push({
+      '@context': 'https://schema.org',
+      '@type': 'VideoObject',
+      name: articleTitle,
+      description: articleDescription,
+      thumbnailUrl: articleThumbnail,
+      uploadDate: new Date().toISOString().split('T')[0],
+      embedUrl: `https://player.vimeo.com/video/${videoId}`,
+    });
+  }
+
+  return videos;
+}
+
 // ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================

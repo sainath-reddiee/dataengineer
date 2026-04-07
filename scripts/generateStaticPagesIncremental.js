@@ -677,6 +677,51 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     </script>`;
   }
 
+  // 🎬 Extract YouTube/Vimeo embeds for VideoObject schema
+  let videoSchemaBlock = '';
+  const videoEmbeds = [];
+  const seenVideos = new Set();
+  const ytRegex = /src=["'](?:https?:)?\/\/(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})[^"']*["']/gi;
+  const vimeoRegex = /src=["'](?:https?:)?\/\/player\.vimeo\.com\/video\/(\d+)[^"']*["']/gi;
+  let vMatch;
+  while ((vMatch = ytRegex.exec(processedContent)) !== null) {
+    const vid = vMatch[1];
+    if (seenVideos.has(vid)) continue;
+    seenVideos.add(vid);
+    videoEmbeds.push({
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": title,
+      "description": description,
+      "thumbnailUrl": `https://img.youtube.com/vi/${vid}/maxresdefault.jpg`,
+      "uploadDate": postDate || buildTimestamp,
+      "embedUrl": `https://www.youtube.com/embed/${vid}`,
+      "contentUrl": `https://www.youtube.com/watch?v=${vid}`
+    });
+  }
+  while ((vMatch = vimeoRegex.exec(processedContent)) !== null) {
+    const vid = vMatch[1];
+    if (seenVideos.has(`vimeo-${vid}`)) continue;
+    seenVideos.add(`vimeo-${vid}`);
+    videoEmbeds.push({
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": title,
+      "description": description,
+      "thumbnailUrl": ogImageUrl,
+      "uploadDate": postDate || buildTimestamp,
+      "embedUrl": `https://player.vimeo.com/video/${vid}`
+    });
+  }
+  if (videoEmbeds.length > 0) {
+    const videoData = videoEmbeds.length === 1 ? videoEmbeds[0] : videoEmbeds;
+    videoSchemaBlock = `
+    <!-- 🎬 STRUCTURED DATA - VideoObject Schema -->
+    <script type="application/ld+json">
+    ${JSON.stringify(videoData, null, 2)}
+    </script>`;
+  }
+
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -1158,6 +1203,7 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
     }
     </script>
 ${faqSchemaBlock}
+${videoSchemaBlock}
 
     <!-- React app loads and takes over for interactive experience -->
 ${relativeModulePreload}
@@ -3168,6 +3214,20 @@ async function buildIncremental(options = {}) {
     const finalArticleCount = fs.existsSync(articlesDir) ? fs.readdirSync(articlesDir).length : 0;
     console.log(`   📊 Verified: ${finalArticleCount} article directories in dist/articles/`);
 
+    // 📝 SEO Override Coverage Report
+    const overrideKeys = Object.keys(seoOverrides);
+    const articleSlugs = posts.map(p => p.slug);
+    const coveredSlugs = articleSlugs.filter(slug => seoOverrides[slug]);
+    const missingSlugs = articleSlugs.filter(slug => !seoOverrides[slug]);
+    const coverage = articleSlugs.length > 0 ? ((coveredSlugs.length / articleSlugs.length) * 100).toFixed(1) : 0;
+    console.log(`   🎯 SEO Override Coverage: ${coveredSlugs.length}/${articleSlugs.length} articles (${coverage}%)`);
+    if (missingSlugs.length > 0) {
+      console.log(`   ⚠️  ${missingSlugs.length} articles missing SEO overrides:`);
+      missingSlugs.slice(0, 10).forEach(slug => console.log(`      - ${slug}`));
+      if (missingSlugs.length > 10) {
+        console.log(`      ... and ${missingSlugs.length - 10} more`);
+      }
+    }
   } catch (error) {
     console.error('❌ Error processing posts:', error.message);
     stats.errors++;

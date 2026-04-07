@@ -10,7 +10,7 @@ import { usePost, useRelatedPosts } from '@/hooks/useWordPress';
 import { preloadImage } from '@/utils/imageOptimizer';
 import { throttle } from '@/utils/performance';
 import { trackScrollDepth, trackArticleRead } from '@/utils/analytics';
-import { generateBreadcrumbs, getFAQSchema, getHowToSchema } from '@/lib/seoConfig';
+import { generateBreadcrumbs, getFAQSchema, getHowToSchema, getVideoSchema, extractVideosFromContent } from '@/lib/seoConfig';
 import { extractFAQFromContent } from '@/utils/faqExtractor';
 import { extractHowToSteps } from '@/utils/howToExtractor';
 import { getOptimizedTitle, getOptimizedDescription } from '@/data/seoOverrides';
@@ -23,9 +23,11 @@ import ArticleNavigation from '@/components/ArticleNavigation';
 import ReadingProgressBar from '@/components/ReadingProgressBar';
 import TableOfContents, { extractHeadings, injectHeadingIds } from '@/components/TableOfContents';
 import ShareButtons from '@/components/ShareButtons';
+import KeyTakeaways from '@/components/KeyTakeaways';
 import GiscusComments from '@/components/GiscusComments';
 import InArticleCTA from '@/components/InArticleCTA';
 import useCopyCodeButtons from '@/hooks/useCopyCodeButtons';
+import { injectInternalLinks } from '@/lib/pseo/linkingEngine';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
@@ -92,9 +94,26 @@ const processWordPressContent = (content) => {
     .replace(/<table/g, '<table class="wp-table"')
     .replace(/<iframe/g, '<div class="iframe-wrapper"><iframe')
     .replace(/<\/iframe>/g, '</iframe></div>')
-    .replace(/\n\n/g, '</p><p>');
+    .replace(/\n\n/g, '</p><p>')
+    // Optimize inline images: add lazy loading and async decoding
+    .replace(/<img(?![^>]*loading=)/gi, '<img loading="lazy" decoding="async"');
 
   return cleanContent;
+};
+
+// Extract key takeaways from H2 headings in article content
+const extractKeyTakeaways = (html) => {
+  if (!html) return [];
+  const h2Regex = /<h2[^>]*>(.*?)<\/h2>/gi;
+  const takeaways = [];
+  let match;
+  while ((match = h2Regex.exec(html)) !== null) {
+    const text = match[1].replace(/<[^>]+>/g, '').trim();
+    if (text && text.length > 3 && text.length < 150) {
+      takeaways.push(text);
+    }
+  }
+  return takeaways.slice(0, 8);
 };
 
 const ErrorDisplay = ({ error, onRetry, slug }) => {
@@ -542,7 +561,18 @@ const ArticlePage = () => {
         })
       : null;
 
-    const processedHtml = useMemo(() => processWordPressContent(safePost.content), [safePost.content]);
+    // Auto-extract VideoObject schema from YouTube/Vimeo embeds
+    const videoSchema = getVideoSchema(
+      extractVideosFromContent(safePost.content, safePost.title, safePost.excerpt, safePost.image)
+    );
+
+    // Extract key takeaways from H2 headings for AEO visibility
+    const keyTakeaways = extractKeyTakeaways(safePost.content);
+
+    const processedHtml = useMemo(() => {
+      const sanitized = processWordPressContent(safePost.content);
+      return injectInternalLinks(sanitized, slug);
+    }, [safePost.content, slug]);
     const headings = useMemo(() => extractHeadings(processedHtml), [processedHtml]);
 
     return (
@@ -563,6 +593,7 @@ const ArticlePage = () => {
           breadcrumbs={breadcrumbs}
           faqSchema={faqSchema}
           howToSchema={howToSchema}
+          videoSchema={videoSchema}
         />
 
       <div className="container mx-auto px-6 max-w-7xl">
@@ -623,6 +654,9 @@ const ArticlePage = () => {
           <Suspense fallback={<div className="h-32" />}>
             <AdPlacement />
           </Suspense>
+
+          {/* Key Takeaways — AEO/AI visibility, Speakable schema target */}
+          <KeyTakeaways items={keyTakeaways} />
 
           {/* Article Content with Table of Contents */}
               {/* Mobile ToC (above content) — hidden on xl where sidebar TOC shows */}

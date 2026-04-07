@@ -181,7 +181,7 @@ const CategoryPage = () => {
         keywords={`${lowerCategoryName}, data engineering, ${currentCategory.name} tutorials`}
         type="website"
         breadcrumbs={breadcrumbs}
-        noindex={true}
+        noindex={false}
       />
 
       <div className="pt-1 pb-8">

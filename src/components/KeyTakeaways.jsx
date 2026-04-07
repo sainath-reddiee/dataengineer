@@ -13,7 +13,7 @@ const KeyTakeaways = ({ items }) => {
     if (!items || items.length === 0) return null;
 
     return (
-        <div className="my-8 bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-6">
+        <div className="key-takeaways my-8 bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-6">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <CheckCircle className="w-6 h-6 text-blue-500" />
                 Key Takeaways

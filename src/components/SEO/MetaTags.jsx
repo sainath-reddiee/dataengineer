@@ -32,6 +32,7 @@ const MetaTags = ({
   breadcrumbs = null,
   faqSchema = null,
   howToSchema = null,
+  videoSchema = null,
   readTime, // NEW: for meta description optimization
   optimizeDescription = true, // NEW: enable/disable optimization
 }) => {
@@ -190,6 +191,13 @@ const MetaTags = ({
       {howToSchema && (
         <script type="application/ld+json">
           {JSON.stringify(howToSchema)}
+        </script>
+      )}
+
+      {/* Structured Data - VideoObject (if embedded videos detected) */}
+      {videoSchema && (
+        <script type="application/ld+json">
+          {JSON.stringify(videoSchema)}
         </script>
       )}
     </Helmet>
