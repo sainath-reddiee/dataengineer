@@ -66,6 +66,12 @@ Allow: /
 User-agent: cohere-ai
 Allow: /
 
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
 # =============================================================================
 # RATE LIMITING - Aggressive crawlers
 # =============================================================================

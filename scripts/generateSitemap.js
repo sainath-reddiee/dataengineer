@@ -159,7 +159,8 @@ function generateSitemapXML(pages) {
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
 ${pages.map(page => `  <url>
     <loc>${escapeXml(page.url)}</loc>
     <lastmod>${page.lastmod}</lastmod>
@@ -168,7 +169,15 @@ ${pages.map(page => `  <url>
     <image:image>
       <image:loc>${escapeXml(page.image)}</image:loc>
       <image:title>${escapeXml(page.imageTitle || '')}</image:title>
-    </image:image>` : ''}
+    </image:image>` : ''}${page.newsDate ? `
+    <news:news>
+      <news:publication>
+        <news:name>DataEngineer Hub</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>${page.newsDate}</news:publication_date>
+      <news:title>${escapeXml(page.newsTitle || '')}</news:title>
+    </news:news>` : ''}
   </url>`).join('\n')}
 </urlset>`;
 
@@ -222,8 +231,11 @@ async function generateSitemap() {
 
     // Add blog posts with validated dates and images
     console.log('📝 Adding blog posts...');
+    const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
+    let newsCount = 0;
     posts.forEach(post => {
       const postDate = formatDate(post.modified || post.date || new Date());
+      const publishDate = new Date(post.date);
 
       // Extract featured image URL from _embedded if available
       let imageUrl = null;
@@ -231,14 +243,23 @@ async function generateSitemap() {
         imageUrl = post._embedded['wp:featuredmedia'][0].source_url;
       }
 
-      sitemapEntries.push({
+      const entry = {
         url: `${SITE_URL}/articles/${post.slug}`,
         lastmod: postDate,
         changefreq: 'weekly',
         priority: 0.7,
         image: imageUrl,
         imageTitle: post.title?.rendered || post.slug.replace(/-/g, ' '),
-      });
+      };
+
+      // Add news:news markup for articles published within the last 2 days
+      if (publishDate >= twoDaysAgo) {
+        entry.newsDate = publishDate.toISOString();
+        entry.newsTitle = post.title?.rendered || post.slug.replace(/-/g, ' ');
+        newsCount++;
+      }
+
+      sitemapEntries.push(entry);
     });
 
     // NOTE: Category and tag pages are excluded from sitemap (they are noindex)
@@ -289,6 +310,7 @@ async function generateSitemap() {
     console.log(`📊 Total URLs: ${sitemapEntries.length}`);
     console.log(`   - Static pages: ${STATIC_PAGES.length}`);
     console.log(`   - Blog posts: ${posts.length}`);
+    console.log(`   - News entries (last 2 days): ${newsCount}`);
     console.log(`\n💡 Next steps:`);
     console.log(`   1. Validate sitemap: https://www.xml-sitemaps.com/validate-xml-sitemap.html`);
     console.log(`   2. Test locally: Open ${sitemapPath} in browser`);

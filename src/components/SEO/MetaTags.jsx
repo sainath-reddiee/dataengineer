@@ -135,7 +135,7 @@ const MetaTags = ({
       {/* Article-specific meta tags */}
       {type === 'article' && formattedPublishedTime && (
         <>
-          <meta property="article:author" content={author} />
+          <meta property="article:author" content={SITE_CONFIG.author.url} />
           <meta property="article:published_time" content={formattedPublishedTime} />
           {formattedModifiedTime && (
             <>

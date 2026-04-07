@@ -57,6 +57,38 @@ function sanitizeWordPressHTML(html) {
     // Remove data: URIs in src attributes (potential XSS vector)
     .replace(/src\s*=\s*["']?\s*data:/gi, 'src="');
 }
+
+/**
+ * Extract FAQ-style Q&A pairs from article HTML content.
+ * Looks for h2/h3 headings that end with '?' and extracts the following
+ * paragraph(s) as the answer text. Returns array of {question, answer}.
+ */
+function extractFAQsFromContent(html) {
+  if (!html) return [];
+  const faqs = [];
+  // Match h2 or h3 headings ending with '?'
+  const headingRegex = /<h[23][^>]*>(.*?)<\/h[23]>/gi;
+  let match;
+  while ((match = headingRegex.exec(html)) !== null) {
+    const questionHtml = match[1];
+    const question = stripHTML(questionHtml).trim();
+    if (!question.endsWith('?')) continue;
+
+    // Extract text between this heading and the next heading (h2/h3/h4)
+    const afterHeading = html.substring(match.index + match[0].length);
+    const nextHeadingMatch = afterHeading.match(/<h[2-4][^>]*>/i);
+    const answerBlock = nextHeadingMatch
+      ? afterHeading.substring(0, nextHeadingMatch.index)
+      : afterHeading.substring(0, 1000);
+    const answer = stripHTML(answerBlock).trim().substring(0, 500);
+
+    if (answer.length > 20) {
+      faqs.push({ question, answer });
+    }
+    if (faqs.length >= 10) break; // Cap at 10 FAQs per article
+  }
+  return faqs;
+}
 const CACHE_FILE = path.join(__dirname, '..', '.build-cache.json');
 
 // ============================================================================
@@ -595,6 +627,24 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   // 🖼️ Determine OG image: use featured image or fallback to default
   const ogImageUrl = featuredImage || 'https://dataengineerhub.blog/og-image.jpg';
 
+  // 🔥 Extract FAQ-style Q&A from article content for FAQPage schema
+  const articleFaqs = extractFAQsFromContent(fullContent);
+  let faqSchemaBlock = '';
+  if (articleFaqs.length > 0) {
+    const faqItems = articleFaqs.map(faq =>
+      `{"@type":"Question","name":${JSON.stringify(faq.question)},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(faq.answer)}}}`
+    ).join(',');
+    faqSchemaBlock = `
+    <!-- 🔥 STRUCTURED DATA - FAQPage Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [${faqItems}]
+    }
+    </script>`;
+  }
+
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -604,6 +654,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     <meta name="description" content="${description}" />
     <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />` : ''}
 
     <!-- Open Graph -->
     <meta property="og:type" content="article" />
@@ -616,7 +667,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="en_US" />
     <meta property="article:published_time" content="${postDate || buildTimestamp}" />
-    <meta property="article:modified_time" content="${postModified || buildTimestamp}" />
+    <meta property="article:modified_time" content="${postModified || postDate || buildTimestamp}" />
     <meta property="article:author" content="https://dataengineerhub.blog/about" />
 
     <!-- Twitter Card -->
@@ -996,7 +1047,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
         }
       },
       "datePublished": "${postDate || buildTimestamp}",
-      "dateModified": "${postModified || buildTimestamp}",
+      "dateModified": "${postModified || postDate || buildTimestamp}",
       "mainEntityOfPage": {
         "@type": "WebPage",
         "@id": "https://dataengineerhub.blog${pagePath}"
@@ -1074,6 +1125,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
       "description": "Data Engineer with 4+ years of experience specializing in building scalable data pipelines and cloud-native data solutions."
     }
     </script>
+${faqSchemaBlock}
 
     <!-- React app loads and takes over for interactive experience -->
 ${relativeModulePreload}

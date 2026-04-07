@@ -32,6 +32,38 @@
       }
     }
     </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": "https://dataengineerhub.blog/#website",
+      "name": "DataEngineer Hub",
+      "url": "https://dataengineerhub.blog",
+      "publisher": { "@id": "https://dataengineerhub.blog/#organization" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://dataengineerhub.blog/articles?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "@id": "https://dataengineerhub.blog/#webpage",
+      "name": "DataEngineer Hub - Data Engineering Tutorials & Guides",
+      "url": "https://dataengineerhub.blog",
+      "isPartOf": { "@id": "https://dataengineerhub.blog/#website" },
+      "about": { "@id": "https://dataengineerhub.blog/#organization" },
+      "description": "In-depth tutorials on Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and modern data engineering."
+    }
+    </script>
     
     <style>
       * {
