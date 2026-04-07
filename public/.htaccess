@@ -28,6 +28,12 @@
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
     
     # ========================================================================
+    # KEYWORD CANNIBALIZATION: 301 redirects for consolidated articles
+    # ========================================================================
+    
+    RewriteRule ^articles/snowflake-query-optimization-2025/?$ /articles/snowflake-query-optimization-guide-2026 [R=301,L]
+    
+    # ========================================================================
     # CRITICAL FIX: Handle trailing slashes consistently (SEO!)
     # ========================================================================
     

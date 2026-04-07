@@ -97,25 +97,8 @@ const MobileOptimization = () => {
       });
     }
 
-    // Preload critical font weights for mobile
-    const criticalFonts = [
-      'Inter-400.woff2',
-      'Inter-600.woff2',
-      'Inter-700.woff2'
-    ];
-
-    criticalFonts.forEach(font => {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.as = 'font';
-      link.type = 'font/woff2';
-      link.crossOrigin = 'anonymous';
-      link.href = `https://fonts.gstatic.com/s/inter/v12/${font}`;
-
-      if (!document.querySelector(`link[href="${link.href}"]`)) {
-        document.head.appendChild(link);
-      }
-    });
+    // Self-hosted Inter variable font is already preloaded in index.html
+    // No additional font preloading needed
   };
 
   return null; // This component doesn't render anything

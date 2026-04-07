@@ -376,9 +376,28 @@ function findBundleFiles(distDir) {
   return { jsFile, cssFile };
 }
 
-// ============================================================================
-// API FETCHING
-// ============================================================================
+// Discover critical JS chunks for modulepreload hints (eliminates waterfall)
+function findCriticalChunks(distDir) {
+  const jsDir = path.join(distDir, 'assets', 'js');
+  if (!fs.existsSync(jsDir)) return [];
+
+  const jsFiles = fs.readdirSync(jsDir);
+  // Critical chunks that the browser will need immediately after the entry module
+  const criticalPrefixes = ['react-vendor-', 'vendor-', 'helmet-'];
+  const chunks = [];
+
+  for (const prefix of criticalPrefixes) {
+    const match = jsFiles.find(f => f.startsWith(prefix) && f.endsWith('.js'));
+    if (match) {
+      chunks.push(`/assets/js/${match}`);
+    }
+  }
+
+  if (chunks.length > 0) {
+    console.log(`📦 Found ${chunks.length} critical chunks for modulepreload`);
+  }
+  return chunks;
+}
 
 async function fetchFromWP(endpoint, fields = '') {
   const items = [];
@@ -529,8 +548,8 @@ function makeImagesAbsolute(content) {
 // ============================================================================
 
 function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
-  const { title: rawTitle, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified } = pageData;
-  const { jsFile, cssFile } = bundleFiles;
+  const { title: rawTitle, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, featuredImage } = pageData;
+  const { jsFile, cssFile, modulePreloadHtml = '' } = bundleFiles;
 
   // 🛡️ Sanitize user-supplied strings from WordPress
   const title = escapeHtml(rawTitle);
@@ -545,12 +564,17 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   // Remove leading slash and prepend relative prefix
   const productionJsFile = jsFile ? `${relativePrefix}${jsFile.substring(1)}` : null;
   const productionCssFile = cssFile ? `${relativePrefix}${cssFile.substring(1)}` : null;
+  // Convert absolute modulepreload paths to relative
+  const relativeModulePreload = modulePreloadHtml.replace(/href="\/assets\//g, `href="${relativePrefix}assets/`);
 
   const buildTimestamp = new Date().toISOString();
   const buildHash = crypto.randomBytes(8).toString('hex');
 
   // 🖼️ Process images to make them absolute
   const processedContent = makeImagesAbsolute(fullContent);
+
+  // 🖼️ Determine OG image: use featured image or fallback to default
+  const ogImageUrl = featuredImage || 'https://dataengineerhub.blog/og-image.jpg';
 
   return `<!doctype html>
 <html lang="en">
@@ -568,6 +592,22 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     <meta property="og:title" content="${title}" />
     <meta property="og:description" content="${description}" />
     <meta property="og:site_name" content="DataEngineer Hub" />
+    <meta property="og:image" content="${ogImageUrl}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="article:published_time" content="${postDate || buildTimestamp}" />
+    <meta property="article:modified_time" content="${postModified || buildTimestamp}" />
+    <meta property="article:author" content="https://dataengineerhub.blog/about" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@sainath29" />
+    <meta name="twitter:creator" content="@sainath29" />
+    <meta name="twitter:title" content="${title}" />
+    <meta name="twitter:description" content="${description}" />
+    <meta name="twitter:image" content="${ogImageUrl}" />
+    <meta name="twitter:image:alt" content="${title}" />
 
     <!-- Build: ${buildTimestamp} | Hash: ${buildHash} -->
 
@@ -911,14 +951,20 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
       "description": "${descriptionJsonLd}",
       "image": {
         "@type": "ImageObject",
-        "url": "https://dataengineerhub.blog/og-image.jpg",
+        "url": "${ogImageUrl}",
         "width": 1200,
         "height": 630
       },
       "author": {
         "@type": "Person",
+        "@id": "https://dataengineerhub.blog/about#person",
         "name": "Sainath Reddy",
-        "url": "https://dataengineerhub.blog/about"
+        "url": "https://dataengineerhub.blog/about",
+        "jobTitle": "Data Engineer",
+        "sameAs": [
+          "https://twitter.com/sainath29",
+          "https://www.linkedin.com/in/sainath-reddy-06a97817a/"
+        ]
       },
       "publisher": {
         "@type": "Organization",
@@ -988,6 +1034,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     </script>
 
     <!-- React app loads and takes over for interactive experience -->
+${relativeModulePreload}
     ${productionJsFile ? `<script type="module" crossorigin src="${productionJsFile}"></script>` : ''}
 
     <script>
@@ -2876,6 +2923,8 @@ async function buildIncremental(options = {}) {
   }
 
   const bundleFiles = findBundleFiles(distDir);
+  const criticalChunks = findCriticalChunks(distDir);
+  bundleFiles.modulePreloadHtml = criticalChunks.map(c => `    <link rel="modulepreload" href="${c}" />`).join('\n');
   const articlesDir = path.join(distDir, 'articles');
   const articlesExist = fs.existsSync(articlesDir) && fs.readdirSync(articlesDir).length > 0;
 
@@ -2910,7 +2959,7 @@ async function buildIncremental(options = {}) {
 
   try {
     // 🔥 CRITICAL: Fetch with _embed to get full content + categories + tags for mapping
-    const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content,modified,categories,tags');
+    const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content,modified,categories,tags,jetpack_featured_media_url');
     console.log(`   Found ${posts.length} posts from API`);
 
     // Build article list for "More Articles" section and listing pages
@@ -2947,7 +2996,8 @@ async function buildIncremental(options = {}) {
         fullContent: fullContent, // 🔥 FULL content for crawlers
         slug: post.slug,
         date: post.date,
-        modified: post.modified
+        modified: post.modified,
+        featuredImage: post.jetpack_featured_media_url || null
       };
 
       const contentHash = hashContent(pageData);

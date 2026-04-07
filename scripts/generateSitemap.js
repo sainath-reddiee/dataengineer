@@ -167,6 +167,7 @@ ${pages.map(page => `  <url>
     <priority>${page.priority}</priority>${page.image ? `
     <image:image>
       <image:loc>${escapeXml(page.image)}</image:loc>
+      <image:title>${escapeXml(page.imageTitle || '')}</image:title>
     </image:image>` : ''}
   </url>`).join('\n')}
 </urlset>`;
@@ -235,7 +236,8 @@ async function generateSitemap() {
         lastmod: postDate,
         changefreq: 'weekly',
         priority: 0.7,
-        image: imageUrl, // Add image URL for sitemap
+        image: imageUrl,
+        imageTitle: post.title?.rendered || post.slug.replace(/-/g, ' '),
       });
     });
 
