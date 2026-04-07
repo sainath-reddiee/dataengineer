@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 06 Apr 2026 15:35:25 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 07 Apr 2026 07:33:28 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -53,7 +53,7 @@
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/02/Designer_11zon.jpg" type="image/jpeg" />
     </item>
     <item>
-      <title>Snowflake AI_PARSE_DOCUMENT: Complete End-to-End Guide for Document Processing 2026</title>
+      <title>Snowflake AI_PARSE_DOCUMENT: Full Guide 2026</title>
       <link>https://dataengineerhub.blog/articles/snowflake-parse-document-complete-guide-2026</link>
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-parse-document-complete-guide-2026</guid>
       <description>Why Document Processing Matters in 2026 Enterprises store approximately 80-90% of their business data in unstructured formats—PDFs, Word documents, scanned images, contracts, invoices, and reports. Yet most enterprise data warehouses,&amp;#8230;</description>
@@ -74,7 +74,7 @@
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/Snowflake-cortex-cost-comparison.jpg" type="image/jpeg" />
     </item>
     <item>
-      <title>Snowflake Streams and Tasks: Complete Guide to Building Data Pipelines with SCD2</title>
+      <title>Snowflake Streams &amp;amp; Tasks: SCD2 Pipeline Guide</title>
       <link>https://dataengineerhub.blog/articles/snowflake-streams-tasks-pipeline-guide</link>
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-streams-tasks-pipeline-guide</guid>
       <description>The Night Everything Broke (And How Streams Saved Me) It was 2 AM on a Tuesday. My phone was buzzing non-stop. Our nightly ETL job had failed—again. This time, it&amp;#8230;</description>
@@ -202,7 +202,7 @@
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/11/ChatGPT-Image-Nov-10-2025-08_01_35-PM_11zon.jpg" type="image/jpeg" />
     </item>
     <item>
-      <title>Snowflake Cortex AISQL Query Optimization: 7 Proven Strategies to Cut Costs &amp;amp; Boost Performance</title>
+      <title>7 Ways to Cut Snowflake Cortex AI Costs [2026]</title>
       <link>https://dataengineerhub.blog/articles/snowflake-cortex-aisql-query-optimization-guide</link>
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-cortex-aisql-query-optimization-guide</guid>
       <description>Modern data architectures are evolving rapidly, and Snowflake Cortex AISQL is at the forefront of this change. It lets you query unstructured data—files, images, and text—directly using SQL enhanced with&amp;#8230;</description>

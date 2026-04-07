@@ -9,6 +9,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
 const WORDPRESS_BASE_URL = 'https://app.dataengineerhub.blog';
 
+// SEO overrides for CTR-optimized titles and descriptions
+import seoOverrides, { getSEOOverride } from '../src/data/seoOverrides.js';
+
 // ============================================================================
 // 🛡️ XSS PREVENTION HELPERS
 // ============================================================================
@@ -2927,15 +2930,19 @@ async function buildIncremental(options = {}) {
       const pagePath = `/articles/${post.slug}`;
       currentPages.add(pagePath);
 
-      const description = stripHTML(post.excerpt.rendered).substring(0, 160) ||
+      const rawTitle = stripHTML(post.title.rendered);
+      const rawDescription = stripHTML(post.excerpt.rendered).substring(0, 160) ||
         'Read this article on DataEngineer Hub';
+
+      // Apply SEO overrides for CTR-optimized titles and descriptions
+      const seoOverride = getSEOOverride(post.slug);
 
       // 🔥 KEY FIX: Use FULL content, not just 500 chars!
       const fullContent = post.content.rendered; // Complete HTML content
 
       const pageData = {
-        title: stripHTML(post.title.rendered),
-        description,
+        title: seoOverride?.title || rawTitle,
+        description: seoOverride?.description || rawDescription,
         path: pagePath,
         fullContent: fullContent, // 🔥 FULL content for crawlers
         slug: post.slug,

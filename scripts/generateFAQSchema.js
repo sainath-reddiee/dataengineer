@@ -21,7 +21,7 @@ async function fetchAllPosts() {
 
         while (hasMore && page <= 20) {
             const response = await fetch(
-                `${WORDPRESS_API_URL}/posts?page=${page}&per_page=100`,
+                `${WORDPRESS_API_URL}/posts?page=${page}&per_page=100&_fields=slug,title,content`,
                 {
                     headers: {
                         'Accept': 'application/json',
@@ -60,54 +60,185 @@ async function fetchAllPosts() {
     }
 }
 
-// Extract Q&A pairs from content
+// Check if text looks like a question (ported from runtime faqExtractor.js)
+function isQuestionText(text) {
+    const lower = text.toLowerCase().trim();
+    return (
+        text.endsWith('?') ||
+        lower.startsWith('how ') ||
+        lower.startsWith('what ') ||
+        lower.startsWith('why ') ||
+        lower.startsWith('when ') ||
+        lower.startsWith('where ') ||
+        lower.startsWith('which ') ||
+        lower.startsWith('can ') ||
+        lower.startsWith('should ') ||
+        lower.startsWith('is ') ||
+        lower.startsWith('are ') ||
+        lower.startsWith('do ') ||
+        lower.startsWith('does ') ||
+        lower.startsWith('will ') ||
+        lower.startsWith('would ')
+    );
+}
+
+// Extract Q&A pairs from content using split-on-tags approach (Node.js compatible)
 function extractQAPairs(content) {
     if (!content) return [];
 
     const qaPairs = [];
+    const seenQuestions = new Set();
 
-    // Pattern 1: H2/H3 questions followed by paragraphs
-    const questionPattern = /<h[2-3][^>]*>([^<]*\?[^<]*)<\/h[2-3]>\s*<p[^>]*>([^<]+(?:<[^>]+>[^<]*<\/[^>]+>[^<]*)*?)<\/p>/gi;
-    let match; // This 'match' variable is used in the while loop condition below.
-
-    while ((match = questionPattern.exec(content)) !== null) {
-        const question = stripHTML(match[1]).trim();
-        let answer = stripHTML(match[2]).trim();
-
-        // Get more context if answer is too short
-        if (answer.length < 50) {
-            // Try to get next paragraph too
-            const nextPMatch = content.substring(match.index + match[0].length).match(/<p[^>]*>([^<]+)<\/p>/i);
-            if (nextPMatch) {
-                answer += ' ' + stripHTML(nextPMatch[1]).trim();
-            }
+    function addPair(question, answer) {
+        const q = question.trim();
+        const a = answer.trim();
+        const qLower = q.toLowerCase();
+        if (seenQuestions.has(qLower)) return;
+        if (q.length < 10 || a.length < 30) return;
+        seenQuestions.add(qLower);
+        // Truncate answer at sentence boundary
+        let finalAnswer = a.substring(0, 500);
+        if (a.length > 500) {
+            const lastPeriod = finalAnswer.lastIndexOf('. ');
+            if (lastPeriod > 200) finalAnswer = finalAnswer.substring(0, lastPeriod + 1);
         }
+        qaPairs.push({ question: q, answer: finalAnswer });
+    }
 
-        // Only include if we have a good answer (50-500 chars)
-        if (answer.length >= 50 && answer.length <= 500) {
-            qaPairs.push({
-                question,
-                answer: answer.substring(0, 500) // Cap at 500 chars
-            });
+    // Split content into blocks by HTML tags to walk the structure
+    // Each block is { tag, text } where tag is 'h2', 'h3', 'p', 'ul', 'ol', etc.
+    const blocks = [];
+    const tagRegex = /<(h[1-6]|p|ul|ol|li|dt|dd|strong|blockquote)(\s[^>]*)?>[\s\S]*?<\/\1>/gi;
+    let tagMatch;
+
+    while ((tagMatch = tagRegex.exec(content)) !== null) {
+        const fullMatch = tagMatch[0];
+        const tag = tagMatch[1].toLowerCase();
+        const text = stripHTML(fullMatch);
+        if (text.length > 0) {
+            blocks.push({ tag, text, raw: fullMatch });
         }
     }
 
-    // Pattern 2: Strong tags with questions
-    const strongQuestionPattern = /<strong[^>]*>([^<]*\?[^<]*)<\/strong>\s*<\/p>\s*<p[^>]*>([^<]+)<\/p>/gi;
+    // Strategy 1: H2/H3 headings that look like questions
+    for (let i = 0; i < blocks.length; i++) {
+        const block = blocks[i];
+        if ((block.tag === 'h2' || block.tag === 'h3') && isQuestionText(block.text)) {
+            // Collect answer from following paragraphs, lists
+            let answer = '';
+            let j = i + 1;
+            while (j < blocks.length && answer.length < 500) {
+                const next = blocks[j];
+                // Stop at next heading
+                if (next.tag.startsWith('h')) break;
+                if (next.tag === 'p' && next.text.length > 15) {
+                    answer += next.text + ' ';
+                }
+                if (next.tag === 'ul' || next.tag === 'ol' || next.tag === 'li') {
+                    answer += next.text + '. ';
+                }
+                j++;
+            }
+            const q = block.text.endsWith('?') ? block.text : block.text + '?';
+            addPair(q, answer);
+        }
+    }
 
-    while ((match = strongQuestionPattern.exec(content)) !== null) {
-        const question = stripHTML(match[1]).trim();
-        const answer = stripHTML(match[2]).trim();
-
-        if (answer.length >= 50 && answer.length <= 500) {
-            // Avoid duplicates
-            if (!qaPairs.some(qa => qa.question === question)) {
-                qaPairs.push({ question, answer: answer.substring(0, 500) });
+    // Strategy 2: Synthesize FAQ from non-question H2/H3 headings
+    // Converts headings like "Data Masking Best Practices" into
+    // "What are Data Masking Best Practices?" with the content below as answer
+    if (qaPairs.length < 5) {
+        for (let i = 0; i < blocks.length; i++) {
+            if (qaPairs.length >= 8) break;
+            const block = blocks[i];
+            if ((block.tag === 'h2' || block.tag === 'h3') && !isQuestionText(block.text)) {
+                // Skip generic headings
+                const lower = block.text.toLowerCase();
+                if (['introduction', 'conclusion', 'summary', 'references', 'about',
+                     'table of contents', 'tldr', 'tl;dr', 'final thoughts',
+                     'related articles', 'share this'].some(skip => lower.includes(skip))) {
+                    continue;
+                }
+                // Collect answer
+                let answer = '';
+                let j = i + 1;
+                while (j < blocks.length && answer.length < 500) {
+                    const next = blocks[j];
+                    if (next.tag.startsWith('h')) break;
+                    if (next.tag === 'p' && next.text.length > 15) {
+                        answer += next.text + ' ';
+                    }
+                    if (next.tag === 'ul' || next.tag === 'ol' || next.tag === 'li') {
+                        answer += next.text + '. ';
+                    }
+                    j++;
+                }
+                if (answer.length >= 50) {
+                    // Synthesize a question from the heading
+                    const q = synthesizeQuestion(block.text);
+                    addPair(q, answer);
+                }
             }
         }
     }
 
-    return qaPairs.slice(0, 10); // Max 10 Q&A pairs per article
+    // Strategy 3: Inline Q&A patterns (Q: / A:)
+    for (let i = 0; i < blocks.length; i++) {
+        const block = blocks[i];
+        if (block.tag === 'p') {
+            const qMatch = block.text.match(/^Q\s*[:\-]\s*(.+)/i);
+            if (qMatch) {
+                let answer = '';
+                let j = i + 1;
+                while (j < blocks.length && answer.length < 400) {
+                    const next = blocks[j];
+                    if (next.tag === 'p' && /^Q\s*[:\-]/i.test(next.text)) break;
+                    if (next.tag === 'p') {
+                        const aMatch = next.text.match(/^A\s*[:\-]\s*(.*)/i);
+                        answer += (aMatch ? aMatch[1] : next.text) + ' ';
+                    }
+                    j++;
+                }
+                addPair(qMatch[1].trim(), answer);
+            }
+        }
+    }
+
+    // Strategy 4: Definition lists (dt/dd)
+    for (let i = 0; i < blocks.length; i++) {
+        if (blocks[i].tag === 'dt' && i + 1 < blocks.length && blocks[i + 1].tag === 'dd') {
+            addPair(blocks[i].text, blocks[i + 1].text);
+        }
+    }
+
+    return qaPairs.slice(0, 8); // Max 8 Q&A pairs (Google-safe)
+}
+
+// Synthesize a question from a heading that isn't already a question
+function synthesizeQuestion(heading) {
+    const lower = heading.toLowerCase();
+
+    // Pattern: "X vs Y" or "X versus Y" → "What is the difference between X and Y?"
+    const vsMatch = heading.match(/^(.+?)\s+(?:vs\.?|versus)\s+(.+)$/i);
+    if (vsMatch) return `What is the difference between ${vsMatch[1].trim()} and ${vsMatch[2].trim()}?`;
+
+    // Pattern: starts with verb-ing → "What is [heading]?"
+    if (/^(building|creating|implementing|deploying|configuring|setting|managing|optimizing|running|using)/i.test(lower)) {
+        return `How does ${heading} work?`;
+    }
+
+    // Pattern: "Best Practices" / "Key Features" / "Benefits" → "What are [heading]?"
+    if (/(?:practices|features|benefits|advantages|strategies|techniques|tips|steps|requirements|limitations|challenges)/i.test(lower)) {
+        return `What are ${heading}?`;
+    }
+
+    // Pattern: "Architecture" / "Setup" / "Configuration" → "What is [heading]?"
+    if (/(?:architecture|setup|configuration|overview|pricing|comparison|performance|security|governance)/i.test(lower)) {
+        return `What is ${heading}?`;
+    }
+
+    // Default: "What is [heading]?"
+    return `What is ${heading}?`;
 }
 
 // Strip HTML tags

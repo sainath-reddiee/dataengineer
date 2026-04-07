@@ -1,5 +1,5 @@
 # DataEngineer Hub - Full Content Index for LLMs
-> Last generated: 2026-04-06
+> Last generated: 2026-04-07
 > Total articles: 59
 > Source: https://dataengineerhub.blog
 > Compact version: https://dataengineerhub.blog/llms.txt
@@ -26,9 +26,9 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Summary: What it is: Snowflake Managed Iceberg Tables store data in your cloud storage (S3, GCS, Azure) instead of Snowflake&#8217;s storage, while Snowflake manages the metadata and catalog.
 - Key sections: ⚡ TL;DR (Too Long; Didn&#8217;t Read) | Introduction: The Evolution of Snowflake Table Formats | What is Apache Iceberg? | Why Iceberg Matters | Snowflake Managed Iceberg Tables: What&#8217;s Different? | 1. Snowflake-Managed Iceberg Tables ⭐ (Recommended) | 2. Externally-Managed Iceberg Tables | Architecture: How Snowflake Managed Iceberg Tables Work
 
-### Snowflake AI_PARSE_DOCUMENT: Complete End-to-End Guide for Document Processing 2026
+### Snowflake AI_PARSE_DOCUMENT: Full Guide 2026
 - URL: https://dataengineerhub.blog/articles/snowflake-parse-document-complete-guide-2026
-- Published: 2026-01-28 | Updated: 2026-01-28
+- Published: 2026-01-28 | Updated: 2026-04-07
 - Word count: ~2372
 - Summary: Enterprises store approximately 80-90% of their business data in unstructured formats—PDFs, Word documents, scanned images, contracts, invoices, and reports. Yet most enterprise data warehouses, including Snowflake, were built to handle structured data.
 - Key sections: What is AI_PARSE_DOCUMENT? | Why Should You Use AI_PARSE_DOCUMENT? | Real Business Problems It Solves | LAYOUT Mode vs. OCR Mode: Which One Do You Need? | LAYOUT Mode: Perfect for Retaining Precise Layout and Formatting | OCR Mode: Fast Text Extraction | Image Extraction: New in January 2026 | How AI_PARSE_DOCUMENT Is Priced
@@ -40,9 +40,9 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Summary: Snowflake Cortex AI matured significantly between 2023-2026, expanding from simple LLM functions to a comprehensive AI platform with AISQL, Cortex Search, Cortex Analyst, Document AI, and Agents. As adoption accelerates, controlling costs becomes critical—not because Cortex is expensive, but because
 - Key sections: What is Snowflake Cortex AI? (2026 Overview) | How Does Snowflake Cortex Charge You? (2026 Pricing Model) | Token-Based Pricing Fundamentals | AISQL Functions: The Core Cortex Services | What Are the Available AISQL Functions? | AI_SENTIMENT: Analyzing Emotional Tone | How Does AI_SENTIMENT Work? | AI_EXTRACT: Pulling Structured Data
 
-### Snowflake Streams and Tasks: Complete Guide to Building Data Pipelines with SCD2
+### Snowflake Streams &amp; Tasks: SCD2 Pipeline Guide
 - URL: https://dataengineerhub.blog/articles/snowflake-streams-tasks-pipeline-guide
-- Published: 2026-01-14 | Updated: 2026-01-17
+- Published: 2026-01-14 | Updated: 2026-04-07
 - Word count: ~3017
 - Summary: It was 2 AM on a Tuesday. My phone was buzzing non-stop. Our nightly ETL job had failed—again. This time, it crashed after processing 6 hours of data, and we had to start over from scratch. The business needed fresh customer data by 8 AM for the morning reports.
 - Key sections: The Night Everything Broke (And How Streams Saved Me) | What Are Streams and Tasks? (The Simple Explanation) | Part 1: Understanding Streams (Change Data Capture) | Creating Your First Stream | How Streams Capture Changes | Stream Consumption (Critical Concept) | Part 2: Understanding Tasks (Automation) | Creating Your First Task
@@ -108,9 +108,9 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Summary: I’ll be honest &#8211; when I first saw the OpenFlow announcement at Snowflake BUILD, my initial reaction was “Great, another data pipeline tool.” We already have dbt , Airflow , Fivetran, and dozens of other ingestion solutions. Did we really need another one?
 - Key sections: What is Snowflake OpenFlow? | Why OpenFlow Matters for Modern Organizations | 1. Unified Ingestion Framework | 2. AI-Powered Transformation | 3. Intelligent Error Handling | 4. Schema Evolution | 5. Cost Optimization | The Architecture: How OpenFlow Actually Works
 
-### Snowflake Cortex AISQL Query Optimization: 7 Proven Strategies to Cut Costs &amp; Boost Performance
+### 7 Ways to Cut Snowflake Cortex AI Costs [2026]
 - URL: https://dataengineerhub.blog/articles/snowflake-cortex-aisql-query-optimization-guide
-- Published: 2025-11-08 | Updated: 2025-11-08
+- Published: 2025-11-08 | Updated: 2026-04-07
 - Word count: ~1422
 - Summary: Modern data architectures are evolving rapidly , and Snowflake Cortex AISQL is at the forefront of this change. It lets you query unstructured data—files, images, and text—directly using SQL enhanced with AI capabilities. But here&#8217;s the catch: these powerful AI features come with significant c
 - Key sections: Why Snowflake Cortex AISQL Query Optimization Matters in 2025 | Understanding How Cortex AISQL Works | Getting Started: Profile Your Queries First | The Single Most Effective Optimization: Filter Early, Filter Hard | Smart Join Strategies | Pre-Calculate and Store Embeddings | Optimize Your Table Structure | Size Your Warehouse Appropriately

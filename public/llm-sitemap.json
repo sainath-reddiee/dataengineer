@@ -11,7 +11,7 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-04-06",
+  "lastUpdated": "2026-04-07",
   "totalArticles": 59,
   "pages": [
     {
@@ -92,7 +92,7 @@
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-parse-document-complete-guide-2026",
-      "title": "Snowflake AI_PARSE_DOCUMENT: Complete End-to-End Guide for Document Processing 2026",
+      "title": "Snowflake AI_PARSE_DOCUMENT: Full Guide 2026",
       "summary": "Why Document Processing Matters in 2026 Enterprises store approximately 80-90% of their business data in unstructured formats—PDFs, Word documents, scanned images, contracts, invoices, and reports. Yet most enterprise data warehouses,&#8230;",
       "keyFacts": [
         "AI_PARSE_DOCUMENT is a fully managed SQL function that transforms unstructured documents into AI-ready structured data",
@@ -105,7 +105,7 @@
         "azure"
       ],
       "questionAnswered": "What is AI_PARSE_DOCUMENT?",
-      "lastUpdated": "2026-01-28",
+      "lastUpdated": "2026-04-07",
       "published": "2026-01-28",
       "author": "sainath",
       "expertise": "Data Engineering Expert",
@@ -136,7 +136,7 @@
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-streams-tasks-pipeline-guide",
-      "title": "Snowflake Streams and Tasks: Complete Guide to Building Data Pipelines with SCD2",
+      "title": "Snowflake Streams &amp; Tasks: SCD2 Pipeline Guide",
       "summary": "The Night Everything Broke (And How Streams Saved Me) It was 2 AM on a Tuesday. My phone was buzzing non-stop. Our nightly ETL job had failed—again. This time, it&#8230;",
       "keyFacts": [
         "new_amount); -- IMPORTANT: Resume tasks in reverse order (child first, parent last) ALTER TASK aggregate_to_prod RESUME; ALTER TASK stage_data RESUME; ALTER TASK load_raw_data RESUME; -- Root task last"
@@ -146,7 +146,7 @@
         "sql"
       ],
       "questionAnswered": "What Are Streams and Tasks? (The Simple Explanation)",
-      "lastUpdated": "2026-01-17",
+      "lastUpdated": "2026-04-07",
       "published": "2026-01-14",
       "author": "sainath",
       "expertise": "Data Engineering Expert",
@@ -412,7 +412,7 @@
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-cortex-aisql-query-optimization-guide",
-      "title": "Snowflake Cortex AISQL Query Optimization: 7 Proven Strategies to Cut Costs &amp; Boost Performance",
+      "title": "7 Ways to Cut Snowflake Cortex AI Costs [2026]",
       "summary": "Modern data architectures are evolving rapidly, and Snowflake Cortex AISQL is at the forefront of this change. It lets you query unstructured data—files, images, and text—directly using SQL enhanced with&#8230;",
       "keyFacts": [
         "You can always scale down if it&#8217;s overkill, but starting too small will frustrate users and mask optimization opportunities"
@@ -421,8 +421,8 @@
         "snowflake",
         "sql"
       ],
-      "questionAnswered": "What are the best snowflake cortex aisql query optimization: 7 proven strategies to cut costs &amp; boost performance?",
-      "lastUpdated": "2025-11-08",
+      "questionAnswered": "What is 7 Ways to Cut Snowflake Cortex AI Costs [2026] and how does it work?",
+      "lastUpdated": "2026-04-07",
       "published": "2025-11-08",
       "author": "sainath",
       "expertise": "Data Engineering Expert",

@@ -13,6 +13,7 @@ import { trackScrollDepth, trackArticleRead } from '@/utils/analytics';
 import { generateBreadcrumbs, getFAQSchema, getHowToSchema } from '@/lib/seoConfig';
 import { extractFAQFromContent } from '@/utils/faqExtractor';
 import { extractHowToSteps } from '@/utils/howToExtractor';
+import { getOptimizedTitle, getOptimizedDescription } from '@/data/seoOverrides';
 import LazyImage from '@/components/LazyImage';
 import TagsList from '@/components/TagsList';
 import DOMPurify from 'dompurify';
@@ -550,8 +551,8 @@ const ArticlePage = () => {
       <ShareButtons title={safePost.title} url={typeof window !== 'undefined' ? window.location.href : ''} />
 
         <MetaTags
-          title={safePost.title}
-          description={safePost.excerpt}
+          title={getOptimizedTitle(slug, safePost.title)}
+          description={getOptimizedDescription(slug, safePost.excerpt)}
           image={safePost.image}
           type="article"
           publishedTime={safePost.date}
