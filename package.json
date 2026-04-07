@@ -32,7 +32,7 @@
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'",
     "test:seo": "npm run build && node scripts/testSEO.js",
     "test:build": "npm run build && npm run build:verify",
-    "pseo:sitemaps": "node scripts/lib/sitemap-generator.js",
+    "pseo:sitemaps": "node scripts/generateSitemap.js",
     "pseo:migrate": "node scripts/migrate-pseo-data.js",
     "pseo:sync-articles": "node scripts/sync-articles-for-linking.js",
     "pseo:search-index": "node scripts/generate-search-index.js",

@@ -5,7 +5,7 @@ import https from 'https';
 import http from 'http';
 
 const SITE_URL = 'https://dataengineerhub.blog';
-const SITEMAP_URL = `${SITE_URL}/sitemap.xml`;
+const SITEMAP_URL = `${SITE_URL}/sitemap-index.xml`;
 
 // Only search engines that still support ping
 // Only search engines that still support ping
@@ -74,17 +74,17 @@ async function verifySitemap() {
     console.log(`   Size: ${response.data.length} bytes`);
 
     // Basic XML validation
-    if (!response.data.includes('<?xml') || !response.data.includes('<urlset')) {
-      console.warn('⚠️  Warning: Sitemap might not be valid XML');
+    if (!response.data.includes('<?xml') || !response.data.includes('<sitemapindex')) {
+      console.warn('⚠️  Warning: Sitemap index might not be valid XML');
       return false;
     }
 
-    // Count URLs
-    const urlCount = (response.data.match(/<url>/g) || []).length;
-    console.log(`   URLs found: ${urlCount}`);
+    // Count sitemaps
+    const sitemapCount = (response.data.match(/<sitemap>/g) || []).length;
+    console.log(`   Sitemaps found: ${sitemapCount}`);
 
-    if (urlCount === 0) {
-      console.warn('⚠️  Warning: No URLs found in sitemap');
+    if (sitemapCount === 0) {
+      console.warn('⚠️  Warning: No sitemaps found in sitemap index');
       return false;
     }
 
@@ -169,7 +169,7 @@ async function submitSitemap() {
   console.log('   2. Add property: dataengineerhub.blog');
   console.log('   3. Verify ownership (DNS, HTML file, or Google Analytics)');
   console.log('   4. Go to Sitemaps → Submit sitemap');
-  console.log('   5. Enter: sitemap.xml');
+  console.log('   5. Enter: sitemap-index.xml');
   console.log('   6. Click Submit\n');
 
   console.log('📍 Bing Webmaster Tools (RECOMMENDED):');
@@ -177,7 +177,7 @@ async function submitSitemap() {
   console.log('   2. Add your site');
   console.log('   3. Import from Google Search Console (easiest!)');
   console.log('   4. Or verify manually');
-  console.log('   5. Submit sitemap: sitemap.xml\n');
+  console.log('   5. Submit sitemap: sitemap-index.xml\n');
 
   console.log('📍 IndexNow API (OPTIONAL - For Instant Indexing):');
   console.log('   1. Generate API key: https://www.bing.com/indexnow');

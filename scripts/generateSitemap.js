@@ -1,4 +1,4 @@
-// scripts/generateSitemap.js - FIXED WITH TAGS SUPPORT
+// scripts/generateSitemap.js - Full sitemap generation with categories, tags, pSEO
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -9,14 +9,20 @@ const __dirname = path.dirname(__filename);
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
 const SITE_URL = 'https://dataengineerhub.blog';
 
+// Static pages with realistic lastmod dates (not "today")
 const STATIC_PAGES = [
-  { url: '/', changefreq: 'daily', priority: 1.0 },
-  { url: '/articles', changefreq: 'daily', priority: 0.9 },
-  { url: '/about', changefreq: 'monthly', priority: 0.7 },
-  { url: '/contact', changefreq: 'monthly', priority: 0.4 },
-  { url: '/newsletter', changefreq: 'monthly', priority: 0.5 },
-  { url: '/privacy-policy', changefreq: 'yearly', priority: 0.3 },
-  { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3 },
+  { url: '/', changefreq: 'daily', priority: 1.0, lastmod: 'today' },       // Homepage changes with new posts
+  { url: '/articles', changefreq: 'daily', priority: 0.9, lastmod: 'today' }, // Articles listing changes with new posts
+  { url: '/about', changefreq: 'monthly', priority: 0.7, lastmod: '2026-03-01' },
+  { url: '/contact', changefreq: 'monthly', priority: 0.4, lastmod: '2026-03-01' },
+  { url: '/newsletter', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
+  { url: '/privacy-policy', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
+  { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
+  { url: '/disclaimer', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
+  { url: '/tags', changefreq: 'weekly', priority: 0.6, lastmod: 'today' },
+  { url: '/explore', changefreq: 'weekly', priority: 0.7, lastmod: 'today' },
+  { url: '/certification', changefreq: 'monthly', priority: 0.6, lastmod: '2026-03-01' },
+  { url: '/checklist', changefreq: 'monthly', priority: 0.6, lastmod: '2026-03-01' },
 ];
 
 // Format date to W3C format (YYYY-MM-DD)
@@ -206,30 +212,108 @@ function validateSitemap(entries) {
   return errors;
 }
 
+// Load pSEO data from JSON files
+function loadPSEOData() {
+  const pseoDir = path.join(__dirname, '..', 'src', 'data', 'pseo');
+  const entries = [];
+
+  // Hub pages
+  entries.push(
+    { url: `${SITE_URL}/glossary`, changefreq: 'monthly', priority: 0.8 },
+    { url: `${SITE_URL}/compare`, changefreq: 'monthly', priority: 0.8 }
+  );
+
+  // Glossary terms
+  const glossaryDir = path.join(pseoDir, 'glossary');
+  if (fs.existsSync(glossaryDir)) {
+    const files = fs.readdirSync(glossaryDir).filter(f => f.endsWith('.json'));
+    for (const file of files) {
+      try {
+        const data = JSON.parse(fs.readFileSync(path.join(glossaryDir, file), 'utf8'));
+        if (Array.isArray(data)) {
+          data.forEach(item => {
+            if (item.slug) {
+              entries.push({
+                url: `${SITE_URL}/glossary/${item.slug}`,
+                changefreq: 'monthly',
+                priority: 0.7,
+              });
+            }
+          });
+        }
+      } catch (e) {
+        console.warn(`  Warning: Could not parse ${file}: ${e.message}`);
+      }
+    }
+  }
+
+  // Comparison pages
+  const comparisonsDir = path.join(pseoDir, 'comparisons');
+  if (fs.existsSync(comparisonsDir)) {
+    const files = fs.readdirSync(comparisonsDir).filter(f => f.endsWith('.json'));
+    for (const file of files) {
+      try {
+        const data = JSON.parse(fs.readFileSync(path.join(comparisonsDir, file), 'utf8'));
+        if (Array.isArray(data)) {
+          data.forEach(item => {
+            if (item.slug) {
+              entries.push({
+                url: `${SITE_URL}/compare/${item.slug}`,
+                changefreq: 'monthly',
+                priority: 0.7,
+              });
+            }
+          });
+        }
+      } catch (e) {
+        console.warn(`  Warning: Could not parse ${file}: ${e.message}`);
+      }
+    }
+  }
+
+  return entries;
+}
+
+// Determine blog post priority based on recency
+function getPostPriority(post) {
+  const now = Date.now();
+  const publishDate = new Date(post.date).getTime();
+  const daysSincePublish = (now - publishDate) / (1000 * 60 * 60 * 24);
+
+  if (daysSincePublish <= 7) return 0.9;   // Last week: highest
+  if (daysSincePublish <= 30) return 0.8;   // Last month: high
+  if (daysSincePublish <= 90) return 0.7;   // Last quarter: normal
+  return 0.6;                                // Older: lower
+}
+
 // Main function
 async function generateSitemap() {
   console.log('🚀 Starting sitemap generation...\n');
 
   try {
-    // Fetch posts only - category/tag pages are noindex so excluded from sitemap
-    const posts = await fetchAllPosts();
+    // Fetch posts, categories, and tags in parallel
+    const [posts, categories, tags] = await Promise.all([
+      fetchAllPosts(),
+      fetchAllCategories(),
+      fetchAllTags(),
+    ]);
 
     // Build sitemap entries
     const sitemapEntries = [];
     const today = formatDate(new Date());
 
-    // Add static pages
+    // Add static pages with proper lastmod
     console.log('\n📝 Adding static pages...');
     STATIC_PAGES.forEach(page => {
       sitemapEntries.push({
         url: `${SITE_URL}${page.url}`,
-        lastmod: today,
+        lastmod: page.lastmod === 'today' ? today : page.lastmod,
         changefreq: page.changefreq,
         priority: page.priority,
       });
     });
 
-    // Add blog posts with validated dates and images
+    // Add blog posts with priority differentiation and images
     console.log('📝 Adding blog posts...');
     const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
     let newsCount = 0;
@@ -247,7 +331,7 @@ async function generateSitemap() {
         url: `${SITE_URL}/articles/${post.slug}`,
         lastmod: postDate,
         changefreq: 'weekly',
-        priority: 0.7,
+        priority: getPostPriority(post),
         image: imageUrl,
         imageTitle: post.title?.rendered || post.slug.replace(/-/g, ' '),
       };
@@ -262,7 +346,27 @@ async function generateSitemap() {
       sitemapEntries.push(entry);
     });
 
-    // NOTE: Category and tag pages are excluded from sitemap (they are noindex)
+    // Add category pages (now indexable)
+    console.log('📝 Adding category pages...');
+    categories.forEach(cat => {
+      sitemapEntries.push({
+        url: `${SITE_URL}/category/${cat.slug}`,
+        lastmod: today,
+        changefreq: 'weekly',
+        priority: 0.6,
+      });
+    });
+
+    // Add tag pages (now indexable)
+    console.log('📝 Adding tag pages...');
+    tags.forEach(tag => {
+      sitemapEntries.push({
+        url: `${SITE_URL}/tag/${tag.slug}`,
+        lastmod: today,
+        changefreq: 'weekly',
+        priority: 0.5,
+      });
+    });
 
     // Validate sitemap entries
     console.log('\n🔍 Validating sitemap...');
@@ -276,7 +380,7 @@ async function generateSitemap() {
 
     console.log('✅ Sitemap validation passed!');
 
-    // Generate XML
+    // Generate main sitemap XML
     const sitemapXML = generateSitemapXML(sitemapEntries);
 
     // Write to file
@@ -289,10 +393,25 @@ async function generateSitemap() {
 
     fs.writeFileSync(sitemapPath, sitemapXML, 'utf8');
 
-    // Also update sitemap-index.xml with current date
+    // Generate pSEO sitemap dynamically from JSON data
+    console.log('\n📝 Generating pSEO sitemap from data files...');
+    const pseoEntries = loadPSEOData();
+    const pseoLastmod = today;
+    const pseoXML = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${pseoEntries.map(entry => `  <url>
+    <loc>${entry.url}</loc>
+    <lastmod>${pseoLastmod}</lastmod>
+    <changefreq>${entry.changefreq}</changefreq>
+    <priority>${entry.priority}</priority>
+  </url>`).join('\n')}
+</urlset>`;
+    const pseoSitemapPath = path.join(publicDir, 'sitemap-pseo-1.xml');
+    fs.writeFileSync(pseoSitemapPath, pseoXML, 'utf8');
+
+    // Update sitemap-index.xml
     const sitemapIndexXML = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- WordPress Main Sitemap (Dynamically managed by API) -->
   <sitemap>
     <loc>https://dataengineerhub.blog/sitemap.xml</loc>
     <lastmod>${today}</lastmod>
@@ -306,15 +425,16 @@ async function generateSitemap() {
     fs.writeFileSync(sitemapIndexPath, sitemapIndexXML, 'utf8');
 
     console.log(`\n✅ Sitemap generated successfully!`);
-    console.log(`📍 Location: ${sitemapPath}`);
-    console.log(`📊 Total URLs: ${sitemapEntries.length}`);
+    console.log(`📍 Main sitemap: ${sitemapPath}`);
+    console.log(`📍 pSEO sitemap: ${pseoSitemapPath}`);
+    console.log(`📍 Sitemap index: ${sitemapIndexPath}`);
+    console.log(`📊 Main sitemap URLs: ${sitemapEntries.length}`);
     console.log(`   - Static pages: ${STATIC_PAGES.length}`);
     console.log(`   - Blog posts: ${posts.length}`);
+    console.log(`   - Categories: ${categories.length}`);
+    console.log(`   - Tags: ${tags.length}`);
     console.log(`   - News entries (last 2 days): ${newsCount}`);
-    console.log(`\n💡 Next steps:`);
-    console.log(`   1. Validate sitemap: https://www.xml-sitemaps.com/validate-xml-sitemap.html`);
-    console.log(`   2. Test locally: Open ${sitemapPath} in browser`);
-    console.log(`   3. Deploy and submit to Google Search Console`);
+    console.log(`📊 pSEO sitemap URLs: ${pseoEntries.length}`);
 
     return sitemapEntries;
   } catch (error) {
