@@ -7,6 +7,7 @@ const NotFoundPage = () => {
       <MetaTags
         title="Page Not Found | DataEngineer Hub"
         description="The page you are looking for does not exist or has been moved."
+        noindex={true}
       />
       <div className="container mx-auto px-6 py-24 text-center">
         <h1 className="text-6xl md:text-8xl font-black mb-4 gradient-text">404</h1>

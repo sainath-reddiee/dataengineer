@@ -38,6 +38,25 @@ function escapeJsonLd(str) {
     .replace(/\n/g, '\\n')
     .replace(/\r/g, '\\r');
 }
+/**
+ * Sanitize WordPress HTML content for safe embedding in static pages.
+ * Strips dangerous elements (script, iframe, object, embed, form),
+ * on* event handlers, and javascript: URIs.
+ */
+function sanitizeWordPressHTML(html) {
+  if (!html) return '';
+  return String(html)
+    // Remove script tags and content
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    // Remove iframe, object, embed, form tags
+    .replace(/<\/?(?:iframe|object|embed|form|applet)\b[^>]*>/gi, '')
+    // Remove on* event handlers from any tag
+    .replace(/\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+    // Remove javascript: URIs
+    .replace(/href\s*=\s*["']?\s*javascript:/gi, 'href="')
+    // Remove data: URIs in src attributes (potential XSS vector)
+    .replace(/src\s*=\s*["']?\s*data:/gi, 'src="');
+}
 const CACHE_FILE = path.join(__dirname, '..', '.build-cache.json');
 
 // ============================================================================
@@ -918,14 +937,14 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
 
           <!-- 🔥 THIS IS THE KEY: FULL HTML CONTENT WITH IMAGES -->
           <div class="article-body">
-            ${processedContent}
+            ${sanitizeWordPressHTML(processedContent)}
           </div>
           
           ${relatedArticles.length > 0 ? `
           <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
             <h2 style="color: #93c5fd; font-size: 1.4rem; margin-bottom: 1rem;">More Articles</h2>
             <ul style="list-style: none; padding: 0;">
-              ${relatedArticles.map(a => `<li style="margin-bottom: 0.8rem;"><a href="/articles/${a.slug}" style="color: #60a5fa; text-decoration: none; font-weight: 500;">${a.title}</a></li>`).join('\n              ')}
+              ${relatedArticles.map(a => `<li style="margin-bottom: 0.8rem;"><a href="/articles/${a.slug}" style="color: #60a5fa; text-decoration: none; font-weight: 500;">${escapeHtml(a.title)}</a></li>`).join('\n              ')}
             </ul>
           </div>
           ` : ''}
@@ -1030,6 +1049,29 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
       "sameAs": [
         "https://twitter.com/sainath29"
       ]
+    }
+    </script>
+
+    <!-- 🔥 STRUCTURED DATA - Person/Author Schema (E-E-A-T) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "@id": "https://dataengineerhub.blog/#author",
+      "name": "Sainath Reddy",
+      "url": "https://dataengineerhub.blog",
+      "jobTitle": "Data Engineer",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Anblicks"
+      },
+      "sameAs": [
+        "https://www.linkedin.com/in/sainath-reddy-06a97817a/",
+        "https://twitter.com/sainath29",
+        "https://github.com/sainathreddy-dataengineer"
+      ],
+      "knowsAbout": ["Data Engineering", "Snowflake", "AWS", "Azure", "Databricks", "Apache Airflow", "dbt", "ETL/ELT Pipelines", "Data Warehousing", "Cloud Architecture"],
+      "description": "Data Engineer with 4+ years of experience specializing in building scalable data pipelines and cloud-native data solutions."
     }
     </script>
 
@@ -1158,8 +1200,8 @@ function generateHomepageEnhancement(allArticleSummaries, categories) {
     for (const article of articles.slice(0, 8)) {
       articlesHTML += `
               <li style="margin-bottom: 0.8rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <a href="https://dataengineerhub.blog/articles/${article.slug}" style="color: #e2e8f0; text-decoration: none; font-size: 1.05rem; font-weight: 500;">${article.title}</a>
-                ${article.excerpt ? `<p style="color: #94a3b8; font-size: 0.9rem; margin-top: 0.3rem; line-height: 1.5;">${article.excerpt}</p>` : ''}
+                <a href="https://dataengineerhub.blog/articles/${article.slug}" style="color: #e2e8f0; text-decoration: none; font-size: 1.05rem; font-weight: 500;">${escapeHtml(article.title)}</a>
+                ${article.excerpt ? `<p style="color: #94a3b8; font-size: 0.9rem; margin-top: 0.3rem; line-height: 1.5;">${escapeHtml(article.excerpt)}</p>` : ''}
               </li>`;
     }
 
@@ -1206,9 +1248,9 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
 
     articleListHTML += `
               <li style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08);">
-                <a href="https://dataengineerhub.blog/articles/${article.slug}" style="color: #f1f5f9; text-decoration: none; font-size: 1.15rem; font-weight: 600; line-height: 1.4;">${article.title}</a>
+                <a href="https://dataengineerhub.blog/articles/${article.slug}" style="color: #f1f5f9; text-decoration: none; font-size: 1.15rem; font-weight: 600; line-height: 1.4;">${escapeHtml(article.title)}</a>
                 ${catNames ? `<div style="margin-top: 0.4rem;">${catNames}</div>` : ''}
-                ${article.excerpt ? `<p style="color: #94a3b8; font-size: 0.95rem; margin-top: 0.5rem; line-height: 1.6;">${article.excerpt}</p>` : ''}
+                ${article.excerpt ? `<p style="color: #94a3b8; font-size: 0.95rem; margin-top: 0.5rem; line-height: 1.6;">${escapeHtml(article.excerpt)}</p>` : ''}
               </li>`;
   }
 
@@ -1227,8 +1269,6 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
     <meta property="og:title" content="All Data Engineering Articles | DataEngineer Hub" />
     <meta property="og:description" content="Browse ${allArticleSummaries.length} in-depth tutorials covering Snowflake, Spark, dbt, Airflow, Python, and modern data engineering." />
     <meta property="og:site_name" content="DataEngineer Hub" />
-
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728" crossorigin="anonymous"></script>
 
     <!-- Build: ${buildTimestamp} -->
 
@@ -1404,7 +1444,6 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <meta property="og:title" content="' + safeName + ' Articles | DataEngineer Hub" />\n';
   html += '    <meta property="og:description" content="Browse ' + categoryArticles.length + ' ' + safeName + ' tutorials and guides for data engineers." />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n\n';
-  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728" crossorigin="anonymous"><\/script>\n\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
@@ -1675,8 +1714,6 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '    <meta property="og:description" content="Comprehensive glossary covering ' + totalTerms + ' essential data engineering terms across ' + categoryKeys.length + ' categories." />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
   html += '\n';
-  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728" crossorigin="anonymous"></script>\n';
-  html += '\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n';
   html += '\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
@@ -1848,11 +1885,11 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles) {
     for (var f = 0; f < term.faqs.length; f++) {
       var faq = term.faqs[f];
       faqHTML += '<div style="margin-bottom: 1.5rem; padding: 1.2rem; background: rgba(0,0,0,0.2); border-radius: 10px; border-left: 3px solid #60a5fa;">';
-      faqHTML += '<h3 style="color: #f1f5f9; font-size: 1.15rem; margin-bottom: 0.5rem;">' + faq.question + '</h3>';
-      faqHTML += '<p style="color: #cbd5e1; font-size: 1.05rem; line-height: 1.7; margin: 0;">' + faq.answer + '</p>';
+      faqHTML += '<h3 style="color: #f1f5f9; font-size: 1.15rem; margin-bottom: 0.5rem;">' + escapeHtml(faq.question) + '</h3>';
+      faqHTML += '<p style="color: #cbd5e1; font-size: 1.05rem; line-height: 1.7; margin: 0;">' + escapeHtml(faq.answer) + '</p>';
       faqHTML += '</div>';
       if (f > 0) faqSchemaItems += ',';
-      faqSchemaItems += '{"@type":"Question","name":"' + faq.question.replace(/"/g, '\\"') + '","acceptedAnswer":{"@type":"Answer","text":"' + faq.answer.replace(/"/g, '\\"').replace(/\n/g, ' ') + '"}}';
+      faqSchemaItems += '{"@type":"Question","name":' + JSON.stringify(faq.question) + ',"acceptedAnswer":{"@type":"Answer","text":' + JSON.stringify(faq.answer.replace(/\n/g, ' ')) + '}}';
     }
   }
 
@@ -1921,7 +1958,6 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles) {
   html += '    <meta property="og:title" content="What is ' + term.term + '? | Data Engineering Glossary" />\n';
   html += '    <meta property="og:description" content="' + descriptionMeta.replace(/"/g, '&quot;') + '" />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n\n';
-  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728" crossorigin="anonymous"><\/script>\n\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
@@ -2146,8 +2182,6 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '    <meta property="og:title" content="Data Engineering Tool Comparisons | ' + totalComparisons + ' Head-to-Head Guides" />\n';
   html += '    <meta property="og:description" content="Side-by-side comparisons of ' + totalComparisons + ' data engineering tools across ' + categoryKeys.length + ' categories." />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
-  html += '\n';
-  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728" crossorigin="anonymous"></script>\n';
   html += '\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n';
   html += '\n';
@@ -2417,7 +2451,6 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <meta property="og:title" content="' + comparison.toolA + ' vs ' + comparison.toolB + ' Comparison" />\n';
   html += '    <meta property="og:description" content="' + descriptionMeta.replace(/"/g, '&quot;') + '" />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n\n';
-  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728" crossorigin="anonymous"><\/script>\n\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
@@ -2558,9 +2591,9 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   for (var i = 0; i < tagArticles.length; i++) {
     var article = tagArticles[i];
     articleListHTML += '\n              <li style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08);">';
-    articleListHTML += '\n                <a href="https://dataengineerhub.blog/articles/' + article.slug + '" style="color: #f1f5f9; text-decoration: none; font-size: 1.15rem; font-weight: 600; line-height: 1.4;">' + article.title + '</a>';
+    articleListHTML += '\n                <a href="https://dataengineerhub.blog/articles/' + article.slug + '" style="color: #f1f5f9; text-decoration: none; font-size: 1.15rem; font-weight: 600; line-height: 1.4;">' + escapeHtml(article.title) + '</a>';
     if (article.excerpt) {
-      articleListHTML += '\n                <p style="color: #94a3b8; font-size: 0.95rem; margin-top: 0.5rem; line-height: 1.6;">' + article.excerpt + '</p>';
+      articleListHTML += '\n                <p style="color: #94a3b8; font-size: 0.95rem; margin-top: 0.5rem; line-height: 1.6;">' + escapeHtml(article.excerpt) + '</p>';
     }
     articleListHTML += '\n              </li>';
   }
@@ -2580,7 +2613,6 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '    <meta property="og:title" content="' + tag.name + ' Articles | DataEngineer Hub" />\n';
   html += '    <meta property="og:description" content="Browse ' + tagArticles.length + ' ' + tag.name + ' tutorials and guides for data engineers." />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n\n';
-  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728" crossorigin="anonymous"><\/script>\n\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
@@ -2710,9 +2742,6 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
     <meta property="og:title" content="${title}" />
     <meta property="og:description" content="${description}" />
     <meta property="og:site_name" content="DataEngineer Hub" />
-
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728" crossorigin="anonymous"></script>
 
     <!-- Build: ${buildTimestamp} -->
 
