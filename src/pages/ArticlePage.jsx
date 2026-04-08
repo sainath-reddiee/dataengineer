@@ -620,7 +620,7 @@ const ArticlePage = () => {
         <motion.article initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} className="space-y-8">
           {/* Hero Image */}
           {METADATA_DESIGN !== 3 && (
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl" style={{ height: '450px' }}>
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl max-h-[280px] sm:max-h-[340px] md:max-h-[400px] aspect-video">
               <LazyImage
                 src={safePost.image}
                 alt={safePost.title}
