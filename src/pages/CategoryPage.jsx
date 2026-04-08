@@ -120,7 +120,7 @@ const getCategoryIcon = (category, className = 'h-10 w-10') => {
   if (lowerCategory === 'sql') {
     return (
       <div className={`${className} bg-slate-200 rounded-full p-1.5 flex items-center justify-center`}>
-        <img src={iconUrls.sql} alt="SQL logo" className="h-full w-full object-contain" />
+        <img src={iconUrls.sql} alt="SQL logo" className="h-full w-full object-contain" width={24} height={24} loading="lazy" />
       </div>
     );
   }
@@ -135,6 +135,9 @@ const getCategoryIcon = (category, className = 'h-10 w-10') => {
           e.target.style.display = 'none';
           e.target.parentNode.innerHTML = `<div class="${className} bg-blue-500/20 rounded-lg flex items-center justify-center text-2xl">📁</div>`;
         }}
+        width={24}
+        height={24}
+        loading="lazy"
       />
     );
   }

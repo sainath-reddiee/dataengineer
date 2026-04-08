@@ -25,7 +25,7 @@ import { getAllGlossaryTerms } from '@/lib/pseo/glossaryLoader';
 
 // SEO Factories
 import { generateComparisonMeta, generateComparisonCanonical } from '@/lib/pseo/metadataFactory';
-import { generateComparisonSchema } from '@/lib/pseo/schemaFactory';
+import { generateComparisonSchema, generateBreadcrumbSchema } from '@/lib/pseo/schemaFactory';
 
 // Linking Engine
 import { getRelatedComparisons, getGlossaryTermsForTool } from '@/lib/pseo/linkingEngine';
@@ -58,6 +58,11 @@ const ComparisonPage = () => {
                 const meta = generateComparisonMeta(data);
                 const canonical = generateComparisonCanonical(slug);
                 const schema = generateComparisonSchema(data);
+                const breadcrumbSchema = generateBreadcrumbSchema([
+                    { name: 'Home', url: 'https://dataengineerhub.blog' },
+                    { name: 'Comparisons', url: 'https://dataengineerhub.blog/compare' },
+                    { name: `${data.toolA} vs ${data.toolB}` },
+                ]);
 
                 // Load all data for linking engine
                 const [allComparisons, allTerms] = await Promise.all([
@@ -70,7 +75,7 @@ const ComparisonPage = () => {
                 const crossLinkedTerms = [...toolATerms, ...toolBTerms].filter((t, i, arr) => arr.findIndex(x => x.slug === t.slug) === i);
 
                 setComparison(data);
-                setDerivedData({ meta, canonical, schema, relatedComparisons, crossLinkedTerms });
+                setDerivedData({ meta, canonical, schema, breadcrumbSchema, relatedComparisons, crossLinkedTerms });
 
             } catch (err) {
                 console.error("Error loading comparison:", err);
@@ -115,7 +120,7 @@ const ComparisonPage = () => {
         finalVerdict, intro, lastUpdated
     } = comparison;
 
-    const { meta, canonical, schema } = derivedData;
+    const { meta, canonical, schema, breadcrumbSchema } = derivedData;
 
     return (
         <>
@@ -128,6 +133,7 @@ const ComparisonPage = () => {
                 <meta property="og:description" content={meta.description} />
                 <meta property="og:type" content="article" />
                 <script type="application/ld+json">{JSON.stringify(schema)}</script>
+                {breadcrumbSchema && <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>}
             </Helmet>
 
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">

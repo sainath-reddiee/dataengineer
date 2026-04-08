@@ -10,7 +10,7 @@ import searchIndex from '@/data/searchIndex.json';
 
 // SEO Factories
 import { generateComparisonHubMeta, generateComparisonCanonical } from '@/lib/pseo/metadataFactory';
-import { generateGlossaryHubSchema, generateItemListSchema } from '@/lib/pseo/schemaFactory'; // Reusing collection schema for now, or could create specific one
+import { generateComparisonHubSchema, generateBreadcrumbSchema, generateItemListSchema } from '@/lib/pseo/schemaFactory';
 
 export function ComparisonHubPage() {
     // Use searchIndex comparisons (has all 7 including pSEO additions)
@@ -25,14 +25,7 @@ export function ComparisonHubPage() {
     }));
     const meta = generateComparisonHubMeta();
     const canonical = generateComparisonCanonical();
-    // Using glossary hub schema structure as a base for collection
-    const schema = {
-        ...generateGlossaryHubSchema(),
-        name: 'Data Tool Comparisons',
-        description: meta.description,
-        url: canonical,
-        '@id': canonical
-    };
+    const schema = generateComparisonHubSchema();
     const itemListSchema = generateItemListSchema({
         name: 'Data Tool Comparisons',
         description: 'Unbiased, in-depth comparisons of the top data engineering tools.',
@@ -44,6 +37,10 @@ export function ComparisonHubPage() {
             position: idx + 1,
         })),
     });
+    const breadcrumbSchema = generateBreadcrumbSchema([
+        { name: 'Home', url: 'https://dataengineerhub.blog' },
+        { name: 'Comparisons', url: canonical },
+    ]);
 
     return (
         <>
@@ -57,9 +54,21 @@ export function ComparisonHubPage() {
                 <meta property="og:type" content="website" />
                 <script type="application/ld+json">{JSON.stringify(schema)}</script>
                 {itemListSchema && <script type="application/ld+json">{JSON.stringify(itemListSchema)}</script>}
+                {breadcrumbSchema && <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>}
             </Helmet>
 
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+                {/* Breadcrumb */}
+                <div className="bg-slate-900/50 border-b border-slate-800">
+                    <div className="max-w-6xl mx-auto px-4 py-3">
+                        <nav className="flex items-center gap-2 text-sm">
+                            <Link to="/" className="text-gray-400 hover:text-white transition-colors">Home</Link>
+                            <ChevronRight className="w-4 h-4 text-gray-500" />
+                            <span className="text-white font-medium">Comparisons</span>
+                        </nav>
+                    </div>
+                </div>
+
                 {/* Hero Section */}
                 <div className="bg-slate-900/50 border-b border-white/10 pt-24 pb-16">
                     <div className="container mx-auto px-6 text-center">

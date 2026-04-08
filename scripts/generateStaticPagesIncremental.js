@@ -722,6 +722,42 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     </script>`;
   }
 
+  // 📋 Extract HowTo steps from article content (regex-based, no DOM parser)
+  let howToSchemaBlock = '';
+  const howToSteps = [];
+  // Strategy 1: H2/H3 headings with "Step N:" pattern
+  const stepHeadingRegex = /<h[23][^>]*>\s*(Step\s+\d+\s*[:\-–—]\s*(.+?))\s*<\/h[23]>/gi;
+  let stepMatch;
+  while ((stepMatch = stepHeadingRegex.exec(processedContent)) !== null) {
+    const stepName = (stepMatch[2] || stepMatch[1]).replace(/<[^>]+>/g, '').trim();
+    if (stepName.length > 3) {
+      // Grab next <p> text as step description
+      const afterHeading = processedContent.substring(stepMatch.index + stepMatch[0].length, stepMatch.index + stepMatch[0].length + 1000);
+      const pMatch = afterHeading.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+      const stepText = pMatch ? pMatch[1].replace(/<[^>]+>/g, '').trim().substring(0, 500) : stepName;
+      howToSteps.push({ name: stepName, text: stepText.length > 20 ? stepText : stepName });
+    }
+  }
+  if (howToSteps.length >= 2) {
+    const howToData = {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": rawTitle,
+      "description": rawDescription,
+      "step": howToSteps.slice(0, 10).map((s, i) => ({
+        "@type": "HowToStep",
+        "position": i + 1,
+        "name": s.name,
+        "text": s.text
+      }))
+    };
+    howToSchemaBlock = `
+    <!-- 📋 STRUCTURED DATA - HowTo Schema -->
+    <script type="application/ld+json">
+    ${JSON.stringify(howToData, null, 2)}
+    </script>`;
+  }
+
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -1204,6 +1240,7 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
     </script>
 ${faqSchemaBlock}
 ${videoSchemaBlock}
+${howToSchemaBlock}
 
     <!-- React app loads and takes over for interactive experience -->
 ${relativeModulePreload}
@@ -1392,13 +1429,26 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
     <title>All Data Engineering Articles | DataEngineer Hub</title>
     <meta name="description" content="Browse all ${allArticleSummaries.length} data engineering articles on DataEngineer Hub. Tutorials on Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and more." />
     <link rel="canonical" href="https://dataengineerhub.blog/articles" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
 
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://dataengineerhub.blog/articles" />
     <meta property="og:title" content="All Data Engineering Articles | DataEngineer Hub" />
     <meta property="og:description" content="Browse ${allArticleSummaries.length} in-depth tutorials covering Snowflake, Spark, dbt, Airflow, Python, and modern data engineering." />
     <meta property="og:site_name" content="DataEngineer Hub" />
+    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@sainath29" />
+    <meta name="twitter:creator" content="@sainath29" />
+    <meta name="twitter:title" content="All Data Engineering Articles | DataEngineer Hub" />
+    <meta name="twitter:description" content="Browse ${allArticleSummaries.length} in-depth tutorials covering Snowflake, Spark, dbt, Airflow, Python, and modern data engineering." />
+    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />
+    <meta name="twitter:image:alt" content="All Data Engineering Articles | DataEngineer Hub" />
 
     <!-- Build: ${buildTimestamp} -->
 
@@ -1568,12 +1618,25 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <title>' + safeName + ' - Data Engineering Articles | DataEngineer Hub</title>\n';
   html += '    <meta name="description" content="' + descriptionMeta + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta name="robots" content="' + (categoryArticles.length === 0 ? 'noindex, follow' : 'index, follow') + '" />\n\n';
+  html += '    <meta name="robots" content="' + (categoryArticles.length === 0 ? 'noindex, follow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1') + '" />\n\n';
+  html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
   html += '    <meta property="og:title" content="' + safeName + ' Articles | DataEngineer Hub" />\n';
   html += '    <meta property="og:description" content="Browse ' + categoryArticles.length + ' ' + safeName + ' tutorials and guides for data engineers." />\n';
-  html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n\n';
+  html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
+  html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
+  html += '    <meta property="og:image:width" content="1200" />\n';
+  html += '    <meta property="og:image:height" content="630" />\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '    <!-- Twitter Card -->\n';
+  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
+  html += '    <meta name="twitter:site" content="@sainath29" />\n';
+  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
+  html += '    <meta name="twitter:title" content="' + safeName + ' Articles | DataEngineer Hub" />\n';
+  html += '    <meta name="twitter:description" content="Browse ' + categoryArticles.length + ' ' + safeName + ' tutorials and guides for data engineers." />\n';
+  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
+  html += '    <meta name="twitter:image:alt" content="' + safeName + ' Articles | DataEngineer Hub" />\n\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
@@ -1836,13 +1899,26 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '    <title>Data Engineering Glossary | ' + totalTerms + ' Key Terms Explained | DataEngineer Hub</title>\n';
   html += '    <meta name="description" content="Comprehensive data engineering glossary with ' + totalTerms + ' key terms explained. Learn about ETL, data warehousing, streaming, orchestration, cloud platforms, and more." />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog/glossary" />\n';
-  html += '    <meta name="robots" content="index, follow" />\n';
+  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n';
   html += '\n';
+  html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog/glossary" />\n';
   html += '    <meta property="og:title" content="Data Engineering Glossary | ' + totalTerms + ' Key Terms Explained" />\n';
   html += '    <meta property="og:description" content="Comprehensive glossary covering ' + totalTerms + ' essential data engineering terms across ' + categoryKeys.length + ' categories." />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
+  html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
+  html += '    <meta property="og:image:width" content="1200" />\n';
+  html += '    <meta property="og:image:height" content="630" />\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '    <!-- Twitter Card -->\n';
+  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
+  html += '    <meta name="twitter:site" content="@sainath29" />\n';
+  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
+  html += '    <meta name="twitter:title" content="Data Engineering Glossary | ' + totalTerms + ' Key Terms Explained" />\n';
+  html += '    <meta name="twitter:description" content="Comprehensive glossary covering ' + totalTerms + ' essential data engineering terms across ' + categoryKeys.length + ' categories." />\n';
+  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
+  html += '    <meta name="twitter:image:alt" content="Data Engineering Glossary | DataEngineer Hub" />\n';
   html += '\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n';
   html += '\n';
@@ -1959,6 +2035,38 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '    }\n';
   html += '    </script>\n';
   html += '\n';
+
+  // ItemList schema for glossary terms
+  html += '    <script type="application/ld+json">\n';
+  html += '    {\n';
+  html += '      "@context": "https://schema.org",\n';
+  html += '      "@type": "ItemList",\n';
+  html += '      "name": "Data Engineering Glossary Terms",\n';
+  html += '      "numberOfItems": ' + totalTerms + ',\n';
+  html += '      "itemListElement": [\n';
+  for (var ili = 0; ili < allGlossaryTerms.length; ili++) {
+    var listTerm = allGlossaryTerms[ili];
+    html += '        { "@type": "ListItem", "position": ' + (ili + 1) + ', "name": "' + listTerm.term.replace(/"/g, '\\"') + '", "url": "https://dataengineerhub.blog/glossary/' + listTerm.slug + '" }';
+    html += (ili < allGlossaryTerms.length - 1 ? ',\n' : '\n');
+  }
+  html += '      ]\n';
+  html += '    }\n';
+  html += '    </script>\n';
+  html += '\n';
+
+  // BreadcrumbList schema
+  html += '    <script type="application/ld+json">\n';
+  html += '    {\n';
+  html += '      "@context": "https://schema.org",\n';
+  html += '      "@type": "BreadcrumbList",\n';
+  html += '      "itemListElement": [\n';
+  html += '        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://dataengineerhub.blog" },\n';
+  html += '        { "@type": "ListItem", "position": 2, "name": "Glossary" }\n';
+  html += '      ]\n';
+  html += '    }\n';
+  html += '    </script>\n';
+  html += '\n';
+
   html += (productionJsFile ? '    <script type="module" crossorigin src="' + productionJsFile + '"></script>\n' : '');
   html += '\n';
   html += '    <script>\n';
@@ -2082,12 +2190,25 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles) {
   html += '    <title>What is ' + term.term + '? | Data Engineering Glossary | DataEngineer Hub</title>\n';
   html += '    <meta name="description" content="' + descriptionMeta.replace(/"/g, '&quot;') + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta name="robots" content="index, follow" />\n\n';
+  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n\n';
+  html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="article" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
   html += '    <meta property="og:title" content="What is ' + term.term + '? | Data Engineering Glossary" />\n';
   html += '    <meta property="og:description" content="' + descriptionMeta.replace(/"/g, '&quot;') + '" />\n';
-  html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n\n';
+  html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
+  html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
+  html += '    <meta property="og:image:width" content="1200" />\n';
+  html += '    <meta property="og:image:height" content="630" />\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '    <!-- Twitter Card -->\n';
+  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
+  html += '    <meta name="twitter:site" content="@sainath29" />\n';
+  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
+  html += '    <meta name="twitter:title" content="What is ' + term.term + '? | Data Engineering Glossary" />\n';
+  html += '    <meta name="twitter:description" content="' + descriptionMeta.replace(/"/g, '&quot;') + '" />\n';
+  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
+  html += '    <meta name="twitter:image:alt" content="What is ' + term.term + '? | Data Engineering Glossary" />\n\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
@@ -2184,6 +2305,27 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles) {
   html += '    }\n';
   html += '    <\/script>\n\n';
 
+  // Article schema for glossary term
+  html += '    <script type="application/ld+json">\n';
+  html += '    {\n';
+  html += '      "@context": "https://schema.org",\n';
+  html += '      "@type": "Article",\n';
+  html += '      "headline": "What is ' + term.term.replace(/"/g, '\\"') + '?",\n';
+  html += '      "description": "' + (term.shortDefinition || '').replace(/"/g, '\\"') + '",\n';
+  html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
+  html += '      "author": {\n';
+  html += '        "@type": "Person",\n';
+  html += '        "name": "Sainath Reddy",\n';
+  html += '        "url": "https://dataengineerhub.blog/about"\n';
+  html += '      },\n';
+  html += '      "publisher": {\n';
+  html += '        "@type": "Organization",\n';
+  html += '        "name": "DataEngineer Hub",\n';
+  html += '        "url": "https://dataengineerhub.blog"\n';
+  html += '      }' + (term.lastUpdated ? ',\n      "dateModified": "' + term.lastUpdated + '"' : '') + '\n';
+  html += '    }\n';
+  html += '    <\/script>\n\n';
+
   // FAQ schema
   if (term.faqs && term.faqs.length > 0) {
     html += '    <script type="application/ld+json">\n';
@@ -2194,6 +2336,19 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles) {
     html += '    }\n';
     html += '    <\/script>\n\n';
   }
+
+  // BreadcrumbList schema
+  html += '    <script type="application/ld+json">\n';
+  html += '    {\n';
+  html += '      "@context": "https://schema.org",\n';
+  html += '      "@type": "BreadcrumbList",\n';
+  html += '      "itemListElement": [\n';
+  html += '        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://dataengineerhub.blog" },\n';
+  html += '        { "@type": "ListItem", "position": 2, "name": "Glossary", "item": "https://dataengineerhub.blog/glossary" },\n';
+  html += '        { "@type": "ListItem", "position": 3, "name": "' + term.term.replace(/"/g, '\\"') + '" }\n';
+  html += '      ]\n';
+  html += '    }\n';
+  html += '    <\/script>\n\n';
 
   // React bootstrap
   if (productionJsFile) {
@@ -2305,13 +2460,26 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '    <title>Data Engineering Tool Comparisons | ' + totalComparisons + ' Head-to-Head Guides | DataEngineer Hub</title>\n';
   html += '    <meta name="description" content="Compare ' + totalComparisons + ' popular data engineering tools side by side. Detailed feature comparisons for data warehousing, streaming, orchestration, analytics, and more." />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog/compare" />\n';
-  html += '    <meta name="robots" content="index, follow" />\n';
+  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n';
   html += '\n';
+  html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog/compare" />\n';
   html += '    <meta property="og:title" content="Data Engineering Tool Comparisons | ' + totalComparisons + ' Head-to-Head Guides" />\n';
   html += '    <meta property="og:description" content="Side-by-side comparisons of ' + totalComparisons + ' data engineering tools across ' + categoryKeys.length + ' categories." />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
+  html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
+  html += '    <meta property="og:image:width" content="1200" />\n';
+  html += '    <meta property="og:image:height" content="630" />\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '    <!-- Twitter Card -->\n';
+  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
+  html += '    <meta name="twitter:site" content="@sainath29" />\n';
+  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
+  html += '    <meta name="twitter:title" content="Data Engineering Tool Comparisons | ' + totalComparisons + ' Head-to-Head Guides" />\n';
+  html += '    <meta name="twitter:description" content="Side-by-side comparisons of ' + totalComparisons + ' data engineering tools across ' + categoryKeys.length + ' categories." />\n';
+  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
+  html += '    <meta name="twitter:image:alt" content="Data Engineering Tool Comparisons | DataEngineer Hub" />\n';
   html += '\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n';
   html += '\n';
@@ -2427,6 +2595,38 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '    }\n';
   html += '    </script>\n';
   html += '\n';
+
+  // ItemList schema for comparisons
+  html += '    <script type="application/ld+json">\n';
+  html += '    {\n';
+  html += '      "@context": "https://schema.org",\n';
+  html += '      "@type": "ItemList",\n';
+  html += '      "name": "Data Engineering Tool Comparisons",\n';
+  html += '      "numberOfItems": ' + totalComparisons + ',\n';
+  html += '      "itemListElement": [\n';
+  for (var ci = 0; ci < allComparisons.length; ci++) {
+    var comp = allComparisons[ci];
+    html += '        { "@type": "ListItem", "position": ' + (ci + 1) + ', "name": "' + (comp.toolA + ' vs ' + comp.toolB).replace(/"/g, '\\"') + '", "url": "https://dataengineerhub.blog/compare/' + comp.slug + '" }';
+    html += (ci < allComparisons.length - 1 ? ',\n' : '\n');
+  }
+  html += '      ]\n';
+  html += '    }\n';
+  html += '    </script>\n';
+  html += '\n';
+
+  // BreadcrumbList schema
+  html += '    <script type="application/ld+json">\n';
+  html += '    {\n';
+  html += '      "@context": "https://schema.org",\n';
+  html += '      "@type": "BreadcrumbList",\n';
+  html += '      "itemListElement": [\n';
+  html += '        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://dataengineerhub.blog" },\n';
+  html += '        { "@type": "ListItem", "position": 2, "name": "Compare" }\n';
+  html += '      ]\n';
+  html += '    }\n';
+  html += '    </script>\n';
+  html += '\n';
+
   html += (productionJsFile ? '    <script type="module" crossorigin src="' + productionJsFile + '"></script>\n' : '');
   html += '\n';
   html += '    <script>\n';
@@ -2575,12 +2775,25 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <title>' + comparison.toolA + ' vs ' + comparison.toolB + ' | Data Engineering Tools Comparison | DataEngineer Hub</title>\n';
   html += '    <meta name="description" content="' + descriptionMeta.replace(/"/g, '&quot;') + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta name="robots" content="index, follow" />\n\n';
+  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n\n';
+  html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="article" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
   html += '    <meta property="og:title" content="' + comparison.toolA + ' vs ' + comparison.toolB + ' Comparison" />\n';
   html += '    <meta property="og:description" content="' + descriptionMeta.replace(/"/g, '&quot;') + '" />\n';
-  html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n\n';
+  html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
+  html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
+  html += '    <meta property="og:image:width" content="1200" />\n';
+  html += '    <meta property="og:image:height" content="630" />\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '    <!-- Twitter Card -->\n';
+  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
+  html += '    <meta name="twitter:site" content="@sainath29" />\n';
+  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
+  html += '    <meta name="twitter:title" content="' + comparison.toolA + ' vs ' + comparison.toolB + ' Comparison" />\n';
+  html += '    <meta name="twitter:description" content="' + descriptionMeta.replace(/"/g, '&quot;') + '" />\n';
+  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
+  html += '    <meta name="twitter:image:alt" content="' + comparison.toolA + ' vs ' + comparison.toolB + ' Comparison" />\n\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
@@ -2677,6 +2890,19 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    }\n';
   html += '    <\/script>\n\n';
 
+  // BreadcrumbList schema
+  html += '    <script type="application/ld+json">\n';
+  html += '    {\n';
+  html += '      "@context": "https://schema.org",\n';
+  html += '      "@type": "BreadcrumbList",\n';
+  html += '      "itemListElement": [\n';
+  html += '        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://dataengineerhub.blog" },\n';
+  html += '        { "@type": "ListItem", "position": 2, "name": "Compare", "item": "https://dataengineerhub.blog/compare" },\n';
+  html += '        { "@type": "ListItem", "position": 3, "name": "' + (comparison.toolA + ' vs ' + comparison.toolB).replace(/"/g, '\\"') + '" }\n';
+  html += '      ]\n';
+  html += '    }\n';
+  html += '    <\/script>\n\n';
+
   // React bootstrap
   if (productionJsFile) {
     html += '    <script type="module" crossorigin src="' + productionJsFile + '"><\/script>\n\n';
@@ -2737,12 +2963,25 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '    <title>' + tag.name + ' - Tagged Articles | DataEngineer Hub</title>\n';
   html += '    <meta name="description" content="' + descriptionMeta + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta name="robots" content="' + (tagArticles.length === 0 ? 'noindex, follow' : 'index, follow') + '" />\n\n';
+  html += '    <meta name="robots" content="' + (tagArticles.length === 0 ? 'noindex, follow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1') + '" />\n\n';
+  html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
   html += '    <meta property="og:title" content="' + tag.name + ' Articles | DataEngineer Hub" />\n';
   html += '    <meta property="og:description" content="Browse ' + tagArticles.length + ' ' + tag.name + ' tutorials and guides for data engineers." />\n';
-  html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n\n';
+  html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
+  html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
+  html += '    <meta property="og:image:width" content="1200" />\n';
+  html += '    <meta property="og:image:height" content="630" />\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '    <!-- Twitter Card -->\n';
+  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
+  html += '    <meta name="twitter:site" content="@sainath29" />\n';
+  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
+  html += '    <meta name="twitter:title" content="' + tag.name + ' Articles | DataEngineer Hub" />\n';
+  html += '    <meta name="twitter:description" content="Browse ' + tagArticles.length + ' ' + tag.name + ' tutorials and guides for data engineers." />\n';
+  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
+  html += '    <meta name="twitter:image:alt" content="' + tag.name + ' Articles | DataEngineer Hub" />\n\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
@@ -2864,7 +3103,7 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
     <title>${smartTitle(title)}</title>
     <meta name="description" content="${description}" />
     <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -2872,6 +3111,18 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
     <meta property="og:title" content="${title}" />
     <meta property="og:description" content="${description}" />
     <meta property="og:site_name" content="DataEngineer Hub" />
+    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@sainath29" />
+    <meta name="twitter:creator" content="@sainath29" />
+    <meta name="twitter:title" content="${title}" />
+    <meta name="twitter:description" content="${description}" />
+    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />
+    <meta name="twitter:image:alt" content="${title}" />
 
     <!-- Build: ${buildTimestamp} -->
 

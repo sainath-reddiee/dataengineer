@@ -35,6 +35,9 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
         src={iconUrl} 
         alt={`${category} logo`} 
         className={`${className} object-contain`}
+        width={40}
+        height={40}
+        loading="lazy"
         style={{ 
           maxWidth: '100%',
           maxHeight: '100%',

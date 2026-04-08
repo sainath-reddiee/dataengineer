@@ -112,11 +112,23 @@ export function getPersonSchema() {
     '@id': `${SITE_CONFIG.url}/#author`,
     name: SITE_CONFIG.author.name,
     url: SITE_CONFIG.author.url,
+    image: `${SITE_CONFIG.url}/author.jpg`,
     jobTitle: SITE_CONFIG.author.role,
     worksFor: {
       '@type': 'Organization',
       name: 'Anblicks',
     },
+    alumniOf: {
+      '@type': 'Organization',
+      name: 'Anblicks',
+    },
+    hasCredential: [
+      {
+        '@type': 'EducationalOccupationalCredential',
+        name: 'SnowPro Core Certification',
+        credentialCategory: 'Professional Certification',
+      },
+    ],
     sameAs: SITE_CONFIG.author.sameAs,
     knowsAbout: [
       'Data Engineering',

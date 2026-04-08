@@ -52,7 +52,10 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
         <img 
           src={iconUrls.sql} 
           alt={`${category} logo`} 
-          className="h-full w-full object-contain" 
+          className="h-full w-full object-contain"
+          width={24}
+          height={24}
+          loading="lazy"
         />
       </div>
     );
@@ -68,6 +71,9 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
           src={iconUrl} 
           alt={`${category} logo`} 
           className="relative w-full h-full object-contain"
+          width={24}
+          height={24}
+          loading="lazy"
           style={{ filter: 'drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.4))' }}
           onError={(e) => {
             e.target.style.display = 'none';

@@ -41,7 +41,7 @@ const CertificationDetail = () => {
         
         <div className="flex items-start gap-6 mb-8">
           {certification.featured_image && (
-            <img src={certification.featured_image} alt={certification.title} className="w-24 h-24 object-contain rounded-lg bg-white/10 p-2" />
+            <img src={certification.featured_image} alt={certification.title} className="w-24 h-24 object-contain rounded-lg bg-white/10 p-2" width={96} height={96} loading="lazy" />
           )}
           <div>
             <h1 className="text-4xl font-black mb-2 gradient-text">{certification.title}</h1>

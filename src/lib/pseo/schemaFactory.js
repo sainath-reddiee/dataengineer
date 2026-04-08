@@ -145,6 +145,31 @@ export const generateGlossaryHubSchema = () => {
 };
 
 /**
+ * Generate CollectionPage schema for comparison hub
+ * @returns {Object} JSON-LD CollectionPage schema
+ */
+export const generateComparisonHubSchema = () => {
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        '@id': `${SITE_CONFIG.url}/compare`,
+        name: 'Data Tool Comparisons',
+        description: 'Unbiased, in-depth comparisons of the top data engineering tools. Features, pricing, and use cases.',
+        url: `${SITE_CONFIG.url}/compare`,
+        isPartOf: {
+            '@type': 'WebSite',
+            '@id': `${SITE_CONFIG.url}#website`,
+            name: SITE_CONFIG.name,
+            url: SITE_CONFIG.url,
+        },
+        about: {
+            '@type': 'Thing',
+            name: 'Data Engineering Tools',
+        },
+    };
+};
+
+/**
  * Generate all schemas for a glossary term page
  * @param {Object} term - Term object from glossaryData.js
  * @param {Array} breadcrumbs - Breadcrumb items
@@ -239,6 +264,7 @@ export default {
     generateGlossaryArticleSchema,
     generateBreadcrumbSchema,
     generateGlossaryHubSchema,
+    generateComparisonHubSchema,
     generateAllGlossarySchemas,
     generateComparisonSchema,
     generateItemListSchema,

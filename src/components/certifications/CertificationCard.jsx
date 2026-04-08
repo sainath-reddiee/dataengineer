@@ -37,6 +37,9 @@ const CertificationCard = ({ certification }) => {
             src={certification.featured_image} 
             alt={`${certification.title} logo`} 
             className="max-h-24 w-auto object-contain transition-transform duration-300 group-hover:scale-110"
+            width={96}
+            height={96}
+            loading="lazy"
           />
         )}
          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent"></div>
