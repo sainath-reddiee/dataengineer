@@ -507,6 +507,16 @@ const ArticlePage = () => {
   // Inject copy buttons on code blocks after content renders
   useCopyCodeButtons(post?.content);
 
+  // IMPORTANT: useMemo hooks must be called before any early returns
+  // to satisfy React's Rules of Hooks (consistent call order every render)
+  const processedHtml = useMemo(() => {
+    if (!post?.content) return '';
+    const sanitized = processWordPressContent(post.content);
+    return injectInternalLinks(sanitized, slug);
+  }, [post?.content, slug]);
+
+  const headings = useMemo(() => extractHeadings(processedHtml), [processedHtml]);
+
   if (loading) {
     return (
       <div className="pt-4 pb-12">
@@ -568,12 +578,6 @@ const ArticlePage = () => {
 
     // Extract key takeaways from H2 headings for AEO visibility
     const keyTakeaways = extractKeyTakeaways(safePost.content);
-
-    const processedHtml = useMemo(() => {
-      const sanitized = processWordPressContent(safePost.content);
-      return injectInternalLinks(sanitized, slug);
-    }, [safePost.content, slug]);
-    const headings = useMemo(() => extractHeadings(processedHtml), [processedHtml]);
 
     return (
     <div className="pt-4 pb-12">
