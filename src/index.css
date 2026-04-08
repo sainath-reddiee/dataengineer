@@ -227,15 +227,19 @@ a:not([class]) {
   text-decoration-color: #93c5fd;
 }
 
-.article-content .auto-keyword-link {
-  color: #2563eb;
+.article-content .internal-link {
+  color: #60a5fa;
   text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: rgba(96, 165, 250, 0.5);
   font-weight: 500;
-  transition: color 0.2s;
+  transition: all 0.2s ease;
 }
 
-.article-content .auto-keyword-link:hover {
-  color: #1d4ed8;
+.article-content .internal-link:hover {
+  color: #93c5fd;
+  text-decoration-style: solid;
+  text-decoration-color: #93c5fd;
 }
 
 .article-content strong,

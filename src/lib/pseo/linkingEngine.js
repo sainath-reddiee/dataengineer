@@ -23,17 +23,8 @@ import { SITE_CONFIG } from '@/lib/seoConfig';
  *   { slug, title, keywords, categories }
  */
 
-// Try to load synced articles, fallback to empty array
-let SYNCED_ARTICLES = [];
-try {
-    // Dynamic import for build-time
-    const articlesPath = new URL('../../data/pseo/articles.json', import.meta.url).href;
-    const articlesModule = await import(/* @vite-ignore */ articlesPath, { assert: { type: 'json' } });
-    SYNCED_ARTICLES = articlesModule.default || [];
-} catch {
-    // articles.json doesn't exist yet - run sync-articles-for-linking.js
-    console.warn('⚠️  articles.json not found. Run: node scripts/sync-articles-for-linking.js');
-}
+import articlesData from '../../data/pseo/articles.json';
+const SYNCED_ARTICLES = articlesData || [];
 
 /**
  * Export for use in templates. Combines synced articles with any manual overrides.
