@@ -1,14 +1,20 @@
 // src/components/Layout.jsx
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import MetaTags from '@/components/SEO/MetaTags';
 import ScrollToTop from '@/components/ScrollToTop';
+import AnnouncementBar from '@/components/AnnouncementBar';
+
+const ANNOUNCEMENT_BAR_HEIGHT = 40;
 
 const Layout = () => {
+  const [isBarVisible, setIsBarVisible] = useState(false);
+  const topOffset = isBarVisible ? ANNOUNCEMENT_BAR_HEIGHT : 0;
+
   return (
     <>
       <MetaTags />
@@ -19,8 +25,9 @@ const Layout = () => {
         >
           Skip to main content
         </a>
-        <Header />
-        <div className="pt-16"></div>
+        <AnnouncementBar onVisibilityChange={setIsBarVisible} />
+        <Header topOffset={topOffset} />
+        <div style={{ paddingTop: 64 + topOffset }}></div>
         {/* The 'relative z-0' classes are the crucial fix here */}
         <main id="main-content" tabIndex={-1} className="flex-grow relative z-0 outline-none">
           <Outlet />

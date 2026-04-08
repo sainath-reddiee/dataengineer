@@ -90,7 +90,7 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
   );
 };
 
-const Header = () => {
+const Header = ({ topOffset = 0 }) => {
   const [isMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isVisible, setIsVisible] = useState(true);
@@ -344,8 +344,9 @@ const Header = () => {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: isVisible ? 0 : -100, opacity: isVisible ? 1 : 0 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="fixed top-0 w-full z-[9999]"
+      className="fixed w-full z-[9999]"
       style={{
+        top: topOffset,
         background: 'rgba(15, 23, 42, 0.85)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
