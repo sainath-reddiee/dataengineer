@@ -1,9 +1,10 @@
-fix: move useMemo hooks before early returns in ArticlePage (React error #310)
+fix: responsive header nav overflow at 100% zoom and article hero image sizing
 
-useMemo calls were placed after conditional early returns for loading/error
-states, violating React's Rules of Hooks. On re-render when loading finished,
-React saw more hooks than the previous render and crashed with error #310
-("Rendered fewer hooks than expected").
+Header: shift full nav experience (icons, full labels, large text, generous spacing)
+from xl (1280px) to 2xl (1536px) breakpoint so nav items fit at 100% zoom on
+standard 1440-1536px screens. Three-tier responsive: lg=compact, xl=intermediate,
+2xl=full. Article: replace fixed 450px hero image height with responsive max-h +
+aspect-video for better proportions across screen sizes.
 
 .... Generated with [Cortex Code](https://docs.snowflake.com/en/user-guide/cortex-code/cortex-code)
 
