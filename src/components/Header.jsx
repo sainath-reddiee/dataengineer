@@ -145,6 +145,7 @@ const Header = ({ topOffset = 0 }) => {
   const categories = {
   platforms: {
     title: 'Cloud & Data Platforms',
+    shortTitle: 'Platforms',
     icon: Cloud,
     items: [
       { name: 'AWS', path: '/category/aws', color: 'from-orange-500 to-red-500', desc: 'Amazon Web Services' },
@@ -158,6 +159,7 @@ const Header = ({ topOffset = 0 }) => {
   },
   tools: {
     title: 'Orchestration & Transform',
+    shortTitle: 'Tools',
     icon: Wrench,
     items: [
       { name: 'Airflow', path: '/category/airflow', color: 'from-teal-500 to-cyan-500', desc: 'Workflow Orchestration' },
@@ -166,6 +168,7 @@ const Header = ({ topOffset = 0 }) => {
   },
   languages: {
     title: 'Languages',
+    shortTitle: 'Code',
     icon: Code,
     items: [
       { name: 'Python', path: '/category/python', color: 'from-yellow-400 to-orange-500', desc: 'Data Processing' },
@@ -358,7 +361,7 @@ const Header = ({ topOffset = 0 }) => {
       <nav className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 sm:space-x-3 z-10">
+          <Link to="/" className="flex items-center space-x-1.5 lg:space-x-2 xl:space-x-3 z-10">
             <motion.div
               whileHover={{ scale: 1.1, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
@@ -375,19 +378,19 @@ const Header = ({ topOffset = 0 }) => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-6 lg:space-x-8">
+          <div className="hidden lg:flex items-center space-x-2 lg:space-x-3 xl:space-x-6">
             {/* Home */}
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/" 
-                className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
+                className={`font-semibold text-sm xl:text-base transition-all duration-200 flex items-center gap-2 ${
                   isHomeActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
                 }`}
                 style={isHomeActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
               >
-                <Home className="w-4 h-4" />
+                <Home className="w-4 h-4 hidden xl:inline-block" />
                 Home
               </Link>
             </motion.div>
@@ -401,15 +404,16 @@ const Header = ({ topOffset = 0 }) => {
                     whileHover={{ y: -2 }}
                     onMouseEnter={() => setOpenDropdown(key)}
                     onMouseLeave={() => setOpenDropdown(null)}
-                    className={`flex items-center gap-1.5 font-medium text-base transition-all duration-200 ${
+                    className={`flex items-center gap-1.5 font-medium text-sm xl:text-base transition-all duration-200 ${
                       isActive 
                         ? 'text-blue-400' 
                         : 'text-gray-300 hover:text-blue-400'
                     }`}
                     style={isActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
                   >
-                    <category.icon className="w-4 h-4" />
-                    {category.title.split(' ')[0]}
+                    <category.icon className="w-4 h-4 hidden xl:inline-block" />
+                    <span className="xl:hidden">{category.shortTitle}</span>
+                    <span className="hidden xl:inline">{category.title.split(' ')[0]}</span>
                     <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
                   </motion.button>
 
@@ -432,14 +436,14 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/tag" 
-                className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
+                className={`font-semibold text-sm xl:text-base transition-all duration-200 flex items-center gap-2 ${
                   isTagsActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
                 }`}
                 style={isTagsActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
               >
-                <Tags className="w-4 h-4" />
+                <Tags className="w-4 h-4 hidden xl:inline-block" />
                 Tags
               </Link>
             </motion.div>
@@ -447,14 +451,14 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/glossary" 
-                className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
+                className={`font-semibold text-sm xl:text-base transition-all duration-200 flex items-center gap-2 ${
                   isGlossaryActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
                 }`}
                 style={isGlossaryActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
               >
-                <BookOpen className="w-4 h-4" />
+                <BookOpen className="w-4 h-4 hidden xl:inline-block" />
                 Glossary
               </Link>
             </motion.div>
@@ -462,14 +466,14 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/compare" 
-                className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
+                className={`font-semibold text-sm xl:text-base transition-all duration-200 flex items-center gap-2 ${
                   isCompareActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
                 }`}
                 style={isCompareActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
               >
-                <GitCompareArrows className="w-4 h-4" />
+                <GitCompareArrows className="w-4 h-4 hidden xl:inline-block" />
                 Compare
               </Link>
             </motion.div>
@@ -477,14 +481,14 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/certification" 
-                className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
+                className={`font-semibold text-sm xl:text-base transition-all duration-200 flex items-center gap-2 ${
                   isCertificationActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
                 }`}
                 style={isCertificationActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
               >
-                <Award className="w-4 h-4" />
+                <Award className="w-4 h-4 hidden xl:inline-block" />
                 Certification
                 {/* Optional: Glowing Dot to indicate it's New */}
                 <span className="relative flex h-2 w-2">
@@ -497,14 +501,14 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/about" 
-                className={`font-semibold text-base transition-all duration-200 flex items-center gap-2 ${
+                className={`font-semibold text-sm xl:text-base transition-all duration-200 flex items-center gap-2 ${
                   isAboutActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
                 }`}
                 style={isAboutActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
               >
-                <Info className="w-4 h-4" />
+                <Info className="w-4 h-4 hidden xl:inline-block" />
                 About
               </Link>
             </motion.div>
@@ -513,7 +517,7 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="flex items-center gap-2 text-gray-300 hover:text-blue-400 transition-all duration-200 font-medium text-base"
+                className="flex items-center gap-2 text-gray-300 hover:text-blue-400 transition-all duration-200 font-medium text-sm xl:text-base"
                 title="Search (Ctrl+K)"
               >
                 <Search className="w-4 h-4" />
@@ -527,7 +531,7 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/articles"
-                className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white px-6 lg:px-8 py-2.5 rounded-full font-bold text-base shadow-lg hover:shadow-xl transition-all duration-300 inline-block"
+                className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white px-4 xl:px-8 py-2 xl:py-2.5 rounded-full font-bold text-sm xl:text-base shadow-lg hover:shadow-xl transition-all duration-300 inline-block"
               >
                 Explore
               </Link>

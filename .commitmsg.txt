@@ -1,15 +1,9 @@
-fix: comprehensive sitemap overhaul — 8 fixes for better indexing
+fix: move useMemo hooks before early returns in ArticlePage (React error #310)
 
-- Add category (10) and tag (26) pages to sitemap (now indexable)
-- Add 5 missing static pages: /disclaimer, /tags, /explore, /certification, /checklist
-- Auto-generate pSEO sitemap from JSON data files (replaces hardcoded XML)
-- Differentiate blog post priority by recency (0.9/0.8/0.7/0.6)
-- Use realistic lastmod dates for static pages instead of always "today"
-- Fix submitSitemap.js to reference sitemap-index.xml instead of sitemap.xml
-- Remove dead api/routes/sitemap.js (unused Express endpoint)
-- Ensure xmlns:news namespace is always declared in main sitemap
-
-Main sitemap: 66 → 108 URLs | pSEO sitemap: 86 URLs (now dynamic)
+useMemo calls were placed after conditional early returns for loading/error
+states, violating React's Rules of Hooks. On re-render when loading finished,
+React saw more hooks than the previous render and crashed with error #310
+("Rendered fewer hooks than expected").
 
 .... Generated with [Cortex Code](https://docs.snowflake.com/en/user-guide/cortex-code/cortex-code)
 
