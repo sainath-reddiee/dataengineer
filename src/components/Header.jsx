@@ -100,13 +100,25 @@ const Header = ({ topOffset = 0 }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const dropdownTimeout = React.useRef(null);
 
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
+    };
+  }, []);
+
   const openDropdownWithCancel = (key) => {
     if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
+    dropdownTimeout.current = null;
     setOpenDropdown(key);
   };
 
   const closeDropdownWithDelay = () => {
-    dropdownTimeout.current = setTimeout(() => setOpenDropdown(null), 150);
+    if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
+    dropdownTimeout.current = setTimeout(() => {
+      dropdownTimeout.current = null;
+      setOpenDropdown(null);
+    }, 120);
   };
 
   // Ctrl+K / Cmd+K to open search
@@ -222,6 +234,12 @@ const Header = ({ topOffset = 0 }) => {
       return () => document.removeEventListener('click', handleClickOutside);
     }
   }, [openDropdown]);
+
+  // Close dropdown on route change (e.g., clicking a link inside the menu)
+  useEffect(() => {
+    setOpenDropdown(null);
+    if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
+  }, [currentPath]);
 
   const MegaMenu = ({ category, categoryKey }) => {
     // Generate sparks for animation
