@@ -227,14 +227,14 @@ export default function CheatSheetPage() {
 
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
         {/* Breadcrumb */}
-        <div className="bg-slate-900/50 border-b border-slate-800">
+        <div className="bg-slate-800/80 border-b border-slate-700/50">
           <div className="max-w-5xl mx-auto px-4 py-3">
             <nav className="flex items-center gap-2 text-sm flex-wrap" aria-label="Breadcrumb">
-              <Link to="/" className="text-gray-400 hover:text-white transition-colors">Home</Link>
+              <Link to="/" className="text-gray-300 hover:text-white transition-colors">Home</Link>
               <ChevronRight className="w-4 h-4 text-gray-500" />
-              <Link to="/cheatsheets" className="text-gray-400 hover:text-white transition-colors">Cheat Sheets</Link>
+              <Link to="/cheatsheets" className="text-gray-300 hover:text-white transition-colors">Cheat Sheets</Link>
               <ChevronRight className="w-4 h-4 text-gray-500" />
-              <span className="text-white font-medium">{sheet.title}</span>
+              <span className="text-blue-400 font-medium">{sheet.title}</span>
             </nav>
           </div>
         </div>

@@ -122,14 +122,14 @@ export function GlossaryHubPage() {
 
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
                 {/* Breadcrumb */}
-                <div className="bg-slate-900/50 border-b border-slate-800">
+                <div className="bg-slate-800/80 border-b border-slate-700/50">
                     <div className="max-w-6xl mx-auto px-4 py-3">
                         <nav className="flex items-center gap-2 text-sm">
-                            <Link to="/" className="text-gray-400 hover:text-white transition-colors">
+                            <Link to="/" className="text-gray-300 hover:text-white transition-colors">
                                 Home
                             </Link>
                             <ChevronRight className="w-4 h-4 text-gray-500" />
-                            <span className="text-white font-medium">Glossary</span>
+                            <span className="text-blue-400 font-medium">Glossary</span>
                         </nav>
                     </div>
                 </div>
