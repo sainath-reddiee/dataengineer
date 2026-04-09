@@ -399,11 +399,14 @@ const Header = ({ topOffset = 0 }) => {
             {Object.entries(categories).map(([key, category]) => {
               const isActive = isCategoryActive(key);
               return (
-                <div key={key} className="relative group">
+                <div
+                  key={key}
+                  className="relative group"
+                  onMouseEnter={() => setOpenDropdown(key)}
+                  onMouseLeave={() => setOpenDropdown(null)}
+                >
                   <motion.button
                     whileHover={{ y: -2 }}
-                    onMouseEnter={() => setOpenDropdown(key)}
-                    onMouseLeave={() => setOpenDropdown(null)}
                     className={`flex items-center gap-1.5 font-medium text-sm 2xl:text-base transition-all duration-200 ${
                       isActive 
                         ? 'text-blue-400' 
@@ -419,13 +422,7 @@ const Header = ({ topOffset = 0 }) => {
 
                   <AnimatePresence>
                     {openDropdown === key && (
-                      <div 
-                        onMouseEnter={() => setOpenDropdown(key)} 
-                        onMouseLeave={() => setOpenDropdown(null)}
-                        className="pointer-events-auto"
-                      >
-                        <MegaMenu category={category} categoryKey={key} />
-                      </div>
+                      <MegaMenu category={category} categoryKey={key} />
                     )}
                   </AnimatePresence>
                 </div>
