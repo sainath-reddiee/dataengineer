@@ -98,6 +98,16 @@ const Header = ({ topOffset = 0 }) => {
   const location = useLocation();
   const currentPath = location.pathname;
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const dropdownTimeout = React.useRef(null);
+
+  const openDropdownWithCancel = (key) => {
+    if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
+    setOpenDropdown(key);
+  };
+
+  const closeDropdownWithDelay = () => {
+    dropdownTimeout.current = setTimeout(() => setOpenDropdown(null), 150);
+  };
 
   // Ctrl+K / Cmd+K to open search
   useEffect(() => {
@@ -255,7 +265,7 @@ const Header = ({ topOffset = 0 }) => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
-        className="absolute left-0 top-full mt-2 w-[600px] bg-gradient-to-br from-slate-800/95 via-slate-900/95 to-slate-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 p-6 z-[99999]"
+        className="absolute left-0 top-0 w-[600px] bg-gradient-to-br from-slate-800/95 via-slate-900/95 to-slate-800/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 p-6 z-[99999]"
         style={{ 
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(59, 130, 246, 0.1)'
         }}
@@ -399,14 +409,11 @@ const Header = ({ topOffset = 0 }) => {
             {Object.entries(categories).map(([key, category]) => {
               const isActive = isCategoryActive(key);
               return (
-                <div
-                  key={key}
-                  className="relative group"
-                  onMouseEnter={() => setOpenDropdown(key)}
-                  onMouseLeave={() => setOpenDropdown(null)}
-                >
+                <div key={key} className="relative">
                   <motion.button
                     whileHover={{ y: -2 }}
+                    onMouseEnter={() => openDropdownWithCancel(key)}
+                    onMouseLeave={closeDropdownWithDelay}
                     className={`flex items-center gap-1.5 font-medium text-sm 2xl:text-base transition-all duration-200 ${
                       isActive 
                         ? 'text-blue-400' 
@@ -417,12 +424,18 @@ const Header = ({ topOffset = 0 }) => {
                     <category.icon className="w-4 h-4 hidden 2xl:inline-block" />
                     <span className="2xl:hidden">{category.shortTitle}</span>
                     <span className="hidden 2xl:inline">{category.title.split(' ')[0]}</span>
-                    <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${openDropdown === key ? 'rotate-180' : ''}`} />
                   </motion.button>
 
                   <AnimatePresence>
                     {openDropdown === key && (
-                      <MegaMenu category={category} categoryKey={key} />
+                      <div
+                        onMouseEnter={() => openDropdownWithCancel(key)}
+                        onMouseLeave={closeDropdownWithDelay}
+                        className="absolute left-0 top-full pt-2"
+                      >
+                        <MegaMenu category={category} categoryKey={key} />
+                      </div>
                     )}
                   </AnimatePresence>
                 </div>
