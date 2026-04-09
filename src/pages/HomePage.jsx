@@ -7,7 +7,7 @@ import { Sparkles, TrendingUp, FileText, Zap, BookOpen } from 'lucide-react';
 import { getOrganizationSchema } from '@/lib/seoConfig';
 import { Link } from 'react-router-dom';
 
-import { cheatsheets } from '@/data/cheatsheetData';
+import { cheatsheets, CHEATSHEET_CATEGORIES } from '@/data/cheatsheetData';
 
 const FeaturedPosts = React.lazy(() => import('../components/FeaturedPosts'));
 const TrendingPosts = React.lazy(() => import('../components/TrendingPosts'));
@@ -71,25 +71,51 @@ const DIFFICULTY_COLORS = {
   Advanced: 'bg-orange-500/20 text-orange-300',
 };
 
-const CheatSheetCards = () => (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-    {cheatsheets.slice(0, 4).map((sheet) => (
-      <Link
-        key={sheet.slug}
-        to={`/cheatsheets/${sheet.slug}`}
-        className="group bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 rounded-xl p-4 transition-all duration-200"
-      >
-        <h3 className="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors line-clamp-2 mb-2">
-          {sheet.title}
-        </h3>
-        <p className="text-xs text-gray-400 line-clamp-2 mb-3">{sheet.shortDescription}</p>
-        <span className={`text-xs px-2 py-0.5 rounded ${DIFFICULTY_COLORS[sheet.difficulty] || DIFFICULTY_COLORS.Intermediate}`}>
-          {sheet.difficulty}
-        </span>
-      </Link>
-    ))}
-  </div>
-);
+// Pick a diverse mix: one per category, up to 8 cards
+const FEATURED_SLUGS = [
+  'snowflake-interview-questions',
+  'snowflake-best-practices',
+  'snowflake-sql',
+  'sql-interview-questions',
+  'dbt-best-practices',
+  'dbt-commands',
+  'data-engineering-interview-questions',
+  'airflow-best-practices',
+];
+
+const CheatSheetCards = () => {
+  const featured = FEATURED_SLUGS
+    .map((slug) => cheatsheets.find((s) => s.slug === slug))
+    .filter(Boolean)
+    .slice(0, 8);
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {featured.map((sheet) => {
+        const cat = CHEATSHEET_CATEGORIES.find((c) => c.id === sheet.category);
+        return (
+          <Link
+            key={sheet.slug}
+            to={`/cheatsheets/${sheet.slug}`}
+            className="group bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 rounded-xl p-4 transition-all duration-200"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              {cat && <span className="text-xs">{cat.icon}</span>}
+              <span className="text-[10px] uppercase tracking-wider text-gray-500">{cat?.name}</span>
+            </div>
+            <h3 className="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors line-clamp-2 mb-2">
+              {sheet.title}
+            </h3>
+            <p className="text-xs text-gray-400 line-clamp-2 mb-3">{sheet.shortDescription}</p>
+            <span className={`text-xs px-2 py-0.5 rounded ${DIFFICULTY_COLORS[sheet.difficulty] || DIFFICULTY_COLORS.Intermediate}`}>
+              {sheet.difficulty}
+            </span>
+          </Link>
+        );
+      })}
+    </div>
+  );
+};
 
 const HomePage = () => {
   // Generate Organization schema for homepage
@@ -178,8 +204,8 @@ const HomePage = () => {
           <section>
             <SectionHeader
               icon={BookOpen}
-              title="Cheat Sheets"
-              subtitle="Quick reference guides"
+              title="Cheat Sheets & Interview Prep"
+              subtitle="References, best practices & interview questions"
               actionText="View all"
               actionLink="/cheatsheets"
             />

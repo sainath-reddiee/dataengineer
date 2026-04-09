@@ -5,7 +5,7 @@
  * Spoke page in the hub-and-spoke PSEO pattern
  */
 
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -19,6 +19,12 @@ import {
   Code2,
   Share2,
   FileText,
+  HelpCircle,
+  CheckSquare,
+  AlertTriangle,
+  Info,
+  Zap,
+  ChevronDown,
 } from 'lucide-react';
 
 import {
@@ -101,10 +107,100 @@ function TipsSection({ section }) {
   );
 }
 
+function QnASection({ section }) {
+  const [openIndex, setOpenIndex] = useState(null);
+  return (
+    <div className="space-y-3">
+      {section.items.map((item, i) => (
+        <div key={i} className="border border-slate-700 rounded-lg overflow-hidden">
+          <button
+            onClick={() => setOpenIndex(openIndex === i ? null : i)}
+            className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left hover:bg-slate-700/30 transition-colors"
+          >
+            <span className="flex items-center gap-3">
+              <span className="flex items-center justify-center w-7 h-7 bg-purple-500/20 text-purple-400 text-sm font-bold rounded-full shrink-0">
+                Q{i + 1}
+              </span>
+              <span className="text-white font-medium text-sm">{item.question}</span>
+            </span>
+            <ChevronDown className={`w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200 ${openIndex === i ? 'rotate-180' : ''}`} />
+          </button>
+          {openIndex === i && (
+            <div className="px-5 pb-4 pt-0">
+              <div className="pl-10 border-l-2 border-purple-500/30 ml-[2px]">
+                <p className="text-gray-300 text-sm leading-relaxed">{item.answer}</p>
+                {item.tip && (
+                  <p className="mt-2 text-xs text-blue-400 flex items-center gap-1">
+                    <Zap className="w-3 h-3" /> {item.tip}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ChecklistSection({ section }) {
+  return (
+    <div className="space-y-3">
+      {section.items.map((item, i) => (
+        <div key={i} className="flex items-start gap-3 bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+          <span className={`flex items-center justify-center w-6 h-6 rounded shrink-0 mt-0.5 ${item.checked === false ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+            {item.checked === false ? '✗' : '✓'}
+          </span>
+          <div>
+            <p className={`text-sm font-medium ${item.checked === false ? 'text-red-300' : 'text-white'}`}>
+              {item.label}
+            </p>
+            {item.detail && (
+              <p className="text-xs text-gray-400 mt-1 leading-relaxed">{item.detail}</p>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const CALLOUT_STYLES = {
+  warning: { bg: 'bg-amber-500/10 border-amber-500/30', icon: <AlertTriangle className="w-5 h-5 text-amber-400" />, label: 'Warning' },
+  info: { bg: 'bg-blue-500/10 border-blue-500/30', icon: <Info className="w-5 h-5 text-blue-400" />, label: 'Info' },
+  tip: { bg: 'bg-emerald-500/10 border-emerald-500/30', icon: <Zap className="w-5 h-5 text-emerald-400" />, label: 'Pro Tip' },
+};
+
+function CalloutSection({ section }) {
+  return (
+    <div className="space-y-4">
+      {section.items.map((item, i) => {
+        const style = CALLOUT_STYLES[item.variant] || CALLOUT_STYLES.info;
+        return (
+          <div key={i} className={`border rounded-lg p-5 ${style.bg}`}>
+            <div className="flex items-center gap-2 mb-2">
+              {style.icon}
+              <span className="text-sm font-semibold text-white">{item.title || style.label}</span>
+            </div>
+            <p className="text-sm text-gray-300 leading-relaxed">{item.body}</p>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+const SECTION_ICONS = {
+  table: <Table2 className="w-5 h-5" />,
+  code: <Code2 className="w-5 h-5" />,
+  tips: <Lightbulb className="w-5 h-5" />,
+  qna: <HelpCircle className="w-5 h-5" />,
+  checklist: <CheckSquare className="w-5 h-5" />,
+  callout: <AlertTriangle className="w-5 h-5" />,
+};
+
 function SectionRenderer({ section }) {
-  const icon = section.type === 'table' ? <Table2 className="w-5 h-5" /> :
-               section.type === 'code'  ? <Code2 className="w-5 h-5" /> :
-                                           <Lightbulb className="w-5 h-5" />;
+  const icon = SECTION_ICONS[section.type] || <Lightbulb className="w-5 h-5" />;
   return (
     <motion.section
       initial={{ opacity: 0, y: 15 }}
@@ -120,6 +216,9 @@ function SectionRenderer({ section }) {
         {section.type === 'table' && <TableSection section={section} />}
         {section.type === 'code'  && <CodeSection section={section} />}
         {section.type === 'tips'  && <TipsSection section={section} />}
+        {section.type === 'qna'   && <QnASection section={section} />}
+        {section.type === 'checklist' && <ChecklistSection section={section} />}
+        {section.type === 'callout'   && <CalloutSection section={section} />}
       </div>
     </motion.section>
   );
