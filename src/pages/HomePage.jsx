@@ -75,12 +75,12 @@ const DIFFICULTY_COLORS = {
 const FEATURED_SLUGS = [
   'snowflake-interview-questions',
   'snowflake-best-practices',
-  'snowflake-sql',
+  'snowflake-streams-tasks-interview',
+  'snowflake-performance-deep-dive-interview',
   'sql-interview-questions',
   'dbt-best-practices',
-  'dbt-commands',
-  'data-engineering-interview-questions',
-  'airflow-best-practices',
+  'snowflake-governance-interview',
+  'snowflake-cost-optimization-interview',
 ];
 
 const CheatSheetCards = () => {
