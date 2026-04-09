@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles, Award, Search, BookOpen, GitCompareArrows } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles, Award, Search, BookOpen, GitCompareArrows, FileText } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
 
 // Helper component for the "Corner Burst" sparks animation
@@ -616,6 +616,10 @@ const Header = ({ topOffset = 0 }) => {
                 <Link to="/compare" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
                   <GitCompareArrows className="w-5 h-5" />
                   Comparisons
+                </Link>
+                <Link to="/cheatsheets" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                  <FileText className="w-5 h-5" />
+                  Cheat Sheets
                 </Link>
                 {/* ✅ NEW: Certification Tab (Mobile) */}
                 <Link to="/certification" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">

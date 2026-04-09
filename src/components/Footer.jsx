@@ -20,7 +20,8 @@ const Footer = () => {
       { name: 'Azure Resources', href: '/category/azure' },
       { name: 'SQL Tips', href: '/category/sql' },
       { name: 'Glossary', href: '/glossary' },
-      { name: 'Comparisons', href: '/compare' }
+      { name: 'Comparisons', href: '/compare' },
+      { name: 'Cheat Sheets', href: '/cheatsheets' }
     ],
     tools: [
       { name: 'Airflow', href: '/category/airflow' },

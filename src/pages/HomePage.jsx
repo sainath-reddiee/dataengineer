@@ -3,8 +3,11 @@ import React, { Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Hero from '../components/Hero';
 import MetaTags from '../components/SEO/MetaTags';
-import { Sparkles, TrendingUp, FileText, Zap } from 'lucide-react';
+import { Sparkles, TrendingUp, FileText, Zap, BookOpen } from 'lucide-react';
 import { getOrganizationSchema } from '@/lib/seoConfig';
+import { Link } from 'react-router-dom';
+
+import { cheatsheets } from '@/data/cheatsheetData';
 
 const FeaturedPosts = React.lazy(() => import('../components/FeaturedPosts'));
 const TrendingPosts = React.lazy(() => import('../components/TrendingPosts'));
@@ -59,6 +62,33 @@ const SectionHeader = ({
       </a>
     )}
   </motion.div>
+);
+
+// 📋 CHEAT SHEET CARDS - Featured cheat sheets on homepage
+const DIFFICULTY_COLORS = {
+  Beginner: 'bg-green-500/20 text-green-300',
+  Intermediate: 'bg-blue-500/20 text-blue-300',
+  Advanced: 'bg-orange-500/20 text-orange-300',
+};
+
+const CheatSheetCards = () => (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    {cheatsheets.slice(0, 4).map((sheet) => (
+      <Link
+        key={sheet.slug}
+        to={`/cheatsheets/${sheet.slug}`}
+        className="group bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 rounded-xl p-4 transition-all duration-200"
+      >
+        <h3 className="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors line-clamp-2 mb-2">
+          {sheet.title}
+        </h3>
+        <p className="text-xs text-gray-400 line-clamp-2 mb-3">{sheet.shortDescription}</p>
+        <span className={`text-xs px-2 py-0.5 rounded ${DIFFICULTY_COLORS[sheet.difficulty] || DIFFICULTY_COLORS.Intermediate}`}>
+          {sheet.difficulty}
+        </span>
+      </Link>
+    ))}
+  </div>
 );
 
 const HomePage = () => {
@@ -142,6 +172,18 @@ const HomePage = () => {
             <Suspense fallback={<SectionSkeleton height="h-32" />}>
               <TechCategories />
             </Suspense>
+          </section>
+
+          {/* 📋 CHEAT SHEETS - Quick reference */}
+          <section>
+            <SectionHeader
+              icon={BookOpen}
+              title="Cheat Sheets"
+              subtitle="Quick reference guides"
+              actionText="View all"
+              actionLink="/cheatsheets"
+            />
+            <CheatSheetCards />
           </section>
 
           {/* 📚 RECENT POSTS - Compact list */}

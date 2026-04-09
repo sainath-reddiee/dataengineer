@@ -30,6 +30,8 @@ const GlossaryHubPage = lazy(() => import('./pages/GlossaryHubPage'));
 const GlossaryPage = lazy(() => import('./pages/GlossaryPage'));
 const ComparisonHubPage = lazy(() => import('./pages/ComparisonHubPage'));
 const ComparisonPage = lazy(() => import('./pages/ComparisonPage'));
+const CheatSheetHubPage = lazy(() => import('./pages/CheatSheetHubPage'));
+const CheatSheetPage = lazy(() => import('./pages/CheatSheetPage'));
 
 // Not Found Page
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
@@ -206,6 +208,16 @@ function App() {
           <Route path="compare/:slug" element={
             <Suspense fallback={<LoadingFallback text="Loading Comparison..." />}>
               <ComparisonPage />
+            </Suspense>
+          } />
+          <Route path="cheatsheets" element={
+            <Suspense fallback={<LoadingFallback text="Loading Cheat Sheets..." />}>
+              <CheatSheetHubPage />
+            </Suspense>
+          } />
+          <Route path="cheatsheets/:slug" element={
+            <Suspense fallback={<LoadingFallback text="Loading Cheat Sheet..." />}>
+              <CheatSheetPage />
             </Suspense>
           } />
           <Route path="about" element={

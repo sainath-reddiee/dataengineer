@@ -1,0 +1,388 @@
+// src/pages/CheatSheetPage.jsx
+/**
+ * Individual Cheat Sheet Detail Page
+ * Renders sections (tables, code, tips) with SEO schema
+ * Spoke page in the hub-and-spoke PSEO pattern
+ */
+
+import React, { useMemo } from 'react';
+import { Link, useParams, Navigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { motion } from 'framer-motion';
+import {
+  ChevronRight,
+  BookOpen,
+  Clock,
+  ArrowLeft,
+  Lightbulb,
+  Table2,
+  Code2,
+  Share2,
+  FileText,
+} from 'lucide-react';
+
+import {
+  getCheatSheetBySlug,
+  getRelatedCheatSheets,
+  CHEATSHEET_CATEGORIES,
+} from '@/data/cheatsheetData';
+import { SITE_CONFIG } from '@/lib/seoConfig';
+
+const DIFFICULTY_COLORS = {
+  Beginner: 'bg-green-500/20 text-green-300 border-green-500/30',
+  Intermediate: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+  Advanced: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
+};
+
+// ─── Section Renderers ──────────────────────────────────────
+
+function TableSection({ section }) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-slate-600">
+            {section.columns.map((col) => (
+              <th key={col} className="py-3 px-4 text-left text-blue-300 font-semibold whitespace-nowrap">
+                {col}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {section.items.map((row, i) => (
+            <tr key={i} className="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
+              {row.map((cell, j) => (
+                <td key={j} className={`py-3 px-4 ${j === 0 ? 'text-white font-medium' : 'text-gray-300'}`}>
+                  <code className={j === 1 || j === 2 ? 'text-xs bg-slate-900/50 px-1.5 py-0.5 rounded break-all' : ''}>
+                    {cell}
+                  </code>
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function CodeSection({ section }) {
+  return (
+    <div className="relative">
+      <div className="flex items-center justify-between bg-slate-900 border-b border-slate-700 rounded-t-lg px-4 py-2">
+        <span className="text-xs text-gray-400 uppercase tracking-wider">{section.language}</span>
+        <button
+          onClick={() => navigator.clipboard?.writeText(section.code)}
+          className="text-xs text-gray-400 hover:text-white transition-colors px-2 py-1 rounded hover:bg-slate-700"
+        >
+          Copy
+        </button>
+      </div>
+      <pre className="bg-slate-900/80 rounded-b-lg p-4 overflow-x-auto">
+        <code className="text-sm text-gray-300 leading-relaxed">{section.code}</code>
+      </pre>
+    </div>
+  );
+}
+
+function TipsSection({ section }) {
+  return (
+    <div className="grid gap-3">
+      {section.items.map((tip, i) => (
+        <div key={i} className="flex items-start gap-3 bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+          <span className="flex items-center justify-center w-7 h-7 bg-blue-500/20 text-blue-400 text-sm font-bold rounded-full shrink-0 mt-0.5">
+            {i + 1}
+          </span>
+          <p className="text-gray-300 text-sm leading-relaxed">{tip}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SectionRenderer({ section }) {
+  const icon = section.type === 'table' ? <Table2 className="w-5 h-5" /> :
+               section.type === 'code'  ? <Code2 className="w-5 h-5" /> :
+                                           <Lightbulb className="w-5 h-5" />;
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden"
+    >
+      <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-700">
+        <span className="text-blue-400">{icon}</span>
+        <h2 className="text-lg font-semibold text-white">{section.title}</h2>
+      </div>
+      <div className="p-6">
+        {section.type === 'table' && <TableSection section={section} />}
+        {section.type === 'code'  && <CodeSection section={section} />}
+        {section.type === 'tips'  && <TipsSection section={section} />}
+      </div>
+    </motion.section>
+  );
+}
+
+// ─── Main Page ──────────────────────────────────────────────
+
+export default function CheatSheetPage() {
+  const { slug } = useParams();
+  const sheet = getCheatSheetBySlug(slug);
+
+  const relatedSheets = useMemo(
+    () => (sheet ? getRelatedCheatSheets(slug) : []),
+    [slug, sheet]
+  );
+
+  if (!sheet) {
+    return <Navigate to="/cheatsheets" replace />;
+  }
+
+  const category = CHEATSHEET_CATEGORIES.find((c) => c.id === sheet.category);
+  const canonicalUrl = `${SITE_CONFIG.url}/cheatsheets/${sheet.slug}`;
+  const hubUrl = `${SITE_CONFIG.url}/cheatsheets`;
+
+  // SEO Schemas
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_CONFIG.url },
+      { '@type': 'ListItem', position: 2, name: 'Cheat Sheets', item: hubUrl },
+      { '@type': 'ListItem', position: 3, name: sheet.title, item: canonicalUrl },
+    ],
+  };
+
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: sheet.title,
+    description: sheet.shortDescription,
+    url: canonicalUrl,
+    dateModified: sheet.lastUpdated,
+    datePublished: sheet.lastUpdated,
+    author: {
+      '@type': 'Organization',
+      name: SITE_CONFIG.name,
+      url: SITE_CONFIG.url,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_CONFIG.name,
+      url: SITE_CONFIG.url,
+    },
+  };
+
+  const faqSchema = sheet.faqs?.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: sheet.faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  } : null;
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: sheet.title,
+          text: sheet.shortDescription,
+          url: window.location.href,
+        });
+      } catch {
+        // user cancelled
+      }
+    } else {
+      navigator.clipboard?.writeText(window.location.href);
+    }
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>{`${sheet.title} — Free Reference Guide | DataEngineer Hub`}</title>
+        <meta name="description" content={sheet.shortDescription} />
+        <link rel="canonical" href={canonicalUrl} />
+
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={sheet.title} />
+        <meta property="og:description" content={sheet.shortDescription} />
+        <meta property="og:url" content={canonicalUrl} />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={sheet.title} />
+        <meta name="twitter:description" content={sheet.shortDescription} />
+
+        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
+        {faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}
+      </Helmet>
+
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+        {/* Breadcrumb */}
+        <div className="bg-slate-900/50 border-b border-slate-800">
+          <div className="max-w-5xl mx-auto px-4 py-3">
+            <nav className="flex items-center gap-2 text-sm flex-wrap" aria-label="Breadcrumb">
+              <Link to="/" className="text-gray-400 hover:text-white transition-colors">Home</Link>
+              <ChevronRight className="w-4 h-4 text-gray-500" />
+              <Link to="/cheatsheets" className="text-gray-400 hover:text-white transition-colors">Cheat Sheets</Link>
+              <ChevronRight className="w-4 h-4 text-gray-500" />
+              <span className="text-white font-medium">{sheet.title}</span>
+            </nav>
+          </div>
+        </div>
+
+        {/* Header */}
+        <div className="max-w-5xl mx-auto px-4 py-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <Link
+              to="/cheatsheets"
+              className="inline-flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 transition-colors mb-6"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              All Cheat Sheets
+            </Link>
+
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              {sheet.title}
+            </h1>
+
+            <p className="text-lg text-gray-300 max-w-3xl mb-6">
+              {sheet.shortDescription}
+            </p>
+
+            <div className="flex flex-wrap items-center gap-3">
+              {category && (
+                <span className="inline-flex items-center gap-1 text-sm px-3 py-1 bg-slate-700/50 text-gray-300 rounded-lg">
+                  <span>{category.icon}</span>
+                  {category.name}
+                </span>
+              )}
+              <span className={`text-sm px-3 py-1 rounded-lg border ${DIFFICULTY_COLORS[sheet.difficulty] || ''}`}>
+                {sheet.difficulty}
+              </span>
+              <span className="inline-flex items-center gap-1 text-sm text-gray-400">
+                <Clock className="w-4 h-4" />
+                Updated {sheet.lastUpdated}
+              </span>
+              <button
+                onClick={handleShare}
+                className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors ml-auto"
+              >
+                <Share2 className="w-4 h-4" />
+                Share
+              </button>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Content */}
+        <div className="max-w-5xl mx-auto px-4 pb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+            {/* Main Sections */}
+            <div className="space-y-6">
+              {sheet.sections.map((section, i) => (
+                <SectionRenderer key={i} section={section} />
+              ))}
+
+              {/* FAQ */}
+              {sheet.faqs?.length > 0 && (
+                <motion.section
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden"
+                >
+                  <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-700">
+                    <span className="text-blue-400"><BookOpen className="w-5 h-5" /></span>
+                    <h2 className="text-lg font-semibold text-white">Frequently Asked Questions</h2>
+                  </div>
+                  <div className="divide-y divide-slate-700">
+                    {sheet.faqs.map((faq, i) => (
+                      <div key={i} className="p-6">
+                        <h3 className="text-white font-medium mb-2">{faq.question}</h3>
+                        <p className="text-gray-400 text-sm leading-relaxed">{faq.answer}</p>
+                      </div>
+                    ))}
+                  </div>
+                </motion.section>
+              )}
+            </div>
+
+            {/* Sidebar */}
+            <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+              {/* Table of Contents */}
+              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-white mb-3 uppercase tracking-wider">
+                  On this page
+                </h3>
+                <nav className="space-y-2">
+                  {sheet.sections.map((section, i) => (
+                    <a
+                      key={i}
+                      href={`#section-${i}`}
+                      className="block text-sm text-gray-400 hover:text-blue-400 transition-colors truncate"
+                    >
+                      {section.title}
+                    </a>
+                  ))}
+                  {sheet.faqs?.length > 0 && (
+                    <a href="#faqs" className="block text-sm text-gray-400 hover:text-blue-400 transition-colors">
+                      FAQs
+                    </a>
+                  )}
+                </nav>
+              </div>
+
+              {/* Related Cheat Sheets */}
+              {relatedSheets.length > 0 && (
+                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
+                  <h3 className="text-sm font-semibold text-white mb-3 uppercase tracking-wider">
+                    Related Cheat Sheets
+                  </h3>
+                  <div className="space-y-2">
+                    {relatedSheets.slice(0, 4).map((related) => (
+                      <Link
+                        key={related.slug}
+                        to={`/cheatsheets/${related.slug}`}
+                        className="flex items-center gap-2 text-sm text-gray-400 hover:text-blue-400 transition-colors group"
+                      >
+                        <FileText className="w-4 h-4 shrink-0" />
+                        <span className="truncate">{related.title}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* CTA */}
+              <div className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-xl p-5 text-center">
+                <p className="text-sm text-white font-medium mb-2">Want the full deep-dive?</p>
+                <p className="text-xs text-gray-400 mb-3">
+                  Check out our in-depth articles for production-ready patterns.
+                </p>
+                <Link
+                  to="/articles"
+                  className="inline-flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 font-medium"
+                >
+                  Browse Articles <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
