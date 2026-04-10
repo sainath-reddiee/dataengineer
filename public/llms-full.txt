@@ -1,6 +1,6 @@
 # DataEngineer Hub - Full Content Index for LLMs
-> Last generated: 2026-04-07
-> Total articles: 59
+> Last generated: 2026-04-10
+> Total articles: 61
 > Source: https://dataengineerhub.blog
 > Compact version: https://dataengineerhub.blog/llms.txt
 > Structured data: https://dataengineerhub.blog/llm-sitemap.json
@@ -10,7 +10,14 @@ Each article includes its URL, summary, key headings, and primary topics.
 
 ---
 
-## Snowflake (40 articles)
+## Snowflake (41 articles)
+
+### Snowflake Interview Questions — Expert Level
+- URL: https://dataengineerhub.blog/articles/snowflake-expert-interview-questions
+- Published: 2026-04-09 | Updated: 2026-04-09
+- Word count: ~5111
+- Summary: After all of this, the real tell at the senior level isn&#8217;t whether you know all these answers. It&#8217;s whether you can connect them.
+- Key sections: How to Read This Article | Category One: Architecture &amp; Internals | Category 2: Performance Tuning &amp; Query Optimization | Category 3: Cost Management &amp; Credits | Category #4: Data Ingestion &amp; Pipelines | Category Five: Security, Governance &amp; RBAC | Category six: Real-World Scenario Questions | What Interviewers Are Really Looking For
 
 ### How I Taught Myself Snowflake Cortex Code (And What I Found)
 - URL: https://dataengineerhub.blog/articles/snowflake-cortex-code-guide-real-examples
@@ -288,7 +295,14 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Summary: In the world of data, Snowflake&#8217;s rapid rise to a leader in the cloud data space is a well-known story. However , what’s the secret behind its success? The answer isn&#8217;t just a list of features, but instead , its revolutionary Snowflake architecture . Specifically , this unique three-laye
 - Key sections: The Flaws of Traditional Data Warehouse Architecture | Snowflake’s Tri-Factor Architecture: A Masterclass in Decoupling | Layer 1: The Centralized Storage Foundation | Layer 2: The Decoupled Compute Architecture | Conclusion: Why the Snowflake Architecture is a Game-Changer
 
-## Airflow (2 articles)
+## Airflow (3 articles)
+
+### Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide
+- URL: https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration
+- Published: 2026-04-07 | Updated: 2026-04-07
+- Word count: ~3374
+- Summary: How I Wired Snowflake&#8217;s Native dbt Projects to Airflow — And Finally Got True End-to-End Orchestration
+- Key sections: First — What Exactly Is a dbt Project on Snowflake ? | The Architecture We&#8217;re Building | Step 1: Snowflake Setup — Roles, Warehouse, and Permissions | Step 2: Deploy Your dbt Project as a Native Snowflake Object | Step 3: Set Up a Real dbt Project Structure | Step 4: Wire It All Together in Airflow | Step 5: Running Specific dbt Selectors from Airflow | Step 6: Handling New Versions of Your dbt Project
 
 ### Snowflake Cortex Code for dbt: Cut Build Time 48% | 2026 Guide
 - URL: https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide

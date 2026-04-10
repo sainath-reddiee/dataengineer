@@ -1,10 +1,7 @@
-fix: responsive header nav overflow at 100% zoom and article hero image sizing
+seo: add 25 cheat sheet URLs to sitemap for Google Search Console indexing
 
-Header: shift full nav experience (icons, full labels, large text, generous spacing)
-from xl (1280px) to 2xl (1536px) breakpoint so nav items fit at 100% zoom on
-standard 1440-1536px screens. Three-tier responsive: lg=compact, xl=intermediate,
-2xl=full. Article: replace fixed 450px hero image height with responsive max-h +
-aspect-video for better proportions across screen sizes.
+Adds /cheatsheets hub + 24 spoke page URLs to sitemap-pseo-1.xml and
+updates lastmod dates in sitemap-index.xml and sitemap.xml.
 
 .... Generated with [Cortex Code](https://docs.snowflake.com/en/user-guide/cortex-code/cortex-code)
 

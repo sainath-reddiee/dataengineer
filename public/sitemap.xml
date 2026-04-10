@@ -4,13 +4,13 @@
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
   <url>
     <loc>https://dataengineerhub.blog/</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -52,13 +52,13 @@
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tags</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/explore</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -75,6 +75,24 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://dataengineerhub.blog/articles/snowflake-expert-interview-questions</loc>
+    <lastmod>2026-04-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Snowflake-interview-questions.jpg</image:loc>
+      <image:title>Snowflake Interview Questions — Expert Level</image:title>
+    </image:image>
+    <news:news>
+      <news:publication>
+        <news:name>DataEngineer Hub</news:name>
+        <news:language>en</news:language>
+      </news:publication>
+      <news:publication_date>2026-04-09T06:20:38.000Z</news:publication_date>
+      <news:title>Snowflake Interview Questions — Expert Level</news:title>
+    </news:news>
+  </url>
+  <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>weekly</changefreq>
@@ -83,20 +101,12 @@
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Dbt-projects-in-snowflake.jpg</image:loc>
       <image:title>Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide</image:title>
     </image:image>
-    <news:news>
-      <news:publication>
-        <news:name>DataEngineer Hub</news:name>
-        <news:language>en</news:language>
-      </news:publication>
-      <news:publication_date>2026-04-07T11:36:23.000Z</news:publication_date>
-      <news:title>Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide</news:title>
-    </news:news>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-code-guide-real-examples</loc>
     <lastmod>2026-04-03</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/SNowflake-cortex-code.jpg</image:loc>
       <image:title>How I Taught Myself Snowflake Cortex Code (And What I Found)</image:title>
@@ -166,7 +176,7 @@
     <loc>https://dataengineerhub.blog/articles/build-a-simple-rag-application-in-snowflake-using-streamlit-and-snowflake-cortex</loc>
     <lastmod>2026-01-14</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/IMG_8382.png</image:loc>
       <image:title>Build a Simple RAG Application in Snowflake Using Streamlit and Snowflake Cortex</image:title>
@@ -684,217 +694,217 @@
   </url>
   <url>
     <loc>https://dataengineerhub.blog/category/airflow</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/category/aws</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/category/azure</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/category/databricks</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/category/dbt</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/category/gcp</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/category/python</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/category/salesforce</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/category/snowflake</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/category/sql</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/ai</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/airflow</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/aws</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/azure</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/copilot</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/cortex</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/data-engineering</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/data-masking</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/data-modeling</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/data-warehouse</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/databricks</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/dbt</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/etl</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/gcp</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/iceberg</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/interview</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/migration</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/ml</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/openflow</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/optimization</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/osi</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/rag</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/salesforce</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/snowflake</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/sql</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tag/synapse</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

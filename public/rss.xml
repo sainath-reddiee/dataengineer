@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Tue, 07 Apr 2026 07:33:28 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 10 Apr 2026 15:55:27 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -18,6 +18,28 @@
     <managingEditor>contact@dataengineerhub.blog (Sainath Reddy)</managingEditor>
     <webMaster>contact@dataengineerhub.blog (Sainath Reddy)</webMaster>
     <ttl>60</ttl>
+    <item>
+      <title>Snowflake Interview Questions — Expert Level</title>
+      <link>https://dataengineerhub.blog/articles/snowflake-expert-interview-questions</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-expert-interview-questions</guid>
+      <description>After all of this, the real tell at the senior level isn&amp;#8217;t whether you know all these answers. It&amp;#8217;s whether you can connect them. The best signal a senior candidate&amp;#8230;</description>
+      <pubDate>Thu, 09 Apr 2026 06:20:38 GMT</pubDate>
+      <dc:creator>sainath</dc:creator>
+      <category>Snowflake</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Snowflake-interview-questions.jpg" type="image/jpeg" />
+    </item>
+    <item>
+      <title>Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide</title>
+      <link>https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration</guid>
+      <description>How I Wired Snowflake&amp;#8217;s Native dbt Projects to Airflow — And Finally Got True End-to-End Orchestration I&amp;#8217;ll be honest with you — for a long time I was running dbt&amp;#8230;</description>
+      <pubDate>Tue, 07 Apr 2026 11:36:23 GMT</pubDate>
+      <dc:creator>sainath</dc:creator>
+      <category>Airflow</category>
+      <category>dbt</category>
+      <category>Snowflake</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Dbt-projects-in-snowflake.jpg" type="image/jpeg" />
+    </item>
     <item>
       <title>How I Taught Myself Snowflake Cortex Code (And What I Found)</title>
       <link>https://dataengineerhub.blog/articles/snowflake-cortex-code-guide-real-examples</link>

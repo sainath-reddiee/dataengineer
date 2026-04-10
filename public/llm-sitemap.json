@@ -11,9 +11,61 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-04-07",
-  "totalArticles": 59,
+  "lastUpdated": "2026-04-10",
+  "totalArticles": 61,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-expert-interview-questions",
+      "title": "Snowflake Interview Questions — Expert Level",
+      "summary": "After all of this, the real tell at the senior level isn&#8217;t whether you know all these answers. It&#8217;s whether you can connect them. The best signal a senior candidate&#8230;",
+      "keyFacts": [
+        "&#8220;That&#8217;s the same clustering depth issue I mentioned earlier — the root cause is the same even though the symptoms look different",
+        "Nobody at the senior level is going to ask you &#8220;what is a virtual warehouse",
+        "It never reads those partitions"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "azure",
+        "dbt",
+        "airflow",
+        "tableau",
+        "power bi"
+      ],
+      "questionAnswered": "What is Snowflake Interview Questions — Expert Level and how does it work?",
+      "lastUpdated": "2026-04-09",
+      "published": "2026-04-09",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 5111
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration",
+      "title": "Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide",
+      "summary": "How I Wired Snowflake&#8217;s Native dbt Projects to Airflow — And Finally Got True End-to-End Orchestration I&#8217;ll be honest with you — for a long time I was running dbt&#8230;",
+      "keyFacts": [
+        "80 THEN 'ALERT: Row count dropped over 20%' ELSE 'OK' END AS status FROM today, yesterday; I added this query as a SQLExecuteQueryOperator task right after the mart validation step",
+        "If the row count drops by more than 20% compared to the previous day, the task raises a warning in Airflow logs, and the email alert fires",
+        "First — What Exactly Is a dbt Project on Snowflake",
+        "The DBT PROJECT object in Snowflake is essentially a file container that can contain one or more dbt Core projects",
+        "This is important because the terminology can trip you up, and I don&#8217;t want you 45 minutes into setup before the confusion hits"
+      ],
+      "entities": [
+        "snowflake",
+        "dbt",
+        "airflow",
+        "sql",
+        "python"
+      ],
+      "questionAnswered": "What is Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline and how do you use it?",
+      "lastUpdated": "2026-04-07",
+      "published": "2026-04-07",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Airflow",
+      "wordCount": 3374
+    },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-cortex-code-guide-real-examples",
       "title": "How I Taught Myself Snowflake Cortex Code (And What I Found)",
