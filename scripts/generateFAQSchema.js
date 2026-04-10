@@ -286,14 +286,15 @@ function injectFAQSchema(htmlPath, faqSchema) {
     try {
         let html = fs.readFileSync(htmlPath, 'utf8');
 
-        // Check if FAQ schema already exists
-        if (html.includes('"@type": "FAQPage"') || html.includes('"@type":"FAQPage"')) {
-            // Remove existing FAQ schema ([\s\S]*? handles nested JSON with braces)
-            html = html.replace(
-                /<script type="application\/ld\+json">\s*\{[\s\S]*?"@type"\s*:\s*"FAQPage"[\s\S]*?\}\s*<\/script>\s*/gi,
-                ''
-            );
-        }
+        // Remove any existing FAQ schema blocks to avoid duplicates
+        html = html.replace(
+            /<!--[^>]*FAQ[^>]*-->\s*/gi,
+            ''
+        );
+        html = html.replace(
+            /<script type="application\/ld\+json">[\s\S]*?<\/script>/gi,
+            (match) => match.includes('FAQPage') ? '' : match
+        );
 
         // Find the position to inject (before closing </body> tag)
         const bodyCloseIndex = html.lastIndexOf('</body>');
