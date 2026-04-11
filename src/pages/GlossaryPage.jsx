@@ -35,7 +35,7 @@ import {
     generateGlossaryBreadcrumbs,
     generateGlossaryCanonical,
 } from '@/lib/pseo/metadataFactory';
-import { generateAllGlossarySchemas } from '@/lib/pseo/schemaFactory';
+
 import { getRelatedGlossaryTerms } from '@/lib/pseo/linkingEngine';
 
 import { marked } from 'marked';
@@ -128,7 +128,6 @@ export function GlossaryPage() {
                 const meta = generateGlossaryMeta(data);
                 const breadcrumbs = generateGlossaryBreadcrumbs(data);
                 const canonical = generateGlossaryCanonical(data.slug);
-                const schemas = generateAllGlossarySchemas(data, breadcrumbs);
                 const category = getCategoryById(data.category);
                 const allTerms = await getAllGlossaryTerms();
                 const relatedTerms = getRelatedGlossaryTerms(data.slug, 5, { terms: allTerms });
@@ -138,7 +137,6 @@ export function GlossaryPage() {
                     meta,
                     breadcrumbs,
                     canonical,
-                    schemas,
                     category,
                     relatedTerms
                 });
@@ -180,7 +178,7 @@ export function GlossaryPage() {
         );
     }
 
-    const { meta, breadcrumbs, canonical, schemas, category, relatedTerms } = derivedData;
+    const { meta, breadcrumbs, canonical, category, relatedTerms } = derivedData;
 
     return (
         <>
@@ -200,13 +198,6 @@ export function GlossaryPage() {
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content={meta.title} />
                 <meta name="twitter:description" content={meta.description} />
-
-                {/* Structured Data */}
-                {schemas.map((schema, idx) => (
-                    <script key={idx} type="application/ld+json">
-                        {JSON.stringify(schema)}
-                    </script>
-                ))}
             </Helmet>
 
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">

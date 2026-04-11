@@ -10,8 +10,7 @@ import { usePost, useRelatedPosts } from '@/hooks/useWordPress';
 import { preloadImage } from '@/utils/imageOptimizer';
 import { throttle } from '@/utils/performance';
 import { trackScrollDepth, trackArticleRead } from '@/utils/analytics';
-import { generateBreadcrumbs, getFAQSchema, getHowToSchema, getVideoSchema, extractVideosFromContent } from '@/lib/seoConfig';
-import { extractFAQFromContent } from '@/utils/faqExtractor';
+import { generateBreadcrumbs, getHowToSchema, getVideoSchema, extractVideosFromContent } from '@/lib/seoConfig';
 import { extractHowToSteps } from '@/utils/howToExtractor';
 import { getOptimizedTitle, getOptimizedDescription } from '@/data/seoOverrides';
 import LazyImage from '@/components/LazyImage';
@@ -556,10 +555,6 @@ const ArticlePage = () => {
   // Generate breadcrumbs for SEO
   const breadcrumbs = generateBreadcrumbs(`/articles/${slug}`, safePost.title);
 
-    // Auto-extract FAQ schema from content
-    const faqs = extractFAQFromContent(safePost.content || '');
-    const faqSchema = faqs.length > 0 ? getFAQSchema(faqs) : null;
-
     // Auto-extract HowTo schema from step-based content
     const howToSteps = extractHowToSteps(safePost.content || '');
     const howToSchema = howToSteps.length > 0
@@ -595,7 +590,6 @@ const ArticlePage = () => {
           tags={safePost.tags}
           author={safePost.author}
           breadcrumbs={breadcrumbs}
-          faqSchema={faqSchema}
           howToSchema={howToSchema}
           videoSchema={videoSchema}
         />

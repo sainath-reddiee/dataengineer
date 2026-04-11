@@ -10,7 +10,6 @@ import searchIndex from '@/data/searchIndex.json';
 
 // SEO Factories
 import { generateComparisonHubMeta, generateComparisonCanonical } from '@/lib/pseo/metadataFactory';
-import { generateComparisonHubSchema, generateBreadcrumbSchema, generateItemListSchema } from '@/lib/pseo/schemaFactory';
 
 export function ComparisonHubPage() {
     // Use searchIndex comparisons (has all 7 including pSEO additions)
@@ -25,22 +24,6 @@ export function ComparisonHubPage() {
     }));
     const meta = generateComparisonHubMeta();
     const canonical = generateComparisonCanonical();
-    const schema = generateComparisonHubSchema();
-    const itemListSchema = generateItemListSchema({
-        name: 'Data Tool Comparisons',
-        description: 'Unbiased, in-depth comparisons of the top data engineering tools.',
-        url: canonical,
-        items: comparisons.map((comp, idx) => ({
-            name: `${comp.toolA} vs ${comp.toolB}`,
-            url: `https://dataengineerhub.blog/compare/${comp.slug}`,
-            description: comp.shortVerdict,
-            position: idx + 1,
-        })),
-    });
-    const breadcrumbSchema = generateBreadcrumbSchema([
-        { name: 'Home', url: 'https://dataengineerhub.blog' },
-        { name: 'Comparisons', url: canonical },
-    ]);
 
     return (
         <>
@@ -52,9 +35,6 @@ export function ComparisonHubPage() {
                 <meta property="og:title" content={meta.title} />
                 <meta property="og:description" content={meta.description} />
                 <meta property="og:type" content="website" />
-                <script type="application/ld+json">{JSON.stringify(schema)}</script>
-                {itemListSchema && <script type="application/ld+json">{JSON.stringify(itemListSchema)}</script>}
-                {breadcrumbSchema && <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>}
             </Helmet>
 
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">

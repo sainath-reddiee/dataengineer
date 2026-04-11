@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
-Main Orchestrator (GEMINI + TAVILY VERSION) - COMPLETE & FIXED
+Main Orchestrator (GEMINI + TAVILY VERSION) - V2
 Uses Google Gemini API + Tavily Research API
-All FREE APIs - NO Anthropic needed!
-Updated to support both Gemini and Tavily API keys
+Supports both V2 (modular, multi-pass) and legacy V1 generator.
 """
 
 import os
@@ -14,10 +13,20 @@ from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Import our FREE modules
+# Import modules
 from trend_monitor_realtime import EnhancedTrendMonitor
-from blog_generator_free import BlogGeneratorTavily  # Correct class name
 from wordpress_publisher import WordPressPublisher
+
+# V2 modular generator + quality gate
+from generator import BlogGeneratorV2, QuotaExhaustedException
+from quality import QualityGate
+
+# V1 legacy generator (optional fallback)
+try:
+    from blog_generator_free import BlogGeneratorTavily
+    LEGACY_AVAILABLE = True
+except ImportError:
+    LEGACY_AVAILABLE = False
 
 # Optional: Import free image generator
 try:
@@ -31,26 +40,45 @@ class BlogAutomationPipelineGemini:
     def __init__(self, config: dict):
         """Initialize pipeline with Gemini + Tavily APIs"""
         self.config = config
+        self.use_legacy = config.get('use_legacy', False)
         
-        print("🚀 Initializing Blog Automation Pipeline (Gemini + Tavily)...\n")
-        print("✅ Using Google Gemini API + Tavily Research API")
-        print("💰 Both APIs are FREE for reasonable usage!")
+        print("  Initializing Blog Automation Pipeline (Gemini + Tavily)...\n")
         
-        # Initialize components - ALL using FREE APIs!
-        print("\n📊 Initializing components...")
+        # Initialize components
+        print("  Initializing components...")
         
         # 1. Trend Monitor (Gemini)
-        print("   • Trend Monitor (Gemini)... ", end="")
+        print("   - Trend Monitor (Gemini)... ", end="")
         self.trend_monitor = EnhancedTrendMonitor(config['gemini_api_key'])
-        print("✅")
+        print("OK")
         
-        # 2. Blog Generator (Gemini + Tavily)
-        print("   • Blog Generator (Gemini + Tavily)... ", end="")
-        self.blog_generator = BlogGeneratorTavily(
-            gemini_api_key=config['gemini_api_key'],
-            tavily_api_key=config['tavily_api_key']
-        )
-        print("✅")
+        # 2. Blog Generator — V2 (default) or V1 (legacy)
+        if self.use_legacy and LEGACY_AVAILABLE:
+            print("   - Blog Generator (V1 LEGACY)... ", end="")
+            self.blog_generator = BlogGeneratorTavily(
+                gemini_api_key=config['gemini_api_key'],
+                tavily_api_key=config['tavily_api_key']
+            )
+            self.quality_gate = None
+        else:
+            print("   - Blog Generator V2 (multi-pass)... ", end="")
+            author_config = config.get('author_config', 'author_config.json')
+            self.blog_generator = BlogGeneratorV2(
+                gemini_api_key=config['gemini_api_key'],
+                tavily_api_key=config['tavily_api_key'],
+                author_config_path=author_config,
+                gemini_api_key_2=config.get('gemini_api_key_2'),
+                groq_api_key=config.get('groq_api_key'),
+                cerebras_api_key=config.get('cerebras_api_key'),
+                together_api_key=config.get('together_api_key'),
+                mistral_api_key=config.get('mistral_api_key'),
+                openrouter_api_key=config.get('openrouter_api_key'),
+                cloudflare_api_key=config.get('cloudflare_api_key'),
+                cloudflare_account_id=config.get('cloudflare_account_id'),
+                openai_api_key=config.get('openai_api_key'),
+            )
+            self.quality_gate = QualityGate()
+        print("OK")
         
         # 3. WordPress Publisher
         print("   • WordPress Publisher... ", end="")
@@ -143,6 +171,21 @@ class BlogAutomationPipelineGemini:
                     # Save intermediate results
                     self._save_results(results)
                     
+                except QuotaExhaustedException as e:
+                    print(f"\n{'='*70}")
+                    print(f"  QUOTA EXHAUSTED — Pipeline aborted for post {idx}")
+                    print(f"  {e}")
+                    print(f"  Skipping remaining posts (if any). No fallback content published.")
+                    print(f"{'='*70}\n")
+                    results.append({
+                        'success': False,
+                        'topic': topic['title'],
+                        'error': f'Quota exhausted: {str(e)[:200]}',
+                        'skipped': True
+                    })
+                    # Stop processing remaining topics — quota won't reset mid-run
+                    break
+                    
                 except Exception as e:
                     print(f"\n❌ Error processing post {idx}: {str(e)}")
                     import traceback
@@ -176,23 +219,47 @@ class BlogAutomationPipelineGemini:
         post_dir.mkdir(exist_ok=True)
         
         # Step 2: Generate blog content (using Gemini + Tavily)
-        print("📝 STEP 2: Generating blog content (Gemini + Tavily Research)...")
-        print("   This may take 2-3 minutes for high-quality research-backed content...\n")
+        print("  STEP 2: Generating blog content (Gemini + Tavily Research)...")
+        if not self.use_legacy:
+            print("   Using V2 multi-pass generator...\n")
+        else:
+            print("   Using V1 legacy generator...\n")
         
         blog_data = self.blog_generator.generate_blog_post(topic)
+        
+        # Quality gate (V2 only) — retry up to 2x on failure
+        # BUT: never retry if quota is exhausted (would just produce more garbage)
+        if self.quality_gate and not self.use_legacy:
+            max_retries = 2
+            for attempt in range(max_retries + 1):
+                passed = self.quality_gate.print_report(blog_data)
+                if passed:
+                    break
+                if attempt < max_retries:
+                    print(f"  Quality gate failed. Regenerating (attempt {attempt + 2}/{max_retries + 1})...")
+                    try:
+                        blog_data = self.blog_generator.generate_blog_post(topic)
+                    except QuotaExhaustedException:
+                        print("\n  *** QUOTA EXHAUSTED during quality-gate retry. Stopping retries. ***")
+                        print("  *** Will NOT publish fallback content. ***")
+                        raise
+                else:
+                    print("  Quality gate failed after retries. Publishing anyway as draft.")
+                    if publish_status == 'publish':
+                        publish_status = 'draft'
         
         # Save raw blog data
         with open(post_dir / 'blog_data.json', 'w', encoding='utf-8') as f:
             json.dump(blog_data, f, indent=2, ensure_ascii=False)
         
-        print(f"\n✅ Content generated successfully!")
-        print(f"   📊 Statistics:")
-        print(f"      • Word count: {blog_data['metadata']['word_count']}")
-        print(f"      • Reading time: {blog_data['metadata']['reading_time']} minutes")
-        print(f"      • Focus keyphrase: {blog_data['seo']['focus_keyphrase']}")
-        print(f"      • Blocks: {blog_data['metadata']['blocks_count']} (Gutenberg)")
-        print(f"      • Sources cited: {blog_data['metadata']['sources_used']}")
-        print(f"      • Cost: {blog_data['metadata']['cost']}")
+        print(f"\n  Content generated successfully!")
+        print(f"    Word count: {blog_data['metadata']['word_count']}")
+        print(f"    Reading time: {blog_data['metadata']['reading_time']} minutes")
+        print(f"    Focus keyphrase: {blog_data['seo']['focus_keyphrase']}")
+        print(f"    Blocks: {blog_data['metadata']['blocks_count']} (Gutenberg)")
+        print(f"    Sources cited: {blog_data['metadata']['sources_used']}")
+        print(f"    Generator: {blog_data['metadata'].get('generator_version', 'v1')}")
+        print(f"    Cost: {blog_data['metadata']['cost']}")
         
         # Save HTML preview
         html_preview = self._generate_html_preview(blog_data)
@@ -492,48 +559,44 @@ def load_config() -> dict:
         'wordpress_user': wp_user,
         'wordpress_app_password': wp_pass,
         'use_images': os.getenv('USE_IMAGES', 'false').lower() == 'true',
-        'output_dir': os.getenv('OUTPUT_DIR', 'blog_outputs')
+        'output_dir': os.getenv('OUTPUT_DIR', 'blog_outputs'),
+        'gemini_api_key_2': os.getenv('GEMINI_API_KEY_2', ''),
+        'groq_api_key': os.getenv('GROQ_API_KEY', ''),
+        'cerebras_api_key': os.getenv('CEREBRAS_API_KEY', ''),
+        'together_api_key': os.getenv('TOGETHER_API_KEY', ''),
+        'mistral_api_key': os.getenv('MISTRAL_API_KEY', ''),
+        'openrouter_api_key': os.getenv('OPENROUTER_API_KEY', ''),
+        'cloudflare_api_key': os.getenv('CLOUDFLARE_API_KEY', ''),
+        'cloudflare_account_id': os.getenv('CLOUDFLARE_ACCOUNT_ID', ''),
+        'openai_api_key': os.getenv('OPENAI_API_KEY', ''),
     }
 
 
 def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(
-        description='AI Blog Automation (Gemini + Tavily - All FREE)',
+        description='AI Blog Automation (Gemini + Tavily)',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 USAGE EXAMPLES:
 
 Automatic Mode (AI finds trending topics):
   python main_gemini.py --posts 1 --category snowflake --status draft
-  python main_gemini.py --posts 3 --category databricks --status draft
-  python main_gemini.py --posts 5 --category aws --status publish
+  python main_gemini.py --posts 3 --category data-engineering --status draft
 
 Manual Mode (You provide topics):
-  python main_gemini.py --topics "Snowflake Time Travel Guide" --status draft
-  python main_gemini.py --topics "Topic 1" "Topic 2" "Topic 3" --status draft
+  python main_gemini.py --topics "DuckDB for Data Engineers" --status draft
+  python main_gemini.py --topics "Topic 1" "Topic 2" --category python --status draft
+
+Model Selection:
+  python main_gemini.py --topics "Iceberg Tables" --model gemini-2.0-flash --status draft
+
+Legacy Mode (use V1 generator):
+  python main_gemini.py --topics "Snowflake Tips" --legacy --status draft
 
 Supported Categories:
-  snowflake    - Snowflake data warehouse
-  aws          - Amazon Web Services
-  azure        - Microsoft Azure
-  dbt          - Data Build Tool
-  airflow      - Apache Airflow
-  python       - Python programming
-  sql          - SQL and databases
-  gcp          - Google Cloud Platform
-  salesforce   - Salesforce
-  databricks   - Databricks
-
-Features:
-  • Real-time web research with Tavily
-  • Premium content generation with Gemini
-  • Research-backed blog posts with citations
-  • SEO-optimized with Yoast support
-  • WordPress Gutenberg blocks
-  • 100% FREE (using free API tiers)
-
-Cost: $0.00 (FREE tier usage)
+  snowflake, aws, azure, dbt, airflow, python, sql, gcp,
+  salesforce, databricks, data-engineering, open-source, career
         """
     )
     
@@ -559,24 +622,51 @@ Cost: $0.00 (FREE tier usage)
     
     parser.add_argument(
         '--category',
-        choices=['snowflake', 'aws', 'azure', 'dbt', 'airflow', 'python', 'sql', 'gcp', 'salesforce', 'databricks'],
-        help='Focus on specific category (automatic mode only)'
+        choices=[
+            'snowflake', 'aws', 'azure', 'dbt', 'airflow', 'python', 'sql',
+            'gcp', 'salesforce', 'databricks',
+            'data-engineering', 'open-source', 'career',
+        ],
+        help='Focus on specific category'
+    )
+    
+    parser.add_argument(
+        '--legacy',
+        action='store_true',
+        help='Use V1 legacy generator instead of V2 multi-pass'
+    )
+    
+    parser.add_argument(
+        '--model',
+        type=str,
+        default=None,
+        help='Gemini model override (e.g., gemini-2.0-flash, gemini-pro)'
     )
     
     args = parser.parse_args()
     
+    # Set model env var if specified via CLI
+    if args.model:
+        os.environ['GEMINI_MODEL'] = args.model
+    
     # Determine mode
     if args.topics:
-        print(f"📝 MANUAL mode - Will create {len(args.topics)} post(s) from your topics")
+        print(f"  MANUAL mode - Will create {len(args.topics)} post(s) from your topics")
     else:
-        print(f"🤖 AUTOMATIC mode - Will create {args.posts} post(s) from trending topics")
+        print(f"  AUTOMATIC mode - Will create {args.posts} post(s) from trending topics")
         if args.category:
-            print(f"🎯 Category filter: {args.category}")
+            print(f"  Category filter: {args.category}")
+    if args.legacy:
+        print(f"  Using V1 LEGACY generator")
+    else:
+        print(f"  Using V2 multi-pass generator")
     
     print()
     
     # Load configuration
     config = load_config()
+    config['use_legacy'] = args.legacy
+    config['author_config'] = os.getenv('AUTHOR_CONFIG', 'author_config.json')
     
     # Initialize pipeline
     pipeline = BlogAutomationPipelineGemini(config)

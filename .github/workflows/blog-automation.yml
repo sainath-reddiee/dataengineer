@@ -33,6 +33,9 @@ on:
           - 'gcp'
           - 'databricks'
           - 'salesforce'
+          - 'data-engineering'
+          - 'open-source'
+          - 'career'
         default: 'snowflake'
       
       topic1:
@@ -51,6 +54,17 @@ on:
       
       enable_images:
         description: 'Generate images?'
+        required: false
+        type: boolean
+        default: false
+      
+      model:
+        description: 'Gemini model (e.g. gemini-2.0-flash, gemini-2.5-pro)'
+        required: false
+        default: 'gemini-2.0-flash'
+      
+      use_legacy:
+        description: 'Use legacy V1 generator?'
         required: false
         type: boolean
         default: false
@@ -90,12 +104,27 @@ jobs:
           WORDPRESS_USER: ${{ secrets.WORDPRESS_USER }}
           WORDPRESS_APP_PASSWORD: ${{ secrets.WORDPRESS_APP_PASSWORD }}
           USE_IMAGES: ${{ github.event.inputs.enable_images || 'false' }}
+          GEMINI_MODEL: ${{ github.event.inputs.model || 'gemini-2.0-flash' }}
+          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           echo "🤖 AUTOMATIC mode - Will create ${{ github.event.inputs.num_posts || '1' }} post(s)"
+          LEGACY_FLAG=""
+          if [ "${{ github.event.inputs.use_legacy }}" = "true" ]; then
+            LEGACY_FLAG="--legacy"
+          fi
           python blog-automation/main_gemini.py \
             --posts ${{ github.event.inputs.num_posts || '1' }} \
             --category ${{ github.event.inputs.category || 'snowflake' }} \
-            --status ${{ github.event.inputs.status || 'draft' }}
+            --status ${{ github.event.inputs.status || 'draft' }} \
+            $LEGACY_FLAG
       
       - name: Generate blog posts (Manual Mode)
         if: github.event.inputs.mode == 'manual'
@@ -106,6 +135,16 @@ jobs:
           WORDPRESS_USER: ${{ secrets.WORDPRESS_USER }}
           WORDPRESS_APP_PASSWORD: ${{ secrets.WORDPRESS_APP_PASSWORD }}
           USE_IMAGES: ${{ github.event.inputs.enable_images || 'false' }}
+          GEMINI_MODEL: ${{ github.event.inputs.model || 'gemini-2.0-flash' }}
+          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           TOPIC1: ${{ github.event.inputs.topic1 }}
         run: |
           echo "✍️  MANUAL mode"
@@ -116,10 +155,16 @@ jobs:
             exit 1
           fi
           
+          LEGACY_FLAG=""
+          if [ "${{ github.event.inputs.use_legacy }}" = "true" ]; then
+            LEGACY_FLAG="--legacy"
+          fi
+          
           # Use environment variable to avoid shell word splitting
           python blog-automation/main_gemini.py \
             --topics "$TOPIC1" \
-            --status ${{ github.event.inputs.status || 'draft' }}
+            --status ${{ github.event.inputs.status || 'draft' }} \
+            $LEGACY_FLAG
       
       - name: Upload results
         uses: actions/upload-artifact@v4

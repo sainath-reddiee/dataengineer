@@ -48,7 +48,10 @@ class EnhancedTrendMonitor:
             'sql': ['SQL', 'database', 'dataengineering'],
             'gcp': ['googlecloud', 'dataengineering', 'bigquery'],
             'salesforce': ['salesforce', 'salesforceadmins', 'SalesforceDeveloper', 'dataengineering'],
-            'databricks': ['databricks', 'apachespark', 'dataengineering', 'bigdata']
+            'databricks': ['databricks', 'apachespark', 'dataengineering', 'bigdata'],
+            'data-engineering': ['dataengineering', 'dataquality', 'analytics', 'devops'],
+            'open-source': ['dataengineering', 'apachespark', 'bigdata', 'duckdb'],
+            'career': ['dataengineering', 'cscareerquestions', 'datascience', 'experienceddevs']
         }
         
         # Official documentation URLs (EXPANDED with Salesforce & Databricks)
@@ -98,6 +101,22 @@ class EnhancedTrendMonitor:
                 'blog': 'https://www.databricks.com/blog',
                 'release_notes': 'https://docs.databricks.com/en/release-notes/index.html',
                 'engineering_blog': 'https://www.databricks.com/blog/category/engineering'
+            },
+            'data-engineering': {
+                'duckdb_blog': 'https://duckdb.org/news/',
+                'iceberg_releases': 'https://iceberg.apache.org/releases/',
+                'great_expectations': 'https://greatexpectations.io/blog/',
+                'data_engineering_weekly': 'https://www.dataengineeringweekly.com/'
+            },
+            'open-source': {
+                'duckdb': 'https://duckdb.org/news/',
+                'iceberg': 'https://iceberg.apache.org/releases/',
+                'polars': 'https://pola.rs/posts/',
+                'spark': 'https://spark.apache.org/news/'
+            },
+            'career': {
+                'interview_query': 'https://www.interviewquery.com/blog/',
+                'start_data_engineering': 'https://www.startdataengineering.com/'
             }
         }
         
