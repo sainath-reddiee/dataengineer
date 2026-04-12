@@ -12,8 +12,34 @@
     "ETL/ELT"
   ],
   "lastUpdated": "2026-04-12",
-  "totalArticles": 62,
+  "totalArticles": 63,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/why-i-stopped-using-snowflake-tasks-orchestration",
+      "title": "Why I Stopped Using Snowflake Tasks for Orchestration",
+      "summary": "I want to be clear about something before I say anything critical: Snowflake Tasks are genuinely good. I used them for months. I recommended them to people. I wrote internal&#8230;",
+      "keyFacts": [
+        "If you&#8217;re a team of two data engineers and setting up Airflow feels like overkill, Tasks get you 80% of the way there with 10% of the setup cost",
+        "In Airflow, this is a BranchPythonOperator",
+        "The Scale Limit Nobody Mentions There is a hard limit of 1,000 Tasks per data pipeline",
+        "I want to be clear about something before I say anything critical: Snowflake Tasks are genuinely good"
+      ],
+      "entities": [
+        "snowflake",
+        "airflow",
+        "docker",
+        "sql",
+        "python",
+        "dbt"
+      ],
+      "questionAnswered": "Why I Stopped Using Snowflake Tasks for Orchestration",
+      "lastUpdated": "2026-04-12",
+      "published": "2026-04-12",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 1733
+    },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-cortex-code-cost-control-2026",
       "title": "Snowflake Cortex Code Cost Control in 2026",
