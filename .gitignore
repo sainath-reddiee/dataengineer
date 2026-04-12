@@ -12,6 +12,9 @@ dist/
 dist-ssr/
 *.local
 
+# Lint artifacts
+lint_results.json
+
 # Node
 node_modules/
 

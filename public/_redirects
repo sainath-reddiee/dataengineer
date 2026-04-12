@@ -14,6 +14,17 @@ https://www.dataengineerhub.blog/* https://dataengineerhub.blog/:splat 301!
 /tag/:slug/ /tag/:slug 301!
 /about/ /about 301!
 /contact/ /contact 301!
+/newsletter/ /newsletter 301!
+/privacy-policy/ /privacy-policy 301!
+/terms-of-service/ /terms-of-service 301!
+/disclaimer/ /disclaimer 301!
+/glossary/ /glossary 301!
+/compare/ /compare 301!
+/cheatsheets/ /cheatsheets 301!
+/certification/ /certification 301!
+/tags/ /tags 301!
+/explore/ /explore 301!
+/checklist/ /checklist 301!
 
 # SPA fallback - Must be last
 /* /index.html 200

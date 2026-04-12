@@ -65,7 +65,11 @@ const MetaTags = ({
 
   // Format dates
   const formattedPublishedTime = formatDate(publishedTime);
-  const formattedModifiedTime = formatDate(modifiedTime || publishedTime);
+  let formattedModifiedTime = formatDate(modifiedTime || publishedTime);
+  // Ensure dateModified is never before datePublished (Google flags this)
+  if (formattedModifiedTime && formattedPublishedTime && formattedModifiedTime < formattedPublishedTime) {
+    formattedModifiedTime = formattedPublishedTime;
+  }
 
   // Generate keywords
   const finalKeywords = keywords || generateKeywords(tags, category);
@@ -114,7 +118,7 @@ const MetaTags = ({
       {/* Open Graph */}
       <meta property="og:type" content={type} />
       <meta property="og:url" content={currentUrl} />
-      <meta property="og:title" content={fullTitle} />
+      <meta property="og:title" content={title || SITE_CONFIG.name} />
       <meta property="og:description" content={fullDescription} />
       <meta property="og:image" content={fullImage} />
       <meta property="og:image:width" content="1200" />
@@ -126,7 +130,7 @@ const MetaTags = ({
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:url" content={currentUrl} />
-      <meta name="twitter:title" content={fullTitle} />
+      <meta name="twitter:title" content={title || SITE_CONFIG.name} />
       <meta name="twitter:description" content={fullDescription} />
       <meta name="twitter:image" content={fullImage} />
       <meta name="twitter:image:alt" content={title || SITE_CONFIG.name} />

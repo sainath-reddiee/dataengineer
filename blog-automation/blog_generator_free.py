@@ -21,9 +21,7 @@ try:
     import google.generativeai as genai
     from tavily import TavilyClient
 except ImportError:
-    print("❌ Missing dependencies!")
-    print("Install: pip install google-generativeai tavily-python python-slugify")
-    exit(1)
+    raise ImportError("Missing dependencies: pip install google-generativeai tavily-python python-slugify")
 
 
 class BlogGeneratorTavily:

@@ -114,6 +114,7 @@ jobs:
           CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
         run: |
           echo "🤖 AUTOMATIC mode - Will create ${{ github.event.inputs.num_posts || '1' }} post(s)"
           LEGACY_FLAG=""
@@ -145,6 +146,7 @@ jobs:
           CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
           TOPIC1: ${{ github.event.inputs.topic1 }}
         run: |
           echo "✍️  MANUAL mode"
@@ -163,6 +165,7 @@ jobs:
           # Use environment variable to avoid shell word splitting
           python blog-automation/main_gemini.py \
             --topics "$TOPIC1" \
+            --category ${{ github.event.inputs.category || 'data-engineering' }} \
             --status ${{ github.event.inputs.status || 'draft' }} \
             $LEGACY_FLAG
       

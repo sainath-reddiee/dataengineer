@@ -5,7 +5,8 @@ import { optimizeWordPressImage, generateSrcSet } from '@/utils/imageOptimizer';
 const LazyImage = ({ 
   src, 
   alt, 
-  width = 800, 
+  width = 800,
+  height,
   quality = 80,
   sizes = '100vw',
   className = '',
@@ -13,6 +14,8 @@ const LazyImage = ({
   onLoad,
   onError
 }) => {
+  // Default to 16:9 aspect ratio if height not provided (reduces CLS)
+  const imgHeight = height || Math.round(width * 9 / 16);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(priority);
   const [hasError, setHasError] = useState(false);
@@ -93,6 +96,8 @@ const LazyImage = ({
           srcSet={srcSet}
           sizes={sizes}
           alt={alt}
+          width={width}
+          height={imgHeight}
           loading={priority ? 'eager' : 'lazy'}
           fetchpriority={priority ? 'high' : 'auto'}
           decoding={priority ? 'sync' : 'async'}

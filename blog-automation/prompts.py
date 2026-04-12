@@ -719,5 +719,12 @@ REVIEW CHECKLIST — fix each issue IN-PLACE and return the corrected HTML:
    a citation — either add an inline link to a source from the research, or soften to "many teams"
    / "a common approach".
 
+STRUCTURAL RULES (do NOT violate these):
+- Code blocks MUST keep their exact <pre><code class="language-*">...</code></pre> structure.
+  Never strip the <code> tag or its class attribute from inside <pre>.
+- List items (<li>) MUST always have matching closing </li> tags.
+- Lists MUST be wrapped in <ul> or <ol> tags.
+- Never remove closing tags for <strong>, <em>, or <a> inside any element.
+
 Return ONLY the corrected HTML content (no JSON wrapping, no markdown fences, no explanations).
 If no issues are found, return the original HTML unchanged."""

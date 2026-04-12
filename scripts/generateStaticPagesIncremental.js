@@ -77,12 +77,12 @@ function normalizeHeadings(html) {
   const hasH2 = /<h2[\s>]/i.test(html);
   const hasH3 = /<h3[\s>]/i.test(html);
   if (!hasH2 && hasH3) {
-    // Promote each level up by one: h6→h5, h5→h4, h4→h3, h3→h2
-    // Process from highest to lowest to avoid double-promotion
-    html = html.replace(/<(\/?)h6([\s>])/gi, '<$1h5$2');
-    html = html.replace(/<(\/?)h5([\s>])/gi, '<$1h4$2');
-    html = html.replace(/<(\/?)h4([\s>])/gi, '<$1h3$2');
+    // Promote each level up by one: h3→h2, h4→h3, h5→h4, h6→h5
+    // Process from lowest to highest to avoid double-promotion
     html = html.replace(/<(\/?)h3([\s>])/gi, '<$1h2$2');
+    html = html.replace(/<(\/?)h4([\s>])/gi, '<$1h3$2');
+    html = html.replace(/<(\/?)h5([\s>])/gi, '<$1h4$2');
+    html = html.replace(/<(\/?)h6([\s>])/gi, '<$1h5$2');
   }
   return html;
 }
@@ -307,7 +307,7 @@ function saveCache(cache) {
 }
 
 function hashContent(content) {
-  return crypto.createHash('md5').update(JSON.stringify(content)).digest('hex');
+  return crypto.createHash('sha256').update(JSON.stringify(content)).digest('hex');
 }
 
 // ============================================================================
@@ -618,6 +618,13 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const buildTimestamp = new Date().toISOString();
   const buildHash = crypto.randomBytes(8).toString('hex');
 
+  // Ensure dateModified is never before datePublished (Google flags this)
+  const effectivePublished = postDate || buildTimestamp;
+  let effectiveModified = postModified || postDate || buildTimestamp;
+  if (effectiveModified < effectivePublished) {
+    effectiveModified = effectivePublished;
+  }
+
   // 🖼️ Process images to make them absolute
   const absoluteContent = makeImagesAbsolute(fullContent);
 
@@ -728,9 +735,10 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="${title}" />
     <meta property="og:locale" content="en_US" />
-    <meta property="article:published_time" content="${postDate || buildTimestamp}" />
-    <meta property="article:modified_time" content="${postModified || postDate || buildTimestamp}" />
+    <meta property="article:published_time" content="${effectivePublished}" />
+    <meta property="article:modified_time" content="${effectiveModified}" />
     <meta property="article:author" content="https://dataengineerhub.blog/about" />
 
     <!-- Twitter Card -->
@@ -1105,12 +1113,12 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
         "logo": {
           "@type": "ImageObject",
           "url": "https://dataengineerhub.blog/logo.png",
-          "width": 250,
+          "width": 246,
           "height": 250
         }
       },
-      "datePublished": "${postDate || buildTimestamp}",
-      "dateModified": "${postModified || postDate || buildTimestamp}",
+      "datePublished": "${effectivePublished}",
+      "dateModified": "${effectiveModified}",
       "mainEntityOfPage": {
         "@type": "WebPage",
         "@id": "https://dataengineerhub.blog${pagePath}"
@@ -1157,11 +1165,13 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
       "logo": {
         "@type": "ImageObject",
         "url": "https://dataengineerhub.blog/logo.png",
-        "width": 250,
+        "width": 246,
         "height": 250
       },
       "sameAs": [
-        "https://twitter.com/sainath29"
+        "https://twitter.com/sainath29",
+        "https://www.linkedin.com/in/sainath-reddy-06a97817a/",
+        "https://github.com/sainath-reddiee/dataengineer"
       ]
     }
     </script>
@@ -1173,7 +1183,7 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
       "@type": "Person",
       "@id": "https://dataengineerhub.blog/#author",
       "name": "Sainath Reddy",
-      "url": "https://dataengineerhub.blog",
+      "url": "https://dataengineerhub.blog/about",
       "jobTitle": "Data Engineer",
       "worksFor": {
         "@type": "Organization",
@@ -1182,7 +1192,7 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
       "sameAs": [
         "https://www.linkedin.com/in/sainath-reddy-06a97817a/",
         "https://twitter.com/sainath29",
-        "https://github.com/sainathreddy-dataengineer"
+        "https://github.com/sainath-reddiee/dataengineer"
       ],
       "knowsAbout": ["Data Engineering", "Snowflake", "AWS", "Azure", "Databricks", "Apache Airflow", "dbt", "ETL/ELT Pipelines", "Data Warehousing", "Cloud Architecture"],
       "description": "Data Engineer with 4+ years of experience specializing in building scalable data pipelines and cloud-native data solutions."

@@ -8,6 +8,7 @@ Supports both V2 (modular, multi-pass) and legacy V1 generator.
 import os
 import sys
 import json
+import html as html_module
 import argparse
 from datetime import datetime
 from pathlib import Path
@@ -373,7 +374,7 @@ class BlogAutomationPipelineGemini:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{blog_data['title']}</title>
+    <title>{html_module.escape(blog_data['title'])}</title>
     <style>
         body {{
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -420,15 +421,15 @@ class BlogAutomationPipelineGemini:
 </head>
 <body>
     <div class="seo-info">
-        <strong>SEO Title:</strong> {blog_data['seo']['title']}<br>
-        <strong>Focus Keyphrase:</strong> {blog_data['seo']['focus_keyphrase']}<br>
-        <strong>Meta Description:</strong> {blog_data['seo']['meta_description']}<br>
+        <strong>SEO Title:</strong> {html_module.escape(blog_data['seo']['title'])}<br>
+        <strong>Focus Keyphrase:</strong> {html_module.escape(blog_data['seo']['focus_keyphrase'])}<br>
+        <strong>Meta Description:</strong> {html_module.escape(blog_data['seo']['meta_description'])}<br>
         <strong>Word Count:</strong> {blog_data['metadata']['word_count']} | 
         <strong>Reading Time:</strong> {blog_data['metadata']['reading_time']} min | 
         <strong>Sources:</strong> {blog_data['metadata']['sources_used']}
     </div>
     
-    <h1>{blog_data['title']}</h1>
+    <h1>{html_module.escape(blog_data['title'])}</h1>
 """
         
         # Convert blocks to HTML

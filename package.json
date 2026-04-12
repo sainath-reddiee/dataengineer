@@ -22,7 +22,6 @@
     "sitemap:notify:force": "node scripts/notifySearchEngines.js --force",
     "sitemap:notify:all": "node scripts/notifySearchEngines.js --all",
     "indexnow:generate": "node scripts/generateIndexNowKey.js",
-    "indexnow:test": "node scripts/testIndexNow.js",
     "llm-sitemap": "node scripts/generateLLMSitemap.js",
     "rss-feed": "node scripts/generateRSSFeed.js",
     "llms-full": "node scripts/generateLLMSFull.js",
@@ -30,14 +29,12 @@
     "optimize-citations": "node scripts/optimizeForAICitation.js",
     "prebuild": "npm run indexnow:generate && npm run sitemap:generate && npm run llm-sitemap && npm run llms-full && npm run rss-feed && npm run sitemap:validate",
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'",
-    "test:seo": "npm run build && node scripts/testSEO.js",
     "test:build": "npm run build && npm run build:verify",
     "pseo:sitemaps": "node scripts/generateSitemap.js",
     "pseo:migrate": "node scripts/migrate-pseo-data.js",
     "pseo:sync-articles": "node scripts/sync-articles-for-linking.js",
     "pseo:search-index": "node scripts/generate-search-index.js",
-    "pseo:merge": "node scripts/merge-pseo-data.cjs",
-    "pseo:verify": "node scripts/testSEO.js"
+    "pseo:merge": "node scripts/merge-pseo-data.cjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

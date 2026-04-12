@@ -18,6 +18,7 @@ import os
 import json
 import re
 import time
+from difflib import SequenceMatcher
 from typing import Dict, List, Optional
 from datetime import datetime
 from slugify import slugify
@@ -27,8 +28,7 @@ try:
     import google.generativeai as genai
     from tavily import TavilyClient
 except ImportError:
-    print("Missing dependencies: pip install google-generativeai tavily-python python-slugify")
-    exit(1)
+    raise ImportError("Missing dependencies: pip install google-generativeai tavily-python python-slugify")
 
 try:
     from openai import OpenAI as _OpenAI
@@ -153,7 +153,7 @@ class BlogGeneratorV2:
                 })
 
             if cerebras_api_key:
-                _cerebras_model = os.getenv("CEREBRAS_MODEL", "llama-3.3-70b")
+                _cerebras_model = os.getenv("CEREBRAS_MODEL", "llama3.3-70b")
                 self._providers.append({
                     "name": "cerebras",
                     "type": "openai_compat",
@@ -310,9 +310,7 @@ class BlogGeneratorV2:
         finally:
             # Restore primary key if we switched to backup
             if "api_key" in provider and provider["api_key"]:
-                primary = self._providers[0]
-                if "api_key" not in primary:
-                    genai.configure(api_key=self._primary_gemini_key)
+                genai.configure(api_key=self._primary_gemini_key)
 
     def _call_openai_compat(self, provider: dict, prompt: str, gen_config: dict = None) -> str:
         """Call an OpenAI-compatible provider (Groq, OpenRouter, OpenAI)."""
@@ -437,7 +435,7 @@ class BlogGeneratorV2:
             previous_ending = self._last_text(section_blocks)
             # Extract code snippets and source URLs from this section for dedup
             for block in section_blocks:
-                content = block.get("innerContent", [""])[0]
+                content = (block.get("innerContent") or [""])[0]
                 if block.get("blockName") == "core/code":
                     # Store first 200 chars of code as fingerprint
                     clean = re.sub(r'<[^>]+>', '', content).strip()
@@ -473,7 +471,7 @@ class BlogGeneratorV2:
                 insert_pos = None
                 past_tldr = False
                 for idx, block in enumerate(blocks):
-                    content = block.get("innerContent", [""])[0]
+                    content = (block.get("innerContent") or [""])[0]
                     if "TL;DR" in content:
                         past_tldr = True
                         continue
@@ -514,6 +512,9 @@ class BlogGeneratorV2:
         # Pass 11 — Editorial review (catch fabricated metrics, repeated content)
         print("\n  PASS 11/12: Editorial review pass...")
         blocks = self._editorial_review(blocks, keyphrase, research_summary)
+
+        # Post-editorial structural repair (editorial LLM can strip <code> wrappers, break lists)
+        blocks = self._validate_blocks(blocks)
 
         # Pass 12 — Generate image prompts
         print("\n  PASS 12/12: Generating image prompts...")
@@ -900,10 +901,21 @@ class BlogGeneratorV2:
 
         try:
             text = self._call_gemini(prompt)
-            blocks = json.loads(self._extract_json(text))
-
-            if not isinstance(blocks, list) or len(blocks) == 0:
-                raise ValueError("Section returned no blocks")
+            try:
+                blocks = json.loads(self._extract_json(text))
+                if not isinstance(blocks, list) or len(blocks) == 0:
+                    raise ValueError("Section returned no blocks")
+            except (json.JSONDecodeError, ValueError) as parse_err:
+                print(f"    JSON parse failed for '{section.get('heading', '?')}': {parse_err}, retrying once...")
+                json_nudge = (
+                    "\n\nCRITICAL: Your previous response was not valid JSON. "
+                    "Return ONLY a JSON array of WordPress Gutenberg blocks. "
+                    "No markdown, no explanation — just the JSON array starting with [ and ending with ]."
+                )
+                text = self._call_gemini(prompt + json_nudge)
+                blocks = json.loads(self._extract_json(text))
+                if not isinstance(blocks, list) or len(blocks) == 0:
+                    raise ValueError("Section returned no blocks after retry")
 
             blocks = self._validate_blocks(blocks)
 
@@ -972,16 +984,19 @@ class BlogGeneratorV2:
             })
             # Topic-aware code skeleton instead of placeholder TODO
             code_points = key_points[:3] if key_points else [heading.lower()]
-            code_lines = [f"-- {heading}: Production-ready pattern for {keyphrase}"]
+            category = topic.get("category", "").lower()
+            lang = "python" if "python" in category or "airflow" in category or "spark" in category else "sql"
+            code_comment = "#" if lang == "python" else "--"
+            code_lines = [f"{code_comment} {heading}: Production-ready pattern for {keyphrase}"]
             for i, pt in enumerate(code_points, 1):
-                code_lines.append(f"-- Step {i}: {pt.strip().capitalize()}")
-                code_lines.append(f"--   Configure this based on your data volume and SLA targets")
-            code_lines.append(f"\n-- Verify: Run a test query to confirm {keyphrase} behavior")
+                code_lines.append(f"{code_comment} Step {i}: {pt.strip().capitalize()}")
+                code_lines.append(f"{code_comment}   Configure this based on your data volume and SLA targets")
+            code_lines.append(f"\n{code_comment} Verify: Run a test query to confirm {keyphrase} behavior")
             code_body = "\n".join(code_lines)
             blocks.append({
                 "blockName": "core/code",
-                "attrs": {"language": "sql"},
-                "innerContent": [f"<pre><code class=\"language-sql\">{code_body}</code></pre>"],
+                "attrs": {"language": lang},
+                "innerContent": [f"<pre><code class=\"language-{lang}\">{code_body}</code></pre>"],
             })
             blocks.append({
                 "blockName": "core/paragraph",
@@ -1022,10 +1037,20 @@ class BlogGeneratorV2:
                 "innerContent": [f"<p>Evaluating {keyphrase} against alternatives requires looking at three concrete dimensions: throughput under your actual query patterns, operational overhead for your team size, and total cost at your data volume.</p>"],
             })
             if key_points:
+                compare_descriptions = [
+                    "benchmark this with a representative subset of your production workload before committing.",
+                    "evaluate this by measuring cost-per-query at your actual data volume, not just speed.",
+                    "compare setup complexity and ongoing maintenance effort across your team's skill set.",
+                    "test failure modes and recovery time — resilience matters as much as throughput.",
+                ]
+                compare_items = []
+                for i, pt in enumerate(key_points[:4]):
+                    desc = compare_descriptions[i % len(compare_descriptions)]
+                    compare_items.append(f"<li><strong>{pt.strip().capitalize()}</strong> — {desc}</li>")
                 blocks.append({
                     "blockName": "core/list",
                     "attrs": {},
-                    "innerContent": ["<ul>" + "".join(f"<li><strong>{pt.strip().capitalize()}</strong> — benchmark this with a representative subset of your production workload before committing.</li>" for pt in key_points[:4]) + "</ul>"],
+                    "innerContent": ["<ul>" + "".join(compare_items) + "</ul>"],
                 })
             blocks.append({
                 "blockName": "core/paragraph",
@@ -1042,9 +1067,17 @@ class BlogGeneratorV2:
                     "innerContent": [f"<p>Understanding {intro_point} is foundational to working effectively with {keyphrase}. Here is what this looks like in practice and the specific patterns that separate production-grade implementations from tutorial-level setups.</p>"],
                 })
                 if len(key_points) > 1:
+                    teach_descriptions = [
+                        f"a foundational concept you will apply directly when building {keyphrase} pipelines.",
+                        f"understanding this helps you avoid the most common performance pitfalls with {keyphrase}.",
+                        f"teams that master this pattern report significantly fewer production incidents with {keyphrase}.",
+                        f"this is where most optimization gains come from when scaling {keyphrase} workloads.",
+                        f"getting this right early prevents costly rework when your {keyphrase} usage grows.",
+                    ]
                     teach_items = []
-                    for pt in key_points:
-                        teach_items.append(f"<li><strong>{pt.strip().capitalize()}</strong> — a concept you will apply directly when building or optimizing {keyphrase} pipelines.</li>")
+                    for i, pt in enumerate(key_points):
+                        desc = teach_descriptions[i % len(teach_descriptions)]
+                        teach_items.append(f"<li><strong>{pt.strip().capitalize()}</strong> — {desc}</li>")
                     blocks.append({
                         "blockName": "core/list",
                         "attrs": {},
@@ -1086,13 +1119,29 @@ class BlogGeneratorV2:
 
         try:
             text = self._call_gemini(prompt)
-            blocks = json.loads(self._extract_json(text))
+            try:
+                blocks = json.loads(self._extract_json(text))
+                if not isinstance(blocks, list) or len(blocks) == 0:
+                    raise ValueError("FAQ returned no blocks")
+            except (json.JSONDecodeError, ValueError) as parse_err:
+                print(f"    FAQ JSON parse failed: {parse_err}, retrying once...")
+                json_nudge = (
+                    "\n\nCRITICAL: Your previous response was not valid JSON. "
+                    "Return ONLY a JSON array of WordPress Gutenberg blocks. "
+                    "No markdown, no explanation — just the JSON array starting with [ and ending with ]."
+                )
+                text = self._call_gemini(prompt + json_nudge)
+                blocks = json.loads(self._extract_json(text))
+                if not isinstance(blocks, list) or len(blocks) == 0:
+                    raise ValueError("FAQ returned no blocks after retry")
             return self._validate_blocks(blocks)
 
         except QuotaExhaustedException:
             raise  # Let circuit breaker handle this
         except Exception as e:
-            # Topic-aware fallback FAQ with varied answers per question
+            print(f"    FAQ generation failed: {e}, using question-aware fallback")
+            # Question-aware fallback FAQ — parse each question to generate
+            # an answer that actually matches the question type
             faq_blocks = [
                 {
                     "blockName": "core/heading",
@@ -1100,20 +1149,64 @@ class BlogGeneratorV2:
                     "innerContent": ["<h2>Frequently Asked Questions</h2>"],
                 }
             ]
-            # Generate varied fallback answers based on question content
-            answer_patterns = [
-                f"The short answer depends on your data volume and team setup. For most production {keyphrase} deployments, start with the defaults and tune based on observed performance.",
-                f"Yes — {keyphrase} supports this out of the box. Check the official documentation for the latest configuration options, as the API surface has changed in recent releases.",
-                f"The most common mistake is skipping the planning phase. Before implementing {keyphrase}, map out your data flows and identify potential bottlenecks.",
-                f"Getting started is straightforward: install the core package, configure your connection, and run the quickstart example. The setup section above covers this step by step.",
-            ]
-            for i, q in enumerate(faq_questions[:4]):
+            title = topic.get("title", keyphrase)
+            for q in faq_questions[:4]:
+                q_lower = q.lower()
+                # Classify question type and build a relevant answer
+                if q_lower.startswith("what is") or q_lower.startswith("what are"):
+                    answer = (
+                        f"{title} is a technique used in data engineering to improve "
+                        f"pipeline reliability and performance. It addresses common "
+                        f"challenges teams face when working with {keyphrase} at scale, "
+                        f"and is covered in detail in the sections above."
+                    )
+                elif "how do i" in q_lower or "how to" in q_lower or "get started" in q_lower:
+                    answer = (
+                        f"Start by reviewing the prerequisites in the setup section above. "
+                        f"The core steps are: configure your environment, run the basic example "
+                        f"from this article, then iterate on your specific use case. "
+                        f"Most teams get a working {keyphrase} setup within a single sprint."
+                    )
+                elif "mistake" in q_lower or "avoid" in q_lower or "wrong" in q_lower:
+                    answer = (
+                        f"The most common {keyphrase} mistakes are: skipping validation in "
+                        f"non-production environments, ignoring data volume when choosing "
+                        f"configurations, and not monitoring performance after deployment. "
+                        f"The pitfalls section above covers each of these in detail."
+                    )
+                elif "can i" in q_lower or "is it possible" in q_lower or "does" in q_lower:
+                    answer = (
+                        f"Yes, this is supported. The approach depends on your specific "
+                        f"data volume and infrastructure. Review the examples in this article "
+                        f"for practical patterns, and consult the official documentation for "
+                        f"the latest configuration options."
+                    )
+                elif "performance" in q_lower or "slow" in q_lower or "fast" in q_lower or "optimi" in q_lower:
+                    answer = (
+                        f"Performance with {keyphrase} depends on data volume, query patterns, "
+                        f"and your configuration choices. The optimization techniques covered "
+                        f"in this article — particularly around indexing and partitioning — "
+                        f"address the most common bottlenecks."
+                    )
+                elif "cost" in q_lower or "free" in q_lower or "pricing" in q_lower:
+                    answer = (
+                        f"Pricing varies by platform and usage tier. Many of the {keyphrase} "
+                        f"techniques in this article work on free-tier accounts. Check the "
+                        f"official pricing page for your platform for current details."
+                    )
+                else:
+                    # Generic but still references the article content
+                    answer = (
+                        f"This depends on your specific setup and requirements. The article "
+                        f"above covers the key considerations for {keyphrase}, including "
+                        f"practical examples and common trade-offs. Start with the approach "
+                        f"that best fits your current data volume and team size."
+                    )
                 faq_blocks.append({
                     "blockName": "core/heading",
                     "attrs": {"level": 3},
                     "innerContent": [f"<h3>{q}</h3>"],
                 })
-                answer = answer_patterns[i % len(answer_patterns)]
                 faq_blocks.append({
                     "blockName": "core/paragraph",
                     "attrs": {},
@@ -1137,7 +1230,7 @@ class BlogGeneratorV2:
         total_count = 0
         total_paragraphs = 0
         for block in blocks:
-            content = block.get("innerContent", [""])[0]
+            content = (block.get("innerContent") or [""])[0]
             total_count += content.lower().count(keyphrase.lower())
             if block.get("blockName") == "core/paragraph":
                 total_paragraphs += 1
@@ -1152,23 +1245,38 @@ class BlogGeneratorV2:
             return blocks
 
         # Find paragraphs without the keyphrase and rewrite a few
+        # Prioritize introduction (first 3 paragraphs) for SEO — keyphrase
+        # in the opening is critical for search ranking.
         needed = min(target_count - total_count, 4)  # max 4 rewrites per run
         rewritten = 0
 
+        intro_candidates = []
+        later_candidates = []
+        para_seen = 0
         for i, block in enumerate(blocks):
-            if rewritten >= needed:
-                break
             if block.get("blockName") != "core/paragraph":
                 continue
-
-            content = block.get("innerContent", [""])[0]
+            para_seen += 1
+            content = (block.get("innerContent") or [""])[0]
             if keyphrase.lower() in content.lower():
                 continue
-
-            # Skip very short paragraphs
             text_len = len(re.sub(r"<[^>]+>", "", content))
             if text_len < 80:
                 continue
+            if para_seen <= 3:
+                intro_candidates.append(i)
+            else:
+                later_candidates.append(i)
+
+        # Process intro paragraphs first, then later ones
+        candidates = intro_candidates + later_candidates
+
+        for i in candidates:
+            if rewritten >= needed:
+                break
+            block = blocks[i]
+
+            content = (block.get("innerContent") or [""])[0]
 
             try:
                 prompt = build_natural_keyphrase_prompt(content, keyphrase)
@@ -1220,7 +1328,7 @@ class BlogGeneratorV2:
         for i, block in enumerate(blocks):
             bname = block.get("blockName", "")
             if bname in ("core/paragraph", "core/code", "core/list"):
-                content = block.get("innerContent", [""])[0]
+                content = (block.get("innerContent") or [""])[0]
                 reviewable_html += content + "\n"
                 reviewable_indices.append(i)
 
@@ -1271,24 +1379,28 @@ class BlogGeneratorV2:
                 safe_code = len(reviewed_code) >= orig_code_count * 0.5 if orig_code_count else True
                 safe_list = len(reviewed_lists) >= orig_list_count * 0.5 if orig_list_count else True
 
-                # Patch blocks with reviewed versions by type
+                # Patch blocks with reviewed versions by type (skip code — editorial can corrupt structure)
+                # Use similarity matching to avoid misaligned patching when LLM merges/splits blocks
                 para_idx = 0
-                code_idx = 0
                 list_idx = 0
                 for i in reviewable_indices:
                     block = blocks[i]
                     bname = block.get("blockName", "")
+                    original = (block.get("innerContent") or [""])[0] if block.get("innerContent") else ""
                     if bname == "core/paragraph" and safe_para and para_idx < len(reviewed_paragraphs):
-                        blocks[i]["innerContent"] = [reviewed_paragraphs[para_idx]]
+                        candidate = reviewed_paragraphs[para_idx]
+                        similarity = SequenceMatcher(None, original, candidate).ratio()
+                        if similarity > 0.3:
+                            blocks[i]["innerContent"] = [candidate]
                         para_idx += 1
-                    elif bname == "core/code" and safe_code and code_idx < len(reviewed_code):
-                        blocks[i]["innerContent"] = [reviewed_code[code_idx]]
-                        code_idx += 1
                     elif bname == "core/list" and safe_list and list_idx < len(reviewed_lists):
-                        blocks[i]["innerContent"] = [reviewed_lists[list_idx]]
+                        candidate = reviewed_lists[list_idx]
+                        similarity = SequenceMatcher(None, original, candidate).ratio()
+                        if similarity > 0.3:
+                            blocks[i]["innerContent"] = [candidate]
                         list_idx += 1
 
-                changes = para_idx + code_idx + list_idx
+                changes = para_idx + list_idx
                 skipped = []
                 if not safe_para:
                     skipped.append(f"paragraphs ({len(reviewed_paragraphs)} vs {orig_para_count})")
@@ -1297,7 +1409,7 @@ class BlogGeneratorV2:
                 if not safe_list:
                     skipped.append(f"lists ({len(reviewed_lists)} vs {orig_list_count})")
                 skip_msg = f" — skipped mismatched types: {', '.join(skipped)}" if skipped else ""
-                print(f"    Editorial review applied — patched {changes} blocks ({para_idx} paragraphs, {code_idx} code, {list_idx} lists){skip_msg}")
+                print(f"    Editorial review applied — patched {changes} blocks ({para_idx} paragraphs, {list_idx} lists, code blocks preserved){skip_msg}")
             else:
                 print("    Editorial review returned insufficient content — skipping")
 
@@ -1370,7 +1482,7 @@ class BlogGeneratorV2:
         """Count words across all blocks."""
         total = 0
         for block in blocks:
-            content = block.get("innerContent", [""])[0]
+            content = (block.get("innerContent") or [""])[0]
             text = re.sub(r"<[^>]+>", "", content)
             total += len(text.split())
         return total
@@ -1379,7 +1491,7 @@ class BlogGeneratorV2:
         """Count internal links in blocks."""
         count = 0
         for block in blocks:
-            content = block.get("innerContent", [""])[0]
+            content = (block.get("innerContent") or [""])[0]
             count += content.count("/articles/")
         return count
 
@@ -1388,7 +1500,7 @@ class BlogGeneratorV2:
         if not blocks:
             return ""
         for block in reversed(blocks):
-            content = block.get("innerContent", [""])[0]
+            content = (block.get("innerContent") or [""])[0]
             text = re.sub(r"<[^>]+>", "", content).strip()
             if text:
                 return text[-chars:]
@@ -1442,13 +1554,15 @@ class BlogGeneratorV2:
                 content = block["innerContent"][0]
                 if not content.startswith("<p>"):
                     block["innerContent"][0] = f"<p>{content}</p>"
+                elif "</p>" not in content:
+                    block["innerContent"][0] = content + "</p>"
 
             # Fix code block wrapping
             if name == "core/code":
                 content = block["innerContent"][0]
+                lang = block["attrs"].get("language", "")
                 if "<pre>" not in content:
-                    # Preserve existing language class from HTML before stripping
-                    lang = block["attrs"].get("language", "")
+                    # No <pre> at all — full rewrap needed
                     if not lang:
                         lang_match = re.search(r'class="language-(\w+)"', content)
                         lang = lang_match.group(1) if lang_match else "python"
@@ -1456,6 +1570,79 @@ class BlogGeneratorV2:
                     content = re.sub(r'<code[^>]*>', '', content)
                     content = content.replace('</code>', '')
                     block["innerContent"][0] = f'<pre><code class="language-{lang}">{content}</code></pre>'
+                elif "<code" not in content:
+                    # Has <pre> but missing <code> wrapper — add it
+                    if not lang:
+                        lang = "sql"
+                    # Extract content between <pre> and </pre>
+                    inner = re.sub(r'</?pre[^>]*>', '', content)
+                    block["innerContent"][0] = f'<pre><code class="language-{lang}">{inner}</code></pre>'
+                elif '<code>' in content and 'class="language-' not in content and lang:
+                    # Has <pre><code> but missing language class — inject it
+                    block["innerContent"][0] = content.replace('<code>', f'<code class="language-{lang}">', 1)
+
+            # Fix unclosed inline HTML tags (<strong>, <em>, <a>)
+            # Process innermost tags first to maintain proper nesting order
+            content = block["innerContent"][0]
+            for tag in ("a", "em", "strong"):
+                open_count = len(re.findall(rf"<{tag}[\s>]", content))
+                close_count = content.count(f"</{tag}>")
+                if open_count > close_count:
+                    # Append missing closing tags
+                    for _ in range(open_count - close_count):
+                        # Insert before the outermost closing tag (</p>, </li>, </h2>, etc.)
+                        outer_close = re.search(r"(</(?:p|li|h[2-4]|ul|ol|td|th)>\s*)$", content)
+                        if outer_close:
+                            pos = outer_close.start()
+                            content = content[:pos] + f"</{tag}>" + content[pos:]
+                        else:
+                            content += f"</{tag}>"
+                    block["innerContent"][0] = content
+
+            # Fix list block structure
+            if name == "core/list":
+                content = block["innerContent"][0]
+                # Ensure content is wrapped in <ul> or <ol>
+                if not re.search(r'^\s*<[uo]l', content):
+                    content = f"<ul>{content}</ul>"
+                # Close any unclosed <li> tags
+                li_open = content.count("<li>") + len(re.findall(r'<li\s[^>]*>', content))
+                li_close = content.count("</li>")
+                if li_open > li_close:
+                    # Insert missing </li> before </ul> or </ol>
+                    for _ in range(li_open - li_close):
+                        list_end = re.search(r'(</[uo]l>\s*)$', content)
+                        if list_end:
+                            pos = list_end.start()
+                            content = content[:pos] + "</li>" + content[pos:]
+                        else:
+                            content += "</li>"
+                block["innerContent"][0] = content
+
+            # Fix table block structure
+            if name == "core/table":
+                content = block["innerContent"][0]
+                if "<table" not in content:
+                    content = f"<table>{content}</table>"
+                # Ensure </table> closing tag exists
+                if "<table" in content and "</table>" not in content:
+                    content += "</table>"
+                block["innerContent"][0] = content
+
+            # Fix quote block structure
+            if name == "core/quote":
+                content = block["innerContent"][0]
+                if "<blockquote" not in content:
+                    content = f"<blockquote>{content}</blockquote>"
+                if "<blockquote" in content and "</blockquote>" not in content:
+                    content += "</blockquote>"
+                block["innerContent"][0] = content
+
+            # Normalize separator to WordPress format
+            if name == "core/separator":
+                content = block["innerContent"][0]
+                if "wp-block-separator" not in content:
+                    block["innerContent"][0] = '<hr class="wp-block-separator has-alpha-channel-opacity"/>'
 
             valid.append(block)
 
@@ -1514,5 +1701,16 @@ class BlogGeneratorV2:
                     depth -= 1
                     if depth == 0:
                         return text[start:i + 1]
+        
+        # Bracket matcher failed (unbalanced quotes/brackets in LLM output).
+        # Try json.loads on progressively trimmed text as fallback.
+        for end_offset in range(len(text), 0, -1):
+            candidate = text[:end_offset].strip()
+            if candidate and candidate[-1] in ']})':
+                try:
+                    json.loads(candidate)
+                    return candidate
+                except (json.JSONDecodeError, ValueError):
+                    continue
         
         return text

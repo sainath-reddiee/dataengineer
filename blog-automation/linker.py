@@ -70,7 +70,7 @@ class InternalLinker:
             if block.get("blockName") != "core/paragraph":
                 continue
 
-            content = block.get("innerContent", [""])[0]
+            content = (block.get("innerContent") or [""])[0]
 
             # Skip if paragraph already has an internal link
             if f"{self.link_prefix}/" in content:
@@ -232,6 +232,13 @@ class InternalLinker:
 
         if last_a_open > last_a_close:
             return True
+
+        # Check if we're inside <code> or <pre> elements (don't link inside code)
+        for tag in ("code", "pre"):
+            last_tag_open = text_before.rfind(f"<{tag}")
+            last_tag_close = text_before.rfind(f"</{tag}>")
+            if last_tag_open > last_tag_close:
+                return True
 
         # Check if we're inside an href or other attribute value
         last_quote = max(text_before.rfind('"'), text_before.rfind("'"))

@@ -28,6 +28,8 @@ class QualityGate:
         """
         issues = []
         blocks = blog_data.get("content_blocks", [])
+        if not blocks:
+            return (False, ["CRITICAL: No content blocks found"], {"word_count": 0})
         seo = blog_data.get("seo", {})
         metadata = blog_data.get("metadata", {})
         keyphrase = seo.get("focus_keyphrase", "")
@@ -52,50 +54,50 @@ class QualityGate:
         para_count = 0
         for block in blocks:
             if block.get("blockName") == "core/paragraph":
-                opening_text += " " + block.get("innerContent", [""])[0]
+                opening_text += " " + (block.get("innerContent") or [""])[0]
                 para_count += 1
                 if para_count >= 3:
                     break
         opening_text = re.sub(r"<[^>]+>", "", opening_text)
 
         if not re.search(r"\b(I|my|we|our)\b", opening_text, re.IGNORECASE):
-            issues.append("No first-person voice in first 3 paragraphs")
+            issues.append("WARNING: No first-person voice in first 3 paragraphs")
 
         # ---- Internal links ---- #
         full_html = self._blocks_to_html(blocks)
         link_count = full_html.count("/articles/")
         if link_count < 2:
-            issues.append(f"Only {link_count} internal links (need 2+)")
+            issues.append(f"WARNING: Only {link_count} internal links (need 2+)")
 
         # ---- FAQ section ---- #
         has_faq = any(
-            "faq" in block.get("innerContent", [""])[0].lower()
-            or "frequently" in block.get("innerContent", [""])[0].lower()
+            "faq" in (block.get("innerContent") or [""])[0].lower()
+            or "frequently" in (block.get("innerContent") or [""])[0].lower()
             for block in blocks
             if block.get("blockName") == "core/heading"
         )
         if not has_faq:
-            issues.append("Missing FAQ section")
+            issues.append("WARNING: Missing FAQ section")
 
         # ---- Code blocks ---- #
         code_blocks = [b for b in blocks if b.get("blockName") == "core/code"]
         if len(code_blocks) < 1:
-            issues.append("No code blocks found")
+            issues.append("WARNING: No code blocks found")
         # Check for placeholder code
         for cb in code_blocks:
             content = cb.get("innerContent", [""])[0]
             if "def process_data(data):" in content and "return transform(data)" in content:
-                issues.append("Contains placeholder code (process_data/transform)")
+                issues.append("WARNING: Contains placeholder code (process_data/transform)")
                 break
 
         # ---- AI-detectable patterns ---- #
         ai_patterns = [
-            (r"When it comes to .{5,40},", "Contains 'When it comes to...' pattern"),
-            (r"In today's data-driven world", "Contains 'In today's data-driven world'"),
-            (r"It is crucial to", "Contains 'It is crucial to'"),
-            (r"In the ever-evolving landscape", "Contains 'In the ever-evolving landscape'"),
-            (r"Let's dive in", "Contains 'Let's dive in'"),
-            (r"comprehensive guide", "Contains 'comprehensive guide'"),
+            (r"When it comes to .{5,40},", "WARNING: Contains 'When it comes to...' pattern"),
+            (r"In today's data-driven world", "WARNING: Contains 'In today's data-driven world'"),
+            (r"It is crucial to", "WARNING: Contains 'It is crucial to'"),
+            (r"In the ever-evolving landscape", "WARNING: Contains 'In the ever-evolving landscape'"),
+            (r"Let's dive in", "WARNING: Contains 'Let's dive in'"),
+            (r"comprehensive guide", "WARNING: Contains 'comprehensive guide'"),
         ]
         for pattern, msg in ai_patterns:
             if re.search(pattern, full_text, re.IGNORECASE):
@@ -104,30 +106,30 @@ class QualityGate:
         # ---- SEO title check ---- #
         title = seo.get("title", "")
         if re.search(r"Guide 20\d{2}$", title):
-            issues.append(f"Formulaic title ending: '{title}'")
+            issues.append(f"WARNING: Formulaic title ending: '{title}'")
         if len(title) > 60:
-            issues.append(f"Title too long: {len(title)} chars (max 60)")
+            issues.append(f"WARNING: Title too long: {len(title)} chars (max 60)")
         if len(title) < 20:
-            issues.append(f"Title too short: {len(title)} chars")
+            issues.append(f"WARNING: Title too short: {len(title)} chars")
 
         # ---- Meta description check ---- #
         meta_desc = seo.get("meta_description", "")
         if len(meta_desc) > 165:
-            issues.append(f"Meta description too long: {len(meta_desc)} chars (max 160)")
+            issues.append(f"WARNING: Meta description too long: {len(meta_desc)} chars (max 160)")
         if len(meta_desc) < 100:
-            issues.append(f"Meta description too short: {len(meta_desc)} chars")
+            issues.append(f"WARNING: Meta description too short: {len(meta_desc)} chars")
 
         # ---- Block structure ---- #
         block_count = len(blocks)
         if block_count < 15:
-            issues.append(f"Only {block_count} blocks (minimum 15)")
+            issues.append(f"WARNING: Only {block_count} blocks (minimum 15)")
 
         # ---- Keyphrase from SEO report ---- #
         kp_report = seo_report.get("keyphrase", {})
         if kp_report.get("count", 0) < 4:
-            issues.append(f"Keyphrase appears only {kp_report.get('count', 0)} times (need 4+)")
+            issues.append(f"WARNING: Keyphrase appears only {kp_report.get('count', 0)} times (need 4+)")
         if not kp_report.get("in_intro", False):
-            issues.append("Keyphrase not in introduction")
+            issues.append("WARNING: Keyphrase not in introduction")
 
         # ---- Duplicate code block detection ---- #
         code_contents = []
@@ -152,7 +154,7 @@ class QualityGate:
         paragraph_texts = []
         for block in blocks:
             if block.get("blockName") == "core/paragraph":
-                raw = block.get("innerContent", [""])[0]
+                raw = (block.get("innerContent") or [""])[0]
                 text = re.sub(r"<[^>]+>", "", raw).strip()
                 if len(text) > 50:  # Only check substantial paragraphs
                     paragraph_texts.append(text)
@@ -174,7 +176,7 @@ class QualityGate:
         for block in blocks:
             if block.get("blockName") != "core/paragraph":
                 continue
-            content = block.get("innerContent", [""])[0]
+            content = (block.get("innerContent") or [""])[0]
             # Find specific metrics: percentages (with optional space), Nx multipliers, dollar amounts, "N percent"
             metrics = re.findall(r'\b\d+\s*[%x]\b|\$\d+|\b\d+\s+percent\b', content, re.IGNORECASE)
             if metrics:
@@ -232,7 +234,12 @@ class QualityGate:
         # 3. Fallback block detection
         fallback_count = sum(1 for b in blocks if b.get("fallback_used"))
         if fallback_count > 0:
-            issues.append(f"WARNING: {fallback_count} fallback-generated block(s) — LLM generation failed for some sections")
+            total_blocks = len(blocks) if blocks else 1
+            fallback_ratio = fallback_count / total_blocks
+            if fallback_ratio > 0.2:
+                issues.append(f"CRITICAL: {fallback_count}/{total_blocks} blocks ({fallback_ratio:.0%}) are fallback-generated — LLM generation failed for too many sections")
+            else:
+                issues.append(f"WARNING: {fallback_count} fallback-generated block(s) — LLM generation failed for some sections")
 
         # 4. Section-level citation check — sections with zero external links
         uncited_sections = []
@@ -249,16 +256,16 @@ class QualityGate:
         if slug and keyphrase:
             kp_slug = keyphrase.lower().replace(" ", "-")
             if kp_slug not in slug:
-                issues.append(f"Slug '{slug}' does not contain keyphrase '{keyphrase}'")
+                issues.append(f"WARNING: Slug '{slug}' does not contain keyphrase '{keyphrase}'")
         elif not slug:
-            issues.append("No slug defined for the post")
+            issues.append("WARNING: No slug defined for the post")
 
         # ---- Meta description quality check ---- #
         if meta_desc:
             md_lower = meta_desc.lower()
             kp_lower = keyphrase.lower()
             if kp_lower and kp_lower not in md_lower:
-                issues.append(f"Meta description does not contain keyphrase '{keyphrase}'")
+                issues.append(f"WARNING: Meta description does not contain keyphrase '{keyphrase}'")
             formulaic_starts = [
                 f"master {kp_lower}",
                 f"learn everything about {kp_lower}",
@@ -267,7 +274,7 @@ class QualityGate:
             ]
             for pattern in formulaic_starts:
                 if md_lower.startswith(pattern):
-                    issues.append(f"Meta description starts with formulaic pattern: '{pattern}'")
+                    issues.append(f"WARNING: Meta description starts with formulaic pattern: '{pattern}'")
                     break
         else:
             issues.append("CRITICAL: No meta description defined")
@@ -323,7 +330,7 @@ class QualityGate:
         """Extract plain text from blocks."""
         parts = []
         for block in blocks:
-            content = block.get("innerContent", [""])[0]
+            content = (block.get("innerContent") or [""])[0]
             text = re.sub(r"<[^>]+>", "", content).strip()
             if text:
                 parts.append(text)
@@ -333,7 +340,7 @@ class QualityGate:
         """Concatenate raw HTML from all blocks."""
         parts = []
         for block in blocks:
-            content = block.get("innerContent", [""])[0]
+            content = (block.get("innerContent") or [""])[0]
             parts.append(content)
         return " ".join(parts)
 
@@ -352,7 +359,7 @@ class QualityGate:
                     if current_blocks:
                         sections.append((current_heading, current_blocks))
                     # Start new section
-                    raw = block.get("innerContent", [""])[0]
+                    raw = (block.get("innerContent") or [""])[0]
                     current_heading = re.sub(r"<[^>]+>", "", raw).strip()
                     current_blocks = []
                     continue

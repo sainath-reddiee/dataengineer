@@ -147,7 +147,15 @@ function extractQAPairs(content) {
     // Strategy 2: Synthesize FAQ from non-question H2/H3 headings
     // Converts headings like "Data Masking Best Practices" into
     // "What are Data Masking Best Practices?" with the content below as answer
-    if (qaPairs.length < 5) {
+    // GATE: Skip when the article already has a dedicated FAQ section —
+    // synthesized questions from section headings create garbage schema
+    // entries (e.g. "What is 1. Audit Your Credit Consumption Patterns?")
+    // that conflict with the real FAQ and hurt SEO.
+    const hasFAQSection = blocks.some(b =>
+        (b.tag === 'h2' || b.tag === 'h3') &&
+        /^(faq|faqs|frequently\s+asked\s+questions)/i.test(b.text.trim())
+    );
+    if (qaPairs.length < 5 && !hasFAQSection) {
         for (let i = 0; i < blocks.length; i++) {
             if (qaPairs.length >= 8) break;
             const block = blocks[i];

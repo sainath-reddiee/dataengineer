@@ -289,7 +289,7 @@ class SEOAnalyzer:
                     h2_count += 1
                 elif level == 3:
                     h3_count += 1
-                content = block.get("innerContent", [""])[0].lower()
+                content = (block.get("innerContent") or [""])[0].lower()
                 if "faq" in content or "frequently" in content:
                     has_faq = True
             elif name == "core/code":
@@ -304,7 +304,7 @@ class SEOAnalyzer:
         # Internal links
         internal_links = 0
         for block in blocks:
-            content = block.get("innerContent", [""])[0]
+            content = (block.get("innerContent") or [""])[0]
             internal_links += content.count(self.link_prefix)
 
         issues = []
@@ -478,7 +478,7 @@ class SEOAnalyzer:
             if bname == "core/heading" and block.get("attrs", {}).get("level", 2) == 2:
                 if current_blocks:
                     sections.append((current_heading, current_blocks))
-                raw = block.get("innerContent", [""])[0]
+                raw = (block.get("innerContent") or [""])[0]
                 current_heading = re.sub(r"<[^>]+>", "", raw).strip()
                 current_blocks = []
                 continue
@@ -585,7 +585,7 @@ class SEOAnalyzer:
         """Extract plain text from all blocks."""
         parts = []
         for block in blocks:
-            content = block.get("innerContent", [""])[0]
+            content = (block.get("innerContent") or [""])[0]
             text = re.sub(r"<[^>]+>", "", content).strip()
             if text:
                 parts.append(text)
@@ -595,11 +595,12 @@ class SEOAnalyzer:
         """Concatenate HTML from all blocks."""
         parts = []
         for block in blocks:
-            content = block.get("innerContent", [""])[0]
+            content = (block.get("innerContent") or [""])[0]
             parts.append(content)
         return " ".join(parts)
 
     def _split_sentences(self, text: str) -> List[str]:
-        """Split text into sentences."""
-        sentences = re.split(r"(?<=[.!?])\s+", text)
+        """Split text into sentences, avoiding splits on common abbreviations."""
+        # Negative lookbehinds for e.g., i.e., vs., etc., U.S., and decimal numbers
+        sentences = re.split(r"(?<!\be\.g)(?<!\bi\.e)(?<!\bvs)(?<!\betc)(?<!\bU\.S)(?<!\d)(?<=[.!?])\s+", text)
         return [s.strip() for s in sentences if s.strip() and len(s.strip()) > 5]

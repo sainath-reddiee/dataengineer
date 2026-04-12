@@ -87,6 +87,107 @@ class SchedulerHelper:
             command=f"main.py --posts {posts} --status draft"
         )
     
+    def multiple_daily_schedule(self):
+        """Multiple posts per day"""
+        print("\n📅 Multiple Daily Posts Setup")
+        print("-" * 60)
+        
+        num_posts = input("How many posts per day? (2-5): ").strip()
+        
+        if not num_posts.isdigit() or not (2 <= int(num_posts) <= 5):
+            print("❌ Invalid number. Using 2 as default.")
+            num_posts = "2"
+        
+        times = []
+        print(f"\nEnter {num_posts} times (hours 0-23):")
+        for i in range(int(num_posts)):
+            hour = input(f"  Time {i+1}: ").strip()
+            if hour.isdigit() and 0 <= int(hour) <= 23:
+                times.append(hour)
+        
+        if not times:
+            times = ["9", "15"]  # Default: 9 AM and 3 PM
+        
+        for hour in times:
+            self._generate_cron_and_task(
+                cron_expression=f"0 {hour} * * *",
+                description=f"Daily at {hour}:00",
+                command="main.py --posts 1 --status draft"
+            )
+    
+    def weekly_schedule(self):
+        """Weekly posting schedule"""
+        print("\n📅 Weekly Schedule Setup")
+        print("-" * 60)
+        
+        days = {
+            '1': 'Monday', '2': 'Tuesday', '3': 'Wednesday',
+            '4': 'Thursday', '5': 'Friday', '6': 'Saturday', '7': 'Sunday'
+        }
+        
+        print("\nDays of week:")
+        for key, day in days.items():
+            print(f"  {key}. {day}")
+        
+        day = input("\nWhich day? (1-7): ").strip()
+        hour = input("What time? (hour 0-23): ").strip()
+        
+        if day not in days:
+            day = '1'  # Default Monday
+        if not hour.isdigit():
+            hour = '9'  # Default 9 AM
+        
+        # Cron: Sunday is 0, Monday is 1
+        cron_day = '0' if day == '7' else day
+        
+        self._generate_cron_and_task(
+            cron_expression=f"0 {hour} * * {cron_day}",
+            description=f"Weekly on {days[day]} at {hour}:00",
+            command="main.py --posts 1 --status draft"
+        )
+    
+    def twice_weekly_schedule(self):
+        """Twice per week schedule"""
+        print("\n📅 Twice Weekly Schedule Setup")
+        print("-" * 60)
+        
+        print("\nRecommended: Monday and Thursday")
+        print("Enter two day numbers (1-7), or press Enter for default:")
+        
+        day1 = input("  First day (default=1 Monday): ").strip() or '1'
+        day2 = input("  Second day (default=4 Thursday): ").strip() or '4'
+        hour = input("  Time (default=9): ").strip() or '9'
+        
+        # Convert to cron format
+        cron_day1 = '0' if day1 == '7' else day1
+        cron_day2 = '0' if day2 == '7' else day2
+        
+        self._generate_cron_and_task(
+            cron_expression=f"0 {hour} * * {cron_day1}",
+            description=f"Every {day1} at {hour}:00",
+            command="main.py --posts 1 --status draft"
+        )
+        
+        self._generate_cron_and_task(
+            cron_expression=f"0 {hour} * * {cron_day2}",
+            description=f"Every {day2} at {hour}:00",
+            command="main.py --posts 1 --status draft"
+        )
+    
+    def monthly_schedule(self):
+        """Monthly posting schedule"""
+        print("\n📅 Monthly Schedule Setup")
+        print("-" * 60)
+        
+        day = input("Day of month (1-28, default=1): ").strip() or '1'
+        hour = input("Time (hour 0-23, default=9): ").strip() or '9'
+        
+        self._generate_cron_and_task(
+            cron_expression=f"0 {hour} {day} * *",
+            description=f"Monthly on day {day} at {hour}:00",
+            command="main.py --posts 1 --status draft"
+        )
+    
     def _generate_cron_and_task(self, cron_expression: str, description: str, command: str):
         """Generate platform-specific scheduling commands"""
         print("\n" + "=" * 60)
@@ -272,105 +373,4 @@ Examples:
 
 
 if __name__ == "__main__":
-    main()status draft"
-        )
-    
-    def multiple_daily_schedule(self):
-        """Multiple posts per day"""
-        print("\n📅 Multiple Daily Posts Setup")
-        print("-" * 60)
-        
-        num_posts = input("How many posts per day? (2-5): ").strip()
-        
-        if not num_posts.isdigit() or not (2 <= int(num_posts) <= 5):
-            print("❌ Invalid number. Using 2 as default.")
-            num_posts = "2"
-        
-        times = []
-        print(f"\nEnter {num_posts} times (hours 0-23):")
-        for i in range(int(num_posts)):
-            hour = input(f"  Time {i+1}: ").strip()
-            if hour.isdigit() and 0 <= int(hour) <= 23:
-                times.append(hour)
-        
-        if not times:
-            times = ["9", "15"]  # Default: 9 AM and 3 PM
-        
-        for hour in times:
-            self._generate_cron_and_task(
-                cron_expression=f"0 {hour} * * *",
-                description=f"Daily at {hour}:00",
-                command="main.py --posts 1 --status draft"
-            )
-    
-    def weekly_schedule(self):
-        """Weekly posting schedule"""
-        print("\n📅 Weekly Schedule Setup")
-        print("-" * 60)
-        
-        days = {
-            '1': 'Monday', '2': 'Tuesday', '3': 'Wednesday',
-            '4': 'Thursday', '5': 'Friday', '6': 'Saturday', '7': 'Sunday'
-        }
-        
-        print("\nDays of week:")
-        for key, day in days.items():
-            print(f"  {key}. {day}")
-        
-        day = input("\nWhich day? (1-7): ").strip()
-        hour = input("What time? (hour 0-23): ").strip()
-        
-        if day not in days:
-            day = '1'  # Default Monday
-        if not hour.isdigit():
-            hour = '9'  # Default 9 AM
-        
-        # Cron: Sunday is 0, Monday is 1
-        cron_day = '0' if day == '7' else day
-        
-        self._generate_cron_and_task(
-            cron_expression=f"0 {hour} * * {cron_day}",
-            description=f"Weekly on {days[day]} at {hour}:00",
-            command="main.py --posts 1 --status draft"
-        )
-    
-    def twice_weekly_schedule(self):
-        """Twice per week schedule"""
-        print("\n📅 Twice Weekly Schedule Setup")
-        print("-" * 60)
-        
-        print("\nRecommended: Monday and Thursday")
-        print("Enter two day numbers (1-7), or press Enter for default:")
-        
-        day1 = input("  First day (default=1 Monday): ").strip() or '1'
-        day2 = input("  Second day (default=4 Thursday): ").strip() or '4'
-        hour = input("  Time (default=9): ").strip() or '9'
-        
-        # Convert to cron format
-        cron_day1 = '0' if day1 == '7' else day1
-        cron_day2 = '0' if day2 == '7' else day2
-        
-        self._generate_cron_and_task(
-            cron_expression=f"0 {hour} * * {cron_day1}",
-            description=f"Every Monday at {hour}:00",
-            command="main.py --posts 1 --status draft"
-        )
-        
-        self._generate_cron_and_task(
-            cron_expression=f"0 {hour} * * {cron_day2}",
-            description=f"Every Thursday at {hour}:00",
-            command="main.py --posts 1 --status draft"
-        )
-    
-    def monthly_schedule(self):
-        """Monthly posting schedule"""
-        print("\n📅 Monthly Schedule Setup")
-        print("-" * 60)
-        
-        day = input("Day of month (1-28, default=1): ").strip() or '1'
-        hour = input("Time (hour 0-23, default=9): ").strip() or '9'
-        
-        self._generate_cron_and_task(
-            cron_expression=f"0 {hour} {day} * *",
-            description=f"Monthly on day {day} at {hour}:00",
-            command="main.py --posts 1 --
+    main()

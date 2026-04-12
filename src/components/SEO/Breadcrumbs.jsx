@@ -2,30 +2,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Home } from 'lucide-react';
-import { getBreadcrumbSchema } from '@/lib/seoConfig';
 
 /**
  * Breadcrumbs Component
- * Provides visual navigation and structured data for SEO
+ * Provides visual navigation breadcrumbs.
+ * Note: BreadcrumbList JSON-LD is injected by MetaTags.jsx to avoid duplicates.
  */
 const Breadcrumbs = ({ breadcrumbs, className = '' }) => {
     if (!breadcrumbs || breadcrumbs.length <= 1) return null;
 
-    // Generate structured data
-    const structuredData = getBreadcrumbSchema(breadcrumbs);
-
     return (
-        <>
-            {/* Structured Data */}
-            <script type="application/ld+json">
-                {JSON.stringify(structuredData)}
-            </script>
-
-            {/* Visual Breadcrumbs */}
-            <nav
-                aria-label="Breadcrumb"
-                className={`flex items-center space-x-2 text-sm ${className}`}
-            >
+        <nav
+            aria-label="Breadcrumb"
+            className={`flex items-center space-x-2 text-sm ${className}`}
+        >
                 <ol className="flex items-center space-x-2 flex-wrap">
                     {breadcrumbs.map((crumb, index) => {
                         const isLast = index === breadcrumbs.length - 1;
@@ -58,7 +48,6 @@ const Breadcrumbs = ({ breadcrumbs, className = '' }) => {
                     })}
                 </ol>
             </nav>
-        </>
     );
 };
 

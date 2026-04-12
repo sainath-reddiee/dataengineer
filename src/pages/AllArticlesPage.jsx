@@ -1,6 +1,7 @@
 // src/pages/AllArticlesPage.jsx - COMPLETE FINAL VERSION WITH ACCESSIBILITY FIXES
-import React, { useState, useCallback, Suspense } from 'react';
+import React, { useState, useCallback, Suspense, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Search, SortAsc, SortDesc, Grid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,11 +19,21 @@ import { trackSearch } from '@/utils/analytics';
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
 const AllArticlesPage = () => {
+  const [searchParams] = useSearchParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('desc');
   const [activeSearch, setActiveSearch] = useState('');
   const [viewMode, setViewMode] = useState('grid');
+
+  // Read ?search= query param on mount (supports Google Sitelinks Search Box)
+  useEffect(() => {
+    const q = searchParams.get('search');
+    if (q) {
+      setSearchQuery(q);
+      setActiveSearch(q);
+    }
+  }, []);
   
   const postsPerPage = 12;
 

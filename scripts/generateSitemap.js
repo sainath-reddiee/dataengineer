@@ -23,6 +23,9 @@ const STATIC_PAGES = [
   { url: '/explore', changefreq: 'weekly', priority: 0.7, lastmod: 'today' },
   { url: '/certification', changefreq: 'monthly', priority: 0.6, lastmod: '2026-03-01' },
   { url: '/checklist', changefreq: 'monthly', priority: 0.6, lastmod: '2026-03-01' },
+  { url: '/glossary', changefreq: 'weekly', priority: 0.6, lastmod: 'today' },
+  { url: '/compare', changefreq: 'weekly', priority: 0.6, lastmod: 'today' },
+  { url: '/cheatsheets', changefreq: 'weekly', priority: 0.6, lastmod: 'today' },
 ];
 
 // Format date to W3C format (YYYY-MM-DD)
@@ -229,7 +232,9 @@ function loadPSEOData() {
     const files = fs.readdirSync(glossaryDir).filter(f => f.endsWith('.json'));
     for (const file of files) {
       try {
-        const data = JSON.parse(fs.readFileSync(path.join(glossaryDir, file), 'utf8'));
+        const filePath = path.join(glossaryDir, file);
+        const fileMod = fs.statSync(filePath).mtime.toISOString().split('T')[0];
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         if (Array.isArray(data)) {
           data.forEach(item => {
             if (item.slug) {
@@ -237,6 +242,7 @@ function loadPSEOData() {
                 url: `${SITE_URL}/glossary/${item.slug}`,
                 changefreq: 'monthly',
                 priority: 0.7,
+                lastmod: fileMod,
               });
             }
           });
@@ -253,7 +259,9 @@ function loadPSEOData() {
     const files = fs.readdirSync(comparisonsDir).filter(f => f.endsWith('.json'));
     for (const file of files) {
       try {
-        const data = JSON.parse(fs.readFileSync(path.join(comparisonsDir, file), 'utf8'));
+        const filePath = path.join(comparisonsDir, file);
+        const fileMod = fs.statSync(filePath).mtime.toISOString().split('T')[0];
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         if (Array.isArray(data)) {
           data.forEach(item => {
             if (item.slug) {
@@ -261,6 +269,7 @@ function loadPSEOData() {
                 url: `${SITE_URL}/compare/${item.slug}`,
                 changefreq: 'monthly',
                 priority: 0.7,
+                lastmod: fileMod,
               });
             }
           });
@@ -396,12 +405,11 @@ async function generateSitemap() {
     // Generate pSEO sitemap dynamically from JSON data
     console.log('\n📝 Generating pSEO sitemap from data files...');
     const pseoEntries = loadPSEOData();
-    const pseoLastmod = today;
     const pseoXML = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${pseoEntries.map(entry => `  <url>
     <loc>${entry.url}</loc>
-    <lastmod>${pseoLastmod}</lastmod>
+    <lastmod>${entry.lastmod || today}</lastmod>
     <changefreq>${entry.changefreq}</changefreq>
     <priority>${entry.priority}</priority>
   </url>`).join('\n')}

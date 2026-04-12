@@ -19,7 +19,7 @@ export const SITE_CONFIG = {
     url: 'https://dataengineerhub.blog/about',
     sameAs: [
       'https://www.linkedin.com/in/sainath-reddy-06a97817a/',
-      'https://github.com/sainath-reddy',
+      'https://github.com/sainath-reddiee/dataengineer',
       'https://twitter.com/sainath29'
     ]
   },
@@ -27,11 +27,11 @@ export const SITE_CONFIG = {
     twitter: '@sainath29',
     twitterHandle: 'sainath29',
     linkedin: 'https://www.linkedin.com/in/sainath-reddy-06a97817a/',
-    github: 'https://github.com/sainath-reddy'
+    github: 'https://github.com/sainath-reddiee/dataengineer'
   },
   logo: {
     url: 'https://dataengineerhub.blog/logo.png',
-    width: 250,
+    width: 246,
     height: 250,
   },
   ogImage: {
@@ -99,6 +99,12 @@ export function getOrganizationSchema() {
       SITE_CONFIG.social.linkedin,
       SITE_CONFIG.social.github,
     ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      email: 'sainath@dataengineerhub.blog',
+      contactType: 'customer support',
+      url: `${SITE_CONFIG.url}/contact`,
+    },
   };
 }
 
@@ -115,10 +121,6 @@ export function getPersonSchema() {
     image: `${SITE_CONFIG.url}/author.jpg`,
     jobTitle: SITE_CONFIG.author.role,
     worksFor: {
-      '@type': 'Organization',
-      name: 'Anblicks',
-    },
-    alumniOf: {
       '@type': 'Organization',
       name: 'Anblicks',
     },
@@ -213,7 +215,9 @@ export function getArticleSchema({
       },
     },
     datePublished: datePublished,
-    dateModified: dateModified || datePublished,
+    dateModified: (dateModified && datePublished && dateModified < datePublished)
+      ? datePublished
+      : (dateModified || datePublished),
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': url,

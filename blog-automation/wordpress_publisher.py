@@ -6,6 +6,7 @@ Includes Yoast SEO support
 """
 
 import os
+import html as html_module
 import requests
 import base64
 from typing import Dict, List, Optional
@@ -235,7 +236,8 @@ class WordPressPublisher:
         for block in blocks:
             block_name = block.get('blockName', '')
             attrs = block.get('attrs', {})
-            content = block.get('innerContent', [''])[0]
+            content = block.get('innerContent', [''])[0] if block.get('innerContent') else ''
+            content = content or ''
             
             # Skip empty blocks (but allow separator which generates its own HTML)
             if block_name != 'core/separator' and (not content or not content.strip()):
@@ -567,8 +569,8 @@ class WordPressPublisher:
         """
         return f'''
 <figure class="wp-block-image size-large">
-    <img src="{img.get('url', '')}" alt="{img.get('alt_text', '')}" class="wp-image-{img.get('id', '')}"/>
-    <figcaption>{img.get('caption', '')}</figcaption>
+    <img src="{html_module.escape(img.get('url', ''), quote=True)}" alt="{html_module.escape(img.get('alt_text', ''), quote=True)}" class="wp-image-{img.get('id', '')}"/>
+    <figcaption>{html_module.escape(img.get('caption', ''))}</figcaption>
 </figure>
 '''
     
@@ -588,9 +590,9 @@ class WordPressPublisher:
         html = '\n\n<h2>References and Further Reading</h2>\n<ul>\n'
         
         for ref in references:
-            title = ref.get('title', 'Source')
-            url = ref.get('url', '#')
-            description = ref.get('description', '')
+            title = html_module.escape(ref.get('title', 'Source'))
+            url = html_module.escape(ref.get('url', '#'), quote=True)
+            description = html_module.escape(ref.get('description', ''))
             
             html += f'<li><a href="{url}" target="_blank" rel="noopener">{title}</a>'
             if description:
@@ -615,7 +617,7 @@ class WordPressPublisher:
             meta_data = {
                 '_yoast_wpseo_title': seo_data.get('title'),
                 '_yoast_wpseo_metadesc': seo_data.get('meta_description'),
-                '_yoast_wpseo_focuskw': seo_data.get('focus_keyword'),
+                '_yoast_wpseo_focuskw': seo_data.get('focus_keyphrase'),
             }
             
             for key, value in meta_data.items():

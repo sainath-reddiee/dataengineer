@@ -730,7 +730,7 @@ class EnhancedTrendMonitor:
                             'age_hours': 1,
                             'category': topic
                         })
-                    except:
+                    except Exception:
                         continue
         
         except Exception as e:
@@ -883,7 +883,7 @@ class EnhancedTrendMonitor:
                                         'created': story.get('time', 0),
                                         'age_hours': (time.time() - story.get('time', 0)) / 3600
                                     })
-                    except:
+                    except Exception:
                         continue
         
         except Exception as e:
@@ -927,7 +927,7 @@ class EnhancedTrendMonitor:
                                 'created': time.time(),
                                 'age_hours': 1
                             })
-                        except:
+                        except Exception:
                             continue
                 
                 time.sleep(2)
@@ -1014,9 +1014,9 @@ class EnhancedTrendMonitor:
         recent = [s for s in signals if s.get('created', 0) > cutoff]
         
         recent.sort(key=lambda x: (
-            x.get('type', '') == 'official_doc' and 300 or
-            x.get('type', '') == 'official_announcement' and 250 or
-            x.get('type', '') == 'official_blog' and 200 or
+            300 if x.get('type', '') == 'official_doc' else
+            250 if x.get('type', '') == 'official_announcement' else
+            200 if x.get('type', '') == 'official_blog' else
             x.get('engagement', 0)
         ), reverse=True)
         
@@ -1108,7 +1108,7 @@ Return as JSON array ONLY (no markdown, no code blocks):
         
         except Exception as e:
             print(f"❌ Gemini analysis failed: {e}")
-            print(f"Response text: {text[:500] if 'text' in locals() else 'No response'}")
+            print(f"Response text: {text[:500] if 'text' in locals() and text else 'No response'}")
             return self._manual_analysis(top_signals, limit, category)
     
     def _manual_analysis(self, signals: List[Dict], limit: int, category: str = None) -> List[Dict]:
