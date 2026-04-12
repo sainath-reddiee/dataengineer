@@ -112,8 +112,6 @@ class QualityGate:
 
         # ---- Meta description check ---- #
         meta_desc = seo.get("meta_description", "")
-        if meta_desc.lower().startswith(f"master {keyphrase}"):
-            issues.append("Meta description starts with formulaic 'Master {keyphrase}'")
         if len(meta_desc) > 165:
             issues.append(f"Meta description too long: {len(meta_desc)} chars (max 160)")
         if len(meta_desc) < 100:
@@ -245,6 +243,34 @@ class QualityGate:
                 uncited_sections.append(sec_heading)
         if len(uncited_sections) > 2:
             issues.append(f"WARNING: {len(uncited_sections)} section(s) have no external citations: {', '.join(uncited_sections[:3])}")
+
+        # ---- Slug keyphrase check ---- #
+        slug = blog_data.get("slug", "")
+        if slug and keyphrase:
+            kp_slug = keyphrase.lower().replace(" ", "-")
+            if kp_slug not in slug:
+                issues.append(f"Slug '{slug}' does not contain keyphrase '{keyphrase}'")
+        elif not slug:
+            issues.append("No slug defined for the post")
+
+        # ---- Meta description quality check ---- #
+        if meta_desc:
+            md_lower = meta_desc.lower()
+            kp_lower = keyphrase.lower()
+            if kp_lower and kp_lower not in md_lower:
+                issues.append(f"Meta description does not contain keyphrase '{keyphrase}'")
+            formulaic_starts = [
+                f"master {kp_lower}",
+                f"learn everything about {kp_lower}",
+                f"a comprehensive guide to {kp_lower}",
+                f"discover the best {kp_lower}",
+            ]
+            for pattern in formulaic_starts:
+                if md_lower.startswith(pattern):
+                    issues.append(f"Meta description starts with formulaic pattern: '{pattern}'")
+                    break
+        else:
+            issues.append("CRITICAL: No meta description defined")
 
         # ---- Determine pass/fail ---- #
         critical_count = sum(1 for i in issues if i.startswith("CRITICAL"))

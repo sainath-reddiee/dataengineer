@@ -209,6 +209,7 @@ def build_section_prompt(
     previous_section_ending: str = "",
     previous_code_snippets: Optional[List[str]] = None,
     used_source_urls: Optional[List[str]] = None,
+    used_conclusions: Optional[List[str]] = None,
 ) -> str:
     """Generate ONE section (300-500 words) with full research context."""
 
@@ -274,6 +275,16 @@ You MUST write a DIFFERENT code example. Show a different query, different opera
 SOURCES ALREADY CITED HEAVILY (prefer citing DIFFERENT sources):
 {urls_list}
 Try to cite sources NOT in this list. If you must re-cite one, add NEW information from it — not the same quote."""
+
+    if used_conclusions:
+        conclusions_list = "\n".join(f"  - \"{c}\"" for c in used_conclusions[:10])
+        dedup_instruction += f"""
+
+PHRASES/CONCLUSIONS ALREADY USED IN PREVIOUS SECTIONS (do NOT repeat these):
+{conclusions_list}
+You MUST write FRESH conclusions and takeaways. Do NOT rephrase or echo the above.
+Use a different angle, different analogy, or different supporting evidence.
+BANNED: repeating the same verdict, same recommendation, or same summary sentence across sections."""
 
     return f"""You are {name}, a {role} at {company} with {years}+ years of experience.
 
@@ -489,6 +500,70 @@ Example input:  <p>This approach reduces query time by 40%.</p>
 Example output: <p>Using DuckDB reduces query time by 40% compared to raw Python.</p>"""
 
 
+def build_featured_image_prompt(topic: Dict, keyphrase: str = "") -> str:
+    """Generate a featured image prompt in hand-drawn watercolor style.
+
+    Returns a ready-to-use image generation prompt string (not an LLM meta-prompt).
+    The caller can use this directly with an image generation API.
+    """
+    title = topic.get('title', '')
+    category = topic.get('category', 'data-engineering')
+
+    # Extract key tools/concepts from the title for visual elements
+    tools = []
+    tool_keywords = {
+        'dbt': 'dbt', 'snowflake': 'Snowflake', 'airflow': 'Airflow',
+        'duckdb': 'DuckDB', 'spark': 'Spark', 'kafka': 'Kafka',
+        'python': 'Python', 'sql': 'SQL', 'postgres': 'PostgreSQL',
+        'redshift': 'Redshift', 'bigquery': 'BigQuery', 'databricks': 'Databricks',
+        'fivetran': 'Fivetran', 'dagster': 'Dagster', 'prefect': 'Prefect',
+        'docker': 'Docker', 'kubernetes': 'Kubernetes', 'terraform': 'Terraform',
+        'iceberg': 'Iceberg', 'delta': 'Delta Lake', 'parquet': 'Parquet',
+    }
+    title_lower = title.lower()
+    for keyword, label in tool_keywords.items():
+        if keyword in title_lower:
+            tools.append(label)
+
+    # Build visual elements description based on detected tools
+    if len(tools) >= 2:
+        tool_labels = ', '.join(f'"{t}"' for t in tools[:3])
+        visual_elements = (
+            f"interconnected gears or cogs labelled with small handwritten tags: "
+            f"{tool_labels}. "
+            f"Flowing between the gears are delicate watercolor arrows suggesting data movement "
+            f"— like water flowing downhill through a pipe system"
+        )
+    elif len(tools) == 1:
+        visual_elements = (
+            f"a central gear or cog labelled \"{tools[0]}\" surrounded by flowing watercolor "
+            f"data streams connecting to smaller nodes representing tables, queries, and pipelines"
+        )
+    else:
+        visual_elements = (
+            "flowing watercolor data streams connecting architectural blocks — databases, "
+            "pipelines, and query engines — sketched loosely as if mapped out in a notebook"
+        )
+
+    # Category-specific background elements
+    bg_elements = {
+        'data-engineering': 'faint grid lines suggest a DAG or pipeline chart, drawn loosely as if sketched in a notebook',
+        'analytics': 'faint bar charts and scatter plots sketched in the background like dashboard wireframes',
+        'cloud': 'faint cloud shapes and network topology lines drawn loosely in the background',
+        'devops': 'faint CI/CD pipeline arrows and container outlines sketched in the background',
+    }
+    background = bg_elements.get(category, bg_elements['data-engineering'])
+
+    return (
+        f"A hand-drawn watercolor illustration in cool blues, warm ambers, and earthy greens. "
+        f"The scene shows {visual_elements}. "
+        f"In the background, {background}. "
+        f"The overall mood is that of an engineer mapping out a system on paper — purposeful, "
+        f"slightly scrappy, genuinely curious. Loose watercolor brush technique, visible paper "
+        f"texture, no corporate aesthetics. Leave empty space in the top third for a blog title overlay."
+    )
+
+
 def build_image_prompts(topic: Dict, blocks: List[Dict]) -> str:
     """Generate image prompts for the article."""
 
@@ -506,9 +581,12 @@ CONTENT PREVIEW: {content_preview[:800]}
 
 For each image, generate:
 1. placement: hero, section-1, section-2, section-3
-2. prompt: A detailed image generation prompt (80-120 words). Style: clean technical illustration,
-   hand-drawn sketch aesthetic, minimal colors (blues and whites), professional data engineering theme.
-   Show architecture diagrams, data flow arrows, or tool logos — NOT people or stock photo scenes.
+2. prompt: A detailed image generation prompt (80-120 words).
+   STYLE: Hand-drawn watercolor illustration in cool blues, warm ambers, and earthy greens.
+   Loose watercolor brush technique, visible paper texture, no corporate aesthetics.
+   Show architecture diagrams, data flow arrows, gears, or tool labels as if sketched in a notebook.
+   NOT people, NOT stock photo scenes, NOT 3D renders.
+   The hero image MUST leave empty space in the top third for a blog title overlay.
 3. alt_text: SEO-optimized alt text describing the image (<125 chars)
 4. caption: Brief descriptive caption for under the image
 
@@ -516,8 +594,8 @@ Return ONLY a valid JSON array (no markdown fences):
 [
   {{
     "placement": "hero",
-    "prompt": "Clean technical illustration showing...",
-    "alt_text": "Architecture diagram of...",
+    "prompt": "Hand-drawn watercolor illustration showing...",
+    "alt_text": "Watercolor diagram of...",
     "caption": "High-level architecture overview"
   }}
 ]"""
@@ -618,14 +696,26 @@ REVIEW CHECKLIST — fix each issue IN-PLACE and return the corrected HTML:
 3. REPEATED PARAGRAPHS: If two paragraphs convey essentially the same information with different
    wording, merge them into one stronger paragraph and delete the duplicate.
 
-4. VAGUE ANECDOTES: Find sentences like "I recall a project where..." or "In my experience..."
+4. REPEATED CONCLUSIONS & VERDICTS: Scan for sentences that express the same takeaway across
+   different sections. Common patterns to catch:
+   - The same recommendation repeated (e.g., "use DuckDB for local, Snowflake for scale" said 3 times)
+   - The same closing phrase reused (e.g., "the simplest solution usually wins" in multiple sections)
+   - The same comparison verdict restated (e.g., "large-scale collaborative data warehousing" repeated)
+   Keep the STRONGEST version and rewrite others to make a DIFFERENT point or add new nuance.
+
+5. REPEATED PHRASES & SENTENCE PATTERNS: Look for the same phrase (3+ words) appearing 3 or more
+   times across the article. Rewrite duplicates using synonyms or restructured sentences. Also catch:
+   - Repeated transitional phrases (e.g., "In my experience" used in every section)
+   - Repeated source citations (same source name/link cited more than 3 times — vary the sources)
+
+6. VAGUE ANECDOTES: Find sentences like "I recall a project where..." or "In my experience..."
    that lack specifics. Either add 2+ concrete details (tool name, data volume, time period, error)
    or remove the anecdote entirely.
 
-5. KEYPHRASE STUFFING: If "{keyphrase}" appears more than 6 times in the article, remove the
+7. KEYPHRASE STUFFING: If "{keyphrase}" appears more than 6 times in the article, remove the
    least natural occurrences. Target: 3-5 uses across the whole article.
 
-6. UNSOURCED CLAIMS: Statements like "most teams use X" or "the industry standard is Y" without
+8. UNSOURCED CLAIMS: Statements like "most teams use X" or "the industry standard is Y" without
    a citation — either add an inline link to a source from the research, or soften to "many teams"
    / "a common approach".
 

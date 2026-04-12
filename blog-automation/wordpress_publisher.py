@@ -93,13 +93,17 @@ class WordPressPublisher:
             
             # Step 4: Create post
             print("\n✍️  STEP 4: Creating WordPress post...")
+            seo_data = blog_data.get('seo', {})
+            slug = blog_data.get('slug', '')
+            meta_desc = seo_data.get('meta_description', '')
             post_data = {
                 'title': blog_data['title'],
                 'content': full_content,
                 'status': status,
-                'slug': blog_data.get('slug', ''),
+                'slug': slug,
+                'excerpt': meta_desc,
                 'categories': [category_id],
-                'meta': self._build_yoast_meta(blog_data.get('seo', {})),
+                'meta': self._build_yoast_meta(seo_data),
                 'featured_media': uploaded_images[0]['id'] if uploaded_images and 'id' in uploaded_images[0] else None
             }
             
@@ -112,14 +116,35 @@ class WordPressPublisher:
             
             if response.status_code in [200, 201]:
                 post_info = response.json()
+                post_id = post_info['id']
+                
+                # Follow-up: explicitly update Yoast meta fields via a separate PUT
+                # WordPress REST API sometimes ignores custom meta on initial POST
+                yoast_meta = self._build_yoast_meta(seo_data)
+                if yoast_meta:
+                    try:
+                        meta_update = {'meta': yoast_meta}
+                        meta_resp = requests.post(
+                            f"{self.api_base}/posts/{post_id}",
+                            headers=self.headers,
+                            json=meta_update,
+                            timeout=15
+                        )
+                        if meta_resp.status_code in [200, 201]:
+                            print(f"   ✅ Yoast SEO meta fields updated successfully")
+                        else:
+                            print(f"   ⚠️  Yoast meta update returned {meta_resp.status_code}: {meta_resp.text[:100]}")
+                    except Exception as e:
+                        print(f"   ⚠️  Could not update Yoast meta: {e}")
+                
                 result = {
                     'success': True,
-                    'post_id': post_info['id'],
+                    'post_id': post_id,
                     'post_url': post_info['link'],
-                    'edit_url': f"{self.site_url}/wp-admin/post.php?post={post_info['id']}&action=edit",
+                    'edit_url': f"{self.site_url}/wp-admin/post.php?post={post_id}&action=edit",
                     'status': status,
                     'images_uploaded': len(uploaded_images),
-                    'yoast_seo': blog_data.get('seo', {}),
+                    'yoast_seo': seo_data,
                     'published_at': datetime.now().isoformat()
                 }
                 
@@ -130,11 +155,11 @@ class WordPressPublisher:
                 print(f"View: {result['post_url']}")
                 print(f"Edit: {result['edit_url']}")
                 
-                if blog_data.get('seo'):
+                if seo_data:
                     print(f"\n📊 Yoast SEO:")
-                    print(f"   Focus Keyphrase: {blog_data['seo'].get('focus_keyphrase', 'N/A')}")
-                    print(f"   SEO Title: {blog_data['seo'].get('title', 'N/A')}")
-                    print(f"   Meta Description: {blog_data['seo'].get('meta_description', 'N/A')[:60]}...")
+                    print(f"   Focus Keyphrase: {seo_data.get('focus_keyphrase', 'N/A')}")
+                    print(f"   SEO Title: {seo_data.get('title', 'N/A')}")
+                    print(f"   Meta Description: {seo_data.get('meta_description', 'N/A')[:60]}...")
                 
                 print(f"{'='*70}\n")
                 
@@ -217,11 +242,14 @@ class WordPressPublisher:
         if not seo_data:
             return {}
         
-        return {
+        meta = {
             '_yoast_wpseo_focuskw': seo_data.get('focus_keyphrase', ''),
             '_yoast_wpseo_title': seo_data.get('title', ''),
             '_yoast_wpseo_metadesc': seo_data.get('meta_description', ''),
         }
+        
+        # Remove empty values so WordPress doesn't store blank meta
+        return {k: v for k, v in meta.items() if v}
     
     def _upload_images(self, image_files: List[Dict]) -> List[Dict]:
         """

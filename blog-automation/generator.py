@@ -45,6 +45,7 @@ from prompts import (
     build_faq_prompt,
     build_natural_keyphrase_prompt,
     build_image_prompts,
+    build_featured_image_prompt,
     build_comparison_table_prompt,
     build_editorial_review_prompt,
 )
@@ -418,6 +419,7 @@ class BlogGeneratorV2:
         previous_ending = self._last_text(blocks)
         used_code_snippets: List[str] = []
         used_source_urls: List[str] = []
+        used_conclusions: List[str] = []
         for i, section in enumerate(outline.get("sections", [])):
             print(f"    Section {i+1}/{len(outline['sections'])}: {section['heading']}")
             try:
@@ -425,6 +427,7 @@ class BlogGeneratorV2:
                     section, topic, research, keyphrase, previous_ending,
                     previous_code_snippets=used_code_snippets,
                     used_source_urls=used_source_urls,
+                    used_conclusions=used_conclusions,
                 )
             except QuotaExhaustedException:
                 print(f"\n    *** QUOTA EXHAUSTED at section {i+1}/{len(outline['sections'])} ***")
@@ -444,8 +447,17 @@ class BlogGeneratorV2:
                 for url_match in re.findall(r'href="(https?://[^"]+)"', content):
                     if url_match not in used_source_urls:
                         used_source_urls.append(url_match)
+                # Extract concluding sentences from paragraphs for dedup
+                if block.get("blockName") == "core/paragraph":
+                    text = re.sub(r'<[^>]+>', '', content).strip()
+                    sentences = [s.strip() for s in re.split(r'[.!?]+', text) if len(s.strip()) > 30]
+                    if sentences:
+                        # Track the last sentence of each paragraph as a potential conclusion
+                        last_sentence = sentences[-1][:150]
+                        if last_sentence not in used_conclusions:
+                            used_conclusions.append(last_sentence)
             time.sleep(self.section_delay)
-        print(f"    Tracked {len(used_code_snippets)} code snippets, {len(used_source_urls)} cited URLs")
+        print(f"    Tracked {len(used_code_snippets)} code snippets, {len(used_source_urls)} cited URLs, {len(used_conclusions)} conclusions")
 
         # Pass 7 — Comparison table for 'vs' articles
         title_lower = topic.get("title", "").lower()
@@ -505,7 +517,7 @@ class BlogGeneratorV2:
 
         # Pass 12 — Generate image prompts
         print("\n  PASS 12/12: Generating image prompts...")
-        images = self._generate_image_prompts(topic, blocks)
+        images = self._generate_image_prompts(topic, blocks, keyphrase)
 
         # Build slug
         slug = self._generate_slug(seo["title"], keyphrase)
@@ -873,6 +885,7 @@ class BlogGeneratorV2:
         previous_ending: str,
         previous_code_snippets: Optional[List[str]] = None,
         used_source_urls: Optional[List[str]] = None,
+        used_conclusions: Optional[List[str]] = None,
     ) -> List[Dict]:
         """Generate ONE section (300-500 words) with full research context."""
 
@@ -880,6 +893,7 @@ class BlogGeneratorV2:
             section, topic, research, self.author, keyphrase, previous_ending,
             previous_code_snippets=previous_code_snippets,
             used_source_urls=used_source_urls,
+            used_conclusions=used_conclusions,
         )
 
         try:
@@ -1263,10 +1277,11 @@ class BlogGeneratorV2:
     #  Image Prompts                                                      #
     # ------------------------------------------------------------------ #
 
-    def _generate_image_prompts(self, topic: Dict, blocks: List[Dict]) -> List[Dict]:
+    def _generate_image_prompts(self, topic: Dict, blocks: List[Dict], keyphrase: str = '') -> List[Dict]:
         """Generate image prompts for the article."""
 
         prompt = build_image_prompts(topic, blocks)
+        featured_prompt = build_featured_image_prompt(topic, keyphrase)
 
         try:
             text = self._call_gemini(
@@ -1274,17 +1289,21 @@ class BlogGeneratorV2:
             )
             images = json.loads(self._extract_json(text))
             if isinstance(images, list) and len(images) > 0:
+                # Override hero image prompt with the dedicated watercolor prompt
+                for img in images:
+                    if img.get('placement') == 'hero':
+                        img['prompt'] = featured_prompt
+                        break
                 return images
             raise ValueError("No images returned")
 
         except QuotaExhaustedException:
             print(f"    Quota exhausted during image prompt generation — using default")
-            # Image prompts are non-critical; fall through to default
             return [
                 {
                     "placement": "hero",
-                    "prompt": f"Clean technical illustration showing {topic['title']} architecture, hand-drawn sketch style, blues and whites, minimal",
-                    "alt_text": f"{topic['title']} architecture diagram",
+                    "prompt": featured_prompt,
+                    "alt_text": f"{topic['title']} watercolor architecture diagram",
                     "caption": "Technical overview",
                 }
             ]
@@ -1292,8 +1311,8 @@ class BlogGeneratorV2:
             return [
                 {
                     "placement": "hero",
-                    "prompt": f"Clean technical illustration showing {topic['title']} architecture, hand-drawn sketch style, blues and whites, minimal",
-                    "alt_text": f"{topic['title']} architecture diagram",
+                    "prompt": featured_prompt,
+                    "alt_text": f"{topic['title']} watercolor architecture diagram",
                     "caption": "Technical overview",
                 }
             ]

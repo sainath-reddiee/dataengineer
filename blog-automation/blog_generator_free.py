@@ -361,14 +361,18 @@ Return JSON:
             if not keyphrase or len(keyphrase.split()) < 2:
                 keyphrase = self._extract_keyphrase_from_title(topic['title'])
             
-            # Build title
-            kp_title = keyphrase.title()
-            title = f"{kp_title} Guide 2025"
-            if len(title) > 55:
-                title = f"{kp_title} 2025"
+            # Use LLM-generated title if available, fallback to template
+            title = seo_data.get('title', '').strip()
+            if not title:
+                kp_title = keyphrase.title()
+                title = f"{kp_title} Guide 2025"
+            if len(title) > 60:
+                title = title[:57] + '...'
             
-            # Build description
-            desc = f"Master {keyphrase} with our comprehensive guide. Learn best practices, optimization techniques, and strategies for {keyphrase} in 2025."
+            # Use LLM-generated description if available, fallback to template
+            desc = seo_data.get('meta_description', '').strip()
+            if not desc:
+                desc = f"Learn {keyphrase} with real-world examples and production-tested patterns. A hands-on guide for data engineers."
             if len(desc) > 160:
                 desc = desc[:157] + '...'
             
@@ -679,7 +683,7 @@ WRITE 2500-3000 words total. Return ONLY the JSON array."""
             
             for old, new in replacements.items():
                 if old in content.lower():
-                    content = content.replace(old, new, 1)
+                    content = re.sub(re.escape(old), new, content, count=1, flags=re.IGNORECASE)
                     block['innerContent'][0] = content
                     added += 1
                     break
@@ -753,25 +757,29 @@ WRITE 2500-3000 words total. Return ONLY the JSON array."""
                 if len(content_preview) > 1000:
                     break
         
-        prompt = f"""Generate 4 image prompts for hand-drawn illustrations.
+        prompt = f"""Generate 4 image prompts for hand-drawn watercolor illustrations.
 
 TOPIC: {topic['title']}
 CONTENT PREVIEW: {content_preview[:500]}...
 
 For each image:
 1. placement: hero, section-1, section-2, section-3
-2. prompt: Detailed hand-drawn illustration prompt (100-150 words)
+2. prompt: Detailed watercolor illustration prompt (100-150 words)
 3. alt_text: SEO-optimized alt text (<125 chars)
 4. caption: Brief caption
 
-STYLE: Hand-drawn sketch, technical diagrams, clean lines, professional
+STYLE: Hand-drawn watercolor illustration in cool blues, warm ambers, and earthy greens.
+Loose watercolor brush technique, visible paper texture, no corporate aesthetics.
+Show gears, data flow arrows, tool labels, and architecture diagrams as if sketched in a notebook.
+NOT people, NOT stock photo scenes, NOT 3D renders.
+The hero image MUST leave empty space in the top third for a blog title overlay.
 
 Return JSON array:
 [
   {{
     "placement": "hero",
-    "prompt": "Hand-drawn technical sketch showing...",
-    "alt_text": "Technical diagram of...",
+    "prompt": "Hand-drawn watercolor illustration showing...",
+    "alt_text": "Watercolor diagram of...",
     "caption": "Overview diagram"
   }}
 ]"""
@@ -790,8 +798,8 @@ Return JSON array:
         except:
             return [{
                 "placement": "hero",
-                "prompt": f"Hand-drawn technical sketch of {topic['title']}, clean style",
-                "alt_text": f"{topic['title']} architecture diagram",
+                "prompt": f"Hand-drawn watercolor illustration of {topic['title']} with cool blues, warm ambers, earthy greens, loose brush technique, visible paper texture, notebook style, leave space in top third for title",
+                "alt_text": f"{topic['title']} watercolor architecture diagram",
                 "caption": "Technical overview"
             }]
     
@@ -956,12 +964,6 @@ Return JSON array:
         
         return blocks
     
-    def _calculate_reading_time(self, content: str) -> int:
-        """Calculate reading time from HTML content"""
-        text = re.sub(r'<[^>]+>', '', content)
-        words = len(text.split())
-        return max(1, round(words / 225))
-    
     def _verify_intro_keyphrase_blocks(self, blocks: List[Dict], keyphrase: str) -> bool:
         """Verify keyphrase in opening blocks"""
         # Check first 3 paragraph blocks
@@ -1006,75 +1008,6 @@ Return JSON array:
                     h3_with_kp += 1
         
         return h2_count, h3_count, h2_with_kp + h3_with_kp
-    
-    def _enhance_keyphrase_density_blocks(self, blocks: List[Dict], keyphrase: str, target: int = 10) -> List[Dict]:
-        """Enhance keyphrase density across blocks"""
-        
-        # Count current occurrences
-        current_count = 0
-        for block in blocks:
-            content = block.get('innerContent', [''])[0]
-            current_count += content.lower().count(keyphrase.lower())
-        
-        if current_count >= target:
-            return blocks
-        
-        needed = target - current_count
-        
-        # Add to paragraph blocks
-        added = 0
-        for block in blocks:
-            if added >= needed:
-                break
-            
-            if block.get('blockName') != 'core/paragraph':
-                continue
-            
-            content = block.get('innerContent', [''])[0]
-            
-            # Skip if already has keyphrase
-            if keyphrase.lower() in content.lower():
-                continue
-            
-            # Replace generic terms
-            replacements = {
-                'this approach': keyphrase,
-                'the system': keyphrase,
-                'this solution': keyphrase,
-                'this technology': keyphrase,
-                'the platform': keyphrase
-            }
-            
-            for old, new in replacements.items():
-                if old in content.lower():
-                    content = content.replace(old, new, 1)
-                    block['innerContent'][0] = content
-                    added += 1
-                    break
-        
-        return blocks
-    
-    def _keyphrase_in_first_paragraph_block(self, blocks: List[Dict], keyphrase: str) -> bool:
-        """Check if keyphrase in first paragraph block"""
-        for block in blocks:
-            if block.get('blockName') == 'core/paragraph':
-                content = block.get('innerContent', [''])[0]
-                return keyphrase.lower() in content.lower()
-        return False
-    
-    def _inject_keyphrase_to_start_blocks(self, blocks: List[Dict], keyphrase: str) -> List[Dict]:
-        """Inject keyphrase into first paragraph block"""
-        for i, block in enumerate(blocks):
-            if block.get('blockName') == 'core/paragraph':
-                content = block.get('innerContent', [''])[0]
-                # Inject after <p>
-                new_content = content.replace(
-                    '<p>',
-                    f'<p>When it comes to {keyphrase}, '
-                )
-                blocks[i]['innerContent'][0] = new_content
-                break
-        return blocks
     
     def convert_blocks_to_html(self, blocks: List[Dict]) -> str:
         """Convert Gutenberg blocks to HTML (for preview/backwards compatibility)"""
