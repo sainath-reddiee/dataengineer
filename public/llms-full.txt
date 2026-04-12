@@ -1,6 +1,6 @@
 # DataEngineer Hub - Full Content Index for LLMs
-> Last generated: 2026-04-10
-> Total articles: 61
+> Last generated: 2026-04-12
+> Total articles: 62
 > Source: https://dataengineerhub.blog
 > Compact version: https://dataengineerhub.blog/llms.txt
 > Structured data: https://dataengineerhub.blog/llm-sitemap.json
@@ -9,6 +9,36 @@ This file provides a comprehensive content index designed for large language mod
 Each article includes its URL, summary, key headings, and primary topics.
 
 ---
+
+## Airflow (4 articles)
+
+### Snowflake Cortex Code Cost Control in 2026
+- URL: https://dataengineerhub.blog/articles/snowflake-cortex-code-cost-control-2026
+- Published: 2026-04-11 | Updated: 2026-04-11
+- Word count: ~1379
+- Summary: Snowflake Cortex Code Cost Control in 2026 — The Right Way to Set Limits
+- Key sections: How Cortex Code Billing Works | The Two Parameters You Need to Know | Setting Account-Level Limits | Setting Per-User Limits (Override) | A Practical Setup for a Real Team | Auditing Who Has Custom Limits | What Happens When a User Hits Their Limit | One More Layer: Monitor Actual Usage Too
+
+### Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide
+- URL: https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration
+- Published: 2026-04-07 | Updated: 2026-04-11
+- Word count: ~3374
+- Summary: How I Wired Snowflake&#8217;s Native dbt Projects to Airflow — And Finally Got True End-to-End Orchestration
+- Key sections: First — What Exactly Is a dbt Project on Snowflake ? | The Architecture We&#8217;re Building | Step 1: Snowflake Setup — Roles, Warehouse, and Permissions | Step 2: Deploy Your dbt Project as a Native Snowflake Object | Step 3: Set Up a Real dbt Project Structure | Step 4: Wire It All Together in Airflow | Step 5: Running Specific dbt Selectors from Airflow | Step 6: Handling New Versions of Your dbt Project
+
+### Snowflake Cortex Code for dbt: Cut Build Time 48% | 2026 Guide
+- URL: https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide
+- Published: 2026-03-08 | Updated: 2026-04-11
+- Word count: ~5026
+- Summary: It was a Tuesday morning when I finally snapped. My dbt project had grown to 147 models, and the daily run was taking 2 hours and 47 minutes. Our Airflow DAG was timing out. The business team was complaining about stale dashboards. And I was spending my entire morning investigating why dim_customer 
+- Key sections: The Moment Everything Changed | Part 1: What Is Snowflake Cortex Code? (The Simple Truth) | Part 2: Getting Started (5-Minute Setup) | Cortex Code is available in Snowflake (check your edition—Enterprise or higher typically has it). | Part 3: Core Capabilities (The Quick Tour) | Part 4: dbt + Cortex Code &#8211; The Real Game Changer | 4.1: Quick Overview &#8211; Beyond Basic Generation | 4.2: Performance Optimization &#8211; The Killer Feature
+
+### Automated ETL with Airflow and Python: A Practical Guide
+- URL: https://dataengineerhub.blog/articles/automated-etl-airflow-python
+- Published: 2025-09-28 | Updated: 2025-10-08
+- Word count: ~855
+- Summary: In the world of data, consistency is king. Manually running scripts to fetch and process data is not just tedious; it&#8217;s prone to errors, delays, and gaps in your analytics. To build a reliable data-driven culture, you need automation. This is where building an automated ETL with Airflow and Py
+- Key sections: The Architecture: A Simple, Powerful Workflow | Step 1: The Python ETL Script | Step 2: Creating the Airflow DAG | Step 3: The Analytics Payoff | Conclusion: Build Once, Benefit Forever
 
 ## Snowflake (41 articles)
 
@@ -21,7 +51,7 @@ Each article includes its URL, summary, key headings, and primary topics.
 
 ### How I Taught Myself Snowflake Cortex Code (And What I Found)
 - URL: https://dataengineerhub.blog/articles/snowflake-cortex-code-guide-real-examples
-- Published: 2026-04-03 | Updated: 2026-04-03
+- Published: 2026-04-03 | Updated: 2026-04-11
 - Word count: ~2073
 - Summary: No manager pinged me. No sprint ticket had &#8220;explore Cortex Code&#8221; written on it. I stumbled across it one evening while clicking around Snowsight after a long day of debugging dbt models, and three hours later I looked up and realized I hadn&#8217;t thought about Jira or Slack once.
 - Key sections: What Cortex Code Actually Is (And What It Is Not) | How to Actually Access Cortex Code in Snowsight | Real Example 1: Analyzing a dbt Model for Performance Issues | Real Example 2: Explaining Someone Else&#8217;s Legacy Code | Real Example 3: Generating New Transformation Code from a Description | Real Example 4: Reviewing Python Scripts for Data Quality Issues | Where Cortex Code Fits in Your Daily Workflow | What It Can&#8217;t Do (And Where You Still Need to Think)
@@ -56,7 +86,7 @@ Each article includes its URL, summary, key headings, and primary topics.
 
 ### How I passed the “SnowPro® Specialty: Gen AI” certification exam 2026
 - URL: https://dataengineerhub.blog/articles/how-i-passed-snowpro-gen-ai-certification-guide
-- Published: 2026-01-14 | Updated: 2026-01-14
+- Published: 2026-01-14 | Updated: 2026-04-11
 - Word count: ~954
 - Summary: When Snowflake announced the SnowPro Specialty: Generative AI (GES-C01) certification , I knew I had to take it. GenAI isn’t just a buzzword anymore; it’s the engine driving data engineering forward. But honestly? I was intimidated. The documentation is vast, the features are brand new (Cortex, anyo
 - Key sections: The Exam at a Glance: What Are You Up Against? | The 4 Domains You Need to Master | My &#8220;Secret Weapon&#8221; Study Strategy | Step 1: The Official Documentation (The Bible) | Step 2: Validating Knowledge with Practice Exams (Crucial) | Step 3: Reference &amp; Cheat Sheets | Deep Dive: Tips for Each Domain | 1. Mastering the Functions (40%)
@@ -294,29 +324,6 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Word count: ~679
 - Summary: In the world of data, Snowflake&#8217;s rapid rise to a leader in the cloud data space is a well-known story. However , what’s the secret behind its success? The answer isn&#8217;t just a list of features, but instead , its revolutionary Snowflake architecture . Specifically , this unique three-laye
 - Key sections: The Flaws of Traditional Data Warehouse Architecture | Snowflake’s Tri-Factor Architecture: A Masterclass in Decoupling | Layer 1: The Centralized Storage Foundation | Layer 2: The Decoupled Compute Architecture | Conclusion: Why the Snowflake Architecture is a Game-Changer
-
-## Airflow (3 articles)
-
-### Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide
-- URL: https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration
-- Published: 2026-04-07 | Updated: 2026-04-07
-- Word count: ~3374
-- Summary: How I Wired Snowflake&#8217;s Native dbt Projects to Airflow — And Finally Got True End-to-End Orchestration
-- Key sections: First — What Exactly Is a dbt Project on Snowflake ? | The Architecture We&#8217;re Building | Step 1: Snowflake Setup — Roles, Warehouse, and Permissions | Step 2: Deploy Your dbt Project as a Native Snowflake Object | Step 3: Set Up a Real dbt Project Structure | Step 4: Wire It All Together in Airflow | Step 5: Running Specific dbt Selectors from Airflow | Step 6: Handling New Versions of Your dbt Project
-
-### Snowflake Cortex Code for dbt: Cut Build Time 48% | 2026 Guide
-- URL: https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide
-- Published: 2026-03-08 | Updated: 2026-03-08
-- Word count: ~5026
-- Summary: It was a Tuesday morning when I finally snapped. My dbt project had grown to 147 models, and the daily run was taking 2 hours and 47 minutes. Our Airflow DAG was timing out. The business team was complaining about stale dashboards. And I was spending my entire morning investigating why dim_customer 
-- Key sections: The Moment Everything Changed | Part 1: What Is Snowflake Cortex Code? (The Simple Truth) | Part 2: Getting Started (5-Minute Setup) | Cortex Code is available in Snowflake (check your edition—Enterprise or higher typically has it). | Part 3: Core Capabilities (The Quick Tour) | Part 4: dbt + Cortex Code &#8211; The Real Game Changer | 4.1: Quick Overview &#8211; Beyond Basic Generation | 4.2: Performance Optimization &#8211; The Killer Feature
-
-### Automated ETL with Airflow and Python: A Practical Guide
-- URL: https://dataengineerhub.blog/articles/automated-etl-airflow-python
-- Published: 2025-09-28 | Updated: 2025-10-08
-- Word count: ~855
-- Summary: In the world of data, consistency is king. Manually running scripts to fetch and process data is not just tedious; it&#8217;s prone to errors, delays, and gaps in your analytics. To build a reliable data-driven culture, you need automation. This is where building an automated ETL with Airflow and Py
-- Key sections: The Architecture: A Simple, Powerful Workflow | Step 1: The Python ETL Script | Step 2: Creating the Airflow DAG | Step 3: The Analytics Payoff | Conclusion: Build Once, Benefit Forever
 
 ## Python (3 articles)
 

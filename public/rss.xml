@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Fri, 10 Apr 2026 15:55:27 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 12 Apr 2026 05:26:04 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -18,6 +18,19 @@
     <managingEditor>contact@dataengineerhub.blog (Sainath Reddy)</managingEditor>
     <webMaster>contact@dataengineerhub.blog (Sainath Reddy)</webMaster>
     <ttl>60</ttl>
+    <item>
+      <title>Snowflake Cortex Code Cost Control in 2026</title>
+      <link>https://dataengineerhub.blog/articles/snowflake-cortex-code-cost-control-2026</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-cortex-code-cost-control-2026</guid>
+      <description>Snowflake Cortex Code Cost Control in 2026 — The Right Way to Set Limits When I first started using Cortex Code, cost was the last thing on my mind. It&amp;#8217;s&amp;#8230;</description>
+      <pubDate>Sat, 11 Apr 2026 00:08:27 GMT</pubDate>
+      <dc:creator>sainath</dc:creator>
+      <category>Airflow</category>
+      <category>dbt</category>
+      <category>Snowflake</category>
+      <category>SQL</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Snowflake-cortex-code-cost.jpg" type="image/jpeg" />
+    </item>
     <item>
       <title>Snowflake Interview Questions — Expert Level</title>
       <link>https://dataengineerhub.blog/articles/snowflake-expert-interview-questions</link>

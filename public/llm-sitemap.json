@@ -11,9 +11,31 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-04-10",
-  "totalArticles": 61,
+  "lastUpdated": "2026-04-12",
+  "totalArticles": 62,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-cortex-code-cost-control-2026",
+      "title": "Snowflake Cortex Code Cost Control in 2026",
+      "summary": "Snowflake Cortex Code Cost Control in 2026 — The Right Way to Set Limits When I first started using Cortex Code, cost was the last thing on my mind. It&#8217;s&#8230;",
+      "keyFacts": [
+        "Setting them to 0 explicitly means even if someone accidentally grants CORTEX_AGENT_USER to a service role, the credit limit acts as a safety net",
+        "Useful for service accounts that should never be touching Cortex Code interactively"
+      ],
+      "entities": [
+        "snowflake",
+        "dbt",
+        "airflow",
+        "sql"
+      ],
+      "questionAnswered": "What is Snowflake Cortex Code Cost Control in and how does it work?",
+      "lastUpdated": "2026-04-11",
+      "published": "2026-04-11",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "Airflow",
+      "wordCount": 1379
+    },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-expert-interview-questions",
       "title": "Snowflake Interview Questions — Expert Level",
@@ -59,7 +81,7 @@
         "python"
       ],
       "questionAnswered": "What is Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline and how do you use it?",
-      "lastUpdated": "2026-04-07",
+      "lastUpdated": "2026-04-11",
       "published": "2026-04-07",
       "author": "sainath",
       "expertise": "Data Engineering Expert",
@@ -82,7 +104,7 @@
         "python"
       ],
       "questionAnswered": "How I Taught Myself Snowflake Cortex Code (And What I Found)",
-      "lastUpdated": "2026-04-03",
+      "lastUpdated": "2026-04-11",
       "published": "2026-04-03",
       "author": "sainath",
       "expertise": "Data Engineering Expert",
@@ -108,7 +130,7 @@
         "tableau"
       ],
       "questionAnswered": "Part 1: What Is Snowflake Cortex Code? (The Simple Truth)",
-      "lastUpdated": "2026-03-08",
+      "lastUpdated": "2026-04-11",
       "published": "2026-03-08",
       "author": "sainath",
       "expertise": "Data Engineering Expert",
@@ -221,7 +243,7 @@
         "sql"
       ],
       "questionAnswered": "How I passed the “SnowPro® Specialty: Gen AI” certification exam 2026",
-      "lastUpdated": "2026-01-14",
+      "lastUpdated": "2026-04-11",
       "published": "2026-01-14",
       "author": "sainath",
       "expertise": "Data Engineering Expert",
