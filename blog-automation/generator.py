@@ -577,7 +577,8 @@ class BlogGeneratorV2:
         base_query = topic["title"]
         category = topic.get("category", "")
         keywords = " ".join(topic.get("keywords", []))
-        search_query = f"{base_query} {category} {keywords} best practices tutorial 2025"
+        current_year = datetime.now().year
+        search_query = f"{base_query} {category} {keywords} best practices tutorial {current_year}"
 
         try:
             response = self.tavily.search(
@@ -601,7 +602,7 @@ class BlogGeneratorV2:
 
             return {
                 "query": search_query,
-                "summary": response.get("answer", f"Guide to {topic['title']}"),
+                "summary": response.get("answer", f"Comprehensive guide to {topic['title']} covering {category} best practices and implementation strategies"),
                 "sources": sources[:8],
             }
 
@@ -609,7 +610,7 @@ class BlogGeneratorV2:
             print(f"    Tavily error: {str(e)[:80]}")
             return {
                 "query": search_query,
-                "summary": f"Guide to {topic['title']} best practices",
+                "summary": f"Comprehensive guide to {topic['title']} covering {category} best practices and implementation strategies",
                 "sources": self._fallback_sources(topic),
             }
 
@@ -691,7 +692,8 @@ class BlogGeneratorV2:
 
             title = data.get("title", "")
             if not title or len(title) > 60:
-                title = f"{keyphrase.title()}: A Practical Guide"
+                # Build a natural fallback from the topic title instead of a generic pattern
+                title = topic["title"]
                 if len(title) > 60:
                     title = title[:57] + "..."
 
@@ -1234,6 +1236,21 @@ class BlogGeneratorV2:
             prompt = build_editorial_review_prompt(reviewable_html, keyphrase, research_summary)
             reviewed_text = self._call_gemini(prompt, self.gen_config_precise)
 
+            # Strip common LLM preamble and markdown fences from response
+            if reviewed_text:
+                reviewed_text = reviewed_text.strip()
+                # Remove markdown code fences (```html ... ``` or ``` ... ```)
+                reviewed_text = re.sub(r'^```(?:html)?\s*\n?', '', reviewed_text)
+                reviewed_text = re.sub(r'\n?```\s*$', '', reviewed_text)
+                # Remove common preamble lines before first HTML tag
+                first_tag = re.search(r'<[a-zA-Z]', reviewed_text)
+                if first_tag and first_tag.start() > 0:
+                    preamble = reviewed_text[:first_tag.start()]
+                    # Only strip if preamble is short prose (not HTML content)
+                    if len(preamble) < 200 and '<' not in preamble:
+                        reviewed_text = reviewed_text[first_tag.start():]
+                reviewed_text = reviewed_text.strip()
+
             # The review returns corrected HTML. We need to map corrections
             # back to original blocks. Since the LLM may restructure slightly,
             # we do a simple approach: split by block boundaries and patch.
@@ -1244,6 +1261,16 @@ class BlogGeneratorV2:
                 reviewed_code = re.findall(r'<pre>.*?</pre>', reviewed_text, re.DOTALL)
                 reviewed_lists = re.findall(r'<[uo]l>.*?</[uo]l>', reviewed_text, re.DOTALL)
 
+                # Count original blocks by type for safety check
+                orig_para_count = sum(1 for i in reviewable_indices if blocks[i].get("blockName") == "core/paragraph")
+                orig_code_count = sum(1 for i in reviewable_indices if blocks[i].get("blockName") == "core/code")
+                orig_list_count = sum(1 for i in reviewable_indices if blocks[i].get("blockName") == "core/list")
+
+                # Safety: skip patching a type if count drifted too far (LLM merged/split blocks)
+                safe_para = len(reviewed_paragraphs) >= orig_para_count * 0.5
+                safe_code = len(reviewed_code) >= orig_code_count * 0.5 if orig_code_count else True
+                safe_list = len(reviewed_lists) >= orig_list_count * 0.5 if orig_list_count else True
+
                 # Patch blocks with reviewed versions by type
                 para_idx = 0
                 code_idx = 0
@@ -1251,18 +1278,26 @@ class BlogGeneratorV2:
                 for i in reviewable_indices:
                     block = blocks[i]
                     bname = block.get("blockName", "")
-                    if bname == "core/paragraph" and para_idx < len(reviewed_paragraphs):
+                    if bname == "core/paragraph" and safe_para and para_idx < len(reviewed_paragraphs):
                         blocks[i]["innerContent"] = [reviewed_paragraphs[para_idx]]
                         para_idx += 1
-                    elif bname == "core/code" and code_idx < len(reviewed_code):
+                    elif bname == "core/code" and safe_code and code_idx < len(reviewed_code):
                         blocks[i]["innerContent"] = [reviewed_code[code_idx]]
                         code_idx += 1
-                    elif bname == "core/list" and list_idx < len(reviewed_lists):
+                    elif bname == "core/list" and safe_list and list_idx < len(reviewed_lists):
                         blocks[i]["innerContent"] = [reviewed_lists[list_idx]]
                         list_idx += 1
 
                 changes = para_idx + code_idx + list_idx
-                print(f"    Editorial review applied — patched {changes} blocks ({para_idx} paragraphs, {code_idx} code, {list_idx} lists)")
+                skipped = []
+                if not safe_para:
+                    skipped.append(f"paragraphs ({len(reviewed_paragraphs)} vs {orig_para_count})")
+                if not safe_code:
+                    skipped.append(f"code ({len(reviewed_code)} vs {orig_code_count})")
+                if not safe_list:
+                    skipped.append(f"lists ({len(reviewed_lists)} vs {orig_list_count})")
+                skip_msg = f" — skipped mismatched types: {', '.join(skipped)}" if skipped else ""
+                print(f"    Editorial review applied — patched {changes} blocks ({para_idx} paragraphs, {code_idx} code, {list_idx} lists){skip_msg}")
             else:
                 print("    Editorial review returned insufficient content — skipping")
 
@@ -1412,7 +1447,11 @@ class BlogGeneratorV2:
             if name == "core/code":
                 content = block["innerContent"][0]
                 if "<pre>" not in content:
-                    lang = block["attrs"].get("language", "python")
+                    # Preserve existing language class from HTML before stripping
+                    lang = block["attrs"].get("language", "")
+                    if not lang:
+                        lang_match = re.search(r'class="language-(\w+)"', content)
+                        lang = lang_match.group(1) if lang_match else "python"
                     # Strip existing <code> tags to avoid double wrapping
                     content = re.sub(r'<code[^>]*>', '', content)
                     content = content.replace('</code>', '')

@@ -277,8 +277,8 @@ class QualityGate:
         warning_count = sum(1 for i in issues if i.startswith("WARNING"))
         other_count = len(issues) - critical_count - warning_count
 
-        # Fail on any critical issue or 4+ other issues
-        passed = critical_count == 0 and other_count < 4
+        # Fail on any critical issue, 4+ non-warning issues, or 6+ warnings
+        passed = critical_count == 0 and other_count < 4 and warning_count < 6
 
         return passed, issues, seo_report
 

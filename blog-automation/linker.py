@@ -14,13 +14,17 @@ from pathlib import Path
 class InternalLinker:
     """Injects internal links to existing blog articles into generated content."""
 
-    def __init__(self, articles_path: str = None):
+    def __init__(self, articles_path: str = None, link_prefix: str = "/articles"):
         """Load the articles index.
 
         Args:
             articles_path: Path to articles.json. Defaults to
                            ../src/data/pseo/articles.json relative to this file.
+            link_prefix: URL prefix for internal links (e.g. "/articles", "/blog").
+                         Should not have a trailing slash.
         """
+        self.link_prefix = link_prefix.rstrip("/")
+
         if articles_path is None:
             articles_path = (
                 Path(__file__).parent.parent / "src" / "data" / "pseo" / "articles.json"
@@ -69,7 +73,7 @@ class InternalLinker:
             content = block.get("innerContent", [""])[0]
 
             # Skip if paragraph already has an internal link
-            if "/articles/" in content:
+            if f"{self.link_prefix}/" in content:
                 continue
 
             # Skip very short paragraphs
@@ -86,7 +90,7 @@ class InternalLinker:
                 # Find a natural anchor phrase in the paragraph text
                 anchor, pos = self._find_anchor_phrase(content, article, match_keyword)
                 if anchor:
-                    link_html = f'<a href="/articles/{slug}">{anchor}</a>'
+                    link_html = f'<a href="{self.link_prefix}/{slug}">{anchor}</a>'
                     # Replace at the exact validated position
                     new_content = content[:pos] + link_html + content[pos + len(anchor):]
                     if new_content != content:

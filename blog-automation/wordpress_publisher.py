@@ -121,6 +121,7 @@ class WordPressPublisher:
                 # Follow-up: explicitly update Yoast meta fields via a separate PUT
                 # WordPress REST API sometimes ignores custom meta on initial POST
                 yoast_meta = self._build_yoast_meta(seo_data)
+                yoast_verified = False
                 if yoast_meta:
                     try:
                         meta_update = {'meta': yoast_meta}
@@ -131,11 +132,19 @@ class WordPressPublisher:
                             timeout=15
                         )
                         if meta_resp.status_code in [200, 201]:
-                            print(f"   ✅ Yoast SEO meta fields updated successfully")
+                            print(f"   ✅ Yoast SEO meta fields sent successfully")
                         else:
                             print(f"   ⚠️  Yoast meta update returned {meta_resp.status_code}: {meta_resp.text[:100]}")
                     except Exception as e:
                         print(f"   ⚠️  Could not update Yoast meta: {e}")
+                    
+                    # Verify meta actually persisted by reading the post back
+                    yoast_verified = self._verify_yoast_meta(post_id, yoast_meta)
+                
+                # Verify slug was set correctly
+                slug_verified = False
+                if slug:
+                    slug_verified = self._verify_slug(post_id, slug)
                 
                 result = {
                     'success': True,
@@ -144,7 +153,11 @@ class WordPressPublisher:
                     'edit_url': f"{self.site_url}/wp-admin/post.php?post={post_id}&action=edit",
                     'status': status,
                     'images_uploaded': len(uploaded_images),
-                    'yoast_seo': seo_data,
+                    'yoast_seo': {
+                        **seo_data,
+                        'verified': yoast_verified,
+                    },
+                    'slug_verified': slug_verified,
                     'published_at': datetime.now().isoformat()
                 }
                 
@@ -160,6 +173,8 @@ class WordPressPublisher:
                     print(f"   Focus Keyphrase: {seo_data.get('focus_keyphrase', 'N/A')}")
                     print(f"   SEO Title: {seo_data.get('title', 'N/A')}")
                     print(f"   Meta Description: {seo_data.get('meta_description', 'N/A')[:60]}...")
+                    print(f"   Meta Verified: {'YES' if yoast_verified else 'NO - check Yoast REST API settings'}")
+                print(f"   Slug Verified: {'YES' if slug_verified else 'NO - slug may have been altered'}")
                 
                 print(f"{'='*70}\n")
                 
@@ -203,30 +218,55 @@ class WordPressPublisher:
     
     def _blocks_to_html(self, blocks: List[Dict]) -> str:
         """
-        Convert Gutenberg blocks to clean HTML
+        Convert Gutenberg blocks to WordPress Gutenberg HTML with block comments.
+        
+        WordPress requires <!-- wp:blocktype --> comments to render blocks properly
+        in the Block Editor. Without these, content is treated as Classic Editor
+        and code blocks, tables, etc. lose their formatting.
         
         Args:
             blocks: List of Gutenberg block dictionaries
         
         Returns:
-            Clean HTML string
+            Gutenberg-formatted HTML string with block comments
         """
         html_parts = []
         
         for block in blocks:
             block_name = block.get('blockName', '')
+            attrs = block.get('attrs', {})
             content = block.get('innerContent', [''])[0]
             
-            # Skip empty blocks
-            if not content or not content.strip():
+            # Skip empty blocks (but allow separator which generates its own HTML)
+            if block_name != 'core/separator' and (not content or not content.strip()):
                 continue
             
-            # Extract clean HTML from supported block types
-            if block_name in ['core/paragraph', 'core/heading', 'core/list', 'core/code', 'core/quote', 'core/image']:
-                html_parts.append(content)
+            # Wrap each block type in its Gutenberg block comment
+            if block_name == 'core/paragraph':
+                html_parts.append(f'<!-- wp:paragraph -->\n{content}\n<!-- /wp:paragraph -->')
+            elif block_name == 'core/heading':
+                level = attrs.get('level', 2)
+                attrs_json = f' {{"level":{level}}}' if level != 2 else ''
+                html_parts.append(f'<!-- wp:heading{attrs_json} -->\n{content}\n<!-- /wp:heading -->')
+            elif block_name == 'core/code':
+                html_parts.append(f'<!-- wp:code -->\n{content}\n<!-- /wp:code -->')
+            elif block_name == 'core/list':
+                html_parts.append(f'<!-- wp:list -->\n{content}\n<!-- /wp:list -->')
+            elif block_name == 'core/quote':
+                html_parts.append(f'<!-- wp:quote -->\n{content}\n<!-- /wp:quote -->')
+            elif block_name == 'core/image':
+                html_parts.append(f'<!-- wp:image -->\n{content}\n<!-- /wp:image -->')
+            elif block_name == 'core/table':
+                html_parts.append(f'<!-- wp:table -->\n{content}\n<!-- /wp:table -->')
+            elif block_name == 'core/separator':
+                html_parts.append('<!-- wp:separator -->\n<hr class="wp-block-separator"/>\n<!-- /wp:separator -->')
+            else:
+                # Pass through any other block type with generic wrapper
+                if content.strip():
+                    html_parts.append(content)
         
         html = '\n\n'.join(html_parts)
-        print(f"   ✅ Converted {len(blocks)} blocks → {len(html)} characters HTML")
+        print(f"   ✅ Converted {len(blocks)} blocks → {len(html)} characters Gutenberg HTML")
         return html
     
     def _build_yoast_meta(self, seo_data: Dict) -> Dict:
@@ -250,6 +290,90 @@ class WordPressPublisher:
         
         # Remove empty values so WordPress doesn't store blank meta
         return {k: v for k, v in meta.items() if v}
+    
+    def _verify_yoast_meta(self, post_id: int, expected_meta: Dict) -> bool:
+        """
+        Verify Yoast SEO meta fields actually persisted by reading the post back.
+        
+        WordPress silently ignores meta fields if:
+        - Yoast REST API is not enabled in plugin settings
+        - The meta key is not registered with show_in_rest=true
+        - The user lacks edit_posts capability for meta
+        
+        Args:
+            post_id: WordPress post ID
+            expected_meta: Dict of meta keys/values we tried to set
+        
+        Returns:
+            True if all meta fields were confirmed, False otherwise
+        """
+        try:
+            resp = requests.get(
+                f"{self.api_base}/posts/{post_id}",
+                headers=self.headers,
+                params={'_fields': 'meta,slug'},
+                timeout=15
+            )
+            if resp.status_code != 200:
+                print(f"   ⚠️  Could not verify meta: GET returned {resp.status_code}")
+                return False
+            
+            post_data = resp.json()
+            saved_meta = post_data.get('meta', {})
+            
+            all_verified = True
+            for key, expected_value in expected_meta.items():
+                actual_value = saved_meta.get(key, '')
+                if actual_value == expected_value:
+                    print(f"   ✅ Verified {key}")
+                else:
+                    print(f"   ❌ {key} NOT persisted (expected: '{expected_value[:50]}...', got: '{str(actual_value)[:50]}')")
+                    all_verified = False
+            
+            if not all_verified:
+                print(f"   ⚠️  Yoast meta fields did not persist. Check:")
+                print(f"      1. Yoast SEO > General > Features > 'REST API: Head endpoint' is ON")
+                print(f"      2. Application Password user has 'edit_posts' capability")
+                print(f"      3. Yoast plugin is active and up to date")
+            
+            return all_verified
+            
+        except Exception as e:
+            print(f"   ⚠️  Meta verification failed: {e}")
+            return False
+    
+    def _verify_slug(self, post_id: int, expected_slug: str) -> bool:
+        """
+        Verify the post slug was set correctly.
+        
+        WordPress may alter the slug (appending -2, -3, etc.) if a duplicate exists.
+        
+        Args:
+            post_id: WordPress post ID
+            expected_slug: The slug we intended to set
+        
+        Returns:
+            True if slug matches, False otherwise
+        """
+        try:
+            resp = requests.get(
+                f"{self.api_base}/posts/{post_id}",
+                headers=self.headers,
+                params={'_fields': 'slug'},
+                timeout=10
+            )
+            if resp.status_code == 200:
+                actual_slug = resp.json().get('slug', '')
+                if actual_slug == expected_slug:
+                    print(f"   ✅ Slug verified: {actual_slug}")
+                    return True
+                else:
+                    print(f"   ⚠️  Slug mismatch: expected '{expected_slug}', got '{actual_slug}'")
+                    return False
+            return False
+        except Exception as e:
+            print(f"   ⚠️  Slug verification failed: {e}")
+            return False
     
     def _upload_images(self, image_files: List[Dict]) -> List[Dict]:
         """
@@ -389,8 +513,20 @@ class WordPressPublisher:
         # Find hero image
         hero_img = next((img for img in images if img.get('placement') == 'hero'), None)
         
-        # Split content into sections (by H2 tags)
-        sections = content.split('<h2>')
+        # Split content into sections by heading blocks.
+        # Handle both Gutenberg format (<!-- wp:heading --> before <h2>) and raw HTML (<h2> only).
+        # Use regex to split on the Gutenberg heading comment OR bare <h2> tag.
+        heading_pattern = re.compile(r'(<!-- wp:heading.*?-->\s*<h2>|<h2>)', re.DOTALL)
+        parts = heading_pattern.split(content)
+        
+        # Reassemble into sections: parts[0] is before first heading,
+        # then alternating [heading_prefix, section_content, heading_prefix, section_content, ...]
+        sections = [parts[0]]  # Content before first heading
+        for i in range(1, len(parts), 2):
+            # Recombine heading prefix with its content
+            heading_prefix = parts[i] if i < len(parts) else ''
+            section_content = parts[i + 1] if (i + 1) < len(parts) else ''
+            sections.append(heading_prefix + section_content)
         
         result = []
         
@@ -406,7 +542,7 @@ class WordPressPublisher:
         section_images = [img for img in images if img.get('placement') != 'hero' and 'url' in img]
         
         for i, section in enumerate(sections[1:], 1):
-            result.append('<h2>' + section)
+            result.append(section)
             
             # Insert image after every 2 sections
             if i % 2 == 0 and section_images:

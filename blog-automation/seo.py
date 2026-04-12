@@ -24,6 +24,14 @@ class SEOAnalyzer:
     # Auxiliaries that signal passive voice
     PASSIVE_AUXILIARIES = {"is", "are", "was", "were", "been", "being", "be", "get", "gets", "got", "gotten"}
 
+    def __init__(self, link_prefix: str = "/articles"):
+        """Initialize SEO analyzer.
+
+        Args:
+            link_prefix: URL prefix used for internal links (e.g. "/articles", "/blog").
+        """
+        self.link_prefix = link_prefix.rstrip("/") + "/"
+
     def analyze(self, blocks: List[Dict], keyphrase: str) -> Dict:
         """Run full SEO analysis on Gutenberg blocks.
 
@@ -297,7 +305,7 @@ class SEOAnalyzer:
         internal_links = 0
         for block in blocks:
             content = block.get("innerContent", [""])[0]
-            internal_links += content.count("/articles/")
+            internal_links += content.count(self.link_prefix)
 
         issues = []
         if h2_count < 4:
