@@ -77,18 +77,7 @@
       "sql"
     ]
   },
-  {
-    "slug": "build-a-simple-rag-application-in-snowflake-using-streamlit-and-snowflake-cortex",
-    "title": "Build a Simple RAG Application in Snowflake Using Streamlit and Snowflake Cortex",
-    "keywords": [
-      "Snowflake"
-    ],
-    "categories": [
-      "python",
-      "snowflake",
-      "sql"
-    ]
-  },
+
   {
     "slug": "snowflake-cost-optimization-techniques-2026",
     "title": "Snowflake Cost Optimization: 12 Proven Techniques to Cut Your Bill by 40% in 2026",
@@ -150,19 +139,7 @@
       "sql"
     ]
   },
-  {
-    "slug": "build-rag-snowflake-documentation",
-    "title": "How to Build a RAG System Using Snowflake Documentation (Step-by-Step Guide)",
-    "keywords": [
-      "rag",
-      "snowflake",
-      "Build a RAG System Using Snowflake Documentation",
-      "Snowflake"
-    ],
-    "categories": [
-      "snowflake"
-    ]
-  },
+
   {
     "slug": "snowpro-specialty-gen-ai-practice-exams",
     "title": "Snowflake’s New GenAI Cert is Here—And I’ve Built Something to Help You Pass",
@@ -225,35 +202,8 @@
       "snowflake"
     ]
   },
-  {
-    "slug": "snowflake-openflow-tutorial",
-    "title": "Snowflake Openflow Tutorial Guide 2025",
-    "keywords": [
-      "Snowflake Openflow Tutorial Guide 2025",
-      "openflow",
-      "snowflake",
-      "Snowflake"
-    ],
-    "categories": [
-      "dbt",
-      "snowflake",
-      "sql"
-    ]
-  },
-  {
-    "slug": "snowflake-performance",
-    "title": "A Data Engineer's Handbook to Snowflake Performance and SQL Improvements 2025",
-    "keywords": [
-      "data-warehouse",
-      "snowflake",
-      "sql",
-      "Snowflake"
-    ],
-    "categories": [
-      "snowflake",
-      "sql"
-    ]
-  },
+
+
   {
     "slug": "snowflake-native-dbt-integration-2025-guide",
     "title": "Snowflake Native dbt Integration: Complete 2025 Guide",
@@ -314,19 +264,7 @@
       "sql"
     ]
   },
-  {
-    "slug": "build-a-snowflake-agent-in-10-minutes",
-    "title": "Build a Snowflake Agent in 10 Minutes",
-    "keywords": [
-      "Build a Snowflake Agent in 10 Minutes",
-      "snowflake",
-      "Snowflake"
-    ],
-    "categories": [
-      "snowflake",
-      "sql"
-    ]
-  },
+
   {
     "slug": "snowflake-dynamic-tables-complete-guide-2025",
     "title": "Snowflake Dynamic Tables: Complete 2025 Guide & Examples",
@@ -489,18 +427,6 @@
     ]
   },
   {
-    "slug": "snowflake-query-optimization-2025",
-    "title": "Snowflake Query Optimization in 2025",
-    "keywords": [
-      "Snowflake Query Optimization in 2025",
-      "snowflake",
-      "Snowflake"
-    ],
-    "categories": [
-      "snowflake"
-    ]
-  },
-  {
     "slug": "snowflake-merge-optimization-techniques",
     "title": "5 Advanced Techniques for Optimizing Snowflake MERGE Queries",
     "keywords": [
@@ -604,20 +530,7 @@
       "snowflake"
     ]
   },
-  {
-    "slug": "loading-data-from-s3-to-snowflake",
-    "title": "Loading Data from S3 to Snowflake",
-    "keywords": [
-      "Loading Data from S3 to Snowflake",
-      "data-engineering",
-      "etl",
-      "snowflake",
-      "Snowflake"
-    ],
-    "categories": [
-      "snowflake"
-    ]
-  },
+
   {
     "slug": "aws-data-pipeline-cost-optimization-strategies",
     "title": "AWS Data Pipeline Cost Optimization Strategies",
@@ -631,20 +544,7 @@
       "aws"
     ]
   },
-  {
-    "slug": "snowflake-performance-tuning-techniques",
-    "title": "Snowflake Performance Tuning Techniques",
-    "keywords": [
-      "Snowflake Performance Tuning Techniques",
-      "data-engineering",
-      "data-warehouse",
-      "snowflake",
-      "Snowflake"
-    ],
-    "categories": [
-      "snowflake"
-    ]
-  },
+
   {
     "slug": "advanced-snowflake-interview-questions-experienced",
     "title": "Advanced Snowflake Interview Questions for Experienced",
@@ -730,6 +630,76 @@
     ],
     "categories": [
       "snowflake"
+    ]
+  },
+  {
+    "slug": "why-i-stopped-using-snowflake-tasks-orchestration",
+    "title": "Why I Stopped Using Snowflake Tasks for Orchestration",
+    "keywords": [
+      "snowflake",
+      "airflow",
+      "orchestration",
+      "Snowflake Tasks"
+    ],
+    "categories": [
+      "snowflake",
+      "airflow"
+    ]
+  },
+  {
+    "slug": "snowflake-cortex-code-cost-control-2026",
+    "title": "Snowflake Cortex Code Cost Control in 2026",
+    "keywords": [
+      "snowflake",
+      "cortex",
+      "cost-control",
+      "Snowflake Cortex Code"
+    ],
+    "categories": [
+      "snowflake",
+      "sql"
+    ]
+  },
+  {
+    "slug": "snowflake-expert-interview-questions",
+    "title": "Snowflake Interview Questions — Expert Level",
+    "keywords": [
+      "snowflake",
+      "interview",
+      "expert",
+      "Snowflake Interview"
+    ],
+    "categories": [
+      "snowflake"
+    ]
+  },
+  {
+    "slug": "snowflake-dbt-projects-airflow-orchestration",
+    "title": "Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide",
+    "keywords": [
+      "snowflake",
+      "dbt",
+      "airflow",
+      "orchestration"
+    ],
+    "categories": [
+      "snowflake",
+      "dbt",
+      "airflow"
+    ]
+  },
+  {
+    "slug": "snowflake-cortex-code-guide-real-examples",
+    "title": "How I Taught Myself Snowflake Cortex Code (And What I Found)",
+    "keywords": [
+      "snowflake",
+      "cortex",
+      "dbt",
+      "Snowflake Cortex Code"
+    ],
+    "categories": [
+      "snowflake",
+      "dbt"
     ]
   }
 ]

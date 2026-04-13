@@ -16,53 +16,49 @@
     <meta name="description" content="In-depth tutorials on Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and modern data engineering. Master cloud platforms, data pipelines, and best practices." />
 
     <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />
+    <link rel="canonical" href="https://dataengineerhub.blog/" />
 
-    
+    <!-- JSON-LD: Organization + WebSite schemas in static HTML so Googlebot sees them without JS -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Organization",
-      "@id": "https://dataengineerhub.blog/#organization",
       "name": "DataEngineer Hub",
       "url": "https://dataengineerhub.blog",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://dataengineerhub.blog/logo.png",
-        "width": 246,
-        "height": 250
+      "logo": "https://dataengineerhub.blog/logo.png",
+      "description": "In-depth tutorials on Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and modern data engineering.",
+      "sameAs": [
+        "https://github.com/dataengineerhub",
+        "https://www.linkedin.com/company/dataengineerhub"
+      ],
+      "founder": {
+        "@type": "Person",
+        "name": "Satya Sainath Pulla",
+        "jobTitle": "Data Engineer",
+        "url": "https://dataengineerhub.blog/about"
       }
     }
     </script>
-
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "@id": "https://dataengineerhub.blog/#website",
       "name": "DataEngineer Hub",
       "url": "https://dataengineerhub.blog",
-      "publisher": { "@id": "https://dataengineerhub.blog/#organization" },
+      "description": "In-depth tutorials on Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and modern data engineering.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "DataEngineer Hub",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://dataengineerhub.blog/logo.png"
+        }
+      },
       "potentialAction": {
         "@type": "SearchAction",
-        "target": {
-          "@type": "EntryPoint",
-          "urlTemplate": "https://dataengineerhub.blog/articles?search={search_term_string}"
-        },
+        "target": "https://dataengineerhub.blog/articles?search={search_term_string}",
         "query-input": "required name=search_term_string"
       }
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      "@id": "https://dataengineerhub.blog/#webpage",
-      "name": "DataEngineer Hub - Data Engineering Tutorials & Guides",
-      "url": "https://dataengineerhub.blog",
-      "isPartOf": { "@id": "https://dataengineerhub.blog/#website" },
-      "about": { "@id": "https://dataengineerhub.blog/#organization" },
-      "description": "In-depth tutorials on Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and modern data engineering."
     }
     </script>
     

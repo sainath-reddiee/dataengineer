@@ -94,7 +94,7 @@ const Header = ({ topOffset = 0 }) => {
   const [isMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollY = React.useRef(0);
   const location = useLocation();
   const currentPath = location.pathname;
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -163,6 +163,7 @@ const Header = ({ topOffset = 0 }) => {
   const isCertificationActive = currentPath.includes('/certification');
   const isGlossaryActive = currentPath.startsWith('/glossary');
   const isCompareActive = currentPath.startsWith('/compare');
+  const isCheatSheetsActive = currentPath.startsWith('/cheatsheet');
   // Enhanced category structure
   const categories = {
   platforms: {
@@ -205,19 +206,19 @@ const Header = ({ topOffset = 0 }) => {
       const currentScrollY = window.scrollY;
       if (currentScrollY < 10) {
         setIsVisible(true);
-      } else if (currentScrollY > lastScrollY) {
+      } else if (currentScrollY > lastScrollY.current) {
         setIsVisible(false);
         // 🔥 CRITICAL: Close any open dropdown when scrolling down
         setOpenDropdown(null);
       } else {
         setIsVisible(true);
       }
-      setLastScrollY(currentScrollY);
+      lastScrollY.current = currentScrollY;
     };
 
     window.addEventListener('scroll', controlHeader, { passive: true });
     return () => window.removeEventListener('scroll', controlHeader);
-  }, [lastScrollY]);
+  }, []);
 
   // 🔥 FIX 2: Close dropdown on click outside (e.g., clicking article content)
   useEffect(() => {
@@ -503,6 +504,21 @@ const Header = ({ topOffset = 0 }) => {
               >
                 <GitCompareArrows className="w-4 h-4 hidden 2xl:inline-block" />
                 Compare
+              </Link>
+            </motion.div>
+            {/* Cheat Sheets */}
+            <motion.div whileHover={{ y: -2 }}>
+              <Link 
+                to="/cheatsheets" 
+                className={`font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
+                  isCheatSheetsActive 
+                    ? 'text-blue-400' 
+                    : 'text-gray-300 hover:text-blue-400'
+                }`}
+                style={isCheatSheetsActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+              >
+                <FileText className="w-4 h-4 hidden 2xl:inline-block" />
+                Cheat Sheets
               </Link>
             </motion.div>
             {/* ✅ NEW: Certification Tab */}

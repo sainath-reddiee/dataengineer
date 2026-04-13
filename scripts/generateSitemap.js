@@ -10,22 +10,28 @@ const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
 const SITE_URL = 'https://dataengineerhub.blog';
 
 // Static pages with realistic lastmod dates (not "today")
+// Only include pages that:
+// 1. Have a real public route in App.jsx
+// 2. Are NOT noindexed by their React component
+// 3. Are NOT already covered by sitemap-pseo-1.xml (/glossary, /compare are there)
+// 4. Have pre-rendered HTML or are meaningful indexable pages
+// Excluded: /newsletter (noindexed), /tags (noindexed), /explore (no route),
+//           /checklist (admin-only), /glossary & /compare (in pseo sitemap),
+//           /certification (noindexed + iframe-only, no pre-rendered HTML)
 const STATIC_PAGES = [
-  { url: '/', changefreq: 'daily', priority: 1.0, lastmod: 'today' },       // Homepage changes with new posts
-  { url: '/articles', changefreq: 'daily', priority: 0.9, lastmod: 'today' }, // Articles listing changes with new posts
+  { url: '/', changefreq: 'daily', priority: 1.0, lastmod: 'today' },
+  { url: '/articles', changefreq: 'daily', priority: 0.9, lastmod: 'today' },
   { url: '/about', changefreq: 'monthly', priority: 0.7, lastmod: '2026-03-01' },
   { url: '/contact', changefreq: 'monthly', priority: 0.4, lastmod: '2026-03-01' },
-  { url: '/newsletter', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
   { url: '/privacy-policy', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/disclaimer', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
-  { url: '/tags', changefreq: 'weekly', priority: 0.6, lastmod: 'today' },
-  { url: '/explore', changefreq: 'weekly', priority: 0.7, lastmod: 'today' },
-  { url: '/certification', changefreq: 'monthly', priority: 0.6, lastmod: '2026-03-01' },
-  { url: '/checklist', changefreq: 'monthly', priority: 0.6, lastmod: '2026-03-01' },
-  { url: '/glossary', changefreq: 'weekly', priority: 0.6, lastmod: 'today' },
-  { url: '/compare', changefreq: 'weekly', priority: 0.6, lastmod: 'today' },
-  { url: '/cheatsheets', changefreq: 'weekly', priority: 0.6, lastmod: 'today' },
+  // /cheatsheets excluded — no pre-rendered HTML, Googlebot gets SPA shell (soft 404)
+];
+
+// Article slugs to exclude from sitemap (noindexed due to thin content <400 words)
+const EXCLUDED_ARTICLE_SLUGS = [
+  'snowpro-specialty-gen-ai-practice-exams', // <400 words, marked noindex by SSG
 ];
 
 // Format date to W3C format (YYYY-MM-DD)
@@ -326,7 +332,15 @@ async function generateSitemap() {
     console.log('📝 Adding blog posts...');
     const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
     let newsCount = 0;
+    let excludedCount = 0;
     posts.forEach(post => {
+      // Skip articles that are noindexed due to thin content
+      if (EXCLUDED_ARTICLE_SLUGS.includes(post.slug)) {
+        excludedCount++;
+        console.log(`   ⏭️  Skipping thin article: ${post.slug}`);
+        return;
+      }
+
       const postDate = formatDate(post.modified || post.date || new Date());
       const publishDate = new Date(post.date);
 
@@ -354,28 +368,18 @@ async function generateSitemap() {
 
       sitemapEntries.push(entry);
     });
+    if (excludedCount > 0) {
+      console.log(`   ⏭️  Excluded ${excludedCount} thin article(s) from sitemap`);
+    }
 
-    // Add category pages (now indexable)
-    console.log('📝 Adding category pages...');
-    categories.forEach(cat => {
-      sitemapEntries.push({
-        url: `${SITE_URL}/category/${cat.slug}`,
-        lastmod: today,
-        changefreq: 'weekly',
-        priority: 0.6,
-      });
-    });
+    // Category pages excluded from sitemap — no pre-rendered HTML exists,
+    // so Googlebot receives the SPA shell (soft 404 / thin content).
+    // Re-add once category pages are pre-rendered with unique content.
+    console.log('⏭️  Skipping category pages (no pre-rendered HTML, soft 404 for Googlebot)...');
 
-    // Add tag pages (now indexable)
-    console.log('📝 Adding tag pages...');
-    tags.forEach(tag => {
-      sitemapEntries.push({
-        url: `${SITE_URL}/tag/${tag.slug}`,
-        lastmod: today,
-        changefreq: 'weekly',
-        priority: 0.5,
-      });
-    });
+    // Tag pages excluded from sitemap — all have noindex={true} in TagPage.jsx
+    // Including noindexed pages in sitemap sends contradictory signals to Google
+    console.log('⏭️  Skipping tag pages (all noindexed in React)...');
 
     // Validate sitemap entries
     console.log('\n🔍 Validating sitemap...');

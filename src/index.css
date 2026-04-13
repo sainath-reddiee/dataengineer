@@ -484,6 +484,11 @@ img {
   height: auto;
   display: block;
   transition: opacity 0.3s ease;
+}
+
+.article-content img,
+.blog-card img,
+.related-posts img {
   content-visibility: auto;
   contain-intrinsic-size: 300px 200px;
 }
@@ -680,7 +685,7 @@ img {
 }
 
 .adsense-ad {
-  min-height: 100px;
+  min-height: 250px;
   display: block;
   margin: 2rem 0;
   text-align: center;

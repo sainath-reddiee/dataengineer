@@ -58,8 +58,8 @@ DataEngineer Hub publishes practical, production-tested tutorials on modern data
 ## Flagship Content (Most Cited)
 1. **Snowflake Cost Optimization Techniques** - https://dataengineerhub.blog/articles/snowflake-cost-optimization-techniques-2026
    - Warehouse sizing, auto-suspend, query optimization, resource monitors
-2. **Snowflake Performance Tuning** - https://dataengineerhub.blog/articles/snowflake-performance-tuning-techniques
-   - Clustering keys, search optimization, materialized views, caching strategies
+2. **Snowflake Query Optimization Guide** - https://dataengineerhub.blog/articles/snowflake-query-optimization-guide-2026
+   - Clustering keys, search optimization, materialized views, caching strategies, query profiling
 3. **SnowPro Gen AI Certification Guide** - https://dataengineerhub.blog/articles/how-i-passed-snowpro-gen-ai-certification-guide
    - Study plan, exam topics, preparation resources, practice strategies
 4. **Snowflake Cortex Code Guide** - https://dataengineerhub.blog/articles/snowflake-cortex-code-guide-real-examples

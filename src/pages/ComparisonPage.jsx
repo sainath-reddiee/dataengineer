@@ -85,6 +85,9 @@ const ComparisonPage = () => {
     if (error) {
         return (
             <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+                <Helmet>
+                    <meta name="robots" content="noindex, follow" />
+                </Helmet>
                 <div className="bg-red-500/10 border border-red-500 rounded-lg p-6 max-w-md">
                     <h2 className="text-red-400 text-xl font-bold mb-2">Error Loading Comparison</h2>
                     <p className="text-gray-300">Something went wrong while loading the content.</p>

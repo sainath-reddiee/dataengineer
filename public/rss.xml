@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Sun, 12 Apr 2026 15:05:02 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 13 Apr 2026 11:23:35 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -141,18 +141,6 @@
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/images.png" type="image/png" />
     </item>
     <item>
-      <title>Build a Simple RAG Application in Snowflake Using Streamlit and Snowflake Cortex</title>
-      <link>https://dataengineerhub.blog/articles/build-a-simple-rag-application-in-snowflake-using-streamlit-and-snowflake-cortex</link>
-      <guid isPermaLink="true">https://dataengineerhub.blog/articles/build-a-simple-rag-application-in-snowflake-using-streamlit-and-snowflake-cortex</guid>
-      <description>I built this while experimenting with Snowflake Cortex over a weekend. The problem was simple: our team had hours of meeting notes scattered across documents, and nobody could find answers&amp;#8230;</description>
-      <pubDate>Thu, 08 Jan 2026 12:10:32 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
-      <category>Python</category>
-      <category>Snowflake</category>
-      <category>SQL</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/IMG_8382.png" type="image/png" />
-    </item>
-    <item>
       <title>Snowflake Cost Optimization: 12 Proven Techniques to Cut Your Bill by 40% in 2026</title>
       <link>https://dataengineerhub.blog/articles/snowflake-cost-optimization-techniques-2026</link>
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-cost-optimization-techniques-2026</guid>
@@ -203,16 +191,6 @@
       <category>Snowflake</category>
       <category>SQL</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/IMG_8290_11zon.jpg" type="image/jpeg" />
-    </item>
-    <item>
-      <title>How to Build a RAG System Using Snowflake Documentation (Step-by-Step Guide)</title>
-      <link>https://dataengineerhub.blog/articles/build-rag-snowflake-documentation</link>
-      <guid isPermaLink="true">https://dataengineerhub.blog/articles/build-rag-snowflake-documentation</guid>
-      <description>The Problem That Started Everything You know what’s frustrating? Having 500+ pages of Snowflake documentation and still spending 20 minutes hunting for that one specific syntax example you need. That&amp;#8230;</description>
-      <pubDate>Tue, 30 Dec 2025 08:03:22 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
-      <category>Snowflake</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/12/Designe.jpeg" type="image/jpeg" />
     </item>
     <item>
       <title>Snowflake’s New GenAI Cert is Here—And I’ve Built Something to Help You Pass</title>
@@ -268,29 +246,6 @@
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/11/Copilot_20251107_080501.png" type="image/png" />
     </item>
     <item>
-      <title>Snowflake Openflow Tutorial Guide 2025</title>
-      <link>https://dataengineerhub.blog/articles/snowflake-openflow-tutorial</link>
-      <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-openflow-tutorial</guid>
-      <description>Obviously, snowflake has revolutionized cloud data warehousing for years. Consequently, the demands for streamlined data ingestion grew significantly. When it comes to the snowflake openflow tutorial, understanding this new paradigm&amp;#8230;</description>
-      <pubDate>Fri, 24 Oct 2025 03:41:27 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
-      <category>dbt</category>
-      <category>Snowflake</category>
-      <category>SQL</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/IMG_7387_11zon.jpg" type="image/jpeg" />
-    </item>
-    <item>
-      <title>A Data Engineer&amp;#8217;s Handbook to Snowflake Performance and SQL Improvements 2025</title>
-      <link>https://dataengineerhub.blog/articles/snowflake-performance</link>
-      <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-performance</guid>
-      <description>Data Engineers today face immense pressure to deliver speed and efficiency. Optimizing snowflake performance is no longer a luxury; it is a fundamental requirement. Furthermore, mastering these concepts separates efficient&amp;#8230;</description>
-      <pubDate>Wed, 22 Oct 2025 09:36:35 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
-      <category>Snowflake</category>
-      <category>SQL</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Copilot_20251022_203238_11zon.jpg" type="image/jpeg" />
-    </item>
-    <item>
       <title>Snowflake Native dbt Integration: Complete 2025 Guide</title>
       <link>https://dataengineerhub.blog/articles/snowflake-native-dbt-integration-2025-guide</link>
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-native-dbt-integration-2025-guide</guid>
@@ -341,17 +296,6 @@
       <category>Snowflake</category>
       <category>SQL</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/C4F9EC12-CE45-4426-ACF5-6CE3A6D5A08.jpeg" type="image/jpeg" />
-    </item>
-    <item>
-      <title>Build a Snowflake Agent in 10 Minutes</title>
-      <link>https://dataengineerhub.blog/articles/build-a-snowflake-agent-in-10-minutes</link>
-      <guid isPermaLink="true">https://dataengineerhub.blog/articles/build-a-snowflake-agent-in-10-minutes</guid>
-      <description>The world of data is buzzing with the promise of Large Language Models (LLMs), but how do you move them from simple chat interfaces to intelligent actors that can do&amp;#8230;</description>
-      <pubDate>Thu, 16 Oct 2025 07:34:12 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
-      <category>Snowflake</category>
-      <category>SQL</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg_11zon.jpg" type="image/jpeg" />
     </item>
     <item>
       <title>Snowflake Dynamic Tables: Complete 2025 Guide &amp;amp; Examples</title>
@@ -577,16 +521,6 @@
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image.png" type="image/png" />
     </item>
     <item>
-      <title>Loading Data from S3 to Snowflake</title>
-      <link>https://dataengineerhub.blog/articles/loading-data-from-s3-to-snowflake</link>
-      <guid isPermaLink="true">https://dataengineerhub.blog/articles/loading-data-from-s3-to-snowflake</guid>
-      <description>For any data engineer working in the modern data stack, loading data from a data lake like Amazon S3 into a cloud data platform like Snowflake is a daily reality. While it seems straightforward,&amp;#8230;</description>
-      <pubDate>Mon, 29 Sep 2025 00:48:54 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
-      <category>Snowflake</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/Snowflake-1.png" type="image/png" />
-    </item>
-    <item>
       <title>AWS Data Pipeline Cost Optimization Strategies</title>
       <link>https://dataengineerhub.blog/articles/aws-data-pipeline-cost-optimization-strategies</link>
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/aws-data-pipeline-cost-optimization-strategies</guid>
@@ -595,16 +529,6 @@
       <dc:creator>sainath</dc:creator>
       <category>AWS</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/AWS.png" type="image/png" />
-    </item>
-    <item>
-      <title>Snowflake Performance Tuning Techniques</title>
-      <link>https://dataengineerhub.blog/articles/snowflake-performance-tuning-techniques</link>
-      <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-performance-tuning-techniques</guid>
-      <description>Snowflake is incredibly fast out of the box, but as your data and query complexity grow, even the most powerful engine needs a tune-up. Slow-running queries not only frustrate users but also lead&amp;#8230;</description>
-      <pubDate>Mon, 29 Sep 2025 00:11:07 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
-      <category>Snowflake</category>
-      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-4.png" type="image/png" />
     </item>
     <item>
       <title>Advanced Snowflake Interview Questions for Experienced</title>

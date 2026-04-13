@@ -155,6 +155,9 @@ export function GlossaryPage() {
     if (error) {
         return (
             <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+                <Helmet>
+                    <meta name="robots" content="noindex, follow" />
+                </Helmet>
                 <div className="bg-red-500/10 border border-red-500 rounded-lg p-6 max-w-md">
                     <h2 className="text-red-400 text-xl font-bold mb-2">Error Loading Page</h2>
                     <p className="text-gray-300">Something went wrong while loading the content.</p>
@@ -180,6 +183,11 @@ export function GlossaryPage() {
 
     const { meta, breadcrumbs, canonical, category, relatedTerms } = derivedData;
 
+    // Calculate word count for read time and thin content detection
+    const wordCount = term.fullDefinition ? term.fullDefinition.split(/\s+/).length : 0;
+    const readTimeMin = Math.max(1, Math.ceil(wordCount / 200));
+    const isThinContent = wordCount < 250;
+
     return (
         <>
             <Helmet>
@@ -187,6 +195,7 @@ export function GlossaryPage() {
                 <meta name="description" content={meta.description} />
                 <meta name="keywords" content={meta.keywords} />
                 <link rel="canonical" href={canonical} />
+                {isThinContent && <meta name="robots" content="noindex, follow" />}
 
                 {/* Open Graph */}
                 <meta property="og:type" content="article" />
@@ -260,7 +269,7 @@ export function GlossaryPage() {
                                 </div>
                                 <div className="flex items-center gap-1">
                                     <BookOpen className="w-4 h-4" />
-                                    <span>5 min read</span>
+                                    <span>{readTimeMin} min read</span>
                                 </div>
                             </div>
                         </header>

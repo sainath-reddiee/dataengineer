@@ -1,6 +1,7 @@
 // src/pages/ArticlePage.jsx - ENHANCED WITH BREADCRUMBS AND SEO
 import React, { Suspense, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Calendar, Clock, User, AlertCircle, RefreshCw, Tag, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -134,6 +135,9 @@ const ErrorDisplay = ({ error, onRetry, slug }) => {
 
   return (
     <div className="pt-4 pb-12">
+      <Helmet>
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
       <div className="container mx-auto px-6 max-w-7xl">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-4">
           <Button asChild variant="outline" className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20">
@@ -542,6 +546,8 @@ const ArticlePage = () => {
     image: post.image || 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop'
   };
 
+  const isThinArticle = (parseInt(safePost.readTime) || 1) <= 2;
+
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -592,6 +598,7 @@ const ArticlePage = () => {
           breadcrumbs={breadcrumbs}
           howToSchema={howToSchema}
           videoSchema={videoSchema}
+          noindex={isThinArticle}
         />
 
       <div className="container mx-auto px-6 max-w-7xl">
@@ -648,10 +655,6 @@ const ArticlePage = () => {
               </div>
             </div>
           )}
-
-          <Suspense fallback={<div className="h-32" />}>
-            <AdPlacement />
-          </Suspense>
 
           {/* Key Takeaways — AEO/AI visibility, Speakable schema target */}
           <KeyTakeaways items={keyTakeaways} />

@@ -55,10 +55,10 @@ const MetaTags = ({
     fullDescription = formatDescription(description);
   }
 
-  // Generate canonical URL (strip query params to avoid duplicate content)
+  // Generate canonical URL (always use SITE_CONFIG.url to avoid staging/preview domain leaks)
   const currentUrl = url
     ? ensureAbsoluteUrl(url)
-    : (typeof window !== 'undefined' ? window.location.origin + window.location.pathname : SITE_CONFIG.url);
+    : `${SITE_CONFIG.url}${typeof window !== 'undefined' ? window.location.pathname : ''}`;
 
   // Get image URL
   const fullImage = getImageUrl(image);
@@ -106,7 +106,7 @@ const MetaTags = ({
 
       {/* Robots directives */}
       {noindex ? (
-        <meta name="robots" content="noindex, nofollow" />
+        <meta name="robots" content="noindex, follow" />
       ) : (
         <>
           <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />

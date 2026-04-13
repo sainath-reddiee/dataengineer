@@ -193,13 +193,6 @@ const AllArticlesPage = () => {
             </div>
           </motion.div>
           
-          {/* Ad after search, before featured posts */}
-          {currentPage === 1 && !activeSearch && (
-            <Suspense fallback={null}>
-              <AdPlacement />
-            </Suspense>
-          )}
-          
           {/* Featured Posts - Only on first page without search */}
           {currentPage === 1 && !activeSearch && <FeaturedPosts />}
           

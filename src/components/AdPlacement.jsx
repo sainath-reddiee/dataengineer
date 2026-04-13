@@ -1,5 +1,6 @@
 // src/components/AdPlacement.jsx - Auto Ads only (no individual slot IDs)
 import React, { useEffect, useRef, useState } from 'react';
+import { getConsentStatus } from '@/components/CookieConsent';
 
 const AdPlacement = ({ 
   className = ''
@@ -33,15 +34,22 @@ const AdPlacement = ({
   useEffect(() => {
     if (!shouldRender || !PUBLISHER_ID) return;
 
-    // Auto ads are enabled via the script tag in index.html.
-    // This component just ensures the AdSense script is loaded.
-    try {
-      if (window.adsbygoogle) {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
+    const pushAd = () => {
+      if (!getConsentStatus()) return;
+      try {
+        if (window.adsbygoogle) {
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        }
+      } catch (error) {
+        console.error('AdSense error:', error);
       }
-    } catch (error) {
-      console.error('AdSense error:', error);
-    }
+    };
+
+    pushAd();
+
+    const onConsentChanged = () => pushAd();
+    window.addEventListener('consentChanged', onConsentChanged);
+    return () => window.removeEventListener('consentChanged', onConsentChanged);
   }, [shouldRender, PUBLISHER_ID]);
 
   if (!shouldRender) {

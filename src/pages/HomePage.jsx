@@ -1,10 +1,11 @@
 // src/pages/HomePage.jsx - ENHANCED WITH SEO STRUCTURED DATA
 import React, { Suspense } from 'react';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import Hero from '../components/Hero';
 import MetaTags from '../components/SEO/MetaTags';
 import { Sparkles, TrendingUp, FileText, Zap, BookOpen } from 'lucide-react';
-import { getOrganizationSchema } from '@/lib/seoConfig';
+import { getOrganizationSchema, getWebSiteSchema } from '@/lib/seoConfig';
 import { Link } from 'react-router-dom';
 
 import { cheatsheets, CHEATSHEET_CATEGORIES } from '@/data/cheatsheetData';
@@ -118,8 +119,9 @@ const CheatSheetCards = () => {
 };
 
 const HomePage = () => {
-  // Generate Organization schema for homepage
+  // Generate schemas for homepage
   const organizationSchema = getOrganizationSchema();
+  const webSiteSchema = getWebSiteSchema();
 
   return (
     <>
@@ -130,10 +132,15 @@ const HomePage = () => {
         type="website"
       />
 
-      {/* Organization Structured Data */}
-      <script type="application/ld+json">
-        {JSON.stringify(organizationSchema)}
-      </script>
+      {/* Organization + WebSite Structured Data */}
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify(organizationSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(webSiteSchema)}
+        </script>
+      </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white">
         {/* ============================================================================
@@ -147,11 +154,6 @@ const HomePage = () => {
             CONTAINER WITH OPTIMIZED SPACING
             ============================================================================ */}
         <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
-
-          {/* AD - TOP */}
-          <Suspense fallback={null}>
-            <AdPlacement />
-          </Suspense>
 
           {/* 🌟 FEATURED POSTS - Optimized section */}
           <section>
@@ -180,11 +182,6 @@ const HomePage = () => {
               <TrendingPosts />
             </Suspense>
           </section>
-
-          {/* AD - MIDDLE */}
-          <Suspense fallback={null}>
-            <AdPlacement />
-          </Suspense>
 
           {/* 🛠 TECH CATEGORIES - Grid view */}
           <section>

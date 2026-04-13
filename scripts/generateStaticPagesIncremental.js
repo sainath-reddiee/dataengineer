@@ -172,7 +172,7 @@ const ESSENTIAL_PAGES = [
     description: 'Read the Privacy Policy for DataEngineer Hub. Learn how we collect, use, and protect your personal information.',
     content: `
       <h1>Privacy Policy</h1>
-      <p><strong>Last Updated:</strong> January 2025</p>
+      <p><strong>Last Updated:</strong> April 2026</p>
       <p>DataEngineer Hub ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you visit our website at dataengineerhub.blog.</p>
 
       <h2>Information We Collect</h2>
@@ -218,7 +218,7 @@ const ESSENTIAL_PAGES = [
     description: 'Read the Terms of Service for DataEngineer Hub. Understand the rules and regulations governing your use of our website.',
     content: `
       <h1>Terms of Service</h1>
-      <p><strong>Last Updated:</strong> January 2025</p>
+      <p><strong>Last Updated:</strong> September 2025</p>
       <p>Welcome to DataEngineer Hub. By accessing and using this website (dataengineerhub.blog), you agree to comply with and be bound by the following terms and conditions.</p>
 
       <h2>Acceptance of Terms</h2>
@@ -256,7 +256,7 @@ const ESSENTIAL_PAGES = [
     description: 'Read the Disclaimer for DataEngineer Hub. Understand the limitations and conditions of the information provided on our website.',
     content: `
       <h1>Disclaimer</h1>
-      <p><strong>Last Updated:</strong> January 2025</p>
+      <p><strong>Last Updated:</strong> October 2025</p>
 
       <h2>General Information</h2>
       <p>The information provided on DataEngineer Hub (dataengineerhub.blog) is for general informational and educational purposes only. While we strive to keep the information accurate and up-to-date, we make no representations or warranties of any kind about the completeness, accuracy, reliability, or suitability of the information.</p>
@@ -634,6 +634,13 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   // 🖼️ Determine OG image: use featured image or fallback to default
   const ogImageUrl = featuredImage || 'https://dataengineerhub.blog/og-image.jpg';
 
+  // 📊 Thin content detection for articles
+  const articlePlainText = stripHTML(processedContent || '');
+  const articleWordCount = articlePlainText.split(/\s+/).filter(w => w.length > 0).length;
+  const articleRobotsDirective = articleWordCount < 400
+    ? 'noindex, follow'
+    : 'index, follow, max-snippet:-1, max-image-preview:large';
+
   // 🎬 Extract YouTube/Vimeo embeds for VideoObject schema
   let videoSchemaBlock = '';
   const videoEmbeds = [];
@@ -723,7 +730,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     <title>${smartTitle(title)}</title>
     <meta name="description" content="${description}" />
     <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+    <meta name="robots" content="${articleRobotsDirective}" />
 ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />` : ''}
 
     <!-- Open Graph -->
@@ -2137,6 +2144,12 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles) {
   // Convert fullDefinition markdown to HTML
   var fullDefHTML = markdownToHTML(term.fullDefinition || '');
 
+  // Determine if content is thin (< 250 words) — noindex thin pages
+  var defWordCount = (term.fullDefinition || '').split(/\s+/).length;
+  var robotsDirective = defWordCount < 250
+    ? 'noindex, follow'
+    : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+
   // Category display name
   var categoryDisplay = (term.category || '').replace(/-/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
 
@@ -2149,7 +2162,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles) {
   html += '    <title>What is ' + term.term + '? | Data Engineering Glossary | DataEngineer Hub</title>\n';
   html += '    <meta name="description" content="' + descriptionMeta.replace(/"/g, '&quot;') + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n\n';
+  html += '    <meta name="robots" content="' + robotsDirective + '" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="article" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
@@ -2878,6 +2891,477 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '        setTimeout(function() { clearInterval(checkReactMount); }, 3000);\n';
   html += '      });\n';
   html += '    <\/script>\n';
+  html += '  </body>\n';
+  html += '</html>';
+
+  return html;
+}
+
+// ============================================================================
+// CHEATSHEET HUB PAGE HTML - Listing page for all cheat sheets (/cheatsheets)
+// ============================================================================
+
+function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) {
+  var jsFile = bundleFiles.jsFile;
+  var cssFile = bundleFiles.cssFile;
+  var productionJsFile = jsFile ? '.' + jsFile : null;
+  var productionCssFile = cssFile ? '.' + cssFile : null;
+  var buildTimestamp = new Date().toISOString();
+  var totalSheets = allCheatsheets.length;
+
+  // Group by category
+  var categoryMap = {};
+  for (var i = 0; i < allCheatsheets.length; i++) {
+    var cs = allCheatsheets[i];
+    var cat = cs.category || 'general';
+    if (!categoryMap[cat]) categoryMap[cat] = [];
+    categoryMap[cat].push(cs);
+  }
+
+  // Build category lookup for display names
+  var catNameLookup = {};
+  for (var ci = 0; ci < categories.length; ci++) {
+    catNameLookup[categories[ci].id] = categories[ci].name;
+  }
+
+  var categoryKeys = Object.keys(categoryMap).sort();
+
+  // Build category nav + sections
+  var categoryNavHTML = '';
+  var categorySectionsHTML = '';
+
+  for (var c = 0; c < categoryKeys.length; c++) {
+    var catKey = categoryKeys[c];
+    var catSheets = categoryMap[catKey];
+    var catDisplayName = catNameLookup[catKey] || catKey.replace(/-/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+
+    categoryNavHTML += '<a href="#cs-' + escapeHtml(catKey) + '" style="display: inline-block; padding: 6px 14px; background: rgba(96,165,250,0.12); color: #93c5fd; text-decoration: none; border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(96,165,250,0.25); margin: 4px;">' + escapeHtml(catDisplayName) + ' (' + catSheets.length + ')</a>';
+
+    categorySectionsHTML += '<div id="cs-' + escapeHtml(catKey) + '" style="margin-top: 2.5rem;">';
+    categorySectionsHTML += '<h2 style="color: #93c5fd; font-size: 1.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(147,197,253,0.2);">' + escapeHtml(catDisplayName) + '</h2>';
+    categorySectionsHTML += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">';
+
+    for (var s = 0; s < catSheets.length; s++) {
+      var sheet = catSheets[s];
+      var shortDesc = sheet.shortDescription || '';
+      if (shortDesc.length > 160) shortDesc = shortDesc.substring(0, 157) + '...';
+
+      categorySectionsHTML += '<a href="https://dataengineerhub.blog/cheatsheets/' + escapeHtml(sheet.slug) + '" style="display: block; padding: 1.2rem; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); text-decoration: none;">';
+      categorySectionsHTML += '<h3 style="color: #f1f5f9; font-size: 1.1rem; margin-bottom: 0.4rem; font-weight: 600;">' + escapeHtml(sheet.title) + '</h3>';
+      categorySectionsHTML += '<p style="color: #94a3b8; font-size: 0.85rem; line-height: 1.5; margin: 0 0 0.5rem 0;">' + escapeHtml(shortDesc) + '</p>';
+      categorySectionsHTML += '<span style="display: inline-block; padding: 2px 8px; background: rgba(96,165,250,0.15); color: #93c5fd; border-radius: 4px; font-size: 0.75rem;">' + escapeHtml(sheet.difficulty || 'Intermediate') + '</span>';
+      categorySectionsHTML += '</a>';
+    }
+
+    categorySectionsHTML += '</div></div>';
+  }
+
+  var html = '<!doctype html>\n<html lang="en">\n  <head>\n';
+  html += '    <meta charset="UTF-8" />\n';
+  html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
+  html += '    <title>Data Engineering Cheat Sheets | ' + totalSheets + ' Quick References | DataEngineer Hub</title>\n';
+  html += '    <meta name="description" content="' + totalSheets + ' data engineering cheat sheets covering Snowflake SQL, dbt, Airflow, window functions, interview prep, and best practices. Quick reference guides for data engineers." />\n';
+  html += '    <link rel="canonical" href="https://dataengineerhub.blog/cheatsheets" />\n';
+  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n\n';
+  html += '    <!-- Open Graph -->\n';
+  html += '    <meta property="og:type" content="website" />\n';
+  html += '    <meta property="og:url" content="https://dataengineerhub.blog/cheatsheets" />\n';
+  html += '    <meta property="og:title" content="Data Engineering Cheat Sheets | ' + totalSheets + ' Quick References" />\n';
+  html += '    <meta property="og:description" content="' + totalSheets + ' cheat sheets across ' + categoryKeys.length + ' categories for data engineers." />\n';
+  html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
+  html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
+  html += '    <meta property="og:image:width" content="1200" />\n';
+  html += '    <meta property="og:image:height" content="630" />\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '    <!-- Twitter Card -->\n';
+  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
+  html += '    <meta name="twitter:site" content="@sainath29" />\n';
+  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
+  html += '    <meta name="twitter:title" content="Data Engineering Cheat Sheets | ' + totalSheets + ' Quick References" />\n';
+  html += '    <meta name="twitter:description" content="' + totalSheets + ' cheat sheets across ' + categoryKeys.length + ' categories for data engineers." />\n';
+  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />\n\n';
+  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
+  html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
+  html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
+  html += (productionCssFile ? '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n' : '');
+  html += '\n';
+  html += '    <style>\n';
+  html += '      * { margin: 0; padding: 0; box-sizing: border-box; }\n';
+  html += '      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%); color: #f8fafc; line-height: 1.6; min-height: 100vh; }\n';
+  html += '      .seo-content { max-width: 1000px; margin: 40px auto 0; padding: 40px 20px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }\n';
+  html += '      .seo-content h1 { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }\n';
+  html += '      .seo-content h2 { color: #93c5fd; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
+  html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
+  html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
+  html += '      .seo-content a:hover { text-decoration: underline; }\n';
+  html += '      body.react-loaded .seo-content { display: none; }\n';
+  html += '      body.react-loaded .breadcrumb-nav { display: none; }\n';
+  html += '      .breadcrumb-nav { max-width: 1000px; margin: 20px auto 0; padding: 0 20px; }\n';
+  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
+  html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
+  html += '      .breadcrumb-link { color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
+  html += '      .breadcrumb-link:hover { color: #93c5fd; text-decoration: underline; }\n';
+  html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
+  html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
+  html += '      @media (max-width: 768px) { .seo-content { padding: 20px 15px; margin-top: 20px; } .seo-content h1 { font-size: 1.8rem; } }\n';
+  html += '    </style>\n';
+  html += '  </head>\n';
+  html += '  <body>\n';
+  html += '    <div id="root">\n';
+  html += '      <nav aria-label="Breadcrumb" class="breadcrumb-nav">\n';
+  html += '        <ol class="breadcrumb-list">\n';
+  html += '          <li class="breadcrumb-item"><a href="https://dataengineerhub.blog" class="breadcrumb-link">Home</a></li>\n';
+  html += '          <li class="breadcrumb-separator">\u203A</li>\n';
+  html += '          <li class="breadcrumb-item breadcrumb-current" aria-current="page"><span>Cheat Sheets</span></li>\n';
+  html += '        </ol>\n';
+  html += '      </nav>\n\n';
+  html += '      <div class="seo-content">\n';
+  html += '        <h1>Data Engineering Cheat Sheets</h1>\n';
+  html += '        <p>\n';
+  html += '          Quick-reference guides for data engineers — <strong>' + totalSheets + ' cheat sheets</strong> across ' + categoryKeys.length + ' categories.\n';
+  html += '          From Snowflake SQL syntax to dbt commands, Airflow DAG patterns, window functions, interview questions,\n';
+  html += '          and production best practices — bookmark these for fast lookups during development and interview prep.\n';
+  html += '        </p>\n\n';
+  html += '        <h2>Browse by Category</h2>\n';
+  html += '        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 1rem;">\n';
+  html += '          ' + categoryNavHTML + '\n';
+  html += '        </div>\n\n';
+  html += categorySectionsHTML + '\n';
+  html += '        <div style="margin-top: 2.5rem; padding: 1.5rem; background: rgba(96,165,250,0.1); border-radius: 12px; border: 1px solid rgba(96,165,250,0.2);">\n';
+  html += '          <h2 style="font-size: 1.3rem; margin-top: 0;">Explore More</h2>\n';
+  html += '          <p style="margin-bottom: 0.5rem;">Looking for in-depth explanations? Check our <a href="https://dataengineerhub.blog/glossary">Data Engineering Glossary</a> for ' + totalSheets + '+ key terms.</p>\n';
+  html += '          <p style="margin-bottom: 0;">For hands-on tutorials and guides, browse the <a href="https://dataengineerhub.blog/articles">full article library</a>.</p>\n';
+  html += '        </div>\n\n';
+  html += '        <a href="https://dataengineerhub.blog" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 Back to Home</a>\n';
+  html += '      </div>\n';
+  html += '    </div>\n\n';
+
+  // CollectionPage schema
+  html += '    <script type="application/ld+json">\n';
+  html += '    {\n';
+  html += '      "@context": "https://schema.org",\n';
+  html += '      "@type": "CollectionPage",\n';
+  html += '      "name": "Data Engineering Cheat Sheets",\n';
+  html += '      "description": "' + totalSheets + ' quick-reference cheat sheets for data engineers",\n';
+  html += '      "url": "https://dataengineerhub.blog/cheatsheets",\n';
+  html += '      "numberOfItems": ' + totalSheets + ',\n';
+  html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" }\n';
+  html += '    }\n';
+  html += '    </script>\n\n';
+
+  // ItemList schema
+  html += '    <script type="application/ld+json">\n';
+  html += '    {\n';
+  html += '      "@context": "https://schema.org",\n';
+  html += '      "@type": "ItemList",\n';
+  html += '      "name": "Data Engineering Cheat Sheets",\n';
+  html += '      "numberOfItems": ' + totalSheets + ',\n';
+  html += '      "itemListElement": [\n';
+  for (var ili = 0; ili < allCheatsheets.length; ili++) {
+    html += '        { "@type": "ListItem", "position": ' + (ili + 1) + ', "name": "' + escapeJsonLd(allCheatsheets[ili].title) + '", "url": "https://dataengineerhub.blog/cheatsheets/' + allCheatsheets[ili].slug + '" }';
+    html += (ili < allCheatsheets.length - 1 ? ',\n' : '\n');
+  }
+  html += '      ]\n';
+  html += '    }\n';
+  html += '    </script>\n\n';
+
+  // BreadcrumbList schema
+  html += '    <script type="application/ld+json">\n';
+  html += '    {\n';
+  html += '      "@context": "https://schema.org",\n';
+  html += '      "@type": "BreadcrumbList",\n';
+  html += '      "itemListElement": [\n';
+  html += '        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://dataengineerhub.blog" },\n';
+  html += '        { "@type": "ListItem", "position": 2, "name": "Cheat Sheets" }\n';
+  html += '      ]\n';
+  html += '    }\n';
+  html += '    </script>\n\n';
+
+  html += (productionJsFile ? '    <script type="module" crossorigin src="' + productionJsFile + '"></script>\n' : '');
+  html += '\n';
+  html += '    <script>\n';
+  html += '      window.addEventListener("load", function() {\n';
+  html += '        var checkReactMount = setInterval(function() {\n';
+  html += '          var root = document.getElementById("root");\n';
+  html += '          if (root && root.children.length > 2) {\n';
+  html += '            document.body.classList.add("react-loaded");\n';
+  html += '            clearInterval(checkReactMount);\n';
+  html += '          }\n';
+  html += '        }, 100);\n';
+  html += '        setTimeout(function() { clearInterval(checkReactMount); }, 3000);\n';
+  html += '      });\n';
+  html += '    </script>\n';
+  html += '  </body>\n';
+  html += '</html>';
+
+  return html;
+}
+
+// ============================================================================
+// CHEATSHEET PAGE HTML GENERATION - Individual cheat sheet pages for pSEO
+// ============================================================================
+
+function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
+  var jsFile = bundleFiles.jsFile;
+  var cssFile = bundleFiles.cssFile;
+  var productionJsFile = jsFile ? '.' + jsFile : null;
+  var productionCssFile = cssFile ? '.' + cssFile : null;
+  var buildTimestamp = new Date().toISOString();
+  var pagePath = '/cheatsheets/' + sheet.slug;
+
+  // Count total content words for thin-content check
+  var totalWords = 0;
+  var sections = sheet.sections || [];
+  for (var si = 0; si < sections.length; si++) {
+    var sec = sections[si];
+    if (sec.type === 'table' && sec.items) {
+      for (var ri = 0; ri < sec.items.length; ri++) {
+        totalWords += sec.items[ri].join(' ').split(/\s+/).length;
+      }
+    } else if (sec.type === 'code' && sec.code) {
+      totalWords += sec.code.split(/\s+/).length;
+    } else if (sec.type === 'tips' && sec.items) {
+      for (var ti = 0; ti < sec.items.length; ti++) {
+        totalWords += sec.items[ti].split(/\s+/).length;
+      }
+    } else if (sec.type === 'qna' && sec.items) {
+      for (var qi = 0; qi < sec.items.length; qi++) {
+        totalWords += (sec.items[qi].question + ' ' + sec.items[qi].answer).split(/\s+/).length;
+      }
+    }
+  }
+  if (sheet.faqs) {
+    for (var fi = 0; fi < sheet.faqs.length; fi++) {
+      totalWords += (sheet.faqs[fi].question + ' ' + sheet.faqs[fi].answer).split(/\s+/).length;
+    }
+  }
+
+  var robotsDirective = totalWords < 250
+    ? 'noindex, follow'
+    : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+
+  var descMeta = escapeHtml(sheet.shortDescription || ('Comprehensive ' + sheet.title + ' for data engineers.'));
+
+  // Build section content HTML
+  var sectionsHTML = '';
+  for (var sIdx = 0; sIdx < sections.length; sIdx++) {
+    var section = sections[sIdx];
+    sectionsHTML += '<div style="margin-top: 2rem;">';
+    sectionsHTML += '<h2 style="color: #93c5fd; font-size: 1.4rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(147,197,253,0.2);">' + escapeHtml(section.title) + '</h2>';
+
+    if (section.type === 'table' && section.columns && section.items) {
+      sectionsHTML += '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">';
+      sectionsHTML += '<thead><tr>';
+      for (var col = 0; col < section.columns.length; col++) {
+        sectionsHTML += '<th style="text-align: left; padding: 10px 12px; background: rgba(96,165,250,0.15); color: #93c5fd; border-bottom: 2px solid rgba(96,165,250,0.3); font-weight: 600;">' + escapeHtml(section.columns[col]) + '</th>';
+      }
+      sectionsHTML += '</tr></thead><tbody>';
+      for (var row = 0; row < section.items.length; row++) {
+        var bgColor = row % 2 === 0 ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.05)';
+        sectionsHTML += '<tr style="background: ' + bgColor + ';">';
+        for (var cell = 0; cell < section.items[row].length; cell++) {
+          sectionsHTML += '<td style="padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); color: #e2e8f0;">';
+          // Wrap code-like content in <code>
+          var cellText = section.items[row][cell];
+          if (cell > 0 && /[A-Z_]{2,}|SELECT|CREATE|INSERT|FROM|WHERE|ALTER|DROP|dbt |--/.test(cellText)) {
+            sectionsHTML += '<code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; color: #a5f3fc;">' + escapeHtml(cellText) + '</code>';
+          } else {
+            sectionsHTML += escapeHtml(cellText);
+          }
+          sectionsHTML += '</td>';
+        }
+        sectionsHTML += '</tr>';
+      }
+      sectionsHTML += '</tbody></table></div>';
+
+    } else if (section.type === 'code' && section.code) {
+      sectionsHTML += '<pre style="background: rgba(0,0,0,0.4); padding: 16px; border-radius: 8px; overflow-x: auto; border: 1px solid rgba(255,255,255,0.08);"><code style="color: #a5f3fc; font-size: 0.85rem; line-height: 1.6;">' + escapeHtml(section.code) + '</code></pre>';
+
+    } else if (section.type === 'tips' && section.items) {
+      sectionsHTML += '<ul style="list-style: none; padding: 0;">';
+      for (var tip = 0; tip < section.items.length; tip++) {
+        sectionsHTML += '<li style="padding: 8px 0 8px 24px; position: relative; color: #e2e8f0; line-height: 1.6; border-bottom: 1px solid rgba(255,255,255,0.04);"><span style="position: absolute; left: 0; color: #34d399;">&#10003;</span>' + escapeHtml(section.items[tip]) + '</li>';
+      }
+      sectionsHTML += '</ul>';
+
+    } else if (section.type === 'qna' && section.items) {
+      for (var qn = 0; qn < section.items.length; qn++) {
+        var item = section.items[qn];
+        sectionsHTML += '<div style="margin-bottom: 1.2rem; padding: 1rem; background: rgba(0,0,0,0.15); border-radius: 8px; border-left: 3px solid #60a5fa;">';
+        sectionsHTML += '<p style="color: #93c5fd; font-weight: 600; margin-bottom: 0.5rem;">Q: ' + escapeHtml(item.question) + '</p>';
+        sectionsHTML += '<p style="color: #e2e8f0; margin: 0; line-height: 1.7;">' + escapeHtml(item.answer) + '</p>';
+        sectionsHTML += '</div>';
+      }
+    }
+
+    sectionsHTML += '</div>';
+  }
+
+  // Build FAQ HTML
+  var faqHTML = '';
+  if (sheet.faqs && sheet.faqs.length > 0) {
+    faqHTML += '<div style="margin-top: 2.5rem;">';
+    faqHTML += '<h2 style="color: #93c5fd; font-size: 1.4rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(147,197,253,0.2);">Frequently Asked Questions</h2>';
+    for (var fq = 0; fq < sheet.faqs.length; fq++) {
+      faqHTML += '<div style="margin-bottom: 1.2rem; padding: 1rem; background: rgba(0,0,0,0.15); border-radius: 8px;">';
+      faqHTML += '<h3 style="color: #f1f5f9; font-size: 1.05rem; margin-bottom: 0.5rem;">' + escapeHtml(sheet.faqs[fq].question) + '</h3>';
+      faqHTML += '<p style="color: #cbd5e1; margin: 0; line-height: 1.7;">' + escapeHtml(sheet.faqs[fq].answer) + '</p>';
+      faqHTML += '</div>';
+    }
+    faqHTML += '</div>';
+  }
+
+  // Related cheat sheets
+  var relatedHTML = '';
+  if (sheet.relatedSlugs && sheet.relatedSlugs.length > 0) {
+    relatedHTML += '<div style="margin-top: 2rem;">';
+    relatedHTML += '<h2 style="color: #93c5fd; font-size: 1.3rem; margin-bottom: 1rem;">Related Cheat Sheets</h2>';
+    relatedHTML += '<div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">';
+    for (var rs = 0; rs < sheet.relatedSlugs.length; rs++) {
+      var relSlug = sheet.relatedSlugs[rs];
+      // Find title from allCheatsheets
+      var relTitle = relSlug;
+      for (var rl = 0; rl < allCheatsheets.length; rl++) {
+        if (allCheatsheets[rl].slug === relSlug) { relTitle = allCheatsheets[rl].title; break; }
+      }
+      relatedHTML += '<a href="https://dataengineerhub.blog/cheatsheets/' + escapeHtml(relSlug) + '" style="display: inline-block; padding: 6px 14px; background: rgba(96,165,250,0.12); color: #93c5fd; text-decoration: none; border-radius: 20px; font-size: 0.85rem; border: 1px solid rgba(96,165,250,0.25);">' + escapeHtml(relTitle) + '</a>';
+    }
+    relatedHTML += '</div></div>';
+  }
+
+  // Build full HTML
+  var html = '<!doctype html>\n<html lang="en">\n  <head>\n';
+  html += '    <meta charset="UTF-8" />\n';
+  html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
+  html += '    <title>' + escapeHtml(sheet.title) + ' | DataEngineer Hub</title>\n';
+  html += '    <meta name="description" content="' + descMeta + '" />\n';
+  html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
+  html += '    <meta name="robots" content="' + robotsDirective + '" />\n\n';
+  html += '    <!-- Open Graph -->\n';
+  html += '    <meta property="og:type" content="article" />\n';
+  html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
+  html += '    <meta property="og:title" content="' + escapeHtml(sheet.title) + '" />\n';
+  html += '    <meta property="og:description" content="' + descMeta + '" />\n';
+  html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
+  html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
+  html += '    <meta property="og:image:width" content="1200" />\n';
+  html += '    <meta property="og:image:height" content="630" />\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '    <!-- Twitter Card -->\n';
+  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
+  html += '    <meta name="twitter:site" content="@sainath29" />\n';
+  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
+  html += '    <meta name="twitter:title" content="' + escapeHtml(sheet.title) + '" />\n';
+  html += '    <meta name="twitter:description" content="' + descMeta + '" />\n';
+  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />\n\n';
+  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
+  html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
+  html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
+  html += (productionCssFile ? '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n' : '');
+  html += '\n';
+  html += '    <style>\n';
+  html += '      * { margin: 0; padding: 0; box-sizing: border-box; }\n';
+  html += '      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%); color: #f8fafc; line-height: 1.6; min-height: 100vh; }\n';
+  html += '      .seo-content { max-width: 900px; margin: 40px auto 0; padding: 40px 20px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }\n';
+  html += '      .seo-content h1 { font-size: 2.2rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }\n';
+  html += '      .seo-content h2 { color: #93c5fd; font-size: 1.4rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
+  html += '      .seo-content p { color: #e2e8f0; font-size: 1.05rem; margin-bottom: 1rem; line-height: 1.8; }\n';
+  html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
+  html += '      .seo-content a:hover { text-decoration: underline; }\n';
+  html += '      body.react-loaded .seo-content { display: none; }\n';
+  html += '      body.react-loaded .breadcrumb-nav { display: none; }\n';
+  html += '      .breadcrumb-nav { max-width: 900px; margin: 20px auto 0; padding: 0 20px; }\n';
+  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
+  html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
+  html += '      .breadcrumb-link { color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
+  html += '      .breadcrumb-link:hover { color: #93c5fd; text-decoration: underline; }\n';
+  html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
+  html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
+  html += '      @media (max-width: 768px) { .seo-content { padding: 20px 15px; margin-top: 20px; } .seo-content h1 { font-size: 1.6rem; } table { font-size: 0.8rem; } }\n';
+  html += '    </style>\n';
+  html += '  </head>\n';
+  html += '  <body>\n';
+  html += '    <div id="root">\n';
+  html += '      <nav aria-label="Breadcrumb" class="breadcrumb-nav">\n';
+  html += '        <ol class="breadcrumb-list">\n';
+  html += '          <li class="breadcrumb-item"><a href="https://dataengineerhub.blog" class="breadcrumb-link">Home</a></li>\n';
+  html += '          <li class="breadcrumb-separator">\u203A</li>\n';
+  html += '          <li class="breadcrumb-item"><a href="https://dataengineerhub.blog/cheatsheets" class="breadcrumb-link">Cheat Sheets</a></li>\n';
+  html += '          <li class="breadcrumb-separator">\u203A</li>\n';
+  html += '          <li class="breadcrumb-item breadcrumb-current" aria-current="page"><span>' + escapeHtml(sheet.title) + '</span></li>\n';
+  html += '        </ol>\n';
+  html += '      </nav>\n\n';
+  html += '      <div class="seo-content">\n';
+  html += '        <h1>' + escapeHtml(sheet.title) + '</h1>\n';
+  html += '        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem;">';
+  html += '<span style="background: rgba(96,165,250,0.15); color: #93c5fd; padding: 2px 8px; border-radius: 4px; margin-right: 8px;">' + escapeHtml(sheet.difficulty || 'Intermediate') + '</span>';
+  html += 'Last updated: ' + escapeHtml(sheet.lastUpdated || '') + ' &bull; ' + sections.length + ' sections';
+  html += '</p>\n';
+  html += '        <p>' + escapeHtml(sheet.shortDescription || '') + '</p>\n\n';
+  html += sectionsHTML + '\n';
+  html += faqHTML + '\n';
+  html += relatedHTML + '\n';
+  html += '        <a href="https://dataengineerhub.blog/cheatsheets" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 All Cheat Sheets</a>\n';
+  html += '      </div>\n';
+  html += '    </div>\n\n';
+
+  // Article schema
+  html += '    <script type="application/ld+json">\n';
+  html += '    {\n';
+  html += '      "@context": "https://schema.org",\n';
+  html += '      "@type": "Article",\n';
+  html += '      "headline": "' + escapeJsonLd(sheet.title) + '",\n';
+  html += '      "description": "' + escapeJsonLd(sheet.shortDescription || '') + '",\n';
+  html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
+  html += '      "dateModified": "' + (sheet.lastUpdated || new Date().toISOString().split('T')[0]) + '",\n';
+  html += '      "author": { "@type": "Person", "name": "Satya Sainath Penumudi", "url": "https://dataengineerhub.blog/about" },\n';
+  html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" }\n';
+  html += '    }\n';
+  html += '    </script>\n\n';
+
+  // FAQ schema if FAQs exist
+  if (sheet.faqs && sheet.faqs.length > 0) {
+    html += '    <script type="application/ld+json">\n';
+    html += '    {\n';
+    html += '      "@context": "https://schema.org",\n';
+    html += '      "@type": "FAQPage",\n';
+    html += '      "mainEntity": [\n';
+    for (var fsi = 0; fsi < sheet.faqs.length; fsi++) {
+      html += '        { "@type": "Question", "name": "' + escapeJsonLd(sheet.faqs[fsi].question) + '", "acceptedAnswer": { "@type": "Answer", "text": "' + escapeJsonLd(sheet.faqs[fsi].answer) + '" } }';
+      html += (fsi < sheet.faqs.length - 1 ? ',\n' : '\n');
+    }
+    html += '      ]\n';
+    html += '    }\n';
+    html += '    </script>\n\n';
+  }
+
+  // BreadcrumbList schema
+  html += '    <script type="application/ld+json">\n';
+  html += '    {\n';
+  html += '      "@context": "https://schema.org",\n';
+  html += '      "@type": "BreadcrumbList",\n';
+  html += '      "itemListElement": [\n';
+  html += '        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://dataengineerhub.blog" },\n';
+  html += '        { "@type": "ListItem", "position": 2, "name": "Cheat Sheets", "item": "https://dataengineerhub.blog/cheatsheets" },\n';
+  html += '        { "@type": "ListItem", "position": 3, "name": "' + escapeJsonLd(sheet.title) + '" }\n';
+  html += '      ]\n';
+  html += '    }\n';
+  html += '    </script>\n\n';
+
+  html += (productionJsFile ? '    <script type="module" crossorigin src="' + productionJsFile + '"></script>\n' : '');
+  html += '\n';
+  html += '    <script>\n';
+  html += '      window.addEventListener("load", function() {\n';
+  html += '        var checkReactMount = setInterval(function() {\n';
+  html += '          var root = document.getElementById("root");\n';
+  html += '          if (root && root.children.length > 2) {\n';
+  html += '            document.body.classList.add("react-loaded");\n';
+  html += '            clearInterval(checkReactMount);\n';
+  html += '          }\n';
+  html += '        }, 100);\n';
+  html += '        setTimeout(function() { clearInterval(checkReactMount); }, 3000);\n';
+  html += '      });\n';
+  html += '    </script>\n';
   html += '  </body>\n';
   html += '</html>';
 
@@ -3898,6 +4382,120 @@ async function buildIncremental(options = {}) {
 
     } catch (error) {
       console.error('❌ Error processing comparison pages:', error.message);
+      stats.errors++;
+    }
+
+    // ============================================================================
+    // CHEATSHEET PAGES - Pre-rendered from cheatsheetData.js (pSEO)
+    // ============================================================================
+
+    console.log('\n📋 Processing cheatsheet pages from cheatsheetData.js…');
+    try {
+      // cheatsheetData.js uses ES module exports, so we read & extract via regex
+      const cheatsheetDataPath = path.join(__dirname, '..', 'src', 'data', 'cheatsheetData.js');
+      const cheatsheetRaw = fs.readFileSync(cheatsheetDataPath, 'utf-8');
+
+      // Extract CHEATSHEET_CATEGORIES array
+      var cheatsheetCategories = [];
+      var catMatch = cheatsheetRaw.match(/export\s+const\s+CHEATSHEET_CATEGORIES\s*=\s*(\[[\s\S]*?\]);/);
+      if (catMatch) {
+        try { cheatsheetCategories = eval(catMatch[1]); } catch(e) { console.warn('   ⚠️ Could not parse CHEATSHEET_CATEGORIES'); }
+      }
+
+      // Extract cheatsheets array
+      var allCheatsheets = [];
+      var csMatch = cheatsheetRaw.match(/export\s+const\s+cheatsheets\s*=\s*(\[[\s\S]*?\]);\s*(?=\nexport|\s*$)/m);
+      if (csMatch) {
+        try { allCheatsheets = eval(csMatch[1]); } catch(e) {
+          // Fallback: try Function constructor to avoid strict mode issues
+          try {
+            var fn = new Function('return ' + csMatch[1]);
+            allCheatsheets = fn();
+          } catch(e2) {
+            console.error('   ❌ Could not parse cheatsheets array:', e2.message);
+          }
+        }
+      }
+
+      console.log(`   Found ${allCheatsheets.length} cheatsheets across ${cheatsheetCategories.length} categories`);
+
+      // Generate individual cheatsheet pages
+      for (const sheet of allCheatsheets) {
+        const pagePath = '/cheatsheets/' + sheet.slug;
+        currentPages.add(pagePath);
+
+        const contentHash = hashContent({ slug: sheet.slug, updated: sheet.lastUpdated, title: sheet.title, sections: (sheet.sections || []).length });
+        const cachedPage = cache.pages[pagePath];
+        const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
+
+        if (needsRebuild) {
+          try {
+            const html = generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles);
+            const outputPath = path.join(distDir, pagePath, 'index.html');
+            const dir = path.dirname(outputPath);
+
+            if (!fs.existsSync(dir)) {
+              fs.mkdirSync(dir, { recursive: true });
+            }
+
+            fs.writeFileSync(outputPath, html);
+
+            const fileStats = fs.statSync(outputPath);
+            const fileSizeKB = (fileStats.size / 1024).toFixed(2);
+            console.log(`   ${cachedPage ? '↻' : '✓'} ${sheet.title} (${fileSizeKB} KB)`);
+
+            if (cachedPage) { stats.updated++; } else { stats.new++; }
+          } catch (err) {
+            console.error(`   ❌ Error generating ${pagePath}:`, err.message);
+            stats.errors++;
+          }
+        } else {
+          stats.unchanged++;
+        }
+
+        newCache.pages[pagePath] = {
+          hash: contentHash,
+          built: needsRebuild ? new Date().toISOString() : cachedPage.built,
+          type: 'cheatsheet'
+        };
+      }
+
+      console.log(`   ✅ Cheatsheet pages complete: ${allCheatsheets.length} sheets processed`);
+
+      // Generate cheatsheet hub page (/cheatsheets)
+      const csHubPath = '/cheatsheets';
+      currentPages.add(csHubPath);
+      const csHubHash = hashContent({ type: 'cheatsheet-hub', count: allCheatsheets.length, slugs: allCheatsheets.map(c => c.slug).join(',') });
+      const cachedCsHub = cache.pages[csHubPath];
+      const needsCsHub = force || !cachedCsHub || cachedCsHub.hash !== csHubHash;
+
+      if (needsCsHub) {
+        try {
+          const hubHtml = generateCheatsheetHubPageHTML(allCheatsheets, cheatsheetCategories, bundleFiles);
+          const hubOutputPath = path.join(distDir, 'cheatsheets', 'index.html');
+          const hubDir = path.dirname(hubOutputPath);
+          if (!fs.existsSync(hubDir)) {
+            fs.mkdirSync(hubDir, { recursive: true });
+          }
+          fs.writeFileSync(hubOutputPath, hubHtml);
+          const hubStats = fs.statSync(hubOutputPath);
+          console.log(`   ✓ Cheatsheet hub page (${(hubStats.size / 1024).toFixed(2)} KB)`);
+          if (cachedCsHub) { stats.updated++; } else { stats.new++; }
+        } catch (err) {
+          console.error(`   ❌ Error generating cheatsheet hub page:`, err.message);
+          stats.errors++;
+        }
+      } else {
+        stats.unchanged++;
+      }
+      newCache.pages[csHubPath] = {
+        hash: csHubHash,
+        built: needsCsHub ? new Date().toISOString() : cachedCsHub.built,
+        type: 'cheatsheet-hub'
+      };
+
+    } catch (error) {
+      console.error('❌ Error processing cheatsheet pages:', error.message);
       stats.errors++;
     }
   }

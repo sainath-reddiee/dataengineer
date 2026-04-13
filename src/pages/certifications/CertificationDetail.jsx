@@ -32,6 +32,7 @@ const CertificationDetail = () => {
       <MetaTags
         title={`${certification.title} - Certification Hub`}
         description={certification.excerpt}
+        noindex={true}
       />
       <div className="container mx-auto px-6 py-12 max-w-4xl">
         <Link to="/certifications" className="inline-flex items-center text-blue-400 hover:text-blue-300 mb-8">

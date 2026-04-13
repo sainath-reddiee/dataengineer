@@ -11,8 +11,8 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-04-12",
-  "totalArticles": 63,
+  "lastUpdated": "2026-04-13",
+  "totalArticles": 56,
   "pages": [
     {
       "url": "https://dataengineerhub.blog/articles/why-i-stopped-using-snowflake-tasks-orchestration",
@@ -277,28 +277,6 @@
       "wordCount": 954
     },
     {
-      "url": "https://dataengineerhub.blog/articles/build-a-simple-rag-application-in-snowflake-using-streamlit-and-snowflake-cortex",
-      "title": "Build a Simple RAG Application in Snowflake Using Streamlit and Snowflake Cortex",
-      "summary": "I built this while experimenting with Snowflake Cortex over a weekend. The problem was simple: our team had hours of meeting notes scattered across documents, and nobody could find answers&#8230;",
-      "keyFacts": [
-        "This is the face of your RAG system",
-        "Note: ‘multilingual-e5-base’ is a solid, general-purpose embedding model",
-        "If you’ve been watching the GenAI wave from a distance and thinking “maybe I should understand how this actually works,” this guide is for you"
-      ],
-      "entities": [
-        "snowflake",
-        "sql",
-        "python"
-      ],
-      "questionAnswered": "Build a Simple RAG Application in Snowflake Using Streamlit and Snowflake Cortex?",
-      "lastUpdated": "2026-01-14",
-      "published": "2026-01-08",
-      "author": "sainath",
-      "expertise": "Data Engineering Expert",
-      "category": "Python",
-      "wordCount": 1501
-    },
-    {
       "url": "https://dataengineerhub.blog/articles/snowflake-cost-optimization-techniques-2026",
       "title": "Snowflake Cost Optimization: 12 Proven Techniques to Cut Your Bill by 40% in 2026",
       "summary": "Why Snowflake Costs Spiral Out of Control If your Snowflake bill jumped 200% last quarter while data volume only grew 30%, you&#8217;re not alone. I&#8217;ve audited dozens of Snowflake environments&#8230;",
@@ -419,29 +397,6 @@
       "wordCount": 5892
     },
     {
-      "url": "https://dataengineerhub.blog/articles/build-rag-snowflake-documentation",
-      "title": "How to Build a RAG System Using Snowflake Documentation (Step-by-Step Guide)",
-      "summary": "The Problem That Started Everything You know what’s frustrating? Having 500+ pages of Snowflake documentation and still spending 20 minutes hunting for that one specific syntax example you need. That&#8230;",
-      "keyFacts": [
-        "After chunking, accuracy improved by about 60%",
-        "'); -- Question 4: Edge case SELECT ask_snowflake_docs('What is the capital of France",
-        "CORTEX_USER TO ROLE your_role_name; Pro tip: Start with a SMALL warehouse"
-      ],
-      "entities": [
-        "snowflake",
-        "sql",
-        "kubernetes",
-        "python"
-      ],
-      "questionAnswered": "How to Build a RAG System Using Snowflake Documentation (Step-by-Step Guide)",
-      "lastUpdated": "2025-12-30",
-      "published": "2025-12-30",
-      "author": "sainath",
-      "expertise": "Data Engineering Expert",
-      "category": "Snowflake",
-      "wordCount": 3039
-    },
-    {
       "url": "https://dataengineerhub.blog/articles/snowpro-specialty-gen-ai-practice-exams",
       "title": "Snowflake’s New GenAI Cert is Here—And I’ve Built Something to Help You Pass",
       "summary": "Prepare for the Snowflake GES-C01 exam with realistic practice questions. Master Snowflake Cortex, LLMs, and RAG pipelines to get certified in 2025.",
@@ -552,50 +507,6 @@
       "wordCount": 1221
     },
     {
-      "url": "https://dataengineerhub.blog/articles/snowflake-openflow-tutorial",
-      "title": "Snowflake Openflow Tutorial Guide 2025",
-      "summary": "Obviously, snowflake has revolutionized cloud data warehousing for years. Consequently, the demands for streamlined data ingestion grew significantly. When it comes to the snowflake openflow tutorial, understanding this new paradigm&#8230;",
-      "keyFacts": [
-        "Making Snowflake Openflow Tutorial 10x Faster Achieving significant performance gains often comes from optimizing the underlying compute resources utilized",
-        "Here is a basic configuration definition example for a simple batch pipeline setup",
-        "Furthermore, managing separate batch and streaming systems was always inefficient"
-      ],
-      "entities": [
-        "snowflake",
-        "dbt",
-        "sql"
-      ],
-      "questionAnswered": "What is Snowflake Openflow Tutorial and how do you use it?",
-      "lastUpdated": "2025-10-24",
-      "published": "2025-10-24",
-      "author": "sainath",
-      "expertise": "Data Engineering Expert",
-      "category": "dbt",
-      "wordCount": 1321
-    },
-    {
-      "url": "https://dataengineerhub.blog/articles/snowflake-performance",
-      "title": "A Data Engineer&#8217;s Handbook to Snowflake Performance and SQL Improvements 2025",
-      "summary": "Data Engineers today face immense pressure to deliver speed and efficiency. Optimizing snowflake performance is no longer a luxury; it is a fundamental requirement. Furthermore, mastering these concepts separates efficient&#8230;",
-      "keyFacts": [
-        "Additionally, fixing that query could save 80% of the compute time instantly",
-        "Optimizing snowflake performance is no longer a luxury; it is a fundamental requirement",
-        "A delayed dashboard means slower business decisions",
-        "Moreover, effective pruning is the single most important factor for fast query execution"
-      ],
-      "entities": [
-        "snowflake",
-        "sql"
-      ],
-      "questionAnswered": "What is A Data Engineer&#8217;s Handbook to Snowflake Performance and SQL Improvements and how does it work?",
-      "lastUpdated": "2025-10-22",
-      "published": "2025-10-22",
-      "author": "sainath",
-      "expertise": "Data Engineering Expert",
-      "category": "Snowflake",
-      "wordCount": 2183
-    },
-    {
       "url": "https://dataengineerhub.blog/articles/snowflake-native-dbt-integration-2025-guide",
       "title": "Snowflake Native dbt Integration: Complete 2025 Guide",
       "summary": "Run dbt Core Directly in Snowflake Without Infrastructure Snowflake native dbt integration announced at Summit 2025 eliminates the need for separate containers or VMs to run dbt Core. Data teams&#8230;",
@@ -694,26 +605,6 @@
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 947
-    },
-    {
-      "url": "https://dataengineerhub.blog/articles/build-a-snowflake-agent-in-10-minutes",
-      "title": "Build a Snowflake Agent in 10 Minutes",
-      "summary": "The world of data is buzzing with the promise of Large Language Models (LLMs), but how do you move them from simple chat interfaces to intelligent actors that can do&#8230;",
-      "keyFacts": [
-        "What Exactly is a Snowflake Agent",
-        "A Snowflake Agent is an advanced AI entity, powered by Snowflake Cortex , that you can instruct to complete complex tasks"
-      ],
-      "entities": [
-        "snowflake",
-        "sql"
-      ],
-      "questionAnswered": "Build a Snowflake Agent in 10 Minutes?",
-      "lastUpdated": "2025-10-16",
-      "published": "2025-10-16",
-      "author": "sainath",
-      "expertise": "Data Engineering Expert",
-      "category": "Snowflake",
-      "wordCount": 883
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-dynamic-tables-complete-guide-2025",
@@ -1201,28 +1092,6 @@
       "wordCount": 715
     },
     {
-      "url": "https://dataengineerhub.blog/articles/loading-data-from-s3-to-snowflake",
-      "title": "Loading Data from S3 to Snowflake",
-      "summary": "For any data engineer working in the modern data stack, loading data from a data lake like Amazon S3 into a cloud data platform like Snowflake is a daily reality. While it seems straightforward,&#8230;",
-      "keyFacts": [
-        "For any data engineer working in the modern data stack, loading data from a data lake like Amazon S3 into a cloud data platform like Snowflake is a daily reality",
-        "Optimize Your File Sizes This is a simple but incredibly effective best practice",
-        "This guide moves beyond a simple&nbsp; COPY &nbsp;command and covers four essential best practices for building a high-performance data ingestion pipeline between S3 and Snowflake"
-      ],
-      "entities": [
-        "snowflake",
-        "sql",
-        "aws"
-      ],
-      "questionAnswered": "What is Loading Data from S3 to Snowflake and how does it work?",
-      "lastUpdated": "2025-10-08",
-      "published": "2025-09-29",
-      "author": "sainath",
-      "expertise": "Data Engineering Expert",
-      "category": "Snowflake",
-      "wordCount": 812
-    },
-    {
       "url": "https://dataengineerhub.blog/articles/aws-data-pipeline-cost-optimization-strategies",
       "title": "AWS Data Pipeline Cost Optimization Strategies",
       "summary": "Building a powerful data pipeline on AWS is one thing. Building one that doesn&#8217;t burn a hole in your company&#8217;s budget is another. As data volumes grow, the costs associated&#8230;",
@@ -1247,27 +1116,6 @@
       "expertise": "Data Engineering Expert",
       "category": "AWS",
       "wordCount": 985
-    },
-    {
-      "url": "https://dataengineerhub.blog/articles/snowflake-performance-tuning-techniques",
-      "title": "Snowflake Performance Tuning Techniques",
-      "summary": "Snowflake is incredibly fast out of the box, but as your data and query complexity grow, even the most powerful engine needs a tune-up. Slow-running queries not only frustrate users but also lead&#8230;",
-      "keyFacts": [
-        "If you&#8217;re an experienced data engineer, mastering Snowflake performance tuning is a critical skill that separates you from the crowd",
-        "Snowflake&#8217;s Query Profile is the single most important tool for diagnosing performance issues",
-        "Before applying any of these techniques, you should always analyze the query profile of a slow query to identify the bottlenecks"
-      ],
-      "entities": [
-        "snowflake",
-        "sql"
-      ],
-      "questionAnswered": "What are the best snowflake performance tuning techniques?",
-      "lastUpdated": "2025-10-08",
-      "published": "2025-09-29",
-      "author": "sainath",
-      "expertise": "Data Engineering Expert",
-      "category": "Snowflake",
-      "wordCount": 953
     },
     {
       "url": "https://dataengineerhub.blog/articles/advanced-snowflake-interview-questions-experienced",

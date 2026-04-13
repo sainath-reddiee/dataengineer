@@ -156,6 +156,7 @@ const CategoryPage = () => {
     name: categoryName.charAt(0).toUpperCase() + categoryName.slice(1),
     description: `Discover articles and tutorials about ${categoryName}.`
   };
+  const isKnownCategory = !!categoryConfig[lowerCategoryName];
 
   const sparkContainerVariants = {
     rest: {},
@@ -184,7 +185,7 @@ const CategoryPage = () => {
         keywords={`${lowerCategoryName}, data engineering, ${currentCategory.name} tutorials`}
         type="website"
         breadcrumbs={breadcrumbs}
-        noindex={false}
+        noindex={!isKnownCategory}
       />
 
       <div className="pt-1 pb-8">
@@ -243,11 +244,6 @@ const CategoryPage = () => {
             </div>
           </motion.div>
 
-          {/* Ad after header, before posts */}
-          <Suspense fallback={null}>
-            <AdPlacement />
-          </Suspense>
-
           {/* Posts Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -263,11 +259,6 @@ const CategoryPage = () => {
               showViewToggle={true}
             />
           </motion.div>
-
-          {/* Ad after posts section */}
-          <Suspense fallback={null}>
-            <AdPlacement />
-          </Suspense>
 
           {/* Explore Other Categories Section */}
           <motion.div

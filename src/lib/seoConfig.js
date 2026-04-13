@@ -118,7 +118,7 @@ export function getPersonSchema() {
     '@id': `${SITE_CONFIG.url}/#author`,
     name: SITE_CONFIG.author.name,
     url: SITE_CONFIG.author.url,
-    image: `${SITE_CONFIG.url}/author.jpg`,
+    image: `${SITE_CONFIG.url}/logo.png`,
     jobTitle: SITE_CONFIG.author.role,
     worksFor: {
       '@type': 'Organization',

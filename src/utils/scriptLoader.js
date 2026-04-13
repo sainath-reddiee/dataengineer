@@ -159,12 +159,6 @@ export function loadAdSense() {
   ).then(() => {
     window.adsbygoogle = window.adsbygoogle || [];
     
-    // Initialize auto ads if desired
-    window.adsbygoogle.push({
-      google_ad_client: publisherId,
-      enable_page_level_ads: true
-    });
-    
     console.log('✅ AdSense loaded and initialized');
   }).catch(error => {
     console.error('❌ AdSense loading failed:', error);

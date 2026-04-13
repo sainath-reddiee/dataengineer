@@ -1,6 +1,6 @@
 # DataEngineer Hub - Full Content Index for LLMs
-> Last generated: 2026-04-12
-> Total articles: 63
+> Last generated: 2026-04-13
+> Total articles: 56
 > Source: https://dataengineerhub.blog
 > Compact version: https://dataengineerhub.blog/llms.txt
 > Structured data: https://dataengineerhub.blog/llm-sitemap.json
@@ -10,7 +10,7 @@ Each article includes its URL, summary, key headings, and primary topics.
 
 ---
 
-## Snowflake (42 articles)
+## Snowflake (37 articles)
 
 ### Why I Stopped Using Snowflake Tasks for Orchestration
 - URL: https://dataengineerhub.blog/articles/why-i-stopped-using-snowflake-tasks-orchestration
@@ -102,13 +102,6 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Summary: You know that feeling when someone asks “What did we decide about the API redesign?” and you’re frantically scrolling through three weeks of meeting notes trying to find that one conversation?
 - Key sections: The Problem We All Face (And Nobody Talks About) | What We’re Building (In Plain English) | Why Snowflake for This? | The Architecture (Keep It Simple) | Step 1: Setting Up the Foundation | Step 2: Designing the Meeting Notes Table | Step 3: Chunking Strategy for Meetings | Step 4: Generate Vector Embeddings
 
-### How to Build a RAG System Using Snowflake Documentation (Step-by-Step Guide)
-- URL: https://dataengineerhub.blog/articles/build-rag-snowflake-documentation
-- Published: 2025-12-30 | Updated: 2025-12-30
-- Word count: ~3039
-- Summary: You know what’s frustrating? Having 500+ pages of Snowflake documentation and still spending 20 minutes hunting for that one specific syntax example you need. That was me, three weeks ago, tabbing between browser windows like a maniac while trying to figure out how to properly use window functions w
-- Key sections: The Problem That Started Everything | What Even Is RAG? | Why I Chose Snowflake for This Project | The Architecture (Simpler Than You Think) | Step 1: Setting Up Your Environment | Step 2: Getting the Documentation Data | Step 3: Chunking the Documentation | Step 4: Creating Vector Embeddings
-
 ### Snowflake’s New GenAI Cert is Here—And I’ve Built Something to Help You Pass
 - URL: https://dataengineerhub.blog/articles/snowpro-specialty-gen-ai-practice-exams
 - Published: 2025-12-26 | Updated: 2025-12-26
@@ -136,25 +129,11 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Summary: I&#8217;ve spent the last few days working with Snowflake Intelligence, and I want to share what actually works—not just the marketing pitch. If you&#8217;re tired of being the bottleneck for every data request in your organization, this might be exactly what you need.
 - Key sections: Why This Actually Matters | The Three Building Blocks | Setting This Up (The Real Way) | Step 1: Create Your Semantic View | Step 2: Add Performance Optimization | Step 3: Configure Your AI Agent | What Actually Breaks (And How to Fix It) | Performance Tips That Actually Work
 
-### A Data Engineer&#8217;s Handbook to Snowflake Performance and SQL Improvements 2025
-- URL: https://dataengineerhub.blog/articles/snowflake-performance
-- Published: 2025-10-22 | Updated: 2025-10-22
-- Word count: ~2183
-- Summary: Cloud expenditure remains a chief concern for executive teams. Poorly optimized queries directly translate into high compute consumption. Therefore, understanding resource utilization is crucial for data engineering success. Furthermore, slow queries erode user trust in the data platform itself. A d
-- Key sections: Why Snowflake Performance Matters for Modern Teams | The Hidden Cost of Inefficiency | Understanding Snowflake Performance Architecture | Leveraging micro-partitions and Pruning | The Query Optimizer’s Role | Setting Up Optimal Snowflake Performance: A Deep Dive into Warehouse Costs | Right-Sizing Your Compute | Auto-Suspend and Auto-Resume Features
-
 ### Snowflake&#8217;s Unique Aggregation Functions You Need to Know
 - URL: https://dataengineerhub.blog/articles/snowflake-unique-aggregations-hidden-functions
 - Published: 2025-10-16 | Updated: 2025-10-16
 - Word count: ~947
 - Summary: When you think of aggregation functions in SQL, SUM(), COUNT(), and AVG() likely come to mind first. These are the workhorses of data analysis, undoubtedly. However , Snowflake, a titan in the data cloud , offers a treasure trove of specialized, unique aggregation functions that often fly under the 
-
-### Build a Snowflake Agent in 10 Minutes
-- URL: https://dataengineerhub.blog/articles/build-a-snowflake-agent-in-10-minutes
-- Published: 2025-10-16 | Updated: 2025-10-16
-- Word count: ~883
-- Summary: The world of data is buzzing with the promise of Large Language Models (LLMs), but how do you move them from simple chat interfaces to intelligent actors that can do things ? The answer is agents. This guide will show you how to build your very first Snowflake Agent in minutes, creating a powerful a
-- Key sections: What Exactly is a Snowflake Agent? | Our Project: The &#8220;Text-to-SQL&#8221; Agent | Step 1: Create the Tools (SQL Functions) | Step 2: Create Your First Snowflake Agent | Step 3: Chat with Your Agent | Conclusion: From Minutes to Mastery
 
 ### Snowflake Dynamic Tables: Complete 2025 Guide &amp; Examples
 - URL: https://dataengineerhub.blog/articles/snowflake-dynamic-tables-complete-guide-2025
@@ -274,20 +253,6 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Summary: If you work in the world of data, you’ve undoubtedly heard the name Snowflake . It has rapidly become one of the most dominant platforms in the cloud data ecosystem. But what is Snowflake, exactly? Is it just another database? A data warehouse? A data lake?
 - Key sections: The Problem with Traditional Data Warehouses | The Secret Sauce: Snowflake&#8217;s Decoupled Architecture | 1. Centralized Storage Layer (The Foundation) | 2. Multi-Cluster Compute Layer (The Engine Room) | 3. Cloud Services Layer (The Brain) | In Summary: Why It Matters
 
-### Loading Data from S3 to Snowflake
-- URL: https://dataengineerhub.blog/articles/loading-data-from-s3-to-snowflake
-- Published: 2025-09-29 | Updated: 2025-10-08
-- Word count: ~812
-- Summary: For any data engineer working in the modern data stack, loading data from a data lake like Amazon S3 into a cloud data platform like Snowflake is a daily reality. While it seems straightforward, the method you choose to load data from S3 to Snowflake can have a massive impact on performance, cost, a
-- Key sections: 1. Choose the Right Tool: Snowpipe vs. COPY Command | 2. Optimize Your File Sizes | 3. Use an Optimal Folder Structure in S3 | 4. Always Load Pre-Processed, Columnar Data | Conclusion
-
-### Snowflake Performance Tuning Techniques
-- URL: https://dataengineerhub.blog/articles/snowflake-performance-tuning-techniques
-- Published: 2025-09-29 | Updated: 2025-10-08
-- Word count: ~953
-- Summary: Snowflake is incredibly fast out of the box, but as your data and query complexity grow, even the most powerful engine needs a tune-up. Slow-running queries not only frustrate users but also lead to higher credit consumption and wasted costs. The good news is that most performance issues can be solv
-- Key sections: Before You Tune: Use the Query Profile | 2. Master Your Clustering Keys | 3. Avoid Spilling to Remote Storage | 4. Use Materialized Views for High-Frequency Queries | 5. Optimize Your Joins | Conclusion
-
 ### Advanced Snowflake Interview Questions for Experienced
 - URL: https://dataengineerhub.blog/articles/advanced-snowflake-interview-questions-experienced
 - Published: 2025-09-28 | Updated: 2025-10-08
@@ -332,14 +297,7 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Summary: In the world of data, consistency is king. Manually running scripts to fetch and process data is not just tedious; it&#8217;s prone to errors, delays, and gaps in your analytics. To build a reliable data-driven culture, you need automation. This is where building an automated ETL with Airflow and Py
 - Key sections: The Architecture: A Simple, Powerful Workflow | Step 1: The Python ETL Script | Step 2: Creating the Airflow DAG | Step 3: The Analytics Payoff | Conclusion: Build Once, Benefit Forever
 
-## Python (3 articles)
-
-### Build a Simple RAG Application in Snowflake Using Streamlit and Snowflake Cortex
-- URL: https://dataengineerhub.blog/articles/build-a-simple-rag-application-in-snowflake-using-streamlit-and-snowflake-cortex
-- Published: 2026-01-08 | Updated: 2026-01-14
-- Word count: ~1501
-- Summary: I built this while experimenting with Snowflake Cortex over a weekend. The problem was simple: our team had hours of meeting notes scattered across documents, and nobody could find answers to basic questions without rereading everything. Most solutions felt either too complicated or required spinnin
-- Key sections: ⚡ Quick Reference: Architecture &amp; Syntax
+## Python (2 articles)
 
 ### Build RAG in Snowflake: Complete Cortex Search Guide 2025
 - URL: https://dataengineerhub.blog/articles/build-rag-snowflake-cortex-search-guide
@@ -355,14 +313,7 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Summary: In today&#8217;s data-driven world, creating robust data pipelines solutions is essential for businesses to handle large volumes of information efficiently. Whether you&#8217;re pulling data from RESTful APIs or external databases, the goal is to extract, transform, and load (ETL) it reliably. This 
 - Key sections: Introduction to Data Pipelines in Python | Why Use Python for Data Pipelines? | Step 1: Extracting Data from APIs | Step 2: Extracting Data from External Databases | Step 3: Transforming Data (Optional ETL Step) | Step 4: Loading Data to Amazon S3 | Step 5: Loading Data into Snowflake | Best Practices for Data Pipelines in Python
 
-## dbt (3 articles)
-
-### Snowflake Openflow Tutorial Guide 2025
-- URL: https://dataengineerhub.blog/articles/snowflake-openflow-tutorial
-- Published: 2025-10-24 | Updated: 2025-10-24
-- Word count: ~1321
-- Summary: Obviously, snowflake has revolutionized cloud data warehousing for years. Consequently, the demands for streamlined data ingestion grew significantly. When it comes to the snowflake openflow tutorial , understanding this new paradigm is absolutely essential. Snowflake Openflow launched in 2025. It t
-- Key sections: The Evolution of Snowflake Openflow Tutorial and Why It Matters Now | How Snowflake Openflow Tutorial Actually Works Under the Hood | Building Your First Snowflake Openflow Tutorial Solution | Advanced Snowflake Openflow Tutorial Techniques That Actually Work | What I Wish I Knew Before Using Snowflake Openflow Tutorial | Making Snowflake Openflow Tutorial 10x Faster | Observability Strategies for Snowflake Openflow Tutorial | References and Further Reading
+## dbt (2 articles)
 
 ### Snowflake Native dbt Integration: Complete 2025 Guide
 - URL: https://dataengineerhub.blog/articles/snowflake-native-dbt-integration-2025-guide

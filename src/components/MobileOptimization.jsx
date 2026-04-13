@@ -46,7 +46,12 @@ const MobileOptimization = () => {
     const images = document.querySelectorAll('img');
     images.forEach(img => {
       if (!img.dataset.optimized) {
-        // Add loading="lazy" for better performance
+        // Skip hero/critical images that need eager loading for LCP
+        if (img.loading === 'eager' || img.getAttribute('fetchpriority')) {
+          img.dataset.optimized = 'true';
+          return;
+        }
+        // Add loading="lazy" for non-critical images
         img.loading = 'lazy';
         img.decoding = 'async';
 

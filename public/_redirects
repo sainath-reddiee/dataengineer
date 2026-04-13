@@ -23,8 +23,6 @@ https://www.dataengineerhub.blog/* https://dataengineerhub.blog/:splat 301!
 /cheatsheets/ /cheatsheets 301!
 /certification/ /certification 301!
 /tags/ /tags 301!
-/explore/ /explore 301!
-/checklist/ /checklist 301!
 
 # SPA fallback - Must be last
 /* /index.html 200

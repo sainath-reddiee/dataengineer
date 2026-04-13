@@ -59,6 +59,7 @@ const CertificationHub = () => {
       <MetaTags
         title="Certification Hub - DataEngineer Hub"
         description="Explore study guides, practice questions, and cheat sheets for top data engineering certifications from AWS, Azure, Snowflake, and more."
+        noindex={true}
       />
       <div className="container mx-auto px-4 sm:px-6 py-12">
         <div className="text-center mb-12">

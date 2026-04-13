@@ -235,6 +235,16 @@ export default function CheatSheetPage() {
     [slug, sheet]
   );
 
+  // Calculate word count for thin content detection (must be before early return — hooks rules)
+  const wordCount = useMemo(() => {
+    if (!sheet) return 0;
+    const text = (sheet.sections || [])
+      .flatMap((s) => (s.items || []).flat())
+      .join(' ');
+    return text.split(/\s+/).filter(Boolean).length;
+  }, [sheet]);
+  const isThin = wordCount <= 400;
+
   if (!sheet) {
     return <Navigate to="/cheatsheets" replace />;
   }
@@ -309,6 +319,7 @@ export default function CheatSheetPage() {
         <title>{`${sheet.title} — Free Reference Guide | DataEngineer Hub`}</title>
         <meta name="description" content={sheet.shortDescription} />
         <link rel="canonical" href={canonicalUrl} />
+        {isThin && <meta name="robots" content="noindex, follow" />}
 
         <meta property="og:type" content="article" />
         <meta property="og:title" content={sheet.title} />
