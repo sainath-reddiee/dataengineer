@@ -75,7 +75,7 @@ jobs:
           echo "trigger=${{ github.event_name }}" >> $GITHUB_OUTPUT
           
           # Detect code changes
-          if git diff --name-only HEAD^ HEAD | grep -qE '^(src/|index.html|vite.config.js|tailwind.config.js|package)'; then
+          if git diff --name-only HEAD^ HEAD | grep -qE '^(src/|scripts/|public/|index.html|vite.config.js|tailwind.config.js|package)'; then
             echo "code_changed=true" >> $GITHUB_OUTPUT
             echo "🔨 Code changes detected - full rebuild needed"
           else
@@ -156,7 +156,7 @@ jobs:
             public/sitemap.xml
             public/indexnow-key.txt
             .build-cache.json
-          key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**', 'index.html', 'vite.config.js', 'tailwind.config.js', 'postcss.config.js') }}
+          key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**', 'scripts/**', 'index.html', 'vite.config.js', 'tailwind.config.js', 'postcss.config.js') }}
           restore-keys: |
             build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
 
@@ -359,10 +359,14 @@ jobs:
           mkdir -p dist
           
           [ -f "public/sitemap.xml" ] && cp public/sitemap.xml dist/ && echo "✅ Copied sitemap.xml"
+          [ -f "public/sitemap-index.xml" ] && cp public/sitemap-index.xml dist/ && echo "✅ Copied sitemap-index.xml"
           [ -f "public/robots.txt" ] && cp public/robots.txt dist/ && echo "✅ Copied robots.txt"
           [ -f "public/.htaccess" ] && cp public/.htaccess dist/ && echo "✅ Copied .htaccess"
           
           find public -name "*.txt" -exec cp {} dist/ \; 2>/dev/null && echo "✅ Copied .txt files" || echo "⚠️ No .txt files found"
+          
+          # Clean up stale files that should no longer be deployed
+          [ -f "dist/sitemap-pseo-1.xml" ] && rm dist/sitemap-pseo-1.xml && echo "🗑️ Removed stale sitemap-pseo-1.xml from dist"
           
           echo "✅ Files prepared for deployment"
 
@@ -577,7 +581,7 @@ jobs:
             public/sitemap.xml
             public/indexnow-key.txt
             .build-cache.json
-          key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**', 'index.html', 'vite.config.js', 'tailwind.config.js', 'postcss.config.js') }}
+          key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**', 'scripts/**', 'index.html', 'vite.config.js', 'tailwind.config.js', 'postcss.config.js') }}
 
       - name: 💾 Upload Artifact
         if: |
