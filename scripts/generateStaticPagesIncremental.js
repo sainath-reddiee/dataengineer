@@ -519,6 +519,34 @@ function stripHTML(html) {
   return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 }
 
+/**
+ * Truncate text at a sentence boundary without exceeding maxLen.
+ * Prefers cutting at the last '.', '!', or '?' before maxLen.
+ * Falls back to the last space before maxLen with '…' appended.
+ */
+function truncateAtSentence(text, maxLen) {
+  if (!text || text.length <= maxLen) return text || '';
+  const region = text.substring(0, maxLen);
+  // Find last sentence-ending punctuation
+  const lastSentenceEnd = Math.max(
+    region.lastIndexOf('. '),
+    region.lastIndexOf('! '),
+    region.lastIndexOf('? '),
+    region.lastIndexOf('.\u00a0'),  // non-breaking space
+  );
+  if (lastSentenceEnd > maxLen * 0.4) {
+    // Cut right after the punctuation mark
+    return region.substring(0, lastSentenceEnd + 1).trim();
+  }
+  // No good sentence boundary — cut at last space
+  const lastSpace = region.lastIndexOf(' ');
+  if (lastSpace > maxLen * 0.4) {
+    return region.substring(0, lastSpace).trim() + '…';
+  }
+  // Worst case: hard cut
+  return region.trim() + '…';
+}
+
 // ============================================================================
 // 🖼️ IMAGE PROCESSING - Make all image URLs absolute & fix CDN issues
 // ============================================================================
@@ -588,6 +616,12 @@ function makeImagesAbsolute(content) {
   // Pattern 7: Remove HTML entities that cause encoding issues
   processedContent = processedContent.replace(/&#038;/g, '&');
 
+  // Pattern 8: Add loading="lazy" to <img> tags that don't already have it
+  processedContent = processedContent.replace(
+    /<img(?![^>]*loading=)([^>]*?)(\s*\/?>)/gi,
+    '<img loading="lazy"$1$2'
+  );
+
   return processedContent;
 }
 
@@ -596,7 +630,7 @@ function makeImagesAbsolute(content) {
 // ============================================================================
 
 function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
-  const { title: rawTitle, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, featuredImage } = pageData;
+  const { title: rawTitle, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, featuredImage, categoryNames = [] } = pageData;
   const { jsFile, cssFile, modulePreloadHtml = '' } = bundleFiles;
 
   // 🛡️ Sanitize user-supplied strings from WordPress
@@ -1031,11 +1065,97 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
           max-width: 150px;
         }
       }
+
+      /* Site Nav */
+      .site-nav {
+        background: rgba(15, 23, 42, 0.95);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding: 12px 20px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .site-nav-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .site-nav-brand {
+        color: #60a5fa;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-decoration: none;
+      }
+      .site-nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 16px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .site-nav-links a {
+        color: #cbd5e1;
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: color 0.2s;
+      }
+      .site-nav-links a:hover { color: #60a5fa; }
+
+      /* Site Footer */
+      .site-footer {
+        max-width: 900px;
+        margin: 3rem auto 0;
+        padding: 2rem 20px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        text-align: center;
+        font-size: 0.85rem;
+        color: #94a3b8;
+      }
+      .site-footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px 20px;
+        list-style: none;
+        padding: 0;
+        margin: 0 0 0.75rem;
+      }
+      .site-footer-links a {
+        color: #60a5fa;
+        text-decoration: none;
+      }
+      .site-footer-links a:hover { text-decoration: underline; }
+
+      body.react-loaded .site-nav,
+      body.react-loaded .site-footer { display: none; }
+
+      @media (max-width: 768px) {
+        .site-nav-links { gap: 4px 12px; }
+      }
     </style>
   </head>
   <body>
     <!-- 🔥 ROOT DIV: React will mount here, but SEO content is visible first -->
     <div id="root">
+      <nav class="site-nav" aria-label="Site navigation">
+        <div class="site-nav-inner">
+          <a href="https://dataengineerhub.blog" class="site-nav-brand">DataEngineer Hub</a>
+          <ul class="site-nav-links">
+            <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
+            <li><a href="https://dataengineerhub.blog/glossary">Glossary</a></li>
+            <li><a href="https://dataengineerhub.blog/compare">Compare</a></li>
+            <li><a href="https://dataengineerhub.blog/cheatsheets">Cheatsheets</a></li>
+            <li><a href="https://dataengineerhub.blog/about">About</a></li>
+            <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
+          </ul>
+        </div>
+      </nav>
+
       <!-- 🔥 BREADCRUMBS - Visible to crawlers -->
       <nav aria-label="Breadcrumb" class="breadcrumb-nav">
         <ol class="breadcrumb-list">
@@ -1088,6 +1208,18 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
           </p>
         </noscript>
       </div>
+
+      <footer class="site-footer">
+        <ul class="site-footer-links">
+          <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy Policy</a></li>
+          <li><a href="https://dataengineerhub.blog/terms">Terms</a></li>
+          <li><a href="https://dataengineerhub.blog/disclaimer">Disclaimer</a></li>
+          <li><a href="https://dataengineerhub.blog/about">About</a></li>
+          <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
+          <li><a href="https://dataengineerhub.blog/rss.xml">RSS</a></li>
+        </ul>
+        <p>&copy; ${new Date().getFullYear()} DataEngineer Hub. All rights reserved.</p>
+      </footer>
     </div>
 
     <!-- 🔥 STRUCTURED DATA - Article Schema -->
@@ -1126,6 +1258,8 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
       },
       "datePublished": "${effectivePublished}",
       "dateModified": "${effectiveModified}",
+      "wordCount": ${articleWordCount},
+      ${categoryNames.length > 0 ? `"articleSection": ${JSON.stringify(categoryNames[0])},` : ''}
       "mainEntityOfPage": {
         "@type": "WebPage",
         "@id": "https://dataengineerhub.blog${pagePath}"
@@ -3686,10 +3820,96 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
         .seo-content { padding: 20px 15px; margin-top: 20px; }
         .seo-content h1 { font-size: 1.8rem; }
       }
+
+      /* Site Nav */
+      .site-nav {
+        background: rgba(15, 23, 42, 0.95);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding: 12px 20px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .site-nav-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .site-nav-brand {
+        color: #60a5fa;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-decoration: none;
+      }
+      .site-nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 16px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .site-nav-links a {
+        color: #cbd5e1;
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: color 0.2s;
+      }
+      .site-nav-links a:hover { color: #60a5fa; }
+
+      /* Site Footer */
+      .site-footer {
+        max-width: 900px;
+        margin: 3rem auto 0;
+        padding: 2rem 20px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        text-align: center;
+        font-size: 0.85rem;
+        color: #94a3b8;
+      }
+      .site-footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px 20px;
+        list-style: none;
+        padding: 0;
+        margin: 0 0 0.75rem;
+      }
+      .site-footer-links a {
+        color: #60a5fa;
+        text-decoration: none;
+      }
+      .site-footer-links a:hover { text-decoration: underline; }
+
+      body.react-loaded .site-nav,
+      body.react-loaded .site-footer { display: none; }
+
+      @media (max-width: 768px) {
+        .site-nav-links { gap: 4px 12px; }
+      }
     </style>
   </head>
   <body>
     <div id="root">
+      <nav class="site-nav" aria-label="Site navigation">
+        <div class="site-nav-inner">
+          <a href="https://dataengineerhub.blog" class="site-nav-brand">DataEngineer Hub</a>
+          <ul class="site-nav-links">
+            <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
+            <li><a href="https://dataengineerhub.blog/glossary">Glossary</a></li>
+            <li><a href="https://dataengineerhub.blog/compare">Compare</a></li>
+            <li><a href="https://dataengineerhub.blog/cheatsheets">Cheatsheets</a></li>
+            <li><a href="https://dataengineerhub.blog/about">About</a></li>
+            <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
+          </ul>
+        </div>
+      </nav>
+
       <nav aria-label="Breadcrumb" class="breadcrumb-nav">
         <ol class="breadcrumb-list">
           <li class="breadcrumb-item">
@@ -3717,9 +3937,21 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
           </p>
         </noscript>
       </div>
+
+      <footer class="site-footer">
+        <ul class="site-footer-links">
+          <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy Policy</a></li>
+          <li><a href="https://dataengineerhub.blog/terms">Terms</a></li>
+          <li><a href="https://dataengineerhub.blog/disclaimer">Disclaimer</a></li>
+          <li><a href="https://dataengineerhub.blog/about">About</a></li>
+          <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
+          <li><a href="https://dataengineerhub.blog/rss.xml">RSS</a></li>
+        </ul>
+        <p>&copy; ${new Date().getFullYear()} DataEngineer Hub. All rights reserved.</p>
+      </footer>
     </div>
 
-    <!-- Structured Data -->
+    <!-- Structured Data - WebPage -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -3734,6 +3966,73 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
       }
     }
     </script>
+
+    <!-- Structured Data - BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://dataengineerhub.blog"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "${titleJsonLd}",
+          "item": "https://dataengineerhub.blog${pagePath}"
+        }
+      ]
+    }
+    </script>
+
+    <!-- Structured Data - Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://dataengineerhub.blog/#organization",
+      "name": "DataEngineer Hub",
+      "url": "https://dataengineerhub.blog",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://dataengineerhub.blog/logo.png",
+        "width": 246,
+        "height": 250
+      },
+      "sameAs": [
+        "https://twitter.com/sainath29",
+        "https://www.linkedin.com/in/sainath-reddy-06a97817a/",
+        "https://github.com/sainath-reddiee/dataengineer"
+      ]
+    }
+    </script>
+
+    ${pagePath === '/about' ? `<!-- Structured Data - Person (About page E-E-A-T) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "@id": "https://dataengineerhub.blog/#author",
+      "name": "Sainath Reddy",
+      "url": "https://dataengineerhub.blog/about",
+      "jobTitle": "Data Engineer",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Anblicks"
+      },
+      "sameAs": [
+        "https://www.linkedin.com/in/sainath-reddy-06a97817a/",
+        "https://twitter.com/sainath29",
+        "https://github.com/sainath-reddiee/dataengineer"
+      ],
+      "knowsAbout": ["Data Engineering", "Snowflake", "AWS", "Azure", "Databricks", "Apache Airflow", "dbt", "ETL/ELT Pipelines", "Data Warehousing", "Cloud Architecture"],
+      "description": "Data Engineer with 4+ years of experience specializing in building scalable data pipelines and cloud-native data solutions."
+    }
+    </script>` : ''}
 
     ${productionJsFile ? `<script type="module" crossorigin src="${productionJsFile}"></script>` : ''}
 
@@ -3810,16 +4109,26 @@ async function buildIncremental(options = {}) {
   // Declared outside try so it's accessible for homepage/articles/category pages
   let allArticleSummaries = [];
 
+  // 🔥 Pre-fetch categories for articleSection mapping
+  let catIdToName = {};
+  try {
+    const cats = await fetchFromWP('/categories', 'id,name');
+    cats.forEach(c => { catIdToName[c.id] = c.name; });
+    console.log(`   Loaded ${cats.length} category names for articleSection mapping`);
+  } catch (err) {
+    console.warn('   ⚠️  Could not fetch categories for articleSection:', err.message);
+  }
+
   try {
     // 🔥 CRITICAL: Fetch with _embed to get full content + categories + tags for mapping
-    const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content,modified,categories,tags,jetpack_featured_media_url');
+    const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content,date,modified,categories,tags,jetpack_featured_media_url');
     console.log(`   Found ${posts.length} posts from API`);
 
     // Build article list for "More Articles" section and listing pages
     allArticleSummaries = posts.map(p => ({
       slug: p.slug,
       title: stripHTML(p.title.rendered),
-      excerpt: stripHTML(p.excerpt.rendered).substring(0, 200),
+      excerpt: truncateAtSentence(stripHTML(p.excerpt.rendered), 200),
       categories: p.categories || [],
       tags: p.tags || []
     }));
@@ -3833,7 +4142,7 @@ async function buildIncremental(options = {}) {
       currentPages.add(pagePath);
 
       const rawTitle = stripHTML(post.title.rendered);
-      const rawDescription = stripHTML(post.excerpt.rendered).substring(0, 160) ||
+      const rawDescription = truncateAtSentence(stripHTML(post.excerpt.rendered), 160) ||
         'Read this article on DataEngineer Hub';
 
       // Apply SEO overrides for CTR-optimized titles and descriptions
@@ -3850,7 +4159,8 @@ async function buildIncremental(options = {}) {
         slug: post.slug,
         date: post.date,
         modified: post.modified,
-        featuredImage: post.jetpack_featured_media_url || null
+        featuredImage: post.jetpack_featured_media_url || null,
+        categoryNames: (post.categories || []).map(id => catIdToName[id]).filter(Boolean)
       };
 
       const contentHash = hashContent(pageData);
