@@ -406,30 +406,16 @@ async function generateSitemap() {
 
     fs.writeFileSync(sitemapPath, sitemapXML, 'utf8');
 
-    // Generate pSEO sitemap dynamically from JSON data
-    console.log('\n📝 Generating pSEO sitemap from data files...');
-    const pseoEntries = loadPSEOData();
-    const pseoXML = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${pseoEntries.map(entry => `  <url>
-    <loc>${entry.url}</loc>
-    <lastmod>${entry.lastmod || today}</lastmod>
-    <changefreq>${entry.changefreq}</changefreq>
-    <priority>${entry.priority}</priority>
-  </url>`).join('\n')}
-</urlset>`;
-    const pseoSitemapPath = path.join(publicDir, 'sitemap-pseo-1.xml');
-    fs.writeFileSync(pseoSitemapPath, pseoXML, 'utf8');
+    // pSEO sitemap DISABLED — 86 glossary/comparison pages have no pre-rendered HTML,
+    // so Googlebot receives the SPA shell (soft 404 / thin content).
+    // Re-enable once pSEO pages are pre-rendered with static HTML.
+    console.log('\n⏭️  Skipping pSEO sitemap (no pre-rendered HTML for glossary/comparison pages)');
 
-    // Update sitemap-index.xml
+    // Update sitemap-index.xml (only main sitemap, no pSEO)
     const sitemapIndexXML = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>https://dataengineerhub.blog/sitemap.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://dataengineerhub.blog/sitemap-pseo-1.xml</loc>
     <lastmod>${today}</lastmod>
   </sitemap>
 </sitemapindex>`;
@@ -438,7 +424,6 @@ ${pseoEntries.map(entry => `  <url>
 
     console.log(`\n✅ Sitemap generated successfully!`);
     console.log(`📍 Main sitemap: ${sitemapPath}`);
-    console.log(`📍 pSEO sitemap: ${pseoSitemapPath}`);
     console.log(`📍 Sitemap index: ${sitemapIndexPath}`);
     console.log(`📊 Main sitemap URLs: ${sitemapEntries.length}`);
     console.log(`   - Static pages: ${STATIC_PAGES.length}`);
@@ -446,7 +431,6 @@ ${pseoEntries.map(entry => `  <url>
     console.log(`   - Categories: ${categories.length}`);
     console.log(`   - Tags: ${tags.length}`);
     console.log(`   - News entries (last 2 days): ${newsCount}`);
-    console.log(`📊 pSEO sitemap URLs: ${pseoEntries.length}`);
 
     return sitemapEntries;
   } catch (error) {
