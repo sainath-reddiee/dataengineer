@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Tags, Info, Sparkles, Award, Search, BookOpen, GitCompareArrows, FileText } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Info, Sparkles, Award, Search, BookOpen, GitCompareArrows, FileText } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
 
 // Helper component for the "Corner Burst" sparks animation
@@ -158,7 +158,6 @@ const Header = ({ topOffset = 0 }) => {
   };
 
   const isHomeActive = currentPath === '/';
-  const isTagsActive = currentPath.includes('/tag');
   const isAboutActive = currentPath.includes('/about');
   const isCertificationActive = currentPath.includes('/certification');
   const isGlossaryActive = currentPath.startsWith('/glossary');
@@ -461,21 +460,6 @@ const Header = ({ topOffset = 0 }) => {
               );
             })}
 
-            {/* Tags */}
-            <motion.div whileHover={{ y: -2 }}>
-              <Link 
-                to="/tag" 
-                className={`font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
-                  isTagsActive 
-                    ? 'text-blue-400' 
-                    : 'text-gray-300 hover:text-blue-400'
-                }`}
-                style={isTagsActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
-              >
-                <Tags className="w-4 h-4 hidden 2xl:inline-block" />
-                Tags
-              </Link>
-            </motion.div>
             {/* Glossary */}
             <motion.div whileHover={{ y: -2 }}>
               <Link 
@@ -649,10 +633,6 @@ const Header = ({ topOffset = 0 }) => {
                   </div>
                 ))}
 
-                <Link to="/tag" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
-                  <Tags className="w-5 h-5" />
-                  Tags
-                </Link>
                 <Link to="/glossary" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
                   <BookOpen className="w-5 h-5" />
                   Glossary
