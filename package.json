@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "npm run build:vite && npm run build:incremental && npm run faq-schema",
     "build:vite": "vite build",
-    "build:incremental": "node scripts/generateStaticPagesIncremental.js --posts-only",
+    "build:incremental": "node scripts/generateStaticPagesIncremental.js",
     "build:pages": "node scripts/generateStaticPagesIncremental.js --posts-only",
     "build:full": "npm run build:vite && node scripts/generateStaticPagesIncremental.js && npm run faq-schema",
     "build:force": "npm run build:vite && node scripts/generateStaticPagesIncremental.js --force && npm run faq-schema",

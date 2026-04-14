@@ -104,11 +104,6 @@ const seoOverrides = {
     description: 'Step-by-step guide to building a RAG system over 500+ Snowflake documentation pages. Search docs with natural language using Cortex AI.'
   },
 
-  'snowpro-specialty-gen-ai-practice-exams': {
-    title: 'SnowPro Gen AI Practice Exams (GES-C01 Prep)',
-    description: 'Realistic practice questions for the Snowflake GES-C01 certification. Master Cortex, LLMs, and RAG pipelines with exam-style questions.'
-  },
-
   // === November 2025 Articles ===
 
   'snowflake-openflow-ai-data-ingestion-guide': {

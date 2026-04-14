@@ -11,7 +11,7 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-04-13",
+  "lastUpdated": "2026-04-14",
   "totalArticles": 56,
   "pages": [
     {
@@ -59,7 +59,7 @@
       "published": "2026-04-11",
       "author": "sainath",
       "expertise": "Data Engineering Expert",
-      "category": "Airflow",
+      "category": "Snowflake",
       "wordCount": 1379
     },
     {

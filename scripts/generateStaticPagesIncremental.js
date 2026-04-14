@@ -185,7 +185,7 @@ const ESSENTIAL_PAGES = [
   },
   {
     path: '/privacy-policy',
-    title: 'Privacy Policy - DataEngineer Hub',
+    title: 'Privacy Policy',
     description: 'Read the Privacy Policy for DataEngineer Hub. Learn how we collect, use, and protect your personal information.',
     content: `
       <h1>Privacy Policy</h1>
@@ -231,7 +231,7 @@ const ESSENTIAL_PAGES = [
   },
   {
     path: '/terms-of-service',
-    title: 'Terms of Service - DataEngineer Hub',
+    title: 'Terms of Service',
     description: 'Read the Terms of Service for DataEngineer Hub. Understand the rules and regulations governing your use of our website.',
     content: `
       <h1>Terms of Service</h1>
@@ -269,7 +269,7 @@ const ESSENTIAL_PAGES = [
   },
   {
     path: '/disclaimer',
-    title: 'Disclaimer - DataEngineer Hub',
+    title: 'Disclaimer',
     description: 'Read the Disclaimer for DataEngineer Hub. Understand the limitations and conditions of the information provided on our website.',
     content: `
       <h1>Disclaimer</h1>
