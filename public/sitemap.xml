@@ -4,13 +4,13 @@
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
   <url>
     <loc>https://dataengineerhub.blog/</loc>
-    <lastmod>2026-04-13</lastmod>
+    <lastmod>2026-04-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles</loc>
-    <lastmod>2026-04-13</lastmod>
+    <lastmod>2026-04-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -53,14 +53,6 @@
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Snowflake-tasks.jpg</image:loc>
       <image:title>Why I Stopped Using Snowflake Tasks for Orchestration</image:title>
     </image:image>
-    <news:news>
-      <news:publication>
-        <news:name>DataEngineer Hub</news:name>
-        <news:language>en</news:language>
-      </news:publication>
-      <news:publication_date>2026-04-12T08:37:00.000Z</news:publication_date>
-      <news:title>Why I Stopped Using Snowflake Tasks for Orchestration</news:title>
-    </news:news>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-code-cost-control-2026</loc>
@@ -86,7 +78,7 @@
     <loc>https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration</loc>
     <lastmod>2026-04-11</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Dbt-projects-in-snowflake.jpg</image:loc>
       <image:title>Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide</image:title>
@@ -146,17 +138,17 @@
     <loc>https://dataengineerhub.blog/articles/snowflake-streams-tasks-pipeline-guide</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/Designer_11zon.jpg</image:loc>
-      <image:title>Snowflake Streams &amp; Tasks: SCD2 Pipeline Guide</image:title>
+      <image:title>Snowflake Streams &amp;amp; Tasks: SCD2 Pipeline Guide</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/how-i-passed-snowpro-gen-ai-certification-guide</loc>
     <lastmod>2026-04-11</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/images.png</image:loc>
       <image:title>How I passed the “SnowPro® Specialty: Gen AI” certification exam 2026</image:title>
@@ -249,7 +241,7 @@
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/11/Copilot_20251107_080501.png</image:loc>
-      <image:title>Snowflake Intelligence Guide: Setup, Optimization &amp; Real SQL Examples</image:title>
+      <image:title>Snowflake Intelligence Guide: Setup, Optimization &amp;amp; Real SQL Examples</image:title>
     </image:image>
   </url>
   <url>
@@ -289,7 +281,7 @@
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg_11zon-2.jpg</image:loc>
-      <image:title>Salesforce Agentforce: Complete 2025 Guide &amp; Examples</image:title>
+      <image:title>Salesforce Agentforce: Complete 2025 Guide &amp;amp; Examples</image:title>
     </image:image>
   </url>
   <url>
@@ -309,7 +301,7 @@
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/resizefile_Designer.png</image:loc>
-      <image:title>Snowflake Dynamic Tables: Complete 2025 Guide &amp; Examples</image:title>
+      <image:title>Snowflake Dynamic Tables: Complete 2025 Guide &amp;amp; Examples</image:title>
     </image:image>
   </url>
   <url>
@@ -389,7 +381,7 @@
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/dataenigneerhub.jpg</image:loc>
-      <image:title>Star Schema vs Snowflake Schema:Key Differences &amp; Use Cases</image:title>
+      <image:title>Star Schema vs Snowflake Schema:Key Differences &amp;amp; Use Cases</image:title>
     </image:image>
   </url>
   <url>
@@ -399,7 +391,7 @@
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Designer_imresizer-10.jpg</image:loc>
-      <image:title>Mastering Python Data Pipelines: Extract from APIs &amp; Databases, Load to S3 &amp; Snowflake</image:title>
+      <image:title>Mastering Python Data Pipelines: Extract from APIs &amp;amp; Databases, Load to S3 &amp;amp; Snowflake</image:title>
     </image:image>
   </url>
   <url>
