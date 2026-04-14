@@ -27,6 +27,22 @@ function escapeHtml(str) {
     .replace(/'/g, '&#39;');
 }
 
+/** Decode common HTML entities back to their literal characters.
+ *  WordPress REST API returns pre-encoded text in `rendered` fields
+ *  (e.g. &#8217; for a right single quote).  Decoding first prevents
+ *  escapeHtml() from double-encoding them (& → &amp; inside &#8217;). */
+function decodeHtmlEntities(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&');  // must be last
+}
+
 /** Escape a string for safe embedding inside a JSON-LD <script> block value. */
 function escapeJsonLd(str) {
   if (!str) return '';
@@ -64,7 +80,8 @@ function sanitizeWordPressHTML(html) {
  */
 function smartTitle(title) {
   const suffix = ' | DataEngineer Hub';
-  return (title.length + suffix.length) > 60 ? title : title + suffix;
+  const displayLen = decodeHtmlEntities(title).length;
+  return (displayLen + suffix.length) > 60 ? title : title + suffix;
 }
 
 /**
@@ -516,7 +533,7 @@ async function fetchFromWP(endpoint, fields = '') {
 
 function stripHTML(html) {
   if (!html) return '';
-  return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+  return decodeHtmlEntities(html.replace(/<[^>]*>/g, '')).replace(/\s+/g, ' ').trim();
 }
 
 /**
@@ -634,10 +651,12 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const { jsFile, cssFile, modulePreloadHtml = '' } = bundleFiles;
 
   // 🛡️ Sanitize user-supplied strings from WordPress
-  const title = escapeHtml(rawTitle);
-  const description = escapeHtml(rawDescription);
-  const titleJsonLd = escapeJsonLd(rawTitle);
-  const descriptionJsonLd = escapeJsonLd(rawDescription);
+  // WordPress REST API returns pre-encoded entities in rendered fields —
+  // decode first, then re-encode to prevent double-encoding.
+  const title = escapeHtml(decodeHtmlEntities(rawTitle));
+  const description = escapeHtml(decodeHtmlEntities(rawDescription));
+  const titleJsonLd = escapeJsonLd(decodeHtmlEntities(rawTitle));
+  const descriptionJsonLd = escapeJsonLd(decodeHtmlEntities(rawDescription));
 
   // 🔥 CRITICAL: Use relative paths from article subdirectory
   const depth = (pagePath.match(/\//g) || []).length - 1;
@@ -1212,7 +1231,7 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
       <footer class="site-footer">
         <ul class="site-footer-links">
           <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy Policy</a></li>
-          <li><a href="https://dataengineerhub.blog/terms">Terms</a></li>
+          <li><a href="https://dataengineerhub.blog/terms-of-service">Terms</a></li>
           <li><a href="https://dataengineerhub.blog/disclaimer">Disclaimer</a></li>
           <li><a href="https://dataengineerhub.blog/about">About</a></li>
           <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
@@ -2293,15 +2312,15 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles) {
   var html = '<!doctype html>\n<html lang="en">\n  <head>\n';
   html += '    <meta charset="UTF-8" />\n';
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
-  html += '    <title>What is ' + term.term + '? | Data Engineering Glossary | DataEngineer Hub</title>\n';
-  html += '    <meta name="description" content="' + descriptionMeta.replace(/"/g, '&quot;') + '" />\n';
+  html += '    <title>What is ' + escapeHtml(term.term) + '? | Data Engineering Glossary | DataEngineer Hub</title>\n';
+  html += '    <meta name="description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
   html += '    <meta name="robots" content="' + robotsDirective + '" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="article" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta property="og:title" content="What is ' + term.term + '? | Data Engineering Glossary" />\n';
-  html += '    <meta property="og:description" content="' + descriptionMeta.replace(/"/g, '&quot;') + '" />\n';
+  html += '    <meta property="og:title" content="What is ' + escapeHtml(term.term) + '? | Data Engineering Glossary" />\n';
+  html += '    <meta property="og:description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
@@ -2311,10 +2330,10 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles) {
   html += '    <meta name="twitter:card" content="summary_large_image" />\n';
   html += '    <meta name="twitter:site" content="@sainath29" />\n';
   html += '    <meta name="twitter:creator" content="@sainath29" />\n';
-  html += '    <meta name="twitter:title" content="What is ' + term.term + '? | Data Engineering Glossary" />\n';
-  html += '    <meta name="twitter:description" content="' + descriptionMeta.replace(/"/g, '&quot;') + '" />\n';
+  html += '    <meta name="twitter:title" content="What is ' + escapeHtml(term.term) + '? | Data Engineering Glossary" />\n';
+  html += '    <meta name="twitter:description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
-  html += '    <meta name="twitter:image:alt" content="What is ' + term.term + '? | Data Engineering Glossary" />\n\n';
+  html += '    <meta name="twitter:image:alt" content="What is ' + escapeHtml(term.term) + '? | Data Engineering Glossary" />\n\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
@@ -2428,7 +2447,9 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles) {
   html += '        "@type": "Organization",\n';
   html += '        "name": "DataEngineer Hub",\n';
   html += '        "url": "https://dataengineerhub.blog"\n';
-  html += '      }' + (term.lastUpdated ? ',\n      "dateModified": "' + term.lastUpdated + '"' : '') + '\n';
+  html += '      },\n';
+  html += '      "datePublished": "' + (term.lastUpdated || new Date().toISOString().split('T')[0]) + '",\n';
+  html += '      "dateModified": "' + (term.lastUpdated || new Date().toISOString().split('T')[0]) + '"\n';
   html += '    }\n';
   html += '    <\/script>\n\n';
 
@@ -2878,15 +2899,15 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   var html = '<!doctype html>\n<html lang="en">\n  <head>\n';
   html += '    <meta charset="UTF-8" />\n';
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
-  html += '    <title>' + comparison.toolA + ' vs ' + comparison.toolB + ' | Data Engineering Tools Comparison | DataEngineer Hub</title>\n';
-  html += '    <meta name="description" content="' + descriptionMeta.replace(/"/g, '&quot;') + '" />\n';
+  html += '    <title>' + escapeHtml(comparison.toolA) + ' vs ' + escapeHtml(comparison.toolB) + ' | Data Engineering Tools Comparison | DataEngineer Hub</title>\n';
+  html += '    <meta name="description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
   html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="article" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta property="og:title" content="' + comparison.toolA + ' vs ' + comparison.toolB + ' Comparison" />\n';
-  html += '    <meta property="og:description" content="' + descriptionMeta.replace(/"/g, '&quot;') + '" />\n';
+  html += '    <meta property="og:title" content="' + escapeHtml(comparison.toolA) + ' vs ' + escapeHtml(comparison.toolB) + ' Comparison" />\n';
+  html += '    <meta property="og:description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
@@ -2896,10 +2917,10 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <meta name="twitter:card" content="summary_large_image" />\n';
   html += '    <meta name="twitter:site" content="@sainath29" />\n';
   html += '    <meta name="twitter:creator" content="@sainath29" />\n';
-  html += '    <meta name="twitter:title" content="' + comparison.toolA + ' vs ' + comparison.toolB + ' Comparison" />\n';
-  html += '    <meta name="twitter:description" content="' + descriptionMeta.replace(/"/g, '&quot;') + '" />\n';
+  html += '    <meta name="twitter:title" content="' + escapeHtml(comparison.toolA) + ' vs ' + escapeHtml(comparison.toolB) + ' Comparison" />\n';
+  html += '    <meta name="twitter:description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
-  html += '    <meta name="twitter:image:alt" content="' + comparison.toolA + ' vs ' + comparison.toolB + ' Comparison" />\n\n';
+  html += '    <meta name="twitter:image:alt" content="' + escapeHtml(comparison.toolA) + ' vs ' + escapeHtml(comparison.toolB) + ' Comparison" />\n\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
@@ -2992,7 +3013,10 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '      "headline": "' + comparison.toolA + ' vs ' + comparison.toolB + ' Comparison",\n';
   html += '      "description": "' + (comparison.shortVerdict || '').replace(/"/g, '\\"') + '",\n';
   html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
-  html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" }\n';
+  html += '      "author": { "@type": "Person", "name": "Sainath Reddy", "url": "https://dataengineerhub.blog/about" },\n';
+  html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" },\n';
+  html += '      "datePublished": "' + (comparison.lastUpdated || new Date().toISOString().split('T')[0]) + '",\n';
+  html += '      "dateModified": "' + (comparison.lastUpdated || new Date().toISOString().split('T')[0]) + '"\n';
   html += '    }\n';
   html += '    <\/script>\n\n';
 
@@ -3447,8 +3471,9 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '      "headline": "' + escapeJsonLd(sheet.title) + '",\n';
   html += '      "description": "' + escapeJsonLd(sheet.shortDescription || '') + '",\n';
   html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
+  html += '      "datePublished": "' + (sheet.lastUpdated || new Date().toISOString().split('T')[0]) + '",\n';
   html += '      "dateModified": "' + (sheet.lastUpdated || new Date().toISOString().split('T')[0]) + '",\n';
-  html += '      "author": { "@type": "Person", "name": "Satya Sainath Penumudi", "url": "https://dataengineerhub.blog/about" },\n';
+  html += '      "author": { "@type": "Person", "name": "Sainath Reddy", "url": "https://dataengineerhub.blog/about" },\n';
   html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" }\n';
   html += '    }\n';
   html += '    </script>\n\n';
@@ -3537,15 +3562,15 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   var html = '<!doctype html>\n<html lang="en">\n  <head>\n';
   html += '    <meta charset="UTF-8" />\n';
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
-  html += '    <title>' + tag.name + ' - Tagged Articles | DataEngineer Hub</title>\n';
-  html += '    <meta name="description" content="' + descriptionMeta + '" />\n';
+  html += '    <title>' + escapeHtml(tag.name) + ' - Tagged Articles | DataEngineer Hub</title>\n';
+  html += '    <meta name="description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
   html += '    <meta name="robots" content="' + (tagArticles.length === 0 ? 'noindex, follow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1') + '" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta property="og:title" content="' + tag.name + ' Articles | DataEngineer Hub" />\n';
-  html += '    <meta property="og:description" content="Browse ' + tagArticles.length + ' ' + tag.name + ' tutorials and guides for data engineers." />\n';
+  html += '    <meta property="og:title" content="' + escapeHtml(tag.name) + ' Articles | DataEngineer Hub" />\n';
+  html += '    <meta property="og:description" content="Browse ' + tagArticles.length + ' ' + escapeHtml(tag.name) + ' tutorials and guides for data engineers." />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
@@ -3555,10 +3580,10 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '    <meta name="twitter:card" content="summary_large_image" />\n';
   html += '    <meta name="twitter:site" content="@sainath29" />\n';
   html += '    <meta name="twitter:creator" content="@sainath29" />\n';
-  html += '    <meta name="twitter:title" content="' + tag.name + ' Articles | DataEngineer Hub" />\n';
-  html += '    <meta name="twitter:description" content="Browse ' + tagArticles.length + ' ' + tag.name + ' tutorials and guides for data engineers." />\n';
+  html += '    <meta name="twitter:title" content="' + escapeHtml(tag.name) + ' Articles | DataEngineer Hub" />\n';
+  html += '    <meta name="twitter:description" content="Browse ' + tagArticles.length + ' ' + escapeHtml(tag.name) + ' tutorials and guides for data engineers." />\n';
   html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
-  html += '    <meta name="twitter:image:alt" content="' + tag.name + ' Articles | DataEngineer Hub" />\n\n';
+  html += '    <meta name="twitter:image:alt" content="' + escapeHtml(tag.name) + ' Articles | DataEngineer Hub" />\n\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
@@ -3941,7 +3966,7 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
       <footer class="site-footer">
         <ul class="site-footer-links">
           <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy Policy</a></li>
-          <li><a href="https://dataengineerhub.blog/terms">Terms</a></li>
+          <li><a href="https://dataengineerhub.blog/terms-of-service">Terms</a></li>
           <li><a href="https://dataengineerhub.blog/disclaimer">Disclaimer</a></li>
           <li><a href="https://dataengineerhub.blog/about">About</a></li>
           <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>

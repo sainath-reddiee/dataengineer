@@ -22,8 +22,21 @@ function escapeXml(str) {
         .replace(/'/g, '&apos;');
 }
 
+/** Decode common HTML entities (WordPress REST API returns pre-encoded text). */
+function decodeHtmlEntities(str) {
+    if (!str) return '';
+    return str
+        .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
+        .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+        .replace(/&quot;/g, '"')
+        .replace(/&apos;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&');  // must be last
+}
+
 function stripHTML(html) {
-    return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    return decodeHtmlEntities(html.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
 }
 
 function getMimeType(url) {
