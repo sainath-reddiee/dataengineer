@@ -14,6 +14,26 @@
 const seoOverrides = {
   // === 2026 Articles ===
 
+  'snowflake-cortex-code-cost-control-2026': {
+    title: 'Snowflake Cortex Code Cost Control: Set Limits Right',
+    description: 'Control Snowflake Cortex Code costs with budget limits, token caps, and warehouse guards. Practical setup guide to avoid surprise credit burns.'
+  },
+
+  'why-i-stopped-using-snowflake-tasks-orchestration': {
+    title: 'Why I Stopped Using Snowflake Tasks for Orchestration',
+    description: 'Snowflake Tasks worked fine — until they didn\'t. Real experience on where native orchestration breaks down and what replaced it in production.'
+  },
+
+  'snowflake-expert-interview-questions': {
+    title: 'Snowflake Expert Interview Questions (2026)',
+    description: 'Expert-level Snowflake interview questions on architecture, optimization, streams, and security. Detailed answers with the depth senior roles demand.'
+  },
+
+  'snowflake-dbt-projects-airflow-orchestration': {
+    title: 'Orchestrate Snowflake dbt Projects with Airflow',
+    description: 'Wire Snowflake\'s native dbt projects to Apache Airflow for true end-to-end orchestration. Step-by-step pipeline setup with real configuration examples.'
+  },
+
   'snowflake-cortex-code-guide-real-examples': {
     title: 'Snowflake Cortex Code: Hands-On Guide + Examples',
     description: 'Learn Snowflake Cortex Code through real examples. Step-by-step tutorial covering setup, prompts, and practical use cases for data engineers.'
