@@ -69,6 +69,11 @@ const seoOverrides = {
     description: 'Passed the SnowPro Specialty Gen AI exam on the first attempt. Study plan, key topics, practice resources, and tips that actually work.'
   },
 
+  'snowpro-specialty-gen-ai-practice-exams': {
+    title: 'SnowPro Gen AI Practice Exams — Free Questions (2026)',
+    description: 'Free SnowPro Specialty Gen AI practice questions with detailed explanations. Test yourself on Cortex, LLMs, RAG, and vector search before the real exam.'
+  },
+
   'build-a-simple-rag-application-in-snowflake-using-streamlit-and-snowflake-cortex': {
     title: 'Build a RAG App with Snowflake Cortex + Streamlit',
     description: 'Build a working RAG application in Snowflake using Cortex and Streamlit. Weekend project with complete code for searching meeting notes.'

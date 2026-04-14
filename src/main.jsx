@@ -72,11 +72,7 @@ const initApp = () => {
     </React.StrictMode>
   );
 
-  // Mark React as loaded after render
-  setTimeout(() => {
-    document.body.classList.remove('react-loading');
-    document.body.classList.add('react-loaded');
-  }, 100);
+  // react-loaded class is now set by App.jsx useEffect (fires after actual render)
 
   // Initialize third-party scripts after app loads
   setTimeout(() => {

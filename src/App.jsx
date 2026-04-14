@@ -102,6 +102,11 @@ function App() {
   const [routeAnnouncement, setRouteAnnouncement] = useState('');
 
   useEffect(() => {
+    // Signal that React has actually mounted and rendered
+    document.body.classList.remove('react-loading');
+    document.body.classList.add('react-loaded');
+    window.dispatchEvent(new Event('react-mounted'));
+
     if (typeof performance !== "undefined" && performance.mark) {
       performance.mark('app-initialized');
     }

@@ -639,6 +639,32 @@ function makeImagesAbsolute(content) {
     '<img loading="lazy"$1$2'
   );
 
+  // Pattern 9: Alt text fallback — derive from filename when alt is empty or missing
+  processedContent = processedContent.replace(
+    /<img([^>]*?)(\s*\/?>)/gi,
+    (match, attrs, close) => {
+      const altMatch = attrs.match(/alt="([^"]*)"/i);
+      if (altMatch && altMatch[1].trim()) return match; // already has meaningful alt
+      // Extract filename from src for fallback alt text
+      const srcMatch = attrs.match(/src="([^"]+)"/i);
+      if (!srcMatch) return match;
+      const filename = srcMatch[1].split('/').pop().split('?')[0]
+        .replace(/\.[^.]+$/, '')       // remove extension
+        .replace(/[-_]/g, ' ')         // dashes/underscores to spaces
+        .replace(/\d{2,}/g, '')        // remove numeric sequences
+        .replace(/\s+/g, ' ')          // collapse whitespace
+        .trim();
+      if (!filename) return match;
+      const altText = filename.charAt(0).toUpperCase() + filename.slice(1);
+      if (altMatch) {
+        // Replace empty alt=""
+        return `<img${attrs.replace(/alt="[^"]*"/i, `alt="${escapeHtml(altText)}`)}${close}`;
+      }
+      // No alt attribute at all — add one
+      return `<img alt="${escapeHtml(altText)}"${attrs}${close}`;
+    }
+  );
+
   return processedContent;
 }
 
@@ -647,7 +673,7 @@ function makeImagesAbsolute(content) {
 // ============================================================================
 
 function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
-  const { title: rawTitle, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, featuredImage, categoryNames = [] } = pageData;
+  const { title: rawTitle, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, featuredImage, categoryNames = [], tagNames = [] } = pageData;
   const { jsFile, cssFile, modulePreloadHtml = '' } = bundleFiles;
 
   // 🛡️ Sanitize user-supplied strings from WordPress
@@ -682,7 +708,47 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const absoluteContent = makeImagesAbsolute(fullContent);
 
   // 📐 Normalize heading hierarchy (h3→h2 etc. when h2 is missing)
-  const processedContent = normalizeHeadings(absoluteContent);
+  let processedContent = normalizeHeadings(absoluteContent);
+
+  // 📑 Extract headings for Table of Contents and inject anchor IDs
+  const tocHeadings = [];
+  const seenSlugs = new Set();
+  processedContent = processedContent.replace(
+    /<(h[23])([^>]*)>([\s\S]*?)<\/\1>/gi,
+    (match, tag, attrs, inner) => {
+      const text = inner.replace(/<[^>]+>/g, '').trim();
+      if (!text || text.length < 3) return match;
+      // Generate unique slug
+      let baseSlug = text.toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .substring(0, 60);
+      let slug = baseSlug;
+      let counter = 2;
+      while (seenSlugs.has(slug)) { slug = baseSlug + '-' + counter++; }
+      seenSlugs.add(slug);
+      tocHeadings.push({ tag: tag.toLowerCase(), text, slug });
+      // Inject id attribute into heading (preserve existing attrs)
+      if (/id\s*=/i.test(attrs)) return match; // already has id
+      return `<${tag}${attrs} id="${slug}">${inner}</${tag}>`;
+    }
+  );
+  const tocHtml = tocHeadings.length >= 3 ? (() => {
+    let html = '        <nav class="article-toc" aria-label="Table of Contents">\n';
+    html += '          <details open>\n';
+    html += '            <summary>Table of Contents</summary>\n';
+    html += '            <ul>\n';
+    for (const h of tocHeadings) {
+      const indent = h.tag === 'h3' ? '                ' : '              ';
+      const cls = h.tag === 'h3' ? ' class="toc-sub"' : '';
+      html += `${indent}<li${cls}><a href="#${h.slug}">${escapeHtml(h.text)}</a></li>\n`;
+    }
+    html += '            </ul>\n';
+    html += '          </details>\n';
+    html += '        </nav>\n';
+    return html;
+  })() : '';
 
   // 🖼️ Determine OG image: use featured image or fallback to default
   const ogImageUrl = featuredImage || 'https://dataengineerhub.blog/og-image.jpg';
@@ -805,6 +871,7 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
     <meta property="article:published_time" content="${effectivePublished}" />
     <meta property="article:modified_time" content="${effectiveModified}" />
     <meta property="article:author" content="https://dataengineerhub.blog/about" />
+${categoryNames.length > 0 ? `    <meta property="article:section" content="${escapeHtml(categoryNames[0])}" />\n` : ''}${tagNames.slice(0, 6).map(t => `    <meta property="article:tag" content="${escapeHtml(t)}" />`).join('\n')}
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -994,6 +1061,42 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
       
       .back-link:hover {
         transform: translateY(-2px);
+      }
+      
+      /* Table of Contents styles */
+      .article-toc {
+        background: #f8f9fa;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin: 20px 0 28px;
+        max-width: 600px;
+      }
+      .article-toc summary {
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        color: #1a202c;
+      }
+      .article-toc ul {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+      }
+      .article-toc li {
+        margin: 6px 0;
+      }
+      .article-toc li.toc-sub {
+        padding-left: 20px;
+      }
+      .article-toc a {
+        color: #2563eb;
+        text-decoration: none;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+      .article-toc a:hover {
+        text-decoration: underline;
       }
       
       /* Hide SEO content when React loads (for interactive experience) */
@@ -1215,6 +1318,8 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
           </div>
           <p class="excerpt">${description}</p>
 
+          ${tocHtml}
+
           <!-- 🔥 THIS IS THE KEY: FULL HTML CONTENT WITH IMAGES -->
           <div class="article-body">
             ${sanitizeWordPressHTML(processedContent)}
@@ -1393,26 +1498,16 @@ ${relativeModulePreload}
       });
       
       // Gracefully transition from static to React
-      window.addEventListener('load', function() {
-        // Wait for React to mount
-        const checkReactMount = setInterval(function() {
-          const root = document.getElementById('root');
-          // Check if React has added its own content
-          if (root && root.children.length > 1) {
-            document.body.classList.add('react-loaded');
-            clearInterval(checkReactMount);
-            console.log('✅ React app mounted - switching to interactive mode');
-          }
-        }, 100);
-        
-        // Fallback: If React doesn't load in 3 seconds, keep static content
-        setTimeout(function() {
-          clearInterval(checkReactMount);
-          if (!document.body.classList.contains('react-loaded')) {
-            console.log('⚠️  React not detected - showing static content');
-          }
-        }, 3000);
-      });
+      window.addEventListener('react-mounted', function() {
+        document.body.classList.add('react-loaded');
+        console.log('✅ React app mounted - switching to interactive mode');
+      }, { once: true });
+      // Fallback: If React doesn't load in 5 seconds, keep static content
+      setTimeout(function() {
+        if (!document.body.classList.contains('react-loaded')) {
+          console.log('⚠️  React not detected - showing static content');
+        }
+      }, 5000);
     </script>
   </body>
 </html>`;
@@ -1691,16 +1786,14 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
     ${productionJsFile ? `<script type="module" crossorigin src="${productionJsFile}"></script>` : ''}
 
     <script>
-      window.addEventListener('load', function() {
-        var checkReactMount = setInterval(function() {
-          var root = document.getElementById('root');
-          if (root && root.children.length > 2) {
-            document.body.classList.add('react-loaded');
-            clearInterval(checkReactMount);
-          }
-        }, 100);
-        setTimeout(function() { clearInterval(checkReactMount); }, 3000);
-      });
+      window.addEventListener('react-mounted', function() {
+        document.body.classList.add('react-loaded');
+      }, { once: true });
+      setTimeout(function() {
+        if (!document.body.classList.contains('react-loaded')) {
+          console.log('React not detected - showing static content');
+        }
+      }, 5000);
     </script>
   </body>
 </html>`;
@@ -1837,16 +1930,14 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
     html += '    <script type="module" crossorigin src="' + productionJsFile + '"><\/script>\n\n';
   }
   html += '    <script>\n';
-  html += '      window.addEventListener("load", function() {\n';
-  html += '        var checkReactMount = setInterval(function() {\n';
-  html += '          var root = document.getElementById("root");\n';
-  html += '          if (root && root.children.length > 2) {\n';
-  html += '            document.body.classList.add("react-loaded");\n';
-  html += '            clearInterval(checkReactMount);\n';
-  html += '          }\n';
-  html += '        }, 100);\n';
-  html += '        setTimeout(function() { clearInterval(checkReactMount); }, 3000);\n';
-  html += '      });\n';
+  html += '      window.addEventListener("react-mounted", function() {\n';
+  html += '        document.body.classList.add("react-loaded");\n';
+  html += '      }, { once: true });\n';
+  html += '      setTimeout(function() {\n';
+  html += '        if (!document.body.classList.contains("react-loaded")) {\n';
+  html += '          console.log("React not detected - showing static content");\n';
+  html += '        }\n';
+  html += '      }, 5000);\n';
   html += '    <\/script>\n';
   html += '  </body>\n';
   html += '</html>';
@@ -2200,16 +2291,14 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += (productionJsFile ? '    <script type="module" crossorigin src="' + productionJsFile + '"></script>\n' : '');
   html += '\n';
   html += '    <script>\n';
-  html += '      window.addEventListener("load", function() {\n';
-  html += '        var checkReactMount = setInterval(function() {\n';
-  html += '          var root = document.getElementById("root");\n';
-  html += '          if (root && root.children.length > 2) {\n';
-  html += '            document.body.classList.add("react-loaded");\n';
-  html += '            clearInterval(checkReactMount);\n';
-  html += '          }\n';
-  html += '        }, 100);\n';
-  html += '        setTimeout(function() { clearInterval(checkReactMount); }, 3000);\n';
-  html += '      });\n';
+  html += '      window.addEventListener("react-mounted", function() {\n';
+  html += '        document.body.classList.add("react-loaded");\n';
+  html += '      }, { once: true });\n';
+  html += '      setTimeout(function() {\n';
+  html += '        if (!document.body.classList.contains("react-loaded")) {\n';
+  html += '          console.log("React not detected - showing static content");\n';
+  html += '        }\n';
+  html += '      }, 5000);\n';
   html += '    </script>\n';
   html += '  </body>\n';
   html += '</html>';
@@ -2513,16 +2602,14 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
     html += '    <script type="module" crossorigin src="' + productionJsFile + '"><\/script>\n\n';
   }
   html += '    <script>\n';
-  html += '      window.addEventListener("load", function() {\n';
-  html += '        var checkReactMount = setInterval(function() {\n';
-  html += '          var root = document.getElementById("root");\n';
-  html += '          if (root && root.children.length > 2) {\n';
-  html += '            document.body.classList.add("react-loaded");\n';
-  html += '            clearInterval(checkReactMount);\n';
-  html += '          }\n';
-  html += '        }, 100);\n';
-  html += '        setTimeout(function() { clearInterval(checkReactMount); }, 3000);\n';
-  html += '      });\n';
+  html += '      window.addEventListener("react-mounted", function() {\n';
+  html += '        document.body.classList.add("react-loaded");\n';
+  html += '      }, { once: true });\n';
+  html += '      setTimeout(function() {\n';
+  html += '        if (!document.body.classList.contains("react-loaded")) {\n';
+  html += '          console.log("React not detected - showing static content");\n';
+  html += '        }\n';
+  html += '      }, 5000);\n';
   html += '    <\/script>\n';
   html += '  </body>\n';
   html += '</html>';
@@ -2788,16 +2875,14 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += (productionJsFile ? '    <script type="module" crossorigin src="' + productionJsFile + '"></script>\n' : '');
   html += '\n';
   html += '    <script>\n';
-  html += '      window.addEventListener("load", function() {\n';
-  html += '        var checkReactMount = setInterval(function() {\n';
-  html += '          var root = document.getElementById("root");\n';
-  html += '          if (root && root.children.length > 2) {\n';
-  html += '            document.body.classList.add("react-loaded");\n';
-  html += '            clearInterval(checkReactMount);\n';
-  html += '          }\n';
-  html += '        }, 100);\n';
-  html += '        setTimeout(function() { clearInterval(checkReactMount); }, 3000);\n';
-  html += '      });\n';
+  html += '      window.addEventListener("react-mounted", function() {\n';
+  html += '        document.body.classList.add("react-loaded");\n';
+  html += '      }, { once: true });\n';
+  html += '      setTimeout(function() {\n';
+  html += '        if (!document.body.classList.contains("react-loaded")) {\n';
+  html += '          console.log("React not detected - showing static content");\n';
+  html += '        }\n';
+  html += '      }, 5000);\n';
   html += '    </script>\n';
   html += '  </body>\n';
   html += '</html>';
@@ -3069,16 +3154,14 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
     html += '    <script type="module" crossorigin src="' + productionJsFile + '"><\/script>\n\n';
   }
   html += '    <script>\n';
-  html += '      window.addEventListener("load", function() {\n';
-  html += '        var checkReactMount = setInterval(function() {\n';
-  html += '          var root = document.getElementById("root");\n';
-  html += '          if (root && root.children.length > 2) {\n';
-  html += '            document.body.classList.add("react-loaded");\n';
-  html += '            clearInterval(checkReactMount);\n';
-  html += '          }\n';
-  html += '        }, 100);\n';
-  html += '        setTimeout(function() { clearInterval(checkReactMount); }, 3000);\n';
-  html += '      });\n';
+  html += '      window.addEventListener("react-mounted", function() {\n';
+  html += '        document.body.classList.add("react-loaded");\n';
+  html += '      }, { once: true });\n';
+  html += '      setTimeout(function() {\n';
+  html += '        if (!document.body.classList.contains("react-loaded")) {\n';
+  html += '          console.log("React not detected - showing static content");\n';
+  html += '        }\n';
+  html += '      }, 5000);\n';
   html += '    <\/script>\n';
   html += '  </body>\n';
   html += '</html>';
@@ -3269,16 +3352,14 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += (productionJsFile ? '    <script type="module" crossorigin src="' + productionJsFile + '"></script>\n' : '');
   html += '\n';
   html += '    <script>\n';
-  html += '      window.addEventListener("load", function() {\n';
-  html += '        var checkReactMount = setInterval(function() {\n';
-  html += '          var root = document.getElementById("root");\n';
-  html += '          if (root && root.children.length > 2) {\n';
-  html += '            document.body.classList.add("react-loaded");\n';
-  html += '            clearInterval(checkReactMount);\n';
-  html += '          }\n';
-  html += '        }, 100);\n';
-  html += '        setTimeout(function() { clearInterval(checkReactMount); }, 3000);\n';
-  html += '      });\n';
+  html += '      window.addEventListener("react-mounted", function() {\n';
+  html += '        document.body.classList.add("react-loaded");\n';
+  html += '      }, { once: true });\n';
+  html += '      setTimeout(function() {\n';
+  html += '        if (!document.body.classList.contains("react-loaded")) {\n';
+  html += '          console.log("React not detected - showing static content");\n';
+  html += '        }\n';
+  html += '      }, 5000);\n';
   html += '    </script>\n';
   html += '  </body>\n';
   html += '</html>';
@@ -3541,16 +3622,14 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += (productionJsFile ? '    <script type="module" crossorigin src="' + productionJsFile + '"></script>\n' : '');
   html += '\n';
   html += '    <script>\n';
-  html += '      window.addEventListener("load", function() {\n';
-  html += '        var checkReactMount = setInterval(function() {\n';
-  html += '          var root = document.getElementById("root");\n';
-  html += '          if (root && root.children.length > 2) {\n';
-  html += '            document.body.classList.add("react-loaded");\n';
-  html += '            clearInterval(checkReactMount);\n';
-  html += '          }\n';
-  html += '        }, 100);\n';
-  html += '        setTimeout(function() { clearInterval(checkReactMount); }, 3000);\n';
-  html += '      });\n';
+  html += '      window.addEventListener("react-mounted", function() {\n';
+  html += '        document.body.classList.add("react-loaded");\n';
+  html += '      }, { once: true });\n';
+  html += '      setTimeout(function() {\n';
+  html += '        if (!document.body.classList.contains("react-loaded")) {\n';
+  html += '          console.log("React not detected - showing static content");\n';
+  html += '        }\n';
+  html += '      }, 5000);\n';
   html += '    </script>\n';
   html += '  </body>\n';
   html += '</html>';
@@ -3688,16 +3767,14 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
     html += '    <script type="module" crossorigin src="' + productionJsFile + '"><\/script>\n\n';
   }
   html += '    <script>\n';
-  html += '      window.addEventListener("load", function() {\n';
-  html += '        var checkReactMount = setInterval(function() {\n';
-  html += '          var root = document.getElementById("root");\n';
-  html += '          if (root && root.children.length > 2) {\n';
-  html += '            document.body.classList.add("react-loaded");\n';
-  html += '            clearInterval(checkReactMount);\n';
-  html += '          }\n';
-  html += '        }, 100);\n';
-  html += '        setTimeout(function() { clearInterval(checkReactMount); }, 3000);\n';
-  html += '      });\n';
+  html += '      window.addEventListener("react-mounted", function() {\n';
+  html += '        document.body.classList.add("react-loaded");\n';
+  html += '      }, { once: true });\n';
+  html += '      setTimeout(function() {\n';
+  html += '        if (!document.body.classList.contains("react-loaded")) {\n';
+  html += '          console.log("React not detected - showing static content");\n';
+  html += '        }\n';
+  html += '      }, 5000);\n';
   html += '    <\/script>\n';
   html += '  </body>\n';
   html += '</html>';
@@ -4093,18 +4170,14 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
     ${productionJsFile ? `<script type="module" crossorigin src="${productionJsFile}"></script>` : ''}
 
     <script>
-      window.addEventListener('load', function() {
-        const checkReactMount = setInterval(function() {
-          const root = document.getElementById('root');
-          if (root && root.children.length > 1) {
-            document.body.classList.add('react-loaded');
-            clearInterval(checkReactMount);
-          }
-        }, 100);
-        setTimeout(function() {
-          clearInterval(checkReactMount);
-        }, 3000);
-      });
+      window.addEventListener('react-mounted', function() {
+        document.body.classList.add('react-loaded');
+      }, { once: true });
+      setTimeout(function() {
+        if (!document.body.classList.contains('react-loaded')) {
+          console.log('React not detected - showing static content');
+        }
+      }, 5000);
     </script>
   </body>
 </html>`;
@@ -4175,6 +4248,16 @@ async function buildIncremental(options = {}) {
     console.warn('   ⚠️  Could not fetch categories for articleSection:', err.message);
   }
 
+  // 🏷️ Pre-fetch tags for article:tag OG meta
+  let tagIdToName = {};
+  try {
+    const tagsData = await fetchFromWP('/tags', 'id,name');
+    tagsData.forEach(t => { tagIdToName[t.id] = t.name; });
+    console.log(`   Loaded ${tagsData.length} tag names for article:tag mapping`);
+  } catch (err) {
+    console.warn('   ⚠️  Could not fetch tags for article:tag:', err.message);
+  }
+
   try {
     // 🔥 CRITICAL: Fetch with _embed to get full content + categories + tags for mapping
     const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content,date,modified,categories,tags,jetpack_featured_media_url');
@@ -4216,7 +4299,8 @@ async function buildIncremental(options = {}) {
         date: post.date,
         modified: post.modified,
         featuredImage: post.jetpack_featured_media_url || null,
-        categoryNames: (post.categories || []).map(id => catIdToName[id]).filter(Boolean)
+        categoryNames: (post.categories || []).map(id => catIdToName[id]).filter(Boolean),
+        tagNames: (post.tags || []).map(id => tagIdToName[id]).filter(Boolean)
       };
 
       const contentHash = hashContent(pageData);
