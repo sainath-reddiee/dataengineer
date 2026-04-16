@@ -117,7 +117,7 @@ const seoOverrides = {
   },
 
   'build-rag-snowflake-cortex-search-guide': {
-    title: 'Build RAG in Snowflake: Cortex Search Guide 2025',
+    title: 'Build RAG in Snowflake: Cortex Search Guide 2026',
     description: 'Build production-ready RAG applications using Snowflake Cortex Search. Complete guide with vector embeddings, chunking strategies, and Streamlit UI.'
   },
 
@@ -134,17 +134,17 @@ const seoOverrides = {
   // === October 2025 Articles ===
 
   'snowflake-openflow-tutorial': {
-    title: 'Snowflake OpenFlow Tutorial: Get Started in 2025',
+    title: 'Snowflake OpenFlow Tutorial: Get Started in 2026',
     description: 'Hands-on Snowflake OpenFlow tutorial with step-by-step setup. Learn the new data ingestion paradigm with practical SQL and configuration examples.'
   },
 
   'snowflake-performance': {
-    title: 'Snowflake Performance & SQL Tuning Handbook 2025',
+    title: 'Snowflake Performance & SQL Tuning Handbook 2026',
     description: 'Data engineer\'s handbook to Snowflake performance optimization. Clustering, warehouse sizing, query profiling, and SQL improvements that matter.'
   },
 
   'snowflake-native-dbt-integration-2025-guide': {
-    title: 'Snowflake Native dbt Integration: 2025 Setup Guide',
+    title: 'Snowflake Native dbt Integration: 2026 Setup Guide',
     description: 'Run dbt Core directly inside Snowflake — no containers or VMs needed. Complete setup guide with configuration, examples, and migration tips.'
   },
 
@@ -159,8 +159,8 @@ const seoOverrides = {
   },
 
   'salesforce-agentforce-complete-guide-2025': {
-    title: 'Salesforce Agentforce: Complete 2025 Guide',
-    description: 'Master Salesforce Agentforce — autonomous AI agents for CRM. Setup guide, real examples, and how it transforms customer engagement in 2025.'
+    title: 'Salesforce Agentforce: Complete 2026 Guide',
+    description: 'Master Salesforce Agentforce — autonomous AI agents for CRM. Setup guide, real examples, and how it transforms customer engagement in 2026.'
   },
 
   'snowflake-unique-aggregations-hidden-functions': {
@@ -174,7 +174,7 @@ const seoOverrides = {
   },
 
   'snowflake-dynamic-tables-complete-guide-2025': {
-    title: 'Snowflake Dynamic Tables: Complete 2025 Guide',
+    title: 'Snowflake Dynamic Tables: Complete 2026 Guide',
     description: 'Build automated data pipelines with Snowflake Dynamic Tables. Covers target lag, refresh modes, monitoring, and real-world ETL patterns.'
   },
 
@@ -204,7 +204,7 @@ const seoOverrides = {
   },
 
   'build-snowflake-cortex-ai-agent-guide': {
-    title: 'Build a Snowflake Cortex AI Agent (2025 Tutorial)',
+    title: 'Build a Snowflake Cortex AI Agent (2026 Tutorial)',
     description: 'Build a conversational AI data agent with Snowflake Cortex. Complete tutorial covering setup, natural language queries, and deployment.'
   },
 
@@ -229,7 +229,7 @@ const seoOverrides = {
   },
 
   'snowflake-data-science-agent-automate-ml-2025': {
-    title: 'Snowflake Data Science Agent: Automate ML in 2025',
+    title: 'Snowflake Data Science Agent: Automate ML in 2026',
     description: 'Automate the 60-80% of data science work that kills productivity. Build ML workflows with Snowflake\'s Data Science Agent and Cortex AI.'
   },
 
@@ -241,7 +241,7 @@ const seoOverrides = {
   // === September-October 2025 Articles ===
 
   'snowflake-query-optimization-2025': {
-    title: 'Snowflake Query Optimization Tips for 2025',
+    title: 'Snowflake Query Optimization Tips for 2026',
     description: 'Fix slow Snowflake queries with practical optimization tips. Clustering keys, warehouse sizing, query profiling, and cost reduction strategies.'
   },
 

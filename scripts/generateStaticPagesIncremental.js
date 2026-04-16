@@ -12,6 +12,85 @@ const WORDPRESS_BASE_URL = 'https://app.dataengineerhub.blog';
 // SEO overrides for CTR-optimized titles and descriptions
 import seoOverrides, { getSEOOverride } from '../src/data/seoOverrides.js';
 
+// Meta description optimizer for CTR-optimized descriptions
+import { optimizeMetaDescription } from '../src/lib/metaDescriptionOptimizer.js';
+
+// Articles data for internal linking during SSG
+const articlesJsonPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../src/data/pseo/articles.json');
+let LINKED_ARTICLES = [];
+try {
+  LINKED_ARTICLES = JSON.parse(fs.readFileSync(articlesJsonPath, 'utf-8')) || [];
+} catch (e) {
+  console.warn('⚠️  Could not load articles.json for internal linking:', e.message);
+}
+
+// ============================================================================
+// 🔗 INTERNAL LINKING ENGINE (SSG-compatible standalone version)
+// ============================================================================
+
+function escapeRegexSSG(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function escapeHtmlAttrSSG(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function isAlreadyLinkedSSG(html, keyword) {
+  const anchorRegex = new RegExp(`<a[^>]*>[^<]*${escapeRegexSSG(keyword)}[^<]*</a>`, 'i');
+  if (anchorRegex.test(html)) return true;
+  const attrRegex = new RegExp(`<[^>]*${escapeRegexSSG(keyword)}[^>]*>`, 'i');
+  if (attrRegex.test(html)) return true;
+  return false;
+}
+
+/**
+ * Inject internal links into static HTML so crawlers see them.
+ * Mirrors the runtime linkingEngine.js logic but runs at build time.
+ * @param {string} htmlContent - The HTML content to process
+ * @param {string} excludeSlug - Current article slug to exclude from self-linking
+ * @returns {string} - HTML with internal links injected
+ */
+function injectInternalLinksSSG(htmlContent, excludeSlug = '') {
+  if (!htmlContent || typeof htmlContent !== 'string' || LINKED_ARTICLES.length === 0) {
+    return htmlContent;
+  }
+
+  let result = htmlContent;
+  const linkedKeywords = new Set();
+
+  for (const article of LINKED_ARTICLES) {
+    if (article.slug === excludeSlug) continue;
+    if (!article.keywords || !article.keywords.length) continue;
+
+    for (const keyword of article.keywords) {
+      if (linkedKeywords.has(keyword.toLowerCase())) continue;
+      if (isAlreadyLinkedSSG(result, keyword)) continue;
+
+      const keywordPattern = new RegExp(`\\b(${escapeRegexSSG(keyword)})\\b`, 'i');
+      const parts = result.split(/(<[^>]*>)/);
+      let matched = false;
+      for (let i = 0; i < parts.length; i++) {
+        if (i % 2 === 0 && keywordPattern.test(parts[i])) {
+          const anchor = `<a href="/articles/${article.slug}" class="internal-link" title="${escapeHtmlAttrSSG(article.title)}">${parts[i].match(keywordPattern)[1]}</a>`;
+          parts[i] = parts[i].replace(keywordPattern, anchor);
+          matched = true;
+          break;
+        }
+      }
+
+      if (matched) {
+        result = parts.join('');
+        linkedKeywords.add(keyword.toLowerCase());
+        break; // Only one keyword per article to avoid over-optimization
+      }
+    }
+  }
+
+  return result;
+}
+
 // ============================================================================
 // 🛡️ XSS PREVENTION HELPERS
 // ============================================================================
@@ -710,6 +789,9 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   // 📐 Normalize heading hierarchy (h3→h2 etc. when h2 is missing)
   let processedContent = normalizeHeadings(absoluteContent);
 
+  // 🔗 Inject internal links so crawlers see cross-article links in static HTML
+  processedContent = injectInternalLinksSSG(processedContent, slug);
+
   // 📑 Extract headings for Table of Contents and inject anchor IDs
   const tocHeadings = [];
   const seenSlugs = new Set();
@@ -1308,7 +1390,7 @@ ${categoryNames.length > 0 ? `    <meta property="article:section" content="${es
       <!-- 🔥 FULL ARTICLE CONTENT - Visible to Googlebot/AdSense crawlers -->
       <div class="seo-content">
         <article>
-          <h1>${title}</h1>
+          <h1 class="article-title">${title}</h1>
           <div style="display:flex;align-items:center;gap:0.6rem;margin:0.75rem 0 1rem;flex-wrap:wrap;color:#94a3b8;font-size:0.9rem;">
             <a href="/about" style="color:#60a5fa;text-decoration:none;font-weight:500;">Sainath Reddy</a>
             <span>·</span>
@@ -1316,7 +1398,7 @@ ${categoryNames.length > 0 ? `    <meta property="article:section" content="${es
             <span>·</span>
             <span>${readingTime} min read</span>
           </div>
-          <p class="excerpt">${description}</p>
+          <p class="excerpt article-description">${description}</p>
 
           ${tocHtml}
 
@@ -1396,6 +1478,11 @@ ${categoryNames.length > 0 ? `    <meta property="article:section" content="${es
       "dateModified": "${effectiveModified}",
       "wordCount": ${articleWordCount},
       ${categoryNames.length > 0 ? `"articleSection": ${JSON.stringify(categoryNames[0])},` : ''}
+      ${tagNames.length > 0 ? `"keywords": ${JSON.stringify(tagNames.slice(0, 10))},` : ''}
+      "speakable": {
+        "@type": "SpeakableSpecification",
+        "cssSelector": [".article-title", ".article-description"]
+      },
       "mainEntityOfPage": {
         "@type": "WebPage",
         "@id": "https://dataengineerhub.blog${pagePath}"
@@ -4287,12 +4374,30 @@ async function buildIncremental(options = {}) {
       // Apply SEO overrides for CTR-optimized titles and descriptions
       const seoOverride = getSEOOverride(post.slug);
 
+      // For articles without SEO overrides, generate CTR-optimized description
+      let optimizedDescription = rawDescription;
+      if (!seoOverride?.description) {
+        try {
+          const tagNamesList = (post.tags || []).map(id => tagIdToName[id]).filter(Boolean);
+          optimizedDescription = optimizeMetaDescription({
+            title: seoOverride?.title || rawTitle,
+            excerpt: rawDescription,
+            category: (post.categories || []).map(id => catIdToName[id]).filter(Boolean)[0] || '',
+            tags: tagNamesList,
+            readTime: Math.max(1, Math.ceil((stripHTML(post.content.rendered || '').split(/\s+/).filter(w => w.length > 0).length) / 250))
+          }) || rawDescription;
+        } catch (e) {
+          // Fallback silently to raw description if optimizer fails
+          optimizedDescription = rawDescription;
+        }
+      }
+
       // 🔥 KEY FIX: Use FULL content, not just 500 chars!
       const fullContent = post.content.rendered; // Complete HTML content
 
       const pageData = {
         title: seoOverride?.title || rawTitle,
-        description: seoOverride?.description || rawDescription,
+        description: seoOverride?.description || optimizedDescription,
         path: pagePath,
         fullContent: fullContent, // 🔥 FULL content for crawlers
         slug: post.slug,
