@@ -10,6 +10,45 @@ const __dirname = path.dirname(__filename);
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
 const SITE_URL = 'https://dataengineerhub.blog';
 
+// Manual overrides for questionAnswered — used when auto-generation produces poor results
+const QUESTION_OVERRIDES = {
+    'automation-in-data-engineering': 'How is automation transforming data engineering roles?',
+    'why-i-stopped-using-snowflake-tasks-orchestration': 'Why should you avoid using Snowflake Tasks for orchestration?',
+    'snowflake-cortex-code-cost-control-2026': 'How do you control Snowflake Cortex Code costs?',
+    'snowflake-cortex-code-guide-real-examples': 'What is Snowflake Cortex Code and how do you use it?',
+    'snowflake-cortex-code-dbt-optimization-guide': 'How can Snowflake Cortex Code optimize dbt build times?',
+    'snowflake-cortex-cost-comparison': 'How much do Snowflake Cortex AI functions cost?',
+    'snowflake-cortex-ai-complete-guide-2026': 'What is Snowflake Cortex AI and what can it do?',
+    'snowpro-specialty-gen-ai-practice-exams': 'How do you prepare for the SnowPro Specialty Gen AI certification?',
+    'snowflake-cortex-aisql-query-optimization-guide': 'How do you reduce Snowflake Cortex AI costs?',
+    'snowflake-intelligence-guide-setup-optimization': 'How do you set up and optimize Snowflake Intelligence?',
+    'snowflake-cost-optimization-techniques-2026': 'What are proven techniques to reduce your Snowflake bill?',
+    'snowflake-query-optimization-guide-2026': 'What Snowflake query optimization techniques actually work?',
+    'snowflake-interview-questions-answers-2026': 'What Snowflake interview questions should you prepare for?',
+    'snowflake-dynamic-tables-complete-guide-2025': 'What are Snowflake Dynamic Tables and how do you use them?',
+    'snowflake-hybrid-tables-unify-transactional-analytical-data': 'What are Snowflake Hybrid Tables?',
+    'snowflake-unique-aggregations-hidden-functions': 'What are Snowflake hidden aggregation functions you should know?',
+    'snowflake-optima-automatic-query-optimization-guide': 'What is Snowflake Optima and how does it optimize queries?',
+    'open-semantic-interchange-snowflake-ai-problem-solved': 'What is Open Semantic Interchange and how does it help AI?',
+    'star-schema-vs-snowflake-schema-comparison': 'What are the differences between star schema and snowflake schema?',
+    'data-pipelines-python': 'How do you build Python data pipelines from APIs to Snowflake?',
+    'snowflake-cortex-ai-financial-services': 'How is Snowflake Cortex AI used in financial services?',
+    'snowflake-query-optimization-2025': 'What are effective Snowflake query optimization techniques?',
+    'snowflake-merge-optimization-techniques': 'How do you optimize Snowflake MERGE queries?',
+    'what-is-incremental-data-processing-a-data-engineers-guide': 'What is incremental data processing?',
+    'how-i-passed-snowpro-gen-ai-certification-guide': 'How do you pass the SnowPro Gen AI certification exam?',
+    'snowflake-data-science-agent-automate-ml-2025': 'What is the Snowflake Data Science Agent?',
+    'meeting-notes-rag-snowflake-ai-assistant': 'How do you build a meeting notes RAG in Snowflake?',
+    'load-data-into-snowflake': 'How do you load data into Snowflake?',
+    'what-is-snowflake-guide': 'What is Snowflake and how does it work?',
+    'aws-data-pipeline-cost-optimization-strategies': 'How do you optimize AWS data pipeline costs?',
+    'advanced-snowflake-interview-questions-experienced': 'What advanced Snowflake interview questions should experienced engineers prepare for?',
+    'snowflake-expert-interview-questions': 'What are the most important expert-level Snowflake interview questions?',
+    'salesforce-copilot-custom-action-guide': 'How do you build a custom Salesforce Copilot action?',
+    'build-data-lakehouse-on-azure': 'How do you build a data lakehouse on Azure?',
+    'dynamic-data-masking-snowflake': 'How do you implement dynamic data masking in Snowflake?',
+};
+
 // Fetch all posts with full content
 async function fetchAllPosts() {
     try {
@@ -107,54 +146,76 @@ function extractEntities(content) {
 
 // Extract the primary question this article answers
 function extractQuestionAnswered(title, content) {
-    // Check if title is already a question
+    // Helper: ensure string ends with exactly one ?
+    const ensureQuestion = (s) => s.replace(/\?*$/, '?');
+
+    // Check if title is already a question (starts with question word)
     if (/^(?:what|why|how|when|where|who|can|is|are|do|does)\s/i.test(title)) {
-        return title;
+        return ensureQuestion(title);
     }
 
-    // Find first H2/H3 that is a question
-    const questionMatch = content.match(/<h[2-3][^>]*>([^<]*\?[^<]*)<\/h[2-3]>/i);
+    // Find first H2/H3 that is a proper question (must end with ?)
+    const questionMatch = content.match(/<h[2-3][^>]*>([^<]*\?)\s*<\/h[2-3]>/i);
     if (questionMatch) {
-        return questionMatch[1].replace(/<[^>]+>/g, '').trim();
+        const q = questionMatch[1].replace(/<[^>]+>/g, '').trim();
+        if (q.length > 15 && q.length < 200) return q;
     }
 
-    // Generate a natural question from the title based on content type
-    const cleanTitle = title.toLowerCase().trim();
-    // Strip trailing year (e.g., "2024", "2025") for cleaner questions
-    const titleNoYear = title.replace(/\s*[-–—]?\s*\d{4}\s*$/, '').trim();
+    // Strip trailing year and any dangling preposition/punctuation
+    const titleClean = title
+        .replace(/\s*[-–—:,]?\s*\d{4}\s*$/, '')   // remove trailing year
+        .replace(/\s+(?:in|for|of|from|by|on)\s*$/i, '')  // remove dangling preposition
+        .replace(/\s*[-–—:,]\s*$/, '')              // remove trailing punctuation
+        .trim();
+    const cleanLower = titleClean.toLowerCase();
 
-    // "How to" patterns — already imperative, just add question mark
-    if (/^how to\b/i.test(cleanTitle)) {
-        return title.endsWith('?') ? title : `${title}?`;
+    // "How to" / "How I" patterns — already imperative
+    if (/^how (?:to|i)\b/i.test(cleanLower)) {
+        return ensureQuestion(titleClean);
+    }
+
+    // "Build/Create/Deploy" imperative patterns
+    if (/^(?:build|create|deploy|design|master|automate|implement)\b/i.test(cleanLower)) {
+        return `How do you ${titleClean.charAt(0).toLowerCase() + titleClean.slice(1)}?`;
     }
 
     // "vs" comparison patterns
-    if (/\bvs\.?\b|\bversus\b/i.test(cleanTitle)) {
-        return `What are the differences between ${titleNoYear.replace(/\s*\bvs\.?\b\s*/i, ' and ')}?`;
+    if (/\bvs\.?\b|\bversus\b/i.test(cleanLower)) {
+        return `What are the differences between ${titleClean.replace(/\s*\bvs\.?\b\s*/i, ' and ')}?`;
     }
 
     // Certification/exam patterns
-    if (/certif|exam/i.test(cleanTitle)) {
-        return `How do you prepare for the ${titleNoYear}?`;
+    if (/certif|exam/i.test(cleanLower)) {
+        return `How do you prepare for the ${titleClean}?`;
     }
 
-    // Guide/tutorial patterns — ask what the subject covers
-    if (/guide|tutorial|getting started|introduction|intro\b/i.test(cleanTitle)) {
-        return `What does the ${titleNoYear} cover?`;
+    // Interview questions patterns
+    if (/interview\s*questions/i.test(cleanLower)) {
+        return `What are the most important ${titleClean.toLowerCase()}?`;
+    }
+
+    // Guide/tutorial patterns
+    if (/guide|tutorial|getting started|introduction|intro\b/i.test(cleanLower)) {
+        return `What does the ${titleClean} cover?`;
     }
 
     // Setup/configure/install patterns
-    if (/setup|configure|install|implement|deploy/i.test(cleanTitle)) {
-        return `How do you ${titleNoYear.toLowerCase()}?`;
+    if (/setup|configure|install/i.test(cleanLower)) {
+        return `How do you ${titleClean.toLowerCase()}?`;
     }
 
-    // Best practices / tips / optimization
-    if (/optimization|tuning|techniques|best practices|tips|strategies/i.test(cleanTitle)) {
-        return `What are the key ${titleNoYear.toLowerCase()}?`;
+    // Best practices / tips / optimization / techniques
+    if (/optimization|tuning|techniques|best practices|tips|strategies|proven/i.test(cleanLower)) {
+        return `What are the key ${titleClean.toLowerCase()}?`;
+    }
+
+    // "X Explained" / "Understanding X" patterns
+    if (/explained|breakdown|deep dive|overview/i.test(cleanLower)) {
+        return `What is ${titleClean.replace(/[-–—:]?\s*(?:explained|a simple breakdown|deep dive|overview)\s*/gi, '').trim()}?`;
     }
 
     // Default: simple "What is X?"
-    return `What is ${titleNoYear}?`;
+    return `What is ${titleClean}?`;
 }
 
 /** Decode HTML entities that WordPress REST API returns pre-encoded
@@ -251,7 +312,7 @@ async function generateLLMSitemap() {
                 summary: generateSummary(content, excerpt),
                 keyFacts: extractKeyFacts(stripHTML(content)),
                 entities: extractEntities(stripHTML(content)),
-                questionAnswered: extractQuestionAnswered(stripHTML(title), content),
+                questionAnswered: QUESTION_OVERRIDES[post.slug] || extractQuestionAnswered(stripHTML(title), content),
                 lastUpdated: post.modified ? post.modified.split('T')[0] : post.date.split('T')[0],
                 published: post.date.split('T')[0],
                 author: authorName,

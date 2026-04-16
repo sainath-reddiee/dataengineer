@@ -1,12 +1,17 @@
-fix: resolve HTML entity encoding issues across all generation scripts
+fix: improve questionAnswered quality, FAQ synthesis, and TOC encoding
 
-- Sitemap: fix double-encoding in image/news titles (decodeHtmlEntities before escapeXml)
-- RSS: replace invalid &apos; with &#39; (XML 1.0 compliant), handle &nbsp;/&hellip; entities
-- FAQ schema: comprehensive entity decoding in stripHTML() with generic numeric patterns
-- LLM sitemap: decode HTML entities in titles/summaries/keyFacts, improve questionAnswered quality
-- SSG: relevance-rank related articles by shared categories (+3) and tags (+1) instead of random order
-- Tag/category pages: always noindex (thin content, prior session)
-- Regenerated all outputs: sitemap.xml, rss.xml, llm-sitemap.json, 212 static pages, FAQ schemas
+- LLM sitemap: add 35 manual questionAnswered overrides for articles where
+  auto-generation produced nonsensical results (dangling prepositions,
+  "What is [title]?" on non-concept articles, double question marks)
+- LLM sitemap: improve extractQuestionAnswered() with dangling preposition
+  stripping, imperative verb handling, and ensureQuestion() helper
+- FAQ schema: skip structural headings (Step N, Part N, Prerequisites,
+  Additional Materials, etc.) that produce garbage synthesized questions
+- FAQ schema: improve synthesizeQuestion() with imperative verb patterns
+  and better grammar ("What are the X?" instead of "What are X?")
+- SSG: fix TOC double-encoding by decoding HTML entities from heading text
+  before escapeHtml() (fixes &amp;gt; appearing as literal text)
+- Regenerated llm-sitemap.json, FAQ schemas, and all 212 static pages
 
 .... Generated with [Cortex Code](https://docs.snowflake.com/en/user-guide/cortex-code/cortex-code)
 

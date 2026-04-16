@@ -160,11 +160,18 @@ function extractQAPairs(content) {
             if (qaPairs.length >= 8) break;
             const block = blocks[i];
             if ((block.tag === 'h2' || block.tag === 'h3') && !isQuestionText(block.text)) {
-                // Skip generic headings
+                // Skip generic/structural headings that make bad FAQ questions
                 const lower = block.text.toLowerCase();
                 if (['introduction', 'conclusion', 'summary', 'references', 'about',
                      'table of contents', 'tldr', 'tl;dr', 'final thoughts',
-                     'related articles', 'share this'].some(skip => lower.includes(skip))) {
+                     'related articles', 'share this', 'prerequisites', 'requirements',
+                     'additional materials', 'resources', 'next steps', 'wrap up',
+                     'key takeaways', 'further reading', 'appendix', 'changelog',
+                     'disclaimer', 'overview'].some(skip => lower.includes(skip))) {
+                    continue;
+                }
+                // Skip numbered step headings (e.g., "Step 1:", "Part 3:", "1. Do X")
+                if (/^(?:step|part)\s*\d/i.test(lower) || /^\d+[\.\)]\s/.test(block.text)) {
                     continue;
                 }
                 // Collect answer
@@ -230,19 +237,27 @@ function synthesizeQuestion(heading) {
     const vsMatch = heading.match(/^(.+?)\s+(?:vs\.?|versus)\s+(.+)$/i);
     if (vsMatch) return `What is the difference between ${vsMatch[1].trim()} and ${vsMatch[2].trim()}?`;
 
-    // Pattern: starts with verb-ing → "What is [heading]?"
-    if (/^(building|creating|implementing|deploying|configuring|setting|managing|optimizing|running|using)/i.test(lower)) {
+    // Pattern: starts with "How to" → already a question
+    if (/^how to\b/i.test(lower)) return `${heading}?`;
+
+    // Pattern: starts with verb-ing → "How does [heading] work?"
+    if (/^(building|creating|implementing|deploying|configuring|setting|managing|optimizing|running|using|monitoring|testing|debugging|migrating|scaling)/i.test(lower)) {
         return `How does ${heading} work?`;
     }
 
-    // Pattern: "Best Practices" / "Key Features" / "Benefits" → "What are [heading]?"
-    if (/(?:practices|features|benefits|advantages|strategies|techniques|tips|steps|requirements|limitations|challenges)/i.test(lower)) {
-        return `What are ${heading}?`;
+    // Pattern: starts with imperative verb → "How do you [heading]?"
+    if (/^(build|create|implement|deploy|configure|set up|manage|optimize|run|use|install|connect|integrate|automate|load|query|migrate)/i.test(lower)) {
+        return `How do you ${heading.charAt(0).toLowerCase() + heading.slice(1)}?`;
     }
 
-    // Pattern: "Architecture" / "Setup" / "Configuration" → "What is [heading]?"
-    if (/(?:architecture|setup|configuration|overview|pricing|comparison|performance|security|governance)/i.test(lower)) {
-        return `What is ${heading}?`;
+    // Pattern: plural concept nouns → "What are [heading]?"
+    if (/(?:practices|features|benefits|advantages|strategies|techniques|tips|steps|limitations|challenges|types|methods|patterns|components|modules|functions|differences|alternatives|options|examples|use cases)/i.test(lower)) {
+        return `What are the ${heading.charAt(0).toLowerCase() + heading.slice(1)}?`;
+    }
+
+    // Pattern: "Architecture" / "Pricing" / "Performance" etc. → "What is [heading]?"
+    if (/(?:architecture|pricing|comparison|performance|security|governance|cost|structure|workflow|pipeline|framework|model|schema|design)/i.test(lower)) {
+        return `What is the ${heading.charAt(0).toLowerCase() + heading.slice(1)}?`;
     }
 
     // Default: "What is [heading]?"

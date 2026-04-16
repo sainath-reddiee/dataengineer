@@ -798,7 +798,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   processedContent = processedContent.replace(
     /<(h[23])([^>]*)>([\s\S]*?)<\/\1>/gi,
     (match, tag, attrs, inner) => {
-      const text = inner.replace(/<[^>]+>/g, '').trim();
+      const text = decodeHtmlEntities(inner.replace(/<[^>]+>/g, '')).trim();
       if (!text || text.length < 3) return match;
       // Generate unique slug
       let baseSlug = text.toLowerCase()
