@@ -13,11 +13,9 @@ const SITE_URL = 'https://dataengineerhub.blog';
 // Only include pages that:
 // 1. Have a real public route in App.jsx
 // 2. Are NOT noindexed by their React component
-// 3. Are NOT already covered by sitemap-pseo-1.xml (/glossary, /compare are there)
-// 4. Have pre-rendered HTML or are meaningful indexable pages
+// 3. Have pre-rendered HTML or are meaningful indexable pages
 // Excluded: /newsletter (noindexed), /tags (noindexed), /explore (no route),
-//           /checklist (admin-only), /glossary & /compare (in pseo sitemap),
-//           /certification (noindexed + iframe-only, no pre-rendered HTML)
+//           /checklist (admin-only), /certification (noindexed + iframe-only)
 const STATIC_PAGES = [
   { url: '/', changefreq: 'daily', priority: 1.0, lastmod: 'today' },
   { url: '/articles', changefreq: 'daily', priority: 0.9, lastmod: 'today' },
@@ -26,7 +24,7 @@ const STATIC_PAGES = [
   { url: '/privacy-policy', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/disclaimer', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
-  // /cheatsheets excluded — no pre-rendered HTML, Googlebot gets SPA shell (soft 404)
+  { url: '/cheatsheets', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
 ];
 
 // Article slugs to exclude from sitemap (noindexed due to thin content <400 words)
@@ -289,6 +287,45 @@ function loadPSEOData() {
   return entries;
 }
 
+// Load cheatsheet slugs from cheatsheetData.js
+function loadCheatsheetData() {
+  const entries = [];
+  const cheatsheetPath = path.join(__dirname, '..', 'src', 'data', 'cheatsheetData.js');
+
+  if (!fs.existsSync(cheatsheetPath)) {
+    console.warn('  Warning: cheatsheetData.js not found, skipping cheatsheets');
+    return entries;
+  }
+
+  try {
+    const raw = fs.readFileSync(cheatsheetPath, 'utf-8');
+    const today = formatDate(new Date());
+
+    // Extract slug and lastUpdated from each cheatsheet entry
+    const slugRegex = /slug:\s*['"]([^'"]+)['"]/g;
+    const dateRegex = /lastUpdated:\s*['"]([^'"]+)['"]/g;
+
+    const slugs = [];
+    const dates = [];
+    let match;
+    while ((match = slugRegex.exec(raw)) !== null) slugs.push(match[1]);
+    while ((match = dateRegex.exec(raw)) !== null) dates.push(match[1]);
+
+    slugs.forEach((slug, i) => {
+      entries.push({
+        url: `${SITE_URL}/cheatsheets/${slug}`,
+        changefreq: 'monthly',
+        priority: 0.7,
+        lastmod: dates[i] || today,
+      });
+    });
+  } catch (e) {
+    console.warn(`  Warning: Could not parse cheatsheetData.js: ${e.message}`);
+  }
+
+  return entries;
+}
+
 // Determine blog post priority based on recency
 function getPostPriority(post) {
   const now = Date.now();
@@ -381,6 +418,21 @@ async function generateSitemap() {
     // Including noindexed pages in sitemap sends contradictory signals to Google
     console.log('⏭️  Skipping tag pages (all noindexed in React)...');
 
+    // pSEO pages (glossary + comparisons) — now pre-rendered with full static HTML
+    console.log('\n📖 Adding pSEO pages (glossary + comparisons)...');
+    const pseoEntries = loadPSEOData();
+    pseoEntries.forEach(entry => {
+      if (!entry.lastmod) entry.lastmod = today;
+      sitemapEntries.push(entry);
+    });
+    console.log(`✅ Added ${pseoEntries.length} pSEO pages`);
+
+    // Cheatsheet pages — pre-rendered with full static HTML
+    console.log('📋 Adding cheatsheet pages...');
+    const cheatsheetEntries = loadCheatsheetData();
+    cheatsheetEntries.forEach(entry => sitemapEntries.push(entry));
+    console.log(`✅ Added ${cheatsheetEntries.length} cheatsheet pages`);
+
     // Validate sitemap entries
     console.log('\n🔍 Validating sitemap...');
     const validationErrors = validateSitemap(sitemapEntries);
@@ -406,12 +458,7 @@ async function generateSitemap() {
 
     fs.writeFileSync(sitemapPath, sitemapXML, 'utf8');
 
-    // pSEO sitemap DISABLED — 86 glossary/comparison pages have no pre-rendered HTML,
-    // so Googlebot receives the SPA shell (soft 404 / thin content).
-    // Re-enable once pSEO pages are pre-rendered with static HTML.
-    console.log('\n⏭️  Skipping pSEO sitemap (no pre-rendered HTML for glossary/comparison pages)');
-
-    // Update sitemap-index.xml (only main sitemap, no pSEO)
+    // Update sitemap-index.xml
     const sitemapIndexXML = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
@@ -430,6 +477,8 @@ async function generateSitemap() {
     console.log(`   - Blog posts: ${posts.length}`);
     console.log(`   - Categories: ${categories.length}`);
     console.log(`   - Tags: ${tags.length}`);
+    console.log(`   - pSEO pages: ${pseoEntries.length}`);
+    console.log(`   - Cheatsheets: ${cheatsheetEntries.length}`);
     console.log(`   - News entries (last 2 days): ${newsCount}`);
 
     return sitemapEntries;
