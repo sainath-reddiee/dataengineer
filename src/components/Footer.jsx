@@ -21,7 +21,8 @@ const Footer = () => {
       { name: 'SQL Tips', href: '/category/sql' },
       { name: 'Glossary', href: '/glossary' },
       { name: 'Comparisons', href: '/compare' },
-      { name: 'Cheat Sheets', href: '/cheatsheets' }
+      { name: 'Cheat Sheets', href: '/cheatsheets' },
+      { name: 'Tags', href: '/tag' }
     ],
     tools: [
       { name: 'Airflow', href: '/category/airflow' },
