@@ -1,17 +1,6 @@
-fix: SPA race condition, Vercel rewrites, CTR improvements (ToC, OG tags, alt text, seoOverrides 100%)
+feat: add Tags link to footer Content section
 
-SPA fixes:
-- Centralize react-loaded class in App.jsx useEffect (fires after actual render)
-- Remove premature react-loaded from index.html onload and main.jsx setTimeout
-- Replace all 10 children.length polling blocks with react-mounted event listener
-- Add 7 missing Vercel rewrites for /articles, /glossary, /compare, /cheatsheets routes
-
-CTR improvements:
-- Add Table of Contents (h2/h3) with anchor IDs for Google jump-link sitelinks
-- Add article:section and article:tag OG meta tags for social signals
-- Derive image alt text from filenames for Google Image Search
-- Fix OG image from logo.png to og-image.jpg with proper dimensions
-- Add missing seoOverrides for snowpro-specialty-gen-ai (56/56 = 100%)
+Moved Tags navigation from header to footer for discoverability without taking header space.
 
 .... Generated with [Cortex Code](https://docs.snowflake.com/en/user-guide/cortex-code/cortex-code)
 
