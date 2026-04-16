@@ -968,6 +968,13 @@ ${categoryNames.length > 0 ? `    <meta property="article:section" content="${es
 
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
+    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1e293b">
+    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />
     ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
 
     <style>
@@ -1766,6 +1773,13 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
 
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
+    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1e293b">
+    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />
     ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
 
     <style>
@@ -1950,6 +1964,13 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
+  html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
+  html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
+  html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
+  html += '    <link rel="manifest" href="/manifest.json">\n';
+  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   if (productionCssFile) {
     html += '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n';
   }
@@ -2232,6 +2253,13 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
+  html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
+  html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
+  html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
+  html += '    <link rel="manifest" href="/manifest.json">\n';
+  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   html += (productionCssFile ? '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n' : '');
   html += '\n';
   html += '    <style>\n';
@@ -2524,6 +2552,13 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
+  html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
+  html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
+  html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
+  html += '    <link rel="manifest" href="/manifest.json">\n';
+  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   if (productionCssFile) {
     html += '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n';
   }
@@ -2817,6 +2852,13 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
+  html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
+  html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
+  html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
+  html += '    <link rel="manifest" href="/manifest.json">\n';
+  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   html += (productionCssFile ? '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n' : '');
   html += '\n';
   html += '    <style>\n';
@@ -3127,6 +3169,13 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
+  html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
+  html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
+  html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
+  html += '    <link rel="manifest" href="/manifest.json">\n';
+  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   if (productionCssFile) {
     html += '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n';
   }
@@ -3342,6 +3391,13 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
+  html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
+  html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
+  html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
+  html += '    <link rel="manifest" href="/manifest.json">\n';
+  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   html += (productionCssFile ? '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n' : '');
   html += '\n';
   html += '    <style>\n';
@@ -3614,6 +3670,13 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
+  html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
+  html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
+  html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
+  html += '    <link rel="manifest" href="/manifest.json">\n';
+  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   html += (productionCssFile ? '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n' : '');
   html += '\n';
   html += '    <style>\n';
@@ -3784,6 +3847,13 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
+  html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
+  html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
+  html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
+  html += '    <link rel="manifest" href="/manifest.json">\n';
+  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   if (productionCssFile) {
     html += '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n';
   }
@@ -3925,11 +3995,17 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
 
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
+    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1e293b">
+    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />
     ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
 
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
-
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
