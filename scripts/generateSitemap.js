@@ -32,6 +32,27 @@ const EXCLUDED_ARTICLE_SLUGS = [
   'snowpro-specialty-gen-ai-practice-exams', // <400 words, marked noindex by SSG
 ];
 
+// Cheatsheet slugs to exclude from sitemap (noindexed due to thin content <250 words)
+const EXCLUDED_CHEATSHEET_SLUGS = [
+  'airflow-best-practices',    // <250 words, marked noindex by SSG
+  'snowflake-best-practices',  // <250 words, marked noindex by SSG
+];
+
+/** Decode HTML entities that WordPress REST API returns pre-encoded
+ *  (e.g. &amp; for &, &#8217; for right single quote).
+ *  Decoding first prevents escapeXml() from double-encoding them. */
+function decodeHtmlEntities(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&');  // must be last
+}
+
 // Format date to W3C format (YYYY-MM-DD)
 function formatDate(dateString) {
   try {
@@ -312,6 +333,10 @@ function loadCheatsheetData() {
     while ((match = dateRegex.exec(raw)) !== null) dates.push(match[1]);
 
     slugs.forEach((slug, i) => {
+      if (EXCLUDED_CHEATSHEET_SLUGS.includes(slug)) {
+        console.log(`   ⏭️  Skipping thin cheatsheet: ${slug}`);
+        return;
+      }
       entries.push({
         url: `${SITE_URL}/cheatsheets/${slug}`,
         changefreq: 'monthly',
@@ -393,13 +418,13 @@ async function generateSitemap() {
         changefreq: 'weekly',
         priority: getPostPriority(post),
         image: imageUrl,
-        imageTitle: post.title?.rendered || post.slug.replace(/-/g, ' '),
+        imageTitle: decodeHtmlEntities(post.title?.rendered) || post.slug.replace(/-/g, ' '),
       };
 
       // Add news:news markup for articles published within the last 2 days
       if (publishDate >= twoDaysAgo) {
         entry.newsDate = publishDate.toISOString();
-        entry.newsTitle = post.title?.rendered || post.slug.replace(/-/g, ' ');
+        entry.newsTitle = decodeHtmlEntities(post.title?.rendered) || post.slug.replace(/-/g, ' ');
         newsCount++;
       }
 

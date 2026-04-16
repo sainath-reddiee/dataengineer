@@ -1942,7 +1942,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <title>' + safeName + ' - Data Engineering Articles | DataEngineer Hub</title>\n';
   html += '    <meta name="description" content="' + descriptionMeta + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta name="robots" content="' + (categoryArticles.length === 0 ? 'noindex, follow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1') + '" />\n\n';
+  html += '    <meta name="robots" content="noindex, follow" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
@@ -3825,7 +3825,7 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '    <title>' + escapeHtml(tag.name) + ' - Tagged Articles | DataEngineer Hub</title>\n';
   html += '    <meta name="description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta name="robots" content="' + (tagArticles.length === 0 ? 'noindex, follow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1') + '" />\n\n';
+  html += '    <meta name="robots" content="noindex, follow" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
@@ -4491,7 +4491,19 @@ async function buildIncremental(options = {}) {
       if (needsRebuild) {
         try {
           // 🔥 Use the FULL content generator with image processing
-          const relatedArticles = allArticleSummaries.filter(a => a.slug !== post.slug).slice(0, 10);
+          // Relevance-rank related articles by shared categories/tags
+          const postCats = new Set(post.categories || []);
+          const postTags = new Set(post.tags || []);
+          const relatedArticles = allArticleSummaries
+            .filter(a => a.slug !== post.slug)
+            .map(a => {
+              let score = 0;
+              (a.categories || []).forEach(c => { if (postCats.has(c)) score += 3; });
+              (a.tags || []).forEach(t => { if (postTags.has(t)) score += 1; });
+              return { ...a, _score: score };
+            })
+            .sort((a, b) => b._score - a._score)
+            .slice(0, 10);
           const html = generateFullArticleHTML(pageData, bundleFiles, relatedArticles);
           const filePath = path.join(distDir, pagePath, 'index.html');
           const dir = path.dirname(filePath);

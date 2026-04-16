@@ -120,38 +120,62 @@ function extractQuestionAnswered(title, content) {
 
     // Generate a natural question from the title based on content type
     const cleanTitle = title.toLowerCase().trim();
+    // Strip trailing year (e.g., "2024", "2025") for cleaner questions
+    const titleNoYear = title.replace(/\s*[-–—]?\s*\d{4}\s*$/, '').trim();
 
-    // Tutorial/guide patterns
-    if (/guide|tutorial|getting started|introduction|intro\b/i.test(cleanTitle)) {
-        return `What is ${title.replace(/[-:]?\s*(?:complete |ultimate |comprehensive )?(?:guide|tutorial|intro\w*)\s*(?:for\s+)?\d{0,4}\s*$/i, '').trim()} and how do you use it?`;
-    }
-
-    // "How to" patterns
-    if (/how to|setup|configure|install|implement|build|create|deploy/i.test(cleanTitle)) {
+    // "How to" patterns — already imperative, just add question mark
+    if (/^how to\b/i.test(cleanTitle)) {
         return title.endsWith('?') ? title : `${title}?`;
     }
 
     // "vs" comparison patterns
-    if (/\bvs\.?\b|\bversus\b|\bcompared?\b/i.test(cleanTitle)) {
-        return `${title} - which should you choose?`;
+    if (/\bvs\.?\b|\bversus\b/i.test(cleanTitle)) {
+        return `What are the differences between ${titleNoYear.replace(/\s*\bvs\.?\b\s*/i, ' and ')}?`;
     }
 
     // Certification/exam patterns
-    if (/certif|exam|pass/i.test(cleanTitle)) {
-        return `How do you prepare for and pass the ${title.replace(/[-:]?\s*(?:guide|tips)\s*\d{0,4}\s*$/i, '').trim()}?`;
+    if (/certif|exam/i.test(cleanTitle)) {
+        return `How do you prepare for the ${titleNoYear}?`;
     }
 
-    // Default: wrap as "What is" or "How does X work"
-    if (/optimization|tuning|techniques|best practices|tips/i.test(cleanTitle)) {
-        return `What are the best ${title.replace(/\d{4}\s*$/,'').trim().toLowerCase()}?`;
+    // Guide/tutorial patterns — ask what the subject covers
+    if (/guide|tutorial|getting started|introduction|intro\b/i.test(cleanTitle)) {
+        return `What does the ${titleNoYear} cover?`;
     }
 
-    return `What is ${title.replace(/\d{4}\s*$/,'').trim()} and how does it work?`;
+    // Setup/configure/install patterns
+    if (/setup|configure|install|implement|deploy/i.test(cleanTitle)) {
+        return `How do you ${titleNoYear.toLowerCase()}?`;
+    }
+
+    // Best practices / tips / optimization
+    if (/optimization|tuning|techniques|best practices|tips|strategies/i.test(cleanTitle)) {
+        return `What are the key ${titleNoYear.toLowerCase()}?`;
+    }
+
+    // Default: simple "What is X?"
+    return `What is ${titleNoYear}?`;
 }
 
-// Strip HTML tags
+/** Decode HTML entities that WordPress REST API returns pre-encoded
+ *  (e.g. &amp; for &, &#8217; for right single quote). */
+function decodeHtmlEntities(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&hellip;/g, '...')
+        .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
+        .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+        .replace(/&quot;/g, '"')
+        .replace(/&apos;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&');  // must be last
+}
+
+// Strip HTML tags and decode entities
 function stripHTML(html) {
-    return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    return decodeHtmlEntities(html.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
 }
 
 // Generate summary from content

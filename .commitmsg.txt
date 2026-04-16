@@ -1,6 +1,12 @@
-feat: add Tags link to footer Content section
+fix: resolve HTML entity encoding issues across all generation scripts
 
-Moved Tags navigation from header to footer for discoverability without taking header space.
+- Sitemap: fix double-encoding in image/news titles (decodeHtmlEntities before escapeXml)
+- RSS: replace invalid &apos; with &#39; (XML 1.0 compliant), handle &nbsp;/&hellip; entities
+- FAQ schema: comprehensive entity decoding in stripHTML() with generic numeric patterns
+- LLM sitemap: decode HTML entities in titles/summaries/keyFacts, improve questionAnswered quality
+- SSG: relevance-rank related articles by shared categories (+3) and tags (+1) instead of random order
+- Tag/category pages: always noindex (thin content, prior session)
+- Regenerated all outputs: sitemap.xml, rss.xml, llm-sitemap.json, 212 static pages, FAQ schemas
 
 .... Generated with [Cortex Code](https://docs.snowflake.com/en/user-guide/cortex-code/cortex-code)
 

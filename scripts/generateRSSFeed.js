@@ -19,13 +19,15 @@ function escapeXml(str) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
-        .replace(/'/g, '&apos;');
+        .replace(/'/g, '&#39;');
 }
 
 /** Decode common HTML entities (WordPress REST API returns pre-encoded text). */
 function decodeHtmlEntities(str) {
     if (!str) return '';
     return str
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&hellip;/g, '...')
         .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
         .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
         .replace(/&quot;/g, '"')

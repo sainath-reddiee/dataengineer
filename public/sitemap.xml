@@ -165,7 +165,7 @@
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/Designer_11zon.jpg</image:loc>
-      <image:title>Snowflake Streams &amp;amp; Tasks: SCD2 Pipeline Guide</image:title>
+      <image:title>Snowflake Streams &amp; Tasks: SCD2 Pipeline Guide</image:title>
     </image:image>
   </url>
   <url>
@@ -265,7 +265,7 @@
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/11/Copilot_20251107_080501.png</image:loc>
-      <image:title>Snowflake Intelligence Guide: Setup, Optimization &amp;amp; Real SQL Examples</image:title>
+      <image:title>Snowflake Intelligence Guide: Setup, Optimization &amp; Real SQL Examples</image:title>
     </image:image>
   </url>
   <url>
@@ -305,7 +305,7 @@
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg_11zon-2.jpg</image:loc>
-      <image:title>Salesforce Agentforce: Complete 2025 Guide &amp;amp; Examples</image:title>
+      <image:title>Salesforce Agentforce: Complete 2025 Guide &amp; Examples</image:title>
     </image:image>
   </url>
   <url>
@@ -315,7 +315,7 @@
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/C4F9EC12-CE45-4426-ACF5-6CE3A6D5A08.jpeg</image:loc>
-      <image:title>Snowflake&amp;#8217;s Unique Aggregation Functions You Need to Know</image:title>
+      <image:title>Snowflake’s Unique Aggregation Functions You Need to Know</image:title>
     </image:image>
   </url>
   <url>
@@ -325,7 +325,7 @@
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/resizefile_Designer.png</image:loc>
-      <image:title>Snowflake Dynamic Tables: Complete 2025 Guide &amp;amp; Examples</image:title>
+      <image:title>Snowflake Dynamic Tables: Complete 2025 Guide &amp; Examples</image:title>
     </image:image>
   </url>
   <url>
@@ -365,7 +365,7 @@
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg-optimizer_jpeg-3.jpg</image:loc>
-      <image:title>Open Semantic Interchange: Solving AI&amp;#8217;s $1T Problem</image:title>
+      <image:title>Open Semantic Interchange: Solving AI’s $1T Problem</image:title>
     </image:image>
   </url>
   <url>
@@ -405,7 +405,7 @@
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/dataenigneerhub.jpg</image:loc>
-      <image:title>Star Schema vs Snowflake Schema:Key Differences &amp;amp; Use Cases</image:title>
+      <image:title>Star Schema vs Snowflake Schema:Key Differences &amp; Use Cases</image:title>
     </image:image>
   </url>
   <url>
@@ -415,7 +415,7 @@
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Designer_imresizer-10.jpg</image:loc>
-      <image:title>Mastering Python Data Pipelines: Extract from APIs &amp;amp; Databases, Load to S3 &amp;amp; Snowflake</image:title>
+      <image:title>Mastering Python Data Pipelines: Extract from APIs &amp; Databases, Load to S3 &amp; Snowflake</image:title>
     </image:image>
   </url>
   <url>
@@ -425,7 +425,7 @@
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Designer_imresizer-9.jpg</image:loc>
-      <image:title>Revolutionizing Finance: A Deep Dive into Snowflake&amp;#8217;s Cortex AI</image:title>
+      <image:title>Revolutionizing Finance: A Deep Dive into Snowflake’s Cortex AI</image:title>
     </image:image>
   </url>
   <url>
@@ -475,7 +475,7 @@
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/incre.png</image:loc>
-      <image:title>What is Incremental Data Processing? A Data Engineer&amp;#8217;s Guide</image:title>
+      <image:title>What is Incremental Data Processing? A Data Engineer’s Guide</image:title>
     </image:image>
   </url>
   <url>
@@ -1177,19 +1177,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://dataengineerhub.blog/cheatsheets/snowflake-best-practices</loc>
-    <lastmod>2026-04-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://dataengineerhub.blog/cheatsheets/dbt-best-practices</loc>
-    <lastmod>2026-04-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://dataengineerhub.blog/cheatsheets/airflow-best-practices</loc>
     <lastmod>2026-04-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

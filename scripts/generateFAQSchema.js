@@ -249,20 +249,20 @@ function synthesizeQuestion(heading) {
     return `What is ${heading}?`;
 }
 
-// Strip HTML tags
+// Strip HTML tags and decode entities
 function stripHTML(html) {
     if (!html) return '';
     return html
         .replace(/<[^>]+>/g, ' ')
         .replace(/&nbsp;/g, ' ')
-        .replace(/&amp;/g, '&')
+        .replace(/&hellip;/g, '...')
+        .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
+        .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+        .replace(/&quot;/g, '"')
+        .replace(/&apos;/g, "'")
         .replace(/&lt;/g, '<')
         .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/&#8217;/g, "'")
-        .replace(/&#8220;/g, '"')
-        .replace(/&#8221;/g, '"')
-        .replace(/&#8230;/g, '...')
+        .replace(/&amp;/g, '&')  // must be last
         .replace(/\s+/g, ' ')
         .trim();
 }

@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Thu, 16 Apr 2026 06:56:34 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 16 Apr 2026 10:51:26 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -18,6 +18,16 @@
     <managingEditor>contact@dataengineerhub.blog (Sainath Reddy)</managingEditor>
     <webMaster>contact@dataengineerhub.blog (Sainath Reddy)</webMaster>
     <ttl>60</ttl>
+    <item>
+      <title>It’s Not AI You Should Worry About—It’s Automation</title>
+      <link>https://dataengineerhub.blog/articles/automation-in-data-engineering</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/automation-in-data-engineering</guid>
+      <description>I still remember the afternoon I burned four hours debugging a production pipeline — convinced the problem was in the model logic — only to find the real culprit was…</description>
+      <pubDate>Thu, 16 Apr 2026 02:46:08 GMT</pubDate>
+      <dc:creator>sainath</dc:creator>
+      <category>Python</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Data-Engineering-automation.jpg" type="image/jpeg" />
+    </item>
     <item>
       <title>Why I Stopped Using Snowflake Tasks for Orchestration</title>
       <link>https://dataengineerhub.blog/articles/why-i-stopped-using-snowflake-tasks-orchestration</link>
@@ -461,7 +471,7 @@
       <title>Data Modeling for the Modern Data Warehouse: A Guide</title>
       <link>https://dataengineerhub.blog/articles/data-modeling-modern-data-warehouse</link>
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/data-modeling-modern-data-warehouse</guid>
-      <description>&amp;nbsp;In the world of&amp;nbsp;data engineering, it’s easy to get excited about the latest tools and technologies. But before you can build powerful pipelines and insightful dashboards, you need a solid…</description>
+      <description>In the world of data engineering, it’s easy to get excited about the latest tools and technologies. But before you can build powerful pipelines and insightful dashboards, you need a solid…</description>
       <pubDate>Tue, 30 Sep 2025 06:57:44 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>SQL</category>
@@ -481,7 +491,7 @@
       <title>Snowflake Data Sharing and Governance</title>
       <link>https://dataengineerhub.blog/articles/snowflake-data-sharing-governance</link>
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-data-sharing-governance</guid>
-      <description>&amp;nbsp;In the final part of our&amp;nbsp;Snowflake&amp;nbsp;guide, we move beyond the technical implementation and into one of the most powerful strategic advantages of the platform:&amp;nbsp;governance and secure data sharing. So far,…</description>
+      <description>In the final part of our Snowflake guide, we move beyond the technical implementation and into one of the most powerful strategic advantages of the platform: governance and secure data sharing. So far,…</description>
       <pubDate>Mon, 29 Sep 2025 01:48:23 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
@@ -501,7 +511,7 @@
       <title>How to Load Data into Snowflake: Guide to Warehouse, Stages and File Format</title>
       <link>https://dataengineerhub.blog/articles/load-data-into-snowflake</link>
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/load-data-into-snowflake</guid>
-      <description>&amp;nbsp;In&amp;nbsp;Part 1&amp;nbsp;of our guide, we covered the revolutionary architecture of&amp;nbsp;Snowflake. Now, it’s time to get hands-on. A data platform is only as good as the data within it, so understanding…</description>
+      <description>In Part 1 of our guide, we covered the revolutionary architecture of Snowflake. Now, it’s time to get hands-on. A data platform is only as good as the data within it, so understanding…</description>
       <pubDate>Mon, 29 Sep 2025 01:19:16 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>Snowflake</category>
@@ -571,7 +581,7 @@
       <title>Building a Serverless Data Pipeline on AWS: A Step-by-Step Guide</title>
       <link>https://dataengineerhub.blog/articles/serverless-data-pipeline-aws</link>
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/serverless-data-pipeline-aws</guid>
-      <description>&amp;nbsp;For&amp;nbsp;data engineers, the dream is to build pipelines that are robust, scalable, and cost-effective. For years, this meant managing complex clusters and servers. But with the power of the cloud,…</description>
+      <description>For data engineers, the dream is to build pipelines that are robust, scalable, and cost-effective. For years, this meant managing complex clusters and servers. But with the power of the cloud,…</description>
       <pubDate>Fri, 26 Sep 2025 09:17:13 GMT</pubDate>
       <dc:creator>sainath</dc:creator>
       <category>AWS</category>
