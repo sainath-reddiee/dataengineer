@@ -4,8 +4,14 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Load .env so build script can read VITE_ADSENSE_PUBLISHER_ID
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+const ADSENSE_PUBLISHER_ID = process.env.VITE_ADSENSE_PUBLISHER_ID || '';
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
 const WORDPRESS_BASE_URL = 'https://app.dataengineerhub.blog';
 
@@ -970,6 +976,20 @@ ${categoryNames.length > 0 ? `    <meta property="article:section" content="${es
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
     <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">
+    <!-- Google Consent Mode v2: default to denied until user consents -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied',
+        'wait_for_update': 500
+      });
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}"
+            crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png">
     <link rel="manifest" href="/manifest.json">
@@ -1413,6 +1433,16 @@ ${categoryNames.length > 0 ? `    <meta property="article:section" content="${es
           <div class="article-body">
             ${sanitizeWordPressHTML(processedContent)}
           </div>
+
+          <!-- Static ad slot so AdSense bot can verify ad code in raw HTML -->
+          <div style="margin: 2rem 0; text-align: center;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="${ADSENSE_PUBLISHER_ID}"
+                 data-ad-slot="auto"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+          </div>
           
           ${relatedArticles.length > 0 ? `
           <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
@@ -1468,7 +1498,7 @@ ${categoryNames.length > 0 ? `    <meta property="article:section" content="${es
         "jobTitle": "Data Engineer",
         "sameAs": [
           "https://twitter.com/sainath29",
-          "https://www.linkedin.com/in/sainath-reddy-06a97817a/"
+          "https://www.linkedin.com/in/sainathreddypogaku/"
         ]
       },
       "publisher": {
@@ -1541,7 +1571,7 @@ ${categoryNames.length > 0 ? `    <meta property="article:section" content="${es
       },
       "sameAs": [
         "https://twitter.com/sainath29",
-        "https://www.linkedin.com/in/sainath-reddy-06a97817a/",
+        "https://www.linkedin.com/in/sainathreddypogaku/",
         "https://github.com/sainath-reddiee/dataengineer"
       ]
     }
@@ -1561,7 +1591,7 @@ ${categoryNames.length > 0 ? `    <meta property="article:section" content="${es
         "name": "Anblicks"
       },
       "sameAs": [
-        "https://www.linkedin.com/in/sainath-reddy-06a97817a/",
+        "https://www.linkedin.com/in/sainathreddypogaku/",
         "https://twitter.com/sainath29",
         "https://github.com/sainath-reddiee/dataengineer"
       ],
@@ -1775,6 +1805,20 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
     <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">
+    <!-- Google Consent Mode v2: default to denied until user consents -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied',
+        'wait_for_update': 500
+      });
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}"
+            crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png">
     <link rel="manifest" href="/manifest.json">
@@ -1966,6 +2010,20 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <!-- Google Consent Mode v2: default to denied until user consents -->\n';
+  html += '    <script>\n';
+  html += '      window.dataLayer = window.dataLayer || [];\n';
+  html += '      function gtag(){dataLayer.push(arguments);}\n';
+  html += '      gtag("consent", "default", {\n';
+  html += '        "ad_storage": "denied",\n';
+  html += '        "ad_user_data": "denied",\n';
+  html += '        "ad_personalization": "denied",\n';
+  html += '        "analytics_storage": "denied",\n';
+  html += '        "wait_for_update": 500\n';
+  html += '      });\n';
+  html += '    </script>\n';
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -2255,6 +2313,20 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <!-- Google Consent Mode v2: default to denied until user consents -->\n';
+  html += '    <script>\n';
+  html += '      window.dataLayer = window.dataLayer || [];\n';
+  html += '      function gtag(){dataLayer.push(arguments);}\n';
+  html += '      gtag("consent", "default", {\n';
+  html += '        "ad_storage": "denied",\n';
+  html += '        "ad_user_data": "denied",\n';
+  html += '        "ad_personalization": "denied",\n';
+  html += '        "analytics_storage": "denied",\n';
+  html += '        "wait_for_update": 500\n';
+  html += '      });\n';
+  html += '    </script>\n';
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -2554,6 +2626,20 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <!-- Google Consent Mode v2: default to denied until user consents -->\n';
+  html += '    <script>\n';
+  html += '      window.dataLayer = window.dataLayer || [];\n';
+  html += '      function gtag(){dataLayer.push(arguments);}\n';
+  html += '      gtag("consent", "default", {\n';
+  html += '        "ad_storage": "denied",\n';
+  html += '        "ad_user_data": "denied",\n';
+  html += '        "ad_personalization": "denied",\n';
+  html += '        "analytics_storage": "denied",\n';
+  html += '        "wait_for_update": 500\n';
+  html += '      });\n';
+  html += '    </script>\n';
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -2854,6 +2940,20 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <!-- Google Consent Mode v2: default to denied until user consents -->\n';
+  html += '    <script>\n';
+  html += '      window.dataLayer = window.dataLayer || [];\n';
+  html += '      function gtag(){dataLayer.push(arguments);}\n';
+  html += '      gtag("consent", "default", {\n';
+  html += '        "ad_storage": "denied",\n';
+  html += '        "ad_user_data": "denied",\n';
+  html += '        "ad_personalization": "denied",\n';
+  html += '        "analytics_storage": "denied",\n';
+  html += '        "wait_for_update": 500\n';
+  html += '      });\n';
+  html += '    </script>\n';
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -3171,6 +3271,20 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <!-- Google Consent Mode v2: default to denied until user consents -->\n';
+  html += '    <script>\n';
+  html += '      window.dataLayer = window.dataLayer || [];\n';
+  html += '      function gtag(){dataLayer.push(arguments);}\n';
+  html += '      gtag("consent", "default", {\n';
+  html += '        "ad_storage": "denied",\n';
+  html += '        "ad_user_data": "denied",\n';
+  html += '        "ad_personalization": "denied",\n';
+  html += '        "analytics_storage": "denied",\n';
+  html += '        "wait_for_update": 500\n';
+  html += '      });\n';
+  html += '    </script>\n';
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -3393,6 +3507,20 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <!-- Google Consent Mode v2: default to denied until user consents -->\n';
+  html += '    <script>\n';
+  html += '      window.dataLayer = window.dataLayer || [];\n';
+  html += '      function gtag(){dataLayer.push(arguments);}\n';
+  html += '      gtag("consent", "default", {\n';
+  html += '        "ad_storage": "denied",\n';
+  html += '        "ad_user_data": "denied",\n';
+  html += '        "ad_personalization": "denied",\n';
+  html += '        "analytics_storage": "denied",\n';
+  html += '        "wait_for_update": 500\n';
+  html += '      });\n';
+  html += '    </script>\n';
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -3672,6 +3800,20 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <!-- Google Consent Mode v2: default to denied until user consents -->\n';
+  html += '    <script>\n';
+  html += '      window.dataLayer = window.dataLayer || [];\n';
+  html += '      function gtag(){dataLayer.push(arguments);}\n';
+  html += '      gtag("consent", "default", {\n';
+  html += '        "ad_storage": "denied",\n';
+  html += '        "ad_user_data": "denied",\n';
+  html += '        "ad_personalization": "denied",\n';
+  html += '        "analytics_storage": "denied",\n';
+  html += '        "wait_for_update": 500\n';
+  html += '      });\n';
+  html += '    </script>\n';
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -3849,6 +3991,20 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
+  html += '    <!-- Google Consent Mode v2: default to denied until user consents -->\n';
+  html += '    <script>\n';
+  html += '      window.dataLayer = window.dataLayer || [];\n';
+  html += '      function gtag(){dataLayer.push(arguments);}\n';
+  html += '      gtag("consent", "default", {\n';
+  html += '        "ad_storage": "denied",\n';
+  html += '        "ad_user_data": "denied",\n';
+  html += '        "ad_personalization": "denied",\n';
+  html += '        "analytics_storage": "denied",\n';
+  html += '        "wait_for_update": 500\n';
+  html += '      });\n';
+  html += '    </script>\n';
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -3997,6 +4153,20 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
     <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">
+    <!-- Google Consent Mode v2: default to denied until user consents -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied',
+        'wait_for_update': 500
+      });
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}"
+            crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png">
     <link rel="manifest" href="/manifest.json">
@@ -4301,7 +4471,7 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
       },
       "sameAs": [
         "https://twitter.com/sainath29",
-        "https://www.linkedin.com/in/sainath-reddy-06a97817a/",
+        "https://www.linkedin.com/in/sainathreddypogaku/",
         "https://github.com/sainath-reddiee/dataengineer"
       ]
     }
@@ -4321,7 +4491,7 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
         "name": "Anblicks"
       },
       "sameAs": [
-        "https://www.linkedin.com/in/sainath-reddy-06a97817a/",
+        "https://www.linkedin.com/in/sainathreddypogaku/",
         "https://twitter.com/sainath29",
         "https://github.com/sainath-reddiee/dataengineer"
       ],

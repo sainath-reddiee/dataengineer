@@ -114,56 +114,26 @@ export function loadScriptDelayed(src, options = {}) {
 }
 
 /**
- * Load AdSense with environment checks
+ * Initialize AdSense ad queue.
+ * The adsbygoogle.js script is loaded statically in <head> (with Consent Mode v2
+ * defaulting ad_storage to 'denied'). This function only ensures the push queue
+ * exists so AdPlacement components can call adsbygoogle.push({}).
  */
 export function loadAdSense() {
-  // GDPR: Only load if user has accepted cookies
-  if (getConsentStatus() !== 'accepted') {
-    console.log('⏸️ AdSense loading deferred — waiting for cookie consent');
+  if (!areAdsEnabled()) {
+    console.log('🚫 AdSense skipped - ads disabled');
     return Promise.resolve();
   }
 
-  // Check if ads should be loaded
-  if (!areAdsEnabled()) {
-    console.log('🚫 AdSense loading skipped - ads disabled');
-    return Promise.resolve();
-  }
-  
-  // Get publisher ID
   const publisherId = getAdSensePublisherId();
   if (!publisherId) {
-    console.error('❌ Cannot load AdSense - Publisher ID not configured');
+    console.error('❌ Cannot init AdSense - Publisher ID not configured');
     return Promise.reject(new Error('AdSense Publisher ID not configured'));
   }
-  
-  // Check if already loaded
-  if (window.adsbygoogle) {
-    console.log('✅ AdSense already initialized');
-    return Promise.resolve();
-  }
 
-  console.log('📢 Loading AdSense with Publisher ID:', publisherId);
-
-  // Preconnect to ad domains
-  preconnectDomain('https://pagead2.googlesyndication.com');
-  preconnectDomain('https://googleads.g.doubleclick.net');
-
-  return loadScriptDelayed(
-    `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`,
-    {
-      id: 'adsense-script',
-      timeout: 2000,
-      waitForInteraction: true,
-      async: true
-    }
-  ).then(() => {
-    window.adsbygoogle = window.adsbygoogle || [];
-    
-    console.log('✅ AdSense loaded and initialized');
-  }).catch(error => {
-    console.error('❌ AdSense loading failed:', error);
-    throw error;
-  });
+  window.adsbygoogle = window.adsbygoogle || [];
+  console.log('✅ AdSense queue initialized (script loaded statically)');
+  return Promise.resolve();
 }
 
 /**
@@ -197,9 +167,12 @@ export function loadGoogleAnalytics(measurementId) {
     }
   ).then(() => {
     window.dataLayer = window.dataLayer || [];
-    window.gtag = function() {
-      window.dataLayer.push(arguments);
-    };
+    // gtag may already be defined by Consent Mode v2 snippet in index.html — don't overwrite
+    if (typeof window.gtag !== 'function') {
+      window.gtag = function() {
+        window.dataLayer.push(arguments);
+      };
+    }
     window.gtag('js', new Date());
     window.gtag('config', measurementId, {
       send_page_view: false,
@@ -250,6 +223,14 @@ export function initThirdPartyScripts() {
   });
   
   if (typeof window !== 'undefined') {
+    // AdSense script is loaded statically in <head> with Consent Mode v2.
+    // Just init the push queue immediately — no consent gate needed here.
+    if (areAdsEnabled()) {
+      loadAdSense().catch(err =>
+        console.error('Failed to init AdSense:', err)
+      );
+    }
+
     const loadConsentedScripts = () => {
       if (getConsentStatus() !== 'accepted') {
         console.log('⏸️ Third-party scripts deferred — waiting for cookie consent');
@@ -264,12 +245,6 @@ export function initThirdPartyScripts() {
           console.error('Failed to load Google Analytics:', err)
         );
       }
-      
-      if (areAdsEnabled()) {
-        loadAdSense().catch(err => 
-          console.error('Failed to load AdSense:', err)
-        );
-      }
     };
 
     // Attempt now (skips if no consent yet)
@@ -279,6 +254,10 @@ export function initThirdPartyScripts() {
     window.addEventListener('consentChanged', (e) => {
       if (e.detail === 'accepted') {
         loadConsentedScripts();
+      } else if (e.detail === 'revoked') {
+        console.log('⚠️ Cookie consent revoked — third-party scripts will not load on next page.');
+        // Note: Already-loaded scripts (GA, AdSense) cannot be fully unloaded at runtime.
+        // They will not re-initialize on the next navigation or page load.
       }
     });
   }

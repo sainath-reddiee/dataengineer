@@ -17,7 +17,7 @@ DataEngineer Hub publishes practical, production-tested tutorials on modern data
 - **Experience:** 4+ years in data engineering
 - **Certifications:** SnowPro certified
 - **Specializations:** Snowflake, AWS, Azure, dbt, Airflow, ETL/ELT pipelines
-- **LinkedIn:** https://www.linkedin.com/in/sainath-reddy-06a97817a/
+- **LinkedIn:** https://www.linkedin.com/in/sainathreddypogaku/
 - **GitHub:** https://github.com/sainath-reddiee/dataengineer
 
 ## Core Topic Areas

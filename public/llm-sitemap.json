@@ -11,9 +11,57 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-04-16",
-  "totalArticles": 57,
+  "lastUpdated": "2026-04-20",
+  "totalArticles": 59,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/query-snowflake-in-duckdb-cut-costs",
+      "title": "How to Query Snowflake in DuckDB (And Cut Your Bill While Doing It)",
+      "summary": "Three practical methods to query Snowflake data in DuckDB — via Iceberg tables, ADBC, or a hybrid architecture — with real cost breakdowns showing 70–90% savings on BI and dev workloads.",
+      "keyFacts": [
+        "These alone can cut spend by 20–40%",
+        "DuckDB’s benchmarks show ADBC is up to 38x faster than ODBC",
+        "ADBC (Arrow Database Connectivity) is the right tool here",
+        "Apache Arrow is a columnar memory format",
+        "The 60-second minimum means a 4-second query costs 15x what it should"
+      ],
+      "entities": [
+        "snowflake",
+        "dbt",
+        "aws",
+        "sql"
+      ],
+      "questionAnswered": "How to Query Snowflake in DuckDB (And Cut Your Bill While Doing It)?",
+      "lastUpdated": "2026-04-20",
+      "published": "2026-04-19",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "AWS",
+      "wordCount": 1633
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/dbt-tests-pass-bad-data",
+      "title": "The Problem with dbt Tests Nobody Talks About — They Pass and You Still Ship Bad Data",
+      "summary": "I’ve been running dbt in production for a while now. And I’ll be honest — there was a phase where I genuinely believed that if my dbt tests were green,…",
+      "keyFacts": [
+        "This is the quiet failure mode that nobody in the dbt community writes about loudly enough",
+        "The problem is the mental model we build around it",
+        "row_count What Actually Helps Write custom singular tests for critical models"
+      ],
+      "entities": [
+        "dbt",
+        "sql",
+        "airflow",
+        "snowflake"
+      ],
+      "questionAnswered": "What Are dbt Tests Actually Checking?",
+      "lastUpdated": "2026-04-18",
+      "published": "2026-04-17",
+      "author": "sainath",
+      "expertise": "Data Engineering Expert",
+      "category": "dbt",
+      "wordCount": 2169
+    },
     {
       "url": "https://dataengineerhub.blog/articles/automation-in-data-engineering",
       "title": "It’s Not AI You Should Worry About—It’s Automation",

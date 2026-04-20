@@ -55,12 +55,12 @@ const SectionHeader = ({
       </div>
     </div>
     {actionText && actionLink && (
-      <a
-        href={actionLink}
+      <Link
+        to={actionLink}
         className="whitespace-nowrap text-xs sm:text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors py-1 px-2 hover:bg-blue-500/10 rounded"
       >
         {actionText} →
-      </a>
+      </Link>
     )}
   </motion.div>
 );

@@ -18,7 +18,7 @@ export const SITE_CONFIG = {
     experience: '4+ years',
     url: 'https://dataengineerhub.blog/about',
     sameAs: [
-      'https://www.linkedin.com/in/sainath-reddy-06a97817a/',
+      'https://www.linkedin.com/in/sainathreddypogaku/',
       'https://github.com/sainath-reddiee/dataengineer',
       'https://twitter.com/sainath29'
     ]
@@ -26,7 +26,7 @@ export const SITE_CONFIG = {
   social: {
     twitter: '@sainath29',
     twitterHandle: 'sainath29',
-    linkedin: 'https://www.linkedin.com/in/sainath-reddy-06a97817a/',
+    linkedin: 'https://www.linkedin.com/in/sainathreddypogaku/',
     github: 'https://github.com/sainath-reddiee/dataengineer'
   },
   logo: {

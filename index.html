@@ -8,7 +8,23 @@
     <link rel="dns-prefetch" href="//giscus.app">
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
     <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">
-    
+
+    <!-- Google Consent Mode v2: default to denied until user consents -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied',
+        'wait_for_update': 500
+      });
+    </script>
+    <!-- AdSense: static tag so the AdSense bot can verify ad code in raw HTML -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728"
+            crossorigin="anonymous"></script>
+
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
     <link rel="preconnect" href="https://giscus.app" crossorigin>
     
@@ -16,7 +32,8 @@
     <meta name="description" content="In-depth tutorials on Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and modern data engineering. Master cloud platforms, data pipelines, and best practices." />
 
     <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />
-    <link rel="canonical" href="https://dataengineerhub.blog/" />
+    <!-- Canonical URL is set dynamically by MetaTags.jsx per route. No static canonical here to avoid
+         crawlers seeing the wrong canonical on non-pre-rendered pages. -->
 
     <!-- JSON-LD: Organization + WebSite schemas in static HTML so Googlebot sees them without JS -->
     <script type="application/ld+json">
@@ -208,7 +225,7 @@
       }
     </style>
     
-    <!-- AdSense is loaded dynamically via scriptLoader.js, gated by cookie consent -->
+    <!-- AdSense script is loaded statically in <head> with Consent Mode v2 (ad_storage denied by default) -->
 
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png">
@@ -217,22 +234,8 @@
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="theme-color" content="#1e293b">
 
-    <!-- Open Graph -->
-    <meta property="og:type" content="website" />
-    <meta property="og:locale" content="en_US" />
-    <meta property="og:title" content="DataEngineer Hub — Learn Snowflake, dbt, Airflow & SQL | Data Engineering Tutorials" />
-    <meta property="og:description" content="In-depth tutorials on Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and modern data engineering. Master cloud platforms, data pipelines, and best practices." />
-    <meta property="og:url" content="https://dataengineerhub.blog/" />
-    <meta property="og:site_name" content="DataEngineer Hub" />
-    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="DataEngineer Hub — Learn Snowflake, dbt, Airflow & SQL | Data Engineering Tutorials" />
-    <meta name="twitter:description" content="In-depth tutorials on Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and modern data engineering. Master cloud platforms, data pipelines, and best practices." />
-    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />
+    <!-- Open Graph and Twitter Card meta tags are set dynamically per route by MetaTags.jsx.
+         Static fallback tags removed to prevent crawlers from seeing homepage OG data on article pages. -->
     
     <script>
       // Performance mark
@@ -252,7 +255,8 @@
   </head>
   <body>
     <div id="root">
-      <!-- ✅ CRITICAL: Static content visible by default for SEO -->
+      <!-- ✅ CRITICAL: Static content visible by default for SEO.
+           Hidden via CSS when body.react-loaded is set by App.jsx after React mounts. -->
       <div class="seo-fallback">
         <h1>DataEngineer Hub - Master Data Engineering</h1>
         
@@ -261,6 +265,18 @@
           Our expert tutorials cover everything from cloud platforms to data orchestration tools, 
           helping you build a successful career in data engineering.
         </p>
+
+        <nav aria-label="Main topics">
+          <ul style="list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:0.5rem 1rem;">
+            <li><a href="/articles">All Articles</a></li>
+            <li><a href="/category/snowflake">Snowflake</a></li>
+            <li><a href="/category/aws">AWS</a></li>
+            <li><a href="/category/python">Python</a></li>
+            <li><a href="/glossary">Glossary</a></li>
+            <li><a href="/cheatsheets">Cheat Sheets</a></li>
+            <li><a href="/about">About</a></li>
+          </ul>
+        </nav>
         
         <div class="topics">
           <div class="topic-card">
@@ -293,13 +309,14 @@
             <p>Get career advice, interview preparation tips, and insights into the data engineering field.</p>
           </div>
         </div>
-        
-        <noscript>
-          <p style="margin-top: 2rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444;">
-            <strong>JavaScript Required:</strong> Please enable JavaScript to access the full website with interactive features and all articles.
-          </p>
-        </noscript>
       </div>
+
+      <!-- noscript lives OUTSIDE seo-fallback so it is never hidden by the react-loaded class -->
+      <noscript>
+        <p style="margin-top: 2rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444;">
+          <strong>JavaScript Required:</strong> Please enable JavaScript to access the full website with interactive features and all articles.
+        </p>
+      </noscript>
       
       <!-- Loading spinner - hidden by default, shown only when React starts -->
       <div class="loading-container">
@@ -314,9 +331,10 @@
     <!-- Performance monitoring -->
     <script>
       window.addEventListener('load', function() {
-        // react-loaded class is now set by App.jsx useEffect (after actual React render)
-        // Only do performance monitoring here
-        document.body.classList.remove('react-loading');
+        // IMPORTANT: Do NOT remove 'react-loading' here. App.jsx useEffect handles the
+        // react-loading → react-loaded transition after React actually renders.
+        // Removing it here causes a race condition where the SEO fallback disappears
+        // before React content is painted, showing a blank screen.
         
         if (typeof performance !== 'undefined' && performance.mark) {
           performance.mark('page-loaded');

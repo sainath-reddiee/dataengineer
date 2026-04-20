@@ -1,6 +1,6 @@
 # DataEngineer Hub - Full Content Index for LLMs
-> Last generated: 2026-04-16
-> Total articles: 56
+> Last generated: 2026-04-20
+> Total articles: 59
 > Source: https://dataengineerhub.blog
 > Compact version: https://dataengineerhub.blog/llms.txt
 > Structured data: https://dataengineerhub.blog/llm-sitemap.json
@@ -9,6 +9,74 @@ This file provides a comprehensive content index designed for large language mod
 Each article includes its URL, summary, key headings, and primary topics.
 
 ---
+
+## AWS (3 articles)
+
+### How to Query Snowflake in DuckDB (And Cut Your Bill While Doing It)
+- URL: https://dataengineerhub.blog/articles/query-snowflake-in-duckdb-cut-costs
+- Published: 2026-04-19 | Updated: 2026-04-20
+- Word count: ~1633
+- Summary: I&#8217;ve been building on Snowflake long enough to know the ritual. Warehouse wakes up. Query runs in three seconds. Warehouse idles. You get billed for sixty seconds anyway. Multiply that by every analyst, every BI dashboard refresh, every dbt run in your dev environment — and suddenly you&#8217;
+
+### AWS Data Pipeline Cost Optimization Strategies
+- URL: https://dataengineerhub.blog/articles/aws-data-pipeline-cost-optimization-strategies
+- Published: 2025-09-29 | Updated: 2025-10-08
+- Word count: ~985
+- Summary: Building a powerful data pipeline on AWS is one thing. Building one that doesn&#8217;t burn a hole in your company&#8217;s budget is another. As data volumes grow, the costs associated with storage, compute, and data transfer can quickly spiral out of control. For an experienced data engineer, maste
+- Key sections: 2. Go Serverless with AWS Glue and Lambda | 3. Use Spot Instances for Batch Workloads | 4. Choose the Right File Format (Hello, Parquet!) | 5. Monitor and Alert with AWS Budgets | Conclusion
+
+### Building a Serverless Data Pipeline on AWS: A Step-by-Step Guide
+- URL: https://dataengineerhub.blog/articles/serverless-data-pipeline-aws
+- Published: 2025-09-26 | Updated: 2025-10-08
+- Word count: ~1085
+- Summary: &nbsp;For&nbsp;data engineers, the dream is to build pipelines that are robust, scalable, and cost-effective. For years, this meant managing complex clusters and servers. But with the power of the cloud, a new paradigm has emerged: the&nbsp; serverless data pipeline on AWS . This approach allows you
+- Key sections: The Architecture: A Four-Part Harmony | Step 1: Setting Up the S3 Data Lake Buckets | Step 2: Creating the Lambda Trigger | Step 3: Transforming Data with AWS Glue | Step 4: Querying Processed Data with Amazon Athena | Conclusion: The Power of Serverless
+
+## dbt (3 articles)
+
+### The Problem with dbt Tests Nobody Talks About — They Pass and You Still Ship Bad Data
+- URL: https://dataengineerhub.blog/articles/dbt-tests-pass-bad-data
+- Published: 2026-04-17 | Updated: 2026-04-18
+- Word count: ~2169
+- Summary: I&#8217;ve been running dbt in production for a while now. And I&#8217;ll be honest — there was a phase where I genuinely believed that if my dbt tests were green, I was good. Green means clean, right?
+- Key sections: What Are dbt Tests Actually Checking? | The Scenario That Broke Me | The Three Gaps Nobody Talks About | 1. Volume Drift — Records Disappear and Nothing Breaks | 2. Business Logic Correctness — The Math Can Still Be Wrong | 3. Silent Join Fan-Out and Record Loss | What Actually Helps | The Mindset Shift
+
+### Snowflake Native dbt Integration: Complete 2025 Guide
+- URL: https://dataengineerhub.blog/articles/snowflake-native-dbt-integration-2025-guide
+- Published: 2025-10-17 | Updated: 2025-10-17
+- Word count: ~1277
+- Summary: Snowflake native dbt integration announced at Summit 2025 eliminates the need for separate containers or VMs to run dbt Core. Data teams can now execute dbt transformations directly within Snowflake, with built-in lineage tracking, logging, and job scheduling through Snowsight. This breakthrough sim
+- Key sections: Run dbt Core Directly in Snowflake Without Infrastructure | What Is Snowflake Native dbt Integration? | Key Benefits | How Native dbt Integration Works | Execution Architecture | Setting Up Native dbt Integration | Prerequisites | Step-by-Step Implementation
+
+### Structuring dbt Projects in Snowflake: The Definitive Guide
+- URL: https://dataengineerhub.blog/articles/dbt-projects-snowflake-structure
+- Published: 2025-09-25 | Updated: 2025-10-08
+- Word count: ~1111
+- Summary: If you’ve ever inherited a dbt project, you know there are two kinds: the clean, logical, and easy-to-navigate project, and the other kind—a tangled mess of models that makes you question every life choice that led you to that moment. The difference between the two isn&#8217;t talent; it&#8217;s str
+- Key sections: Why dbt and Snowflake Are a Perfect Match | The Layered Approach: From Raw Data to Actionable Insights | Layer 1: Declaring Your Sources (The Contract with Raw Data) | Layer 2: Staging Models (Clean and Standardize) | Layer 3: Intermediate Models (Build, Join, and Aggregate) | Layer 4: Data Marts (Ready for Analysis) | Conclusion: Structure is Freedom
+
+## Python (3 articles)
+
+### It’s Not AI You Should Worry About—It’s Automation
+- URL: https://dataengineerhub.blog/articles/automation-in-data-engineering
+- Published: 2026-04-16 | Updated: 2026-04-16
+- Word count: ~1636
+- Summary: I still remember the afternoon I burned four hours debugging a production pipeline — convinced the problem was in the model logic — only to find the real culprit was a manual data prep step where someone had quietly introduced a column name inconsistency. No alerts. No schema validation. Just silent
+- Key sections: TL;DR | Why Reliable Data Pipelines Are a Business Problem, Not Just a Technical One | Beyond Scheduling : Event-Based Triggers Are Underused | Where AI Actually Fits in Data Engineering | Common Automation Mistakes I&#8217;ve Made (and Watched Others Make) | Testing and CI/CD for Data Pipelines | DataOps: The Operational Layer People Skip | When to Automate and When Not To
+
+### Build RAG in Snowflake: Complete Cortex Search Guide 2025
+- URL: https://dataengineerhub.blog/articles/build-rag-snowflake-cortex-search-guide
+- Published: 2025-11-10 | Updated: 2025-11-10
+- Word count: ~5758
+- Summary: When I first heard about building Retrieval-Augmented Generation (RAG) systems directly in Snowflake, I’ll admit I was skeptical. Could a data warehouse really handle AI workloads this seamlessly? After spending countless hours experimenting with Snowflake Cortex Search, I’m here to tell you – it’s 
+- Key sections: What is RAG and Why Should You Care? | Why Build RAG in Snowflake? | Prerequisites | Step 1: Setting Up Your Snowflake Environment | Step 2: Preparing Your Document Data | Step 3: Creating a Cortex Search Service | Step 4: Testing Your Search Service | Step 5: Building the RAG Query Function
+
+### Mastering Python Data Pipelines: Extract from APIs &amp; Databases, Load to S3 &amp; Snowflake
+- URL: https://dataengineerhub.blog/articles/data-pipelines-python
+- Published: 2025-10-07 | Updated: 2025-10-08
+- Word count: ~933
+- Summary: In today&#8217;s data-driven world, creating robust data pipelines solutions is essential for businesses to handle large volumes of information efficiently. Whether you&#8217;re pulling data from RESTful APIs or external databases, the goal is to extract, transform, and load (ETL) it reliably. This 
+- Key sections: Introduction to Data Pipelines in Python | Why Use Python for Data Pipelines? | Step 1: Extracting Data from APIs | Step 2: Extracting Data from External Databases | Step 3: Transforming Data (Optional ETL Step) | Step 4: Loading Data to Amazon S3 | Step 5: Loading Data into Snowflake | Best Practices for Data Pipelines in Python
 
 ## Snowflake (38 articles)
 
@@ -297,38 +365,6 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Summary: In the world of data, consistency is king. Manually running scripts to fetch and process data is not just tedious; it&#8217;s prone to errors, delays, and gaps in your analytics. To build a reliable data-driven culture, you need automation. This is where building an automated ETL with Airflow and Py
 - Key sections: The Architecture: A Simple, Powerful Workflow | Step 1: The Python ETL Script | Step 2: Creating the Airflow DAG | Step 3: The Analytics Payoff | Conclusion: Build Once, Benefit Forever
 
-## Python (2 articles)
-
-### Build RAG in Snowflake: Complete Cortex Search Guide 2025
-- URL: https://dataengineerhub.blog/articles/build-rag-snowflake-cortex-search-guide
-- Published: 2025-11-10 | Updated: 2025-11-10
-- Word count: ~5758
-- Summary: When I first heard about building Retrieval-Augmented Generation (RAG) systems directly in Snowflake, I’ll admit I was skeptical. Could a data warehouse really handle AI workloads this seamlessly? After spending countless hours experimenting with Snowflake Cortex Search, I’m here to tell you – it’s 
-- Key sections: What is RAG and Why Should You Care? | Why Build RAG in Snowflake? | Prerequisites | Step 1: Setting Up Your Snowflake Environment | Step 2: Preparing Your Document Data | Step 3: Creating a Cortex Search Service | Step 4: Testing Your Search Service | Step 5: Building the RAG Query Function
-
-### Mastering Python Data Pipelines: Extract from APIs &amp; Databases, Load to S3 &amp; Snowflake
-- URL: https://dataengineerhub.blog/articles/data-pipelines-python
-- Published: 2025-10-07 | Updated: 2025-10-08
-- Word count: ~933
-- Summary: In today&#8217;s data-driven world, creating robust data pipelines solutions is essential for businesses to handle large volumes of information efficiently. Whether you&#8217;re pulling data from RESTful APIs or external databases, the goal is to extract, transform, and load (ETL) it reliably. This 
-- Key sections: Introduction to Data Pipelines in Python | Why Use Python for Data Pipelines? | Step 1: Extracting Data from APIs | Step 2: Extracting Data from External Databases | Step 3: Transforming Data (Optional ETL Step) | Step 4: Loading Data to Amazon S3 | Step 5: Loading Data into Snowflake | Best Practices for Data Pipelines in Python
-
-## dbt (2 articles)
-
-### Snowflake Native dbt Integration: Complete 2025 Guide
-- URL: https://dataengineerhub.blog/articles/snowflake-native-dbt-integration-2025-guide
-- Published: 2025-10-17 | Updated: 2025-10-17
-- Word count: ~1277
-- Summary: Snowflake native dbt integration announced at Summit 2025 eliminates the need for separate containers or VMs to run dbt Core. Data teams can now execute dbt transformations directly within Snowflake, with built-in lineage tracking, logging, and job scheduling through Snowsight. This breakthrough sim
-- Key sections: Run dbt Core Directly in Snowflake Without Infrastructure | What Is Snowflake Native dbt Integration? | Key Benefits | How Native dbt Integration Works | Execution Architecture | Setting Up Native dbt Integration | Prerequisites | Step-by-Step Implementation
-
-### Structuring dbt Projects in Snowflake: The Definitive Guide
-- URL: https://dataengineerhub.blog/articles/dbt-projects-snowflake-structure
-- Published: 2025-09-25 | Updated: 2025-10-08
-- Word count: ~1111
-- Summary: If you’ve ever inherited a dbt project, you know there are two kinds: the clean, logical, and easy-to-navigate project, and the other kind—a tangled mess of models that makes you question every life choice that led you to that moment. The difference between the two isn&#8217;t talent; it&#8217;s str
-- Key sections: Why dbt and Snowflake Are a Perfect Match | The Layered Approach: From Raw Data to Actionable Insights | Layer 1: Declaring Your Sources (The Contract with Raw Data) | Layer 2: Staging Models (Clean and Standardize) | Layer 3: Intermediate Models (Build, Join, and Aggregate) | Layer 4: Data Marts (Ready for Analysis) | Conclusion: Structure is Freedom
-
 ## Salesforce (2 articles)
 
 ### Your First Salesforce Copilot Action : A 5-Step Guide
@@ -399,22 +435,6 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Word count: ~749
 - Summary: Every data professional knows the power of GROUP BY . It’s the trusty tool we all learn first, allowing us to aggregate data and calculate metrics like total sales per category or the number of users per city. But what happens when the questions get more complex?
 - Key sections: What Are Window Functions, Really? | The Core Syntax | Practical Examples: From Theory to Insight | 1. Calculating a Running Total | 2. Ranking Rows within a Group ( RANK ,&nbsp; DENSE_RANK ,&nbsp; ROW_NUMBER ) | 3. Comparing to Previous/Next Rows ( LAG &nbsp;and&nbsp; LEAD ) | Conclusion: Go Beyond&nbsp; GROUP BY
-
-## AWS (2 articles)
-
-### AWS Data Pipeline Cost Optimization Strategies
-- URL: https://dataengineerhub.blog/articles/aws-data-pipeline-cost-optimization-strategies
-- Published: 2025-09-29 | Updated: 2025-10-08
-- Word count: ~985
-- Summary: Building a powerful data pipeline on AWS is one thing. Building one that doesn&#8217;t burn a hole in your company&#8217;s budget is another. As data volumes grow, the costs associated with storage, compute, and data transfer can quickly spiral out of control. For an experienced data engineer, maste
-- Key sections: 2. Go Serverless with AWS Glue and Lambda | 3. Use Spot Instances for Batch Workloads | 4. Choose the Right File Format (Hello, Parquet!) | 5. Monitor and Alert with AWS Budgets | Conclusion
-
-### Building a Serverless Data Pipeline on AWS: A Step-by-Step Guide
-- URL: https://dataengineerhub.blog/articles/serverless-data-pipeline-aws
-- Published: 2025-09-26 | Updated: 2025-10-08
-- Word count: ~1085
-- Summary: &nbsp;For&nbsp;data engineers, the dream is to build pipelines that are robust, scalable, and cost-effective. For years, this meant managing complex clusters and servers. But with the power of the cloud, a new paradigm has emerged: the&nbsp; serverless data pipeline on AWS . This approach allows you
-- Key sections: The Architecture: A Four-Part Harmony | Step 1: Setting Up the S3 Data Lake Buckets | Step 2: Creating the Lambda Trigger | Step 3: Transforming Data with AWS Glue | Step 4: Querying Processed Data with Amazon Athena | Conclusion: The Power of Serverless
 
 ---
 

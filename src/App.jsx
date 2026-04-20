@@ -71,7 +71,9 @@ const RouteChangeTracker = ({ onRouteChange }) => {
 
   useEffect(() => {
     if (typeof performance !== "undefined" && performance.mark) {
-      performance.mark(`route-${location.pathname}-${Date.now()}`);
+      // Use a fixed mark name and clear previous entries to avoid unbounded growth
+      performance.clearMarks('route-change');
+      performance.mark('route-change');
     }
 
     trackPageView(location.pathname + location.search);

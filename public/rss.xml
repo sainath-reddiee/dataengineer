@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Thu, 16 Apr 2026 10:51:26 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 20 Apr 2026 04:44:14 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -18,6 +18,29 @@
     <managingEditor>contact@dataengineerhub.blog (Sainath Reddy)</managingEditor>
     <webMaster>contact@dataengineerhub.blog (Sainath Reddy)</webMaster>
     <ttl>60</ttl>
+    <item>
+      <title>How to Query Snowflake in DuckDB (And Cut Your Bill While Doing It)</title>
+      <link>https://dataengineerhub.blog/articles/query-snowflake-in-duckdb-cut-costs</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/query-snowflake-in-duckdb-cut-costs</guid>
+      <description>Three practical methods to query Snowflake data in DuckDB — via Iceberg tables, ADBC, or a hybrid architecture — with real cost breakdowns showing 70–90% savings on BI and dev workloads.</description>
+      <pubDate>Sun, 19 Apr 2026 06:39:09 GMT</pubDate>
+      <dc:creator>sainath</dc:creator>
+      <category>AWS</category>
+      <category>dbt</category>
+      <category>Snowflake</category>
+      <category>SQL</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/04/19D3D99C-0012-453B-B706-032B99A24AAB_11zon.jpg" type="image/jpeg" />
+    </item>
+    <item>
+      <title>The Problem with dbt Tests Nobody Talks About — They Pass and You Still Ship Bad Data</title>
+      <link>https://dataengineerhub.blog/articles/dbt-tests-pass-bad-data</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/dbt-tests-pass-bad-data</guid>
+      <description>I’ve been running dbt in production for a while now. And I’ll be honest — there was a phase where I genuinely believed that if my dbt tests were green,…</description>
+      <pubDate>Fri, 17 Apr 2026 10:41:12 GMT</pubDate>
+      <dc:creator>sainath</dc:creator>
+      <category>dbt</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/04/dbt-tests-bad-data.jpg" type="image/jpeg" />
+    </item>
     <item>
       <title>It’s Not AI You Should Worry About—It’s Automation</title>
       <link>https://dataengineerhub.blog/articles/automation-in-data-engineering</link>

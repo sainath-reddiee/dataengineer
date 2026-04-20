@@ -1,110 +1,45 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 // Mobile-specific optimization component
+// Uses CSS class toggles on <body> instead of direct DOM mutation.
+// Individual image src rewriting has been removed — it caused double downloads
+// and bypassed React's rendering. Use CSS or responsive <picture>/<srcset> instead.
+
 const MobileOptimization = () => {
   useEffect(() => {
-    // Defer optimizations to avoid blocking FCP
-    const applyOptimizations = () => {
-      // Detect mobile device
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const isSmallScreen = window.innerWidth <= 768;
+    let debounceTimer;
 
-      if (isMobile || isSmallScreen) {
-        // Apply mobile-specific optimizations
-        optimizeForMobile();
+    const applyLayout = () => {
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        document.body.classList.add('mobile-optimized');
+      } else {
+        document.body.classList.remove('mobile-optimized');
       }
     };
 
-    // Run after paint to avoid blocking FCP/LCP
+    // Apply on mount (deferred to avoid blocking FCP)
     if ('requestIdleCallback' in window) {
-      requestIdleCallback(applyOptimizations, { timeout: 2000 });
+      requestIdleCallback(() => applyLayout(), { timeout: 2000 });
     } else {
-      // Fallback for Safari
-      setTimeout(applyOptimizations, 100);
+      setTimeout(applyLayout, 100);
     }
 
-    // Listen for orientation changes and resize events
+    // Debounced resize handler
     const handleResize = () => {
-      if (window.innerWidth <= 768) {
-        optimizeForMobile();
-      } else {
-        optimizeForDesktop();
-      }
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(applyLayout, 150);
     };
 
     window.addEventListener('resize', handleResize);
     window.addEventListener('orientationchange', handleResize);
 
     return () => {
+      clearTimeout(debounceTimer);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleResize);
     };
   }, []);
-
-  const optimizeForMobile = () => {
-    // Reduce image quality and size for mobile
-    const images = document.querySelectorAll('img');
-    images.forEach(img => {
-      if (!img.dataset.optimized) {
-        // Skip hero/critical images that need eager loading for LCP
-        if (img.loading === 'eager' || img.getAttribute('fetchpriority')) {
-          img.dataset.optimized = 'true';
-          return;
-        }
-        // Add loading="lazy" for non-critical images
-        img.loading = 'lazy';
-        img.decoding = 'async';
-
-        // Add mobile-specific classes
-        img.classList.add('mobile-optimized');
-        img.dataset.optimized = 'true';
-
-        // Optimize image URLs if they contain size parameters
-        if (img.src && img.src.includes('w=')) {
-          const mobileUrl = img.src
-            .replace(/w=\d+/g, 'w=400')
-            .replace(/h=\d+/g, 'h=300')
-            .replace(/quality=\d+/g, 'quality=80');
-          img.src = mobileUrl;
-        }
-      }
-    });
-
-    // Disable heavy animations on mobile
-    document.body.classList.add('mobile-optimized');
-
-    // Reduce backdrop-filter blur on mobile for better performance
-    const elements = document.querySelectorAll('.glass-effect, .blog-card, .tech-card');
-    elements.forEach(el => {
-      el.style.backdropFilter = 'blur(5px)';
-    });
-
-    // Optimize fonts for mobile
-    optimizeFontsForMobile();
-  };
-
-  const optimizeForDesktop = () => {
-    document.body.classList.remove('mobile-optimized');
-
-    // Restore full backdrop-filter blur on desktop
-    const elements = document.querySelectorAll('.glass-effect, .blog-card, .tech-card');
-    elements.forEach(el => {
-      el.style.backdropFilter = '';
-    });
-  };
-
-  const optimizeFontsForMobile = () => {
-    // Ensure fonts are loaded efficiently
-    if ('fonts' in document) {
-      document.fonts.ready.then(() => {
-        // Font loading complete
-        console.log('✅ Fonts loaded successfully');
-      });
-    }
-
-    // Self-hosted Inter variable font is already preloaded in index.html
-    // No additional font preloading needed
-  };
 
   return null; // This component doesn't render anything
 };

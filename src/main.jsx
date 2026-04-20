@@ -7,29 +7,6 @@ import App from '@/App';
 import '@/index.css';
 import { initThirdPartyScripts } from '@/utils/scriptLoader';
 
-// Simple minimal loader for Suspense fallback
-const PageLoader = () => (
-  <div style={{
-    minHeight: '100vh',
-    background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    gap: '1rem'
-  }}>
-    <div style={{
-      width: '32px',
-      height: '32px',
-      border: '4px solid #60a5fa',
-      borderTopColor: 'transparent',
-      borderRadius: '50%',
-      animation: 'spin 1s linear infinite'
-    }}></div>
-    <p style={{ color: '#93c5fd', fontWeight: '500' }}>Loading...</p>
-  </div>
-);
-
 // Note: Font preloading is handled in index.html with proper preload tags
 // This avoids duplicate requests and improves FCP
 
@@ -64,9 +41,7 @@ const initApp = () => {
     <React.StrictMode>
       <HelmetProvider>
         <BrowserRouter>
-          <React.Suspense fallback={<PageLoader />}>
-            <App />
-          </React.Suspense>
+          <App />
         </BrowserRouter>
       </HelmetProvider>
     </React.StrictMode>
