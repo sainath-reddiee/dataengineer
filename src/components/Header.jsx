@@ -235,9 +235,10 @@ const Header = ({ topOffset = 0 }) => {
     }
   }, [openDropdown]);
 
-  // Close dropdown on route change (e.g., clicking a link inside the menu)
+  // Close dropdown AND mobile menu on route change (e.g., clicking a link inside the menu)
   useEffect(() => {
     setOpenDropdown(null);
+    setMobileMenuOpen(false);
     if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
   }, [currentPath]);
 

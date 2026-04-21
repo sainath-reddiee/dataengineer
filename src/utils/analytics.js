@@ -69,7 +69,7 @@ export const trackEvent = ({ action, category, label, value }) => {
     value: value,
   });
   
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.log('📊 Event tracked:', { action, category, label, value });
   }
 };

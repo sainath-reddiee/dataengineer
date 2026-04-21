@@ -56,9 +56,14 @@ const MetaTags = ({
   }
 
   // Generate canonical URL (always use SITE_CONFIG.url to avoid staging/preview domain leaks)
+  // Strip trailing slash so canonical stays consistent with SSG shells regardless of
+  // how the host serves the URL (Hostinger appends "/" for directory index pages).
+  const runtimePath = typeof window !== 'undefined'
+    ? (window.location.pathname !== '/' ? window.location.pathname.replace(/\/+$/, '') : '/')
+    : '';
   const currentUrl = url
     ? ensureAbsoluteUrl(url)
-    : `${SITE_CONFIG.url}${typeof window !== 'undefined' ? window.location.pathname : ''}`;
+    : `${SITE_CONFIG.url}${runtimePath}`;
 
   // Get image URL
   const fullImage = getImageUrl(image);

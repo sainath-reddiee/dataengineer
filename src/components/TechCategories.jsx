@@ -173,7 +173,7 @@ const TechCategories = () => {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center mb-8 sm:mb-12">
             <div className="flex items-center justify-center gap-4 mb-4 sm:mb-6 flex-wrap">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Explore <span className="gradient-text">Technologies</span></h2>
-              {process.env.NODE_ENV === 'development' && (<button onClick={refreshCategories} className="p-2 bg-blue-500/20 rounded-full hover:bg-blue-500/30 transition-colors" title="Refresh categories"><RefreshCw className="h-4 w-4 text-blue-400" /></button>)}
+              {import.meta.env.DEV && (<button onClick={refreshCategories} className="p-2 bg-blue-500/20 rounded-full hover:bg-blue-500/30 transition-colors" title="Refresh categories"><RefreshCw className="h-4 w-4 text-blue-400" /></button>)}
             </div>
             <p className="text-base sm:text-lg text-gray-300 max-w-2xl mx-auto px-4">Deep dive into the tools and platforms that power modern data engineering</p>
           </motion.div>
