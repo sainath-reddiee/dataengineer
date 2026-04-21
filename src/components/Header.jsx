@@ -406,12 +406,12 @@ const Header = ({ topOffset = 0 }) => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-2 lg:space-x-3 xl:space-x-4 2xl:space-x-6">
+            <div className="hidden xl:flex items-center space-x-2 xl:space-x-3 2xl:space-x-6">
             {/* Home */}
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/" 
-                className={`font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
+                className={`whitespace-nowrap font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
                   isHomeActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
@@ -432,7 +432,7 @@ const Header = ({ topOffset = 0 }) => {
                     whileHover={{ y: -2 }}
                     onMouseEnter={() => openDropdownWithCancel(key)}
                     onMouseLeave={closeDropdownWithDelay}
-                    className={`flex items-center gap-1.5 font-medium text-sm 2xl:text-base transition-all duration-200 ${
+                    className={`whitespace-nowrap flex items-center gap-1.5 font-medium text-sm 2xl:text-base transition-all duration-200 ${
                       isActive 
                         ? 'text-blue-400' 
                         : 'text-gray-300 hover:text-blue-400'
@@ -464,7 +464,7 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/glossary" 
-                className={`font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
+                className={`whitespace-nowrap font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
                   isGlossaryActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
@@ -479,7 +479,7 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/compare" 
-                className={`font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
+                className={`whitespace-nowrap font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
                   isCompareActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
@@ -494,7 +494,7 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/cheatsheets" 
-                className={`font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
+                className={`whitespace-nowrap font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
                   isCheatSheetsActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
@@ -509,7 +509,7 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link
                 to="/tools"
-                className="font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 text-gray-300 hover:text-blue-400"
+                className="whitespace-nowrap font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 text-gray-300 hover:text-blue-400"
               >
                 <FileText className="w-4 h-4 hidden 2xl:inline-block" />
                 Tools
@@ -519,7 +519,7 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/certification" 
-                className={`font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
+                className={`whitespace-nowrap font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
                   isCertificationActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
@@ -539,7 +539,7 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/about" 
-                className={`font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
+                className={`whitespace-nowrap font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
                   isAboutActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
@@ -555,7 +555,7 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="flex items-center gap-2 text-gray-300 hover:text-blue-400 transition-all duration-200 font-medium text-sm 2xl:text-base"
+                className="whitespace-nowrap flex items-center gap-2 text-gray-300 hover:text-blue-400 transition-all duration-200 font-medium text-sm 2xl:text-base"
                 title="Search (Ctrl+K)"
               >
                 <Search className="w-4 h-4" />
@@ -577,7 +577,7 @@ const Header = ({ topOffset = 0 }) => {
           </div>
 
           {/* Mobile Menu Button - FIXED WITH ACCESSIBILITY */}
-          <div className="lg:hidden">
+          <div className="xl:hidden">
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setMobileMenuOpen(!isMenuOpen)}
