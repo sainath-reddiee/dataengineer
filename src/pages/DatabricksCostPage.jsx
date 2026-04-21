@@ -382,6 +382,47 @@ export default function DatabricksCostPage() {
         </div>
 
         <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">How Databricks pricing works</h2>
+          <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+            <p>
+              Databricks bills in <strong>DBUs</strong> (Databricks Units) — a normalized unit of
+              compute-hours. Your total bill is always the sum of two parallel invoices:
+            </p>
+            <p className="font-mono text-xs bg-slate-900/70 border border-slate-700 rounded-lg p-3 text-orange-300">
+              total = (DBUs × $/DBU rate) + (cloud VM hours × VM $/hr)
+            </p>
+            <p>
+              The <strong>DBU rate</strong> depends on three factors: the SKU (Jobs, All-Purpose,
+              SQL), the tier (Standard / Premium / Enterprise), and whether you're running Photon.
+              Classic All-Purpose compute on Premium is ~$0.55/DBU; Photon Jobs compute can be under
+              $0.22. <strong>Serverless</strong> SQL bundles DBU + VM into one line item but is
+              usually 30–40% more per effective compute-hour.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">Worked example: nightly ETL cluster</h2>
+          <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+            <p>
+              A nightly Spark job runs on a <strong>Jobs compute</strong> cluster with 8× i3.2xlarge
+              workers for 2 hours, Premium tier ($0.15/DBU), Photon enabled:
+            </p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li>Worker DBU rate per node: ~2 DBU/hr × 8 nodes = 16 DBU/hr</li>
+              <li>+ driver: ~2 DBU/hr → <strong>18 DBU/hr total</strong></li>
+              <li>Compute (DBU): 18 × 2h × $0.15 = <span className="font-mono text-green-400">$5.40</span></li>
+              <li>Cloud VMs (AWS on-demand): ~$0.624/hr × 9 nodes × 2h = <span className="font-mono text-green-400">$11.23</span></li>
+              <li><strong>Per run: $16.63 · 30 runs/month: ~$499</strong></li>
+            </ul>
+            <p>
+              Switching that cluster to <strong>spot instances</strong> can cut the VM line ~70% →
+              monthly drops to ~$235. The DBU side doesn't change unless you switch SKU or tier.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
           <h2 className="text-2xl font-semibold text-white mb-4">Related tools & guides</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link to="/tools/snowflake-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-orange-500 rounded-xl">

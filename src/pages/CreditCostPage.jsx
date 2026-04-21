@@ -252,6 +252,48 @@ export default function CreditCostPage() {
         </div>
 
         <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">How the calculation works</h2>
+          <div className="prose prose-invert max-w-none text-gray-300 text-sm leading-relaxed space-y-3">
+            <p>
+              Snowflake bills compute in <strong>credits</strong>. A credit is not a fixed dollar
+              amount — its USD value is a product of three inputs: the <strong>region base price</strong>
+              {' '}(what AWS us-east-1 charges vs. Azure West Europe), the <strong>edition multiplier</strong>
+              {' '}(Standard 1.0x → Enterprise 1.5x → Business Critical 2.0x → VPS 2.5x), and the
+              number of credits consumed.
+            </p>
+            <p className="font-mono text-xs bg-slate-900/70 border border-slate-700 rounded-lg p-3 text-blue-300">
+              total_usd = credits × region.base_price × edition.multiplier
+            </p>
+            <p>
+              This calculator applies <em>list</em> pricing — the same number Snowflake shows on its
+              public pricing page. On-demand accounts pay list. Capacity (committed) contracts
+              typically see 20–40% negotiated discounts on top of these numbers.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">Worked example</h2>
+          <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+            <p>
+              Suppose your team burns <strong>5,000 credits in a month</strong> on the Enterprise
+              edition running in AWS us-east-1 (base price $2.00/credit).
+            </p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li>Base rate: <span className="font-mono text-white">$2.00/credit</span></li>
+              <li>Edition multiplier (Enterprise): <span className="font-mono text-white">1.5x</span></li>
+              <li>Effective rate: <span className="font-mono text-white">$2.00 × 1.5 = $3.00/credit</span></li>
+              <li>Monthly bill: <span className="font-mono text-green-400">5,000 × $3.00 = $15,000</span></li>
+            </ul>
+            <p>
+              Upgrading that same workload to Business Critical (2.0x) would move the bill to
+              $20,000 — a 33% increase — which is why you should only elect Business Critical when
+              you genuinely need HIPAA/PCI compliance, tri-secret-secure, or failover.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
           <h2 className="text-2xl font-semibold text-white mb-4">Related tools & guides</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link to="/tools/snowflake-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">

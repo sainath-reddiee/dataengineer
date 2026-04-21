@@ -649,6 +649,88 @@ export default function CostCalculatorPage() {
           </div>
         </div>
 
+        {/* How the calculation works */}
+        <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">How the calculation works</h2>
+          <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+            <p>
+              A Snowflake bill has three independent line items: <strong>compute</strong>,
+              <strong> storage</strong>, and <strong>serverless / cloud services</strong>. This
+              calculator adds them together and applies your edition multiplier.
+            </p>
+            <p className="font-mono text-xs bg-slate-900/70 border border-slate-700 rounded-lg p-3 text-blue-300">
+              monthly_bill = (warehouse_credits × hours × edition_mult × credit_price)<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;+ (storage_TB × $23)<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;+ serverless_credits × credit_price
+            </p>
+            <p>
+              <strong>Warehouse credits</strong> follow the T-shirt scale: XS = 1 cr/hr, S = 2, M = 4,
+              L = 8, XL = 16, doubling each step up to 6XL = 512. <strong>Auto-suspend</strong> kills
+              idle charges — a warehouse set to suspend after 60 seconds can cut compute by 30–50%
+              vs. the default 10 minutes.
+            </p>
+            <p>
+              <strong>Storage</strong> is $23/TB/month on-demand (cheaper on capacity), covering both
+              active + time-travel + fail-safe. <strong>Cloud services</strong> are free up to 10% of
+              daily compute — above that you pay per credit.
+            </p>
+          </div>
+        </div>
+
+        {/* Worked example */}
+        <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">Worked example: a mid-size analytics team</h2>
+          <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+            <p>
+              A 30-person analytics team running Enterprise (1.5x) on AWS us-east-1 ($2/credit):
+            </p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li>One <strong>Medium</strong> BI warehouse (4 cr/hr) × 10 business hours × 22 days = 880 credits</li>
+              <li>One <strong>Large</strong> ETL warehouse (8 cr/hr) × 2 hours × 30 days = 480 credits</li>
+              <li>Snowpipe + Tasks + auto-clustering serverless ≈ 150 credits/mo</li>
+              <li><strong>Total credits:</strong> ~1,510 × $2 × 1.5 = <span className="text-green-400 font-mono">$4,530</span> compute</li>
+              <li>Storage: 8 TB × $23 = <span className="text-green-400 font-mono">$184</span></li>
+              <li><strong>All-in monthly: ~$4,714</strong></li>
+            </ul>
+            <p>
+              Switch the BI warehouse to <strong>auto-suspend at 60s</strong> and right-size the ETL
+              warehouse to Medium with multi-cluster (max=2) and you can typically trim 25–35% —
+              bringing the same workload to ~$3,100/month.
+            </p>
+          </div>
+        </div>
+
+        {/* Related tools */}
+        <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">Related calculators & tools</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <Link to="/tools/snowflake-credit-cost" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl transition-colors">
+              <div className="text-blue-300 font-medium mb-1">Credit → USD converter →</div>
+              <div className="text-gray-400 text-sm">Quick credit-to-dollar conversion by edition and region.</div>
+            </Link>
+            <Link to="/tools/snowflake-query-cost-estimator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl transition-colors">
+              <div className="text-blue-300 font-medium mb-1">Query Cost Estimator →</div>
+              <div className="text-gray-400 text-sm">Estimate the cost of a single query from bytes scanned.</div>
+            </Link>
+            <Link to="/tools/snowflake-warehouse-sizing" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl transition-colors">
+              <div className="text-blue-300 font-medium mb-1">Warehouse Sizing Estimator →</div>
+              <div className="text-gray-400 text-sm">Pick the right T-shirt size for your workload.</div>
+            </Link>
+            <Link to="/tools/databricks-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl transition-colors">
+              <div className="text-blue-300 font-medium mb-1">Databricks Cost Calculator →</div>
+              <div className="text-gray-400 text-sm">Compare DBU-based pricing head-to-head.</div>
+            </Link>
+            <Link to="/tools/bigquery-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl transition-colors">
+              <div className="text-blue-300 font-medium mb-1">BigQuery Cost Calculator →</div>
+              <div className="text-gray-400 text-sm">On-demand ($6.25/TB) vs. Editions slot pricing.</div>
+            </Link>
+            <Link to="/tools/dbt-cloud-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl transition-colors">
+              <div className="text-blue-300 font-medium mb-1">dbt Cloud Cost Calculator →</div>
+              <div className="text-gray-400 text-sm">Price out Developer, Team and Enterprise seats.</div>
+            </Link>
+          </div>
+        </div>
+
         {/* FAQ */}
         <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6">
           <h2 className="text-2xl font-semibold text-white mb-4">

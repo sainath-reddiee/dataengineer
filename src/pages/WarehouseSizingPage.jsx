@@ -345,6 +345,47 @@ export default function WarehouseSizingPage() {
         </div>
 
         <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">How the sizing recommendation works</h2>
+          <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+            <p>
+              Snowflake warehouse sizes follow a doubling pattern: each step up
+              <strong> doubles both the credit rate and the compute power</strong> (cores, memory,
+              local SSD). The recommendation engine balances three signals:
+            </p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li><strong>Working-set size</strong> vs. local cache — if your hottest data fits in the warehouse's SSD, scans go 5–10x faster.</li>
+              <li><strong>Concurrency</strong> — BI workloads with &gt;8 concurrent users usually need multi-cluster, not a bigger single warehouse.</li>
+              <li><strong>Query shape</strong> — heavy joins and window functions benefit most from size bumps; simple filters rarely do.</li>
+            </ul>
+            <p className="font-mono text-xs bg-slate-900/70 border border-slate-700 rounded-lg p-3 text-blue-300">
+              Size up when queries spill to remote storage. Add clusters when queries queue. Never both at once.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">Worked example: BI dashboard with 40 users</h2>
+          <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+            <p>
+              A Tableau deployment where 40 analysts hit dashboards sporadically throughout the day
+              (avg 3 concurrent, peak 15). Data volume per query: 2–20 GB. Current setup:
+              <strong> 1× Large (8 cr/hr)</strong>, always-on during business hours = $1,920/month on Enterprise.
+            </p>
+            <p>The estimator recommends:</p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li>Drop to <strong>Medium</strong> (4 cr/hr) with <strong>multi-cluster max=3</strong></li>
+              <li>Set auto-suspend to <strong>60s</strong> (default 10 min wastes money between clicks)</li>
+              <li>Expected monthly: ~$850 — <span className="text-green-400">~56% savings</span></li>
+            </ul>
+            <p>
+              Why it works: with bursty BI traffic, you only pay for the extra clusters when queries
+              actually queue. The dashboard feels <em>faster</em> because cluster 2/3 spin up in
+              seconds when load spikes, instead of piling work onto a single big warehouse.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
           <h2 className="text-2xl font-semibold text-white mb-4">Related tools & guides</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link to="/tools/snowflake-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">

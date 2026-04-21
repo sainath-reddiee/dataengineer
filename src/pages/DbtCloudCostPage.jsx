@@ -326,6 +326,56 @@ export default function DbtCloudCostPage() {
         </div>
 
         <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">How dbt Cloud pricing works</h2>
+          <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+            <p>
+              dbt Cloud's bill has two components layered on top of the free Developer tier:
+              <strong> seats</strong> and <strong>successful model builds</strong>. A "build" is any
+              successful run of a model or test — reruns after a failure don't count, but each test
+              does.
+            </p>
+            <p className="font-mono text-xs bg-slate-900/70 border border-slate-700 rounded-lg p-3 text-emerald-300">
+              monthly = (developer_seats × $100) + (read_only_seats × $0) + overage_builds × $0.01
+            </p>
+            <p>
+              Team ($100/developer/mo) includes <strong>15,000 builds/month</strong>; Enterprise is
+              custom-negotiated but generally lands between $4k–$15k/mo for typical mid-market teams
+              depending on seat count and SSO/audit requirements.
+            </p>
+            <p>
+              <strong>Important:</strong> this bill is <em>on top of</em> your warehouse cost (the
+              SQL dbt generates still runs on Snowflake/BigQuery/Databricks). When pricing a
+              platform change, always model both together.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">Worked example: 8-person analytics team</h2>
+          <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+            <p>
+              8 analytics engineers, 220 dbt models, runs every 2 hours (12 runs/day), plus a CI
+              check on every PR (~50 PRs/month):
+            </p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li>Daily builds: 220 × 12 × 30 ≈ 79,200</li>
+              <li>+ tests (~1 per model): ~79,200 more</li>
+              <li>+ CI runs: 50 × 220 × 2 ≈ 22,000</li>
+              <li><strong>Monthly total: ~180,000 builds</strong></li>
+              <li>Team plan covers 15,000 + 8 seats × $100 = $800 base</li>
+              <li>Overage: 165,000 × $0.01 = <span className="font-mono text-yellow-400">$1,650</span></li>
+              <li><strong>Team all-in: ~$2,450/month</strong> — Enterprise custom contract often cheaper at this volume</li>
+            </ul>
+            <p>
+              At this volume, consider: (1) enabling <strong>state:modified+</strong> in CI to only
+              build changed models (cuts CI builds 80%+), (2) moving hourly-ish jobs to every 4 hours
+              on non-critical marts, (3) requesting an Enterprise quote — the flat-fee tier often
+              wins past ~100k builds/month.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
           <h2 className="text-2xl font-semibold text-white mb-4">Related tools & guides</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link to="/tools/databricks-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-emerald-500 rounded-xl">

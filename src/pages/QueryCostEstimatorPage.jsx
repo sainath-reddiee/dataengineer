@@ -307,6 +307,46 @@ export default function QueryCostEstimatorPage() {
         </div>
 
         <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">How the query-cost formula works</h2>
+          <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+            <p>
+              A Snowflake query bills you for the wall-clock time the warehouse is executing it.
+              Credits are prorated to the second (with a 60-second minimum once the warehouse
+              resumes). The estimator uses:
+            </p>
+            <p className="font-mono text-xs bg-slate-900/70 border border-slate-700 rounded-lg p-3 text-blue-300">
+              query_cost = (bytes_scanned / scan_throughput) × (credits_per_hour / 3600) × $/credit
+            </p>
+            <p>
+              <strong>Scan throughput</strong> varies by warehouse size — Snowflake roughly doubles
+              throughput each size step. <strong>Partition pruning</strong> and
+              <strong> clustering</strong> are the two largest levers: a well-clustered date column
+              can reduce bytes_scanned by 10–100x on time-series tables.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">Worked example</h2>
+          <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+            <p>
+              A dashboard query scans <strong>250 GB</strong> and runs on a <strong>Medium</strong>
+              warehouse (4 credits/hr) for ~18 seconds on Enterprise ($3/credit effective):
+            </p>
+            <ul className="list-disc pl-6 space-y-1">
+              <li>Runtime: <span className="font-mono text-white">18s</span></li>
+              <li>Credits consumed: <span className="font-mono text-white">4 × (18/3600) = 0.020</span></li>
+              <li>Cost per run: <span className="font-mono text-green-400">0.020 × $3 = $0.06</span></li>
+              <li>Ran 500× per day by 30 analysts: <span className="font-mono text-green-400">$30/day → ~$900/month</span></li>
+            </ul>
+            <p>
+              Adding a clustering key that prunes the scan to 25 GB cuts runtime 10x → <strong>$90/month</strong>.
+              That single change often pays for several hours of engineering time in a week.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
           <h2 className="text-2xl font-semibold text-white mb-4">Related tools & guides</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link to="/tools/snowflake-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
