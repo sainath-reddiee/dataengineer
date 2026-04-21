@@ -1518,6 +1518,15 @@ ${categoryNames.length > 0 ? `    <meta property="article:section" content="${es
 
           ${tocHtml}
 
+          ${slug === 'snowflake-cost-optimization-techniques-2026' ? `
+          <!-- Contextual CTA: drive readers to the interactive cost calculator -->
+          <aside class="calculator-promo" style="background:linear-gradient(90deg,#1e3a8a 0%,#6b21a8 100%);border-radius:12px;padding:1.1rem 1.4rem;margin:0 0 1.75rem 0;box-shadow:0 4px 14px rgba(107,33,168,0.25);">
+            <a href="/tools/snowflake-cost-calculator" style="color:#ffffff;text-decoration:none;font-weight:600;font-size:1rem;display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+              <span style="font-size:1.3rem;" aria-hidden="true">🧮</span>
+              <span>Try our free Snowflake Cost Calculator — estimate your monthly spend in seconds →</span>
+            </a>
+          </aside>` : ''}
+
           <!-- 🔥 THIS IS THE KEY: FULL HTML CONTENT WITH IMAGES -->
           <div class="article-body">
             ${sanitizeWordPressHTML(processedContent)}
