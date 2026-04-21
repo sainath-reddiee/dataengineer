@@ -565,6 +565,40 @@ const ESSENTIAL_PAGES = [
       <h2>Related Tools</h2>
       <p>See the <a href="/tools/snowflake-cost-calculator">full cost calculator</a> for total monthly spend modeling, the <a href="/tools/snowflake-query-cost-estimator">query cost estimator</a> for single-query pricing, and the <a href="/tools/snowflake-credit-cost">credit-to-USD converter</a> for quick price lookups. See also <a href="/articles/snowflake-cost-optimization-techniques-2026">12 Snowflake cost optimization techniques</a>.</p>
     `
+  },
+  {
+    path: '/tools',
+    title: 'Free Snowflake Calculators & Cost Tools 2026 | DataEngineer Hub',
+    description: 'Free Snowflake cost calculator, query cost estimator, warehouse sizing tool, and credit-to-USD converter. No login, instant results.',
+    content: `
+      <h1>Free Snowflake Calculators and Tools</h1>
+      <p><strong>Estimate costs, size warehouses, and price individual queries</strong> - all in your browser, no login required. Shareable URLs preserve every input, so you can send a configured estimate to your team with a single link.</p>
+
+      <h2>Our 4 free Snowflake tools</h2>
+      <ul>
+        <li><strong><a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a></strong> - full monthly spend estimator. Model compute, storage, Snowpipe, Cortex AI, and serverless feature costs across all editions and regions.</li>
+        <li><strong><a href="/tools/snowflake-credit-cost">Credit -&gt; USD Converter</a></strong> - instant credit price lookup. Convert any credit count to USD across Standard, Enterprise, Business Critical, and VPS editions for every supported cloud region.</li>
+        <li><strong><a href="/tools/snowflake-query-cost-estimator">Query Cost Estimator</a></strong> - price per query from bytes scanned and warehouse size. Includes the 60-second resume minimum and scales to daily and monthly totals.</li>
+        <li><strong><a href="/tools/snowflake-warehouse-sizing">Warehouse Sizing Estimator</a></strong> - recommends a starting warehouse size (XS to 6XL) from workload type, data volume, and concurrency. Shows one-size-up and one-size-down cost comparison.</li>
+      </ul>
+
+      <h2>Which tool should I use?</h2>
+      <ul>
+        <li><strong>Planning a new workload?</strong> Start with the Warehouse Sizing Estimator to pick a size, then use the Cost Calculator to model monthly spend.</li>
+        <li><strong>Optimizing a slow query?</strong> Use the Query Cost Estimator to compare cost before and after applying clustering keys, Search Optimization Service, or materialized views.</li>
+        <li><strong>Reviewing an invoice?</strong> Plug credit counts from ACCOUNT_USAGE into the Credit Converter for quick dollar-value checks.</li>
+        <li><strong>Chargeback or showback?</strong> Run the Query Cost Estimator on your top 5-10 queries, multiply by monthly volume, and allocate by team.</li>
+      </ul>
+
+      <h2>Are these tools free?</h2>
+      <p>Yes. Every tool on this page is free, requires no login, and stores nothing on our servers. All calculations run in your browser. Share the configured URL with your team - the query string preserves all inputs.</p>
+
+      <h2>How accurate are the estimates?</h2>
+      <p>Estimates use Snowflake's publicly documented list pricing as of 2026. Actual invoiced cost depends on your contract (capacity deals typically discount 20-40% off list), regional pricing, and real usage patterns. Always verify against ACCOUNT_USAGE views for authoritative billing data.</p>
+
+      <h2>Related reading</h2>
+      <p>For deeper guidance, read our articles on <a href="/articles/snowflake-cost-optimization-techniques-2026">12 Snowflake cost optimization techniques</a> and <a href="/category/snowflake">our Snowflake category</a> for tutorials on warehouse tuning, query performance, and ACCOUNT_USAGE analysis.</p>
+    `
   }
 ];
 
@@ -1580,6 +1614,7 @@ ${categoryNames.length > 0 ? `    <meta property="article:section" content="${es
             <li><a href="https://dataengineerhub.blog/glossary">Glossary</a></li>
             <li><a href="https://dataengineerhub.blog/compare">Compare</a></li>
             <li><a href="https://dataengineerhub.blog/cheatsheets">Cheatsheets</a></li>
+            <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
             <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
           </ul>
@@ -1630,6 +1665,18 @@ ${categoryNames.length > 0 ? `    <meta property="article:section" content="${es
               <span style="font-size:1.3rem;" aria-hidden="true">🧮</span>
               <span>Try our free Snowflake Cost Calculator — estimate your monthly spend in seconds →</span>
             </a>
+          </aside>` : ''}
+
+          ${(categoryNames || []).some(c => String(c).toLowerCase() === 'snowflake') ? `
+          <!-- Related Tools aside: every Snowflake article gets 4 tool links for internal linking + user discovery -->
+          <aside class="related-tools" style="background:#0f172a;border:1px solid rgba(96,165,250,0.25);border-radius:12px;padding:1.1rem 1.4rem;margin:0 0 1.75rem 0;">
+            <h3 style="color:#93c5fd;font-size:1rem;margin:0 0 0.6rem;font-weight:600;">Free Snowflake Tools</h3>
+            <ul style="list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr;gap:0.45rem;">
+              <li><a href="/tools/snowflake-cost-calculator" style="color:#60a5fa;text-decoration:none;font-weight:500;">Snowflake Cost Calculator</a> <span style="color:#94a3b8;font-size:0.9rem;">&mdash; full monthly spend estimator</span></li>
+              <li><a href="/tools/snowflake-query-cost-estimator" style="color:#60a5fa;text-decoration:none;font-weight:500;">Query Cost Estimator</a> <span style="color:#94a3b8;font-size:0.9rem;">&mdash; cost per query from bytes scanned</span></li>
+              <li><a href="/tools/snowflake-warehouse-sizing" style="color:#60a5fa;text-decoration:none;font-weight:500;">Warehouse Sizing</a> <span style="color:#94a3b8;font-size:0.9rem;">&mdash; pick XS&ndash;6XL for your workload</span></li>
+              <li><a href="/tools/snowflake-credit-cost" style="color:#60a5fa;text-decoration:none;font-weight:500;">Credit &rarr; USD Converter</a> <span style="color:#94a3b8;font-size:0.9rem;">&mdash; instant credit price lookup</span></li>
+            </ul>
           </aside>` : ''}
 
           <!-- 🔥 THIS IS THE KEY: FULL HTML CONTENT WITH IMAGES -->
@@ -4646,6 +4693,7 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
             <li><a href="https://dataengineerhub.blog/glossary">Glossary</a></li>
             <li><a href="https://dataengineerhub.blog/compare">Compare</a></li>
             <li><a href="https://dataengineerhub.blog/cheatsheets">Cheatsheets</a></li>
+            <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
             <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
           </ul>

@@ -34,6 +34,7 @@ const CheatSheetHubPage = lazy(() => import('./pages/CheatSheetHubPage'));
 const CheatSheetPage = lazy(() => import('./pages/CheatSheetPage'));
 
 // Tools (interactive public calculators)
+const ToolsHubPage = lazy(() => import('./pages/ToolsHubPage'));
 const CostCalculatorPage = lazy(() => import('./pages/CostCalculatorPage'));
 const CreditCostPage = lazy(() => import('./pages/CreditCostPage'));
 const QueryCostEstimatorPage = lazy(() => import('./pages/QueryCostEstimatorPage'));
@@ -231,6 +232,11 @@ function App() {
           <Route path="cheatsheets/:slug" element={
             <Suspense fallback={<LoadingFallback text="Loading Cheat Sheet..." />}>
               <CheatSheetPage />
+            </Suspense>
+          } />
+          <Route path="tools" element={
+            <Suspense fallback={<LoadingFallback text="Loading Tools..." />}>
+              <ToolsHubPage />
             </Suspense>
           } />
           <Route path="tools/snowflake-cost-calculator" element={

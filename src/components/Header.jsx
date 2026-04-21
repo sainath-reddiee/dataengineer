@@ -505,6 +505,16 @@ const Header = ({ topOffset = 0 }) => {
                 Cheat Sheets
               </Link>
             </motion.div>
+            {/* Tools */}
+            <motion.div whileHover={{ y: -2 }}>
+              <Link
+                to="/tools"
+                className="font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 text-gray-300 hover:text-blue-400"
+              >
+                <FileText className="w-4 h-4 hidden 2xl:inline-block" />
+                Tools
+              </Link>
+            </motion.div>
             {/* ✅ NEW: Certification Tab */}
             <motion.div whileHover={{ y: -2 }}>
               <Link 
@@ -644,6 +654,10 @@ const Header = ({ topOffset = 0 }) => {
                 <Link to="/cheatsheets" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
                   <FileText className="w-5 h-5" />
                   Cheat Sheets
+                </Link>
+                <Link to="/tools" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                  <FileText className="w-5 h-5" />
+                  Tools
                 </Link>
                 {/* ✅ NEW: Certification Tab (Mobile) */}
                 <Link to="/certification" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
