@@ -603,7 +603,7 @@ const Header = ({ topOffset = 0 }) => {
               className="lg:hidden mt-4 pb-4 border-t border-slate-700/50 pt-4 bg-slate-900/95 backdrop-blur-xl rounded-xl px-4 shadow-2xl"
             >
               <div className="flex flex-col space-y-3">
-                <Link to="/" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                <Link to="/" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
                   <Home className="w-5 h-5" />
                   Home
                 </Link>
@@ -634,7 +634,7 @@ const Header = ({ topOffset = 0 }) => {
                               key={item.name}
                               to={item.path}
                               className="block text-gray-300 hover:text-white py-3 pl-3 rounded hover:bg-slate-700/50 transition-colors min-h-[48px] flex items-center"
-                            >
+                             onClick={() => setMobileMenuOpen(false)}>
                               {item.name}
                             </Link>
                           ))}
@@ -644,28 +644,28 @@ const Header = ({ topOffset = 0 }) => {
                   </div>
                 ))}
 
-                <Link to="/glossary" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                <Link to="/glossary" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
                   <BookOpen className="w-5 h-5" />
                   Glossary
                 </Link>
-                <Link to="/compare" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                <Link to="/compare" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
                   <GitCompareArrows className="w-5 h-5" />
                   Comparisons
                 </Link>
-                <Link to="/cheatsheets" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                <Link to="/cheatsheets" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
                   <FileText className="w-5 h-5" />
                   Cheat Sheets
                 </Link>
-                <Link to="/tools" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                <Link to="/tools" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
                   <FileText className="w-5 h-5" />
                   Tools
                 </Link>
                 {/* ✅ NEW: Certification Tab (Mobile) */}
-                <Link to="/certification" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                <Link to="/certification" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
                   <Award className="w-5 h-5" />
                   Certification
                 </Link>
-                <Link to="/about" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]">
+                <Link to="/about" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
                   <Info className="w-5 h-5" />
                   About
                 </Link>
@@ -679,7 +679,7 @@ const Header = ({ topOffset = 0 }) => {
                 <Link
                   to="/articles"
                   className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white w-full mt-4 py-3 text-base font-bold shadow-lg rounded-full text-center min-h-[48px] flex items-center justify-center"
-                >
+                 onClick={() => setMobileMenuOpen(false)}>
                   Explore Articles
                 </Link>
               </div>
