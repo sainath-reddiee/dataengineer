@@ -568,13 +568,15 @@ const ESSENTIAL_PAGES = [
   },
   {
     path: '/tools',
-    title: 'Free Snowflake Calculators & Cost Tools 2026 | DataEngineer Hub',
-    description: 'Free Snowflake cost calculator, query cost estimator, warehouse sizing tool, and credit-to-USD converter. No login, instant results.',
+    title: 'Free Data Engineering Tools 2026 | DataEngineer Hub',
+    description: 'Free tools for data engineers: Snowflake, Databricks, and dbt Cloud cost calculators, warehouse sizing, SQL formatter, cron builder, JSON-to-SQL DDL. No login.',
     content: `
-      <h1>Free Snowflake Calculators and Tools</h1>
-      <p><strong>Estimate costs, size warehouses, and price individual queries</strong> - all in your browser, no login required. Shareable URLs preserve every input, so you can send a configured estimate to your team with a single link.</p>
+      <h1>Free Data Engineering Tools and Calculators</h1>
+      <p><strong>Estimate costs, size warehouses, format SQL, build cron schedules, and convert JSON to DDL</strong> - all in your browser, no login required. Shareable URLs preserve every input, so you can send a configured estimate to your team with a single link.</p>
 
-      <h2>Our 4 free Snowflake tools</h2>
+      <h2>Our free data engineering tools</h2>
+
+      <h3>Snowflake cost tools</h3>
       <ul>
         <li><strong><a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a></strong> - full monthly spend estimator. Model compute, storage, Snowpipe, Cortex AI, and serverless feature costs across all editions and regions.</li>
         <li><strong><a href="/tools/snowflake-credit-cost">Credit -&gt; USD Converter</a></strong> - instant credit price lookup. Convert any credit count to USD across Standard, Enterprise, Business Critical, and VPS editions for every supported cloud region.</li>
@@ -582,22 +584,39 @@ const ESSENTIAL_PAGES = [
         <li><strong><a href="/tools/snowflake-warehouse-sizing">Warehouse Sizing Estimator</a></strong> - recommends a starting warehouse size (XS to 6XL) from workload type, data volume, and concurrency. Shows one-size-up and one-size-down cost comparison.</li>
       </ul>
 
+      <h3>Databricks &amp; dbt cost tools</h3>
+      <ul>
+        <li><strong><a href="/tools/databricks-cost-calculator">Databricks Cost Calculator</a></strong> - DBU + underlying cloud VM pricing estimator. Pick SKU (Jobs, All-Purpose, SQL, Serverless), cluster size, and runtime hours across AWS, Azure, and GCP.</li>
+        <li><strong><a href="/tools/dbt-cloud-cost-calculator">dbt Cloud Cost Calculator</a></strong> - price dbt Cloud plans by developer seats, successful model runs, and job concurrency. Compares Developer, Team, and Enterprise tiers.</li>
+      </ul>
+
+      <h3>SQL &amp; data productivity tools</h3>
+      <ul>
+        <li><strong><a href="/tools/sql-formatter">SQL Formatter</a></strong> - beautify messy SQL instantly. Handles Snowflake, BigQuery, PostgreSQL, and ANSI SQL with configurable indent size and keyword case.</li>
+        <li><strong><a href="/tools/cron-expression-builder">Cron Expression Builder</a></strong> - build and validate cron expressions visually. Preview the next 5 fire times and copy schedules for Airflow, dbt Cloud, Snowflake Tasks, or Databricks Jobs.</li>
+        <li><strong><a href="/tools/json-to-sql-ddl">JSON to SQL DDL</a></strong> - paste a JSON sample, get a CREATE TABLE statement. Supports Snowflake VARIANT, PostgreSQL JSONB, BigQuery STRUCT, and standard SQL types.</li>
+      </ul>
+
       <h2>Which tool should I use?</h2>
       <ul>
-        <li><strong>Planning a new workload?</strong> Start with the Warehouse Sizing Estimator to pick a size, then use the Cost Calculator to model monthly spend.</li>
-        <li><strong>Optimizing a slow query?</strong> Use the Query Cost Estimator to compare cost before and after applying clustering keys, Search Optimization Service, or materialized views.</li>
-        <li><strong>Reviewing an invoice?</strong> Plug credit counts from ACCOUNT_USAGE into the Credit Converter for quick dollar-value checks.</li>
-        <li><strong>Chargeback or showback?</strong> Run the Query Cost Estimator on your top 5-10 queries, multiply by monthly volume, and allocate by team.</li>
+        <li><strong>Planning a new Snowflake workload?</strong> Start with the <a href="/tools/snowflake-warehouse-sizing">Warehouse Sizing Estimator</a> to pick a size, then use the <a href="/tools/snowflake-cost-calculator">Cost Calculator</a> to model monthly spend.</li>
+        <li><strong>Optimizing a slow Snowflake query?</strong> Use the <a href="/tools/snowflake-query-cost-estimator">Query Cost Estimator</a> to compare cost before and after applying clustering keys, Search Optimization Service, or materialized views.</li>
+        <li><strong>Reviewing a Snowflake invoice?</strong> Plug credit counts from ACCOUNT_USAGE into the <a href="/tools/snowflake-credit-cost">Credit Converter</a> for quick dollar-value checks.</li>
+        <li><strong>Comparing Databricks vs Snowflake?</strong> Run the <a href="/tools/databricks-cost-calculator">Databricks Cost Calculator</a> for the same workload hours and compare DBU + VM cost against a Snowflake estimate.</li>
+        <li><strong>Budgeting dbt Cloud seats?</strong> The <a href="/tools/dbt-cloud-cost-calculator">dbt Cloud Cost Calculator</a> prices developer seats, model runs, and concurrency across Developer, Team, and Enterprise tiers.</li>
+        <li><strong>Shipping SQL to production?</strong> Clean it first with the <a href="/tools/sql-formatter">SQL Formatter</a> - consistent formatting makes code review faster and cuts merge conflicts.</li>
+        <li><strong>Scheduling a pipeline?</strong> Build the schedule visually in the <a href="/tools/cron-expression-builder">Cron Expression Builder</a> and paste the expression into Airflow, dbt Cloud, Snowflake Tasks, or Databricks Jobs.</li>
+        <li><strong>Modeling a new JSON source?</strong> Drop a sample into the <a href="/tools/json-to-sql-ddl">JSON to SQL DDL</a> generator to scaffold your CREATE TABLE statement in seconds.</li>
       </ul>
 
       <h2>Are these tools free?</h2>
-      <p>Yes. Every tool on this page is free, requires no login, and stores nothing on our servers. All calculations run in your browser. Share the configured URL with your team - the query string preserves all inputs.</p>
+      <p>Yes. Every tool on this page is free, requires no login, and stores nothing on our servers. All calculations and transformations run in your browser. Share the configured URL with your team - the query string preserves all inputs.</p>
 
-      <h2>How accurate are the estimates?</h2>
-      <p>Estimates use Snowflake's publicly documented list pricing as of 2026. Actual invoiced cost depends on your contract (capacity deals typically discount 20-40% off list), regional pricing, and real usage patterns. Always verify against ACCOUNT_USAGE views for authoritative billing data.</p>
+      <h2>How accurate are the cost estimates?</h2>
+      <p>Estimates use each vendor's publicly documented list pricing as of 2026 (Snowflake editions, Databricks DBU rates, dbt Cloud plan tiers). Actual invoiced cost depends on your contract (capacity deals typically discount 20-40% off list), regional pricing, and real usage patterns. Always verify against your vendor's usage views (Snowflake ACCOUNT_USAGE, Databricks System Tables, dbt Cloud admin console) for authoritative billing data.</p>
 
       <h2>Related reading</h2>
-      <p>For deeper guidance, read our articles on <a href="/articles/snowflake-cost-optimization-techniques-2026">12 Snowflake cost optimization techniques</a> and <a href="/category/snowflake">our Snowflake category</a> for tutorials on warehouse tuning, query performance, and ACCOUNT_USAGE analysis.</p>
+      <p>For deeper guidance, read our articles on <a href="/articles/snowflake-cost-optimization-techniques-2026">12 Snowflake cost optimization techniques</a>, <a href="/articles/snowflake-cortex-cost-comparison">Snowflake Cortex cost comparison</a>, and <a href="/category/snowflake">our Snowflake category</a> for tutorials on warehouse tuning, query performance, and ACCOUNT_USAGE analysis. Preparing for interviews? Visit <a href="/interview-prep">Interview Prep</a> for a 14-day study plan and 16 cheat sheets.</p>
     `
   },
   {
