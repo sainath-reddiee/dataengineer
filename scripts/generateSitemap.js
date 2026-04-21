@@ -25,6 +25,7 @@ const STATIC_PAGES = [
   { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/disclaimer', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/cheatsheets', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
+  { url: '/tools/snowflake-cost-calculator', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
 ];
 
 // Article slugs to exclude from sitemap (noindexed due to thin content <400 words)

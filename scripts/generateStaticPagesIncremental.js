@@ -390,6 +390,76 @@ const ESSENTIAL_PAGES = [
       <h2>Contact</h2>
       <p>If you have any questions about this Disclaimer, please contact us at <strong>sainath@dataengineerhub.blog</strong>.</p>
     `
+  },
+  {
+    path: '/tools/snowflake-cost-calculator',
+    title: 'Snowflake Cost Calculator 2026 - Free Pricing Estimator',
+    description: 'Free Snowflake cost calculator. Estimate warehouse credits, storage, and cloud services costs by edition (Standard/Enterprise/BC) and region. Instant monthly and annual estimates.',
+    content: `
+      <h1>Snowflake Cost Calculator 2026</h1>
+      <p><strong>Free, instant Snowflake pricing estimator.</strong> Enter your warehouse size, hours of usage, storage, and edition to see a live monthly and annual cost breakdown across compute, storage, cloud services, and serverless features like Cortex AI and Snowpipe.</p>
+
+      <h2>How Snowflake Pricing Works</h2>
+      <p>Snowflake bills three primary categories: <strong>compute</strong> (measured in credits), <strong>storage</strong> (per TB per month), and <strong>cloud services</strong> (metadata, auth, query compilation). Compute credits are consumed by virtual warehouses — X-Small warehouses burn 1 credit per hour, and each size doubles: Small (2), Medium (4), Large (8), X-Large (16), up to 6X-Large (512 credits/hour).</p>
+
+      <h2>Credit Prices by Edition</h2>
+      <ul>
+        <li><strong>Standard Edition:</strong> 1.0x multiplier - the base price. Includes complete SQL data warehouse features.</li>
+        <li><strong>Enterprise Edition:</strong> 1.5x - adds multi-cluster warehouses, materialized views, 90-day time travel, and column-level security.</li>
+        <li><strong>Business Critical:</strong> 2.0x - adds HIPAA/PCI compliance, customer-managed keys, and private connectivity.</li>
+        <li><strong>Virtual Private Snowflake (VPS):</strong> 2.5x - fully isolated infrastructure for regulated industries.</li>
+      </ul>
+
+      <h2>Regional Price Variation</h2>
+      <p>Credit prices vary significantly by cloud region. AWS US East (N. Virginia), Azure US East 2, and GCP US Central are the cheapest at roughly $2.00 per Standard credit. European regions add a ~30% premium (around $2.60/credit), and APAC regions can reach $2.90/credit. Storage follows a similar pattern: approximately $23 per TB per month on-demand in US regions, rising to $25/TB in APAC.</p>
+
+      <h2>How to Estimate Your Snowflake Costs</h2>
+      <ol>
+        <li><strong>Choose your edition</strong> (Standard, Enterprise, Business Critical, or VPS) - each applies a credit-rate multiplier.</li>
+        <li><strong>Pick your cloud region</strong> - credit prices and storage rates vary by cloud provider and geography.</li>
+        <li><strong>Set warehouse size and usage</strong> - select XS through 6XL, then estimate hours per day and days per month the warehouse actively runs.</li>
+        <li><strong>Add storage and serverless features</strong> - enter total storage in GB and toggle any serverless features (Snowpipe continuous ingest, Cortex AI LLM inference, Auto-Clustering).</li>
+        <li><strong>Review monthly and annual estimate</strong> - the calculator shows compute, storage, cloud services, and serverless costs, plus potential savings from right-sizing your warehouse.</li>
+      </ol>
+
+      <h2>Top Ways to Cut Snowflake Costs</h2>
+      <ul>
+        <li><strong>Aggressive auto-suspend:</strong> Set warehouses to suspend after 60 seconds of idle. For bursty workloads this can cut compute by 70-90%.</li>
+        <li><strong>Right-size warehouses:</strong> Moving from Large (8 credits/hr) to Medium (4 credits/hr) halves compute cost - test whether queries still meet SLAs at the smaller size.</li>
+        <li><strong>Resource monitors:</strong> Cap monthly credit usage per warehouse with automatic suspend-on-threshold actions.</li>
+        <li><strong>Query tagging + Account Usage review:</strong> Identify top spending queries and optimize or cache them.</li>
+        <li><strong>Partition pruning and clustering keys:</strong> Properly clustered tables reduce scanned micro-partitions, cutting query time and credits.</li>
+        <li><strong>Materialized views only when justified:</strong> They reduce query time but consume maintenance credits - use them only when queried far more often than the underlying table changes.</li>
+      </ul>
+
+      <h2>Frequently Asked Questions</h2>
+      <h3>How are Snowflake credits calculated?</h3>
+      <p>Credits are consumed per second of warehouse run time, billed at a rate determined by warehouse size. A 60-second minimum applies when a warehouse resumes from suspend.</p>
+
+      <h3>What is the cheapest Snowflake edition?</h3>
+      <p>Standard Edition at 1.0x credit rate. Enterprise is 1.5x, Business Critical is 2.0x, and VPS is 2.5x.</p>
+
+      <h3>Does auto-suspend really save money?</h3>
+      <p>Yes, significantly. A Medium warehouse running 24/7 costs about 2,880 credits per month. Auto-suspend after 60 seconds of idle can cut compute costs by 70-90% for bursty workloads.</p>
+
+      <h3>What counts as cloud services billing?</h3>
+      <p>Cloud Services handle query compilation, metadata, authentication, and transaction coordination. Snowflake gives a 10% free allowance against compute credits - only usage above 10% is billed.</p>
+
+      <h3>Is on-demand or capacity storage cheaper?</h3>
+      <p>On-demand storage is roughly $23 per TB per month (pay-as-you-go). Capacity storage requires a pre-purchased commitment but can drop to about $40/TB/month on flat terms.</p>
+
+      <h3>How do I estimate Cortex AI costs?</h3>
+      <p>Cortex AI is billed per million tokens at roughly 3 credits per million tokens. A chatbot handling 10M tokens per month costs about 30 credits (~$60-$90 depending on edition and region).</p>
+
+      <h3>Why is my Snowflake bill higher than the calculator estimate?</h3>
+      <p>Common culprits include warehouses not auto-suspending, cloud services usage above 10%, replication and data transfer, serverless features (Snowpipe, Tasks), and Search Optimization Service. Use Account Usage views to audit actual credits.</p>
+
+      <h3>Does this calculator include multi-cluster warehouses?</h3>
+      <p>Yes - cluster count multiplies compute credits linearly. A Medium warehouse with 3 clusters running 8 hours consumes 4 x 8 x 3 = 96 credits before edition multiplier.</p>
+
+      <h2>Disclaimer</h2>
+      <p>Estimates are based on publicly documented Snowflake list pricing as of 2026. Actual costs depend on your contract, regional discounts (enterprise contracts often negotiate 20-40% off list), and real usage patterns. This tool is for planning purposes only - always verify against your Account Usage views for authoritative billing data.</p>
+    `
   }
 ];
 
