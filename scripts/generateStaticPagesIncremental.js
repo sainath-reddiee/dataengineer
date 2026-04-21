@@ -995,8 +995,8 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const relativePrefix = '../'.repeat(depth);
 
   // Remove leading slash and prepend relative prefix
-  const productionJsFile = jsFile ? `${relativePrefix}${jsFile.substring(1)}` : null;
-  const productionCssFile = cssFile ? `${relativePrefix}${cssFile.substring(1)}` : null;
+  const productionJsFile = jsFile;
+  const productionCssFile = cssFile;
   // Convert absolute modulepreload paths to relative
   const relativeModulePreload = modulePreloadHtml.replace(/href="\/assets\//g, `href="${relativePrefix}assets/`);
 
@@ -1899,8 +1899,8 @@ function generateSimpleHTML(pageData, bundleFiles) {
   const depth = (pagePath.match(/\//g) || []).length - 1;
   const relativePrefix = '../'.repeat(depth);
 
-  const productionJsFile = jsFile ? `${relativePrefix}${jsFile.substring(1)}` : null;
-  const productionCssFile = cssFile ? `${relativePrefix}${cssFile.substring(1)}` : null;
+  const productionJsFile = jsFile;
+  const productionCssFile = cssFile;
 
   return `<!doctype html>
 <html lang="en">
@@ -1992,8 +1992,8 @@ function generateHomepageEnhancement(allArticleSummaries, categories) {
 function generateArticlesListingHTML(allArticleSummaries, categories, bundleFiles) {
   const { jsFile, cssFile } = bundleFiles;
 
-  const productionJsFile = jsFile ? `.${jsFile}` : null;
-  const productionCssFile = cssFile ? `.${cssFile}` : null;
+  const productionJsFile = jsFile;
+  const productionCssFile = cssFile;
 
   const buildTimestamp = new Date().toISOString();
 
@@ -2216,8 +2216,8 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   const depth = (pagePath.match(/\//g) || []).length - 1;
   const relativePrefix = '../'.repeat(depth);
 
-  const productionJsFile = jsFile ? `${relativePrefix}${jsFile.substring(1)}` : null;
-  const productionCssFile = cssFile ? `${relativePrefix}${cssFile.substring(1)}` : null;
+  const productionJsFile = jsFile;
+  const productionCssFile = cssFile;
 
   const buildTimestamp = new Date().toISOString();
   const catDescription = stripHTML(category.description || '').trim();
@@ -2484,8 +2484,8 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   var jsFile = bundleFiles.jsFile;
   var cssFile = bundleFiles.cssFile;
 
-  var productionJsFile = jsFile ? '.' + jsFile : null;
-  var productionCssFile = cssFile ? '.' + cssFile : null;
+  var productionJsFile = jsFile;
+  var productionCssFile = cssFile;
 
   var buildTimestamp = new Date().toISOString();
 
@@ -2780,8 +2780,8 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   var depth = (pagePath.match(/\//g) || []).length - 1;
   var relativePrefix = '../'.repeat(depth);
 
-  var productionJsFile = jsFile ? relativePrefix + jsFile.substring(1) : null;
-  var productionCssFile = cssFile ? relativePrefix + cssFile.substring(1) : null;
+  var productionJsFile = jsFile;
+  var productionCssFile = cssFile;
 
   var buildTimestamp = new Date().toISOString();
 
@@ -3115,8 +3115,8 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   var jsFile = bundleFiles.jsFile;
   var cssFile = bundleFiles.cssFile;
 
-  var productionJsFile = jsFile ? '.' + jsFile : null;
-  var productionCssFile = cssFile ? '.' + cssFile : null;
+  var productionJsFile = jsFile;
+  var productionCssFile = cssFile;
 
   var buildTimestamp = new Date().toISOString();
 
@@ -3420,8 +3420,8 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   var depth = (pagePath.match(/\//g) || []).length - 1;
   var relativePrefix = '../'.repeat(depth);
 
-  var productionJsFile = jsFile ? relativePrefix + jsFile.substring(1) : null;
-  var productionCssFile = cssFile ? relativePrefix + cssFile.substring(1) : null;
+  var productionJsFile = jsFile;
+  var productionCssFile = cssFile;
 
   var buildTimestamp = new Date().toISOString();
 
@@ -3722,8 +3722,8 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
 function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) {
   var jsFile = bundleFiles.jsFile;
   var cssFile = bundleFiles.cssFile;
-  var productionJsFile = jsFile ? '.' + jsFile : null;
-  var productionCssFile = cssFile ? '.' + cssFile : null;
+  var productionJsFile = jsFile;
+  var productionCssFile = cssFile;
   var buildTimestamp = new Date().toISOString();
   var totalSheets = allCheatsheets.length;
 
@@ -3948,8 +3948,8 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
 function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   var jsFile = bundleFiles.jsFile;
   var cssFile = bundleFiles.cssFile;
-  var productionJsFile = jsFile ? '.' + jsFile : null;
-  var productionCssFile = cssFile ? '.' + cssFile : null;
+  var productionJsFile = jsFile;
+  var productionCssFile = cssFile;
   var buildTimestamp = new Date().toISOString();
   var pagePath = '/cheatsheets/' + sheet.slug;
 
@@ -4250,8 +4250,8 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   const depth = (pagePath.match(/\//g) || []).length - 1;
   const relativePrefix = '../'.repeat(depth);
 
-  const productionJsFile = jsFile ? relativePrefix + jsFile.substring(1) : null;
-  const productionCssFile = cssFile ? relativePrefix + cssFile.substring(1) : null;
+  const productionJsFile = jsFile;
+  const productionCssFile = cssFile;
 
   const buildTimestamp = new Date().toISOString();
   const tagDescription = stripHTML(tag.description || '').trim();
@@ -4429,8 +4429,8 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
   const depth = (pagePath.match(/\//g) || []).length - 1;
   const relativePrefix = depth > 0 ? '../'.repeat(depth) : './';
 
-  const productionJsFile = jsFile ? `${relativePrefix}${jsFile.substring(1)}` : null;
-  const productionCssFile = cssFile ? `${relativePrefix}${cssFile.substring(1)}` : null;
+  const productionJsFile = jsFile;
+  const productionCssFile = cssFile;
 
   const buildTimestamp = new Date().toISOString();
 
