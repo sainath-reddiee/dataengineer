@@ -46,6 +46,8 @@ const CronBuilderPage = lazy(() => import('./pages/CronBuilderPage'));
 const JsonToSqlPage = lazy(() => import('./pages/JsonToSqlPage'));
 const CsvToSqlPage = lazy(() => import('./pages/CsvToSqlPage'));
 const DbtSchemaGeneratorPage = lazy(() => import('./pages/DbtSchemaGeneratorPage'));
+const UnixTimestampPage = lazy(() => import('./pages/UnixTimestampPage'));
+const BigQueryCostPage = lazy(() => import('./pages/BigQueryCostPage'));
 const CheatSheetCategoryPage = lazy(() => import('./pages/CheatSheetCategoryPage'));
 const InterviewPrepHubPage = lazy(() => import('./pages/InterviewPrepHubPage'));
 
@@ -301,6 +303,16 @@ function App() {
           <Route path="tools/dbt-schema-generator" element={
             <Suspense fallback={<LoadingFallback text="Loading dbt Schema Generator..." />}>
               <DbtSchemaGeneratorPage />
+            </Suspense>
+          } />
+          <Route path="tools/unix-timestamp-converter" element={
+            <Suspense fallback={<LoadingFallback text="Loading Unix Timestamp Converter..." />}>
+              <UnixTimestampPage />
+            </Suspense>
+          } />
+          <Route path="tools/bigquery-cost-calculator" element={
+            <Suspense fallback={<LoadingFallback text="Loading BigQuery Cost Calculator..." />}>
+              <BigQueryCostPage />
             </Suspense>
           } />
           <Route path="cheatsheets/category/:categoryId" element={

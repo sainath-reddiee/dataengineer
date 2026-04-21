@@ -597,6 +597,12 @@ const ESSENTIAL_PAGES = [
         <li><strong><a href="/tools/json-to-sql-ddl">JSON to SQL DDL</a></strong> - paste a JSON sample, get a CREATE TABLE statement. Supports Snowflake VARIANT, PostgreSQL JSONB, BigQuery STRUCT, and standard SQL types.</li>
         <li><strong><a href="/tools/csv-to-sql">CSV to SQL Converter</a></strong> - paste CSV data, get CREATE TABLE DDL and INSERT statements with inferred types. RFC 4180 compliant parser, Snowflake/Postgres/BigQuery/ANSI dialects.</li>
         <li><strong><a href="/tools/dbt-schema-generator">dbt Schema.yml Generator</a></strong> - paste a CREATE TABLE, get a dbt schema.yml with inferred unique/not_null tests, a staging SQL model, and a sources.yml entry with freshness checks.</li>
+        <li><strong><a href="/tools/unix-timestamp-converter">Unix Timestamp Converter</a></strong> - epoch to human date and back. Auto-detects seconds, milliseconds, microseconds, nanoseconds. SQL cheat sheet for Snowflake, Postgres, BigQuery, MySQL, Redshift, Databricks.</li>
+      </ul>
+
+      <h3>Multi-cloud cost calculators</h3>
+      <ul>
+        <li><strong><a href="/tools/bigquery-cost-calculator">BigQuery Cost Calculator</a></strong> - model on-demand ($6.25/TB scanned) and capacity Editions (Standard/Enterprise/Enterprise Plus slot-hours), storage tiers, and streaming ingest. Includes on-demand vs Editions break-even analysis.</li>
       </ul>
 
       <h2>Which tool should I use?</h2>
@@ -611,6 +617,8 @@ const ESSENTIAL_PAGES = [
         <li><strong>Modeling a new JSON source?</strong> Drop a sample into the <a href="/tools/json-to-sql-ddl">JSON to SQL DDL</a> generator to scaffold your CREATE TABLE statement in seconds.</li>
         <li><strong>Loading a CSV export?</strong> Paste into the <a href="/tools/csv-to-sql">CSV to SQL Converter</a> for instant CREATE TABLE + INSERT scaffolding - great for seeds, fixtures, and small lookups.</li>
         <li><strong>Onboarding a new table into dbt?</strong> Run the <a href="/tools/dbt-schema-generator">dbt Schema.yml Generator</a> on the CREATE TABLE to auto-scaffold schema.yml, staging SQL, and sources.yml with freshness checks.</li>
+        <li><strong>Debugging timestamp data?</strong> The <a href="/tools/unix-timestamp-converter">Unix Timestamp Converter</a> handles seconds, milliseconds, microseconds, and nanoseconds with SQL examples for every major warehouse.</li>
+        <li><strong>Running on Google Cloud?</strong> Use the <a href="/tools/bigquery-cost-calculator">BigQuery Cost Calculator</a> to model on-demand vs capacity Editions pricing and find the break-even point for your workload.</li>
       </ul>
 
       <h2>Are these tools free?</h2>
@@ -888,6 +896,103 @@ const ESSENTIAL_PAGES = [
 
       <h2>Related tools and reading</h2>
       <p>Need a CREATE TABLE first? Use the <a href="/tools/json-to-sql-ddl">JSON to SQL DDL Generator</a> or the <a href="/tools/csv-to-sql">CSV to SQL Converter</a>, then pipe the output here. Price your dbt Cloud usage with the <a href="/tools/dbt-cloud-cost-calculator">dbt Cloud Cost Calculator</a>. For dbt command syntax see the <a href="/cheatsheets/dbt-commands">dbt Commands Reference</a>.</p>
+    `
+  },
+  {
+    path: '/tools/unix-timestamp-converter',
+    title: 'Unix Timestamp Converter 2026 - Epoch to Date (seconds, ms, us, ns)',
+    description: 'Free Unix timestamp converter. Auto-detects seconds, milliseconds, microseconds, nanoseconds. Converts to UTC, ISO 8601, local time. Snowflake, Postgres, BigQuery SQL examples.',
+    content: `
+      <h1>Free Unix Timestamp Converter</h1>
+      <p><strong>Convert Unix epoch time to a human-readable date and back, in any unit.</strong> This tool auto-detects whether your timestamp is in <strong>seconds, milliseconds, microseconds, or nanoseconds</strong> based on its magnitude, then shows the moment in four formats: UTC, ISO 8601, your local time, and a relative description like "3 hours ago". The reverse direction is also supported - pick any datetime and get the Unix timestamp in the unit you need.</p>
+
+      <h2>What is a Unix timestamp?</h2>
+      <p>A <strong>Unix timestamp</strong> (also called Unix time, epoch time, or POSIX time) is the number of seconds that have elapsed since 00:00:00 UTC on 1 January 1970, excluding leap seconds. It is the single most common way to represent a moment in time in databases, logs, APIs, and distributed systems because it is timezone-agnostic, sorts correctly as an integer, and is language-independent. Every major programming language and database has first-class support for it.</p>
+
+      <h2>Seconds vs milliseconds vs microseconds vs nanoseconds</h2>
+      <p>Unix time was originally defined in seconds (10 digits through year 2286), but many modern systems need more precision:</p>
+      <ul>
+        <li><strong>Seconds</strong> - classic Unix time, 10 digits for any realistic modern date. Used by most Unix command-line tools, cron, POSIX APIs.</li>
+        <li><strong>Milliseconds</strong> - 13 digits. Used by <strong>JavaScript</strong> (<code>Date.now()</code>), <strong>Java</strong> (<code>System.currentTimeMillis()</code>), <strong>Kafka</strong>, most logging systems.</li>
+        <li><strong>Microseconds</strong> - 16 digits. Used by <strong>PostgreSQL</strong> (<code>TIMESTAMP</code> internal precision), Python <code>datetime</code>.</li>
+        <li><strong>Nanoseconds</strong> - 19 digits. Used by <strong>Snowflake</strong> <code>TIMESTAMP_NTZ</code> internal precision, Go <code>time.UnixNano()</code>, high-frequency trading logs.</li>
+      </ul>
+      <p>This tool auto-detects the unit from your number's magnitude (a 10-digit number is seconds, a 13-digit number is milliseconds, etc.), but you can force a unit via the dropdown if you know the source is different.</p>
+
+      <h2>SQL conversion quick reference</h2>
+      <p>Every warehouse has built-in conversion functions, but the syntax differs:</p>
+      <ul>
+        <li><strong>Snowflake:</strong> <code>TO_TIMESTAMP_NTZ(epoch_s)</code> for seconds; <code>TO_TIMESTAMP_NTZ(epoch_ms, 3)</code> for milliseconds (the second argument is the scale). Reverse: <code>DATE_PART(EPOCH_SECOND, ts)</code>.</li>
+        <li><strong>PostgreSQL:</strong> <code>TO_TIMESTAMP(epoch_s)</code>; reverse: <code>EXTRACT(EPOCH FROM ts)</code>. For milliseconds divide by 1000 first.</li>
+        <li><strong>BigQuery:</strong> <code>TIMESTAMP_SECONDS()</code>, <code>TIMESTAMP_MILLIS()</code>, <code>TIMESTAMP_MICROS()</code>. Reverse: <code>UNIX_SECONDS(ts)</code>, <code>UNIX_MILLIS(ts)</code>.</li>
+        <li><strong>MySQL:</strong> <code>FROM_UNIXTIME(epoch_s)</code> and <code>UNIX_TIMESTAMP(ts)</code>. Milliseconds need manual math.</li>
+        <li><strong>Redshift:</strong> <code>TIMESTAMP 'epoch' + epoch_s * INTERVAL '1 second'</code>. Verbose but portable.</li>
+        <li><strong>Databricks (Spark):</strong> <code>from_unixtime(epoch_s)</code> and <code>unix_timestamp(ts)</code>.</li>
+      </ul>
+
+      <h2>The Year 2038 problem (and why it matters for data engineers)</h2>
+      <p>Systems that store Unix time as a <strong>signed 32-bit integer</strong> can only represent times up to 2^31 - 1 seconds past the epoch, which is <strong>03:14:07 UTC on 19 January 2038</strong>. After that, the counter overflows to a negative number (December 1901). Most modern systems now use 64-bit timestamps and are unaffected, but legacy embedded systems, older databases, and poorly-written ETL code can still be vulnerable. Always check your data warehouse column types - a Snowflake <code>INTEGER</code> is 38-digit fixed-point and safe, but a source system might export epochs as 32-bit INT.</p>
+
+      <h2>Common UTC timestamps (quick reference)</h2>
+      <ul>
+        <li><strong>0</strong> - Unix epoch - Thu, 01 Jan 1970 00:00:00 UTC</li>
+        <li><strong>946684800</strong> - Y2K - Sat, 01 Jan 2000 00:00:00 UTC</li>
+        <li><strong>2147483647</strong> - 32-bit signed max - Tue, 19 Jan 2038 03:14:07 UTC</li>
+        <li><strong>1767225600</strong> - Thu, 01 Jan 2026 00:00:00 UTC</li>
+      </ul>
+
+      <h2>Related tools</h2>
+      <p>Working with scheduled jobs? Use the <a href="/tools/cron-expression-builder">Cron Expression Builder</a> to model when your next run fires. Need to pretty-print SQL that uses epoch functions? The <a href="/tools/sql-formatter">SQL Formatter</a> handles multi-dialect output. For time-series cost estimation see the <a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a>, and for timestamp function reference see the <a href="/cheatsheets/snowflake-sql">Snowflake SQL cheat sheet</a>.</p>
+    `
+  },
+  {
+    path: '/tools/bigquery-cost-calculator',
+    title: 'BigQuery Cost Calculator 2026 - On-Demand & Editions Pricing',
+    description: 'Free BigQuery pricing calculator. Model on-demand ($6.25/TB scanned), Standard/Enterprise/Enterprise Plus slot capacity, storage, and streaming inserts. Compare with Snowflake.',
+    content: `
+      <h1>Free BigQuery Cost Calculator</h1>
+      <p><strong>Estimate your monthly Google BigQuery spend in seconds.</strong> Model both pricing models - <strong>on-demand</strong> (per-TB scanned) and <strong>capacity Editions</strong> (Standard / Enterprise / Enterprise Plus slot-hours) - side by side with storage tiering and streaming ingest included. Perfect for budget planning, on-demand-vs-Editions break-even analysis, and multi-cloud cost comparison against Snowflake and Databricks.</p>
+
+      <h2>How BigQuery pricing works</h2>
+      <p>BigQuery splits cost into three completely independent dimensions: <strong>compute</strong> (how queries run), <strong>storage</strong> (how tables are kept on disk), and <strong>streaming ingest</strong> (how new rows arrive). Compute is almost always the dominant cost. Storage is usually cheap. Streaming is niche and often free at small volumes.</p>
+
+      <h3>On-demand pricing ($6.25 per TB scanned)</h3>
+      <p>The default billing model. You pay $6.25 for every terabyte of uncompressed logical data your queries scan. The <strong>first 1 TB of scan per project per month is free</strong>. No cluster to provision, no reservation to manage - just pay per query. Best for small and intermittent workloads, dev / staging projects, and any team with unpredictable usage. Downside: a single bad query can cost hundreds of dollars if it scans a full table without partitioning.</p>
+
+      <h3>Capacity (Editions) pricing</h3>
+      <p>You buy slot-hours in advance at one of three tiers:</p>
+      <ul>
+        <li><strong>Standard:</strong> $0.04/slot-hour. No BigQuery ML, no materialized views. Entry-level SQL.</li>
+        <li><strong>Enterprise:</strong> $0.06/slot-hour. Full feature set (ML, materialized views, column-level security). Most common tier.</li>
+        <li><strong>Enterprise Plus:</strong> $0.10/slot-hour. Adds autoscaling slots (0 to max), cross-region + cross-cloud queries, CMEK, assured workloads.</li>
+      </ul>
+
+      <h3>Storage tiers</h3>
+      <ul>
+        <li><strong>Active storage</strong> - $0.02/GB/month - any table or partition modified in the last 90 days.</li>
+        <li><strong>Long-term storage</strong> - $0.01/GB/month (50% off) - automatic on tables/partitions not modified for 90+ days. No query penalty, totally automatic.</li>
+        <li><strong>Physical storage</strong> (optional, opt-in per dataset) - pay for actual compressed bytes instead of logical. Typically ~50% cheaper for well-compressed datasets.</li>
+      </ul>
+
+      <h2>When to switch from on-demand to capacity Editions</h2>
+      <p>Break-even example: You are running <strong>450 TB/month on on-demand</strong>. That costs (450 - 1) * $6.25 = <strong>$2,806/month</strong>. A Standard Edition reservation of 100 slots running 24/7 costs 100 * 730 * $0.04 = <strong>$2,920/month</strong> - about the same. But if your workload is bursty (big overnight ETL, idle during the day), Enterprise Plus with autoscale (50-150 avg slots) often comes in at ~$2,200/month, saving 20-40%.</p>
+      <p><strong>General rule:</strong> if your on-demand spend is above $3,000/month and your query patterns are predictable, move to Editions. If spend is below $1,000/month or highly intermittent, stay on-demand.</p>
+
+      <h2>How to reduce BigQuery cost on on-demand</h2>
+      <p>Bytes scanned is the only cost lever on on-demand. Apply these in order of ROI:</p>
+      <ol>
+        <li><strong>Partition every fact table.</strong> Use DATE partitioning on the event timestamp for almost all analytics data. Filtering on the partition column prunes months of data in a single WHERE clause - often 90%+ bytes saved.</li>
+        <li><strong>Cluster on common WHERE/GROUP BY columns.</strong> Up to 4 columns. Clustering prunes blocks within a partition.</li>
+        <li><strong>Never <code>SELECT *</code>.</strong> BigQuery is columnar - unused columns are not scanned. Specifying columns can cut scan 50-90% on wide tables.</li>
+        <li><strong>Use approximate aggregations.</strong> <code>APPROX_COUNT_DISTINCT</code> is ~100x cheaper than <code>COUNT(DISTINCT)</code> on large tables when 2% error is acceptable.</li>
+        <li><strong>Materialize hot joins.</strong> A materialized view or scheduled query that pre-joins and pre-aggregates the two highest-traffic tables can eliminate 80% of dashboard scan cost.</li>
+      </ol>
+
+      <h2>BigQuery vs Snowflake vs Databricks</h2>
+      <p>For predictable medium workloads the three platforms are within ~20% of each other on list price. Real differences come from usage patterns. Use the <a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a> and <a href="/tools/databricks-cost-calculator">Databricks Cost Calculator</a> for apples-to-apples comparisons at your actual TB and workload shape.</p>
+
+      <h2>Related tools</h2>
+      <p>Use the <a href="/tools/json-to-sql-ddl">JSON to SQL DDL Generator</a> to scaffold BigQuery CREATE TABLE statements from sample data. Use the <a href="/tools/sql-formatter">SQL Formatter</a> to clean up dialect-specific SQL. For multi-cloud comparisons see <a href="/compare/snowflake-vs-google-bigquery">Snowflake vs BigQuery</a>.</p>
     `
   },
   {

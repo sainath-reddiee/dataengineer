@@ -129,6 +129,24 @@ const TOOLS = [
       'Paste a CREATE TABLE statement, get a complete dbt scaffold: schema.yml with inferred unique/not_null tests, staging SQL model, and sources.yml with freshness checks. Zero warehouse connection required.',
     primaryFor: 'dbt onboarding, staging layer bootstrapping, schema.yml generation without codegen',
   },
+  {
+    slug: 'unix-timestamp-converter',
+    title: 'Unix Timestamp Converter',
+    icon: Clock,
+    tagline: 'Epoch ↔ date (sec/ms/μs/ns)',
+    description:
+      'Convert Unix epoch time to human-readable UTC, ISO 8601, and local datetime. Auto-detects seconds, milliseconds, microseconds, and nanoseconds. Includes SQL cheat sheet for Snowflake, Postgres, BigQuery, MySQL, Redshift, Databricks.',
+    primaryFor: 'Debugging time-series data, SQL timestamp conversions, API integration',
+  },
+  {
+    slug: 'bigquery-cost-calculator',
+    title: 'BigQuery Cost Calculator',
+    icon: Cloud,
+    tagline: 'On-demand + Editions pricing',
+    description:
+      'Model Google BigQuery spend across on-demand ($6.25/TB scanned) and capacity Editions (Standard/Enterprise/Enterprise Plus slot-hours). Includes storage tiers, streaming ingest, and on-demand vs Editions break-even analysis.',
+    primaryFor: 'BigQuery cost planning, on-demand vs Editions decisions, multi-cloud comparison',
+  },
 ];
 
 const FAQS = [
