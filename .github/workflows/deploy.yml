@@ -208,6 +208,11 @@ jobs:
 
       - name: 📄 Generate Static Pages
         id: static_pages
+        env:
+          NODE_ENV: production
+          VITE_ADS_ENABLED: ${{ secrets.VITE_ADS_ENABLED }}
+          VITE_ADSENSE_PUBLISHER_ID: ${{ secrets.VITE_ADSENSE_PUBLISHER_ID }}
+          VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
         run: |
           # Get build flags from previous step
           BUILD_FLAGS="${{ steps.changes.outputs.build_flags }}"
