@@ -221,6 +221,20 @@ export default function CheatSheetHubPage() {
                 </button>
               ))}
             </div>
+            <div className="mt-4 text-xs text-gray-500">
+              Prefer a dedicated page per category?{' '}
+              {CHEATSHEET_CATEGORIES.map((cat, idx) => (
+                <React.Fragment key={cat.id}>
+                  <Link
+                    to={`/cheatsheets/category/${cat.id}`}
+                    className="text-blue-400 hover:text-blue-300 underline underline-offset-2"
+                  >
+                    {cat.name}
+                  </Link>
+                  {idx < CHEATSHEET_CATEGORIES.length - 1 ? ' · ' : ''}
+                </React.Fragment>
+              ))}
+            </div>
           </div>
         </div>
 

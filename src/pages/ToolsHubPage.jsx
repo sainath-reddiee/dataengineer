@@ -17,6 +17,12 @@ import {
   ChevronRight,
   Sparkles,
   Wrench,
+  Code2,
+  Clock,
+  FileJson,
+  Cloud,
+  Users,
+  BookOpen,
 } from 'lucide-react';
 
 import { SITE_CONFIG } from '@/lib/seoConfig';
@@ -57,6 +63,51 @@ const TOOLS = [
     description:
       'Recommends a starting warehouse size (XS to 6XL) from workload type, data volume, and concurrency. Shows one-size-up and one-size-down cost comparison.',
     primaryFor: 'Right-sizing, new workload setup, ETL vs BI tradeoffs',
+  },
+  {
+    slug: 'databricks-cost-calculator',
+    title: 'Databricks Cost Calculator',
+    icon: Cloud,
+    tagline: 'DBU-based lakehouse pricing',
+    description:
+      'Model Databricks costs by cluster type (All-Purpose, Jobs, SQL Compute, Serverless SQL), DBU rate, instance type, and hours. Compare directly against Snowflake warehouse equivalents.',
+    primaryFor: 'Lakehouse vs warehouse decisions, multi-cloud cost benchmarking, platform migrations',
+  },
+  {
+    slug: 'dbt-cloud-cost-calculator',
+    title: 'dbt Cloud Cost Calculator',
+    icon: Users,
+    tagline: 'Seat + run-based pricing',
+    description:
+      'Estimate dbt Cloud cost across Developer, Team, and Enterprise tiers. Factor in developer seats, successful models built, IDE usage, and run frequency. Compare with dbt Core TCO.',
+    primaryFor: 'dbt Cloud vs dbt Core ROI, team budgeting, upgrade planning',
+  },
+  {
+    slug: 'sql-formatter',
+    title: 'SQL Formatter',
+    icon: Code2,
+    tagline: 'Beautify + standardize SQL',
+    description:
+      'Paste any SQL — Snowflake, PostgreSQL, BigQuery, Redshift, or ANSI — and get consistent formatting with configurable indentation, keyword case, and line length. 100% client-side.',
+    primaryFor: 'Code review cleanup, PR hygiene, pre-commit style enforcement',
+  },
+  {
+    slug: 'cron-expression-builder',
+    title: 'Cron Expression Builder',
+    icon: Clock,
+    tagline: 'Visual cron + next-run preview',
+    description:
+      'Build and validate 5-field and 6-field cron expressions for Airflow, dbt, Snowflake TASK, and standard Unix cron. Shows next 5 run times and human-readable description.',
+    primaryFor: 'Airflow DAGs, Snowflake TASKs, dbt Cloud jobs, data pipeline schedules',
+  },
+  {
+    slug: 'json-to-sql-ddl',
+    title: 'JSON → SQL DDL Generator',
+    icon: FileJson,
+    tagline: 'Schema inference from sample',
+    description:
+      'Paste a JSON sample (or array of samples) and get a CREATE TABLE DDL with inferred types. Supports Snowflake VARIANT, PostgreSQL JSONB, and standard SQL types. Handles nested objects and arrays.',
+    primaryFor: 'Ingestion pipeline bootstrapping, schema design, API → warehouse mapping',
   },
 ];
 
@@ -281,6 +332,76 @@ export default function ToolsHubPage() {
                 5-10 biggest queries.
               </li>
             </ul>
+          </div>
+        </div>
+
+        {/* Related Cheat Sheets — cross-link to reference material */}
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="flex items-center gap-2 mb-6">
+            <BookOpen className="w-6 h-6 text-blue-400" />
+            <h2 className="text-2xl font-bold text-white">Related cheat sheets</h2>
+          </div>
+          <p className="text-gray-400 mb-6 max-w-3xl">
+            Tools turn concepts into numbers, but you still need the concepts. Pair each calculator
+            with the matching reference cheat sheet — all free, all indexed for fast lookup.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              {
+                slug: 'snowflake-cost-optimization-interview',
+                title: 'Snowflake Cost Optimization',
+                pair: 'Cost Calculator + Query Cost Estimator',
+              },
+              {
+                slug: 'snowflake-sql',
+                title: 'Snowflake SQL Reference',
+                pair: 'SQL Formatter + Query Cost Estimator',
+              },
+              {
+                slug: 'dbt-commands',
+                title: 'dbt Commands Reference',
+                pair: 'dbt Cloud Cost Calculator',
+              },
+              {
+                slug: 'airflow-essentials',
+                title: 'Airflow Essentials',
+                pair: 'Cron Expression Builder',
+              },
+              {
+                slug: 'databricks',
+                title: 'Databricks Fundamentals',
+                pair: 'Databricks Cost Calculator',
+              },
+              {
+                slug: 'snowflake-interview-questions',
+                title: 'Snowflake Interview Questions',
+                pair: 'Warehouse Sizing + Cost Calculator',
+              },
+            ].map((sheet) => (
+              <Link
+                key={sheet.slug}
+                to={`/cheatsheets/${sheet.slug}`}
+                className="group bg-slate-800/40 border border-slate-700/50 hover:border-blue-500/60 rounded-xl p-5 transition-all"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="text-white font-semibold group-hover:text-blue-300">
+                    {sheet.title}
+                  </h3>
+                  <ChevronRight className="w-4 h-4 text-gray-500 group-hover:text-blue-400 shrink-0 mt-1" />
+                </div>
+                <p className="text-xs text-gray-500">
+                  Pairs with: <span className="text-gray-400">{sheet.pair}</span>
+                </p>
+              </Link>
+            ))}
+          </div>
+          <div className="mt-6 text-center">
+            <Link
+              to="/cheatsheets"
+              className="inline-flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 font-medium"
+            >
+              Browse all cheat sheets <ChevronRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
 

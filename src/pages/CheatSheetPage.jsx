@@ -25,6 +25,8 @@ import {
   Info,
   Zap,
   ChevronDown,
+  Calculator,
+  Wrench,
 } from 'lucide-react';
 
 import {
@@ -33,6 +35,42 @@ import {
   CHEATSHEET_CATEGORIES,
 } from '@/data/cheatsheetData';
 import { SITE_CONFIG } from '@/lib/seoConfig';
+
+// Map cheatsheet category -> relevant interactive tools for the sidebar widget.
+// Each entry: { slug, title, tagline }. Keep lists small (3 max) to preserve focus.
+const CATEGORY_TOOLS = {
+  sql: [
+    { slug: 'sql-formatter', title: 'SQL Formatter', tagline: 'Clean up messy queries' },
+    { slug: 'snowflake-query-cost-estimator', title: 'Query Cost Estimator', tagline: 'Forecast spend per query' },
+    { slug: 'json-to-sql-ddl', title: 'JSON → SQL DDL', tagline: 'Generate CREATE TABLE from JSON' },
+  ],
+  orchestration: [
+    { slug: 'cron-expression-builder', title: 'Cron Expression Builder', tagline: 'Build & test schedules' },
+    { slug: 'dbt-cloud-cost-calculator', title: 'dbt Cloud Cost Calculator', tagline: 'Estimate seat + run costs' },
+  ],
+  cloud: [
+    { slug: 'snowflake-cost-calculator', title: 'Snowflake Cost Calculator', tagline: 'Monthly warehouse spend' },
+    { slug: 'databricks-cost-calculator', title: 'Databricks Cost Calculator', tagline: 'DBU-based pricing' },
+    { slug: 'snowflake-warehouse-sizing', title: 'Warehouse Sizing Tool', tagline: 'Right-size your workload' },
+  ],
+  programming: [
+    { slug: 'json-to-sql-ddl', title: 'JSON → SQL DDL', tagline: 'Schema inference from JSON' },
+    { slug: 'sql-formatter', title: 'SQL Formatter', tagline: 'Standardize SQL style' },
+  ],
+  architecture: [
+    { slug: 'snowflake-warehouse-sizing', title: 'Warehouse Sizing Tool', tagline: 'Capacity planning' },
+    { slug: 'snowflake-cost-calculator', title: 'Snowflake Cost Calculator', tagline: 'TCO modeling' },
+    { slug: 'databricks-cost-calculator', title: 'Databricks Cost Calculator', tagline: 'Compare lakehouse costs' },
+  ],
+  interview: [
+    { slug: 'snowflake-query-cost-estimator', title: 'Query Cost Estimator', tagline: 'Practice cost questions' },
+    { slug: 'snowflake-warehouse-sizing', title: 'Warehouse Sizing Tool', tagline: 'Sizing scenarios' },
+  ],
+  bestpractices: [
+    { slug: 'snowflake-cost-calculator', title: 'Snowflake Cost Calculator', tagline: 'Model optimizations' },
+    { slug: 'sql-formatter', title: 'SQL Formatter', tagline: 'Enforce SQL standards' },
+  ],
+};
 
 const DIFFICULTY_COLORS = {
   Beginner: 'bg-green-500/20 text-green-300 border-green-500/30',
@@ -250,6 +288,7 @@ export default function CheatSheetPage() {
   }
 
   const category = CHEATSHEET_CATEGORIES.find((c) => c.id === sheet.category);
+  const relatedTools = CATEGORY_TOOLS[sheet.category] || [];
   const canonicalUrl = `${SITE_CONFIG.url}/cheatsheets/${sheet.slug}`;
   const hubUrl = `${SITE_CONFIG.url}/cheatsheets`;
 
@@ -406,6 +445,53 @@ export default function CheatSheetPage() {
                 <SectionRenderer key={i} section={section} />
               ))}
 
+              {/* Prose cross-link block — contextual internal linking for SEO + UX */}
+              {(relatedSheets.length > 0 || relatedTools.length > 0) && (
+                <motion.section
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-slate-800/40 border border-slate-700 rounded-xl p-6"
+                >
+                  <h2 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-yellow-400" />
+                    Keep going
+                  </h2>
+                  <p className="text-gray-300 text-sm leading-relaxed">
+                    This cheat sheet pairs well with{' '}
+                    {relatedSheets.slice(0, 3).map((rs, idx, arr) => (
+                      <React.Fragment key={rs.slug}>
+                        <Link
+                          to={`/cheatsheets/${rs.slug}`}
+                          className="text-blue-400 hover:text-blue-300 underline underline-offset-2"
+                        >
+                          {rs.title}
+                        </Link>
+                        {idx < arr.length - 2 ? ', ' : idx === arr.length - 2 ? ', and ' : ''}
+                      </React.Fragment>
+                    ))}
+                    {relatedSheets.length > 0 && '.'}
+                    {relatedTools.length > 0 && (
+                      <>
+                        {' '}If you prefer hands-on exploration, try our{' '}
+                        {relatedTools.slice(0, 2).map((t, idx, arr) => (
+                          <React.Fragment key={t.slug}>
+                            <Link
+                              to={`/tools/${t.slug}`}
+                              className="text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
+                            >
+                              {t.title}
+                            </Link>
+                            {idx < arr.length - 2 ? ', ' : idx === arr.length - 2 ? ' or ' : ''}
+                          </React.Fragment>
+                        ))}
+                        {' '}to turn the concepts above into concrete numbers.
+                      </>
+                    )}
+                  </p>
+                </motion.section>
+              )}
+
               {/* FAQ */}
               {sheet.faqs?.length > 0 && (
                 <motion.section
@@ -470,6 +556,35 @@ export default function CheatSheetPage() {
                       >
                         <FileText className="w-4 h-4 shrink-0" />
                         <span className="truncate">{related.title}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Related Tools — hands-on calculators/utilities mapped from category */}
+              {relatedTools.length > 0 && (
+                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
+                  <h3 className="text-sm font-semibold text-white mb-3 uppercase tracking-wider flex items-center gap-2">
+                    <Wrench className="w-4 h-4 text-emerald-400" />
+                    Related Tools
+                  </h3>
+                  <div className="space-y-3">
+                    {relatedTools.map((tool) => (
+                      <Link
+                        key={tool.slug}
+                        to={`/tools/${tool.slug}`}
+                        className="block group"
+                      >
+                        <div className="flex items-start gap-2">
+                          <Calculator className="w-4 h-4 shrink-0 text-emerald-400 mt-0.5" />
+                          <div className="min-w-0">
+                            <div className="text-sm text-gray-300 group-hover:text-emerald-300 transition-colors truncate">
+                              {tool.title}
+                            </div>
+                            <div className="text-xs text-gray-500 truncate">{tool.tagline}</div>
+                          </div>
+                        </div>
                       </Link>
                     ))}
                   </div>

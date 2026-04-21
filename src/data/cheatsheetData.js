@@ -100,7 +100,7 @@ export const cheatsheets = [
       { question: 'How does Time Travel work in Snowflake?', answer: 'Time Travel lets you query historical data using AT or BEFORE clauses. You can go back up to 90 days (Enterprise edition) or 1 day (Standard). Syntax: SELECT * FROM table AT(OFFSET => -300) queries data from 5 minutes ago.' },
       { question: 'What is the difference between VARIANT and VARCHAR in Snowflake?', answer: 'VARIANT is a semi-structured data type that can store JSON, Avro, ORC, Parquet, or XML data natively. VARCHAR stores plain text strings. Use VARIANT when working with nested/hierarchical data and VARCHAR for flat string values.' },
     ],
-    relatedSlugs: ['sql-window-functions', 'snowflake-cost-optimization-interview', 'snowflake-semi-structured-interview'],
+    relatedSlugs: ['sql-window-functions', 'snowflake-cost-optimization-interview', 'snowflake-semi-structured-interview', 'data-modeling', 'python-for-data-engineers'],
     relatedArticles: ['/articles/snowflake-query-optimization-guide-2026', '/articles/snowflake-streams-tasks-pipeline-guide'],
   },
 
@@ -337,7 +337,7 @@ SELECT * FROM {{ source('raw', 'orders') }}
       { question: 'How do incremental models work in dbt?', answer: 'Incremental models only process new or changed rows instead of rebuilding the entire table. Use the is_incremental() macro to add a WHERE filter that selects only rows newer than the latest data in the target table. Use --full-refresh to force a complete rebuild when schema changes.' },
       { question: 'What does the + symbol mean in dbt select syntax?', answer: 'The + prefix means "include all upstream dependencies" (+model runs the model and everything it depends on). The + suffix means "include all downstream dependents" (model+ runs the model and everything that depends on it). Combine both for the full lineage: +model+.' },
     ],
-    relatedSlugs: ['snowflake-sql', 'airflow-essentials'],
+    relatedSlugs: ['snowflake-sql', 'airflow-essentials', 'data-modeling', 'databricks'],
     relatedArticles: ['/articles/snowflake-cortex-code-dbt-optimization-guide', '/articles/structuring-dbt-projects-in-snowflake'],
   },
 
@@ -661,7 +661,7 @@ with DAG(
       { question: 'What tools should I know for a data engineering interview?', answer: 'Core stack: SQL (Snowflake/BigQuery/Redshift), Python, dbt, Airflow/Dagster, and one cloud platform (AWS/GCP/Azure). Nice to have: Kafka, Spark, Terraform, Docker. Know the "why" behind each tool — interviewers value architectural thinking over tool-name-dropping.' },
       { question: 'How should I prepare for a system design round?', answer: 'Practice designing: (1) a real-time analytics pipeline, (2) a batch ETL for a data warehouse, (3) a CDC pipeline, (4) a data quality monitoring system. Use the framework: Requirements → Data flow → Storage → Compute → Orchestration → Monitoring. Draw diagrams and discuss trade-offs at each decision point.' },
     ],
-    relatedSlugs: ['snowflake-interview-questions', 'sql-interview-questions', 'dbt-best-practices'],
+    relatedSlugs: ['snowflake-interview-questions', 'sql-interview-questions', 'dbt-best-practices', 'python-for-data-engineers', 'pyspark', 'data-modeling'],
     relatedArticles: ['/articles/building-end-to-end-data-pipeline', '/articles/data-engineering-on-snowflake-2026'],
   },
 
@@ -1163,6 +1163,1038 @@ GROUP BY date_day`,
   { slug: 'snowflake-semi-structured-interview', title: 'Snowflake Semi-Structured Data — Expert Interview Questions', shortDescription: 'Expert questions on VARIANT, OBJECT, ARRAY data types, FLATTEN, LATERAL, JSON/XML/Parquet handling, and schema-on-read patterns.', category: 'interview', difficulty: 'Advanced', lastUpdated: '2026-04-09', sections: [ { title: 'VARIANT and Data Types', type: 'qna', items: [ { question: 'How does Snowflake store semi-structured data internally?', answer: 'Snowflake stores VARIANT data in an optimized columnar format. When JSON/Avro/Parquet is loaded into a VARIANT column, Snowflake automatically analyzes the structure and stores commonly-occurring paths as individual columns internally (columnar optimization). This means JSON queries like v:user:name can prune and scan efficiently, similar to native columns. VARIANT columns support up to 16MB per value. Performance: well-structured JSON with consistent schemas performs nearly as fast as native columns due to this optimization.' }, { question: 'VARIANT vs OBJECT vs ARRAY: when to use each?', answer: 'VARIANT: the universal semi-structured type. Holds any JSON value (object, array, string, number, null). Use for: raw ingestion, flexible schemas. OBJECT: specifically a key-value map (JSON object). Use for: structured metadata, configuration. ARRAY: ordered list of values. Use for: tags, multi-value attributes. In practice, most teams use VARIANT for everything because it handles all three. OBJECT and ARRAY are useful for: explicit typing in UDFs, clearer schema intent in table definitions, and type checking (IS_OBJECT, IS_ARRAY).' }, { question: 'How do you query nested JSON efficiently?', answer: 'Path notation: SELECT v:user:address:city FROM table. Bracket notation for special chars: v["user-name"]. For arrays: v:items[0]:name (first element). For deep nesting: chain paths v:a:b:c:d. Performance tips: (1) Create views that extract common paths as typed columns for downstream consumers. (2) Use :: for casting: v:price::NUMBER. (3) Filter on extracted paths: WHERE v:status::STRING = "active" leverages micro-partition pruning on the internal columnar representation. (4) For repeated queries on the same paths, materialize into native columns.' }, { question: 'What happens when you load Parquet vs JSON vs Avro into Snowflake?', answer: 'JSON: loaded into VARIANT column (or specific columns via COPY INTO with column mapping). Nested structures preserved. Avro: schema is used to map to Snowflake columns automatically if column names match; otherwise lands in VARIANT ($1). Schemas from Confluent Schema Registry can auto-map. Parquet: columnar format, Snowflake reads column metadata and can map directly to table columns. Most efficient for large datasets. All three: support schema-on-read (load into VARIANT first, extract later) or schema-on-write (map during COPY INTO).' } ] }, { title: 'FLATTEN and Advanced Patterns', type: 'qna', items: [ { question: 'Explain FLATTEN and when you need LATERAL.', answer: 'FLATTEN converts a VARIANT array or object into rows (one row per element). Usage: SELECT f.value:name FROM table, LATERAL FLATTEN(input => v:items) f. LATERAL is required because FLATTEN references a column from the left table (the VARIANT column). Without LATERAL, the subquery cannot reference the outer table. Key parameters: input (the array/object), path (sub-path within), outer (TRUE = include rows even when array is empty/null, like LEFT JOIN), recursive (TRUE = flatten nested structures), mode (OBJECT/ARRAY/BOTH).' }, { question: 'How to handle deeply nested JSON with arrays of objects containing arrays?', answer: 'Chain FLATTEN calls: SELECT t.id, f1.value:name::STRING AS item_name, f2.value::STRING AS tag FROM table t, LATERAL FLATTEN(input => t.v:orders) f1, LATERAL FLATTEN(input => f1.value:tags) f2. Each FLATTEN produces rows that multiply with the next. For complex structures, use CTEs to flatten one level at a time for readability. Performance consideration: chained FLATTEN on large arrays can produce massive row explosions. Add WHERE filters early to reduce intermediate rows.' }, { question: 'Schema-on-read vs materializing into native columns: when each?', answer: 'Schema-on-read (query VARIANT directly): when schema changes frequently, during exploration/prototyping, for ad-hoc analytics on raw data. Materialize (extract into typed columns via Dynamic Table or view): when schema is stable, for production dashboards (faster queries), for downstream tools that need typed columns (BI tools), when you need clustering on extracted values. Hybrid pattern: land raw in VARIANT, materialize hot-path columns into a typed Dynamic Table, keep VARIANT for ad-hoc exploration.' } ] }, { title: 'Semi-Structured Tips', type: 'callout', items: [ { variant: 'tip', title: 'Cast Early and Often', body: 'VARIANT path expressions return VARIANT type. Always cast to native types (::STRING, ::NUMBER, ::TIMESTAMP) for correct comparisons, aggregations, and join behavior. Without casting, string comparison rules apply.' }, { variant: 'warning', title: 'Array Explosion', body: 'FLATTEN on arrays multiplies rows. An array with 100 elements on 1M rows produces 100M rows. Filter before flattening or add LIMIT to avoid resource exhaustion.' }, { variant: 'info', title: 'Columnar Optimization', body: 'Snowflake automatically optimizes frequently-accessed JSON paths into columnar format. Queries on consistent JSON structures can be nearly as fast as native columns without manual materialization.' } ] } ], faqs: [ { question: 'Maximum VARIANT size?', answer: '16MB per VARIANT value. For larger documents, split into chunks before loading. Most JSON records are well under this limit.' }, { question: 'Can you index VARIANT columns?', answer: 'No traditional indexes, but: (1) Search Optimization Service supports VARIANT path expressions. (2) Snowflake auto-optimizes internal columnar storage for common paths. (3) Clustering on extracted expressions (CLUSTER BY (v:date::DATE)) works for pruning.' } ], relatedSlugs: ['snowflake-interview-questions', 'snowflake-performance-deep-dive-interview', 'snowflake-snowpipe-streaming-interview'], relatedArticles: ['/articles/snowflake-interview-questions-answers-2026'] },
   { slug: 'snowflake-stored-procedures-interview', title: 'Snowflake Stored Procedures & UDFs — Expert Interview Questions', shortDescription: 'Expert questions on stored procedures, JavaScript/Python/SQL UDFs, caller vs owner rights, transaction management, and security considerations.', category: 'interview', difficulty: 'Advanced', lastUpdated: '2026-04-09', sections: [ { title: 'Procedures vs UDFs', type: 'qna', items: [ { question: 'Stored procedure vs UDF vs UDTF: when to use each?', answer: 'Stored Procedure: executes a program with multiple SQL statements, DDL, DML, transaction control. Called with CALL. Use for: ETL orchestration, admin automation, multi-step workflows. Can modify data. UDF (User-Defined Function): takes input, returns single value per row. Called in SELECT. Use for: row-level transformations, calculations. Cannot modify data. UDTF (User-Defined Table Function): takes input, returns multiple rows. Called with TABLE(). Use for: exploding data, ML inference per group, custom aggregations returning rows. Key: procedures are imperative (do things), functions are declarative (compute things).' }, { question: 'Caller rights vs owner rights: what is the security difference?', answer: 'Owner rights (default): procedure runs with the privileges of the role that OWNS the procedure, regardless of who calls it. Use for: controlled data access (grant procedure execution without granting table access). Caller rights (EXECUTE AS CALLER): procedure runs with the privileges of the calling role. Use for: utility procedures that should respect the caller permissions, admin scripts that need the caller context. Security implication: owner rights procedures can be security risks if they access sensitive data and the owner role is highly privileged. Always audit owner-rights procedures that access PII. Specify during creation: CREATE PROCEDURE ... EXECUTE AS OWNER|CALLER.' }, { question: 'How do you handle transactions in stored procedures?', answer: 'Snowflake stored procedures support explicit transaction control: BEGIN, COMMIT, ROLLBACK. Key rules: (1) If a procedure is called within an existing transaction, it joins that transaction (no nested transactions). (2) If called outside a transaction, each SQL statement is auto-committed unless you explicitly BEGIN. (3) On unhandled exception: if autocommit is off, changes are rolled back. (4) CALL inside a task graph: all tasks share the graph transaction. Best practice: always wrap multi-statement DML in BEGIN/COMMIT with TRY/CATCH for ROLLBACK on error. Use SQLSTATE for error handling.' }, { question: 'JavaScript vs Python vs SQL for stored procedures?', answer: 'SQL: simplest, best for pure SQL orchestration (MERGE, INSERT, DDL sequences). No external libraries. Python: best for ML, complex logic, pandas/sklearn. Runs in Snowpark sandbox. Access to Anaconda packages. JavaScript: legacy, still supported. Best for JSON manipulation. No package ecosystem compared to Python. Scala/Java: available via Snowpark. Best for teams with JVM expertise. Choose based on: team skills, library needs, and complexity. For pure SQL workflows, SQL procedures are fastest. For anything requiring non-SQL logic, Python is the modern choice.' } ] }, { title: 'Advanced Patterns', type: 'qna', items: [ { question: 'How do you dynamically generate and execute SQL in a stored procedure?', answer: 'In SQL procedures: use EXECUTE IMMEDIATE with string concatenation. Example: LET stmt := \'SELECT * FROM \' || :table_name; EXECUTE IMMEDIATE :stmt. In Python: session.sql(f"SELECT * FROM {table_name}").collect(). Security warning: dynamic SQL is vulnerable to SQL injection. Always validate inputs, use IDENTIFIER() for object names (SELECT * FROM IDENTIFIER(:table_name)), and never concatenate user input directly into SQL strings.' }, { question: 'How do you return results from a stored procedure?', answer: 'SQL procedures: RETURN value (single scalar). For tabular results: use RESULTSET and TABLE(RESULT_SCAN(LAST_QUERY_ID())). Python procedures: return a string, or write results to a table and return the table name. JavaScript: return JSON string or scalar. Limitation: procedures cannot directly return a result set to the caller like a function. Workaround: write to a temporary table, return the table name, caller queries the temp table. Or use a UDTF instead if you need tabular output in SELECT.' } ] }, { title: 'Procedure Tips', type: 'callout', items: [ { variant: 'tip', title: 'Use IDENTIFIER() for Dynamic SQL', body: 'Never concatenate table/column names into SQL strings. Use IDENTIFIER(:var_name) to safely reference dynamic object names and prevent SQL injection.' }, { variant: 'warning', title: 'Owner Rights Security', body: 'Owner-rights procedures execute with the owner role privileges. A procedure owned by SYSADMIN accessing PII tables is a security risk. Audit and restrict ownership of procedures that access sensitive data.' }, { variant: 'info', title: 'Python is the Modern Choice', body: 'For new stored procedures requiring non-SQL logic, use Python (Snowpark). It has the best library ecosystem, debugging support, and is actively developed by Snowflake.' } ] } ], faqs: [ { question: 'Can stored procedures be called from tasks?', answer: 'Yes. A task SQL can be CALL my_procedure(args). Common pattern: task triggers on stream, calls procedure that implements complex ETL logic. The procedure runs within the task execution context.' }, { question: 'Maximum execution time?', answer: 'Stored procedures have the same timeout as regular queries: dependent on warehouse. For long-running procedures, use a larger warehouse and consider breaking into multiple procedures called sequentially.' } ], relatedSlugs: ['snowflake-interview-questions', 'snowflake-snowpark-interview', 'snowflake-streams-tasks-interview'], relatedArticles: ['/articles/snowflake-interview-questions-answers-2026'] },
   { slug: 'snowflake-external-integrations-interview', title: 'Snowflake External Functions & Integrations — Expert Interview Questions', shortDescription: 'Expert questions on external functions, API integrations, external tables, external stages, and connecting Snowflake to external systems.', category: 'interview', difficulty: 'Advanced', lastUpdated: '2026-04-09', sections: [ { title: 'External Functions', type: 'qna', items: [ { question: 'What are external functions and when do you use them?', answer: 'External functions let Snowflake call external HTTP endpoints (REST APIs) during query execution. SQL calls the function, Snowflake sends rows to an API Gateway (AWS API Gateway, Azure API Management), which routes to your backend (Lambda, Azure Functions, etc.). Use cases: (1) ML model inference on an external service. (2) Geocoding, IP lookup, or enrichment APIs. (3) Sending notifications from SQL (email, Slack). (4) Calling proprietary services that cannot run inside Snowflake. Key: data LEAVES Snowflake during the call, so governance and latency are concerns.' }, { question: 'Walk through setting up an external function end to end.', answer: 'Steps: (1) Create API integration: CREATE API INTEGRATION ext_api API_PROVIDER=aws_api_gateway API_AWS_ROLE_ARN=... API_ALLOWED_PREFIXES=(url). This establishes trust between Snowflake and your API Gateway. (2) Create the function: CREATE EXTERNAL FUNCTION classify(text VARCHAR) RETURNS VARIANT API_INTEGRATION=ext_api AS url. (3) Call it: SELECT classify(description) FROM products. Under the hood: Snowflake batches rows (up to 1000 per request), sends JSON payload to the endpoint, receives JSON response, maps back to rows. The API must handle the Snowflake batch format (rows array in, rows array out).' }, { question: 'Performance and cost considerations for external functions?', answer: 'Performance: (1) Network latency per batch (100-500ms per API call). (2) Snowflake sends rows in batches of up to 1000, processes concurrently based on warehouse size. (3) Large tables (millions of rows) = thousands of API calls. Throughput depends on your backend capacity. Cost: (1) Snowflake warehouse credits while waiting for API responses. (2) API Gateway / Lambda / function costs. (3) Data transfer (egress from Snowflake). Optimization: (1) Pre-filter data to minimize rows sent. (2) Cache results in a table for repeated lookups. (3) Use larger warehouse for more parallel batches. (4) Ensure your backend can handle the load (auto-scaling Lambda).' } ] }, { title: 'External Tables and Stages', type: 'qna', items: [ { question: 'External tables vs regular tables: when to use external tables?', answer: 'External tables reference data in cloud storage (S3/GCS/ADLS) without copying it into Snowflake. Data stays in original format (Parquet, CSV, JSON). Use when: (1) Data is managed by another system (Spark, data lake). (2) You want to query without ingestion delay/cost. (3) Data governance requires storage in your own bucket. (4) Exploratory queries on large datasets before deciding to ingest. Trade-offs: external tables are slower (no Snowflake optimizations like clustering, micro-partition pruning is limited), no DML (read-only), and limited metadata. For production workloads, ingest into native or Iceberg tables.' }, { question: 'How do you manage external stages and file formats?', answer: 'External stage: CREATE STAGE my_stage URL=s3://bucket/path/ STORAGE_INTEGRATION=my_int FILE_FORMAT=(TYPE=PARQUET). Storage integration: abstraction over cloud credentials (avoids embedding keys in stage definition). File format: reusable format spec (TYPE, COMPRESSION, FIELD_DELIMITER, etc.). Pattern: (1) Create storage integration (once, by admin). (2) Create stage referencing integration. (3) Create file format. (4) COPY INTO table FROM @stage or create external table on stage. Best practice: use storage integrations, never embed credentials in stage URLs.' } ] }, { title: 'Integration Tips', type: 'callout', items: [ { variant: 'tip', title: 'Cache External Function Results', body: 'If your external function performs lookups (geocoding, IP enrichment), cache results in a Snowflake table. Check cache before calling the API. This can reduce API calls by 90%+ for repeated values.' }, { variant: 'warning', title: 'Data Leaves Snowflake', body: 'External functions send data to external endpoints. Ensure: (1) endpoint is in the same cloud region to minimize latency and egress. (2) data is encrypted in transit (HTTPS required). (3) governance policies allow the data to leave. (4) PII is masked before sending if needed.' }, { variant: 'info', title: 'Iceberg as Alternative to External Tables', body: 'For new projects, consider Iceberg tables over external tables. Iceberg provides better query performance (Snowflake can optimize), DML support, Time Travel, and is still open-format readable by other engines.' } ] } ], faqs: [ { question: 'Can external functions call any API?', answer: 'The API must be exposed through a supported API Gateway (AWS API Gateway, Azure API Management, Google Cloud API Gateway). The endpoint must handle Snowflake batch format. Any backend behind the gateway works: Lambda, containers, VMs, third-party APIs (with a proxy).' }, { question: 'Maximum timeout for external functions?', answer: 'External function calls have a default timeout of 180 seconds per batch. For long-running inference, consider async patterns: the function returns immediately with a job ID, a separate task polls for results.' } ], relatedSlugs: ['snowflake-interview-questions', 'snowflake-snowpark-interview', 'snowflake-data-sharing-interview'], relatedArticles: ['/articles/snowflake-interview-questions-answers-2026'] },
+
+  // ────────────────────────────────────────────
+  // 25. Python for Data Engineers Cheat Sheet
+  // ────────────────────────────────────────────
+  {
+    slug: 'python-for-data-engineers',
+    title: 'Python for Data Engineers Cheat Sheet',
+    shortDescription: 'Essential Python patterns for data engineering: pandas, itertools, generators, connecting to Snowflake, writing production-safe ETL scripts, and testing data pipelines.',
+    category: 'programming',
+    difficulty: 'Intermediate',
+    lastUpdated: '2026-04-16',
+    sections: [
+      {
+        title: 'Core Libraries Every Data Engineer Needs',
+        type: 'table',
+        columns: ['Library', 'Use Case', 'Install'],
+        items: [
+          ['pandas', 'In-memory tabular transforms under ~5GB', 'pip install pandas'],
+          ['polars', 'Faster pandas alternative, lazy eval, Arrow-native', 'pip install polars'],
+          ['pyarrow', 'Columnar memory format, Parquet read/write', 'pip install pyarrow'],
+          ['snowflake-connector-python', 'Connect to Snowflake, fetch_pandas_all()', 'pip install snowflake-connector-python[pandas]'],
+          ['snowflake-snowpark-python', 'Push computation to Snowflake warehouse', 'pip install snowflake-snowpark-python'],
+          ['sqlalchemy', 'Generic DB abstraction (Postgres, MySQL, Snowflake)', 'pip install sqlalchemy'],
+          ['boto3', 'AWS S3 / Secrets Manager / Glue', 'pip install boto3'],
+          ['pydantic', 'Runtime data validation, schema contracts', 'pip install pydantic'],
+          ['great-expectations', 'Data quality testing framework', 'pip install great-expectations'],
+          ['pytest', 'Unit + integration tests for pipelines', 'pip install pytest'],
+        ],
+      },
+      {
+        title: 'Production-Safe Snowflake Connection Pattern',
+        type: 'code',
+        language: 'python',
+        code: `import os
+import snowflake.connector
+from contextlib import contextmanager
+
+@contextmanager
+def snowflake_conn():
+    """Always close connection, even on error."""
+    conn = snowflake.connector.connect(
+        account=os.environ['SF_ACCOUNT'],
+        user=os.environ['SF_USER'],
+        password=os.environ['SF_PASSWORD'],
+        warehouse=os.environ['SF_WAREHOUSE'],
+        database=os.environ['SF_DATABASE'],
+        schema=os.environ['SF_SCHEMA'],
+        role=os.environ['SF_ROLE'],
+        client_session_keep_alive=False,
+    )
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+def run_query(sql: str, params: dict | None = None):
+    with snowflake_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, params or {})
+            return cur.fetchall()
+
+# Parameterized query (SQL-injection safe)
+rows = run_query(
+    "SELECT * FROM orders WHERE customer_id = %(cid)s AND order_date >= %(d)s",
+    {"cid": 12345, "d": "2026-01-01"},
+)`,
+      },
+      {
+        title: 'Efficient Pandas Patterns',
+        type: 'code',
+        language: 'python',
+        code: `import pandas as pd
+
+# Read Parquet (10-100x faster than CSV)
+df = pd.read_parquet('s3://bucket/orders.parquet')
+
+# Specify dtypes to cut memory 50%+
+df = pd.read_csv('data.csv', dtype={
+    'order_id': 'int32',
+    'amount': 'float32',
+    'status': 'category',
+})
+
+# Vectorize — NEVER iterate row-by-row
+# BAD:   for idx, row in df.iterrows(): ...
+# GOOD:  df['total'] = df['qty'] * df['price']
+
+# Use assign() for readable chained transforms
+clean = (
+    df
+    .query('amount > 0')
+    .assign(
+        order_month=lambda d: d['order_date'].dt.to_period('M'),
+        is_big=lambda d: d['amount'] > 1000,
+    )
+    .groupby('order_month', as_index=False)
+    .agg(revenue=('amount', 'sum'), orders=('order_id', 'count'))
+)
+
+# Process giant files in chunks
+for chunk in pd.read_csv('huge.csv', chunksize=100_000):
+    processed = chunk.pipe(transform).pipe(validate)
+    processed.to_parquet(f'out/{chunk.index[0]}.parquet')`,
+      },
+      {
+        title: 'Generators & Memory-Efficient Iteration',
+        type: 'code',
+        language: 'python',
+        code: `# Stream rows from Snowflake without loading all into memory
+def stream_query(sql: str, batch_size: int = 10_000):
+    with snowflake_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql)
+            while True:
+                rows = cur.fetchmany(batch_size)
+                if not rows:
+                    break
+                yield from rows
+
+# Consumer uses constant memory no matter the table size
+for row in stream_query("SELECT * FROM huge_table"):
+    process(row)
+
+# Batch generator for bulk inserts
+from itertools import islice
+def batched(iterable, n):
+    it = iter(iterable)
+    while (batch := list(islice(it, n))):
+        yield batch
+
+# Bulk write 1000 rows at a time
+for batch in batched(records, 1000):
+    cursor.executemany(INSERT_SQL, batch)`,
+      },
+      {
+        title: 'Testing Data Pipelines',
+        type: 'code',
+        language: 'python',
+        code: `# test_transforms.py
+import pandas as pd
+import pytest
+from my_pipeline import clean_orders
+
+def test_clean_orders_removes_negative_amounts():
+    raw = pd.DataFrame({
+        'order_id': [1, 2, 3],
+        'amount': [100.0, -5.0, 250.0],
+    })
+    result = clean_orders(raw)
+    assert len(result) == 2
+    assert (result['amount'] > 0).all()
+
+def test_clean_orders_preserves_schema():
+    raw = pd.DataFrame({'order_id': [1], 'amount': [100.0]})
+    result = clean_orders(raw)
+    assert set(result.columns) == {'order_id', 'amount', 'order_month'}
+
+@pytest.mark.parametrize("amount,expected", [
+    (0.01, True), (999.99, True), (1000.01, False), (-1, False),
+])
+def test_valid_amount(amount, expected):
+    assert is_valid_amount(amount) is expected
+
+# Run: pytest -v --cov=my_pipeline --cov-report=term-missing`,
+      },
+      {
+        title: 'Production Pipeline Best Practices',
+        type: 'tips',
+        items: [
+          'Never hardcode credentials — use environment variables, AWS Secrets Manager, or Snowflake key-pair auth',
+          'Always use parameterized queries (%(name)s or %s) — never f-string SQL (SQL injection risk)',
+          'Wrap connections in context managers (with statement) so they close even on exception',
+          'Use logging, not print() — configure root logger with JSON formatter for production',
+          'Validate input schemas with pydantic BaseModel — fail fast on bad data',
+          'Prefer Parquet over CSV for intermediate files: 10-100x faster I/O, preserves dtypes',
+          'Use Snowpark DataFrames when possible — pushes compute to Snowflake, avoids data egress',
+          'Pin dependencies in requirements.txt or pyproject.toml — unpinned versions break builds silently',
+          'Add retries with exponential backoff for network calls (tenacity library)',
+          'Write tests before productionizing — pytest + moto (mock AWS) + testcontainers (real Postgres)',
+        ],
+      },
+    ],
+    faqs: [
+      { question: 'Should I use pandas or Snowpark for data engineering?', answer: 'Use Snowpark when your data lives in Snowflake and transformations are SQL-expressible — compute runs on the Snowflake warehouse, no data egress, scales to billions of rows. Use pandas for local transforms under ~5GB, or when you need libraries like scikit-learn that require Python objects. Rule: if you find yourself pulling a large table out of Snowflake only to transform and push it back, switch to Snowpark.' },
+      { question: 'Why is my pandas script slow on a 2GB CSV?', answer: 'Common fixes: (1) Read Parquet instead of CSV — 10-100x faster. (2) Specify dtypes on read to avoid object columns. (3) Use category dtype for low-cardinality strings. (4) Vectorize operations — iterrows() is 100x slower than column arithmetic. (5) If still slow, switch to polars (lazy evaluation, multi-core). (6) For over 10GB, push compute to Snowflake via Snowpark.' },
+      { question: 'How do I handle secrets in Python data pipelines?', answer: 'Use environment variables loaded from a secret manager at runtime: AWS Secrets Manager, Azure Key Vault, or Snowflake key-pair authentication. Never commit credentials to git. In CI/CD use GitHub Actions secrets or Vault. For local dev use a .env file with python-dotenv (gitignored). For Snowflake specifically, prefer key-pair auth over passwords — it is more secure and does not expire.' },
+      { question: 'What is the best way to unit-test a data pipeline?', answer: 'Separate pure transform logic (deterministic functions taking a DataFrame, returning a DataFrame) from I/O (read/write). Unit-test the transforms with small fixture DataFrames using pytest. Mock external services with moto (AWS) or responses (HTTP). Use testcontainers or a real Snowflake test account for integration tests. Target about 80% coverage on transform logic and 100% on critical financial/compliance calculations.' },
+      { question: 'When should I use generators instead of lists?', answer: 'Use generators when processing data larger than memory (streaming from Snowflake, reading large files line by line), when you only need the result once (no re-iteration needed), or when you want lazy evaluation. Use lists when you need len(), indexing, or multiple iterations. Generators use O(1) memory regardless of data size — critical for pipelines processing millions of rows.' },
+      { question: 'How do I structure a production ETL Python project?', answer: 'Standard layout: src/pipeline/{extract,transform,load}.py for stages, src/pipeline/config.py for settings (pydantic-settings), src/pipeline/io/ for external connectors, tests/ mirroring src, pyproject.toml pinning deps, Dockerfile for deployment. Keep main.py thin — just wiring. Use dependency injection for connections so tests can inject mocks.' },
+      { question: 'Polars vs pandas — which should I pick in 2026?', answer: 'Polars is faster (Rust + multi-core), uses less memory, and has a cleaner API, but the ecosystem (scikit-learn, plotting libraries, tutorials) is smaller. Pick polars for new ETL work especially over 1GB where speed matters. Stay with pandas when integrating with an existing pandas codebase, using scikit-learn heavily, or onboarding junior engineers — pandas has more Stack Overflow answers.' },
+      { question: 'How do I retry failed API calls gracefully?', answer: 'Use the tenacity library: @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, max=60)) decorator retries on exception with exponential backoff. Only retry idempotent operations. Set a circuit breaker for chronic failures. Log each retry attempt so you can alert when retries exceed normal baseline.' },
+    ],
+    relatedSlugs: ['pyspark', 'dbt-commands', 'snowflake-sql', 'data-engineering-interview-questions'],
+    relatedArticles: ['/articles/snowflake-cortex-code-dbt-optimization-guide', '/articles/data-engineer-roadmap-2025'],
+  },
+
+  // ────────────────────────────────────────────
+  // 26. PySpark / Spark SQL Cheat Sheet
+  // ────────────────────────────────────────────
+  {
+    slug: 'pyspark',
+    title: 'PySpark & Spark SQL Cheat Sheet',
+    shortDescription: 'PySpark DataFrame API, Spark SQL, window functions, partitioning, caching, and performance tuning for production data pipelines.',
+    category: 'programming',
+    difficulty: 'Intermediate',
+    lastUpdated: '2026-04-16',
+    sections: [
+      {
+        title: 'DataFrame API Essentials',
+        type: 'code',
+        language: 'python',
+        code: `from pyspark.sql import SparkSession, functions as F, Window
+
+spark = (
+    SparkSession.builder
+    .appName("orders-etl")
+    .config("spark.sql.adaptive.enabled", "true")
+    .config("spark.sql.adaptive.coalescePartitions.enabled", "true")
+    .getOrCreate()
+)
+
+# Read sources
+orders = spark.read.parquet("s3://bucket/orders/")
+customers = spark.read.format("delta").load("s3://bucket/customers/")
+
+# Transform
+clean = (
+    orders
+    .filter(F.col("amount") > 0)
+    .withColumn("order_month", F.date_trunc("month", F.col("order_date")))
+    .withColumn("is_big", F.col("amount") > 1000)
+    .join(customers, "customer_id", "left")
+    .select("order_id", "customer_id", "amount", "order_month", "country")
+)
+
+# Aggregate
+monthly = (
+    clean.groupBy("order_month", "country")
+    .agg(
+        F.sum("amount").alias("revenue"),
+        F.count("order_id").alias("orders"),
+        F.countDistinct("customer_id").alias("unique_customers"),
+    )
+)
+
+# Write (partitioned)
+(monthly.write
+    .mode("overwrite")
+    .partitionBy("order_month")
+    .format("delta")
+    .save("s3://bucket/monthly_summary/"))`,
+      },
+      {
+        title: 'Window Functions',
+        type: 'code',
+        language: 'python',
+        code: `from pyspark.sql import Window, functions as F
+
+# Running total per customer, ordered by date
+w_running = Window.partitionBy("customer_id").orderBy("order_date") \\
+    .rowsBetween(Window.unboundedPreceding, Window.currentRow)
+
+df = orders.withColumn("lifetime_spend", F.sum("amount").over(w_running))
+
+# Rank orders within customer (1 = largest)
+w_rank = Window.partitionBy("customer_id").orderBy(F.desc("amount"))
+df = df.withColumn("order_rank", F.row_number().over(w_rank))
+
+# 7-day rolling average (requires ordered time window)
+w_rolling = Window.partitionBy("customer_id") \\
+    .orderBy(F.col("order_date").cast("long")) \\
+    .rangeBetween(-6 * 86400, 0)  # 6 days before to current
+
+df = df.withColumn("avg_7d", F.avg("amount").over(w_rolling))
+
+# Lag / Lead for change detection
+w_seq = Window.partitionBy("customer_id").orderBy("order_date")
+df = df.withColumn("prev_amount", F.lag("amount").over(w_seq))
+df = df.withColumn("amount_change", F.col("amount") - F.col("prev_amount"))`,
+      },
+      {
+        title: 'Join Strategies & When Spark Picks Each',
+        type: 'table',
+        columns: ['Strategy', 'When Used', 'How to Force'],
+        items: [
+          ['Broadcast Hash Join', 'Small side under spark.sql.autoBroadcastJoinThreshold (default 10MB)', 'F.broadcast(small_df) hint'],
+          ['Sort-Merge Join', 'Both sides large, sortable by join key', 'Default for large joins'],
+          ['Shuffle Hash Join', 'One side fits in memory per partition', 'Rare, AQE chooses'],
+          ['Broadcast Nested Loop', 'Non-equi joins with a small side', 'F.broadcast() + non-equal condition'],
+          ['Cartesian Product', 'No join condition (danger)', 'crossJoin() — use with extreme care'],
+        ],
+      },
+      {
+        title: 'Spark SQL — Common Patterns',
+        type: 'code',
+        language: 'sql',
+        code: `-- Register DataFrame as a temp view
+-- orders.createOrReplaceTempView("orders")
+
+-- Rank top-5 customers per country by revenue
+SELECT *
+FROM (
+  SELECT
+    country,
+    customer_id,
+    SUM(amount) AS revenue,
+    RANK() OVER (PARTITION BY country ORDER BY SUM(amount) DESC) AS rnk
+  FROM orders
+  GROUP BY country, customer_id
+)
+WHERE rnk <= 5;
+
+-- Pivot monthly revenue by country
+SELECT * FROM orders
+PIVOT (
+  SUM(amount) FOR country IN ('US', 'UK', 'DE', 'IN')
+);
+
+-- Explode array column into rows
+SELECT order_id, item
+FROM orders
+LATERAL VIEW EXPLODE(items) t AS item;
+
+-- Broadcast a small lookup
+SELECT /*+ BROADCAST(c) */ o.*, c.country
+FROM orders o JOIN customers c ON o.customer_id = c.customer_id;`,
+      },
+      {
+        title: 'Performance Tuning Checklist',
+        type: 'tips',
+        items: [
+          'Enable Adaptive Query Execution (AQE): spark.sql.adaptive.enabled=true — auto-coalesces partitions and handles skew',
+          'Partition by low-cardinality columns (country, month) — NOT by user_id (too granular, creates millions of files)',
+          'Use broadcast joins for dimension tables under 100MB: F.broadcast(dim_df)',
+          'Cache DataFrames reused 3+ times: df.cache() then df.count() to materialize',
+          'Prefer DataFrame API over RDD API — Catalyst optimizer only works on DataFrames',
+          'Avoid collect() on big data — brings all rows to driver and OOMs. Use write() instead',
+          'Set spark.sql.shuffle.partitions based on data size: target ~128MB per partition',
+          'Handle skew with salting: add random_key, aggregate, then aggregate again',
+          'Use columnar formats (Parquet, Delta, Iceberg) — predicate pushdown + column pruning',
+          'Monitor Spark UI Stages tab — look for skewed tasks (one task 10x slower than others)',
+        ],
+      },
+      {
+        title: 'Common Interview Q&A',
+        type: 'qna',
+        items: [
+          { question: 'What is the difference between narrow and wide transformations?', answer: 'Narrow transformations (map, filter, union) produce child partitions that depend on exactly one parent partition — no shuffle. Wide transformations (groupBy, join, distinct) require data from multiple partitions — triggers a shuffle which writes intermediate data to disk and reads it over the network. Wide transforms are expensive; minimize them by filtering/projecting before grouping.' },
+          { question: 'How do you handle data skew?', answer: 'Symptoms: one task runs 10-100x slower than peers in the same stage. Fixes: (1) Enable AQE skew join: spark.sql.adaptive.skewJoin.enabled=true — automatically splits skewed partitions. (2) Salting: add a random prefix to the skewed key, group, then group again without salt. (3) Broadcast the smaller side if possible. (4) Isolate hot keys and process separately. (5) Increase spark.sql.shuffle.partitions so skewed data spreads further.' },
+          { question: 'cache() vs persist() — what is the difference?', answer: 'cache() is shorthand for persist(StorageLevel.MEMORY_AND_DISK). persist() accepts any StorageLevel: MEMORY_ONLY (fastest, risk OOM), MEMORY_AND_DISK (default), DISK_ONLY (slowest but safe), MEMORY_ONLY_SER (serialized, saves memory), OFF_HEAP (avoids GC). Always call an action after cache() (e.g., df.count()) to materialize it. Unpersist when no longer needed to free memory.' },
+          { question: 'When should you use PySpark vs pandas vs Snowpark?', answer: 'PySpark: data over 100GB, distributed compute needed, Delta/Iceberg workloads on Databricks/EMR. Pandas: under 5GB in-memory, rich Python ecosystem, single-node. Snowpark: data already in Snowflake — pushes compute to Snowflake warehouse, no egress, uses Snowflake governance. For Snowflake-centric stacks, Snowpark usually beats PySpark on ops simplicity and cost.' },
+        ],
+      },
+    ],
+    faqs: [
+      { question: 'What Spark cluster configuration should I start with?', answer: 'Rule of thumb: executor memory 4-8GB, executor cores 4-5 (higher values hurt parallelism due to JVM GC), driver memory 2x the largest broadcast. Set spark.sql.shuffle.partitions to ~2-3x the total cores. Enable AQE so Spark auto-tunes partition counts. Start with 4 executors, scale based on stage duration. For Databricks, use job clusters (terminate after run) not all-purpose clusters.' },
+      { question: 'Why is my Spark job OOMing on the driver?', answer: 'Common causes: (1) collect() or toPandas() on a large DataFrame brings all rows to driver — replace with write(). (2) Broadcasting a DataFrame too large (>100MB). (3) Accumulators collecting too much data. (4) Large number of files in a partitioned read (driver builds file list in memory). Fix: increase spark.driver.memory, avoid collect(), use checkpoint() to truncate lineage on iterative jobs.' },
+      { question: 'Parquet vs Delta vs Iceberg for Spark — which?', answer: 'Parquet: open columnar format, read/write only — no ACID, no time travel. Delta Lake: Parquet + transaction log + ACID + schema evolution, best on Databricks. Iceberg: open table format with ACID + time travel + hidden partitioning, broad engine support (Spark, Trino, Snowflake, Flink). Pick Delta if on Databricks, Iceberg if you want multi-engine portability (Snowflake + Spark + Trino reading same data).' },
+      { question: 'How do you pass configs to spark-submit in production?', answer: 'Three ways: (1) CLI flags: spark-submit --conf spark.executor.memory=8g app.py. (2) spark-defaults.conf file — baseline cluster settings. (3) In code: SparkSession.builder.config(...). Precedence (highest to lowest): code > CLI > config file. For sensitive values use spark.kubernetes.driver.secrets or environment variables, never commit to git.' },
+      { question: 'repartition() vs coalesce() — when to use each?', answer: 'repartition(N) does a full shuffle to produce exactly N partitions — use when increasing partition count or rebalancing skewed data. coalesce(N) merges existing partitions without shuffle — use only when reducing partition count (e.g., before writing out). coalesce is cheaper but can create uneven partitions. For output: coalesce(1) only for tiny result sets; for large output, repartition on the partition column.' },
+      { question: 'How do I debug a slow PySpark job?', answer: 'Workflow: (1) Open Spark UI — Stages tab, find the slowest stage. (2) Check Summary Metrics — is one task much slower? (skew). (3) Check Input Size / Shuffle Read — is data being re-read? (cache missing). (4) Check SQL tab — look at the physical plan for BroadcastExchange, SortMergeJoin, filters pushed down. (5) Check DAG visualization — excessive stages = unnecessary shuffles. Common wins: add broadcast hint, enable AQE, pre-filter before join.' },
+      { question: 'How are Spark UDFs different from built-in functions?', answer: 'Built-in functions (F.col, F.sum, F.date_trunc) run in the JVM and are optimized by Catalyst — fastest. Python UDFs serialize each row to Python and back — 10-100x slower due to serialization. Pandas UDFs (vectorized, F.pandas_udf) send Arrow batches to Python — much faster than regular UDFs. Rule: always prefer built-ins. If you must write custom logic, use pandas UDFs over Python UDFs.' },
+    ],
+    relatedSlugs: ['python-for-data-engineers', 'databricks', 'sql-window-functions', 'data-engineering-interview-questions'],
+    relatedArticles: ['/articles/data-engineer-roadmap-2025', '/articles/structuring-dbt-projects-in-snowflake'],
+  },
+
+  // ────────────────────────────────────────────
+  // 27. AWS for Data Engineers Cheat Sheet
+  // ────────────────────────────────────────────
+  {
+    slug: 'aws-for-data-engineers',
+    title: 'AWS for Data Engineers Cheat Sheet',
+    shortDescription: 'Essential AWS services for data engineering: S3, Glue, Lambda, Step Functions, Athena, IAM, and common architecture patterns with cost tips.',
+    category: 'cloud',
+    difficulty: 'Intermediate',
+    lastUpdated: '2026-04-16',
+    sections: [
+      {
+        title: 'Core Services Map',
+        type: 'table',
+        columns: ['Service', 'Purpose', 'When to Use'],
+        items: [
+          ['S3', 'Object storage (the data lake)', 'All raw data, Parquet/Iceberg tables, intermediate files'],
+          ['Glue Data Catalog', 'Hive-compatible metastore', 'Central schema store for Athena, EMR, Redshift Spectrum'],
+          ['Glue ETL', 'Serverless Spark jobs', 'PySpark ETL when you want managed clusters'],
+          ['Glue Crawlers', 'Auto-discover schemas', 'New sources where schema is unknown / evolving'],
+          ['Lambda', 'Short-lived (<15 min) serverless functions', 'S3 triggers, API handlers, lightweight ETL'],
+          ['Step Functions', 'Serverless workflow orchestration', 'ETL DAGs without managing Airflow'],
+          ['Athena', 'Serverless SQL on S3', 'Ad-hoc queries, $5/TB scanned'],
+          ['Redshift / Redshift Serverless', 'Cloud data warehouse', 'BI, large analytics workloads'],
+          ['EMR / EMR Serverless', 'Managed Hadoop/Spark', 'Heavy Spark jobs, full cluster control'],
+          ['MSK / Kinesis', 'Streaming (Kafka / proprietary)', 'Real-time ingestion pipelines'],
+          ['IAM', 'Identity & access control', 'Everything — least-privilege roles, service roles'],
+          ['Secrets Manager', 'Credential storage with rotation', 'DB passwords, API keys'],
+        ],
+      },
+      {
+        title: 'S3 Cost & Performance Patterns',
+        type: 'tips',
+        items: [
+          'Use Parquet + Snappy compression — 10x smaller than CSV, 10x faster query',
+          'Partition keys: date first (year=/month=/day=) then low-cardinality filters — enables partition pruning in Athena/Spark',
+          'Avoid thousands of tiny files (< 64MB each) — compaction is mandatory; target 128MB-1GB per file',
+          'Enable S3 Intelligent-Tiering for unknown access patterns — auto-moves cold data to cheaper tiers',
+          'S3 lifecycle rules: move to Glacier after 90 days, delete raw logs after 365 days',
+          'Enable S3 Access Logging + GuardDuty for exfiltration detection',
+          'Use S3 Select / Athena for predicate pushdown instead of scanning full files',
+          'Multi-part upload for files > 100MB; single PUT limit is 5GB',
+          'Cross-region replication for DR; S3 Batch Operations for mass reprocessing',
+          'Request rate: 3500 PUT and 5500 GET per prefix per second — shard prefixes for higher throughput',
+        ],
+      },
+      {
+        title: 'Glue ETL Job Skeleton (PySpark)',
+        type: 'code',
+        language: 'python',
+        code: `import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+from pyspark.sql import functions as F
+
+args = getResolvedOptions(sys.argv, ['JOB_NAME', 'run_date'])
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+
+# Read from Data Catalog (pushdown predicate for partition pruning)
+src = glueContext.create_dynamic_frame.from_catalog(
+    database="raw", table_name="orders",
+    push_down_predicate=f"dt = '{args['run_date']}'"
+)
+
+df = src.toDF()
+clean = (
+    df.filter(F.col("amount") > 0)
+      .withColumn("dt", F.lit(args['run_date']))
+)
+
+# Write to curated zone as Parquet
+clean.write.mode("append").partitionBy("dt").parquet(
+    "s3://analytics-curated/orders/"
+)
+
+job.commit()`,
+      },
+      {
+        title: 'Step Functions ETL Pattern',
+        type: 'code',
+        language: 'json',
+        code: `{
+  "Comment": "Daily orders ETL",
+  "StartAt": "Extract",
+  "States": {
+    "Extract": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::glue:startJobRun.sync",
+      "Parameters": { "JobName": "extract-orders", "Arguments": { "--run_date.$": "$.run_date" } },
+      "Retry": [{ "ErrorEquals": ["States.ALL"], "IntervalSeconds": 30, "MaxAttempts": 3, "BackoffRate": 2.0 }],
+      "Catch": [{ "ErrorEquals": ["States.ALL"], "Next": "NotifyFailure" }],
+      "Next": "Transform"
+    },
+    "Transform": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::glue:startJobRun.sync",
+      "Parameters": { "JobName": "transform-orders" },
+      "Next": "Load"
+    },
+    "Load": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": { "FunctionName": "load-to-snowflake", "Payload.$": "$" },
+      "End": true
+    },
+    "NotifyFailure": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": { "TopicArn": "arn:aws:sns:us-east-1:123:etl-alerts", "Message.$": "$" },
+      "End": true
+    }
+  }
+}`,
+      },
+      {
+        title: 'IAM Least-Privilege Example',
+        type: 'code',
+        language: 'json',
+        code: `{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadRawOrdersOnly",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:ListBucket"],
+      "Resource": [
+        "arn:aws:s3:::raw-zone/orders/*",
+        "arn:aws:s3:::raw-zone"
+      ],
+      "Condition": { "StringLike": { "s3:prefix": "orders/*" } }
+    },
+    {
+      "Sid": "WriteCuratedOrdersOnly",
+      "Effect": "Allow",
+      "Action": ["s3:PutObject", "s3:DeleteObject"],
+      "Resource": "arn:aws:s3:::curated-zone/orders/*"
+    },
+    {
+      "Sid": "GlueCatalogRead",
+      "Effect": "Allow",
+      "Action": ["glue:GetTable", "glue:GetPartitions", "glue:GetDatabase"],
+      "Resource": "*"
+    }
+  ]
+}`,
+      },
+      {
+        title: 'Cost Traps to Avoid',
+        type: 'qna',
+        items: [
+          { question: 'Why is my Athena bill huge?', answer: 'Athena charges $5 per TB scanned. Huge bills almost always mean scanning unpartitioned data or SELECT * on Parquet without column pruning. Fix: (1) Partition by date and filter on partition columns. (2) SELECT only needed columns. (3) Convert CSV to Parquet. (4) Use CTAS to create partitioned summary tables. (5) Set data_scanned_cutoff_per_query workgroup limit. Typical reduction: 10-100x.' },
+          { question: 'S3 costs exploding on a data lake?', answer: 'Usually three causes: (1) Too many small files — S3 charges per request, and Parquet metadata overhead blows up. Compact to 128MB+ files. (2) Storage class not tuned — use Intelligent-Tiering for ambiguous access. (3) Old raw data never deleted — add lifecycle rules: raw → Glacier at 90d, delete at 365d. (4) Cross-region reads charge $0.02/GB — keep compute in same region as data.' },
+          { question: 'Lambda + S3 event storm?', answer: 'S3 events can fan out to Lambda at huge volume when uploading many files. Mitigate: (1) Use SQS between S3 and Lambda for batching and backpressure. (2) Set Lambda reserved concurrency to cap parallelism. (3) Use S3 event batching (batch size, window). (4) For ETL, prefer EventBridge Scheduler + Glue job over per-file Lambda.' },
+        ],
+      },
+    ],
+    faqs: [
+      { question: 'When should I use Glue vs EMR vs Lambda for ETL?', answer: 'Lambda: < 15 min runtime, < 10GB memory, event-driven (S3 trigger, API). Glue ETL: serverless Spark, no cluster management, best for scheduled ETL with moderate data. EMR Serverless: larger/longer Spark jobs, more tuning control, needs custom libraries or specific Spark versions. EMR on EC2: full control, long-running clusters, best for continuous streaming or Hadoop ecosystem (HBase, Presto).' },
+      { question: 'Athena vs Redshift Spectrum vs Snowflake on AWS?', answer: 'Athena: serverless, $5/TB scanned, best for ad-hoc queries on S3. Redshift Spectrum: query S3 from Redshift, same pricing, integrates with Redshift tables. Snowflake on AWS: separate compute/storage, auto-clustering, result cache, best performance and governance but higher per-query cost. Pick Athena for infrequent ad-hoc, Snowflake for production analytics with BI tools, Spectrum if already on Redshift.' },
+      { question: 'How do I secure data in an S3 data lake?', answer: 'Layer defenses: (1) Bucket policies + IAM least-privilege roles. (2) Block all public access at account level. (3) Default encryption SSE-KMS with customer-managed keys. (4) Enable CloudTrail + S3 Access Logs + GuardDuty S3 protection. (5) Use Lake Formation for column/row-level access control on Glue Catalog. (6) VPC endpoints so traffic never leaves AWS network. (7) Rotate IAM keys, prefer IAM Roles over keys.' },
+      { question: 'How should I orchestrate AWS ETL — Step Functions, Airflow, or Glue Workflows?', answer: 'Step Functions: best for pure AWS-service orchestration (Glue + Lambda + SNS), cheapest, no infra to manage. MWAA (managed Airflow): best for complex DAGs, cross-cloud, rich operator ecosystem, but costs $300-1000/mo baseline. Glue Workflows: tight integration with Glue jobs but limited outside Glue. Use Step Functions for simple-to-medium pipelines, MWAA when you need cross-cloud or dbt Cloud integration.' },
+      { question: 'Kinesis Data Streams vs MSK vs SQS?', answer: 'Kinesis Data Streams: AWS-native, shard-based, auto-scaling variant available, simpler ops. MSK: managed Kafka, open protocol, best if you have existing Kafka ecosystem (Kafka Connect, ksqlDB, Schema Registry). SQS: queue not stream, no ordering across partitions, no replay, best for task queues not analytics. Pick Kinesis for new AWS-native streaming, MSK for Kafka compatibility, SQS only for work queues.' },
+      { question: 'What is the minimum IAM setup for an AWS data engineer?', answer: 'Use IAM Identity Center (SSO), no long-lived access keys. Federate via your IdP (Okta, Azure AD). Create permission sets per role: DataEngineer (read all raw, write curated, Glue/Athena), DataScientist (read curated only), Admin (separate MFA-required role). Attach service-linked roles to Glue/Lambda/Step Functions. Use AWS Config + IAM Access Analyzer to flag overly-permissive policies.' },
+      { question: 'How do I move data from AWS to Snowflake efficiently?', answer: 'Best pattern: land data in S3 as Parquet → Snowflake external stage → Snowpipe auto-ingest on S3 event. For streaming: use Snowflake Kafka Connector in Snowpipe Streaming mode (sub-10s latency). Avoid pushing via Python loops on a single machine — slow and expensive. For migrations of over 1TB, use Snowflake COPY INTO with MAX_FILE_SIZE tuned and a well-sized warehouse.' },
+    ],
+    relatedSlugs: ['azure-for-data-engineers', 'databricks', 'python-for-data-engineers', 'airflow-essentials'],
+    relatedArticles: ['/articles/data-engineer-roadmap-2025', '/articles/snowflake-cortex-code-dbt-optimization-guide'],
+  },
+
+  // ────────────────────────────────────────────
+  // 28. Azure for Data Engineers Cheat Sheet
+  // ────────────────────────────────────────────
+  {
+    slug: 'azure-for-data-engineers',
+    title: 'Azure for Data Engineers Cheat Sheet',
+    shortDescription: 'Key Azure services for data engineering: ADLS Gen2, Data Factory, Synapse, Databricks, Functions, Purview, and common architecture patterns.',
+    category: 'cloud',
+    difficulty: 'Intermediate',
+    lastUpdated: '2026-04-16',
+    sections: [
+      {
+        title: 'Core Azure Services for Data',
+        type: 'table',
+        columns: ['Service', 'Purpose', 'Closest AWS Equivalent'],
+        items: [
+          ['ADLS Gen2', 'Data lake storage with hierarchical namespace', 'S3'],
+          ['Azure Data Factory (ADF)', 'Managed ETL/ELT orchestration', 'Glue + Step Functions'],
+          ['Synapse Analytics', 'MPP data warehouse + Spark pools + serverless SQL', 'Redshift + EMR + Athena'],
+          ['Azure Databricks', 'Managed Spark / Delta Lake', 'EMR / Databricks on AWS'],
+          ['Microsoft Fabric', 'Unified SaaS data platform (OneLake + Spark + Warehouse)', 'no direct equivalent'],
+          ['Event Hubs', 'Managed Kafka-compatible streaming', 'Kinesis / MSK'],
+          ['Functions', 'Serverless code triggers', 'Lambda'],
+          ['Cosmos DB', 'Multi-model NoSQL with global distribution', 'DynamoDB'],
+          ['Purview', 'Data governance, lineage, catalog', 'Lake Formation + Glue Catalog'],
+          ['Key Vault', 'Secrets / keys / certs', 'Secrets Manager + KMS'],
+          ['Entra ID (AAD)', 'Identity provider', 'IAM Identity Center'],
+        ],
+      },
+      {
+        title: 'ADLS Gen2 Zones & Partitioning',
+        type: 'tips',
+        items: [
+          'Enable hierarchical namespace at storage-account creation — cannot be added later; required for ACLs and Spark perf',
+          'Zone layout: landing/ → raw/ → curated/ → consumption/ — immutable promotion between zones',
+          'Partition Parquet by date (year=/month=/day=) first; low-cardinality filters (country) second',
+          'Use ABFS driver (abfss://container@account.dfs.core.windows.net/path) in Spark — not WASB (legacy)',
+          'Set lifecycle policies: move to Cool at 30 days, Archive at 180 days, delete raw at 365 days',
+          'Use ADLS ACLs (POSIX-style) for fine-grained access; RBAC for container-level access',
+          'Enable soft delete + versioning on critical containers for accidental-delete protection',
+          'Enable diagnostic logs to Log Analytics for access auditing; integrate with Defender for Storage',
+          'Use private endpoints + firewall rules — never leave storage accounts publicly accessible',
+          'For cross-region DR, use RA-GZRS replication + geo-redundant backup jobs',
+        ],
+      },
+      {
+        title: 'ADF Pipeline — Copy + Transform Pattern',
+        type: 'code',
+        language: 'json',
+        code: `{
+  "name": "pl_orders_daily",
+  "properties": {
+    "parameters": { "runDate": { "type": "String" } },
+    "activities": [
+      {
+        "name": "Copy_OnPrem_to_Raw",
+        "type": "Copy",
+        "inputs": [{ "referenceName": "ds_onprem_orders", "type": "DatasetReference" }],
+        "outputs": [{ "referenceName": "ds_raw_orders", "type": "DatasetReference",
+          "parameters": { "dt": "@pipeline().parameters.runDate" } }],
+        "typeProperties": {
+          "source": { "type": "SqlServerSource",
+            "sqlReaderQuery": "SELECT * FROM dbo.orders WHERE updated_at >= '@{pipeline().parameters.runDate}'" },
+          "sink": { "type": "ParquetSink" },
+          "enableStaging": true
+        },
+        "policy": { "retry": 3, "retryIntervalInSeconds": 30, "timeout": "02:00:00" }
+      },
+      {
+        "name": "Transform_with_Databricks",
+        "type": "DatabricksNotebook",
+        "dependsOn": [{ "activity": "Copy_OnPrem_to_Raw", "dependencyConditions": ["Succeeded"] }],
+        "typeProperties": {
+          "notebookPath": "/etl/transform_orders",
+          "baseParameters": { "run_date": "@pipeline().parameters.runDate" }
+        },
+        "linkedServiceName": { "referenceName": "ls_databricks", "type": "LinkedServiceReference" }
+      }
+    ]
+  }
+}`,
+      },
+      {
+        title: 'Synapse Serverless SQL Patterns',
+        type: 'code',
+        language: 'sql',
+        code: `-- Query Parquet directly from ADLS (no ingestion)
+SELECT
+    country,
+    SUM(amount) AS revenue,
+    COUNT(*) AS orders
+FROM OPENROWSET(
+    BULK 'https://acct.dfs.core.windows.net/curated/orders/year=2026/**',
+    FORMAT = 'PARQUET'
+) AS rows
+GROUP BY country;
+
+-- Create an external table on the Data Catalog
+CREATE EXTERNAL TABLE dbo.orders (
+    order_id BIGINT,
+    customer_id BIGINT,
+    amount DECIMAL(12,2),
+    order_date DATE
+)
+WITH (
+    LOCATION = 'curated/orders/',
+    DATA_SOURCE = ds_curated,
+    FILE_FORMAT = ff_parquet
+);
+
+-- Use CETAS to materialize aggregates (fast future reads)
+CREATE EXTERNAL TABLE dbo.orders_monthly
+WITH (LOCATION='curated/summary/orders_monthly/', FILE_FORMAT=ff_parquet, DATA_SOURCE=ds_curated)
+AS
+SELECT order_month, country, SUM(amount) AS revenue
+FROM dbo.orders
+GROUP BY order_month, country;`,
+      },
+      {
+        title: 'Azure vs Snowflake on Azure',
+        type: 'qna',
+        items: [
+          { question: 'Should I use Synapse dedicated pools or Snowflake on Azure?', answer: 'Snowflake on Azure typically wins on: (1) Per-second billing and auto-suspend (Synapse dedicated pools bill 24x7 while paused, and pause takes 30+ min). (2) Instant warehouse resize, zero-copy clones, time travel. (3) Broader BI ecosystem. Synapse wins on: (1) Tight integration with ADF, Power BI Premium, Purview out of the box. (2) Reserved capacity discounts when fully utilized. (3) No cross-cloud egress if your estate is 100% Azure. In 2026, most teams pick Snowflake on Azure for analytics and use Synapse Pipelines/Serverless for orchestration + ad-hoc.' },
+          { question: 'Fabric OneLake vs Databricks Unity Catalog vs Snowflake Horizon?', answer: 'OneLake: SaaS data lake tied to Fabric, auto-creates shortcut views across workspaces, good for Microsoft-centric orgs. Unity Catalog: Databricks governance across clouds, strong on Delta tables, lineage, fine-grained access. Snowflake Horizon: built into Snowflake, unifies governance + quality + discovery, plus data sharing marketplace. Pick by where your primary workloads run: Fabric if all-Microsoft, UC if Databricks-primary, Horizon if Snowflake-primary.' },
+          { question: 'When use Data Factory vs Synapse Pipelines vs Fabric Data Pipelines?', answer: 'They are the same engine under different brandings. ADF: standalone, most mature, wider connector set. Synapse Pipelines: ADF embedded in Synapse workspace. Fabric Data Pipelines: ADF embedded in Fabric. Pick by where the rest of your stack lives — avoid mixing. For pure pipeline features (triggers, copy, data flows, orchestration) they are equivalent.' },
+        ],
+      },
+      {
+        title: 'Security & Governance Baseline',
+        type: 'tips',
+        items: [
+          'Use Managed Identity everywhere — never store connection strings or keys in pipelines',
+          'Enable private endpoints for ADLS, Synapse, Databricks — no public internet traffic',
+          'Store secrets in Key Vault, reference via Linked Services in ADF/Synapse',
+          'Enable Defender for Cloud (Storage + SQL + Open-source databases)',
+          'Configure Purview scans on ADLS + Synapse + Databricks for lineage and classification',
+          'Enforce RBAC via Entra ID groups, not individual users',
+          'Enable diagnostic logs to Log Analytics + Sentinel for security monitoring',
+          'For cross-region DR use geo-redundant storage + paired regions + tested runbooks',
+        ],
+      },
+    ],
+    faqs: [
+      { question: 'How is Microsoft Fabric different from Synapse and ADF?', answer: 'Fabric is the unified SaaS successor: OneLake (data lake) + Data Factory (pipelines) + Synapse (warehouse + Spark + real-time) + Power BI, all on a shared capacity-based SKU. Synapse and ADF continue to exist for customers who need PaaS control (VNet injection, specific SKUs). Rule of thumb: Fabric for greenfield Microsoft-centric analytics, Synapse/ADF when you need fine-grained networking/compute control or integration with non-Microsoft tools.' },
+      { question: 'ADLS Gen2 vs Gen1 vs Blob Storage?', answer: 'Gen1 is deprecated (migrate by Feb 2024 deadline passed). Blob Storage is the underlying object store — cheap, flat namespace, no ACLs. ADLS Gen2 is Blob Storage with hierarchical namespace enabled — adds directories, ACLs, much better Spark/Hadoop performance. Always use Gen2 for data lakes. Hierarchical namespace must be enabled at account creation (cannot be added later).' },
+      { question: 'Databricks on Azure vs Azure Synapse Spark Pools?', answer: 'Databricks wins on: Delta Lake, MLflow, Unity Catalog, auto-scaling, broader Spark feature set, Photon engine. Synapse Spark wins on: integration with Synapse SQL (single workspace), no separate billing, included in Synapse capacity. Most serious Spark teams pick Databricks; Synapse Spark is fine for light integration scenarios already in Synapse.' },
+      { question: 'How do I ingest streaming data into Azure?', answer: 'Options: (1) Event Hubs + Stream Analytics for SQL-like stream processing with ADLS sink. (2) Event Hubs + Databricks Structured Streaming for complex streams into Delta Lake. (3) Event Hubs Kafka surface + Snowflake Kafka connector (Snowpipe Streaming) for sub-10s ingestion into Snowflake. (4) IoT Hub for device telemetry, routes to Event Hubs. Pick based on destination and processing complexity.' },
+      { question: 'What is the right orchestration tool on Azure?', answer: 'ADF / Synapse Pipelines for most data ETL — cheap, no infra, rich connectors. Azure Data Factory managed Airflow for teams needing Airflow DAGs (dbt Cloud, cross-cloud, complex Python). Logic Apps for business process flows (approvals, emails, SaaS connectors). Azure Functions Durable for lightweight workflows. Use ADF as the default and only move to Airflow when you have existing DAGs or need Python-heavy orchestration.' },
+      { question: 'How do I set up least-privilege for an Azure data lake?', answer: 'Layer: (1) RBAC at the storage account / container: Storage Blob Data Reader / Contributor. (2) ACLs on specific paths for finer control. (3) Entra ID groups (never individual users). (4) Managed Identity for services (ADF, Databricks, Synapse) — never shared keys. (5) Azure Policy to prevent creation of public containers. (6) Defender for Storage to detect anomalies. Purview for auto-classification.' },
+      { question: 'Can I use Snowflake with Azure efficiently?', answer: 'Yes — Snowflake runs natively on Azure regions. Pattern: ADLS as landing zone → Snowflake external stage (Azure SAS or managed identity) → Snowpipe for auto-ingest → dbt or Streams/Tasks for transformation. Use Entra ID federation so Snowflake logins use the same identities as Azure. Private Link between ADF and Snowflake avoids public egress charges.' },
+    ],
+    relatedSlugs: ['aws-for-data-engineers', 'databricks', 'python-for-data-engineers', 'airflow-essentials'],
+    relatedArticles: ['/articles/data-engineer-roadmap-2025', '/articles/snowflake-cortex-code-dbt-optimization-guide'],
+  },
+
+  // ────────────────────────────────────────────
+  // 29. Databricks SQL & Workflows Cheat Sheet
+  // ────────────────────────────────────────────
+  {
+    slug: 'databricks',
+    title: 'Databricks SQL & Workflows Cheat Sheet',
+    shortDescription: 'Databricks essentials: Delta Lake, Unity Catalog, SQL warehouses, workflows, Auto Loader, and performance tuning. Includes comparisons to Snowflake.',
+    category: 'cloud',
+    difficulty: 'Intermediate',
+    lastUpdated: '2026-04-16',
+    sections: [
+      {
+        title: 'Delta Lake Essentials',
+        type: 'code',
+        language: 'sql',
+        code: `-- Create managed Delta table (Unity Catalog)
+CREATE TABLE main.sales.orders (
+  order_id BIGINT,
+  customer_id BIGINT,
+  amount DECIMAL(12,2),
+  order_date DATE
+)
+USING DELTA
+PARTITIONED BY (order_date);
+
+-- MERGE (upsert)
+MERGE INTO main.sales.orders t
+USING staging.orders_new s
+ON t.order_id = s.order_id
+WHEN MATCHED THEN UPDATE SET *
+WHEN NOT MATCHED THEN INSERT *;
+
+-- Time travel — query data as of a timestamp or version
+SELECT * FROM main.sales.orders TIMESTAMP AS OF '2026-04-01T00:00:00';
+SELECT * FROM main.sales.orders VERSION AS OF 42;
+
+-- Compact small files
+OPTIMIZE main.sales.orders;
+
+-- Z-ORDER for multi-column filter pruning
+OPTIMIZE main.sales.orders ZORDER BY (customer_id, product_id);
+
+-- Vacuum old files (default 7-day retention)
+VACUUM main.sales.orders RETAIN 168 HOURS;
+
+-- Change Data Feed (CDC output)
+ALTER TABLE main.sales.orders SET TBLPROPERTIES (delta.enableChangeDataFeed = true);
+SELECT * FROM table_changes('main.sales.orders', 42);`,
+      },
+      {
+        title: 'Unity Catalog Access Model',
+        type: 'table',
+        columns: ['Level', 'Grant Example', 'Use Case'],
+        items: [
+          ['Metastore', 'GRANT CREATE CATALOG ON METASTORE TO `admins`', 'Account-level admin'],
+          ['Catalog', 'GRANT USE CATALOG ON CATALOG main TO `analysts`', 'Business domain isolation'],
+          ['Schema', 'GRANT USE SCHEMA ON SCHEMA main.sales TO `sales_team`', 'Team boundary'],
+          ['Table', 'GRANT SELECT ON TABLE main.sales.orders TO `analysts`', 'Standard table access'],
+          ['Column', 'Dynamic views or column masks', 'Column-level PII protection'],
+          ['Row', 'Row filter function (similar to RLS)', 'Multi-tenant data isolation'],
+          ['Volume', 'GRANT READ VOLUME ON VOLUME main.raw.landing TO `etl_role`', 'Access to files in ADLS/S3'],
+        ],
+      },
+      {
+        title: 'Auto Loader — Incremental File Ingestion',
+        type: 'code',
+        language: 'python',
+        code: `from pyspark.sql.functions import col
+
+stream = (
+    spark.readStream.format("cloudFiles")
+    .option("cloudFiles.format", "json")
+    .option("cloudFiles.schemaLocation", "/_schemas/orders")
+    .option("cloudFiles.inferColumnTypes", "true")
+    .option("cloudFiles.schemaEvolutionMode", "addNewColumns")
+    .load("abfss://raw@acct.dfs.core.windows.net/orders/")
+)
+
+clean = (
+    stream
+    .filter(col("amount") > 0)
+    .withColumn("ingest_ts", F.current_timestamp())
+)
+
+query = (
+    clean.writeStream
+    .format("delta")
+    .outputMode("append")
+    .option("checkpointLocation", "/_checkpoints/orders")
+    .option("mergeSchema", "true")
+    .trigger(availableNow=True)  # process all new files, then stop
+    .toTable("main.sales.orders")
+)
+query.awaitTermination()`,
+      },
+      {
+        title: 'SQL Warehouse Sizing & Tuning',
+        type: 'tips',
+        items: [
+          'Use Serverless SQL Warehouses for BI dashboards — sub-10s startup, auto-scale, no cluster management',
+          'Size by concurrent query count: 2XS handles ~10 concurrent light queries; M handles ~25; L handles ~50+',
+          'Enable Photon — vectorized query engine, 2-8x faster on SQL workloads',
+          'Enable multi-cluster load balancing: min=1, max=3 so spikes scale without over-provisioning',
+          'Auto-stop after 10-15 min idle for BI; 5 min for ad-hoc warehouses',
+          'Use Query History tab to find slow queries; Query Profile shows which stage is the bottleneck',
+          'Result cache is per-warehouse; disk cache (SSD) speeds repeated scans of the same Delta files',
+          'For ETL, prefer Jobs compute (Spark clusters) over SQL Warehouses — cheaper for long batch work',
+          'OPTIMIZE + ZORDER weekly on large tables improves pruning 5-20x',
+          'Monitor Lakeview dashboards or system.query.history table for cost attribution',
+        ],
+      },
+      {
+        title: 'Databricks Workflows (Jobs)',
+        type: 'code',
+        language: 'json',
+        code: `{
+  "name": "orders_daily_etl",
+  "tasks": [
+    {
+      "task_key": "bronze_ingest",
+      "notebook_task": { "notebook_path": "/etl/bronze_orders" },
+      "job_cluster_key": "main_cluster"
+    },
+    {
+      "task_key": "silver_clean",
+      "depends_on": [{ "task_key": "bronze_ingest" }],
+      "notebook_task": { "notebook_path": "/etl/silver_orders" },
+      "job_cluster_key": "main_cluster"
+    },
+    {
+      "task_key": "gold_aggregate",
+      "depends_on": [{ "task_key": "silver_clean" }],
+      "sql_task": {
+        "query": { "query_id": "abc-123" },
+        "warehouse_id": "xyz-456"
+      }
+    }
+  ],
+  "job_clusters": [{
+    "job_cluster_key": "main_cluster",
+    "new_cluster": {
+      "spark_version": "15.4.x-scala2.12",
+      "node_type_id": "Standard_DS3_v2",
+      "num_workers": 4,
+      "runtime_engine": "PHOTON"
+    }
+  }],
+  "schedule": { "quartz_cron_expression": "0 0 6 * * ?", "timezone_id": "UTC" },
+  "email_notifications": { "on_failure": ["oncall@example.com"] }
+}`,
+      },
+      {
+        title: 'Databricks vs Snowflake — When to Pick Each',
+        type: 'qna',
+        items: [
+          { question: 'Databricks vs Snowflake for a new analytics platform?', answer: 'Snowflake wins when: workload is SQL-heavy (BI, dashboards, ELT), team is SQL-first, governance/security is top priority, data sharing is important, you want zero infrastructure to manage. Databricks wins when: workload is Spark/ML-heavy, you need open table formats across engines (Delta + Iceberg), you have large unstructured data (images, logs), data science and ML are core. Many teams use both: Databricks for ML + ingestion, Snowflake for analytics + BI, sharing Iceberg tables between them.' },
+          { question: 'Delta Lake vs Iceberg vs Snowflake native tables?', answer: 'Delta Lake: best on Databricks, strong Spark integration, CDF, Liquid Clustering. Iceberg: open standard, multi-engine (Snowflake, Spark, Trino, Flink), best for cross-tool portability. Snowflake native: auto-clustering, time travel, fastest in Snowflake. Databricks now also reads/writes Iceberg via UniForm. Pick Iceberg for maximum portability, Delta for Databricks-first, native Snowflake for Snowflake-first.' },
+          { question: 'Photon vs classic Databricks runtime?', answer: 'Photon is a C++ vectorized query engine that replaces parts of Spark SQL execution. 2-8x faster on SQL/DataFrame workloads, same API. Costs 2x DBU (not 2x dollars — typically ~20% net cheaper due to speedup). Enable on SQL warehouses (default) and job clusters running heavy SQL. Skip on pure ML/UDF workloads where Photon does not apply.' },
+          { question: 'Serverless SQL warehouse vs classic SQL warehouse vs Jobs cluster?', answer: 'Serverless SQL: sub-10s startup, fully managed by Databricks, best for BI. Classic SQL: runs in your cloud account VPC, longer startup, needed for VNet injection or private workloads. Jobs cluster: general Spark cluster for ETL notebooks/jars — cheapest for long batch runs. Use Serverless SQL for dashboards, Jobs for ETL, Classic only when compliance requires your VPC.' },
+        ],
+      },
+    ],
+    faqs: [
+      { question: 'How do I compact small files in Delta Lake?', answer: 'Run OPTIMIZE table_name to combine files into ~1GB targets. Add ZORDER BY (col1, col2) to co-locate by frequent filter columns. Enable auto-compaction at write time: ALTER TABLE t SET TBLPROPERTIES (delta.autoOptimize.autoCompact = true, delta.autoOptimize.optimizeWrite = true). In 2026 most teams use Liquid Clustering (CLUSTER BY) which removes the need for manual OPTIMIZE/ZORDER.' },
+      { question: 'What is the difference between managed and external tables in Unity Catalog?', answer: 'Managed tables: Databricks owns the storage location, DROP TABLE deletes data. External tables: point to a user-provided path (abfss://, s3://), DROP TABLE keeps data. Managed is simpler and recommended unless you share the same files with other engines (Synapse, Snowflake, Trino) — then use external. External tables require a EXTERNAL LOCATION + storage credential in Unity Catalog.' },
+      { question: 'Databricks Delta Live Tables (DLT) — when should I use it?', answer: 'DLT is declarative pipeline framework: you define transformations, DLT manages dependency order, retries, expectations (data quality), and incremental refresh. Use DLT when: you have Spark streaming or incremental pipelines, you want built-in data quality tests (EXPECT clauses), you value less boilerplate. Skip DLT when: your pipelines are pure SQL on Delta (plain workflows are cheaper), your team already uses dbt (DLT and dbt overlap).' },
+      { question: 'How does Databricks cost work — DBUs vs compute?', answer: 'You pay two things: (1) DBUs (Databricks Units) — billed per second based on cluster type + size + features (Photon doubles DBU rate). (2) Cloud compute — underlying VM cost from AWS/Azure/GCP. Serverless flips this: Databricks bundles DBUs + compute into one rate. Typical: a DS3_v2 worker with Photon on Jobs compute runs ~$1-1.50/hour all-in. Rule: use Jobs compute for ETL (cheapest), Serverless SQL for BI (most productive), avoid all-purpose clusters for production (most expensive).' },
+      { question: 'How do I connect Databricks to Snowflake?', answer: 'Use the snowflake-spark connector: spark.read.format("snowflake").option(...).load("SELECT * FROM t"). Authenticate via OAuth or key-pair (never plain passwords). For bulk reads, use COPY UNLOAD to S3/ADLS and read Parquet — faster than JDBC. For bidirectional sharing, use Iceberg catalog-linked databases so both engines see the same tables.' },
+      { question: 'Should I use Databricks Workflows or Airflow?', answer: 'Workflows: built-in, native integration, cheaper for Databricks-only pipelines, supports task values, retries, conditional logic. Airflow: best when orchestrating across systems (dbt Cloud + Databricks + Snowflake + external APIs), mature alerting, rich operators. Rule: start with Workflows for Databricks-native pipelines; move to Airflow (or MWAA/Astronomer) once you orchestrate 3+ systems.' },
+      { question: 'How do I optimize slow Databricks SQL queries?', answer: 'Checklist: (1) Query Profile — find the slowest stage, check for full file scans. (2) OPTIMIZE + ZORDER on the largest filtered columns. (3) Enable Photon if not already. (4) Check predicate pushdown — column stats may be stale; run ANALYZE TABLE t COMPUTE STATISTICS. (5) Use broadcast hints for small dims. (6) Enable result cache. (7) For repeated scans, use Disk Cache (delta.enable.disk-cache=true).' },
+    ],
+    relatedSlugs: ['pyspark', 'aws-for-data-engineers', 'azure-for-data-engineers', 'snowflake-best-practices'],
+    relatedArticles: ['/articles/snowflake-cortex-code-dbt-optimization-guide', '/articles/data-engineer-roadmap-2025'],
+  },
+
+  // ────────────────────────────────────────────
+  // 30. Data Modeling / Dimensional Modeling Cheat Sheet
+  // ────────────────────────────────────────────
+  {
+    slug: 'data-modeling',
+    title: 'Data Modeling Cheat Sheet — Dimensional, SCD, Data Vault',
+    shortDescription: 'Dimensional modeling, star vs snowflake schema, SCD Types 1/2/3/4, Data Vault 2.0, One Big Table, and choosing the right model for your warehouse.',
+    category: 'architecture',
+    difficulty: 'Intermediate',
+    lastUpdated: '2026-04-16',
+    sections: [
+      {
+        title: 'Modeling Approaches Compared',
+        type: 'table',
+        columns: ['Approach', 'Best For', 'Key Downside'],
+        items: [
+          ['Star Schema (Kimball)', 'BI / reporting, dashboards', 'Slower to evolve when sources change'],
+          ['Snowflake Schema', 'Normalized dims save storage', 'More joins, slower queries'],
+          ['Data Vault 2.0', 'Enterprise DW with many sources, auditability', 'Verbose, hard for BI without a mart on top'],
+          ['3NF / Inmon', 'Atomic enterprise DW, then build marts', 'Heavy upfront design, slow to deliver'],
+          ['One Big Table (OBT)', 'Columnar warehouses (Snowflake, BigQuery), simple dashboards', 'Wide tables, duplicated dim data'],
+          ['Activity Schema', 'Product analytics, event-driven orgs', 'Few BI tools natively support it'],
+          ['Medallion (Bronze/Silver/Gold)', 'Databricks lakehouse layering', 'Orthogonal to modeling — not a replacement'],
+        ],
+      },
+      {
+        title: 'Star Schema Example (Kimball)',
+        type: 'code',
+        language: 'sql',
+        code: `-- Fact table: grain = one row per order line item
+CREATE TABLE fct_order_lines (
+  order_line_id   BIGINT PRIMARY KEY,
+  order_id        BIGINT,
+  order_date_key  INT        REFERENCES dim_date(date_key),
+  customer_key    BIGINT     REFERENCES dim_customer(customer_key),
+  product_key     BIGINT     REFERENCES dim_product(product_key),
+  store_key       BIGINT     REFERENCES dim_store(store_key),
+  quantity        INT,
+  unit_price      DECIMAL(10,2),
+  line_amount     DECIMAL(12,2),
+  discount_amount DECIMAL(12,2)
+);
+
+-- Conformed dimension (SCD Type 2)
+CREATE TABLE dim_customer (
+  customer_key    BIGINT PRIMARY KEY,        -- surrogate
+  customer_id     BIGINT,                    -- natural / business
+  full_name       VARCHAR,
+  email           VARCHAR,
+  country         VARCHAR,
+  tier            VARCHAR,
+  effective_from  DATE,
+  effective_to    DATE,                      -- NULL or 9999-12-31 for current
+  is_current      BOOLEAN
+);
+
+-- Date dimension (build once, reuse across all facts)
+CREATE TABLE dim_date (
+  date_key    INT PRIMARY KEY,  -- YYYYMMDD
+  full_date   DATE,
+  day_of_week INT,
+  month_num   INT,
+  month_name  VARCHAR,
+  quarter     INT,
+  year        INT,
+  is_weekend  BOOLEAN,
+  is_holiday  BOOLEAN
+);`,
+      },
+      {
+        title: 'Slowly Changing Dimensions (SCD) Types',
+        type: 'table',
+        columns: ['Type', 'Behavior', 'When to Use'],
+        items: [
+          ['Type 0', 'Never change (insert-only or frozen)', 'Birth date, original signup source'],
+          ['Type 1', 'Overwrite — lose history', 'Typos, corrections, non-analytical attributes'],
+          ['Type 2', 'New row per change with effective dates + is_current flag', 'History matters (customer tier changes, address changes)'],
+          ['Type 3', 'Previous value stored in extra column', 'Track exactly 1 prior value (rare)'],
+          ['Type 4', 'Current row in main table, history in separate table', 'Hot/cold split when history is huge'],
+          ['Type 6 (1+2+3)', 'Hybrid: overwrite for corrections + versioning for real changes', 'Complex CRM data'],
+        ],
+      },
+      {
+        title: 'SCD Type 2 MERGE (Snowflake / dbt-style)',
+        type: 'code',
+        language: 'sql',
+        code: `-- Close current row when any tracked attribute changes
+MERGE INTO dim_customer d
+USING (
+  SELECT
+    s.customer_id, s.full_name, s.email, s.country, s.tier,
+    CURRENT_DATE() AS load_date
+  FROM staging.customers s
+) s
+ON d.customer_id = s.customer_id AND d.is_current = TRUE
+WHEN MATCHED AND (
+    d.full_name <> s.full_name OR
+    d.email    <> s.email    OR
+    d.country  <> s.country  OR
+    d.tier     <> s.tier
+) THEN UPDATE SET
+    d.effective_to = s.load_date - 1,
+    d.is_current  = FALSE;
+
+-- Insert new current version (and brand-new customers)
+INSERT INTO dim_customer (
+  customer_key, customer_id, full_name, email, country, tier,
+  effective_from, effective_to, is_current
+)
+SELECT
+  dim_customer_seq.NEXTVAL,
+  s.customer_id, s.full_name, s.email, s.country, s.tier,
+  CURRENT_DATE(), DATE '9999-12-31', TRUE
+FROM staging.customers s
+LEFT JOIN dim_customer d
+  ON d.customer_id = s.customer_id AND d.is_current = TRUE
+WHERE d.customer_id IS NULL
+   OR (d.full_name <> s.full_name OR d.email <> s.email
+       OR d.country <> s.country  OR d.tier  <> s.tier);`,
+      },
+      {
+        title: 'Modeling Rules That Save You Later',
+        type: 'tips',
+        items: [
+          'Always define the grain of a fact in one sentence before writing DDL — "one row per order line per day"',
+          'Use surrogate keys (BIGINT sequences) on dimensions — never foreign-key to a natural key that can change',
+          'Conform dimensions across facts — dim_customer used by fct_orders AND fct_support should be the same table',
+          'Never join fact to fact — always go through a dimension (or create a bridge table)',
+          'Degenerate dimensions (order_id on fct_order_lines) are fine — not every attribute needs a dim table',
+          'Store additive measures in facts (quantity, amount); derive ratios in the BI layer',
+          'Use dim_date and dim_time_of_day — never compute date parts in ad-hoc queries',
+          'Junk dimensions group unrelated flags (is_return, payment_type) — keeps fact table narrow',
+          'For Data Vault, Hubs hold business keys, Links capture relationships, Satellites store attributes with load_date',
+          'On columnar warehouses (Snowflake/BigQuery), consider OBT (denormalized wide table) for simple dashboards — joins are cheap but wide scans are cheaper',
+        ],
+      },
+      {
+        title: 'Common Interview Q&A',
+        type: 'qna',
+        items: [
+          { question: 'When would you pick star schema over One Big Table on Snowflake?', answer: 'Star schema wins when: (1) Dimensions have rich attributes used across many facts — reuse saves storage and ensures consistency. (2) Dimensions change (SCD Type 2) — updating one row in a dim is cheaper than updating millions of fact rows. (3) BI tool expects star (many dashboards auto-join on dims). OBT wins when: (1) Single fact, shallow analytics. (2) Aggressive denormalization for fastest dashboard scans. (3) Team is small and schema evolution is infrequent. Many teams use star for core and OBT for specific high-volume dashboards.' },
+          { question: 'How do you design for late-arriving facts?', answer: 'Late-arriving fact scenario: order row arrives after the customer dim has been updated to a newer version. Options: (1) Use is_current + effective dates on dim: look up the dim row whose effective_from/to range covers the fact event_date. (2) Store the snapshot date on the fact and always join on business key + date range (slower but accurate). (3) Accept "as-is at load time" if business is OK with that. In dbt, a macro like scd_join(fact.event_date, dim, business_key) encapsulates the range lookup.' },
+          { question: 'How is Data Vault different from Kimball and when do you use it?', answer: 'Data Vault 2.0 separates keys (Hubs), relationships (Links), and descriptive data (Satellites). Advantages: append-only (easy audit), agile (add sources without redesign), parallel loading. Disadvantages: 3-5x more tables than Kimball, not query-friendly — you always build a Kimball star on top for BI. Use Data Vault for: enterprise warehouses with 50+ sources, regulated industries needing full auditability, teams with dedicated modelers. Skip for small-to-mid analytics where Kimball ships faster.' },
+          { question: 'Explain additive, semi-additive, and non-additive facts.', answer: 'Additive: can be summed across all dimensions (revenue, quantity). Semi-additive: summable across some dimensions, not time (account balance — sum across customers at a point in time, but not across days). Non-additive: never summable (unit price, ratios, percentages). Implication: semi-additive needs period-ending snapshots (fct_balance_daily), non-additive should be derived at query time, not stored pre-aggregated.' },
+        ],
+      },
+    ],
+    faqs: [
+      { question: 'Is dimensional modeling still relevant in 2026?', answer: 'Yes — even with columnar warehouses (Snowflake, BigQuery, Databricks SQL) where joins are cheap, dimensional modeling remains the clearest way to structure analytics. What has changed: you can denormalize more aggressively (OBT for simple cases), skip snowflake schemas (storage is cheap), and use column-level lineage tools. The core idea — facts at a clear grain + conformed dimensions — still prevents the BI chaos that plagues ad-hoc schemas.' },
+      { question: 'What is the Medallion architecture and how does it relate to Kimball?', answer: 'Medallion (Bronze → Silver → Gold) is a lakehouse LAYERING pattern, not a modeling approach. Bronze = raw, Silver = cleaned/joined, Gold = business-ready. You still need a modeling approach inside Gold — typically Kimball star schema or OBT. Think of Medallion as the zones (promotion stages) and Kimball as what you model within the Gold zone.' },
+      { question: 'SCD Type 2 vs snapshots — which should I use?', answer: 'SCD Type 2: one row per version with effective_from/to. Efficient storage (only writes on change), needs careful joins on date ranges. Snapshots: one row per entity per day (or week). Simpler joins (dim_customer_20260415), but 365x storage for a daily snapshot. Use SCD Type 2 for large dims (millions of rows) and snapshots for small, high-change-rate dims where simplicity matters. dbt snapshots generate SCD Type 2 automatically.' },
+      { question: 'How do surrogate keys help and when can I skip them?', answer: 'Surrogate keys (auto-increment integers) insulate dims from source-system changes. Benefits: (1) Stable across source re-keyings. (2) Smaller joins than long natural keys (UUID strings). (3) Allow SCD Type 2 (multiple rows per natural key need a unique surrogate). Skip when: dim is static (dim_date uses YYYYMMDD), performance is fine on natural key, no SCD Type 2 needed. On Snowflake, sequences or IDENTITY columns generate surrogates cheaply.' },
+      { question: 'Should I build a data mart per team or one centralized warehouse?', answer: 'Modern answer: one centralized conformed warehouse (shared facts + dims) + team-specific marts on top (team views or small mart schemas). This avoids the silo-per-team anti-pattern where every team rebuilds customer dim differently. dbt project structure supports this: models/core/ (shared) and models/marts/<team>/ (team-specific). Access control via schema-level grants.' },
+      { question: 'How do I handle many-to-many relationships in a star schema?', answer: 'Use a bridge table between the fact and the dim. Example: an order can have multiple promotions. Create bridge_order_promotion(order_id, promotion_key, weighting_factor) so aggregations can allocate revenue correctly. Bridges can explode row counts, so always document allocation semantics and test against ungrouped totals.' },
+      { question: 'What is a junk dimension and why use one?', answer: 'A junk dimension combines several low-cardinality flags (is_return, payment_type, shipping_method) into one dim with all valid combinations. Keeps fact table narrow (one key vs 3 columns), centralizes flag definitions, and allows adding new attributes without altering the fact. Especially useful when facts are billions of rows.' },
+    ],
+    relatedSlugs: ['snowflake-sql', 'dbt-commands', 'snowflake-best-practices', 'data-engineering-interview-questions'],
+    relatedArticles: ['/articles/structuring-dbt-projects-in-snowflake', '/articles/snowflake-cortex-code-dbt-optimization-guide'],
+  },
 ];
 
 export const getCheatSheetBySlug = (slug) => {

@@ -25,8 +25,8 @@ const seoOverrides = {
   },
 
   'snowflake-expert-interview-questions': {
-    title: 'Snowflake Expert Interview Questions (2026)',
-    description: 'Expert-level Snowflake interview questions on architecture, optimization, streams, and security. Detailed answers with the depth senior roles demand.'
+    title: 'Expert Snowflake Interview Questions & Answers 2026',
+    description: 'Expert Snowflake interview questions with detailed answers. Covers architecture, optimization, Streams, Tasks, and governance — for staff-level roles.'
   },
 
   'snowflake-dbt-projects-airflow-orchestration': {
@@ -90,8 +90,8 @@ const seoOverrides = {
   },
 
   'snowflake-interview-questions-answers-2026': {
-    title: '10 Snowflake Interview Questions (Real 2026 Asks)',
-    description: 'Real Snowflake interview questions from Senior Data Engineer interviews. Detailed answers with the reasoning interviewers actually want to hear.'
+    title: '10 Snowflake Interview Questions + Answers (2026)',
+    description: '10 real Snowflake interview questions asked in 2026 Senior DE interviews. Detailed answers, SQL examples, and the reasoning interviewers expect.'
   },
 
   'snowflake-cortex-ai-complete-guide-2026': {
@@ -301,8 +301,8 @@ const seoOverrides = {
   },
 
   'advanced-snowflake-interview-questions-experienced': {
-    title: 'Advanced Snowflake Interview Questions (Senior Level)',
-    description: 'Go beyond basic syntax. Advanced Snowflake interview questions on architecture, optimization, streams, tasks, and system design for senior roles.'
+    title: 'Advanced Snowflake Interview Q&A: Senior 2026',
+    description: 'Advanced Snowflake interview questions for senior engineers. Architecture, query tuning, Streams, Tasks, and system design — answers included.'
   },
 
   'automated-etl-airflow-python': {

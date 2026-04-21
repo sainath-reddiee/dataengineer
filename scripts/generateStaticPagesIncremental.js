@@ -599,6 +599,443 @@ const ESSENTIAL_PAGES = [
       <h2>Related reading</h2>
       <p>For deeper guidance, read our articles on <a href="/articles/snowflake-cost-optimization-techniques-2026">12 Snowflake cost optimization techniques</a> and <a href="/category/snowflake">our Snowflake category</a> for tutorials on warehouse tuning, query performance, and ACCOUNT_USAGE analysis.</p>
     `
+  },
+  {
+    path: '/tools/databricks-cost-calculator',
+    title: 'Free Databricks Cost Calculator 2026 - DBU + VM Pricing Estimator',
+    description: 'Estimate monthly Databricks cost in seconds. Pick SKU (Jobs, All-Purpose, SQL, Serverless), cluster size, runtime hours - see DBU spend plus AWS/Azure/GCP VM cost.',
+    content: `
+      <h1>Databricks Cost Calculator</h1>
+      <p><strong>Estimate your total monthly Databricks spend</strong> across DBU (Databricks Units) and underlying cloud VM cost. Choose SKU, cluster size, runtime hours, and cloud - get an instant monthly total with a side-by-side Snowflake comparison.</p>
+
+      <h2>How is Databricks billed?</h2>
+      <p>Databricks charges you in two parts: <strong>DBUs</strong> (Databricks Unit consumption based on compute type and tier) and the <strong>underlying cloud VM cost</strong> (EC2 / Azure VM / GCE). Serverless SKUs bundle both into a single DBU rate so the VM line disappears, but the effective per-hour cost is higher because Databricks is now managing the VMs for you.</p>
+
+      <h2>What are the main Databricks SKUs and DBU rates?</h2>
+      <ul>
+        <li><strong>Jobs Compute (Standard):</strong> $0.15/DBU - batch workloads, ETL pipelines, scheduled notebooks</li>
+        <li><strong>Jobs Compute Photon:</strong> $0.22/DBU - Photon-accelerated Spark for 2-5x faster query performance</li>
+        <li><strong>All-Purpose Compute:</strong> $0.55/DBU - interactive notebooks, shared clusters, dev/exploration</li>
+        <li><strong>All-Purpose Photon:</strong> $0.65/DBU - interactive workloads with Photon acceleration</li>
+        <li><strong>SQL Compute Classic:</strong> $0.22/DBU - BI dashboards, ad-hoc SQL, Databricks SQL warehouses</li>
+        <li><strong>SQL Compute Pro:</strong> $0.55/DBU - unity catalog, query federation, advanced SQL features</li>
+        <li><strong>SQL Serverless:</strong> $0.70/DBU - instant-start, auto-scaling, no VM management</li>
+        <li><strong>Model Serving Serverless:</strong> $0.07-0.30/DBU - ML inference endpoints</li>
+      </ul>
+
+      <h2>Databricks vs Snowflake: how do the costs compare?</h2>
+      <p>Direct comparison is tricky because the units differ. Snowflake charges per-credit (a Medium warehouse = 4 credits/hour = ~$16/hour on Enterprise), while Databricks charges DBU + VM. For a rough equivalent: a Databricks M5.xlarge Jobs Photon cluster with 4 workers runs around $7-9/hour all-in, vs a Snowflake Medium at $16/hour - but Databricks needs you to manage cluster startup/shutdown, while Snowflake auto-suspends in seconds. Factor in dev-time savings when comparing.</p>
+
+      <h2>Pro tips to reduce Databricks spend</h2>
+      <ul>
+        <li><strong>Use Jobs clusters for production</strong> - never All-Purpose, which is 3x more expensive per DBU.</li>
+        <li><strong>Enable Photon on CPU-heavy SQL and ETL</strong> - the 1.5x DBU premium typically cuts runtime by 2-5x.</li>
+        <li><strong>Use spot instances</strong> on driver + workers for non-SLA jobs - 70-90% VM cost reduction.</li>
+        <li><strong>Set auto-termination to 10-20 min on All-Purpose clusters</strong> - idle clusters are the #1 cost leak.</li>
+        <li><strong>Right-size with cluster event logs</strong> - if CPU rarely exceeds 40%, downsize one tier.</li>
+      </ul>
+
+      <h2>Related reading</h2>
+      <p>Compare against Snowflake with our <a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a>, read <a href="/cheatsheets/databricks-sql-cheatsheet">Databricks SQL cheat sheet</a>, and explore <a href="/cheatsheets/category/architecture">architecture cheat sheets</a> for platform comparison guidance.</p>
+    `
+  },
+  {
+    path: '/tools/dbt-cloud-cost-calculator',
+    title: 'dbt Cloud Cost Calculator 2026 - Developer vs Team vs Enterprise Pricing',
+    description: 'Estimate dbt Cloud monthly cost by plan, seats, model runs, and CI builds. Compare Developer ($0), Team ($100/seat), Enterprise - pick the right tier.',
+    content: `
+      <h1>dbt Cloud Cost Calculator</h1>
+      <p><strong>Estimate your dbt Cloud subscription cost</strong> across Developer (free), Team, and Enterprise plans. Factor in seats, monthly model runs, CI builds, and overage charges to pick the plan that actually fits your usage pattern.</p>
+
+      <h2>dbt Cloud plans in 2026</h2>
+      <ul>
+        <li><strong>Developer:</strong> Free - 1 developer seat, 3000 successful models built/month, basic scheduling, public Git integration. Best for solo developers and small teams evaluating dbt.</li>
+        <li><strong>Team:</strong> $100/developer seat/month - up to 8 seats, 15,000 successful models/month (pooled), SSO, environments, CI. Best for 3-8 developer teams.</li>
+        <li><strong>Enterprise:</strong> Custom pricing - unlimited seats, dedicated support, private Git, audit logs, multi-tenancy, SOC 2. Best for 10+ developer organizations with compliance needs.</li>
+      </ul>
+
+      <h2>How do model runs get counted?</h2>
+      <p>A "successful model built" is a single model (view, table, or incremental) that dbt executes successfully. A typical project with 100 models run 4x/day across dev + prod = ~12,000 models/month - that pushes you from Developer into Team territory. CI jobs count too; each PR that triggers a full refresh adds another 100 models per PR.</p>
+
+      <h2>When should I upgrade from Developer to Team?</h2>
+      <ul>
+        <li>You've hit 3000 models/month and CI builds are getting throttled.</li>
+        <li>You have 2+ developers needing their own IDE sessions.</li>
+        <li>You need SSO or environments (dev/staging/prod separation).</li>
+        <li>You want slim CI (only run models affected by PR changes) for faster feedback.</li>
+      </ul>
+
+      <h2>Cost optimization tips for dbt Cloud</h2>
+      <ul>
+        <li><strong>Use incremental models</strong> - drops model runtime 10-100x on large tables, reducing model-count pressure and warehouse cost.</li>
+        <li><strong>Enable slim CI</strong> - only run models modified in the PR plus downstream dependencies.</li>
+        <li><strong>Materialize as views for small reference tables</strong> - views don't count against run budgets the same way (no data rewrite).</li>
+        <li><strong>Avoid hourly full-refreshes</strong> - most dim/fact tables only need a nightly full run plus hourly incrementals.</li>
+      </ul>
+
+      <h2>Related reading</h2>
+      <p>See the <a href="/cheatsheets/dbt-cheatsheet">dbt cheat sheet</a> for commands and macros, and <a href="/cheatsheets/data-engineering-interview-questions">interview questions</a> for dbt topics covered by hiring managers.</p>
+    `
+  },
+  {
+    path: '/tools/sql-formatter',
+    title: 'Free SQL Formatter 2026 - Pretty-Print SQL in Browser (No Upload)',
+    description: 'Paste messy SQL, get pretty-printed output instantly. Supports Snowflake, Postgres, BigQuery, MySQL syntax. Runs in browser - nothing sent to server.',
+    content: `
+      <h1>Free SQL Formatter</h1>
+      <p><strong>Paste any SQL query and get clean, indented output in milliseconds.</strong> Supports major keywords, subqueries, CTEs, and dialects including Snowflake, Postgres, BigQuery, and MySQL. Runs fully in your browser - your SQL never leaves the page.</p>
+
+      <h2>Why format SQL?</h2>
+      <p>Well-formatted SQL is easier to code-review, easier to debug, and easier to compare against version control diffs. A single-line 500-character query with nested subqueries is a code smell waiting for a production incident. Auto-formatting enforces consistency across teams and eliminates entire categories of "but mine looks different" disputes in PRs.</p>
+
+      <h2>Formatting rules applied</h2>
+      <ul>
+        <li><strong>Major keywords uppercased:</strong> SELECT, FROM, WHERE, JOIN, GROUP BY, ORDER BY, HAVING, UNION, WITH</li>
+        <li><strong>Sub-keywords uppercased:</strong> ON, AS, AND, OR, IN, BETWEEN, LIKE, IS NULL, NOT NULL</li>
+        <li><strong>String literals preserved:</strong> quoted strings and comments are protected before keyword transforms</li>
+        <li><strong>Paren-based indentation:</strong> subqueries and window specs indent by 2 spaces per depth level</li>
+        <li><strong>One clause per line:</strong> each major keyword starts a new line at the correct indent level</li>
+      </ul>
+
+      <h2>Supported dialects</h2>
+      <p>The formatter is dialect-aware for the most common variants - Snowflake QUALIFY clauses, Postgres DISTINCT ON, BigQuery STRUCT/ARRAY literals, and MySQL backtick identifiers all pass through intact. Unusual dialects may need minor manual cleanup.</p>
+
+      <h2>Is this private?</h2>
+      <p>Yes. The formatter runs entirely in your browser using JavaScript - no network request is made, no SQL is logged, and nothing is stored. You can even use it offline once the page is loaded.</p>
+
+      <h2>Related reading</h2>
+      <p>See the <a href="/cheatsheets/sql-cheatsheet">SQL cheat sheet</a>, <a href="/cheatsheets/snowflake-sql-cheatsheet">Snowflake SQL cheat sheet</a>, and <a href="/cheatsheets/postgresql-cheatsheet">Postgres cheat sheet</a> for syntax references.</p>
+    `
+  },
+  {
+    path: '/tools/cron-builder',
+    title: 'Free Cron Expression Builder 2026 - Build + Preview Next 5 Runs',
+    description: 'Build cron expressions visually or paste existing schedules. See next 5 run times, plain-English description, 11 common presets. Works for cron, Airflow, dbt.',
+    content: `
+      <h1>Free Cron Expression Builder</h1>
+      <p><strong>Build, preview, and validate cron expressions without guessing.</strong> Enter a schedule, see the next 5 run times, get a plain-English description, or pick from 11 common presets. Works for cron, Airflow DAGs, dbt Cloud schedules, and Snowflake tasks.</p>
+
+      <h2>What is a cron expression?</h2>
+      <p>Cron expressions define recurring schedules using 5 fields: minute (0-59), hour (0-23), day-of-month (1-31), month (1-12), and day-of-week (0-6, where 0 = Sunday). Each field can be a specific number, a range (1-5), a list (1,3,5), a step (*/15), or a wildcard (*).</p>
+
+      <h2>11 common presets included</h2>
+      <ul>
+        <li><strong>Every 5 minutes:</strong> */5 * * * * - frequent polls, health checks</li>
+        <li><strong>Every hour:</strong> 0 * * * * - hourly rollups, metric snapshots</li>
+        <li><strong>Every 15 minutes during business hours:</strong> */15 9-17 * * 1-5</li>
+        <li><strong>Daily at midnight:</strong> 0 0 * * * - classic nightly batch window</li>
+        <li><strong>Daily at 2 AM:</strong> 0 2 * * * - common for ETL to avoid business-hours contention</li>
+        <li><strong>Weekdays at 9 AM:</strong> 0 9 * * 1-5 - business-day reports</li>
+        <li><strong>Weekly (Sunday midnight):</strong> 0 0 * * 0 - weekly rollups</li>
+        <li><strong>Monthly (1st at 3 AM):</strong> 0 3 1 * * - month-end close</li>
+        <li><strong>Quarterly (1st of Jan/Apr/Jul/Oct):</strong> 0 3 1 1,4,7,10 *</li>
+        <li><strong>Every 30 seconds:</strong> Not supported - cron's smallest unit is 1 minute</li>
+      </ul>
+
+      <h2>Where does this work?</h2>
+      <ul>
+        <li><strong>Unix cron:</strong> paste the expression into your crontab</li>
+        <li><strong>Airflow:</strong> use schedule_interval="0 3 * * *"</li>
+        <li><strong>dbt Cloud:</strong> paste into the job schedule field</li>
+        <li><strong>Snowflake tasks:</strong> wrap in SCHEDULE = 'USING CRON 0 3 * * * UTC'</li>
+        <li><strong>GitHub Actions:</strong> schedule.cron field</li>
+        <li><strong>Kubernetes CronJobs:</strong> spec.schedule field</li>
+      </ul>
+
+      <h2>Common cron pitfalls</h2>
+      <ul>
+        <li><strong>Timezones:</strong> most systems interpret cron in UTC by default. Snowflake tasks need an explicit timezone in the USING CRON clause.</li>
+        <li><strong>Day-of-month and day-of-week together:</strong> in Unix cron these are OR-ed, not AND-ed. 0 0 1 * 1 means "midnight on the 1st OR every Monday".</li>
+        <li><strong>DST (Daylight Saving Time):</strong> schedules set in local time can skip or repeat on DST boundaries. Prefer UTC for reliable scheduling.</li>
+      </ul>
+
+      <h2>Related reading</h2>
+      <p>See the <a href="/cheatsheets/airflow-cheatsheet">Airflow cheat sheet</a>, <a href="/cheatsheets/data-engineering-best-practices">data engineering best practices</a>, and <a href="/cheatsheets/category/orchestration">orchestration cheat sheets</a> for scheduling patterns.</p>
+    `
+  },
+  {
+    path: '/tools/json-to-sql',
+    title: 'Free JSON to SQL Schema Converter 2026 - DDL for Snowflake, Postgres, BigQuery',
+    description: 'Paste JSON, get CREATE TABLE DDL. Auto-infers types across samples, tracks nullability. Supports Snowflake, Postgres, BigQuery, ANSI SQL dialects.',
+    content: `
+      <h1>Free JSON to SQL Schema Converter</h1>
+      <p><strong>Turn any JSON sample into a CREATE TABLE statement in seconds.</strong> The converter infers column types from your data, promotes types across multiple samples (e.g., INT + FLOAT = FLOAT), and tracks nullability when fields are missing from any row. Supports Snowflake, Postgres, BigQuery, and ANSI SQL.</p>
+
+      <h2>How does type inference work?</h2>
+      <p>For each field, the tool walks every sample, records the observed type (boolean, integer, float, string, object, array, null), then picks the most permissive compatible type. If a field shows up as INT in one sample and FLOAT in another, the output column becomes FLOAT. If any sample is missing the field, the column becomes nullable. Nested objects become VARIANT (Snowflake) or JSONB (Postgres) or STRUCT (BigQuery).</p>
+
+      <h2>Supported output dialects</h2>
+      <ul>
+        <li><strong>Snowflake:</strong> VARCHAR, NUMBER, FLOAT, BOOLEAN, VARIANT for nested, ARRAY for arrays</li>
+        <li><strong>Postgres:</strong> TEXT, BIGINT, DOUBLE PRECISION, BOOLEAN, JSONB for nested/arrays</li>
+        <li><strong>BigQuery:</strong> STRING, INT64, FLOAT64, BOOL, STRUCT&lt;...&gt; for nested, ARRAY&lt;...&gt; for arrays</li>
+        <li><strong>ANSI SQL:</strong> VARCHAR, BIGINT, DOUBLE, BOOLEAN - safe for most databases</li>
+      </ul>
+
+      <h2>Best practices for schema inference</h2>
+      <ul>
+        <li><strong>Paste at least 10-20 samples</strong> - single samples miss optional fields and type variation.</li>
+        <li><strong>Include boundary cases</strong> - rows with nulls, empty strings, zero, max-length strings.</li>
+        <li><strong>Review nullability</strong> - the tool marks fields nullable conservatively; tighten to NOT NULL where the business guarantees presence.</li>
+        <li><strong>Validate against production</strong> - for high-cardinality string fields, check actual max-length before committing to VARCHAR(255).</li>
+      </ul>
+
+      <h2>Common gotchas</h2>
+      <ul>
+        <li><strong>JSON numbers without decimals are treated as integers</strong> - if you expect fractional values, include at least one sample with a decimal.</li>
+        <li><strong>Date strings stay as VARCHAR</strong> - JSON has no native date type; cast downstream.</li>
+        <li><strong>Deeply nested objects</strong> - most dialects handle 2-3 levels well; beyond that, consider flattening.</li>
+      </ul>
+
+      <h2>Related reading</h2>
+      <p>See <a href="/cheatsheets/snowflake-sql-cheatsheet">Snowflake SQL cheat sheet</a> (VARIANT usage), <a href="/cheatsheets/postgresql-cheatsheet">Postgres cheat sheet</a> (JSONB), and <a href="/cheatsheets/bigquery-cheatsheet">BigQuery cheat sheet</a> (STRUCT/ARRAY) for dialect-specific handling.</p>
+    `
+  },
+  {
+    path: '/interview-prep',
+    title: 'Data Engineer Interview Prep Hub 2026 - 14-Day Study Plan + 16 Cheat Sheets',
+    description: 'Complete data engineer interview prep: 14-day structured study plan, 16 cheat sheets (SQL, Snowflake, Airflow, Python, System Design), mock questions, articles.',
+    content: `
+      <h1>Data Engineer Interview Preparation Hub</h1>
+      <p><strong>Everything you need to prep for data engineer interviews in 2026</strong> - a 14-day structured study plan, 16 topic-focused cheat sheets, mock questions, and deep-dive articles. Designed for mid-to-senior roles at data-heavy companies (FAANG, fintech, high-scale SaaS).</p>
+
+      <h2>The 14-day study plan</h2>
+      <p>Work through one focus area per day. Each day combines a cheat sheet review (30-45 min) with 5-10 mock questions (30 min) and one deep-dive article (30 min). Total: ~2 hours/day for 2 weeks.</p>
+
+      <h3>Week 1: Core fundamentals</h3>
+      <ul>
+        <li><strong>Day 1 - SQL fundamentals:</strong> joins, group by, window functions, CTEs. Cheat sheet: <a href="/cheatsheets/sql-cheatsheet">SQL</a>.</li>
+        <li><strong>Day 2 - SQL advanced:</strong> recursive CTEs, pivot, performance. Cheat sheet: <a href="/cheatsheets/advanced-sql-cheatsheet">Advanced SQL</a>.</li>
+        <li><strong>Day 3 - Python for data:</strong> pandas, list comprehensions, generators. Cheat sheet: <a href="/cheatsheets/python-data-engineering-cheatsheet">Python for DE</a>.</li>
+        <li><strong>Day 4 - Data modeling:</strong> star vs snowflake schema, SCD types, normalization. Cheat sheet: <a href="/cheatsheets/data-modeling-cheatsheet">Data modeling</a>.</li>
+        <li><strong>Day 5 - Warehousing:</strong> OLTP vs OLAP, columnar storage, partitioning. Cheat sheet: <a href="/cheatsheets/snowflake-architecture-cheatsheet">Snowflake architecture</a>.</li>
+        <li><strong>Day 6 - Orchestration:</strong> Airflow DAGs, dependencies, retries, SLAs. Cheat sheet: <a href="/cheatsheets/airflow-cheatsheet">Airflow</a>.</li>
+        <li><strong>Day 7 - Transformation:</strong> dbt models, tests, macros, incremental. Cheat sheet: <a href="/cheatsheets/dbt-cheatsheet">dbt</a>.</li>
+      </ul>
+
+      <h3>Week 2: Platform + system design</h3>
+      <ul>
+        <li><strong>Day 8 - Snowflake deep dive:</strong> virtual warehouses, micro-partitions, clustering. Cheat sheet: <a href="/cheatsheets/snowflake-sql-cheatsheet">Snowflake SQL</a>.</li>
+        <li><strong>Day 9 - Spark:</strong> lazy eval, shuffles, broadcast joins, skew. Cheat sheet: <a href="/cheatsheets/spark-cheatsheet">Spark</a>.</li>
+        <li><strong>Day 10 - Streaming:</strong> Kafka partitions, exactly-once, watermarks. Cheat sheet: <a href="/cheatsheets/kafka-cheatsheet">Kafka</a>.</li>
+        <li><strong>Day 11 - Cloud storage:</strong> S3 formats, Parquet vs Iceberg, lifecycle policies. Cheat sheet: <a href="/cheatsheets/aws-data-engineering-cheatsheet">AWS DE</a>.</li>
+        <li><strong>Day 12 - System design:</strong> batch vs streaming, CAP theorem, idempotency. Cheat sheet: <a href="/cheatsheets/data-engineering-system-design">System design</a>.</li>
+        <li><strong>Day 13 - Behavioral + STAR:</strong> conflict, ownership, on-call. Cheat sheet: <a href="/cheatsheets/data-engineering-interview-questions">Interview questions</a>.</li>
+        <li><strong>Day 14 - Mock + review:</strong> one end-to-end mock interview, review weak areas.</li>
+      </ul>
+
+      <h2>16 cheat sheets by topic</h2>
+      <p>Each cheat sheet is tightly scoped, runnable, and includes ~200+ code snippets. Filter by <a href="/cheatsheets/category/sql">SQL</a>, <a href="/cheatsheets/category/orchestration">orchestration</a>, <a href="/cheatsheets/category/cloud">cloud platforms</a>, <a href="/cheatsheets/category/programming">programming</a>, <a href="/cheatsheets/category/architecture">architecture</a>, <a href="/cheatsheets/category/interview">interview-specific</a>, or <a href="/cheatsheets/category/bestpractices">best practices</a>.</p>
+
+      <h2>Interview format at top companies</h2>
+      <ul>
+        <li><strong>FAANG (Amazon, Meta, Google):</strong> 2 SQL rounds (advanced window functions, optimization), 1 system design (lambda architecture), 1-2 coding (Python/Spark), 1 behavioral (STAR).</li>
+        <li><strong>Fintech (Stripe, Robinhood):</strong> heavy on correctness/consistency (idempotency, exactly-once), strong SQL, moderate coding.</li>
+        <li><strong>SaaS scale-ups:</strong> dbt/Snowflake/Airflow deep dives, cost-aware design, more ownership questions.</li>
+      </ul>
+
+      <h2>Common question categories</h2>
+      <ul>
+        <li><strong>SQL:</strong> top-N per group, cumulative totals, gap detection, pivoting, slowest queries</li>
+        <li><strong>Data modeling:</strong> design schema for X, SCD Type 2 implementation, fact vs dim</li>
+        <li><strong>Pipelines:</strong> design daily sales dashboard, handle late-arriving data, backfill strategy</li>
+        <li><strong>System design:</strong> real-time recommendations, data lake + warehouse, streaming ETL</li>
+        <li><strong>Behavioral:</strong> hardest incident, disagreement with PM, on-call horror story</li>
+      </ul>
+
+      <h2>Related reading</h2>
+      <p>Read <a href="/articles/data-engineer-interview-questions">top 50 interview questions</a>, <a href="/articles/sql-interview-questions-advanced">advanced SQL questions</a>, and browse the <a href="/cheatsheets/category/interview">interview cheat sheets</a> for targeted prep.</p>
+    `
+  },
+  {
+    path: '/cheatsheets/category/sql',
+    title: 'SQL Cheat Sheets 2026 - SQL, Advanced SQL, Snowflake SQL, Postgres, BigQuery',
+    description: 'All SQL-focused cheat sheets in one place. Core SQL, advanced window functions, Snowflake SQL, Postgres, BigQuery, SQL for interviews.',
+    content: `
+      <h1>SQL Cheat Sheets</h1>
+      <p><strong>Every SQL cheat sheet in one place</strong> - core SQL fundamentals, advanced window functions, platform-specific syntax (Snowflake, Postgres, BigQuery), and SQL interview prep. Each sheet is runnable, snippet-heavy, and updated for 2026.</p>
+
+      <h2>Core SQL</h2>
+      <ul>
+        <li><a href="/cheatsheets/sql-cheatsheet">SQL Cheat Sheet</a> - joins, group by, window functions, CTEs, subqueries</li>
+        <li><a href="/cheatsheets/advanced-sql-cheatsheet">Advanced SQL</a> - recursive CTEs, pivot/unpivot, performance tuning</li>
+      </ul>
+
+      <h2>Platform-specific SQL</h2>
+      <ul>
+        <li><a href="/cheatsheets/snowflake-sql-cheatsheet">Snowflake SQL</a> - QUALIFY, VARIANT, FLATTEN, time travel</li>
+        <li><a href="/cheatsheets/postgresql-cheatsheet">PostgreSQL</a> - JSONB, DISTINCT ON, LATERAL, arrays</li>
+        <li><a href="/cheatsheets/bigquery-cheatsheet">BigQuery</a> - STRUCT, ARRAY, UNNEST, window frame specs</li>
+        <li><a href="/cheatsheets/databricks-sql-cheatsheet">Databricks SQL</a> - Photon, Delta Lake DML, MERGE</li>
+      </ul>
+
+      <h2>SQL for interviews</h2>
+      <p>See <a href="/cheatsheets/data-engineering-interview-questions">data engineering interview questions</a> and <a href="/articles/sql-interview-questions-advanced">advanced SQL questions article</a> for targeted prep with ~50 worked examples.</p>
+
+      <h2>Related categories</h2>
+      <p>Explore <a href="/cheatsheets/category/cloud">cloud platform cheat sheets</a>, <a href="/cheatsheets/category/orchestration">orchestration</a>, and the full <a href="/cheatsheets">cheat sheet library</a>.</p>
+    `
+  },
+  {
+    path: '/cheatsheets/category/orchestration',
+    title: 'Data Orchestration Cheat Sheets 2026 - Airflow, dbt, Dagster, Prefect',
+    description: 'All orchestration cheat sheets - Airflow DAGs, dbt models and tests, Dagster assets, Prefect flows. Scheduling patterns, dependency management, retries.',
+    content: `
+      <h1>Data Orchestration Cheat Sheets</h1>
+      <p><strong>Schedule, chain, and monitor data pipelines</strong> with the right orchestrator. These cheat sheets cover Airflow (most common), dbt (transformation-focused), Dagster (asset-based), and Prefect (Python-native). Each explains when to pick it and includes production-grade patterns.</p>
+
+      <h2>Orchestrators covered</h2>
+      <ul>
+        <li><a href="/cheatsheets/airflow-cheatsheet">Airflow</a> - DAG authoring, operators, XCom, retries, SLAs, backfill</li>
+        <li><a href="/cheatsheets/dbt-cheatsheet">dbt</a> - models, tests, macros, incremental, exposures, packages</li>
+        <li><a href="/cheatsheets/dagster-cheatsheet">Dagster</a> - asset definitions, software-defined assets, sensors</li>
+        <li><a href="/cheatsheets/prefect-cheatsheet">Prefect</a> - flows, tasks, deployments, work pools</li>
+      </ul>
+
+      <h2>Which orchestrator should I pick?</h2>
+      <ul>
+        <li><strong>Airflow:</strong> mature, huge community, operator ecosystem - default for enterprise teams</li>
+        <li><strong>dbt:</strong> transformation-only, SQL-first - pair with Airflow for end-to-end pipelines</li>
+        <li><strong>Dagster:</strong> asset-centric, strong type system - good for data-quality-focused teams</li>
+        <li><strong>Prefect:</strong> pure Python, modern DX - good for Python-heavy teams without Airflow legacy</li>
+      </ul>
+
+      <h2>Related tools</h2>
+      <p>Use the <a href="/tools/cron-builder">cron builder</a> to define schedules for any of these orchestrators.</p>
+
+      <h2>Related categories</h2>
+      <p>Explore <a href="/cheatsheets/category/bestpractices">best-practices cheat sheets</a>, <a href="/cheatsheets/category/sql">SQL cheat sheets</a>, and the full <a href="/cheatsheets">cheat sheet library</a>.</p>
+    `
+  },
+  {
+    path: '/cheatsheets/category/cloud',
+    title: 'Cloud Data Platform Cheat Sheets 2026 - AWS, Azure, GCP, Snowflake, Databricks',
+    description: 'Cloud platform cheat sheets for data engineers - AWS (S3, Glue, Redshift), Azure (ADF, Synapse), GCP (BigQuery, Dataflow), Snowflake, Databricks.',
+    content: `
+      <h1>Cloud Data Platform Cheat Sheets</h1>
+      <p><strong>Master the major cloud data platforms</strong> with focused cheat sheets on AWS, Azure, GCP, Snowflake, and Databricks. Each sheet covers storage, compute, orchestration, and cost controls for that platform.</p>
+
+      <h2>Cloud platforms</h2>
+      <ul>
+        <li><a href="/cheatsheets/aws-data-engineering-cheatsheet">AWS for Data Engineers</a> - S3, Glue, Athena, Redshift, EMR, Lambda</li>
+        <li><a href="/cheatsheets/azure-data-engineering-cheatsheet">Azure for Data Engineers</a> - ADLS, Synapse, Data Factory, Fabric</li>
+        <li><a href="/cheatsheets/gcp-data-engineering-cheatsheet">GCP for Data Engineers</a> - BigQuery, Dataflow, Cloud Storage, Pub/Sub</li>
+      </ul>
+
+      <h2>Warehouse and lakehouse</h2>
+      <ul>
+        <li><a href="/cheatsheets/snowflake-sql-cheatsheet">Snowflake SQL</a> - warehouses, clustering, time travel</li>
+        <li><a href="/cheatsheets/snowflake-architecture-cheatsheet">Snowflake Architecture</a> - micro-partitions, caching layers</li>
+        <li><a href="/cheatsheets/databricks-sql-cheatsheet">Databricks SQL</a> - Photon, Delta, Unity Catalog</li>
+      </ul>
+
+      <h2>Related tools</h2>
+      <p>Estimate costs with the <a href="/tools/snowflake-cost-calculator">Snowflake cost calculator</a> and <a href="/tools/databricks-cost-calculator">Databricks cost calculator</a>.</p>
+
+      <h2>Related categories</h2>
+      <p>Explore <a href="/cheatsheets/category/sql">SQL cheat sheets</a>, <a href="/cheatsheets/category/architecture">architecture cheat sheets</a>, and the full <a href="/cheatsheets">cheat sheet library</a>.</p>
+    `
+  },
+  {
+    path: '/cheatsheets/category/programming',
+    title: 'Programming Cheat Sheets for Data Engineers 2026 - Python, PySpark, Scala',
+    description: 'Programming cheat sheets for data engineers - Python, PySpark, Scala Spark, pandas, Polars. Syntax, patterns, performance tips.',
+    content: `
+      <h1>Programming Cheat Sheets for Data Engineers</h1>
+      <p><strong>Python, PySpark, and Scala references built for data work</strong> - not generic Python. Focus on data manipulation, distributed processing, and performance patterns that actually matter in data pipelines.</p>
+
+      <h2>Python</h2>
+      <ul>
+        <li><a href="/cheatsheets/python-data-engineering-cheatsheet">Python for Data Engineering</a> - pandas, list comprehensions, generators, context managers</li>
+      </ul>
+
+      <h2>Spark</h2>
+      <ul>
+        <li><a href="/cheatsheets/spark-cheatsheet">Spark Cheat Sheet</a> - DataFrame API, lazy eval, partitioning, shuffles, broadcast joins</li>
+      </ul>
+
+      <h2>Streaming</h2>
+      <ul>
+        <li><a href="/cheatsheets/kafka-cheatsheet">Kafka</a> - producers, consumers, topics, partitions, exactly-once</li>
+      </ul>
+
+      <h2>Related tools</h2>
+      <p>Use the <a href="/tools/json-to-sql">JSON to SQL converter</a> when going from semi-structured data to warehouse tables.</p>
+
+      <h2>Related categories</h2>
+      <p>Explore <a href="/cheatsheets/category/orchestration">orchestration cheat sheets</a>, <a href="/cheatsheets/category/sql">SQL cheat sheets</a>, and the full <a href="/cheatsheets">cheat sheet library</a>.</p>
+    `
+  },
+  {
+    path: '/cheatsheets/category/architecture',
+    title: 'Data Architecture Cheat Sheets 2026 - Modeling, System Design, Snowflake Arch',
+    description: 'Data architecture cheat sheets - dimensional modeling, SCD types, lakehouse, Snowflake architecture, system design for data engineers.',
+    content: `
+      <h1>Data Architecture Cheat Sheets</h1>
+      <p><strong>Design durable data systems</strong> - dimensional modeling, storage architecture, and system-design patterns. These sheets cover the decisions that hurt most when you get them wrong: star vs snowflake, SCD strategy, batch vs streaming, storage vs compute separation.</p>
+
+      <h2>Data modeling</h2>
+      <ul>
+        <li><a href="/cheatsheets/data-modeling-cheatsheet">Data Modeling</a> - star/snowflake schemas, SCD Type 1/2/3, normalization, fact vs dim</li>
+      </ul>
+
+      <h2>Platform architecture</h2>
+      <ul>
+        <li><a href="/cheatsheets/snowflake-architecture-cheatsheet">Snowflake Architecture</a> - three-layer model, micro-partitions, caching, time travel internals</li>
+      </ul>
+
+      <h2>System design</h2>
+      <ul>
+        <li><a href="/cheatsheets/data-engineering-system-design">Data Engineering System Design</a> - lambda/kappa, CAP, idempotency, exactly-once, backfill strategies</li>
+      </ul>
+
+      <h2>Related categories</h2>
+      <p>Explore <a href="/cheatsheets/category/cloud">cloud platform cheat sheets</a>, <a href="/cheatsheets/category/interview">interview cheat sheets</a>, and the full <a href="/cheatsheets">cheat sheet library</a>.</p>
+    `
+  },
+  {
+    path: '/cheatsheets/category/interview',
+    title: 'Data Engineer Interview Cheat Sheets 2026 - Questions, System Design, SQL',
+    description: 'Interview-focused cheat sheets for data engineers - top questions, SQL interview prep, system design, behavioral. Paired with 14-day study plan.',
+    content: `
+      <h1>Data Engineer Interview Cheat Sheets</h1>
+      <p><strong>Pass your next data engineer interview</strong> with focused prep materials. These sheets cover the questions, patterns, and system designs most commonly asked in 2026 - at FAANG, fintech, and high-scale SaaS companies.</p>
+
+      <h2>Interview-focused sheets</h2>
+      <ul>
+        <li><a href="/cheatsheets/data-engineering-interview-questions">Data Engineering Interview Questions</a> - 50 most-asked questions with worked answers</li>
+        <li><a href="/cheatsheets/data-engineering-system-design">System Design for Data Engineers</a> - lambda/kappa, real-time rec, streaming ETL</li>
+      </ul>
+
+      <h2>14-day study plan</h2>
+      <p>Work through the <a href="/interview-prep">full 14-day prep plan</a> - 2 hours/day covering SQL, Python, modeling, orchestration, Snowflake, Spark, streaming, cloud, system design, and behavioral.</p>
+
+      <h2>Related categories</h2>
+      <p>Explore <a href="/cheatsheets/category/sql">SQL cheat sheets</a>, <a href="/cheatsheets/category/architecture">architecture</a>, and the full <a href="/cheatsheets">cheat sheet library</a>.</p>
+    `
+  },
+  {
+    path: '/cheatsheets/category/bestpractices',
+    title: 'Data Engineering Best Practices Cheat Sheets 2026 - Quality, Testing, Ops',
+    description: 'Best-practice cheat sheets for data engineers - testing, data quality, pipeline ops, cost optimization, on-call readiness.',
+    content: `
+      <h1>Data Engineering Best Practices</h1>
+      <p><strong>Ship pipelines that don't page you at 3 AM.</strong> These cheat sheets cover the operational patterns, testing strategies, and quality gates that separate hobby pipelines from production-grade systems.</p>
+
+      <h2>Best-practice cheat sheets</h2>
+      <ul>
+        <li><a href="/cheatsheets/data-engineering-best-practices">Data Engineering Best Practices</a> - idempotency, testing, monitoring, SLAs, on-call</li>
+      </ul>
+
+      <h2>Related topics</h2>
+      <p>For orchestration patterns (retries, backfills, SLA alerting) see <a href="/cheatsheets/category/orchestration">orchestration cheat sheets</a>. For quality + cost instrumentation on Snowflake, see <a href="/cheatsheets/snowflake-architecture-cheatsheet">Snowflake architecture cheat sheet</a>.</p>
+
+      <h2>Related tools</h2>
+      <p>Estimate costs with the <a href="/tools/snowflake-cost-calculator">Snowflake cost calculator</a>, visualize schedules with the <a href="/tools/cron-builder">cron builder</a>.</p>
+
+      <h2>Related categories</h2>
+      <p>Explore <a href="/cheatsheets/category/orchestration">orchestration</a>, <a href="/cheatsheets/category/architecture">architecture</a>, and the full <a href="/cheatsheets">cheat sheet library</a>.</p>
+    `
   }
 ];
 

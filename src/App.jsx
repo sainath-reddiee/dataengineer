@@ -39,6 +39,13 @@ const CostCalculatorPage = lazy(() => import('./pages/CostCalculatorPage'));
 const CreditCostPage = lazy(() => import('./pages/CreditCostPage'));
 const QueryCostEstimatorPage = lazy(() => import('./pages/QueryCostEstimatorPage'));
 const WarehouseSizingPage = lazy(() => import('./pages/WarehouseSizingPage'));
+const DatabricksCostPage = lazy(() => import('./pages/DatabricksCostPage'));
+const DbtCloudCostPage = lazy(() => import('./pages/DbtCloudCostPage'));
+const SqlFormatterPage = lazy(() => import('./pages/SqlFormatterPage'));
+const CronBuilderPage = lazy(() => import('./pages/CronBuilderPage'));
+const JsonToSqlPage = lazy(() => import('./pages/JsonToSqlPage'));
+const CheatSheetCategoryPage = lazy(() => import('./pages/CheatSheetCategoryPage'));
+const InterviewPrepHubPage = lazy(() => import('./pages/InterviewPrepHubPage'));
 
 // Not Found Page
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
@@ -257,6 +264,41 @@ function App() {
           <Route path="tools/snowflake-warehouse-sizing" element={
             <Suspense fallback={<LoadingFallback text="Loading Warehouse Sizing..." />}>
               <WarehouseSizingPage />
+            </Suspense>
+          } />
+          <Route path="tools/databricks-cost-calculator" element={
+            <Suspense fallback={<LoadingFallback text="Loading Databricks Cost Calculator..." />}>
+              <DatabricksCostPage />
+            </Suspense>
+          } />
+          <Route path="tools/dbt-cloud-cost-calculator" element={
+            <Suspense fallback={<LoadingFallback text="Loading dbt Cloud Cost Calculator..." />}>
+              <DbtCloudCostPage />
+            </Suspense>
+          } />
+          <Route path="tools/sql-formatter" element={
+            <Suspense fallback={<LoadingFallback text="Loading SQL Formatter..." />}>
+              <SqlFormatterPage />
+            </Suspense>
+          } />
+          <Route path="tools/cron-expression-builder" element={
+            <Suspense fallback={<LoadingFallback text="Loading Cron Builder..." />}>
+              <CronBuilderPage />
+            </Suspense>
+          } />
+          <Route path="tools/json-to-sql-ddl" element={
+            <Suspense fallback={<LoadingFallback text="Loading JSON→SQL DDL..." />}>
+              <JsonToSqlPage />
+            </Suspense>
+          } />
+          <Route path="cheatsheets/category/:categoryId" element={
+            <Suspense fallback={<LoadingFallback text="Loading Category..." />}>
+              <CheatSheetCategoryPage />
+            </Suspense>
+          } />
+          <Route path="interview-prep" element={
+            <Suspense fallback={<LoadingFallback text="Loading Interview Prep Hub..." />}>
+              <InterviewPrepHubPage />
             </Suspense>
           } />
           <Route path="about" element={

@@ -73,12 +73,12 @@ const DIFFICULTY_COLORS = {
 // Pick a diverse mix: one per category, up to 8 cards
 const FEATURED_SLUGS = [
   'snowflake-interview-questions',
-  'snowflake-best-practices',
-  'snowflake-streams-tasks-interview',
-  'snowflake-performance-deep-dive-interview',
-  'sql-interview-questions',
-  'dbt-best-practices',
-  'snowflake-governance-interview',
+  'snowflake-sql',
+  'dbt-commands',
+  'airflow-essentials',
+  'sql-window-functions',
+  'python-for-data-engineers',
+  'data-engineering-interview-questions',
   'snowflake-cost-optimization-interview',
 ];
 

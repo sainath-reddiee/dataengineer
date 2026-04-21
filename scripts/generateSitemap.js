@@ -30,6 +30,19 @@ const STATIC_PAGES = [
   { url: '/tools/snowflake-credit-cost', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
   { url: '/tools/snowflake-query-cost-estimator', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
   { url: '/tools/snowflake-warehouse-sizing', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
+  { url: '/tools/databricks-cost-calculator', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
+  { url: '/tools/dbt-cloud-cost-calculator', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
+  { url: '/tools/sql-formatter', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
+  { url: '/tools/cron-expression-builder', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
+  { url: '/tools/json-to-sql-ddl', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
+  { url: '/interview-prep', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
+  { url: '/cheatsheets/category/sql', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  { url: '/cheatsheets/category/orchestration', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  { url: '/cheatsheets/category/cloud', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  { url: '/cheatsheets/category/programming', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  { url: '/cheatsheets/category/architecture', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  { url: '/cheatsheets/category/interview', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
+  { url: '/cheatsheets/category/bestpractices', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
 ];
 
 // Article slugs to exclude from sitemap (noindexed due to thin content <400 words)
