@@ -5263,6 +5263,50 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
     }
     </script>
 
+    ${pagePath.startsWith('/tools/') ? `<!-- Structured Data - SoftwareApplication (Free tool) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "${titleJsonLd}",
+      "description": "${descriptionJsonLd}",
+      "url": "https://dataengineerhub.blog${pagePath}",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any (Web-based)",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "DataEngineer Hub",
+        "url": "https://dataengineerhub.blog"
+      }
+    }
+    </script>` : ''}
+
+    ${(pagePath.startsWith('/cheatsheets/category/') || pagePath === '/interview-prep' || pagePath === '/cheatsheets' || pagePath === '/tools') ? `<!-- Structured Data - CollectionPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "${titleJsonLd}",
+      "description": "${descriptionJsonLd}",
+      "url": "https://dataengineerhub.blog${pagePath}",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "DataEngineer Hub",
+        "url": "https://dataengineerhub.blog"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "DataEngineer Hub",
+        "url": "https://dataengineerhub.blog"
+      }
+    }
+    </script>` : ''}
+
     ${pagePath === '/about' ? `<!-- Structured Data - Person (About page E-E-A-T) -->
     <script type="application/ld+json">
     {

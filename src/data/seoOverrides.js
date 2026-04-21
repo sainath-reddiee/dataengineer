@@ -14,6 +14,21 @@
 const seoOverrides = {
   // === 2026 Articles ===
 
+  'query-snowflake-in-duckdb-cut-costs': {
+    title: 'Query Snowflake in DuckDB: Cut Dev Costs 80%',
+    description: 'Stop burning Snowflake credits on dev queries. Query Snowflake data locally with DuckDB to slash development costs without changing your stack.'
+  },
+
+  'dbt-tests-pass-bad-data': {
+    title: 'Why dbt Tests Pass But Bad Data Still Ships',
+    description: 'dbt tests green? Data still broken. Why schema tests miss real issues and how to catch business-logic failures before they hit production dashboards.'
+  },
+
+  'automation-in-data-engineering': {
+    title: 'Automation in Data Engineering: What to Automate',
+    description: 'Not everything should be automated. A practical framework for deciding what to automate in data engineering — and what to leave manual on purpose.'
+  },
+
   'snowflake-cortex-code-cost-control-2026': {
     title: 'Snowflake Cortex Code Cost Control: Set Limits Right',
     description: 'Control Snowflake Cortex Code costs with budget limits, token caps, and warehouse guards. Practical setup guide to avoid surprise credit burns.'

@@ -22,6 +22,8 @@ const Footer = () => {
       { name: 'Glossary', href: '/glossary' },
       { name: 'Comparisons', href: '/compare' },
       { name: 'Cheat Sheets', href: '/cheatsheets' },
+      { name: 'Interview Prep', href: '/interview-prep' },
+      { name: 'Tools', href: '/tools' },
       { name: 'Tags', href: '/tag' }
     ],
     tools: [

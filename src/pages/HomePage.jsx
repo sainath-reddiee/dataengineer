@@ -3,7 +3,7 @@ import React, { Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Hero from '../components/Hero';
 import MetaTags from '../components/SEO/MetaTags';
-import { Sparkles, TrendingUp, FileText, Zap, BookOpen } from 'lucide-react';
+import { Sparkles, TrendingUp, FileText, Zap, BookOpen, Wrench, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { cheatsheets, CHEATSHEET_CATEGORIES } from '@/data/cheatsheetData';
@@ -196,6 +196,55 @@ const HomePage = () => {
               actionLink="/cheatsheets"
             />
             <CheatSheetCards />
+          </section>
+
+          {/* 🧰 TOOLS & INTERVIEW PREP - Cross-link hubs */}
+          <section>
+            <SectionHeader
+              icon={Wrench}
+              title="Free Tools & Interview Prep"
+              subtitle="Calculators, generators & curated interview resources"
+            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Link
+                to="/tools"
+                className="group bg-gradient-to-br from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 border border-slate-700 hover:border-blue-500/50 rounded-xl p-5 transition-all duration-200"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-blue-500/20">
+                    <Wrench className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <h3 className="text-base font-semibold text-white group-hover:text-blue-400 transition-colors">
+                    Free Data Engineering Tools
+                  </h3>
+                </div>
+                <p className="text-sm text-gray-400">
+                  Snowflake cost calculator, cron expression builder, JSON-to-SQL DDL generator, warehouse sizing & more — all free, no signup.
+                </p>
+                <span className="inline-block mt-3 text-xs font-semibold text-blue-400 group-hover:text-blue-300">
+                  Browse all tools →
+                </span>
+              </Link>
+              <Link
+                to="/interview-prep"
+                className="group bg-gradient-to-br from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 border border-slate-700 hover:border-purple-500/50 rounded-xl p-5 transition-all duration-200"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-purple-500/20">
+                    <GraduationCap className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <h3 className="text-base font-semibold text-white group-hover:text-purple-400 transition-colors">
+                    Interview Prep Hub
+                  </h3>
+                </div>
+                <p className="text-sm text-gray-400">
+                  Curated Snowflake, SQL, Python, dbt & system-design interview questions with expert answers for data engineering roles.
+                </p>
+                <span className="inline-block mt-3 text-xs font-semibold text-purple-400 group-hover:text-purple-300">
+                  Start preparing →
+                </span>
+              </Link>
+            </div>
           </section>
 
           {/* 📚 RECENT POSTS - Compact list */}

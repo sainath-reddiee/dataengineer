@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Info, Sparkles, Award, Search, BookOpen, GitCompareArrows, FileText } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Info, Sparkles, Award, Search, BookOpen, GitCompareArrows, FileText, GraduationCap } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
 
 // Helper component for the "Corner Burst" sparks animation
@@ -163,6 +163,7 @@ const Header = ({ topOffset = 0 }) => {
   const isGlossaryActive = currentPath.startsWith('/glossary');
   const isCompareActive = currentPath.startsWith('/compare');
   const isCheatSheetsActive = currentPath.startsWith('/cheatsheet');
+  const isInterviewPrepActive = currentPath.startsWith('/interview-prep');
   // Enhanced category structure
   const categories = {
   platforms: {
@@ -506,13 +507,28 @@ const Header = ({ topOffset = 0 }) => {
                 Cheat Sheets
               </Link>
             </motion.div>
+            {/* Interview Prep */}
+            <motion.div whileHover={{ y: -2 }}>
+              <Link
+                to="/interview-prep"
+                className={`whitespace-nowrap font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
+                  isInterviewPrepActive
+                    ? 'text-blue-400'
+                    : 'text-gray-300 hover:text-blue-400'
+                }`}
+                style={isInterviewPrepActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+              >
+                <GraduationCap className="w-4 h-4 hidden 2xl:inline-block" />
+                Interview Prep
+              </Link>
+            </motion.div>
             {/* Tools */}
             <motion.div whileHover={{ y: -2 }}>
               <Link
                 to="/tools"
                 className="whitespace-nowrap font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 text-gray-300 hover:text-blue-400"
               >
-                <FileText className="w-4 h-4 hidden 2xl:inline-block" />
+                <Wrench className="w-4 h-4 hidden 2xl:inline-block" />
                 Tools
               </Link>
             </motion.div>
@@ -656,8 +672,12 @@ const Header = ({ topOffset = 0 }) => {
                   <FileText className="w-5 h-5" />
                   Cheat Sheets
                 </Link>
+                <Link to="/interview-prep" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
+                  <GraduationCap className="w-5 h-5" />
+                  Interview Prep
+                </Link>
                 <Link to="/tools" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
-                  <FileText className="w-5 h-5" />
+                  <Wrench className="w-5 h-5" />
                   Tools
                 </Link>
                 {/* ✅ NEW: Certification Tab (Mobile) */}
