@@ -595,6 +595,8 @@ const ESSENTIAL_PAGES = [
         <li><strong><a href="/tools/sql-formatter">SQL Formatter</a></strong> - beautify messy SQL instantly. Handles Snowflake, BigQuery, PostgreSQL, and ANSI SQL with configurable indent size and keyword case.</li>
         <li><strong><a href="/tools/cron-expression-builder">Cron Expression Builder</a></strong> - build and validate cron expressions visually. Preview the next 5 fire times and copy schedules for Airflow, dbt Cloud, Snowflake Tasks, or Databricks Jobs.</li>
         <li><strong><a href="/tools/json-to-sql-ddl">JSON to SQL DDL</a></strong> - paste a JSON sample, get a CREATE TABLE statement. Supports Snowflake VARIANT, PostgreSQL JSONB, BigQuery STRUCT, and standard SQL types.</li>
+        <li><strong><a href="/tools/csv-to-sql">CSV to SQL Converter</a></strong> - paste CSV data, get CREATE TABLE DDL and INSERT statements with inferred types. RFC 4180 compliant parser, Snowflake/Postgres/BigQuery/ANSI dialects.</li>
+        <li><strong><a href="/tools/dbt-schema-generator">dbt Schema.yml Generator</a></strong> - paste a CREATE TABLE, get a dbt schema.yml with inferred unique/not_null tests, a staging SQL model, and a sources.yml entry with freshness checks.</li>
       </ul>
 
       <h2>Which tool should I use?</h2>
@@ -607,6 +609,8 @@ const ESSENTIAL_PAGES = [
         <li><strong>Shipping SQL to production?</strong> Clean it first with the <a href="/tools/sql-formatter">SQL Formatter</a> - consistent formatting makes code review faster and cuts merge conflicts.</li>
         <li><strong>Scheduling a pipeline?</strong> Build the schedule visually in the <a href="/tools/cron-expression-builder">Cron Expression Builder</a> and paste the expression into Airflow, dbt Cloud, Snowflake Tasks, or Databricks Jobs.</li>
         <li><strong>Modeling a new JSON source?</strong> Drop a sample into the <a href="/tools/json-to-sql-ddl">JSON to SQL DDL</a> generator to scaffold your CREATE TABLE statement in seconds.</li>
+        <li><strong>Loading a CSV export?</strong> Paste into the <a href="/tools/csv-to-sql">CSV to SQL Converter</a> for instant CREATE TABLE + INSERT scaffolding - great for seeds, fixtures, and small lookups.</li>
+        <li><strong>Onboarding a new table into dbt?</strong> Run the <a href="/tools/dbt-schema-generator">dbt Schema.yml Generator</a> on the CREATE TABLE to auto-scaffold schema.yml, staging SQL, and sources.yml with freshness checks.</li>
       </ul>
 
       <h2>Are these tools free?</h2>
@@ -808,6 +812,82 @@ const ESSENTIAL_PAGES = [
 
       <h2>Related reading</h2>
       <p>See <a href="/cheatsheets/snowflake-sql">Snowflake SQL cheat sheet</a> (VARIANT usage), <a href="/cheatsheets/snowflake-semi-structured-interview">Snowflake semi-structured interview</a> (FLATTEN/LATERAL), and <a href="/cheatsheets/databricks">Databricks cheat sheet</a> (Delta/Photon) for dialect-specific handling.</p>
+    `
+  },
+  {
+    path: '/tools/csv-to-sql',
+    title: 'CSV to SQL Converter 2026 - Free INSERT + CREATE TABLE Generator',
+    description: 'Paste CSV, get CREATE TABLE DDL and INSERT statements with inferred types. Supports Snowflake, PostgreSQL, BigQuery, ANSI SQL. RFC 4180 parser, client-side.',
+    content: `
+      <h1>Free CSV to SQL Converter</h1>
+      <p><strong>Convert any CSV into CREATE TABLE DDL and INSERT statements instantly.</strong> Paste your CSV data, pick a target dialect (Snowflake, PostgreSQL, BigQuery, or ANSI SQL), and get a complete scaffold with inferred column types. Parser follows RFC 4180 for quoted fields, escaped quotes, and embedded commas. All processing runs in your browser.</p>
+
+      <h2>How does the type inference work?</h2>
+      <p>Every column is scanned across all non-empty values. If all values match an integer pattern, the column is typed as NUMBER(38,0) for Snowflake, BIGINT for Postgres, or INT64 for BigQuery. Decimals get NUMBER(38,10) / NUMERIC. ISO dates (YYYY-MM-DD) become DATE; ISO timestamps become TIMESTAMP. Booleans (true/false) become BOOLEAN. Any value that breaks a numeric pattern downgrades the column to VARCHAR / STRING / TEXT - with length picked by the longest observed value.</p>
+
+      <h2>Supported CSV features</h2>
+      <ul>
+        <li><strong>Quoted fields</strong> - cells wrapped in double quotes can contain commas, newlines, and escaped double-quotes (written as "").</li>
+        <li><strong>Alternative delimiters</strong> - choose comma, tab (TSV), semicolon, or pipe for international CSV exports.</li>
+        <li><strong>Header detection</strong> - optional toggle; first row can be column names or the first data row.</li>
+        <li><strong>Mixed-type columns</strong> - any non-numeric value in a numeric column correctly downgrades to VARCHAR.</li>
+      </ul>
+
+      <h2>When to use INSERT vs bulk-load (COPY INTO)</h2>
+      <p>Generated INSERT statements are ideal for seeding test data, dbt seeds, fixtures, and small lookup tables (under ~1,000 rows). For production ingestion of larger CSVs, use bulk-load commands - they are 100-1000x faster and cheaper than INSERT-per-row. Use this tool to generate just the CREATE TABLE DDL, then:</p>
+      <ul>
+        <li><strong>Snowflake:</strong> <code>COPY INTO my_table FROM @stage/file.csv FILE_FORMAT = (TYPE = CSV SKIP_HEADER = 1)</code></li>
+        <li><strong>PostgreSQL:</strong> <code>\\COPY my_table FROM 'file.csv' CSV HEADER</code></li>
+        <li><strong>BigQuery:</strong> <code>bq load --source_format=CSV --skip_leading_rows=1 dataset.table gs://bucket/file.csv</code></li>
+        <li><strong>Redshift:</strong> <code>COPY my_table FROM 's3://bucket/file.csv' IAM_ROLE '...' CSV IGNOREHEADER 1</code></li>
+      </ul>
+
+      <h2>Security and privacy</h2>
+      <p>The CSV parser and SQL generator run 100% in your browser. No data is uploaded, nothing is stored, and the tool works offline after first load. Paste internal or regulated data with confidence - nothing leaves your machine.</p>
+
+      <h2>Related tools and reading</h2>
+      <p>See the <a href="/tools/json-to-sql-ddl">JSON to SQL DDL Generator</a> for JSON inputs, the <a href="/tools/sql-formatter">SQL Formatter</a> to pretty-print the output, and the <a href="/tools/dbt-schema-generator">dbt Schema.yml Generator</a> to turn your new CREATE TABLE into a full dbt staging scaffold. For Snowflake loading patterns see <a href="/cheatsheets/snowflake-sql">Snowflake SQL reference</a>.</p>
+    `
+  },
+  {
+    path: '/tools/dbt-schema-generator',
+    title: 'dbt Schema.yml Generator 2026 - CREATE TABLE to dbt Scaffold',
+    description: 'Paste a CREATE TABLE statement, get a dbt schema.yml with inferred tests, a staging SQL model, and a sources.yml entry. No warehouse connection. Free, client-side.',
+    content: `
+      <h1>Free dbt Schema.yml Generator</h1>
+      <p><strong>Turn any CREATE TABLE into a complete dbt scaffold in one click.</strong> Paste a CREATE TABLE statement - from Snowflake, PostgreSQL, Redshift, BigQuery, or ANSI SQL - and get three artifacts: a <code>schema.yml</code> with inferred <code>unique</code> and <code>not_null</code> tests, a <code>staging SQL model</code> using the canonical <code>with source, renamed</code> pattern, and a <code>sources.yml</code> entry with freshness checks. No warehouse connection, no dbt codegen, no account required.</p>
+
+      <h2>Why use a dbt schema generator?</h2>
+      <p>Writing schema.yml files by hand is tedious and error-prone. <code>dbt codegen</code> does this against a live warehouse connection, but sometimes you don't have one yet - you're reviewing a CREATE TABLE in a pull request, designing a new staging layer from a data-contract doc, or bootstrapping a dbt project offline. This tool solves the offline case. Feed it any CREATE TABLE and get a schema.yml starting point in seconds.</p>
+
+      <h2>What tests get inferred?</h2>
+      <ul>
+        <li><strong>PRIMARY KEY</strong> columns -&gt; both <code>unique</code> and <code>not_null</code> tests. PK enforces both invariants.</li>
+        <li><strong>Columns named <code>id</code></strong> -&gt; both <code>unique</code> and <code>not_null</code> by convention - treated as surrogate keys.</li>
+        <li><strong>NOT NULL columns</strong> (without PK) -&gt; <code>not_null</code> test. DDL explicitly requires a value.</li>
+        <li><strong>Nullable columns</strong> -&gt; no auto-tests. Add <code>accepted_values</code>, <code>relationships</code>, or <code>dbt_utils.expression_is_true</code> manually based on business logic.</li>
+      </ul>
+
+      <h2>Generated artifacts explained</h2>
+      <h3>schema.yml</h3>
+      <p>A dbt YAML doc with <code>version: 2</code>, a single <code>models:</code> entry, column list with descriptions and tests. Column descriptions are inferred from naming conventions (_id columns become foreign-key descriptions, _at columns become event timestamps, status/amount/email get intuitive descriptions). Always review and rewrite with business context - good column documentation is the single highest-ROI item in a dbt project.</p>
+
+      <h3>Staging SQL model</h3>
+      <p>A .sql file using the dbt style-guide pattern: <code>with source as (...), renamed as (...) select * from renamed</code>. The source CTE pulls from <code>{{ source('...', '...') }}</code>; the renamed CTE is where you add column casts, renames, or surrogate keys like <code>{{ dbt_utils.generate_surrogate_key(['order_id']) }}</code>.</p>
+
+      <h3>sources.yml</h3>
+      <p>A <code>sources.yml</code> entry with <code>loaded_at_field</code> and <code>freshness</code> thresholds (warn after 12 hours, error after 24 hours - tune to your SLA). Lets you run <code>dbt source freshness</code> to detect stale ingestion.</p>
+
+      <h2>Where to place the generated files</h2>
+      <ol>
+        <li><strong>Staging SQL</strong> -&gt; <code>models/staging/&lt;source&gt;/stg_&lt;table&gt;.sql</code></li>
+        <li><strong>schema.yml</strong> -&gt; <code>models/staging/&lt;source&gt;/schema.yml</code> (one file per source folder is the dbt style-guide convention)</li>
+        <li><strong>sources.yml</strong> -&gt; <code>models/staging/&lt;source&gt;/sources.yml</code></li>
+        <li>Run <code>dbt build --select stg_&lt;table&gt;+</code> to compile, test, and materialize the model.</li>
+      </ol>
+
+      <h2>Related tools and reading</h2>
+      <p>Need a CREATE TABLE first? Use the <a href="/tools/json-to-sql-ddl">JSON to SQL DDL Generator</a> or the <a href="/tools/csv-to-sql">CSV to SQL Converter</a>, then pipe the output here. Price your dbt Cloud usage with the <a href="/tools/dbt-cloud-cost-calculator">dbt Cloud Cost Calculator</a>. For dbt command syntax see the <a href="/cheatsheets/dbt-commands">dbt Commands Reference</a>.</p>
     `
   },
   {

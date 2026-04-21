@@ -44,6 +44,8 @@ const DbtCloudCostPage = lazy(() => import('./pages/DbtCloudCostPage'));
 const SqlFormatterPage = lazy(() => import('./pages/SqlFormatterPage'));
 const CronBuilderPage = lazy(() => import('./pages/CronBuilderPage'));
 const JsonToSqlPage = lazy(() => import('./pages/JsonToSqlPage'));
+const CsvToSqlPage = lazy(() => import('./pages/CsvToSqlPage'));
+const DbtSchemaGeneratorPage = lazy(() => import('./pages/DbtSchemaGeneratorPage'));
 const CheatSheetCategoryPage = lazy(() => import('./pages/CheatSheetCategoryPage'));
 const InterviewPrepHubPage = lazy(() => import('./pages/InterviewPrepHubPage'));
 
@@ -289,6 +291,16 @@ function App() {
           <Route path="tools/json-to-sql-ddl" element={
             <Suspense fallback={<LoadingFallback text="Loading JSON→SQL DDL..." />}>
               <JsonToSqlPage />
+            </Suspense>
+          } />
+          <Route path="tools/csv-to-sql" element={
+            <Suspense fallback={<LoadingFallback text="Loading CSV→SQL..." />}>
+              <CsvToSqlPage />
+            </Suspense>
+          } />
+          <Route path="tools/dbt-schema-generator" element={
+            <Suspense fallback={<LoadingFallback text="Loading dbt Schema Generator..." />}>
+              <DbtSchemaGeneratorPage />
             </Suspense>
           } />
           <Route path="cheatsheets/category/:categoryId" element={

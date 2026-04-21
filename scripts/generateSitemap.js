@@ -35,6 +35,8 @@ const STATIC_PAGES = [
   { url: '/tools/sql-formatter', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
   { url: '/tools/cron-expression-builder', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
   { url: '/tools/json-to-sql-ddl', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
+  { url: '/tools/csv-to-sql', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
+  { url: '/tools/dbt-schema-generator', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
   { url: '/interview-prep', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
   { url: '/cheatsheets/category/sql', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
   { url: '/cheatsheets/category/orchestration', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },

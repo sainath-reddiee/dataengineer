@@ -20,6 +20,8 @@ import {
   Code2,
   Clock,
   FileJson,
+  FileSpreadsheet,
+  FileCode2,
   Cloud,
   Users,
   BookOpen,
@@ -108,6 +110,24 @@ const TOOLS = [
     description:
       'Paste a JSON sample (or array of samples) and get a CREATE TABLE DDL with inferred types. Supports Snowflake VARIANT, PostgreSQL JSONB, and standard SQL types. Handles nested objects and arrays.',
     primaryFor: 'Ingestion pipeline bootstrapping, schema design, API → warehouse mapping',
+  },
+  {
+    slug: 'csv-to-sql',
+    title: 'CSV → SQL Converter',
+    icon: FileSpreadsheet,
+    tagline: 'INSERT + CREATE TABLE from CSV',
+    description:
+      'Paste CSV, get both CREATE TABLE DDL and INSERT statements with inferred types. RFC 4180 parser handles quoted fields, embedded commas, and escaped quotes. Snowflake, Postgres, BigQuery, ANSI dialects.',
+    primaryFor: 'Test data seeding, fixture generation, quick CSV-to-warehouse loads',
+  },
+  {
+    slug: 'dbt-schema-generator',
+    title: 'dbt Schema.yml Generator',
+    icon: FileCode2,
+    tagline: 'CREATE TABLE → dbt scaffold',
+    description:
+      'Paste a CREATE TABLE statement, get a complete dbt scaffold: schema.yml with inferred unique/not_null tests, staging SQL model, and sources.yml with freshness checks. Zero warehouse connection required.',
+    primaryFor: 'dbt onboarding, staging layer bootstrapping, schema.yml generation without codegen',
   },
 ];
 
