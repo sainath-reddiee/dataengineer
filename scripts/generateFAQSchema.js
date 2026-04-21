@@ -10,76 +10,84 @@ const __dirname = path.dirname(__filename);
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
 const DIST_DIR = path.join(__dirname, '..', 'dist');
 
-// Fetch all posts
+// Fetch all posts with retry/backoff
 async function fetchAllPosts() {
-    try {
-        console.log('📡 Fetching posts for FAQ schema generation...');
+    console.log('📡 Fetching posts for FAQ schema generation...');
 
-        let allPosts = [];
-        let page = 1;
-        let hasMore = true;
+    let allPosts = [];
+    let page = 1;
+    let hasMore = true;
 
-        while (hasMore && page <= 20) {
-            const response = await fetch(
-                `${WORDPRESS_API_URL}/posts?page=${page}&per_page=100&_fields=slug,title,content`,
-                {
+    while (hasMore && page <= 20) {
+        const url = `${WORDPRESS_API_URL}/posts?page=${page}&per_page=100&_fields=slug,title,content`;
+
+        let posts = null;
+        let lastErr = null;
+
+        // Retry up to 3 times with exponential backoff
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                const response = await fetch(url, {
                     headers: {
                         'Accept': 'application/json',
                         'User-Agent': 'DataEngineerHub-FAQ-Schema-Generator'
                     }
+                });
+
+                if (!response.ok) {
+                    // WP returns 400 when page is past the last page — that's a clean end-of-pagination, not an error
+                    if (response.status === 400) {
+                        hasMore = false;
+                        break;
+                    }
+                    throw new Error(`HTTP ${response.status}`);
                 }
-            );
 
-            if (!response.ok) {
-                if (response.status === 400) {
-                    hasMore = false;
-                    break;
+                posts = await response.json();
+                break; // success
+            } catch (err) {
+                lastErr = err;
+                if (attempt < 3) {
+                    const delay = 500 * Math.pow(2, attempt - 1);
+                    console.warn(`⚠️  Page ${page} attempt ${attempt} failed (${err.message}) — retrying in ${delay}ms`);
+                    await new Promise(r => setTimeout(r, delay));
                 }
-                throw new Error(`HTTP ${response.status}`);
             }
-
-            const posts = await response.json();
-
-            if (!Array.isArray(posts) || posts.length === 0) {
-                hasMore = false;
-                break;
-            }
-
-            allPosts = allPosts.concat(posts);
-            console.log(`✅ Fetched page ${page} (${posts.length} posts)`);
-            page++;
-
-            await new Promise(resolve => setTimeout(resolve, 100));
         }
 
-        console.log(`✅ Total posts fetched: ${allPosts.length}`);
-        return allPosts;
-    } catch (error) {
-        console.error('❌ Error fetching posts:', error.message);
-        return [];
+        if (!hasMore) break;
+
+        if (posts === null) {
+            console.error(`❌ Page ${page} failed after 3 attempts: ${lastErr?.message}`);
+            // Don't abort the whole run — keep what we fetched so far
+            break;
+        }
+
+        if (!Array.isArray(posts) || posts.length === 0) {
+            hasMore = false;
+            break;
+        }
+
+        allPosts = allPosts.concat(posts);
+        console.log(`✅ Fetched page ${page} (${posts.length} posts)`);
+        page++;
+
+        await new Promise(resolve => setTimeout(resolve, 100));
     }
+
+    console.log(`✅ Total posts fetched: ${allPosts.length}`);
+    return allPosts;
 }
 
-// Check if text looks like a question (ported from runtime faqExtractor.js)
+// Check if text looks like a question (tightened — must end with ? OR start with a
+// W-word FOLLOWED BY whitespace, not be a random word starting with "is"/"do"/etc.)
 function isQuestionText(text) {
-    const lower = text.toLowerCase().trim();
-    return (
-        text.endsWith('?') ||
-        lower.startsWith('how ') ||
-        lower.startsWith('what ') ||
-        lower.startsWith('why ') ||
-        lower.startsWith('when ') ||
-        lower.startsWith('where ') ||
-        lower.startsWith('which ') ||
-        lower.startsWith('can ') ||
-        lower.startsWith('should ') ||
-        lower.startsWith('is ') ||
-        lower.startsWith('are ') ||
-        lower.startsWith('do ') ||
-        lower.startsWith('does ') ||
-        lower.startsWith('will ') ||
-        lower.startsWith('would ')
-    );
+    const trimmed = text.trim();
+    if (trimmed.endsWith('?')) return true;
+
+    // Strict W-word / modal pattern: word + whitespace + at least 2 more words
+    // This avoids false positives like "Is Admin" (heading fragment) matching "is ".
+    return /^(how|what|why|when|where|which|who|can|should|could|is|are|do|does|will|would|may|might)\s+\S+\s+\S+/i.test(trimmed);
 }
 
 // Extract Q&A pairs from content using split-on-tags approach (Node.js compatible)
@@ -141,6 +149,48 @@ function extractQAPairs(content) {
             }
             const q = block.text.endsWith('?') ? block.text : block.text + '?';
             addPair(q, answer);
+        }
+    }
+
+    // Strategy 1.5: FAQ section walker — when an article has an explicit
+    // "FAQ" / "Frequently Asked Questions" heading, treat EVERY sub-heading
+    // inside that section as a question (even if it doesn't look like one
+    // to isQuestionText, e.g. "Snowflake pricing tiers"). This catches
+    // articles whose FAQ sub-headings are phrased as noun phrases.
+    const faqSectionIdx = blocks.findIndex(b =>
+        (b.tag === 'h2' || b.tag === 'h3') &&
+        /^(faq|faqs|frequently\s+asked\s+questions|common\s+questions)\b/i.test(b.text.trim())
+    );
+    if (faqSectionIdx !== -1) {
+        const faqHeadingTag = blocks[faqSectionIdx].tag; // h2 or h3
+        const subTag = faqHeadingTag === 'h2' ? 'h3' : 'h4';
+
+        for (let i = faqSectionIdx + 1; i < blocks.length; i++) {
+            const block = blocks[i];
+            // Stop when we exit the FAQ section (next same-or-higher heading)
+            if (block.tag === 'h1' || block.tag === faqHeadingTag) break;
+
+            if (block.tag === subTag && block.text.length > 5) {
+                let answer = '';
+                let j = i + 1;
+                while (j < blocks.length && answer.length < 500) {
+                    const next = blocks[j];
+                    if (next.tag.startsWith('h')) break;
+                    if (next.tag === 'p' && next.text.length > 15) {
+                        answer += next.text + ' ';
+                    }
+                    if (next.tag === 'ul' || next.tag === 'ol' || next.tag === 'li') {
+                        answer += next.text + '. ';
+                    }
+                    j++;
+                }
+                if (answer.length >= 30) {
+                    const q = block.text.endsWith('?')
+                        ? block.text
+                        : (isQuestionText(block.text) ? block.text + '?' : synthesizeQuestion(block.text));
+                    addPair(q, answer);
+                }
+            }
         }
     }
 

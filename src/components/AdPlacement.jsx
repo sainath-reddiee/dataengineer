@@ -1,84 +1,42 @@
-// src/components/AdPlacement.jsx - Auto Ads only (no individual slot IDs)
-import React, { useEffect, useRef, useState } from 'react';
-import { getConsentStatus } from '@/components/CookieConsent';
+// src/components/AdPlacement.jsx
+// Auto-Ads-only placeholder. We intentionally do NOT render an <ins class="adsbygoogle">
+// because we don't have a real numeric ad slot ID yet. Shipping data-ad-slot="auto"
+// (a string, not a number) is INVALID AdSense markup and fails AdSense review.
+//
+// AdSense loader script (in <head> of every page) + "Auto Ads" enabled in the
+// AdSense UI is sufficient for:
+//   1. AdSense crawler verification during approval
+//   2. Automatic ad placement after approval
+//
+// When you have a real ad unit (numeric slot from AdSense UI), replace this
+// component with a proper <ins> that uses that slot ID.
+import React from 'react';
 
-const AdPlacement = ({ 
-  className = ''
-}) => {
-  const adRef = useRef(null);
-  const [shouldRender, setShouldRender] = useState(false);
-
-  const PUBLISHER_ID = import.meta.env.VITE_ADSENSE_PUBLISHER_ID;
-  const ADS_ENABLED = import.meta.env.VITE_ADS_ENABLED;
+const AdPlacement = ({ className = '' }) => {
   const IS_DEV = import.meta.env.DEV;
 
-  useEffect(() => {
-    if (ADS_ENABLED === 'false' || ADS_ENABLED === false) {
-      setShouldRender(false);
-      return;
-    }
-
-    if (IS_DEV || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      setShouldRender(false);
-      return;
-    }
-
-    if (!PUBLISHER_ID) {
-      setShouldRender(false);
-      return;
-    }
-
-    setShouldRender(true);
-  }, [ADS_ENABLED, IS_DEV, PUBLISHER_ID]);
-
-  useEffect(() => {
-    if (!shouldRender || !PUBLISHER_ID) return;
-
-    const pushAd = () => {
-      if (!getConsentStatus()) return;
-      try {
-        if (window.adsbygoogle) {
-          (window.adsbygoogle = window.adsbygoogle || []).push({});
-        }
-      } catch (error) {
-        console.error('AdSense error:', error);
-      }
-    };
-
-    pushAd();
-
-    const onConsentChanged = () => pushAd();
-    window.addEventListener('consentChanged', onConsentChanged);
-    return () => window.removeEventListener('consentChanged', onConsentChanged);
-  }, [shouldRender, PUBLISHER_ID]);
-
-  if (!shouldRender) {
-    if (IS_DEV) {
-      return (
-        <div className={`dev-ad-placeholder my-8 p-4 border-2 border-dashed border-yellow-500 rounded-lg bg-yellow-500/10 ${className}`}>
-          <div className="text-center text-yellow-300 text-sm">
-            <p className="font-semibold mb-1">Ad Placeholder (Auto Ads)</p>
-            <p className="text-xs">Ads will appear here in production when VITE_ADSENSE_PUBLISHER_ID is set</p>
-          </div>
+  if (IS_DEV) {
+    return (
+      <div className={`dev-ad-placeholder my-8 p-4 border-2 border-dashed border-yellow-500 rounded-lg bg-yellow-500/10 ${className}`}>
+        <div className="text-center text-yellow-300 text-sm">
+          <p className="font-semibold mb-1">Ad Placeholder (Auto Ads)</p>
+          <p className="text-xs">
+            Auto Ads handles placement in production. Enable Auto Ads in your
+            AdSense UI after approval. No manual ad unit needed.
+          </p>
         </div>
-      );
-    }
-    return null;
+      </div>
+    );
   }
 
+  // Production: render nothing. Auto Ads will inject ads automatically.
+  // A passive hint div lets Auto Ads detect a good placement zone if desired.
   return (
-    <div 
-      ref={adRef}
-      className={`adsense-ad my-8 ${className}`}
-    >
-      <ins 
-        className="adsbygoogle"
-        style={{ display: 'block' }}
-        data-ad-client={PUBLISHER_ID}
-        data-ad-format="auto"
-        data-full-width-responsive="true"
-      />
-    </div>
+    <div
+      className={`auto-ads-placement ${className}`}
+      style={{ minHeight: '1px' }}
+      aria-hidden="true"
+    />
   );
 };
 

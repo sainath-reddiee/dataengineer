@@ -1,11 +1,9 @@
 // src/pages/HomePage.jsx - ENHANCED WITH SEO STRUCTURED DATA
 import React, { Suspense } from 'react';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
 import Hero from '../components/Hero';
 import MetaTags from '../components/SEO/MetaTags';
 import { Sparkles, TrendingUp, FileText, Zap, BookOpen } from 'lucide-react';
-import { getOrganizationSchema, getWebSiteSchema } from '@/lib/seoConfig';
 import { Link } from 'react-router-dom';
 
 import { cheatsheets, CHEATSHEET_CATEGORIES } from '@/data/cheatsheetData';
@@ -119,9 +117,7 @@ const CheatSheetCards = () => {
 };
 
 const HomePage = () => {
-  // Generate schemas for homepage
-  const organizationSchema = getOrganizationSchema();
-  const webSiteSchema = getWebSiteSchema();
+  // Organization + WebSite JSON-LD are emitted in the static index.html shell.
 
   return (
     <>
@@ -132,15 +128,8 @@ const HomePage = () => {
         type="website"
       />
 
-      {/* Organization + WebSite Structured Data */}
-      <Helmet>
-        <script type="application/ld+json">
-          {JSON.stringify(organizationSchema)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify(webSiteSchema)}
-        </script>
-      </Helmet>
+      {/* Organization + WebSite JSON-LD is emitted in the static index.html shell
+          so Googlebot sees it without JS. Do not duplicate here. */}
 
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white">
         {/* ============================================================================

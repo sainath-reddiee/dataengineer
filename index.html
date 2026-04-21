@@ -9,16 +9,27 @@
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
     <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">
 
-    <!-- Google Consent Mode v2: default to denied until user consents -->
+    <!-- Google Consent Mode v2: region-gated defaults.
+         EU/UK/EEA regions default to denied (GDPR); rest of world (incl. AdSense crawler from US) default to granted
+         so Googlebot-AdSense can verify ad code without needing to interact with a consent banner. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      // EU/UK/EEA: denied by default until user consents
       gtag('consent', 'default', {
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
         'ad_personalization': 'denied',
         'analytics_storage': 'denied',
-        'wait_for_update': 500
+        'wait_for_update': 500,
+        'region': ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','GB','IS','LI','NO','CH']
+      });
+      // Rest of world (including US where AdSense crawler operates): granted
+      gtag('consent', 'default', {
+        'ad_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted',
+        'analytics_storage': 'granted'
       });
     </script>
     <!-- AdSense: static tag so the AdSense bot can verify ad code in raw HTML -->
@@ -42,11 +53,17 @@
       "@type": "Organization",
       "name": "DataEngineer Hub",
       "url": "https://dataengineerhub.blog",
-      "logo": "https://dataengineerhub.blog/logo.png",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://dataengineerhub.blog/logo.png",
+        "width": 250,
+        "height": 250
+      },
       "description": "In-depth tutorials on Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and modern data engineering.",
       "sameAs": [
-        "https://github.com/dataengineerhub",
-        "https://www.linkedin.com/company/dataengineerhub"
+        "https://twitter.com/sainath29",
+        "https://www.linkedin.com/in/sainathreddypogaku/",
+        "https://github.com/sainath-reddiee/dataengineer"
       ],
       "founder": {
         "@type": "Person",
@@ -335,25 +352,35 @@
         // react-loading → react-loaded transition after React actually renders.
         // Removing it here causes a race condition where the SEO fallback disappears
         // before React content is painted, showing a blank screen.
-        
+
         if (typeof performance !== 'undefined' && performance.mark) {
           performance.mark('page-loaded');
-          
+
           setTimeout(() => {
             const perfData = performance.getEntriesByType('navigation')[0];
             const paintEntries = performance.getEntriesByType('paint');
-            
+
             if (perfData) {
               const metrics = {
                 'Total Load': Math.round(perfData.loadEventEnd - perfData.fetchStart) + 'ms',
                 'DOM Ready': Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart) + 'ms',
                 'FCP': paintEntries[1] ? Math.round(paintEntries[1].startTime) + 'ms' : 'N/A'
               };
-              
+
               console.log('📊 Performance:', metrics);
             }
           }, 100);
         }
+
+        // 🛟 Failsafe: if React hasn't mounted after 8s, restore the SEO fallback
+        // instead of leaving users stuck on the loading spinner. This protects
+        // against bundle load failures, network issues, or JS errors.
+        setTimeout(function() {
+          if (!document.body.classList.contains('react-loaded')) {
+            document.body.classList.remove('react-loading');
+            console.warn('⚠️  React did not mount within 8s — showing static SEO content');
+          }
+        }, 8000);
       });
     </script>
   </body>

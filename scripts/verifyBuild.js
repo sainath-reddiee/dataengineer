@@ -184,26 +184,82 @@ async function verifyBuild() {
     
     info.push(`Articles: ${articleFiles} pages, ${formatBytes(articlesSize)}`);
     
-    // Sample a few articles to verify content
+    // Sample articles to verify content. Verify ALL articles so AdSense-blocker
+    // regressions can't hide in unsampled pages. Per-article logs are suppressed
+    // for scale; only failures and a final summary are printed.
     if (articleDirs.length > 0) {
-      log(`\n   🔍 Sampling article content...`, 'cyan');
-      const sampleDirs = articleDirs.slice(0, 3);
-      
+      log(`\n   🔍 Verifying all ${articleDirs.length} articles...`, 'cyan');
+      const sampleDirs = articleDirs;
+      let passCount = 0;
+      const missCounts = {};
+
       for (const dir of sampleDirs) {
         const indexPath = path.join(articlesDir, dir, 'index.html');
         if (fs.existsSync(indexPath)) {
           const content = fs.readFileSync(indexPath, 'utf8');
-          const hasTitle = content.includes('<title>');
-          const hasRoot = content.includes('id="root"');
-          const hasMainScript = content.includes('/src/main.jsx');
-          
-          if (!hasTitle || !hasRoot || !hasMainScript) {
-            warnings.push(`⚠️  Article ${dir} may be missing critical HTML elements`);
-            log(`   ⚠️  ${dir}: missing elements`, 'yellow');
+
+          // SPA/AdSense critical checks
+          const checks = {
+            title: /<title>[^<]+<\/title>/.test(content),
+            canonical: /<link\s+rel="canonical"\s+href="https:\/\/dataengineerhub\.blog\//i.test(content),
+            robots: /<meta\s+name="robots"\s+content="/i.test(content),
+            ogImage: /<meta\s+property="og:image"/i.test(content),
+            articleSchema: /"@type"\s*:\s*"Article"/.test(content),
+            productionBundle: /<script[^>]*type="module"[^>]*src="[^"]*\/assets\/js\/index-[^"]+\.js"/.test(content)
+              || /<script[^>]*type="module"[^>]*src="[^"]*\/assets\/index-[^"]+\.js"/.test(content),
+            // AdSense checks — only expected on indexable articles
+            adsenseScript: /pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-/i.test(content),
+            adsenseClientValid: /client=ca-pub-\d+/i.test(content)
+          };
+
+          const robotsMatch = content.match(/<meta\s+name="robots"\s+content="([^"]+)"/i);
+          const isNoindex = robotsMatch && /noindex/i.test(robotsMatch[1]);
+          const hasAdInsSlot = /<ins\s+class="adsbygoogle"/i.test(content);
+          // Catches the invalid data-ad-slot="auto" string (must be numeric)
+          const hasInvalidSlot = /data-ad-slot\s*=\s*"auto"/i.test(content);
+
+          const failed = [];
+          if (!checks.title) failed.push('title');
+          if (!checks.canonical) failed.push('canonical');
+          if (!checks.robots) failed.push('robots meta');
+          if (!checks.ogImage) failed.push('og:image');
+          if (!checks.articleSchema) failed.push('Article JSON-LD');
+          if (!checks.productionBundle) failed.push('production JS bundle');
+          // AdSense loader is only required on indexable pages
+          if (!isNoindex) {
+            if (!checks.adsenseScript) failed.push('AdSense loader script');
+            if (!checks.adsenseClientValid) failed.push('valid ca-pub- client ID');
+          }
+
+          // Invalid slot ID is an AdSense approval blocker
+          if (hasInvalidSlot) {
+            issues.push(`❌ ${dir}: data-ad-slot="auto" is INVALID (must be numeric or omitted)`);
+            log(`   ❌ ${dir}: invalid data-ad-slot="auto" found — blocks AdSense approval`, 'red');
+          }
+
+          // Ads-on-noindex is a quality-score hit (only flag if we're using manual <ins>)
+          if (isNoindex && hasAdInsSlot) {
+            warnings.push(`⚠️  ${dir}: manual ad slot present on noindex article`);
+          }
+
+          // Legacy/dev-mode reference to raw /src/main.jsx should never ship to production
+          if (/\/src\/main\.jsx/.test(content)) {
+            issues.push(`❌ ${dir}: references /src/main.jsx (dev path shipped to production)`);
+            log(`   ❌ ${dir}: dev /src/main.jsx path in production HTML`, 'red');
+          }
+
+          if (failed.length > 0) {
+            warnings.push(`⚠️  Article ${dir} missing: ${failed.join(', ')}`);
+            log(`   ⚠️  ${dir}: missing ${failed.join(', ')}`, 'yellow');
+            for (const k of failed) missCounts[k] = (missCounts[k] || 0) + 1;
           } else {
-            log(`   ✅ ${dir}: valid HTML structure`, 'green');
+            passCount++;
           }
         }
+      }
+      log(`   ✅ ${passCount}/${sampleDirs.length} articles passed SEO + AdSense checks`, passCount === sampleDirs.length ? 'green' : 'yellow');
+      if (Object.keys(missCounts).length > 0) {
+        log(`   ⚠️  Missing counts: ${Object.entries(missCounts).map(([k,v]) => `${k}=${v}`).join(', ')}`, 'yellow');
       }
     }
   }
@@ -266,6 +322,19 @@ async function verifyBuild() {
   } else {
     warnings.push('⚠️  IndexNow key not generated');
     log('   ⚠️  IndexNow key not found', 'yellow');
+  }
+
+  // ============================================================================
+  // Check 7: og-image.jpg (referenced by essential pages)
+  // ============================================================================
+  log('\n🖼️  Checking og-image.jpg...', 'blue');
+  const ogImageDist = path.join(distDir, 'og-image.jpg');
+  if (fs.existsSync(ogImageDist)) {
+    const size = fs.statSync(ogImageDist).size;
+    log(`   ✅ og-image.jpg exists (${formatBytes(size)})`, 'green');
+  } else {
+    warnings.push('⚠️  og-image.jpg not found in dist/ — essential pages reference it');
+    log('   ⚠️  og-image.jpg not found in dist/', 'yellow');
   }
   
   // ============================================================================

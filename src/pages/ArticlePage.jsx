@@ -580,6 +580,9 @@ const ArticlePage = () => {
     // Extract key takeaways from H2 headings for AEO visibility
     const keyTakeaways = extractKeyTakeaways(safePost.content);
 
+    // FAQPage JSON-LD is owned by the SSG layer (scripts/generateFAQSchema.js)
+    // to avoid duplicate schemas in the rendered DOM. Do not re-inject here.
+
     return (
     <div className="pt-4 pb-12">
       <ReadingProgressBar readTime={safePost.readTime} />
