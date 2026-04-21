@@ -460,6 +460,111 @@ const ESSENTIAL_PAGES = [
       <h2>Disclaimer</h2>
       <p>Estimates are based on publicly documented Snowflake list pricing as of 2026. Actual costs depend on your contract, regional discounts (enterprise contracts often negotiate 20-40% off list), and real usage patterns. This tool is for planning purposes only - always verify against your Account Usage views for authoritative billing data.</p>
     `
+  },
+  {
+    path: '/tools/snowflake-credit-cost',
+    title: 'Snowflake Credit Cost Converter 2026 - Instant USD Calculator',
+    description: 'How much does a Snowflake credit cost? Convert credits to USD by edition (Standard/Enterprise/BC/VPS) and region. Free instant price converter.',
+    content: `
+      <h1>Snowflake Credit Cost Converter</h1>
+      <p><strong>Convert any number of Snowflake credits to US dollars instantly.</strong> Price depends on two inputs: your edition (Standard, Enterprise, Business Critical, or VPS) and your cloud region (AWS, Azure, or GCP).</p>
+
+      <h2>How much does one Snowflake credit cost?</h2>
+      <p>A single Snowflake credit costs between <strong>$2.00</strong> (AWS US East or GCP US Central on Standard edition) and <strong>$7.25</strong> (AWS Asia Pacific on VPS edition). The formula is simple: <code>credit_price = region_base_price x edition_multiplier</code>. Multipliers are Standard 1.0x, Enterprise 1.5x, Business Critical 2.0x, and VPS 2.5x.</p>
+
+      <h2>Regional Credit Price Reference</h2>
+      <ul>
+        <li><strong>AWS US East (N. Virginia):</strong> $2.00 Standard, $3.00 Enterprise, $4.00 Business Critical, $5.00 VPS</li>
+        <li><strong>AWS EU (Ireland/Frankfurt):</strong> $2.60 Standard, $3.90 Enterprise, $5.20 Business Critical, $6.50 VPS</li>
+        <li><strong>AWS Asia Pacific (Singapore/Tokyo):</strong> $2.90 Standard, $4.35 Enterprise, $5.80 Business Critical, $7.25 VPS</li>
+        <li><strong>Azure US East 2:</strong> $2.00 Standard (matches AWS US)</li>
+        <li><strong>GCP US Central:</strong> $2.00 Standard (matches AWS US)</li>
+      </ul>
+
+      <h2>Why regional pricing differs</h2>
+      <p>Snowflake prices credits higher in regions with higher underlying cloud infrastructure costs. US regions are cheapest. European regions carry roughly a 30% premium; APAC regions carry roughly 45%. If your workload is portable, deploying in US regions can cut your Snowflake bill by 30-45% vs. APAC.</p>
+
+      <h2>Can I get a discount?</h2>
+      <p>Yes. Enterprise capacity contracts (annual or multi-year commitments) typically negotiate 20-40% off list price. On-demand customers pay full list rate. If your annual spend exceeds $50k, a capacity contract is almost always cheaper than on-demand.</p>
+
+      <h2>Related Tools</h2>
+      <p>Use our <a href="/tools/snowflake-cost-calculator">full Snowflake Cost Calculator</a> to factor warehouse size, hours of use, storage, and serverless features into a complete monthly estimate. For single-query cost estimation, use the <a href="/tools/snowflake-query-cost-estimator">Query Cost Estimator</a>. To pick the right warehouse size for your workload, see the <a href="/tools/snowflake-warehouse-sizing">Warehouse Sizing Estimator</a>.</p>
+    `
+  },
+  {
+    path: '/tools/snowflake-query-cost-estimator',
+    title: 'Snowflake Query Cost Estimator 2026 - Price Per Query Calculator',
+    description: 'Estimate Snowflake query cost from bytes scanned and warehouse size. See cost per query plus daily and monthly projections. Free interactive tool.',
+    content: `
+      <h1>Snowflake Query Cost Estimator</h1>
+      <p><strong>Estimate the cost of a single Snowflake query</strong> from bytes scanned, warehouse size, edition, and region. Includes the 60-second resume minimum and scales to daily and monthly totals.</p>
+
+      <h2>How is query cost calculated in Snowflake?</h2>
+      <p>Snowflake bills per second of warehouse uptime, not per query directly. The formula is: <code>query_cost = (credits_per_hour x runtime_in_hours) x price_per_credit</code>. An XS warehouse runs at 1 credit/hour; each size doubles. A 60-second minimum applies every time a warehouse resumes from auto-suspend, so a 2-second query on a freshly-resumed warehouse is billed as 60 seconds.</p>
+
+      <h2>Why bytes scanned matters</h2>
+      <p>Bytes scanned is the best predictor of runtime. Less pruning means more bytes scanned, which means longer runtime, which means higher cost. Three levers reduce bytes scanned: (1) <strong>clustering keys</strong> on high-cardinality filter columns, (2) <strong>Search Optimization Service</strong> for point lookups, and (3) <strong>materialized views</strong> for repeated aggregations.</p>
+
+      <h2>How to find bytes scanned for your query</h2>
+      <ol>
+        <li>Open Snowsight -&gt; Activity -&gt; Query History</li>
+        <li>Click the query ID and view the Query Profile panel</li>
+        <li>Read "Bytes scanned" from the TableScan nodes</li>
+        <li>Or query: <code>SELECT BYTES_SCANNED FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY WHERE QUERY_ID = '...'</code></li>
+      </ol>
+
+      <h2>Is a bigger warehouse more expensive per query?</h2>
+      <p>Not necessarily. A 2XL that finishes in 10 seconds can cost the same as a Small that runs for 160 seconds. When queries spill to remote disk on smaller sizes, bumping up a size is often cheaper <em>and</em> faster. Use the Query Profile to check for spillage before deciding.</p>
+
+      <h2>Related Tools</h2>
+      <p>See the <a href="/tools/snowflake-cost-calculator">full cost calculator</a> for full-workload estimation, the <a href="/tools/snowflake-warehouse-sizing">warehouse sizing estimator</a> to pick the right size, and the <a href="/tools/snowflake-credit-cost">credit converter</a> for credit-to-USD lookups. Also see our guide on <a href="/articles/snowflake-query-optimization-2025">Snowflake query optimization</a>.</p>
+    `
+  },
+  {
+    path: '/tools/snowflake-warehouse-sizing',
+    title: 'Snowflake Warehouse Sizing Estimator 2026 - Pick XS-6XL by Workload',
+    description: 'Which Snowflake warehouse size should you use? Enter workload type, data volume, and concurrency - get an instant XS-6XL recommendation plus monthly cost.',
+    content: `
+      <h1>Snowflake Warehouse Sizing Estimator</h1>
+      <p><strong>Get a starting-point warehouse size (XS to 6XL)</strong> based on workload type, data volume, and concurrency. Use it as a first cut, then right-size using real query profiles on production data.</p>
+
+      <h2>How should I choose a Snowflake warehouse size?</h2>
+      <p>Start small (XS or S) and monitor query runtimes. If queries routinely exceed your latency SLA or spill to remote disk, bump up one size. Bigger warehouses finish faster and often cost the same - a 2XL running 30 seconds may equal a Small running 8 minutes. Size to your critical-path query, not to your smallest queries.</p>
+
+      <h2>Warehouse sizes and credit consumption</h2>
+      <ul>
+        <li><strong>X-Small (XS):</strong> 1 credit/hour - dev, sandbox, small dashboards</li>
+        <li><strong>Small (S):</strong> 2 credits/hour - small ETL, simple BI</li>
+        <li><strong>Medium (M):</strong> 4 credits/hour - typical production BI and ETL</li>
+        <li><strong>Large (L):</strong> 8 credits/hour - heavier ETL, feature engineering</li>
+        <li><strong>X-Large (XL):</strong> 16 credits/hour - large batch jobs, ML prep</li>
+        <li><strong>2XL-6XL:</strong> 32-512 credits/hour - massive data volumes (only when needed)</li>
+      </ul>
+
+      <h2>When do I need multi-cluster warehouses?</h2>
+      <p>Multi-cluster solves concurrency, not data volume. If 30+ BI users fire queries simultaneously and some queue for 10+ seconds, enable multi-cluster with auto-scale. Snowflake will spin up additional clusters only when concurrent demand exceeds one cluster's capacity, then scale back down.</p>
+
+      <h2>Workload-based sizing heuristics</h2>
+      <ul>
+        <li><strong>BI / Dashboards:</strong> Latency-sensitive. Prefer one size larger with multi-cluster for concurrency.</li>
+        <li><strong>Ad-hoc / exploration:</strong> Moderate data, relaxed latency. M or L works well.</li>
+        <li><strong>ETL / batch:</strong> Throughput-sensitive. Size to the largest table scanned per query.</li>
+        <li><strong>ML feature prep:</strong> Often massive joins. L to 2XL is typical; check for remote disk spillage.</li>
+        <li><strong>Dev / sandbox:</strong> Always XS. Use resource monitors to cap spend.</li>
+      </ul>
+
+      <h2>How to validate your size</h2>
+      <ol>
+        <li>Run your top 10 queries on the recommended warehouse</li>
+        <li>In each Query Profile, check for "Bytes spilled to remote storage" - any remote spill means the size is too small</li>
+        <li>Check WAREHOUSE_LOAD_HISTORY - if average load is consistently &gt;1.0, add multi-cluster</li>
+        <li>Check QUEUED_LOAD_PERCENTAGE - sustained queueing &gt;10s means concurrency is saturating</li>
+        <li>Review WAREHOUSE_METERING_HISTORY after a week and right-size down if utilization is low</li>
+      </ol>
+
+      <h2>Related Tools</h2>
+      <p>See the <a href="/tools/snowflake-cost-calculator">full cost calculator</a> for total monthly spend modeling, the <a href="/tools/snowflake-query-cost-estimator">query cost estimator</a> for single-query pricing, and the <a href="/tools/snowflake-credit-cost">credit-to-USD converter</a> for quick price lookups. See also <a href="/articles/snowflake-cost-optimization-techniques-2026">12 Snowflake cost optimization techniques</a>.</p>
+    `
   }
 ];
 
@@ -2091,7 +2196,11 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <title>' + safeName + ' - Data Engineering Articles | DataEngineer Hub</title>\n';
   html += '    <meta name="description" content="' + descriptionMeta + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n\n';
+  // Thin-content mitigation: noindex category pages with fewer than 3 articles (AdSense quality signal)
+  var catRobots = (categoryArticles.length < 3)
+    ? 'noindex, follow'
+    : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+  html += '    <meta name="robots" content="' + catRobots + '" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';

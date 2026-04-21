@@ -26,6 +26,9 @@ const STATIC_PAGES = [
   { url: '/disclaimer', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/cheatsheets', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
   { url: '/tools/snowflake-cost-calculator', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
+  { url: '/tools/snowflake-credit-cost', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
+  { url: '/tools/snowflake-query-cost-estimator', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
+  { url: '/tools/snowflake-warehouse-sizing', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
 ];
 
 // Article slugs to exclude from sitemap (noindexed due to thin content <400 words)

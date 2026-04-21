@@ -35,6 +35,9 @@ const CheatSheetPage = lazy(() => import('./pages/CheatSheetPage'));
 
 // Tools (interactive public calculators)
 const CostCalculatorPage = lazy(() => import('./pages/CostCalculatorPage'));
+const CreditCostPage = lazy(() => import('./pages/CreditCostPage'));
+const QueryCostEstimatorPage = lazy(() => import('./pages/QueryCostEstimatorPage'));
+const WarehouseSizingPage = lazy(() => import('./pages/WarehouseSizingPage'));
 
 // Not Found Page
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
@@ -233,6 +236,21 @@ function App() {
           <Route path="tools/snowflake-cost-calculator" element={
             <Suspense fallback={<LoadingFallback text="Loading Calculator..." />}>
               <CostCalculatorPage />
+            </Suspense>
+          } />
+          <Route path="tools/snowflake-credit-cost" element={
+            <Suspense fallback={<LoadingFallback text="Loading Credit Converter..." />}>
+              <CreditCostPage />
+            </Suspense>
+          } />
+          <Route path="tools/snowflake-query-cost-estimator" element={
+            <Suspense fallback={<LoadingFallback text="Loading Query Cost Estimator..." />}>
+              <QueryCostEstimatorPage />
+            </Suspense>
+          } />
+          <Route path="tools/snowflake-warehouse-sizing" element={
+            <Suspense fallback={<LoadingFallback text="Loading Warehouse Sizing..." />}>
+              <WarehouseSizingPage />
             </Suspense>
           } />
           <Route path="about" element={
