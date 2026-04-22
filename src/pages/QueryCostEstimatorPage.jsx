@@ -148,7 +148,7 @@ export default function QueryCostEstimatorPage() {
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-blue-300 bg-blue-900/30 border border-blue-700/50 rounded-full">
-            Heuristic estimate · Based on throughput ~100 MB/s per credit/hour
+            Heuristic estimate · Throughput ~100 MB/s per credit/hour · Updated April 2026
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Database className="w-8 h-8 text-blue-400" />

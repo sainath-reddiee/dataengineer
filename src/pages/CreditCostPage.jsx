@@ -312,6 +312,18 @@ export default function CreditCostPage() {
               <div className="text-blue-300 font-medium mb-1">Query Cost Estimator →</div>
               <div className="text-gray-400 text-sm">Estimate the cost of a single query from bytes scanned.</div>
             </Link>
+            <Link to="/tools/databricks-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
+              <div className="text-blue-300 font-medium mb-1">Databricks Cost Calculator →</div>
+              <div className="text-gray-400 text-sm">Compare Snowflake credits to Databricks DBUs + VM hours.</div>
+            </Link>
+            <Link to="/tools/bigquery-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
+              <div className="text-blue-300 font-medium mb-1">BigQuery Cost Calculator →</div>
+              <div className="text-gray-400 text-sm">Compare on-demand $/TB vs slot-based editions.</div>
+            </Link>
+            <Link to="/tools/dbt-cloud-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
+              <div className="text-blue-300 font-medium mb-1">dbt Cloud Cost Calculator →</div>
+              <div className="text-gray-400 text-sm">Price the transformation layer running on top of Snowflake.</div>
+            </Link>
           </div>
         </div>
 

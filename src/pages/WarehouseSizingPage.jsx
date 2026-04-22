@@ -185,7 +185,7 @@ export default function WarehouseSizingPage() {
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-blue-300 bg-blue-900/30 border border-blue-700/50 rounded-full">
-            Heuristic recommendation · Based on public Snowflake sizing patterns
+            Heuristic recommendation · Based on public Snowflake sizing patterns · Updated April 2026
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Layers className="w-8 h-8 text-purple-400" />
@@ -403,6 +403,18 @@ export default function WarehouseSizingPage() {
             <Link to="/articles/snowflake-cost-optimization-techniques-2026" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
               <div className="text-blue-300 font-medium mb-1">12 cost optimization techniques →</div>
               <div className="text-gray-400 text-sm">Warehouse right-sizing is #1 lever — full playbook.</div>
+            </Link>
+            <Link to="/tools/databricks-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
+              <div className="text-blue-300 font-medium mb-1">Databricks Cost Calculator →</div>
+              <div className="text-gray-400 text-sm">Equivalent cluster-sizing problem on the lakehouse side.</div>
+            </Link>
+            <Link to="/tools/bigquery-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
+              <div className="text-blue-300 font-medium mb-1">BigQuery Cost Calculator →</div>
+              <div className="text-gray-400 text-sm">Slot-based vs on-demand sizing for BigQuery.</div>
+            </Link>
+            <Link to="/cheatsheets/snowflake-cost-optimization-interview" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
+              <div className="text-blue-300 font-medium mb-1">Cost Optimization Interview Q&A →</div>
+              <div className="text-gray-400 text-sm">Expert-level sizing, auto-suspend, and resource-monitor questions.</div>
             </Link>
           </div>
         </div>
