@@ -29,6 +29,15 @@ const Spark = ({ x, y, rotate, color }) => {
 };
 
 const PostListItem = ({ post }) => {
+  // Memoize spark particles to prevent recalculation on every render.
+  // MUST be called before any conditional return to satisfy the Rules of Hooks.
+  const sparks = useMemo(() => Array.from({ length: 12 }, () => ({
+    x: Math.random() * 60 - 30,
+    y: Math.random() * 60 - 30,
+    rotate: Math.random() * 360,
+    color: ['#60a5fa', '#a78bfa', '#ffffff'][Math.floor(Math.random() * 3)],
+  })), []);
+
   if (!post) return null;
 
   // --- Animation Variants for all combined effects ---
@@ -52,14 +61,6 @@ const PostListItem = ({ post }) => {
     rest: {},
     hover: { transition: { staggerChildren: 0.03 } },
   };
-
-  // Memoize spark particles to prevent recalculation on every render
-  const sparks = useMemo(() => Array.from({ length: 12 }, () => ({
-    x: Math.random() * 60 - 30,
-    y: Math.random() * 60 - 30,
-    rotate: Math.random() * 360,
-    color: ['#60a5fa', '#a78bfa', '#ffffff'][Math.floor(Math.random() * 3)],
-  })), []);
 
   return (
     <MotionLink

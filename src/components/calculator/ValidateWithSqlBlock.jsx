@@ -2,18 +2,41 @@
 // Collapsible "Validate with SQL" block for calculator pages.
 // Shows a copyable SQL snippet users can run against SNOWFLAKE.ACCOUNT_USAGE
 // (or equivalent) to reconcile the calculator estimate with their real bill.
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Terminal, Copy, Check, ChevronDown } from 'lucide-react';
+
+// Fallback copy for insecure contexts where navigator.clipboard is unavailable.
+function fallbackCopy(text, onOk) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'absolute';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    onOk();
+  } catch { /* clipboard unavailable; silent no-op */ }
+}
 
 const ValidateWithSqlBlock = ({ title, description, sql, note }) => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(sql.trim()).then(() => {
+    const text = sql.trim();
+    const onOk = () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    };
+    // Prefer async Clipboard API; fall back to execCommand for insecure contexts.
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(onOk).catch(() => fallbackCopy(text, onOk));
+    } else {
+      fallbackCopy(text, onOk);
+    }
   }, [sql]);
 
   return (

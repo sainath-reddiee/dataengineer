@@ -2,7 +2,7 @@
 // Lightweight A/B scenario compare primitive. Renders two tabs (A and B) that
 // swap which scenario is currently being edited, plus a diff summary row.
 // The parent owns both scenario state objects; this component is presentational.
-import React from 'react';
+import { useCallback } from 'react';
 import { GitCompare } from 'lucide-react';
 
 const ScenarioCompareToggle = ({
@@ -18,6 +18,14 @@ const ScenarioCompareToggle = ({
 }) => {
   const delta = (totalB ?? 0) - (totalA ?? 0);
   const deltaPct = totalA ? (delta / totalA) * 100 : 0;
+
+  // Arrow-key navigation between tabs (WAI-ARIA tablist pattern).
+  const handleTabKeyDown = useCallback((e) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      onScenarioChange(activeScenario === 'A' ? 'B' : 'A');
+    }
+  }, [activeScenario, onScenarioChange]);
 
   return (
     <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-4 space-y-3">
@@ -59,7 +67,9 @@ const ScenarioCompareToggle = ({
                 type="button"
                 role="tab"
                 aria-selected={activeScenario === s.id}
+                tabIndex={activeScenario === s.id ? 0 : -1}
                 onClick={() => onScenarioChange(s.id)}
+                onKeyDown={handleTabKeyDown}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   activeScenario === s.id
                     ? 'bg-slate-700 text-white shadow'

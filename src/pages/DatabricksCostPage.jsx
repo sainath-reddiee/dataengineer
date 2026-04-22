@@ -7,6 +7,7 @@ import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Cloud, Share2, Check, Calculator, DollarSign, Server, Zap } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import ValidateWithSqlBlock from '@/components/calculator/ValidateWithSqlBlock';
 
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
@@ -188,7 +189,7 @@ export default function DatabricksCostPage() {
             Updated April 2026 · Databricks list pricing
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
-            <Cloud className="w-8 h-8 text-orange-400" />
+            <Cloud className="w-8 h-8 text-orange-400" aria-hidden="true" />
             Databricks Cost Calculator
           </h1>
           <p className="text-gray-300 text-lg max-w-3xl">
@@ -297,7 +298,7 @@ export default function DatabricksCostPage() {
             className="bg-gradient-to-br from-orange-900/40 to-red-900/40 backdrop-blur-xl rounded-2xl border border-orange-700/50 p-6"
           >
             <div className="text-sm text-gray-300 mb-2">Total monthly cost (all-in)</div>
-            <div className="text-5xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent mb-4">
+            <div className="text-5xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent mb-4" aria-live="polite">
               {formatUSD(result.total)}
             </div>
             <div className="space-y-2 text-sm border-t border-slate-700 pt-4">
@@ -310,10 +311,11 @@ export default function DatabricksCostPage() {
             </div>
 
             <button
+              type="button"
               onClick={handleShare}
               className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-700/50 hover:bg-slate-700 border border-slate-600 rounded-xl text-white text-sm font-medium"
             >
-              {copied ? (<><Check className="w-4 h-4 text-green-400" /> Link copied</>) : (<><Share2 className="w-4 h-4" /> Share this calculation</>)}
+              {copied ? (<><Check className="w-4 h-4 text-green-400" aria-hidden="true" /> Link copied</>) : (<><Share2 className="w-4 h-4" aria-hidden="true" /> Share this calculation</>)}
             </button>
 
             <p className="text-[11px] text-gray-500 mt-4">
@@ -325,6 +327,26 @@ export default function DatabricksCostPage() {
         <Suspense fallback={null}>
           <AdPlacement />
         </Suspense>
+
+        <ValidateWithSqlBlock
+          title="Validate your DBU consumption against real billing data"
+          description="Databricks system.billing.usage exposes per-workspace DBU consumption by SKU. Run this in your Databricks SQL editor to see the last 30 days of actual DBU burn and compare against the estimate above."
+          sql={`-- Databricks: last-30-day DBU consumption by workspace + SKU
+SELECT
+  usage_date,
+  workspace_id,
+  sku_name,
+  ROUND(SUM(usage_quantity), 2) AS dbus_consumed,
+  ROUND(SUM(usage_quantity) * list_price.pricing.default, 2) AS list_cost_usd
+FROM system.billing.usage
+LEFT JOIN system.billing.list_prices list_price
+  USING (cloud, sku_name, usage_start_time, usage_end_time)
+WHERE usage_date >= DATE_SUB(CURRENT_DATE(), 30)
+  AND billing_origin_product = 'JOBS'  -- or ALL_PURPOSE, SQL, etc.
+GROUP BY 1, 2, 3, list_price.pricing.default
+ORDER BY 1 DESC, dbus_consumed DESC;`}
+          note="Requires Unity Catalog + access to system.billing schema. Add VM cost (30-60% on-demand, 10-25% Spot) to DBU cost for all-in totals."
+        />
 
         <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
           <h2 className="text-2xl font-semibold text-white mb-4">How to use this calculator</h2>
