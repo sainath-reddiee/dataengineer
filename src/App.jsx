@@ -21,6 +21,7 @@ const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
 const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
 const DisclaimerPage = lazy(() => import('./pages/DisclaimerPage'));
+const ContributePage = lazy(() => import('./pages/ContributePage'));
 const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 const TagsArchivePage = lazy(() => import('./pages/TagsArchivePage'));
 const Certification = lazy(() => import('./pages/Certification'));
@@ -374,6 +375,11 @@ function App() {
           <Route path="disclaimer" element={
             <Suspense fallback={<LoadingFallback text="Loading Disclaimer..." />}>
               <DisclaimerPage />
+            </Suspense>
+          } />
+          <Route path="contribute" element={
+            <Suspense fallback={<LoadingFallback text="Loading..." />}>
+              <ContributePage />
             </Suspense>
           } />
           <Route path="newsletter" element={

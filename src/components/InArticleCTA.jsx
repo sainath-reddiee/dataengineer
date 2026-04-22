@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, ArrowRight, Layers } from 'lucide-react';
+import { BookOpen, ArrowRight, Layers, PenLine } from 'lucide-react';
 
 const links = [
   {
@@ -21,12 +21,18 @@ const links = [
     title: 'All Tutorials',
     desc: 'Browse the full article archive',
   },
+  {
+    to: '/contribute',
+    icon: PenLine,
+    title: 'Write for Us',
+    desc: 'Submit a guest post',
+  },
 ];
 
 const InArticleCTA = () => (
   <nav aria-label="Explore more content" className="my-10 rounded-xl border border-white/10 bg-white/5 p-5 sm:p-6">
     <h2 className="mb-4 text-lg font-bold text-white">Keep Exploring</h2>
-    <div className="grid gap-3 sm:grid-cols-3">
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
       {links.map(({ to, icon: Icon, title, desc }) => (
         <Link
           key={to}

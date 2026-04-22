@@ -426,6 +426,43 @@ const ESSENTIAL_PAGES = [
     `
   },
   {
+    path: '/contribute',
+    title: 'Write for Us - Contribute a Guest Post | DataEngineer Hub',
+    description: 'Share your data engineering expertise with our community. Submit a guest post on Snowflake, dbt, Airflow, cloud platforms, and more. Get published with an author bio and backlink.',
+    content: `
+      <h1>Write for Us</h1>
+      <p>Share your data engineering knowledge with thousands of professionals. We publish practical tutorials, architecture guides, and tool deep-dives on topics like Snowflake, dbt, Apache Airflow, Spark, AWS, Azure, GCP, and more.</p>
+
+      <h2>Why Contribute?</h2>
+      <ul>
+        <li><strong>Author Bio &amp; Backlink:</strong> Get a dedicated author section with your bio, photo, and a do-follow link back to your site or profile.</li>
+        <li><strong>Social Promotion:</strong> Your article will be shared across our social channels reaching thousands of data engineering professionals.</li>
+        <li><strong>Community Recognition:</strong> Join a growing community of contributors and establish yourself as a thought leader in data engineering.</li>
+      </ul>
+
+      <h2>Submission Guidelines</h2>
+      <ul>
+        <li>1,000+ words of original, unpublished content</li>
+        <li>Code samples, diagrams, or screenshots encouraged</li>
+        <li>Practical tutorials, how-tos, or architecture deep-dives preferred</li>
+      </ul>
+
+      <h2>Topics We Cover</h2>
+      <p>Snowflake, dbt, Apache Airflow, Apache Spark, AWS / Azure / GCP, Data Modeling, ETL/ELT Pipelines, Data Quality, Data Governance, Streaming (Kafka, Flink), Python for Data Engineering, SQL Optimization.</p>
+
+      <h2>How It Works</h2>
+      <ol>
+        <li>We review your proposal within 3-5 business days</li>
+        <li>If approved, you write the full article</li>
+        <li>We edit collaboratively for quality and SEO</li>
+        <li>Article goes live with your author bio and backlinks</li>
+      </ol>
+
+      <h2>Submit Your Proposal</h2>
+      <p>Ready to contribute? Email us at <strong>sainath@dataengineerhub.blog</strong> with your proposed topic, a brief outline, and a link to any previous writing samples.</p>
+    `
+  },
+  {
     path: '/certification',
     title: 'Snowflake Certification Prep 2026 - Free SnowPro Core, Advanced & Gen AI Practice',
     description: 'Free Snowflake certification prep for SnowPro Core (COF-C02), SnowPro Advanced: Data Engineer, Architect, and SnowPro Specialty: Gen AI. Study plan, exam breakdown, and interactive practice questions.',
