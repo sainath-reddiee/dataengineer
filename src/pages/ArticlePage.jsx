@@ -30,7 +30,7 @@ import useCopyCodeButtons from '@/hooks/useCopyCodeButtons';
 import { injectInternalLinks } from '@/lib/pseo/linkingEngine';
 import { getRelatedTools } from '@/data/articleToolMap';
 import { getRecommendedCourses, getPlatformColor } from '@/data/courseRecommendations';
-import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap } from 'lucide-react';
+import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap, Megaphone } from 'lucide-react';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
@@ -222,7 +222,7 @@ const RecommendedCourses = ({ post }) => {
 
   const handleClick = (course) => {
     trackEvent({
-      action: 'click_course',
+      action: course.isSponsored ? 'click_sponsored_course' : 'click_course',
       category: 'monetization',
       label: course.title,
       value: course.isFree ? 0 : 1,
@@ -244,13 +244,20 @@ const RecommendedCourses = ({ post }) => {
               target="_blank"
               rel="noopener sponsored"
               onClick={() => handleClick(course)}
-              className="group block rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 backdrop-blur-sm transition-all duration-200 hover:border-blue-400/50 hover:bg-slate-800/60 hover:-translate-y-1"
+              className={`group block rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 ${course.isSponsored ? 'hover:border-amber-500/40 hover:bg-slate-800/60 ring-1 ring-amber-500/10' : 'hover:border-blue-400/50 hover:bg-slate-800/60'}`}
             >
               <div className="flex items-center justify-between mb-3">
-                <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${colors.bg} ${colors.text} border ${colors.border}`}>
-                  <GraduationCap className="h-3 w-3" />
-                  {course.platform}
-                </span>
+                {course.isSponsored ? (
+                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-amber-900/50 text-amber-300 border border-amber-500/30">
+                    <Megaphone className="h-3 w-3" />
+                    Sponsored
+                  </span>
+                ) : (
+                  <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${colors.bg} ${colors.text} border ${colors.border}`}>
+                    <GraduationCap className="h-3 w-3" />
+                    {course.platform}
+                  </span>
+                )}
                 <div className="flex items-center gap-1.5">
                   {course.isFree && (
                     <span className="rounded-full bg-green-900/50 px-2 py-0.5 text-xs font-semibold text-green-300 border border-green-500/30">

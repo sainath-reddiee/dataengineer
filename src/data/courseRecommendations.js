@@ -160,6 +160,15 @@ export function getPlatformColor(platform) {
   return PLATFORM_COLORS[platform] || DEFAULT_PLATFORM_COLOR;
 }
 
+// ── Sponsored slot (set to null to disable) ─────────────────
+// The sponsored course is pinned as the first card in the grid
+// when its targetKeys match the current article's category/tags.
+export const SPONSORED_SLOT = {
+  ...COURSES.snowproGenAI,
+  isSponsored: true,
+  targetKeys: ['snowflake', 'cortex', 'ai', 'data-warehousing', 'data-engineering', 'iceberg'],
+};
+
 // ── Category / tag → course mapping ─────────────────────────
 const COURSE_MAP = {
   snowflake: [COURSES.snowproCore, COURSES.snowproGenAI, COURSES.snowflakeZeroToHero],
@@ -203,6 +212,17 @@ export function getRecommendedCourses(post = {}, limit = 3) {
 
   const result = [];
   const seen = new Set();
+
+  // Prepend sponsored slot when its targeting keys overlap the article
+  if (SPONSORED_SLOT) {
+    const sponsorMatch = SPONSORED_SLOT.targetKeys.some((tk) => keys.has(tk));
+    if (sponsorMatch) {
+      result.push(SPONSORED_SLOT);
+      seen.add(SPONSORED_SLOT.id);
+    }
+  }
+
+  const organicLimit = limit - result.length;
 
   for (const key of keys) {
     const courses = COURSE_MAP[key];
