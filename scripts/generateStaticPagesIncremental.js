@@ -27,6 +27,40 @@ if (!ADSENSE_PUBLISHER_ID || !ADSENSE_PUBLISHER_ID.startsWith('ca-pub-')) {
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
 const WORDPRESS_BASE_URL = 'https://app.dataengineerhub.blog';
 
+// ============================================================================
+// 🔒 GOOGLE CONSENT MODE v2 — single source of truth
+// Emitted in the <head> of every static page. EU/UK/EEA region defaults to
+// denied (GDPR); rest-of-world (incl. US where AdSense crawler operates)
+// defaults to granted so Googlebot-AdSense can verify ad code without a banner.
+// Mirrors index.html and CookieConsent.jsx — keep them in sync.
+// ============================================================================
+const CONSENT_MODE_V2_HTML = `    <!-- Google Consent Mode v2: region-gated. EU denied; rest-of-world (incl. AdSense crawler) granted. -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied',
+        'functionality_storage': 'denied',
+        'personalization_storage': 'denied',
+        'security_storage': 'granted',
+        'wait_for_update': 500,
+        'region': ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','GB','IS','LI','NO','CH']
+      });
+      gtag('consent', 'default', {
+        'ad_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted',
+        'analytics_storage': 'granted',
+        'functionality_storage': 'granted',
+        'personalization_storage': 'granted',
+        'security_storage': 'granted',
+        'wait_for_update': 500
+      });
+    </script>`;
+
 // SEO overrides for CTR-optimized titles and descriptions
 import seoOverrides, { getSEOOverride } from '../src/data/seoOverrides.js';
 
@@ -1976,25 +2010,7 @@ ${categoryNames.length > 0 ? `    <meta property="article:section" content="${es
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
     <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">
-    <!-- Google Consent Mode v2: region-gated. EU denied; rest-of-world (incl. AdSense crawler) granted. -->
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('consent', 'default', {
-        'ad_storage': 'denied',
-        'ad_user_data': 'denied',
-        'ad_personalization': 'denied',
-        'analytics_storage': 'denied',
-        'wait_for_update': 500,
-        'region': ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','GB','IS','LI','NO','CH']
-      });
-      gtag('consent', 'default', {
-        'ad_storage': 'granted',
-        'ad_user_data': 'granted',
-        'ad_personalization': 'granted',
-        'analytics_storage': 'granted'
-      });
-    </script>
+${CONSENT_MODE_V2_HTML}
     ${articleRobotsDirective.startsWith('noindex') ? '<!-- AdSense loader omitted on noindex article -->' : `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}"
             crossorigin="anonymous"></script>`}
     <link rel="icon" type="image/png" href="/logo.png" />
@@ -2834,25 +2850,7 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
     <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">
-    <!-- Google Consent Mode v2: region-gated. EU denied; rest-of-world (incl. AdSense crawler) granted. -->
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('consent', 'default', {
-        'ad_storage': 'denied',
-        'ad_user_data': 'denied',
-        'ad_personalization': 'denied',
-        'analytics_storage': 'denied',
-        'wait_for_update': 500,
-        'region': ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','GB','IS','LI','NO','CH']
-      });
-      gtag('consent', 'default', {
-        'ad_storage': 'granted',
-        'ad_user_data': 'granted',
-        'ad_personalization': 'granted',
-        'analytics_storage': 'granted'
-      });
-    </script>
+${CONSENT_MODE_V2_HTML}
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}"
             crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="/logo.png" />
@@ -3050,25 +3048,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
-  html += '    <!-- Google Consent Mode v2: region-gated. EU denied; rest-of-world (incl. AdSense crawler) granted. -->\n';
-  html += '    <script>\n';
-  html += '      window.dataLayer = window.dataLayer || [];\n';
-  html += '      function gtag(){dataLayer.push(arguments);}\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "denied",\n';
-  html += '        "ad_user_data": "denied",\n';
-  html += '        "ad_personalization": "denied",\n';
-  html += '        "analytics_storage": "denied",\n';
-  html += '        "wait_for_update": 500,\n';
-  html += '        "region": ["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","GB","IS","LI","NO","CH"]\n';
-  html += '      });\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "granted",\n';
-  html += '        "ad_user_data": "granted",\n';
-  html += '        "ad_personalization": "granted",\n';
-  html += '        "analytics_storage": "granted"\n';
-  html += '      });\n';
-  html += '    </script>\n';
+  html += CONSENT_MODE_V2_HTML + '\n';
   html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
   html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
@@ -3360,25 +3340,7 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
-  html += '    <!-- Google Consent Mode v2: region-gated. EU denied; rest-of-world (incl. AdSense crawler) granted. -->\n';
-  html += '    <script>\n';
-  html += '      window.dataLayer = window.dataLayer || [];\n';
-  html += '      function gtag(){dataLayer.push(arguments);}\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "denied",\n';
-  html += '        "ad_user_data": "denied",\n';
-  html += '        "ad_personalization": "denied",\n';
-  html += '        "analytics_storage": "denied",\n';
-  html += '        "wait_for_update": 500,\n';
-  html += '        "region": ["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","GB","IS","LI","NO","CH"]\n';
-  html += '      });\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "granted",\n';
-  html += '        "ad_user_data": "granted",\n';
-  html += '        "ad_personalization": "granted",\n';
-  html += '        "analytics_storage": "granted"\n';
-  html += '      });\n';
-  html += '    </script>\n';
+  html += CONSENT_MODE_V2_HTML + '\n';
   html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
   html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
@@ -3680,25 +3642,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
-  html += '    <!-- Google Consent Mode v2: region-gated. EU denied; rest-of-world (incl. AdSense crawler) granted. -->\n';
-  html += '    <script>\n';
-  html += '      window.dataLayer = window.dataLayer || [];\n';
-  html += '      function gtag(){dataLayer.push(arguments);}\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "denied",\n';
-  html += '        "ad_user_data": "denied",\n';
-  html += '        "ad_personalization": "denied",\n';
-  html += '        "analytics_storage": "denied",\n';
-  html += '        "wait_for_update": 500,\n';
-  html += '        "region": ["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","GB","IS","LI","NO","CH"]\n';
-  html += '      });\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "granted",\n';
-  html += '        "ad_user_data": "granted",\n';
-  html += '        "ad_personalization": "granted",\n';
-  html += '        "analytics_storage": "granted"\n';
-  html += '      });\n';
-  html += '    </script>\n';
+  html += CONSENT_MODE_V2_HTML + '\n';
   html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
   html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
@@ -4001,25 +3945,7 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
-  html += '    <!-- Google Consent Mode v2: region-gated. EU denied; rest-of-world (incl. AdSense crawler) granted. -->\n';
-  html += '    <script>\n';
-  html += '      window.dataLayer = window.dataLayer || [];\n';
-  html += '      function gtag(){dataLayer.push(arguments);}\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "denied",\n';
-  html += '        "ad_user_data": "denied",\n';
-  html += '        "ad_personalization": "denied",\n';
-  html += '        "analytics_storage": "denied",\n';
-  html += '        "wait_for_update": 500,\n';
-  html += '        "region": ["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","GB","IS","LI","NO","CH"]\n';
-  html += '      });\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "granted",\n';
-  html += '        "ad_user_data": "granted",\n';
-  html += '        "ad_personalization": "granted",\n';
-  html += '        "analytics_storage": "granted"\n';
-  html += '      });\n';
-  html += '    </script>\n';
+  html += CONSENT_MODE_V2_HTML + '\n';
   html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
   html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
@@ -4339,25 +4265,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
-  html += '    <!-- Google Consent Mode v2: region-gated. EU denied; rest-of-world (incl. AdSense crawler) granted. -->\n';
-  html += '    <script>\n';
-  html += '      window.dataLayer = window.dataLayer || [];\n';
-  html += '      function gtag(){dataLayer.push(arguments);}\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "denied",\n';
-  html += '        "ad_user_data": "denied",\n';
-  html += '        "ad_personalization": "denied",\n';
-  html += '        "analytics_storage": "denied",\n';
-  html += '        "wait_for_update": 500,\n';
-  html += '        "region": ["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","GB","IS","LI","NO","CH"]\n';
-  html += '      });\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "granted",\n';
-  html += '        "ad_user_data": "granted",\n';
-  html += '        "ad_personalization": "granted",\n';
-  html += '        "analytics_storage": "granted"\n';
-  html += '      });\n';
-  html += '    </script>\n';
+  html += CONSENT_MODE_V2_HTML + '\n';
   html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
   html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
@@ -4582,25 +4490,7 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
-  html += '    <!-- Google Consent Mode v2: region-gated. EU denied; rest-of-world (incl. AdSense crawler) granted. -->\n';
-  html += '    <script>\n';
-  html += '      window.dataLayer = window.dataLayer || [];\n';
-  html += '      function gtag(){dataLayer.push(arguments);}\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "denied",\n';
-  html += '        "ad_user_data": "denied",\n';
-  html += '        "ad_personalization": "denied",\n';
-  html += '        "analytics_storage": "denied",\n';
-  html += '        "wait_for_update": 500,\n';
-  html += '        "region": ["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","GB","IS","LI","NO","CH"]\n';
-  html += '      });\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "granted",\n';
-  html += '        "ad_user_data": "granted",\n';
-  html += '        "ad_personalization": "granted",\n';
-  html += '        "analytics_storage": "granted"\n';
-  html += '      });\n';
-  html += '    </script>\n';
+  html += CONSENT_MODE_V2_HTML + '\n';
   html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
   html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
@@ -4882,25 +4772,7 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
-  html += '    <!-- Google Consent Mode v2: region-gated. EU denied; rest-of-world (incl. AdSense crawler) granted. -->\n';
-  html += '    <script>\n';
-  html += '      window.dataLayer = window.dataLayer || [];\n';
-  html += '      function gtag(){dataLayer.push(arguments);}\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "denied",\n';
-  html += '        "ad_user_data": "denied",\n';
-  html += '        "ad_personalization": "denied",\n';
-  html += '        "analytics_storage": "denied",\n';
-  html += '        "wait_for_update": 500,\n';
-  html += '        "region": ["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","GB","IS","LI","NO","CH"]\n';
-  html += '      });\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "granted",\n';
-  html += '        "ad_user_data": "granted",\n';
-  html += '        "ad_personalization": "granted",\n';
-  html += '        "analytics_storage": "granted"\n';
-  html += '      });\n';
-  html += '    </script>\n';
+  html += CONSENT_MODE_V2_HTML + '\n';
   html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
   html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
@@ -5080,25 +4952,7 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
-  html += '    <!-- Google Consent Mode v2: region-gated. EU denied; rest-of-world (incl. AdSense crawler) granted. -->\n';
-  html += '    <script>\n';
-  html += '      window.dataLayer = window.dataLayer || [];\n';
-  html += '      function gtag(){dataLayer.push(arguments);}\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "denied",\n';
-  html += '        "ad_user_data": "denied",\n';
-  html += '        "ad_personalization": "denied",\n';
-  html += '        "analytics_storage": "denied",\n';
-  html += '        "wait_for_update": 500,\n';
-  html += '        "region": ["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","GB","IS","LI","NO","CH"]\n';
-  html += '      });\n';
-  html += '      gtag("consent", "default", {\n';
-  html += '        "ad_storage": "granted",\n';
-  html += '        "ad_user_data": "granted",\n';
-  html += '        "ad_personalization": "granted",\n';
-  html += '        "analytics_storage": "granted"\n';
-  html += '      });\n';
-  html += '    </script>\n';
+  html += CONSENT_MODE_V2_HTML + '\n';
   // AdSense loader intentionally omitted: tag pages are noindex.
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
@@ -5248,25 +5102,7 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
     <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">
-    <!-- Google Consent Mode v2: region-gated. EU denied; rest-of-world (incl. AdSense crawler) granted. -->
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('consent', 'default', {
-        'ad_storage': 'denied',
-        'ad_user_data': 'denied',
-        'ad_personalization': 'denied',
-        'analytics_storage': 'denied',
-        'wait_for_update': 500,
-        'region': ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','GB','IS','LI','NO','CH']
-      });
-      gtag('consent', 'default', {
-        'ad_storage': 'granted',
-        'ad_user_data': 'granted',
-        'ad_personalization': 'granted',
-        'analytics_storage': 'granted'
-      });
-    </script>
+${CONSENT_MODE_V2_HTML}
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}"
             crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="/logo.png" />

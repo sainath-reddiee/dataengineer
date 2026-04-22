@@ -19,8 +19,10 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import { cheatsheets } from '@/data/cheatsheetData';
 import { SITE_CONFIG } from '@/lib/seoConfig';
+import { generateBreadcrumbs } from '@/lib/seoConfig';
 
 const INTERVIEW_ARTICLES = [
   {
@@ -270,6 +272,11 @@ export default function InterviewPrepHubPage() {
 
       <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-950">
         <div className="max-w-5xl mx-auto px-4 py-8">
+          <Breadcrumbs
+            breadcrumbs={generateBreadcrumbs('/interview-prep', 'Interview Prep')}
+            className="mb-6 text-gray-400"
+          />
+
           {/* Hero */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}

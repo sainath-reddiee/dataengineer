@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Award, BookOpen, Target, Calendar, CheckCircle2, AlertTriangle, ExternalLink } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import Breadcrumbs from '@/components/SEO/Breadcrumbs';
+import { generateBreadcrumbs } from '@/lib/seoConfig';
 
 const FAQ = [
   {
@@ -107,6 +109,12 @@ const Certification = () => {
       </Helmet>
 
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-10 text-gray-200">
+        {/* Breadcrumbs */}
+        <Breadcrumbs
+          breadcrumbs={generateBreadcrumbs('/certification', 'Snowflake Certification Prep')}
+          className="text-gray-400"
+        />
+
         {/* Hero */}
         <header>
           <div className="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-medium text-blue-300 bg-blue-900/30 border border-blue-700/50 rounded-full">
