@@ -1,10 +1,10 @@
 // src/pages/BigQueryCostPage.jsx
 // BigQuery cost calculator: on-demand (per TB scanned) + flat-rate (slot-hours).
 // Targets: bigquery cost calculator, bigquery pricing, bigquery slot cost.
-import React, { useMemo, useState, Suspense } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useMemo, useState, useEffect, useCallback, Suspense } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Calculator, Cloud, BookOpen, Wand2, Zap } from 'lucide-react';
+import { Calculator, Cloud, BookOpen, Wand2, Share2, Check } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
 
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
@@ -48,15 +48,44 @@ const FAQ = [
 ];
 
 export default function BigQueryCostPage() {
-  const [tbScanned, setTbScanned] = useState(10);
-  const [storageGb, setStorageGb] = useState(5000);
-  const [longTermPct, setLongTermPct] = useState(30);
-  const [mode, setMode] = useState('on-demand'); // on-demand | editions
-  const [edition, setEdition] = useState('standard');
-  const [slots, setSlots] = useState(100);
-  const [hoursPerDay, setHoursPerDay] = useState(8);
-  const [daysPerMonth, setDaysPerMonth] = useState(22);
-  const [streamingGb, setStreamingGb] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [tbScanned, setTbScanned] = useState(() => Number(searchParams.get('tb')) || 10);
+  const [storageGb, setStorageGb] = useState(() => Number(searchParams.get('sg')) || 5000);
+  const [longTermPct, setLongTermPct] = useState(() => Number(searchParams.get('lt')) || 30);
+  const [mode, setMode] = useState(() => searchParams.get('m') || 'on-demand'); // on-demand | editions
+  const [edition, setEdition] = useState(() => searchParams.get('ed') || 'standard');
+  const [slots, setSlots] = useState(() => Number(searchParams.get('sl')) || 100);
+  const [hoursPerDay, setHoursPerDay] = useState(() => Number(searchParams.get('h')) || 8);
+  const [daysPerMonth, setDaysPerMonth] = useState(() => Number(searchParams.get('d')) || 22);
+  const [streamingGb, setStreamingGb] = useState(() => Number(searchParams.get('st')) || 0);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setSearchParams({
+        tb: String(tbScanned),
+        sg: String(storageGb),
+        lt: String(longTermPct),
+        m: mode,
+        ed: edition,
+        sl: String(slots),
+        h: String(hoursPerDay),
+        d: String(daysPerMonth),
+        st: String(streamingGb),
+      }, { replace: true });
+    }, 250);
+    return () => clearTimeout(t);
+  }, [tbScanned, storageGb, longTermPct, mode, edition, slots, hoursPerDay, daysPerMonth, streamingGb, setSearchParams]);
+
+  const handleShare = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // ignore
+    }
+  }, []);
 
   const calc = useMemo(() => {
     const billableTb = Math.max(0, tbScanned - 1);
@@ -240,6 +269,13 @@ export default function BigQueryCostPage() {
                 ? `Billable scan: ${calc.billableTb.toFixed(2)} TB at $6.25/TB`
                 : `${slots} slots x ${hoursPerDay}h x ${daysPerMonth}d x $${calc.slotRate.toFixed(2)}/slot-hr`}
             </div>
+            <button
+              type="button"
+              onClick={handleShare}
+              className="mt-2 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-700/50 hover:bg-slate-700 border border-slate-600 rounded-xl text-white text-sm font-medium"
+            >
+              {copied ? (<><Check className="w-4 h-4 text-green-400" aria-hidden="true" /> Link copied</>) : (<><Share2 className="w-4 h-4" aria-hidden="true" /> Share this estimate</>)}
+            </button>
           </div>
         </div>
 

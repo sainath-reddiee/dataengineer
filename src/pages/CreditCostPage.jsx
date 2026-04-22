@@ -230,20 +230,22 @@ export default function CreditCostPage() {
               <thead>
                 <tr className="text-left text-gray-400 border-b border-slate-700">
                   <th className="py-2 pr-4">Region</th>
-                  <th className="py-2 pr-4">Standard</th>
-                  <th className="py-2 pr-4">Enterprise (1.5x)</th>
-                  <th className="py-2 pr-4">Business Critical (2.0x)</th>
-                  <th className="py-2">VPS (2.5x)</th>
+                  {EDITIONS.map(e => (
+                    <th key={e.id} className="py-2 pr-4">
+                      {e.label}{e.multiplier !== 1 ? ` (${e.multiplier}x)` : ''}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
                 {REGIONS.map(r => (
                   <tr key={r.id} className="border-b border-slate-800">
                     <td className="py-2 pr-4 text-gray-300">{r.label}</td>
-                    <td className="py-2 pr-4 text-white font-mono">${r.creditPrice.toFixed(2)}</td>
-                    <td className="py-2 pr-4 text-white font-mono">${(r.creditPrice * 1.5).toFixed(2)}</td>
-                    <td className="py-2 pr-4 text-white font-mono">${(r.creditPrice * 2.0).toFixed(2)}</td>
-                    <td className="py-2 text-white font-mono">${(r.creditPrice * 2.5).toFixed(2)}</td>
+                    {EDITIONS.map(e => (
+                      <td key={e.id} className="py-2 pr-4 text-white font-mono">
+                        ${(r.creditPrice * e.multiplier).toFixed(2)}
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>

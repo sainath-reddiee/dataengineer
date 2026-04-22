@@ -17,7 +17,7 @@ const PLANS = [
     id: 'developer',
     label: 'Developer (Free)',
     pricePerSeat: 0,
-    includedJobsMinutes: 3000,
+    includedBuilds: 3000,
     overageRate: 0, // No paid overage on free tier — you get cut off.
     seatsCap: 1,
     features: 'Single developer, 3,000 successful model builds/month, basic IDE',
@@ -26,7 +26,7 @@ const PLANS = [
     id: 'team',
     label: 'Team',
     pricePerSeat: 100,
-    includedJobsMinutes: 15000,
+    includedBuilds: 15000,
     overageRate: 0.01,
     seatsCap: 8,
     features: 'Up to 8 developer seats, job scheduling, CI, semantic layer',
@@ -35,7 +35,7 @@ const PLANS = [
     id: 'enterprise',
     label: 'Enterprise',
     pricePerSeat: 125,
-    includedJobsMinutes: 50000,
+    includedBuilds: 50000,
     overageRate: 0.008,
     seatsCap: null,
     features: 'Unlimited seats, SSO, audit logs, multi-tenant, priority support',
@@ -99,7 +99,7 @@ export default function DbtCloudCostPage() {
     const plan = PLANS.find((p) => p.id === planId) || PLANS[1];
     const effectiveSeats = plan.seatsCap ? Math.min(plan.seatsCap, Math.max(1, seats)) : Math.max(1, seats);
     const seatCost = effectiveSeats * plan.pricePerSeat;
-    const overageBuilds = Math.max(0, buildsPerMonth - plan.includedJobsMinutes);
+    const overageBuilds = Math.max(0, buildsPerMonth - plan.includedBuilds);
     const overageCost = overageBuilds * plan.overageRate;
     const total = seatCost + overageCost;
     const perSeat = total / Math.max(1, effectiveSeats);
@@ -234,7 +234,7 @@ export default function DbtCloudCostPage() {
                 className="w-full bg-slate-700/50 border border-slate-600 rounded-xl text-white px-4 py-3 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Included: {result.plan.includedJobsMinutes.toLocaleString()}. Overage: ${result.plan.overageRate}/build.
+                Included: {result.plan.includedBuilds.toLocaleString()}. Overage: ${result.plan.overageRate}/build.
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {[3000, 10000, 25000, 50000, 100000].map((n) => (

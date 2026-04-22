@@ -41,6 +41,7 @@ export default function QueryCostEstimatorPage() {
   const [editionId, setEditionId] = useState(() => searchParams.get('e') || 'enterprise');
   const [regionId, setRegionId] = useState(() => searchParams.get('r') || 'aws-us-east');
   const [queriesPerDay, setQueriesPerDay] = useState(() => Number(searchParams.get('q')) || 100);
+  const [daysPerMonth, setDaysPerMonth] = useState(() => Number(searchParams.get('dm')) || 22);
   const [resumeFromCold, setResumeFromCold] = useState(() => searchParams.get('c') === '1');
   const [copied, setCopied] = useState(false);
 
@@ -52,11 +53,12 @@ export default function QueryCostEstimatorPage() {
         e: editionId,
         r: regionId,
         q: String(queriesPerDay),
+        dm: String(daysPerMonth),
         c: resumeFromCold ? '1' : '0',
       }, { replace: true });
     }, 250);
     return () => clearTimeout(t);
-  }, [bytesGB, sizeId, editionId, regionId, queriesPerDay, resumeFromCold, setSearchParams]);
+  }, [bytesGB, sizeId, editionId, regionId, queriesPerDay, daysPerMonth, resumeFromCold, setSearchParams]);
 
   const result = useMemo(() => {
     const ed = EDITIONS.find(e => e.id === editionId) || EDITIONS[1];
@@ -78,7 +80,7 @@ export default function QueryCostEstimatorPage() {
     const costPerQuery = creditsPerQuery * pricePerCredit;
 
     const dailyCost = costPerQuery * Math.max(0, queriesPerDay);
-    const monthlyCost = dailyCost * 30;
+    const monthlyCost = dailyCost * Math.max(0, daysPerMonth);
 
     return {
       edition: ed,
@@ -92,7 +94,7 @@ export default function QueryCostEstimatorPage() {
       dailyCost,
       monthlyCost,
     };
-  }, [bytesGB, sizeId, editionId, regionId, queriesPerDay, resumeFromCold]);
+  }, [bytesGB, sizeId, editionId, regionId, queriesPerDay, daysPerMonth, resumeFromCold]);
 
   const handleShare = useCallback(async () => {
     try {
@@ -237,6 +239,23 @@ export default function QueryCostEstimatorPage() {
                   />
                 </div>
                 <div>
+                  <label htmlFor="qce-days-per-month" className="flex items-center justify-between text-sm font-medium text-gray-300 mb-2">
+                    <span className="flex items-center gap-2"><Clock className="w-4 h-4 text-blue-400" /> Days per month</span>
+                    <span className="font-mono text-white">{daysPerMonth}</span>
+                  </label>
+                  <input
+                    id="qce-days-per-month"
+                    type="range"
+                    min="1"
+                    max="31"
+                    step="1"
+                    value={daysPerMonth}
+                    onChange={e => setDaysPerMonth(Number(e.target.value) || 0)}
+                    className="w-full accent-blue-500"
+                  />
+                  <div className="text-[11px] text-gray-500 mt-1">22 = business days · 30 = calendar days</div>
+                </div>
+                <div>
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
                     <Zap className="w-4 h-4 text-yellow-400" /> Resume from cold
                   </label>
@@ -277,7 +296,7 @@ export default function QueryCostEstimatorPage() {
               </div>
               <div className="mt-4 p-3 bg-slate-900/60 rounded-xl">
                 <div className="flex justify-between text-sm mb-1"><span className="text-gray-400">Daily ({queriesPerDay} queries)</span><span className="text-white font-mono">{formatUSD(result.dailyCost)}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-gray-400">Monthly (×30 days)</span><span className="text-white font-mono">{formatUSD(result.monthlyCost)}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-gray-400">Monthly (×{daysPerMonth} days)</span><span className="text-white font-mono">{formatUSD(result.monthlyCost)}</span></div>
               </div>
               <button
                 onClick={handleShare}
@@ -357,8 +376,8 @@ export default function QueryCostEstimatorPage() {
               <div className="text-blue-300 font-medium mb-1">Warehouse Sizing Estimator →</div>
               <div className="text-gray-400 text-sm">Pick the right warehouse size for your workload shape.</div>
             </Link>
-            <Link to="/articles/snowflake-query-optimization-2025" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">Snowflake query optimization in 2025 →</div>
+            <Link to="/articles/snowflake-query-optimization-guide-2026" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
+              <div className="text-blue-300 font-medium mb-1">Snowflake query optimization guide (2026) →</div>
               <div className="text-gray-400 text-sm">Partition pruning, clustering, and materialized views done right.</div>
             </Link>
             <Link to="/articles/snowflake-cost-optimization-techniques-2026" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">

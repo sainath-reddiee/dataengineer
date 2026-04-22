@@ -42,12 +42,19 @@ const QP_KEYS = {
   g: 'storageGB',
   cs: 'cloudServicesPct',
   t: 'storageTier',
+  sp: 'enableSnowpipe',
+  sf: 'snowpipeFilesPerDay',
+  cx: 'enableCortex',
+  ct: 'cortexTokensPerMonth',
+  ac: 'enableAutoClustering',
+  ak: 'autoClusteringCreditsPerDay',
 };
 
 function inputsToParams(inputs) {
   const params = {};
   for (const [k, v] of Object.entries(QP_KEYS)) {
-    params[k] = String(inputs[v]);
+    const val = inputs[v];
+    params[k] = typeof val === 'boolean' ? (val ? '1' : '0') : String(val);
   }
   return params;
 }
@@ -57,7 +64,9 @@ function paramsToInputs(searchParams) {
   for (const [k, v] of Object.entries(QP_KEYS)) {
     const raw = searchParams.get(k);
     if (raw === null) continue;
-    if (typeof DEFAULT_INPUTS[v] === 'number') {
+    if (typeof DEFAULT_INPUTS[v] === 'boolean') {
+      next[v] = raw === '1' || raw === 'true';
+    } else if (typeof DEFAULT_INPUTS[v] === 'number') {
       const n = Number(raw);
       if (!isNaN(n)) next[v] = n;
     } else {

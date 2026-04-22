@@ -12,11 +12,11 @@ import { EDITIONS, REGIONS, WAREHOUSE_SIZES, formatUSD } from '@/data/snowflakeP
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
 const WORKLOAD_TYPES = [
-  { id: 'dashboard', label: 'BI / Dashboards (fast, many concurrent)', baseBytesGB: 5, latencySLAsec: 5, concurrencyHeavy: true },
-  { id: 'adhoc', label: 'Ad-hoc analytics / exploration', baseBytesGB: 50, latencySLAsec: 30, concurrencyHeavy: false },
-  { id: 'etl', label: 'ETL / batch transformations', baseBytesGB: 500, latencySLAsec: 600, concurrencyHeavy: false },
-  { id: 'ml', label: 'ML feature engineering / training prep', baseBytesGB: 2000, latencySLAsec: 1800, concurrencyHeavy: false },
-  { id: 'dev', label: 'Dev / sandbox (small, cheap)', baseBytesGB: 1, latencySLAsec: 60, concurrencyHeavy: false },
+  { id: 'dashboard', label: 'BI / Dashboards (fast, many concurrent)', concurrencyHeavy: true },
+  { id: 'adhoc', label: 'Ad-hoc analytics / exploration', concurrencyHeavy: false },
+  { id: 'etl', label: 'ETL / batch transformations', concurrencyHeavy: false },
+  { id: 'ml', label: 'ML feature engineering / training prep', concurrencyHeavy: false },
+  { id: 'dev', label: 'Dev / sandbox (small, cheap)', concurrencyHeavy: false },
 ];
 
 const FAQ = [
