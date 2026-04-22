@@ -48,6 +48,7 @@ const CsvToSqlPage = lazy(() => import('./pages/CsvToSqlPage'));
 const DbtSchemaGeneratorPage = lazy(() => import('./pages/DbtSchemaGeneratorPage'));
 const UnixTimestampPage = lazy(() => import('./pages/UnixTimestampPage'));
 const BigQueryCostPage = lazy(() => import('./pages/BigQueryCostPage'));
+const WarehouseComparisonCalculatorPage = lazy(() => import('./pages/WarehouseComparisonCalculatorPage'));
 const CheatSheetCategoryPage = lazy(() => import('./pages/CheatSheetCategoryPage'));
 const InterviewPrepHubPage = lazy(() => import('./pages/InterviewPrepHubPage'));
 
@@ -313,6 +314,11 @@ function App() {
           <Route path="tools/bigquery-cost-calculator" element={
             <Suspense fallback={<LoadingFallback text="Loading BigQuery Cost Calculator..." />}>
               <BigQueryCostPage />
+            </Suspense>
+          } />
+          <Route path="tools/cloud-data-warehouse-cost-comparison" element={
+            <Suspense fallback={<LoadingFallback text="Loading Warehouse Comparison..." />}>
+              <WarehouseComparisonCalculatorPage />
             </Suspense>
           } />
           <Route path="cheatsheets/category/:categoryId" element={

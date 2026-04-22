@@ -996,6 +996,40 @@ const ESSENTIAL_PAGES = [
     `
   },
   {
+    path: '/tools/cloud-data-warehouse-cost-comparison',
+    title: 'Snowflake vs BigQuery vs Databricks Cost Calculator 2026',
+    description: 'Free cross-platform data warehouse cost comparison. Enter one workload profile and see monthly costs side-by-side across Snowflake, Google BigQuery, and Databricks with April 2026 list pricing.',
+    content: `
+      <h1>Cloud Data Warehouse Cost Comparison</h1>
+      <p><strong>Compare monthly cost across Snowflake, BigQuery, and Databricks with a single unified input.</strong> Enter TB scanned, compute hours, storage GB, and workload complexity — get three side-by-side estimates and see which warehouse is cheapest for your specific pattern. Ideal for pre-RFP sizing, migration budget framing, and answering the "should we switch?" question with numbers instead of vendor slides.</p>
+
+      <h2>How the three platforms charge differently</h2>
+      <ul>
+        <li><strong>Snowflake</strong> bills per-second of warehouse uptime, at a credit rate driven by edition (1.0x Standard / 1.5x Enterprise / 2.0x Business Critical / 2.5x VPS) and warehouse size (XS = 1 credit/hr, doubling each size). Cloud Services get a 10% free allowance on top of compute.</li>
+        <li><strong>Databricks</strong> bills per-DBU (Databricks Unit) consumed. A DBU rate varies by compute tier: SQL Pro, Jobs Compute, and Serverless have different $/DBU prices. Storage is passthrough to S3/ADLS.</li>
+        <li><strong>BigQuery</strong> has two billing models: on-demand ($6.25/TB scanned, first 1 TB/month free) and Editions ($0.04 Standard / $0.06 Enterprise / $0.10 Enterprise Plus per slot-hour). The cheaper of the two applies to your workload — this calculator auto-picks.</li>
+      </ul>
+
+      <h2>When each platform tends to win</h2>
+      <ul>
+        <li><strong>Snowflake wins</strong> on bursty workloads with strong auto-suspend discipline, and when you can get a 25-40% contract discount off list. Unique strengths: data sharing, Snowpark, zero-copy clones.</li>
+        <li><strong>BigQuery wins</strong> on truly intermittent workloads under 1-2 TB/month scanned (first-TB-free + no compute to idle) and on heavily partitioned/pruned queries.</li>
+        <li><strong>Databricks wins</strong> on ML and heavy ETL where you mix SQL and PySpark, especially with Photon-accelerated SQL Warehouses and Serverless DBU credits.</li>
+      </ul>
+
+      <h2>Assumptions behind the estimate</h2>
+      <p>This calculator uses published April 2026 list pricing and these normalized assumptions: Snowflake credit rate defaults to Enterprise ($3 avg), Databricks DBU rate defaults to SQL Pro list ($0.55), BigQuery auto-picks between on-demand and Enterprise Editions. Storage is priced at active-tier list (~$20-$23 per TB-month). Networking egress and long-term storage savings are NOT included. These are order-of-magnitude numbers for architecture decisions, not procurement quotes.</p>
+
+      <h2>Platform-specific deep dives</h2>
+      <p>After narrowing down, use the platform-specific calculators for a fuller picture:</p>
+      <ul>
+        <li><a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a> — edition × warehouse size × hours + serverless (Cortex, Snowpipe, Auto-Clustering).</li>
+        <li><a href="/tools/bigquery-cost-calculator">BigQuery Cost Calculator</a> — on-demand vs Editions break-even, active/long-term storage, streaming ingest.</li>
+        <li><a href="/tools/databricks-cost-calculator">Databricks Cost Calculator</a> — DBU rate by tier, instance types, cluster uptime, Photon.</li>
+      </ul>
+    `
+  },
+  {
     path: '/interview-prep',
     title: 'Data Engineer Interview Prep Hub 2026 - 14-Day Study Plan + 16 Cheat Sheets',
     description: 'Complete data engineer interview prep: 14-day structured study plan, 16 cheat sheets (SQL, Snowflake, Airflow, Python, System Design), mock questions, articles.',

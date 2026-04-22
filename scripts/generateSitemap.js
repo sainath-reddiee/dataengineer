@@ -39,6 +39,7 @@ const STATIC_PAGES = [
   { url: '/tools/dbt-schema-generator', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
   { url: '/tools/unix-timestamp-converter', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
   { url: '/tools/bigquery-cost-calculator', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
+  { url: '/tools/cloud-data-warehouse-cost-comparison', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
   { url: '/interview-prep', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
   { url: '/cheatsheets/category/sql', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
   { url: '/cheatsheets/category/orchestration', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
