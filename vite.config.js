@@ -46,12 +46,10 @@ export default defineConfig({
 
   build: {
     // Suppress modulepreload for chunks that depend on Node built-ins
-    // (avsc, duckdb, pdf-vendor). They are lazy-loaded and crash the
-    // browser when preloaded because stream/buffer/zlib stubs execute.
+    // (duckdb, pdf-vendor). They are lazy-loaded and should not execute eagerly.
     modulePreload: {
       resolveDependencies: (filename, deps) => {
         return deps.filter(dep =>
-          !dep.includes('avsc') &&
           !dep.includes('duckdb') &&
           !dep.includes('pdf-vendor')
         );
@@ -77,6 +75,12 @@ export default defineConfig({
       output: {
         manualChunks: (id) => {
           if (id.includes('node_modules')) {
+            // avsc depends on Node.js built-ins (stream, buffer, zlib) that
+            // crash the browser when executed eagerly. Return undefined so
+            // Rollup bundles it with the lazy-loaded FormatConverterPage.
+            if (id.includes('avsc')) {
+              return undefined;
+            }
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
               return 'react-vendor';
             }
@@ -104,9 +108,6 @@ export default defineConfig({
             }
             if (id.includes('@duckdb/duckdb-wasm')) {
               return 'duckdb';
-            }
-            if (id.includes('avsc')) {
-              return 'avsc';
             }
             return 'vendor';
           }
