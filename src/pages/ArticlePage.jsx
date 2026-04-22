@@ -26,6 +26,7 @@ import ShareButtons from '@/components/ShareButtons';
 import KeyTakeaways from '@/components/KeyTakeaways';
 import GiscusComments from '@/components/GiscusComments';
 import InArticleCTA from '@/components/InArticleCTA';
+import EmailDigestBanner from '@/components/EmailDigestBanner';
 import useCopyCodeButtons from '@/hooks/useCopyCodeButtons';
 import { injectInternalLinks } from '@/lib/pseo/linkingEngine';
 import { getRelatedTools } from '@/data/articleToolMap';
@@ -933,6 +934,8 @@ const ArticlePage = () => {
         </motion.article>
 
         <InArticleCTA />
+
+        <EmailDigestBanner />
 
         <RelatedTools post={safePost} />
 

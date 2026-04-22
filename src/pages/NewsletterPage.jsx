@@ -7,9 +7,9 @@ const NewsletterPage = () => {
   return (
     <>
       <MetaTags 
-        title="Newsletter - DataEngineer Hub"
-        description="Subscribe to the DataEngineer Hub newsletter for the latest in data engineering."
-        noindex={true}
+        title="Weekly Data Digest - Subscribe to DataEngineer Hub"
+        description="Subscribe to the DataEngineer Hub weekly digest. Get tutorials, tool deep-dives, and data engineering insights on Snowflake, dbt, Airflow, and the modern data stack delivered to your inbox."
+        keywords="data engineering newsletter, weekly digest, Snowflake tutorials, dbt guides, data engineering updates"
       />
       <div className="pt-4 pb-12">
         <motion.div
