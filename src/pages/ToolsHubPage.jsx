@@ -25,6 +25,8 @@ import {
   Cloud,
   Users,
   BookOpen,
+  Award,
+  ExternalLink,
 } from 'lucide-react';
 
 import { SITE_CONFIG } from '@/lib/seoConfig';
@@ -147,6 +149,17 @@ const TOOLS = [
       'Model Google BigQuery spend across on-demand ($6.25/TB scanned) and capacity Editions (Standard/Enterprise/Enterprise Plus slot-hours). Includes storage tiers, streaming ingest, and on-demand vs Editions break-even analysis.',
     primaryFor: 'BigQuery cost planning, on-demand vs Editions decisions, multi-cloud comparison',
   },
+  {
+    slug: 'snowflake-certification-practice',
+    title: 'Snowflake Certification Practice',
+    icon: Award,
+    tagline: 'Interactive SnowPro exam prep',
+    description:
+      'Practice for SnowPro Core, SnowPro Advanced: Data Engineer, and SnowPro Specialty (Gen AI, Architect) exams. Interactive question bank with real-world scenarios, instant feedback, and topic-wise readiness tracking to help you pass on the first attempt.',
+    primaryFor: 'SnowPro Core prep, Advanced Data Engineer certification, Specialty exam revision',
+    external: true,
+    url: 'https://dataengineerhub.blog/certification',
+  },
 ];
 
 const FAQS = [
@@ -198,7 +211,7 @@ export default function ToolsHubPage() {
       '@type': 'ListItem',
       position: idx + 1,
       name: tool.title,
-      url: `${SITE_CONFIG.url}/tools/${tool.slug}`,
+      url: tool.external ? tool.url : `${SITE_CONFIG.url}/tools/${tool.slug}`,
       description: tool.description,
     })),
   };
@@ -296,6 +309,38 @@ export default function ToolsHubPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {TOOLS.map((tool, idx) => {
               const Icon = tool.icon;
+              const cardInner = (
+                <div className="flex items-start gap-4">
+                  <div className="shrink-0 w-12 h-12 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
+                    <Icon className="w-6 h-6 text-blue-300" aria-hidden="true" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-xl font-semibold text-white group-hover:text-blue-400 transition-colors flex items-center gap-2">
+                      {tool.title}
+                      {tool.external && (
+                        <ExternalLink
+                          className="w-4 h-4 text-blue-300/70"
+                          aria-label="Opens in a new tab"
+                        />
+                      )}
+                    </h2>
+                    <p className="text-sm text-blue-300/80 mt-1">{tool.tagline}</p>
+                    <p className="text-gray-300 text-sm mt-3">{tool.description}</p>
+                    <p className="text-xs text-gray-400 mt-3">
+                      <span className="font-semibold text-gray-300">Best for:</span>{' '}
+                      {tool.primaryFor}
+                    </p>
+                    <div className="mt-4 inline-flex items-center gap-1 text-blue-400 text-sm font-medium group-hover:gap-2 transition-all">
+                      {tool.external ? 'Launch tool' : 'Open tool'}{' '}
+                      <ChevronRight className="w-4 h-4" aria-hidden="true" />
+                    </div>
+                  </div>
+                </div>
+              );
+
+              const cardClass =
+                'group block bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 rounded-2xl p-6 h-full transition-all duration-200';
+
               return (
                 <motion.div
                   key={tool.slug}
@@ -303,30 +348,20 @@ export default function ToolsHubPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: idx * 0.05 }}
                 >
-                  <Link
-                    to={`/tools/${tool.slug}`}
-                    className="group block bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 rounded-2xl p-6 h-full transition-all duration-200"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="shrink-0 w-12 h-12 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
-                        <Icon className="w-6 h-6 text-blue-300" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h2 className="text-xl font-semibold text-white group-hover:text-blue-400 transition-colors">
-                          {tool.title}
-                        </h2>
-                        <p className="text-sm text-blue-300/80 mt-1">{tool.tagline}</p>
-                        <p className="text-gray-300 text-sm mt-3">{tool.description}</p>
-                        <p className="text-xs text-gray-400 mt-3">
-                          <span className="font-semibold text-gray-300">Best for:</span>{' '}
-                          {tool.primaryFor}
-                        </p>
-                        <div className="mt-4 inline-flex items-center gap-1 text-blue-400 text-sm font-medium group-hover:gap-2 transition-all">
-                          Open tool <ChevronRight className="w-4 h-4" />
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
+                  {tool.external ? (
+                    <a
+                      href={tool.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cardClass}
+                    >
+                      {cardInner}
+                    </a>
+                  ) : (
+                    <Link to={`/tools/${tool.slug}`} className={cardClass}>
+                      {cardInner}
+                    </Link>
+                  )}
                 </motion.div>
               );
             })}

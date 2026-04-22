@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Info, Sparkles, Award, Search, BookOpen, GitCompareArrows, FileText, GraduationCap } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Info, Sparkles, Search, BookOpen, GitCompareArrows, FileText, GraduationCap } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
 
 // Helper component for the "Corner Burst" sparks animation
@@ -159,7 +159,6 @@ const Header = ({ topOffset = 0 }) => {
 
   const isHomeActive = currentPath === '/';
   const isAboutActive = currentPath.includes('/about');
-  const isCertificationActive = currentPath.includes('/certification');
   const isGlossaryActive = currentPath.startsWith('/glossary');
   const isCompareActive = currentPath.startsWith('/compare');
   const isCheatSheetsActive = currentPath.startsWith('/cheatsheet');
@@ -532,26 +531,6 @@ const Header = ({ topOffset = 0 }) => {
                 Tools
               </Link>
             </motion.div>
-            {/* ✅ NEW: Certification Tab */}
-            <motion.div whileHover={{ y: -2 }}>
-              <Link 
-                to="/certification" 
-                className={`whitespace-nowrap font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
-                  isCertificationActive 
-                    ? 'text-blue-400' 
-                    : 'text-gray-300 hover:text-blue-400'
-                }`}
-                style={isCertificationActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
-              >
-                <Award className="w-4 h-4 hidden 2xl:inline-block" />
-                Certification
-                {/* Optional: Glowing Dot to indicate it's New */}
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                </span>
-              </Link>
-            </motion.div>
             {/* About */}
             <motion.div whileHover={{ y: -2 }}>
               <Link 
@@ -679,11 +658,6 @@ const Header = ({ topOffset = 0 }) => {
                 <Link to="/tools" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
                   <Wrench className="w-5 h-5" />
                   Tools
-                </Link>
-                {/* ✅ NEW: Certification Tab (Mobile) */}
-                <Link to="/certification" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
-                  <Award className="w-5 h-5" />
-                  Certification
                 </Link>
                 <Link to="/about" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
                   <Info className="w-5 h-5" />
