@@ -1,18 +1,26 @@
-fix: improve questionAnswered quality, FAQ synthesis, and TOC encoding
+seo: close schema and social-card gaps on PSEO pages (Phase 1)
 
-- LLM sitemap: add 35 manual questionAnswered overrides for articles where
-  auto-generation produced nonsensical results (dangling prepositions,
-  "What is [title]?" on non-concept articles, double question marks)
-- LLM sitemap: improve extractQuestionAnswered() with dangling preposition
-  stripping, imperative verb handling, and ensureQuestion() helper
-- FAQ schema: skip structural headings (Step N, Part N, Prerequisites,
-  Additional Materials, etc.) that produce garbage synthesized questions
-- FAQ schema: improve synthesizeQuestion() with imperative verb patterns
-  and better grammar ("What are the X?" instead of "What are X?")
-- SSG: fix TOC double-encoding by decoding HTML entities from heading text
-  before escapeHtml() (fixes &amp;gt; appearing as literal text)
-- Regenerated llm-sitemap.json, FAQ schemas, and all 212 static pages
+Before this change, ~200+ programmatic SEO pages (Comparison, Glossary,
+CheatSheet + 3 hubs) bypassed the central MetaTags component and were
+shipping without og:image, twitter:image, BreadcrumbList JSON-LD, or
+FAQPage JSON-LD. Result: no social-card preview on LinkedIn/Twitter/
+Slack/Discord, no breadcrumb or FAQ rich snippets in Google SERPs.
 
-.... Generated with [Cortex Code](https://docs.snowflake.com/en/user-guide/cortex-code/cortex-code)
+Changes:
+- ComparisonPage: full OG/Twitter image suite, BreadcrumbList JSON-LD,
+  FAQPage JSON-LD when comparison.faqs present.
+- GlossaryPage: full OG/Twitter image suite, BreadcrumbList from
+  derivedData.breadcrumbs, FAQPage JSON-LD when term.faqs present.
+- CheatSheetPage: full OG/Twitter image suite; Article schema author
+  upgraded Organization -> Person with url + sameAs; added image
+  ImageObject, publisher.logo ImageObject, mainEntityOfPage WebPage
+  (required for Google rich results).
+- CheatSheetHubPage, ComparisonHubPage, GlossaryHubPage: full OG/Twitter
+  image suite (og:image width/height/alt, site_name, locale, twitter
+  site/creator). ComparisonHubPage + GlossaryHubPage now emit
+  BreadcrumbList JSON-LD.
+- seoConfig.getArticleSchema: optional wordCount parameter emitted only
+  when > 0.
 
-Co-Authored-By: Cortex Code <noreply@snowflake.com>
+Build verified (2043 modules, 0 errors). Spot-checked dist/compare/
+index.html contains og:image, twitter:image, breadcrumb schema.

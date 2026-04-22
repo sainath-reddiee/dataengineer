@@ -10,6 +10,7 @@ import searchIndex from '@/data/searchIndex.json';
 
 // SEO Factories
 import { generateComparisonHubMeta, generateComparisonCanonical } from '@/lib/pseo/metadataFactory';
+import { SITE_CONFIG } from '@/lib/seoConfig';
 
 export function ComparisonHubPage() {
     // Use searchIndex comparisons (has all 7 including pSEO additions)
@@ -25,6 +26,15 @@ export function ComparisonHubPage() {
     const meta = generateComparisonHubMeta();
     const canonical = generateComparisonCanonical();
 
+    const breadcrumbSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_CONFIG.url },
+            { '@type': 'ListItem', position: 2, name: 'Comparisons', item: canonical },
+        ],
+    };
+
     return (
         <>
             <Helmet>
@@ -32,9 +42,27 @@ export function ComparisonHubPage() {
                 <meta name="description" content={meta.description} />
                 <meta name="keywords" content={meta.keywords} />
                 <link rel="canonical" href={canonical} />
+
+                <meta property="og:type" content="website" />
                 <meta property="og:title" content={meta.title} />
                 <meta property="og:description" content={meta.description} />
-                <meta property="og:type" content="website" />
+                <meta property="og:url" content={canonical} />
+                <meta property="og:image" content={SITE_CONFIG.ogImage.url} />
+                <meta property="og:image:width" content={String(SITE_CONFIG.ogImage.width)} />
+                <meta property="og:image:height" content={String(SITE_CONFIG.ogImage.height)} />
+                <meta property="og:image:alt" content={meta.title} />
+                <meta property="og:site_name" content={SITE_CONFIG.name} />
+                <meta property="og:locale" content="en_US" />
+
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={meta.title} />
+                <meta name="twitter:description" content={meta.description} />
+                <meta name="twitter:image" content={SITE_CONFIG.ogImage.url} />
+                <meta name="twitter:image:alt" content={meta.title} />
+                <meta name="twitter:site" content={SITE_CONFIG.social.twitter} />
+                <meta name="twitter:creator" content={SITE_CONFIG.social.twitter} />
+
+                <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
             </Helmet>
 
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">

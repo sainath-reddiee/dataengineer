@@ -311,15 +311,32 @@ export default function CheatSheetPage() {
     url: canonicalUrl,
     dateModified: sheet.lastUpdated,
     datePublished: sheet.lastUpdated,
+    image: {
+      '@type': 'ImageObject',
+      url: SITE_CONFIG.ogImage.url,
+      width: SITE_CONFIG.ogImage.width,
+      height: SITE_CONFIG.ogImage.height,
+    },
     author: {
-      '@type': 'Organization',
-      name: SITE_CONFIG.name,
-      url: SITE_CONFIG.url,
+      '@type': 'Person',
+      name: SITE_CONFIG.author.name,
+      url: SITE_CONFIG.author.url,
+      sameAs: SITE_CONFIG.author.sameAs,
     },
     publisher: {
       '@type': 'Organization',
       name: SITE_CONFIG.name,
       url: SITE_CONFIG.url,
+      logo: {
+        '@type': 'ImageObject',
+        url: SITE_CONFIG.logo.url,
+        width: SITE_CONFIG.logo.width,
+        height: SITE_CONFIG.logo.height,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': canonicalUrl,
     },
   };
 
@@ -364,10 +381,20 @@ export default function CheatSheetPage() {
         <meta property="og:title" content={sheet.title} />
         <meta property="og:description" content={sheet.shortDescription} />
         <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content={SITE_CONFIG.ogImage.url} />
+        <meta property="og:image:width" content={String(SITE_CONFIG.ogImage.width)} />
+        <meta property="og:image:height" content={String(SITE_CONFIG.ogImage.height)} />
+        <meta property="og:image:alt" content={sheet.title} />
+        <meta property="og:site_name" content={SITE_CONFIG.name} />
+        <meta property="og:locale" content="en_US" />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={sheet.title} />
         <meta name="twitter:description" content={sheet.shortDescription} />
+        <meta name="twitter:image" content={SITE_CONFIG.ogImage.url} />
+        <meta name="twitter:image:alt" content={sheet.title} />
+        <meta name="twitter:site" content={SITE_CONFIG.social.twitter} />
+        <meta name="twitter:creator" content={SITE_CONFIG.social.twitter} />
 
         <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>

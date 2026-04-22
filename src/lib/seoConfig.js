@@ -186,6 +186,7 @@ export function getArticleSchema({
   category,
   tags = [],
   author = SITE_CONFIG.author.name,
+  wordCount,
 }) {
   return {
     '@context': 'https://schema.org',
@@ -228,6 +229,7 @@ export function getArticleSchema({
         ? tags.map(t => (typeof t === 'string' ? t : t.name)).filter(Boolean).join(', ')
         : tags,
     }),
+    ...(wordCount && Number(wordCount) > 0 && { wordCount: Number(wordCount) }),
     speakable: {
       '@type': 'SpeakableSpecification',
       cssSelector: ['.article-summary', '.key-takeaways', 'h1', 'h2', '.tldr'],

@@ -25,6 +25,7 @@ import { getAllGlossaryTerms } from '@/lib/pseo/glossaryLoader';
 
 // SEO Factories
 import { generateComparisonMeta, generateComparisonCanonical } from '@/lib/pseo/metadataFactory';
+import { SITE_CONFIG } from '@/lib/seoConfig';
 
 
 // Linking Engine
@@ -119,6 +120,29 @@ const ComparisonPage = () => {
 
     const { meta, canonical } = derivedData;
 
+    // Build BreadcrumbList + FAQPage JSON-LD (was previously missing — losing rich snippets)
+    const breadcrumbSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_CONFIG.url },
+            { '@type': 'ListItem', position: 2, name: 'Comparisons', item: `${SITE_CONFIG.url}/compare` },
+            { '@type': 'ListItem', position: 3, name: `${comparison.toolA} vs ${comparison.toolB}`, item: canonical },
+        ],
+    };
+
+    const faqSchema = Array.isArray(comparison.faqs) && comparison.faqs.length > 0 ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: comparison.faqs.map((f) => ({
+            '@type': 'Question',
+            name: f.question,
+            acceptedAnswer: { '@type': 'Answer', text: f.answer },
+        })),
+    } : null;
+
+    const ogImage = SITE_CONFIG.ogImage.url;
+
     return (
         <>
             <Helmet>
@@ -129,6 +153,23 @@ const ComparisonPage = () => {
                 <meta property="og:title" content={meta.title} />
                 <meta property="og:description" content={meta.description} />
                 <meta property="og:type" content="article" />
+                <meta property="og:url" content={canonical} />
+                <meta property="og:image" content={ogImage} />
+                <meta property="og:image:width" content={String(SITE_CONFIG.ogImage.width)} />
+                <meta property="og:image:height" content={String(SITE_CONFIG.ogImage.height)} />
+                <meta property="og:image:alt" content={`${comparison.toolA} vs ${comparison.toolB}`} />
+                <meta property="og:site_name" content={SITE_CONFIG.name} />
+                <meta property="og:locale" content="en_US" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={meta.title} />
+                <meta name="twitter:description" content={meta.description} />
+                <meta name="twitter:image" content={ogImage} />
+                <meta name="twitter:image:alt" content={`${comparison.toolA} vs ${comparison.toolB}`} />
+                <meta name="twitter:site" content={SITE_CONFIG.social.twitter} />
+                <meta name="twitter:creator" content={SITE_CONFIG.social.twitter} />
+
+                <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+                {faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}
             </Helmet>
 
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">

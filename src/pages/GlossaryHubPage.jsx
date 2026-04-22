@@ -78,6 +78,15 @@ export function GlossaryHubPage() {
     const meta = generateGlossaryHubMeta();
     const canonical = generateGlossaryCanonical();
 
+    const breadcrumbSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_CONFIG.url },
+            { '@type': 'ListItem', position: 2, name: 'Glossary', item: canonical },
+        ],
+    };
+
     return (
         <>
             <Helmet>
@@ -91,11 +100,23 @@ export function GlossaryHubPage() {
                 <meta property="og:title" content={meta.title} />
                 <meta property="og:description" content={meta.description} />
                 <meta property="og:url" content={canonical} />
+                <meta property="og:image" content={SITE_CONFIG.ogImage.url} />
+                <meta property="og:image:width" content={String(SITE_CONFIG.ogImage.width)} />
+                <meta property="og:image:height" content={String(SITE_CONFIG.ogImage.height)} />
+                <meta property="og:image:alt" content={meta.title} />
+                <meta property="og:site_name" content={SITE_CONFIG.name} />
+                <meta property="og:locale" content="en_US" />
 
                 {/* Twitter */}
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content={meta.title} />
                 <meta name="twitter:description" content={meta.description} />
+                <meta name="twitter:image" content={SITE_CONFIG.ogImage.url} />
+                <meta name="twitter:image:alt" content={meta.title} />
+                <meta name="twitter:site" content={SITE_CONFIG.social.twitter} />
+                <meta name="twitter:creator" content={SITE_CONFIG.social.twitter} />
+
+                <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
             </Helmet>
 
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
