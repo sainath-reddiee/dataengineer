@@ -1,7 +1,7 @@
 // src/pages/AllArticlesPage.jsx - COMPLETE FINAL VERSION WITH ACCESSIBILITY FIXES
 import React, { useState, useCallback, Suspense, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Search, SortAsc, SortDesc, Grid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -141,8 +141,23 @@ const AllArticlesPage = () => {
             <h1 className="text-3xl md:text-4xl font-black mb-2">
               All <span className="gradient-text">Articles</span>
             </h1>
-            <p className="text-base text-gray-300 mb-6 max-w-3xl mx-auto">
+            <p className="text-base text-gray-300 mb-3 max-w-3xl mx-auto">
               Explore our full library of content, from beginner tutorials to advanced deep dives into data engineering.
+            </p>
+            <p className="text-sm text-gray-400 mb-6 max-w-3xl mx-auto leading-relaxed">
+              Browse long-form guides on{' '}
+              <Link to="/category/snowflake" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">Snowflake</Link>,{' '}
+              <Link to="/category/dbt" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">dbt</Link>,{' '}
+              <Link to="/category/airflow" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">Apache Airflow</Link>,{' '}
+              <Link to="/category/aws" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">AWS</Link>,{' '}
+              <Link to="/category/python" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">Python</Link>, and{' '}
+              <Link to="/category/sql" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">SQL</Link>.
+              Looking for quick reference? Skim our{' '}
+              <Link to="/cheatsheets" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">cheat sheets</Link>,{' '}
+              compare tools side-by-side in the{' '}
+              <Link to="/comparisons" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">comparisons hub</Link>,{' '}
+              or look up terms in the{' '}
+              <Link to="/glossary" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">glossary</Link>.
             </p>
             
             {/* Search Bar */}

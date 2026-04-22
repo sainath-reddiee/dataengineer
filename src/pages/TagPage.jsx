@@ -30,6 +30,8 @@ const TagPage = () => {
 
       <div className="pt-4 pb-12">
         <div className="container mx-auto px-6">
+          <Breadcrumbs breadcrumbs={generateBreadcrumbs(`/tag/${tagSlug}`, `#${tagName}`)} />
+
           {/* Back Button */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}

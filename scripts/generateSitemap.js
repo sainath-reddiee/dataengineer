@@ -9,6 +9,22 @@ const __dirname = path.dirname(__filename);
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
 const SITE_URL = 'https://dataengineerhub.blog';
 
+// Derive a realistic changefreq from how old a lastmod date is. Google largely
+// ignores changefreq today, but a value that obviously contradicts lastmod
+// (e.g. "daily" on a page that hasn't changed in a year) is a small trust
+// signal against the sitemap. Mapping:
+//   <= 14 days:  weekly
+//   <= 90 days:  monthly
+//   <= 365 days: yearly
+//   > 365 days:  yearly
+function changefreqFromAge(lastmodDate) {
+  if (!(lastmodDate instanceof Date) || isNaN(lastmodDate)) return 'monthly';
+  const ageDays = (Date.now() - lastmodDate.getTime()) / (1000 * 60 * 60 * 24);
+  if (ageDays <= 14) return 'weekly';
+  if (ageDays <= 90) return 'monthly';
+  return 'yearly';
+}
+
 // Static pages with realistic lastmod dates (not "today")
 // Only include pages that:
 // 1. Have a real public route in App.jsx
@@ -283,13 +299,14 @@ function loadPSEOData() {
       try {
         const filePath = path.join(glossaryDir, file);
         const fileMod = fs.statSync(filePath).mtime.toISOString().split('T')[0];
+        const fileModFreq = changefreqFromAge(new Date(fileMod));
         const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         if (Array.isArray(data)) {
           data.forEach(item => {
             if (item.slug) {
               entries.push({
                 url: `${SITE_URL}/glossary/${item.slug}`,
-                changefreq: 'monthly',
+                changefreq: fileModFreq,
                 priority: 0.7,
                 lastmod: fileMod,
               });
@@ -310,13 +327,14 @@ function loadPSEOData() {
       try {
         const filePath = path.join(comparisonsDir, file);
         const fileMod = fs.statSync(filePath).mtime.toISOString().split('T')[0];
+        const fileModFreq = changefreqFromAge(new Date(fileMod));
         const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         if (Array.isArray(data)) {
           data.forEach(item => {
             if (item.slug) {
               entries.push({
                 url: `${SITE_URL}/compare/${item.slug}`,
-                changefreq: 'monthly',
+                changefreq: fileModFreq,
                 priority: 0.7,
                 lastmod: fileMod,
               });
@@ -406,10 +424,21 @@ async function generateSitemap() {
     // Add static pages with proper lastmod
     console.log('\n📝 Adding static pages...');
     STATIC_PAGES.forEach(page => {
+      const lastmodStr = page.lastmod === 'today' ? today : page.lastmod;
+      // Only override the hardcoded changefreq when it would obviously
+      // contradict the lastmod age (e.g. 'daily' on a page that hasn't been
+      // touched in a year). Keep the declared value if it's already realistic.
+      const parsedDate = new Date(lastmodStr);
+      const ageBased = changefreqFromAge(parsedDate);
+      const declaredOrder = { daily: 1, weekly: 2, monthly: 3, yearly: 4 };
+      const finalChangefreq =
+        (declaredOrder[page.changefreq] || 3) < (declaredOrder[ageBased] || 3)
+          ? ageBased
+          : page.changefreq;
       sitemapEntries.push({
         url: `${SITE_URL}${page.url}`,
-        lastmod: page.lastmod === 'today' ? today : page.lastmod,
-        changefreq: page.changefreq,
+        lastmod: lastmodStr,
+        changefreq: finalChangefreq,
         priority: page.priority,
       });
     });
@@ -439,7 +468,10 @@ async function generateSitemap() {
       const entry = {
         url: `${SITE_URL}/articles/${post.slug}`,
         lastmod: postDate,
-        changefreq: 'weekly',
+        // Derive realistic changefreq from the actual post mtime so stale
+        // articles do not advertise "weekly" updates. Freshly-published or
+        // recently-modified posts still land in the "weekly" bucket.
+        changefreq: changefreqFromAge(new Date(post.modified || post.date)),
         priority: getPostPriority(post),
         image: imageUrl,
         imageTitle: decodeHtmlEntities(post.title?.rendered) || post.slug.replace(/-/g, ' '),

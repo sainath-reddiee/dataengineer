@@ -5,13 +5,13 @@
   <url>
     <loc>https://dataengineerhub.blog/</loc>
     <lastmod>2026-04-22</lastmod>
-    <changefreq>daily</changefreq>
+    <changefreq>weekly</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles</loc>
     <lastmod>2026-04-22</lastmod>
-    <changefreq>daily</changefreq>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
@@ -287,7 +287,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-managed-iceberg-tables-complete-guide-2026</loc>
     <lastmod>2026-02-02</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/02/Designer_11zon.jpg</image:loc>
@@ -297,7 +297,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-parse-document-complete-guide-2026</loc>
     <lastmod>2026-04-07</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/Snowflake-ai_parse_document.jpg</image:loc>
@@ -307,7 +307,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-cost-comparison</loc>
     <lastmod>2026-01-21</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/Snowflake-cortex-cost-comparison.jpg</image:loc>
@@ -317,7 +317,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-streams-tasks-pipeline-guide</loc>
     <lastmod>2026-04-07</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/Designer_11zon.jpg</image:loc>
@@ -337,7 +337,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cost-optimization-techniques-2026</loc>
     <lastmod>2026-01-02</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/IMG_8317_11zon.jpg</image:loc>
@@ -347,7 +347,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-query-optimization-guide-2026</loc>
     <lastmod>2026-01-02</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/IMG_8313_11zon.jpg</image:loc>
@@ -357,7 +357,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-interview-questions-answers-2026</loc>
     <lastmod>2026-01-02</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/IMG_8310.jpeg</image:loc>
@@ -367,7 +367,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-ai-complete-guide-2026</loc>
     <lastmod>2026-01-01</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/Cortex-AI.jpg</image:loc>
@@ -377,7 +377,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/meeting-notes-rag-snowflake-ai-assistant</loc>
     <lastmod>2026-01-04</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/IMG_8290_11zon.jpg</image:loc>
@@ -387,7 +387,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-openflow-ai-data-ingestion-guide</loc>
     <lastmod>2025-11-11</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/11/19FF3B06-30AF-4B1E-B0AF-359D0D6BC4C0_11zon.jpg</image:loc>
@@ -397,7 +397,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/build-rag-snowflake-cortex-search-guide</loc>
     <lastmod>2025-11-10</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/11/ChatGPT-Image-Nov-10-2025-08_01_35-PM_11zon.jpg</image:loc>
@@ -407,7 +407,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-aisql-query-optimization-guide</loc>
     <lastmod>2026-04-07</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/11/A-hand-drawn-technic_11zon.jpg</image:loc>
@@ -417,7 +417,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-intelligence-guide-setup-optimization</loc>
     <lastmod>2025-11-07</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/11/Copilot_20251107_080501.png</image:loc>
@@ -427,7 +427,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-native-dbt-integration-2025-guide</loc>
     <lastmod>2025-10-17</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Copilot_20251017_163250_11zon.jpg</image:loc>
@@ -437,7 +437,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/salesforce-copilot-custom-action-guide</loc>
     <lastmod>2025-10-17</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Copilot_20251017_145651_11zon.jpg</image:loc>
@@ -447,7 +447,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/build-databricks-ai-agent-gpt5-guide</loc>
     <lastmod>2025-10-17</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/ChatGPT-Image-Oct-16-2025-08_18_08-PM_11zon.jpg</image:loc>
@@ -457,7 +457,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/salesforce-agentforce-complete-guide-2025</loc>
     <lastmod>2025-10-17</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg_11zon-2.jpg</image:loc>
@@ -467,7 +467,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-unique-aggregations-hidden-functions</loc>
     <lastmod>2025-10-16</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/C4F9EC12-CE45-4426-ACF5-6CE3A6D5A08.jpeg</image:loc>
@@ -477,7 +477,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-dynamic-tables-complete-guide-2025</loc>
     <lastmod>2025-10-16</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/resizefile_Designer.png</image:loc>
@@ -487,7 +487,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-hybrid-tables-unify-transactional-analytical-data</loc>
     <lastmod>2025-10-14</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg_imresizer-4.jpg</image:loc>
@@ -497,7 +497,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-sql-tutorial-2025-complete-guide</loc>
     <lastmod>2025-10-16</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg-optimizer_jpeg-14.jpg</image:loc>
@@ -507,7 +507,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-optima-automatic-query-optimization-guide</loc>
     <lastmod>2025-10-16</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg-optimizer_jpeg-13.jpg</image:loc>
@@ -517,7 +517,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/open-semantic-interchange-snowflake-ai-problem-solved</loc>
     <lastmod>2025-10-14</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg-optimizer_jpeg-3.jpg</image:loc>
@@ -527,7 +527,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/synapse-to-fabric-migration-adx-eventhouse-guide</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Azure-synapse.jpg</image:loc>
@@ -537,7 +537,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/build-snowflake-cortex-ai-agent-guide</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Designer_img.jpg</image:loc>
@@ -547,7 +547,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/mastering-real-time-etl-with-google-cloud-dataflow</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg_imresizer.jpg</image:loc>
@@ -557,7 +557,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/star-schema-vs-snowflake-schema-comparison</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/dataenigneerhub.jpg</image:loc>
@@ -567,7 +567,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/data-pipelines-python</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Designer_imresizer-10.jpg</image:loc>
@@ -577,7 +577,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-ai-financial-services</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Designer_imresizer-9.jpg</image:loc>
@@ -587,7 +587,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-data-science-agent-automate-ml-2025</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Designer_imresizer-1.jpg</image:loc>
@@ -597,7 +597,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-mcp-server-agentic-ai-guide-2025</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/generated_image-3.jpg</image:loc>
@@ -607,7 +607,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-query-optimization-2025</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/generated_image.jpg</image:loc>
@@ -617,7 +617,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-merge-optimization-techniques</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/featured.png</image:loc>
@@ -627,7 +627,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/what-is-incremental-data-processing-a-data-engineers-guide</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/incre.png</image:loc>
@@ -637,7 +637,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/data-modeling-modern-data-warehouse</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/fact.png</image:loc>
@@ -647,7 +647,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/dynamic-data-masking-snowflake</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/Dynamic.png</image:loc>
@@ -657,7 +657,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-data-sharing-governance</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/New-1.png</image:loc>
@@ -667,7 +667,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/querying-data-in-snowflake</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/New.png</image:loc>
@@ -677,7 +677,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/load-data-into-snowflake</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/Snowflake-3.png</image:loc>
@@ -687,7 +687,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/what-is-snowflake-guide</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image.png</image:loc>
@@ -697,7 +697,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/aws-data-pipeline-cost-optimization-strategies</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/AWS.png</image:loc>
@@ -707,7 +707,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/advanced-snowflake-interview-questions-experienced</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-3.png</image:loc>
@@ -717,7 +717,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/automated-etl-airflow-python</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-2.png</image:loc>
@@ -727,7 +727,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/sql-window-functions-guide</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/Featured-image.png</image:loc>
@@ -737,7 +737,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/build-data-lakehouse-on-azure</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/img_6639.png</image:loc>
@@ -747,7 +747,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/serverless-data-pipeline-aws</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-1.png</image:loc>
@@ -757,7 +757,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/dbt-projects-snowflake-structure</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/dbt_featured.png</image:loc>
@@ -767,7 +767,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-architecture</loc>
     <lastmod>2025-10-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image.png</image:loc>

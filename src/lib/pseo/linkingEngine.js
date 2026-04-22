@@ -71,6 +71,35 @@ function isAlreadyLinked(html, keyword) {
 }
 
 /**
+ * Extract <pre> and <code> blocks into placeholders so keyword linking does
+ * not corrupt code examples (SQL, Python, YAML, etc.). Returns the stripped
+ * HTML plus a restore function that puts the blocks back.
+ *
+ * Using a unique placeholder token that is extremely unlikely to collide with
+ * real content keeps the transformation safe for any keyword.
+ */
+function maskCodeBlocks(html) {
+    const blocks = [];
+    const token = (i) => `\u0001PSEO_CODE_BLOCK_${i}\u0001`;
+    const stripped = html
+        .replace(/<pre[\s\S]*?<\/pre>/gi, (match) => {
+            const i = blocks.length;
+            blocks.push(match);
+            return token(i);
+        })
+        .replace(/<code[\s\S]*?<\/code>/gi, (match) => {
+            const i = blocks.length;
+            blocks.push(match);
+            return token(i);
+        });
+
+    const restore = (processed) =>
+        processed.replace(/\u0001PSEO_CODE_BLOCK_(\d+)\u0001/g, (_, i) => blocks[Number(i)] || '');
+
+    return { stripped, restore };
+}
+
+/**
  * Inject internal links from pSEO content to Manual Articles.
  * Used during R2 build to create SEO link equity flow from programmatic pages
  * to high-value WordPress articles.
@@ -90,7 +119,9 @@ export function injectInternalLinks(htmlContent, excludeSlug = '') {
         return htmlContent;
     }
 
-    let result = htmlContent;
+    // Mask <pre>/<code> blocks so we never inject links inside code samples.
+    const { stripped, restore } = maskCodeBlocks(htmlContent);
+    let result = stripped;
     const linkedKeywords = new Set(); // Track what we've already linked
 
     for (const article of MANUAL_ARTICLES) {
@@ -129,7 +160,7 @@ export function injectInternalLinks(htmlContent, excludeSlug = '') {
         }
     }
 
-    return result;
+    return restore(result);
 }
 
 /**
@@ -146,7 +177,9 @@ export function injectGlossaryCrossLinks(htmlContent, currentSlug = '', maxLinks
         return htmlContent;
     }
 
-    let result = htmlContent;
+    // Mask <pre>/<code> blocks so we never inject links inside code samples.
+    const { stripped, restore } = maskCodeBlocks(htmlContent);
+    let result = stripped;
     let linkCount = 0;
 
     const allTerms = terms || glossaryTerms || [];
@@ -175,7 +208,7 @@ export function injectGlossaryCrossLinks(htmlContent, currentSlug = '', maxLinks
         }
     }
 
-    return result;
+    return restore(result);
 }
 
 // =============================================================================

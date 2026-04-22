@@ -104,6 +104,28 @@ export function ComparisonHubPage() {
                             Unbiased, in-depth comparisons of the top data engineering tools.
                             We break down features, pricing, and use cases so you don't have to.
                         </motion.p>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.25 }}
+                            className="text-sm text-gray-400 max-w-3xl mx-auto mt-6 leading-relaxed"
+                        >
+                            Each head-to-head covers architecture, pricing models, ecosystem maturity,
+                            and the workloads each platform is built for — so you can pick the right
+                            warehouse, lakehouse, or orchestrator for your team without wading through
+                            vendor marketing. Pair these side-by-sides with our{' '}
+                            <Link to="/cheatsheets" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">
+                                cheat sheets
+                            </Link>{' '}
+                            for syntax reference, our{' '}
+                            <Link to="/glossary" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">
+                                glossary
+                            </Link>{' '}
+                            for concept lookups, or dive into deep dives in the{' '}
+                            <Link to="/articles" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">
+                                articles library
+                            </Link>.
+                        </motion.div>
                     </div>
                 </div>
 
