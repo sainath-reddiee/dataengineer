@@ -723,6 +723,11 @@ const ESSENTIAL_PAGES = [
         <li><strong><a href="/tools/sql-playground">SQL Playground</a></strong> - in-browser SQL engine powered by DuckDB-WASM. Practice window functions, CTEs, QUALIFY, aggregations, and joins on preloaded sample datasets. No server, no signup, 100% client-side.</li>
       </ul>
 
+      <h3>Data format conversion</h3>
+      <ul>
+        <li><strong><a href="/tools/json-parquet-avro-converter">JSON / Parquet / Avro Converter</a></strong> - convert between JSON, Apache Parquet, and Apache Avro directly in your browser. Powered by DuckDB-WASM for Parquet and avsc for Avro. No upload, no server — 100% client-side.</li>
+      </ul>
+
       <h2>Which tool should I use?</h2>
       <ul>
         <li><strong>Planning a new Snowflake workload?</strong> Start with the <a href="/tools/snowflake-warehouse-sizing">Warehouse Sizing Estimator</a> to pick a size, then use the <a href="/tools/snowflake-cost-calculator">Cost Calculator</a> to model monthly spend.</li>
@@ -738,6 +743,7 @@ const ESSENTIAL_PAGES = [
         <li><strong>Debugging timestamp data?</strong> The <a href="/tools/unix-timestamp-converter">Unix Timestamp Converter</a> handles seconds, milliseconds, microseconds, and nanoseconds with SQL examples for every major warehouse.</li>
         <li><strong>Running on Google Cloud?</strong> Use the <a href="/tools/bigquery-cost-calculator">BigQuery Cost Calculator</a> to model on-demand vs capacity Editions pricing and find the break-even point for your workload.</li>
         <li><strong>Practicing SQL?</strong> Open the <a href="/tools/sql-playground">SQL Playground</a> — run queries on preloaded sample tables directly in your browser with DuckDB-WASM. No setup required.</li>
+        <li><strong>Converting file formats?</strong> The <a href="/tools/json-parquet-avro-converter">JSON / Parquet / Avro Converter</a> handles all six conversion paths between JSON, Parquet, and Avro — powered by DuckDB-WASM and avsc, entirely in your browser.</li>
       </ul>
 
       <h2>Are these tools free?</h2>
@@ -1226,6 +1232,112 @@ const ESSENTIAL_PAGES = [
         <li><a href="/tools/sql-formatter">SQL Formatter</a> — clean up your SQL before running it here.</li>
         <li><a href="/cheatsheets/snowflake-sql">Snowflake SQL Cheat Sheet</a> — full Snowflake SQL reference with examples you can copy into the playground.</li>
         <li><a href="/cheatsheets/sql-window-functions">Window Functions Reference</a> — ROW_NUMBER, RANK, LAG, LEAD — all examples are runnable in this playground.</li>
+        <li><a href="/interview-prep">Interview Prep Hub</a> — complete 14-day study plan for data engineer interviews.</li>
+      </ul>
+    `
+  },
+  {
+    path: '/tools/json-parquet-avro-converter',
+    title: 'Free JSON / Parquet / Avro Converter 2026 — Browser-Based Format Conversion',
+    description: 'Convert between JSON, Apache Parquet, and Apache Avro directly in your browser. Powered by DuckDB-WASM and avsc. No upload, no server — 100% client-side and free.',
+    content: `
+      <h1>JSON / Parquet / Avro Converter — Convert Data Formats in Your Browser</h1>
+      <p><strong>Free, client-side data format converter.</strong> Convert between JSON, Apache Parquet, and Apache Avro instantly — no file uploads, no server processing, no data leaves your device. Powered by DuckDB-WASM for Parquet operations and avsc for Avro serialization.</p>
+
+      <h2>Supported Conversion Paths</h2>
+      <p>This tool supports all six conversion directions between the three most common data lake and streaming formats:</p>
+      <ul>
+        <li><strong>JSON → Parquet</strong> — Compress JSON arrays into columnar Parquet files for efficient analytics. Ideal for loading into Snowflake external tables, AWS Athena, or Spark.</li>
+        <li><strong>Parquet → JSON</strong> — Inspect and preview Parquet files without a query engine. Read column types, row counts, and actual data as human-readable JSON.</li>
+        <li><strong>JSON → Avro</strong> — Encode JSON records into compact Avro binary with auto-inferred schemas. Perfect for Kafka producers and schema registry workflows.</li>
+        <li><strong>Avro → JSON</strong> — Decode Avro container files (OCF) or raw Avro binary back to readable JSON. Debug Kafka consumer output and inspect Avro payloads.</li>
+        <li><strong>Parquet → Avro</strong> — Convert columnar Parquet files to Avro binary for streaming ingestion. The converter chains Parquet → JSON → Avro internally.</li>
+        <li><strong>Avro → Parquet</strong> — Convert Avro container files to columnar Parquet for analytical queries. The converter chains Avro → JSON → Parquet internally.</li>
+      </ul>
+
+      <h2>How It Works</h2>
+      <ol>
+        <li><strong>Select formats</strong> — Choose your source and target formats from the format selector (JSON, Parquet, Avro). Use the swap button to reverse direction instantly.</li>
+        <li><strong>Provide input</strong> — Paste or type JSON directly, or drag-and-drop / browse for binary files (Parquet, Avro). Sample JSON data is preloaded for quick testing.</li>
+        <li><strong>Convert</strong> — Click "Convert" and the tool processes everything in your browser. DuckDB-WASM handles Parquet read/write; avsc handles Avro encode/decode.</li>
+        <li><strong>Preview and download</strong> — View a preview table (up to 50 rows), copy JSON output to clipboard, or download the converted file directly.</li>
+      </ol>
+
+      <h2>Technology</h2>
+      <ul>
+        <li><strong>DuckDB-WASM</strong> — A full analytical SQL engine compiled to WebAssembly (~2 MB). Handles native Parquet reading (read_parquet) and writing (COPY TO FORMAT PARQUET). Shared instance with the <a href="/tools/sql-playground">SQL Playground</a> so the engine only downloads once.</li>
+        <li><strong>avsc</strong> — A pure JavaScript implementation of the Apache Avro specification (~264 KB). Handles Avro schema inference, binary serialization (toBuffer), deserialization (fromBuffer), and Avro Object Container File (OCF) decoding.</li>
+        <li><strong>No server</strong> — All processing runs in your browser via WebAssembly and JavaScript. Files are read with the FileReader API and never uploaded anywhere.</li>
+      </ul>
+
+      <h2>Format Comparison</h2>
+      <table>
+        <thead>
+          <tr><th>Feature</th><th>JSON</th><th>Parquet</th><th>Avro</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Storage format</td><td>Text (row-oriented)</td><td>Binary (columnar)</td><td>Binary (row-oriented)</td></tr>
+          <tr><td>Compression</td><td>None (gzip separately)</td><td>Built-in (Snappy, Zstd, Gzip)</td><td>Built-in (Deflate, Snappy)</td></tr>
+          <tr><td>Schema</td><td>Schema-less</td><td>Embedded in footer</td><td>Embedded in header</td></tr>
+          <tr><td>Best for</td><td>APIs, config, debugging</td><td>Analytics, data lakes, OLAP</td><td>Streaming, Kafka, CDC</td></tr>
+          <tr><td>Columnar pruning</td><td>No</td><td>Yes (read only needed columns)</td><td>No</td></tr>
+          <tr><td>Human readable</td><td>Yes</td><td>No</td><td>No</td></tr>
+          <tr><td>Typical compression ratio</td><td>1x (baseline)</td><td>5-10x vs JSON</td><td>2-4x vs JSON</td></tr>
+        </tbody>
+      </table>
+
+      <h2>When to Use Each Format</h2>
+      <h3>Choose JSON when:</h3>
+      <ul>
+        <li>You need human-readable data for debugging, APIs, or configuration files</li>
+        <li>Data is small (under 10 MB) and schema flexibility matters</li>
+        <li>Consuming systems expect text-based input (REST APIs, logging pipelines)</li>
+      </ul>
+
+      <h3>Choose Parquet when:</h3>
+      <ul>
+        <li>Data is destined for analytical queries (Snowflake external tables, AWS Athena, Spark, BigQuery)</li>
+        <li>You need columnar pruning — queries that read a subset of columns are dramatically faster</li>
+        <li>Storage cost matters — Parquet typically achieves 5-10x compression vs raw JSON</li>
+        <li>You are building a data lake on S3, GCS, or Azure Blob Storage</li>
+      </ul>
+
+      <h3>Choose Avro when:</h3>
+      <ul>
+        <li>Data flows through Apache Kafka or other message brokers with schema registry</li>
+        <li>Schema evolution is critical — Avro supports backward/forward compatible schema changes</li>
+        <li>Row-level serialization performance matters (streaming writes)</li>
+        <li>You need compact binary encoding for change data capture (CDC) pipelines</li>
+      </ul>
+
+      <h2>Privacy and Security</h2>
+      <p>All conversions run entirely in your browser. DuckDB-WASM and avsc process files locally via WebAssembly and JavaScript — no data is uploaded to any server, no network requests are made during conversion, and no files are stored. You can safely convert proprietary or sensitive data.</p>
+
+      <h2>Frequently Asked Questions</h2>
+      <h3>Is this converter free?</h3>
+      <p>Yes, completely free with no signup, no limits, and no tracking. DuckDB-WASM and avsc run 100% in your browser.</p>
+
+      <h3>What is the maximum file size?</h3>
+      <p>The converter runs inside your browser's memory budget — typically 1-4 GB depending on your device. For most data engineering workflows (files under 100 MB), performance is fast. Very large files (500 MB+) may be slow or cause out-of-memory errors in the browser tab.</p>
+
+      <h3>Does the Parquet output support compression?</h3>
+      <p>Yes. DuckDB-WASM writes Parquet files with Snappy compression by default, which provides a good balance of compression ratio and speed. This matches the default used by Spark, Snowflake, and most data lake tools.</p>
+
+      <h3>Can I convert Avro files without a schema?</h3>
+      <p>Avro Object Container Files (OCF) embed their schema in the file header — the converter reads it automatically. For raw Avro binary without an embedded schema, you need to provide the schema separately (not currently supported in this tool).</p>
+
+      <h3>How does Parquet-to-Avro conversion work?</h3>
+      <p>The converter chains two steps internally: first it reads the Parquet file to JSON using DuckDB-WASM, then encodes the JSON to Avro using avsc. This approach works reliably for typical data sizes and avoids the need for a dedicated Parquet-to-Avro library.</p>
+
+      <h3>Can I use this to preview Parquet files?</h3>
+      <p>Yes. Select "Parquet → JSON", drop your .parquet file, and click Convert. The preview table shows the first 50 rows with all columns. You can also copy the full JSON output to clipboard.</p>
+
+      <h2>Related Tools</h2>
+      <ul>
+        <li><a href="/tools/sql-playground">SQL Playground</a> — query data with SQL directly in your browser using DuckDB-WASM. Shares the same engine as this converter.</li>
+        <li><a href="/tools/json-to-sql-ddl">JSON to SQL DDL</a> — generate CREATE TABLE statements from JSON samples for Snowflake, Postgres, BigQuery, and more.</li>
+        <li><a href="/tools/csv-to-sql">CSV to SQL Converter</a> — convert CSV data to CREATE TABLE + INSERT statements.</li>
+        <li><a href="/cheatsheets/sql-window-functions">Window Functions Reference</a> — SQL window function cheat sheet with runnable examples.</li>
         <li><a href="/interview-prep">Interview Prep Hub</a> — complete 14-day study plan for data engineer interviews.</li>
       </ul>
     `

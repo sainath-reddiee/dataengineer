@@ -93,6 +93,9 @@ export default defineConfig({
             if (id.includes('@duckdb/duckdb-wasm')) {
               return 'duckdb';
             }
+            if (id.includes('avsc')) {
+              return 'avsc';
+            }
             return 'vendor';
           }
 

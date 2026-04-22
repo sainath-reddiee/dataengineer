@@ -49,6 +49,7 @@ const DbtSchemaGeneratorPage = lazy(() => import('./pages/DbtSchemaGeneratorPage
 const UnixTimestampPage = lazy(() => import('./pages/UnixTimestampPage'));
 const BigQueryCostPage = lazy(() => import('./pages/BigQueryCostPage'));
 const SqlPlaygroundPage = lazy(() => import('./pages/SqlPlaygroundPage'));
+const FormatConverterPage = lazy(() => import('./pages/FormatConverterPage'));
 const WarehouseComparisonCalculatorPage = lazy(() => import('./pages/WarehouseComparisonCalculatorPage'));
 const CheatSheetCategoryPage = lazy(() => import('./pages/CheatSheetCategoryPage'));
 const InterviewPrepHubPage = lazy(() => import('./pages/InterviewPrepHubPage'));
@@ -323,6 +324,11 @@ function App() {
           <Route path="tools/sql-playground" element={
             <Suspense fallback={<LoadingFallback text="Loading SQL Playground..." />}>
               <SqlPlaygroundPage />
+            </Suspense>
+          } />
+          <Route path="tools/json-parquet-avro-converter" element={
+            <Suspense fallback={<LoadingFallback text="Loading Format Converter..." />}>
+              <FormatConverterPage />
             </Suspense>
           } />
           <Route path="tools/cloud-data-warehouse-cost-comparison" element={

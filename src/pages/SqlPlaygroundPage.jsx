@@ -18,6 +18,7 @@ import {
   Download,
 } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import { getDb as getSharedDb } from '@/lib/duckdb';
 
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
@@ -178,26 +179,23 @@ const FAQ = [
 ];
 
 // ---------------------------------------------------------------------------
-// DuckDB initialization (lazy, singleton)
+// DuckDB initialization — uses shared singleton, loads sample datasets once
 // ---------------------------------------------------------------------------
-let dbPromise = null;
+let playgroundDbPromise = null;
 
 async function getDb() {
-  if (dbPromise) return dbPromise;
-  dbPromise = (async () => {
-    const duckdb = await import('@duckdb/duckdb-wasm');
-    // Use jsdelivr CDN bundles — avoids Vite needing to serve .wasm files
-    const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
-    const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);
-    const worker = new Worker(bundle.mainWorker);
-    const logger = new duckdb.ConsoleLogger();
-    const db = new duckdb.AsyncDuckDB(logger, worker);
-    await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
+  if (playgroundDbPromise) return playgroundDbPromise;
+  playgroundDbPromise = (async () => {
+    const db = await getSharedDb();
     // Load sample datasets
     const conn = await db.connect();
     for (const [name, ds] of Object.entries(SAMPLE_DATASETS)) {
+      // Register CSV files first so read_csv_auto can find them
+      await db.registerFileText(`${name}.csv`, ds.csv);
+    }
+    for (const [name, ds] of Object.entries(SAMPLE_DATASETS)) {
       // Create table and insert CSV data using DuckDB's read_csv_auto
-      await conn.query(`CREATE TABLE ${name} AS SELECT * FROM read_csv_auto('${name}.csv')`).catch(async () => {
+      await conn.query(`CREATE TABLE IF NOT EXISTS ${name} AS SELECT * FROM read_csv_auto('${name}.csv')`).catch(async () => {
         // Fallback: create table manually and insert
         await conn.query(`CREATE TABLE IF NOT EXISTS ${name} (${ds.schema})`);
         const rows = ds.csv.trim().split('\n').slice(1);
@@ -212,15 +210,10 @@ async function getDb() {
         }
       });
     }
-    // Also register the CSV content so read_csv_auto works if people try it
-    // (DuckDB WASM has an in-memory filesystem)
-    for (const [name, ds] of Object.entries(SAMPLE_DATASETS)) {
-      await db.registerFileText(`${name}.csv`, ds.csv);
-    }
     await conn.close();
     return db;
   })();
-  return dbPromise;
+  return playgroundDbPromise;
 }
 
 // ---------------------------------------------------------------------------

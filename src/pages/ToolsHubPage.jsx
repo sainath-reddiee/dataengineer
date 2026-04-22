@@ -28,6 +28,7 @@ import {
   Award,
   ExternalLink,
   Database,
+  ArrowLeftRight,
 } from 'lucide-react';
 
 import { SITE_CONFIG } from '@/lib/seoConfig';
@@ -158,6 +159,15 @@ const TOOLS = [
     description:
       'In-browser SQL engine powered by DuckDB-WASM. Practice window functions, CTEs, QUALIFY, aggregations, and joins on preloaded sample datasets. No server, no signup, 100% client-side.',
     primaryFor: 'SQL practice, interview prep, learning window functions, quick prototyping',
+  },
+  {
+    slug: 'json-parquet-avro-converter',
+    title: 'JSON / Parquet / Avro Converter',
+    icon: ArrowLeftRight,
+    tagline: 'Convert between data formats',
+    description:
+      'Convert JSON, Apache Parquet, and Apache Avro files directly in your browser. Powered by DuckDB-WASM for Parquet and avsc for Avro. No upload, no server — 100% client-side.',
+    primaryFor: 'Data lake format conversion, Kafka/Avro inspection, Parquet previewing, format migration',
   },
   {
     slug: 'snowflake-certification-practice',
