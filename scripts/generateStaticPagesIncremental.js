@@ -718,6 +718,11 @@ const ESSENTIAL_PAGES = [
         <li><strong><a href="/tools/bigquery-cost-calculator">BigQuery Cost Calculator</a></strong> - model on-demand ($6.25/TB scanned) and capacity Editions (Standard/Enterprise/Enterprise Plus slot-hours), storage tiers, and streaming ingest. Includes on-demand vs Editions break-even analysis.</li>
       </ul>
 
+      <h3>SQL practice</h3>
+      <ul>
+        <li><strong><a href="/tools/sql-playground">SQL Playground</a></strong> - in-browser SQL engine powered by DuckDB-WASM. Practice window functions, CTEs, QUALIFY, aggregations, and joins on preloaded sample datasets. No server, no signup, 100% client-side.</li>
+      </ul>
+
       <h2>Which tool should I use?</h2>
       <ul>
         <li><strong>Planning a new Snowflake workload?</strong> Start with the <a href="/tools/snowflake-warehouse-sizing">Warehouse Sizing Estimator</a> to pick a size, then use the <a href="/tools/snowflake-cost-calculator">Cost Calculator</a> to model monthly spend.</li>
@@ -732,6 +737,7 @@ const ESSENTIAL_PAGES = [
         <li><strong>Onboarding a new table into dbt?</strong> Run the <a href="/tools/dbt-schema-generator">dbt Schema.yml Generator</a> on the CREATE TABLE to auto-scaffold schema.yml, staging SQL, and sources.yml with freshness checks.</li>
         <li><strong>Debugging timestamp data?</strong> The <a href="/tools/unix-timestamp-converter">Unix Timestamp Converter</a> handles seconds, milliseconds, microseconds, and nanoseconds with SQL examples for every major warehouse.</li>
         <li><strong>Running on Google Cloud?</strong> Use the <a href="/tools/bigquery-cost-calculator">BigQuery Cost Calculator</a> to model on-demand vs capacity Editions pricing and find the break-even point for your workload.</li>
+        <li><strong>Practicing SQL?</strong> Open the <a href="/tools/sql-playground">SQL Playground</a> — run queries on preloaded sample tables directly in your browser with DuckDB-WASM. No setup required.</li>
       </ul>
 
       <h2>Are these tools free?</h2>
@@ -1139,6 +1145,88 @@ const ESSENTIAL_PAGES = [
         <li><a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a> — edition × warehouse size × hours + serverless (Cortex, Snowpipe, Auto-Clustering).</li>
         <li><a href="/tools/bigquery-cost-calculator">BigQuery Cost Calculator</a> — on-demand vs Editions break-even, active/long-term storage, streaming ingest.</li>
         <li><a href="/tools/databricks-cost-calculator">Databricks Cost Calculator</a> — DBU rate by tier, instance types, cluster uptime, Photon.</li>
+      </ul>
+    `
+  },
+  {
+    path: '/tools/sql-playground',
+    title: 'Free SQL Playground 2026 — Run SQL in Your Browser | DuckDB-WASM',
+    description: 'Practice SQL instantly in your browser with DuckDB-WASM. Sample datasets, window functions, CTEs, QUALIFY — no signup, no server. 100% private and free.',
+    content: `
+      <h1>SQL Playground — Run SQL in Your Browser</h1>
+      <p><strong>Free, in-browser SQL engine powered by DuckDB-WASM.</strong> Write and execute SQL queries instantly on preloaded sample datasets — employees, orders, and web events. No server, no signup, no data leaves your device. Practice window functions, CTEs, QUALIFY, aggregations, joins, and more.</p>
+
+      <h2>How It Works</h2>
+      <p>This playground loads <a href="https://duckdb.org/docs/api/wasm/overview">DuckDB-WASM</a>, a full analytical SQL engine compiled to WebAssembly, directly in your browser. The ~2 MB engine downloads once and runs entirely client-side. Three sample tables are preloaded with realistic data so you can start writing queries immediately.</p>
+
+      <h2>Preloaded Sample Tables</h2>
+      <ul>
+        <li><strong>employees</strong> (15 rows) — id, name, department, salary, hire_date. Practice GROUP BY, HAVING, window functions, and top-N per group patterns.</li>
+        <li><strong>orders</strong> (15 rows) — order_id, customer_id, product, quantity, unit_price, order_date, region. Practice aggregations, running totals, and revenue analysis.</li>
+        <li><strong>web_events</strong> (15 rows) — event_id, user_id, event_type, page, ts, device. Practice funnel analysis, sessionization, and conditional aggregation.</li>
+      </ul>
+
+      <h2>What You Can Practice</h2>
+      <h3>Fundamentals</h3>
+      <ul>
+        <li>SELECT, WHERE, GROUP BY, HAVING, ORDER BY</li>
+        <li>JOINs (INNER, LEFT, RIGHT, FULL, CROSS)</li>
+        <li>Subqueries and correlated subqueries</li>
+        <li>UNION, INTERSECT, EXCEPT</li>
+      </ul>
+
+      <h3>Advanced SQL</h3>
+      <ul>
+        <li>Window functions — ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM OVER, AVG OVER</li>
+        <li>CTEs (WITH ... AS) and recursive CTEs</li>
+        <li>QUALIFY clause (supported by DuckDB and Snowflake)</li>
+        <li>CASE expressions, COALESCE, NULLIF</li>
+      </ul>
+
+      <h3>Data Engineering Patterns</h3>
+      <ul>
+        <li>Running totals and moving averages with window frames</li>
+        <li>Funnel analysis with conditional aggregation</li>
+        <li>Sessionization using LAG and date arithmetic</li>
+        <li>Deduplication with ROW_NUMBER</li>
+      </ul>
+
+      <h3>Interview Prep</h3>
+      <ul>
+        <li>Top-N per group (a classic data engineer interview question)</li>
+        <li>Year-over-year comparisons</li>
+        <li>Percentile and median calculations</li>
+        <li>Self-joins for sequential event analysis</li>
+      </ul>
+
+      <h2>DuckDB SQL Dialect</h2>
+      <p>DuckDB supports a PostgreSQL-compatible dialect with modern extensions. Most Snowflake and BigQuery SQL patterns work with minor syntax adjustments. Supported features include: window functions, CTEs, recursive CTEs, QUALIFY, PIVOT/UNPIVOT, LATERAL joins, LIST/STRUCT/MAP types, regex functions, and lambda expressions.</p>
+
+      <h2>Privacy and Security</h2>
+      <p>DuckDB runs entirely in your browser via WebAssembly. Your SQL queries and any data you paste never leave your device — there is no server, no database connection, and no logging of queries. You can safely paste proprietary data for testing.</p>
+
+      <h2>Frequently Asked Questions</h2>
+      <h3>Is this SQL playground free?</h3>
+      <p>Yes, completely free. No signup, no limits, no tracking. DuckDB-WASM runs 100% in your browser.</p>
+
+      <h3>What SQL dialect does DuckDB support?</h3>
+      <p>DuckDB supports a PostgreSQL-compatible dialect with modern extensions: window functions, CTEs, QUALIFY, PIVOT/UNPIVOT, LATERAL joins, LIST/STRUCT/MAP types, regex, lambda functions, and more.</p>
+
+      <h3>Can I load my own data?</h3>
+      <p>The playground ships with three preloaded sample tables. You can also use DuckDB's read_csv() function to query CSV data directly.</p>
+
+      <h3>How large a dataset can it handle?</h3>
+      <p>DuckDB-WASM runs inside your browser's memory budget — typically 1-4 GB. For sample datasets (15 rows each), performance is instant. For analytical workloads up to ~100 MB, DuckDB-WASM performs well.</p>
+
+      <h3>Does it support Snowflake-specific syntax?</h3>
+      <p>DuckDB supports many Snowflake SQL patterns natively: QUALIFY, FLATTEN (as UNNEST), window functions, CTEs, MERGE, and most date/string functions. Snowflake-only functions (GET_DDL, SYSTEM$) are not available.</p>
+
+      <h2>Related Tools</h2>
+      <ul>
+        <li><a href="/tools/sql-formatter">SQL Formatter</a> — clean up your SQL before running it here.</li>
+        <li><a href="/cheatsheets/snowflake-sql">Snowflake SQL Cheat Sheet</a> — full Snowflake SQL reference with examples you can copy into the playground.</li>
+        <li><a href="/cheatsheets/sql-window-functions">Window Functions Reference</a> — ROW_NUMBER, RANK, LAG, LEAD — all examples are runnable in this playground.</li>
+        <li><a href="/interview-prep">Interview Prep Hub</a> — complete 14-day study plan for data engineer interviews.</li>
       </ul>
     `
   },

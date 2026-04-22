@@ -27,6 +27,7 @@ import {
   BookOpen,
   Award,
   ExternalLink,
+  Database,
 } from 'lucide-react';
 
 import { SITE_CONFIG } from '@/lib/seoConfig';
@@ -148,6 +149,15 @@ const TOOLS = [
     description:
       'Model Google BigQuery spend across on-demand ($6.25/TB scanned) and capacity Editions (Standard/Enterprise/Enterprise Plus slot-hours). Includes storage tiers, streaming ingest, and on-demand vs Editions break-even analysis.',
     primaryFor: 'BigQuery cost planning, on-demand vs Editions decisions, multi-cloud comparison',
+  },
+  {
+    slug: 'sql-playground',
+    title: 'SQL Playground',
+    icon: Database,
+    tagline: 'Run SQL in your browser',
+    description:
+      'In-browser SQL engine powered by DuckDB-WASM. Practice window functions, CTEs, QUALIFY, aggregations, and joins on preloaded sample datasets. No server, no signup, 100% client-side.',
+    primaryFor: 'SQL practice, interview prep, learning window functions, quick prototyping',
   },
   {
     slug: 'snowflake-certification-practice',

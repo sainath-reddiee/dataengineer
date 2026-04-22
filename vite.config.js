@@ -90,6 +90,9 @@ export default defineConfig({
             if (id.includes('marked') || id.includes('dompurify')) {
               return 'markdown';
             }
+            if (id.includes('@duckdb/duckdb-wasm')) {
+              return 'duckdb';
+            }
             return 'vendor';
           }
 
