@@ -20,6 +20,7 @@ import {
   Info,
 } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import ScenarioCompareToggle from '@/components/calculator/ScenarioCompareToggle';
 import {
   EDITIONS,
   REGIONS,
@@ -215,13 +216,49 @@ const Toggle = ({ checked, onChange, label }) => (
 // --- Main page --------------------------------------------------------------
 export default function CostCalculatorPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  // `inputs` is the scenario being edited (i.e. the active scenario).
+  // `inputsOther` is the other scenario kept in memory when compare is enabled.
   const [inputs, setInputs] = useState(() => paramsToInputs(searchParams));
+  const [inputsOther, setInputsOther] = useState(() => paramsToInputs(searchParams));
+  const [compareEnabled, setCompareEnabled] = useState(false);
+  const [activeScenario, setActiveScenario] = useState('A');
   const [copied, setCopied] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
 
   const result = useMemo(() => calculateCost(inputs), [inputs]);
+  const resultOther = useMemo(() => calculateCost(inputsOther), [inputsOther]);
 
-  // Sync inputs -> URL (debounced)
+  // Swap active <-> other when user flips A/B tabs.
+  const handleScenarioChange = useCallback((next) => {
+    if (next === activeScenario) return;
+    setActiveScenario(next);
+    setInputs(inputsOther);
+    setInputsOther(inputs);
+  }, [activeScenario, inputs, inputsOther]);
+
+  const handleCompareToggle = useCallback((next) => {
+    setCompareEnabled(next);
+    if (next) {
+      // Seed B with a copy of A so B starts identical until user edits.
+      setInputsOther({ ...inputs });
+      setActiveScenario('A');
+    } else {
+      // On disable, snap back to scenario A state.
+      if (activeScenario === 'B') {
+        setInputs(inputsOther);
+      }
+      setActiveScenario('A');
+    }
+  }, [inputs, inputsOther, activeScenario]);
+
+  // totals A/B for the compare widget (A is always "scenario A", regardless of which is active)
+  const totalA = activeScenario === 'A' ? result.totalMonthly : resultOther.totalMonthly;
+  const totalB = compareEnabled
+    ? (activeScenario === 'A' ? resultOther.totalMonthly : result.totalMonthly)
+    : null;
+
+  // Sync inputs -> URL (debounced). Only the currently-active scenario is in URL
+  // to keep share links simple; this is a pragmatic trade-off.
   useEffect(() => {
     const t = setTimeout(() => {
       setSearchParams(inputsToParams(inputs), { replace: true });
@@ -401,8 +438,19 @@ export default function CostCalculatorPage() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
-          {/* Inputs column (2/3) */}
+          {/* Input column (2/3 on desktop) */}
           <div className="lg:col-span-2 space-y-6">
+            <ScenarioCompareToggle
+              enabled={compareEnabled}
+              onToggle={handleCompareToggle}
+              activeScenario={activeScenario}
+              onScenarioChange={handleScenarioChange}
+              totalA={totalA}
+              totalB={totalB}
+              formatValue={formatUSD}
+              labelA="Scenario A (baseline)"
+              labelB="Scenario B (what-if)"
+            />
             <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6">
               <h2 className="text-xl font-semibold text-white mb-4">Workload configuration</h2>
               <div className="grid md:grid-cols-2 gap-5">
