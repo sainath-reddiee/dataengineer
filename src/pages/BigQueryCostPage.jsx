@@ -6,6 +6,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Calculator, Cloud, BookOpen, Wand2, Share2, Check } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import ValidateWithSqlBlock from '@/components/calculator/ValidateWithSqlBlock';
 
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
@@ -282,6 +283,24 @@ export default function BigQueryCostPage() {
         <Suspense fallback={null}>
           <AdPlacement />
         </Suspense>
+
+        <ValidateWithSqlBlock
+          title="Validate this estimate against real BigQuery usage"
+          description="Run this in the BigQuery console against your INFORMATION_SCHEMA to see actual bytes billed for the last 30 days. Compare to the TB scanned you entered above."
+          sql={`-- BigQuery: actual bytes billed + estimated on-demand cost by day
+SELECT
+  DATE(creation_time) AS day,
+  COUNT(*) AS queries,
+  ROUND(SUM(total_bytes_billed) / POW(1024, 4), 3) AS tb_billed,
+  ROUND(SUM(total_bytes_billed) / POW(1024, 4) * 6.25, 2) AS est_on_demand_usd
+FROM \`region-us\`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
+WHERE creation_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)
+  AND statement_type = 'SELECT'
+  AND state = 'DONE'
+GROUP BY 1
+ORDER BY 1 DESC;`}
+          note="Replace region-us with your dataset region. Use JOBS_BY_ORGANIZATION if you have org-level access."
+        />
 
         <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
           <h2 className="text-2xl font-semibold text-white mb-4">How BigQuery pricing works</h2>

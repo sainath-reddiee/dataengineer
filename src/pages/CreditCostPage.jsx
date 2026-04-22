@@ -8,6 +8,7 @@ import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Coins, Cloud, Share2, Check, Calculator } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import ValidateWithSqlBlock from '@/components/calculator/ValidateWithSqlBlock';
 import { EDITIONS, REGIONS, formatUSD } from '@/data/snowflakePricing';
 
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
@@ -222,6 +223,24 @@ export default function CreditCostPage() {
         <Suspense fallback={null}>
           <AdPlacement />
         </Suspense>
+
+        <ValidateWithSqlBlock
+          title="Validate your actual effective $/credit from your contract"
+          description="ORGANIZATION_USAGE.RATE_SHEET_DAILY shows the contract rate your org is paying per credit — by usage type, service, and date. Compare to the list price above to see your effective discount."
+          sql={`-- Snowflake: your effective $/credit rate (includes contract discounts)
+SELECT
+  USAGE_DATE,
+  USAGE_TYPE,
+  SERVICE_TYPE,
+  EFFECTIVE_RATE,
+  CURRENCY
+FROM SNOWFLAKE.ORGANIZATION_USAGE.RATE_SHEET_DAILY
+WHERE USAGE_DATE >= DATEADD('day', -30, CURRENT_DATE())
+  AND USAGE_TYPE = 'compute'
+ORDER BY USAGE_DATE DESC
+LIMIT 20;`}
+          note="RATE_SHEET_DAILY requires ORGADMIN role. If you don't have it, check your bill PDF for the effective unit price."
+        />
 
         <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
           <h2 className="text-2xl font-semibold text-white mb-4">Credit price reference table</h2>

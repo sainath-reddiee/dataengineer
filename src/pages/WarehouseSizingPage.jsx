@@ -7,6 +7,7 @@ import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Layers, Users, HardDrive, Clock, Cloud, Share2, Check, Zap } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import ValidateWithSqlBlock from '@/components/calculator/ValidateWithSqlBlock';
 import { EDITIONS, REGIONS, WAREHOUSE_SIZES, formatUSD } from '@/data/snowflakePricing';
 
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
@@ -332,6 +333,25 @@ export default function WarehouseSizingPage() {
         <Suspense fallback={null}>
           <AdPlacement />
         </Suspense>
+
+        <ValidateWithSqlBlock
+          title="Validate your warehouse size with real load + queue data"
+          description="WAREHOUSE_LOAD_HISTORY tells you if queries are queueing (size up) or the warehouse is idle (size down or add auto-suspend). Run this after a representative week of usage."
+          sql={`-- Snowflake: hourly load + queue pattern (last 7 days)
+SELECT
+  WAREHOUSE_NAME,
+  DATE_TRUNC('hour', START_TIME) AS hour,
+  ROUND(AVG(AVG_RUNNING), 2) AS avg_running,
+  ROUND(AVG(AVG_QUEUED_LOAD), 2) AS avg_queued_load,
+  ROUND(AVG(AVG_QUEUED_PROVISIONING), 2) AS avg_queued_provisioning
+FROM SNOWFLAKE.ACCOUNT_USAGE.WAREHOUSE_LOAD_HISTORY
+WHERE START_TIME >= DATEADD('day', -7, CURRENT_DATE())
+  AND WAREHOUSE_NAME = '<YOUR_WAREHOUSE>'
+GROUP BY 1, 2
+ORDER BY 2 DESC
+LIMIT 72;`}
+          note="Rule of thumb: if avg_queued_load > 0 during peak hours, size up one step or enable multi-cluster. If avg_running < 0.3, size down."
+        />
 
         <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
           <h2 className="text-2xl font-semibold text-white mb-4">How to validate your size</h2>

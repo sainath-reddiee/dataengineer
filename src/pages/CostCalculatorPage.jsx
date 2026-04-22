@@ -20,6 +20,7 @@ import {
   Info,
 } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import ValidateWithSqlBlock from '@/components/calculator/ValidateWithSqlBlock';
 import ScenarioCompareToggle from '@/components/calculator/ScenarioCompareToggle';
 import {
   EDITIONS,
@@ -672,6 +673,23 @@ export default function CostCalculatorPage() {
         <Suspense fallback={null}>
           <AdPlacement />
         </Suspense>
+
+        <ValidateWithSqlBlock
+          title="Validate this estimate against your actual Snowflake bill"
+          description="Run this in Snowsight to pull last-3-months credit burn by warehouse from ACCOUNT_USAGE. Multiply total credits by your $/credit rate to compare against the monthly total above."
+          sql={`-- Snowflake: monthly credit burn by warehouse (last 3 months)
+SELECT
+  DATE_TRUNC('month', START_TIME) AS month,
+  WAREHOUSE_NAME,
+  ROUND(SUM(CREDITS_USED_COMPUTE), 2) AS compute_credits,
+  ROUND(SUM(CREDITS_USED_CLOUD_SERVICES), 2) AS cloud_svc_credits,
+  ROUND(SUM(CREDITS_USED), 2) AS total_credits
+FROM SNOWFLAKE.ACCOUNT_USAGE.WAREHOUSE_METERING_HISTORY
+WHERE START_TIME >= DATEADD('month', -3, CURRENT_DATE())
+GROUP BY 1, 2
+ORDER BY 1 DESC, total_credits DESC;`}
+          note="Cloud Services credits are charged only for the portion above 10% of compute credits. WAREHOUSE_METERING_HISTORY already nets this out."
+        />
 
         {/* Optimization tips */}
         <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6">

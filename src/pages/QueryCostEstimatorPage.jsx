@@ -7,6 +7,7 @@ import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Database, Clock, Cloud, Share2, Check, Zap, HardDrive } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import ValidateWithSqlBlock from '@/components/calculator/ValidateWithSqlBlock';
 import { EDITIONS, REGIONS, WAREHOUSE_SIZES, formatUSD } from '@/data/snowflakePricing';
 
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
@@ -314,6 +315,24 @@ export default function QueryCostEstimatorPage() {
         <Suspense fallback={null}>
           <AdPlacement />
         </Suspense>
+
+        <ValidateWithSqlBlock
+          title="Validate this query cost against Snowflake's actual ACCOUNT_USAGE"
+          description="Paste a real QUERY_ID from your Query History. This returns bytes scanned, execution time, and cloud services credits — compare to the estimate above."
+          sql={`-- Snowflake: real bytes scanned, runtime, and credits for a given query
+SELECT
+  QUERY_ID,
+  LEFT(QUERY_TEXT, 120) AS query_preview,
+  WAREHOUSE_NAME,
+  WAREHOUSE_SIZE,
+  BYTES_SCANNED,
+  ROUND(BYTES_SCANNED / POWER(1024, 4), 4) AS tb_scanned,
+  ROUND(EXECUTION_TIME / 1000.0, 2) AS seconds,
+  CREDITS_USED_CLOUD_SERVICES
+FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
+WHERE QUERY_ID = '<PASTE_QUERY_ID_HERE>';`}
+          note="Cloud Services credits get a 10% free allowance netted against compute — see WAREHOUSE_METERING_HISTORY for the rolled-up monthly view."
+        />
 
         <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
           <h2 className="text-2xl font-semibold text-white mb-4">How to find bytes scanned for your query</h2>
