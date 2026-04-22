@@ -30,7 +30,7 @@ import useCopyCodeButtons from '@/hooks/useCopyCodeButtons';
 import { injectInternalLinks } from '@/lib/pseo/linkingEngine';
 import { getRelatedTools } from '@/data/articleToolMap';
 import { getRecommendedCourses, getPlatformColor } from '@/data/courseRecommendations';
-import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap, Megaphone } from 'lucide-react';
+import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap, Megaphone, MessageCircleQuestion, Send } from 'lucide-react';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
@@ -286,6 +286,75 @@ const RecommendedCourses = ({ post }) => {
         Some links are affiliate links — at no extra cost to you, we may earn a small commission if you enroll.{' '}
         <Link to="/disclaimer" className="underline hover:text-gray-400">Learn more</Link>
       </p>
+    </section>
+  );
+};
+
+const AskQuestion = ({ post, slug }) => {
+  const [open, setOpen] = React.useState(false);
+  const [question, setQuestion] = React.useState('');
+  const [sent, setSent] = React.useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!question.trim()) return;
+
+    const subject = encodeURIComponent(`Question about: ${post.title}`);
+    const body = encodeURIComponent(
+      `Article: https://dataengineerhub.blog/articles/${slug}\n\n${question}`
+    );
+    window.location.href = `mailto:sainath@dataengineerhub.blog?subject=${subject}&body=${body}`;
+
+    trackEvent({ action: 'ask_question', category: 'engagement', label: post.title });
+    setSent(true);
+    setQuestion('');
+    setTimeout(() => { setSent(false); setOpen(false); }, 3000);
+  };
+
+  return (
+    <section className="mt-12 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-6 backdrop-blur-sm text-center">
+      {sent ? (
+        <p className="text-green-400 font-medium">Your email client should have opened — thanks for reaching out!</p>
+      ) : !open ? (
+        <button
+          onClick={() => setOpen(true)}
+          className="inline-flex items-center gap-2 text-gray-300 hover:text-blue-300 transition-colors font-medium"
+        >
+          <MessageCircleQuestion className="h-5 w-5" />
+          Have a question about this article? Ask the author
+        </button>
+      ) : (
+        <form onSubmit={handleSubmit} className="max-w-xl mx-auto space-y-4 text-left">
+          <label htmlFor="ask-q" className="block text-sm font-semibold text-white">
+            Your question about &ldquo;{post.title}&rdquo;
+          </label>
+          <textarea
+            id="ask-q"
+            rows={3}
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="Type your question here…"
+            className="w-full rounded-lg border border-slate-600/50 bg-slate-800/60 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+          <div className="flex items-center gap-3">
+            <button
+              type="submit"
+              disabled={!question.trim()}
+              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Send className="h-4 w-4" />
+              Send Question
+            </button>
+            <button
+              type="button"
+              onClick={() => { setOpen(false); setQuestion(''); }}
+              className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
     </section>
   );
 };
@@ -868,6 +937,8 @@ const ArticlePage = () => {
         <RelatedTools post={safePost} />
 
         <RecommendedCourses post={safePost} />
+
+        <AskQuestion post={safePost} slug={slug} />
 
         <ArticleNavigation currentPostId={safePost.id} category={safePost.category} />
         <RelatedPosts currentPostId={safePost.id} category={safePost.category} />
