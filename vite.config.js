@@ -45,6 +45,18 @@ export default defineConfig({
   },
 
   build: {
+    // Suppress modulepreload for chunks that depend on Node built-ins
+    // (avsc, duckdb, pdf-vendor). They are lazy-loaded and crash the
+    // browser when preloaded because stream/buffer/zlib stubs execute.
+    modulePreload: {
+      resolveDependencies: (filename, deps) => {
+        return deps.filter(dep =>
+          !dep.includes('avsc') &&
+          !dep.includes('duckdb') &&
+          !dep.includes('pdf-vendor')
+        );
+      },
+    },
     target: 'esnext',
     minify: 'terser',
     terserOptions: {
