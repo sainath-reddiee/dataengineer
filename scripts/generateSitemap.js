@@ -15,7 +15,7 @@ const SITE_URL = 'https://dataengineerhub.blog';
 // 2. Are NOT noindexed by their React component
 // 3. Have pre-rendered HTML or are meaningful indexable pages
 // Excluded: /newsletter (noindexed), /tags (noindexed), /explore (no route),
-//           /checklist (admin-only), /certification (noindexed + iframe-only)
+//           /checklist (admin-only)
 const STATIC_PAGES = [
   { url: '/', changefreq: 'daily', priority: 1.0, lastmod: 'today' },
   { url: '/articles', changefreq: 'daily', priority: 0.9, lastmod: 'today' },
@@ -25,6 +25,7 @@ const STATIC_PAGES = [
   { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/disclaimer', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/cheatsheets', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
+  { url: '/certification', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
   { url: '/tools', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
   { url: '/tools/snowflake-cost-calculator', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
   { url: '/tools/snowflake-credit-cost', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
