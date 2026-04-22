@@ -10,7 +10,7 @@ import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import { usePost, useRelatedPosts } from '@/hooks/useWordPress';
 import { preloadImage } from '@/utils/imageOptimizer';
 import { throttle } from '@/utils/performance';
-import { trackScrollDepth, trackArticleRead } from '@/utils/analytics';
+import { trackScrollDepth, trackArticleRead, trackEvent } from '@/utils/analytics';
 import { generateBreadcrumbs, getHowToSchema, getVideoSchema, extractVideosFromContent } from '@/lib/seoConfig';
 import { extractHowToSteps } from '@/utils/howToExtractor';
 import { getOptimizedTitle, getOptimizedDescription } from '@/data/seoOverrides';
@@ -29,7 +29,8 @@ import InArticleCTA from '@/components/InArticleCTA';
 import useCopyCodeButtons from '@/hooks/useCopyCodeButtons';
 import { injectInternalLinks } from '@/lib/pseo/linkingEngine';
 import { getRelatedTools } from '@/data/articleToolMap';
-import { BookOpen, GitCompare, Library } from 'lucide-react';
+import { getRecommendedCourses, getPlatformColor } from '@/data/courseRecommendations';
+import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap } from 'lucide-react';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
@@ -211,6 +212,73 @@ const RelatedTools = ({ post }) => {
         <Column icon={GitCompare} title="Comparisons"  items={comparisons} base="/compare"      accent="text-purple-300" />
         <Column icon={Library}    title="Glossary"     items={glossary}    base="/glossary"     accent="text-green-300" />
       </div>
+    </section>
+  );
+};
+
+const RecommendedCourses = ({ post }) => {
+  const courses = React.useMemo(() => getRecommendedCourses(post, 3), [post]);
+  if (courses.length === 0) return null;
+
+  const handleClick = (course) => {
+    trackEvent({
+      action: 'click_course',
+      category: 'monetization',
+      label: course.title,
+      value: course.isFree ? 0 : 1,
+    });
+  };
+
+  return (
+    <section className="mt-16" aria-labelledby="recommended-courses-heading">
+      <h2 id="recommended-courses-heading" className="text-3xl font-bold mb-8 text-white text-center">
+        Recommended <span className="gradient-text">Courses</span>
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {courses.map((course) => {
+          const colors = getPlatformColor(course.platform);
+          return (
+            <a
+              key={course.id}
+              href={course.url}
+              target="_blank"
+              rel="noopener sponsored"
+              onClick={() => handleClick(course)}
+              className="group block rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 backdrop-blur-sm transition-all duration-200 hover:border-blue-400/50 hover:bg-slate-800/60 hover:-translate-y-1"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${colors.bg} ${colors.text} border ${colors.border}`}>
+                  <GraduationCap className="h-3 w-3" />
+                  {course.platform}
+                </span>
+                <div className="flex items-center gap-1.5">
+                  {course.isFree && (
+                    <span className="rounded-full bg-green-900/50 px-2 py-0.5 text-xs font-semibold text-green-300 border border-green-500/30">
+                      Free
+                    </span>
+                  )}
+                  <span className="rounded-full bg-slate-700/50 px-2 py-0.5 text-xs text-gray-400 border border-slate-600/30">
+                    {course.difficulty}
+                  </span>
+                </div>
+              </div>
+              <h3 className="text-base font-bold text-white mb-2 group-hover:text-blue-300 transition-colors line-clamp-2">
+                {course.title}
+              </h3>
+              <p className="text-sm text-gray-400 line-clamp-3 mb-3">
+                {course.description}
+              </p>
+              <span className="inline-flex items-center gap-1 text-xs text-blue-400 group-hover:text-blue-300 transition-colors">
+                View course <ExternalLink className="h-3 w-3" />
+              </span>
+            </a>
+          );
+        })}
+      </div>
+      <p className="text-xs text-gray-500 text-center mt-4">
+        Some links are affiliate links — at no extra cost to you, we may earn a small commission if you enroll.{' '}
+        <Link to="/disclaimer" className="underline hover:text-gray-400">Learn more</Link>
+      </p>
     </section>
   );
 };
@@ -791,6 +859,8 @@ const ArticlePage = () => {
         <InArticleCTA />
 
         <RelatedTools post={safePost} />
+
+        <RecommendedCourses post={safePost} />
 
         <ArticleNavigation currentPostId={safePost.id} category={safePost.category} />
         <RelatedPosts currentPostId={safePost.id} category={safePost.category} />

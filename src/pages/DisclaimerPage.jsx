@@ -35,7 +35,7 @@ const DisclaimerPage = () => {
           
           <h2 className="text-xl font-bold text-white mt-8">Affiliate Disclaimer</h2>
           <p>
-            This Site may contain links to affiliate websites, and we may receive an affiliate commission for any purchases made by you on the affiliate website using such links. We are currently not part of any affiliate programs. This section will be updated if and when we join any affiliate programs in the future.
+            This Site may contain links to affiliate websites, and we may receive an affiliate commission for any purchases made by you on the affiliate website using such links. We participate in the Udemy affiliate program and may earn a commission when you purchase courses through our referral links — at no extra cost to you. These commissions help support the ongoing creation of free educational content on this site. We only recommend courses and resources we believe provide genuine value to data engineering professionals.
           </p>
 
           <h2 className="text-xl font-bold text-white mt-8">Errors and Omissions Disclaimer</h2>
