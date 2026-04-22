@@ -274,9 +274,16 @@ const Header = ({ topOffset = 0 }) => {
 
     // Build filtered URL with categories
     const getCtaUrl = () => {
-      const categoryNames = category.items.map(item => item.name.toLowerCase()).join(',');
-      // For now, just go to /articles - you can enhance this with query params later
-      return '/articles';
+      const items = Array.isArray(category.items) ? category.items : [];
+      if (items.length === 0) return '/articles';
+      // Derive slugs from each item's /category/<slug> path
+      const slugs = items
+        .map(it => (it?.path || '').replace(/^\/category\//, '').trim())
+        .filter(Boolean);
+      // Single-category groups: jump straight to that category page
+      if (slugs.length === 1) return `/category/${slugs[0]}`;
+      // Multi-category groups: filter on the articles index
+      return `/articles?categories=${encodeURIComponent(slugs.join(','))}`;
     };
 
     return (

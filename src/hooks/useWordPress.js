@@ -500,8 +500,19 @@ export const usePostsByTag = (tagSlug, { page = 1, per_page = 10, orderby = 'dat
   });
 };
 
-// Hook for fetching related posts
-export const useRelatedPosts = (postId, enabled = true) => {
+// Hook for fetching related posts, with category-based fallback
+// when the WordPress /related endpoint returns nothing.
+export const useRelatedPosts = (postId, categoryOrEnabled = true, maybeEnabled) => {
+  // Preserve backward-compat: old signature was (postId, enabled=true)
+  let category = null;
+  let enabled = true;
+  if (typeof categoryOrEnabled === 'string') {
+    category = categoryOrEnabled;
+    enabled = maybeEnabled === undefined ? true : !!maybeEnabled;
+  } else {
+    enabled = categoryOrEnabled === undefined ? true : !!categoryOrEnabled;
+  }
+
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -511,15 +522,43 @@ export const useRelatedPosts = (postId, enabled = true) => {
       return;
     }
 
+    let cancelled = false;
     const fetchRelated = async () => {
       setLoading(true);
-      const relatedData = await wordpressApi.getRelatedPosts(postId);
-      setPosts(relatedData);
-      setLoading(false);
+      try {
+        const relatedData = await wordpressApi.getRelatedPosts(postId);
+        if (cancelled) return;
+
+        if (Array.isArray(relatedData) && relatedData.length > 0) {
+          setPosts(relatedData);
+        } else if (category) {
+          // Fallback: latest posts from the same category
+          try {
+            const slug = String(category).toLowerCase().trim();
+            const categoryId = await wordpressApi.getCategoryIdBySlug(slug);
+            const fallback = await wordpressApi.getPosts({
+              categoryId,
+              perPage: 6,
+              page: 1,
+            });
+            if (cancelled) return;
+            const list = (fallback?.posts || []).filter(p => p.id !== postId).slice(0, 3);
+            setPosts(list);
+          } catch (err) {
+            console.warn('Related-by-category fallback failed:', err?.message || err);
+            setPosts([]);
+          }
+        } else {
+          setPosts([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     };
 
     fetchRelated();
-  }, [postId, enabled]);
+    return () => { cancelled = true; };
+  }, [postId, category, enabled]);
 
   return { posts, loading };
 };

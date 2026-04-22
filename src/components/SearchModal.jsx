@@ -1,9 +1,61 @@
 // src/components/SearchModal.jsx
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, Clock, ArrowRight, FileText, Command } from 'lucide-react';
+import { Search, X, Clock, ArrowRight, FileText, Command, BookOpen, GitCompare, Library } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
+import searchIndex from '@/data/searchIndex.json';
+
+// Flatten local index (glossary + comparisons) into a unified searchable list.
+// WP articles come in separately from the REST API at query time.
+const buildLocalIndex = () => {
+  const out = [];
+  for (const g of searchIndex.glossary || []) {
+    out.push({
+      type: 'glossary',
+      id: `glossary-${g.slug}`,
+      title: g.term,
+      slug: g.slug,
+      href: `/glossary/${g.slug}`,
+      category: g.category,
+      excerpt: g.shortDefinition,
+    });
+  }
+  for (const c of searchIndex.comparisons || []) {
+    out.push({
+      type: 'comparison',
+      id: `comparison-${c.slug}`,
+      title: c.title,
+      slug: c.slug,
+      href: `/compare/${c.slug}`,
+      category: c.category,
+      excerpt: c.shortVerdict,
+    });
+  }
+  return out;
+};
+
+const LOCAL_INDEX = buildLocalIndex();
+
+const scoreLocal = (item, q) => {
+  const needle = q.toLowerCase();
+  const t = (item.title || '').toLowerCase();
+  const e = (item.excerpt || '').toLowerCase();
+  const c = (item.category || '').toLowerCase();
+  if (t === needle) return 100;
+  if (t.startsWith(needle)) return 80;
+  if (t.includes(needle)) return 60;
+  if (c.includes(needle)) return 30;
+  if (e.includes(needle)) return 20;
+  return 0;
+};
+
+const TypeIcon = ({ type, className }) => {
+  if (type === 'glossary') return <Library className={className} />;
+  if (type === 'comparison') return <GitCompare className={className} />;
+  if (type === 'cheatsheet') return <BookOpen className={className} />;
+  return <FileText className={className} />;
+};
 
 const SearchModal = ({ isOpen, onClose }) => {
   const [query, setQuery] = useState('');
@@ -49,28 +101,56 @@ const SearchModal = ({ isOpen, onClose }) => {
     return () => document.removeEventListener('keydown', handleGlobalKey);
   }, [isOpen, onClose]);
 
-  // Debounced search
+  // Debounced search (merges local index + WP posts)
   const performSearch = useCallback(async (searchQuery) => {
-    if (!searchQuery.trim() || searchQuery.trim().length < 2) {
+    const q = searchQuery.trim();
+    if (!q || q.length < 2) {
       setResults([]);
       setLoading(false);
       return;
     }
 
     setLoading(true);
+
+    // 1) Local index (synchronous) — glossary + comparisons
+    const localMatches = LOCAL_INDEX
+      .map(item => ({ item, score: scoreLocal(item, q) }))
+      .filter(x => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 6)
+      .map(x => x.item);
+
+    // 2) WP articles (async)
+    let wpMatches = [];
     try {
-      const { posts } = await wordpressApi.getPosts({
-        search: searchQuery.trim(),
-        per_page: 8,
-        page: 1
-      });
-      setResults(posts || []);
-      setSelectedIndex(0);
+      const { posts } = await wordpressApi.getPosts({ search: q, per_page: 8, page: 1 });
+      wpMatches = (posts || []).map(p => ({
+        type: 'article',
+        id: `article-${p.id}`,
+        title: p.title,
+        slug: p.slug,
+        href: `/articles/${p.slug}`,
+        category: p.category,
+        readTime: p.readTime,
+        raw: p,
+      }));
     } catch {
-      setResults([]);
-    } finally {
-      setLoading(false);
+      wpMatches = [];
     }
+
+    // Merge: articles first (primary intent), then local.
+    // De-dupe by href just in case.
+    const seen = new Set();
+    const merged = [];
+    for (const r of [...wpMatches, ...localMatches]) {
+      if (seen.has(r.href)) continue;
+      seen.add(r.href);
+      merged.push(r);
+    }
+
+    setResults(merged);
+    setSelectedIndex(0);
+    setLoading(false);
   }, []);
 
   const handleInputChange = (e) => {
@@ -104,9 +184,9 @@ const SearchModal = ({ isOpen, onClose }) => {
     }
   };
 
-  const navigateToResult = (post) => {
+  const navigateToResult = (result) => {
     onClose();
-    navigate(`/articles/${post.slug}`);
+    navigate(result.href || `/articles/${result.slug}`);
   };
 
   if (!isOpen) return null;
@@ -161,16 +241,16 @@ const SearchModal = ({ isOpen, onClose }) => {
 
                 {!loading && query.trim().length >= 2 && results.length === 0 && (
                   <div className="px-4 py-8 text-center">
-                    <p className="text-gray-400">No articles found for "{query}"</p>
+                    <p className="text-gray-400">No results for "{query}"</p>
                   </div>
                 )}
 
                 {!loading && results.length > 0 && (
                   <div className="py-2">
-                    {results.map((post, index) => (
+                    {results.map((r, index) => (
                       <button
-                        key={post.id}
-                        onClick={() => navigateToResult(post)}
+                        key={r.id}
+                        onClick={() => navigateToResult(r)}
                         onMouseEnter={() => setSelectedIndex(index)}
                         className={`w-full flex items-start gap-3 px-4 py-3 text-left transition-colors ${
                           index === selectedIndex
@@ -178,22 +258,28 @@ const SearchModal = ({ isOpen, onClose }) => {
                             : 'border-l-2 border-transparent hover:bg-slate-800/50'
                         }`}
                       >
-                        <FileText className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />
+                        <TypeIcon type={r.type} className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-white font-medium truncate">{post.title}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            {post.category && (
+                          <p className="text-white font-medium truncate">{r.title}</p>
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 bg-slate-700/60 text-gray-300 rounded-full">
+                              {r.type === 'article' ? 'Article' : r.type === 'glossary' ? 'Glossary' : r.type === 'comparison' ? 'Comparison' : r.type}
+                            </span>
+                            {r.category && (
                               <span className="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded-full">
-                                {post.category}
+                                {r.category}
                               </span>
                             )}
-                            {post.readTime && (
+                            {r.readTime && (
                               <span className="text-xs text-gray-400 flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
-                                {post.readTime}
+                                {r.readTime}
                               </span>
                             )}
                           </div>
+                          {r.excerpt && (
+                            <p className="text-xs text-gray-400 mt-1 line-clamp-1">{r.excerpt}</p>
+                          )}
                         </div>
                         <ArrowRight className={`h-4 w-4 shrink-0 mt-1 transition-opacity ${
                           index === selectedIndex ? 'text-blue-400 opacity-100' : 'opacity-0'

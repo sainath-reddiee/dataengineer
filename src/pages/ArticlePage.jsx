@@ -28,6 +28,8 @@ import GiscusComments from '@/components/GiscusComments';
 import InArticleCTA from '@/components/InArticleCTA';
 import useCopyCodeButtons from '@/hooks/useCopyCodeButtons';
 import { injectInternalLinks } from '@/lib/pseo/linkingEngine';
+import { getRelatedTools } from '@/data/articleToolMap';
+import { BookOpen, GitCompare, Library } from 'lucide-react';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
@@ -166,8 +168,52 @@ const ErrorDisplay = ({ error, onRetry, slug }) => {
   );
 };
 
-const RelatedPosts = ({ currentPostId }) => {
-  const { posts: relatedPosts, loading } = useRelatedPosts(currentPostId);
+const RelatedTools = ({ post }) => {
+  const tools = React.useMemo(() => getRelatedTools(post, 4), [post]);
+  const { cheatsheets, comparisons, glossary } = tools;
+  const total = cheatsheets.length + comparisons.length + glossary.length;
+  if (total === 0) return null;
+
+  const Column = ({ icon: Icon, title, items, base, accent }) => {
+    if (!items || items.length === 0) return null;
+    return (
+      <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 backdrop-blur-sm">
+        <h3 className={`flex items-center gap-2 text-lg font-bold ${accent} mb-3`}>
+          <Icon className="h-5 w-5" />
+          {title}
+        </h3>
+        <ul className="space-y-2">
+          {items.map((it) => (
+            <li key={it.slug}>
+              <Link
+                to={`${base}/${it.slug}`}
+                className="block rounded-lg border border-slate-700/40 bg-slate-800/40 px-3 py-2 text-sm text-gray-200 transition-colors hover:border-blue-400/50 hover:bg-slate-800/80 hover:text-white"
+              >
+                {it.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
+  return (
+    <section className="mt-16" aria-labelledby="related-tools-heading">
+      <h2 id="related-tools-heading" className="text-3xl font-bold mb-8 text-white text-center">
+        Related <span className="gradient-text">Tools &amp; References</span>
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Column icon={BookOpen}   title="Cheat Sheets" items={cheatsheets} base="/cheatsheets" accent="text-blue-300" />
+        <Column icon={GitCompare} title="Comparisons"  items={comparisons} base="/compare"      accent="text-purple-300" />
+        <Column icon={Library}    title="Glossary"     items={glossary}    base="/glossary"     accent="text-green-300" />
+      </div>
+    </section>
+  );
+};
+
+const RelatedPosts = ({ currentPostId, category }) => {
+  const { posts: relatedPosts, loading } = useRelatedPosts(currentPostId, category);
 
   if (loading) {
     return (
@@ -741,10 +787,12 @@ const ArticlePage = () => {
 
         <InArticleCTA />
 
-        <GiscusComments />
+        <RelatedTools post={safePost} />
 
         <ArticleNavigation currentPostId={safePost.id} category={safePost.category} />
-        <RelatedPosts currentPostId={safePost.id} />
+        <RelatedPosts currentPostId={safePost.id} category={safePost.category} />
+
+        <GiscusComments />
       </div>
     </div>
   );

@@ -1,26 +1,23 @@
-seo: close schema and social-card gaps on PSEO pages (Phase 1)
+linking: broaden internal discovery across articles, 404, and search (Phase 2)
 
-Before this change, ~200+ programmatic SEO pages (Comparison, Glossary,
-CheatSheet + 3 hubs) bypassed the central MetaTags component and were
-shipping without og:image, twitter:image, BreadcrumbList JSON-LD, or
-FAQPage JSON-LD. Result: no social-card preview on LinkedIn/Twitter/
-Slack/Discord, no breadcrumb or FAQ rich snippets in Google SERPs.
+Internal linking & PSEO cross-discovery pass to improve crawl depth,
+dwell time, and SERP share for article traffic.
 
-Changes:
-- ComparisonPage: full OG/Twitter image suite, BreadcrumbList JSON-LD,
-  FAQPage JSON-LD when comparison.faqs present.
-- GlossaryPage: full OG/Twitter image suite, BreadcrumbList from
-  derivedData.breadcrumbs, FAQPage JSON-LD when term.faqs present.
-- CheatSheetPage: full OG/Twitter image suite; Article schema author
-  upgraded Organization -> Person with url + sameAs; added image
-  ImageObject, publisher.logo ImageObject, mainEntityOfPage WebPage
-  (required for Google rich results).
-- CheatSheetHubPage, ComparisonHubPage, GlossaryHubPage: full OG/Twitter
-  image suite (og:image width/height/alt, site_name, locale, twitter
-  site/creator). ComparisonHubPage + GlossaryHubPage now emit
-  BreadcrumbList JSON-LD.
-- seoConfig.getArticleSchema: optional wordCount parameter emitted only
-  when > 0.
+- Add src/data/articleToolMap.js: category/tag -> curated cheatsheets,
+  comparisons, and glossary terms (with alias normalization).
+- ArticlePage: render <RelatedTools/> block above RelatedPosts, move
+  RelatedPosts above GiscusComments so discovery happens before the
+  thread, pass post category to related-posts hook.
+- useRelatedPosts: fall back to latest posts from the same category
+  when the WP /related endpoint returns nothing, keeping old signature
+  backward compatible.
+- NotFoundPage: add search form, 4 popular landings, and 9 category
+  chips so 404 traffic is rescued to high-intent destinations.
+- Header: getCtaUrl() now derives real slugs from group items -
+  single-item groups go direct to the category page, multi-item groups
+  produce /articles?categories=a,b,c instead of a bare /articles.
+- SearchModal: merge local searchIndex.json (glossary + comparisons)
+  with WP article results, de-duped by URL and tagged with type badges
+  (Article / Glossary / Comparison) plus a short excerpt line.
 
-Build verified (2043 modules, 0 errors). Spot-checked dist/compare/
-index.html contains og:image, twitter:image, breadcrumb schema.
+Build verified: 2044 modules transformed, built in 19.34s, 0 errors.
