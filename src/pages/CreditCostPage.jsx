@@ -120,7 +120,7 @@ export default function CreditCostPage() {
             Updated April 2026 · Snowflake list pricing
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
-            <Coins className="w-8 h-8 text-yellow-400" />
+            <Coins className="w-8 h-8 text-yellow-400" aria-hidden="true" />
             Snowflake Credit → USD Converter
           </h1>
           <p className="text-gray-300 text-lg max-w-3xl">
@@ -196,8 +196,8 @@ export default function CreditCostPage() {
             className="bg-gradient-to-br from-blue-900/40 to-purple-900/40 backdrop-blur-xl rounded-2xl border border-blue-700/50 p-6"
           >
             <div className="text-sm text-gray-300 mb-2">Total cost</div>
-            <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4">
-              {formatUSD(result.total)}
+              <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4" aria-live="polite">
+                {formatUSD(result.total)}
             </div>
             <div className="space-y-2 text-sm border-t border-slate-700 pt-4">
               <div className="flex justify-between"><span className="text-gray-400">Credits</span><span className="text-white font-mono">{credits.toLocaleString()}</span></div>
@@ -210,7 +210,7 @@ export default function CreditCostPage() {
               onClick={handleShare}
               className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-700/50 hover:bg-slate-700 border border-slate-600 rounded-xl text-white text-sm font-medium"
             >
-              {copied ? (<><Check className="w-4 h-4 text-green-400" /> Link copied</>) : (<><Share2 className="w-4 h-4" /> Share this calculation</>)}
+              {copied ? (<><Check className="w-4 h-4 text-green-400" aria-hidden="true" /> Link copied</>) : (<><Share2 className="w-4 h-4" aria-hidden="true" /> Share this calculation</>)}
             </button>
 
             <p className="text-[11px] text-gray-500 mt-4">

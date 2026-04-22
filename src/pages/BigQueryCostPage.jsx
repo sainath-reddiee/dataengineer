@@ -152,7 +152,7 @@ export default function BigQueryCostPage() {
             Last updated: April 2026 &middot; List pricing &middot; Client-side
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
-            <Cloud className="w-8 h-8 text-blue-400" />
+            <Cloud className="w-8 h-8 text-blue-400" aria-hidden="true" />
             BigQuery Cost Calculator
           </h1>
           <p className="text-gray-300 text-lg max-w-3xl">
@@ -246,7 +246,7 @@ export default function BigQueryCostPage() {
 
           <div className="bg-gradient-to-br from-blue-600/20 to-indigo-600/20 border border-blue-500/40 rounded-2xl p-6 space-y-4">
             <div className="text-xs text-blue-300 uppercase tracking-wider">Monthly estimate</div>
-            <div className="text-4xl font-bold text-white">{fmt(calc.total)}</div>
+              <div className="text-4xl font-bold text-white" aria-live="polite">{fmt(calc.total)}</div>
             <div className="text-xs text-gray-400">Annual: {fmt(calc.total * 12)}</div>
 
             <div className="pt-4 border-t border-blue-500/30 space-y-2 text-sm">

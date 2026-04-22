@@ -188,7 +188,7 @@ export default function WarehouseSizingPage() {
             Heuristic recommendation · Based on public Snowflake sizing patterns · Updated April 2026
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
-            <Layers className="w-8 h-8 text-purple-400" />
+            <Layers className="w-8 h-8 text-purple-400" aria-hidden="true" />
             Snowflake Warehouse Sizing Estimator
           </h1>
           <p className="text-gray-300 text-lg max-w-3xl">
@@ -295,7 +295,7 @@ export default function WarehouseSizingPage() {
               className="bg-gradient-to-br from-purple-900/40 to-blue-900/40 backdrop-blur-xl rounded-2xl border border-purple-700/50 p-6 lg:sticky lg:top-4"
             >
               <div className="text-sm text-gray-300 mb-2">Recommended size</div>
-              <div className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+              <div className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2" aria-live="polite">
                 {result.size.label}
               </div>
               <div className="text-sm text-gray-300 mb-4">
@@ -320,7 +320,7 @@ export default function WarehouseSizingPage() {
                 onClick={handleShare}
                 className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-700/50 hover:bg-slate-700 border border-slate-600 rounded-xl text-white text-sm font-medium"
               >
-                {copied ? (<><Check className="w-4 h-4 text-green-400" /> Link copied</>) : (<><Share2 className="w-4 h-4" /> Share recommendation</>)}
+                {copied ? (<><Check className="w-4 h-4 text-green-400" aria-hidden="true" /> Link copied</>) : (<><Share2 className="w-4 h-4" aria-hidden="true" /> Share recommendation</>)}
               </button>
               <p className="text-[11px] text-gray-500 mt-4">
                 Starting-point only. Always validate with a query profile on production data.

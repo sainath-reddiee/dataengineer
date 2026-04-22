@@ -390,7 +390,7 @@ export default function CostCalculatorPage() {
             Updated April 2026 · Based on Snowflake list pricing
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
-            <Calculator className="w-8 h-8 text-blue-400" />
+            <Calculator className="w-8 h-8 text-blue-400" aria-hidden="true" />
             Snowflake Cost Calculator
           </h1>
           <p className="text-gray-300 text-lg max-w-3xl">
@@ -560,7 +560,7 @@ export default function CostCalculatorPage() {
               className="bg-gradient-to-br from-blue-900/40 to-purple-900/40 backdrop-blur-xl rounded-2xl border border-blue-700/50 p-6 lg:sticky lg:top-4"
             >
               <h2 className="text-lg font-semibold text-white mb-3">Monthly estimate</h2>
-              <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
+              <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2" aria-live="polite">
                 {formatUSD(result.totalMonthly)}
               </div>
               <p className="text-gray-400 text-sm mb-5">
@@ -594,11 +594,11 @@ export default function CostCalculatorPage() {
                 >
                   {copied ? (
                     <>
-                      <Check className="w-4 h-4 text-green-400" /> Link copied
+                      <Check className="w-4 h-4 text-green-400" aria-hidden="true" /> Link copied
                     </>
                   ) : (
                     <>
-                      <Share2 className="w-4 h-4" /> Share this estimate
+                      <Share2 className="w-4 h-4" aria-hidden="true" /> Share this estimate
                     </>
                   )}
                 </button>

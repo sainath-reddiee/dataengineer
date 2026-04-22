@@ -169,7 +169,7 @@ export default function DbtCloudCostPage() {
             Updated April 2026 · dbt Labs list pricing
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
-            <Users className="w-8 h-8 text-emerald-400" />
+            <Users className="w-8 h-8 text-emerald-400" aria-hidden="true" />
             dbt Cloud Cost Calculator
           </h1>
           <p className="text-gray-300 text-lg max-w-3xl">
@@ -257,8 +257,8 @@ export default function DbtCloudCostPage() {
             className="bg-gradient-to-br from-emerald-900/40 to-teal-900/40 backdrop-blur-xl rounded-2xl border border-emerald-700/50 p-6"
           >
             <div className="text-sm text-gray-300 mb-2">Monthly total</div>
-            <div className="text-5xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent mb-4">
-              {formatUSD(result.total)}
+              <div className="text-5xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent mb-4" aria-live="polite">
+                {formatUSD(result.total)}
             </div>
             <div className="space-y-2 text-sm border-t border-slate-700 pt-4">
               <div className="flex justify-between"><span className="text-gray-400">Effective seats</span><span className="text-white font-mono">{result.effectiveSeats}</span></div>
@@ -273,7 +273,7 @@ export default function DbtCloudCostPage() {
               onClick={handleShare}
               className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-700/50 hover:bg-slate-700 border border-slate-600 rounded-xl text-white text-sm font-medium"
             >
-              {copied ? (<><Check className="w-4 h-4 text-green-400" /> Link copied</>) : (<><Share2 className="w-4 h-4" /> Share this estimate</>)}
+              {copied ? (<><Check className="w-4 h-4 text-green-400" aria-hidden="true" /> Link copied</>) : (<><Share2 className="w-4 h-4" aria-hidden="true" /> Share this estimate</>)}
             </button>
 
             <p className="text-[11px] text-gray-500 mt-4">

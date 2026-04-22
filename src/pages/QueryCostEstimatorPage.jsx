@@ -153,7 +153,7 @@ export default function QueryCostEstimatorPage() {
             Heuristic estimate · Throughput ~100 MB/s per credit/hour · Updated April 2026
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
-            <Database className="w-8 h-8 text-blue-400" />
+            <Database className="w-8 h-8 text-blue-400" aria-hidden="true" />
             Snowflake Query Cost Estimator
           </h1>
           <p className="text-gray-300 text-lg max-w-3xl">
@@ -285,7 +285,7 @@ export default function QueryCostEstimatorPage() {
               className="bg-gradient-to-br from-blue-900/40 to-purple-900/40 backdrop-blur-xl rounded-2xl border border-blue-700/50 p-6 lg:sticky lg:top-4"
             >
               <div className="text-sm text-gray-300 mb-2">Cost per query</div>
-              <div className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4">
+              <div className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4" aria-live="polite">
                 {formatUSD(result.costPerQuery)}
               </div>
               <div className="space-y-2 text-sm border-t border-slate-700 pt-4">
@@ -302,7 +302,7 @@ export default function QueryCostEstimatorPage() {
                 onClick={handleShare}
                 className="mt-5 w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-700/50 hover:bg-slate-700 border border-slate-600 rounded-xl text-white text-sm font-medium"
               >
-                {copied ? (<><Check className="w-4 h-4 text-green-400" /> Link copied</>) : (<><Share2 className="w-4 h-4" /> Share this estimate</>)}
+                {copied ? (<><Check className="w-4 h-4 text-green-400" aria-hidden="true" /> Link copied</>) : (<><Share2 className="w-4 h-4" aria-hidden="true" /> Share this estimate</>)}
               </button>
               <p className="text-[11px] text-gray-500 mt-4">
                 Heuristic only. Real runtime depends on query shape, caching, clustering, and concurrency.
