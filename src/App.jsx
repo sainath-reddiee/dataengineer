@@ -143,6 +143,9 @@ function App() {
 
       // ✅ Prefetch popular category pages
       import('./pages/CategoryPage'); // This covers all categories including new ones
+
+      // ✅ Prefetch Tools hub (frequent nav target, cold chunk causes visible lag)
+      import('./pages/ToolsHubPage');
     }, prefetchDelay);
 
     const logPerformance = () => {

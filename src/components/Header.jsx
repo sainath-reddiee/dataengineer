@@ -525,6 +525,8 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link
                 to="/tools"
+                onMouseEnter={() => { import('@/pages/ToolsHubPage'); }}
+                onFocus={() => { import('@/pages/ToolsHubPage'); }}
                 className="whitespace-nowrap font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 text-gray-300 hover:text-blue-400"
               >
                 <Wrench className="w-4 h-4 hidden 2xl:inline-block" />

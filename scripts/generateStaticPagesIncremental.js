@@ -392,6 +392,85 @@ const ESSENTIAL_PAGES = [
     `
   },
   {
+    path: '/certification',
+    title: 'Snowflake Certification Prep 2026 - Free SnowPro Core, Advanced & Gen AI Practice',
+    description: 'Free Snowflake certification prep for SnowPro Core (COF-C02), SnowPro Advanced: Data Engineer, Architect, and SnowPro Specialty: Gen AI. Study plan, exam breakdown, and interactive practice questions.',
+    content: `
+      <h1>Snowflake Certification Prep: SnowPro Core, Advanced & Specialty</h1>
+      <p><strong>Everything you need to pass a SnowPro exam on the first attempt:</strong> the current exam blueprint for each track, a four-week study plan, the concepts that trip up most candidates, and a free interactive practice question bank covering SnowPro Core, SnowPro Advanced: Data Engineer, SnowPro Advanced: Architect, and the SnowPro Specialty: Generative AI exam.</p>
+
+      <h2>The SnowPro Certification Family</h2>
+      <p>Snowflake organizes its credentials into three tiers. Every Advanced and Specialty exam requires an active SnowPro Core credential as a prerequisite, so Core is the mandatory first step for everyone.</p>
+      <ul>
+        <li><strong>SnowPro Core (COF-C02):</strong> Entry level - 100 questions, 115 minutes, $175 USD, passing score 750/1000. Tests architecture, storage, virtual warehouses, data loading, transformations, RBAC, and data protection.</li>
+        <li><strong>SnowPro Advanced: Data Engineer (DEA-C01):</strong> 65 questions, 115 minutes, $375 USD. Deep pipeline focus: Snowpipe, Streams, Tasks, Dynamic Tables, external tables, stored procedures, UDFs, and performance tuning.</li>
+        <li><strong>SnowPro Advanced: Architect (ARA-C01):</strong> 65 questions, 115 minutes, $375 USD. Solution design focus: multi-account architecture, replication, failover, private connectivity, data sharing, Iceberg tables, and cost governance at scale.</li>
+        <li><strong>SnowPro Specialty: Generative AI:</strong> 55 questions, 90 minutes, $225 USD. Cortex AI focus: LLM functions, Cortex Search, Cortex Analyst, document AI, embeddings, vector similarity, and RAG patterns.</li>
+      </ul>
+
+      <h2>SnowPro Core Domain Weights</h2>
+      <p>The official COF-C02 study guide breaks the exam into six domains. Plan your study hours proportionally - architecture and transformations alone account for nearly half the exam.</p>
+      <ul>
+        <li><strong>Snowflake Cloud Data Platform Features & Architecture (~25%):</strong> editions, regions, micro-partitions, metadata, caching layers, Snowgrid.</li>
+        <li><strong>Account Access & Security (~20%):</strong> roles, grants, network policies, MFA, SSO, masking, row access policies.</li>
+        <li><strong>Data Transformations (~20%):</strong> SQL functions, semi-structured data (VARIANT), UDFs, stored procedures.</li>
+        <li><strong>Performance Concepts (~15%):</strong> warehouse sizing, scaling, clustering, search optimization, query profile interpretation.</li>
+        <li><strong>Data Loading & Unloading (~10%):</strong> COPY INTO, Snowpipe, stages, file formats, external tables.</li>
+        <li><strong>Data Protection & Data Sharing (~10%):</strong> time travel, fail-safe, zero-copy cloning, secure shares, Marketplace.</li>
+      </ul>
+
+      <h2>A Realistic 4-Week Study Plan (SnowPro Core)</h2>
+      <p>This plan assumes you can commit 6-8 hours per week - roughly one hour on weekdays plus a two-hour weekend deep-dive. Adjust the pace if you already have production Snowflake experience.</p>
+      <ul>
+        <li><strong>Week 1 - Architecture & Storage:</strong> read the architecture overview, create a free trial account, load a sample dataset, inspect TABLE_STORAGE_METRICS. Goal: explain decoupled compute/storage, micro-partitions, and how metadata enables zero-copy cloning.</li>
+        <li><strong>Week 2 - Warehouses, Caching & Performance:</strong> virtual warehouses, multi-cluster scaling, auto-suspend/resume, and the three cache layers (result, local disk, remote storage). Inspect Query Profile for cache hits. Resize a warehouse mid-query to see credit burn.</li>
+        <li><strong>Week 3 - Security, RBAC & Data Loading:</strong> build a SYSADMIN role hierarchy, practice GRANT/REVOKE, create a masking policy, load a CSV via COPY INTO, configure Snowpipe for continuous ingest.</li>
+        <li><strong>Week 4 - Data Protection, Sharing & Practice:</strong> time travel with AT/BEFORE, zero-copy clones, a secure share between accounts. Take two full-length practice exams - one Monday, one Sunday. Review every missed question and write a one-line explanation in your own words.</li>
+      </ul>
+
+      <h2>Six Mistakes That Cost Candidates the Exam</h2>
+      <ul>
+        <li><strong>Confusing fail-safe with time travel.</strong> Time travel is user-queryable (up to 90 days on Enterprise). Fail-safe is a 7-day Snowflake-only recovery window - you cannot query fail-safe data.</li>
+        <li><strong>Assuming clustering keys always help.</strong> Clustering only pays off on very large tables (&gt;1 TB) where the key aligns with frequent filter predicates. On small tables the maintenance credits exceed the query savings.</li>
+        <li><strong>Mixing up SYSADMIN and ACCOUNTADMIN.</strong> ACCOUNTADMIN owns billing, resource monitors, and account settings. SYSADMIN should own databases, warehouses, and schemas. Daily work should never happen in ACCOUNTADMIN.</li>
+        <li><strong>Forgetting the 60-second warehouse resume minimum.</strong> A resumed warehouse bills a minimum of 60 seconds even for a 2-second query. Important for cost questions.</li>
+        <li><strong>Misreading result cache rules.</strong> The 24-hour result cache is invalidated when data changes, when non-deterministic functions like CURRENT_TIMESTAMP() are used, or when non-deterministic UDFs are in the query.</li>
+        <li><strong>Memorizing answers instead of concepts.</strong> Snowflake rotates exam pools. If your study relies on leaked dumps, you will fail. Understand <em>why</em> each answer is correct.</li>
+      </ul>
+
+      <h2>Interactive Practice Question Bank</h2>
+      <p>DataEngineer Hub provides a free practice question bank covering SnowPro Core, Advanced: Data Engineer, Advanced: Architect, and Specialty: Gen AI. It runs in your browser, gives instant feedback with rationales, and tracks your readiness by topic.</p>
+
+      <h2>Frequently Asked Questions</h2>
+      <h3>Which Snowflake certification should I take first?</h3>
+      <p>Start with SnowPro Core (COF-C02). It is the foundational credential and a prerequisite for every SnowPro Advanced and Specialty track. Most candidates pass it after 3-6 weeks of part-time study if they already have working SQL experience.</p>
+
+      <h3>How many questions are on SnowPro Core and what is the passing score?</h3>
+      <p>100 questions, 115 minutes, scaled passing score of 750 out of 1000. Questions are multiple choice and multiple select with no penalty for guessing.</p>
+
+      <h3>How much does the SnowPro Core exam cost?</h3>
+      <p>SnowPro Core costs $175 USD. SnowPro Advanced exams (Data Engineer, Architect, Administrator, Data Scientist, Data Analyst) cost $375 USD each. Specialty exams cost $225 USD.</p>
+
+      <h3>How long is a SnowPro certification valid?</h3>
+      <p>SnowPro Core and Advanced certifications are valid for two years. You can recertify by passing the current version of the exam or, for some tracks, by earning continuing education credits before expiry.</p>
+
+      <h3>Do I need hands-on Snowflake experience before taking SnowPro Core?</h3>
+      <p>Snowflake recommends at least six months of hands-on practice. Most candidates who pass have loaded real data, written non-trivial queries, managed warehouses, and set up a role hierarchy. The exam heavily tests micro-partitions, caching, zero-copy cloning, and time travel - concepts that are hard to memorize from a PDF.</p>
+
+      <h3>What topics carry the most weight on SnowPro Core?</h3>
+      <p>Architecture (~25%), Account Access & Security (~20%), Data Transformations (~20%), Performance (~15%), Data Loading & Unloading (~10%), Data Protection & Sharing (~10%).</p>
+
+      <h3>Is the practice tool free?</h3>
+      <p>Yes. The interactive practice app is free, runs in your browser, and covers SnowPro Core, Advanced: Data Engineer, Advanced: Architect, and Specialty: Gen AI.</p>
+
+      <h3>What is the best way to use practice questions without just memorizing answers?</h3>
+      <p>Practice questions are diagnostics, not answer keys. After every question, read the rationale, open the Snowflake documentation, and write a one-line summary in your own words. If you cannot explain why the wrong answers are wrong, you do not understand the topic yet.</p>
+
+      <h2>Disclaimer</h2>
+      <p>Exam details (question counts, duration, pricing, domain weights) reflect Snowflake's published study guides as of 2026. Always verify current specifications on the official Snowflake Certifications page before registering. DataEngineer Hub is an independent community resource and is not affiliated with or endorsed by Snowflake Inc.</p>
+    `
+  },
+  {
     path: '/tools/snowflake-cost-calculator',
     title: 'Snowflake Cost Calculator 2026 - Free Pricing Estimator',
     description: 'Free Snowflake cost calculator. Estimate warehouse credits, storage, and cloud services costs by edition (Standard/Enterprise/BC) and region. Instant monthly and annual estimates.',
