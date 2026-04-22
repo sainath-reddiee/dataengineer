@@ -332,13 +332,13 @@ const Certification = () => {
             Data Engineer, Advanced: Architect, and Specialty: Gen AI. It runs entirely in your
             browser, gives instant feedback with rationales, and tracks your readiness by topic.
           </p>
-          <div className="w-full rounded-lg border border-gray-700 overflow-hidden" style={{ minHeight: '60vh' }}>
+          <div className="w-full rounded-lg border border-gray-700 overflow-hidden" style={{ height: '720px' }}>
             <iframe
               src="https://snowcert.streamlit.app/?embed=true"
               title="Snowflake Certification Practice App"
               width="100%"
-              height="100%"
-              style={{ border: 'none', minHeight: '60vh', display: 'block' }}
+              height="720"
+              style={{ border: 'none', height: '720px', display: 'block' }}
               loading="lazy"
               allow="clipboard-read; clipboard-write;"
             />

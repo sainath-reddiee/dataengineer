@@ -1,12 +1,13 @@
 // src/pages/HomePage.jsx - ENHANCED WITH SEO STRUCTURED DATA
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Hero from '../components/Hero';
 import MetaTags from '../components/SEO/MetaTags';
 import { Sparkles, TrendingUp, FileText, Zap, BookOpen, Wrench, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-import { cheatsheets, CHEATSHEET_CATEGORIES } from '@/data/cheatsheetData';
+// cheatsheetData is large (~all cheat sheet content). We dynamic-import it so
+// it doesn't block the initial HomePage bundle / LCP.
 
 const FeaturedPosts = React.lazy(() => import('../components/FeaturedPosts'));
 const TrendingPosts = React.lazy(() => import('../components/TrendingPosts'));
@@ -83,15 +84,39 @@ const FEATURED_SLUGS = [
 ];
 
 const CheatSheetCards = () => {
+  const [data, setData] = useState({ cheatsheets: null, categories: null });
+
+  useEffect(() => {
+    let cancelled = false;
+    import('@/data/cheatsheetData').then((mod) => {
+      if (cancelled) return;
+      setData({
+        cheatsheets: mod.cheatsheets,
+        categories: mod.CHEATSHEET_CATEGORIES,
+      });
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (!data.cheatsheets) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="h-36 rounded-xl bg-slate-800/50 border border-slate-700 animate-pulse" />
+        ))}
+      </div>
+    );
+  }
+
   const featured = FEATURED_SLUGS
-    .map((slug) => cheatsheets.find((s) => s.slug === slug))
+    .map((slug) => data.cheatsheets.find((s) => s.slug === slug))
     .filter(Boolean)
     .slice(0, 8);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {featured.map((sheet) => {
-        const cat = CHEATSHEET_CATEGORIES.find((c) => c.id === sheet.category);
+        const cat = data.categories.find((c) => c.id === sheet.category);
         return (
           <Link
             key={sheet.slug}

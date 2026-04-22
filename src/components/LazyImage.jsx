@@ -103,8 +103,8 @@ const LazyImage = ({
           decoding={priority ? 'sync' : 'async'}
           onLoad={handleLoad}
           onError={handleError}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
+          className={`w-full h-full object-cover ${
+            priority ? '' : `transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`
           }`}
           style={{
             contentVisibility: 'auto'

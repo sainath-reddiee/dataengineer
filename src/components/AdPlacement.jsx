@@ -29,12 +29,14 @@ const AdPlacement = ({ className = '' }) => {
     );
   }
 
-  // Production: render nothing. Auto Ads will inject ads automatically.
-  // A passive hint div lets Auto Ads detect a good placement zone if desired.
+  // Production: render a reserved slot so Auto Ads can fill it without
+  // causing cumulative layout shift. 280px matches a typical in-article
+  // rectangle; the container won't visually shrink after an ad loads
+  // because min-height is set, not a fixed height.
   return (
     <div
-      className={`auto-ads-placement ${className}`}
-      style={{ minHeight: '1px' }}
+      className={`auto-ads-placement my-8 ${className}`}
+      style={{ minHeight: '280px' }}
       aria-hidden="true"
     />
   );

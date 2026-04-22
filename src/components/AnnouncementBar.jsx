@@ -16,14 +16,28 @@ const ANNOUNCEMENT = {
 const STORAGE_KEY = `announcement_dismissed_${ANNOUNCEMENT.id}`;
 
 const AnnouncementBar = ({ onVisibilityChange }) => {
-  const [visible, setVisible] = useState(false);
+  // Read dismissal state synchronously on the very first render so the parent
+  // layout can reserve padding without a visible layout shift when the bar
+  // actually needs to be shown. During SSG/prerender there is no localStorage;
+  // default to not-visible to match the static HTML output.
+  const initialVisible = (() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      return !localStorage.getItem(STORAGE_KEY);
+    } catch {
+      return false;
+    }
+  })();
+
+  const [visible, setVisible] = useState(initialVisible);
 
   useEffect(() => {
-    const dismissed = localStorage.getItem(STORAGE_KEY);
-    if (!dismissed) {
-      setVisible(true);
+    if (visible) {
       onVisibilityChange?.(true);
     }
+    // We only want this to run once per mount; visibility changes from the
+    // dismiss button call onVisibilityChange directly.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDismiss = () => {

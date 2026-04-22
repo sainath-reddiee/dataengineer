@@ -10,9 +10,21 @@ import ScrollToTop from '@/components/ScrollToTop';
 import AnnouncementBar from '@/components/AnnouncementBar';
 
 const ANNOUNCEMENT_BAR_HEIGHT = 40;
+// Keep this key in sync with AnnouncementBar.jsx so Layout can reserve the
+// correct paddingTop synchronously on the first render (avoiding CLS).
+const ANNOUNCEMENT_STORAGE_KEY = 'announcement_dismissed_snowpro-gen-ai-2026';
+
+const readInitialBarVisible = () => {
+  if (typeof window === 'undefined') return false;
+  try {
+    return !localStorage.getItem(ANNOUNCEMENT_STORAGE_KEY);
+  } catch {
+    return false;
+  }
+};
 
 const Layout = () => {
-  const [isBarVisible, setIsBarVisible] = useState(false);
+  const [isBarVisible, setIsBarVisible] = useState(readInitialBarVisible);
   const topOffset = isBarVisible ? ANNOUNCEMENT_BAR_HEIGHT : 0;
 
   return (
