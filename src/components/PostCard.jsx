@@ -138,7 +138,8 @@ const PostCard = ({ post }) => {
               tags={post.tags}
               limit={3}
               showIcon={false}
-              size="default"  // Change from "small" to "default" for larger touch targets
+              size="default"
+              linkless
             />
           </div>
         )}

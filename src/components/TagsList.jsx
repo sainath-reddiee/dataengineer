@@ -1,10 +1,12 @@
 // src/components/TagsList.jsx - FIXED VERSION WITH ACCESSIBILITY
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Tag } from 'lucide-react';
 
-const TagsList = ({ tags, limit = null, showIcon = true, size = 'default' }) => {
+const TagsList = ({ tags, limit = null, showIcon = true, size = 'default', linkless = false }) => {
+  const navigate = useNavigate();
+
   if (!tags || tags.length === 0) return null;
 
   const displayTags = limit ? tags.slice(0, limit) : tags;
@@ -34,17 +36,44 @@ const TagsList = ({ tags, limit = null, showIcon = true, size = 'default' }) => 
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, delay: index * 0.05 }}
         >
-          <Link
-            to={`/tag/${tag.slug}`}
-            className={`inline-flex items-center justify-center ${sizeClasses[size]} rounded-full font-medium 
-                     bg-blue-500/10 text-blue-300 border border-blue-500/20
-                     hover:bg-blue-500/20 hover:border-blue-400/40 hover:scale-105
-                     transition-all duration-200`}
-            aria-label={`View articles tagged with ${tag.name}`}
-            title={`View articles tagged with ${tag.name}`}
-          >
-            #{tag.name}
-          </Link>
+          {linkless ? (
+            <span
+              role="link"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                navigate(`/tag/${tag.slug}`);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  navigate(`/tag/${tag.slug}`);
+                }
+              }}
+              className={`inline-flex items-center justify-center ${sizeClasses[size]} rounded-full font-medium cursor-pointer
+                       bg-blue-500/10 text-blue-300 border border-blue-500/20
+                       hover:bg-blue-500/20 hover:border-blue-400/40 hover:scale-105
+                       transition-all duration-200`}
+              aria-label={`View articles tagged with ${tag.name}`}
+              title={`View articles tagged with ${tag.name}`}
+            >
+              #{tag.name}
+            </span>
+          ) : (
+            <Link
+              to={`/tag/${tag.slug}`}
+              className={`inline-flex items-center justify-center ${sizeClasses[size]} rounded-full font-medium 
+                       bg-blue-500/10 text-blue-300 border border-blue-500/20
+                       hover:bg-blue-500/20 hover:border-blue-400/40 hover:scale-105
+                       transition-all duration-200`}
+              aria-label={`View articles tagged with ${tag.name}`}
+              title={`View articles tagged with ${tag.name}`}
+            >
+              #{tag.name}
+            </Link>
+          )}
         </motion.div>
       ))}
       {limit && tags.length > limit && (

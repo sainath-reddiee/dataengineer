@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -111,6 +112,9 @@ function AdminNav() {
 export function AdminLayout() {
     return (
         <AdminAuth>
+            <Helmet>
+                <meta name="robots" content="noindex, nofollow" />
+            </Helmet>
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex">
                 <AdminNav />
                 <main className="flex-1 p-6 overflow-auto">

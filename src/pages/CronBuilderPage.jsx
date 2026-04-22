@@ -323,7 +323,7 @@ export default function CronBuilderPage() {
                 {upcoming.map((d, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm text-gray-300">
                     <Clock className="w-4 h-4 text-cyan-400 shrink-0" />
-                    <span className="font-mono">{d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short', weekday: 'short' })}</span>
+                    <span className="font-mono">{d.toLocaleString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                   </li>
                 ))}
               </ul>

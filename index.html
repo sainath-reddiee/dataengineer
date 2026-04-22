@@ -41,10 +41,6 @@
         'wait_for_update': 500
       });
     </script>
-    <!-- AdSense: static tag so the AdSense bot can verify ad code in raw HTML -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728"
-            crossorigin="anonymous"></script>
-
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
     <link rel="preconnect" href="https://giscus.app" crossorigin>
     <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
@@ -254,8 +250,6 @@
       }
     </style>
     
-    <!-- AdSense script is loaded statically in <head> with Consent Mode v2 (ad_storage denied by default) -->
-
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png">
     <link rel="manifest" href="/manifest.json">
@@ -395,5 +389,10 @@
         }, 8000);
       });
     </script>
+
+    <!-- AdSense: moved to end of body so it doesn't compete with critical render path.
+         Bot still finds the tag in raw HTML for verification. -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728"
+            crossorigin="anonymous"></script>
   </body>
 </html>

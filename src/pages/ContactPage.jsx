@@ -119,7 +119,7 @@ const ContactPage = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
-                  <Input id="email" type="email" placeholder="john.doe@example.com" value={formData.email} onChange={handleChange} />
+                  <Input id="email" type="email" required placeholder="john.doe@example.com" value={formData.email} onChange={handleChange} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="message">Your Message</Label>

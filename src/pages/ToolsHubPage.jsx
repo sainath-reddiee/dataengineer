@@ -1,7 +1,8 @@
 // src/pages/ToolsHubPage.jsx
 /**
  * Tools Hub Page
- * Lists all free Snowflake/data-engineering calculators and tools
+ * Lists all free data-engineering calculators and tools
+ * Covers Snowflake, Databricks, BigQuery, dbt Cloud, SQL, and general utilities
  * Hub-and-spoke model for SEO (like Cheat Sheets and Glossary hubs)
  */
 
@@ -29,6 +30,7 @@ import {
   ExternalLink,
   Database,
   ArrowLeftRight,
+  Scale,
 } from 'lucide-react';
 
 import { SITE_CONFIG } from '@/lib/seoConfig';
@@ -170,6 +172,15 @@ const TOOLS = [
     primaryFor: 'Data lake format conversion, Kafka/Avro inspection, Parquet previewing, format migration',
   },
   {
+    slug: 'cloud-data-warehouse-cost-comparison',
+    title: 'Cloud Warehouse Cost Comparison',
+    icon: Scale,
+    tagline: 'Snowflake vs BigQuery vs Databricks',
+    description:
+      'Enter one workload profile — TB scanned, compute hours, storage — and get an apples-to-apples monthly cost estimate across Snowflake, BigQuery, and Databricks. Uses published list pricing (April 2026). Great for pre-RFP sizing and migration budget framing.',
+    primaryFor: 'Platform selection, migration cost modeling, vendor negotiations, multi-cloud strategy',
+  },
+  {
     slug: 'snowflake-certification-practice',
     title: 'Snowflake Certification Practice',
     icon: Award,
@@ -188,12 +199,12 @@ const FAQS = [
     a: 'Yes. Every tool on this page is free, requires no login, and stores nothing on our servers. All calculations run in your browser.',
   },
   {
-    q: 'How accurate are the estimates?',
-    a: 'Estimates use Snowflake\'s publicly documented list pricing as of 2026. Actual invoiced cost depends on your contract (capacity deals typically discount 20-40% off list), regional pricing, and real usage patterns. Always verify against ACCOUNT_USAGE views for authoritative billing data.',
+    q: 'How accurate are the cost estimates?',
+    a: 'Each calculator uses publicly documented list pricing (as of 2026) for the relevant platform — Snowflake credit rates, BigQuery on-demand/slot pricing, Databricks DBU rates, and dbt Cloud seat pricing. Actual invoiced cost depends on your contract, region, and real usage. Always cross-check with your platform\'s billing dashboard for authoritative numbers.',
   },
   {
-    q: 'Do these tools support all Snowflake editions?',
-    a: 'Yes. All tools let you pick Standard (1.0x), Enterprise (1.5x), Business Critical (2.0x), or VPS (2.5x). The edition multiplier is applied on top of the regional credit price.',
+    q: 'Which platforms do these tools cover?',
+    a: 'The collection spans Snowflake (cost calculator, query estimator, warehouse sizing, credit converter), Databricks (DBU cost calculator), BigQuery (on-demand & editions cost calculator), dbt Cloud (seat + consumption estimator), plus cross-platform tools like the Cloud Warehouse Cost Comparison, SQL Playground, JSON/Parquet/Avro converter, and Cron Builder.',
   },
   {
     q: 'Can I share a configured estimate with my team?',
@@ -201,14 +212,14 @@ const FAQS = [
   },
   {
     q: 'Which tool should I use first?',
-    a: 'Start with the Warehouse Sizing Estimator if you are planning a new workload, the Query Cost Estimator if you are optimizing an existing query, or the full Cost Calculator if you are modeling a monthly budget. Use the Credit Converter for one-off price lookups.',
+    a: 'It depends on your goal. For Snowflake cost planning, start with the Warehouse Sizing Estimator. Comparing cloud warehouses? Use the Cloud Warehouse Cost Comparison for side-by-side Snowflake vs BigQuery vs Databricks pricing. For dbt projects, try the dbt Cloud Cost Calculator. For general data engineering, the SQL Playground, Cron Builder, and Format Converter are great everyday utilities.',
   },
 ];
 
 export default function ToolsHubPage() {
-  const pageTitle = 'Free Snowflake Calculators & Cost Tools 2026 | DataEngineer Hub';
+  const pageTitle = 'Free Data Engineering Calculators & Tools 2026 | DataEngineer Hub';
   const pageDescription =
-    'Free Snowflake cost calculator, query cost estimator, warehouse sizing tool, and credit-to-USD converter. No login, instant results, shareable URLs.';
+    'Free cost calculators for Snowflake, Databricks, BigQuery, and dbt Cloud — plus a SQL playground, cron builder, and format converter. No login, instant results, shareable URLs.';
   const canonicalUrl = `${SITE_CONFIG.url}/tools`;
 
   const breadcrumbSchema = {
@@ -223,7 +234,7 @@ export default function ToolsHubPage() {
   const itemListSchema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: 'Free Snowflake Tools and Calculators',
+    name: 'Free Data Engineering Tools and Calculators',
     description: pageDescription,
     url: canonicalUrl,
     numberOfItems: TOOLS.length,
@@ -239,7 +250,7 @@ export default function ToolsHubPage() {
   const collectionSchema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: 'Snowflake Tools & Calculators',
+    name: 'Data Engineering Tools & Calculators',
     description: pageDescription,
     url: canonicalUrl,
     publisher: {
@@ -266,7 +277,7 @@ export default function ToolsHubPage() {
         <meta name="description" content={pageDescription} />
         <meta
           name="keywords"
-          content="snowflake cost calculator, snowflake credit cost, snowflake warehouse sizing, snowflake query cost, free snowflake tools, snowflake pricing calculator"
+          content="snowflake cost calculator, databricks cost calculator, bigquery pricing calculator, dbt cloud cost estimator, snowflake credit cost, snowflake warehouse sizing, cloud data warehouse comparison, sql playground, cron expression builder, free data engineering tools, json parquet avro converter"
         />
         <link rel="canonical" href={canonicalUrl} />
 
@@ -313,12 +324,12 @@ export default function ToolsHubPage() {
               </div>
 
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                Free Snowflake Calculators &amp; Tools
+                Free Data Engineering Calculators &amp; Tools
               </h1>
 
               <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-                Estimate costs, size warehouses, and price individual queries — all in your
-                browser, no login required. Shareable URLs preserve every input.
+                Estimate costs for Snowflake, Databricks, BigQuery, and dbt Cloud — format data,
+                build cron expressions, and run SQL — all in your browser, no login required.
               </p>
             </motion.div>
           </div>
@@ -394,7 +405,7 @@ export default function ToolsHubPage() {
             <h2 className="text-2xl font-bold text-white mb-3">Which tool should I use?</h2>
             <ul className="text-gray-300 space-y-2 list-disc pl-5">
               <li>
-                <strong className="text-white">Planning a new workload?</strong> Start with the{' '}
+                <strong className="text-white">Planning a new Snowflake workload?</strong> Start with the{' '}
                 <Link to="/tools/snowflake-warehouse-sizing" className="text-blue-400 hover:underline">
                   Warehouse Sizing Estimator
                 </Link>{' '}
@@ -405,11 +416,49 @@ export default function ToolsHubPage() {
                 to model monthly spend.
               </li>
               <li>
-                <strong className="text-white">Optimizing a slow query?</strong> Use the{' '}
+                <strong className="text-white">Comparing cloud data warehouses?</strong> Use the{' '}
+                <Link to="/tools/cloud-data-warehouse-cost-comparison" className="text-blue-400 hover:underline">
+                  Cloud Warehouse Cost Comparison
+                </Link>{' '}
+                for side-by-side Snowflake vs BigQuery vs Databricks pricing on the same workload profile.
+              </li>
+              <li>
+                <strong className="text-white">Optimizing a slow Snowflake query?</strong> Use the{' '}
                 <Link to="/tools/snowflake-query-cost-estimator" className="text-blue-400 hover:underline">
                   Query Cost Estimator
                 </Link>{' '}
                 to compare cost before and after optimization (clustering, SOS, materialized views).
+              </li>
+              <li>
+                <strong className="text-white">Budgeting for Databricks or BigQuery?</strong> The{' '}
+                <Link to="/tools/databricks-cost-calculator" className="text-blue-400 hover:underline">
+                  Databricks Cost Calculator
+                </Link>{' '}
+                and{' '}
+                <Link to="/tools/bigquery-cost-calculator" className="text-blue-400 hover:underline">
+                  BigQuery Cost Calculator
+                </Link>{' '}
+                estimate monthly spend with platform-specific pricing models.
+              </li>
+              <li>
+                <strong className="text-white">Estimating dbt Cloud costs?</strong> The{' '}
+                <Link to="/tools/dbt-cloud-cost-calculator" className="text-blue-400 hover:underline">
+                  dbt Cloud Cost Calculator
+                </Link>{' '}
+                covers seat licensing, model runs, and consumption-based pricing.
+              </li>
+              <li>
+                <strong className="text-white">Need a quick SQL or data utility?</strong> The{' '}
+                <Link to="/tools/sql-playground" className="text-blue-400 hover:underline">
+                  SQL Playground
+                </Link>,{' '}
+                <Link to="/tools/cron-expression-builder" className="text-blue-400 hover:underline">
+                  Cron Builder
+                </Link>, and{' '}
+                <Link to="/tools/json-parquet-avro-converter" className="text-blue-400 hover:underline">
+                  Format Converter
+                </Link>{' '}
+                are everyday utilities that work entirely in your browser.
               </li>
               <li>
                 <strong className="text-white">Reviewing an invoice?</strong> Plug credit counts
@@ -418,11 +467,6 @@ export default function ToolsHubPage() {
                   Credit → USD Converter
                 </Link>{' '}
                 for quick dollar-value checks.
-              </li>
-              <li>
-                <strong className="text-white">Chargeback / showback?</strong> The Query Cost
-                Estimator plus a monthly volume multiplier gives per-team cost attribution for the
-                5-10 biggest queries.
               </li>
             </ul>
           </div>
@@ -519,17 +563,17 @@ export default function ToolsHubPage() {
           <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-2xl p-8 text-center">
             <Sparkles className="w-10 h-10 text-blue-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-white mb-2">
-              Want deeper Snowflake guidance?
+              Want deeper data engineering guidance?
             </h2>
             <p className="text-gray-300 mb-6 max-w-xl mx-auto">
-              Read our in-depth articles on cost optimization, warehouse tuning, and query
-              performance — built for data engineers shipping to production.
+              Read our in-depth articles on Snowflake, Databricks, BigQuery, dbt, and data
+              engineering best practices — built for engineers shipping to production.
             </p>
             <Link
-              to="/category/snowflake"
+              to="/blog"
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors"
             >
-              Browse Snowflake Articles
+              Browse All Articles
               <ChevronRight className="w-5 h-5" />
             </Link>
           </div>

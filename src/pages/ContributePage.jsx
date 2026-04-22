@@ -199,7 +199,7 @@ const ContributePage = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address *</Label>
-                  <Input id="email" type="email" placeholder="jane@example.com" value={formData.email} onChange={handleChange} />
+                  <Input id="email" type="email" required placeholder="jane@example.com" value={formData.email} onChange={handleChange} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="topic">Proposed Topic / Title *</Label>

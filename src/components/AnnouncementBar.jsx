@@ -41,7 +41,7 @@ const AnnouncementBar = ({ onVisibilityChange }) => {
   }, []);
 
   const handleDismiss = () => {
-    localStorage.setItem(STORAGE_KEY, 'true');
+    try { localStorage.setItem(STORAGE_KEY, 'true'); } catch { /* quota / incognito */ }
     setVisible(false);
     onVisibilityChange?.(false);
   };
