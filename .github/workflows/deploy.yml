@@ -196,6 +196,7 @@ jobs:
           VITE_GISCUS_REPO_ID: ${{ secrets.VITE_GISCUS_REPO_ID }}
           VITE_GISCUS_CATEGORY: ${{ secrets.VITE_GISCUS_CATEGORY }}
           VITE_GISCUS_CATEGORY_ID: ${{ secrets.VITE_GISCUS_CATEGORY_ID }}
+          VITE_BUTTONDOWN_API_KEY: ${{ secrets.VITE_BUTTONDOWN_API_KEY }}
 
       - name: 🗑️ Delete Build Cache (Force Fresh Build)
         if: |
