@@ -67,6 +67,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose dbt if:**\n*   You want the industry standard skill set and toolchain.\n*   You use Snowflake, Databricks, Redshift, or a mix of warehouses.\n*   You value open-source packages and community support.\n*   You want your transformations to be portable.\n\n**Choose Dataform if:**\n*   You are 100% committed to Google BigQuery.\n*   You want a fully managed, serverless transformation tool for free.\n*   You prefer JavaScript over Python/Jinja for advanced logic.\n*   You want to get started immediately without setting up local environments.",
+    "faqs": [
+      {"question": "Is Dataform free to use?", "answer": "Yes. Since Google acquired Dataform and integrated it into BigQuery, it is completely free as part of your GCP project. You only pay for the BigQuery compute used by your transformations."},
+      {"question": "Can I use dbt with BigQuery?", "answer": "Yes. dbt has excellent BigQuery support via the dbt-bigquery adapter. Many teams on BigQuery still choose dbt for its portability, larger community, and richer package ecosystem."},
+      {"question": "Is Dataform being deprecated?", "answer": "No. Google has integrated Dataform as a native BigQuery feature and continues to invest in it. However, its scope is now limited to BigQuery, whereas it previously supported other warehouses."}
+    ],
     "relatedComparisons": [
       "snowflake-vs-bigquery",
       "airflow-vs-dagster"
@@ -78,7 +83,7 @@
     "toolA": "dbt",
     "toolB": "SQLMesh",
     "category": "data-transformation",
-    "winner": "Depends",
+    "winner": "It Depends",
     "shortVerdict": "dbt is the industry standard with unmatched community and ecosystem. SQLMesh is the performance-focused challenger with built-in column-level lineage, incremental-by-default models, and virtual environments that eliminate warehouse costs during development.",
     "intro": "### The Transformation Layer: Standard vs. Next-Gen\n\nBoth tools transform raw data into analytics-ready models using SQL, but they take very different technical approaches.\n\n**dbt (data build tool)** is the undisputed king of SQL transformation. With 40,000+ companies using it, dbt Core (open-source) and dbt Cloud provide a proven framework for building, testing, and documenting data models. Its strength is simplicity — write SELECT statements, define dependencies, and dbt compiles and runs them in the correct order.\n\n**SQLMesh** is a next-generation framework built by former data leaders at Airbnb and Netflix. It addresses dbt's biggest pain points: slow development cycles, wasteful warehouse compute during testing, and lack of column-level lineage. SQLMesh introduces **Virtual Environments** (preview changes without running queries), **automatic incremental models**, and **plan-based deployment** (like a `git diff` for your data warehouse).\n\n**The core tension:** dbt has the ecosystem; SQLMesh has the technology.",
     "features": [
@@ -150,6 +155,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose dbt if:**\n*   You want the safest, most widely adopted choice\n*   Your team already knows dbt\n*   You need the massive package ecosystem\n*   You value community support and easy hiring\n\n**Choose SQLMesh if:**\n*   Development speed and cost savings are priorities\n*   You need column-level lineage without paying for premium tools\n*   You want Terraform-style plan/apply for your data warehouse\n*   You're starting a new project and can choose freely\n*   You want to migrate from dbt gradually (SQLMesh supports dbt projects)",
+    "faqs": [
+      {"question": "Can I migrate from dbt to SQLMesh?", "answer": "Yes. SQLMesh provides backward compatibility with dbt projects. You can point SQLMesh at your existing dbt project and it will work, allowing you to migrate incrementally without rewriting everything at once."},
+      {"question": "What are Virtual Environments in SQLMesh?", "answer": "Virtual Environments let you preview the impact of model changes without actually running queries in your warehouse. SQLMesh uses metadata to show what would change, saving significant warehouse compute costs during development."},
+      {"question": "Is SQLMesh production-ready?", "answer": "Yes. SQLMesh is used in production by multiple companies. However, its community and ecosystem are much smaller than dbt's, which means fewer packages, integrations, and community support resources."}
+    ],
     "relatedComparisons": [
       "dbt-vs-dataform",
       "snowflake-vs-databricks"
@@ -161,7 +171,7 @@
     "toolA": "dbt Core",
     "toolB": "dbt Cloud",
     "category": "data-transformation",
-    "winner": "depends",
+    "winner": "It Depends",
     "shortVerdict": "dbt Core is free and fully customizable. dbt Cloud adds IDE, scheduling, CI/CD, and governance. Choose Core for cost-conscious teams with DevOps skills; choose Cloud for productivity and enterprise features.",
     "intro": "dbt (data build tool) comes in two flavors: **dbt Core** (free, open-source CLI) and **dbt Cloud** (commercial SaaS platform by dbt Labs). Both use the same SQL-based transformation engine, but dbt Cloud adds a web IDE, job scheduling, CI/CD, documentation hosting, and enterprise governance features on top. The choice is essentially: build your own tooling around Core, or pay for Cloud's integrated experience.",
     "features": [
@@ -254,6 +264,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose dbt Core if:**\n*   Budget is a primary concern (it's free!)\n*   Your team has strong DevOps skills (CI/CD, Airflow, Docker)\n*   You want full control over your deployment environment\n*   You already have scheduling infrastructure (Airflow, Dagster)\n*   You prefer working in VS Code or your favorite editor\n\n**Choose dbt Cloud if:**\n*   You want an integrated experience without building tooling\n*   Your team is analytics-focused (not DevOps-heavy)\n*   You need built-in scheduling, CI/CD, and documentation\n*   Column-level lineage or semantic layer is important\n*   You want the fastest onboarding for new team members",
+    "faqs": [
+      {"question": "Can I start with dbt Core and switch to dbt Cloud later?", "answer": "Yes. dbt Cloud runs dbt Core under the hood, so your project files, models, and tests are fully compatible. Switching primarily involves setting up your project in the dbt Cloud interface and configuring jobs."},
+      {"question": "Is dbt Core completely free?", "answer": "Yes. dbt Core is open-source and free to use. However, you need to provide your own infrastructure for scheduling (Airflow, cron), CI/CD (GitHub Actions), and documentation hosting."},
+      {"question": "What does dbt Cloud offer that dbt Core does not?", "answer": "dbt Cloud adds a web-based IDE, built-in job scheduling, Slim CI (test only changed models), auto-hosted documentation, column-level lineage (Enterprise plan), and the dbt Semantic Layer (MetricFlow) for consistent metric definitions."}
+    ],
     "relatedComparisons": [
       "dbt-vs-dataform",
       "dbt-vs-sqlmesh"

@@ -67,6 +67,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose Terraform if:**\n*   Your goal is simplicity and readability for an Operations team.\n*   You want to follow the industry-standard path with the most tutorials and support.\n*   Your infrastructure is relatively static and doesn't need complex logic.\n\n**Choose Pulumi if:**\n*   Your data engineers are strong in Python or TypeScript and hate HCL.\n*   You need to build complex, dynamic infrastructure that requires real code logic.\n*   You want to use your existing unit-testing and CI/CD tools for infrastructure.",
+    "faqs": [
+      {"question": "Can Pulumi use existing Terraform providers?", "answer": "Yes. Pulumi can consume Terraform providers through its Pulumi-Terraform bridge, giving it access to the same vast provider ecosystem. This means most infrastructure supported by Terraform is also available in Pulumi."},
+      {"question": "Is HCL harder to learn than Python for infrastructure?", "answer": "HCL is simpler and more readable for basic infrastructure definitions. However, for complex logic (loops, conditionals, dynamic resource generation), Python or TypeScript in Pulumi can be more natural for developers already fluent in those languages."},
+      {"question": "Can I migrate from Terraform to Pulumi?", "answer": "Yes. Pulumi provides a `pulumi import` command and a `tf2pulumi` converter tool that can translate existing Terraform HCL code into Pulumi programs in Python, TypeScript, Go, or C#."}
+    ],
     "relatedComparisons": [
       "aws-glue-vs-lambda"
     ],
@@ -77,7 +82,7 @@
     "toolA": "Databricks",
     "toolB": "Google BigQuery",
     "category": "cloud-platforms",
-    "winner": "Depends",
+    "winner": "It Depends",
     "shortVerdict": "Databricks is the unified Lakehouse platform for engineering-heavy workloads with Spark, ML, and Delta Lake. BigQuery is the serverless analytics warehouse that just works — load data, write SQL, get answers.",
     "intro": "### The Lakehouse Platform vs. The Serverless Warehouse\n\n**Databricks** is a unified data analytics platform built around Apache Spark. It combines a data lakehouse architecture (Delta Lake), collaborative notebooks, MLflow for ML lifecycle, and Unity Catalog for governance. Databricks excels at **complex engineering workloads** — ETL pipelines, ML training, streaming, and large-scale data processing.\n\n**Google BigQuery** is a fully serverless, petabyte-scale data warehouse. There's nothing to provision, no clusters to manage, and no indexes to create. Load your data, write SQL, and BigQuery handles the rest. It's the simplest path from raw data to business insights.\n\n**The core trade-off:** Databricks gives you a complete data platform with maximum flexibility. BigQuery gives you the fastest path to analytics with minimum operational burden.",
     "features": [
@@ -149,6 +154,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose Databricks if:**\n*   You need a unified platform for ETL, ML, and analytics\n*   Your team includes data engineers who code in Python/Scala\n*   You have streaming workloads alongside batch processing\n*   You want open data formats and multi-cloud flexibility\n\n**Choose BigQuery if:**\n*   Your primary need is SQL-based analytics and reporting\n*   You want zero infrastructure management\n*   You're on GCP and want the tightest integration\n*   You prefer pay-per-query pricing for unpredictable workloads",
+    "faqs": [
+      {"question": "Can I use Databricks on Google Cloud alongside BigQuery?", "answer": "Yes. Databricks runs on GCP and can read from and write to BigQuery. Some organizations use BigQuery for SQL analytics and Databricks for Spark-based ETL and ML workloads on the same cloud."},
+      {"question": "Which is cheaper, Databricks or BigQuery?", "answer": "BigQuery is typically cheaper for SQL-heavy analytics workloads due to its pay-per-query model. Databricks can be more cost-effective for heavy ETL and ML workloads where you need sustained compute. The answer depends on your workload mix."},
+      {"question": "Does BigQuery support machine learning like Databricks?", "answer": "BigQuery ML lets you train models using SQL, which is simpler but more limited. Databricks offers a full ML platform with MLflow, GPU clusters, and support for any Python ML library, making it superior for advanced ML workflows."}
+    ],
     "relatedComparisons": [
       "snowflake-vs-databricks",
       "snowflake-vs-bigquery",
@@ -161,7 +171,7 @@
     "toolA": "Databricks",
     "toolB": "Amazon EMR",
     "category": "cloud-platforms",
-    "winner": "depends",
+    "winner": "It Depends",
     "shortVerdict": "Databricks offers a premium, unified lakehouse platform with superior developer experience. EMR offers cheaper, more flexible managed Spark on AWS. Choose Databricks for productivity; choose EMR for cost optimization and AWS control.",
     "intro": "Databricks and Amazon EMR are both platforms for running Apache Spark workloads at scale, but they take very different approaches. **Databricks** provides a unified lakehouse platform with an opinionated, premium experience (notebooks, Delta Lake, Unity Catalog, MLflow). **Amazon EMR** provides managed Hadoop/Spark clusters on AWS with more flexibility and lower base costs, but requires more configuration and operational knowledge.",
     "features": [
@@ -256,6 +266,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose Databricks if:**\n*   Developer productivity and collaboration are top priorities\n*   You need a unified platform (ETL, ML, SQL Analytics, Governance)\n*   Multi-cloud deployment is important\n*   You want built-in ML lifecycle management (MLflow)\n*   Your budget allows for the premium pricing\n\n**Choose Amazon EMR if:**\n*   Cost optimization is the primary concern\n*   You need maximum flexibility in Spark configuration\n*   You're deeply invested in the AWS ecosystem\n*   You have experienced Spark engineers who can tune clusters\n*   You want to use Apache Iceberg or Hudi natively\n*   EMR Serverless fits your workload pattern",
+    "faqs": [
+      {"question": "Is Databricks just EMR with a better UI?", "answer": "No. While both run Spark, Databricks adds Delta Lake, Unity Catalog, Photon engine, MLflow, and collaborative notebooks. EMR provides raw managed Spark clusters with more configuration flexibility but fewer integrated features."},
+      {"question": "How much more expensive is Databricks than EMR?", "answer": "Databricks typically costs 2-3x more than EMR for equivalent Spark compute due to DBU pricing on top of cloud compute costs. However, the productivity gains from better tooling can offset this for teams that value developer velocity."},
+      {"question": "Can I run Databricks on AWS like EMR?", "answer": "Yes. Databricks is available on AWS, Azure, and GCP. On AWS, you can use Databricks as an alternative to EMR, with your data still stored in S3 and governed by IAM policies."}
+    ],
     "relatedComparisons": [
       "databricks-vs-bigquery",
       "snowflake-vs-databricks"

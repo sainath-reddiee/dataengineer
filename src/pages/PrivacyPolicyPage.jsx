@@ -123,7 +123,7 @@ const PrivacyPolicyPage = () => {
 </p>
           <h2 className="text-xl font-bold text-white mt-8">HOW CAN YOU CONTACT US ABOUT THIS NOTICE?</h2>
           <p>
-            If you have questions or comments about this notice, you may contact us through the contact form on our website.
+            If you have questions or comments about this notice, you may email us at <a href="mailto:sainath@dataengineerhub.blog" className="text-blue-400 hover:text-blue-300 underline">sainath@dataengineerhub.blog</a> or use the contact form on our website.
           </p>
         </div>
       </div>

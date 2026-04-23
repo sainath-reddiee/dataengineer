@@ -66,6 +66,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose Kafka if:**\n*   You are a pure Java shop comfortable with JVM tuning.\n*   You need absolute assurance of 10+ years of production history.\n*   You are using managed Kafka (Confluent/MSK) and don't care about the backend.\n\n**Choose Redpanda if:**\n*   You manage your own infrastructure and hate ZooKeeper.\n*   You need extreme low latency (fintech, gaming, adtech).\n*   You want to reduce your cloud hardware bill (Redpanda is more efficient).\n*   You want a simple local development experience.",
+    "faqs": [
+      {"question": "Is Redpanda fully compatible with Apache Kafka?", "answer": "Yes, Redpanda implements the Kafka API protocol, so existing Kafka clients, Kafka Connect connectors, and Kafka Streams applications work with Redpanda without code changes."},
+      {"question": "Does Redpanda still need ZooKeeper?", "answer": "No. Redpanda uses an embedded Raft-based consensus protocol, eliminating ZooKeeper entirely. This simplifies deployment to a single binary."},
+      {"question": "When should I stick with Apache Kafka over Redpanda?", "answer": "Stick with Kafka if you need the absolute largest ecosystem (ksqlDB, Confluent Platform), require 10+ years of production battle-testing, or already use a managed Kafka service like Confluent Cloud or Amazon MSK."}
+    ],
     "relatedComparisons": [],
     "lastUpdated": "2026-01-29"
   },
@@ -137,6 +142,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose Apache Flink if:**\n*   Your use case is truly 'real-time' (fraud detection, ad-bidding, sensors).\n*   You have complex stateful logic spanning long time windows.\n*   Latency requirements are consistently under 500ms.\n\n**Choose Spark Streaming if:**\n*   You already use Spark for batch processing and want to reuse logic.\n*   Human-scale latency (1-10 seconds) is acceptable.\n*   You want a unified platform for Analytics and Streaming.",
+    "faqs": [
+      {"question": "What is the main difference between Flink and Spark Streaming?", "answer": "Flink is a native streaming engine that processes events one at a time with millisecond latency. Spark Streaming uses micro-batching, collecting data in small batches (typically 1+ seconds) before processing."},
+      {"question": "Can I use Spark Streaming for real-time processing?", "answer": "Spark Structured Streaming supports near-real-time processing with continuous processing mode achieving ~1ms latency, but it is still fundamentally micro-batch-based and not as mature as Flink for true sub-second use cases."},
+      {"question": "Which is easier to learn, Flink or Spark Streaming?", "answer": "Spark Streaming is generally easier to learn because it shares the same DataFrame API as Spark batch processing. Flink has a steeper learning curve but offers more powerful streaming primitives like event-time processing and complex windowing."}
+    ],
     "relatedComparisons": [
       "kafka-vs-redpanda",
       "snowflake-vs-databricks"
@@ -148,7 +158,7 @@
     "toolA": "Apache Kafka",
     "toolB": "Apache Pulsar",
     "category": "streaming",
-    "winner": "depends",
+    "winner": "It Depends",
     "shortVerdict": "Kafka dominates in ecosystem and adoption. Pulsar offers superior multi-tenancy and geo-replication. Choose Kafka for proven reliability; choose Pulsar for complex multi-tenant architectures.",
     "intro": "Apache Kafka and Apache Pulsar are both distributed messaging and streaming platforms, but they take fundamentally different architectural approaches. Kafka, created at LinkedIn, uses a partition-based log storage model. Pulsar, created at Yahoo!, separates compute (brokers) from storage (Apache BookKeeper), enabling independent scaling of each layer.",
     "features": [
@@ -239,6 +249,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose Apache Kafka if:**\n*   You want the industry standard with the largest ecosystem\n*   You need Kafka Connect, ksqlDB, or Kafka Streams\n*   You prefer abundant managed options (Confluent, MSK)\n*   Your team has existing Kafka expertise\n*   You want the easiest path to hiring and support\n\n**Choose Apache Pulsar if:**\n*   You need native multi-tenancy (many teams on one cluster)\n*   Geo-replication across regions is a core requirement\n*   You want to scale compute and storage independently\n*   You need multiple subscription modes (shared, key-shared)\n*   You're building a new platform and can invest in Pulsar's learning curve",
+    "faqs": [
+      {"question": "Can I migrate from Kafka to Pulsar without rewriting clients?", "answer": "Pulsar offers a Kafka-compatible wrapper (KoP — Kafka on Pulsar) that allows existing Kafka clients to connect to Pulsar brokers. However, to fully leverage Pulsar's features like multi-tenancy, you would need to use native Pulsar clients."},
+      {"question": "Why would I choose Pulsar over Kafka for multi-tenancy?", "answer": "Pulsar has native multi-tenancy built into its architecture with tenant and namespace isolation, rate limiting, and per-tenant quotas on a single cluster. Kafka typically requires separate clusters per tenant, which increases operational overhead."},
+      {"question": "Is Apache Pulsar production-ready?", "answer": "Yes. Pulsar has been in production at companies like Yahoo, Tencent, and Comcast for years, handling millions of messages per second. However, its community and managed service ecosystem are smaller than Kafka's."}
+    ],
     "relatedComparisons": [
       "kafka-vs-redpanda",
       "flink-vs-spark-streaming"
@@ -251,7 +266,7 @@
     "toolA": "Apache Kafka",
     "toolB": "Amazon Kinesis",
     "category": "streaming",
-    "winner": "depends",
+    "winner": "It Depends",
     "shortVerdict": "Kafka gives you full control, portability, and the richest ecosystem. Kinesis gives you zero ops on AWS. Choose Kafka for multi-cloud or complex streaming; choose Kinesis for simple AWS-native streaming.",
     "intro": "Apache Kafka and Amazon Kinesis both solve the same core problem — real-time data streaming — but take opposite approaches. Kafka is an open-source platform you can run anywhere, with a massive ecosystem of tools. Kinesis is a fully managed AWS service that requires zero infrastructure management but locks you into AWS.",
     "features": [
@@ -342,6 +357,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose Apache Kafka if:**\n*   You need multi-cloud or hybrid deployments\n*   You require the rich Kafka ecosystem (Connect, Streams, ksqlDB)\n*   Sub-millisecond latency is critical\n*   You need unlimited data retention\n*   You have (or want to build) Kafka expertise\n\n**Choose Amazon Kinesis if:**\n*   You are 100% on AWS and want zero operational overhead\n*   Your streaming use cases are straightforward (logs to S3, events to Lambda)\n*   You want Kinesis Firehose for zero-code data delivery\n*   Pay-per-use pricing fits your variable workload patterns\n*   Your team doesn't have Kafka expertise",
+    "faqs": [
+      {"question": "Can I use Kafka and Kinesis together?", "answer": "Yes. A common pattern is using Kafka for internal high-throughput streaming and Kinesis for AWS-native integrations like triggering Lambda functions or delivering data to S3 via Kinesis Firehose."},
+      {"question": "Is Amazon MSK the same as Kinesis?", "answer": "No. Amazon MSK (Managed Streaming for Apache Kafka) is a managed Kafka service, while Kinesis is AWS's proprietary streaming service. MSK gives you the full Kafka ecosystem; Kinesis offers simpler, AWS-native streaming with zero ops."},
+      {"question": "What are the throughput limits of Kinesis vs Kafka?", "answer": "Kinesis limits each shard to 1 MB/s write and 2 MB/s read. Kafka has no built-in per-partition limits — throughput scales with broker hardware and partition count. For high-throughput use cases, Kafka typically offers more flexibility."}
+    ],
     "relatedComparisons": [
       "kafka-vs-redpanda",
       "kafka-vs-pulsar"

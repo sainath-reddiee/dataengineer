@@ -1,9 +1,9 @@
 // src/pages/ComparisonHubPage.jsx
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { Swords, ChevronRight, ArrowRight, Scale } from 'lucide-react';
+import { Swords, ChevronRight, ArrowRight, Scale, Search, X } from 'lucide-react';
 
 // Data - Use searchIndex for all comparisons (includes pSEO additions)
 import searchIndex from '@/data/searchIndex.json';
@@ -13,16 +13,47 @@ import { generateComparisonHubMeta, generateComparisonCanonical } from '@/lib/ps
 import { SITE_CONFIG } from '@/lib/seoConfig';
 
 export function ComparisonHubPage() {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState(null);
+
     // Use searchIndex comparisons (has all 7 including pSEO additions)
-    const comparisons = searchIndex.comparisons.map(comp => ({
+    const allComparisons = searchIndex.comparisons.map(comp => ({
         id: comp.slug,
         slug: comp.slug,
         toolA: comp.toolA,
         toolB: comp.toolB,
         category: comp.category || 'Data Engineering',
         shortVerdict: comp.shortVerdict,
-        winner: 'View Details' // Generic since searchIndex doesn't have winner
+        winner: comp.winner || 'It Depends'
     }));
+
+    // Extract unique categories for filter pills
+    const categories = useMemo(() => {
+        const cats = [...new Set(allComparisons.map(c => c.category))];
+        return cats.sort();
+    }, [allComparisons]);
+
+    // Filter comparisons based on search and category
+    const comparisons = useMemo(() => {
+        let filtered = allComparisons;
+
+        if (selectedCategory) {
+            filtered = filtered.filter(c => c.category === selectedCategory);
+        }
+
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(c =>
+                c.toolA.toLowerCase().includes(query) ||
+                c.toolB.toLowerCase().includes(query) ||
+                (c.shortVerdict && c.shortVerdict.toLowerCase().includes(query)) ||
+                c.category.toLowerCase().includes(query)
+            );
+        }
+
+        return filtered;
+    }, [allComparisons, searchQuery, selectedCategory]);
+
     const meta = generateComparisonHubMeta();
     const canonical = generateComparisonCanonical();
 
@@ -129,8 +160,70 @@ export function ComparisonHubPage() {
                     </div>
                 </div>
 
+                {/* Search and Filters */}
+                <div className="max-w-5xl mx-auto px-6 -mt-6">
+                    <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700 rounded-2xl p-6">
+                        {/* Search */}
+                        <div className="relative mb-4">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search comparisons (e.g., Snowflake, dbt, Kafka...)"
+                                className="w-full pl-12 pr-4 py-3 bg-slate-900/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
+                            />
+                            {searchQuery && (
+                                <button
+                                    onClick={() => setSearchQuery('')}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Category Filters */}
+                        <div className="flex flex-wrap gap-2">
+                            <button
+                                onClick={() => setSelectedCategory(null)}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${!selectedCategory
+                                    ? 'bg-purple-500 text-white'
+                                    : 'bg-slate-700/50 text-gray-300 hover:bg-slate-700'
+                                    }`}
+                            >
+                                All ({allComparisons.length})
+                            </button>
+                            {categories.map((cat) => (
+                                <button
+                                    key={cat}
+                                    onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedCategory === cat
+                                        ? 'bg-purple-500 text-white'
+                                        : 'bg-slate-700/50 text-gray-300 hover:bg-slate-700'
+                                        }`}
+                                >
+                                    {cat}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
                 {/* Main Content */}
                 <div className="container mx-auto px-6 py-16">
+                    {comparisons.length === 0 ? (
+                        <div className="text-center py-12">
+                            <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                            <p className="text-gray-400 text-lg">No comparisons found matching "{searchQuery}"</p>
+                            <button
+                                onClick={() => { setSearchQuery(''); setSelectedCategory(null); }}
+                                className="mt-4 text-purple-400 hover:text-purple-300"
+                            >
+                                Clear filters
+                            </button>
+                        </div>
+                    ) : (
                     <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
                         {comparisons.map((comparison, idx) => (
                             <motion.div
@@ -161,7 +254,7 @@ export function ComparisonHubPage() {
 
                                     <div className="flex items-center gap-2 text-sm text-gray-400 bg-slate-900/50 w-fit px-3 py-1 rounded-full border border-slate-700/50">
                                         <span>Winner:</span>
-                                        <span className={`font-bold ${comparison.winner === 'It Depends' || comparison.winner === 'Tie'
+                                        <span className={`font-bold ${/^(It Depends|Depends|Tie)$/i.test(comparison.winner)
                                             ? 'text-yellow-400'
                                             : 'text-green-400'
                                             }`}>
@@ -172,6 +265,7 @@ export function ComparisonHubPage() {
                             </motion.div>
                         ))}
                     </div>
+                    )}
 
                     {/* Empty State / Coming Soon */}
                     <div className="max-w-3xl mx-auto mt-16 text-center border-t border-white/10 pt-12">

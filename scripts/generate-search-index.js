@@ -90,13 +90,20 @@ function generateComparisonsIndex() {
             const toolA = comp.tool1?.name || comp.toolA || comp.title?.split(' vs ')[0] || 'Unknown';
             const toolB = comp.tool2?.name || comp.toolB || comp.title?.split(' vs ')[1] || 'Unknown';
 
+            // Normalize winner value for consistent hub badge styling
+            let winner = comp.winner || 'It Depends';
+            if (/^depends$/i.test(winner)) winner = 'It Depends';
+            if (winner === 'toolA') winner = toolA;
+            if (winner === 'toolB') winner = toolB;
+
             comparisonsIndex.push({
                 title: comp.title || `${toolA} vs ${toolB}`,
                 slug: comp.slug,
                 category: comp.category,
                 toolA: toolA,
                 toolB: toolB,
-                shortVerdict: comp.shortVerdict || comp.verdict || ''
+                shortVerdict: comp.shortVerdict || comp.verdict || '',
+                winner: winner
             });
         }
 

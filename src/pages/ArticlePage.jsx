@@ -397,6 +397,14 @@ const RelatedPosts = ({ currentPostId, category }) => {
 // 🎨 OPTION 1: MINIMALIST AUTHOR CHIP + FLOATING ACTION (RECOMMENDED)
 // ============================================================================
 const MetadataOption1 = ({ safePost, formatDate }) => {
+  const isOwner = safePost.author === 'Sainath Reddy';
+  const authorInitials = safePost.author.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : 'Guest Author';
+  const authorLink = isOwner ? '/about' : null;
+  const AuthorWrapper = ({ children, className }) =>
+    authorLink ? <Link to={authorLink} className={className}>{children}</Link>
+               : <span className={className}>{children}</span>;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -489,6 +497,14 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
 // 🎨 OPTION 2: SIDEBAR METADATA (Pinterest/Medium style - for wide screens)
 // ============================================================================
 const MetadataOption2 = ({ safePost, formatDate }) => {
+  const isOwner = safePost.author === 'Sainath Reddy';
+  const authorInitials = safePost.author.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : 'Guest Author';
+  const authorLink = isOwner ? '/about' : null;
+  const AuthorWrapper = ({ children, className }) =>
+    authorLink ? <Link to={authorLink} className={className}>{children}</Link>
+               : <span className={className}>{children}</span>;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -580,6 +596,14 @@ const MetadataOption2 = ({ safePost, formatDate }) => {
 // 🎨 OPTION 3: MODERN GLASSMORPHISM OVERLAY (Ultra-sleek)
 // ============================================================================
 const MetadataOption3 = ({ safePost, formatDate }) => {
+  const isOwner = safePost.author === 'Sainath Reddy';
+  const authorInitials = safePost.author.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : 'Guest Author';
+  const authorLink = isOwner ? '/about' : null;
+  const AuthorWrapper = ({ children, className }) =>
+    authorLink ? <Link to={authorLink} className={className}>{children}</Link>
+               : <span className={className}>{children}</span>;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}

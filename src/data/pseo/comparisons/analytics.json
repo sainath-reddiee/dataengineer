@@ -67,6 +67,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose ClickHouse if:**\n*   You want the absolute fastest query performance for ad-hoc internal analytics.\n*   You want a tool that's easy to start with (no JVM/ZooKeeper bloat).\n*   You need to process a mix of batch and streaming data efficiently.\n\n**Choose Apache Druid if:**\n*   You are building a user-facing dashboard for thousands of concurrent users.\n*   You need millisecond real-time ingestion from Kafka.\n*   You want an architecture where storage and compute are decoupled for reliability.",
+    "faqs": [
+      {"question": "Can ClickHouse handle real-time data ingestion like Druid?", "answer": "Yes, ClickHouse supports real-time ingestion via Kafka Engine tables and materialized views. However, Druid was specifically designed for real-time ingestion and offers more mature streaming integration with automatic segment management."},
+      {"question": "Which is easier to operate, ClickHouse or Druid?", "answer": "ClickHouse is significantly easier to operate. It runs as a single binary or small cluster with minimal dependencies. Druid has a complex architecture with multiple microservices (broker, historical, coordinator, overlord) and requires ZooKeeper."},
+      {"question": "When should I choose Druid over ClickHouse?", "answer": "Choose Druid when you need ultra-high concurrency (thousands of simultaneous dashboard users), automatic data rollups to reduce storage, or when building user-facing analytics applications that require consistent sub-second queries at massive concurrency."}
+    ],
     "relatedComparisons": [
       "snowflake-vs-bigquery"
     ],
@@ -77,7 +82,7 @@
     "toolA": "DuckDB",
     "toolB": "Polars",
     "category": "analytics",
-    "winner": "Depends",
+    "winner": "It Depends",
     "shortVerdict": "DuckDB is the SQL-first embedded OLAP engine for querying files. Polars is the DataFrame-first library for blazing-fast data manipulation. Both are lightning fast — the choice comes down to SQL vs. DataFrame APIs.",
     "intro": "### The Battle of the Local Analytics Giants\n\nBoth **DuckDB** and **Polars** represent a revolution in local data processing, challenging the dominance of cloud-based solutions for datasets that don't need a full warehouse.\n\n**DuckDB** is an in-process OLAP database that runs inside your application. It speaks SQL natively and can query Parquet, CSV, and JSON files directly. Think of it as **SQLite for analytics** — zero infrastructure, just SQL.\n\n**Polars** is a DataFrame library written in Rust (with Python bindings) designed as a modern replacement for Pandas. It uses Apache Arrow for memory layout, a lazy evaluation engine for query optimization, and multi-threaded execution for performance. Think of it as **Pandas, but 10-100x faster**.\n\nBoth can process datasets much larger than RAM, both are incredibly fast, and both run locally. The key difference: **DuckDB is SQL-first, Polars is DataFrame-first.**",
     "features": [
@@ -148,6 +153,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose DuckDB if:**\n*   Your team is SQL-proficient\n*   You need to query files directly in S3/GCS without downloading\n*   You want database features (persistence, views, transactions)\n*   You're integrating with BI tools or dbt\n\n**Choose Polars if:**\n*   You prefer DataFrame APIs over SQL\n*   You're doing complex multi-step data transformations\n*   You want maximum performance for Python data pipelines\n*   You're replacing Pandas in existing Python codebases\n\n**Choose Both:** Many teams use Polars for data transformation pipelines and DuckDB for ad-hoc SQL analysis — they complement each other perfectly.",
+    "faqs": [
+      {"question": "Can I use DuckDB and Polars together?", "answer": "Yes, and many teams do. DuckDB can read Polars DataFrames directly, and Polars can read DuckDB query results. A common pattern is using Polars for data transformation pipelines and DuckDB for ad-hoc SQL analysis."},
+      {"question": "Is DuckDB a replacement for Pandas?", "answer": "For SQL-oriented workflows, yes. DuckDB can query Pandas DataFrames directly with SQL and is much faster for analytical queries. However, it is SQL-first, so users who prefer the DataFrame API may prefer Polars as a Pandas replacement."},
+      {"question": "Can DuckDB or Polars handle datasets larger than RAM?", "answer": "Both can. DuckDB uses disk-based spilling when data exceeds memory. Polars uses lazy evaluation and streaming to process out-of-core datasets. Both handle multi-GB datasets efficiently on a single machine."}
+    ],
     "relatedComparisons": [
       "snowflake-vs-databricks",
       "clickhouse-vs-druid"
@@ -159,7 +169,7 @@
     "toolA": "Looker",
     "toolB": "Power BI",
     "category": "analytics",
-    "winner": "Depends",
+    "winner": "It Depends",
     "shortVerdict": "Power BI is the enterprise BI king with unmatched Excel/Microsoft integration and lower cost. Looker is the developer-first, governed analytics platform with its unique semantic modeling layer (LookML).",
     "intro": "### Enterprise BI Powerhouse vs. Developer-First Governed Analytics\n\n**Power BI** is Microsoft's business intelligence platform, used by over 10 million users worldwide. With drag-and-drop visualization, natural language queries (Q&A), DAX for calculations, and deep integration with Excel, Microsoft 365, and Azure, it's the most widely adopted BI tool globally — especially in enterprises already on the Microsoft stack.\n\n**Looker** (now part of Google Cloud) takes a fundamentally different approach. Instead of drag-and-drop dashboards, Looker defines a **semantic modeling layer** called **LookML** — a version-controlled, code-based definition of all business metrics. This ensures every team calculates \"revenue\" the same way. Looker is the choice for organizations that prioritize **data governance** and **consistent metrics** over ease of self-service.\n\nThe trade-off: **Power BI is easier for non-technical users. Looker provides stronger data governance.**",
     "features": [
@@ -232,6 +242,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose Looker if:**\n*   Data governance and consistent metrics are your top priority\n*   You want a code-based, version-controlled analytics layer\n*   You're on Google Cloud and want native integration\n*   You need strong embedded analytics for customer-facing products\n\n**Choose Power BI if:**\n*   Budget is a consideration (10x cheaper per user)\n*   Your organization runs on Microsoft 365/Azure\n*   Business users need self-service without learning code\n*   You want the largest BI community and template library",
+    "faqs": [
+      {"question": "Is Looker being replaced by Looker Studio?", "answer": "No. Looker and Looker Studio (formerly Google Data Studio) are separate products. Looker is the enterprise platform with LookML and governed analytics. Looker Studio is a free, lighter BI tool for simple dashboards and reports."},
+      {"question": "Can Power BI connect to Snowflake or BigQuery?", "answer": "Yes. Power BI has native connectors for both Snowflake and BigQuery, supporting both import and DirectQuery modes. However, Power BI's deepest integration is with Azure and Microsoft services."},
+      {"question": "Which is better for embedded analytics?", "answer": "Both offer embedded analytics, but Looker is generally considered stronger for embedding analytics into customer-facing products, with a cleaner API and better multi-tenant support. Power BI Embedded is powerful but has more complex licensing."}
+    ],
     "relatedComparisons": [
       "snowflake-vs-bigquery",
       "snowflake-vs-databricks"
@@ -316,6 +331,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose Pandas if:**\n*   You need maximum library compatibility (scikit-learn, matplotlib)\n*   Your datasets fit comfortably in RAM (<1GB)\n*   Your team already knows Pandas\n*   You're doing exploratory analysis in Jupyter notebooks\n\n**Choose Polars if:**\n*   Performance is critical (large datasets, production pipelines)\n*   You're building new data pipelines from scratch\n*   You want a modern, consistent API without Pandas' gotchas\n*   You process datasets larger than available RAM\n\n**Migration tip:** You can use Polars and convert to Pandas only when needed: `polars_df.to_pandas()` for library compatibility.",
+    "faqs": [
+      {"question": "Is Polars a drop-in replacement for Pandas?", "answer": "No. Polars has a different API, so you cannot simply swap `import pandas` for `import polars`. However, the concepts are similar (DataFrames, Series, filtering, groupby), and Polars provides `.to_pandas()` for interoperability."},
+      {"question": "Why is Polars so much faster than Pandas?", "answer": "Polars is written in Rust, uses Apache Arrow for memory layout (zero-copy), employs lazy evaluation for query optimization, and automatically parallelizes operations across CPU cores. Pandas is single-threaded and copies data frequently."},
+      {"question": "Should I learn Pandas or Polars first?", "answer": "Learn Pandas first. It is the universal standard with the most tutorials, job requirements, and library integrations. Once comfortable, learn Polars for performance-critical work — the concepts transfer well between the two."}
+    ],
     "relatedComparisons": [
       "duckdb-vs-polars",
       "snowflake-vs-databricks"
@@ -327,7 +347,7 @@
     "toolA": "Tableau",
     "toolB": "Looker",
     "category": "analytics",
-    "winner": "depends",
+    "winner": "It Depends",
     "shortVerdict": "Tableau leads in visual exploration and self-service analytics. Looker leads in governed, code-based semantic modeling. Choose Tableau for visual power users; choose Looker for data-team-governed analytics.",
     "intro": "Tableau and Looker are two of the most popular business intelligence platforms, but they embody fundamentally different philosophies. **Tableau** (now part of Salesforce) excels at visual, interactive data exploration — empowering business users to create stunning dashboards with drag-and-drop. **Looker** (now part of Google Cloud) takes a code-first, governed approach where data teams define metrics in LookML, ensuring everyone uses the same definitions.",
     "features": [
@@ -422,6 +442,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose Tableau if:**\n*   Your business users need to build their own dashboards\n*   Visual richness and design flexibility are priorities\n*   You want a desktop app for local development\n*   You have diverse data sources beyond Google Cloud\n*   You're a Salesforce shop\n\n**Choose Looker if:**\n*   Data governance and consistent metrics are critical\n*   Your data team wants version-controlled data modeling\n*   You're on Google Cloud / BigQuery\n*   You need strong embedded analytics\n*   You prefer a code-first, governed approach to analytics",
+    "faqs": [
+      {"question": "Can Tableau and Looker connect to the same data warehouse?", "answer": "Yes. Both tools can connect to all major cloud warehouses (Snowflake, BigQuery, Redshift, Databricks). The choice between them is about the analytics experience, not data connectivity."},
+      {"question": "Which is better for self-service analytics?", "answer": "Tableau is better for self-service analytics. Its drag-and-drop interface lets business users explore data independently. Looker's LookML approach means business users are more dependent on the data team to model data before they can explore it."},
+      {"question": "Is Looker only for Google Cloud users?", "answer": "No. Looker can connect to any major database or warehouse. However, it is now part of Google Cloud and its deepest integrations are with BigQuery. Organizations on other clouds can still use Looker but may not get the tightest experience."}
+    ],
     "relatedComparisons": [
       "looker-vs-power-bi",
       "snowflake-vs-bigquery"
@@ -434,7 +459,7 @@
     "toolA": "Trino",
     "toolB": "PrestoDB",
     "category": "analytics",
-    "winner": "toolA",
+    "winner": "Trino",
     "shortVerdict": "Trino (the community fork) has won with faster development, larger community, and richer features. PrestoDB (the Meta fork) is still used at Meta scale. Choose Trino for most use cases; choose PrestoDB only if you're deeply integrated with the Meta ecosystem.",
     "intro": "Trino and PrestoDB share the same origin — the Presto distributed SQL query engine created at Facebook (now Meta). In 2019, the original Presto creators left Facebook and forked the project, renaming it **Trino** to continue community-driven development. Facebook's internal team continued developing **PrestoDB** as a separate project under the Linux Foundation. The two have diverged significantly since the split.",
     "features": [
@@ -525,6 +550,11 @@
       ]
     },
     "finalVerdict": "### Verdict\n\n**Choose Trino if:**\n*   You want the most active, community-driven distributed SQL engine\n*   You need first-class support for Iceberg, Delta Lake, or Hudi\n*   You want commercial support via Starburst\n*   You're building a data mesh or data lakehouse architecture\n*   You need federated queries across diverse data sources\n\n**Choose PrestoDB if:**\n*   You're already using PrestoDB and it meets your needs\n*   You operate at Meta-like scale with ORC-heavy workloads\n*   You have specific Meta-ecosystem integrations\n\n**Note:** For most new projects, Trino is the clear choice due to its larger community, faster development, and broader ecosystem support.",
+    "faqs": [
+      {"question": "Are Trino and Presto the same thing?", "answer": "They share the same origin — both started as the Presto project at Facebook. In 2019, the original creators forked the project and renamed it Trino, while Facebook continued developing PrestoDB. They have diverged significantly since."},
+      {"question": "Can I run Trino queries on PrestoDB, or vice versa?", "answer": "The SQL dialects are similar but have diverged. Simple queries may work on both, but advanced features and connectors differ. Migration between the two requires testing and potentially rewriting some queries."},
+      {"question": "Which should I choose for a new project?", "answer": "Trino is the recommended choice for most new projects. It has faster development, a larger community, better table format support (Iceberg, Delta, Hudi), and more managed service options through Starburst."}
+    ],
     "relatedComparisons": [
       "clickhouse-vs-druid",
       "snowflake-vs-databricks"

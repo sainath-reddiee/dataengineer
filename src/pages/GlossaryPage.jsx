@@ -16,6 +16,7 @@ import { motion } from 'framer-motion';
 import {
     BookOpen,
     ChevronRight,
+    ChevronDown,
     Tag,
     ExternalLink,
     ArrowLeft,
@@ -184,6 +185,10 @@ export function GlossaryPage() {
 
     const { meta, breadcrumbs, canonical, category, relatedTerms } = derivedData;
 
+    // Track which FAQs are expanded (accordion)
+    const [openFaqs, setOpenFaqs] = useState({});
+    const toggleFaq = (idx) => setOpenFaqs(prev => ({ ...prev, [idx]: !prev[idx] }));
+
     // Calculate word count for read time and thin content detection
     const wordCount = term.fullDefinition ? term.fullDefinition.split(/\s+/).length : 0;
     const readTimeMin = Math.max(1, Math.ceil(wordCount / 200));
@@ -210,6 +215,20 @@ export function GlossaryPage() {
             acceptedAnswer: { '@type': 'Answer', text: f.answer },
         })),
     } : null;
+
+    // DefinedTerm schema — direct signal for glossary rich results
+    const definedTermSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'DefinedTerm',
+        name: term.term,
+        description: term.shortDefinition,
+        url: canonical,
+        inDefinedTermSet: {
+            '@type': 'DefinedTermSet',
+            name: 'Data Engineering Glossary',
+            url: `${SITE_CONFIG.url}/glossary`,
+        },
+    };
 
     const ogImage = SITE_CONFIG.ogImage.url;
 
@@ -246,6 +265,7 @@ export function GlossaryPage() {
                 {/* Structured data */}
                 {breadcrumbSchema && <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>}
                 {faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}
+                <script type="application/ld+json">{JSON.stringify(definedTermSchema)}</script>
             </Helmet>
 
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
@@ -338,23 +358,33 @@ export function GlossaryPage() {
                             {renderMarkdown(term.fullDefinition)}
                         </article>
 
-                        {/* FAQs */}
+                        {/* FAQs — Collapsible Accordion */}
                         {term.faqs?.length > 0 && (
                             <div className="mt-12">
                                 <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
                                     <HelpCircle className="w-6 h-6 text-green-400" />
                                     Frequently Asked Questions
                                 </h2>
-                                <div className="space-y-4">
+                                <div className="space-y-3">
                                     {term.faqs.map((faq, idx) => (
                                         <div
                                             key={idx}
-                                            className="bg-slate-800/50 border border-slate-700 rounded-xl p-5"
+                                            className="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden"
                                         >
-                                            <h3 className="text-lg font-semibold text-white mb-2">
-                                                {faq.question}
-                                            </h3>
-                                            <p className="text-gray-300 leading-relaxed">{faq.answer}</p>
+                                            <button
+                                                onClick={() => toggleFaq(idx)}
+                                                className="w-full flex items-center justify-between p-5 text-left hover:bg-slate-800/80 transition-colors"
+                                            >
+                                                <h3 className="text-lg font-semibold text-white pr-4">
+                                                    {faq.question}
+                                                </h3>
+                                                <ChevronDown className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform duration-200 ${openFaqs[idx] ? 'rotate-180' : ''}`} />
+                                            </button>
+                                            {openFaqs[idx] && (
+                                                <div className="px-5 pb-5 -mt-1">
+                                                    <p className="text-gray-300 leading-relaxed">{faq.answer}</p>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>

@@ -91,7 +91,7 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <div className="text-xl font-semibold">Phone</div>
-                    <p className="text-gray-400">9441414140</p>
+                    <p className="text-gray-400">+91 9441414140</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-4">
