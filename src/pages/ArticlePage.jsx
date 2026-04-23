@@ -397,8 +397,9 @@ const RelatedPosts = ({ currentPostId, category }) => {
 // 🎨 OPTION 1: MINIMALIST AUTHOR CHIP + FLOATING ACTION (RECOMMENDED)
 // ============================================================================
 const MetadataOption1 = ({ safePost, formatDate }) => {
-  const isOwner = safePost.author === 'Sainath Reddy';
-  const authorInitials = safePost.author.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  const isOwner = ['sainath reddy', 'sainath'].includes(safePost.author.toLowerCase().trim());
+  const authorDisplayName = isOwner ? 'Sainath Reddy' : safePost.author;
+  const authorInitials = authorDisplayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
   const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : 'Guest Author';
   const authorLink = isOwner ? '/about' : null;
   const AuthorWrapper = ({ children, className }) =>
@@ -436,7 +437,7 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
             {authorInitials}
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="text-sm font-bold text-white group-hover/chip:text-blue-300">{safePost.author}</span>
+            <span className="text-sm font-bold text-white group-hover/chip:text-blue-300">{authorDisplayName}</span>
             <span className="text-xs text-gray-400">{authorSubtitle}</span>
           </div>
           {authorLink && <ArrowRight className="h-4 w-4 text-gray-400 group-hover/chip:text-blue-400 transition-colors" />}
@@ -497,8 +498,9 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
 // 🎨 OPTION 2: SIDEBAR METADATA (Pinterest/Medium style - for wide screens)
 // ============================================================================
 const MetadataOption2 = ({ safePost, formatDate }) => {
-  const isOwner = safePost.author === 'Sainath Reddy';
-  const authorInitials = safePost.author.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  const isOwner = ['sainath reddy', 'sainath'].includes(safePost.author.toLowerCase().trim());
+  const authorDisplayName = isOwner ? 'Sainath Reddy' : safePost.author;
+  const authorInitials = authorDisplayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
   const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : 'Guest Author';
   const authorLink = isOwner ? '/about' : null;
   const AuthorWrapper = ({ children, className }) =>
@@ -538,7 +540,7 @@ const MetadataOption2 = ({ safePost, formatDate }) => {
                 {authorInitials}
               </div>
               <div>
-                <div className="font-bold text-white group-hover:text-blue-300 text-sm">{safePost.author}</div>
+                <div className="font-bold text-white group-hover:text-blue-300 text-sm">{authorDisplayName}</div>
                 <div className="text-xs text-gray-400">{authorSubtitle}</div>
               </div>
             </AuthorWrapper>
@@ -596,8 +598,9 @@ const MetadataOption2 = ({ safePost, formatDate }) => {
 // 🎨 OPTION 3: MODERN GLASSMORPHISM OVERLAY (Ultra-sleek)
 // ============================================================================
 const MetadataOption3 = ({ safePost, formatDate }) => {
-  const isOwner = safePost.author === 'Sainath Reddy';
-  const authorInitials = safePost.author.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  const isOwner = ['sainath reddy', 'sainath'].includes(safePost.author.toLowerCase().trim());
+  const authorDisplayName = isOwner ? 'Sainath Reddy' : safePost.author;
+  const authorInitials = authorDisplayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
   const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : 'Guest Author';
   const authorLink = isOwner ? '/about' : null;
   const AuthorWrapper = ({ children, className }) =>
@@ -645,7 +648,7 @@ const MetadataOption3 = ({ safePost, formatDate }) => {
               {authorInitials}
             </div>
             <div className="space-y-1">
-              <div className="font-bold text-white group-hover:text-blue-300">{safePost.author}</div>
+              <div className="font-bold text-white group-hover:text-blue-300">{authorDisplayName}</div>
               <div className="text-xs text-gray-300 flex items-center gap-2">
                 {isOwner && <><span>🎯 4+ yrs</span><span className="text-gray-400">•</span></>}
                 <span className="flex items-center gap-1">
@@ -772,8 +775,9 @@ const ArticlePage = () => {
   const isThinArticle = (parseInt(safePost.readTime) || 1) <= 2;
 
   // Dynamic author display helper
-  const isOwner = safePost.author === 'Sainath Reddy';
-  const authorInitials = safePost.author
+  const isOwner = ['sainath reddy', 'sainath'].includes(safePost.author.toLowerCase().trim());
+  const authorDisplayName = isOwner ? 'Sainath Reddy' : safePost.author;
+  const authorInitials = authorDisplayName
     .split(' ')
     .map(w => w[0])
     .join('')
@@ -838,7 +842,7 @@ const ArticlePage = () => {
           modifiedTime={safePost.modified}
           category={safePost.category}
           tags={safePost.tags}
-          author={safePost.author}
+          author={authorDisplayName}
           breadcrumbs={breadcrumbs}
           howToSchema={howToSchema}
           videoSchema={videoSchema}
@@ -975,7 +979,7 @@ const ArticlePage = () => {
                 <AuthorWrapper
                   className="font-bold text-2xl text-white hover:text-blue-400 transition-colors inline-flex items-center gap-2 group"
                 >
-                  {safePost.author}
+                  {authorDisplayName}
                   {authorLink && <ArrowRight className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" />}
                 </AuthorWrapper>
                 <p className="text-base text-blue-400 font-semibold">{authorSubtitle}</p>
