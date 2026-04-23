@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Info, Sparkles, Search, BookOpen, GitCompareArrows, FileText, GraduationCap } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Info, Sparkles, Search, BookOpen, GitCompareArrows, FileText, GraduationCap, Newspaper } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
 
 // Helper component for the "Corner Burst" sparks animation
@@ -163,6 +163,7 @@ const Header = ({ topOffset = 0 }) => {
   const isCompareActive = currentPath.startsWith('/compare');
   const isCheatSheetsActive = currentPath.startsWith('/cheatsheet');
   const isInterviewPrepActive = currentPath.startsWith('/interview-prep');
+  const isNewsActive = currentPath.startsWith('/news');
   // Enhanced category structure
   const categories = {
   platforms: {
@@ -528,6 +529,21 @@ const Header = ({ topOffset = 0 }) => {
                 Interview Prep
               </Link>
             </motion.div>
+            {/* News */}
+            <motion.div whileHover={{ y: -2 }}>
+              <Link
+                to="/news"
+                className={`whitespace-nowrap font-semibold text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 ${
+                  isNewsActive
+                    ? 'text-blue-400'
+                    : 'text-gray-300 hover:text-blue-400'
+                }`}
+                style={isNewsActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+              >
+                <Newspaper className="w-4 h-4 hidden 2xl:inline-block" />
+                News
+              </Link>
+            </motion.div>
             {/* Tools */}
             <motion.div whileHover={{ y: -2 }}>
               <Link
@@ -663,6 +679,10 @@ const Header = ({ topOffset = 0 }) => {
                 <Link to="/interview-prep" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
                   <GraduationCap className="w-5 h-5" />
                   Interview Prep
+                </Link>
+                <Link to="/news" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
+                  <Newspaper className="w-5 h-5" />
+                  News
                 </Link>
                 <Link to="/tools" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
                   <Wrench className="w-5 h-5" />

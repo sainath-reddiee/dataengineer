@@ -28,9 +28,12 @@ import GiscusComments from '@/components/GiscusComments';
 import InArticleCTA from '@/components/InArticleCTA';
 import EmailDigestBanner from '@/components/EmailDigestBanner';
 import useCopyCodeButtons from '@/hooks/useCopyCodeButtons';
+import useReactions from '@/hooks/useReactions';
+import usePopularity from '@/hooks/usePopularity';
 import { injectInternalLinks } from '@/lib/pseo/linkingEngine';
 import { getRelatedTools } from '@/data/articleToolMap';
 import { getRecommendedCourses, getPlatformColor } from '@/data/courseRecommendations';
+import InlineToolWidget from '@/components/InlineToolWidget';
 import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap, Megaphone, MessageCircleQuestion, Send } from 'lucide-react';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
@@ -418,19 +421,18 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
       {/* 🔥 OPTION 1: AUTHOR CHIP WITH FLOATING SHARE */}
       <div className="flex items-center justify-between pt-6 group">
         {/* Author Chip - Clickable */}
-        <Link
-          to="/about"
+        <AuthorWrapper
           className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-800 hover:to-slate-700 border border-slate-600/40 hover:border-slate-500/60 transition-all backdrop-blur-sm group/chip"
         >
           <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
-            SR
+            {authorInitials}
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="text-sm font-bold text-white group-hover/chip:text-blue-300">Sainath Reddy</span>
-            <span className="text-xs text-gray-400">Data Engineer</span>
+            <span className="text-sm font-bold text-white group-hover/chip:text-blue-300">{safePost.author}</span>
+            <span className="text-xs text-gray-400">{authorSubtitle}</span>
           </div>
-          <ArrowRight className="h-4 w-4 text-gray-400 group-hover/chip:text-blue-400 transition-colors" />
-        </Link>
+          {authorLink && <ArrowRight className="h-4 w-4 text-gray-400 group-hover/chip:text-blue-400 transition-colors" />}
+        </AuthorWrapper>
 
         {/* Floating Meta Badges */}
         <div className="flex items-center gap-2">
@@ -513,28 +515,29 @@ const MetadataOption2 = ({ safePost, formatDate }) => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           {/* Main content - left */}
           <div className="lg:col-span-2 space-y-3">
-            <Link
-              to="/about"
+            <AuthorWrapper
               className="inline-flex items-center gap-3 group"
             >
               <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                SR
+                {authorInitials}
               </div>
               <div>
-                <div className="font-bold text-white group-hover:text-blue-300 text-sm">Sainath Reddy</div>
-                <div className="text-xs text-gray-400">Data Engineer at Anblicks</div>
+                <div className="font-bold text-white group-hover:text-blue-300 text-sm">{safePost.author}</div>
+                <div className="text-xs text-gray-400">{authorSubtitle}</div>
               </div>
-            </Link>
+            </AuthorWrapper>
           </div>
 
           {/* Right side - floating badges */}
           <div className="lg:sticky lg:top-24 space-y-2">
             <div className="inline-flex flex-col gap-2 w-full lg:w-auto">
               {/* Experience Badge */}
+              {isOwner && (
               <div className="flex items-center gap-2 px-3 py-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-xs font-semibold text-yellow-400">
                 <span>🎯</span>
                 <span>4+ Years Experience</span>
               </div>
+              )}
 
               {/* Meta Badges Row */}
               <div className="flex gap-2">
@@ -611,18 +614,16 @@ const MetadataOption3 = ({ safePost, formatDate }) => {
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4"
         >
           {/* Left: Author + Meta */}
-          <Link
-            to="/about"
+          <AuthorWrapper
             className="flex items-center gap-3 group"
           >
             <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg ring-2 ring-blue-400/30">
-              SR
+              {authorInitials}
             </div>
             <div className="space-y-1">
-              <div className="font-bold text-white group-hover:text-blue-300">Sainath Reddy</div>
+              <div className="font-bold text-white group-hover:text-blue-300">{safePost.author}</div>
               <div className="text-xs text-gray-300 flex items-center gap-2">
-                <span>🎯 4+ yrs</span>
-                <span className="text-gray-400">•</span>
+                {isOwner && <><span>🎯 4+ yrs</span><span className="text-gray-400">•</span></>}
                 <span className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   {formatDate(safePost.date)}
@@ -634,7 +635,7 @@ const MetadataOption3 = ({ safePost, formatDate }) => {
                 </span>
               </div>
             </div>
-          </Link>
+          </AuthorWrapper>
 
           {/* Right: Share button with glassmorphism */}
           <button
@@ -704,6 +705,10 @@ const ArticlePage = () => {
   // Inject copy buttons on code blocks after content renders
   useCopyCodeButtons(post?.content);
 
+  // Engagement hooks — must be called before early returns (Rules of Hooks)
+  const { reactions, userReaction, react } = useReactions(slug);
+  usePopularity(slug);
+
   // IMPORTANT: useMemo hooks must be called before any early returns
   // to satisfy React's Rules of Hooks (consistent call order every render)
   const processedHtml = useMemo(() => {
@@ -733,7 +738,7 @@ const ArticlePage = () => {
     content: post.content || '<p>Content not available</p>',
     category: post.category || 'Uncategorized',
     tags: post.tags || [],
-    author: 'Sainath Reddy',
+    author: post.author || 'Sainath Reddy',
     date: post.date || new Date().toISOString(),
     modified: post.modified || post.date || new Date().toISOString(),
     readTime: post.readTime || '1 min read',
@@ -741,6 +746,24 @@ const ArticlePage = () => {
   };
 
   const isThinArticle = (parseInt(safePost.readTime) || 1) <= 2;
+
+  // Dynamic author display helper
+  const isOwner = safePost.author === 'Sainath Reddy';
+  const authorInitials = safePost.author
+    .split(' ')
+    .map(w => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : 'Guest Author';
+  const authorLink = isOwner ? '/about' : null;
+
+  const AuthorWrapper = ({ children, className }) =>
+    authorLink ? (
+      <Link to={authorLink} className={className}>{children}</Link>
+    ) : (
+      <span className={className}>{children}</span>
+    );
 
   const formatDate = (dateString) => {
     try {
@@ -894,23 +917,52 @@ const ArticlePage = () => {
             <AdPlacement />
           </Suspense>
 
+          {/* Reactions Bar — engagement signal for Google Discover */}
+          <div className="my-8 flex flex-wrap items-center gap-3">
+            <span className="text-sm text-gray-400 mr-1">React:</span>
+            {['👍', '🔥', '💡', '🎉', '❤️'].map((emoji) => {
+              const count = reactions[emoji] || 0;
+              const isActive = userReaction === emoji;
+              return (
+                <button
+                  key={emoji}
+                  onClick={() => react(emoji)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-all border ${
+                    isActive
+                      ? 'bg-blue-500/20 border-blue-500/50 text-white scale-105'
+                      : 'bg-gray-800/60 border-gray-700/50 text-gray-400 hover:border-gray-600 hover:text-gray-300'
+                  }`}
+                >
+                  <span>{emoji}</span>
+                  {count > 0 && <span className="text-xs font-medium">{count}</span>}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Contextual Tool Widget — drives internal traffic & engagement */}
+          <InlineToolWidget post={safePost} />
+
           {/* Enhanced Author Footer */}
           <div className="border-t-2 border-gray-700/50 pt-8 mt-12">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 p-6 bg-gradient-to-r from-blue-900/10 to-purple-900/10 rounded-2xl border border-blue-500/20">
               <div className="space-y-3">
                 <p className="text-sm text-gray-400 uppercase tracking-wider">Published by</p>
-                <Link
-                  to="/about"
+                <AuthorWrapper
                   className="font-bold text-2xl text-white hover:text-blue-400 transition-colors inline-flex items-center gap-2 group"
                 >
-                  Sainath Reddy
-                  <ArrowRight className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </Link>
-                <p className="text-base text-blue-400 font-semibold">Data Engineer at Anblicks</p>
+                  {safePost.author}
+                  {authorLink && <ArrowRight className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" />}
+                </AuthorWrapper>
+                <p className="text-base text-blue-400 font-semibold">{authorSubtitle}</p>
                 <div className="flex items-center gap-4 text-sm">
                   <span className="text-gray-400">📅 {formatDate(safePost.date)}</span>
+                  {isOwner && (
+                  <>
                   <span className="text-gray-700">•</span>
                   <span className="text-yellow-400 font-semibold">🎯 4+ years experience</span>
+                  </>
+                  )}
                 </div>
               </div>
               <div className="flex flex-col gap-3">

@@ -1,0 +1,11 @@
+At line:1 char:150
++ ... ' -File | ForEach-Object { '{0:N1} KB {1}' -f (.Length/1024), .Name } ...
++                                                                  ~
+Missing expression after ','.
+At line:1 char:151
++ ... e | ForEach-Object { '{0:N1} KB {1}' -f (.Length/1024), .Name } | Sor ...
++                                                             ~~~~~
+Unexpected token '.Name' in expression or statement.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingExpressionAfterToken
+ 

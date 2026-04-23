@@ -23,6 +23,7 @@ const Footer = () => {
       { name: 'Comparisons', href: '/compare' },
       { name: 'Cheat Sheets', href: '/cheatsheets' },
       { name: 'Interview Prep', href: '/interview-prep' },
+      { name: 'News & Trends', href: '/news' },
       { name: 'Tools', href: '/tools' },
       { name: 'Tags', href: '/tag' }
     ],

@@ -2,10 +2,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, User, Eye, TrendingUp } from 'lucide-react';
 import LazyImage from './LazyImage';
 import TagsList from './TagsList';
 import FreshnessBadge from './FreshnessBadge';
+import { useViewCount } from '@/hooks/usePopularity';
 
 const isMobile = window.innerWidth <= 768;
 
@@ -18,6 +19,8 @@ const MotionLink = motion(Link);
 
 const PostCard = ({ post }) => {
   if (!post) return null;
+
+  const { views, isPopular } = useViewCount(post.slug);
 
   const cardVariants = {
     rest: {
@@ -120,6 +123,12 @@ const PostCard = ({ post }) => {
             {post.category}
           </span>
           <FreshnessBadge date={post.date} modifiedDate={post.modified} />
+          {isPopular && (
+            <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-0.5 rounded-full text-xs font-semibold inline-flex items-center gap-1">
+              <TrendingUp className="h-3 w-3" />
+              Popular
+            </span>
+          )}
         </div>
       </div>
 
@@ -144,6 +153,18 @@ const PostCard = ({ post }) => {
           </div>
         )}
 
+        {/* Author row - E-E-A-T signal for Google Discover */}
+        <div className="flex items-center space-x-2 mb-3 text-xs text-gray-500">
+          <User className="h-3 w-3 flex-shrink-0" />
+          <span>
+            {post.author || 'Sainath Reddy'}
+            <span className="mx-1">·</span>
+            <span className="text-gray-600">
+              {(post.author || 'Sainath Reddy') === 'Sainath Reddy' ? 'Data Engineer' : 'Guest Author'}
+            </span>
+          </span>
+        </div>
+
         <div className="flex items-center justify-between text-xs text-gray-400">
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-1">
@@ -154,6 +175,12 @@ const PostCard = ({ post }) => {
               <Clock className="h-3 w-3" />
               <span>{post.readTime}</span>
             </div>
+            {views > 0 && (
+              <div className="flex items-center space-x-1">
+                <Eye className="h-3 w-3" />
+                <span>{views}</span>
+              </div>
+            )}
           </div>
           <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
         </div>

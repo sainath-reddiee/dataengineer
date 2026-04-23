@@ -22,6 +22,7 @@ const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
 const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
 const DisclaimerPage = lazy(() => import('./pages/DisclaimerPage'));
 const ContributePage = lazy(() => import('./pages/ContributePage'));
+const NewsPage = lazy(() => import('./pages/NewsPage'));
 const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 const TagsArchivePage = lazy(() => import('./pages/TagsArchivePage'));
 const Certification = lazy(() => import('./pages/Certification'));
@@ -380,6 +381,11 @@ function App() {
           <Route path="contribute" element={
             <Suspense fallback={<LoadingFallback text="Loading..." />}>
               <ContributePage />
+            </Suspense>
+          } />
+          <Route path="news" element={
+            <Suspense fallback={<LoadingFallback text="Loading News..." />}>
+              <NewsPage />
             </Suspense>
           } />
           <Route path="newsletter" element={

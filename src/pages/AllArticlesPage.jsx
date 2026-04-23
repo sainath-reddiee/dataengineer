@@ -141,23 +141,27 @@ const AllArticlesPage = () => {
             <h1 className="text-3xl md:text-4xl font-black mb-2">
               All <span className="gradient-text">Articles</span>
             </h1>
-            <p className="text-base text-gray-300 mb-3 max-w-3xl mx-auto">
+            <p className="text-base text-gray-200 mb-3 max-w-3xl mx-auto">
               Explore our full library of content, from beginner tutorials to advanced deep dives into data engineering.
             </p>
-            <p className="text-sm text-gray-400 mb-6 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-sm text-gray-300 mb-6 max-w-3xl mx-auto leading-relaxed">
               Browse long-form guides on{' '}
-              <Link to="/category/snowflake" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">Snowflake</Link>,{' '}
-              <Link to="/category/dbt" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">dbt</Link>,{' '}
-              <Link to="/category/airflow" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">Apache Airflow</Link>,{' '}
-              <Link to="/category/aws" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">AWS</Link>,{' '}
-              <Link to="/category/python" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">Python</Link>, and{' '}
-              <Link to="/category/sql" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">SQL</Link>.
+              <Link to="/category/snowflake" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">Snowflake</Link>,{' '}
+              <Link to="/category/dbt" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">dbt</Link>,{' '}
+              <Link to="/category/airflow" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">Apache Airflow</Link>,{' '}
+              <Link to="/category/aws" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">AWS</Link>,{' '}
+              <Link to="/category/python" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">Python</Link>, and{' '}
+              <Link to="/category/sql" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">SQL</Link>.
               Looking for quick reference? Skim our{' '}
-              <Link to="/cheatsheets" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">cheat sheets</Link>,{' '}
+              <Link to="/cheatsheets" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">cheat sheets</Link>,{' '}
               compare tools side-by-side in the{' '}
-              <Link to="/comparisons" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">comparisons hub</Link>,{' '}
+              <Link to="/compare" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">comparisons hub</Link>,{' '}
               or look up terms in the{' '}
-              <Link to="/glossary" className="text-blue-300 hover:text-blue-200 underline decoration-dotted">glossary</Link>.
+              <Link to="/glossary" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">glossary</Link>.
+              {' '}Catch the latest{' '}
+              <Link to="/news" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">news & trends</Link>
+              {' '}or{' '}
+              <Link to="/contribute" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">write for us</Link>.
             </p>
             
             {/* Search Bar */}
