@@ -268,7 +268,8 @@ class WordPressAPI {
         content = typeof wpPost.content === 'string' ? wpPost.content : '';
       } else {
         // Content field is completely missing - use excerpt as fallback
-        console.warn('⚠️ Content field missing from API response, using excerpt as fallback');
+        // This is normal for related posts endpoint which returns a subset of fields
+        console.debug('ℹ️ Content field missing from API response, using excerpt as fallback');
         content = wpPost.excerpt?.rendered || wpPost.excerpt || '<p>Content not available. Please contact support.</p>';
       }
 
