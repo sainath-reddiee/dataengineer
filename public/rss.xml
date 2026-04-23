@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Thu, 23 Apr 2026 13:06:56 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 23 Apr 2026 14:36:48 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -24,7 +24,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/query-snowflake-in-duckdb-cut-costs</guid>
       <description>Three practical methods to query Snowflake data in DuckDB — via Iceberg tables, ADBC, or a hybrid architecture — with real cost breakdowns showing 70–90% savings on BI and dev workloads.</description>
       <pubDate>Sun, 19 Apr 2026 06:39:09 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>AWS</category>
       <category>dbt</category>
       <category>Snowflake</category>
@@ -37,7 +37,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/dbt-tests-pass-bad-data</guid>
       <description>I’ve been running dbt in production for a while now. And I’ll be honest — there was a phase where I genuinely believed that if my dbt tests were green,…</description>
       <pubDate>Fri, 17 Apr 2026 10:41:12 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>dbt</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/04/dbt-tests-bad-data.jpg" type="image/jpeg" />
     </item>
@@ -47,7 +47,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/automation-in-data-engineering</guid>
       <description>I still remember the afternoon I burned four hours debugging a production pipeline — convinced the problem was in the model logic — only to find the real culprit was…</description>
       <pubDate>Thu, 16 Apr 2026 02:46:08 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Python</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Data-Engineering-automation.jpg" type="image/jpeg" />
     </item>
@@ -57,7 +57,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/why-i-stopped-using-snowflake-tasks-orchestration</guid>
       <description>I want to be clear about something before I say anything critical: Snowflake Tasks are genuinely good. I used them for months. I recommended them to people. I wrote internal…</description>
       <pubDate>Sun, 12 Apr 2026 08:37:00 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Snowflake-tasks.jpg" type="image/jpeg" />
     </item>
@@ -67,7 +67,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-cortex-code-cost-control-2026</guid>
       <description>Snowflake Cortex Code Cost Control in 2026 — The Right Way to Set Limits When I first started using Cortex Code, cost was the last thing on my mind. It’s…</description>
       <pubDate>Sat, 11 Apr 2026 00:08:27 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Snowflake-cortex-code-cost.jpg" type="image/jpeg" />
     </item>
@@ -77,7 +77,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-expert-interview-questions</guid>
       <description>After all of this, the real tell at the senior level isn’t whether you know all these answers. It’s whether you can connect them. The best signal a senior candidate…</description>
       <pubDate>Thu, 09 Apr 2026 06:20:38 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Snowflake-interview-questions.jpg" type="image/jpeg" />
     </item>
@@ -87,7 +87,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration</guid>
       <description>How I Wired Snowflake’s Native dbt Projects to Airflow — And Finally Got True End-to-End Orchestration I’ll be honest with you — for a long time I was running dbt…</description>
       <pubDate>Tue, 07 Apr 2026 11:36:23 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Airflow</category>
       <category>dbt</category>
       <category>Snowflake</category>
@@ -99,7 +99,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-cortex-code-guide-real-examples</guid>
       <description>Nobody told me to do this. No manager pinged me. No sprint ticket had “explore Cortex Code” written on it. I stumbled across it one evening while clicking around Snowsight…</description>
       <pubDate>Fri, 03 Apr 2026 06:59:15 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/04/SNowflake-cortex-code.jpg" type="image/jpeg" />
     </item>
@@ -109,7 +109,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide</guid>
       <description>The Moment Everything Changed It was a Tuesday morning when I finally snapped. My dbt project had grown to 147 models, and the daily run was taking 2 hours and…</description>
       <pubDate>Sat, 07 Mar 2026 21:59:33 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Airflow</category>
       <category>dbt</category>
       <category>Python</category>
@@ -123,7 +123,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-managed-iceberg-tables-complete-guide-2026</guid>
       <description>⚡ TL;DR (Too Long; Didn’t Read) What it is: Snowflake Managed Iceberg Tables store data in your cloud storage (S3, GCS, Azure) instead of Snowflake’s storage, while Snowflake manages the…</description>
       <pubDate>Mon, 02 Feb 2026 10:10:37 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/02/Designer_11zon.jpg" type="image/jpeg" />
     </item>
@@ -133,7 +133,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-parse-document-complete-guide-2026</guid>
       <description>Why Document Processing Matters in 2026 Enterprises store approximately 80-90% of their business data in unstructured formats—PDFs, Word documents, scanned images, contracts, invoices, and reports. Yet most enterprise data warehouses,…</description>
       <pubDate>Wed, 28 Jan 2026 11:51:50 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/Snowflake-ai_parse_document.jpg" type="image/jpeg" />
     </item>
@@ -143,7 +143,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-cortex-cost-comparison</guid>
       <description>Snowflake Cortex AI matured significantly between 2023-2026, expanding from simple LLM functions to a comprehensive AI platform with AISQL, Cortex Search, Cortex Analyst, Document AI, and Agents. As adoption accelerates,…</description>
       <pubDate>Wed, 21 Jan 2026 10:19:06 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <category>SQL</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/Snowflake-cortex-cost-comparison.jpg" type="image/jpeg" />
@@ -154,7 +154,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-streams-tasks-pipeline-guide</guid>
       <description>The Night Everything Broke (And How Streams Saved Me) It was 2 AM on a Tuesday. My phone was buzzing non-stop. Our nightly ETL job had failed—again. This time, it…</description>
       <pubDate>Wed, 14 Jan 2026 07:39:06 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <category>SQL</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/Designer_11zon.jpg" type="image/jpeg" />
@@ -165,7 +165,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/how-i-passed-snowpro-gen-ai-certification-guide</guid>
       <description>Let’s be real for a second. When Snowflake announced the SnowPro Specialty: Generative AI (GES-C01) certification, I knew I had to take it. GenAI isn’t just a buzzword anymore; it’s…</description>
       <pubDate>Wed, 14 Jan 2026 06:24:04 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <category>SQL</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/images.png" type="image/png" />
@@ -176,7 +176,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-cost-optimization-techniques-2026</guid>
       <description>Why Snowflake Costs Spiral Out of Control If your Snowflake bill jumped 200% last quarter while data volume only grew 30%, you’re not alone. I’ve audited dozens of Snowflake environments…</description>
       <pubDate>Fri, 02 Jan 2026 11:24:35 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/IMG_8317_11zon.jpg" type="image/jpeg" />
     </item>
@@ -186,7 +186,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-query-optimization-guide-2026</guid>
       <description>I’ve been working with Snowflake for the past three years, and honestly, query optimization used to keep me up at night. Our monthly bills were climbing, queries were timing out,…</description>
       <pubDate>Fri, 02 Jan 2026 08:20:06 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <category>SQL</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/IMG_8313_11zon.jpg" type="image/jpeg" />
@@ -197,7 +197,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-interview-questions-answers-2026</guid>
       <description>Last year, I interviewed for a Senior Data Engineer role at three different companies. All three used Snowflake heavily. All three asked completely different questions. The first interview? They grilled…</description>
       <pubDate>Fri, 02 Jan 2026 03:59:58 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/IMG_8310.jpeg" type="image/jpeg" />
     </item>
@@ -207,7 +207,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-cortex-ai-complete-guide-2026</guid>
       <description>Why I Started Exploring Snowflake Cortex AI Three months ago, I was sitting in a meeting where someone asked, “Can we analyze sentiment in these 50,000 customer reviews?” My immediate…</description>
       <pubDate>Thu, 01 Jan 2026 23:08:02 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/Cortex-AI.jpg" type="image/jpeg" />
     </item>
@@ -217,7 +217,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/meeting-notes-rag-snowflake-ai-assistant</guid>
       <description>The Problem We All Face (And Nobody Talks About) You know that feeling when someone asks “What did we decide about the API redesign?” and you’re frantically scrolling through three…</description>
       <pubDate>Wed, 31 Dec 2025 21:24:03 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <category>SQL</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/IMG_8290_11zon.jpg" type="image/jpeg" />
@@ -228,7 +228,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowpro-specialty-gen-ai-practice-exams</guid>
       <description>Prepare for the Snowflake GES-C01 exam with realistic practice questions. Master Snowflake Cortex, LLMs, and RAG pipelines to get certified in 2025.</description>
       <pubDate>Fri, 26 Dec 2025 11:05:31 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/12/img_8225.png" type="image/png" />
     </item>
@@ -238,7 +238,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-openflow-ai-data-ingestion-guide</guid>
       <description>I’ll be honest – when I first saw the OpenFlow announcement at Snowflake BUILD, my initial reaction was “Great, another data pipeline tool.” We already have dbt, Airflow, Fivetran, and…</description>
       <pubDate>Tue, 11 Nov 2025 03:14:24 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/11/19FF3B06-30AF-4B1E-B0AF-359D0D6BC4C0_11zon.jpg" type="image/jpeg" />
     </item>
@@ -248,7 +248,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/build-rag-snowflake-cortex-search-guide</guid>
       <description>When I first heard about building Retrieval-Augmented Generation (RAG) systems directly in Snowflake, I’ll admit I was skeptical. Could a data warehouse really handle AI workloads this seamlessly? After spending…</description>
       <pubDate>Mon, 10 Nov 2025 09:09:53 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Python</category>
       <category>Snowflake</category>
       <category>SQL</category>
@@ -260,7 +260,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-cortex-aisql-query-optimization-guide</guid>
       <description>Modern data architectures are evolving rapidly, and Snowflake Cortex AISQL is at the forefront of this change. It lets you query unstructured data—files, images, and text—directly using SQL enhanced with…</description>
       <pubDate>Sat, 08 Nov 2025 00:44:02 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <category>SQL</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/11/A-hand-drawn-technic_11zon.jpg" type="image/jpeg" />
@@ -271,7 +271,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-intelligence-guide-setup-optimization</guid>
       <description>I’ve spent the last few days working with Snowflake Intelligence, and I want to share what actually works—not just the marketing pitch. If you’re tired of being the bottleneck for…</description>
       <pubDate>Thu, 06 Nov 2025 21:18:37 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/11/Copilot_20251107_080501.png" type="image/png" />
     </item>
@@ -281,7 +281,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-native-dbt-integration-2025-guide</guid>
       <description>Run dbt Core Directly in Snowflake Without Infrastructure Snowflake native dbt integration announced at Summit 2025 eliminates the need for separate containers or VMs to run dbt Core. Data teams…</description>
       <pubDate>Fri, 17 Oct 2025 05:44:10 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>dbt</category>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Copilot_20251017_163250_11zon.jpg" type="image/jpeg" />
@@ -292,7 +292,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/salesforce-copilot-custom-action-guide</guid>
       <description>The era of AI in CRM is here, and its name is Salesforce Copilot. It’s more than just a chatbot that answers questions; in fact, it’s an intelligent assistant designed…</description>
       <pubDate>Fri, 17 Oct 2025 04:37:01 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Salesforce</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Copilot_20251017_145651_11zon.jpg" type="image/jpeg" />
     </item>
@@ -302,7 +302,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/build-databricks-ai-agent-gpt5-guide</guid>
       <description>The age of AI chatbots is evolving into the era of AI doers. Instead of just answering questions, modern AI can now execute tasks, interact with systems, and solve multi-step…</description>
       <pubDate>Fri, 17 Oct 2025 00:09:27 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Databricks</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/ChatGPT-Image-Oct-16-2025-08_18_08-PM_11zon.jpg" type="image/jpeg" />
     </item>
@@ -312,7 +312,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/salesforce-agentforce-complete-guide-2025</guid>
       <description>Autonomous AI Agents That Transform Customer Engagement Salesforce Agentforce represents the most significant CRM innovation of 2025, marking the shift from generative AI to truly autonomous agents. Unveiled at Dreamforce…</description>
       <pubDate>Fri, 17 Oct 2025 00:06:08 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Salesforce</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg_11zon-2.jpg" type="image/jpeg" />
     </item>
@@ -322,7 +322,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-unique-aggregations-hidden-functions</guid>
       <description>When you think of aggregation functions in SQL, SUM(), COUNT(), and AVG() likely come to mind first. These are the workhorses of data analysis, undoubtedly. However, Snowflake, a titan in…</description>
       <pubDate>Thu, 16 Oct 2025 12:15:14 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <category>SQL</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/C4F9EC12-CE45-4426-ACF5-6CE3A6D5A08.jpeg" type="image/jpeg" />
@@ -333,7 +333,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-dynamic-tables-complete-guide-2025</guid>
       <description>Revolutionary Declarative Data Pipelines That Transform ETL In 2025, Snowflake Dynamic Tables have become the most powerful way to build automated data pipelines. This comprehensive guide covers everything from target…</description>
       <pubDate>Mon, 13 Oct 2025 23:06:23 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/resizefile_Designer.png" type="image/png" />
     </item>
@@ -343,7 +343,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-hybrid-tables-unify-transactional-analytical-data</guid>
       <description>Snowflake Hybrid Tables: Is This the End of the ETL Era? For decades, the data world has been split in two. On one side, you have transactional (OLTP) databases—the fast,…</description>
       <pubDate>Mon, 13 Oct 2025 08:54:18 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg_imresizer-4.jpg" type="image/jpeg" />
     </item>
@@ -353,7 +353,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-sql-tutorial-2025-complete-guide</guid>
       <description>Revolutionary SQL Features That Transform data engineering In 2025, Snowflake has introduced groundbreaking improvements that fundamentally change how data engineers write queries. This Snowflake SQL tutorial covers the latest features…</description>
       <pubDate>Sun, 12 Oct 2025 23:38:15 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg-optimizer_jpeg-14.jpg" type="image/jpeg" />
     </item>
@@ -363,7 +363,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-optima-automatic-query-optimization-guide</guid>
       <description>Revolutionary Performance Without Lifting a Finger On October 8, 2025, Snowflake unveiled Snowflake Optima—a groundbreaking optimization engine that fundamentally changes how data warehouses handle performance. Unlike traditional optimization that requires…</description>
       <pubDate>Sun, 12 Oct 2025 09:54:54 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <category>SQL</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg-optimizer_jpeg-13.jpg" type="image/jpeg" />
@@ -374,7 +374,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/open-semantic-interchange-snowflake-ai-problem-solved</guid>
       <description>Breaking: Tech Giants Unite to Solve AI’s Biggest Bottleneck The Open Semantic Interchange was announced by Snowflake in their official blog On September 23, 2025, something unprecedented happened in the…</description>
       <pubDate>Thu, 09 Oct 2025 11:06:31 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg-optimizer_jpeg-3.jpg" type="image/jpeg" />
     </item>
@@ -384,7 +384,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/synapse-to-fabric-migration-adx-eventhouse-guide</guid>
       <description>The clock is ticking for Azure Synapse Data Explorer (ADX). With its retirement announced, a strategic Synapse to Fabric migration is now a critical task for data teams. This move…</description>
       <pubDate>Wed, 08 Oct 2025 06:56:45 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Azure</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Azure-synapse.jpg" type="image/jpeg" />
     </item>
@@ -394,7 +394,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/build-snowflake-cortex-ai-agent-guide</guid>
       <description>The world of data analytics is changing. For years, accessing insights required writing complex SQL queries. However, the industry is now shifting towards a more intuitive, conversational approach. At the…</description>
       <pubDate>Wed, 08 Oct 2025 05:35:30 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <category>SQL</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Designer_img.jpg" type="image/jpeg" />
@@ -405,7 +405,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/mastering-real-time-etl-with-google-cloud-dataflow</guid>
       <description>In the fast-paced world of data engineering, mastering real-time ETL with Google Cloud Dataflow is a game-changer for businesses needing instant insights. Extract, Transform, Load (ETL) processes are evolving from…</description>
       <pubDate>Tue, 07 Oct 2025 12:04:57 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>GCP</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg_imresizer.jpg" type="image/jpeg" />
     </item>
@@ -415,7 +415,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/star-schema-vs-snowflake-schema-comparison</guid>
       <description>In the realm of data warehousing, choosing the right schema design is crucial for efficient data management, querying, and analysis. Two of the most popular multidimensional schemas are the star…</description>
       <pubDate>Tue, 07 Oct 2025 11:00:33 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/dataenigneerhub.jpg" type="image/jpeg" />
     </item>
@@ -425,7 +425,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/data-pipelines-python</guid>
       <description>Introduction to Data Pipelines in Python In today’s data-driven world, creating robust data pipelines solutions is essential for businesses to handle large volumes of information efficiently. Whether you’re pulling data…</description>
       <pubDate>Tue, 07 Oct 2025 09:02:37 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Python</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Designer_imresizer-10.jpg" type="image/jpeg" />
     </item>
@@ -435,7 +435,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-cortex-ai-financial-services</guid>
       <description>The financial services industry is in the midst of a technological revolution. At the heart of this change lies Artificial Intelligence. Consequently, financial institutions are constantly seeking new ways to…</description>
       <pubDate>Tue, 07 Oct 2025 06:29:44 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Designer_imresizer-9.jpg" type="image/jpeg" />
     </item>
@@ -445,7 +445,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-data-science-agent-automate-ml-2025</guid>
       <description>The 60–80% Problem Killing Data Science Productivity Data science productivity is being crushed by the 60–80% problem. Despite powerful platforms like Snowflake and cutting-edge ML tools, data scientists still spend…</description>
       <pubDate>Mon, 06 Oct 2025 06:34:00 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Designer_imresizer-1.jpg" type="image/jpeg" />
     </item>
@@ -455,7 +455,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-mcp-server-agentic-ai-guide-2025</guid>
       <description>Introduction: The Dawn of Context-Aware AI in Enterprise Data Enterprise AI is experiencing a fundamental shift in October 2025. Organizations are no longer satisfied with isolated AI tools that operate…</description>
       <pubDate>Mon, 06 Oct 2025 03:18:09 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/generated_image-3.jpg" type="image/jpeg" />
     </item>
@@ -465,7 +465,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-query-optimization-2025</guid>
       <description>Snowflake is renowned for its incredible performance, but as data scales into terabytes and petabytes, no platform is immune to a slow-running query. For a data engineer, mastering Snowflake query…</description>
       <pubDate>Sat, 04 Oct 2025 08:12:24 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/generated_image.jpg" type="image/jpeg" />
     </item>
@@ -475,7 +475,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-merge-optimization-techniques</guid>
       <description>Snowflake MERGE statements are powerful tools for upserting data, but poor optimization can lead to massive performance bottlenecks. If your MERGE queries are taking hours instead of minutes, you’re not…</description>
       <pubDate>Wed, 01 Oct 2025 06:37:50 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <category>SQL</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/featured.png" type="image/png" />
@@ -486,7 +486,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/what-is-incremental-data-processing-a-data-engineers-guide</guid>
       <description>As a data engineer, your goal is to build pipelines that are not just accurate, but also efficient, scalable, and cost-effective. One of the biggest challenges in achieving this is…</description>
       <pubDate>Tue, 30 Sep 2025 12:34:01 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>SQL</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/incre.png" type="image/png" />
     </item>
@@ -496,7 +496,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/data-modeling-modern-data-warehouse</guid>
       <description>In the world of data engineering, it’s easy to get excited about the latest tools and technologies. But before you can build powerful pipelines and insightful dashboards, you need a solid…</description>
       <pubDate>Tue, 30 Sep 2025 06:57:44 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>SQL</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/fact.png" type="image/png" />
     </item>
@@ -506,7 +506,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/dynamic-data-masking-snowflake</guid>
       <description>In today’s data-driven world, providing access to data is undoubtedly crucial. However, what happens when that data contains sensitive Personally Identifiable Information (PII) like emails, phone numbers, or credit card…</description>
       <pubDate>Tue, 30 Sep 2025 05:55:29 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/Dynamic.png" type="image/png" />
     </item>
@@ -516,7 +516,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-data-sharing-governance</guid>
       <description>In the final part of our Snowflake guide, we move beyond the technical implementation and into one of the most powerful strategic advantages of the platform: governance and secure data sharing. So far,…</description>
       <pubDate>Mon, 29 Sep 2025 01:48:23 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/New-1.png" type="image/png" />
     </item>
@@ -526,7 +526,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/querying-data-in-snowflake</guid>
       <description>In Part 1 of our guide, we explored Snowflake’s unique architecture, and in Part 2, we learned how to load data. Now comes the most important part: turning that raw…</description>
       <pubDate>Mon, 29 Sep 2025 01:36:15 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/New.png" type="image/png" />
     </item>
@@ -536,7 +536,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/load-data-into-snowflake</guid>
       <description>In Part 1 of our guide, we covered the revolutionary architecture of Snowflake. Now, it’s time to get hands-on. A data platform is only as good as the data within it, so understanding…</description>
       <pubDate>Mon, 29 Sep 2025 01:19:16 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/Snowflake-3.png" type="image/png" />
     </item>
@@ -546,7 +546,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/what-is-snowflake-guide</guid>
       <description>If you work in the world of data, you’ve undoubtedly heard the name Snowflake. It has rapidly become one of the most dominant platforms in the cloud data ecosystem. But what is…</description>
       <pubDate>Mon, 29 Sep 2025 01:09:23 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image.png" type="image/png" />
     </item>
@@ -556,7 +556,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/aws-data-pipeline-cost-optimization-strategies</guid>
       <description>Building a powerful data pipeline on AWS is one thing. Building one that doesn’t burn a hole in your company’s budget is another. As data volumes grow, the costs associated…</description>
       <pubDate>Mon, 29 Sep 2025 00:22:53 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>AWS</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/AWS.png" type="image/png" />
     </item>
@@ -566,7 +566,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/advanced-snowflake-interview-questions-experienced</guid>
       <description>Stop memorizing the difference between a VARCHAR and a TEXT field. If you’re an experienced data engineer, you know that real Snowflake interviews go much deeper. Hiring managers aren’t just looking for someone who knows the syntax;…</description>
       <pubDate>Sun, 28 Sep 2025 11:20:46 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-3.png" type="image/png" />
     </item>
@@ -576,7 +576,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/automated-etl-airflow-python</guid>
       <description>In the world of data, consistency is king. Manually running scripts to fetch and process data is not just tedious; it’s prone to errors, delays, and gaps in your analytics….</description>
       <pubDate>Sat, 27 Sep 2025 21:49:27 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Airflow</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-2.png" type="image/png" />
     </item>
@@ -586,7 +586,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/sql-window-functions-guide</guid>
       <description>Every data professional knows the power of GROUP BY. It’s the trusty tool we all learn first, allowing us to aggregate data and calculate metrics like total sales per category or…</description>
       <pubDate>Sat, 27 Sep 2025 21:35:45 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>SQL</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/Featured-image.png" type="image/png" />
     </item>
@@ -596,7 +596,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/build-data-lakehouse-on-azure</guid>
       <description>For years, data teams have faced a difficult choice: the structured, high-performance world of the data warehouse, or the flexible, low-cost scalability of the data lake. But what if you could have…</description>
       <pubDate>Fri, 26 Sep 2025 22:11:17 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Azure</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/img_6639.png" type="image/png" />
     </item>
@@ -606,7 +606,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/serverless-data-pipeline-aws</guid>
       <description>For data engineers, the dream is to build pipelines that are robust, scalable, and cost-effective. For years, this meant managing complex clusters and servers. But with the power of the cloud,…</description>
       <pubDate>Fri, 26 Sep 2025 09:17:13 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>AWS</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-1.png" type="image/png" />
     </item>
@@ -616,7 +616,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/dbt-projects-snowflake-structure</guid>
       <description>If you’ve ever inherited a dbt project, you know there are two kinds: the clean, logical, and easy-to-navigate project, and the other kind—a tangled mess of models that makes you…</description>
       <pubDate>Thu, 25 Sep 2025 05:56:39 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>dbt</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/dbt_featured.png" type="image/png" />
     </item>
@@ -626,7 +626,7 @@
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-architecture</guid>
       <description>In the world of data, Snowflake’s rapid rise to a leader in the cloud data space is a well-known story. However, what’s the secret behind its success? The answer isn’t…</description>
       <pubDate>Tue, 23 Sep 2025 04:59:16 GMT</pubDate>
-      <dc:creator>sainath</dc:creator>
+      <dc:creator>Sainath Reddy</dc:creator>
       <category>Snowflake</category>
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image.png" type="image/png" />
     </item>

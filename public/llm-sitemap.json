@@ -34,7 +34,7 @@
       "questionAnswered": "How to Query Snowflake in DuckDB (And Cut Your Bill While Doing It)?",
       "lastUpdated": "2026-04-20",
       "published": "2026-04-19",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "AWS",
       "wordCount": 1633
@@ -57,7 +57,7 @@
       "questionAnswered": "What Are dbt Tests Actually Checking?",
       "lastUpdated": "2026-04-18",
       "published": "2026-04-17",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "dbt",
       "wordCount": 2169
@@ -80,7 +80,7 @@
       "questionAnswered": "How is automation transforming data engineering roles?",
       "lastUpdated": "2026-04-16",
       "published": "2026-04-16",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Python",
       "wordCount": 1636
@@ -107,7 +107,7 @@
       "questionAnswered": "Why should you avoid using Snowflake Tasks for orchestration?",
       "lastUpdated": "2026-04-12",
       "published": "2026-04-12",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 1733
@@ -129,7 +129,7 @@
       "questionAnswered": "How do you control Snowflake Cortex Code costs?",
       "lastUpdated": "2026-04-11",
       "published": "2026-04-11",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 1379
@@ -155,7 +155,7 @@
       "questionAnswered": "What are the most important expert-level Snowflake interview questions?",
       "lastUpdated": "2026-04-09",
       "published": "2026-04-09",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 5111
@@ -181,7 +181,7 @@
       "questionAnswered": "What does the Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide cover?",
       "lastUpdated": "2026-04-11",
       "published": "2026-04-07",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Airflow",
       "wordCount": 3374
@@ -204,7 +204,7 @@
       "questionAnswered": "What is Snowflake Cortex Code and how do you use it?",
       "lastUpdated": "2026-04-11",
       "published": "2026-04-03",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 2073
@@ -230,7 +230,7 @@
       "questionAnswered": "How can Snowflake Cortex Code optimize dbt build times?",
       "lastUpdated": "2026-04-11",
       "published": "2026-03-08",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Airflow",
       "wordCount": 5026
@@ -257,7 +257,7 @@
       "questionAnswered": "What is Apache Iceberg?",
       "lastUpdated": "2026-02-02",
       "published": "2026-02-02",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 2559
@@ -279,7 +279,7 @@
       "questionAnswered": "What is AI_PARSE_DOCUMENT?",
       "lastUpdated": "2026-04-07",
       "published": "2026-01-28",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 2372
@@ -301,7 +301,7 @@
       "questionAnswered": "How much do Snowflake Cortex AI functions cost?",
       "lastUpdated": "2026-01-21",
       "published": "2026-01-21",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 2116
@@ -320,7 +320,7 @@
       "questionAnswered": "What does the Snowflake Streams & Tasks: SCD2 Pipeline Guide cover?",
       "lastUpdated": "2026-04-07",
       "published": "2026-01-14",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 3017
@@ -343,7 +343,7 @@
       "questionAnswered": "How do you pass the SnowPro Gen AI certification exam?",
       "lastUpdated": "2026-04-11",
       "published": "2026-01-14",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 954
@@ -370,7 +370,7 @@
       "questionAnswered": "What are proven techniques to reduce your Snowflake bill?",
       "lastUpdated": "2026-01-02",
       "published": "2026-01-02",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 2527
@@ -390,7 +390,7 @@
       "questionAnswered": "What Snowflake query optimization techniques actually work?",
       "lastUpdated": "2026-01-02",
       "published": "2026-01-02",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 1241
@@ -415,7 +415,7 @@
       "questionAnswered": "What Snowflake interview questions should you prepare for?",
       "lastUpdated": "2026-01-02",
       "published": "2026-01-02",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 3529
@@ -439,7 +439,7 @@
       "questionAnswered": "What is Snowflake Cortex AI and what can it do?",
       "lastUpdated": "2026-01-02",
       "published": "2026-01-02",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 5960
@@ -463,7 +463,7 @@
       "questionAnswered": "How do you build a meeting notes RAG in Snowflake?",
       "lastUpdated": "2026-01-04",
       "published": "2026-01-01",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 5892
@@ -482,7 +482,7 @@
       "questionAnswered": "How do you prepare for the SnowPro Specialty Gen AI certification?",
       "lastUpdated": "2025-12-26",
       "published": "2025-12-26",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 374
@@ -509,7 +509,7 @@
       "questionAnswered": "What is Snowflake OpenFlow?",
       "lastUpdated": "2025-11-11",
       "published": "2025-11-11",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 5214
@@ -532,7 +532,7 @@
       "questionAnswered": "What is RAG and Why Should You Care?",
       "lastUpdated": "2025-11-10",
       "published": "2025-11-10",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Python",
       "wordCount": 5758
@@ -551,7 +551,7 @@
       "questionAnswered": "How do you reduce Snowflake Cortex AI costs?",
       "lastUpdated": "2026-04-07",
       "published": "2025-11-08",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 1422
@@ -573,7 +573,7 @@
       "questionAnswered": "How do you set up and optimize Snowflake Intelligence?",
       "lastUpdated": "2025-11-08",
       "published": "2025-11-07",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 1221
@@ -595,7 +595,7 @@
       "questionAnswered": "What Is Snowflake Native dbt Integration?",
       "lastUpdated": "2025-10-17",
       "published": "2025-10-17",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "dbt",
       "wordCount": 1277
@@ -612,7 +612,7 @@
       "questionAnswered": "How do you build a custom Salesforce Copilot action?",
       "lastUpdated": "2025-10-17",
       "published": "2025-10-17",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Salesforce",
       "wordCount": 976
@@ -634,7 +634,7 @@
       "questionAnswered": "How do you build a Databricks AI Agent with GPT-5?",
       "lastUpdated": "2025-10-17",
       "published": "2025-10-17",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Databricks",
       "wordCount": 927
@@ -652,7 +652,7 @@
       "questionAnswered": "What Is Salesforce Agentforce?",
       "lastUpdated": "2025-10-17",
       "published": "2025-10-17",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Salesforce",
       "wordCount": 1263
@@ -673,7 +673,7 @@
       "questionAnswered": "What are Snowflake hidden aggregation functions you should know?",
       "lastUpdated": "2025-10-16",
       "published": "2025-10-16",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 947
@@ -698,7 +698,7 @@
       "questionAnswered": "What are Snowflake Dynamic Tables and how do you use them?",
       "lastUpdated": "2025-10-16",
       "published": "2025-10-14",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 3146
@@ -719,7 +719,7 @@
       "questionAnswered": "What are Snowflake Hybrid Tables?",
       "lastUpdated": "2025-10-14",
       "published": "2025-10-13",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 771
@@ -737,7 +737,7 @@
       "questionAnswered": "What does the Snowflake SQL Tutorial: Master MERGE ALL BY NAME cover?",
       "lastUpdated": "2025-10-16",
       "published": "2025-10-13",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 3571
@@ -760,7 +760,7 @@
       "questionAnswered": "What is Snowflake Optima and how does it optimize queries?",
       "lastUpdated": "2025-10-16",
       "published": "2025-10-12",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 3241
@@ -784,7 +784,7 @@
       "questionAnswered": "What is Open Semantic Interchange and how does it help AI?",
       "lastUpdated": "2025-10-14",
       "published": "2025-10-09",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 3267
@@ -806,7 +806,7 @@
       "questionAnswered": "What does the Synapse to Fabric: Your ADX Migration Guide cover?",
       "lastUpdated": "2025-10-08",
       "published": "2025-10-08",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Azure",
       "wordCount": 958
@@ -828,7 +828,7 @@
       "questionAnswered": "What does the AI Data Agent Guide 2025: Snowflake Cortex Tutorial cover?",
       "lastUpdated": "2025-10-08",
       "published": "2025-10-08",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 1237
@@ -851,7 +851,7 @@
       "questionAnswered": "What does the Mastering Real-Time ETL with Google Cloud Dataflow: A Comprehensive Tutorial cover?",
       "lastUpdated": "2025-10-08",
       "published": "2025-10-07",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "GCP",
       "wordCount": 857
@@ -878,7 +878,7 @@
       "questionAnswered": "What are the differences between star schema and snowflake schema?",
       "lastUpdated": "2025-10-08",
       "published": "2025-10-07",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 1043
@@ -900,7 +900,7 @@
       "questionAnswered": "How do you build Python data pipelines from APIs to Snowflake?",
       "lastUpdated": "2025-10-08",
       "published": "2025-10-07",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Python",
       "wordCount": 933
@@ -920,7 +920,7 @@
       "questionAnswered": "How is Snowflake Cortex AI used in financial services?",
       "lastUpdated": "2025-10-08",
       "published": "2025-10-07",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 804
@@ -946,7 +946,7 @@
       "questionAnswered": "What is the Snowflake Data Science Agent?",
       "lastUpdated": "2025-10-08",
       "published": "2025-10-06",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 2624
@@ -969,7 +969,7 @@
       "questionAnswered": "What is the Model Context Protocol (MCP)?",
       "lastUpdated": "2025-10-08",
       "published": "2025-10-06",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 2251
@@ -990,7 +990,7 @@
       "questionAnswered": "What are effective Snowflake query optimization techniques?",
       "lastUpdated": "2025-10-08",
       "published": "2025-10-04",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 888
@@ -1010,7 +1010,7 @@
       "questionAnswered": "How do you optimize Snowflake MERGE queries?",
       "lastUpdated": "2025-10-08",
       "published": "2025-10-01",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 1524
@@ -1031,7 +1031,7 @@
       "questionAnswered": "What is incremental data processing?",
       "lastUpdated": "2025-10-08",
       "published": "2025-09-30",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "SQL",
       "wordCount": 649
@@ -1049,7 +1049,7 @@
       "questionAnswered": "What does the Data Modeling for the Modern Data Warehouse: A Guide cover?",
       "lastUpdated": "2025-10-08",
       "published": "2025-09-30",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "SQL",
       "wordCount": 682
@@ -1070,7 +1070,7 @@
       "questionAnswered": "How do you implement dynamic data masking in Snowflake?",
       "lastUpdated": "2025-10-08",
       "published": "2025-09-30",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 715
@@ -1091,7 +1091,7 @@
       "questionAnswered": "What is Snowflake Data Sharing and Governance?",
       "lastUpdated": "2025-10-08",
       "published": "2025-09-29",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 726
@@ -1111,7 +1111,7 @@
       "questionAnswered": "What does the Querying data in snowflake: A Guide to JSON and Time Travel cover?",
       "lastUpdated": "2025-10-08",
       "published": "2025-09-29",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 811
@@ -1135,7 +1135,7 @@
       "questionAnswered": "How do you load data into Snowflake?",
       "lastUpdated": "2025-10-08",
       "published": "2025-09-29",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 846
@@ -1158,7 +1158,7 @@
       "questionAnswered": "What is Snowflake and how does it work?",
       "lastUpdated": "2025-10-08",
       "published": "2025-09-29",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 715
@@ -1184,7 +1184,7 @@
       "questionAnswered": "How do you optimize AWS data pipeline costs?",
       "lastUpdated": "2025-10-08",
       "published": "2025-09-29",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "AWS",
       "wordCount": 985
@@ -1206,7 +1206,7 @@
       "questionAnswered": "What advanced Snowflake interview questions should experienced engineers prepare for?",
       "lastUpdated": "2025-10-08",
       "published": "2025-09-28",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 1215
@@ -1230,7 +1230,7 @@
       "questionAnswered": "What does the Automated ETL with Airflow and Python: A Practical Guide cover?",
       "lastUpdated": "2025-10-08",
       "published": "2025-09-28",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Airflow",
       "wordCount": 855
@@ -1250,7 +1250,7 @@
       "questionAnswered": "What Are Window Functions, Really?",
       "lastUpdated": "2025-10-08",
       "published": "2025-09-28",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "SQL",
       "wordCount": 749
@@ -1274,7 +1274,7 @@
       "questionAnswered": "How do you build a data lakehouse on Azure?",
       "lastUpdated": "2025-10-08",
       "published": "2025-09-27",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Azure",
       "wordCount": 992
@@ -1297,7 +1297,7 @@
       "questionAnswered": "What does the Building a Serverless Data Pipeline on AWS: A Step-by-Step Guide cover?",
       "lastUpdated": "2025-10-08",
       "published": "2025-09-26",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "AWS",
       "wordCount": 1107
@@ -1321,7 +1321,7 @@
       "questionAnswered": "What does the Structuring dbt Projects in Snowflake: The Definitive Guide cover?",
       "lastUpdated": "2025-10-08",
       "published": "2025-09-25",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "dbt",
       "wordCount": 1111
@@ -1342,7 +1342,7 @@
       "questionAnswered": "What is Snowflake Architecture?",
       "lastUpdated": "2025-10-08",
       "published": "2025-09-23",
-      "author": "sainath",
+      "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 679
