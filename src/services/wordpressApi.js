@@ -561,10 +561,8 @@ class WordPressAPI {
     throw new Error(data.detail || data.message || 'Subscription failed');
   }
 
-  async submitContactForm(formData) {
-    console.log('📝 Contact form submission:', formData);
-    return { success: true };
-  }
+  // Contact form now handled directly by Web3Forms in ContactPage.jsx
+  // submitContactForm() stub removed — was a no-op
 
   // Helper method for SEO analysis - fetch all posts with full content
   async getAllPosts(page = 1, perPage = 100) {

@@ -5,6 +5,5 @@ export const FRONTEND_URL = "https://dataengineerhub.blog";
 export const API_ENDPOINTS = {
   POSTS: '/wp-json/wp/v2/posts',
   CATEGORIES: '/wp-json/wp/v2/categories',
-  NEWSLETTER: '/wp-json/wp/v2/newsletter/subscribe',
-  CONTACT: '/wp-json/wp/v2/contact/submit'
+  NEWSLETTER: '/wp-json/wp/v2/newsletter/subscribe'
 };

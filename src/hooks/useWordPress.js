@@ -595,34 +595,4 @@ export const useNewsletter = () => {
   return { subscribe, loading, error, success, reset };
 };
 
-// Hook for contact form
-export const useContact = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-
-  const submitForm = useCallback(async (formData) => {
-    try {
-      setLoading(true);
-      setError(null);
-      setSuccess(false);
-
-      await wordpressApi.submitContactForm(formData);
-      setSuccess(true);
-
-      return { success: true };
-    } catch (err) {
-      setError(err.message);
-      return { success: false, error: err.message };
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const reset = useCallback(() => {
-    setError(null);
-    setSuccess(false);
-  }, []);
-
-  return { submitForm, loading, error, success, reset };
-};
+// useContact hook removed — contact form now uses Web3Forms directly in ContactPage.jsx
