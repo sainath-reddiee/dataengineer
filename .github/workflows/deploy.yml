@@ -160,6 +160,15 @@ jobs:
           restore-keys: |
             build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
 
+      - name: 💾 Restore FTP Sync State
+        id: ftp-cache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: .ftp-deploy-sync-state.json
+          key: ftp-state-
+          restore-keys: |
+            ftp-state-
+
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -270,10 +279,6 @@ jobs:
           echo "📋 Generating FAQ schemas..."
           npm run faq-schema || echo "⚠️ FAQ schema generation skipped"
           
-          # Verify build output
-          echo ""
-          echo "🔍 Verifying build output..."
-          npm run build:verify || echo "⚠️ Build verification skipped"
           echo "article_count=$ARTICLE_COUNT" >> $GITHUB_OUTPUT
           echo "build_completed=true" >> $GITHUB_OUTPUT
           
@@ -409,7 +414,7 @@ jobs:
           state-name: .ftp-deploy-sync-state.json
           dry-run: ${{ steps.changes.outputs.dry_run == 'true' }}
           timeout: 300000
-          log-level: standard
+          log-level: minimal
           exclude: |
             **/.git*
             **/.git*/**
@@ -418,6 +423,7 @@ jobs:
             **/.DS_Store
             **/Thumbs.db
             **/.build-cache.json
+            **/*.map
 
       - name: ⏭️ Deployment Skipped
         if: steps.changes.outputs.skip_deploy == 'true'
@@ -587,6 +593,13 @@ jobs:
             public/indexnow-key.txt
             .build-cache.json
           key: build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**', 'scripts/**', 'index.html', 'vite.config.js', 'tailwind.config.js', 'postcss.config.js') }}
+
+      - name: 💾 Save FTP Sync State
+        if: steps.changes.outputs.skip_deploy != 'true' && steps.changes.outputs.dry_run != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .ftp-deploy-sync-state.json
+          key: ftp-state-${{ github.run_id }}
 
       - name: 💾 Upload Artifact
         if: |
