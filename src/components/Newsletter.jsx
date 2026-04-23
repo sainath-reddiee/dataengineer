@@ -1,28 +1,25 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Send, CheckCircle, Rss, Sparkles, BookOpen } from 'lucide-react';
+import { Mail, Send, CheckCircle, Rss, Sparkles, BookOpen, AlertCircle, Loader2 } from 'lucide-react';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { useNewsletter } from '@/hooks/useWordPress';
 import { trackNewsletterSignup } from '@/utils/analytics';
 
 const Newsletter = () => {
   const [ref, , hasIntersected] = useIntersectionObserver();
   const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const { subscribe, loading, error, success, reset } = useNewsletter();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!email.trim() || loading) return;
 
-    const subject = encodeURIComponent('Newsletter Subscribe');
-    const body = encodeURIComponent(
-      `Please add me to the DataEngineer Hub weekly digest.\n\nEmail: ${email}`
-    );
-    window.location.href = `mailto:sainath@dataengineerhub.blog?subject=${subject}&body=${body}`;
-
-    trackNewsletterSignup('newsletter_section');
-    setSubmitted(true);
-    setEmail('');
-    setTimeout(() => setSubmitted(false), 5000);
+    const result = await subscribe(email);
+    if (result.success) {
+      trackNewsletterSignup('newsletter_section');
+      setEmail('');
+      setTimeout(() => reset(), 5000);
+    }
   };
 
   return (
@@ -74,29 +71,48 @@ const Newsletter = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
                 >
-                  {submitted ? (
+                  {success ? (
                     <div className="inline-flex items-center gap-2 text-green-400 font-medium text-lg">
                       <CheckCircle className="h-5 w-5" />
-                      Your email client should have opened — thanks for subscribing!
+                      You're subscribed — welcome to the Data Digest!
                     </div>
                   ) : (
-                    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row justify-center gap-3 max-w-lg mx-auto">
-                      <input
-                        type="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@example.com"
-                        className="flex-1 px-5 py-3.5 rounded-full bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm"
-                      />
-                      <button
-                        type="submit"
-                        className="inline-flex items-center justify-center px-7 py-3.5 rounded-full font-bold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-xl transition-all duration-300 group"
-                      >
-                        Subscribe
-                        <Send className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                      </button>
-                    </form>
+                    <>
+                      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row justify-center gap-3 max-w-lg mx-auto">
+                        <input
+                          type="email"
+                          required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="you@example.com"
+                          disabled={loading}
+                          className="flex-1 px-5 py-3.5 rounded-full bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm disabled:opacity-50"
+                        />
+                        <button
+                          type="submit"
+                          disabled={loading}
+                          className="inline-flex items-center justify-center px-7 py-3.5 rounded-full font-bold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-xl transition-all duration-300 group disabled:opacity-50"
+                        >
+                          {loading ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Subscribing...
+                            </>
+                          ) : (
+                            <>
+                              Subscribe
+                              <Send className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                            </>
+                          )}
+                        </button>
+                      </form>
+                      {error && (
+                        <div className="inline-flex items-center gap-2 text-red-400 text-sm mt-3">
+                          <AlertCircle className="h-4 w-4" />
+                          {error}
+                        </div>
+                      )}
+                    </>
                   )}
                 </motion.div>
 

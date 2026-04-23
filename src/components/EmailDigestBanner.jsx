@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Mail, Send, X, CheckCircle, Rss } from 'lucide-react';
+import { Mail, Send, X, CheckCircle, Rss, AlertCircle, Loader2 } from 'lucide-react';
+import { useNewsletter } from '@/hooks/useWordPress';
 import { trackNewsletterSignup } from '@/utils/analytics';
 
 const STORAGE_KEY = 'email_digest_dismissed';
@@ -14,7 +15,7 @@ const EmailDigestBanner = () => {
     }
   });
   const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const { subscribe, loading, error, success, reset } = useNewsletter();
 
   const handleDismiss = () => {
     try {
@@ -23,19 +24,16 @@ const EmailDigestBanner = () => {
     setDismissed(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!email.trim() || loading) return;
 
-    const subject = encodeURIComponent('Newsletter Subscribe');
-    const body = encodeURIComponent(
-      `Please add me to the DataEngineer Hub weekly digest.\n\nEmail: ${email}`
-    );
-    window.location.href = `mailto:sainath@dataengineerhub.blog?subject=${subject}&body=${body}`;
-
-    trackNewsletterSignup('article_inline');
-    setSubmitted(true);
-    setEmail('');
+    const result = await subscribe(email);
+    if (result.success) {
+      trackNewsletterSignup('article_inline');
+      setEmail('');
+      setTimeout(() => reset(), 5000);
+    }
   };
 
   if (dismissed) return null;
@@ -50,10 +48,10 @@ const EmailDigestBanner = () => {
         <X className="h-4 w-4" />
       </button>
 
-      {submitted ? (
+      {success ? (
         <div className="flex items-center justify-center gap-2 text-green-400 font-medium py-2">
           <CheckCircle className="h-5 w-5" />
-          Your email client should have opened — thanks for subscribing!
+          You're subscribed — welcome to the Data Digest!
         </div>
       ) : (
         <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -74,14 +72,20 @@ const EmailDigestBanner = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="flex-1 min-w-0 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              disabled={loading}
+              className="flex-1 min-w-0 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
             />
             <button
               type="submit"
-              className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-colors"
+              disabled={loading}
+              className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-colors disabled:opacity-50"
             >
-              <Send className="h-3.5 w-3.5" />
-              Subscribe
+              {loading ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Send className="h-3.5 w-3.5" />
+              )}
+              {loading ? 'Wait...' : 'Subscribe'}
             </button>
           </form>
 
@@ -94,6 +98,12 @@ const EmailDigestBanner = () => {
             <Rss className="h-3.5 w-3.5" />
             RSS
           </a>
+        </div>
+      )}
+      {error && (
+        <div className="flex items-center justify-center gap-2 text-red-400 text-sm mt-2">
+          <AlertCircle className="h-4 w-4" />
+          {error}
         </div>
       )}
     </section>

@@ -533,8 +533,19 @@ class WordPressAPI {
   }
 
   async subscribeNewsletter(email) {
-    console.log('📧 Newsletter subscription for:', email);
-    return { success: true };
+    const response = await fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Subscription failed');
+    }
+
+    return data;
   }
 
   async submitContactForm(formData) {
