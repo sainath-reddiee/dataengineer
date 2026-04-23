@@ -167,7 +167,6 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Install Dependencies
-        if: steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true' || steps.changes.outputs.skip_cache == 'true'
         run: npm ci --prefer-offline --no-audit
 
       - name: 🗺️ Generate & Validate Sitemap

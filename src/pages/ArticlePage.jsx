@@ -494,205 +494,10 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
   );
 };
 
-// ============================================================================
-// 🎨 OPTION 2: SIDEBAR METADATA (Pinterest/Medium style - for wide screens)
-// ============================================================================
-const MetadataOption2 = ({ safePost, formatDate }) => {
-  const isOwner = ['sainath reddy', 'sainath'].includes(safePost.author.toLowerCase().trim());
-  const authorDisplayName = isOwner ? 'Sainath Reddy' : safePost.author;
-  const authorInitials = authorDisplayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : 'Guest Author';
-  const authorLink = isOwner ? '/about' : null;
-  const AuthorWrapper = ({ children, className }) =>
-    authorLink ? <Link to={authorLink} className={className}>{children}</Link>
-               : <span className={className}>{children}</span>;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-4"
-    >
-      {/* Category */}
-      <div>
-        <Link
-          to={`/category/${safePost.category.toLowerCase()}`}
-          className="inline-flex items-center px-3 py-1.5 bg-blue-500/20 border border-blue-400/40 rounded-full text-xs font-semibold text-blue-300 hover:bg-blue-500/30 transition-all"
-        >
-          {safePost.category}
-        </Link>
-      </div>
-
-      {/* Title */}
-      <h1 className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight text-white">
-        {safePost.title}
-      </h1>
-
-      {/* 🔥 OPTION 2: SIDEBAR STYLE with floating badges */}
-      <div className="relative pt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-          {/* Main content - left */}
-          <div className="lg:col-span-2 space-y-3">
-            <AuthorWrapper
-              className="inline-flex items-center gap-3 group"
-            >
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                {authorInitials}
-              </div>
-              <div>
-                <div className="font-bold text-white group-hover:text-blue-300 text-sm">{authorDisplayName}</div>
-                <div className="text-xs text-gray-400">{authorSubtitle}</div>
-              </div>
-            </AuthorWrapper>
-          </div>
-
-          {/* Right side - floating badges */}
-          <div className="lg:sticky lg:top-24 space-y-2">
-            <div className="inline-flex flex-col gap-2 w-full lg:w-auto">
-              {/* Experience Badge */}
-              {isOwner && (
-              <div className="flex items-center gap-2 px-3 py-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-xs font-semibold text-yellow-400">
-                <span>🎯</span>
-                <span>4+ Years Experience</span>
-              </div>
-              )}
-
-              {/* Meta Badges Row */}
-              <div className="flex gap-2">
-                <div className="flex-1 flex items-center gap-1.5 px-3 py-2 bg-slate-800/60 border border-slate-700/40 rounded-lg text-xs text-gray-300">
-                  <Calendar className="h-3.5 w-3.5 text-purple-400" />
-                  <span className="hidden sm:inline">{formatDate(safePost.date)}</span>
-                </div>
-                <div className="flex-1 flex items-center gap-1.5 px-3 py-2 bg-slate-800/60 border border-slate-700/40 rounded-lg text-xs text-gray-300">
-                  <Clock className="h-3.5 w-3.5 text-green-400" />
-                  <span>{safePost.readTime}</span>
-                </div>
-              </div>
-
-              {/* Share Button */}
-              <button
-                onClick={async () => {
-                  if (navigator.share) {
-                    navigator.share({
-                      title: safePost.title,
-                      url: window.location.href
-                    }).catch(() => { });
-                  } else {
-                    try { await navigator.clipboard.writeText(window.location.href); } catch { /* ignore */ }
-                  }
-                }}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-lg text-sm font-semibold text-white transition-all"
-              >
-                <Share2 className="h-4 w-4" />
-                Share
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-// ============================================================================
-// 🎨 OPTION 3: MODERN GLASSMORPHISM OVERLAY (Ultra-sleek)
-// ============================================================================
-const MetadataOption3 = ({ safePost, formatDate }) => {
-  const isOwner = ['sainath reddy', 'sainath'].includes(safePost.author.toLowerCase().trim());
-  const authorDisplayName = isOwner ? 'Sainath Reddy' : safePost.author;
-  const authorInitials = authorDisplayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : 'Guest Author';
-  const authorLink = isOwner ? '/about' : null;
-  const AuthorWrapper = ({ children, className }) =>
-    authorLink ? <Link to={authorLink} className={className}>{children}</Link>
-               : <span className={className}>{children}</span>;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-0"
-    >
-      {/* Category Badge - Overlay on image */}
-      <div className="absolute top-6 left-6 z-10">
-        <Link
-          to={`/category/${safePost.category.toLowerCase()}`}
-          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600/80 to-blue-500/80 hover:from-blue-600 hover:to-blue-500 backdrop-blur-md border border-blue-400/20 rounded-full text-sm font-semibold text-white transition-all shadow-lg"
-        >
-          {safePost.category}
-        </Link>
-      </div>
-
-      {/* Gradient overlay on image */}
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent rounded-3xl z-5" />
-
-      {/* Content overlaid on image */}
-      <div className="relative space-y-6 pt-64">
-        {/* Title */}
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight text-white">
-          {safePost.title}
-        </h1>
-
-        {/* 🔥 OPTION 3: MODERN GLASSMORPHISM METADATA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4"
-        >
-          {/* Left: Author + Meta */}
-          <AuthorWrapper
-            className="flex items-center gap-3 group"
-          >
-            <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg ring-2 ring-blue-400/30">
-              {authorInitials}
-            </div>
-            <div className="space-y-1">
-              <div className="font-bold text-white group-hover:text-blue-300">{authorDisplayName}</div>
-              <div className="text-xs text-gray-300 flex items-center gap-2">
-                {isOwner && <><span>🎯 4+ yrs</span><span className="text-gray-400">•</span></>}
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  {formatDate(safePost.date)}
-                </span>
-                <span className="text-gray-400">•</span>
-                <span className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  {safePost.readTime}
-                </span>
-              </div>
-            </div>
-          </AuthorWrapper>
-
-          {/* Right: Share button with glassmorphism */}
-          <button
-            onClick={async () => {
-              if (navigator.share) {
-                navigator.share({
-                  title: safePost.title,
-                  url: window.location.href
-                }).catch(() => { });
-              } else {
-                try { await navigator.clipboard.writeText(window.location.href); } catch { /* ignore */ }
-              }
-            }}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-lg text-sm font-semibold text-white transition-all"
-          >
-            <Share2 className="h-4 w-4" />
-            <span className="hidden sm:inline">Share</span>
-          </button>
-        </motion.div>
-      </div>
-    </motion.div>
-  );
-};
-
 const ArticlePage = () => {
   const { slug } = useParams();
   const { post, loading, error, refetch } = usePost(slug);
-  // 🎨 CHOOSE YOUR METADATA DESIGN:
-  // Change this value: 1, 2, or 3
-  const METADATA_DESIGN = 1;
+
 
   // Preload hero image into browser cache
   useEffect(() => {
@@ -865,41 +670,20 @@ const ArticlePage = () => {
 
         <motion.article initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} className="space-y-8">
           {/* Hero Image */}
-          {METADATA_DESIGN !== 3 && (
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl max-h-[280px] sm:max-h-[340px] md:max-h-[400px] aspect-video">
-              <LazyImage
-                src={safePost.image}
-                alt={safePost.title}
-                width={1600}
-                quality={90}
-                sizes="(max-width: 768px) 100vw, 1200px"
-                className="w-full h-full object-cover"
-                priority={true}
-              />
-            </div>
-          )}
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl max-h-[280px] sm:max-h-[340px] md:max-h-[400px] aspect-video">
+            <LazyImage
+              src={safePost.image}
+              alt={safePost.title}
+              width={1600}
+              quality={90}
+              sizes="(max-width: 768px) 100vw, 1200px"
+              className="w-full h-full object-cover"
+              priority={true}
+            />
+          </div>
 
-          {/* Metadata Section - Choose design */}
-          {METADATA_DESIGN === 1 && <MetadataOption1 safePost={safePost} formatDate={formatDate} />}
-          {METADATA_DESIGN === 2 && <MetadataOption2 safePost={safePost} formatDate={formatDate} />}
-
-          {/* Option 3 needs special layout with image */}
-          {METADATA_DESIGN === 3 && (
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl -mx-6" style={{ height: '600px' }}>
-              <LazyImage
-                src={safePost.image}
-                alt={safePost.title}
-                width={1600}
-                quality={90}
-                sizes="(max-width: 768px) 100vw, 1200px"
-                className="w-full h-full object-cover"
-                priority={true}
-              />
-              <div className="absolute inset-0 px-6 pb-6 flex flex-col justify-end">
-                <MetadataOption3 safePost={safePost} formatDate={formatDate} />
-              </div>
-            </div>
-          )}
+          {/* Metadata Section */}
+          <MetadataOption1 safePost={safePost} formatDate={formatDate} />
 
           {/* Key Takeaways — AEO/AI visibility, Speakable schema target */}
           <KeyTakeaways items={keyTakeaways} />
@@ -948,12 +732,13 @@ const ArticlePage = () => {
           {/* Reactions Bar — engagement signal for Google Discover */}
           <div className="my-8 flex flex-wrap items-center gap-3">
             <span className="text-sm text-gray-400 mr-1">React:</span>
-            {['👍', '🔥', '💡', '🎉', '❤️'].map((emoji) => {
+            {[['👍','Like'],['🔥','Fire'],['💡','Insightful'],['🎉','Celebrate'],['❤️','Love']].map(([emoji, label]) => {
               const count = reactions[emoji] || 0;
               const isActive = userReaction === emoji;
               return (
                 <button
                   key={emoji}
+                  aria-label={`React with ${label}${count > 0 ? `, ${count} reaction${count !== 1 ? 's' : ''}` : ''}`}
                   onClick={() => react(emoji)}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-all border ${
                     isActive
