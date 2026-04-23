@@ -411,7 +411,7 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
       </div>
 
       {/* Title */}
-      <h1 className="text-2xl md:text-3xl lg:text-4xl font-black leading-tight text-white">
+      <h1 className="text-2xl md:text-3xl lg:text-[2.75rem] font-black leading-tight bg-gradient-to-r from-white via-blue-100 to-blue-300 bg-clip-text text-transparent">
         {safePost.title}
       </h1>
 
@@ -799,18 +799,15 @@ const ArticlePage = () => {
         />
 
       <div className="container mx-auto px-6 max-w-7xl">
-        {/* Breadcrumbs */}
+        {/* Breadcrumbs + Back Button */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
-          className="mb-4"
+          className="flex items-center justify-between gap-4 mb-6 flex-wrap"
         >
           <Breadcrumbs breadcrumbs={breadcrumbs} />
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="mb-6">
-          <Button asChild variant="outline" className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 backdrop-blur-sm">
+          <Button asChild variant="outline" size="sm" className="border border-slate-700/60 text-gray-300 hover:text-blue-300 hover:bg-blue-500/10 hover:border-blue-400/40 backdrop-blur-sm shrink-0">
             <Link to="/articles"><ArrowLeft className="mr-2 h-4 w-4" />All Articles</Link>
           </Button>
         </motion.div>

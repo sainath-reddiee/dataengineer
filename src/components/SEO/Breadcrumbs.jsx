@@ -14,9 +14,9 @@ const Breadcrumbs = ({ breadcrumbs, className = '' }) => {
     return (
         <nav
             aria-label="Breadcrumb"
-            className={`flex items-center space-x-2 text-sm ${className}`}
+            className={`inline-flex items-center text-sm bg-slate-800/40 px-4 py-2 rounded-lg border border-slate-700/50 ${className}`}
         >
-                <ol className="flex items-center space-x-2 flex-wrap">
+                <ol className="flex items-center flex-wrap">
                     {breadcrumbs.map((crumb, index) => {
                         const isLast = index === breadcrumbs.length - 1;
                         const isFirst = index === 0;
@@ -24,12 +24,12 @@ const Breadcrumbs = ({ breadcrumbs, className = '' }) => {
                         return (
                             <li key={crumb.url} className="flex items-center">
                                 {index > 0 && (
-                                    <ChevronRight className="h-4 w-4 text-gray-400 mx-2" aria-hidden="true" />
+                                    <ChevronRight className="h-3.5 w-3.5 text-gray-500 mx-2 shrink-0" aria-hidden="true" />
                                 )}
 
                                 {isLast ? (
                                     <span
-                                        className="text-gray-400 font-medium truncate max-w-xs"
+                                        className="text-gray-300 font-medium line-clamp-1"
                                         aria-current="page"
                                     >
                                         {crumb.name}
@@ -37,9 +37,9 @@ const Breadcrumbs = ({ breadcrumbs, className = '' }) => {
                                 ) : (
                                     <Link
                                         to={crumb.url.replace('https://dataengineerhub.blog', '')}
-                                        className="text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1"
+                                        className="text-blue-300 hover:text-blue-200 transition-colors flex items-center gap-1 shrink-0"
                                     >
-                                        {isFirst && <Home className="h-4 w-4" aria-hidden="true" />}
+                                        {isFirst && <Home className="h-3.5 w-3.5" aria-hidden="true" />}
                                         <span className="hover:underline">{crumb.name}</span>
                                     </Link>
                                 )}
