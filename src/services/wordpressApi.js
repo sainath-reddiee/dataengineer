@@ -533,19 +533,32 @@ class WordPressAPI {
   }
 
   async subscribeNewsletter(email) {
-    const response = await fetch('/api/subscribe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Subscription failed');
+    const apiKey = import.meta.env.VITE_BUTTONDOWN_API_KEY;
+    if (!apiKey) {
+      throw new Error('Newsletter service is not configured');
     }
 
-    return data;
+    const response = await fetch('https://api.buttondown.email/v1/subscribers', {
+      method: 'POST',
+      headers: {
+        Authorization: `Token ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, type: 'regular' }),
+    });
+
+    if (response.ok) {
+      return { success: true };
+    }
+
+    const data = await response.json().catch(() => ({}));
+
+    // Already subscribed is still a success
+    if (response.status === 409 || (data.detail && data.detail.includes('already'))) {
+      return { success: true, message: 'Already subscribed' };
+    }
+
+    throw new Error(data.detail || data.message || 'Subscription failed');
   }
 
   async submitContactForm(formData) {
