@@ -11,9 +11,48 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-04-23",
-  "totalArticles": 59,
+  "lastUpdated": "2026-04-25",
+  "totalArticles": 61,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-zero-copy-cloning-problems-2",
+      "title": "The Problem with Zero-Copy Cloning in Snowflake That Nobody Talks About",
+      "summary": "Every time I demo Snowflake to someone new, zero-copy cloning gets the biggest reaction. You type one line. You get an instant copy of a table — or an entire…",
+      "keyFacts": [
+        "The clone is a new object with no masking policies applied",
+        "policy_name}` }); } return 'Clone created with governance policies applied: ' + TARGET_TABLE; $$; A clone that exists without its governance policies re-applied is a compliance gap, not a convenience feature",
+        "Q: What’s the best practice for cloning production for dev"
+      ],
+      "entities": [
+        "snowflake",
+        "dbt"
+      ],
+      "questionAnswered": "What is The Problem with Zero-Copy Cloning in Snowflake That Nobody Talks About?",
+      "lastUpdated": "2026-04-25",
+      "published": "2026-04-25",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 1893
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/claude-code-power-user-guide",
+      "title": "Claude Code Power User Guide: Stop Using It Like Autocomplete",
+      "summary": "Most developers are using Claude Code like a fancy autocomplete. Paste a bug, get a fix, repeat — never building on anything. This guide covers everything that separates that from…",
+      "keyFacts": [
+        "md is the most important file you’re not creating Plan mode vs direct execution is the single biggest workflow unlock Path-specific rules in",
+        "This is the right place for things like “I prefer verbose variable names” or “always add JSDoc comments to exported functions",
+        "Paste a bug, get a fix, repeat — never building on anything"
+      ],
+      "entities": [],
+      "questionAnswered": "What does the Claude Code Power User Guide: Stop Using It Like Autocomplete cover?",
+      "lastUpdated": "2026-04-25",
+      "published": "2026-04-25",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Developer Productivity",
+      "wordCount": 2261
+    },
     {
       "url": "https://dataengineerhub.blog/articles/query-snowflake-in-duckdb-cut-costs",
       "title": "How to Query Snowflake in DuckDB (And Cut Your Bill While Doing It)",

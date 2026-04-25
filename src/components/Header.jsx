@@ -67,12 +67,6 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
       <div className={`${className} bg-emerald-500/20 rounded-lg flex items-center justify-center text-lg`}>⚡</div>
     );
   }
-  if (lowerCategory === 'career & learning') {
-    return (
-      <div className={`${className} bg-amber-500/20 rounded-lg flex items-center justify-center text-lg`}>🎓</div>
-    );
-  }
-
   if (iconUrl) {
     return (
       <span className={`${className} relative inline-flex items-center justify-center`}>
@@ -170,10 +164,6 @@ const Header = ({ topOffset = 0 }) => {
       return path.includes('/category/developer-productivity');
     }
     
-    if (categoryKey === 'career') {
-      return path.includes('/category/career');
-    }
-    
     return false;
   };
 
@@ -226,14 +216,6 @@ const Header = ({ topOffset = 0 }) => {
       { name: 'Developer Productivity', path: '/category/developer-productivity', color: 'from-emerald-500 to-teal-500', desc: 'AI Tools & Workflows' }
     ]
   },
-  career: {
-    title: 'Career & Learning',
-    shortTitle: 'Career',
-    icon: GraduationCap,
-    items: [
-      { name: 'Career & Learning', path: '/category/career', color: 'from-amber-500 to-yellow-500', desc: 'Growth & Interview Prep' }
-    ]
-  }
 };
 
   // 🔥 FIX 1: Close dropdown on scroll with passive listener
@@ -308,9 +290,6 @@ const Header = ({ topOffset = 0 }) => {
       }
       if (categoryKey === 'productivity') {
         return 'View all Developer Productivity articles';
-      }
-      if (categoryKey === 'career') {
-        return 'View all Career & Learning articles';
       }
       return 'View all articles';
     };

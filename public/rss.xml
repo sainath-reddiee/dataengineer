@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Thu, 23 Apr 2026 14:36:48 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 25 Apr 2026 03:45:08 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -18,6 +18,26 @@
     <managingEditor>contact@dataengineerhub.blog (Sainath Reddy)</managingEditor>
     <webMaster>contact@dataengineerhub.blog (Sainath Reddy)</webMaster>
     <ttl>60</ttl>
+    <item>
+      <title>The Problem with Zero-Copy Cloning in Snowflake That Nobody Talks About</title>
+      <link>https://dataengineerhub.blog/articles/snowflake-zero-copy-cloning-problems-2</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-zero-copy-cloning-problems-2</guid>
+      <description>Every time I demo Snowflake to someone new, zero-copy cloning gets the biggest reaction. You type one line. You get an instant copy of a table — or an entire…</description>
+      <pubDate>Fri, 24 Apr 2026 22:05:55 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Snowflake</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Snowflake-zero-copy-clone-issue.jpg" type="image/jpeg" />
+    </item>
+    <item>
+      <title>Claude Code Power User Guide: Stop Using It Like Autocomplete</title>
+      <link>https://dataengineerhub.blog/articles/claude-code-power-user-guide</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/claude-code-power-user-guide</guid>
+      <description>Most developers are using Claude Code like a fancy autocomplete. Paste a bug, get a fix, repeat — never building on anything. This guide covers everything that separates that from…</description>
+      <pubDate>Fri, 24 Apr 2026 21:28:45 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Developer Productivity</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Claude-code-user-guide.jpg" type="image/jpeg" />
+    </item>
     <item>
       <title>How to Query Snowflake in DuckDB (And Cut Your Bill While Doing It)</title>
       <link>https://dataengineerhub.blog/articles/query-snowflake-in-duckdb-cut-costs</link>

@@ -35,8 +35,7 @@ const Footer = () => {
       // ✅ NEW
       { name: 'Databricks', href: '/category/databricks' },
       { name: 'Salesforce', href: '/category/salesforce' },
-      { name: 'Developer Productivity', href: '/category/developer-productivity' },
-      { name: 'Career & Learning', href: '/category/career' }
+      { name: 'Developer Productivity', href: '/category/developer-productivity' }
     ],
     company: [
       { name: 'About', href: '/about' },

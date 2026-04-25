@@ -35,12 +35,6 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
       <div className={`${className} bg-emerald-500/20 rounded-lg flex items-center justify-center text-2xl`}>⚡</div>
     );
   }
-  if (lowerCategory === 'career & learning') {
-    return (
-      <div className={`${className} bg-amber-500/20 rounded-lg flex items-center justify-center text-2xl`}>🎓</div>
-    );
-  }
-  
   if (iconUrl) {
     return (
       <img 
@@ -127,7 +121,6 @@ const SparkleCard = ({ category }) => {
             name === 'Azure' ? 'bg-white/95' :                 // White for blue logo
             name === 'Salesforce' ? 'bg-gray-50' :            // White for blue logo (Option 1)
             name === 'Developer Productivity' ? 'bg-emerald-500/20' :  // Emerald tint for productivity
-            name === 'Career & Learning' ? 'bg-amber-500/20' :        // Amber tint for career
             `bg-gradient-to-br ${color}`
           } mb-3 sm:mb-4 md:mb-6 self-start shadow-lg`}>
             {getCategoryIcon(name, 'h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8')}
@@ -172,8 +165,7 @@ const TechCategories = () => {
   // ✅ NEW
   { name: 'Databricks', description: 'Unified analytics and lakehouse platform for big data', color: 'from-red-500 to-orange-500', path: '/category/databricks' },
   { name: 'Salesforce', description: 'CRM data integration and Salesforce Data Cloud', color: 'from-blue-600 to-cyan-500', path: '/category/salesforce' },
-  { name: 'Developer Productivity', description: 'AI coding tools, IDE setups, and workflow automation tips', color: 'from-emerald-500 to-teal-500', path: '/category/developer-productivity' },
-  { name: 'Career & Learning', description: 'Interview prep, certifications, and career advice', color: 'from-amber-500 to-yellow-500', path: '/category/career' }
+  { name: 'Developer Productivity', description: 'AI coding tools, IDE setups, and workflow automation tips', color: 'from-emerald-500 to-teal-500', path: '/category/developer-productivity' }
 ];
 
   const categories = categoryConfig.map(config => {

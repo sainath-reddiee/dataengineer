@@ -553,12 +553,19 @@ class WordPressAPI {
 
     const data = await response.json().catch(() => ({}));
 
+    // Normalize data.detail — Buttondown may return an object like {"email": ["..."]}
+    const detail = typeof data.detail === 'string'
+      ? data.detail
+      : typeof data.detail === 'object' && data.detail !== null
+        ? Object.values(data.detail).flat().join(', ')
+        : null;
+
     // Already subscribed is still a success
-    if (response.status === 409 || (data.detail && data.detail.includes('already'))) {
+    if (response.status === 409 || (detail && detail.includes('already'))) {
       return { success: true, message: 'Already subscribed' };
     }
 
-    throw new Error(data.detail || data.message || 'Subscription failed');
+    throw new Error(detail || data.message || 'Subscription failed');
   }
 
   // Contact form now handled directly by Web3Forms in ContactPage.jsx
