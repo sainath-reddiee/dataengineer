@@ -600,7 +600,7 @@ export default function FormatConverterPage() {
 
         {/* Ad placement */}
         <Suspense fallback={null}>
-          <AdPlacement slot="converter-mid" format="horizontal" />
+          <AdPlacement />
         </Suspense>
 
         {/* Educational content */}

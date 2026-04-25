@@ -725,9 +725,11 @@ const ArticlePage = () => {
             </motion.div>
           )}
 
-          <Suspense fallback={<div className="h-32" />}>
-            <AdPlacement />
-          </Suspense>
+          {!isThinArticle && (
+            <Suspense fallback={<div className="h-32" />}>
+              <AdPlacement />
+            </Suspense>
+          )}
 
           {/* Reactions Bar — engagement signal for Google Discover */}
           <div className="my-8 flex flex-wrap items-center gap-3">

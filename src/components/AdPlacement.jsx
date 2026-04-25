@@ -29,17 +29,11 @@ const AdPlacement = ({ className = '' }) => {
     );
   }
 
-  // Production: render a reserved slot so Auto Ads can fill it without
-  // causing cumulative layout shift. 280px matches a typical in-article
-  // rectangle; the container won't visually shrink after an ad loads
-  // because min-height is set, not a fixed height.
-  return (
-    <div
-      className={`auto-ads-placement my-8 ${className}`}
-      style={{ minHeight: '280px' }}
-      aria-hidden="true"
-    />
-  );
+  // Production: Auto Ads handles placement automatically via the script
+  // in index.html. No need to render empty placeholder divs that create
+  // blank 280px gaps on every page. Once you have a real ad unit (numeric
+  // slot ID from AdSense UI), replace this with a proper <ins> element.
+  return null;
 };
 
 export default AdPlacement;

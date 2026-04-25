@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { revokeConsent } from './CookieConsent';
 import {
   Database,
   Github,
@@ -44,7 +45,8 @@ const Footer = () => {
       { name: 'Privacy Policy', href: '/privacy-policy' },
       { name: 'Terms of Service', href: '/terms-of-service' },
       { name: 'Disclaimer', href: '/disclaimer' },
-      { name: 'Write for Us', href: '/contribute' }
+      { name: 'Write for Us', href: '/contribute' },
+      { name: 'Manage Cookies', action: () => { revokeConsent(); window.location.reload(); } }
     ]
   };
 
@@ -119,13 +121,23 @@ const Footer = () => {
               <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.name}>
-                    <Link
-                      to={link.href}
-                      className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group"
-                    >
-                      {link.name}
-                      <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
-                    </Link>
+                    {link.action ? (
+                      <button
+                        onClick={link.action}
+                        className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group"
+                      >
+                        {link.name}
+                        <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                      </button>
+                    ) : (
+                      <Link
+                        to={link.href}
+                        className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group"
+                      >
+                        {link.name}
+                        <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

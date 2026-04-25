@@ -41,7 +41,8 @@ function getAdSensePublisherId() {
   const publisherId = import.meta.env.VITE_ADSENSE_PUBLISHER_ID;
   
   if (!publisherId || publisherId === 'ca-pub-XXXXXXXXXX') {
-    console.warn('⚠️ AdSense Publisher ID not configured or using placeholder');
+    // Silenced: real publisher ID is hardcoded in index.html for Auto Ads.
+    // This env-var path is only needed if you switch to JS-driven ad loading.
     return null;
   }
   
