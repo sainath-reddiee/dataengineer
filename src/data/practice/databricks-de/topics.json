@@ -1,0 +1,38 @@
+[
+  {
+    "slug": "lakehouse-platform",
+    "name": "Databricks Lakehouse Platform",
+    "description": "Workspace, clusters, notebooks, Unity Catalog basics.",
+    "weight": 20
+  },
+  {
+    "slug": "delta-lake",
+    "name": "Delta Lake",
+    "description": "ACID transactions, time travel, OPTIMIZE, ZORDER, VACUUM.",
+    "weight": 25
+  },
+  {
+    "slug": "spark-etl",
+    "name": "ELT with Spark & PySpark",
+    "description": "DataFrames, transformations, SQL, performance tuning.",
+    "weight": 20
+  },
+  {
+    "slug": "structured-streaming",
+    "name": "Structured Streaming & DLT",
+    "description": "Streaming reads/writes, triggers, watermarks, Delta Live Tables.",
+    "weight": 15
+  },
+  {
+    "slug": "production-pipelines",
+    "name": "Production Pipelines",
+    "description": "Jobs, workflows, orchestration, testing.",
+    "weight": 10
+  },
+  {
+    "slug": "governance",
+    "name": "Data Governance & Security",
+    "description": "Unity Catalog, permissions, lineage, PII handling.",
+    "weight": 10
+  }
+]

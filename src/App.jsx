@@ -56,6 +56,10 @@ const FormatConverterPage = lazy(() => import('./pages/FormatConverterPage'));
 const WarehouseComparisonCalculatorPage = lazy(() => import('./pages/WarehouseComparisonCalculatorPage'));
 const CheatSheetCategoryPage = lazy(() => import('./pages/CheatSheetCategoryPage'));
 const InterviewPrepHubPage = lazy(() => import('./pages/InterviewPrepHubPage'));
+const PracticeHubPage = lazy(() => import('./pages/PracticeHubPage'));
+const PracticeQuizPage = lazy(() => import('./pages/PracticeQuizPage'));
+const PracticeTopicPage = lazy(() => import('./pages/PracticeTopicPage'));
+const PracticeQuestionPage = lazy(() => import('./pages/PracticeQuestionPage'));
 
 // Not Found Page
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
@@ -304,7 +308,11 @@ function App() {
           <Route path="tools/json-parquet-avro-converter" element={<SafeRoute fallbackText="Loading Format Converter..."><FormatConverterPage /></SafeRoute>} />
           <Route path="tools/cloud-data-warehouse-cost-comparison" element={<SafeRoute fallbackText="Loading Warehouse Comparison..."><WarehouseComparisonCalculatorPage /></SafeRoute>} />
           <Route path="cheatsheets/category/:categoryId" element={<SafeRoute fallbackText="Loading Category..."><CheatSheetCategoryPage /></SafeRoute>} />
-          <Route path="interview-prep" element={<SafeRoute fallbackText="Loading Interview Prep Hub..."><InterviewPrepHubPage /></SafeRoute>} />
+              <Route path="interview-prep" element={<SafeRoute fallbackText="Loading Interview Prep Hub..."><InterviewPrepHubPage /></SafeRoute>} />
+              <Route path="practice" element={<SafeRoute fallbackText="Loading Practice Tests..."><PracticeHubPage /></SafeRoute>} />
+              <Route path="practice/:slug" element={<SafeRoute fallbackText="Loading Quiz..."><PracticeQuizPage /></SafeRoute>} />
+              <Route path="practice/:slug/topics/:topicSlug" element={<SafeRoute fallbackText="Loading Topic..."><PracticeTopicPage /></SafeRoute>} />
+              <Route path="practice/:slug/q/:questionSlug" element={<SafeRoute fallbackText="Loading Question..."><PracticeQuestionPage /></SafeRoute>} />
           <Route path="about" element={<SafeRoute fallbackText="Loading About..."><AboutPage /></SafeRoute>} />
           <Route path="certification" element={<SafeRoute fallbackText="Loading Certification..."><Certification /></SafeRoute>} />
           <Route path="contact" element={<SafeRoute fallbackText="Loading Contact..."><ContactPage /></SafeRoute>} />

@@ -1,0 +1,30 @@
+{
+  "slug": "snowpro-genai",
+  "title": "SnowPro Specialty: Gen AI Practice Test",
+  "shortTitle": "SnowPro Gen AI",
+  "provider": "Snowflake",
+  "examCode": "GES-C01",
+  "description": "Free interactive practice tests for the Snowflake SnowPro Specialty: Generative AI certification with Cortex AI, LLMs, and RAG questions.",
+  "longDescription": "The SnowPro Specialty: Gen AI certification validates your expertise in building generative AI applications on Snowflake. Practice with questions on Cortex AI functions, Cortex Search, Cortex Analyst, fine-tuning, RAG pipelines, and LLM evaluation.",
+  "durationMinutes": 115,
+  "passingScore": 75,
+  "totalOfficialQuestions": 65,
+  "officialDomains": [
+    "Snowflake Cortex AI Features",
+    "LLM & Model Operations",
+    "Retrieval-Augmented Generation (RAG)",
+    "Vector Search & Embeddings",
+    "AI Application Security & Governance",
+    "Evaluation & Observability"
+  ],
+  "difficulty": "Specialty",
+  "officialUrl": "https://www.snowflake.com/certifications/snowpro-specialty-gen-ai/",
+  "prerequisites": [
+    "SnowPro Core certification (recommended)",
+    "Familiarity with LLMs, embeddings, and RAG patterns",
+    "Hands-on Cortex AI function experience"
+  ],
+  "heroGradient": "from-violet-500 via-purple-600 to-fuchsia-700",
+  "icon": "Sparkles",
+  "color": "purple"
+}

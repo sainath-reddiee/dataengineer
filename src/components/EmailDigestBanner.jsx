@@ -103,7 +103,7 @@ const EmailDigestBanner = () => {
       {error && (
         <div className="flex items-center justify-center gap-2 text-red-400 text-sm mt-2">
           <AlertCircle className="h-4 w-4" />
-          {error}
+          {typeof error === 'string' ? error : 'Subscription failed. Please try again.'}
         </div>
       )}
     </section>

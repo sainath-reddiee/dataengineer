@@ -1,0 +1,29 @@
+{
+  "slug": "databricks-de",
+  "title": "Databricks Data Engineer Associate Practice Test",
+  "shortTitle": "Databricks DE Associate",
+  "provider": "Databricks",
+  "examCode": "DE-Associate",
+  "description": "Free interactive practice tests for the Databricks Certified Data Engineer Associate certification with PySpark, Delta Lake, and Databricks SQL.",
+  "longDescription": "The Databricks Certified Data Engineer Associate exam validates foundational knowledge of Databricks Lakehouse Platform, Delta Lake, Structured Streaming, and production ETL with PySpark and SQL. Practice with questions covering the full data engineering lifecycle on Databricks.",
+  "durationMinutes": 90,
+  "passingScore": 70,
+  "totalOfficialQuestions": 45,
+  "officialDomains": [
+    "Databricks Lakehouse Platform",
+    "ELT with Apache Spark",
+    "Incremental Data Processing",
+    "Production Pipelines",
+    "Data Governance"
+  ],
+  "difficulty": "Associate",
+  "officialUrl": "https://www.databricks.com/learn/certification/data-engineer-associate",
+  "prerequisites": [
+    "Basic SQL and Python",
+    "Familiarity with Apache Spark concepts",
+    "6+ months of hands-on Databricks experience"
+  ],
+  "heroGradient": "from-orange-500 via-red-600 to-rose-700",
+  "icon": "Flame",
+  "color": "orange"
+}

@@ -1,0 +1,28 @@
+{
+  "slug": "aws-de-associate",
+  "title": "AWS Data Engineer Associate Practice Test",
+  "shortTitle": "AWS DE Associate",
+  "provider": "AWS",
+  "examCode": "DEA-C01",
+  "description": "Free interactive practice tests for the AWS Certified Data Engineer - Associate (DEA-C01) exam with instant feedback, domain-level scoring, and detailed explanations.",
+  "longDescription": "The AWS Certified Data Engineer - Associate (DEA-C01) validates skills in ingesting, transforming, orchestrating, and securing data pipelines on AWS. Practice scenario-based questions across ingestion and transformation (Kinesis, Glue, EMR, MSK), data store management (S3, Redshift, DynamoDB), operations and support (CloudWatch, Step Functions, EventBridge), and data security and governance (Lake Formation, KMS, IAM). All questions include detailed explanations and references to the official AWS documentation.",
+  "durationMinutes": 130,
+  "passingScore": 72,
+  "totalOfficialQuestions": 85,
+  "officialDomains": [
+    "Data Ingestion and Transformation",
+    "Data Store Management",
+    "Data Operations and Support",
+    "Data Security and Governance"
+  ],
+  "difficulty": "Associate",
+  "officialUrl": "https://aws.amazon.com/certification/certified-data-engineer-associate/",
+  "prerequisites": [
+    "2-3 years of general data engineering experience",
+    "1+ year of hands-on experience with AWS services",
+    "Familiarity with SQL, Python, and common data formats (Parquet, ORC, Avro)"
+  ],
+  "heroGradient": "from-orange-500 via-amber-600 to-yellow-600",
+  "icon": "Cloud",
+  "color": "orange"
+}

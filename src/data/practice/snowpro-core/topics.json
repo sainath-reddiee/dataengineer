@@ -1,0 +1,44 @@
+[
+  {
+    "slug": "architecture",
+    "name": "Architecture & Data Cloud",
+    "description": "Snowflake's three-layer architecture: storage, compute, and cloud services.",
+    "weight": 25,
+    "relatedArticles": []
+  },
+  {
+    "slug": "warehouses",
+    "name": "Virtual Warehouses & Performance",
+    "description": "Warehouse sizing, scaling, caching, and query performance tuning.",
+    "weight": 20,
+    "relatedArticles": []
+  },
+  {
+    "slug": "data-loading",
+    "name": "Data Loading & Unloading",
+    "description": "COPY INTO, stages, file formats, Snowpipe, and bulk loading strategies.",
+    "weight": 15,
+    "relatedArticles": []
+  },
+  {
+    "slug": "security",
+    "name": "Security & Access Control",
+    "description": "RBAC, roles, network policies, encryption, and authentication.",
+    "weight": 15,
+    "relatedArticles": []
+  },
+  {
+    "slug": "data-protection",
+    "name": "Data Protection & Sharing",
+    "description": "Time Travel, Fail-safe, cloning, replication, and Secure Data Sharing.",
+    "weight": 15,
+    "relatedArticles": []
+  },
+  {
+    "slug": "transformations",
+    "name": "Data Transformations",
+    "description": "Semi-structured data, streams, tasks, stored procedures, and UDFs.",
+    "weight": 10,
+    "relatedArticles": []
+  }
+]

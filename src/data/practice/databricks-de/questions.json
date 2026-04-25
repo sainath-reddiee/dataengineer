@@ -1,0 +1,162 @@
+[
+  {
+    "id": "dbd-001",
+    "slug": "delta-lake-acid",
+    "topicSlug": "delta-lake",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Which of the following best describes Delta Lake?",
+    "options": [
+      { "id": "a", "text": "A proprietary database storage engine" },
+      { "id": "b", "text": "An open-source storage layer that brings ACID transactions to data lakes" },
+      { "id": "c", "text": "A query engine built on top of Parquet" },
+      { "id": "d", "text": "A streaming message broker" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**Delta Lake** is an open-source storage layer (now Linux Foundation project) that sits on top of Parquet files and adds: **ACID transactions**, schema enforcement + evolution, time travel, MERGE/UPDATE/DELETE, and unified batch + streaming. It's the default table format on Databricks and the backbone of the Lakehouse architecture.",
+    "references": [
+      "https://docs.databricks.com/aws/en/delta/"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "dbd-002",
+    "slug": "optimize-zorder",
+    "topicSlug": "delta-lake",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A query frequently filters a 1TB Delta table on the `customer_id` column and is slow due to reading many small files. Which combination of commands should you run?",
+    "options": [
+      { "id": "a", "text": "VACUUM then ANALYZE" },
+      { "id": "b", "text": "OPTIMIZE ... ZORDER BY (customer_id)" },
+      { "id": "c", "text": "REFRESH TABLE then CACHE TABLE" },
+      { "id": "d", "text": "CLONE then MERGE" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "`OPTIMIZE` compacts small files into larger ones (~1GB by default). Adding `ZORDER BY (customer_id)` co-locates rows with similar customer_id values into the same files, so subsequent filters can use **data skipping** to prune files at the column statistics layer. VACUUM only deletes old files; ANALYZE collects stats (still useful, but doesn't fix small-file problem).",
+    "references": [
+      "https://docs.databricks.com/aws/en/delta/optimize"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "dbd-003",
+    "slug": "vacuum-retention",
+    "topicSlug": "delta-lake",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "What is the default retention threshold for VACUUM on a Delta table, and why does Databricks enforce it?",
+    "options": [
+      { "id": "a", "text": "1 hour — to free storage quickly" },
+      { "id": "b", "text": "7 days (168 hours) — to prevent breaking concurrent readers or streaming queries" },
+      { "id": "c", "text": "30 days — to maintain compliance" },
+      { "id": "d", "text": "There is no default — you must always specify" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "VACUUM's default and **minimum safe** retention is **7 days (168 hours)**. Running with a shorter retention risks deleting files that are still being read by concurrent queries or long-running streaming jobs, corrupting their reads. You can override with `spark.databricks.delta.retentionDurationCheck.enabled = false`, but this is strongly discouraged in production.",
+    "references": [
+      "https://docs.databricks.com/aws/en/delta/vacuum"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "dbd-004",
+    "slug": "autoloader-cloudfiles",
+    "topicSlug": "structured-streaming",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Which Databricks feature is designed for incrementally and efficiently processing new data files as they arrive in cloud object storage?",
+    "options": [
+      { "id": "a", "text": "COPY INTO" },
+      { "id": "b", "text": "Auto Loader (cloudFiles source)" },
+      { "id": "c", "text": "DBFS mount" },
+      { "id": "d", "text": "Structured Streaming file source" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**Auto Loader** (the `cloudFiles` format) is purpose-built for incremental, scalable file ingestion. It uses file-notification mode (SNS/SQS, EventGrid, PubSub) or optimized directory listing, supports schema inference/evolution, and handles billions of files cost-efficiently. COPY INTO works for smaller, idempotent batch loads. The basic file source doesn't scale to millions of files.",
+    "references": [
+      "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "dbd-005",
+    "slug": "unity-catalog-three-level",
+    "topicSlug": "governance",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "What is the three-level namespace structure used by Unity Catalog?",
+    "options": [
+      { "id": "a", "text": "database.schema.table" },
+      { "id": "b", "text": "catalog.schema.table" },
+      { "id": "c", "text": "workspace.database.table" },
+      { "id": "d", "text": "metastore.database.table" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "Unity Catalog uses a **three-level namespace: catalog → schema (database) → table/view/function**. Catalogs are the top-level container (often one per environment/domain). This replaces the flat two-level (database.table) Hive metastore. Fully qualified name example: `prod.sales.orders`.",
+    "references": [
+      "https://docs.databricks.com/aws/en/data-governance/unity-catalog/"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "dbd-006",
+    "slug": "dlt-expectations",
+    "topicSlug": "structured-streaming",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "In Delta Live Tables, which clause enforces data quality rules on a streaming/materialized dataset?",
+    "options": [
+      { "id": "a", "text": "CONSTRAINT ... CHECK" },
+      { "id": "b", "text": "EXPECT" },
+      { "id": "c", "text": "VALIDATE" },
+      { "id": "d", "text": "FILTER" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "DLT uses **`EXPECT` (expectations)** to declare data-quality rules on a table. Actions on violation: `EXPECT (rule)` (allow + log), `EXPECT ... ON VIOLATION DROP ROW` (quarantine bad rows), or `EXPECT ... ON VIOLATION FAIL UPDATE` (stop the pipeline). Metrics are surfaced in the DLT UI. Regular SQL CHECK constraints exist on Delta tables but aren't DLT-native quality rules.",
+    "references": [
+      "https://docs.databricks.com/aws/en/delta-live-tables/expectations"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "dbd-007",
+    "slug": "pyspark-narrow-wide",
+    "topicSlug": "spark-etl",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Which PySpark operation triggers a shuffle (wide transformation)?",
+    "options": [
+      { "id": "a", "text": "filter()" },
+      { "id": "b", "text": "select()" },
+      { "id": "c", "text": "groupBy().agg()" },
+      { "id": "d", "text": "withColumn()" }
+    ],
+    "correctIds": ["c"],
+    "explanation": "`groupBy().agg()` is a **wide transformation** — it shuffles data across the cluster so rows with the same key land on the same partition. `filter`, `select`, and `withColumn` are **narrow** (no shuffle — each output partition depends on one input partition). Shuffles are the most expensive part of most Spark jobs, so minimizing them is a core tuning strategy.",
+    "references": [
+      "https://spark.apache.org/docs/latest/rdd-programming-guide.html#transformations"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "dbd-008",
+    "slug": "databricks-jobs-dependencies",
+    "topicSlug": "production-pipelines",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "How do you define task-level dependencies within a Databricks Job (Workflow)?",
+    "options": [
+      { "id": "a", "text": "By manually scheduling each task with a cron offset" },
+      { "id": "b", "text": "Using the 'depends_on' (depends on) setting to define a DAG of tasks" },
+      { "id": "c", "text": "Jobs only support a single task" },
+      { "id": "d", "text": "By using an external orchestrator like Airflow" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "Databricks Jobs support **multi-task workflows** as a DAG. Each task declares upstream tasks via `depends_on` in the UI or YAML/JSON. Tasks can share a job cluster (cheaper) or use separate clusters. External orchestration (Airflow/dbt Cloud/ADF) is optional and typically used when the workflow spans beyond Databricks.",
+    "references": [
+      "https://docs.databricks.com/aws/en/jobs/"
+    ],
+    "source": "human"
+  }
+]

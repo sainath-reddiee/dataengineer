@@ -544,7 +544,7 @@ class WordPressAPI {
         Authorization: `Token ${apiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, type: 'regular' }),
+      body: JSON.stringify({ email_address: email, email, type: 'regular' }),
     });
 
     if (response.ok) {
@@ -553,19 +553,57 @@ class WordPressAPI {
 
     const data = await response.json().catch(() => ({}));
 
-    // Normalize data.detail — Buttondown may return an object like {"email": ["..."]}
-    const detail = typeof data.detail === 'string'
-      ? data.detail
-      : typeof data.detail === 'object' && data.detail !== null
-        ? Object.values(data.detail).flat().join(', ')
-        : null;
+    // Normalize Buttondown error payloads into a single readable string.
+    // Buttondown may return:
+    //   - { detail: "string" }
+    //   - { detail: [ { msg, loc, type }, ... ] }              (FastAPI-style validation)
+    //   - { detail: { email: ["msg"], ... } }                  (field-keyed)
+    //   - { code: "email_already_exists", ... }
+    //   - { message: "string" }
+    const stringifyLeaf = (v) => {
+      if (v == null) return '';
+      if (typeof v === 'string') return v;
+      if (typeof v === 'number' || typeof v === 'boolean') return String(v);
+      if (typeof v === 'object') {
+        return v.msg || v.message || v.detail || v.error || '';
+      }
+      return '';
+    };
 
-    // Already subscribed is still a success
-    if (response.status === 409 || (detail && detail.includes('already'))) {
+    let detail = null;
+    if (typeof data.detail === 'string') {
+      detail = data.detail;
+    } else if (Array.isArray(data.detail)) {
+      detail = data.detail.map(stringifyLeaf).filter(Boolean).join(', ');
+    } else if (data.detail && typeof data.detail === 'object') {
+      detail = Object.values(data.detail)
+        .flat()
+        .map(stringifyLeaf)
+        .filter(Boolean)
+        .join(', ');
+    }
+
+    const code = typeof data.code === 'string' ? data.code : '';
+    const haystack = `${detail || ''} ${code}`.toLowerCase();
+
+    // Already subscribed / previously unsubscribed — treat as soft success
+    if (
+      response.status === 409 ||
+      haystack.includes('already') ||
+      code === 'email_already_exists' ||
+      code === 'email_unsubscribed'
+    ) {
       return { success: true, message: 'Already subscribed' };
     }
 
-    throw new Error(detail || data.message || 'Subscription failed');
+    const message =
+      detail ||
+      (typeof data.message === 'string' ? data.message : '') ||
+      code ||
+      response.statusText ||
+      'Subscription failed';
+
+    throw new Error(String(message));
   }
 
   // Contact form now handled directly by Web3Forms in ContactPage.jsx

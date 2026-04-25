@@ -1,0 +1,30 @@
+[
+  {
+    "slug": "ingestion-transformation",
+    "name": "Data Ingestion & Transformation",
+    "description": "Kinesis Data Streams/Firehose, MSK, Glue ETL, EMR, Lambda, and AppFlow for moving and reshaping data.",
+    "weight": 34,
+    "relatedArticles": []
+  },
+  {
+    "slug": "store-management",
+    "name": "Data Store Management",
+    "description": "S3 storage classes and lifecycle, Redshift design and workload management, DynamoDB, RDS/Aurora, and data cataloging.",
+    "weight": 26,
+    "relatedArticles": []
+  },
+  {
+    "slug": "operations-support",
+    "name": "Data Operations & Support",
+    "description": "Orchestration with Step Functions/MWAA/EventBridge, monitoring with CloudWatch, and incident response for pipelines.",
+    "weight": 22,
+    "relatedArticles": []
+  },
+  {
+    "slug": "security-governance",
+    "name": "Data Security & Governance",
+    "description": "IAM, KMS, Lake Formation fine-grained access, encryption in transit and at rest, PII handling, and audit.",
+    "weight": 18,
+    "relatedArticles": []
+  }
+]

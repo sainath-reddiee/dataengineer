@@ -1,0 +1,162 @@
+[
+  {
+    "id": "spg-001",
+    "slug": "cortex-complete-basic",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Which Snowflake function is used to generate a text completion from a large language model?",
+    "options": [
+      { "id": "a", "text": "AI_GENERATE()" },
+      { "id": "b", "text": "AI_COMPLETE() (formerly SNOWFLAKE.CORTEX.COMPLETE)" },
+      { "id": "c", "text": "CORTEX_LLM()" },
+      { "id": "d", "text": "AI_QUERY()" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "`AI_COMPLETE()` (aliased as `SNOWFLAKE.CORTEX.COMPLETE()`) is the function for LLM text completion in Snowflake Cortex. It accepts a model name (e.g., `'llama3.1-70b'`, `'mistral-large2'`, `'claude-3-5-sonnet'`) and a prompt string. It returns the model's generated response as a string.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/complete-snowflake-cortex"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spg-002",
+    "slug": "cortex-search-hybrid",
+    "topicSlug": "cortex-search",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Cortex Search combines which two retrieval techniques under the hood?",
+    "options": [
+      { "id": "a", "text": "SQL full-text search and regex matching" },
+      { "id": "b", "text": "Vector similarity (embeddings) and keyword/lexical search (BM25-like)" },
+      { "id": "c", "text": "Graph traversal and JSON path matching" },
+      { "id": "d", "text": "Only semantic search via embeddings" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**Cortex Search** is a hybrid retrieval service combining **vector similarity** (dense embeddings) and **lexical/keyword search** (BM25-style). This hybrid approach delivers higher recall than pure vector search (which can miss exact terms) or pure keyword search (which misses semantic matches). Snowflake handles embedding generation, indexing, and ranking automatically.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spg-003",
+    "slug": "cortex-analyst-semantic-view",
+    "topicSlug": "cortex-analyst",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "What is the primary input that Cortex Analyst requires to generate accurate SQL from natural language questions?",
+    "options": [
+      { "id": "a", "text": "A CSV sample of the data" },
+      { "id": "b", "text": "A semantic model (YAML) or semantic view describing tables, dimensions, and measures" },
+      { "id": "c", "text": "Nothing — it introspects the database automatically" },
+      { "id": "d", "text": "A trained ML model on historical queries" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "Cortex Analyst requires a **semantic model** — either a YAML file uploaded to a stage or a native **semantic view**. The model describes base tables, dimensions, measures, synonyms, and verified queries. This structure is what allows the LLM to map business questions to accurate, governed SQL. Without it, accuracy drops significantly.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/cortex-analyst"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spg-004",
+    "slug": "ai-classify-vs-ai-complete",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A user wants to categorize 100,000 support tickets into predefined categories (Billing, Technical, Sales). Which is the best-suited Cortex function?",
+    "options": [
+      { "id": "a", "text": "AI_COMPLETE with a custom prompt" },
+      { "id": "b", "text": "AI_CLASSIFY with the category list" },
+      { "id": "c", "text": "AI_SUMMARIZE" },
+      { "id": "d", "text": "AI_EMBED + similarity search" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "`AI_CLASSIFY` is purpose-built for multi-class classification. It's cheaper and more consistent than AI_COMPLETE with a hand-rolled prompt because it's optimized/constrained to return one of the provided labels. AI_COMPLETE works but costs more credits and requires prompt engineering + parsing. Use AI_CLASSIFY whenever the label space is known and finite.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_classify"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spg-005",
+    "slug": "rag-chunk-size",
+    "topicSlug": "rag-patterns",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "When building a RAG pipeline on Snowflake, why is chunk size an important hyperparameter?",
+    "options": [
+      { "id": "a", "text": "Larger chunks always improve answer quality" },
+      { "id": "b", "text": "Too-small chunks lose context; too-large chunks dilute relevance and waste the LLM context window" },
+      { "id": "c", "text": "Chunk size only affects storage cost, not retrieval quality" },
+      { "id": "d", "text": "Snowflake auto-tunes chunk size at query time" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "Chunk size is a quality trade-off. **Small chunks** (e.g., 256 tokens) risk losing surrounding context needed for accurate answers. **Large chunks** (e.g., 2000+ tokens) reduce retrieval precision (many irrelevant tokens per hit) and can exceed LLM context windows. Typical starting point: 500-1000 tokens with 10-20% overlap. Always evaluate with a ground-truth set.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-tutorials"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spg-006",
+    "slug": "ai-parse-document",
+    "topicSlug": "rag-patterns",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Which Cortex function extracts text and layout from PDFs and other documents stored in a Snowflake stage?",
+    "options": [
+      { "id": "a", "text": "AI_EXTRACT" },
+      { "id": "b", "text": "AI_PARSE_DOCUMENT" },
+      { "id": "c", "text": "AI_SUMMARIZE" },
+      { "id": "d", "text": "CORTEX.OCR" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "`AI_PARSE_DOCUMENT` is the OCR/document-intelligence function in Cortex. It reads files from a stage (PDF, DOCX, PPTX, images) and returns structured text — commonly used as the first step of a RAG pipeline. `AI_EXTRACT` pulls structured fields from unstructured text (often used *after* AI_PARSE_DOCUMENT).",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_parse_document"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spg-007",
+    "slug": "cortex-cost-model",
+    "topicSlug": "ai-governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "How are Cortex AI functions billed in Snowflake?",
+    "options": [
+      { "id": "a", "text": "Flat monthly subscription per model" },
+      { "id": "b", "text": "Per query, at a fixed credit rate" },
+      { "id": "c", "text": "Per token processed (input + output), converted to credits per the Consumption Table" },
+      { "id": "d", "text": "Free of charge — only warehouse time is billed" }
+    ],
+    "correctIds": ["c"],
+    "explanation": "Cortex AI functions bill on a **token basis** (input + output tokens), converted to Snowflake credits at rates published in the Cortex Consumption Table. Rates vary by model — smaller models (e.g., `llama3.1-8b`) are much cheaper than frontier models (e.g., `claude-3-5-sonnet`). Use `SNOWFLAKE.ACCOUNT_USAGE.CORTEX_FUNCTIONS_USAGE_HISTORY` to track spend.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/aisql"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spg-008",
+    "slug": "fine-tuning-when",
+    "topicSlug": "fine-tuning",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You have a general-purpose LLM that produces inconsistent outputs for your domain-specific classification task. Before fine-tuning, what should you try first?",
+    "options": [
+      { "id": "a", "text": "Immediately launch a fine-tuning job with CORTEX FINETUNE" },
+      { "id": "b", "text": "Improve the prompt (few-shot examples, clearer instructions) and try a larger base model" },
+      { "id": "c", "text": "Switch to a different cloud provider" },
+      { "id": "d", "text": "Retrain the base model from scratch" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "Always exhaust **prompt engineering** (few-shot examples, clearer instructions, structured output schemas) and **model selection** before fine-tuning. Fine-tuning is expensive, creates ongoing maintenance burden (retraining, evaluation), and often yields marginal gains over good prompting + a larger base model. Fine-tune only when (a) prompting plateaus, (b) you have quality labeled data, and (c) latency or cost of a larger model is unacceptable.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-finetuning"
+    ],
+    "source": "human"
+  }
+]

@@ -1,0 +1,121 @@
+[
+  {
+    "id": "aws-de-001",
+    "slug": "kinesis-firehose-vs-kds-exactly-once",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A clickstream pipeline produces ~30 MB/s of JSON events. The downstream team wants events landed in S3 as Parquet partitioned by event date with at least 1-minute freshness, and they need exactly-one delivery to a Redshift staging table. The engineering team wants the lowest-ops solution. Which design best meets all requirements?",
+    "options": [
+      { "id": "a", "text": "Produce to Kinesis Data Streams, use Kinesis Data Firehose with dynamic partitioning and Parquet conversion as a consumer to S3, and configure Firehose's built-in Redshift delivery with COPY and a manifest." },
+      { "id": "b", "text": "Produce directly to Kinesis Data Firehose with dynamic partitioning, then use an EventBridge rule to trigger a Lambda that issues a Redshift COPY on each new S3 object." },
+      { "id": "c", "text": "Produce to Amazon MSK, run a self-managed Kafka Connect S3 sink for Parquet, and use a Glue job every minute to MERGE into Redshift." },
+      { "id": "d", "text": "Produce to Kinesis Data Streams, run a KCL consumer on EC2 that writes Parquet to S3 and also issues Redshift INSERTs from the consumer." }
+    ],
+    "correctIds": ["a"],
+    "explanation": "Kinesis Data Streams (KDS) gives durable, replayable, per-shard ordered storage of the raw events. Kinesis Data Firehose can consume directly from a KDS stream, perform dynamic partitioning on `eventDate`, convert JSON to Parquet via Glue Data Catalog, and deliver to S3 with ~60s buffering — matching the 1-minute freshness goal with no servers to manage. Firehose's Redshift delivery mode uses S3 as an intermediate store and issues a `COPY` with a manifest, and Firehose tracks delivery offsets so duplicates are deduplicated on retries — giving effectively exactly-once into the staging table while remaining fully managed.\n\n**b wrong**: producing straight to Firehose loses the replayable stream. More importantly, a Lambda-per-object `COPY` provides no exactly-once guarantee — a Lambda retry or concurrent invocation can re-COPY the same manifest, causing duplicates unless you build your own idempotency layer.\n\n**c wrong**: MSK + self-managed Kafka Connect is significantly higher ops than KDS+Firehose for this volume, and a Glue MERGE every minute is fine for upserts but overkill and more expensive than Firehose's native Redshift delivery for append-only staging.\n\n**d wrong**: a custom KCL consumer on EC2 reintroduces the server fleet the team wanted to avoid, and issuing Redshift `INSERT` statements per record is an anti-pattern — Redshift is columnar and requires `COPY` for bulk loads to avoid leader-node bottlenecks.",
+    "references": [
+      "https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html",
+      "https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html#create-destination-redshift",
+      "https://docs.aws.amazon.com/streams/latest/dev/introduction.html"
+    ],
+    "tags": ["kinesis", "firehose", "redshift", "streaming"],
+    "source": "human",
+    "reviewedAt": "2026-04-25"
+  },
+  {
+    "id": "aws-de-002",
+    "slug": "glue-job-bookmarks-incremental-load",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "An AWS Glue Spark job reads daily CSV uploads from `s3://raw/orders/` and writes Parquet to `s3://curated/orders/`. Each run currently reprocesses every file in the prefix, which is slow and expensive. You want only new files processed on each run with minimal code change. Which approach is the best fit?",
+    "options": [
+      { "id": "a", "text": "Enable Glue job bookmarks on the job and use `create_dynamic_frame.from_catalog` with `transformation_ctx` set; commit bookmarks at the end of the job." },
+      { "id": "b", "text": "Add a Lambda triggered by S3 PutObject that moves each new file into a `processed/` prefix after Glue finishes, and have Glue read only `unprocessed/`." },
+      { "id": "c", "text": "Switch the Glue job to a Python shell job and filter the file list by `last_modified > job_start - 24h` before reading." },
+      { "id": "d", "text": "Add a WHERE clause on an `ingest_date` column in the DynamicFrame to filter out old partitions." }
+    ],
+    "correctIds": ["a"],
+    "explanation": "Glue job bookmarks are specifically designed for this use case: Glue persists per-source state (S3 object keys already processed, or last-committed JDBC value) keyed by `transformation_ctx`. When bookmarks are enabled and you read via `from_catalog` or `from_options` with a `transformation_ctx`, Glue automatically skips previously processed objects and calls `job.commit()` persists the new high-water mark. This is a one-line change per source.\n\n**b wrong**: a file-shuffling pattern works but is brittle — it requires a separate Lambda, adds failure modes (partial moves), and couples your ingestion to an S3 side effect. It's more moving parts than bookmarks, not fewer.\n\n**c wrong**: a Python shell job is single-node and not appropriate for Spark-scale CSV-to-Parquet conversion. A 24h window is also not equivalent to bookmarks — it re-reads everything inside the window and misses late-arriving files outside it.\n\n**d wrong**: filtering on `ingest_date` only works if the column exists in the data and is trustworthy, and it still requires Spark to read every file to apply the filter — partition pruning happens at the Hive partition level, not the column level of the DataFrame after load.",
+    "references": [
+      "https://docs.aws.amazon.com/glue/latest/dg/monitor-continuations.html",
+      "https://docs.aws.amazon.com/glue/latest/dg/glue-programming-etl-connect-s3.html"
+    ],
+    "tags": ["glue", "etl", "bookmarks", "incremental"],
+    "source": "human",
+    "reviewedAt": "2026-04-25"
+  },
+  {
+    "id": "aws-de-003",
+    "slug": "redshift-distribution-key-skew",
+    "topicSlug": "store-management",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A Redshift cluster has a `fact_orders` table (2B rows) joined to `dim_customer` (80M rows) on `customer_id`. The query planner shows DS_BCAST_INNER on `dim_customer` and queries take 40+ minutes. Distribution and sort keys are currently `DISTSTYLE EVEN` on both tables. Which change will most improve join performance?",
+    "options": [
+      { "id": "a", "text": "Set `DISTSTYLE KEY DISTKEY(customer_id)` on both `fact_orders` and `dim_customer` so matching keys colocate on the same slices." },
+      { "id": "b", "text": "Set `DISTSTYLE ALL` on `fact_orders` so every slice has the full fact, eliminating the broadcast." },
+      { "id": "c", "text": "Set `DISTSTYLE KEY DISTKEY(order_id)` on `fact_orders` and leave `dim_customer` as `EVEN`." },
+      { "id": "d", "text": "Increase the cluster to RA3.16xlarge — broadcast joins are always fine with enough memory." }
+    ],
+    "correctIds": ["a"],
+    "explanation": "A co-located join requires both tables to be distributed on the join key so matching rows live on the same compute slice. Setting `DISTKEY(customer_id)` on both sides lets Redshift do a local hash join per slice with no network shuffle, changing the plan from `DS_BCAST_INNER` (broadcast the inner table to every slice) to `DS_DIST_NONE`. For a 2B-row fact joined to an 80M-row dim, that's typically a 10x+ speedup.\n\n**b wrong**: `DISTSTYLE ALL` replicates the entire table to every node. On a 2B-row fact that's prohibitive on storage and write cost. `ALL` is appropriate for small, slowly-changing dims (think <5M rows), not fact tables.\n\n**c wrong**: distributing the fact on `order_id` and leaving the dim on `EVEN` doesn't co-locate the join keys, so Redshift still has to redistribute or broadcast one side. The broadcast cost is unchanged.\n\n**d wrong**: bigger nodes don't eliminate the O(N) network cost of broadcasting 80M rows to every slice on every query. The fix is a distribution choice, not a hardware choice.",
+    "references": [
+      "https://docs.aws.amazon.com/redshift/latest/dg/c_best-practices-best-dist-key.html",
+      "https://docs.aws.amazon.com/redshift/latest/dg/c_data_redistribution.html"
+    ],
+    "tags": ["redshift", "distkey", "joins", "performance"],
+    "source": "human",
+    "reviewedAt": "2026-04-25"
+  },
+  {
+    "id": "aws-de-004",
+    "slug": "step-functions-vs-mwaa-orchestration",
+    "topicSlug": "operations-support",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You must orchestrate a nightly pipeline with 6 Glue jobs, 2 Lambda transforms, an EMR step, and a final Redshift `COPY`, with per-step retries and email alerts on failure. The team has no Airflow experience and wants the lowest operational overhead and predictable cost. Which orchestrator best fits?",
+    "options": [
+      { "id": "a", "text": "AWS Step Functions Standard Workflows using the Glue, Lambda, EMR, and Redshift Data API service integrations, with SNS for failure notifications." },
+      { "id": "b", "text": "Amazon MWAA (Managed Airflow) with Glue and EMR operators; SLA miss callbacks for alerts." },
+      { "id": "c", "text": "A single Lambda kicked off by EventBridge that calls each service's SDK in sequence and handles retries with try/except." },
+      { "id": "d", "text": "Step Functions Express Workflows chained by EventBridge, using activity workers for each step." }
+    ],
+    "correctIds": ["a"],
+    "explanation": "Step Functions Standard Workflows are the native AWS orchestrator and the right choice here: (1) first-class service integrations for Glue `StartJobRun.sync`, Lambda, EMR steps, and the Redshift Data API mean no custom polling code; (2) per-state `Retry` and `Catch` blocks handle retries and failure routing declaratively; (3) failure branches to SNS for email alerting is one state; (4) Standard is priced per state transition and is cheap for nightly batch at this scale; (5) no infrastructure to manage, unlike MWAA which has an always-on environment cost.\n\n**b wrong**: MWAA is powerful but introduces a ~$300+/month minimum environment cost and an Airflow learning curve the team doesn't have. For a single nightly DAG of this size it's over-provisioned.\n\n**c wrong**: a single Lambda orchestrating long-running services hits the 15-minute Lambda timeout the moment EMR or Glue takes longer, and you lose per-step observability. Manual try/except is a poor substitute for declarative retries.\n\n**d wrong**: Express Workflows have a 5-minute maximum duration and are designed for high-volume short-lived workflows (e.g., per-request orchestration), not nightly batch that runs for 30+ minutes. Activity workers also require self-hosted pollers, raising ops.",
+    "references": [
+      "https://docs.aws.amazon.com/step-functions/latest/dg/concepts-standard-vs-express.html",
+      "https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html",
+      "https://docs.aws.amazon.com/step-functions/latest/dg/connect-redshift-data.html"
+    ],
+    "tags": ["step-functions", "orchestration", "mwaa"],
+    "source": "human",
+    "reviewedAt": "2026-04-25"
+  },
+  {
+    "id": "aws-de-005",
+    "slug": "lake-formation-fine-grained-access",
+    "topicSlug": "security-governance",
+    "difficulty": "hard",
+    "type": "multi",
+    "stem": "A data lake on S3 is cataloged in Glue. The security team requires: analysts can query only non-PII columns of `customers` (exclude `ssn`, `email`), and only rows where `region = 'EU'`. They must enforce this across Athena, Redshift Spectrum, and EMR Spark. Which combination of actions correctly implements this? (Select all that apply.)",
+    "options": [
+      { "id": "a", "text": "Register the S3 location with AWS Lake Formation and grant column-level SELECT on `customers` excluding `ssn` and `email` to the analyst role." },
+      { "id": "b", "text": "Create a Lake Formation row-level filter `region = 'EU'` on `customers` and grant it to the analyst role as a data filter." },
+      { "id": "c", "text": "Use an S3 bucket policy that denies `s3:GetObject` on objects tagged `pii=true` to the analyst role." },
+      { "id": "d", "text": "Query from EMR using the Lake Formation integration with EMR (EMR on EC2 runtime roles or EMR Serverless) so Spark enforces the LF grants." },
+      { "id": "e", "text": "Create an Athena workgroup with a query result filter that drops the `ssn` and `email` columns post-hoc." }
+    ],
+    "correctIds": ["a", "b", "d"],
+    "explanation": "Lake Formation is the only AWS-native way to enforce column- and row-level access uniformly across Athena, Redshift Spectrum, and EMR Spark. **(a)** Column-level SELECT grants (or, equivalently, LF `DataFilters` that exclude columns) are the standard mechanism to hide `ssn` and `email`. **(b)** A LF row-level data filter with `region = 'EU'` is applied automatically by every LF-integrated engine — analysts querying via Athena or Spectrum see only EU rows without any client-side predicate. **(d)** Enforcement in EMR Spark requires using the EMR Lake Formation integration (runtime roles on EMR on EC2, or EMR Serverless with LF) — without this, Spark bypasses LF and reads S3 directly with the cluster's IAM role.\n\n**c wrong**: S3 bucket policies operate at the object level, not the column or row level. You cannot express \"deny this column\" or \"deny rows where region<>'EU'\" with an S3 policy — Parquet files contain both PII and non-PII columns in the same object.\n\n**e wrong**: Athena workgroups have per-workgroup settings (result location, encryption, engine version, cost controls) but do not provide a column-masking \"query result filter.\" Even if you post-process results in a proxy, that doesn't stop Redshift Spectrum or EMR from reading the raw columns.",
+    "references": [
+      "https://docs.aws.amazon.com/lake-formation/latest/dg/cbac-tutorial.html",
+      "https://docs.aws.amazon.com/lake-formation/latest/dg/data-filters-about.html",
+      "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-lf.html"
+    ],
+    "tags": ["lake-formation", "rbac", "pii", "governance"],
+    "source": "human",
+    "reviewedAt": "2026-04-25"
+  }
+]

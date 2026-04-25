@@ -1,0 +1,38 @@
+[
+  {
+    "slug": "cortex-ai-functions",
+    "name": "Cortex AI Functions",
+    "description": "AI_COMPLETE, AI_CLASSIFY, AI_EXTRACT, AI_SUMMARIZE, AI_SENTIMENT, AI_TRANSLATE.",
+    "weight": 25
+  },
+  {
+    "slug": "cortex-search",
+    "name": "Cortex Search & Vector Embeddings",
+    "description": "Hybrid search, embedding models, CORTEX SEARCH SERVICE.",
+    "weight": 20
+  },
+  {
+    "slug": "cortex-analyst",
+    "name": "Cortex Analyst & Semantic Views",
+    "description": "Text-to-SQL, semantic models, verified queries.",
+    "weight": 15
+  },
+  {
+    "slug": "rag-patterns",
+    "name": "RAG Pipelines",
+    "description": "Document chunking, retrieval, prompt engineering, context windows.",
+    "weight": 15
+  },
+  {
+    "slug": "fine-tuning",
+    "name": "Fine-Tuning & Model Ops",
+    "description": "CORTEX FINETUNE, model registry, deployment.",
+    "weight": 10
+  },
+  {
+    "slug": "ai-governance",
+    "name": "AI Security & Governance",
+    "description": "Masking, RBAC for AI, cost controls, PII handling.",
+    "weight": 15
+  }
+]

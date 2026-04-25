@@ -1,0 +1,30 @@
+{
+  "slug": "snowpro-core",
+  "title": "SnowPro Core Certification Practice Test",
+  "shortTitle": "SnowPro Core",
+  "provider": "Snowflake",
+  "examCode": "COF-C02",
+  "description": "Free interactive practice tests for the Snowflake SnowPro Core certification with instant feedback, topic-level scoring, and detailed explanations.",
+  "longDescription": "The SnowPro Core Certification validates your foundational knowledge of the Snowflake Data Cloud. Practice with questions covering architecture, virtual warehouses, data loading, security, and performance optimization. All questions include detailed explanations and links to official documentation.",
+  "durationMinutes": 115,
+  "passingScore": 75,
+  "totalOfficialQuestions": 100,
+  "officialDomains": [
+    "Snowflake Data Cloud Features & Architecture",
+    "Account Access and Security",
+    "Performance Concepts",
+    "Data Loading and Unloading",
+    "Data Transformations",
+    "Data Protection and Data Sharing"
+  ],
+  "difficulty": "Foundational",
+  "officialUrl": "https://www.snowflake.com/certifications/snowpro-core/",
+  "prerequisites": [
+    "6+ months of Snowflake experience",
+    "Basic SQL knowledge",
+    "Familiarity with data warehousing concepts"
+  ],
+  "heroGradient": "from-sky-500 via-blue-600 to-indigo-700",
+  "icon": "Database",
+  "color": "blue"
+}

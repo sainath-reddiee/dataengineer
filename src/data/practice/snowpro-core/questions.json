@@ -1,0 +1,636 @@
+[
+  {
+    "id": "spc-001",
+    "slug": "snowflake-three-layer-architecture",
+    "topicSlug": "architecture",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Which of the following are the three distinct layers of Snowflake's architecture?",
+    "options": [
+      { "id": "a", "text": "Storage, Compute, Cloud Services" },
+      { "id": "b", "text": "Storage, Processing, Networking" },
+      { "id": "c", "text": "Database, Warehouse, Application" },
+      { "id": "d", "text": "Ingestion, Transformation, Consumption" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "Snowflake uses a unique multi-cluster, shared-data architecture consisting of three layers: **Database Storage** (centralized, compressed, columnar), **Query Processing** (virtual warehouses = compute clusters), and **Cloud Services** (metadata, authentication, query optimization, infrastructure management). These layers scale independently.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/intro-key-concepts"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-002",
+    "slug": "virtual-warehouse-scaling",
+    "topicSlug": "warehouses",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You have a warehouse that frequently has queued queries during peak hours. Which warehouse setting should you adjust to reduce queuing without manually resizing?",
+    "options": [
+      { "id": "a", "text": "Increase WAREHOUSE_SIZE from Medium to Large" },
+      { "id": "b", "text": "Enable multi-cluster warehouse with MAX_CLUSTER_COUNT > 1" },
+      { "id": "c", "text": "Set AUTO_SUSPEND to a higher value" },
+      { "id": "d", "text": "Enable query acceleration service" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**Multi-cluster warehouses** automatically add/remove clusters based on concurrency. Setting `MAX_CLUSTER_COUNT > 1` with `SCALING_POLICY = STANDARD` (or ECONOMY) lets Snowflake spin up additional clusters when queries queue up, then scale down when demand drops. Increasing size helps with query speed but not concurrency. AUTO_SUSPEND controls idle shutdown, not scaling.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/warehouses-multicluster"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-003",
+    "slug": "copy-into-file-formats",
+    "topicSlug": "data-loading",
+    "difficulty": "medium",
+    "type": "multi",
+    "stem": "Which of the following file formats are natively supported by Snowflake's COPY INTO command? (Select all that apply)",
+    "options": [
+      { "id": "a", "text": "CSV" },
+      { "id": "b", "text": "JSON" },
+      { "id": "c", "text": "Parquet" },
+      { "id": "d", "text": "XLSX (Excel)" },
+      { "id": "e", "text": "Avro" }
+    ],
+    "correctIds": ["a", "b", "c", "e"],
+    "explanation": "Snowflake's COPY INTO natively supports **CSV, JSON, Avro, ORC, Parquet, and XML**. Excel (.xlsx) is **not** natively supported — you must convert it to CSV or Parquet first. All semi-structured formats (JSON, Avro, ORC, Parquet, XML) can be loaded into a VARIANT column.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/data-load-prepare"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-004",
+    "slug": "time-travel-retention-period",
+    "topicSlug": "data-protection",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "What is the maximum Time Travel retention period for a permanent table in Snowflake Enterprise Edition or higher?",
+    "options": [
+      { "id": "a", "text": "1 day" },
+      { "id": "b", "text": "7 days" },
+      { "id": "c", "text": "90 days" },
+      { "id": "d", "text": "365 days" }
+    ],
+    "correctIds": ["c"],
+    "explanation": "For **Enterprise Edition and higher**, Time Travel retention can be set from 0 to **90 days** for permanent tables via `DATA_RETENTION_TIME_IN_DAYS`. Standard Edition is limited to 0 or 1 day. Transient and temporary tables are capped at 0 or 1 day regardless of edition. After Time Travel ends, Fail-safe begins (7 days, permanent tables only, not user-accessible).",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/data-time-travel"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-005",
+    "slug": "rbac-role-hierarchy",
+    "topicSlug": "security",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Which system-defined role in Snowflake has the highest level of privileges and should be used sparingly?",
+    "options": [
+      { "id": "a", "text": "SYSADMIN" },
+      { "id": "b", "text": "SECURITYADMIN" },
+      { "id": "c", "text": "ACCOUNTADMIN" },
+      { "id": "d", "text": "ORGADMIN" }
+    ],
+    "correctIds": ["c"],
+    "explanation": "**ACCOUNTADMIN** is the most privileged role in a Snowflake account — it encompasses SYSADMIN + SECURITYADMIN and can view all billing/usage data. Best practice is to grant it only to a small number of users, enforce MFA, and do day-to-day work under SYSADMIN. ORGADMIN is at the organization level (across accounts) but has narrower scope within a single account.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/security-access-control-overview"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-006",
+    "slug": "zero-copy-clone",
+    "topicSlug": "data-protection",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "What happens to storage when you run `CREATE TABLE new_tbl CLONE old_tbl;`?",
+    "options": [
+      { "id": "a", "text": "All data is physically copied, doubling storage" },
+      { "id": "b", "text": "No additional storage is used until data in either table is modified" },
+      { "id": "c", "text": "Only 50% of data is copied initially" },
+      { "id": "d", "text": "The clone operation requires a Snowpipe to complete" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "Snowflake uses **zero-copy cloning**: the clone only duplicates metadata pointers. No new storage is consumed until micro-partitions diverge due to DML on either the source or clone. This makes cloning instant and nearly free initially — ideal for dev/test environments.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/object-clone"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-007",
+    "slug": "result-cache-duration",
+    "topicSlug": "warehouses",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "How long does Snowflake retain a query result in the Result Cache before it is purged?",
+    "options": [
+      { "id": "a", "text": "1 hour" },
+      { "id": "b", "text": "24 hours, extended up to 31 days if reused" },
+      { "id": "c", "text": "Until the warehouse is suspended" },
+      { "id": "d", "text": "Indefinitely" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "The **Result Cache** holds query results for **24 hours** after execution. If the same query is re-run within that window, Snowflake serves it from cache (no warehouse needed). Each reuse **extends** the retention by another 24 hours, up to a maximum of **31 days**. Underlying data changes invalidate the cache.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/querying-persisted-results"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-008",
+    "slug": "snowpipe-vs-copy-into",
+    "topicSlug": "data-loading",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Which statement best describes the difference between Snowpipe and a manual COPY INTO load?",
+    "options": [
+      { "id": "a", "text": "Snowpipe uses a user-specified warehouse; COPY INTO uses serverless compute" },
+      { "id": "b", "text": "Snowpipe is continuous and serverless; COPY INTO is a one-time, warehouse-based batch load" },
+      { "id": "c", "text": "Snowpipe only loads JSON; COPY INTO handles all formats" },
+      { "id": "d", "text": "There is no functional difference, only syntax" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**Snowpipe** is Snowflake-managed serverless continuous ingestion — triggered by cloud storage events (e.g., S3 SQS) or REST API, billed per-second of serverless compute. **COPY INTO** is a manual, batch, warehouse-driven load. Use Snowpipe for near-real-time micro-batches (<1 min latency); use COPY INTO for large scheduled bulk loads.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/data-load-snowpipe-intro"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-009",
+    "slug": "micro-partition-size",
+    "topicSlug": "architecture",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "What is the approximate size of a Snowflake micro-partition when uncompressed?",
+    "options": [
+      { "id": "a", "text": "1-5 MB" },
+      { "id": "b", "text": "50-500 MB" },
+      { "id": "c", "text": "1-5 GB" },
+      { "id": "d", "text": "Variable, based on warehouse size" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "Snowflake micro-partitions are **50-500 MB of uncompressed data** each. They are immutable, columnar, and compressed on disk (typically 3-5x compression). Snowflake tracks metadata per micro-partition (min/max, distinct counts) to enable efficient pruning during query execution.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/tables-clustering-micropartitions"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-010",
+    "slug": "secure-data-sharing-consumer",
+    "topicSlug": "data-protection",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "When a provider shares data via Snowflake Secure Data Sharing, what does the consumer pay for?",
+    "options": [
+      { "id": "a", "text": "Storage and compute for the shared data" },
+      { "id": "b", "text": "A monthly data-sharing fee to Snowflake" },
+      { "id": "c", "text": "Only the compute used to query the shared data" },
+      { "id": "d", "text": "Nothing — the provider pays all costs" }
+    ],
+    "correctIds": ["c"],
+    "explanation": "In **Secure Data Sharing**, no data is physically copied. The consumer pays **only for the compute (warehouse credits)** used to query the shared data. The provider continues to pay storage costs. This is why data sharing is extremely cost-efficient compared to traditional ETL-based data distribution.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/data-sharing-intro"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-011",
+    "slug": "variant-column-semi-structured",
+    "topicSlug": "transformations",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Which Snowflake data type is used to store semi-structured data like JSON, Avro, or XML?",
+    "options": [
+      { "id": "a", "text": "OBJECT" },
+      { "id": "b", "text": "VARIANT" },
+      { "id": "c", "text": "ARRAY" },
+      { "id": "d", "text": "STRING" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**VARIANT** is Snowflake's universal semi-structured data type that can hold any JSON, Avro, ORC, Parquet, or XML value. OBJECT and ARRAY are specialized subtypes (you can cast to them). VARIANT columns are stored in a columnar, type-aware format internally — Snowflake extracts and indexes common paths automatically.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/semistructured-intro"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-012",
+    "slug": "streams-cdc",
+    "topicSlug": "transformations",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "What is the primary purpose of a Snowflake Stream object?",
+    "options": [
+      { "id": "a", "text": "To continuously load files from a cloud stage" },
+      { "id": "b", "text": "To track DML changes (inserts/updates/deletes) on a table for CDC processing" },
+      { "id": "c", "text": "To replicate data to another account" },
+      { "id": "d", "text": "To store streaming data before ingestion" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "A **Stream** records DML changes (inserts, updates, deletes) on a source table — effectively change-data-capture (CDC). Streams are consumed (offset advances) when used in a DML statement inside a transaction, typically combined with **Tasks** to build incremental ELT pipelines. Streams add no extra storage cost beyond Time Travel.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/streams-intro"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-013",
+    "slug": "warehouse-auto-suspend",
+    "topicSlug": "warehouses",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "What is the minimum value for AUTO_SUSPEND on a Snowflake virtual warehouse?",
+    "options": [
+      { "id": "a", "text": "30 seconds" },
+      { "id": "b", "text": "60 seconds (1 minute)" },
+      { "id": "c", "text": "5 minutes" },
+      { "id": "d", "text": "No minimum — can be set to 0" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "The minimum `AUTO_SUSPEND` value is **60 seconds (1 minute)**. Warehouses are billed per-second with a **60-second minimum** per resume, so suspending too aggressively (if it were allowed) wouldn't save money. Setting AUTO_SUSPEND = 0 is not allowed; setting it to NULL disables auto-suspend entirely.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/sql/create-warehouse"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-014",
+    "slug": "network-policy-priority",
+    "topicSlug": "security",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "In a Snowflake network policy, if an IP address appears in both the ALLOWED_IP_LIST and BLOCKED_IP_LIST, what happens?",
+    "options": [
+      { "id": "a", "text": "The IP is allowed — ALLOWED_IP_LIST takes precedence" },
+      { "id": "b", "text": "The IP is blocked — BLOCKED_IP_LIST takes precedence" },
+      { "id": "c", "text": "Snowflake raises an error when the policy is created" },
+      { "id": "d", "text": "It depends on the order in which the lists were defined" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**BLOCKED_IP_LIST takes precedence** over ALLOWED_IP_LIST. This lets you allow a broad CIDR range (e.g., a corporate network) and explicitly block specific IPs within it. The policy-creation step does not raise an error on overlap.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/network-policies"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-015",
+    "slug": "fail-safe-access",
+    "topicSlug": "data-protection",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Who can access data in Fail-safe to recover a permanent table?",
+    "options": [
+      { "id": "a", "text": "The ACCOUNTADMIN role" },
+      { "id": "b", "text": "Only Snowflake Support, via a support request" },
+      { "id": "c", "text": "The table owner with UNDROP privilege" },
+      { "id": "d", "text": "Any user with SELECT on the table" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**Fail-safe** is a 7-day non-configurable disaster-recovery window that activates after Time Travel expires. It is accessible **only by Snowflake Support** via a support request — customers cannot query it directly. Fail-safe applies only to permanent tables (not transient/temporary) and incurs storage cost.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/data-failsafe"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-016",
+    "slug": "stage-types",
+    "topicSlug": "data-loading",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Which of the following is NOT a valid type of Snowflake stage?",
+    "options": [
+      { "id": "a", "text": "User stage (@~)" },
+      { "id": "b", "text": "Table stage (@%table_name)" },
+      { "id": "c", "text": "Named internal/external stage" },
+      { "id": "d", "text": "Warehouse stage (@!warehouse)" }
+    ],
+    "correctIds": ["d"],
+    "explanation": "Snowflake supports three stage types: **User** (`@~`, one per user), **Table** (`@%table_name`, one per table), and **Named** (internal or external, created with CREATE STAGE). There is no 'warehouse stage.' Use named external stages for cloud storage (S3, Azure Blob, GCS).",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/data-load-local-file-system-create-stage"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-017",
+    "slug": "caching-layers",
+    "topicSlug": "warehouses",
+    "difficulty": "hard",
+    "type": "multi",
+    "stem": "Which of the following caching layers exist in Snowflake? (Select all that apply)",
+    "options": [
+      { "id": "a", "text": "Result Cache (cloud services layer)" },
+      { "id": "b", "text": "Metadata Cache (cloud services layer)" },
+      { "id": "c", "text": "Local Disk Cache / Warehouse Cache (compute layer)" },
+      { "id": "d", "text": "Remote Storage Cache (storage layer)" }
+    ],
+    "correctIds": ["a", "b", "c"],
+    "explanation": "Snowflake has three caches: **Result Cache** (24h, services layer, query-level), **Metadata Cache** (statistics/min-max used for query planning and pruning), and **Local Disk/Warehouse Cache** (SSD on warehouse nodes, holds micro-partitions read from remote storage). There is no 'remote storage cache' — the storage layer itself is the source of truth.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/performance-query-warehouse-cache"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-018",
+    "slug": "transient-table-characteristics",
+    "topicSlug": "data-protection",
+    "difficulty": "medium",
+    "type": "multi",
+    "stem": "Which of the following are true about Snowflake transient tables? (Select all that apply)",
+    "options": [
+      { "id": "a", "text": "They persist across sessions until explicitly dropped" },
+      { "id": "b", "text": "They have a maximum Time Travel of 1 day" },
+      { "id": "c", "text": "They have no Fail-safe period" },
+      { "id": "d", "text": "They are automatically dropped at session end" }
+    ],
+    "correctIds": ["a", "b", "c"],
+    "explanation": "**Transient tables** persist across sessions (unlike temporary tables), but have reduced data-protection: max 1 day Time Travel and **no Fail-safe** — making them cheaper to store. Option (d) describes **temporary** tables. Use transient for intermediate/staging data where disaster recovery isn't needed.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/tables-temp-transient"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-019",
+    "slug": "storage-pricing-compressed",
+    "topicSlug": "architecture",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "How is Snowflake storage billed?",
+    "options": [
+      { "id": "a", "text": "Based on the uncompressed size of the data" },
+      { "id": "b", "text": "Based on the compressed size stored in Snowflake's columnar format" },
+      { "id": "c", "text": "Flat monthly fee per database" },
+      { "id": "d", "text": "Based on query volume" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "Snowflake bills storage on the **compressed** size of data (after Snowflake's columnar compression, typically 3-5x smaller than raw). Pricing is per TB/month, on-demand or capacity. Storage is cheap and a distinct billing line from compute (warehouse credits).",
+    "references": [
+      "https://www.snowflake.com/pricing/"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-020",
+    "slug": "tasks-dependencies",
+    "topicSlug": "transformations",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "What is the purpose of the AFTER clause when creating a Snowflake Task?",
+    "options": [
+      { "id": "a", "text": "To schedule the task after a specific timestamp" },
+      { "id": "b", "text": "To define the task as a child in a task tree (DAG), running after a predecessor task" },
+      { "id": "c", "text": "To suspend the task after N runs" },
+      { "id": "d", "text": "To define a post-execution cleanup step" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "The **AFTER** clause builds a **task DAG** by declaring that the new task runs only after the predecessor task(s) complete successfully. This enables multi-step pipelines: root task triggers on schedule; dependent tasks chain via AFTER. The root task must be the only one with a SCHEDULE; children inherit timing via the DAG.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/tasks-intro"
+    ],
+    "source": "human"
+  },
+  {
+    "id": "spc-021",
+    "slug": "cross-region-dr-replication-rpo",
+    "topicSlug": "data-protection",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Your org runs production workloads in Snowflake on AWS us-east-1 and needs cross-region disaster recovery with an RPO of 15 minutes and an RTO under 1 minute. The secondary region is AWS us-west-2. Which approach best satisfies both objectives?",
+    "options": [
+      { "id": "a", "text": "Create a Database Replication Group on the primary with an auto-refresh every 10 minutes, and pair it with a Client Redirect connection URL for the application" },
+      { "id": "b", "text": "Enable Fail-safe on all production tables and rely on Snowflake Support during an outage" },
+      { "id": "c", "text": "Run a daily COPY INTO to an S3 bucket in us-west-2 with a nightly restore script" },
+      { "id": "d", "text": "Use Time Travel with a 7-day retention window and UNDROP after the failure" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "Cross-region DR with a sub-15-minute RPO and sub-minute RTO requires Snowflake's **Replication + Failover** feature (Business Critical edition or higher for failover groups). You create a **replication group** containing the production databases, set an auto-refresh schedule (every 10 min here) so the secondary account continuously pulls incremental metadata and data changes from the primary. Pair the group with a **Client Redirect** connection URL: applications use one logical hostname, and on failover Snowflake reroutes traffic to the secondary account transparently - no code change. RPO is bounded by the refresh cadence; RTO is typically under 60 seconds.\n\n**b wrong**: Fail-safe is a 7-day internal disaster-recovery window accessible only by Snowflake Support, scoped to a single account, meant for catastrophic internal failures - not for customer-driven cross-region failover.\n\n**c wrong**: a daily COPY INTO gives a 24-hour RPO - 96x outside the 15-min target - and restore is a manual, slow, error-prone process that violates the RTO requirement.\n\n**d wrong**: Time Travel and UNDROP protect against *logical* errors (bad DELETE, accidental DROP) within a single account/region. They do not replicate data across regions and offer no protection for a region-wide outage.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/account-replication-intro",
+      "https://docs.snowflake.com/en/user-guide/client-redirect"
+    ],
+    "tags": ["replication", "dr", "failover", "business-critical"],
+    "source": "human",
+    "reviewedAt": "2026-04-25"
+  },
+  {
+    "id": "spc-022",
+    "slug": "poor-pruning-remediation-query-profile",
+    "topicSlug": "warehouses",
+    "difficulty": "hard",
+    "type": "multi",
+    "stem": "A filter-heavy query on a LARGE warehouse is slow. Query Profile shows a single TableScan taking 70% of runtime with Partitions Scanned \u2248 Partitions Total, indicating almost no pruning. Which actions could meaningfully reduce runtime? (Select all that apply)",
+    "options": [
+      { "id": "a", "text": "Add a clustering key on the selective filter column to improve pruning" },
+      { "id": "b", "text": "Enable Query Acceleration Service (QAS) on the warehouse" },
+      { "id": "c", "text": "Resize the warehouse from LARGE to X-LARGE" },
+      { "id": "d", "text": "Create Search Optimization Service on the filter column for equality / point lookups" },
+      { "id": "e", "text": "Set AUTO_SUSPEND to 60 seconds" }
+    ],
+    "correctIds": ["a", "b", "d"],
+    "explanation": "Poor pruning (most partitions scanned) is a data-layout problem, not a raw-compute problem, so the highest-leverage fixes reduce the *amount* of data read.\n\n**a correct**: a well-chosen clustering key aligns micro-partition boundaries with the filter predicate, increasing prune rate dramatically; works best on columns with high-to-moderate cardinality used in range or equality filters.\n\n**b correct**: QAS offloads scan/filter work to additional serverless compute, transparently accelerating scan-heavy queries that outgrow the warehouse; it is specifically designed for this profile.\n\n**d correct**: Search Optimization Service builds per-column lookup structures that let point / equality / IN filters skip almost all partitions. It is the right tool for selective point lookups that clustering alone cannot optimize.\n\n**c wrong**: scaling warehouse size doubles parallelism but still scans the same number of partitions - a spend-to-fix-layout approach, typically gives only a 1.2-1.5x speedup and costs 2x credits/hour.\n\n**e wrong**: AUTO_SUSPEND governs idle shutdown behavior (cost knob), not query performance.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/tables-clustering-keys",
+      "https://docs.snowflake.com/en/user-guide/query-acceleration-service",
+      "https://docs.snowflake.com/en/user-guide/search-optimization-service"
+    ],
+    "tags": ["pruning", "qas", "sos", "clustering", "query-profile"],
+    "source": "human",
+    "reviewedAt": "2026-04-25"
+  },
+  {
+    "id": "spc-023",
+    "slug": "snowpipe-streaming-low-latency",
+    "topicSlug": "data-loading",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "An application needs to deliver row-level click events into Snowflake with sub-10-second end-to-end latency, without staging files anywhere. Which ingestion method fits?",
+    "options": [
+      { "id": "a", "text": "Snowpipe (file-based auto-ingest from S3 with SQS event notifications)" },
+      { "id": "b", "text": "Snowpipe Streaming (row-set API via the Snowflake Ingest SDK)" },
+      { "id": "c", "text": "COPY INTO on a scheduled Task running every minute" },
+      { "id": "d", "text": "External tables over S3 with auto-refresh" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**Snowpipe Streaming** uses the Snowflake Ingest SDK's `insertRows()` API to push individual rows (or micro-batches of rows) directly into a target table - no staging file, no COPY statement, no pipe queue. End-to-end latency is typically 1-10 seconds; throughput scales horizontally by opening more channels. Billing is per client-hour + ingested volume, decoupled from warehouse credits. It is the native Snowflake low-latency row path and pairs with the Kafka connector's streaming mode.\n\n**a wrong**: classic Snowpipe is file-based. The application must first write a file to S3 (or Azure/GCS), an event notification triggers Snowpipe, and the file is then COPYed in. End-to-end latency floor is 1-5 minutes; the staging file requirement is a non-starter here.\n\n**c wrong**: Tasks have a 1-minute minimum schedule, and a scheduled COPY still requires a staged file produced somewhere upstream. Latency floor is ~60 seconds and the file-staging requirement violates the constraint.\n\n**d wrong**: External tables expose S3 data as a queryable surface - they do not ingest rows at all. Each query pays for S3 scan / file list, and there is no push path for the application.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/data-load-snowpipe-streaming-overview",
+      "https://docs.snowflake.com/en/user-guide/data-load-snowpipe-intro"
+    ],
+    "tags": ["snowpipe-streaming", "ingestion", "latency"],
+    "source": "human",
+    "reviewedAt": "2026-04-25"
+  },
+  {
+    "id": "spc-024",
+    "slug": "functional-role-hierarchy-design",
+    "topicSlug": "security",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You are designing role-based access for an analytics org with hundreds of users and dozens of databases. Which approach best follows Snowflake's recommended functional-role pattern for maintainability and least privilege?",
+    "options": [
+      { "id": "a", "text": "Grant ACCOUNTADMIN directly to each analyst and rotate it quarterly" },
+      { "id": "b", "text": "Create one custom role per user, each granted USAGE + SELECT on the schemas they need" },
+      { "id": "c", "text": "Create access roles (e.g. DB_SALES_R, DB_SALES_RW) that hold object privileges; create functional roles (ANALYST, DATA_ENGINEER, FINANCE) that are granted the relevant access roles; grant functional roles to users" },
+      { "id": "d", "text": "Grant SYSADMIN to all users and rely on masking policies to restrict sensitive data" }
+    ],
+    "correctIds": ["c"],
+    "explanation": "Snowflake's reference pattern is a **two-tier role model**: **access roles** own fine-grained object privileges (USAGE on database/schema, SELECT/INSERT/UPDATE on tables, separated read vs write), and **functional roles** map to job families (ANALYST, DATA_ENGINEER, FINANCE_ANALYST) and are granted the access roles relevant to that function. Users only ever hold functional roles. This gives clean least privilege, one place per object to audit, and scales as users change teams - you simply grant them a different functional role. Access roles form a reusable privilege library.\n\n**a wrong**: ACCOUNTADMIN is the most privileged role in the account (includes SECURITYADMIN + SYSADMIN and bypasses most governance). Best practice is to restrict it to a handful of break-glass operators with MFA. Granting it broadly destroys least privilege and is a common audit finding.\n\n**b wrong**: per-user roles is an explicit anti-pattern - O(users x objects) grants, impossible to audit, breaks entirely when people change teams, and the SECURITYADMIN-level work to rewire on every change becomes unmanageable.\n\n**d wrong**: SYSADMIN sits at the top of the object-ownership hierarchy (owns databases and warehouses). Granting it broadly hands out DDL, not just DML. Masking policies protect *values* inside columns - they do not substitute for object-level access control.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/security-access-control-considerations",
+      "https://docs.snowflake.com/en/user-guide/security-access-control-overview"
+    ],
+    "tags": ["rbac", "functional-roles", "access-roles", "least-privilege"],
+    "source": "human",
+    "reviewedAt": "2026-04-25"
+  },
+  {
+    "id": "spc-025",
+    "slug": "replication-effective-rpo-metric",
+    "topicSlug": "data-protection",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You enabled cross-region Database Replication. During a failover drill, which metric most directly represents the effective RPO at the moment of failover?",
+    "options": [
+      { "id": "a", "text": "Time since the last successful REFRESH on the secondary database" },
+      { "id": "b", "text": "The FAIL_SAFE_PERIOD of the source table" },
+      { "id": "c", "text": "The DATA_RETENTION_TIME_IN_DAYS setting on the source database" },
+      { "id": "d", "text": "The warehouse AUTO_SUSPEND interval" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**RPO** (Recovery Point Objective) is the maximum acceptable data loss measured in time. With Snowflake Database Replication, every REFRESH on the secondary applies incremental changes from the primary as of a point in time. The gap between *now* and the **last successful REFRESH on the secondary** is the exact data-loss window on failover - anything committed to the primary after that point is not on the secondary and is unrecoverable if the primary region is lost. Therefore that gap is the effective RPO. You can surface it via `SHOW REPLICATION DATABASES` or `INFORMATION_SCHEMA.DATABASE_REFRESH_HISTORY`.\n\n**b wrong**: Fail-safe is the 7-day internal Snowflake-Support-only recovery window within a single account. It has no role in cross-account replication RPO.\n\n**c wrong**: DATA_RETENTION_TIME_IN_DAYS governs Time Travel (in-region point-in-time queries via AT / BEFORE / UNDROP). It does not influence replication lag between accounts.\n\n**d wrong**: AUTO_SUSPEND governs idle warehouse shutdown - a cost-optimization knob for compute, completely unrelated to replication or RPO.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/sql/show-replication-databases",
+      "https://docs.snowflake.com/en/user-guide/account-replication-intro"
+    ],
+    "tags": ["replication", "rpo", "dr-drill"],
+    "source": "human",
+    "reviewedAt": "2026-04-25"
+  },
+  {
+    "id": "spc-026",
+    "slug": "dynamic-tables-vs-streams-tasks-vs-mv",
+    "topicSlug": "transformations",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You need an always-up-to-date aggregation of a 2 TB orders table with these constraints: under 5-minute data lag, automatic refresh on upstream changes, declarative SQL (no orchestration code), multi-table joins allowed, and clear per-refresh cost visibility. Which Snowflake feature best fits?",
+    "options": [
+      { "id": "a", "text": "Materialized View" },
+      { "id": "b", "text": "Stream + scheduled Task running MERGE every minute" },
+      { "id": "c", "text": "Dynamic Table with TARGET_LAG = '5 minutes'" },
+      { "id": "d", "text": "Standard View" }
+    ],
+    "correctIds": ["c"],
+    "explanation": "**Dynamic Tables** are Snowflake's declarative transformation primitive: you write a SELECT, set a `TARGET_LAG`, and Snowflake automatically refreshes the result (incrementally when it can prove correctness, full-refresh otherwise). Lag, refresh history, bytes scanned per refresh, and credits are surfaced in `DYNAMIC_TABLE_REFRESH_HISTORY` and `DYNAMIC_TABLE_GRAPH_HISTORY`. Multi-table joins, window functions, and aggregations are supported. A 5-minute lag is well inside the supported range.\n\n**a wrong**: Materialized Views are tightly scoped - single base table only (no joins), limited aggregation functions, no window functions, no user-defined refresh lag (Snowflake refreshes opportunistically). They are a pre-aggregation tool, not a pipeline primitive.\n\n**b wrong**: Streams + Tasks are imperative - you write MERGE/INSERT consuming the stream, orchestrate Task dependencies, handle failure and back-pressure yourself. Tasks have a 1-minute minimum schedule. Valid for complex transactional logic but far more code and operations overhead than a Dynamic Table.\n\n**d wrong**: a standard View is evaluated on every query (no materialization, no freshness SLA). It cannot satisfy \"always up-to-date aggregation\" as a cached queryable result - it has no cached result at all.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/dynamic-tables-about",
+      "https://docs.snowflake.com/en/user-guide/dynamic-tables-refresh"
+    ],
+    "tags": ["dynamic-tables", "transformations", "pipelines"],
+    "source": "human",
+    "reviewedAt": "2026-04-25"
+  },
+  {
+    "id": "spc-027",
+    "slug": "clustering-key-cardinality-pruning",
+    "topicSlug": "architecture",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You cluster a 5 TB fact table on `event_date`. Queries filter heavily on both `event_date` AND `customer_id`. Date filters prune well but `customer_id` filters still scan most partitions. What is the most likely cause?",
+    "options": [
+      { "id": "a", "text": "Clustering keys only help equality filters, not range filters" },
+      { "id": "b", "text": "The clustering key order is (event_date), and within each date `customer_id` is randomly distributed, so every partition's min/max range on customer_id covers most of the domain" },
+      { "id": "c", "text": "Snowflake clustering is probabilistic and may occasionally miss" },
+      { "id": "d", "text": "You need to run OPTIMIZE TABLE daily to reclaim pruning" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "Clustering keys define the *sort order* Snowflake attempts to maintain across micro-partitions. With single-column key `(event_date)`, partitions are tight on date ranges - excellent for date filters. But *within* any given date, rows arrive in ingest order, so `customer_id` is scattered across every partition of that date; each partition's min/max on customer_id spans almost the entire customer_id domain, defeating pruning for a `customer_id = 123` filter. Fixes: (1) change clustering key to a multi-column order like `(event_date, customer_id)` so partitions are tight on both; (2) apply the **Search Optimization Service** on `customer_id` for selective point lookups - this is often the better fit for high-cardinality lookup columns alongside an existing date cluster.\n\n**a wrong**: clustering helps both range and equality filters; the issue is layout, not predicate type.\n\n**c wrong**: Snowflake's pruning evaluation is deterministic. Automatic clustering (reclustering in the background) is *asynchronous*, but not probabilistic on a per-query basis.\n\n**d wrong**: there is no OPTIMIZE TABLE command in Snowflake. The AUTOMATIC_CLUSTERING service reclusters continuously in the background when enabled.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/tables-clustering-keys",
+      "https://docs.snowflake.com/en/user-guide/search-optimization-service"
+    ],
+    "tags": ["clustering", "pruning", "sos"],
+    "source": "human",
+    "reviewedAt": "2026-04-25"
+  },
+  {
+    "id": "spc-028",
+    "slug": "remote-spill-remediation",
+    "topicSlug": "warehouses",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Query Profile for a heavy join shows `Bytes spilled to local storage: 50 GB` AND `Bytes spilled to remote storage: 200 GB`. Which single change most likely gives the biggest runtime improvement?",
+    "options": [
+      { "id": "a", "text": "Resize the warehouse up one T-shirt size (e.g. LARGE \u2192 X-LARGE) to roughly double memory and local SSD" },
+      { "id": "b", "text": "Add a clustering key on the join column to improve partition pruning" },
+      { "id": "c", "text": "Set AUTO_SUSPEND to 0 so the warehouse stays hot" },
+      { "id": "d", "text": "Rely on the Result Cache for the next run" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**Remote spill** means the operator exceeded warehouse RAM *and* local SSD and had to write hash-table or sort partitions out to remote object storage - roughly 10-100x slower than in-memory operations. Each warehouse size step up roughly doubles total RAM and local SSD, which typically eliminates remote spill entirely and often local spill too. On spill-bound queries, the expected runtime improvement is 2-10x, and the doubled credit rate is usually net positive because the query finishes in a fraction of the time.\n\n**b wrong**: a clustering key helps *pruning* (scanning fewer partitions); it does not change how a hash join or sort fits in memory. Spill during join/sort is a memory/SSD sizing issue, not a scan issue.\n\n**c wrong**: `AUTO_SUSPEND = 0` is not allowed (minimum is 60 seconds; setting NULL disables). Keeping a warehouse hot does not change how much memory an in-flight query has.\n\n**d wrong**: the Result Cache serves *identical repeat* queries from the services layer without hitting a warehouse. It does not help the first execution of any query, including a spilling one. Correct diagnostic flow: check spill numbers \u2192 upsize \u2192 verify spill gone \u2192 if still spilling, consider query rewrite (reduce build-side cardinality, push filters down).",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/ui-snowsight-activity#query-profile",
+      "https://docs.snowflake.com/en/user-guide/warehouses-overview"
+    ],
+    "tags": ["spill", "memory", "sizing", "query-profile"],
+    "source": "human",
+    "reviewedAt": "2026-04-25"
+  },
+  {
+    "id": "spc-029",
+    "slug": "schema-evolution-parquet-match-by-column-name",
+    "topicSlug": "data-loading",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You ingest Parquet files whose schema evolves weekly (new optional columns are added). You want a single recurring COPY INTO to continue loading without manual edits. Which combination is most robust?",
+    "options": [
+      { "id": "a", "text": "MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE on the COPY, ENABLE_SCHEMA_EVOLUTION = TRUE on the target table, and use INFER_SCHEMA on the source when bootstrapping / adding columns" },
+      { "id": "b", "text": "VALIDATION_MODE = RETURN_ALL_ERRORS with FORCE = TRUE" },
+      { "id": "c", "text": "ON_ERROR = CONTINUE and TRUNCATECOLUMNS = TRUE" },
+      { "id": "d", "text": "PURGE = TRUE and STRIP_OUTER_ARRAY = TRUE" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "The modern Snowflake pattern for evolving Parquet schemas is:\n\n- **MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE** aligns Parquet fields to target columns by name, not position - so adding a new column upstream does not shift existing columns around and break the load.\n- **ENABLE_SCHEMA_EVOLUTION = TRUE** on the target table lets COPY INTO itself ADD COLUMN for new fields it finds in the Parquet file during the load (within safe bounds).\n- **INFER_SCHEMA** (used at bootstrap via `CREATE TABLE ... USING TEMPLATE (SELECT ... FROM TABLE(INFER_SCHEMA(...)))`) captures the source schema for the initial DDL.\n\nCombined, new Parquet columns flow into new target columns automatically.\n\n**b wrong**: VALIDATION_MODE and FORCE control error reporting and re-loading of already-seen files. They do not address schema drift.\n\n**c wrong**: ON_ERROR = CONTINUE skips bad rows, and TRUNCATECOLUMNS silently truncates oversize strings. Neither *creates* the new column, so new-column data would still be dropped (or error before evolution).\n\n**d wrong**: PURGE deletes source files after a successful load and STRIP_OUTER_ARRAY is a JSON-specific option. Neither is relevant to Parquet schema evolution.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/sql/copy-into-table",
+      "https://docs.snowflake.com/en/user-guide/data-load-schema-evolution"
+    ],
+    "tags": ["copy-into", "parquet", "schema-evolution", "infer-schema"],
+    "source": "human",
+    "reviewedAt": "2026-04-25"
+  },
+  {
+    "id": "spc-030",
+    "slug": "scim-network-policy-precedence",
+    "topicSlug": "security",
+    "difficulty": "hard",
+    "type": "multi",
+    "stem": "You use SCIM with Okta to provision Snowflake users and groups, and you define an account-level NETWORK_POLICY restricting logins to corporate IPs. Which statements are TRUE? (Select all that apply)",
+    "options": [
+      { "id": "a", "text": "Network-policy evaluation occurs before authentication - a blocked IP is rejected even with valid credentials" },
+      { "id": "b", "text": "If an IP appears in both ALLOWED_IP_LIST and BLOCKED_IP_LIST, the block takes precedence" },
+      { "id": "c", "text": "SCIM-provisioned group membership automatically grants the user all roles currently held by the group, with no extra configuration" },
+      { "id": "d", "text": "A user-level NETWORK_POLICY, if set, overrides the account-level NETWORK_POLICY for that user" },
+      { "id": "e", "text": "Disabling a user in Okta immediately terminates all of that user's active Snowflake sessions" }
+    ],
+    "correctIds": ["a", "b", "d"],
+    "explanation": "**a correct**: network policies are enforced at the gateway *before* credential verification; a request from a blocked IP is rejected with a connection-level error and never reaches authentication.\n\n**b correct**: BLOCKED_IP_LIST takes precedence over ALLOWED_IP_LIST. This lets you allow a wide corporate CIDR and then punch specific deny holes for known-bad IPs inside it.\n\n**d correct**: Snowflake supports `ALTER USER ... SET NETWORK_POLICY = ...`. A user-level policy overrides the account-level policy for that specific user - useful for service accounts that need stricter or different IP constraints than humans.\n\n**c wrong**: SCIM group sync creates/updates Snowflake groups and maps members, but role grants on a group must be configured explicitly (via SCIM role-mapping configuration, or by granting roles to the SCIM-provisioned group object). Group membership alone does not magically attach roles - that is a deliberate security boundary.\n\n**e wrong**: SCIM disabling a user in Okta deprovisions them in Snowflake (blocks future logins), but active sessions continue until the session token expires or an admin explicitly terminates them. For forced termination, an admin must use `SYSTEM$ABORT_SESSION(<session_id>)` or wait for SESSION_IDLE_TIMEOUT_MINS.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/network-policies",
+      "https://docs.snowflake.com/en/user-guide/scim-intro"
+    ],
+    "tags": ["network-policy", "scim", "okta", "session"],
+    "source": "human",
+    "reviewedAt": "2026-04-25"
+  }
+]

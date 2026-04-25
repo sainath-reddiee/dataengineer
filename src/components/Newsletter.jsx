@@ -109,7 +109,7 @@ const Newsletter = () => {
                       {error && (
                         <div className="inline-flex items-center gap-2 text-red-400 text-sm mt-3">
                           <AlertCircle className="h-4 w-4" />
-                          {error}
+                          {typeof error === 'string' ? error : 'Subscription failed. Please try again.'}
                         </div>
                       )}
                     </>
