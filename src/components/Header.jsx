@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Info, Sparkles, Search, BookOpen, GitCompareArrows, FileText, GraduationCap, Newspaper } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Cloud, Wrench, Code, Info, Sparkles, Search, BookOpen, GitCompareArrows, FileText, GraduationCap, Newspaper, Zap } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
 
 // Helper component for the "Corner Burst" sparks animation
@@ -61,6 +61,18 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
     );
   }
   
+  // Emoji-based icons for topic categories (no brand logo)
+  if (lowerCategory === 'developer productivity') {
+    return (
+      <div className={`${className} bg-emerald-500/20 rounded-lg flex items-center justify-center text-lg`}>⚡</div>
+    );
+  }
+  if (lowerCategory === 'career & learning') {
+    return (
+      <div className={`${className} bg-amber-500/20 rounded-lg flex items-center justify-center text-lg`}>🎓</div>
+    );
+  }
+
   if (iconUrl) {
     return (
       <span className={`${className} relative inline-flex items-center justify-center`}>
@@ -154,6 +166,14 @@ const Header = ({ topOffset = 0 }) => {
              path.includes('/category/sql');
     }
     
+    if (categoryKey === 'productivity') {
+      return path.includes('/category/developer-productivity');
+    }
+    
+    if (categoryKey === 'career') {
+      return path.includes('/category/career');
+    }
+    
     return false;
   };
 
@@ -196,6 +216,22 @@ const Header = ({ topOffset = 0 }) => {
     items: [
       { name: 'Python', path: '/category/python', color: 'from-yellow-400 to-orange-500', desc: 'Data Processing' },
       { name: 'SQL', path: '/category/sql', color: 'from-blue-400 to-indigo-500', desc: 'Query Language' }
+    ]
+  },
+  productivity: {
+    title: 'Developer Productivity',
+    shortTitle: 'Productivity',
+    icon: Zap,
+    items: [
+      { name: 'Developer Productivity', path: '/category/developer-productivity', color: 'from-emerald-500 to-teal-500', desc: 'AI Tools & Workflows' }
+    ]
+  },
+  career: {
+    title: 'Career & Learning',
+    shortTitle: 'Career',
+    icon: GraduationCap,
+    items: [
+      { name: 'Career & Learning', path: '/category/career', color: 'from-amber-500 to-yellow-500', desc: 'Growth & Interview Prep' }
     ]
   }
 };
@@ -269,6 +305,12 @@ const Header = ({ topOffset = 0 }) => {
       }
       if (categoryKey === 'languages') {
         return 'View all Language articles';
+      }
+      if (categoryKey === 'productivity') {
+        return 'View all Developer Productivity articles';
+      }
+      if (categoryKey === 'career') {
+        return 'View all Career & Learning articles';
       }
       return 'View all articles';
     };

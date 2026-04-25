@@ -5,7 +5,7 @@
  * Following Schema.org best practices for rich snippets
  */
 
-import { SITE_CONFIG } from '@/lib/seoConfig';
+import { SITE_CONFIG, ensureAbsoluteUrl } from '@/lib/seoConfig';
 
 /**
  * Generate DefinedTerm schema for a glossary term
@@ -108,7 +108,7 @@ export const generateBreadcrumbSchema = (breadcrumbs) => {
             '@type': 'ListItem',
             position: index + 1,
             name: crumb.name,
-            item: crumb.url,
+            item: ensureAbsoluteUrl(crumb.url),
         })),
     };
 };

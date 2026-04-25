@@ -94,6 +94,18 @@ const categoryConfig = {
     color: 'from-blue-600 to-cyan-500',
     path: '/category/salesforce',
     description: "Salesforce data integration tutorials: CRM data, Apex, SOQL, MuleSoft, and Salesforce Data Cloud."
+  },
+  'developer-productivity': {
+    name: 'Developer Productivity',
+    color: 'from-emerald-500 to-teal-500',
+    path: '/category/developer-productivity',
+    description: "Boost your data engineering workflow with AI coding tools, IDE setups, and developer productivity tips."
+  },
+  career: {
+    name: 'Career & Learning',
+    color: 'from-amber-500 to-yellow-500',
+    path: '/category/career',
+    description: "Interview prep, certification guides, and career advice for aspiring and experienced data engineers."
   }
 };
 
@@ -111,7 +123,9 @@ const getCategoryIcon = (category, className = 'h-10 w-10') => {
     // ✅ NEW: Databricks
     databricks: 'https://cdn.brandfetch.io/idSUrLOWbH/idEHbzBDZC.svg?c=1dxbfHSJFAPEGdCLU4o5B',
     // ✅ NEW: Salesforce  
-    salesforce: 'https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/salesforce/salesforce-original.svg'
+    salesforce: 'https://raw.githubusercontent.com/devicons/devicon/refs/heads/master/icons/salesforce/salesforce-original.svg',
+    'developer-productivity': null,
+    career: null
   };
 
   const iconUrl = iconUrls[lowerCategory];
@@ -122,6 +136,18 @@ const getCategoryIcon = (category, className = 'h-10 w-10') => {
       <div className={`${className} bg-slate-200 rounded-full p-1.5 flex items-center justify-center`}>
         <img src={iconUrls.sql} alt="SQL logo" className="h-full w-full object-contain" width={24} height={24} loading="lazy" />
       </div>
+    );
+  }
+
+  // Emoji-based icons for topic categories (no brand logo)
+  if (lowerCategory === 'developer-productivity') {
+    return (
+      <div className={`${className} bg-emerald-500/20 rounded-lg flex items-center justify-center text-2xl`}>⚡</div>
+    );
+  }
+  if (lowerCategory === 'career') {
+    return (
+      <div className={`${className} bg-amber-500/20 rounded-lg flex items-center justify-center text-2xl`}>🎓</div>
     );
   }
 

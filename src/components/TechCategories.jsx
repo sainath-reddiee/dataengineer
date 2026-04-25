@@ -28,6 +28,18 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
   
   // Special handling for logos that need light backgrounds
   const needsLightBg = ['databricks', 'aws', 'dbt', 'salesforce'].includes(lowerCategory);
+
+  // Emoji-based icons for topic categories (no brand logo)
+  if (lowerCategory === 'developer productivity') {
+    return (
+      <div className={`${className} bg-emerald-500/20 rounded-lg flex items-center justify-center text-2xl`}>⚡</div>
+    );
+  }
+  if (lowerCategory === 'career & learning') {
+    return (
+      <div className={`${className} bg-amber-500/20 rounded-lg flex items-center justify-center text-2xl`}>🎓</div>
+    );
+  }
   
   if (iconUrl) {
     return (
@@ -114,6 +126,8 @@ const SparkleCard = ({ category }) => {
             name === 'Snowflake' ? 'bg-slate-900' :            // Dark for light blue logo
             name === 'Azure' ? 'bg-white/95' :                 // White for blue logo
             name === 'Salesforce' ? 'bg-gray-50' :            // White for blue logo (Option 1)
+            name === 'Developer Productivity' ? 'bg-emerald-500/20' :  // Emerald tint for productivity
+            name === 'Career & Learning' ? 'bg-amber-500/20' :        // Amber tint for career
             `bg-gradient-to-br ${color}`
           } mb-3 sm:mb-4 md:mb-6 self-start shadow-lg`}>
             {getCategoryIcon(name, 'h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8')}
@@ -157,7 +171,9 @@ const TechCategories = () => {
   { name: 'GCP', description: 'Google Cloud Platform services like BigQuery and Dataflow', color: 'from-green-500 to-blue-500', path: '/category/gcp' },
   // ✅ NEW
   { name: 'Databricks', description: 'Unified analytics and lakehouse platform for big data', color: 'from-red-500 to-orange-500', path: '/category/databricks' },
-  { name: 'Salesforce', description: 'CRM data integration and Salesforce Data Cloud', color: 'from-blue-600 to-cyan-500', path: '/category/salesforce' }
+  { name: 'Salesforce', description: 'CRM data integration and Salesforce Data Cloud', color: 'from-blue-600 to-cyan-500', path: '/category/salesforce' },
+  { name: 'Developer Productivity', description: 'AI coding tools, IDE setups, and workflow automation tips', color: 'from-emerald-500 to-teal-500', path: '/category/developer-productivity' },
+  { name: 'Career & Learning', description: 'Interview prep, certifications, and career advice', color: 'from-amber-500 to-yellow-500', path: '/category/career' }
 ];
 
   const categories = categoryConfig.map(config => {
@@ -172,7 +188,7 @@ const TechCategories = () => {
         {hasIntersected && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center mb-8 sm:mb-12">
             <div className="flex items-center justify-center gap-4 mb-4 sm:mb-6 flex-wrap">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Explore <span className="gradient-text">Technologies</span></h2>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Explore <span className="gradient-text">Topics</span></h2>
               {import.meta.env.DEV && (<button onClick={refreshCategories} className="p-2 bg-blue-500/20 rounded-full hover:bg-blue-500/30 transition-colors" title="Refresh categories"><RefreshCw className="h-4 w-4 text-blue-400" /></button>)}
             </div>
             <p className="text-base sm:text-lg text-gray-300 max-w-2xl mx-auto px-4">Deep dive into the tools and platforms that power modern data engineering</p>

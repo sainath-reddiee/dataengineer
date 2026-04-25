@@ -34,7 +34,9 @@ const Footer = () => {
       { name: 'GCP', href: '/category/gcp' },
       // ✅ NEW
       { name: 'Databricks', href: '/category/databricks' },
-      { name: 'Salesforce', href: '/category/salesforce' }
+      { name: 'Salesforce', href: '/category/salesforce' },
+      { name: 'Developer Productivity', href: '/category/developer-productivity' },
+      { name: 'Career & Learning', href: '/category/career' }
     ],
     company: [
       { name: 'About', href: '/about' },

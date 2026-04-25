@@ -248,7 +248,7 @@ export function getBreadcrumbSchema(breadcrumbs) {
       '@type': 'ListItem',
       position: index + 1,
       name: crumb.name,
-      item: crumb.url,
+      item: ensureAbsoluteUrl(crumb.url),
     })),
   };
 }

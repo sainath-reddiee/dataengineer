@@ -690,5 +690,18 @@
       "snowflake",
       "dbt"
     ]
+  },
+  {
+    "slug": "claude-code-power-user-guide",
+    "title": "Claude Code Power User Guide: Master AI-Assisted Development",
+    "keywords": [
+      "claude code",
+      "AI coding assistant",
+      "developer productivity",
+      "AI development tools"
+    ],
+    "categories": [
+      "developer-productivity"
+    ]
   }
 ]
