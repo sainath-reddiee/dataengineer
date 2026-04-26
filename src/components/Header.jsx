@@ -456,32 +456,32 @@ const Header = ({ topOffset = 0 }) => {
         pointerEvents: 'auto'
       }}
     >
-      <nav className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
-        <div className="flex items-center justify-between">
+      <nav className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 py-3 sm:py-4">
+        <div className="flex items-center justify-between gap-3">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-1.5 lg:space-x-2 2xl:space-x-3 z-10">
+          <Link to="/" className="flex items-center space-x-1.5 lg:space-x-2 2xl:space-x-3 z-10 min-w-0 shrink">
             <motion.div
               whileHover={{ scale: 1.1, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
               <div className="relative">
-                <Database className="h-7 w-7 sm:h-8 sm:w-8 text-blue-400" />
+                <Database className="h-7 w-7 sm:h-8 sm:w-8 text-blue-400 shrink-0" />
                 <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse" />
               </div>
             </motion.div>
-            <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent truncate">
               DataEngineer Hub
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-1 xl:space-x-3 2xl:space-x-6">
+            <div className="hidden lg:flex items-center gap-1 2xl:gap-4 flex-nowrap shrink-0">
             {/* Home */}
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/" 
-                className={`whitespace-nowrap font-semibold text-xs xl:text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 px-1.5 xl:px-0 ${
+                className={`whitespace-nowrap font-semibold text-xs 2xl:text-base transition-all duration-200 flex items-center gap-2 px-1.5 2xl:px-0 ${
                   isHomeActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
@@ -507,7 +507,7 @@ const Header = ({ topOffset = 0 }) => {
                       }
                     }}
                     onMouseLeave={closeDropdownWithDelay}
-                    className={`whitespace-nowrap flex items-center gap-1 xl:gap-1.5 font-medium text-xs xl:text-sm 2xl:text-base px-1.5 xl:px-0 transition-all duration-200 ${
+                    className={`whitespace-nowrap flex items-center gap-1 2xl:gap-1.5 font-medium text-xs 2xl:text-base px-1.5 2xl:px-0 transition-all duration-200 ${
                       isActive 
                         ? 'text-blue-400' 
                         : 'text-gray-300 hover:text-blue-400'
@@ -517,7 +517,7 @@ const Header = ({ topOffset = 0 }) => {
                     <category.icon className="w-4 h-4 hidden 2xl:inline-block" />
                     <span className="2xl:hidden">{category.shortTitle}</span>
                     <span className="hidden 2xl:inline">{category.title.split(' ')[0]}</span>
-                    <ChevronDown className={`w-3 h-3 xl:w-4 xl:h-4 transition-transform duration-300 ${openDropdown === key ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-3 h-3 2xl:w-4 2xl:h-4 transition-transform duration-300 ${openDropdown === key ? 'rotate-180' : ''}`} />
                   </motion.button>
 
                   <AnimatePresence>
@@ -541,7 +541,7 @@ const Header = ({ topOffset = 0 }) => {
                 to="/tools"
                 onMouseEnter={() => { import('@/pages/ToolsHubPage'); }}
                 onFocus={() => { import('@/pages/ToolsHubPage'); }}
-                className={`whitespace-nowrap font-semibold text-xs xl:text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 px-1.5 xl:px-0 ${
+                className={`whitespace-nowrap font-semibold text-xs 2xl:text-base transition-all duration-200 flex items-center gap-2 px-1.5 2xl:px-0 ${
                   isToolsActive
                     ? 'text-blue-400'
                     : 'text-gray-300 hover:text-blue-400'
@@ -556,7 +556,7 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/about" 
-                className={`whitespace-nowrap font-semibold text-xs xl:text-sm 2xl:text-base transition-all duration-200 flex items-center gap-2 px-1.5 xl:px-0 ${
+                className={`whitespace-nowrap font-semibold text-xs 2xl:text-base transition-all duration-200 flex items-center gap-2 px-1.5 2xl:px-0 ${
                   isAboutActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
@@ -572,7 +572,7 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="whitespace-nowrap flex items-center gap-1.5 xl:gap-2 text-gray-300 hover:text-blue-400 transition-all duration-200 font-medium text-xs xl:text-sm 2xl:text-base px-1.5 xl:px-0"
+                className="whitespace-nowrap flex items-center gap-1.5 2xl:gap-2 text-gray-300 hover:text-blue-400 transition-all duration-200 font-medium text-xs 2xl:text-base px-1.5 2xl:px-0"
                 title="Search (Ctrl+K)"
               >
                 <Search className="w-4 h-4" />
@@ -586,7 +586,7 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/articles"
-                className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white px-2.5 xl:px-4 2xl:px-8 py-1.5 xl:py-2 2xl:py-2.5 rounded-full font-bold text-xs xl:text-sm 2xl:text-base shadow-lg hover:shadow-xl transition-all duration-300 inline-block"
+                className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white px-3 2xl:px-8 py-1.5 2xl:py-2.5 rounded-full font-bold text-xs 2xl:text-base shadow-lg hover:shadow-xl transition-all duration-300 inline-block"
               >
                 Explore
               </Link>

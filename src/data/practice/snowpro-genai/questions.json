@@ -158,5 +158,2030 @@
       "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-finetuning"
     ],
     "source": "human"
+  },
+  {
+    "id": "spg-009",
+    "slug": "ai-complete-basic",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Which Snowflake Cortex function generates free-form text completions from a prompt?",
+    "options": [
+      { "id": "a", "text": "AI_COMPLETE (or legacy SNOWFLAKE.CORTEX.COMPLETE)" },
+      { "id": "b", "text": "AI_CLASSIFY" },
+      { "id": "c", "text": "AI_SUMMARIZE_AGG" },
+      { "id": "d", "text": "AI_TRANSLATE" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `AI_COMPLETE(model, prompt)` is the general-purpose text generation function - the Snowflake equivalent of an LLM chat completion.\n\n**b wrong**: AI_CLASSIFY returns a label from a supplied list.\n\n**c wrong**: AI_SUMMARIZE_AGG aggregates many rows into a single summary.\n\n**d wrong**: AI_TRANSLATE converts text between languages.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_complete"
+    ],
+    "tags": ["ai-complete"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-010",
+    "slug": "ai-classify-categories",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "AI_CLASSIFY expects which arguments?",
+    "options": [
+      { "id": "a", "text": "(input, ARRAY of category labels) - returns the best matching label (or labels with multi-label flag)" },
+      { "id": "b", "text": "(input, number_of_clusters)" },
+      { "id": "c", "text": "(input, regex_pattern)" },
+      { "id": "d", "text": "(input) only" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `AI_CLASSIFY(text, ['a','b','c'])` returns the most likely label. You can pass an options object for multi-label, examples (few-shot), or task description.\n\n**b wrong**: Not k-means; it's LLM-based.\n\n**c wrong**: Not regex - it's semantic.\n\n**d wrong**: The label set is required.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_classify"
+    ],
+    "tags": ["ai-classify"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-011",
+    "slug": "ai-extract-json",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "To pull structured fields (invoice_number, total, date) from unstructured text, use:",
+    "options": [
+      { "id": "a", "text": "AI_EXTRACT with a responseFormat JSON schema or response_list" },
+      { "id": "b", "text": "AI_SENTIMENT" },
+      { "id": "c", "text": "AI_TRANSLATE" },
+      { "id": "d", "text": "AI_FILTER" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `AI_EXTRACT` (or `AI_COMPLETE` with `response_format`) returns JSON matching a declared schema - ideal for pulling known fields from invoices, contracts, support tickets.\n\n**b, c, d wrong**: Other specialized functions.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_extract"
+    ],
+    "tags": ["ai-extract"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-012",
+    "slug": "ai-sentiment-scores",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "AI_SENTIMENT returns a score in the range:",
+    "options": [
+      { "id": "a", "text": "[-1, 1] where -1 = most negative, +1 = most positive" },
+      { "id": "b", "text": "[0, 100]" },
+      { "id": "c", "text": "'positive' / 'neutral' / 'negative' string only" },
+      { "id": "d", "text": "Any integer" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: AI_SENTIMENT returns a float in [-1, 1] for overall polarity. Aspect-based variant returns per-aspect scores as a JSON object.\n\n**b, c, d wrong**: Not the documented range.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_sentiment"
+    ],
+    "tags": ["ai-sentiment"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-013",
+    "slug": "ai-summarize-agg",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You want a single paragraph summary of thousands of customer reviews, grouped by product. Which function and aggregation pattern?",
+    "options": [
+      { "id": "a", "text": "SELECT product, AI_SUMMARIZE_AGG(review_text) GROUP BY product" },
+      { "id": "b", "text": "AI_SUMMARIZE(review_text) per row only" },
+      { "id": "c", "text": "STRING_AGG + AI_COMPLETE" },
+      { "id": "d", "text": "LISTAGG only" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `AI_SUMMARIZE_AGG` is an **aggregate** Cortex function - it combines many input rows into a single summary per group, handling prompt-size limits internally via hierarchical summarization.\n\n**b wrong**: Per-row summary loses the cross-row synthesis.\n\n**c wrong**: Works but may exceed model context; hierarchical built-in is better.\n\n**d wrong**: No summarization.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_summarize_agg"
+    ],
+    "tags": ["ai-summarize-agg"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-014",
+    "slug": "ai-filter-where-clause",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You want to keep only reviews where the user expresses frustration with delivery speed. Which Cortex function is PURPOSE-BUILT for semantic row filtering?",
+    "options": [
+      { "id": "a", "text": "AI_FILTER(prompt, column) - returns TRUE/FALSE per row" },
+      { "id": "b", "text": "AI_SENTIMENT > 0" },
+      { "id": "c", "text": "AI_CLASSIFY only" },
+      { "id": "d", "text": "WHERE text ILIKE '%late%'" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `AI_FILTER` evaluates a natural-language predicate per row and returns boolean - perfect for `WHERE AI_FILTER('user frustrated with delivery speed', review_text)`. More accurate than keyword ILIKE and more scalable than AI_CLASSIFY for boolean gating.\n\n**b wrong**: Sentiment alone misses topical intent.\n\n**c wrong**: Classify returns labels.\n\n**d wrong**: Keyword misses semantic variants.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_filter"
+    ],
+    "tags": ["ai-filter"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-015",
+    "slug": "ai-embed-function",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "To generate vector embeddings from text inside Snowflake SQL, use:",
+    "options": [
+      { "id": "a", "text": "AI_EMBED (or legacy SNOWFLAKE.CORTEX.EMBED_TEXT_*)" },
+      { "id": "b", "text": "AI_COMPLETE with 'embed' prompt" },
+      { "id": "c", "text": "TO_VECTOR" },
+      { "id": "d", "text": "HASH()" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `AI_EMBED(model, text)` returns a VECTOR. Use together with `VECTOR_COSINE_SIMILARITY` for retrieval. Legacy names: `EMBED_TEXT_768`, `EMBED_TEXT_1024`.\n\n**b wrong**: AI_COMPLETE is generation, not embedding.\n\n**c wrong**: TO_VECTOR just casts an array.\n\n**d wrong**: HASH is non-semantic.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_embed"
+    ],
+    "tags": ["ai-embed", "vectors"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-016",
+    "slug": "ai-translate",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "AI_TRANSLATE is given ('Hola mundo', 'es', 'en'). What does it do?",
+    "options": [
+      { "id": "a", "text": "Translates 'Hola mundo' from Spanish to English" },
+      { "id": "b", "text": "Transliterates without translation" },
+      { "id": "c", "text": "Detects language only" },
+      { "id": "d", "text": "Returns NULL for Spanish" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Arguments are `(text, source_language, target_language)` with ISO language codes. Pass '' as source to auto-detect.\n\n**b, c, d wrong**: Not the function's behavior.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_translate"
+    ],
+    "tags": ["ai-translate"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-017",
+    "slug": "ai-parse-document-stage",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You have PDFs in a stage with mixed text, tables, and images. Which Cortex function extracts layout-aware text?",
+    "options": [
+      { "id": "a", "text": "AI_PARSE_DOCUMENT (with LAYOUT or OCR mode)" },
+      { "id": "b", "text": "AI_COMPLETE" },
+      { "id": "c", "text": "AI_EXTRACT" },
+      { "id": "d", "text": "PDF.TO_STRING" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `AI_PARSE_DOCUMENT` reads a file from a stage (PDF, DOCX, images) and returns extracted text with optional layout (headings, tables). Supports both layout-aware and OCR modes.\n\n**b wrong**: Not file-based.\n\n**c wrong**: AI_EXTRACT pulls specific fields from text.\n\n**d wrong**: Not a Snowflake function.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_parse_document"
+    ],
+    "tags": ["parse-document", "ocr"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-018",
+    "slug": "ai-redact-pii",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "AI_REDACT_PII does what?",
+    "options": [
+      { "id": "a", "text": "Replaces detected PII (names, emails, SSNs, phone numbers) in text with placeholders or tokens" },
+      { "id": "b", "text": "Deletes rows with PII" },
+      { "id": "c", "text": "Masks columns via row access policy" },
+      { "id": "d", "text": "Returns a boolean" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: AI_REDACT_PII detects and masks PII inline in free-text, returning cleaned strings. Suitable for sharing logs or training data.\n\n**b, c, d wrong**: Mis-describe redaction.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_redact_pii"
+    ],
+    "tags": ["redact-pii"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-019",
+    "slug": "cortex-model-selection",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "For AI_COMPLETE you want the lowest-latency, lowest-cost model for simple transformations. A reasonable pick is:",
+    "options": [
+      { "id": "a", "text": "A small model like llama3.1-8b or mistral-7b" },
+      { "id": "b", "text": "Always use the largest model available" },
+      { "id": "c", "text": "Use AI_EMBED instead" },
+      { "id": "d", "text": "Use no model parameter" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Small models are order-of-magnitude cheaper and faster for tasks like rewriting, tagging, classifying short text. Reserve large models for complex reasoning.\n\n**b wrong**: Over-pay for simple tasks.\n\n**c wrong**: Different function.\n\n**d wrong**: Model parameter is required.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/llm-functions"
+    ],
+    "tags": ["model-selection", "cost"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-020",
+    "slug": "cortex-cross-region-inference",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A Cortex function errors out because the requested model isn't available in the account region. The FASTEST fix is:",
+    "options": [
+      { "id": "a", "text": "Enable Cross-Region Inference via the CORTEX_ENABLED_CROSS_REGION account parameter" },
+      { "id": "b", "text": "Switch models to a legacy one" },
+      { "id": "c", "text": "Replicate the account to another region" },
+      { "id": "d", "text": "File a support ticket and wait" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Setting `CORTEX_ENABLED_CROSS_REGION = 'ANY_REGION'` (or a specific region list) lets Cortex route inference to a region where the model is available. Data is transferred for the inference.\n\n**b wrong**: May not meet functional needs.\n\n**c wrong**: Heavy operation.\n\n**d wrong**: Unnecessary.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cross-region-inference"
+    ],
+    "tags": ["cross-region-inference"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-021",
+    "slug": "cortex-guardrails",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Cortex Guardrails can be enabled on AI_COMPLETE and AI_AGG calls to:",
+    "options": [
+      { "id": "a", "text": "Filter unsafe prompts and responses (harmful content, prompt injection, etc.) using Snowflake's safety layer" },
+      { "id": "b", "text": "Limit request-per-second rates" },
+      { "id": "c", "text": "Enforce RBAC" },
+      { "id": "d", "text": "Add user authentication" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex Guardrails apply content-safety classifiers to inputs/outputs and can block or flag violations. Configured via the `guardrails` parameter in the function call.\n\n**b, c, d wrong**: Not Guardrails' role.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/guardrails"
+    ],
+    "tags": ["guardrails", "safety"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-022",
+    "slug": "ai-agg-aggregate",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "AI_AGG differs from AI_SUMMARIZE_AGG because:",
+    "options": [
+      { "id": "a", "text": "AI_AGG takes a free-form task prompt so you can ask anything ('extract top 3 complaints as JSON'), while AI_SUMMARIZE_AGG is specialized to produce a summary" },
+      { "id": "b", "text": "They are identical" },
+      { "id": "c", "text": "AI_AGG works only on numbers" },
+      { "id": "d", "text": "AI_SUMMARIZE_AGG is non-aggregate" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `AI_AGG(column, task_description)` is a general-purpose LLM aggregate - supply any natural-language task to apply across grouped rows. AI_SUMMARIZE_AGG is a preset for summarization.\n\n**b, c, d wrong**: Misstate the functions.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_agg"
+    ],
+    "tags": ["ai-agg"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-023",
+    "slug": "ai-complete-structured-output",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "To force AI_COMPLETE to return JSON matching a specific schema, use:",
+    "options": [
+      { "id": "a", "text": "The response_format parameter with a JSON schema" },
+      { "id": "b", "text": "A trailing regex in the prompt" },
+      { "id": "c", "text": "PARSE_JSON on the string output and pray" },
+      { "id": "d", "text": "AI_EXTRACT does not exist for JSON" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `AI_COMPLETE` accepts a `response_format = {'type':'json', 'schema':{...}}` option so the model output is validated and parsed into structured JSON - no post-hoc regex needed.\n\n**b, c wrong**: Fragile.\n\n**d wrong**: Misleading - AI_EXTRACT also supports structured output.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_complete"
+    ],
+    "tags": ["structured-output"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-024",
+    "slug": "cortex-multimodal-input",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You need to describe the content of an image file stored on a Snowflake stage using a multimodal LLM. Which approach is supported?",
+    "options": [
+      { "id": "a", "text": "AI_COMPLETE with a multimodal model, passing a reference to the staged image (TO_FILE / file URL)" },
+      { "id": "b", "text": "Convert image to CSV first" },
+      { "id": "c", "text": "Use AI_TRANSLATE on the bytes" },
+      { "id": "d", "text": "Multimodal input is not supported" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Snowflake Cortex supports multimodal LLMs (e.g., Claude 3.5 Sonnet, Pixtral) via AI_COMPLETE with image or file inputs referenced from stages.\n\n**b, c, d wrong**: Incorrect.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_complete"
+    ],
+    "tags": ["multimodal"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-025",
+    "slug": "ai-similarity-semantic",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "`AI_SIMILARITY(text1, text2)` differs from a raw embedding cosine because:",
+    "options": [
+      { "id": "a", "text": "It returns a [0,1] semantic similarity score directly from a prompt, without you managing embeddings or vectors" },
+      { "id": "b", "text": "It's slower because it uses SQL Levenshtein" },
+      { "id": "c", "text": "It's identical" },
+      { "id": "d", "text": "It requires a vector index" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: AI_SIMILARITY is a convenience function that returns a normalized similarity score between two texts - useful for quick de-duplication and matching without setting up vector tables.\n\n**b, c, d wrong**: Mis-state behavior.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_similarity"
+    ],
+    "tags": ["ai-similarity"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-026",
+    "slug": "cortex-sentiment-aspect",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Aspect-based AI_SENTIMENT returns per-aspect scores when:",
+    "options": [
+      { "id": "a", "text": "You pass an ARRAY of aspect names (e.g., ['food','service','price']) and the function returns a JSON object of per-aspect sentiments" },
+      { "id": "b", "text": "You pass a single aspect string" },
+      { "id": "c", "text": "You only pass the review text" },
+      { "id": "d", "text": "You use AI_COMPLETE" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Aspect-based variant takes a text plus an aspect list and returns a JSON mapping each aspect to a score (or `null` when not mentioned). Useful for product reviews.\n\n**b, c, d wrong**: Not the aspect-based API.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_sentiment"
+    ],
+    "tags": ["aspect-sentiment"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-027",
+    "slug": "ai-complete-temperature",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "To make AI_COMPLETE outputs more DETERMINISTIC, set:",
+    "options": [
+      { "id": "a", "text": "temperature close to 0 (e.g., 0.0 or 0.1)" },
+      { "id": "b", "text": "temperature to 1.0" },
+      { "id": "c", "text": "max_tokens to 0" },
+      { "id": "d", "text": "response_format to text" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Lower temperature biases the model toward the highest-probability tokens, reducing variation and making outputs more reproducible. Higher temperatures add creativity.\n\n**b wrong**: Opposite effect.\n\n**c wrong**: Returns nothing.\n\n**d wrong**: Format doesn't affect determinism.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_complete"
+    ],
+    "tags": ["temperature"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-028",
+    "slug": "ai-complete-token-costs",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You want to understand AI_COMPLETE cost drivers. Which statement is TRUE?",
+    "options": [
+      { "id": "a", "text": "Billing is based on tokens processed (input + output) at per-model rates from the Cortex pricing table" },
+      { "id": "b", "text": "Billing is flat per call" },
+      { "id": "c", "text": "Only output tokens are charged" },
+      { "id": "d", "text": "Cortex calls are free" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex LLM functions are priced per token (input + output), with rates varying by model size. See Snowflake's consumption table for current rates.\n\n**b, c, d wrong**: Mis-state billing.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/llm-functions#cost-considerations"
+    ],
+    "tags": ["cost", "tokens"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-029",
+    "slug": "cortex-observability",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "To monitor AI_COMPLETE usage across an account, inspect:",
+    "options": [
+      { "id": "a", "text": "SNOWFLAKE.ACCOUNT_USAGE.CORTEX_FUNCTIONS_USAGE_HISTORY" },
+      { "id": "b", "text": "SNOWFLAKE.ACCOUNT_USAGE.LOGIN_HISTORY" },
+      { "id": "c", "text": "INFORMATION_SCHEMA.TABLES" },
+      { "id": "d", "text": "SNOWFLAKE.ACCOUNT_USAGE.CONTRACT_ITEMS" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `CORTEX_FUNCTIONS_USAGE_HISTORY` (and its query-level sibling) records function name, model, token counts, and credits, enabling cost attribution and trend analysis.\n\n**b, c, d wrong**: Unrelated views.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/account-usage/cortex_functions_usage_history"
+    ],
+    "tags": ["observability", "usage-history"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-030",
+    "slug": "ai-complete-streaming",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "For an interactive chat UI, you want tokens streamed back as they're generated. Cortex supports this via:",
+    "options": [
+      { "id": "a", "text": "The REST API / Snowflake Python SDK with stream=true" },
+      { "id": "b", "text": "SQL functions always stream" },
+      { "id": "c", "text": "Only Snowpark supports streaming" },
+      { "id": "d", "text": "Streaming is not available" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: The Cortex REST API and Python APIs (`complete(..., stream=True)`) yield incremental response chunks - the right choice for chat UIs. SQL-based AI_COMPLETE returns the full response at once.\n\n**b, c, d wrong**: Incorrect.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/llm-functions"
+    ],
+    "tags": ["streaming", "rest-api"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-031",
+    "slug": "cortex-ai-functions-batch-pattern",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You want to apply AI_CLASSIFY to 10 million rows cheaply. Best pattern?",
+    "options": [
+      { "id": "a", "text": "Run the classification in SQL (batched naturally) on a sufficiently sized warehouse, optionally caching via a UDTF / table" },
+      { "id": "b", "text": "Loop through rows one at a time via Python" },
+      { "id": "c", "text": "Export to an external LLM, then re-import" },
+      { "id": "d", "text": "Use a Streamlit app with per-row calls" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: SQL-based Cortex functions run in parallel across the warehouse. A larger warehouse increases throughput and lowers wall-clock time. Persist results to a table to avoid re-billing on reruns.\n\n**b, c, d wrong**: Much slower and costlier.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/llm-functions"
+    ],
+    "tags": ["batch-classification"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-032",
+    "slug": "cortex-search-service-overview",
+    "topicSlug": "cortex-search",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Cortex Search Service provides:",
+    "options": [
+      { "id": "a", "text": "A fully managed hybrid (vector + lexical) retrieval service over Snowflake tables with automatic indexing and incremental refresh" },
+      { "id": "b", "text": "A bring-your-own-vector database" },
+      { "id": "c", "text": "A BM25-only full-text index" },
+      { "id": "d", "text": "A replacement for Cortex Analyst" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex Search is a managed retrieval service that combines dense vector and lexical (keyword) scoring with automatic re-ranking. It indexes a source table incrementally via a configured target lag.\n\n**b, c, d wrong**: Mis-state Cortex Search.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["cortex-search"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-033",
+    "slug": "cortex-search-create",
+    "topicSlug": "cortex-search",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "When CREATE CORTEX SEARCH SERVICE is run, which of the following is REQUIRED?",
+    "options": [
+      { "id": "a", "text": "An ON column (the text column to search), a WAREHOUSE, a TARGET_LAG, and an AS SELECT statement" },
+      { "id": "b", "text": "A vector column you computed manually" },
+      { "id": "c", "text": "A user-specified embedding model name and dimension" },
+      { "id": "d", "text": "A foreign key to an existing Cortex Analyst service" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Required clauses include `ON <search_column>`, `WAREHOUSE = ...`, `TARGET_LAG = '...'`, and the source `AS SELECT`. Cortex Search manages embeddings internally.\n\n**b, c wrong**: You don't precompute vectors; embedding model is managed.\n\n**d wrong**: Independent services.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/sql/create-cortex-search"
+    ],
+    "tags": ["cortex-search", "ddl"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-034",
+    "slug": "cortex-search-attributes-filters",
+    "topicSlug": "cortex-search",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You want to filter search results by `region = 'EU'` and `language = 'en'` at query time. You must:",
+    "options": [
+      { "id": "a", "text": "Declare those columns as ATTRIBUTES in the service and pass a filter in the query" },
+      { "id": "b", "text": "Use WHERE after retrieval in a wrapping query only" },
+      { "id": "c", "text": "Embed them into the search text" },
+      { "id": "d", "text": "Filters are unsupported" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex Search indexes attributes you declare, enabling efficient server-side filtering (`@eq`, `@contains`, etc.) alongside the retrieval - far more efficient than post-filtering in SQL.\n\n**b wrong**: Works but loses top-k semantics.\n\n**c, d wrong**: Incorrect.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/query-cortex-search-service"
+    ],
+    "tags": ["cortex-search", "attributes"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-035",
+    "slug": "cortex-search-target-lag",
+    "topicSlug": "cortex-search",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A Cortex Search Service has TARGET_LAG = '1 hour'. What does this mean?",
+    "options": [
+      { "id": "a", "text": "Index refreshes so the search service reflects source data with at most ~1 hour of staleness" },
+      { "id": "b", "text": "Each query takes 1 hour" },
+      { "id": "c", "text": "Service expires after 1 hour" },
+      { "id": "d", "text": "Ingestion pauses for 1 hour" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex Search refreshes incrementally at a cadence that keeps data within TARGET_LAG. Smaller lag = fresher data but more compute.\n\n**b, c, d wrong**: Misinterpret.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["target-lag", "freshness"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-036",
+    "slug": "cortex-search-query-api",
+    "topicSlug": "cortex-search",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A RAG application queries a Cortex Search service. Which API returns ranked results?",
+    "options": [
+      { "id": "a", "text": "The Cortex Search REST API (POST :query) or the Python SDK's .search() method" },
+      { "id": "b", "text": "SELECT * from the service as a plain table" },
+      { "id": "c", "text": "Only the Snowsight UI" },
+      { "id": "d", "text": "A SHOW command" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex Search exposes a REST endpoint and Python client `.search(query, columns, filter, limit)` returning ranked JSON results.\n\n**b, c, d wrong**: Not the query path.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/query-cortex-search-service"
+    ],
+    "tags": ["rest-api", "python-sdk"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-037",
+    "slug": "cortex-search-chunking",
+    "topicSlug": "cortex-search",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "For a 200-page PDF, what is the recommended approach BEFORE indexing with Cortex Search?",
+    "options": [
+      { "id": "a", "text": "Chunk the document into passages (e.g., 500-1000 tokens) and store one row per passage" },
+      { "id": "b", "text": "Index the entire PDF as a single row" },
+      { "id": "c", "text": "Summarize the PDF to one paragraph first" },
+      { "id": "d", "text": "Nothing; Cortex Search auto-chunks any size" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Retrieval quality improves when sources are chunked to passage size. Tools like `text-splitter` or Snowflake's `SPLIT_TEXT_RECURSIVE_CHARACTER` help chunk while preserving context.\n\n**b wrong**: One huge row dilutes relevance.\n\n**c wrong**: Loses detail.\n\n**d wrong**: Cortex Search indexes rows you give it.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["chunking"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-038",
+    "slug": "cortex-search-hybrid-ranking",
+    "topicSlug": "cortex-search",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Cortex Search uses hybrid retrieval. Which signals are combined?",
+    "options": [
+      { "id": "a", "text": "Dense semantic similarity (vector) + lexical keyword (BM25-style) + reranking for the final ordering" },
+      { "id": "b", "text": "Dense vectors only" },
+      { "id": "c", "text": "Only keyword search" },
+      { "id": "d", "text": "Random reranking" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Combining dense semantic recall with lexical precision - then reranking - outperforms either alone, especially for domain-specific jargon and exact token matches.\n\n**b, c, d wrong**: Mis-describe hybrid retrieval.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["hybrid-search"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-039",
+    "slug": "cortex-search-grant-usage",
+    "topicSlug": "cortex-search",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A role needs to query a Cortex Search Service. You must:",
+    "options": [
+      { "id": "a", "text": "GRANT USAGE ON CORTEX SEARCH SERVICE <name> TO ROLE <role>" },
+      { "id": "b", "text": "GRANT SELECT on the underlying table" },
+      { "id": "c", "text": "GRANT OWNERSHIP to the role" },
+      { "id": "d", "text": "Nothing; Cortex Search is public" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: USAGE is the grant needed to query the service. Underlying table grants are not automatically inherited.\n\n**b wrong**: Not required for querying the service.\n\n**c wrong**: Too much privilege.\n\n**d wrong**: Not public.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/sql/grant-privilege"
+    ],
+    "tags": ["rbac"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-040",
+    "slug": "cortex-search-refresh-cost",
+    "topicSlug": "cortex-search",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Cortex Search consumption is billed for:",
+    "options": [
+      { "id": "a", "text": "Serverless refresh compute (indexing) and a separate query-side compute cost" },
+      { "id": "b", "text": "Just storage" },
+      { "id": "c", "text": "Only queries" },
+      { "id": "d", "text": "A flat fee" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex Search has two main consumption dimensions: **refresh** compute (tied to TARGET_LAG and data volume) and **query** compute (per query scaled with workload). Storage is separate.\n\n**b, c, d wrong**: Incomplete.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview#cost-considerations"
+    ],
+    "tags": ["cost"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-041",
+    "slug": "cortex-search-multi-tenant-filters",
+    "topicSlug": "cortex-search",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You host multi-tenant data in one Cortex Search service. How do you ensure a tenant can only see their own documents?",
+    "options": [
+      { "id": "a", "text": "Declare tenant_id as an attribute and ALWAYS include a filter @eq tenant_id in every query (or use a row access policy on the source)" },
+      { "id": "b", "text": "Create a new service per tenant" },
+      { "id": "c", "text": "Post-filter results in a proxy" },
+      { "id": "d", "text": "Trust the application layer" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Pushing the tenant filter into the search query (with attribute indexing) is both performant and correct. Enforce via server-side proxy / view that injects the tenant filter. Row access policies on the source table also limit who sees what the indexer sees.\n\n**b wrong**: Scales poorly.\n\n**c wrong**: Performance hit and risk of leakage if bypassed.\n\n**d wrong**: Dangerous.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/query-cortex-search-service"
+    ],
+    "tags": ["multi-tenant", "filter"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-042",
+    "slug": "cortex-search-underlying-vectors",
+    "topicSlug": "cortex-search",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Which statement about vectors in Cortex Search is CORRECT?",
+    "options": [
+      { "id": "a", "text": "Snowflake manages embedding generation, vector storage, and index maintenance automatically; you do NOT need to compute or store embeddings yourself" },
+      { "id": "b", "text": "You must call AI_EMBED and store vectors in a VECTOR column" },
+      { "id": "c", "text": "Cortex Search uses no vectors" },
+      { "id": "d", "text": "The service requires a pgvector extension" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex Search is fully managed - including the embedding model, vector storage, and index maintenance. You just declare the text column; Snowflake does the rest.\n\n**b, c, d wrong**: Describes BYO-vector patterns, not Cortex Search.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["vectors", "managed"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-043",
+    "slug": "cortex-search-reindex",
+    "topicSlug": "cortex-search",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A new document category is added and you want a fresh index state immediately. Run:",
+    "options": [
+      { "id": "a", "text": "ALTER CORTEX SEARCH SERVICE ... REFRESH (or rely on the configured TARGET_LAG)" },
+      { "id": "b", "text": "DROP + CREATE only" },
+      { "id": "c", "text": "CALL SYSTEM$REINDEX" },
+      { "id": "d", "text": "TRUNCATE service" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: The service refreshes automatically per TARGET_LAG; you can also trigger an immediate refresh via ALTER ... REFRESH.\n\n**b wrong**: Disruptive; not needed.\n\n**c, d wrong**: Not valid.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/sql/alter-cortex-search"
+    ],
+    "tags": ["refresh"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-044",
+    "slug": "cortex-search-ranking-options",
+    "topicSlug": "cortex-search",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Which options can you pass in a Cortex Search `.search()` call?",
+    "options": [
+      { "id": "a", "text": "query, columns, filter (attribute predicate), limit (top-k), scoring_config" },
+      { "id": "b", "text": "Only query and limit" },
+      { "id": "c", "text": "Only raw SQL" },
+      { "id": "d", "text": "A GraphQL query" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: The `.search()` API accepts query text, columns to return, attribute filters, top-k limit, and scoring/tuning knobs.\n\n**b wrong**: More options are available.\n\n**c, d wrong**: Not the query model.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/query-cortex-search-service"
+    ],
+    "tags": ["search-api"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-045",
+    "slug": "cortex-search-ingest-modifying",
+    "topicSlug": "cortex-search",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "If you add/delete rows in the source table for a Cortex Search service, those changes:",
+    "options": [
+      { "id": "a", "text": "Are reflected in the service on the next refresh (incrementally)" },
+      { "id": "b", "text": "Require a full drop and recreate" },
+      { "id": "c", "text": "Never appear" },
+      { "id": "d", "text": "Require running MSCK REPAIR" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: The service tracks source changes and applies INSERT/UPDATE/DELETE incrementally at each refresh.\n\n**b, c, d wrong**: Not needed or incorrect.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["incremental-refresh"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-046",
+    "slug": "cortex-search-vs-vector-type",
+    "topicSlug": "cortex-search",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Compared to a manual pipeline using VECTOR columns and VECTOR_COSINE_SIMILARITY, Cortex Search's main advantages include:",
+    "options": [
+      { "id": "a", "text": "Managed embedding, hybrid ranking, attribute filters, incremental refresh, and a Python SDK - no pipeline to build" },
+      { "id": "b", "text": "Faster SQL scans" },
+      { "id": "c", "text": "Better for transactional workloads" },
+      { "id": "d", "text": "No cost" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex Search productizes the stack (embedding + vectors + BM25 + rerank + incremental maintenance) so you don't rebuild it. Raw VECTOR columns still have their place when you need bespoke behaviors.\n\n**b, c, d wrong**: Incorrect.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["vector-type"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-047",
+    "slug": "cortex-search-debug",
+    "topicSlug": "cortex-search",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Users report poor retrieval quality. Which is a sensible FIRST diagnostic?",
+    "options": [
+      { "id": "a", "text": "Inspect chunk sizes, examine a few queries + retrieved documents, then tune chunking or adjust attribute filters" },
+      { "id": "b", "text": "Switch cloud providers" },
+      { "id": "c", "text": "Double the warehouse size only" },
+      { "id": "d", "text": "Remove the service" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Retrieval quality issues are most often due to chunking, stale data (lag), or missing attribute filters. Inspect actual queries and results before escalating.\n\n**b, c, d wrong**: Non-diagnostic moves.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/query-cortex-search-service"
+    ],
+    "tags": ["debug", "quality"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-048",
+    "slug": "cortex-search-ui-studio",
+    "topicSlug": "cortex-search",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Snowsight offers a UI to quickly try Cortex Search queries against an existing service. True or false?",
+    "options": [
+      { "id": "a", "text": "True - the Cortex Search Studio / preview panel lets you try queries and inspect ranked results" },
+      { "id": "b", "text": "False - only SQL access is supported" },
+      { "id": "c", "text": "False - only Python" },
+      { "id": "d", "text": "False - only REST" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Snowsight offers a Cortex Search preview UI where you enter queries and see results (and filters) interactively - useful for iteration.\n\n**b, c, d wrong**: Multiple access methods exist.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["snowsight"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-049",
+    "slug": "cortex-search-sparse-vs-dense",
+    "topicSlug": "cortex-search",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "When should lexical ranking dominate over semantic vectors?",
+    "options": [
+      { "id": "a", "text": "When queries rely on exact tokens like product codes, error IDs, or people names - where paraphrase doesn't help" },
+      { "id": "b", "text": "Never" },
+      { "id": "c", "text": "For casual conversational queries" },
+      { "id": "d", "text": "Always, in all cases" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Lexical search excels with rare tokens and exact identifiers. Cortex Search's hybrid scoring means you usually don't need to choose - but knowing this informs chunking and attribute decisions.\n\n**b, c, d wrong**: Absolutes aren't right.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["lexical"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-050",
+    "slug": "cortex-analyst-overview",
+    "topicSlug": "cortex-analyst",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Cortex Analyst lets business users:",
+    "options": [
+      { "id": "a", "text": "Ask natural-language questions over curated data; it generates SQL against a Snowflake Semantic Model and returns validated answers" },
+      { "id": "b", "text": "Train models" },
+      { "id": "c", "text": "Build ETL pipelines" },
+      { "id": "d", "text": "Manage warehouses" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex Analyst is the text-to-SQL service grounded by a **Semantic Model / Semantic View**. The model provides table/column descriptions, metrics, joins, and synonyms so generated SQL is consistent.\n\n**b, c, d wrong**: Not Cortex Analyst's role.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/cortex-analyst"
+    ],
+    "tags": ["cortex-analyst"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-051",
+    "slug": "semantic-view-what-it-is",
+    "topicSlug": "cortex-analyst",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A Snowflake SEMANTIC VIEW stores:",
+    "options": [
+      { "id": "a", "text": "A governed definition of tables, dimensions, metrics, relationships, synonyms, and verified queries over base data - used by Cortex Analyst and other AI tools" },
+      { "id": "b", "text": "A raw Parquet file" },
+      { "id": "c", "text": "Only a materialized result set" },
+      { "id": "d", "text": "A warehouse config" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Semantic views consolidate business metadata (measures, dimensions, joins, synonyms) into a governed object. Cortex Analyst and third-party BI tools consume it to produce consistent answers.\n\n**b, c, d wrong**: Mis-describe semantic views.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/views-semantic/overview"
+    ],
+    "tags": ["semantic-view"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-052",
+    "slug": "cortex-analyst-rest-api",
+    "topicSlug": "cortex-analyst",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "The Cortex Analyst API returns:",
+    "options": [
+      { "id": "a", "text": "A structured response containing the generated SQL, an explanation, and an optional result set when the SQL is executed" },
+      { "id": "b", "text": "Only raw text" },
+      { "id": "c", "text": "An executable Python notebook" },
+      { "id": "d", "text": "A semantic model YAML file" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex Analyst returns a JSON envelope with SQL, natural-language explanation, suggested follow-ups, and result data when the engine runs the query for you. Apps embed this in chat UIs.\n\n**b, c, d wrong**: Incorrect.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/cortex-analyst"
+    ],
+    "tags": ["analyst-api"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-053",
+    "slug": "semantic-model-verified-queries",
+    "topicSlug": "cortex-analyst",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Verified Queries / VQRs in a semantic model serve what role?",
+    "options": [
+      { "id": "a", "text": "Human-authored Q&A pairs (natural-language question + known-correct SQL) that Cortex Analyst retrieves as strong grounding examples" },
+      { "id": "b", "text": "A list of forbidden queries" },
+      { "id": "c", "text": "An automatic BI dashboard" },
+      { "id": "d", "text": "A data quality framework" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Verified Query Repository (VQR)** entries are gold-standard examples. Cortex Analyst retrieves semantically-similar VQRs to ground generation - dramatically improving accuracy on nuanced metrics.\n\n**b, c, d wrong**: Mis-describe VQRs.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/semantic-model-spec"
+    ],
+    "tags": ["vqr", "verified-queries"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-054",
+    "slug": "semantic-model-metrics",
+    "topicSlug": "cortex-analyst",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "In a semantic view / model, METRICS are:",
+    "options": [
+      { "id": "a", "text": "Named business measures (e.g., net_revenue, active_users) defined by aggregated SQL expressions over base tables" },
+      { "id": "b", "text": "CloudWatch-like system metrics" },
+      { "id": "c", "text": "Raw columns on the base table only" },
+      { "id": "d", "text": "Logs" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Metrics are governed business measures with standardized definitions. Users and LLMs reference the metric name instead of re-writing the SQL.\n\n**b, c, d wrong**: Incorrect.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/views-semantic/overview"
+    ],
+    "tags": ["metrics"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-055",
+    "slug": "cortex-analyst-synonyms",
+    "topicSlug": "cortex-analyst",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Synonyms in a semantic model help Cortex Analyst because:",
+    "options": [
+      { "id": "a", "text": "Users may phrase questions with alternative names ('revenue' vs 'net sales' vs 'turnover'); synonyms map them to canonical metrics/dimensions" },
+      { "id": "b", "text": "They disable metrics" },
+      { "id": "c", "text": "They compress tables" },
+      { "id": "d", "text": "They manage permissions" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Mapping synonyms to canonical names improves question understanding across diverse phrasing.\n\n**b, c, d wrong**: Not synonym behavior.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/semantic-model-spec"
+    ],
+    "tags": ["synonyms"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-056",
+    "slug": "cortex-analyst-multi-turn",
+    "topicSlug": "cortex-analyst",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Cortex Analyst supports MULTI-TURN conversations. How does the client preserve context across turns?",
+    "options": [
+      { "id": "a", "text": "Pass prior user messages and assistant responses as `messages` in the next request body" },
+      { "id": "b", "text": "It's maintained server-side without any client effort" },
+      { "id": "c", "text": "Multi-turn is unsupported" },
+      { "id": "d", "text": "Store in Snowflake stages" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex Analyst expects a transcript as `messages` (user/assistant turns), similar to OpenAI chat APIs. The client is responsible for maintaining that array.\n\n**b, c, d wrong**: Incorrect.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/cortex-analyst"
+    ],
+    "tags": ["multi-turn"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-057",
+    "slug": "cortex-analyst-governance",
+    "topicSlug": "cortex-analyst",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Row access policies on base tables interact with Cortex Analyst how?",
+    "options": [
+      { "id": "a", "text": "Generated SQL runs as the calling user/role, so RAP/column masks are enforced exactly as in any other SQL - Cortex Analyst inherits Snowflake governance" },
+      { "id": "b", "text": "Cortex Analyst bypasses RAPs" },
+      { "id": "c", "text": "You must disable RAPs for Analyst" },
+      { "id": "d", "text": "Only SECURITYADMIN can use Analyst" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: The generated SQL executes under the caller's role, so masking policies, RAPs, and grants all apply. This is a key governance win vs external LLM tools.\n\n**b, c, d wrong**: Mis-state behavior.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/cortex-analyst"
+    ],
+    "tags": ["governance", "rap"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-058",
+    "slug": "cortex-analyst-failure-modes",
+    "topicSlug": "cortex-analyst",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Cortex Analyst is returning wrong numbers for a metric the user asked by several aliases. The FIRST place to look?",
+    "options": [
+      { "id": "a", "text": "The semantic model's metric definition, synonyms, and verified queries" },
+      { "id": "b", "text": "The warehouse size" },
+      { "id": "c", "text": "User's network" },
+      { "id": "d", "text": "Snowflake region" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Most Analyst quality issues trace to the semantic model: missing synonyms, ambiguous dimensions, wrong metric SQL, or missing VQRs. Fix the model and accuracy recovers.\n\n**b, c, d wrong**: Red herrings.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/semantic-model-spec"
+    ],
+    "tags": ["debug"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-059",
+    "slug": "semantic-view-joins",
+    "topicSlug": "cortex-analyst",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Declaring JOINS in a semantic model lets Cortex Analyst:",
+    "options": [
+      { "id": "a", "text": "Use declared join keys automatically when a question spans multiple tables, avoiding accidental fan-out" },
+      { "id": "b", "text": "Skip query optimization" },
+      { "id": "c", "text": "Turn joins into unions" },
+      { "id": "d", "text": "Encrypt data" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Explicit joins (with many-to-one vs one-to-one semantics) are critical - without them the LLM may guess wrong joins, produce duplicates, or pick the wrong cardinality.\n\n**b, c, d wrong**: Not the role.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/semantic-model-spec"
+    ],
+    "tags": ["joins"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-060",
+    "slug": "cortex-analyst-cost",
+    "topicSlug": "cortex-analyst",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Cortex Analyst charges are driven by:",
+    "options": [
+      { "id": "a", "text": "Tokens used for generation plus the compute of executing the generated SQL" },
+      { "id": "b", "text": "Number of semantic models only" },
+      { "id": "c", "text": "Storage only" },
+      { "id": "d", "text": "A per-seat license" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Two components: LLM generation (Cortex token charges) and SQL execution (warehouse / Snowflake resource monitor). Budgeting must cover both.\n\n**b, c, d wrong**: Not the Cortex model.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/cortex-analyst"
+    ],
+    "tags": ["cost"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-061",
+    "slug": "cortex-analyst-streamlit-integration",
+    "topicSlug": "cortex-analyst",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A quick way to prototype a Cortex Analyst chat experience on top of a semantic view?",
+    "options": [
+      { "id": "a", "text": "A Streamlit-in-Snowflake app that calls the Cortex Analyst REST endpoint and renders messages" },
+      { "id": "b", "text": "Only a Java servlet" },
+      { "id": "c", "text": "Cannot be prototyped inside Snowflake" },
+      { "id": "d", "text": "Only through a Native App" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Streamlit-in-Snowflake (SiS) + Cortex Analyst is the canonical quick-build; your app inherits user's role so governance is preserved.\n\n**b, c, d wrong**: Inaccurate.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/cortex-analyst"
+    ],
+    "tags": ["streamlit", "sis"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-062",
+    "slug": "cortex-analyst-feedback",
+    "topicSlug": "cortex-analyst",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You want to feed 'thumbs up/down' signals back into model quality for Cortex Analyst. Best practice?",
+    "options": [
+      { "id": "a", "text": "Log user feedback, curate the good ones into VQRs, and fix semantic model gaps revealed by bad ones" },
+      { "id": "b", "text": "Retrain the foundation model yourself" },
+      { "id": "c", "text": "Switch providers" },
+      { "id": "d", "text": "Ignore feedback" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex Analyst is tuned via the semantic model and VQRs - not user-side model training. Feedback -> curated VQRs -> monotonic improvement.\n\n**b, c, d wrong**: Unnecessary or counterproductive.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/semantic-model-spec"
+    ],
+    "tags": ["feedback"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-063",
+    "slug": "cortex-analyst-search-integration",
+    "topicSlug": "cortex-analyst",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Cortex Analyst can combine structured answers with unstructured evidence when you:",
+    "options": [
+      { "id": "a", "text": "Attach a Cortex Search service to the semantic model so the Analyst can cite unstructured docs alongside SQL answers" },
+      { "id": "b", "text": "Hard-code docs into prompts" },
+      { "id": "c", "text": "Use only Analyst" },
+      { "id": "d", "text": "Replace Analyst with Search" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Analyst supports linking to Cortex Search services for hybrid structured + unstructured answers - the 'talk-to-your-data' pattern spanning tables and documents.\n\n**b, c, d wrong**: Limited patterns.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst/cortex-analyst"
+    ],
+    "tags": ["hybrid"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-064",
+    "slug": "rag-definition",
+    "topicSlug": "rag-patterns",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "RAG (Retrieval-Augmented Generation) is:",
+    "options": [
+      { "id": "a", "text": "A pattern where a retriever fetches relevant context from a knowledge store and an LLM generates an answer grounded in that context" },
+      { "id": "b", "text": "A fine-tuning method" },
+      { "id": "c", "text": "A reinforcement learning technique" },
+      { "id": "d", "text": "A cache layer" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: RAG decouples 'knowledge' (retrieved passages) from 'reasoning' (LLM generation). It reduces hallucinations, keeps facts fresh, and avoids fine-tuning for new content.\n\n**b, c, d wrong**: Different concepts.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["rag"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-065",
+    "slug": "rag-components",
+    "topicSlug": "rag-patterns",
+    "difficulty": "medium",
+    "type": "multi",
+    "stem": "Which components make up a typical RAG pipeline? (Select all that apply)",
+    "options": [
+      { "id": "a", "text": "A chunker for source documents" },
+      { "id": "b", "text": "An embedding model or hybrid retriever" },
+      { "id": "c", "text": "A vector / search index" },
+      { "id": "d", "text": "An LLM that generates the final answer grounded on retrieved context" },
+      { "id": "e", "text": "A data-warehouse migration tool" }
+    ],
+    "correctIds": ["a", "b", "c", "d"],
+    "explanation": "**a, b, c, d correct**: A RAG pipeline consists of chunking, retrieval (often hybrid), an index, and a generation LLM. Often plus an evaluator.\n\n**e wrong**: Not part of RAG.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["rag-components"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-066",
+    "slug": "rag-in-snowflake",
+    "topicSlug": "rag-patterns",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Building RAG entirely inside Snowflake typically uses:",
+    "options": [
+      { "id": "a", "text": "Cortex Search (retrieval) + AI_COMPLETE (generation), with data governed by Snowflake roles and masking" },
+      { "id": "b", "text": "An external vector DB and GPT-4 only" },
+      { "id": "c", "text": "Just AI_COMPLETE and no retrieval" },
+      { "id": "d", "text": "Custom CUDA kernels" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: The governed, low-latency pattern keeps retrieval (Cortex Search) and generation (Cortex LLMs) in Snowflake. Data never leaves the perimeter and Snowflake RBAC applies.\n\n**b, c, d wrong**: Either external or incomplete.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["rag-snowflake"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-067",
+    "slug": "rag-anti-hallucination",
+    "topicSlug": "rag-patterns",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "To reduce hallucinations in a RAG system, which practice is MOST effective?",
+    "options": [
+      { "id": "a", "text": "Instruct the LLM to answer ONLY from retrieved context, cite sources, and refuse if no relevant passages are found" },
+      { "id": "b", "text": "Use a very high temperature" },
+      { "id": "c", "text": "Remove the retriever" },
+      { "id": "d", "text": "Ignore citations" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: A grounded prompt with 'answer only from the provided context; say I don't know otherwise' plus required citations is the foundation of trustworthy RAG.\n\n**b, c, d wrong**: Increase hallucination risk.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/llm-functions"
+    ],
+    "tags": ["hallucination", "prompting"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-068",
+    "slug": "rag-reranking",
+    "topicSlug": "rag-patterns",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A retriever returns 50 candidates but only the top 5 go to the LLM. A reranker helps because:",
+    "options": [
+      { "id": "a", "text": "A stronger (cross-encoder) model reorders candidates for relevance, boosting top-k precision before generation" },
+      { "id": "b", "text": "It compresses input" },
+      { "id": "c", "text": "It adds randomness" },
+      { "id": "d", "text": "It reduces token count only" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: A reranker evaluates (query, document) pairs more carefully than the recall stage, significantly improving top-k quality. Cortex Search applies reranking automatically.\n\n**b, c, d wrong**: Incorrect.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["reranking"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-069",
+    "slug": "rag-chunk-size-tradeoff",
+    "topicSlug": "rag-patterns",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Choosing a chunk size for RAG involves which trade-off?",
+    "options": [
+      { "id": "a", "text": "Too small -> loss of context; too large -> diluted relevance and higher token cost" },
+      { "id": "b", "text": "Always use 10 tokens" },
+      { "id": "c", "text": "Always use the whole doc" },
+      { "id": "d", "text": "Size doesn't matter" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Typical sweet spots are 500-1000 tokens with 10-20% overlap. Iterate with eval sets.\n\n**b, c, d wrong**: Extremes or wrong.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["chunking"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-070",
+    "slug": "rag-evaluation",
+    "topicSlug": "rag-patterns",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Which metrics are commonly tracked when evaluating a RAG system?",
+    "options": [
+      { "id": "a", "text": "Retrieval recall/precision and generation faithfulness, answer correctness, and citation accuracy" },
+      { "id": "b", "text": "Only GPU utilization" },
+      { "id": "c", "text": "Disk IOPS" },
+      { "id": "d", "text": "Warehouse cost only" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: End-to-end RAG quality is usually decomposed into retrieval quality (did we find the right passages?) and generation quality (did the LLM stay faithful to those passages and answer correctly with citations?).\n\n**b, c, d wrong**: Infra metrics, not quality.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["rag-eval"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-071",
+    "slug": "rag-metadata-filters",
+    "topicSlug": "rag-patterns",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Your RAG returns mixed English and French docs to an English question. Best fix?",
+    "options": [
+      { "id": "a", "text": "Store a language attribute on each chunk and filter the retriever by the user's language" },
+      { "id": "b", "text": "Always translate the corpus to English" },
+      { "id": "c", "text": "Use a larger model" },
+      { "id": "d", "text": "Disable retrieval" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Attribute filtering (language, tenant, product line, ACL scope) is the cheapest and most reliable RAG quality lever - prevents off-topic retrieval entirely.\n\n**b wrong**: Expensive and lossy.\n\n**c wrong**: Bigger model doesn't fix filter gaps.\n\n**d wrong**: Loses RAG.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/query-cortex-search-service"
+    ],
+    "tags": ["attribute-filter"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-072",
+    "slug": "rag-agentic-pattern",
+    "topicSlug": "rag-patterns",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Cortex Agents differ from plain RAG because:",
+    "options": [
+      { "id": "a", "text": "Agents can orchestrate tools (Cortex Search, Cortex Analyst, Python tool calls) across multiple turns to complete a task" },
+      { "id": "b", "text": "They don't use LLMs" },
+      { "id": "c", "text": "They are deterministic workflows without LLMs" },
+      { "id": "d", "text": "They are just a UI feature" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex Agents add tool use and iterative planning on top of retrieval, letting the LLM decide which tool to call at each step - structured answers via Analyst, unstructured via Search, etc.\n\n**b, c, d wrong**: Mis-state Agents.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents"
+    ],
+    "tags": ["agents"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-073",
+    "slug": "rag-citations",
+    "topicSlug": "rag-patterns",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A critical UX feature in RAG answers is:",
+    "options": [
+      { "id": "a", "text": "Inline citations / source references users can click to verify the claim" },
+      { "id": "b", "text": "Random emojis" },
+      { "id": "c", "text": "Prompt leakage" },
+      { "id": "d", "text": "No references" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Citations let users verify the LLM, build trust, and surface when context was weak. Most modern RAG templates require per-claim citation markers.\n\n**b, c, d wrong**: Incorrect.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["citations"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-074",
+    "slug": "rag-vs-fine-tuning",
+    "topicSlug": "rag-patterns",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "When is RAG PREFERRED over fine-tuning?",
+    "options": [
+      { "id": "a", "text": "When knowledge updates frequently, sources need citations, and you want governance to control what the model can see" },
+      { "id": "b", "text": "When you need the model to adopt a fixed, narrow writing style" },
+      { "id": "c", "text": "When you have massive unlabeled data and want to bake knowledge into weights" },
+      { "id": "d", "text": "Never" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: RAG is ideal for frequently-changing knowledge, traceability (citations), and access control. Fine-tuning is for stable style/format tasks.\n\n**b wrong**: Style fits fine-tuning.\n\n**c wrong**: Fine-tuning or continued pretraining fits baking knowledge into weights.\n\n**d wrong**: RAG is often preferred.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-finetuning"
+    ],
+    "tags": ["rag-vs-ft"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-075",
+    "slug": "rag-freshness-tracking",
+    "topicSlug": "rag-patterns",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "To keep a RAG system 'fresh' as source documents change:",
+    "options": [
+      { "id": "a", "text": "Use an incrementally-refreshing retriever (e.g., Cortex Search with TARGET_LAG) so new/changed docs appear in retrieval within minutes" },
+      { "id": "b", "text": "Manually rebuild the index monthly" },
+      { "id": "c", "text": "Retrain the LLM nightly" },
+      { "id": "d", "text": "Use a read-only snapshot indefinitely" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Incremental refresh is the fundamental mechanism to keep RAG current without retraining or full rebuilds.\n\n**b, c, d wrong**: Stale or wrong approaches.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search/cortex-search-overview"
+    ],
+    "tags": ["freshness"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-076",
+    "slug": "rag-structured-unstructured",
+    "topicSlug": "rag-patterns",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A user asks 'Summarize last quarter's support tickets about billing errors.' The optimal pipeline:",
+    "options": [
+      { "id": "a", "text": "Filter tickets by date + topic (structured), then pass a sample to AI_SUMMARIZE_AGG or a RAG summarizer" },
+      { "id": "b", "text": "Embed all tickets ever and retrieve" },
+      { "id": "c", "text": "Ask the LLM without any data" },
+      { "id": "d", "text": "Run a full-text search for 'billing' and be done" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Combine structured filters (date/topic/region) with LLM summarization or RAG retrieval. Structured filtering reduces the candidate set dramatically.\n\n**b, c, d wrong**: Less precise or wasteful.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/llm-functions"
+    ],
+    "tags": ["structured-unstructured"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-077",
+    "slug": "rag-prompt-templates",
+    "topicSlug": "rag-patterns",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A good RAG prompt template typically includes:",
+    "options": [
+      { "id": "a", "text": "System instruction, retrieved context blocks with IDs, user question, output format spec, and citation rules" },
+      { "id": "b", "text": "Just the user question" },
+      { "id": "c", "text": "The entire corpus" },
+      { "id": "d", "text": "Only the system instruction" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Structured prompts with labeled retrieved chunks, clear citation rules, and format specification consistently outperform ad-hoc prompting.\n\n**b, c, d wrong**: Under- or over-specified.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/llm-functions"
+    ],
+    "tags": ["prompt-template"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-078",
+    "slug": "fine-tuning-supervised",
+    "topicSlug": "fine-tuning",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "CORTEX FINETUNE on Snowflake performs which type of fine-tuning?",
+    "options": [
+      { "id": "a", "text": "Supervised fine-tuning (parameter-efficient) on labeled (prompt, completion) pairs for a supported base model" },
+      { "id": "b", "text": "Full pretraining" },
+      { "id": "c", "text": "RLHF only" },
+      { "id": "d", "text": "Unsupervised clustering" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex Fine-tuning is parameter-efficient (LoRA-style) supervised fine-tuning. You supply a training table with prompt and completion columns; Snowflake handles the training.\n\n**b, c, d wrong**: Not what the service offers.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-finetuning"
+    ],
+    "tags": ["fine-tuning", "sft"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-079",
+    "slug": "fine-tuning-dataset-size",
+    "topicSlug": "fine-tuning",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Typical minimum dataset size for useful supervised fine-tuning:",
+    "options": [
+      { "id": "a", "text": "A few hundred to a few thousand clean, representative examples (more is better; quality matters more than volume)" },
+      { "id": "b", "text": "10 examples" },
+      { "id": "c", "text": "10 million examples" },
+      { "id": "d", "text": "Exactly 100,000" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Parameter-efficient fine-tuning often produces measurable lift with a few hundred high-quality pairs. Label quality, diversity, and coverage of failure modes drive results more than raw count.\n\n**b, c, d wrong**: Too few or not absolute requirements.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-finetuning"
+    ],
+    "tags": ["dataset-size"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-080",
+    "slug": "fine-tuning-overfit",
+    "topicSlug": "fine-tuning",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Your fine-tuned model memorizes training examples but fails on new variations. This is called:",
+    "options": [
+      { "id": "a", "text": "Overfitting - mitigate with fewer epochs, more diverse data, regularization, or early stopping" },
+      { "id": "b", "text": "Underfitting" },
+      { "id": "c", "text": "Hallucination" },
+      { "id": "d", "text": "Tokenization error" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Overfitting = training loss low, eval loss high. Address with eval set monitoring, lower epochs, more data diversity, or regularization.\n\n**b wrong**: Underfit = both losses high.\n\n**c wrong**: Hallucination is generation of false content, not a training artifact.\n\n**d wrong**: Unrelated.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-finetuning"
+    ],
+    "tags": ["overfit"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-081",
+    "slug": "fine-tuning-eval-set",
+    "topicSlug": "fine-tuning",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Before launching a fine-tune, you should:",
+    "options": [
+      { "id": "a", "text": "Hold out a representative eval set with clear pass/fail metrics so you can compare the tuned model to the base" },
+      { "id": "b", "text": "Skip evaluation" },
+      { "id": "c", "text": "Evaluate only on training data" },
+      { "id": "d", "text": "Use only vibes" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: A held-out eval set with quantitative metrics (accuracy, BLEU, faithfulness, custom rubric) is non-negotiable. Without it, you can't tell if the tuned model actually won.\n\n**b, c, d wrong**: Recipes for regression.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-finetuning"
+    ],
+    "tags": ["eval-set"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-082",
+    "slug": "fine-tuning-use-inference",
+    "topicSlug": "fine-tuning",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "After CORTEX FINETUNE completes, how do you invoke the tuned model?",
+    "options": [
+      { "id": "a", "text": "Pass the returned fine-tuned model name into AI_COMPLETE as the model parameter" },
+      { "id": "b", "text": "Use CREATE MODEL manually" },
+      { "id": "c", "text": "It's only for batch jobs" },
+      { "id": "d", "text": "Must export to Hugging Face" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: The fine-tuning job emits a model name; use it as the model argument of AI_COMPLETE / AI_CLASSIFY / etc. - same APIs as base models.\n\n**b, c, d wrong**: Not required.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-finetuning"
+    ],
+    "tags": ["inference"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-083",
+    "slug": "fine-tuning-cost-model",
+    "topicSlug": "fine-tuning",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Cortex Fine-tune billing is based on:",
+    "options": [
+      { "id": "a", "text": "Training tokens processed (dataset size x epochs) plus ongoing inference costs on the tuned model" },
+      { "id": "b", "text": "A flat monthly subscription" },
+      { "id": "c", "text": "Storage only" },
+      { "id": "d", "text": "It is free" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Training cost scales with token volume and epoch count; inference is billed separately per token as for any Cortex model.\n\n**b, c, d wrong**: Not Snowflake's model.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-finetuning"
+    ],
+    "tags": ["cost"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-084",
+    "slug": "fine-tuning-governance",
+    "topicSlug": "fine-tuning",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Because Cortex fine-tuning runs inside Snowflake:",
+    "options": [
+      { "id": "a", "text": "Training data stays in the account; the resulting model is a governed object subject to Snowflake RBAC" },
+      { "id": "b", "text": "Data is always uploaded to public HuggingFace" },
+      { "id": "c", "text": "RBAC does not apply" },
+      { "id": "d", "text": "Only public datasets are allowed" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Training data never leaves the Snowflake account; the tuned model is an account object you grant USAGE on. This is a major enterprise advantage over sending data to external APIs.\n\n**b, c, d wrong**: Mis-state behavior.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-finetuning"
+    ],
+    "tags": ["governance"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-085",
+    "slug": "ai-governance-data-perimeter",
+    "topicSlug": "ai-governance",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Running Cortex AI functions inside Snowflake means:",
+    "options": [
+      { "id": "a", "text": "Model inputs and outputs never leave the Snowflake governance perimeter by default; they are not used to train foundation models" },
+      { "id": "b", "text": "Data is sent to arbitrary third-party clouds" },
+      { "id": "c", "text": "Inputs are always logged publicly" },
+      { "id": "d", "text": "Snowflake resells your data" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex functions run in-region by default, and customer inputs/outputs are not used to train shared foundation models. Cross-region inference requires an explicit opt-in.\n\n**b, c, d wrong**: False.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/llm-functions#data-privacy"
+    ],
+    "tags": ["privacy"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-086",
+    "slug": "ai-governance-masking-policies",
+    "topicSlug": "ai-governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You want Cortex calls to see MASKED PII values when the caller isn't authorized for clear text. Which Snowflake feature enforces this?",
+    "options": [
+      { "id": "a", "text": "Column masking policies on the source tables - the masking applies before values reach the Cortex function call" },
+      { "id": "b", "text": "Client-side JavaScript" },
+      { "id": "c", "text": "AI_REDACT_PII only" },
+      { "id": "d", "text": "Data classification tags alone" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Masking policies execute as part of query planning - Cortex receives already-masked values. Combined with RAPs and grants, this enforces governance end-to-end.\n\n**b wrong**: Browser-side masking is not enforcement.\n\n**c wrong**: AI_REDACT_PII is a textual redaction function, not the governance mechanism.\n\n**d wrong**: Tags label data but don't mask by themselves.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/security-column-ddm"
+    ],
+    "tags": ["masking-policy"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-087",
+    "slug": "ai-governance-rbac",
+    "topicSlug": "ai-governance",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Which privilege model applies to Cortex usage?",
+    "options": [
+      { "id": "a", "text": "Role-Based Access Control - functions run with the caller's role and honor Snowflake grants on data" },
+      { "id": "b", "text": "No RBAC; anyone can invoke functions" },
+      { "id": "c", "text": "Only ACCOUNTADMIN can use Cortex" },
+      { "id": "d", "text": "A separate AI RBAC system" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex functions run under the user's role; access to source data, models, and services all respect standard Snowflake RBAC.\n\n**b, c, d wrong**: Incorrect.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/llm-functions"
+    ],
+    "tags": ["rbac"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-088",
+    "slug": "ai-governance-audit-trail",
+    "topicSlug": "ai-governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "For compliance audits, you need to prove who called which Cortex function and when. Use:",
+    "options": [
+      { "id": "a", "text": "ACCOUNT_USAGE.QUERY_HISTORY (who/what SQL) combined with CORTEX_FUNCTIONS_QUERY_USAGE_HISTORY (per-call details)" },
+      { "id": "b", "text": "LOGIN_HISTORY only" },
+      { "id": "c", "text": "Manual log files kept by the application" },
+      { "id": "d", "text": "No logging available" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cortex usage is captured in dedicated usage views joined with query history - giving full audit coverage: caller, role, SQL text, model, tokens, credits.\n\n**b wrong**: Logins only.\n\n**c wrong**: Unnecessary when native audit exists.\n\n**d wrong**: Logging is comprehensive.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/account-usage/cortex_functions_query_usage_history"
+    ],
+    "tags": ["audit"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-089",
+    "slug": "ai-governance-model-blocking",
+    "topicSlug": "ai-governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "An account admin wants to PREVENT use of specific foundation models (e.g., external-region models). Use:",
+    "options": [
+      { "id": "a", "text": "Snowflake Cortex model allowlist / disabled-models account parameters and grants" },
+      { "id": "b", "text": "Bucket policies" },
+      { "id": "c", "text": "Cortex has no such controls" },
+      { "id": "d", "text": "IAM roles on EC2" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Admins can restrict which models users can invoke using account parameters and USAGE grants on Cortex, providing a controlled model catalog.\n\n**b, c, d wrong**: Not Cortex controls.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/llm-functions"
+    ],
+    "tags": ["allowlist"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-090",
+    "slug": "ai-governance-prompt-injection",
+    "topicSlug": "ai-governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "An untrusted user can paste arbitrary text that gets embedded into a Cortex prompt. Which risk and mitigation applies?",
+    "options": [
+      { "id": "a", "text": "Prompt injection - mitigate by isolating untrusted input clearly in the prompt, using Guardrails, validating output, and applying least privilege for any tool calls" },
+      { "id": "b", "text": "There is no such risk" },
+      { "id": "c", "text": "Just disable Cortex" },
+      { "id": "d", "text": "Increase temperature" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Prompt injection** is a leading LLM risk. Best practices include: isolate untrusted text, refuse-to-follow instructions in data, validate/sanitize output (especially when used in agentic tool calls), and enable Cortex Guardrails.\n\n**b, c, d wrong**: Ignores the risk or wrong.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/guardrails"
+    ],
+    "tags": ["prompt-injection", "guardrails"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-091",
+    "slug": "ai-governance-cost-controls",
+    "topicSlug": "ai-governance",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A platform owner wants a hard ceiling on monthly Cortex spend per team. Use:",
+    "options": [
+      { "id": "a", "text": "Snowflake Budgets / Resource Monitors plus per-role warehouse assignment and monitoring via CORTEX_FUNCTIONS_USAGE_HISTORY" },
+      { "id": "b", "text": "CloudWatch alarms" },
+      { "id": "c", "text": "Per-seat licenses" },
+      { "id": "d", "text": "No controls exist" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Budgets + resource monitors + per-role warehouses let you enforce spend. Usage views power chargeback and monitoring.\n\n**b, c, d wrong**: Wrong or unavailable.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/budgets"
+    ],
+    "tags": ["budget", "cost-control"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-092",
+    "slug": "ai-governance-no-train",
+    "topicSlug": "ai-governance",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A security team worries their data is used to improve hosted LLMs. What is Snowflake's position?",
+    "options": [
+      { "id": "a", "text": "Customer data passed through Cortex is NOT used to train or improve foundation models by default" },
+      { "id": "b", "text": "All prompts are added to public training data" },
+      { "id": "c", "text": "Snowflake resells prompt data" },
+      { "id": "d", "text": "Customers must opt out manually per call" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Snowflake's Cortex terms guarantee that customer inputs/outputs aren't used for foundation-model training. This is a key enterprise compliance reason to keep AI workloads in Snowflake.\n\n**b, c, d wrong**: False.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/llm-functions#data-privacy"
+    ],
+    "tags": ["privacy", "no-train"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-093",
+    "slug": "ai-governance-model-version-pinning",
+    "topicSlug": "ai-governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "For reproducibility, you want your RAG pipeline to keep using a specific model version. Approach?",
+    "options": [
+      { "id": "a", "text": "Reference a pinned model version string in AI_COMPLETE calls (rather than a floating alias), and document it in runbooks" },
+      { "id": "b", "text": "Use whatever the default is" },
+      { "id": "c", "text": "Self-host the model on EC2" },
+      { "id": "d", "text": "Skip model specification" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Pinning a specific model version protects your evaluations from silent regressions when the platform updates default versions. Upgrade intentionally with re-eval.\n\n**b, c, d wrong**: Not idiomatic.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/llm-functions"
+    ],
+    "tags": ["version-pinning"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-094",
+    "slug": "ai-governance-regions",
+    "topicSlug": "ai-governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Your organization has a data residency policy banning cross-region transfer. Which Cortex setting is MOST important?",
+    "options": [
+      { "id": "a", "text": "Leave CORTEX_ENABLED_CROSS_REGION disabled so inference only occurs within the account's region" },
+      { "id": "b", "text": "Enable cross-region for performance" },
+      { "id": "c", "text": "Use the largest model" },
+      { "id": "d", "text": "Disable all Cortex" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cross-region inference is opt-in; leave it disabled when data residency mandates in-region processing. Alternatively enumerate allowed regions for fine-grained control.\n\n**b wrong**: Opposite of residency.\n\n**c wrong**: Unrelated.\n\n**d wrong**: Usually overly restrictive.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cross-region-inference"
+    ],
+    "tags": ["residency"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-095",
+    "slug": "cortex-agents-overview",
+    "topicSlug": "rag-patterns",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A Cortex Agent configuration lists tools like Cortex Search services and Cortex Analyst semantic models. The agent:",
+    "options": [
+      { "id": "a", "text": "Uses the LLM to decide at each turn which tool to call, then composes the final answer with citations" },
+      { "id": "b", "text": "Always calls every tool" },
+      { "id": "c", "text": "Never uses tools" },
+      { "id": "d", "text": "Is a SQL stored procedure" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Agents are reasoning loops: LLM plans -> tool call -> observation -> next step. They can combine structured (Analyst) and unstructured (Search) retrieval in one answer.\n\n**b, c, d wrong**: Mis-describe agents.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents"
+    ],
+    "tags": ["agents"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-096",
+    "slug": "cortex-document-ai",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Snowflake Document AI (Cortex) lets you:",
+    "options": [
+      { "id": "a", "text": "Train a custom document extraction model on labeled PDFs/forms and call it from SQL to extract fields at scale" },
+      { "id": "b", "text": "Translate PDFs only" },
+      { "id": "c", "text": "Convert PDF to PPT" },
+      { "id": "d", "text": "Replace Cortex Search" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Document AI trains a model on labeled document samples; once published you call it from SQL with a staged file reference to extract structured fields.\n\n**b, c, d wrong**: Not Document AI's purpose.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/document-ai/overview"
+    ],
+    "tags": ["document-ai"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-097",
+    "slug": "cortex-embed-model-dimensions",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "AI_EMBED allows multiple embedding models of different dimensions. Why does dimension matter?",
+    "options": [
+      { "id": "a", "text": "All vectors in a similarity search must use the same model/dimension; mixing dimensions is an error" },
+      { "id": "b", "text": "Higher dimensions are always better and free" },
+      { "id": "c", "text": "Dimension affects language only" },
+      { "id": "d", "text": "Dimensions are random" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: A vector index/similarity query is only valid across vectors produced by the **same embedding model**. Larger dimensions often mean higher accuracy but more storage and compute; pick once and stick with it.\n\n**b, c, d wrong**: Incorrect.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/ai_embed"
+    ],
+    "tags": ["embeddings", "dimensions"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-098",
+    "slug": "vector-cosine-similarity",
+    "topicSlug": "cortex-ai-functions",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "To find the top-5 semantically similar rows to a query embedding in a Snowflake VECTOR column, you:",
+    "options": [
+      { "id": "a", "text": "ORDER BY VECTOR_COSINE_SIMILARITY(col, :qvec) DESC LIMIT 5" },
+      { "id": "b", "text": "Use WHERE col = :qvec" },
+      { "id": "c", "text": "Use GROUP BY col" },
+      { "id": "d", "text": "Load everything to Python" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `VECTOR_COSINE_SIMILARITY` (or L2 distance) with ORDER BY + LIMIT implements top-k nearest-neighbor. Snowflake has native VECTOR support.\n\n**b, c, d wrong**: Incorrect.",
+    "references": [
+      "https://docs.snowflake.com/en/sql-reference/functions/vector_cosine_similarity"
+    ],
+    "tags": ["vector-cosine-similarity"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-099",
+    "slug": "ai-governance-human-review",
+    "topicSlug": "ai-governance",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "For high-stakes decisions (credit, medical, hiring), best practice is to:",
+    "options": [
+      { "id": "a", "text": "Use AI to assist a human decision-maker with review, explanations, and audit logs - not as a fully automated approver" },
+      { "id": "b", "text": "Let the LLM decide autonomously" },
+      { "id": "c", "text": "Disable all logging for privacy" },
+      { "id": "d", "text": "Replace staff with the LLM" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Responsible AI for high-stakes domains keeps a human in the loop, records rationales, and supports recourse. Many regulations (EU AI Act, NYC AI hiring law) require it.\n\n**b, c, d wrong**: Non-compliant or unsafe.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/snowflake-cortex/guardrails"
+    ],
+    "tags": ["responsible-ai", "human-in-loop"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "spg-100",
+    "slug": "ai-governance-data-classification",
+    "topicSlug": "ai-governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Before exposing a table to Cortex Analyst / Search, you should:",
+    "options": [
+      { "id": "a", "text": "Classify sensitive columns, apply tag-based masking / row access policies, and review what the LLM can reveal through natural-language queries" },
+      { "id": "b", "text": "Grant PUBLIC on everything for convenience" },
+      { "id": "c", "text": "Only rely on prompt text rules" },
+      { "id": "d", "text": "Skip classification" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: AI surfaces (Analyst, Search, agents) inherit SQL governance. The right defense starts with classification and masking, not prompt-level pleading. Review sample queries to ensure no sensitive leakage through joins/aggregations.\n\n**b, c, d wrong**: Weak controls.",
+    "references": [
+      "https://docs.snowflake.com/en/user-guide/governance-classify"
+    ],
+    "tags": ["classification", "tags"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
   }
 ]

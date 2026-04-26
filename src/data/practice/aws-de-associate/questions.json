@@ -117,5 +117,2096 @@
     "tags": ["lake-formation", "rbac", "pii", "governance"],
     "source": "human",
     "reviewedAt": "2026-04-25"
+  },
+  {
+    "id": "aws-de-006",
+    "slug": "kinesis-data-streams-shard-capacity",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A Kinesis Data Stream in provisioned mode has 4 shards. Producers are throttled with ProvisionedThroughputExceededException. Which per-shard write limit are they hitting FIRST?",
+    "options": [
+      { "id": "a", "text": "1 MB/s or 1,000 records/s per shard on writes" },
+      { "id": "b", "text": "2 MB/s or 5 reads/s per shard" },
+      { "id": "c", "text": "10 MB/s and 10,000 records/s per shard" },
+      { "id": "d", "text": "There is no per-shard limit" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Each shard in provisioned Kinesis Data Streams supports **1 MB/s OR 1,000 records/s on ingress (whichever hits first)**. Once either limit is reached the producer gets `ProvisionedThroughputExceededException` and must retry or scale out shards.\n\n**b wrong**: 2 MB/s and 5 GetRecords/s are the **read-side** limits per shard, not writes.\n\n**c wrong**: Those numbers don't match any Kinesis limit.\n\n**d wrong**: Kinesis always has per-shard limits; use on-demand mode or add shards to increase capacity.",
+    "references": [
+      "https://docs.aws.amazon.com/streams/latest/dev/service-sizes-and-limits.html"
+    ],
+    "tags": ["kinesis", "shard-limits"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-007",
+    "slug": "kinesis-on-demand-vs-provisioned",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Traffic on a Kinesis Data Stream is bursty and unpredictable. Which capacity mode minimizes operational overhead?",
+    "options": [
+      { "id": "a", "text": "Provisioned mode with manual shard scaling" },
+      { "id": "b", "text": "On-demand mode that auto-scales based on incoming traffic" },
+      { "id": "c", "text": "Provisioned with enhanced fan-out only" },
+      { "id": "d", "text": "Use Kinesis Data Firehose instead of Data Streams" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: **On-demand mode** scales capacity automatically up to 200 MiB/s (writes) without manual shard management - ideal for unknown or spiky traffic. You pay per GB and per request.\n\n**a wrong**: Provisioned requires predicting shard counts and rescaling manually.\n\n**c wrong**: Enhanced fan-out is a consumer feature, not a write-side scaler.\n\n**d wrong**: Firehose is a delivery pipeline, not a durable stream for application consumers.",
+    "references": [
+      "https://docs.aws.amazon.com/streams/latest/dev/how-do-i-size-a-stream.html"
+    ],
+    "tags": ["kinesis", "on-demand"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-008",
+    "slug": "firehose-dynamic-partitioning",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Kinesis Data Firehose is delivering JSON events to S3. You need files partitioned by `customer_id` and `yyyy-MM-dd` from `event_time` inside the payload. Which feature enables this WITHOUT a Lambda transform?",
+    "options": [
+      { "id": "a", "text": "S3 bucket keys" },
+      { "id": "b", "text": "Firehose Dynamic Partitioning with inline JQ expressions and Parquet/ORC conversion" },
+      { "id": "c", "text": "Firehose error record retry" },
+      { "id": "d", "text": "S3 Object Lambda" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: **Firehose Dynamic Partitioning** lets you declare keys via inline parsing (JQ for JSON) so records are written to prefixes like `customer_id=X/dt=2026-04-26/`. Combine with record format conversion to Parquet for query-ready Hive-style partitioning.\n\n**a wrong**: S3 bucket keys optimize KMS; unrelated to partitioning.\n\n**c wrong**: Retry handles failures, not partitioning.\n\n**d wrong**: S3 Object Lambda rewrites objects on GET; adds latency and cost for ingestion.",
+    "references": [
+      "https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html"
+    ],
+    "tags": ["firehose", "dynamic-partitioning"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-009",
+    "slug": "glue-etl-vs-glue-for-ray",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A team processes 2 TB of Parquet with joins and aggregations on S3. Which AWS Glue job type is the NATURAL default?",
+    "options": [
+      { "id": "a", "text": "Python Shell (G.1X)" },
+      { "id": "b", "text": "Spark (ETL) on G.1X/G.2X workers" },
+      { "id": "c", "text": "Ray job" },
+      { "id": "d", "text": "Glue crawler" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: Glue ETL Spark jobs are the standard for multi-GB/TB transformations - managed Spark on auto-scaling workers (G.1X = 1 DPU, G.2X = 2 DPU, G.4X/G.8X for heavier memory).\n\n**a wrong**: Python Shell is for small single-node scripts (max 1 DPU).\n\n**c wrong**: Ray is for Python-native distributed ML, not SQL-style ETL.\n\n**d wrong**: Crawlers infer schemas; they don't transform data.",
+    "references": [
+      "https://docs.aws.amazon.com/glue/latest/dg/author-job.html"
+    ],
+    "tags": ["glue", "etl", "spark"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-010",
+    "slug": "glue-bookmarks",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A nightly Glue ETL job should process only NEW files since the last run. Which Glue feature is idiomatic?",
+    "options": [
+      { "id": "a", "text": "Job Bookmarks" },
+      { "id": "b", "text": "Workflows" },
+      { "id": "c", "text": "DataBrew recipes" },
+      { "id": "d", "text": "Triggers only" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Glue Job Bookmarks** persist processed-state (file paths / timestamps or primary key values for JDBC sources) across runs so subsequent runs only process new data. Enable at the job level.\n\n**b wrong**: Workflows orchestrate multiple jobs/triggers; not incremental state.\n\n**c wrong**: DataBrew is visual data prep, not incremental processing.\n\n**d wrong**: Triggers invoke jobs on schedule/events but don't track incremental state.",
+    "references": [
+      "https://docs.aws.amazon.com/glue/latest/dg/monitor-continuations.html"
+    ],
+    "tags": ["glue", "bookmarks", "incremental"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-011",
+    "slug": "glue-crawler-schema-evolution",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A Glue crawler runs daily on S3 and you want to PREVENT it from changing existing table schemas when new columns appear in new files. Which setting?",
+    "options": [
+      { "id": "a", "text": "Crawler Schema change policy: Update = LOG, Delete = LOG" },
+      { "id": "b", "text": "Crawler Schema change policy: Update = UPDATE_IN_DATABASE, Delete = DELETE_FROM_DATABASE" },
+      { "id": "c", "text": "Disable the crawler" },
+      { "id": "d", "text": "Use Lake Formation to block schema changes" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Set the **Schema change policy** to `LOG` on both update and delete - the crawler records differences in CloudWatch but leaves the Glue table unchanged.\n\n**b wrong**: Opposite - actively applies updates and deletes.\n\n**c wrong**: Removes the crawler entirely.\n\n**d wrong**: LF grants access; it doesn't intercept crawler behavior.",
+    "references": [
+      "https://docs.aws.amazon.com/glue/latest/dg/crawler-configuration.html"
+    ],
+    "tags": ["glue-crawler", "schema-change-policy"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-012",
+    "slug": "emr-vs-emr-serverless",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A Spark workload has sporadic bursts, no long-running cluster need, and should avoid capacity planning. Which EMR flavor fits BEST?",
+    "options": [
+      { "id": "a", "text": "EMR on EC2 with manual instance fleets" },
+      { "id": "b", "text": "EMR Serverless" },
+      { "id": "c", "text": "EMR on EKS with persistent nodes" },
+      { "id": "d", "text": "EC2 Spot fleet with self-managed Spark" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: **EMR Serverless** auto-provisions workers per job from pre-warmed capacity; you set worker size and max concurrent executors. No cluster lifecycle to manage - ideal for bursty or intermittent workloads.\n\n**a wrong**: EMR on EC2 requires cluster sizing and scaling policies.\n\n**c wrong**: EMR on EKS is for teams who want Kubernetes - still cluster-based.\n\n**d wrong**: Self-managed = highest ops overhead.",
+    "references": [
+      "https://docs.aws.amazon.com/emr/latest/EMR-Serverless-UserGuide/what-is-emr-serverless.html"
+    ],
+    "tags": ["emr-serverless"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-013",
+    "slug": "msk-vs-msk-serverless",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Which Amazon MSK deployment option eliminates the need to size brokers or storage?",
+    "options": [
+      { "id": "a", "text": "MSK Provisioned" },
+      { "id": "b", "text": "MSK Serverless" },
+      { "id": "c", "text": "MSK Connect" },
+      { "id": "d", "text": "Kafka on EC2" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: **MSK Serverless** auto-scales brokers and storage; you create clusters and topics without instance decisions.\n\n**a wrong**: Provisioned requires broker type/count and storage sizing.\n\n**c wrong**: MSK Connect is a managed Kafka Connect runtime, not brokers.\n\n**d wrong**: Self-managed = full ops.",
+    "references": [
+      "https://docs.aws.amazon.com/msk/latest/developerguide/serverless.html"
+    ],
+    "tags": ["msk", "serverless"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-014",
+    "slug": "appflow-use-cases",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "You need scheduled ingestion from Salesforce into S3 WITHOUT writing any code. Which AWS service is purpose-built for this?",
+    "options": [
+      { "id": "a", "text": "AWS AppFlow" },
+      { "id": "b", "text": "AWS Glue Studio" },
+      { "id": "c", "text": "Amazon AppStream" },
+      { "id": "d", "text": "Amazon SES" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **AppFlow** is fully managed SaaS-to-AWS ingestion (Salesforce, SAP, ServiceNow, Google Analytics, Slack, Zendesk...) with scheduling, incremental sync, mapping, and masking - no code.\n\n**b wrong**: Glue Studio is a visual ETL designer for Glue jobs - still requires data-source connectors to be wired.\n\n**c wrong**: AppStream streams desktop apps.\n\n**d wrong**: SES is email.",
+    "references": [
+      "https://docs.aws.amazon.com/appflow/latest/userguide/what-is-appflow.html"
+    ],
+    "tags": ["appflow", "saas-ingestion"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-015",
+    "slug": "dms-cdc",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "AWS DMS replicates an on-prem Oracle database to Amazon Aurora. To capture ongoing changes (not just a one-time migration), enable:",
+    "options": [
+      { "id": "a", "text": "Full Load only" },
+      { "id": "b", "text": "Full Load + CDC (Change Data Capture)" },
+      { "id": "c", "text": "Snapshot only" },
+      { "id": "d", "text": "DMS Serverless with disabled logging" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: DMS task type **Full Load + CDC** performs the initial snapshot and then tails the source's transaction log (redo/binlog) to apply ongoing changes. Pure Full Load ends after the snapshot; CDC-only assumes the target is already loaded.\n\n**a, c, d wrong**: Either stop after snapshot or are not DMS options.",
+    "references": [
+      "https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Task.CDC.html"
+    ],
+    "tags": ["dms", "cdc"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-016",
+    "slug": "glue-connection-jdbc-vpc",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A Glue job must read from a Postgres RDS in a private subnet. Which configuration is REQUIRED?",
+    "options": [
+      { "id": "a", "text": "Create a Glue JDBC Connection with VPC/subnet/security-group; Glue ENIs land in that subnet" },
+      { "id": "b", "text": "Attach an IAM role that allows rds-data:ExecuteStatement" },
+      { "id": "c", "text": "Open the database to 0.0.0.0/0" },
+      { "id": "d", "text": "Use Glue DataBrew only" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: A **Glue Connection** (JDBC type) ties Glue to a VPC/subnet/security group. During job execution Glue creates ENIs inside that subnet with the SG, giving network reachability to the RDS instance. The RDS SG must accept traffic from the Glue SG.\n\n**b wrong**: Data API is a separate API for Aurora Serverless, not generic JDBC.\n\n**c wrong**: Public exposure is a serious security anti-pattern.\n\n**d wrong**: DataBrew can't replace JDBC connectivity.",
+    "references": [
+      "https://docs.aws.amazon.com/glue/latest/dg/populate-add-connection.html"
+    ],
+    "tags": ["glue", "vpc", "jdbc"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-017",
+    "slug": "glue-workflows-vs-step-functions",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You want to chain a Glue crawler -> Glue ETL -> another Glue ETL with a single workflow object inside Glue. Use:",
+    "options": [
+      { "id": "a", "text": "Glue Workflows (with triggers)" },
+      { "id": "b", "text": "Amazon MWAA DAGs only" },
+      { "id": "c", "text": "EventBridge rules manually" },
+      { "id": "d", "text": "Lambda chaining" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Glue Workflows** orchestrate Glue-native components (crawlers, jobs, triggers) as a DAG inside the Glue console. For Glue-only pipelines this is the most lightweight option.\n\n**b wrong**: MWAA is heavier weight if everything is Glue.\n\n**c wrong**: Possible but loose, harder to visualize.\n\n**d wrong**: Lambda chaining doesn't handle long-running Glue jobs well.",
+    "references": [
+      "https://docs.aws.amazon.com/glue/latest/dg/workflows_overview.html"
+    ],
+    "tags": ["glue-workflows"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-018",
+    "slug": "lambda-s3-event-ingestion",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A Lambda function processes newly-uploaded S3 objects. To avoid missed events during bursts, the RECOMMENDED wiring is:",
+    "options": [
+      { "id": "a", "text": "S3 -> EventBridge -> SQS -> Lambda" },
+      { "id": "b", "text": "S3 direct invocation only" },
+      { "id": "c", "text": "S3 -> SNS only" },
+      { "id": "d", "text": "Polling with a scheduled Lambda" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **S3 -> EventBridge -> SQS -> Lambda** provides a durable queue in front of Lambda, controls concurrency, supports DLQ for poison messages, and lets you replay via EventBridge rules. Direct S3->Lambda can drop events during throttling.\n\n**b, c, d wrong**: Each is less reliable or operationally heavier.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html"
+    ],
+    "tags": ["s3-events", "sqs", "lambda"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-019",
+    "slug": "kinesis-firehose-conversion-parquet",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Firehose is landing JSON into S3 but Athena queries are slow and expensive. Which Firehose feature reduces both?",
+    "options": [
+      { "id": "a", "text": "Record format conversion to Parquet (with Glue Data Catalog schema)" },
+      { "id": "b", "text": "GZIP compression of JSON" },
+      { "id": "c", "text": "Increase buffer size only" },
+      { "id": "d", "text": "Disable conversion and write raw" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Firehose **record format conversion** transforms incoming JSON into **Parquet/ORC** using a Glue schema. Athena then benefits from columnar pruning and compression, reducing scan cost and latency dramatically.\n\n**b wrong**: GZIP helps size but keeps row-oriented JSON - Athena still scans everything.\n\n**c wrong**: Buffer size affects file count, not format.\n\n**d wrong**: Opposite of the recommendation.",
+    "references": [
+      "https://docs.aws.amazon.com/firehose/latest/dev/record-format-conversion.html"
+    ],
+    "tags": ["firehose", "parquet"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-020",
+    "slug": "glue-dynamicframe-vs-dataframe",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "In Glue ETL, which scenario favors DynamicFrame over DataFrame?",
+    "options": [
+      { "id": "a", "text": "Reading semi-structured data with inconsistent types across records, needing ResolveChoice" },
+      { "id": "b", "text": "Strict, uniform schemas where Spark SQL plans are optimal" },
+      { "id": "c", "text": "Unit tests" },
+      { "id": "d", "text": "Writing RDD code" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **DynamicFrame** tolerates schema drift and per-field type variance using a choice type; transforms like `ResolveChoice`, `Unbox`, `Relationalize`, and `ApplyMapping` make it handy for messy JSON. You can always `.toDF()` for SQL-heavy steps.\n\n**b wrong**: DataFrames win when the schema is stable.\n\n**c, d wrong**: Not distinguishing factors.",
+    "references": [
+      "https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-pyspark-extensions-dynamic-frame.html"
+    ],
+    "tags": ["glue", "dynamicframe"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-021",
+    "slug": "athena-ctas-partitioning",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "An analyst must convert 10 TB of CSV in S3 into partitioned Parquet for future queries, without managing clusters. Which approach is MOST efficient?",
+    "options": [
+      { "id": "a", "text": "Athena CTAS with partitioned_by and format=Parquet, supplemented by INSERT INTO for partitions over the 100-partition limit" },
+      { "id": "b", "text": "Copy to Redshift and UNLOAD" },
+      { "id": "c", "text": "Download locally and convert" },
+      { "id": "d", "text": "Use S3 Batch Operations" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Athena **CTAS** with `partitioned_by`, `format='PARQUET'`, and `write_compression='SNAPPY'` creates partitioned Parquet in S3 with no cluster. The initial CTAS tops out at 100 partitions per statement; use **INSERT INTO** for additional partitions.\n\n**b, c, d wrong**: Slower, costlier, or not fit for the job.",
+    "references": [
+      "https://docs.aws.amazon.com/athena/latest/ug/ctas.html"
+    ],
+    "tags": ["athena", "ctas"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-022",
+    "slug": "glue-data-quality",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You need declarative rules like \"no nulls in column id\" and \"range on amount\" enforced during a Glue ETL job. Use:",
+    "options": [
+      { "id": "a", "text": "AWS Glue Data Quality (DQDL rules)" },
+      { "id": "b", "text": "CloudWatch alarms on metrics" },
+      { "id": "c", "text": "S3 object tags" },
+      { "id": "d", "text": "IAM policies" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Glue Data Quality** lets you author rules in **DQDL** (IsComplete, ColumnValues, RowCount, etc.) and attach them to Glue jobs or crawled tables. Failing rules can fail the job or just log results.\n\n**b, c, d wrong**: Not data-quality primitives.",
+    "references": [
+      "https://docs.aws.amazon.com/glue/latest/dg/glue-data-quality.html"
+    ],
+    "tags": ["glue-dq", "dqdl"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-023",
+    "slug": "kinesis-enhanced-fan-out",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Multiple consumer applications need to read the SAME Kinesis stream at near line-rate without affecting each other. Which feature?",
+    "options": [
+      { "id": "a", "text": "Enhanced Fan-Out (EFO) - each consumer gets dedicated 2 MB/s per shard over HTTP/2" },
+      { "id": "b", "text": "All consumers share the default 2 MB/s read per shard" },
+      { "id": "c", "text": "KCL v1 without EFO" },
+      { "id": "d", "text": "Shard merging" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Enhanced Fan-Out** registers consumers to get their own dedicated 2 MB/s per shard pipe via HTTP/2 push - essential when multiple downstream apps must read in parallel.\n\n**b wrong**: Without EFO all consumers share a single 2 MB/s-per-shard read budget.\n\n**c, d wrong**: Don't provide per-consumer throughput.",
+    "references": [
+      "https://docs.aws.amazon.com/streams/latest/dev/enhanced-consumers.html"
+    ],
+    "tags": ["kinesis", "enhanced-fan-out"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-024",
+    "slug": "lambda-function-urls-vs-api-gw",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "A Lambda webhook receives ad-hoc JSON from a partner with NO auth, quotas, or transformation needs. Simplest HTTPS entry point?",
+    "options": [
+      { "id": "a", "text": "Lambda Function URL" },
+      { "id": "b", "text": "API Gateway REST API" },
+      { "id": "c", "text": "Application Load Balancer" },
+      { "id": "d", "text": "CloudFront with Lambda@Edge" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Function URLs** give Lambda a dedicated HTTPS endpoint with AUTH_NONE or IAM - no extra services.\n\n**b, c, d wrong**: More capable but add operational and cost overhead for a pure webhook.",
+    "references": [
+      "https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html"
+    ],
+    "tags": ["lambda", "function-url"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-025",
+    "slug": "glue-streaming-etl",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "AWS Glue Streaming ETL jobs read from Kinesis / MSK in micro-batches and write to S3. Which setting controls batch cadence?",
+    "options": [
+      { "id": "a", "text": "windowSize (e.g., '100 seconds') on the DataFrame read options" },
+      { "id": "b", "text": "A cron schedule on the job" },
+      { "id": "c", "text": "Crawler frequency" },
+      { "id": "d", "text": "Firehose buffer interval" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Glue Streaming jobs are Structured Streaming. Set `windowSize` (or the equivalent Spark trigger) to control micro-batch interval. The job runs continuously until stopped.\n\n**b wrong**: Schedules don't apply to continuous streams.\n\n**c wrong**: Crawlers are metadata.\n\n**d wrong**: Firehose is a different service.",
+    "references": [
+      "https://docs.aws.amazon.com/glue/latest/dg/add-job-streaming.html"
+    ],
+    "tags": ["glue-streaming"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-026",
+    "slug": "dms-heterogeneous-migration",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You are migrating Oracle to PostgreSQL. DMS can carry data, but you also need to convert PL/SQL procedures. Which tool handles the SCHEMA/code conversion?",
+    "options": [
+      { "id": "a", "text": "AWS Schema Conversion Tool (SCT) / DMS Schema Conversion" },
+      { "id": "b", "text": "DMS Data Types API" },
+      { "id": "c", "text": "Glue Catalog" },
+      { "id": "d", "text": "Athena" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **AWS SCT** (or the integrated **DMS Schema Conversion**) converts source schema and procedural code (PL/SQL, T-SQL) to the target dialect, generating migration assessment reports for unsupported constructs.\n\n**b, c, d wrong**: Not schema-conversion tools.",
+    "references": [
+      "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html"
+    ],
+    "tags": ["sct", "migration"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-027",
+    "slug": "msk-connect-use-cases",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "MSK Connect is used to:",
+    "options": [
+      { "id": "a", "text": "Run managed Kafka Connect source/sink connectors (e.g., S3 Sink, Debezium) without self-managing worker infrastructure" },
+      { "id": "b", "text": "Create MSK brokers" },
+      { "id": "c", "text": "Replace MSK Serverless" },
+      { "id": "d", "text": "Monitor MSK clusters" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: MSK Connect hosts Kafka Connect workers as a managed service. You upload a connector plugin (S3 Sink, JDBC, Debezium, etc.) and configure workers, tasks, IAM role. Auto-scales on MCUs.\n\n**b, c, d wrong**: Mis-describe MSK Connect.",
+    "references": [
+      "https://docs.aws.amazon.com/msk/latest/developerguide/msk-connect.html"
+    ],
+    "tags": ["msk-connect", "kafka-connect"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-028",
+    "slug": "kinesis-producer-library-batching",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A Java application sends millions of small records per second to Kinesis. Which producer pattern MAXIMIZES throughput and reduces PutRecord costs?",
+    "options": [
+      { "id": "a", "text": "KPL (Kinesis Producer Library) with aggregation + batching" },
+      { "id": "b", "text": "PutRecord synchronously per message" },
+      { "id": "c", "text": "SDK with no batching" },
+      { "id": "d", "text": "Use SNS then Kinesis" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: The **KPL** aggregates multiple user records into a single Kinesis record (up to 1 MB) and batches multiple records into a single PutRecords call - dramatically improving throughput and cost. Consumers use KCL for automatic de-aggregation.\n\n**b, c wrong**: High API calls and low shard efficiency.\n\n**d wrong**: Adds cost and indirection.",
+    "references": [
+      "https://docs.aws.amazon.com/streams/latest/dev/developing-producers-with-kpl.html"
+    ],
+    "tags": ["kpl", "aggregation"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-029",
+    "slug": "glue-auto-scaling-workers",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Glue 3.0+ / 4.0 jobs support auto-scaling so that the number of workers:",
+    "options": [
+      { "id": "a", "text": "Scales dynamically based on Spark task backlog, up to the configured maximum" },
+      { "id": "b", "text": "Is static throughout the job run" },
+      { "id": "c", "text": "Is fixed at 1 worker" },
+      { "id": "d", "text": "Auto-scaling requires a separate service" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Glue auto scaling monitors pending tasks and scales executors up/down within the Max capacity limit. You pay only for active DPU-seconds.\n\n**b, c, d wrong**: Mis-state Glue behavior.",
+    "references": [
+      "https://docs.aws.amazon.com/glue/latest/dg/auto-scaling.html"
+    ],
+    "tags": ["glue", "auto-scaling"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-030",
+    "slug": "athena-federated-queries",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You need to JOIN data between S3 and a DynamoDB table from Athena. Which capability enables this?",
+    "options": [
+      { "id": "a", "text": "Athena Federated Query with the DynamoDB connector (Lambda-based)" },
+      { "id": "b", "text": "S3 SELECT" },
+      { "id": "c", "text": "DynamoDB Streams to Athena directly" },
+      { "id": "d", "text": "Redshift Spectrum" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Athena Federated Query** uses Lambda-based data source connectors (pre-built for DynamoDB, RDS, HBase, Elasticsearch, etc.) to push predicates and scan remote stores in SQL queries alongside S3 data.\n\n**b, c, d wrong**: Don't federate Athena queries.",
+    "references": [
+      "https://docs.aws.amazon.com/athena/latest/ug/connect-to-a-data-source.html"
+    ],
+    "tags": ["athena-federated"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-031",
+    "slug": "glue-streaming-checkpoint",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A Glue streaming job reads from Kinesis and writes Parquet to S3. To guarantee resume-from-last-committed behavior, you must:",
+    "options": [
+      { "id": "a", "text": "Set a unique checkpointLocation in S3 per job" },
+      { "id": "b", "text": "Use the default temp path" },
+      { "id": "c", "text": "Checkpoint is unnecessary in Glue streaming" },
+      { "id": "d", "text": "Store checkpoints in the Glue Data Catalog" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Structured Streaming requires a persistent, unique `checkpointLocation` per streaming query for offsets/commit logs. Glue jobs expose this via script options.\n\n**b, c, d wrong**: Lead to reprocessing or data loss.",
+    "references": [
+      "https://docs.aws.amazon.com/glue/latest/dg/add-job-streaming.html"
+    ],
+    "tags": ["glue-streaming", "checkpoint"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-032",
+    "slug": "kinesis-idempotency",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A producer retries after transient errors and occasionally causes duplicate records in Kinesis. Which best practice helps consumers dedupe?",
+    "options": [
+      { "id": "a", "text": "Include a unique `event_id` in the payload; consumers dedupe by id (idempotent processing)" },
+      { "id": "b", "text": "Kinesis auto-deduplicates" },
+      { "id": "c", "text": "Use SHA-1 of the entire payload as the partition key only" },
+      { "id": "d", "text": "Turn off retries" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Kinesis provides **at-least-once** delivery; producers that retry may create duplicates. Embed a unique **event id** and make consumer-side processing **idempotent** (upsert by id, LWW, etc.).\n\n**b wrong**: Kinesis does not dedupe.\n\n**c wrong**: Partition key distributes across shards but isn't deduplication.\n\n**d wrong**: Turning off retries causes data loss.",
+    "references": [
+      "https://docs.aws.amazon.com/streams/latest/dev/kinesis-record-processor-duplicates.html"
+    ],
+    "tags": ["kinesis", "idempotency"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-033",
+    "slug": "glue-dynamic-overwrite",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A Glue Spark job writes partitioned Parquet to S3. You want ONLY the partitions present in the current batch to be overwritten. Which Spark configuration?",
+    "options": [
+      { "id": "a", "text": "spark.sql.sources.partitionOverwriteMode = 'dynamic' with df.write.mode('overwrite')" },
+      { "id": "b", "text": "mode('overwrite') always" },
+      { "id": "c", "text": "mode('append') replaces partitions" },
+      { "id": "d", "text": "Not possible without Delta" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Setting `spark.sql.sources.partitionOverwriteMode=dynamic` with overwrite mode rewrites ONLY partitions the write batch touches, leaving other partitions intact.\n\n**b wrong**: Default static overwrite wipes the entire table.\n\n**c wrong**: Append doesn't replace.\n\n**d wrong**: Dynamic partition overwrite works on Parquet.",
+    "references": [
+      "https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-partitions.html"
+    ],
+    "tags": ["partition-overwrite"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-034",
+    "slug": "kinesis-firehose-s3-buffering",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Firehose to S3 buffers by:",
+    "options": [
+      { "id": "a", "text": "Size (MB) OR time (seconds) whichever hits first" },
+      { "id": "b", "text": "Count of records only" },
+      { "id": "c", "text": "Per consumer" },
+      { "id": "d", "text": "Never - it writes per record" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Firehose flushes to S3 when either buffer SIZE (1-128 MB) or INTERVAL (60-900 s) is reached. Choose larger sizes for fewer, bigger files (better for analytics).\n\n**b, c, d wrong**: Not Firehose's model.",
+    "references": [
+      "https://docs.aws.amazon.com/firehose/latest/dev/basic-deliver.html"
+    ],
+    "tags": ["firehose", "buffering"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-035",
+    "slug": "glue-python-libraries",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Your Glue Spark job needs a custom PyPI package (e.g., `great_expectations`). How do you provide it?",
+    "options": [
+      { "id": "a", "text": "Set the job parameter --additional-python-modules to the package name(s)" },
+      { "id": "b", "text": "pip install at runtime via os.system" },
+      { "id": "c", "text": "Modify the Glue Docker image" },
+      { "id": "d", "text": "Not supported" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Glue supports the `--additional-python-modules` job argument to pip-install packages at session start. You can also mount wheels in S3 via `--extra-py-files`.\n\n**b, c, d wrong**: Hacky or wrong.",
+    "references": [
+      "https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-python-libraries.html"
+    ],
+    "tags": ["glue", "python-modules"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-036",
+    "slug": "kinesis-firehose-delivery-streams",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "medium",
+    "type": "multi",
+    "stem": "Kinesis Data Firehose supports native delivery to which destinations? (Select all that apply)",
+    "options": [
+      { "id": "a", "text": "Amazon S3" },
+      { "id": "b", "text": "Amazon OpenSearch Service" },
+      { "id": "c", "text": "Amazon Redshift (via S3 COPY)" },
+      { "id": "d", "text": "Splunk" },
+      { "id": "e", "text": "Amazon DynamoDB" }
+    ],
+    "correctIds": ["a", "b", "c", "d"],
+    "explanation": "**a, b, c, d correct**: Firehose has native destinations for **S3, OpenSearch, Redshift (via S3 staging + COPY), and Splunk**, plus HTTP endpoints (Datadog, New Relic) and Snowflake.\n\n**e wrong**: DynamoDB is NOT a native Firehose destination.",
+    "references": [
+      "https://docs.aws.amazon.com/firehose/latest/dev/basic-deliver.html"
+    ],
+    "tags": ["firehose", "destinations"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-037",
+    "slug": "lakeflow-athena-view",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "A Glue table's Parquet files land in S3 daily under `dt=YYYY-MM-DD/`. To make Athena see new partitions AUTOMATICALLY without running a crawler:",
+    "options": [
+      { "id": "a", "text": "Use Glue table Partition Projection with a date range template" },
+      { "id": "b", "text": "Run MSCK REPAIR TABLE every minute" },
+      { "id": "c", "text": "Manually add partitions weekly" },
+      { "id": "d", "text": "Disable partitioning" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Partition Projection** lets Athena infer partitions from a template (e.g., `dt` as date from 2020-01-01 with daily granularity) instead of storing them in the Glue Catalog - zero metadata maintenance.\n\n**b wrong**: MSCK REPAIR is expensive and manual.\n\n**c wrong**: Operational toil.\n\n**d wrong**: Loses pruning benefits.",
+    "references": [
+      "https://docs.aws.amazon.com/athena/latest/ug/partition-projection.html"
+    ],
+    "tags": ["partition-projection"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-038",
+    "slug": "s3-storage-classes-overview",
+    "topicSlug": "store-management",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Which S3 storage class offers the LOWEST cost for data accessed less than once a quarter, with millisecond retrieval?",
+    "options": [
+      { "id": "a", "text": "S3 Standard" },
+      { "id": "b", "text": "S3 Standard-IA" },
+      { "id": "c", "text": "S3 Glacier Instant Retrieval" },
+      { "id": "d", "text": "S3 Glacier Deep Archive" }
+    ],
+    "correctIds": ["c"],
+    "explanation": "**c correct**: **Glacier Instant Retrieval** offers millisecond access at roughly 1/2 the Standard-IA storage price, aimed at rarely-accessed but immediately-needed data.\n\n**a wrong**: Standard is priced for hot data.\n\n**b wrong**: IA is cheaper than Standard but more than Glacier IR.\n\n**d wrong**: Deep Archive has the lowest storage price but 12-48 hour retrieval.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html"
+    ],
+    "tags": ["s3", "storage-classes"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-039",
+    "slug": "s3-intelligent-tiering",
+    "topicSlug": "store-management",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Data access patterns are unknown and changing. Which S3 class auto-moves objects between frequent/infrequent tiers without retrieval fees?",
+    "options": [
+      { "id": "a", "text": "S3 Standard" },
+      { "id": "b", "text": "S3 Intelligent-Tiering" },
+      { "id": "c", "text": "S3 Standard-IA" },
+      { "id": "d", "text": "S3 One Zone-IA" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: **Intelligent-Tiering** monitors per-object access patterns and automatically moves objects between Frequent, Infrequent, Archive Instant, and optional Archive/Deep Archive tiers, with no retrieval fees between the base tiers.\n\n**a, c, d wrong**: Do not auto-move.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html"
+    ],
+    "tags": ["intelligent-tiering"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-040",
+    "slug": "s3-lifecycle-policies",
+    "topicSlug": "store-management",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A lifecycle rule transitions raw logs to Glacier Deep Archive after 180 days. Which configuration element expresses this?",
+    "options": [
+      { "id": "a", "text": "A Transition action with days: 180 and storageClass: DEEP_ARCHIVE" },
+      { "id": "b", "text": "An Expiration action" },
+      { "id": "c", "text": "A Replication rule" },
+      { "id": "d", "text": "An Inventory report" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: S3 lifecycle **Transition** actions move objects between classes at defined ages. **Expiration** deletes them.\n\n**b wrong**: Expiration means delete, not transition.\n\n**c wrong**: Replication copies to another bucket.\n\n**d wrong**: Inventory is a reporting feature.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html"
+    ],
+    "tags": ["lifecycle", "transition"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-041",
+    "slug": "redshift-dist-sort-keys",
+    "topicSlug": "store-management",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A large Redshift fact table is JOINed on `customer_id` and filtered by `event_date`. Best keys?",
+    "options": [
+      { "id": "a", "text": "DISTKEY = customer_id, SORTKEY = event_date" },
+      { "id": "b", "text": "DISTKEY = event_date, SORTKEY = customer_id" },
+      { "id": "c", "text": "DISTSTYLE EVEN, no SORTKEY" },
+      { "id": "d", "text": "DISTSTYLE ALL for a 10 TB table" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Co-locating fact and dimension on the JOIN key via **DISTKEY** avoids shuffle. **SORTKEY** on `event_date` enables range-restricted scans and zone map skipping.\n\n**b wrong**: Swapped responsibilities.\n\n**c wrong**: EVEN distribution forces broadcast or shuffle on joins.\n\n**d wrong**: ALL duplicates to every node - impractical for 10 TB.",
+    "references": [
+      "https://docs.aws.amazon.com/redshift/latest/dg/t_Distributing_data.html"
+    ],
+    "tags": ["redshift", "distkey", "sortkey"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-042",
+    "slug": "redshift-ra3-vs-dc2",
+    "topicSlug": "store-management",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Which Redshift node family separates compute from managed storage so you scale each independently?",
+    "options": [
+      { "id": "a", "text": "DC2" },
+      { "id": "b", "text": "RA3 with Redshift Managed Storage (RMS)" },
+      { "id": "c", "text": "DS2" },
+      { "id": "d", "text": "R5" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: **RA3** uses RMS to store data on S3-backed managed storage while node-local cache keeps hot blocks. Scale compute and storage independently.\n\n**a, c wrong**: DC2/DS2 are local-storage node types being retired.\n\n**d wrong**: R5 is EC2, not Redshift.",
+    "references": [
+      "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html"
+    ],
+    "tags": ["redshift-ra3"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-043",
+    "slug": "redshift-serverless",
+    "topicSlug": "store-management",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Redshift Serverless pricing model is based on:",
+    "options": [
+      { "id": "a", "text": "RPU-hours of compute used (with base and max capacity settings) plus managed storage" },
+      { "id": "b", "text": "Node-hours like RA3" },
+      { "id": "c", "text": "Queries only, no storage charge" },
+      { "id": "d", "text": "Flat monthly fee" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: You set a **Base RPU** (min capacity) and optionally Max RPU. Redshift bills per RPU-hour of actual usage and separately for managed storage. No cluster to manage.\n\n**b, c, d wrong**: Incorrect models.",
+    "references": [
+      "https://docs.aws.amazon.com/redshift/latest/mgmt/serverless-capacity.html"
+    ],
+    "tags": ["redshift-serverless", "rpu"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-044",
+    "slug": "redshift-copy-command",
+    "topicSlug": "store-management",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "The canonical high-throughput way to load S3 files into Redshift is:",
+    "options": [
+      { "id": "a", "text": "COPY command with an IAM role and a manifest file" },
+      { "id": "b", "text": "INSERT ... SELECT per row" },
+      { "id": "c", "text": "UNLOAD" },
+      { "id": "d", "text": "GET" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **COPY** does parallel, compressed ingestion from S3 using slice parallelism. Pair with a manifest file to control the file list and avoid partial loads.\n\n**b wrong**: INSERT per row is slow and causes catalog bloat.\n\n**c wrong**: UNLOAD is the reverse.\n\n**d wrong**: Not Redshift syntax.",
+    "references": [
+      "https://docs.aws.amazon.com/redshift/latest/dg/r_COPY.html"
+    ],
+    "tags": ["redshift", "copy"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-045",
+    "slug": "redshift-materialized-views",
+    "topicSlug": "store-management",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A Redshift dashboard re-runs the same expensive aggregation every minute. Which feature reduces cost and latency?",
+    "options": [
+      { "id": "a", "text": "Materialized view with auto-refresh, optionally incremental" },
+      { "id": "b", "text": "Increase cluster size" },
+      { "id": "c", "text": "Export to Athena" },
+      { "id": "d", "text": "Add more DISTKEYs" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Redshift **materialized views** pre-compute the aggregation. AUTO REFRESH + AUTOMATED MATERIALIZED VIEWS (AutoMV) keep them current. Query planner can also rewrite eligible queries automatically.\n\n**b wrong**: Throws compute at a cacheable problem.\n\n**c wrong**: Adds another surface.\n\n**d wrong**: You can only have one DISTKEY per table.",
+    "references": [
+      "https://docs.aws.amazon.com/redshift/latest/dg/materialized-view-overview.html"
+    ],
+    "tags": ["redshift", "materialized-view"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-046",
+    "slug": "redshift-spectrum",
+    "topicSlug": "store-management",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Redshift Spectrum is used to:",
+    "options": [
+      { "id": "a", "text": "Query S3-resident data from Redshift using external schemas backed by Glue / Hive Metastore" },
+      { "id": "b", "text": "Federate Redshift to DynamoDB" },
+      { "id": "c", "text": "Encrypt data at rest" },
+      { "id": "d", "text": "Copy data to cluster nodes" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Spectrum** reads S3 data via an external schema (usually Glue Catalog) with fleet of Spectrum workers that push filters/aggregations. Scan cost is per-TB-scanned. Works with partitioned Parquet/ORC/CSV.\n\n**b, c, d wrong**: Not Spectrum's role.",
+    "references": [
+      "https://docs.aws.amazon.com/redshift/latest/dg/c-using-spectrum.html"
+    ],
+    "tags": ["redshift-spectrum"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-047",
+    "slug": "redshift-data-sharing",
+    "topicSlug": "store-management",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You want to share a schema of Redshift tables READ-ONLY with another Redshift cluster in your org WITHOUT copying data. Use:",
+    "options": [
+      { "id": "a", "text": "Redshift Data Sharing (CREATE DATASHARE, GRANT USAGE to consumer cluster)" },
+      { "id": "b", "text": "S3 replication" },
+      { "id": "c", "text": "UNLOAD to S3 daily" },
+      { "id": "d", "text": "Cross-Region snapshot copy" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Datashare** enables live, read-only access to RA3 cluster data from other RA3 clusters (same account, cross-account, cross-Region) - no copy, no lag.\n\n**b, c, d wrong**: Copy data or aren't read-only shares.",
+    "references": [
+      "https://docs.aws.amazon.com/redshift/latest/dg/datashare-overview.html"
+    ],
+    "tags": ["redshift", "data-sharing"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-048",
+    "slug": "dynamodb-partition-key",
+    "topicSlug": "store-management",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A DynamoDB table is hot on a single partition (`device_id=foo`). Which technique spreads load?",
+    "options": [
+      { "id": "a", "text": "Write sharding: append a random suffix (0..N) to the partition key and query all shards" },
+      { "id": "b", "text": "Increase RCU only" },
+      { "id": "c", "text": "Add a sort key" },
+      { "id": "d", "text": "Switch to S3" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Write sharding** distributes load across multiple synthetic partitions by appending a shard suffix to the hot key. Reads fan out across shards.\n\n**b wrong**: Per-partition throughput limits still apply (3,000 RRU / 1,000 WRU).\n\n**c wrong**: Sort key doesn't change partition hashing.\n\n**d wrong**: Different service, different model.",
+    "references": [
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-partition-key-sharding.html"
+    ],
+    "tags": ["dynamodb", "sharding"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-049",
+    "slug": "dynamodb-capacity-modes",
+    "topicSlug": "store-management",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Unpredictable DynamoDB traffic. Which capacity mode avoids throttling without manual scaling?",
+    "options": [
+      { "id": "a", "text": "On-Demand" },
+      { "id": "b", "text": "Provisioned with no auto-scaling" },
+      { "id": "c", "text": "Provisioned with auto-scaling" },
+      { "id": "d", "text": "DAX only" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **On-Demand** automatically accommodates traffic up to double the previous peak, no pre-provisioning. Pay per request.\n\n**c wrong**: Auto-scaling adjusts but has minute-level lag - spikes can still throttle.\n\n**b wrong**: Static provisioned risks throttling.\n\n**d wrong**: DAX is a cache.",
+    "references": [
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html"
+    ],
+    "tags": ["dynamodb", "on-demand"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-050",
+    "slug": "s3-object-versioning",
+    "topicSlug": "store-management",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Enabling S3 Versioning on a bucket:",
+    "options": [
+      { "id": "a", "text": "Preserves previous object versions on overwrite/delete, enabling recovery from accidents" },
+      { "id": "b", "text": "Reduces storage cost" },
+      { "id": "c", "text": "Encrypts the bucket automatically" },
+      { "id": "d", "text": "Is required for S3 static websites" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Versioning retains all prior versions; deletes become delete markers; you can restore by version id. Often paired with MFA-Delete for highest protection.\n\n**b, c, d wrong**: Versioning increases storage cost; doesn't encrypt; not tied to static hosting.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html"
+    ],
+    "tags": ["s3-versioning"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-051",
+    "slug": "s3-object-lock",
+    "topicSlug": "store-management",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A compliance mandate says log data must be IMMUTABLE for 7 years. Which feature enforces WORM (write-once-read-many) on S3?",
+    "options": [
+      { "id": "a", "text": "S3 Object Lock in Compliance Mode with retention 7 years" },
+      { "id": "b", "text": "Bucket policy deny delete" },
+      { "id": "c", "text": "IAM deny s3:DeleteObject" },
+      { "id": "d", "text": "S3 Inventory" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Object Lock Compliance Mode** makes objects undeletable and un-modifiable for the retention period - even by the root user. Required for SEC 17a-4 and similar regulations.\n\n**b, c wrong**: Can be modified by an admin, not regulator-grade.\n\n**d wrong**: Inventory reports bucket contents; not WORM.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html"
+    ],
+    "tags": ["object-lock", "compliance"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-052",
+    "slug": "s3-access-points",
+    "topicSlug": "store-management",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Multiple teams share a huge bucket. Each needs its own policy scope (prefix, permissions, VPC-only). Which S3 feature simplifies access management?",
+    "options": [
+      { "id": "a", "text": "S3 Access Points - named endpoints per team with per-endpoint policies" },
+      { "id": "b", "text": "Multiple bucket policies" },
+      { "id": "c", "text": "Object ACLs" },
+      { "id": "d", "text": "S3 Inventory" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **S3 Access Points** are per-team hostnames with isolated IAM policies (and optional VPC-only constraint). Keeps the bucket policy tiny while scaling access configuration across teams.\n\n**b, c, d wrong**: Either don't scale or are deprecated patterns.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-points.html"
+    ],
+    "tags": ["access-points"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-053",
+    "slug": "parquet-vs-orc-vs-csv",
+    "topicSlug": "store-management",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "For analytic queries on S3, which format is BEST default?",
+    "options": [
+      { "id": "a", "text": "Parquet (columnar, compressed, splittable, predicate pushdown)" },
+      { "id": "b", "text": "CSV (human-readable)" },
+      { "id": "c", "text": "JSON (schema-flexible)" },
+      { "id": "d", "text": "Avro" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Parquet's columnar layout, dictionary encoding, and per-column statistics let query engines read only needed columns and skip ranges - 10-100x I/O improvement vs row formats.\n\n**b wrong**: CSV has no column pruning, no stats, bloated sizes.\n\n**c wrong**: JSON is verbose.\n\n**d wrong**: Avro is row-based; good for stream serialization, poor for analytics.",
+    "references": [
+      "https://docs.aws.amazon.com/athena/latest/ug/compression-formats.html"
+    ],
+    "tags": ["parquet", "formats"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-054",
+    "slug": "iceberg-on-aws",
+    "topicSlug": "store-management",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You need ACID UPDATE/DELETE, Time Travel, and schema evolution on S3-based tables queryable from Athena, EMR, and Redshift. Which table format meets this?",
+    "options": [
+      { "id": "a", "text": "Apache Iceberg tables cataloged in AWS Glue (supported by Athena engine v3, EMR, Redshift, Glue)" },
+      { "id": "b", "text": "Plain Parquet" },
+      { "id": "c", "text": "CSV with manifest" },
+      { "id": "d", "text": "DynamoDB" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Apache Iceberg** is the AWS-recommended open table format on S3 - ACID, Time Travel, schema evolution - with read/write support across Athena engine v3, EMR, Redshift, and Glue ETL.\n\n**b wrong**: No ACID or evolution.\n\n**c wrong**: No transactional model.\n\n**d wrong**: Not a lake table format.",
+    "references": [
+      "https://docs.aws.amazon.com/athena/latest/ug/querying-iceberg.html"
+    ],
+    "tags": ["iceberg"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-055",
+    "slug": "s3-select-vs-athena",
+    "topicSlug": "store-management",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "When is S3 Select preferable to Athena?",
+    "options": [
+      { "id": "a", "text": "Simple single-object filters/projections called directly from an application" },
+      { "id": "b", "text": "Joins across many files" },
+      { "id": "c", "text": "Ad-hoc SQL analytics over an entire dataset" },
+      { "id": "d", "text": "Complex window functions" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **S3 Select** scans a single object and returns filtered/projected rows - useful for app-level scans to cut bytes returned. Athena is better for multi-file, multi-table SQL.\n\n**b, c, d wrong**: Beyond S3 Select's scope.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/selecting-content-from-objects.html"
+    ],
+    "tags": ["s3-select"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-056",
+    "slug": "rds-aurora-vs-rds",
+    "topicSlug": "store-management",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A team wants a managed Postgres with 5x read replicas, low-latency failover, and automatic storage up to 128 TiB. Which service?",
+    "options": [
+      { "id": "a", "text": "Amazon Aurora PostgreSQL" },
+      { "id": "b", "text": "RDS Postgres single-AZ" },
+      { "id": "c", "text": "DynamoDB" },
+      { "id": "d", "text": "Redshift" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Aurora** supports up to 15 read replicas sharing a distributed storage layer (6-way replicated across 3 AZs), fast failover, and auto-expanding storage.\n\n**b wrong**: RDS read-replica count and storage limits are smaller.\n\n**c wrong**: Different data model.\n\n**d wrong**: Redshift is OLAP.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html"
+    ],
+    "tags": ["aurora"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-057",
+    "slug": "dynamodb-gsi-lsi",
+    "topicSlug": "store-management",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A DynamoDB table is keyed on (`user_id`, `created_at`). You also need to query by `email`. Which index?",
+    "options": [
+      { "id": "a", "text": "Global Secondary Index (GSI) with email as partition key" },
+      { "id": "b", "text": "Local Secondary Index (LSI) with email as sort key" },
+      { "id": "c", "text": "A new table" },
+      { "id": "d", "text": "No index needed; scan the table" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **GSI** supports a different partition key than the base table, so queries by email are efficient. LSIs share the base partition key - they can't change it.\n\n**b wrong**: LSI must use the same PK.\n\n**c wrong**: Duplicate data management overhead.\n\n**d wrong**: Scans read every item; cost-prohibitive.",
+    "references": [
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SecondaryIndexes.html"
+    ],
+    "tags": ["gsi", "lsi"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-058",
+    "slug": "s3-cross-region-replication",
+    "topicSlug": "store-management",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You need DR copies of S3 objects in another Region with a 15-minute RTO. Which feature?",
+    "options": [
+      { "id": "a", "text": "S3 Replication with S3 Replication Time Control (RTC) - 99.99% of new objects replicated within 15 minutes, SLA-backed" },
+      { "id": "b", "text": "S3 Inventory" },
+      { "id": "c", "text": "Cross-Region snapshot copy" },
+      { "id": "d", "text": "Manual copy scripts" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **S3 RTC** enhances replication with an SLA of 15-minute replication for 99.99% of objects.\n\n**b, c wrong**: Not replication.\n\n**d wrong**: Can't offer SLA.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-time-control.html"
+    ],
+    "tags": ["s3-replication", "rtc"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-059",
+    "slug": "redshift-workload-management",
+    "topicSlug": "store-management",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Two workloads collide on a Redshift cluster: ETL (long-running) and BI (short, priority). The modern WLM recommendation is:",
+    "options": [
+      { "id": "a", "text": "Auto WLM with query priorities and query monitoring rules" },
+      { "id": "b", "text": "Manual WLM with 15 queues" },
+      { "id": "c", "text": "Disable WLM" },
+      { "id": "d", "text": "Route BI to a different AWS account" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Automatic WLM** with **query priorities** (LOW/NORMAL/HIGH/HIGHEST) dynamically allocates memory and concurrency. Add QMR rules to hop or abort long runaway queries. Manual WLM is largely legacy.\n\n**b, c, d wrong**: Legacy, risky, or overkill.",
+    "references": [
+      "https://docs.aws.amazon.com/redshift/latest/dg/cm-c-implementing-workload-management.html"
+    ],
+    "tags": ["redshift-wlm"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-060",
+    "slug": "redshift-vacuum-analyze",
+    "topicSlug": "store-management",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "After large DML on a Redshift table, query planner stats are stale and deleted rows are still on disk. Which pair of commands addresses both?",
+    "options": [
+      { "id": "a", "text": "VACUUM (reclaim, resort) and ANALYZE (refresh stats)" },
+      { "id": "b", "text": "TRUNCATE and INSERT" },
+      { "id": "c", "text": "REINDEX and REBUILD" },
+      { "id": "d", "text": "CHECKPOINT" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **VACUUM** reclaims space from deleted rows and re-sorts rows into sorted regions; **ANALYZE** updates column statistics for the planner. Redshift also runs **Auto Vacuum/Analyze** in the background, but manual runs are used after big loads.\n\n**b, c, d wrong**: Don't solve the stated problem.",
+    "references": [
+      "https://docs.aws.amazon.com/redshift/latest/dg/r_VACUUM_command.html"
+    ],
+    "tags": ["redshift", "vacuum"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-061",
+    "slug": "s3-multipart-upload",
+    "topicSlug": "store-management",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Uploading a 20 GB file with a single PUT frequently fails mid-transfer. Which S3 feature solves this?",
+    "options": [
+      { "id": "a", "text": "Multipart Upload with independent part retries and CompleteMultipartUpload" },
+      { "id": "b", "text": "S3 Transfer Acceleration only" },
+      { "id": "c", "text": "Cross-Region replication" },
+      { "id": "d", "text": "Single-part PUT with retry" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Multipart Upload** splits the object into parts (up to 10,000), each uploadable in parallel and retryable independently. Recommended for objects above 100 MB and required above 5 GB.\n\n**b wrong**: Complements but doesn't solve the single-PUT size problem.\n\n**c, d wrong**: Don't address chunked uploads.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html"
+    ],
+    "tags": ["multipart-upload"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-062",
+    "slug": "s3-strong-consistency",
+    "topicSlug": "store-management",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "S3 consistency model for read-after-write on existing objects is:",
+    "options": [
+      { "id": "a", "text": "Strong read-after-write consistency for PUTs and DELETEs, including overwrites" },
+      { "id": "b", "text": "Eventual consistency" },
+      { "id": "c", "text": "Strong only for new objects" },
+      { "id": "d", "text": "Requires DynamoDB locks" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Since 2020 S3 provides **strong read-after-write consistency** for all new and overwrite PUTs and DELETEs, no client-side workarounds needed.\n\n**b, c, d wrong**: Out-of-date assumptions.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html#ConsistencyModel"
+    ],
+    "tags": ["s3", "consistency"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-063",
+    "slug": "dynamodb-streams-ttl",
+    "topicSlug": "store-management",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Which combination archives aged-out DynamoDB items to S3?",
+    "options": [
+      { "id": "a", "text": "TTL + DynamoDB Streams -> Lambda -> S3" },
+      { "id": "b", "text": "Scheduled Scan with delete" },
+      { "id": "c", "text": "GSI rollover" },
+      { "id": "d", "text": "DynamoDB Export to S3 only" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **TTL** auto-deletes items whose TTL attribute passed; **Streams** emits the REMOVE events; a Lambda subscriber writes the item to S3 before it's gone. TTL deletes don't consume WCU.\n\n**b wrong**: Expensive scans.\n\n**c wrong**: Irrelevant.\n\n**d wrong**: Export is a point-in-time bulk snapshot, not archival on delete.",
+    "references": [
+      "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html"
+    ],
+    "tags": ["ttl", "streams"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-064",
+    "slug": "opensearch-vs-cloudwatch-logs",
+    "topicSlug": "store-management",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You need full-text search and Kibana-style dashboards on 2 TB of application logs. Which store?",
+    "options": [
+      { "id": "a", "text": "Amazon OpenSearch Service with index lifecycle management and UltraWarm/Cold tiers" },
+      { "id": "b", "text": "DynamoDB" },
+      { "id": "c", "text": "Redshift" },
+      { "id": "d", "text": "RDS MySQL" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **OpenSearch Service** is the AWS-managed Elasticsearch fork with OpenSearch Dashboards. UltraWarm and Cold storage tiers keep large historical indices cheap.\n\n**b, c, d wrong**: Not full-text engines.",
+    "references": [
+      "https://docs.aws.amazon.com/opensearch-service/latest/developerguide/what-is.html"
+    ],
+    "tags": ["opensearch"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-065",
+    "slug": "step-functions-error-handling",
+    "topicSlug": "operations-support",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A Step Functions state calls a Lambda that intermittently throws `Lambda.Unknown`. Which state field adds automatic retry with backoff?",
+    "options": [
+      { "id": "a", "text": "Retry array with ErrorEquals, IntervalSeconds, MaxAttempts, BackoffRate" },
+      { "id": "b", "text": "Catch only" },
+      { "id": "c", "text": "ResultPath" },
+      { "id": "d", "text": "Comment" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: The **Retry** field on a Task state specifies which errors to retry, with interval, backoff multiplier, and max attempts. **Catch** handles errors that retries didn't resolve by routing to a fallback state.\n\n**b, c, d wrong**: Catch is for post-retry routing; ResultPath/Comment don't retry.",
+    "references": [
+      "https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html"
+    ],
+    "tags": ["step-functions", "retry"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-066",
+    "slug": "mwaa-airflow",
+    "topicSlug": "operations-support",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "An existing team already has large Airflow DAGs in Python and needs a managed Airflow on AWS. Use:",
+    "options": [
+      { "id": "a", "text": "Amazon MWAA (Managed Workflows for Apache Airflow)" },
+      { "id": "b", "text": "Step Functions only" },
+      { "id": "c", "text": "Glue Workflows only" },
+      { "id": "d", "text": "EventBridge Scheduler alone" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **MWAA** is managed Airflow with Python DAGs, plugins, and scheduler HA. Ideal when teams already know Airflow and want to avoid running their own cluster.\n\n**b wrong**: Different model; migration effort.\n\n**c wrong**: Glue-native DAGs, no Airflow compatibility.\n\n**d wrong**: Event-driven scheduler, not DAG orchestration.",
+    "references": [
+      "https://docs.aws.amazon.com/mwaa/latest/userguide/what-is-mwaa.html"
+    ],
+    "tags": ["mwaa", "airflow"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-067",
+    "slug": "eventbridge-scheduler",
+    "topicSlug": "operations-support",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "You need one-time and cron schedules firing Lambda / ECS / Step Functions targets at millions of scale with per-schedule retries. Use:",
+    "options": [
+      { "id": "a", "text": "EventBridge Scheduler" },
+      { "id": "b", "text": "CloudWatch Alarms" },
+      { "id": "c", "text": "SNS" },
+      { "id": "d", "text": "Systems Manager State Manager" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **EventBridge Scheduler** supports one-time + cron schedules, flexible time windows, retry + DLQ, and native targets (Lambda, ECS, SQS, Step Functions, etc.). Scales to millions of schedules.\n\n**b, c, d wrong**: Different purposes.",
+    "references": [
+      "https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html"
+    ],
+    "tags": ["eventbridge-scheduler"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-068",
+    "slug": "cloudwatch-metrics-filters",
+    "topicSlug": "operations-support",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "An ETL Lambda logs `ERROR` lines you want to alert on. Which CloudWatch Logs feature enables this?",
+    "options": [
+      { "id": "a", "text": "Metric filter on the log group that increments a custom metric, with an alarm on that metric" },
+      { "id": "b", "text": "CloudWatch Dashboard" },
+      { "id": "c", "text": "CloudWatch Synthetics" },
+      { "id": "d", "text": "X-Ray" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: A **metric filter** parses log events (e.g., pattern `ERROR`) and emits a CloudWatch metric; an alarm on that metric triggers SNS / OpsGenie / Lambda. Standard pattern for log-based alerting.\n\n**b, c, d wrong**: Don't create metrics from logs for alerting.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/MonitoringPolicyExamples.html"
+    ],
+    "tags": ["cloudwatch", "metric-filter"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-069",
+    "slug": "cloudwatch-logs-insights",
+    "topicSlug": "operations-support",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You want to run SQL-like queries across a log group over the last 24h. Use:",
+    "options": [
+      { "id": "a", "text": "CloudWatch Logs Insights with its purpose-built query syntax" },
+      { "id": "b", "text": "AWS Glue Studio" },
+      { "id": "c", "text": "Athena directly on raw logs in CloudWatch" },
+      { "id": "d", "text": "Redshift" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Logs Insights** is a query engine over CloudWatch log groups: `fields`, `filter`, `stats`, `sort`, `parse`. Great for ad-hoc ops investigations without exporting.\n\n**b, c wrong**: Require pre-export.\n\n**d wrong**: Overkill.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html"
+    ],
+    "tags": ["logs-insights"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-070",
+    "slug": "step-functions-sync-integrations",
+    "topicSlug": "operations-support",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Which Step Functions integration pattern makes the state wait for an async job like Glue to FINISH before moving on?",
+    "options": [
+      { "id": "a", "text": "arn:aws:states:::glue:startJobRun.sync" },
+      { "id": "b", "text": "arn:aws:states:::glue:startJobRun (fire-and-forget)" },
+      { "id": "c", "text": "arn:aws:states:::lambda:invoke.waitForTaskToken" },
+      { "id": "d", "text": "arn:aws:states:::sns:publish" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: The `.sync` variant polls the target API and returns when the job reaches a terminal state. For APIs that don't have a sync integration, use `waitForTaskToken` with a callback.\n\n**b wrong**: Fire-and-forget doesn't wait.\n\n**c wrong**: Valid pattern but for APIs without .sync; Glue has .sync.\n\n**d wrong**: SNS publish isn't a wait pattern.",
+    "references": [
+      "https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html"
+    ],
+    "tags": ["step-functions", "sync"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-071",
+    "slug": "eventbridge-rules-patterns",
+    "topicSlug": "operations-support",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You want to route specific S3 `Object Created` events (prefix `incoming/`, suffix `.csv`) to a Lambda. Which AWS feature?",
+    "options": [
+      { "id": "a", "text": "EventBridge rule with an event pattern filtering on detail-type and object key" },
+      { "id": "b", "text": "A Kinesis stream consumer" },
+      { "id": "c", "text": "S3 bucket policy" },
+      { "id": "d", "text": "CloudTrail Lake" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **EventBridge rules** can match on exact event attributes using event patterns (including prefix/suffix matchers), routing only matching S3 events to targets like Lambda.\n\n**b, c, d wrong**: Not suited to event filtering.",
+    "references": [
+      "https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html"
+    ],
+    "tags": ["eventbridge", "event-pattern"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-072",
+    "slug": "cost-explorer-reports",
+    "topicSlug": "operations-support",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "A data platform owner wants a breakdown of last month's spend by service and tag. Use:",
+    "options": [
+      { "id": "a", "text": "AWS Cost Explorer with cost allocation tags" },
+      { "id": "b", "text": "CloudWatch Billing only" },
+      { "id": "c", "text": "Trusted Advisor" },
+      { "id": "d", "text": "AWS Config" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Cost Explorer** supports filtering by service, linked account, and cost-allocation tags. Activate tags in Billing console for them to appear.\n\n**b, c, d wrong**: Not cost breakdowns.",
+    "references": [
+      "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/ce-what-is.html"
+    ],
+    "tags": ["cost-explorer"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-073",
+    "slug": "aws-budgets-alerts",
+    "topicSlug": "operations-support",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "You want to be alerted when forecasted monthly spend exceeds $10,000. Use:",
+    "options": [
+      { "id": "a", "text": "AWS Budgets with forecasted cost threshold and SNS notification" },
+      { "id": "b", "text": "CloudWatch Billing metric only" },
+      { "id": "c", "text": "S3 Inventory" },
+      { "id": "d", "text": "Personal Health Dashboard" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **AWS Budgets** supports alerts on actual or forecasted cost, usage, Reserved Instance coverage, and Savings Plans coverage, via SNS/email/Chatbot.\n\n**b, c, d wrong**: Don't forecast.",
+    "references": [
+      "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-create.html"
+    ],
+    "tags": ["budgets"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-074",
+    "slug": "x-ray-tracing",
+    "topicSlug": "operations-support",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Across API Gateway -> Lambda -> Aurora, you need distributed tracing to find latency bottlenecks. Use:",
+    "options": [
+      { "id": "a", "text": "AWS X-Ray (via SDK / Active Tracing on Lambda / API Gateway)" },
+      { "id": "b", "text": "CloudWatch Logs only" },
+      { "id": "c", "text": "CloudTrail" },
+      { "id": "d", "text": "Config rules" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **X-Ray** correlates per-request traces across services. Enable Active Tracing in API Gateway and Lambda; instrument Aurora calls with the X-Ray SDK.\n\n**b wrong**: Logs show events but not trace graphs.\n\n**c, d wrong**: Audit/compliance tools.",
+    "references": [
+      "https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html"
+    ],
+    "tags": ["x-ray"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-075",
+    "slug": "sqs-dlq",
+    "topicSlug": "operations-support",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A Lambda consumer of an SQS queue occasionally fails repeatedly on poison messages, blocking the queue. Which setting helps?",
+    "options": [
+      { "id": "a", "text": "Configure a Dead-Letter Queue and set maxReceiveCount to move bad messages out" },
+      { "id": "b", "text": "Increase message visibility timeout to 12 hours" },
+      { "id": "c", "text": "Delete the queue" },
+      { "id": "d", "text": "Enable FIFO" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: A **DLQ** with `maxReceiveCount` (e.g., 5) automatically moves messages that couldn't be processed after N attempts, letting the main queue drain. Ops can then inspect / replay DLQ contents.\n\n**b wrong**: Long timeouts hide the problem.\n\n**c wrong**: Data loss.\n\n**d wrong**: FIFO doesn't deal with poison pills.",
+    "references": [
+      "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html"
+    ],
+    "tags": ["sqs", "dlq"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-076",
+    "slug": "sqs-standard-vs-fifo",
+    "topicSlug": "operations-support",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "An application requires strict ordering and exactly-once processing per group of messages. Which SQS option?",
+    "options": [
+      { "id": "a", "text": "FIFO queue with MessageGroupId and content-based dedup or explicit dedup id" },
+      { "id": "b", "text": "Standard queue" },
+      { "id": "c", "text": "Delay queue" },
+      { "id": "d", "text": "Any Kinesis stream" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **FIFO queues** provide FIFO ordering per **MessageGroupId** and exactly-once processing within a 5-minute dedup window.\n\n**b wrong**: Standard is at-least-once and best-effort ordering.\n\n**c, d wrong**: Not the right service.",
+    "references": [
+      "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues.html"
+    ],
+    "tags": ["sqs-fifo"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-077",
+    "slug": "lambda-concurrency-reserved",
+    "topicSlug": "operations-support",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A Lambda downstream to DynamoDB keeps throttling the table under load. Which Lambda feature caps its concurrency?",
+    "options": [
+      { "id": "a", "text": "Reserved concurrency on the function" },
+      { "id": "b", "text": "Provisioned concurrency" },
+      { "id": "c", "text": "Memory size" },
+      { "id": "d", "text": "Ephemeral storage" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Reserved concurrency** caps the function's concurrent executions (and guarantees that capacity). Perfect for protecting slower downstream dependencies.\n\n**b wrong**: Provisioned concurrency pre-warms instances - doesn't cap.\n\n**c, d wrong**: Memory/storage don't limit concurrency.",
+    "references": [
+      "https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html"
+    ],
+    "tags": ["lambda", "reserved-concurrency"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-078",
+    "slug": "systems-manager-parameter-store",
+    "topicSlug": "operations-support",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Which service is a FREE, IAM-secured key-value store ideal for non-rotating configuration (e.g., feature flags, API endpoints) referenced from Lambda and ECS?",
+    "options": [
+      { "id": "a", "text": "AWS Systems Manager Parameter Store (Standard tier)" },
+      { "id": "b", "text": "AWS Secrets Manager" },
+      { "id": "c", "text": "S3" },
+      { "id": "d", "text": "RDS" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Parameter Store Standard** is free (throughput-limited), hierarchical, supports SecureString with KMS, and integrates with Lambda, ECS, CodeBuild. Secrets Manager is preferred for rotating secrets but priced per secret.\n\n**b, c, d wrong**: Not optimal for configs.",
+    "references": [
+      "https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html"
+    ],
+    "tags": ["parameter-store"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-079",
+    "slug": "secrets-manager-rotation",
+    "topicSlug": "operations-support",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Which service AUTOMATES rotation of RDS credentials every 30 days via a Lambda?",
+    "options": [
+      { "id": "a", "text": "AWS Secrets Manager with automatic rotation enabled" },
+      { "id": "b", "text": "SSM Parameter Store Standard" },
+      { "id": "c", "text": "IAM access key rotation" },
+      { "id": "d", "text": "CloudTrail" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Secrets Manager** natively rotates RDS, Redshift, and DocumentDB secrets via managed Lambda rotation functions.\n\n**b wrong**: Parameter Store Standard doesn't auto-rotate.\n\n**c wrong**: IAM keys aren't DB creds.\n\n**d wrong**: CloudTrail audits; doesn't rotate.",
+    "references": [
+      "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html"
+    ],
+    "tags": ["secrets-manager", "rotation"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-080",
+    "slug": "cloudformation-stacks-idempotency",
+    "topicSlug": "operations-support",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Which statement about CloudFormation is TRUE?",
+    "options": [
+      { "id": "a", "text": "Stacks track resource state and automatically roll back on failure by default (retain-on-failure is opt-in)" },
+      { "id": "b", "text": "There is no rollback on failure" },
+      { "id": "c", "text": "Templates are imperative Python" },
+      { "id": "d", "text": "CFN is part of CloudWatch" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: CFN manages declarative stacks with automatic rollback on CREATE/UPDATE failure (configurable). Supports change sets, drift detection, and cross-stack references.\n\n**b, c, d wrong**: Wrong.",
+    "references": [
+      "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html"
+    ],
+    "tags": ["cloudformation"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-081",
+    "slug": "cdk-overview",
+    "topicSlug": "operations-support",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "AWS CDK lets you define infrastructure using:",
+    "options": [
+      { "id": "a", "text": "General-purpose programming languages (TypeScript/Python/Java/Go/C#) synthesized to CloudFormation" },
+      { "id": "b", "text": "Only YAML" },
+      { "id": "c", "text": "A proprietary binary format" },
+      { "id": "d", "text": "A SQL dialect" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **CDK** offers L1/L2/L3 constructs in TypeScript/Python/Java/Go/C#. `cdk synth` emits CloudFormation; `cdk deploy` provisions stacks.\n\n**b, c, d wrong**: CDK is multi-language but not YAML/SQL/binary.",
+    "references": [
+      "https://docs.aws.amazon.com/cdk/v2/guide/home.html"
+    ],
+    "tags": ["cdk"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-082",
+    "slug": "cloudtrail-data-events",
+    "topicSlug": "operations-support",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "To audit every S3 `GetObject` call on a sensitive bucket, you must enable:",
+    "options": [
+      { "id": "a", "text": "CloudTrail Data Events for that bucket (management events don't record GetObject)" },
+      { "id": "b", "text": "CloudTrail management events only" },
+      { "id": "c", "text": "S3 server access logs only (not integrated with CloudTrail Lake)" },
+      { "id": "d", "text": "CloudWatch Events" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **CloudTrail Data Events** capture API-level S3 object access (GetObject, PutObject). They incur per-event cost, so scope to specific buckets or prefixes.\n\n**b wrong**: Management events don't include object-level reads.\n\n**c wrong**: S3 server access logs work, but the question asks about CloudTrail-based audit.\n\n**d wrong**: CloudWatch Events (EventBridge) isn't an audit trail.",
+    "references": [
+      "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html"
+    ],
+    "tags": ["cloudtrail", "data-events"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-083",
+    "slug": "cloudwatch-alarms-composite",
+    "topicSlug": "operations-support",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You want a single alert when BOTH ETL job failures AND late data arrival conditions are true. Which CloudWatch feature?",
+    "options": [
+      { "id": "a", "text": "Composite alarms combining two metric alarms with AND" },
+      { "id": "b", "text": "One alarm per metric with 2 different SNS topics" },
+      { "id": "c", "text": "Logs Insights saved query" },
+      { "id": "d", "text": "EventBridge rule" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Composite alarms** evaluate boolean expressions over other alarms' states (ALARM, OK), reducing alert noise from correlated conditions.\n\n**b, c, d wrong**: Not fit for boolean alarm logic.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Create_Composite_Alarm_How_To.html"
+    ],
+    "tags": ["cloudwatch", "composite-alarm"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-084",
+    "slug": "lake-formation-lf-tags",
+    "topicSlug": "security-governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You need to grant access to dozens of tables without listing each one. Lake Formation provides:",
+    "options": [
+      { "id": "a", "text": "LF-Tags (tag-based access control): assign tags to resources and grant by tag expression" },
+      { "id": "b", "text": "Per-object IAM policies only" },
+      { "id": "c", "text": "S3 bucket policies" },
+      { "id": "d", "text": "Glue classifiers" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **LF-Tags** (Tag-Based Access Control) let you tag catalogs/DBs/tables/columns with key-value tags and grant access by tag matching - scales to thousands of objects.\n\n**b, c, d wrong**: Don't scale as cleanly or are unrelated.",
+    "references": [
+      "https://docs.aws.amazon.com/lake-formation/latest/dg/tag-based-access-control.html"
+    ],
+    "tags": ["lake-formation", "lf-tags"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-085",
+    "slug": "kms-customer-managed-keys",
+    "topicSlug": "security-governance",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You must be able to revoke access to all encrypted S3 objects at once for compliance. Use:",
+    "options": [
+      { "id": "a", "text": "SSE-KMS with a customer-managed KMS key (CMK); disable or schedule deletion to render ciphertext unreadable" },
+      { "id": "b", "text": "SSE-S3 only" },
+      { "id": "c", "text": "Client-side AES in the application" },
+      { "id": "d", "text": "No encryption" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Customer-managed **KMS keys** give you full control: disable the key, change its key policy, rotate, or schedule deletion to revoke all dependent decryptions at once.\n\n**b wrong**: SSE-S3 uses AWS-managed keys - no revocation.\n\n**c wrong**: Possible but shifts key management burden.\n\n**d wrong**: Violates policy.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html"
+    ],
+    "tags": ["kms", "sse-kms"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-086",
+    "slug": "iam-least-privilege",
+    "topicSlug": "security-governance",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Which IAM construct allows a Lambda to assume temporary permissions to read one specific S3 prefix and nothing else?",
+    "options": [
+      { "id": "a", "text": "Execution role with a scoped inline/managed policy allowing s3:GetObject on arn:aws:s3:::bucket/prefix/*" },
+      { "id": "b", "text": "IAM user access keys baked into the function" },
+      { "id": "c", "text": "Root credentials" },
+      { "id": "d", "text": "Cognito identity pools" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Lambda **execution roles** grant temporary STS credentials at runtime with least-privilege policies restricted by ARN pattern.\n\n**b, c wrong**: Secret leakage; also widely over-privileged.\n\n**d wrong**: For end-user identities, not service workloads.",
+    "references": [
+      "https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html"
+    ],
+    "tags": ["iam", "lambda-execution-role"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-087",
+    "slug": "vpc-endpoints-s3",
+    "topicSlug": "security-governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "An EMR cluster in a private subnet must read S3 without traversing the Internet. Which construct is most cost-effective?",
+    "options": [
+      { "id": "a", "text": "S3 Gateway VPC Endpoint (free, routes traffic via AWS backbone)" },
+      { "id": "b", "text": "S3 Interface VPC Endpoint (priced per hour + per GB)" },
+      { "id": "c", "text": "NAT Gateway" },
+      { "id": "d", "text": "Public S3 access" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Gateway Endpoints** for S3 (and DynamoDB) are free and route traffic via route tables. Interface endpoints are used when you need PrivateLink + DNS or cross-account, but they charge hourly and by data.\n\n**b wrong**: More expensive without extra benefit here.\n\n**c wrong**: NAT Gateway adds egress cost.\n\n**d wrong**: Violates 'no internet'.",
+    "references": [
+      "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
+    ],
+    "tags": ["vpc-endpoint", "s3"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-088",
+    "slug": "macie-pii-detection",
+    "topicSlug": "security-governance",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Which AWS service discovers and classifies PII in S3 data at scale?",
+    "options": [
+      { "id": "a", "text": "Amazon Macie" },
+      { "id": "b", "text": "GuardDuty" },
+      { "id": "c", "text": "Inspector" },
+      { "id": "d", "text": "Detective" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Amazon Macie** uses ML and regex-based identifiers to discover PII (credit cards, SSNs, keys) in S3 buckets and reports findings via EventBridge / Security Hub.\n\n**b wrong**: GuardDuty is threat detection.\n\n**c wrong**: Inspector scans workloads for CVEs.\n\n**d wrong**: Detective is log-based investigation.",
+    "references": [
+      "https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html"
+    ],
+    "tags": ["macie", "pii"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-089",
+    "slug": "iam-vs-resource-policies",
+    "topicSlug": "security-governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Cross-account S3 access to a bucket typically requires:",
+    "options": [
+      { "id": "a", "text": "Both an IAM policy in the calling account AND a bucket policy (or Access Point policy) in the owning account granting access" },
+      { "id": "b", "text": "A bucket policy only" },
+      { "id": "c", "text": "An IAM policy only" },
+      { "id": "d", "text": "Setting the bucket public" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Cross-account access requires permissions on **both sides**: IAM in the caller's account and the resource-based policy in the bucket owner's account. Also check SCPs and KMS key policies.\n\n**b, c wrong**: One side alone isn't sufficient.\n\n**d wrong**: Public access violates least privilege.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-walkthroughs-managing-access.html"
+    ],
+    "tags": ["iam", "bucket-policy", "cross-account"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-090",
+    "slug": "sse-kms-bucket-keys",
+    "topicSlug": "security-governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A bucket with SSE-KMS receives high request rates; KMS costs are significant. Which feature reduces KMS calls?",
+    "options": [
+      { "id": "a", "text": "S3 Bucket Keys (a bucket-level encryption key derived from the KMS CMK, reducing KMS GenerateDataKey calls by ~99%)" },
+      { "id": "b", "text": "Disable encryption" },
+      { "id": "c", "text": "Reduce KMS key rotation" },
+      { "id": "d", "text": "Switch to Glacier" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **S3 Bucket Keys** cache a bucket-level data key per bucket, so S3 doesn't call KMS for every object - major KMS cost savings at scale with the same CMK-backed security.\n\n**b wrong**: Violates policy.\n\n**c wrong**: Rotation is yearly and unrelated to per-request costs.\n\n**d wrong**: Different problem.",
+    "references": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html"
+    ],
+    "tags": ["s3-bucket-keys", "kms"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-091",
+    "slug": "iam-access-analyzer",
+    "topicSlug": "security-governance",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Which service identifies resources shared with principals OUTSIDE your account / organization?",
+    "options": [
+      { "id": "a", "text": "IAM Access Analyzer" },
+      { "id": "b", "text": "GuardDuty" },
+      { "id": "c", "text": "CloudTrail" },
+      { "id": "d", "text": "Config" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **IAM Access Analyzer** inspects resource-based policies (S3 buckets, KMS, Lambda, IAM roles, Secrets Manager, SQS) and flags unintended external access.\n\n**b, c, d wrong**: Other purposes.",
+    "references": [
+      "https://docs.aws.amazon.com/IAM/latest/UserGuide/what-is-access-analyzer.html"
+    ],
+    "tags": ["access-analyzer"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-092",
+    "slug": "redshift-column-security",
+    "topicSlug": "security-governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "In Redshift, you need column-level permissions so `analyst` role cannot select `ssn` but can select other columns. Use:",
+    "options": [
+      { "id": "a", "text": "GRANT SELECT on specific columns (GRANT SELECT (col1, col2) ON tbl TO analyst)" },
+      { "id": "b", "text": "Create 2 tables" },
+      { "id": "c", "text": "IAM policy on Redshift API" },
+      { "id": "d", "text": "VPC endpoint policy" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Redshift supports **column-level GRANTs** natively: `GRANT SELECT (col1, col2) ON tbl TO role;` Analysts querying excluded columns get a permission error.\n\n**b wrong**: Duplication overhead.\n\n**c, d wrong**: Out of scope for SQL permissions.",
+    "references": [
+      "https://docs.aws.amazon.com/redshift/latest/dg/r_GRANT.html"
+    ],
+    "tags": ["redshift", "column-grants"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-093",
+    "slug": "redshift-rls",
+    "topicSlug": "security-governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Amazon Redshift Row-Level Security (RLS) lets you:",
+    "options": [
+      { "id": "a", "text": "Attach policies that filter rows visible to a user/role based on a predicate function" },
+      { "id": "b", "text": "Encrypt individual rows" },
+      { "id": "c", "text": "Replicate rows to other clusters" },
+      { "id": "d", "text": "Compress rows" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Redshift **RLS policies** evaluate a BOOLEAN expression per row (often using CURRENT_USER / context) and only return rows where it's true. Integrates with column permissions for full fine-grained access.\n\n**b, c, d wrong**: Not RLS.",
+    "references": [
+      "https://docs.aws.amazon.com/redshift/latest/dg/t_rls.html"
+    ],
+    "tags": ["redshift-rls"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-094",
+    "slug": "glue-pii-detect",
+    "topicSlug": "security-governance",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "AWS Glue PII Detection transform can:",
+    "options": [
+      { "id": "a", "text": "Identify and optionally mask/hash PII (SSN, credit card, phone, etc.) inline during an ETL job" },
+      { "id": "b", "text": "Block untrusted IPs" },
+      { "id": "c", "text": "Scan CloudWatch logs" },
+      { "id": "d", "text": "Replace Macie" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: The Glue Studio PII transform detects PII using built-in identifiers and can redact, mask, or hash matched values - in-line during ETL, not after landing.\n\n**b, c, d wrong**: Mis-describe the feature.",
+    "references": [
+      "https://docs.aws.amazon.com/glue/latest/dg/detect-PII.html"
+    ],
+    "tags": ["glue-pii"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-095",
+    "slug": "aws-organizations-scp",
+    "topicSlug": "security-governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You want to PREVENT any account in your AWS Organization from creating Redshift clusters in `us-west-2`. Use:",
+    "options": [
+      { "id": "a", "text": "Service Control Policies (SCPs) denying redshift:CreateCluster in the us-west-2 Region" },
+      { "id": "b", "text": "IAM permissions boundaries in each account" },
+      { "id": "c", "text": "AWS Config remediation" },
+      { "id": "d", "text": "CloudTrail filters" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **SCPs** are the only mechanism that can hard-stop every principal (including root) in member accounts from performing specific actions - perfect guardrails for Region / service restrictions.\n\n**b wrong**: Permissions boundaries are per-IAM principal, not org-wide.\n\n**c wrong**: Config remediates after the fact.\n\n**d wrong**: CloudTrail audits, doesn't block.",
+    "references": [
+      "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+    ],
+    "tags": ["scp", "organizations"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-096",
+    "slug": "aws-config-rules",
+    "topicSlug": "security-governance",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You want continuous compliance checks like \"S3 buckets must not be public.\" Use:",
+    "options": [
+      { "id": "a", "text": "AWS Config Rules (managed + custom) with automated remediation actions" },
+      { "id": "b", "text": "CloudWatch alarms" },
+      { "id": "c", "text": "Trusted Advisor" },
+      { "id": "d", "text": "Macie" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **AWS Config** evaluates resources against rules (managed or custom Lambda) and can trigger SSM Automation remediation on non-compliance.\n\n**b, c, d wrong**: Trusted Advisor is periodic best-practice checks; Macie is for PII; CloudWatch isn't a config-compliance engine.",
+    "references": [
+      "https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config.html"
+    ],
+    "tags": ["config", "compliance"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-097",
+    "slug": "glue-workflow-tags-costs",
+    "topicSlug": "operations-support",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You want per-project cost attribution on Glue jobs shared in one account. Do:",
+    "options": [
+      { "id": "a", "text": "Tag jobs with project=X and activate cost allocation tags in Billing" },
+      { "id": "b", "text": "Create one Glue job per project in separate accounts" },
+      { "id": "c", "text": "Ignore tags" },
+      { "id": "d", "text": "Parse CloudTrail for approximations" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Tagging resources with cost-allocation tags activated in Billing lets Cost Explorer and CUR split costs by project without account splitting.\n\n**b wrong**: Overkill.\n\n**c, d wrong**: Inefficient.",
+    "references": [
+      "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html"
+    ],
+    "tags": ["tags", "cost-allocation"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-098",
+    "slug": "emr-spot-instances",
+    "topicSlug": "operations-support",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "On EMR on EC2, which node role SHOULD you avoid putting on Spot instances to prevent job failure on interruption?",
+    "options": [
+      { "id": "a", "text": "Master (primary) node" },
+      { "id": "b", "text": "Core nodes" },
+      { "id": "c", "text": "Task nodes" },
+      { "id": "d", "text": "All roles are equally safe" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Losing the master kills the cluster - always on-demand. Core nodes host HDFS/data so interruption can cost partial data (avoid Spot unless you tolerate HDFS re-replication). **Task nodes** are the natural Spot target.\n\n**b wrong**: Risky but acceptable with mitigations.\n\n**c wrong**: Task nodes are the ideal Spot candidates.\n\n**d wrong**: Not all roles are equal.",
+    "references": [
+      "https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-plan-instances-guidelines.html"
+    ],
+    "tags": ["emr", "spot"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-099",
+    "slug": "redshift-snapshots",
+    "topicSlug": "store-management",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Redshift provides automated backups via:",
+    "options": [
+      { "id": "a", "text": "Automatic incremental snapshots to S3 with configurable retention and cross-Region copy" },
+      { "id": "b", "text": "Full daily SQL dumps only" },
+      { "id": "c", "text": "CloudTrail archive" },
+      { "id": "d", "text": "None; backups require EBS snapshots" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Redshift automatically takes **incremental snapshots** to S3 every 8 hours or every 5 GB of changes (whichever first), with 1-35 day retention. You can also copy snapshots cross-Region for DR.\n\n**b, c, d wrong**: Not Redshift's backup model.",
+    "references": [
+      "https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-snapshots.html"
+    ],
+    "tags": ["redshift", "snapshots"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "aws-de-100",
+    "slug": "zero-etl-aurora-redshift",
+    "topicSlug": "ingestion-transformation",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Aurora to Redshift \"zero-ETL\" integration provides:",
+    "options": [
+      { "id": "a", "text": "Near-real-time replication of Aurora tables into Redshift via an AWS-managed CDC pipeline requiring no custom code" },
+      { "id": "b", "text": "Hourly batch exports via Glue" },
+      { "id": "c", "text": "Only schema copying" },
+      { "id": "d", "text": "Manual UNLOAD/COPY cycles" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Zero-ETL** integrations use AWS-managed CDC to replicate Aurora (MySQL/PostgreSQL) into Redshift with seconds-level freshness - no Glue/DMS/Lambda to build. Similar integrations exist for DynamoDB -> Redshift / OpenSearch.\n\n**b, c, d wrong**: Describe the problem zero-ETL solves.",
+    "references": [
+      "https://docs.aws.amazon.com/redshift/latest/mgmt/zero-etl-using.html"
+    ],
+    "tags": ["zero-etl"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
   }
 ]

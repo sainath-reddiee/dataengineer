@@ -158,5 +158,2031 @@
       "https://docs.databricks.com/aws/en/jobs/"
     ],
     "source": "human"
+  },
+  {
+    "id": "dbd-009",
+    "slug": "lakehouse-platform-overview",
+    "topicSlug": "lakehouse-platform",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Which statement BEST describes the Databricks Lakehouse architecture?",
+    "options": [
+      { "id": "a", "text": "A data warehouse with no support for unstructured data" },
+      { "id": "b", "text": "Unified analytics and ML on open file formats (Delta/Parquet) stored in cloud object storage, with ACID transactions and governance via Unity Catalog" },
+      { "id": "c", "text": "A Hadoop-only compute engine" },
+      { "id": "d", "text": "A proprietary columnar store that locks data into Databricks" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: The lakehouse combines the openness of data lakes (Parquet/Delta on S3/ADLS/GCS) with the reliability of warehouses (ACID via Delta, schema enforcement, governance via Unity Catalog) for BI, SQL, streaming, and ML in one platform.\n\n**a wrong**: Lakehouse fully supports unstructured data (images, PDFs, audio, video).\n\n**c wrong**: Spark is the default engine but the platform is not Hadoop-only.\n\n**d wrong**: Delta Lake is open-source; data remains portable.",
+    "references": [
+      "https://docs.databricks.com/en/lakehouse/index.html"
+    ],
+    "tags": ["lakehouse", "architecture"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-010",
+    "slug": "workspace-catalog-schema-hierarchy",
+    "topicSlug": "lakehouse-platform",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "In Unity Catalog, what is the correct three-level namespace for a table?",
+    "options": [
+      { "id": "a", "text": "workspace.database.table" },
+      { "id": "b", "text": "catalog.schema.table" },
+      { "id": "c", "text": "metastore.database.table" },
+      { "id": "d", "text": "cluster.database.table" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: Unity Catalog uses a **three-level namespace**: `catalog.schema.table`. Multiple catalogs can live under a metastore, and multiple schemas (a.k.a. databases) under a catalog.\n\n**a wrong**: Workspace is not part of the table namespace; Unity Catalog decouples data from workspaces.\n\n**c wrong**: The metastore is the outer container but isn't addressed in table FQN.\n\n**d wrong**: Clusters are compute, not a naming level.",
+    "references": [
+      "https://docs.databricks.com/en/data-governance/unity-catalog/index.html"
+    ],
+    "tags": ["unity-catalog", "namespace"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-011",
+    "slug": "cluster-types-all-purpose-vs-job",
+    "topicSlug": "lakehouse-platform",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You have a nightly ETL job. Which cluster type is MOST cost-efficient and appropriate?",
+    "options": [
+      { "id": "a", "text": "All-purpose cluster kept running 24/7" },
+      { "id": "b", "text": "Job cluster spun up per job run and auto-terminated on completion" },
+      { "id": "c", "text": "SQL warehouse in Serverless mode" },
+      { "id": "d", "text": "Shared interactive cluster with auto-termination off" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: **Job clusters** are created on-demand for a specific job run and destroyed afterward. They are billed at the **Jobs Compute** DBU rate (lower than All-Purpose) and incur zero idle cost.\n\n**a wrong**: All-purpose clusters are priced higher and idle for most of the day - wasteful for nightly batch.\n\n**c wrong**: SQL warehouses are for SQL analytics and BI, not general Spark ETL.\n\n**d wrong**: Shared interactive clusters are for humans, priced as All-Purpose, and leave idle capacity.",
+    "references": [
+      "https://docs.databricks.com/en/compute/index.html"
+    ],
+    "tags": ["cluster", "jobs", "cost"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-012",
+    "slug": "photon-engine-benefit",
+    "topicSlug": "lakehouse-platform",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Photon is a Databricks-native engine. Which workload benefits MOST from enabling Photon?",
+    "options": [
+      { "id": "a", "text": "Small notebook with 100 rows" },
+      { "id": "b", "text": "Large aggregations and joins on Delta tables with SQL and DataFrames" },
+      { "id": "c", "text": "Pure Python pandas code on the driver" },
+      { "id": "d", "text": "PySpark UDF-heavy pipelines with no SQL operators" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: **Photon** is a C++ vectorized execution engine that accelerates Spark SQL and DataFrame operators (filters, joins, aggregations, window functions) on Parquet/Delta. Expect 2-10x speedups on scan-heavy SQL.\n\n**a wrong**: Tiny data has no meaningful Photon benefit.\n\n**c wrong**: Single-node Python doesn't go through Spark.\n\n**d wrong**: Python UDFs fall back to JVM/Python which Photon can't accelerate.",
+    "references": [
+      "https://docs.databricks.com/en/compute/photon.html"
+    ],
+    "tags": ["photon", "performance"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-013",
+    "slug": "dbfs-deprecation-vs-uc-volumes",
+    "topicSlug": "lakehouse-platform",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "For governed file storage accessible via `/Volumes/<catalog>/<schema>/<volume>/` paths in Unity Catalog, you use:",
+    "options": [
+      { "id": "a", "text": "DBFS root (/dbfs)" },
+      { "id": "b", "text": "Unity Catalog Volumes" },
+      { "id": "c", "text": "Mount points via dbutils.fs.mount" },
+      { "id": "d", "text": "Direct cluster-local /tmp" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: **Unity Catalog Volumes** provide governed, namespace-aware storage for non-tabular data (images, PDFs, models, unstructured files). Accessed via `/Volumes/catalog/schema/volume/file.ext`, with UC grants.\n\n**a wrong**: DBFS root is deprecated for governed data; it has no fine-grained ACLs.\n\n**c wrong**: Mounts bypass UC governance.\n\n**d wrong**: /tmp is ephemeral per-driver.",
+    "references": [
+      "https://docs.databricks.com/en/connect/unity-catalog/volumes.html"
+    ],
+    "tags": ["volumes", "unity-catalog"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-014",
+    "slug": "notebook-magics",
+    "topicSlug": "lakehouse-platform",
+    "difficulty": "easy",
+    "type": "multi",
+    "stem": "Which notebook magic commands are valid in a Databricks notebook? (Select all that apply)",
+    "options": [
+      { "id": "a", "text": "%sql" },
+      { "id": "b", "text": "%python" },
+      { "id": "c", "text": "%md" },
+      { "id": "d", "text": "%scala" },
+      { "id": "e", "text": "%bash" }
+    ],
+    "correctIds": ["a", "b", "c", "d"],
+    "explanation": "**a, b, c, d correct**: Databricks notebooks support `%sql`, `%python`, `%r`, `%scala`, `%md`, and `%sh` for shell commands.\n\n**e wrong**: The correct shell magic is **%sh**, not %bash.",
+    "references": [
+      "https://docs.databricks.com/en/notebooks/notebooks-code.html"
+    ],
+    "tags": ["notebook", "magics"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-015",
+    "slug": "cluster-autoscaling",
+    "topicSlug": "lakehouse-platform",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "With cluster autoscaling enabled (min=2, max=10 workers), Databricks uses which metric to add/remove workers?",
+    "options": [
+      { "id": "a", "text": "CPU utilization of drivers" },
+      { "id": "b", "text": "Pending task queue and shuffle activity" },
+      { "id": "c", "text": "Number of notebook cells executed" },
+      { "id": "d", "text": "Random selection per minute" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: Databricks autoscaling monitors **pending Spark tasks** and **shuffle activity** to scale out, and idle executors to scale in. Aggressive autoscaling (Optimized Autoscaling) makes these decisions faster for interactive workloads.\n\n**a wrong**: Driver CPU doesn't reflect executor capacity needs.\n\n**c wrong**: Cell count isn't a scaling signal.\n\n**d wrong**: Scaling is workload-driven, not random.",
+    "references": [
+      "https://docs.databricks.com/en/compute/cluster-config-best-practices.html"
+    ],
+    "tags": ["autoscaling", "cluster"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-016",
+    "slug": "sql-warehouse-sizing",
+    "topicSlug": "lakehouse-platform",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A SQL warehouse shows many queries queued even though the CPU is under 30%. What should you tune FIRST?",
+    "options": [
+      { "id": "a", "text": "Increase cluster size (X-Small -> Small)" },
+      { "id": "b", "text": "Increase max clusters (horizontal scaling / multi-cluster)" },
+      { "id": "c", "text": "Enable Photon" },
+      { "id": "d", "text": "Disable auto-stop" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: Queuing with low CPU implies **concurrency saturation**. SQL warehouses scale horizontally: raise **max clusters** to let the warehouse spin up additional clusters under load.\n\n**a wrong**: Bigger size improves per-query latency, not concurrency.\n\n**c wrong**: Photon speeds up queries but won't add concurrency slots.\n\n**d wrong**: Auto-stop controls idle shutdown; irrelevant to queuing.",
+    "references": [
+      "https://docs.databricks.com/en/sql/admin/sql-endpoints.html"
+    ],
+    "tags": ["sql-warehouse", "concurrency"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-017",
+    "slug": "workspace-assets-repos",
+    "topicSlug": "lakehouse-platform",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Which feature lets you sync Databricks notebooks with a remote Git provider (GitHub/GitLab/Azure DevOps) for version control?",
+    "options": [
+      { "id": "a", "text": "Workspace Files only" },
+      { "id": "b", "text": "Databricks Git folders (formerly Repos)" },
+      { "id": "c", "text": "DBFS zip export" },
+      { "id": "d", "text": "Unity Catalog Volumes" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: **Git folders** let you clone a remote repo into a workspace and pull/commit/push from within Databricks. Supports PAT or OAuth app.\n\n**a wrong**: Workspace Files holds notebooks but has no native Git sync.\n\n**c wrong**: Zip export is manual and one-way.\n\n**d wrong**: Volumes store data, not code.",
+    "references": [
+      "https://docs.databricks.com/en/repos/index.html"
+    ],
+    "tags": ["git-folders", "repos"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-018",
+    "slug": "workspace-identity-federation",
+    "topicSlug": "lakehouse-platform",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Unity Catalog supports identity federation. What does this mean?",
+    "options": [
+      { "id": "a", "text": "Each workspace manages its own users independently." },
+      { "id": "b", "text": "Users and groups are managed at the account level and federated into workspaces." },
+      { "id": "c", "text": "Users must be created in every workspace manually." },
+      { "id": "d", "text": "Only service principals are supported." }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: Identity federation puts user/group management at the **account console** with SCIM provisioning from IdP (Entra ID, Okta), then grants access to workspaces and UC objects centrally.\n\n**a wrong**: Legacy per-workspace identity is the anti-pattern UC identity federation replaces.\n\n**c wrong**: No manual duplication.\n\n**d wrong**: Users, groups, and service principals are all supported.",
+    "references": [
+      "https://docs.databricks.com/en/admin/users-groups/index.html"
+    ],
+    "tags": ["identity-federation", "scim"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-019",
+    "slug": "init-scripts-global-vs-cluster",
+    "topicSlug": "lakehouse-platform",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You want a certain Python package installed on all new clusters in a workspace, before any library install. Which mechanism is RECOMMENDED?",
+    "options": [
+      { "id": "a", "text": "Per-notebook pip install at the top of each notebook" },
+      { "id": "b", "text": "Global init script stored in a workspace file or UC volume" },
+      { "id": "c", "text": "Cluster-scoped libraries only" },
+      { "id": "d", "text": "Modify the DBR image in /etc" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: **Global init scripts** (stored in workspace files / UC volumes since DBFS init scripts deprecated) run on every cluster at startup. Ideal for mandatory packages, certs, or environment setup.\n\n**a wrong**: Per-notebook installs are brittle and don't cover jobs.\n\n**c wrong**: Cluster-scoped libraries must be added to each cluster individually.\n\n**d wrong**: The DBR image is managed by Databricks; you can't edit it.",
+    "references": [
+      "https://docs.databricks.com/en/init-scripts/index.html"
+    ],
+    "tags": ["init-scripts"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-020",
+    "slug": "lakehouse-platform-databricks-assistant",
+    "topicSlug": "lakehouse-platform",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Databricks Assistant (AI/BI Genie) is a context-aware AI helper that:",
+    "options": [
+      { "id": "a", "text": "Replaces the Spark execution engine" },
+      { "id": "b", "text": "Helps generate/explain/fix SQL and PySpark code using workspace context and UC metadata" },
+      { "id": "c", "text": "Runs on customer-managed LLMs only" },
+      { "id": "d", "text": "Is available only on Serverless SQL" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: Databricks Assistant uses UC metadata, notebook context, and recent errors to generate / explain / debug SQL and PySpark, and to suggest visualizations and tests.\n\n**a, c, d wrong**: Not the role of the Assistant.",
+    "references": [
+      "https://docs.databricks.com/en/notebooks/databricks-assistant.html"
+    ],
+    "tags": ["assistant", "ai"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-021",
+    "slug": "delta-acid-transactions",
+    "topicSlug": "delta-lake",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Delta Lake provides ACID transactions on top of cloud object storage. The transaction log is stored:",
+    "options": [
+      { "id": "a", "text": "Inside the Parquet files' footers" },
+      { "id": "b", "text": "In the _delta_log/ subdirectory as JSON commit files (with periodic Parquet checkpoints)" },
+      { "id": "c", "text": "In the Hive metastore only" },
+      { "id": "d", "text": "As rows inside each table" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: Each Delta table has a `_delta_log/` directory containing ordered `0000...json` commit files describing add/remove operations. Every ~10 commits Databricks creates a `.checkpoint.parquet` for faster log replay.\n\n**a, c, d wrong**: Incorrect storage locations.",
+    "references": [
+      "https://docs.databricks.com/en/delta/index.html"
+    ],
+    "tags": ["delta-log", "acid"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-022",
+    "slug": "optimize-and-zorder",
+    "topicSlug": "delta-lake",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You often filter a Delta table by `region` and `customer_id`. Which command co-locates rows so scans prune more files?",
+    "options": [
+      { "id": "a", "text": "OPTIMIZE sales" },
+      { "id": "b", "text": "OPTIMIZE sales ZORDER BY (region, customer_id)" },
+      { "id": "c", "text": "VACUUM sales" },
+      { "id": "d", "text": "ANALYZE TABLE sales COMPUTE STATISTICS" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: `OPTIMIZE ... ZORDER BY` rewrites small files into larger ones and Z-orders rows on the specified columns so min/max stats allow dramatic file skipping for those filters.\n\n**a wrong**: OPTIMIZE alone compacts files but doesn't cluster by columns.\n\n**c wrong**: VACUUM removes old files; unrelated to layout.\n\n**d wrong**: ANALYZE computes stats; doesn't rewrite data.",
+    "references": [
+      "https://docs.databricks.com/en/delta/optimize.html"
+    ],
+    "tags": ["optimize", "zorder"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-023",
+    "slug": "vacuum-retention-safety",
+    "topicSlug": "delta-lake",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You run `VACUUM orders RETAIN 1 HOURS`. Why does Databricks throw a safety error by default?",
+    "options": [
+      { "id": "a", "text": "VACUUM always requires a locked cluster" },
+      { "id": "b", "text": "Retention under 7 days can delete files needed for concurrent readers / Time Travel; override with spark.databricks.delta.retentionDurationCheck.enabled = false" },
+      { "id": "c", "text": "VACUUM is not supported on external tables" },
+      { "id": "d", "text": "VACUUM requires MANAGE grant only" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: The default retention safety is **7 days** (168 hours) to protect active readers and Time Travel. Shortening below that requires disabling the retention check - acknowledging the risk.\n\n**a, c, d wrong**: Mis-state VACUUM semantics.",
+    "references": [
+      "https://docs.databricks.com/en/sql/language-manual/delta-vacuum.html"
+    ],
+    "tags": ["vacuum", "retention"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-024",
+    "slug": "delta-schema-evolution",
+    "topicSlug": "delta-lake",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Which write option enables automatic ADDITION of new columns (but not rename or delete)?",
+    "options": [
+      { "id": "a", "text": ".option(\"mergeSchema\", \"true\")" },
+      { "id": "b", "text": ".option(\"overwriteSchema\", \"true\")" },
+      { "id": "c", "text": ".option(\"schemaMode\", \"strict\")" },
+      { "id": "d", "text": ".option(\"allowAny\", \"true\")" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `mergeSchema=true` allows append/merge writes to add new columns to the table schema. Old columns keep their types.\n\n**b wrong**: `overwriteSchema=true` replaces the schema entirely - destructive and used only for full table rewrites.\n\n**c, d wrong**: Not valid Delta options.",
+    "references": [
+      "https://docs.databricks.com/en/delta/update-schema.html"
+    ],
+    "tags": ["schema-evolution", "mergeSchema"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-025",
+    "slug": "delta-time-travel",
+    "topicSlug": "delta-lake",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Which syntax queries a Delta table as of version 42?",
+    "options": [
+      { "id": "a", "text": "SELECT * FROM sales VERSION AS OF 42" },
+      { "id": "b", "text": "SELECT * FROM sales AT VERSION 42" },
+      { "id": "c", "text": "SELECT * FROM sales@version=42" },
+      { "id": "d", "text": "SELECT * FROM sales TIMETRAVEL(42)" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Delta supports `VERSION AS OF <n>` and `TIMESTAMP AS OF '<ts>'`. You can also use the path suffix `@v42` in the DataFrame API.\n\n**b, c, d wrong**: Not valid Delta Time Travel syntax.",
+    "references": [
+      "https://docs.databricks.com/en/delta/history.html"
+    ],
+    "tags": ["time-travel", "versioning"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-026",
+    "slug": "delta-merge-upsert",
+    "topicSlug": "delta-lake",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "In a Delta MERGE, you want to UPDATE on match, INSERT on no-match, and DELETE rows that no longer exist in the source. Which feature do you need?",
+    "options": [
+      { "id": "a", "text": "WHEN NOT MATCHED BY SOURCE THEN DELETE" },
+      { "id": "b", "text": "A separate DELETE statement; MERGE can't delete" },
+      { "id": "c", "text": "CREATE OR REPLACE TABLE" },
+      { "id": "d", "text": "DROP PARTITION" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Delta's MERGE supports `WHEN MATCHED THEN UPDATE`, `WHEN NOT MATCHED THEN INSERT`, and `WHEN NOT MATCHED BY SOURCE THEN DELETE / UPDATE` - covering full type-1 sync.\n\n**b wrong**: MERGE supports deletes natively.\n\n**c wrong**: CREATE OR REPLACE is destructive and loses history.\n\n**d wrong**: Partition ops aren't row-level.",
+    "references": [
+      "https://docs.databricks.com/en/delta/merge.html"
+    ],
+    "tags": ["merge", "upsert"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-027",
+    "slug": "delta-cdf-change-data-feed",
+    "topicSlug": "delta-lake",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Change Data Feed (CDF) on a Delta table exposes:",
+    "options": [
+      { "id": "a", "text": "Row-level inserts/updates/deletes with `_change_type`, `_commit_version`, `_commit_timestamp` columns" },
+      { "id": "b", "text": "Only updated rows, no inserts or deletes" },
+      { "id": "c", "text": "Schema changes only" },
+      { "id": "d", "text": "A snapshot at a given timestamp" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Enable with `TBLPROPERTIES (delta.enableChangeDataFeed = true)`. Consume via `table_changes('db.tbl', startingVersion, endingVersion)` to get per-row changes with type, version, and timestamp.\n\n**b wrong**: CDF covers all three DML types.\n\n**c wrong**: Schema changes appear in _delta_log, not CDF.\n\n**d wrong**: Snapshots use Time Travel, not CDF.",
+    "references": [
+      "https://docs.databricks.com/en/delta/delta-change-data-feed.html"
+    ],
+    "tags": ["cdf", "change-data-feed"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-028",
+    "slug": "deletion-vectors",
+    "topicSlug": "delta-lake",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Deletion Vectors in Delta Lake improve DELETE/UPDATE/MERGE performance by:",
+    "options": [
+      { "id": "a", "text": "Storing a list of deleted row positions per file, avoiding immediate Parquet rewrites" },
+      { "id": "b", "text": "Physically removing rows from Parquet instantly" },
+      { "id": "c", "text": "Disabling Time Travel" },
+      { "id": "d", "text": "Converting Delta tables to Iceberg" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Deletion Vectors (DVs) record row positions to hide instead of rewriting entire Parquet files on each small delete. Reorgs consolidate DVs back into files later. Enable via `TBLPROPERTIES (delta.enableDeletionVectors = true)`.\n\n**b wrong**: That's the legacy behavior DVs avoid.\n\n**c wrong**: DVs are compatible with Time Travel.\n\n**d wrong**: Unrelated to format conversion.",
+    "references": [
+      "https://docs.databricks.com/en/delta/deletion-vectors.html"
+    ],
+    "tags": ["deletion-vectors"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-029",
+    "slug": "delta-partitioning-vs-liquid",
+    "topicSlug": "delta-lake",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Liquid Clustering replaces traditional Hive-style partitioning because:",
+    "options": [
+      { "id": "a", "text": "It requires manual partition pruning" },
+      { "id": "b", "text": "It automatically co-locates data on clustering columns without rigid directory partitions, and allows changing clustering keys later" },
+      { "id": "c", "text": "It disables Delta ACID" },
+      { "id": "d", "text": "It is only for streaming" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: **Liquid Clustering** uses file-level clustering metadata instead of directory partitions. Files self-organize on the clustering keys, pruning works automatically, and you can change keys without rewriting everything.\n\n**a, c, d wrong**: Mis-state Liquid Clustering behavior.",
+    "references": [
+      "https://docs.databricks.com/en/delta/clustering.html"
+    ],
+    "tags": ["liquid-clustering"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-030",
+    "slug": "delta-concurrent-writes",
+    "topicSlug": "delta-lake",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Two concurrent jobs both write to the same Delta table. Job A appends new rows; Job B deletes old rows where `date < '2024-01-01'`. Will they conflict?",
+    "options": [
+      { "id": "a", "text": "Yes, always; Delta serializes all writes" },
+      { "id": "b", "text": "No, because append and a disjoint delete on different files do not conflict under Delta's optimistic concurrency" },
+      { "id": "c", "text": "Yes, because Delta has no conflict detection" },
+      { "id": "d", "text": "Only if partition columns differ" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: Delta uses **optimistic concurrency control**. Commit A and B see non-overlapping file sets (Job A adds new files, Job B removes old files); the second commit rebases over the first. Conflicts occur only on overlapping file modifications.\n\n**a, c, d wrong**: Mis-characterize Delta's concurrency model.",
+    "references": [
+      "https://docs.databricks.com/en/optimizations/isolation-level.html"
+    ],
+    "tags": ["concurrency", "optimistic"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-031",
+    "slug": "delta-generated-columns",
+    "topicSlug": "delta-lake",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You want a `date_partition` column automatically derived from `event_ts` without writing ETL logic. Which Delta feature?",
+    "options": [
+      { "id": "a", "text": "Generated columns via `GENERATED ALWAYS AS (CAST(event_ts AS DATE))`" },
+      { "id": "b", "text": "A scheduled job updating the column" },
+      { "id": "c", "text": "Materialized view only" },
+      { "id": "d", "text": "It's not possible" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Delta **generated columns** are defined with `GENERATED ALWAYS AS (<expr>)` and are computed at write time. Delta can also leverage them for partition pruning on the underlying expression.\n\n**b, c, d wrong**: Overly complex or incorrect.",
+    "references": [
+      "https://docs.databricks.com/en/delta/generated-columns.html"
+    ],
+    "tags": ["generated-columns"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-032",
+    "slug": "delta-constraints",
+    "topicSlug": "delta-lake",
+    "difficulty": "medium",
+    "type": "multi",
+    "stem": "Which constraint types are ENFORCED at write time on Delta tables? (Select all that apply)",
+    "options": [
+      { "id": "a", "text": "NOT NULL" },
+      { "id": "b", "text": "CHECK constraints" },
+      { "id": "c", "text": "PRIMARY KEY" },
+      { "id": "d", "text": "FOREIGN KEY" }
+    ],
+    "correctIds": ["a", "b"],
+    "explanation": "**a, b correct**: Delta enforces NOT NULL and CHECK constraints at write time. Violations cause the write to fail.\n\n**c, d wrong**: PRIMARY KEY and FOREIGN KEY can be declared on Delta tables in Unity Catalog but are **informational only** (not enforced). They help BI tools and query planning.",
+    "references": [
+      "https://docs.databricks.com/en/tables/constraints.html"
+    ],
+    "tags": ["constraints", "check"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-033",
+    "slug": "delta-small-file-problem",
+    "topicSlug": "delta-lake",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Your streaming writes produced 500,000 small Parquet files in a Delta table. Queries are slow. Which remediation is MOST effective?",
+    "options": [
+      { "id": "a", "text": "Enable auto-optimize (optimizeWrite + autoCompact) and/or run OPTIMIZE periodically" },
+      { "id": "b", "text": "Disable statistics collection" },
+      { "id": "c", "text": "Drop all indexes" },
+      { "id": "d", "text": "Switch to CSV" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Enable `delta.autoOptimize.optimizeWrite = true` and `delta.autoOptimize.autoCompact = true` so Databricks writes larger files and compacts small ones post-commit. Complement with scheduled `OPTIMIZE` for long-term maintenance.\n\n**b, c, d wrong**: Degrade performance further.",
+    "references": [
+      "https://docs.databricks.com/en/delta/tune-file-size.html"
+    ],
+    "tags": ["auto-optimize", "small-files"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-034",
+    "slug": "delta-drop-recreate-vs-restore",
+    "topicSlug": "delta-lake",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "An analyst accidentally ran DELETE FROM orders; 2 million rows gone. The table has default retention. Which recovery is simplest?",
+    "options": [
+      { "id": "a", "text": "Run RESTORE TABLE orders TO VERSION AS OF <prior_version>" },
+      { "id": "b", "text": "Drop the table and re-ingest from source" },
+      { "id": "c", "text": "Rerun the DELETE in reverse" },
+      { "id": "d", "text": "Contact Databricks support for a backup" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `RESTORE TABLE ... TO VERSION AS OF n` atomically reverts the Delta table to a prior version within the retention window. Simple, fast, no data movement.\n\n**b, c, d wrong**: Overly disruptive or unnecessary given Delta's native history.",
+    "references": [
+      "https://docs.databricks.com/en/delta/history.html#restore"
+    ],
+    "tags": ["restore", "recovery"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-035",
+    "slug": "delta-iceberg-reads",
+    "topicSlug": "delta-lake",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Uniform (Universal Format) on Delta lets external engines read the table as:",
+    "options": [
+      { "id": "a", "text": "Apache Iceberg (and Hudi) via generated metadata in the same directory" },
+      { "id": "b", "text": "Only other Delta clients" },
+      { "id": "c", "text": "CSV exports" },
+      { "id": "d", "text": "A REST endpoint" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Delta UniForm** generates Iceberg (and Hudi) metadata alongside the Delta log so Iceberg-native engines (Snowflake, Trino, Athena) can read the same underlying Parquet without a copy.\n\n**b, c, d wrong**: Not what UniForm does.",
+    "references": [
+      "https://docs.databricks.com/en/delta/uniform.html"
+    ],
+    "tags": ["uniform", "iceberg"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-036",
+    "slug": "delta-default-isolation",
+    "topicSlug": "delta-lake",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "What is the DEFAULT isolation level for Delta tables on Databricks?",
+    "options": [
+      { "id": "a", "text": "READ UNCOMMITTED" },
+      { "id": "b", "text": "WriteSerializable" },
+      { "id": "c", "text": "Snapshot" },
+      { "id": "d", "text": "NONE" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: Default isolation is **WriteSerializable** - reads see a consistent snapshot; concurrent writes are ordered such that the outcome is equivalent to some serial execution of writes. You can opt into Serializable (stricter) via table property `delta.isolationLevel`.\n\n**a, c, d wrong**: Mis-state the default.",
+    "references": [
+      "https://docs.databricks.com/en/optimizations/isolation-level.html"
+    ],
+    "tags": ["isolation", "serializable"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-037",
+    "slug": "delta-table-properties",
+    "topicSlug": "delta-lake",
+    "difficulty": "medium",
+    "type": "multi",
+    "stem": "Which of the following are VALID Delta table properties? (Select all that apply)",
+    "options": [
+      { "id": "a", "text": "delta.logRetentionDuration" },
+      { "id": "b", "text": "delta.deletedFileRetentionDuration" },
+      { "id": "c", "text": "delta.enableChangeDataFeed" },
+      { "id": "d", "text": "delta.queryTimeout" }
+    ],
+    "correctIds": ["a", "b", "c"],
+    "explanation": "**a, b, c correct**: All three are real Delta table properties controlling log retention, deleted-file retention (VACUUM floor), and CDF enablement.\n\n**d wrong**: No such property - query timeout is a session/cluster concern, not a table property.",
+    "references": [
+      "https://docs.databricks.com/en/delta/table-properties.html"
+    ],
+    "tags": ["table-properties"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-038",
+    "slug": "delta-external-table-location",
+    "topicSlug": "delta-lake",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You need to create a Delta table at an external UC-governed location. Which clause do you use?",
+    "options": [
+      { "id": "a", "text": "CREATE TABLE foo USING DELTA LOCATION 's3://mybucket/foo'" },
+      { "id": "b", "text": "CREATE MANAGED TABLE foo USING DELTA" },
+      { "id": "c", "text": "CREATE TABLE foo USING DELTA STORED AS S3" },
+      { "id": "d", "text": "CREATE EXTERNAL TABLE foo (schema) LOCATION '...'" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `LOCATION` clause makes the table external. UC requires the location to be inside a registered external location + storage credential.\n\n**b wrong**: Omitting LOCATION creates a managed table.\n\n**c wrong**: `STORED AS` is Hive syntax; not used for Delta in Databricks.\n\n**d wrong**: Legacy Hive syntax; modern UC uses `USING DELTA` plus `LOCATION`.",
+    "references": [
+      "https://docs.databricks.com/en/sql/language-manual/sql-ref-syntax-ddl-create-table-using.html"
+    ],
+    "tags": ["external-table", "location"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-039",
+    "slug": "delta-shallow-vs-deep-clone",
+    "topicSlug": "delta-lake",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "`CREATE TABLE dev.orders SHALLOW CLONE prod.orders;` produces:",
+    "options": [
+      { "id": "a", "text": "A new table that copies all data files" },
+      { "id": "b", "text": "A new table that references the source's data files until new writes happen on either side" },
+      { "id": "c", "text": "A symbolic link; both tables must stay in sync" },
+      { "id": "d", "text": "An error; shallow clones are not supported on Delta" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: A **shallow clone** copies metadata only; data files are shared until either side writes (at which point new files are written, originals are preserved for the original table). **Deep clones** copy data.\n\n**a wrong**: That's a deep clone.\n\n**c wrong**: Clones are independent objects, not symlinks.\n\n**d wrong**: Both shallow and deep clones are supported.",
+    "references": [
+      "https://docs.databricks.com/en/delta/clone.html"
+    ],
+    "tags": ["shallow-clone", "deep-clone"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-040",
+    "slug": "delta-streaming-source-checkpointing",
+    "topicSlug": "delta-lake",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A streaming query reads a Delta table as a source. What tracks progress so restarts don't reprocess data?",
+    "options": [
+      { "id": "a", "text": "A per-stream checkpoint directory storing committed Delta versions" },
+      { "id": "b", "text": "The _delta_log alone" },
+      { "id": "c", "text": "Spark's in-memory state only" },
+      { "id": "d", "text": "Nothing - streams always reprocess" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Every Structured Streaming query writes offsets/commits to a `checkpointLocation`. For Delta sources, Spark records the last-processed Delta version so restarts pick up cleanly.\n\n**b, c, d wrong**: Mis-state the streaming progress model.",
+    "references": [
+      "https://docs.databricks.com/en/structured-streaming/delta-lake.html"
+    ],
+    "tags": ["streaming", "checkpoint"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-041",
+    "slug": "delta-merge-performance",
+    "topicSlug": "delta-lake",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A nightly MERGE into a 10 TB Delta table is slow. Profile shows MERGE rewrites huge files for only a handful of matched keys. Which change is MOST likely to help?",
+    "options": [
+      { "id": "a", "text": "Z-ORDER / cluster the target by the merge key so affected rows cluster in fewer files" },
+      { "id": "b", "text": "Disable Photon" },
+      { "id": "c", "text": "Increase shuffle partitions to 50,000" },
+      { "id": "d", "text": "Drop indexes" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: If matching keys are scattered, every relevant file must be rewritten. Clustering by the merge key concentrates matches into fewer files, reducing rewrite amplification. Liquid Clustering is ideal here.\n\n**b wrong**: Photon speeds MERGE; don't disable it.\n\n**c wrong**: Excess shuffle partitions cause small-file issues.\n\n**d wrong**: Delta doesn't have classic indexes.",
+    "references": [
+      "https://docs.databricks.com/en/delta/merge.html#performance-tuning"
+    ],
+    "tags": ["merge", "performance"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-042",
+    "slug": "delta-snapshot-isolation-read",
+    "topicSlug": "delta-lake",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A long-running read scan starts, then a writer commits new rows mid-scan. What does the reader see?",
+    "options": [
+      { "id": "a", "text": "A consistent snapshot from the start-of-scan Delta version - new rows are invisible." },
+      { "id": "b", "text": "A mix of old and new rows." },
+      { "id": "c", "text": "An error." },
+      { "id": "d", "text": "The reader automatically restarts." }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Delta snapshot isolation pins the reader to the Delta version observed at scan start. The writer's new commit is visible only to subsequent queries.\n\n**b, c, d wrong**: Not the Delta semantic.",
+    "references": [
+      "https://docs.databricks.com/en/optimizations/isolation-level.html"
+    ],
+    "tags": ["snapshot-isolation"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-043",
+    "slug": "spark-dataframe-vs-rdd",
+    "topicSlug": "spark-etl",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Which statement is TRUE of the DataFrame API vs RDDs?",
+    "options": [
+      { "id": "a", "text": "RDDs are recommended for most new ETL code; DataFrames are legacy" },
+      { "id": "b", "text": "DataFrames leverage the Catalyst optimizer and Tungsten execution; RDDs bypass both" },
+      { "id": "c", "text": "DataFrames and RDDs have identical APIs and performance" },
+      { "id": "d", "text": "Only RDDs support SQL" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: DataFrames/Datasets are the **preferred** API. Catalyst optimizes the logical plan (predicate pushdown, column pruning, join reordering) and Tungsten generates efficient native code. RDDs are the low-level, un-optimized primitive.\n\n**a, c, d wrong**: Mis-state the modern Spark guidance.",
+    "references": [
+      "https://docs.databricks.com/en/spark/latest/dataframes-datasets/index.html"
+    ],
+    "tags": ["dataframe", "rdd", "catalyst"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-044",
+    "slug": "spark-lazy-evaluation",
+    "topicSlug": "spark-etl",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Calling `df.filter(...).select(...)` in Spark does NOT execute immediately. What triggers execution?",
+    "options": [
+      { "id": "a", "text": "An **action** such as .count(), .show(), .collect(), or .write" },
+      { "id": "b", "text": "Every transformation triggers a job" },
+      { "id": "c", "text": "Only saving to Delta" },
+      { "id": "d", "text": "A keyboard shortcut" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Spark uses **lazy evaluation**. Transformations (select/filter/join/withColumn) build a logical plan; only **actions** (count, show, collect, write, saveAsTable) submit a job.\n\n**b wrong**: Transformations build a plan, not execute.\n\n**c wrong**: Any action triggers, not just Delta writes.\n\n**d wrong**: Absurd.",
+    "references": [
+      "https://docs.databricks.com/en/pyspark/basics.html"
+    ],
+    "tags": ["lazy-evaluation", "actions"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-045",
+    "slug": "spark-broadcast-join",
+    "topicSlug": "spark-etl",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A join between a 1 TB fact table and a 50 MB dimension table is slow due to shuffle. Which optimization should you apply?",
+    "options": [
+      { "id": "a", "text": "Use a broadcast join: broadcast(dim) or set spark.sql.autoBroadcastJoinThreshold high enough" },
+      { "id": "b", "text": "Repartition the fact to 100,000 partitions" },
+      { "id": "c", "text": "Switch to CSV" },
+      { "id": "d", "text": "Disable Photon" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Broadcasting the small side ships it to every executor in memory; the large side is read in-place without a shuffle. Use `broadcast(df)` hint or rely on AQE to auto-broadcast if under threshold.\n\n**b, c, d wrong**: Make performance worse.",
+    "references": [
+      "https://docs.databricks.com/en/optimizations/bi.html"
+    ],
+    "tags": ["broadcast-join", "shuffle"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-046",
+    "slug": "spark-aqe-adaptive",
+    "topicSlug": "spark-etl",
+    "difficulty": "medium",
+    "type": "multi",
+    "stem": "Adaptive Query Execution (AQE) can do which of the following at runtime? (Select all that apply)",
+    "options": [
+      { "id": "a", "text": "Convert sort-merge joins to broadcast joins based on actual sizes" },
+      { "id": "b", "text": "Coalesce small shuffle partitions" },
+      { "id": "c", "text": "Handle data skew by splitting skewed partitions" },
+      { "id": "d", "text": "Rewrite SQL to target a different warehouse" }
+    ],
+    "correctIds": ["a", "b", "c"],
+    "explanation": "**a, b, c correct**: AQE gathers runtime stats at shuffle stage boundaries and adapts: demote SMJ to BHJ when the actual side is small, coalesce over-partitioned shuffles, and split skewed partitions into sub-tasks.\n\n**d wrong**: AQE does not rewrite targets; it tunes execution.",
+    "references": [
+      "https://docs.databricks.com/en/optimizations/aqe.html"
+    ],
+    "tags": ["aqe", "skew"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-047",
+    "slug": "spark-partition-skew",
+    "topicSlug": "spark-etl",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "One partition in your join holds 80% of the data (skew). Which technique DIRECTLY addresses this?",
+    "options": [
+      { "id": "a", "text": "Salting the skewed key (e.g., append random suffix to split into multiple sub-keys)" },
+      { "id": "b", "text": "Reducing shuffle partitions to 1" },
+      { "id": "c", "text": "Dropping indexes" },
+      { "id": "d", "text": "Using RDDs" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Salting** splits a hot key across multiple sub-keys (e.g., original_key + '_' + rand() % 10), distributing load across executors. AQE skew handling automates this for many cases; manual salting helps for the stubborn ones.\n\n**b, c, d wrong**: Do not address skew.",
+    "references": [
+      "https://docs.databricks.com/en/optimizations/aqe.html#skew-join"
+    ],
+    "tags": ["skew", "salting"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-048",
+    "slug": "spark-cache-vs-persist",
+    "topicSlug": "spark-etl",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "What is the difference between `df.cache()` and `df.persist(StorageLevel.MEMORY_AND_DISK)`?",
+    "options": [
+      { "id": "a", "text": "cache() is shorthand for persist(MEMORY_AND_DISK); both are equivalent by default" },
+      { "id": "b", "text": "cache() is faster because it is memory-only and never spills" },
+      { "id": "c", "text": "persist() is only for RDDs" },
+      { "id": "d", "text": "cache() disables Catalyst" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `cache()` is a shortcut for `persist(StorageLevel.MEMORY_AND_DISK)` in DataFrame API. Both deserialize lazily on first action. Use persist() when you need a different storage level (e.g., DISK_ONLY).\n\n**b, c, d wrong**: Mis-state cache semantics.",
+    "references": [
+      "https://docs.databricks.com/en/optimizations/cache.html"
+    ],
+    "tags": ["cache", "persist"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-049",
+    "slug": "spark-withcolumn-performance",
+    "topicSlug": "spark-etl",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A pipeline calls `.withColumn(...)` 40 times in a loop on the same DataFrame, each adding one column. Queries got drastically slower. What is the idiomatic fix?",
+    "options": [
+      { "id": "a", "text": "Collapse into a single .select() or .withColumns({...}) call" },
+      { "id": "b", "text": "Replace with .dropDuplicates()" },
+      { "id": "c", "text": "Switch to RDDs" },
+      { "id": "d", "text": "Add .cache() between every step" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Many chained `withColumn` calls build up a long logical plan Catalyst has to reason about. Use a single `select(*columns, new_col_1, new_col_2, ...)` or the batched `withColumns({...})` (Spark 3.3+).\n\n**b, c, d wrong**: Don't address the root cause.",
+    "references": [
+      "https://docs.databricks.com/en/optimizations/performance.html"
+    ],
+    "tags": ["withColumn", "performance"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-050",
+    "slug": "spark-udfs-python-vs-pandas",
+    "topicSlug": "spark-etl",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You need a custom transformation in Python. Which option is MOST performant for large data?",
+    "options": [
+      { "id": "a", "text": "Row-at-a-time Python UDF" },
+      { "id": "b", "text": "Pandas UDF (vectorized, Arrow-based)" },
+      { "id": "c", "text": "SQL built-ins if available, otherwise Pandas UDF" },
+      { "id": "d", "text": "Convert to RDD and use map()" }
+    ],
+    "correctIds": ["c"],
+    "explanation": "**c correct**: Rank: **native SQL/DataFrame > Pandas UDF > Python UDF**. Always try built-ins first; they run in the JVM with Catalyst optimization. If you must write custom, Pandas UDFs use Arrow batches and vectorized Python, avoiding per-row serialization. Row-at-a-time Python UDFs are slowest.\n\n**a wrong**: Slowest option.\n\n**b wrong**: Good fallback, but native first.\n\n**d wrong**: RDDs bypass Catalyst.",
+    "references": [
+      "https://docs.databricks.com/en/udf/pandas.html"
+    ],
+    "tags": ["udf", "pandas-udf"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-051",
+    "slug": "spark-joins-shuffle-hash",
+    "topicSlug": "spark-etl",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Which Spark join strategy is the DEFAULT for large-large joins when neither side fits for broadcast?",
+    "options": [
+      { "id": "a", "text": "Sort-merge join (SMJ)" },
+      { "id": "b", "text": "Nested loop join" },
+      { "id": "c", "text": "Broadcast hash join" },
+      { "id": "d", "text": "Cartesian product" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: For two large tables, Spark chooses **sort-merge join** by default: both sides are shuffled and sorted on the join key, then merged.\n\n**b, d wrong**: Used only for non-equi joins; always avoid if possible.\n\n**c wrong**: Only when one side is small (under broadcast threshold).",
+    "references": [
+      "https://docs.databricks.com/en/optimizations/bi.html"
+    ],
+    "tags": ["smj", "join-strategy"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-052",
+    "slug": "spark-file-formats",
+    "topicSlug": "spark-etl",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Which file format is RECOMMENDED as the default for new analytic tables on Databricks?",
+    "options": [
+      { "id": "a", "text": "CSV" },
+      { "id": "b", "text": "JSON" },
+      { "id": "c", "text": "Delta (Parquet-based, open-source)" },
+      { "id": "d", "text": "Avro" }
+    ],
+    "correctIds": ["c"],
+    "explanation": "**c correct**: Delta is the default recommendation: columnar, compressed, statistics-rich, ACID, supports Time Travel, schema evolution, and streaming.\n\n**a, b wrong**: Row-oriented text formats have poor analytic performance.\n\n**d wrong**: Avro is row-based; fine for streams/Kafka serialization, not analytic tables.",
+    "references": [
+      "https://docs.databricks.com/en/delta/index.html"
+    ],
+    "tags": ["delta", "file-format"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-053",
+    "slug": "spark-sql-catalog-functions",
+    "topicSlug": "spark-etl",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You want to check if a table exists in UC before creating it. Which SQL is idiomatic?",
+    "options": [
+      { "id": "a", "text": "CREATE TABLE IF NOT EXISTS catalog.schema.tbl ..." },
+      { "id": "b", "text": "BEGIN TRY ... CATCH" },
+      { "id": "c", "text": "IF EXISTS (SELECT 1 FROM tables...) THEN ..." },
+      { "id": "d", "text": "MERGE INTO schema.tbl ..." }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Spark SQL supports `CREATE TABLE IF NOT EXISTS`. Also `CREATE OR REPLACE TABLE` for idempotent rebuilds, and `DROP TABLE IF EXISTS`.\n\n**b, c wrong**: Not Spark SQL syntax.\n\n**d wrong**: MERGE is for data, not table existence.",
+    "references": [
+      "https://docs.databricks.com/en/sql/language-manual/sql-ref-syntax-ddl-create-table-using.html"
+    ],
+    "tags": ["ddl", "if-not-exists"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-054",
+    "slug": "spark-dbr-runtime-selection",
+    "topicSlug": "spark-etl",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You have a Machine Learning workload needing pinned library versions. Which Databricks Runtime (DBR) variant do you pick?",
+    "options": [
+      { "id": "a", "text": "Standard DBR" },
+      { "id": "b", "text": "DBR ML (includes MLflow, XGBoost, scikit-learn, etc.)" },
+      { "id": "c", "text": "Photon DBR" },
+      { "id": "d", "text": "DBR Light" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: **DBR ML** ships curated ML libraries pinned to tested versions (MLflow, PyTorch, TensorFlow, scikit-learn, XGBoost) plus GPU variants when needed.\n\n**a wrong**: Standard has Spark but not pre-installed ML stack.\n\n**c wrong**: Photon is an engine flag, not an ML runtime.\n\n**d wrong**: DBR Light is deprecated.",
+    "references": [
+      "https://docs.databricks.com/en/release-notes/runtime/index.html"
+    ],
+    "tags": ["dbr", "ml-runtime"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-055",
+    "slug": "spark-bucketing-deprecation",
+    "topicSlug": "spark-etl",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Hive-style bucketing in Spark is generally NOT recommended on Databricks today. Which feature should you use instead?",
+    "options": [
+      { "id": "a", "text": "Liquid Clustering or Z-ORDER on Delta tables" },
+      { "id": "b", "text": "DISTRIBUTE BY clause in every query" },
+      { "id": "c", "text": "Manual partitioning on file name" },
+      { "id": "d", "text": "No replacement is needed" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: On Delta, Liquid Clustering (preferred) or Z-ORDER provides data co-location with file-level metadata and doesn't require pre-declaring a bucket count that becomes stale as data grows.\n\n**b, c, d wrong**: Don't replicate bucketing benefits.",
+    "references": [
+      "https://docs.databricks.com/en/delta/clustering.html"
+    ],
+    "tags": ["bucketing", "liquid-clustering"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-056",
+    "slug": "spark-repartition-vs-coalesce",
+    "topicSlug": "spark-etl",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "What is the functional difference between `df.repartition(200)` and `df.coalesce(200)`?",
+    "options": [
+      { "id": "a", "text": "repartition triggers a full shuffle (can increase or decrease partitions); coalesce only reduces partitions and avoids a shuffle" },
+      { "id": "b", "text": "Both are identical" },
+      { "id": "c", "text": "coalesce triggers a shuffle; repartition does not" },
+      { "id": "d", "text": "Neither works on DataFrames" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `repartition(n)` does a full shuffle and distributes rows evenly. `coalesce(n)` merges existing partitions without a shuffle but only **decreases** count and may yield uneven partition sizes. Use coalesce when shrinking before writing.\n\n**b, c, d wrong**: Reverse or mis-state the semantics.",
+    "references": [
+      "https://docs.databricks.com/en/pyspark/basics.html"
+    ],
+    "tags": ["repartition", "coalesce"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-057",
+    "slug": "spark-window-functions",
+    "topicSlug": "spark-etl",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You need the 7-day rolling sum of sales per store. Which construct is idiomatic?",
+    "options": [
+      { "id": "a", "text": "GROUP BY store, week" },
+      { "id": "b", "text": "A window: sum(sales) OVER (PARTITION BY store ORDER BY date RANGE BETWEEN INTERVAL 6 DAYS PRECEDING AND CURRENT ROW)" },
+      { "id": "c", "text": "Self-join on 7 day pairs" },
+      { "id": "d", "text": "Pandas UDF" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: Window functions with `RANGE BETWEEN ... PRECEDING AND CURRENT ROW` compute rolling aggregations efficiently in SQL/DataFrames.\n\n**a wrong**: Weekly buckets are not rolling.\n\n**c wrong**: Self-join is a heavier alternative.\n\n**d wrong**: Custom UDF isn't needed; SQL supports this natively.",
+    "references": [
+      "https://docs.databricks.com/en/sql/language-manual/sql-ref-syntax-qry-select-window.html"
+    ],
+    "tags": ["window-functions"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-058",
+    "slug": "spark-driver-memory",
+    "topicSlug": "spark-etl",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A pipeline fails with a driver OOM after `df.toPandas()`. What is the ROOT cause?",
+    "options": [
+      { "id": "a", "text": "toPandas() collects all data to the driver in memory" },
+      { "id": "b", "text": "Pandas has no OOM protection" },
+      { "id": "c", "text": "UDF memory leak" },
+      { "id": "d", "text": "Shuffle spill on executors" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `toPandas()` is essentially a giant `.collect()` - the entire DataFrame is materialized on the driver JVM. For anything beyond a few MB use Pandas-on-Spark (`pyspark.pandas`) which runs distributed.\n\n**b, c, d wrong**: Not the cause.",
+    "references": [
+      "https://docs.databricks.com/en/pandas/pandas-on-spark.html"
+    ],
+    "tags": ["driver-oom", "toPandas"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-059",
+    "slug": "spark-catalyst-pushdown",
+    "topicSlug": "spark-etl",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Predicate pushdown on Parquet/Delta means:",
+    "options": [
+      { "id": "a", "text": "The engine applies filters at the scan level, using Parquet row-group statistics and Delta file stats to skip data that can't match" },
+      { "id": "b", "text": "All predicates run post-scan in memory" },
+      { "id": "c", "text": "The warehouse pushes queries to the SQL layer" },
+      { "id": "d", "text": "Cloud storage evaluates SQL" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: With pushdown, Catalyst communicates filters to the scan; the reader uses column min/max and bloom filters (Parquet) plus Delta's per-file stats to skip whole row groups / files. Column pruning also reduces I/O.\n\n**b, c, d wrong**: Mis-describe pushdown.",
+    "references": [
+      "https://docs.databricks.com/en/optimizations/file-pruning.html"
+    ],
+    "tags": ["pushdown", "catalyst"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-060",
+    "slug": "spark-jdbc-read-parallelism",
+    "topicSlug": "spark-etl",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "When reading a 100-million-row PostgreSQL table via JDBC, which options unlock parallel reads?",
+    "options": [
+      { "id": "a", "text": "partitionColumn, lowerBound, upperBound, numPartitions" },
+      { "id": "b", "text": "broadcast(true)" },
+      { "id": "c", "text": "spark.sql.shuffle.partitions only" },
+      { "id": "d", "text": "None; JDBC is always single-threaded" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: JDBC parallel read requires specifying a **numeric partition column**, the value range (lowerBound/upperBound), and the desired numPartitions. Spark then issues N concurrent range queries.\n\n**b, c wrong**: Unrelated.\n\n**d wrong**: JDBC is single-threaded only when partition info isn't provided.",
+    "references": [
+      "https://docs.databricks.com/en/connect/external-systems/jdbc.html"
+    ],
+    "tags": ["jdbc", "parallelism"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-061",
+    "slug": "spark-avoid-collect",
+    "topicSlug": "spark-etl",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Which Spark action should be AVOIDED on large DataFrames?",
+    "options": [
+      { "id": "a", "text": ".collect()" },
+      { "id": "b", "text": ".write.saveAsTable()" },
+      { "id": "c", "text": ".count()" },
+      { "id": "d", "text": ".filter()" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `.collect()` pulls the entire DataFrame onto the driver - almost always wrong for non-trivial data. Use `.show(n)`, `.take(n)`, or write to storage instead.\n\n**b, c wrong**: Scale out fine.\n\n**d wrong**: `.filter()` is a transformation, not an action.",
+    "references": [
+      "https://docs.databricks.com/en/pyspark/basics.html"
+    ],
+    "tags": ["collect", "anti-pattern"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-062",
+    "slug": "structured-streaming-triggers",
+    "topicSlug": "structured-streaming",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Which trigger setting runs a streaming micro-batch exactly ONCE and then stops the query?",
+    "options": [
+      { "id": "a", "text": "Trigger.ProcessingTime('1 minute')" },
+      { "id": "b", "text": "Trigger.Once() (legacy) or Trigger.AvailableNow() (preferred)" },
+      { "id": "c", "text": "Trigger.Continuous('1 second')" },
+      { "id": "d", "text": "No trigger specified" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: `Trigger.AvailableNow()` processes all currently available data in one or more batches and stops - the modern replacement for the legacy single-batch `Trigger.Once()`. Useful for cheap periodic jobs.\n\n**a wrong**: ProcessingTime is recurring.\n\n**c wrong**: Continuous is experimental low-latency.\n\n**d wrong**: Default trigger processes continuously.",
+    "references": [
+      "https://docs.databricks.com/en/structured-streaming/triggers.html"
+    ],
+    "tags": ["trigger", "available-now"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-063",
+    "slug": "structured-streaming-output-modes",
+    "topicSlug": "structured-streaming",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A streaming aggregation `groupBy(window(...)).count()` writes to a Delta sink. Which output mode is REQUIRED?",
+    "options": [
+      { "id": "a", "text": "Append" },
+      { "id": "b", "text": "Update" },
+      { "id": "c", "text": "Complete" },
+      { "id": "d", "text": "Append (with watermark) OR Update OR Complete depending on the intent" }
+    ],
+    "correctIds": ["d"],
+    "explanation": "**d correct**: Aggregations allow **Complete** (full result each batch, memory-heavy), **Update** (only changed rows), and **Append** when combined with a **watermark** that allows late rows to be finalized. Choose based on downstream consumer.\n\n**a, b, c wrong individually**: Each alone is partially correct; the all-encompassing answer is best.",
+    "references": [
+      "https://docs.databricks.com/en/structured-streaming/output-modes.html"
+    ],
+    "tags": ["output-mode", "aggregation"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-064",
+    "slug": "structured-streaming-watermark",
+    "topicSlug": "structured-streaming",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "`.withWatermark('event_ts', '10 minutes')` tells Spark that:",
+    "options": [
+      { "id": "a", "text": "Events older than (max_event_ts - 10 min) are considered late and can be dropped or finalize aggregate windows" },
+      { "id": "b", "text": "Events arriving more than 10 minutes after the query starts are dropped" },
+      { "id": "c", "text": "Aggregation windows are 10 minutes long" },
+      { "id": "d", "text": "The query emits results every 10 minutes" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Watermark = max observed event time minus the threshold. State for windows older than the watermark is finalized and purged; late events past the watermark are dropped. Enables Append mode on aggregations with bounded state.\n\n**b, c, d wrong**: Mis-describe watermark semantics.",
+    "references": [
+      "https://docs.databricks.com/en/structured-streaming/watermarks.html"
+    ],
+    "tags": ["watermark", "event-time"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-065",
+    "slug": "structured-streaming-exactly-once",
+    "topicSlug": "structured-streaming",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "How does Structured Streaming achieve exactly-once semantics when writing to Delta?",
+    "options": [
+      { "id": "a", "text": "Each micro-batch's offsets are written transactionally with the data, so replays idempotently skip already-committed batches via the txnVersion/appId mechanism" },
+      { "id": "b", "text": "By always writing duplicates and dedup-ing afterwards" },
+      { "id": "c", "text": "By holding a global lock" },
+      { "id": "d", "text": "Only at-least-once is supported" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Delta sink ties the Streaming batch offsets to the Delta commit. On restart, Spark sees the last committed batch and skips reprocessing. Combined with the checkpointLocation, this provides exactly-once end-to-end for Delta sinks.\n\n**b, c, d wrong**: Not the mechanism.",
+    "references": [
+      "https://docs.databricks.com/en/structured-streaming/delta-lake.html"
+    ],
+    "tags": ["exactly-once", "checkpoint"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-066",
+    "slug": "autoloader-vs-copy-into",
+    "topicSlug": "structured-streaming",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "You need to continuously ingest new files landing in S3 with schema inference and evolution. Which is the RECOMMENDED tool?",
+    "options": [
+      { "id": "a", "text": "Auto Loader (cloudFiles source)" },
+      { "id": "b", "text": "COPY INTO every minute" },
+      { "id": "c", "text": "Manual spark.read.csv(...) in a loop" },
+      { "id": "d", "text": "Snowpipe" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Auto Loader** (`cloudFiles` format) uses file notification (SNS/SQS/Event Grid) or directory listing to incrementally discover new files, supports schema inference/evolution, and scales to billions of files. Perfect for streaming ingestion into bronze tables.\n\n**b wrong**: COPY INTO is batch-oriented and needs explicit file lists.\n\n**c wrong**: Custom loops reinvent what Auto Loader provides.\n\n**d wrong**: Snowpipe is Snowflake-only.",
+    "references": [
+      "https://docs.databricks.com/en/ingestion/auto-loader/index.html"
+    ],
+    "tags": ["auto-loader", "cloudfiles"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-067",
+    "slug": "autoloader-schema-evolution",
+    "topicSlug": "structured-streaming",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Auto Loader's `schemaEvolutionMode` setting `addNewColumns` does what when a new column appears in an incoming file?",
+    "options": [
+      { "id": "a", "text": "Rejects the file" },
+      { "id": "b", "text": "Stops the stream; operator can restart and the new column is added to the schema" },
+      { "id": "c", "text": "Silently drops the column" },
+      { "id": "d", "text": "Renames the column automatically" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: With `addNewColumns`, Auto Loader halts the stream when a new column is detected, updates the stored schema, and on restart the column becomes part of the target schema. This is safe (explicit) evolution.\n\n**a, c, d wrong**: Other schemaEvolutionMode values (rescue, failOnNewColumns, none) behave differently; `addNewColumns` is the graceful-growth default.",
+    "references": [
+      "https://docs.databricks.com/en/ingestion/auto-loader/schema.html"
+    ],
+    "tags": ["auto-loader", "schema-evolution"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-068",
+    "slug": "structured-streaming-foreachbatch",
+    "topicSlug": "structured-streaming",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You need a streaming query to MERGE each micro-batch into a Delta table (upsert behavior). Which sink API do you use?",
+    "options": [
+      { "id": "a", "text": ".writeStream.format('delta').start() - direct append only" },
+      { "id": "b", "text": ".writeStream.foreachBatch(fn) where fn performs the DeltaTable.merge()" },
+      { "id": "c", "text": ".writeStream.format('memory')" },
+      { "id": "d", "text": "MERGE is not supported from streams" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: `foreachBatch` gives you the batch DataFrame and an `epoch_id`; inside you can call `DeltaTable.forName(...).alias('t').merge(batchDF.alias('s'), ...)` for exactly-once upserts.\n\n**a wrong**: Direct streaming write is append-oriented.\n\n**c wrong**: Memory sink is for debugging only.\n\n**d wrong**: MERGE is fully supported via foreachBatch.",
+    "references": [
+      "https://docs.databricks.com/en/structured-streaming/foreach.html"
+    ],
+    "tags": ["foreach-batch", "merge"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-069",
+    "slug": "delta-live-tables-overview",
+    "topicSlug": "structured-streaming",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Delta Live Tables (DLT) provides:",
+    "options": [
+      { "id": "a", "text": "A declarative pipeline framework with automatic dependency resolution, data quality expectations, and CDC support on top of Delta" },
+      { "id": "b", "text": "A BI dashboarding tool" },
+      { "id": "c", "text": "A legacy Hive metastore" },
+      { "id": "d", "text": "A SQL warehouse" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: DLT lets you define tables and views declaratively (Python or SQL); the engine resolves the DAG, executes incrementally, enforces EXPECT data-quality constraints, and provides APPLY CHANGES INTO for CDC.\n\n**b, c, d wrong**: DLT is a pipeline framework, not any of these.",
+    "references": [
+      "https://docs.databricks.com/en/delta-live-tables/index.html"
+    ],
+    "tags": ["dlt"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-070",
+    "slug": "dlt-expect-semantics",
+    "topicSlug": "structured-streaming",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "In DLT, what is the difference between `@expect`, `@expect_or_drop`, and `@expect_or_fail`?",
+    "options": [
+      { "id": "a", "text": "expect: warn + keep; expect_or_drop: drop bad rows; expect_or_fail: abort the pipeline" },
+      { "id": "b", "text": "They are synonyms" },
+      { "id": "c", "text": "Only expect_or_fail is supported" },
+      { "id": "d", "text": "None of them actually validate data" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: DLT expectations escalate severity: `expect` records violations but keeps rows, `expect_or_drop` discards violating rows, `expect_or_fail` fails the update.\n\n**b, c, d wrong**: Mis-state DLT expectations.",
+    "references": [
+      "https://docs.databricks.com/en/delta-live-tables/expectations.html"
+    ],
+    "tags": ["dlt", "expectations"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-071",
+    "slug": "dlt-apply-changes-cdc",
+    "topicSlug": "structured-streaming",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "`APPLY CHANGES INTO target_table FROM source_stream KEYS (id) SEQUENCE BY ts STORED AS SCD TYPE 2` implements:",
+    "options": [
+      { "id": "a", "text": "SCD Type 2 dimension with historical rows (effective-from/effective-to) driven by CDC events" },
+      { "id": "b", "text": "A materialized view" },
+      { "id": "c", "text": "A simple COPY" },
+      { "id": "d", "text": "Cartesian join" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: APPLY CHANGES INTO in DLT is CDC-native; with SCD TYPE 2 it maintains historical rows with auto-managed start/end timestamps based on the SEQUENCE BY column.\n\n**b, c, d wrong**: Mis-describe APPLY CHANGES.",
+    "references": [
+      "https://docs.databricks.com/en/delta-live-tables/cdc.html"
+    ],
+    "tags": ["apply-changes", "scd2"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-072",
+    "slug": "structured-streaming-kafka-source",
+    "topicSlug": "structured-streaming",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Reading from Kafka in Structured Streaming requires specifying at minimum:",
+    "options": [
+      { "id": "a", "text": "kafka.bootstrap.servers and subscribe (or subscribePattern / assign)" },
+      { "id": "b", "text": "Only the topic name" },
+      { "id": "c", "text": "A cluster-scoped password" },
+      { "id": "d", "text": "Nothing; defaults are enough" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Minimum Kafka source options are **bootstrap servers** and a subscription spec (`subscribe` for a list, `subscribePattern` for regex, `assign` for partition-level). Auth and offsets add more options.\n\n**b, c, d wrong**: Don't suffice.",
+    "references": [
+      "https://docs.databricks.com/en/connect/streaming/kafka.html"
+    ],
+    "tags": ["kafka", "streaming-source"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-073",
+    "slug": "structured-streaming-state-timeout",
+    "topicSlug": "structured-streaming",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A stateful streaming aggregation grows memory indefinitely. Which mechanism bounds state?",
+    "options": [
+      { "id": "a", "text": "Watermarks drop old state for event-time windows; stateful operations support explicit GroupState timeouts" },
+      { "id": "b", "text": "Spark automatically garbage-collects" },
+      { "id": "c", "text": "Use RDDs" },
+      { "id": "d", "text": "Restart the cluster" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Watermarks** let the engine purge state for windows older than the watermark. Custom stateful ops (`mapGroupsWithState`/`flatMapGroupsWithState`) accept ProcessingTime or EventTime timeouts that delete keys that have been idle.\n\n**b, c, d wrong**: Don't address unbounded state.",
+    "references": [
+      "https://docs.databricks.com/en/structured-streaming/watermarks.html"
+    ],
+    "tags": ["state", "watermark"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-074",
+    "slug": "structured-streaming-multi-query-isolation",
+    "topicSlug": "structured-streaming",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Two streaming queries share a checkpoint location. What happens?",
+    "options": [
+      { "id": "a", "text": "Both run safely" },
+      { "id": "b", "text": "Undefined behavior / corruption: a checkpoint is owned by exactly ONE streaming query" },
+      { "id": "c", "text": "Spark auto-renames" },
+      { "id": "d", "text": "Queries serialize" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: The checkpointLocation is a per-query state store. Sharing it between queries corrupts offsets and state, leading to data loss / duplication. Always use a distinct path per query.\n\n**a, c, d wrong**: Unsafe assumptions.",
+    "references": [
+      "https://docs.databricks.com/en/structured-streaming/structured-streaming-basics.html"
+    ],
+    "tags": ["checkpoint", "anti-pattern"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-075",
+    "slug": "jobs-multi-task-dag-features",
+    "topicSlug": "production-pipelines",
+    "difficulty": "easy",
+    "type": "multi",
+    "stem": "Which features do Databricks Jobs support natively? (Select all that apply)",
+    "options": [
+      { "id": "a", "text": "Multi-task DAG with conditional branches" },
+      { "id": "b", "text": "Retry on failure with exponential backoff" },
+      { "id": "c", "text": "Parameterized runs" },
+      { "id": "d", "text": "Running arbitrary on-prem binaries" },
+      { "id": "e", "text": "Job-level notifications (email/webhook)" }
+    ],
+    "correctIds": ["a", "b", "c", "e"],
+    "explanation": "**a, b, c, e correct**: Jobs support multi-task DAGs (including conditional, run-if, for-each), configurable retries, parameterized runs, and email/webhook notifications on start/success/failure.\n\n**d wrong**: Jobs run on Databricks compute; you can shell out but not natively execute on-prem infrastructure.",
+    "references": [
+      "https://docs.databricks.com/en/jobs/index.html"
+    ],
+    "tags": ["jobs", "workflows"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-076",
+    "slug": "jobs-cluster-reuse",
+    "topicSlug": "production-pipelines",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A Job has 5 sequential tasks. To minimize startup time and cost, you should:",
+    "options": [
+      { "id": "a", "text": "Give each task its own all-purpose cluster" },
+      { "id": "b", "text": "Configure a shared job cluster at the Job level that all tasks reuse" },
+      { "id": "c", "text": "Run everything on the driver" },
+      { "id": "d", "text": "Always use Serverless SQL" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: A **shared job cluster** spins up once, all 5 tasks run on it, and it terminates after the job. You pay startup once and get Jobs-Compute DBU pricing.\n\n**a wrong**: Per-task clusters pay 5x startup cost.\n\n**c wrong**: Nonsensical.\n\n**d wrong**: SQL warehouses are for SQL analytics.",
+    "references": [
+      "https://docs.databricks.com/en/jobs/compute.html"
+    ],
+    "tags": ["job-cluster", "reuse"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-077",
+    "slug": "dab-databricks-asset-bundles",
+    "topicSlug": "production-pipelines",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "Databricks Asset Bundles (DABs) are used to:",
+    "options": [
+      { "id": "a", "text": "Package, version, and deploy Databricks workloads (notebooks, jobs, DLT pipelines, MLflow experiments) as code via YAML config" },
+      { "id": "b", "text": "Replace Git" },
+      { "id": "c", "text": "Store credentials" },
+      { "id": "d", "text": "Manage DBFS mounts" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: DAB is Databricks' IaC format. A `databricks.yml` describes resources (jobs, pipelines, experiments) and targets (dev/prod). Deploy via `databricks bundle deploy`. Integrates with CI/CD.\n\n**b, c, d wrong**: Not DAB's purpose.",
+    "references": [
+      "https://docs.databricks.com/en/dev-tools/bundles/index.html"
+    ],
+    "tags": ["asset-bundles", "cicd"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-078",
+    "slug": "ci-cd-test-fixtures",
+    "topicSlug": "production-pipelines",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You want unit tests for a PySpark transformation. Which is the MOST practical approach?",
+    "options": [
+      { "id": "a", "text": "pytest with a local SparkSession on the CI runner, using small in-memory DataFrames" },
+      { "id": "b", "text": "Running tests only in production" },
+      { "id": "c", "text": "Manual spot-checks only" },
+      { "id": "d", "text": "Re-running the full pipeline on each commit" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: PySpark's local mode + pytest fixtures is the standard pattern. Build small DataFrames via `spark.createDataFrame(...)`, apply your function, assert on the result. Fast, hermetic, CI-friendly. DABs integrate this for CI/CD.\n\n**b, c, d wrong**: Bad engineering practices.",
+    "references": [
+      "https://docs.databricks.com/en/dev-tools/ci-cd/index.html"
+    ],
+    "tags": ["testing", "pytest"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-079",
+    "slug": "jobs-notifications-webhooks",
+    "topicSlug": "production-pipelines",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "For on-failure alerts from a Databricks Job, which options are built-in?",
+    "options": [
+      { "id": "a", "text": "Email, Slack (via webhook), PagerDuty (via webhook)" },
+      { "id": "b", "text": "Only SMS" },
+      { "id": "c", "text": "No notifications; you must poll" },
+      { "id": "d", "text": "Snowflake alerts" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Jobs have email notification destinations and webhook destinations (Slack, PagerDuty, Teams, custom HTTP). Configure on start/success/failure/duration.\n\n**b, c, d wrong**: Incorrect.",
+    "references": [
+      "https://docs.databricks.com/en/jobs/notifications.html"
+    ],
+    "tags": ["notifications", "jobs"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-080",
+    "slug": "jobs-idempotency-task-keys",
+    "topicSlug": "production-pipelines",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Within a single Job run, Task A writes to Delta and Task B reads from it. How do you ensure B waits for A?",
+    "options": [
+      { "id": "a", "text": "Set depends_on in Task B pointing at Task A" },
+      { "id": "b", "text": "Add a sleep(60)" },
+      { "id": "c", "text": "Always use separate Jobs" },
+      { "id": "d", "text": "Both will run in parallel regardless" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Declaring `depends_on: [A]` on task B makes the DAG wait for A to succeed before running B. This is the orchestration contract.\n\n**b wrong**: Sleeps are fragile.\n\n**c wrong**: Unnecessary.\n\n**d wrong**: Without depends_on they'd run in parallel - exactly the problem you avoid by declaring deps.",
+    "references": [
+      "https://docs.databricks.com/en/jobs/tasks-depends-on.html"
+    ],
+    "tags": ["depends-on", "dag"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-081",
+    "slug": "jobs-secrets-integration",
+    "topicSlug": "production-pipelines",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A job needs a database password at runtime. The RIGHT way to provide it is:",
+    "options": [
+      { "id": "a", "text": "Hard-code it in the notebook" },
+      { "id": "b", "text": "Use Databricks Secrets via secret scope + dbutils.secrets.get('scope','key')" },
+      { "id": "c", "text": "Paste it into a job parameter" },
+      { "id": "d", "text": "Store it in Delta" }
+    ],
+    "correctIds": ["b"],
+    "explanation": "**b correct**: **Databricks Secrets** store credentials (backed by Databricks or Azure Key Vault / AWS Secrets Manager scopes). Fetch at runtime via `dbutils.secrets.get`. Values are automatically redacted in output.\n\n**a, c, d wrong**: Violate secret-management best practices.",
+    "references": [
+      "https://docs.databricks.com/en/security/secrets/index.html"
+    ],
+    "tags": ["secrets"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-082",
+    "slug": "jobs-serverless-compute",
+    "topicSlug": "production-pipelines",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "Serverless compute for Jobs / DLT means:",
+    "options": [
+      { "id": "a", "text": "Databricks-managed compute pool with near-instant startup, fine-grained billing, no cluster management" },
+      { "id": "b", "text": "Your own Kubernetes" },
+      { "id": "c", "text": "Runs only in browsers" },
+      { "id": "d", "text": "Only available in one region" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Serverless compute removes node/pool configuration - Databricks allocates resources from a shared pool with sub-second startup and per-second billing. Simpler than classic compute; ideal for short tasks.\n\n**b, c, d wrong**: Mis-describe Serverless.",
+    "references": [
+      "https://docs.databricks.com/en/compute/serverless/index.html"
+    ],
+    "tags": ["serverless"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-083",
+    "slug": "lakeflow-declarative-pipelines",
+    "topicSlug": "production-pipelines",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Lakeflow (the unified orchestration/ingestion/transformation framework on Databricks) subsumes which previously-separate products?",
+    "options": [
+      { "id": "a", "text": "Delta Live Tables (declarative pipelines), Databricks Workflows (Jobs), and Lakehouse Federation connectors" },
+      { "id": "b", "text": "Only MLflow" },
+      { "id": "c", "text": "Only SQL warehouses" },
+      { "id": "d", "text": "Only Delta" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Lakeflow bundles ingestion (LakeFlow Connect), transformations (Declarative Pipelines, evolving DLT), and orchestration (Jobs/Workflows) under one product umbrella with shared lineage, observability, and governance.\n\n**b, c, d wrong**: Partial or incorrect.",
+    "references": [
+      "https://docs.databricks.com/en/lakeflow/index.html"
+    ],
+    "tags": ["lakeflow"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-084",
+    "slug": "unity-catalog-privilege-model",
+    "topicSlug": "governance",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "In Unity Catalog, to let a role run SELECT on a table in catalog `prod.sales`, you must grant:",
+    "options": [
+      { "id": "a", "text": "USE CATALOG on prod, USE SCHEMA on prod.sales, SELECT on prod.sales.orders" },
+      { "id": "b", "text": "SELECT alone is enough" },
+      { "id": "c", "text": "OWNER on the metastore" },
+      { "id": "d", "text": "ALL PRIVILEGES on the workspace" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: UC privileges are **hierarchical** - you need USE on the parent catalog and schema, plus the specific action (SELECT/MODIFY/EXECUTE/etc.) on the object. Missing USE gives no access even if SELECT is granted.\n\n**b, c, d wrong**: Incomplete or over-privileged.",
+    "references": [
+      "https://docs.databricks.com/en/data-governance/unity-catalog/manage-privileges/privileges.html"
+    ],
+    "tags": ["unity-catalog", "privileges"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-085",
+    "slug": "uc-row-column-filters",
+    "topicSlug": "governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "You want to mask the `ssn` column so that only analysts with role PII_VIEWER see real values. Which UC feature?",
+    "options": [
+      { "id": "a", "text": "Column masks: ALTER TABLE ... ALTER COLUMN ssn SET MASK mask_fn USING COLUMNS ..." },
+      { "id": "b", "text": "DBFS permissions" },
+      { "id": "c", "text": "Spark ACLs on notebooks" },
+      { "id": "d", "text": "Delete the column" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: UC **column masks** attach a SQL function to a column; the function receives the value and session context (e.g., is_account_group_member('PII_VIEWER')) and returns a masked or clear value.\n\n**b, c, d wrong**: Not fit for column-level governance.",
+    "references": [
+      "https://docs.databricks.com/en/data-governance/unity-catalog/column-masks.html"
+    ],
+    "tags": ["column-mask"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-086",
+    "slug": "uc-row-filters",
+    "topicSlug": "governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "UC Row Filters let you:",
+    "options": [
+      { "id": "a", "text": "Attach a SQL function to a table that returns BOOLEAN; only rows where the function returns TRUE are visible to a given session" },
+      { "id": "b", "text": "Filter only at write time" },
+      { "id": "c", "text": "Drop rows permanently" },
+      { "id": "d", "text": "Replace WHERE clauses globally" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: UC row filters apply a boolean function per row at query time, keyed on CURRENT_USER() or group membership - standard row-level security.\n\n**b, c, d wrong**: Mis-describe row filters.",
+    "references": [
+      "https://docs.databricks.com/en/data-governance/unity-catalog/row-filters.html"
+    ],
+    "tags": ["row-filter", "rls"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-087",
+    "slug": "uc-lineage",
+    "topicSlug": "governance",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "UC captures lineage automatically for which of the following?",
+    "options": [
+      { "id": "a", "text": "Tables, views, columns, notebooks, dashboards, jobs - query-driven lineage is captured from SQL/PySpark runs through UC" },
+      { "id": "b", "text": "Only SQL queries" },
+      { "id": "c", "text": "Only DLT pipelines" },
+      { "id": "d", "text": "Nothing - lineage is manual" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: UC automatically records table-level and column-level lineage from queries that run against UC-governed assets, surfaced in Catalog Explorer's Lineage tab and via system tables.\n\n**b, c, d wrong**: Under-state UC lineage.",
+    "references": [
+      "https://docs.databricks.com/en/data-governance/unity-catalog/data-lineage.html"
+    ],
+    "tags": ["lineage"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-088",
+    "slug": "uc-external-locations-credentials",
+    "topicSlug": "governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "In UC, what is the relationship between a STORAGE CREDENTIAL and an EXTERNAL LOCATION?",
+    "options": [
+      { "id": "a", "text": "A credential (IAM role / managed identity / service account) authenticates to cloud storage; an external location binds a credential to a specific URL prefix, which in turn can be referenced by external tables and volumes" },
+      { "id": "b", "text": "They are the same object" },
+      { "id": "c", "text": "Credentials are for users, locations for clusters" },
+      { "id": "d", "text": "Neither exists in UC" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Credential = cloud auth principal. External location = (URL, credential) pair that UC grants USE/READ/WRITE privileges over. External tables/volumes live under external locations.\n\n**b, c, d wrong**: Mis-model UC.",
+    "references": [
+      "https://docs.databricks.com/en/connect/unity-catalog/external-locations.html"
+    ],
+    "tags": ["external-location", "credential"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-089",
+    "slug": "uc-system-tables",
+    "topicSlug": "governance",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "UC system tables give you governed access to platform metadata. Which schema is CORRECT for audit logs?",
+    "options": [
+      { "id": "a", "text": "system.access.audit" },
+      { "id": "b", "text": "audit.logs.all" },
+      { "id": "c", "text": "workspace.audit_trail" },
+      { "id": "d", "text": "metastore.events" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `system.access.audit` captures workspace and account-level audit events. Other useful system schemas include `system.billing.usage`, `system.compute.warehouse_events`, `system.information_schema.*`.\n\n**b, c, d wrong**: Not real UC system schemas.",
+    "references": [
+      "https://docs.databricks.com/en/admin/system-tables/index.html"
+    ],
+    "tags": ["system-tables", "audit"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-090",
+    "slug": "uc-delta-sharing",
+    "topicSlug": "governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Delta Sharing in UC enables:",
+    "options": [
+      { "id": "a", "text": "Sharing UC tables with other Databricks accounts OR with open-protocol clients outside Databricks, with no data copy" },
+      { "id": "b", "text": "Only intra-workspace sharing" },
+      { "id": "c", "text": "Sharing via email attachments" },
+      { "id": "d", "text": "Only Parquet export" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Delta Sharing is an **open protocol**; consumers can be other Databricks accounts (recipients via UC) or external tools (pandas, PowerBI, Spark) with zero-copy access to the shared Delta tables.\n\n**b, c, d wrong**: Under-state Delta Sharing.",
+    "references": [
+      "https://docs.databricks.com/en/delta-sharing/index.html"
+    ],
+    "tags": ["delta-sharing"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-091",
+    "slug": "uc-service-principals",
+    "topicSlug": "governance",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A nightly job needs to authenticate to Databricks from an external orchestrator. The RECOMMENDED identity is:",
+    "options": [
+      { "id": "a", "text": "A named service principal with OAuth M2M credentials and tightly-scoped grants" },
+      { "id": "b", "text": "A human user's PAT copied around the team" },
+      { "id": "c", "text": "A shared service account password stored in the repo" },
+      { "id": "d", "text": "Workspace admin credentials" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: **Service principals** (with OAuth M2M / federated credentials) are the recommended machine identity. Grants should follow least privilege.\n\n**b, c, d wrong**: Violate modern auth best practices.",
+    "references": [
+      "https://docs.databricks.com/en/dev-tools/auth/oauth-m2m.html"
+    ],
+    "tags": ["service-principal", "oauth"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-092",
+    "slug": "uc-tags-governance",
+    "topicSlug": "governance",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "UC tags enable which governance workflow?",
+    "options": [
+      { "id": "a", "text": "Attach tags (key-value) to catalogs/schemas/tables/columns; drive tag-based access policies and reporting" },
+      { "id": "b", "text": "Change Delta file format" },
+      { "id": "c", "text": "Force row deletion" },
+      { "id": "d", "text": "Replace Unity Catalog" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Tags label objects (e.g., pii=true, domain=finance). Used for discovery, classification-driven policies, and compliance reporting.\n\n**b, c, d wrong**: Tags don't do these things.",
+    "references": [
+      "https://docs.databricks.com/en/data-governance/unity-catalog/tags.html"
+    ],
+    "tags": ["tags", "classification"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-093",
+    "slug": "uc-information-schema",
+    "topicSlug": "governance",
+    "difficulty": "easy",
+    "type": "single",
+    "stem": "To list all tables a user can see in a UC catalog via SQL, you query:",
+    "options": [
+      { "id": "a", "text": "<catalog>.information_schema.tables" },
+      { "id": "b", "text": "sys.tables" },
+      { "id": "c", "text": "pg_catalog.tables" },
+      { "id": "d", "text": "dbutils.fs.ls" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Each UC catalog has an `information_schema` exposing tables, columns, schemata, and grants - governed by the querying principal's privileges.\n\n**b, c wrong**: Not Databricks.\n\n**d wrong**: Lists files, not logical tables.",
+    "references": [
+      "https://docs.databricks.com/en/sql/language-manual/sql-ref-information-schema.html"
+    ],
+    "tags": ["information-schema"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-094",
+    "slug": "spark-broadcast-variable-vs-broadcast-join",
+    "topicSlug": "spark-etl",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A small Python dict (10 MB) is used inside a UDF. How do you avoid shipping it per task?",
+    "options": [
+      { "id": "a", "text": "Wrap it in spark.sparkContext.broadcast(d) and reference .value inside the UDF" },
+      { "id": "b", "text": "Do nothing - Spark auto-broadcasts dicts" },
+      { "id": "c", "text": "Store it in Delta" },
+      { "id": "d", "text": "Use a Python global variable" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: `sc.broadcast(obj)` ships the object once per executor and caches it; tasks read `.value`. Without broadcasting, Python closures may serialize the object per task.\n\n**b, c, d wrong**: Don't provide the broadcast benefit.",
+    "references": [
+      "https://docs.databricks.com/en/pyspark/basics.html"
+    ],
+    "tags": ["broadcast-variable"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-095",
+    "slug": "spark-ops-history-server",
+    "topicSlug": "spark-etl",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "A failed Spark job needs diagnosis. Where do you start in Databricks?",
+    "options": [
+      { "id": "a", "text": "Spark UI (Jobs/Stages/SQL tabs) and the Driver logs from the cluster" },
+      { "id": "b", "text": "Run the job 5 more times" },
+      { "id": "c", "text": "Check AWS S3 logs only" },
+      { "id": "d", "text": "Reduce cluster size" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Spark UI shows the failed stage, exception, shuffle metrics, and task breakdown. Driver logs have the Python traceback and Spark warnings. Start there before changing configuration.\n\n**b, c, d wrong**: Bypass root-cause analysis.",
+    "references": [
+      "https://docs.databricks.com/en/compute/web-ui.html"
+    ],
+    "tags": ["spark-ui", "debugging"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-096",
+    "slug": "lakehouse-monitoring",
+    "topicSlug": "governance",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Databricks Lakehouse Monitoring (on UC tables) provides:",
+    "options": [
+      { "id": "a", "text": "Profile / drift / data-quality metrics automatically computed on a schedule, with dashboards and alerts" },
+      { "id": "b", "text": "CPU monitoring only" },
+      { "id": "c", "text": "SQL warehouse monitoring only" },
+      { "id": "d", "text": "Replaces Delta" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Lakehouse Monitoring is UC-native data observability: profile metrics (row count, null %, distinct count), drift detection (vs baseline), and inference-quality checks (for ML tables), with alerts and dashboards.\n\n**b, c, d wrong**: Mis-describe the feature.",
+    "references": [
+      "https://docs.databricks.com/en/lakehouse-monitoring/index.html"
+    ],
+    "tags": ["lakehouse-monitoring", "data-quality"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-097",
+    "slug": "streaming-from-kinesis",
+    "topicSlug": "structured-streaming",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Reading from AWS Kinesis in Structured Streaming requires:",
+    "options": [
+      { "id": "a", "text": "format('kinesis') with streamName, region, and appropriate IAM permissions for DynamoDB (offsets) and Kinesis" },
+      { "id": "b", "text": "Only a stream name" },
+      { "id": "c", "text": "Kinesis is not supported" },
+      { "id": "d", "text": "Spark writes directly, no consumer state needed" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: The Kinesis source uses DynamoDB to track consumer offsets (the `streamName` becomes the coordination key). IAM permissions required: Kinesis GetShardIterator/GetRecords plus DynamoDB read/write for the checkpoint table.\n\n**b, c, d wrong**: Incorrect.",
+    "references": [
+      "https://docs.databricks.com/en/connect/streaming/kinesis.html"
+    ],
+    "tags": ["kinesis", "streaming"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-098",
+    "slug": "dlt-streaming-vs-live-table",
+    "topicSlug": "structured-streaming",
+    "difficulty": "medium",
+    "type": "single",
+    "stem": "In DLT, what's the difference between a STREAMING LIVE TABLE and a LIVE TABLE?",
+    "options": [
+      { "id": "a", "text": "STREAMING LIVE processes append-only streaming sources incrementally; LIVE (materialized view) recomputes from sources with potentially full refresh semantics" },
+      { "id": "b", "text": "They are synonyms" },
+      { "id": "c", "text": "LIVE tables only support Python" },
+      { "id": "d", "text": "STREAMING LIVE runs only once" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: STREAMING LIVE TABLES consume append-only streams (Auto Loader, Kafka, Delta streaming source) with incremental processing and checkpoints. LIVE TABLES (now called Materialized Views) compute from upstream tables with query-based dependency tracking and support full or incremental refresh.\n\n**b, c, d wrong**: Mis-state.",
+    "references": [
+      "https://docs.databricks.com/en/delta-live-tables/python-ref.html"
+    ],
+    "tags": ["dlt", "streaming-live"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-099",
+    "slug": "delta-vs-managed-identity",
+    "topicSlug": "lakehouse-platform",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "A cluster needs to access ADLS Gen2 without any user credentials. Which pattern is recommended?",
+    "options": [
+      { "id": "a", "text": "Use a UC managed identity / storage credential at the External Location level" },
+      { "id": "b", "text": "Paste an account key into spark.conf" },
+      { "id": "c", "text": "Mount with dbutils.fs.mount and SAS token" },
+      { "id": "d", "text": "Disable ADLS and use DBFS root" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Using a UC storage credential (Azure managed identity) bound to an external location avoids credential sprawl and gives UC grant-level control. The cluster doesn't need any stored secret.\n\n**b, c wrong**: Credential-in-conf / SAS-mount patterns are deprecated.\n\n**d wrong**: DBFS root is an anti-pattern.",
+    "references": [
+      "https://docs.databricks.com/en/connect/unity-catalog/cloud-storage/managed-identities.html"
+    ],
+    "tags": ["managed-identity", "adls"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
+  },
+  {
+    "id": "dbd-100",
+    "slug": "lakehouse-federation-overview",
+    "topicSlug": "lakehouse-platform",
+    "difficulty": "hard",
+    "type": "single",
+    "stem": "Lakehouse Federation lets you:",
+    "options": [
+      { "id": "a", "text": "Query external databases (Postgres, MySQL, Snowflake, Redshift, BigQuery, SQL Server, etc.) as UC-governed foreign catalogs without copying data" },
+      { "id": "b", "text": "Federate auth between Databricks workspaces" },
+      { "id": "c", "text": "Host Spark on your laptop" },
+      { "id": "d", "text": "Nothing - it's a deprecated feature" }
+    ],
+    "correctIds": ["a"],
+    "explanation": "**a correct**: Lakehouse Federation exposes external databases as **foreign catalogs** inside UC; queries push predicates to the source when possible. Governance (grants, lineage) applies as if they were native tables.\n\n**b, c, d wrong**: Mis-describe federation.",
+    "references": [
+      "https://docs.databricks.com/en/query-federation/index.html"
+    ],
+    "tags": ["lakehouse-federation"],
+    "source": "human",
+    "reviewedAt": "2026-04-26"
   }
 ]
