@@ -1,0 +1,45 @@
+npm warn "build.out;" is being parsed as a normal command line argument.
+npm warn "build.err" is being parsed as a normal command line argument.
+npm warn Unknown cli config "--20". This will stop working in the next major version of npm.
+npm warn Unknown cli config "--30". This will stop working in the next major version of npm.
+npm warn Unknown env config "20". This will stop working in the next major version of npm.
+npm warn Unknown env config "30". This will stop working in the next major version of npm.
+npm warn Unknown env config "20". This will stop working in the next major version of npm.
+npm warn Unknown env config "30". This will stop working in the next major version of npm.
+npm warn Unknown env config "20". This will stop working in the next major version of npm.
+npm warn Unknown env config "30". This will stop working in the next major version of npm.
+npm warn Unknown env config "20". This will stop working in the next major version of npm.
+npm warn Unknown env config "30". This will stop working in the next major version of npm.
+npm warn Unknown env config "20". This will stop working in the next major version of npm.
+npm warn Unknown env config "30". This will stop working in the next major version of npm.
+npm warn Unknown env config "20". This will stop working in the next major version of npm.
+npm warn Unknown env config "30". This will stop working in the next major version of npm.
+npm warn Unknown env config "20". This will stop working in the next major version of npm.
+npm warn Unknown env config "30". This will stop working in the next major version of npm.
+[33m[plugin vite:resolve] Module "stream" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/etc/browser/avsc.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "util" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/etc/browser/avsc.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "buffer" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/lib/containers.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "stream" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/lib/containers.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "util" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/lib/containers.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "zlib" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/lib/containers.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "buffer" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/lib/utils.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "util" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/lib/utils.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "buffer" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/lib/services.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "events" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/lib/services.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "stream" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/lib/services.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "util" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/lib/services.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "path" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/lib/specs.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "util" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/lib/specs.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "buffer" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/lib/types.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "util" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/lib/types.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[plugin vite:resolve] Module "buffer" has been externalized for browser compatibility, imported by "C:/Users/satyasainath.p/Blog/dataengineer/node_modules/avsc/etc/browser/lib/crypto.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+npm warn Unknown env config "20". This will stop working in the next major version of npm.
+npm warn Unknown env config "30". This will stop working in the next major version of npm.
+⚠️  articles/ directory not found or empty
+npm warn Unknown env config "20". This will stop working in the next major version of npm.
+npm warn Unknown env config "30". This will stop working in the next major version of npm.

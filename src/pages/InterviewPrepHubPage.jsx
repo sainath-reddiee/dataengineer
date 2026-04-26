@@ -1,7 +1,9 @@
 // src/pages/InterviewPrepHubPage.jsx
 // Interview Prep Hub — curated landing page for all interview-prep content.
-// Surfaces interview cheat sheets + interview articles + a structured study plan.
-import React from 'react';
+// Surfaces interview cheat sheets + interview articles + a structured study plan,
+// organized by track (SQL, Snowflake, Databricks/Spark, AWS, Azure, dbt, Airflow,
+// Python/PySpark, Modeling, System Design).
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -17,6 +19,16 @@ import {
   Calculator,
   FileText,
   CheckCircle2,
+  Database,
+  Cloud,
+  Wrench,
+  Layers,
+  Code2,
+  Sigma,
+  Workflow,
+  Boxes,
+  GitBranch,
+  Cpu,
 } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';
@@ -45,6 +57,146 @@ const INTERVIEW_ARTICLES = [
   },
 ];
 
+// TRACKS — each track links ONLY to cheat sheets / articles that already exist in the repo.
+// Track names are navigation labels, not new prose. Descriptions reuse label-level phrasing only.
+const TRACKS = [
+  {
+    id: 'sql',
+    label: 'SQL & Window Functions',
+    icon: Sigma,
+    accent: 'from-sky-500/20 to-blue-500/20 border-sky-500/30',
+    dot: 'text-sky-300',
+    items: [
+      { slug: 'sql-interview-questions', type: 'cheatsheet' },
+      { slug: 'sql-window-functions', type: 'cheatsheet' },
+      { slug: 'snowflake-sql', type: 'cheatsheet' },
+    ],
+  },
+  {
+    id: 'modeling',
+    label: 'Data Modeling & Architecture',
+    icon: Boxes,
+    accent: 'from-indigo-500/20 to-violet-500/20 border-indigo-500/30',
+    dot: 'text-indigo-300',
+    items: [
+      { slug: 'data-modeling', type: 'cheatsheet' },
+      { slug: 'data-engineering-interview-questions', type: 'cheatsheet' },
+    ],
+  },
+  {
+    id: 'system-design',
+    label: 'System Design',
+    icon: Workflow,
+    accent: 'from-fuchsia-500/20 to-pink-500/20 border-fuchsia-500/30',
+    dot: 'text-fuchsia-300',
+    items: [
+      { slug: 'data-engineer-system-design-interview', type: 'article' },
+      { slug: 'data-engineering-interview-questions', type: 'cheatsheet' },
+    ],
+  },
+  {
+    id: 'snowflake',
+    label: 'Snowflake',
+    icon: Database,
+    accent: 'from-cyan-500/20 to-sky-500/20 border-cyan-500/30',
+    dot: 'text-cyan-300',
+    items: [
+      { slug: 'snowflake-interview-questions', type: 'cheatsheet' },
+      { slug: 'snowflake-interview-questions-advanced', type: 'article' },
+      { slug: 'snowflake-cost-optimization-interview', type: 'cheatsheet' },
+      { slug: 'snowflake-performance-deep-dive-interview', type: 'cheatsheet' },
+      { slug: 'snowflake-semi-structured-interview', type: 'cheatsheet' },
+      { slug: 'snowflake-governance-interview', type: 'cheatsheet' },
+      { slug: 'snowflake-snowpipe-streaming-interview', type: 'cheatsheet' },
+      { slug: 'snowflake-streams-tasks-interview', type: 'cheatsheet' },
+      { slug: 'snowflake-dynamic-tables-interview', type: 'cheatsheet' },
+      { slug: 'snowflake-data-sharing-interview', type: 'cheatsheet' },
+      { slug: 'snowflake-iceberg-tables-interview', type: 'cheatsheet' },
+      { slug: 'snowflake-cortex-ai-interview', type: 'cheatsheet' },
+      { slug: 'snowflake-snowpark-interview', type: 'cheatsheet' },
+      { slug: 'snowflake-stored-procedures-interview', type: 'cheatsheet' },
+      { slug: 'snowflake-external-integrations-interview', type: 'cheatsheet' },
+      { slug: 'snowflake-replication-failover-interview', type: 'cheatsheet' },
+      { slug: 'snowflake-best-practices', type: 'cheatsheet' },
+      { slug: 'snowflake-sql', type: 'cheatsheet' },
+    ],
+  },
+  {
+    id: 'databricks',
+    label: 'Databricks & Spark',
+    icon: Layers,
+    accent: 'from-orange-500/20 to-red-500/20 border-orange-500/30',
+    dot: 'text-orange-300',
+    items: [
+      { slug: 'databricks', type: 'cheatsheet' },
+      { slug: 'pyspark', type: 'cheatsheet' },
+    ],
+  },
+  {
+    id: 'aws',
+    label: 'AWS for Data Engineers',
+    icon: Cloud,
+    accent: 'from-amber-500/20 to-yellow-500/20 border-amber-500/30',
+    dot: 'text-amber-300',
+    items: [
+      { slug: 'aws-for-data-engineers', type: 'cheatsheet' },
+    ],
+  },
+  {
+    id: 'azure',
+    label: 'Azure for Data Engineers',
+    icon: Cloud,
+    accent: 'from-blue-500/20 to-indigo-500/20 border-blue-500/30',
+    dot: 'text-blue-300',
+    items: [
+      { slug: 'azure-for-data-engineers', type: 'cheatsheet' },
+    ],
+  },
+  {
+    id: 'dbt',
+    label: 'dbt',
+    icon: GitBranch,
+    accent: 'from-rose-500/20 to-pink-500/20 border-rose-500/30',
+    dot: 'text-rose-300',
+    items: [
+      { slug: 'dbt-commands', type: 'cheatsheet' },
+      { slug: 'dbt-best-practices', type: 'cheatsheet' },
+    ],
+  },
+  {
+    id: 'airflow',
+    label: 'Airflow & Orchestration',
+    icon: Wrench,
+    accent: 'from-teal-500/20 to-emerald-500/20 border-teal-500/30',
+    dot: 'text-teal-300',
+    items: [
+      { slug: 'airflow-essentials', type: 'cheatsheet' },
+      { slug: 'airflow-best-practices', type: 'cheatsheet' },
+    ],
+  },
+  {
+    id: 'python',
+    label: 'Python & PySpark',
+    icon: Code2,
+    accent: 'from-emerald-500/20 to-green-500/20 border-emerald-500/30',
+    dot: 'text-emerald-300',
+    items: [
+      { slug: 'python-for-data-engineers', type: 'cheatsheet' },
+      { slug: 'pyspark', type: 'cheatsheet' },
+    ],
+  },
+  {
+    id: 'behavioral',
+    label: 'Behavioral & Top-50',
+    icon: Briefcase,
+    accent: 'from-slate-500/20 to-gray-500/20 border-slate-500/30',
+    dot: 'text-slate-300',
+    items: [
+      { slug: 'top-50-data-engineer-interview-questions-2026', type: 'article' },
+    ],
+  },
+];
+
 const WEEK1_PLAN = [
   {
     day: 'Mon',
@@ -56,42 +208,42 @@ const WEEK1_PLAN = [
   },
   {
     day: 'Tue',
-    title: 'Snowflake fundamentals',
+    title: 'Data modeling + DE breadth',
     tasks: [
-      { label: 'Snowflake Interview Questions', slug: 'snowflake-interview-questions', type: 'cheatsheet' },
-      { label: 'Snowflake SQL Reference', slug: 'snowflake-sql', type: 'cheatsheet' },
+      { label: 'Data Modeling Cheat Sheet', slug: 'data-modeling', type: 'cheatsheet' },
+      { label: 'Data Engineering Interview Questions', slug: 'data-engineering-interview-questions', type: 'cheatsheet' },
     ],
   },
   {
     day: 'Wed',
-    title: 'Cost + performance',
+    title: 'Pick your warehouse (Snowflake or Databricks)',
     tasks: [
-      { label: 'Snowflake Cost Optimization — Interview', slug: 'snowflake-cost-optimization-interview', type: 'cheatsheet' },
-      { label: 'Snowflake Query Tuning — Interview', slug: 'snowflake-performance-deep-dive-interview', type: 'cheatsheet' },
+      { label: 'Snowflake Interview Questions', slug: 'snowflake-interview-questions', type: 'cheatsheet' },
+      { label: 'Databricks Fundamentals', slug: 'databricks', type: 'cheatsheet' },
     ],
   },
   {
     day: 'Thu',
-    title: 'Semi-structured + governance',
+    title: 'Cloud platform of your target role',
     tasks: [
-      { label: 'Snowflake Semi-Structured — Interview', slug: 'snowflake-semi-structured-interview', type: 'cheatsheet' },
-      { label: 'Snowflake Governance & Masking — Interview', slug: 'snowflake-governance-interview', type: 'cheatsheet' },
+      { label: 'AWS for Data Engineers', slug: 'aws-for-data-engineers', type: 'cheatsheet' },
+      { label: 'Azure for Data Engineers', slug: 'azure-for-data-engineers', type: 'cheatsheet' },
     ],
   },
   {
     day: 'Fri',
-    title: 'Pipelines + streaming',
+    title: 'Python for data engineering',
     tasks: [
-      { label: 'Snowpipe Streaming & Kafka — Interview', slug: 'snowflake-snowpipe-streaming-interview', type: 'cheatsheet' },
-      { label: 'Snowflake Streams & Tasks — Interview', slug: 'snowflake-streams-tasks-interview', type: 'cheatsheet' },
+      { label: 'Python for DE Cheat Sheet', slug: 'python-for-data-engineers', type: 'cheatsheet' },
+      { label: 'PySpark Cheat Sheet', slug: 'pyspark', type: 'cheatsheet' },
     ],
   },
   {
     day: 'Sat',
-    title: 'Architecture + modeling',
+    title: 'Transformation + orchestration',
     tasks: [
-      { label: 'Data Modeling Cheat Sheet', slug: 'data-modeling', type: 'cheatsheet' },
-      { label: 'Data Engineering Interview Questions', slug: 'data-engineering-interview-questions', type: 'cheatsheet' },
+      { label: 'dbt Commands Reference', slug: 'dbt-commands', type: 'cheatsheet' },
+      { label: 'Airflow Essentials', slug: 'airflow-essentials', type: 'cheatsheet' },
     ],
   },
   {
@@ -99,7 +251,7 @@ const WEEK1_PLAN = [
     title: 'Mock interview',
     tasks: [
       { label: 'Run 3 timed questions from the sheets above, out loud', slug: null, type: 'activity' },
-      { label: 'Review the 3 cost/performance/semi-structured sheets again', slug: null, type: 'activity' },
+      { label: 'Re-review the two areas where you were slowest', slug: null, type: 'activity' },
     ],
   },
 ];
@@ -107,42 +259,42 @@ const WEEK1_PLAN = [
 const WEEK2_PLAN = [
   {
     day: 'Mon',
-    title: 'Expert Snowflake — stored procs + UDFs',
+    title: 'Snowflake depth — cost + performance',
     tasks: [
-      { label: 'Stored Procedures & UDFs — Interview', slug: 'snowflake-stored-procedures-interview', type: 'cheatsheet' },
-      { label: 'External Functions & Integrations — Interview', slug: 'snowflake-external-integrations-interview', type: 'cheatsheet' },
+      { label: 'Snowflake Cost Optimization — Interview', slug: 'snowflake-cost-optimization-interview', type: 'cheatsheet' },
+      { label: 'Snowflake Query Tuning — Interview', slug: 'snowflake-performance-deep-dive-interview', type: 'cheatsheet' },
     ],
   },
   {
     day: 'Tue',
-    title: 'Replication + failover + Cortex AI',
+    title: 'Semi-structured + governance',
     tasks: [
-      { label: 'Replication & Failover — Interview', slug: 'snowflake-replication-failover-interview', type: 'cheatsheet' },
-      { label: 'Cortex AI & ML — Interview', slug: 'snowflake-cortex-ai-interview', type: 'cheatsheet' },
+      { label: 'Snowflake Semi-Structured — Interview', slug: 'snowflake-semi-structured-interview', type: 'cheatsheet' },
+      { label: 'Snowflake Governance & Masking — Interview', slug: 'snowflake-governance-interview', type: 'cheatsheet' },
     ],
   },
   {
     day: 'Wed',
-    title: 'dbt + pipelines',
+    title: 'Streaming + pipelines',
     tasks: [
-      { label: 'dbt Commands Reference', slug: 'dbt-commands', type: 'cheatsheet' },
-      { label: 'dbt Best Practices', slug: 'dbt-best-practices', type: 'cheatsheet' },
+      { label: 'Snowpipe Streaming & Kafka — Interview', slug: 'snowflake-snowpipe-streaming-interview', type: 'cheatsheet' },
+      { label: 'Snowflake Streams & Tasks — Interview', slug: 'snowflake-streams-tasks-interview', type: 'cheatsheet' },
     ],
   },
   {
     day: 'Thu',
-    title: 'Orchestration + data apps',
+    title: 'dbt + best practices',
     tasks: [
-      { label: 'Airflow Essentials', slug: 'airflow-essentials', type: 'cheatsheet' },
-      { label: 'Databricks Fundamentals', slug: 'databricks', type: 'cheatsheet' },
+      { label: 'dbt Best Practices', slug: 'dbt-best-practices', type: 'cheatsheet' },
+      { label: 'Airflow Best Practices', slug: 'airflow-best-practices', type: 'cheatsheet' },
     ],
   },
   {
     day: 'Fri',
-    title: 'Python for data engineers',
+    title: 'Expert Snowflake — procs, integrations, Cortex',
     tasks: [
-      { label: 'Python for DE Cheat Sheet', slug: 'python-for-data-engineers', type: 'cheatsheet' },
-      { label: 'PySpark Cheat Sheet', slug: 'pyspark', type: 'cheatsheet' },
+      { label: 'Stored Procedures & UDFs — Interview', slug: 'snowflake-stored-procedures-interview', type: 'cheatsheet' },
+      { label: 'Cortex AI & ML — Interview', slug: 'snowflake-cortex-ai-interview', type: 'cheatsheet' },
     ],
   },
   {
@@ -157,7 +309,7 @@ const WEEK2_PLAN = [
     day: 'Sun',
     title: 'Final mock + review',
     tasks: [
-      { label: 'Full 60-min mock: 15m SQL + 15m system design + 15m Snowflake + 15m behavioral', slug: null, type: 'activity' },
+      { label: 'Full 60-min mock: 15m SQL + 15m system design + 15m warehouse + 15m behavioral', slug: null, type: 'activity' },
       { label: 'Review weakest 3 sheets', slug: null, type: 'activity' },
     ],
   },
@@ -197,19 +349,66 @@ const DIFFICULTY_COLORS = {
 };
 
 export default function InterviewPrepHubPage() {
-  const interviewSheets = cheatsheets.filter((s) => s.category === 'interview');
+  // Lookup tables for cheat-sheet + article metadata referenced by TRACKS.
+  const sheetBySlug = useMemo(() => {
+    const map = {};
+    cheatsheets.forEach((c) => { map[c.slug] = c; });
+    return map;
+  }, []);
+
+  const articleBySlug = useMemo(() => {
+    const map = {};
+    INTERVIEW_ARTICLES.forEach((a) => { map[a.slug] = a; });
+    return map;
+  }, []);
+
+  const resolveItem = (item) => {
+    if (item.type === 'article') {
+      const a = articleBySlug[item.slug];
+      return a
+        ? { href: `/articles/${item.slug}`, title: a.title, description: a.description, meta: 'Long-form article' }
+        : null;
+    }
+    const s = sheetBySlug[item.slug];
+    return s
+      ? {
+          href: `/cheatsheets/${item.slug}`,
+          title: s.title,
+          description: s.shortDescription,
+          meta: `${s.difficulty || ''} · ${s.sections?.length || 0} sections`.replace(/^\s*·\s*/, ''),
+        }
+      : null;
+  };
+
+  // Deduplicated set of all referenced cheat sheet slugs across TRACKS (for itemList schema).
+  const allTrackSlugs = useMemo(() => {
+    const set = new Set();
+    TRACKS.forEach((t) => t.items.forEach((it) => {
+      if (it.type === 'cheatsheet') set.add(it.slug);
+    }));
+    return Array.from(set);
+  }, []);
+
+  const sheetCount = allTrackSlugs.length;
+  const trackCount = TRACKS.length;
   const pageUrl = `${SITE_CONFIG.url}/interview-prep`;
 
   const itemListSchema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: 'Data Engineering Interview Prep Hub',
-    itemListElement: interviewSheets.map((s, idx) => ({
-      '@type': 'ListItem',
-      position: idx + 1,
-      url: `${SITE_CONFIG.url}/cheatsheets/${s.slug}`,
-      name: s.title,
-    })),
+    itemListElement: allTrackSlugs
+      .map((slug, idx) => {
+        const s = sheetBySlug[slug];
+        if (!s) return null;
+        return {
+          '@type': 'ListItem',
+          position: idx + 1,
+          url: `${SITE_CONFIG.url}/cheatsheets/${slug}`,
+          name: s.title,
+        };
+      })
+      .filter(Boolean),
   };
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -254,9 +453,9 @@ export default function InterviewPrepHubPage() {
   return (
     <>
       <MetaTags
-        title="Data Engineering Interview Prep Hub — 17 Cheat Sheets + 2-Week Plan"
-        description="Free structured interview prep for data engineering roles. 17 focused cheat sheets across Snowflake, SQL, dbt, modeling, and system design — with a concrete 2-week study plan."
-        keywords="data engineer interview prep, snowflake interview prep, data engineering interview questions, snowflake interview questions, SQL interview prep, dbt interview, data engineer study plan"
+        title="Data Engineering Interview Prep Hub — Multi-Track Cheat Sheets + 2-Week Plan"
+        description="Free structured interview prep for data engineering roles across Snowflake, Databricks, AWS, Azure, dbt, Airflow, Python, PySpark, SQL, data modeling, and system design. Concrete 2-week study plan."
+        keywords="data engineer interview prep, snowflake interview, databricks interview, aws data engineer interview, azure data engineer interview, dbt interview, airflow interview, pyspark interview, system design interview, data modeling interview, SQL interview prep, DE study plan"
         url="/interview-prep"
         type="website"
         breadcrumbs={[
@@ -284,18 +483,38 @@ export default function InterviewPrepHubPage() {
             className="mb-10"
           >
             <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-amber-300 bg-amber-900/30 border border-amber-700/50 rounded-full">
-              Free · {interviewSheets.length} focused cheat sheets · 2-week structured plan
+              Free · {trackCount} tracks · {sheetCount} cheat sheets · 2-week structured plan
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
               <Target className="w-9 h-9 text-amber-400" />
               Data Engineering Interview Prep
             </h1>
             <p className="text-gray-300 text-lg max-w-3xl">
-              A curated interview-prep library for data engineers. 17 cheat sheets spanning SQL,
-              Snowflake, dbt, Airflow, modeling, and system design — plus a concrete 2-week study
-              plan you can follow day-by-day. Everything is free and indexed for rapid review.
+              A curated interview-prep library for data engineers. {sheetCount} cheat sheets across
+              SQL, Snowflake, Databricks, AWS, Azure, dbt, Airflow, Python/PySpark, data modeling,
+              and system design — plus a concrete 2-week study plan you can follow day-by-day.
+              Everything is free and indexed for rapid review.
             </p>
           </motion.div>
+
+          {/* Track nav */}
+          <nav aria-label="Interview tracks" className="mb-10">
+            <div className="flex flex-wrap gap-2">
+              {TRACKS.map((t) => {
+                const Ic = t.icon;
+                return (
+                  <a
+                    key={t.id}
+                    href={`#track-${t.id}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-slate-800/60 border border-slate-700 text-gray-200 hover:bg-slate-800 hover:border-amber-500/50 hover:text-amber-200 transition-colors"
+                  >
+                    <Ic className={`w-3.5 h-3.5 ${t.dot}`} />
+                    {t.label}
+                  </a>
+                );
+              })}
+            </div>
+          </nav>
 
           {/* Overview prose */}
           <section className="prose prose-invert max-w-3xl mb-12 text-gray-300">
@@ -310,11 +529,11 @@ export default function InterviewPrepHubPage() {
               semi-structured access patterns are all assumed.
             </p>
             <p className="mb-4">
-              This hub is structured around those question patterns. The 17 cheat sheets in the
-              interview category are organized by topic, not by difficulty — each sheet covers
-              one specific area end-to-end, at enough depth to answer follow-ups. The companion
-              articles provide narrative context for concepts that need more than a scan-ready
-              reference.
+              This hub is organized by track — SQL, Snowflake, Databricks, AWS, Azure, dbt,
+              Airflow, Python/PySpark, modeling, system design — so you can jump straight to the
+              stack your target role uses. Each track links only to cheat sheets and articles
+              already in this library; the companion long-form articles provide narrative context
+              for concepts that need more than a scan-ready reference.
             </p>
             <p className="mb-4">
               If you have two weeks, follow the study plan below. If you have fewer days, use the
@@ -333,39 +552,45 @@ export default function InterviewPrepHubPage() {
               <li className="flex gap-3">
                 <span className="shrink-0 w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center font-semibold">1</span>
                 <div>
-                  <Link to="/cheatsheets/snowflake-interview-questions" className="text-white font-medium hover:text-amber-300">Snowflake Interview Questions</Link>
-                  <span className="block text-gray-400">Foundation. Covers architecture, warehouses, storage, caching, security, and common traps.</span>
+                  <Link to="/cheatsheets/sql-interview-questions" className="text-white font-medium hover:text-amber-300">SQL Interview Questions</Link>
+                  <span className="block text-gray-400">Joins, grouping, set ops, subqueries, recursion. Dialect-agnostic — applies to every role.</span>
                 </div>
               </li>
               <li className="flex gap-3">
                 <span className="shrink-0 w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center font-semibold">2</span>
-                <div>
-                  <Link to="/cheatsheets/sql-interview-questions" className="text-white font-medium hover:text-amber-300">SQL Interview Questions</Link>
-                  <span className="block text-gray-400">Joins, grouping, set ops, subqueries, recursion. Dialect-agnostic.</span>
-                </div>
-              </li>
-              <li className="flex gap-3">
-                <span className="shrink-0 w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center font-semibold">3</span>
                 <div>
                   <Link to="/cheatsheets/sql-window-functions" className="text-white font-medium hover:text-amber-300">SQL Window Functions</Link>
                   <span className="block text-gray-400">Must-know. Most interview failures cluster here.</span>
                 </div>
               </li>
               <li className="flex gap-3">
+                <span className="shrink-0 w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center font-semibold">3</span>
+                <div>
+                  <Link to="/cheatsheets/data-engineering-interview-questions" className="text-white font-medium hover:text-amber-300">Data Engineering Interview Questions</Link>
+                  <span className="block text-gray-400">Systems + pipelines + orchestration breadth — warehouse-agnostic.</span>
+                </div>
+              </li>
+              <li className="flex gap-3">
                 <span className="shrink-0 w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center font-semibold">4</span>
                 <div>
-                  <Link to="/cheatsheets/snowflake-cost-optimization-interview" className="text-white font-medium hover:text-amber-300">Snowflake Cost Optimization (Expert)</Link>
-                  <span className="block text-gray-400">The most-asked architectural question at senior+ roles.</span>
+                  <Link to="/cheatsheets/data-modeling" className="text-white font-medium hover:text-amber-300">Data Modeling</Link>
+                  <span className="block text-gray-400">Dimensional, normalization, SCDs, fact/dim trade-offs. Asked at every level.</span>
                 </div>
               </li>
               <li className="flex gap-3">
                 <span className="shrink-0 w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center font-semibold">5</span>
                 <div>
-                  <Link to="/cheatsheets/data-engineering-interview-questions" className="text-white font-medium hover:text-amber-300">Data Engineering Interview Questions</Link>
-                  <span className="block text-gray-400">Systems + pipelines + orchestration breadth.</span>
+                  <Link to="/articles/data-engineer-system-design-interview" className="text-white font-medium hover:text-amber-300">Data Engineer System Design Guide</Link>
+                  <span className="block text-gray-400">End-to-end pipelines, ingestion/storage/serving, cost + SLA trade-offs.</span>
                 </div>
               </li>
             </ol>
+            <p className="text-xs text-gray-500 mt-4">
+              Then add the warehouse that matches your target role: <Link to="/cheatsheets/snowflake-interview-questions" className="text-amber-300 hover:text-amber-200 underline">Snowflake</Link>
+              {' '}· <Link to="/cheatsheets/databricks" className="text-amber-300 hover:text-amber-200 underline">Databricks</Link>
+              {' '}· <Link to="/cheatsheets/aws-for-data-engineers" className="text-amber-300 hover:text-amber-200 underline">AWS</Link>
+              {' '}· <Link to="/cheatsheets/azure-for-data-engineers" className="text-amber-300 hover:text-amber-200 underline">Azure</Link>.
+            </p>
           </section>
 
           {/* 2-week plan */}
@@ -379,7 +604,7 @@ export default function InterviewPrepHubPage() {
               to read it linearly. Scan, absorb, close, explain out loud, move on.
             </p>
 
-            <h3 className="text-xl text-amber-300 font-semibold mb-3">Week 1 — Foundations</h3>
+            <h3 className="text-xl text-amber-300 font-semibold mb-3">Week 1 — Breadth across the stack</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               {WEEK1_PLAN.map((day, idx) => (
                 <div key={`w1-${idx}`} className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
@@ -410,36 +635,64 @@ export default function InterviewPrepHubPage() {
             </div>
           </section>
 
-          {/* All interview cheat sheets */}
+          {/* Browse by track */}
           <section className="mb-12">
             <div className="flex items-center gap-2 mb-4">
               <BookOpen className="w-6 h-6 text-amber-400" />
-              <h2 className="text-2xl font-semibold text-white">All interview cheat sheets</h2>
+              <h2 className="text-2xl font-semibold text-white">Browse by track</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {interviewSheets.map((sheet) => (
-                <Link
-                  key={sheet.slug}
-                  to={`/cheatsheets/${sheet.slug}`}
-                  className="group bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/50 rounded-xl p-5 transition-all"
-                >
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="text-white font-semibold group-hover:text-amber-300">
-                      {sheet.title}
-                    </h3>
-                    <span className={`shrink-0 text-xs px-2 py-0.5 rounded border ${DIFFICULTY_COLORS[sheet.difficulty] || ''}`}>
-                      {sheet.difficulty}
-                    </span>
+            <p className="text-gray-400 text-sm mb-6 max-w-3xl">
+              Jump to the track that matches your target role. Every link is to a cheat sheet or
+              article already in this library — no external redirects.
+            </p>
+
+            <div className="space-y-6">
+              {TRACKS.map((t) => {
+                const Ic = t.icon;
+                const resolved = t.items.map((it) => ({ ...it, resolved: resolveItem(it) })).filter((x) => x.resolved);
+                if (resolved.length === 0) return null;
+                return (
+                  <div
+                    key={t.id}
+                    id={`track-${t.id}`}
+                    className={`bg-gradient-to-br ${t.accent} border rounded-2xl p-5 scroll-mt-20`}
+                  >
+                    <div className="flex items-center gap-2 mb-4">
+                      <Ic className={`w-5 h-5 ${t.dot}`} />
+                      <h3 className="text-lg font-semibold text-white">{t.label}</h3>
+                      <span className="text-xs text-gray-400 ml-auto">{resolved.length} resources</span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {resolved.map((item, i) => {
+                        const r = item.resolved;
+                        const isArticle = item.type === 'article';
+                        return (
+                          <Link
+                            key={`${t.id}-${i}`}
+                            to={r.href}
+                            className="group bg-slate-900/50 hover:bg-slate-900 border border-slate-700/50 hover:border-amber-500/50 rounded-xl p-4 transition-all"
+                          >
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <h4 className="text-white text-sm font-semibold group-hover:text-amber-300 leading-snug">
+                                {r.title}
+                              </h4>
+                              {isArticle ? (
+                                <Award className="w-4 h-4 text-amber-400 shrink-0" />
+                              ) : (
+                                <FileText className="w-4 h-4 text-gray-400 shrink-0" />
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-400 line-clamp-2 mb-2">
+                              {r.description}
+                            </p>
+                            <div className="text-[11px] text-gray-500">{r.meta}</div>
+                          </Link>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-400 line-clamp-3 mb-3">
-                    {sheet.shortDescription}
-                  </p>
-                  <div className="text-xs text-gray-500">
-                    <FileText className="w-3 h-3 inline mr-1" />
-                    {sheet.sections?.length || 0} sections · Updated {sheet.lastUpdated}
-                  </div>
-                </Link>
-              ))}
+                );
+              })}
             </div>
           </section>
 
@@ -482,7 +735,8 @@ export default function InterviewPrepHubPage() {
             <p className="text-gray-300 text-sm mb-4 max-w-3xl">
               Interviewers often ask &quot;roughly how much would this cost?&quot; or &quot;what
               warehouse size would you pick for this workload?&quot; Practice with numbers, not
-              hand-waving.
+              hand-waving. (Calculators are currently Snowflake-focused — the unit economics
+              concepts transfer to Databricks DBUs and BigQuery slots.)
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <Link to="/tools/snowflake-cost-calculator" className="flex items-center gap-2 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-amber-500 rounded-lg p-3 text-sm">
@@ -494,7 +748,7 @@ export default function InterviewPrepHubPage() {
                 <span className="text-gray-300">Query Cost Estimator</span>
               </Link>
               <Link to="/tools/snowflake-warehouse-sizing" className="flex items-center gap-2 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-amber-500 rounded-lg p-3 text-sm">
-                <Zap className="w-4 h-4 text-amber-400" />
+                <Cpu className="w-4 h-4 text-amber-400" />
                 <span className="text-gray-300">Warehouse Sizing Estimator</span>
               </Link>
             </div>

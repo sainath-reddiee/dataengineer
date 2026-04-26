@@ -1,0 +1,635 @@
+
+> dataengineerhub-blog@1.0.0 prebuild
+> npm run indexnow:generate && npm run sitemap:generate && npm run llm-sitemap && npm run llms-full && npm run rss-feed && npm run sitemap:validate
+
+
+> dataengineerhub-blog@1.0.0 indexnow:generate
+> node scripts/generateIndexNowKey.js
+
+🔑 IndexNow Key Generator
+============================================================
+✅ Using existing IndexNow key
+📝 Key: 964879007f504f7656ed5318909f7c79
+✅ Verification file exists: 964879007f504f7656ed5318909f7c79.txt
+
+📋 Files created:
+   1. public/indexnow-key.txt
+   2. public/964879007f504f7656ed5318909f7c79.txt
+
+🌐 After deployment, verify at:
+   https://dataengineerhub.blog/indexnow-key.txt
+   https://dataengineerhub.blog/964879007f504f7656ed5318909f7c79.txt
+
+> dataengineerhub-blog@1.0.0 sitemap:generate
+> node scripts/generateSitemap.js
+
+🚀 Starting sitemap generation...
+
+📡 Fetching posts from WordPress...
+📡 Fetching categories from WordPress...
+🏷️  Fetching tags from WordPress...
+✅ Total tags fetched: 33
+✅ Total categories fetched: 11
+✅ Fetched page 1 (61 posts)
+✅ Total posts fetched: 61
+
+📝 Adding static pages...
+📝 Adding blog posts...
+   ⏭️  Skipping thin article: snowpro-specialty-gen-ai-practice-exams
+   ⏭️  Excluded 1 thin article(s) from sitemap
+⏭️  Skipping category pages (no pre-rendered HTML, soft 404 for Googlebot)...
+⏭️  Skipping tag pages (all noindexed in React)...
+
+📖 Adding pSEO pages (glossary + comparisons)...
+✅ Added 86 pSEO pages
+📋 Adding cheatsheet pages...
+   ⏭️  Skipping thin cheatsheet: snowflake-best-practices
+   ⏭️  Skipping thin cheatsheet: airflow-best-practices
+✅ Added 28 cheatsheet pages
+
+🔍 Validating sitemap...
+✅ Sitemap validation passed!
+
+✅ Sitemap generated successfully!
+📍 Main sitemap: C:\Users\satyasainath.p\Blog\dataengineer\public\sitemap.xml
+📍 Sitemap index: C:\Users\satyasainath.p\Blog\dataengineer\public\sitemap-index.xml
+📊 Main sitemap URLs: 208
+   - Static pages: 34
+   - Blog posts: 61
+   - Categories: 11
+   - Tags: 33
+   - pSEO pages: 86
+   - Cheatsheets: 28
+   - News entries (last 2 days): 2
+
+> dataengineerhub-blog@1.0.0 llm-sitemap
+> node scripts/generateLLMSitemap.js
+
+🤖 Starting LLM-friendly sitemap generation...
+
+📡 Fetching posts for LLM sitemap...
+✅ Fetched page 1 (61 posts)
+✅ Total posts fetched: 61
+📝 Processing articles...
+   Processed 10/61 articles...
+   Processed 20/61 articles...
+   Processed 30/61 articles...
+   Processed 40/61 articles...
+   Processed 50/61 articles...
+   Processed 60/61 articles...
+✅ Processed all 61 articles
+
+✅ LLM sitemap generated successfully!
+📍 Location: C:\Users\satyasainath.p\Blog\dataengineer\public\llm-sitemap.json
+📊 Total articles: 61
+🔗 Access at: https://dataengineerhub.blog/llm-sitemap.json
+
+💡 This sitemap helps AI systems:
+   ✓ Understand article context and purpose
+   ✓ Extract key facts for citations
+   ✓ Identify relevant entities and topics
+   ✓ Match content to user questions
+   ✓ Assess author expertise and freshness
+
+> dataengineerhub-blog@1.0.0 llms-full
+> node scripts/generateLLMSFull.js
+
+Generating llms-full.txt...
+
+llms-full.txt generated: C:\Users\satyasainath.p\Blog\dataengineer\public\llms-full.txt
+Total articles indexed: 61
+Access at: https://dataengineerhub.blog/llms-full.txt
+
+> dataengineerhub-blog@1.0.0 rss-feed
+> node scripts/generateRSSFeed.js
+
+Starting RSS feed generation...
+
+Fetching posts for RSS feed...
+Fetched 61 posts
+RSS feed generated: C:\Users\satyasainath.p\Blog\dataengineer\public\rss.xml
+Total items: 61
+Access at: https://dataengineerhub.blog/rss.xml
+
+> dataengineerhub-blog@1.0.0 sitemap:validate
+> node scripts/validateSitemap.js
+
+
+🔍 SITEMAP VALIDATION
+============================================================
+
+📄 Checking if sitemap exists...
+📏 Checking file size...
+🔍 Validating XML structure...
+🔢 Checking URL count...
+🔗 Validating URLs...
+📅 Validating dates...
+⚖️  Validating priorities...
+🔄 Validating change frequencies...
+📄 Checking for required pages...
+
+============================================================
+📊 VALIDATION REPORT
+============================================================
+
+ℹ️  ✅ Sitemap file exists
+ℹ️  ✅ File size: 54.39KB
+ℹ️  ✅ Found 208 URL entries
+ℹ️  ✅ URL count: 208 (within limits)
+ℹ️  ✅ All 208 URLs are valid
+ℹ️  ✅ All 208 dates are valid
+ℹ️  ✅ All 208 priorities are valid
+ℹ️  ✅ All 208 changefreq values are valid
+
+============================================================
+✅ Info: 8
+⚠️  Warnings: 0
+❌ Errors: 0
+============================================================
+
+✅ VALIDATION PASSED - Sitemap is ready for deployment!
+
+
+> dataengineerhub-blog@1.0.0 build
+> npm run build:vite && npm run build:incremental && npm run faq-schema ; tail build.log
+
+
+> dataengineerhub-blog@1.0.0 build:vite
+> vite build
+
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 2236 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                                               [39m[1m[2m 15.64 kB[22m[1m[22m[2m │ gzip:   5.01 kB[22m
+[2mdist/[22m[35massets/index-DMnp3j57.css                                [39m[1m[2m121.65 kB[22m[1m[22m[2m │ gzip:  19.13 kB[22m
+[2mdist/[22m[36massets/js/ui-vendor-D3hghNPx.js                          [39m[1m[2m  0.14 kB[22m[1m[22m[2m │ gzip:   0.13 kB[22m
+[2mdist/[22m[36massets/js/performance-CBor82sO.js                        [39m[1m[2m  0.30 kB[22m[1m[22m[2m │ gzip:   0.21 kB[22m
+[2mdist/[22m[36massets/js/useIntersectionObserver-Bkplytle.js            [39m[1m[2m  0.37 kB[22m[1m[22m[2m │ gzip:   0.27 kB[22m
+[2mdist/[22m[36massets/js/duckdb-GDg5Ja-O.js                             [39m[1m[2m  0.56 kB[22m[1m[22m[2m │ gzip:   0.39 kB[22m
+[2mdist/[22m[36massets/js/BookmarkButton-DdOatWox.js                     [39m[1m[2m  0.60 kB[22m[1m[22m[2m │ gzip:   0.40 kB[22m
+[2mdist/[22m[36massets/js/categories-1F7LurWd.js                         [39m[1m[2m  0.66 kB[22m[1m[22m[2m │ gzip:   0.32 kB[22m
+[2mdist/[22m[36massets/js/input-nURr0W6t.js                              [39m[1m[2m  0.66 kB[22m[1m[22m[2m │ gzip:   0.40 kB[22m
+[2mdist/[22m[36massets/js/label-hcLhEaUa.js                              [39m[1m[2m  0.87 kB[22m[1m[22m[2m │ gzip:   0.47 kB[22m
+[2mdist/[22m[36massets/js/Breadcrumbs-n0A1-GnS.js                        [39m[1m[2m  0.98 kB[22m[1m[22m[2m │ gzip:   0.53 kB[22m
+[2mdist/[22m[36massets/js/button-DaR4MZXF.js                             [39m[1m[2m  1.22 kB[22m[1m[22m[2m │ gzip:   0.60 kB[22m
+[2mdist/[22m[36massets/js/NewsPosts-cDa_9xP2.js                          [39m[1m[2m  1.33 kB[22m[1m[22m[2m │ gzip:   0.71 kB[22m
+[2mdist/[22m[36massets/js/scanHistory-DinTNXzm.js                        [39m[1m[2m  1.38 kB[22m[1m[22m[2m │ gzip:   0.65 kB[22m
+[2mdist/[22m[36massets/js/SEOScoreCard-CPuGPvJD.js                       [39m[1m[2m  1.68 kB[22m[1m[22m[2m │ gzip:   0.79 kB[22m
+[2mdist/[22m[36massets/js/exportUtils-CjKez5Qw.js                        [39m[1m[2m  1.96 kB[22m[1m[22m[2m │ gzip:   0.90 kB[22m
+[2mdist/[22m[36massets/js/useQuizStore-DkdHMlSA.js                       [39m[1m[2m  2.06 kB[22m[1m[22m[2m │ gzip:   0.87 kB[22m
+[2mdist/[22m[36massets/js/ValidateWithSqlBlock-q9d123xV.js               [39m[1m[2m  2.14 kB[22m[1m[22m[2m │ gzip:   0.94 kB[22m
+[2mdist/[22m[36massets/js/metadataFactory-DbjX4T2F.js                    [39m[1m[2m  2.22 kB[22m[1m[22m[2m │ gzip:   0.85 kB[22m
+[2mdist/[22m[36massets/js/TrendingPosts-iztvp8AD.js                      [39m[1m[2m  2.53 kB[22m[1m[22m[2m │ gzip:   1.08 kB[22m
+[2mdist/[22m[36massets/js/NewsletterPage-C49f-r0e.js                     [39m[1m[2m  3.11 kB[22m[1m[22m[2m │ gzip:   1.47 kB[22m
+[2mdist/[22m[36massets/js/PracticeTopicPage-DxjeTQFB.js                  [39m[1m[2m  3.20 kB[22m[1m[22m[2m │ gzip:   1.39 kB[22m
+[2mdist/[22m[36massets/js/snowflakePricing-CdjDPzWO.js                   [39m[1m[2m  3.30 kB[22m[1m[22m[2m │ gzip:   1.24 kB[22m
+[2mdist/[22m[36massets/js/aeoAnalyzer-BzJWKRR8.js                        [39m[1m[2m  3.32 kB[22m[1m[22m[2m │ gzip:   1.42 kB[22m
+[2mdist/[22m[36massets/js/FeaturedPosts-UiMBBqyH.js                      [39m[1m[2m  3.37 kB[22m[1m[22m[2m │ gzip:   1.48 kB[22m
+[2mdist/[22m[36massets/js/PracticeQuestionPage-ug5AuyDn.js               [39m[1m[2m  3.47 kB[22m[1m[22m[2m │ gzip:   1.45 kB[22m
+[2mdist/[22m[36massets/js/glossaryLoader-FDHvkG_a.js                     [39m[1m[2m  3.50 kB[22m[1m[22m[2m │ gzip:   1.00 kB[22m
+[2mdist/[22m[36massets/js/DisclaimerPage-DdeDBPMK.js                     [39m[1m[2m  3.54 kB[22m[1m[22m[2m │ gzip:   1.44 kB[22m
+[2mdist/[22m[36massets/js/TagPage-CwOUtrdR.js                            [39m[1m[2m  3.64 kB[22m[1m[22m[2m │ gzip:   1.38 kB[22m
+[2mdist/[22m[36massets/js/NotFoundPage-D87LszzC.js                       [39m[1m[2m  4.09 kB[22m[1m[22m[2m │ gzip:   1.50 kB[22m
+[2mdist/[22m[36massets/js/ChecklistPage-C2cjlrAD.js                      [39m[1m[2m  4.15 kB[22m[1m[22m[2m │ gzip:   1.74 kB[22m
+[2mdist/[22m[36massets/js/data-observability-BK35Ajoo.js                 [39m[1m[2m  4.21 kB[22m[1m[22m[2m │ gzip:   1.76 kB[22m
+[2mdist/[22m[36massets/js/data-orchestration-DbW3l3JC.js                 [39m[1m[2m  4.32 kB[22m[1m[22m[2m │ gzip:   1.95 kB[22m
+[2mdist/[22m[36massets/js/TermsOfServicePage-BKuCFpfJ.js                 [39m[1m[2m  4.44 kB[22m[1m[22m[2m │ gzip:   2.01 kB[22m
+[2mdist/[22m[36massets/js/Newsletter-DZcVl85Y.js                         [39m[1m[2m  4.46 kB[22m[1m[22m[2m │ gzip:   1.73 kB[22m
+[2mdist/[22m[36massets/js/NewsPage-DLHBdYv5.js                           [39m[1m[2m  4.86 kB[22m[1m[22m[2m │ gzip:   1.68 kB[22m
+[2mdist/[22m[36massets/js/ApiDebugger-X5Huod6W.js                        [39m[1m[2m  4.96 kB[22m[1m[22m[2m │ gzip:   1.83 kB[22m
+[2mdist/[22m[36massets/js/data-quality-DHj9Og3O.js                       [39m[1m[2m  5.00 kB[22m[1m[22m[2m │ gzip:   2.04 kB[22m
+[2mdist/[22m[36massets/js/useWordPress-Bn0cEyzj.js                       [39m[1m[2m  5.26 kB[22m[1m[22m[2m │ gzip:   1.65 kB[22m
+[2mdist/[22m[36massets/js/ContactPage-DhoAyTVp.js                        [39m[1m[2m  5.44 kB[22m[1m[22m[2m │ gzip:   1.94 kB[22m
+[2mdist/[22m[36massets/js/TagsArchivePage-Cdhqdhzk.js                    [39m[1m[2m  5.63 kB[22m[1m[22m[2m │ gzip:   1.87 kB[22m
+[2mdist/[22m[36massets/js/ExportButton-N4s44zGO.js                       [39m[1m[2m  6.17 kB[22m[1m[22m[2m │ gzip:   2.17 kB[22m
+[2mdist/[22m[36massets/js/AISuitePage-CSNRX5QN.js                        [39m[1m[2m  6.49 kB[22m[1m[22m[2m │ gzip:   2.62 kB[22m
+[2mdist/[22m[36massets/js/SEODashboard-CAS3vQ32.js                       [39m[1m[2m  6.59 kB[22m[1m[22m[2m │ gzip:   1.85 kB[22m
+[2mdist/[22m[36massets/js/SchemaPage-XtwI8Icw.js                         [39m[1m[2m  7.10 kB[22m[1m[22m[2m │ gzip:   1.96 kB[22m
+[2mdist/[22m[36massets/js/RecentPosts-DiLN3Xgz.js                        [39m[1m[2m  7.36 kB[22m[1m[22m[2m │ gzip:   2.19 kB[22m
+[2mdist/[22m[36massets/js/TechCategories-BDdV6YF-.js                     [39m[1m[2m  7.60 kB[22m[1m[22m[2m │ gzip:   3.06 kB[22m
+[2mdist/[22m[36massets/js/GlossaryHubPage-BXxEhD_U.js                    [39m[1m[2m  7.66 kB[22m[1m[22m[2m │ gzip:   2.50 kB[22m
+[2mdist/[22m[36massets/js/etl-elt-CqJ-wP62.js                            [39m[1m[2m  7.83 kB[22m[1m[22m[2m │ gzip:   3.26 kB[22m
+[2mdist/[22m[36massets/js/SerpPreviewPage-DiaCgl6D.js                    [39m[1m[2m  8.00 kB[22m[1m[22m[2m │ gzip:   2.97 kB[22m
+[2mdist/[22m[36massets/js/ComparisonHubPage-BsIechKs.js                  [39m[1m[2m  8.48 kB[22m[1m[22m[2m │ gzip:   2.81 kB[22m
+[2mdist/[22m[36massets/js/ScannerPage-B2OMYjO-.js                        [39m[1m[2m  8.99 kB[22m[1m[22m[2m │ gzip:   2.91 kB[22m
+[2mdist/[22m[36massets/js/CheatSheetHubPage-CkFir76Z.js                  [39m[1m[2m  9.31 kB[22m[1m[22m[2m │ gzip:   2.95 kB[22m
+[2mdist/[22m[36massets/js/pseoAnalyzer-B6UOHgYe.js                       [39m[1m[2m  9.34 kB[22m[1m[22m[2m │ gzip:   3.14 kB[22m
+[2mdist/[22m[36massets/js/CategoryPage-CNK_chAZ.js                       [39m[1m[2m  9.50 kB[22m[1m[22m[2m │ gzip:   3.59 kB[22m
+[2mdist/[22m[36massets/js/PrivacyPolicyPage-zMTlOSLS.js                  [39m[1m[2m 10.09 kB[22m[1m[22m[2m │ gzip:   3.32 kB[22m
+[2mdist/[22m[36massets/js/ComparePage-BmYg4rso.js                        [39m[1m[2m 10.10 kB[22m[1m[22m[2m │ gzip:   2.74 kB[22m
+[2mdist/[22m[36massets/js/geoAnalyzer-DvagQp7n.js                        [39m[1m[2m 10.90 kB[22m[1m[22m[2m │ gzip:   3.98 kB[22m
+[2mdist/[22m[36massets/js/AllArticlesPage-BwzkzFC_.js                    [39m[1m[2m 11.61 kB[22m[1m[22m[2m │ gzip:   3.49 kB[22m
+[2mdist/[22m[36massets/js/GlossaryPage-DCzhbuLk.js                       [39m[1m[2m 11.71 kB[22m[1m[22m[2m │ gzip:   3.54 kB[22m
+[2mdist/[22m[36massets/js/ads-B8GwDI-c.js                                [39m[1m[2m 11.75 kB[22m[1m[22m[2m │ gzip:   3.91 kB[22m
+[2mdist/[22m[36massets/js/WarehouseComparisonCalculatorPage-Dr5oYods.js  [39m[1m[2m 11.97 kB[22m[1m[22m[2m │ gzip:   3.98 kB[22m
+[2mdist/[22m[36massets/js/AboutPage-3BhkpGSR.js                          [39m[1m[2m 12.15 kB[22m[1m[22m[2m │ gzip:   3.54 kB[22m
+[2mdist/[22m[36massets/js/ContentOptimizerPage-DGEXldFb.js               [39m[1m[2m 13.47 kB[22m[1m[22m[2m │ gzip:   3.35 kB[22m
+[2mdist/[22m[36massets/js/CheatSheetCategoryPage-hDMmrJY0.js             [39m[1m[2m 13.65 kB[22m[1m[22m[2m │ gzip:   4.71 kB[22m
+[2mdist/[22m[36massets/js/data-transformation-CH0Vrh5M.js                [39m[1m[2m 13.66 kB[22m[1m[22m[2m │ gzip:   4.89 kB[22m
+[2mdist/[22m[36massets/js/PracticeHubPage-BhQ_fJdl.js                    [39m[1m[2m 13.76 kB[22m[1m[22m[2m │ gzip:   5.35 kB[22m
+[2mdist/[22m[36massets/js/cloud-platforms-CeDMDvkW.js                    [39m[1m[2m 13.98 kB[22m[1m[22m[2m │ gzip:   5.01 kB[22m
+[2mdist/[22m[36massets/js/ComparisonPage-Caz9Ivgn.js                     [39m[1m[2m 14.45 kB[22m[1m[22m[2m │ gzip:   4.00 kB[22m
+[2mdist/[22m[36massets/js/ContributePage-DBVC3h7N.js                     [39m[1m[2m 14.80 kB[22m[1m[22m[2m │ gzip:   4.67 kB[22m
+[2mdist/[22m[36massets/js/cloud-platforms-B-up1Gnq.js                    [39m[1m[2m 15.03 kB[22m[1m[22m[2m │ gzip:   5.46 kB[22m
+[2mdist/[22m[36massets/js/post-components-WvEslh6B.js                    [39m[1m[2m 15.16 kB[22m[1m[22m[2m │ gzip:   4.53 kB[22m
+[2mdist/[22m[36massets/js/HomePage-vEsC9nOT.js                           [39m[1m[2m 15.77 kB[22m[1m[22m[2m │ gzip:   4.86 kB[22m
+[2mdist/[22m[36massets/js/SqlFormatterPage-DIixU6df.js                   [39m[1m[2m 16.40 kB[22m[1m[22m[2m │ gzip:   5.58 kB[22m
+[2mdist/[22m[36massets/js/CreditCostPage-DVoT_lHQ.js                     [39m[1m[2m 16.55 kB[22m[1m[22m[2m │ gzip:   5.04 kB[22m
+[2mdist/[22m[36massets/js/data-integration-ClMDGJdn.js                   [39m[1m[2m 16.59 kB[22m[1m[22m[2m │ gzip:   5.90 kB[22m
+[2mdist/[22m[36massets/js/data-quality-KIgozBMa.js                       [39m[1m[2m 16.63 kB[22m[1m[22m[2m │ gzip:   5.60 kB[22m
+[2mdist/[22m[36massets/js/streaming-C2gX6wns.js                          [39m[1m[2m 16.81 kB[22m[1m[22m[2m │ gzip:   5.80 kB[22m
+[2mdist/[22m[36massets/js/CsvToSqlPage-COzAhNWK.js                       [39m[1m[2m 17.07 kB[22m[1m[22m[2m │ gzip:   5.63 kB[22m
+[2mdist/[22m[36massets/js/CronBuilderPage-B67aELDU.js                    [39m[1m[2m 17.38 kB[22m[1m[22m[2m │ gzip:   5.66 kB[22m
+[2mdist/[22m[36massets/js/UnixTimestampPage-CJuVYenh.js                  [39m[1m[2m 17.56 kB[22m[1m[22m[2m │ gzip:   5.23 kB[22m
+[2mdist/[22m[36massets/js/CheatSheetPage-B95mXcse.js                     [39m[1m[2m 17.62 kB[22m[1m[22m[2m │ gzip:   4.67 kB[22m
+[2mdist/[22m[36massets/js/JsonToSqlPage-Bc1MCavB.js                      [39m[1m[2m 17.92 kB[22m[1m[22m[2m │ gzip:   5.62 kB[22m
+[2mdist/[22m[36massets/js/DbtSchemaGeneratorPage-BUzAZR7c.js             [39m[1m[2m 18.69 kB[22m[1m[22m[2m │ gzip:   6.08 kB[22m
+[2mdist/[22m[36massets/js/pdfExportService-CrR-3uz1.js                   [39m[1m[2m 18.80 kB[22m[1m[22m[2m │ gzip:   6.62 kB[22m
+[2mdist/[22m[36massets/js/QueryCostEstimatorPage-C0RS_FoC.js             [39m[1m[2m 19.15 kB[22m[1m[22m[2m │ gzip:   5.74 kB[22m
+[2mdist/[22m[36massets/js/DbtCloudCostPage-CSNg6sqC.js                   [39m[1m[2m 19.46 kB[22m[1m[22m[2m │ gzip:   6.06 kB[22m
+[2mdist/[22m[36massets/js/seoScanner-BDjfp29T.js                         [39m[1m[2m 19.73 kB[22m[1m[22m[2m │ gzip:   6.06 kB[22m
+[2mdist/[22m[36massets/js/PracticeQuizPage-DLA2qXJA.js                   [39m[1m[2m 20.31 kB[22m[1m[22m[2m │ gzip:   6.58 kB[22m
+[2mdist/[22m[36massets/js/BigQueryCostPage-BNGFvfgT.js                   [39m[1m[2m 20.42 kB[22m[1m[22m[2m │ gzip:   6.31 kB[22m
+[2mdist/[22m[36massets/js/WarehouseSizingPage-_DpAxIiG.js                [39m[1m[2m 20.66 kB[22m[1m[22m[2m │ gzip:   6.28 kB[22m
+[2mdist/[22m[36massets/js/ToolsHubPage-CFy6OkYA.js                       [39m[1m[2m 20.89 kB[22m[1m[22m[2m │ gzip:   6.62 kB[22m
+[2mdist/[22m[36massets/js/Certification-hG2nKGCc.js                      [39m[1m[2m 21.07 kB[22m[1m[22m[2m │ gzip:   6.11 kB[22m
+[2mdist/[22m[36massets/js/streaming-C0yODEIP.js                          [39m[1m[2m 21.41 kB[22m[1m[22m[2m │ gzip:   7.02 kB[22m
+[2mdist/[22m[36massets/js/FormatConverterPage-BuLvMhLF.js                [39m[1m[2m 21.59 kB[22m[1m[22m[2m │ gzip:   7.08 kB[22m
+[2mdist/[22m[36massets/js/data-governance-CZ8li_Bc.js                    [39m[1m[2m 22.46 kB[22m[1m[22m[2m │ gzip:   7.21 kB[22m
+[2mdist/[22m[36massets/js/DatabricksCostPage-DQPShF1W.js                 [39m[1m[2m 23.33 kB[22m[1m[22m[2m │ gzip:   7.09 kB[22m
+[2mdist/[22m[36massets/js/SqlPlaygroundPage-DN8D2mJc.js                  [39m[1m[2m 23.51 kB[22m[1m[22m[2m │ gzip:   7.45 kB[22m
+[2mdist/[22m[36massets/js/data-orchestration-DvJky0IH.js                 [39m[1m[2m 23.54 kB[22m[1m[22m[2m │ gzip:   7.79 kB[22m
+[2mdist/[22m[36massets/js/analytics-wR41XTcL.js                          [39m[1m[2m 24.28 kB[22m[1m[22m[2m │ gzip:   8.77 kB[22m
+[2mdist/[22m[36massets/js/data-modeling-D3f5yYZ_.js                      [39m[1m[2m 26.14 kB[22m[1m[22m[2m │ gzip:   8.66 kB[22m
+[2mdist/[22m[36massets/js/duckdb-ClQ_LzAE.js                             [39m[1m[2m 27.19 kB[22m[1m[22m[2m │ gzip:   7.04 kB[22m
+[2mdist/[22m[36massets/js/InterviewPrepHubPage-0Gaotx8c.js               [39m[1m[2m 27.28 kB[22m[1m[22m[2m │ gzip:   7.21 kB[22m
+[2mdist/[22m[36massets/js/CostCalculatorPage-C6yxyrr6.js                 [39m[1m[2m 28.39 kB[22m[1m[22m[2m │ gzip:   8.88 kB[22m
+[2mdist/[22m[36massets/js/analytics-B7PhnNv9.js                          [39m[1m[2m 28.68 kB[22m[1m[22m[2m │ gzip:   9.38 kB[22m
+[2mdist/[22m[36massets/js/data-integration-D8ZGl6gk.js                   [39m[1m[2m 32.09 kB[22m[1m[22m[2m │ gzip:  10.38 kB[22m
+[2mdist/[22m[36massets/js/data-warehousing-aIWHM3u9.js                   [39m[1m[2m 35.89 kB[22m[1m[22m[2m │ gzip:  11.42 kB[22m
+[2mdist/[22m[36massets/js/BulkScanPage-D4c6AqLv.js                       [39m[1m[2m 38.82 kB[22m[1m[22m[2m │ gzip:   9.98 kB[22m
+[2mdist/[22m[36massets/js/markdown-DtYEmT9z.js                           [39m[1m[2m 63.09 kB[22m[1m[22m[2m │ gzip:  20.56 kB[22m
+[2mdist/[22m[36massets/js/data-warehousing-BPT9_eo9.js                   [39m[1m[2m 65.24 kB[22m[1m[22m[2m │ gzip:  19.77 kB[22m
+[2mdist/[22m[36massets/js/ArticlePage-Mr4Ej0l9.js                        [39m[1m[2m 77.20 kB[22m[1m[22m[2m │ gzip:  24.04 kB[22m
+[2mdist/[22m[36massets/js/avsc-Bao1diap.js                               [39m[1m[2m104.25 kB[22m[1m[22m[2m │ gzip:  29.94 kB[22m
+[2mdist/[22m[36massets/js/index-B6cJE4Gx.js                              [39m[1m[2m113.49 kB[22m[1m[22m[2m │ gzip:  33.13 kB[22m
+[2mdist/[22m[36massets/js/framer-motion-CWS9jpDP.js                      [39m[1m[2m116.69 kB[22m[1m[22m[2m │ gzip:  37.50 kB[22m
+[2mdist/[22m[36massets/js/linkingEngine-lFHK8mDo.js                      [39m[1m[2m145.75 kB[22m[1m[22m[2m │ gzip:  43.57 kB[22m
+[2mdist/[22m[36massets/js/cheatsheetData-BIUe9rqw.js                     [39m[1m[2m221.29 kB[22m[1m[22m[2m │ gzip:  75.62 kB[22m
+[2mdist/[22m[36massets/js/vendor-CGlz5CKW.js                             [39m[1m[2m259.03 kB[22m[1m[22m[2m │ gzip:  68.36 kB[22m
+[2mdist/[22m[36massets/js/pdf-vendor-_WFrPK7o.js                         [39m[1m[2m371.44 kB[22m[1m[22m[2m │ gzip: 119.22 kB[22m
+[2mdist/[22m[36massets/js/practiceSeo-CDcMRU5M.js                        [39m[1m[2m428.37 kB[22m[1m[22m[2m │ gzip: 114.83 kB[22m
+[2mdist/[22m[36massets/js/react-vendor-BVzDUFDl.js                       [39m[1m[33m637.44 kB[39m[22m[2m │ gzip: 177.13 kB[22m
+[32m✓ built in 26.44s[39m
+
+> dataengineerhub-blog@1.0.0 build:incremental
+> node scripts/generateStaticPagesIncremental.js
+
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+🚀 Starting FULL CONTENT static generation with images…
+   🔥 Articles will include COMPLETE content for SEO/AdSense
+   🖼️  Images will be properly linked with absolute URLs
+
+📦 JS bundle: /assets/js/index-B6cJE4Gx.js
+🎨 CSS bundle: /assets/index-DMnp3j57.css
+✅ Verified JS exists at: /assets/js/index-B6cJE4Gx.js
+✅ Verified CSS exists at: /assets/index-DMnp3j57.css
+📦 Found 2 critical chunks for modulepreload
+🔨 Enabling force rebuild…
+📦 Loaded cache with 258 pages
+📄 Processing posts with FULL content and images…
+   Loaded 13 category names for articleSection mapping
+   Loaded 34 tag names for article:tag mapping
+   Found 61 posts from API
+   ↻ Updated: /articles/snowflake-zero-copy-cloning-problems-2 (44.38 KB)
+   ↻ Updated: /articles/claude-code-power-user-guide (46.46 KB)
+   ↻ Updated: /articles/query-snowflake-in-duckdb-cut-costs (43.63 KB)
+   ↻ Updated: /articles/dbt-tests-pass-bad-data (45.98 KB)
+   ↻ Updated: /articles/automation-in-data-engineering (43.36 KB)
+✅ Posts: 0 new, 61 updated, 0 unchanged (5.28s)
+   📊 Verified: 61 article directories in dist/articles/
+   🎯 SEO Override Coverage: 59/61 articles (96.7%)
+   ⚠️  2 articles missing SEO overrides:
+      - snowflake-zero-copy-cloning-problems-2
+      - claude-code-power-user-guide
+
+📄 Processing essential pages (About, Contact, Privacy, Terms, Disclaimer)…
+   ↻ Updated: /about (17.47 KB)
+   ↻ Updated: /contact (14.80 KB)
+   ↻ Updated: /privacy-policy (16.13 KB)
+   ↻ Updated: /terms-of-service (15.51 KB)
+   ↻ Updated: /disclaimer (15.04 KB)
+   ↻ Updated: /contribute (15.60 KB)
+   ↻ Updated: /certification (22.62 KB)
+   ↻ Updated: /tools/snowflake-cost-calculator (20.85 KB)
+   ↻ Updated: /tools/snowflake-credit-cost (17.01 KB)
+   ↻ Updated: /tools/snowflake-query-cost-estimator (16.98 KB)
+   ↻ Updated: /tools/snowflake-warehouse-sizing (18.01 KB)
+   ↻ Updated: /tools (23.50 KB)
+   ↻ Updated: /tools/databricks-cost-calculator (17.99 KB)
+   ↻ Updated: /tools/dbt-cloud-cost-calculator (17.32 KB)
+   ↻ Updated: /tools/sql-formatter (16.75 KB)
+   ↻ Updated: /tools/cron-expression-builder (17.65 KB)
+   ↻ Updated: /tools/json-to-sql-ddl (17.48 KB)
+   ↻ Updated: /tools/csv-to-sql (17.75 KB)
+   ↻ Updated: /tools/dbt-schema-generator (18.57 KB)
+   ↻ Updated: /tools/unix-timestamp-converter (19.80 KB)
+   ↻ Updated: /tools/bigquery-cost-calculator (19.87 KB)
+   ↻ Updated: /tools/cloud-data-warehouse-cost-comparison (18.04 KB)
+   ↻ Updated: /tools/sql-playground (19.58 KB)
+   ↻ Updated: /tools/json-parquet-avro-converter (23.06 KB)
+   ↻ Updated: /interview-prep (19.85 KB)
+   ↻ Updated: /cheatsheets/category/sql (16.03 KB)
+   ↻ Updated: /cheatsheets/category/orchestration (16.28 KB)
+   ↻ Updated: /cheatsheets/category/cloud (15.80 KB)
+   ↻ Updated: /cheatsheets/category/programming (15.93 KB)
+   ↻ Updated: /cheatsheets/category/architecture (16.25 KB)
+   ↻ Updated: /cheatsheets/category/interview (17.22 KB)
+   ↻ Updated: /cheatsheets/category/bestpractices (16.27 KB)
+✅ Essential pages processed: 32 pages
+
+📂 Processing categories with article listings…
+   Found 13 categories from API
+   ↻ Airflow: 3 articles (10.29 KB)
+   ↻ AWS: 3 articles (10.27 KB)
+   ↻ Azure: 2 articles (9.53 KB)
+   ↻ Databricks: 1 articles (8.78 KB)
+   ↻ dbt: 6 articles (12.31 KB)
+   ↻ Developer Productivity: 1 articles (9.07 KB)
+   ↻ GCP: 1 articles (8.81 KB)
+   ↻ News: 0 articles (8.34 KB)
+   ↻ Python: 4 articles (11.04 KB)
+   ↻ Salesforce: 2 articles (9.64 KB)
+   ↻ Snowflake: 44 articles (38.29 KB)
+   ↻ SQL: 16 articles (19.15 KB)
+   ↻ Uncategorized: 0 articles (8.17 KB)
+
+📄 Generating /articles listing page…
+   ✓ Created /articles listing page (70.59 KB, 61 articles)
+
+🏠 Enhancing homepage with article listings…
+   ✓ Homepage enhanced with article listings (39.28 KB)
+
+🏷️  Processing tags with article listings…
+   Found 34 tags from API
+   ↻ ai: 17 articles (19.46 KB)
+   ↻ AI coding: 1 articles (8.71 KB)
+   ↻ airflow: 3 articles (10.05 KB)
+   ↻ Anthropic: 1 articles (8.71 KB)
+   ↻ aws: 2 articles (9.28 KB)
+   ↻ azure: 2 articles (9.32 KB)
+   ↻ CI/CD: 1 articles (8.64 KB)
+   ↻ Claude Code: 1 articles (8.74 KB)
+   ↻ CLAUDE.md: 1 articles (8.71 KB)
+   ↻ copilot: 1 articles (8.67 KB)
+   ↻ cortex: 11 articles (15.42 KB)
+   ↻ data-engineering: 16 articles (19.06 KB)
+   ↻ data-masking: 1 articles (8.76 KB)
+   ↻ data-modeling: 1 articles (8.80 KB)
+   ↻ data-warehouse: 10 articles (15.02 KB)
+   ↻ databricks: 1 articles (8.70 KB)
+   ↻ dbt: 4 articles (10.69 KB)
+   ↻ developer tools: 1 articles (8.81 KB)
+   ↻ duckdb: 1 articles (8.68 KB)
+   ↻ etl: 8 articles (13.34 KB)
+   ↻ gcp: 1 articles (8.62 KB)
+   ↻ iceberg: 1 articles (8.69 KB)
+   ↻ interview: 2 articles (9.41 KB)
+   ↻ migration: 1 articles (8.71 KB)
+   ↻ ml: 1 articles (8.54 KB)
+   ↻ openflow: 1 articles (8.73 KB)
+   ↻ optimization: 2 articles (9.48 KB)
+   ↻ osi: 1 articles (8.64 KB)
+   ↻ prompt engineering: 1 articles (8.86 KB)
+   ↻ rag: 0 articles (7.96 KB)
+   ↻ salesforce: 2 articles (9.42 KB)
+   ↻ snowflake: 43 articles (37.30 KB)
+   ↻ sql: 6 articles (12.07 KB)
+   ↻ synapse: 1 articles (8.68 KB)
+
+📖 Processing glossary pages from JSON data…
+   Found 50 glossary terms from 11 JSON files
+   ↻ Apache Spark (22.56 KB)
+   ↻ OLAP (Online Analytical Processing) (29.85 KB)
+   ↻ DuckDB (23.91 KB)
+   ↻ Vector Database (27.48 KB)
+   ↻ Feature Store (24.76 KB)
+   ↻ Databricks (25.44 KB)
+   ↻ Infrastructure as Code (IaC) (29.37 KB)
+   ↻ Snowpark (26.17 KB)
+   ↻ Data Governance (24.63 KB)
+   ↻ Data Lineage (24.58 KB)
+   ↻ Data Catalog (24.79 KB)
+   ↻ Data Mesh (30.19 KB)
+   ↻ Data Fabric (25.21 KB)
+   ↻ Fivetran (22.74 KB)
+   ↻ Airbyte (22.71 KB)
+   ↻ Change Data Capture (CDC) (25.17 KB)
+   ↻ Reverse ETL (28.45 KB)
+   ↻ Data Pipeline (28.79 KB)
+   ↻ Apache NiFi (25.61 KB)
+   ↻ Data Virtualization (28.41 KB)
+   ↻ Data Modeling (24.61 KB)
+   ↻ CAP Theorem (25.02 KB)
+   ↻ ACID Transactions (27.69 KB)
+   ↻ Star Schema (26.94 KB)
+   ↻ Dimensional Modeling (28.15 KB)
+   ↻ Data Observability (25.26 KB)
+   ↻ Apache Airflow (24.79 KB)
+   ↻ Data Quality (23.08 KB)
+   ↻ Data Contracts (23.00 KB)
+   ↻ Great Expectations (21.63 KB)
+   ↻ Soda Core (26.00 KB)
+   ↻ Snowflake (23.49 KB)
+   ↻ Data Warehouse (26.29 KB)
+   ↻ Data Lake (26.66 KB)
+   ↻ Slowly Changing Dimensions (SCD) (26.82 KB)
+   ↻ Columnar Storage (27.47 KB)
+   ↻ Lakehouse Architecture (30.16 KB)
+   ↻ Table Format (29.15 KB)
+   ↻ Medallion Architecture (25.94 KB)
+   ↻ Apache Iceberg (27.38 KB)
+   ↻ Apache Hudi (26.00 KB)
+   ↻ Delta Lake (25.86 KB)
+   ↻ Data Lakehouse (27.99 KB)
+   ↻ Data Warehouse Automation (27.03 KB)
+   ↻ dbt (Data Build Tool) (23.86 KB)
+   ↻ ETL (Extract, Transform, Load) (24.22 KB)
+   ↻ Apache Kafka (22.99 KB)
+   ↻ Stateful Processing (31.61 KB)
+   ↻ Apache Flink (25.04 KB)
+   ↻ Stream Processing (28.96 KB)
+   ✅ Glossary pages complete: 50 terms processed
+   ✓ Glossary hub page (51.52 KB)
+
+⚖️  Processing comparison pages from JSON data…
+   Found 34 comparisons from 8 JSON files
+   ↻ ClickHouse vs Apache Druid (20.17 KB)
+   ↻ DuckDB vs Polars (22.48 KB)
+   ↻ Looker vs Power BI (22.57 KB)
+   ↻ Pandas vs Polars (22.67 KB)
+   ↻ Tableau vs Looker (24.15 KB)
+   ↻ Trino vs PrestoDB (23.61 KB)
+   ↻ Terraform vs Pulumi (20.08 KB)
+   ↻ Databricks vs Google BigQuery (22.73 KB)
+   ↻ Databricks vs Amazon EMR (24.67 KB)
+   ↻ Fivetran vs Airbyte (19.51 KB)
+   ↻ Airbyte vs Meltano (19.88 KB)
+   ↻ Fivetran vs Stitch (20.11 KB)
+   ↻ Fivetran vs Matillion (23.99 KB)
+   ↻ Apache Airflow vs Dagster (19.70 KB)
+   ↻ Apache Airflow vs Prefect (23.05 KB)
+   ↻ Dagster vs Prefect (22.80 KB)
+   ↻ Amazon MWAA vs Google Cloud Composer (22.92 KB)
+   ↻ Apache Airflow vs Luigi (23.92 KB)
+   ↻ Great Expectations vs Soda (24.49 KB)
+   ↻ dbt vs Dataform (20.50 KB)
+   ↻ dbt vs SQLMesh (23.00 KB)
+   ↻ dbt Core vs dbt Cloud (23.74 KB)
+   ↻ Snowflake vs Google BigQuery (22.01 KB)
+   ↻ Delta Lake vs Apache Iceberg (18.70 KB)
+   ↻ Apache Iceberg vs Apache Hudi (20.11 KB)
+   ↻ Amazon Redshift vs Snowflake (20.40 KB)
+   ↻ Snowflake vs Databricks (20.72 KB)
+   ↻ Google BigQuery vs Amazon Redshift (23.05 KB)
+   ↻ Snowflake vs Azure Synapse Analytics (23.79 KB)
+   ↻ Snowflake vs MotherDuck (24.50 KB)
+   ↻ Apache Kafka vs Redpanda (18.95 KB)
+   ↻ Apache Flink vs Spark Streaming (20.35 KB)
+   ↻ Apache Kafka vs Apache Pulsar (23.40 KB)
+   ↻ Apache Kafka vs Amazon Kinesis (23.30 KB)
+   ✅ Comparison pages complete: 34 comparisons processed
+   ✓ Compare hub page (49.85 KB)
+
+📋 Processing cheatsheet pages from cheatsheetData.js…
+   Found 30 cheatsheets across 7 categories
+   ↻ Snowflake SQL Cheat Sheet (35.96 KB)
+   ↻ SQL Window Functions Cheat Sheet (28.63 KB)
+   ↻ dbt Commands Cheat Sheet (33.43 KB)
+   ↻ Apache Airflow Cheat Sheet (33.24 KB)
+   ↻ Top 30 Snowflake Interview Questions & Answers (27.40 KB)
+   ↻ Top 25 SQL Interview Questions for Data Engineers (21.66 KB)
+   ↻ Data Engineering Interview Questions & Answers (19.82 KB)
+   ↻ Snowflake Best Practices for Data Engineers (16.71 KB)
+   ↻ dbt Best Practices for Production Projects (15.57 KB)
+   ↻ Apache Airflow Best Practices for Production (15.29 KB)
+   ↻ Snowflake Streams & Tasks — Expert Interview Questions (24.43 KB)
+   ↻ Snowflake Dynamic Tables — Expert Interview Questions (21.74 KB)
+   ↻ Snowflake Snowpark — Expert Interview Questions (21.68 KB)
+   ↻ Snowflake Data Sharing & Marketplace — Expert Interview Questions (21.29 KB)
+   ↻ Snowflake Iceberg Tables — Expert Interview Questions (20.90 KB)
+   ↻ Snowflake Cortex AI & ML — Expert Interview Questions (15.79 KB)
+   ↻ Snowpipe Streaming & Kafka — Expert Interview Questions (16.04 KB)
+   ↻ Snowflake Governance & Masking — Expert Interview Questions (17.57 KB)
+   ↻ Snowflake Cost Optimization — Expert Interview Questions (16.92 KB)
+   ↻ Snowflake Query Tuning — Expert Interview Questions (17.10 KB)
+   ↻ Snowflake Replication & Failover — Expert Interview Questions (16.45 KB)
+   ↻ Snowflake Semi-Structured Data — Expert Interview Questions (18.58 KB)
+   ↻ Snowflake Stored Procedures & UDFs — Expert Interview Questions (18.13 KB)
+   ↻ Snowflake External Functions & Integrations — Expert Interview Questions (17.66 KB)
+   ↻ Python for Data Engineers Cheat Sheet (34.36 KB)
+   ↻ PySpark & Spark SQL Cheat Sheet (33.15 KB)
+   ↻ AWS for Data Engineers Cheat Sheet (36.40 KB)
+   ↻ Azure for Data Engineers Cheat Sheet (37.44 KB)
+   ↻ Databricks SQL & Workflows Cheat Sheet (35.04 KB)
+   ↻ Data Modeling Cheat Sheet — Dimensional, SCD, Data Vault (37.30 KB)
+   ✅ Cheatsheet pages complete: 30 sheets processed
+   ✓ Cheatsheet hub page (41.23 KB)
+💾 Cache saved successfully
+
+============================================================
+✅ FULL CONTENT build complete!
+============================================================
+📊 Summary:
+   ✨ New pages:       1
+   ↻  Updated pages:   257
+   ✓  Unchanged pages: 0
+   ⏱️  Build time:      8.08s
+============================================================
+
+✅ All articles now contain FULL content for crawlers!
+✅ AdSense/Googlebot will see complete articles with images
+🖼️  All image URLs converted to absolute paths
+
+
+> dataengineerhub-blog@1.0.0 faq-schema
+> node scripts/generateFAQSchema.js ; tail build.log
+
+🤖 Starting FAQ Schema generation...
+
+📡 Fetching posts for FAQ schema generation...
+✅ Fetched page 1 (61 posts)
+✅ Total posts fetched: 61
+
+📝 Processing articles for FAQ schema...
+
+✅ The Problem with Zero-Copy Cloning in Snowflake Th... (1 Q&A pairs)
+✅ Claude Code Power User Guide: Stop Using It Like A... (1 Q&A pairs)
+✅ The Problem with dbt Tests Nobody Talks About — Th... (2 Q&A pairs)
+✅ It’s Not AI You Should Worry About—It’s Automation... (3 Q&A pairs)
+✅ Why I Stopped Using Snowflake Tasks for Orchestrat... (7 Q&A pairs)
+✅ Snowflake Cortex Code Cost Control in 2026... (8 Q&A pairs)
+✅ Snowflake Interview Questions — Expert Level... (8 Q&A pairs)
+✅ Orchestrating Snowflake dbt Projects with Airflow ... (5 Q&A pairs)
+✅ How I Taught Myself Snowflake Cortex Code (And Wha... (5 Q&A pairs)
+✅ Snowflake Cortex Code for dbt: Cut Build Time 48% ... (1 Q&A pairs)
+   Processed 10/61 articles...
+✅ Snowflake Managed Iceberg Tables 2026... (5 Q&A pairs)
+✅ Snowflake AI_PARSE_DOCUMENT: Full Guide 2026... (6 Q&A pairs)
+✅ Snowflake Cortex Cost Comparison 2026: Complete Pr... (8 Q&A pairs)
+✅ Snowflake Streams & Tasks: SCD2 Pipeline Guide... (5 Q&A pairs)
+✅ How I passed the “SnowPro® Specialty: Gen AI” cert... (4 Q&A pairs)
+✅ Snowflake Cost Optimization: 12 Proven Techniques ... (2 Q&A pairs)
+✅ 10 Snowflake Interview Questions and Answers 2026 ... (8 Q&A pairs)
+✅ Snowflake Cortex AI: Complete Guide for 2026... (3 Q&A pairs)
+✅ Build a Meeting Notes RAG in Snowflake: AI-Powered... (8 Q&A pairs)
+✅ Snowflake OpenFlow: Revolutionizing Data Ingestion... (8 Q&A pairs)
+   Processed 20/61 articles...
+✅ Build RAG in Snowflake: Complete Cortex Search Gui... (8 Q&A pairs)
+✅ 7 Ways to Cut Snowflake Cortex AI Costs [2026]... (8 Q&A pairs)
+✅ Snowflake Intelligence Guide: Setup, Optimization ... (6 Q&A pairs)
+✅ Snowflake Native dbt Integration: Complete 2025 Gu... (8 Q&A pairs)
+✅ Build a Databricks AI Agent with GPT-5... (2 Q&A pairs)
+✅ Salesforce Agentforce: Complete 2025 Guide & Examp... (8 Q&A pairs)
+✅ Snowflake Dynamic Tables: Complete 2025 Guide & Ex... (8 Q&A pairs)
+✅ Snowflake Hybrid Tables: End of the ETL Era?... (5 Q&A pairs)
+✅ Snowflake SQL Tutorial: Master MERGE ALL BY NAME i... (8 Q&A pairs)
+✅ Snowflake Optima: 15x Faster Queries at Zero Cost... (8 Q&A pairs)
+   Processed 30/61 articles...
+✅ Open Semantic Interchange: Solving AI’s $1T Proble... (8 Q&A pairs)
+✅ Synapse to Fabric: Your ADX Migration Guide 2025... (5 Q&A pairs)
+✅ AI Data Agent Guide 2025: Snowflake Cortex Tutoria... (3 Q&A pairs)
+✅ Mastering Python Data Pipelines: Extract from APIs... (2 Q&A pairs)
+✅ Revolutionizing Finance: A Deep Dive into Snowflak... (7 Q&A pairs)
+✅ Snowflake Data Science Agent: Automate ML Workflow... (8 Q&A pairs)
+✅ Enterprise AI 2025: Snowflake MCP Links Agents to ... (7 Q&A pairs)
+✅ Snowflake Query Optimization in 2025... (1 Q&A pairs)
+✅ 5 Advanced Techniques for Optimizing Snowflake MER... (8 Q&A pairs)
+✅ What is Incremental Data Processing? A Data Engine... (2 Q&A pairs)
+   Processed 40/61 articles...
+✅ Data Modeling for the Modern Data Warehouse: A Gui... (2 Q&A pairs)
+✅ How to Implement Dynamic Data Masking in Snowflake... (1 Q&A pairs)
+✅ Snowflake Data Sharing and Governance... (2 Q&A pairs)
+✅ Querying data in snowflake: A Guide to JSON and Ti... (5 Q&A pairs)
+✅ What is Snowflake? A Beginners Guide to the Cloud ... (2 Q&A pairs)
+✅ Automated ETL with Airflow and Python: A Practical... (1 Q&A pairs)
+✅ SQL Window Functions: The Ultimate Guide for Data ... (3 Q&A pairs)
+✅ Building a Serverless Data Pipeline on AWS: A Step... (1 Q&A pairs)
+✅ Structuring dbt Projects in Snowflake: The Definit... (6 Q&A pairs)
+✅ Snowflake Architecture Explained: A Simple Breakdo... (4 Q&A pairs)
+   Processed 50/61 articles...
+
+✅ FAQ Schema generation complete!
+📊 Summary:
+   - Total articles: 61
+   - FAQ schemas injected: 50
+   - Skipped (no Q&A): 11
+   - Success rate: 82%
+
+💡 Benefits:
+   ✓ Rich snippets in Google search
+   ✓ 36% higher AI citation rate
+   ✓ Better visibility in voice search
+   ✓ Enhanced user experience
