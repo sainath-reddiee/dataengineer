@@ -506,9 +506,11 @@ export default function InterviewPrepHubPage() {
                   <a
                     key={t.id}
                     href={`#track-${t.id}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-slate-800/60 border border-slate-700 text-gray-200 hover:bg-slate-800 hover:border-amber-500/50 hover:text-amber-200 transition-colors"
+                    className="inline-flex items-center gap-2 pl-1.5 pr-3 py-1.5 text-xs font-medium rounded-full bg-slate-800/80 border border-slate-700 text-gray-100 hover:bg-slate-800 hover:border-amber-500/60 hover:text-amber-200 transition-colors"
                   >
-                    <Ic className={`w-3.5 h-3.5 ${t.dot}`} />
+                    <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-900/80 ring-1 ring-slate-700 ${t.dot}`}>
+                      <Ic className="w-3.5 h-3.5" strokeWidth={2.5} />
+                    </span>
                     {t.label}
                   </a>
                 );

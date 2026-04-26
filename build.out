@@ -151,7 +151,7 @@ Access at: https://dataengineerhub.blog/rss.xml
 
 
 > dataengineerhub-blog@1.0.0 build
-> npm run build:vite && npm run build:incremental && npm run faq-schema ; echo "EXIT=$?"; tail build.out; echo "---ERR---"; tail build.err
+> npm run build:vite && npm run build:incremental && npm run faq-schema
 
 
 > dataengineerhub-blog@1.0.0 build:vite
@@ -163,139 +163,139 @@ transforming...
 rendering chunks...
 computing gzip size...
 [2mdist/[22m[32mindex.html                                               [39m[1m[2m 15.64 kB[22m[1m[22m[2m │ gzip:   5.01 kB[22m
-[2mdist/[22m[35massets/index-DMnp3j57.css                                [39m[1m[2m121.65 kB[22m[1m[22m[2m │ gzip:  19.13 kB[22m
+[2mdist/[22m[35massets/index-CqZszdp6.css                                [39m[1m[2m121.88 kB[22m[1m[22m[2m │ gzip:  19.17 kB[22m
 [2mdist/[22m[36massets/js/ui-vendor-D3hghNPx.js                          [39m[1m[2m  0.14 kB[22m[1m[22m[2m │ gzip:   0.13 kB[22m
 [2mdist/[22m[36massets/js/performance-CBor82sO.js                        [39m[1m[2m  0.30 kB[22m[1m[22m[2m │ gzip:   0.21 kB[22m
 [2mdist/[22m[36massets/js/useIntersectionObserver-Bkplytle.js            [39m[1m[2m  0.37 kB[22m[1m[22m[2m │ gzip:   0.27 kB[22m
 [2mdist/[22m[36massets/js/duckdb-GDg5Ja-O.js                             [39m[1m[2m  0.56 kB[22m[1m[22m[2m │ gzip:   0.39 kB[22m
 [2mdist/[22m[36massets/js/BookmarkButton-DdOatWox.js                     [39m[1m[2m  0.60 kB[22m[1m[22m[2m │ gzip:   0.40 kB[22m
 [2mdist/[22m[36massets/js/categories-1F7LurWd.js                         [39m[1m[2m  0.66 kB[22m[1m[22m[2m │ gzip:   0.32 kB[22m
-[2mdist/[22m[36massets/js/input-nURr0W6t.js                              [39m[1m[2m  0.66 kB[22m[1m[22m[2m │ gzip:   0.40 kB[22m
-[2mdist/[22m[36massets/js/label-hcLhEaUa.js                              [39m[1m[2m  0.87 kB[22m[1m[22m[2m │ gzip:   0.47 kB[22m
+[2mdist/[22m[36massets/js/input-atulLtuc.js                              [39m[1m[2m  0.66 kB[22m[1m[22m[2m │ gzip:   0.40 kB[22m
+[2mdist/[22m[36massets/js/label-D82VlCkn.js                              [39m[1m[2m  0.87 kB[22m[1m[22m[2m │ gzip:   0.47 kB[22m
 [2mdist/[22m[36massets/js/Breadcrumbs-n0A1-GnS.js                        [39m[1m[2m  0.98 kB[22m[1m[22m[2m │ gzip:   0.53 kB[22m
-[2mdist/[22m[36massets/js/button-DaR4MZXF.js                             [39m[1m[2m  1.22 kB[22m[1m[22m[2m │ gzip:   0.60 kB[22m
-[2mdist/[22m[36massets/js/NewsPosts-cDa_9xP2.js                          [39m[1m[2m  1.33 kB[22m[1m[22m[2m │ gzip:   0.71 kB[22m
+[2mdist/[22m[36massets/js/button-Bi4I6AGW.js                             [39m[1m[2m  1.22 kB[22m[1m[22m[2m │ gzip:   0.60 kB[22m
+[2mdist/[22m[36massets/js/NewsPosts-u04iNvUL.js                          [39m[1m[2m  1.33 kB[22m[1m[22m[2m │ gzip:   0.71 kB[22m
 [2mdist/[22m[36massets/js/scanHistory-DinTNXzm.js                        [39m[1m[2m  1.38 kB[22m[1m[22m[2m │ gzip:   0.65 kB[22m
 [2mdist/[22m[36massets/js/SEOScoreCard-CPuGPvJD.js                       [39m[1m[2m  1.68 kB[22m[1m[22m[2m │ gzip:   0.79 kB[22m
 [2mdist/[22m[36massets/js/exportUtils-CjKez5Qw.js                        [39m[1m[2m  1.96 kB[22m[1m[22m[2m │ gzip:   0.90 kB[22m
 [2mdist/[22m[36massets/js/useQuizStore-DkdHMlSA.js                       [39m[1m[2m  2.06 kB[22m[1m[22m[2m │ gzip:   0.87 kB[22m
 [2mdist/[22m[36massets/js/ValidateWithSqlBlock-q9d123xV.js               [39m[1m[2m  2.14 kB[22m[1m[22m[2m │ gzip:   0.94 kB[22m
-[2mdist/[22m[36massets/js/metadataFactory-DbjX4T2F.js                    [39m[1m[2m  2.22 kB[22m[1m[22m[2m │ gzip:   0.85 kB[22m
-[2mdist/[22m[36massets/js/TrendingPosts-iztvp8AD.js                      [39m[1m[2m  2.53 kB[22m[1m[22m[2m │ gzip:   1.08 kB[22m
-[2mdist/[22m[36massets/js/NewsletterPage-C49f-r0e.js                     [39m[1m[2m  3.11 kB[22m[1m[22m[2m │ gzip:   1.47 kB[22m
-[2mdist/[22m[36massets/js/PracticeTopicPage-DxjeTQFB.js                  [39m[1m[2m  3.20 kB[22m[1m[22m[2m │ gzip:   1.39 kB[22m
+[2mdist/[22m[36massets/js/metadataFactory-BWeJsXHY.js                    [39m[1m[2m  2.22 kB[22m[1m[22m[2m │ gzip:   0.85 kB[22m
+[2mdist/[22m[36massets/js/TrendingPosts-7YWkmGL_.js                      [39m[1m[2m  2.53 kB[22m[1m[22m[2m │ gzip:   1.08 kB[22m
+[2mdist/[22m[36massets/js/NewsletterPage-PSh7slX6.js                     [39m[1m[2m  3.11 kB[22m[1m[22m[2m │ gzip:   1.47 kB[22m
+[2mdist/[22m[36massets/js/PracticeTopicPage-CO8rH935.js                  [39m[1m[2m  3.20 kB[22m[1m[22m[2m │ gzip:   1.38 kB[22m
 [2mdist/[22m[36massets/js/snowflakePricing-CdjDPzWO.js                   [39m[1m[2m  3.30 kB[22m[1m[22m[2m │ gzip:   1.24 kB[22m
 [2mdist/[22m[36massets/js/aeoAnalyzer-BzJWKRR8.js                        [39m[1m[2m  3.32 kB[22m[1m[22m[2m │ gzip:   1.42 kB[22m
-[2mdist/[22m[36massets/js/FeaturedPosts-UiMBBqyH.js                      [39m[1m[2m  3.37 kB[22m[1m[22m[2m │ gzip:   1.48 kB[22m
-[2mdist/[22m[36massets/js/PracticeQuestionPage-ug5AuyDn.js               [39m[1m[2m  3.47 kB[22m[1m[22m[2m │ gzip:   1.45 kB[22m
-[2mdist/[22m[36massets/js/glossaryLoader-FDHvkG_a.js                     [39m[1m[2m  3.50 kB[22m[1m[22m[2m │ gzip:   1.00 kB[22m
-[2mdist/[22m[36massets/js/DisclaimerPage-DdeDBPMK.js                     [39m[1m[2m  3.54 kB[22m[1m[22m[2m │ gzip:   1.44 kB[22m
-[2mdist/[22m[36massets/js/TagPage-CwOUtrdR.js                            [39m[1m[2m  3.64 kB[22m[1m[22m[2m │ gzip:   1.38 kB[22m
-[2mdist/[22m[36massets/js/NotFoundPage-D87LszzC.js                       [39m[1m[2m  4.09 kB[22m[1m[22m[2m │ gzip:   1.50 kB[22m
+[2mdist/[22m[36massets/js/FeaturedPosts-D7EEgS5P.js                      [39m[1m[2m  3.37 kB[22m[1m[22m[2m │ gzip:   1.48 kB[22m
+[2mdist/[22m[36massets/js/PracticeQuestionPage-CqYETc-e.js               [39m[1m[2m  3.47 kB[22m[1m[22m[2m │ gzip:   1.44 kB[22m
+[2mdist/[22m[36massets/js/glossaryLoader-DXMejVsP.js                     [39m[1m[2m  3.50 kB[22m[1m[22m[2m │ gzip:   0.99 kB[22m
+[2mdist/[22m[36massets/js/DisclaimerPage-D_CRGjIV.js                     [39m[1m[2m  3.54 kB[22m[1m[22m[2m │ gzip:   1.44 kB[22m
+[2mdist/[22m[36massets/js/TagPage-CF5011BC.js                            [39m[1m[2m  3.64 kB[22m[1m[22m[2m │ gzip:   1.38 kB[22m
+[2mdist/[22m[36massets/js/NotFoundPage-BBZ3piZe.js                       [39m[1m[2m  4.09 kB[22m[1m[22m[2m │ gzip:   1.50 kB[22m
 [2mdist/[22m[36massets/js/ChecklistPage-C2cjlrAD.js                      [39m[1m[2m  4.15 kB[22m[1m[22m[2m │ gzip:   1.74 kB[22m
 [2mdist/[22m[36massets/js/data-observability-BK35Ajoo.js                 [39m[1m[2m  4.21 kB[22m[1m[22m[2m │ gzip:   1.76 kB[22m
 [2mdist/[22m[36massets/js/data-orchestration-DbW3l3JC.js                 [39m[1m[2m  4.32 kB[22m[1m[22m[2m │ gzip:   1.95 kB[22m
-[2mdist/[22m[36massets/js/TermsOfServicePage-BKuCFpfJ.js                 [39m[1m[2m  4.44 kB[22m[1m[22m[2m │ gzip:   2.01 kB[22m
-[2mdist/[22m[36massets/js/Newsletter-DZcVl85Y.js                         [39m[1m[2m  4.46 kB[22m[1m[22m[2m │ gzip:   1.73 kB[22m
-[2mdist/[22m[36massets/js/NewsPage-DLHBdYv5.js                           [39m[1m[2m  4.86 kB[22m[1m[22m[2m │ gzip:   1.68 kB[22m
-[2mdist/[22m[36massets/js/ApiDebugger-X5Huod6W.js                        [39m[1m[2m  4.96 kB[22m[1m[22m[2m │ gzip:   1.83 kB[22m
+[2mdist/[22m[36massets/js/TermsOfServicePage-BGzZ4CAC.js                 [39m[1m[2m  4.44 kB[22m[1m[22m[2m │ gzip:   2.00 kB[22m
+[2mdist/[22m[36massets/js/Newsletter-BCJOeX-G.js                         [39m[1m[2m  4.46 kB[22m[1m[22m[2m │ gzip:   1.73 kB[22m
+[2mdist/[22m[36massets/js/NewsPage-CNfOTfOu.js                           [39m[1m[2m  4.86 kB[22m[1m[22m[2m │ gzip:   1.68 kB[22m
+[2mdist/[22m[36massets/js/ApiDebugger-DBOO_e90.js                        [39m[1m[2m  4.96 kB[22m[1m[22m[2m │ gzip:   1.82 kB[22m
 [2mdist/[22m[36massets/js/data-quality-DHj9Og3O.js                       [39m[1m[2m  5.00 kB[22m[1m[22m[2m │ gzip:   2.04 kB[22m
-[2mdist/[22m[36massets/js/useWordPress-Bn0cEyzj.js                       [39m[1m[2m  5.26 kB[22m[1m[22m[2m │ gzip:   1.65 kB[22m
-[2mdist/[22m[36massets/js/ContactPage-DhoAyTVp.js                        [39m[1m[2m  5.44 kB[22m[1m[22m[2m │ gzip:   1.94 kB[22m
-[2mdist/[22m[36massets/js/TagsArchivePage-Cdhqdhzk.js                    [39m[1m[2m  5.63 kB[22m[1m[22m[2m │ gzip:   1.87 kB[22m
+[2mdist/[22m[36massets/js/useWordPress-Ca65HM4j.js                       [39m[1m[2m  5.26 kB[22m[1m[22m[2m │ gzip:   1.65 kB[22m
+[2mdist/[22m[36massets/js/ContactPage-D5vfVpXo.js                        [39m[1m[2m  5.44 kB[22m[1m[22m[2m │ gzip:   1.94 kB[22m
+[2mdist/[22m[36massets/js/TagsArchivePage-D5WKn60f.js                    [39m[1m[2m  5.63 kB[22m[1m[22m[2m │ gzip:   1.87 kB[22m
 [2mdist/[22m[36massets/js/ExportButton-N4s44zGO.js                       [39m[1m[2m  6.17 kB[22m[1m[22m[2m │ gzip:   2.17 kB[22m
 [2mdist/[22m[36massets/js/AISuitePage-CSNRX5QN.js                        [39m[1m[2m  6.49 kB[22m[1m[22m[2m │ gzip:   2.62 kB[22m
-[2mdist/[22m[36massets/js/SEODashboard-CAS3vQ32.js                       [39m[1m[2m  6.59 kB[22m[1m[22m[2m │ gzip:   1.85 kB[22m
+[2mdist/[22m[36massets/js/SEODashboard-BLac-NeO.js                       [39m[1m[2m  6.59 kB[22m[1m[22m[2m │ gzip:   1.85 kB[22m
 [2mdist/[22m[36massets/js/SchemaPage-XtwI8Icw.js                         [39m[1m[2m  7.10 kB[22m[1m[22m[2m │ gzip:   1.96 kB[22m
-[2mdist/[22m[36massets/js/RecentPosts-DiLN3Xgz.js                        [39m[1m[2m  7.36 kB[22m[1m[22m[2m │ gzip:   2.19 kB[22m
-[2mdist/[22m[36massets/js/TechCategories-BDdV6YF-.js                     [39m[1m[2m  7.60 kB[22m[1m[22m[2m │ gzip:   3.06 kB[22m
-[2mdist/[22m[36massets/js/GlossaryHubPage-BXxEhD_U.js                    [39m[1m[2m  7.66 kB[22m[1m[22m[2m │ gzip:   2.50 kB[22m
+[2mdist/[22m[36massets/js/RecentPosts-CZiieC-s.js                        [39m[1m[2m  7.36 kB[22m[1m[22m[2m │ gzip:   2.19 kB[22m
+[2mdist/[22m[36massets/js/TechCategories-C07JA6Of.js                     [39m[1m[2m  7.60 kB[22m[1m[22m[2m │ gzip:   3.06 kB[22m
+[2mdist/[22m[36massets/js/GlossaryHubPage-Bsh_k7Ib.js                    [39m[1m[2m  7.66 kB[22m[1m[22m[2m │ gzip:   2.50 kB[22m
 [2mdist/[22m[36massets/js/etl-elt-CqJ-wP62.js                            [39m[1m[2m  7.83 kB[22m[1m[22m[2m │ gzip:   3.26 kB[22m
 [2mdist/[22m[36massets/js/SerpPreviewPage-DiaCgl6D.js                    [39m[1m[2m  8.00 kB[22m[1m[22m[2m │ gzip:   2.97 kB[22m
-[2mdist/[22m[36massets/js/ComparisonHubPage-BsIechKs.js                  [39m[1m[2m  8.48 kB[22m[1m[22m[2m │ gzip:   2.81 kB[22m
+[2mdist/[22m[36massets/js/ComparisonHubPage-CW3Uvjxw.js                  [39m[1m[2m  8.48 kB[22m[1m[22m[2m │ gzip:   2.81 kB[22m
 [2mdist/[22m[36massets/js/ScannerPage-B2OMYjO-.js                        [39m[1m[2m  8.99 kB[22m[1m[22m[2m │ gzip:   2.91 kB[22m
-[2mdist/[22m[36massets/js/CheatSheetHubPage-CkFir76Z.js                  [39m[1m[2m  9.31 kB[22m[1m[22m[2m │ gzip:   2.95 kB[22m
+[2mdist/[22m[36massets/js/CheatSheetHubPage-DwfGPc3p.js                  [39m[1m[2m  9.31 kB[22m[1m[22m[2m │ gzip:   2.95 kB[22m
 [2mdist/[22m[36massets/js/pseoAnalyzer-B6UOHgYe.js                       [39m[1m[2m  9.34 kB[22m[1m[22m[2m │ gzip:   3.14 kB[22m
-[2mdist/[22m[36massets/js/CategoryPage-CNK_chAZ.js                       [39m[1m[2m  9.50 kB[22m[1m[22m[2m │ gzip:   3.59 kB[22m
-[2mdist/[22m[36massets/js/PrivacyPolicyPage-zMTlOSLS.js                  [39m[1m[2m 10.09 kB[22m[1m[22m[2m │ gzip:   3.32 kB[22m
+[2mdist/[22m[36massets/js/CategoryPage-D6n2NhiN.js                       [39m[1m[2m  9.50 kB[22m[1m[22m[2m │ gzip:   3.59 kB[22m
+[2mdist/[22m[36massets/js/PrivacyPolicyPage-BGlhTtmn.js                  [39m[1m[2m 10.09 kB[22m[1m[22m[2m │ gzip:   3.32 kB[22m
 [2mdist/[22m[36massets/js/ComparePage-BmYg4rso.js                        [39m[1m[2m 10.10 kB[22m[1m[22m[2m │ gzip:   2.74 kB[22m
 [2mdist/[22m[36massets/js/geoAnalyzer-DvagQp7n.js                        [39m[1m[2m 10.90 kB[22m[1m[22m[2m │ gzip:   3.98 kB[22m
-[2mdist/[22m[36massets/js/AllArticlesPage-BwzkzFC_.js                    [39m[1m[2m 11.61 kB[22m[1m[22m[2m │ gzip:   3.49 kB[22m
-[2mdist/[22m[36massets/js/GlossaryPage-DCzhbuLk.js                       [39m[1m[2m 11.71 kB[22m[1m[22m[2m │ gzip:   3.54 kB[22m
+[2mdist/[22m[36massets/js/AllArticlesPage-Bl2CdKU5.js                    [39m[1m[2m 11.61 kB[22m[1m[22m[2m │ gzip:   3.49 kB[22m
+[2mdist/[22m[36massets/js/GlossaryPage-BGgJ7hUo.js                       [39m[1m[2m 11.71 kB[22m[1m[22m[2m │ gzip:   3.54 kB[22m
 [2mdist/[22m[36massets/js/ads-B8GwDI-c.js                                [39m[1m[2m 11.75 kB[22m[1m[22m[2m │ gzip:   3.91 kB[22m
-[2mdist/[22m[36massets/js/WarehouseComparisonCalculatorPage-Dr5oYods.js  [39m[1m[2m 11.97 kB[22m[1m[22m[2m │ gzip:   3.98 kB[22m
-[2mdist/[22m[36massets/js/AboutPage-3BhkpGSR.js                          [39m[1m[2m 12.15 kB[22m[1m[22m[2m │ gzip:   3.54 kB[22m
+[2mdist/[22m[36massets/js/WarehouseComparisonCalculatorPage-DZrlh2fG.js  [39m[1m[2m 11.97 kB[22m[1m[22m[2m │ gzip:   3.97 kB[22m
+[2mdist/[22m[36massets/js/AboutPage-DTrJxrUI.js                          [39m[1m[2m 12.15 kB[22m[1m[22m[2m │ gzip:   3.54 kB[22m
 [2mdist/[22m[36massets/js/ContentOptimizerPage-DGEXldFb.js               [39m[1m[2m 13.47 kB[22m[1m[22m[2m │ gzip:   3.35 kB[22m
-[2mdist/[22m[36massets/js/CheatSheetCategoryPage-hDMmrJY0.js             [39m[1m[2m 13.65 kB[22m[1m[22m[2m │ gzip:   4.71 kB[22m
+[2mdist/[22m[36massets/js/CheatSheetCategoryPage-CS7Lw4eF.js             [39m[1m[2m 13.65 kB[22m[1m[22m[2m │ gzip:   4.71 kB[22m
 [2mdist/[22m[36massets/js/data-transformation-CH0Vrh5M.js                [39m[1m[2m 13.66 kB[22m[1m[22m[2m │ gzip:   4.89 kB[22m
-[2mdist/[22m[36massets/js/PracticeHubPage-BhQ_fJdl.js                    [39m[1m[2m 13.76 kB[22m[1m[22m[2m │ gzip:   5.35 kB[22m
+[2mdist/[22m[36massets/js/PracticeHubPage-WmcuobCT.js                    [39m[1m[2m 13.76 kB[22m[1m[22m[2m │ gzip:   5.35 kB[22m
 [2mdist/[22m[36massets/js/cloud-platforms-CeDMDvkW.js                    [39m[1m[2m 13.98 kB[22m[1m[22m[2m │ gzip:   5.01 kB[22m
-[2mdist/[22m[36massets/js/ComparisonPage-Caz9Ivgn.js                     [39m[1m[2m 14.45 kB[22m[1m[22m[2m │ gzip:   4.00 kB[22m
-[2mdist/[22m[36massets/js/ContributePage-DBVC3h7N.js                     [39m[1m[2m 14.80 kB[22m[1m[22m[2m │ gzip:   4.67 kB[22m
+[2mdist/[22m[36massets/js/ComparisonPage-15nNWrnD.js                     [39m[1m[2m 14.45 kB[22m[1m[22m[2m │ gzip:   4.00 kB[22m
+[2mdist/[22m[36massets/js/ContributePage-81mHgzhX.js                     [39m[1m[2m 14.80 kB[22m[1m[22m[2m │ gzip:   4.67 kB[22m
 [2mdist/[22m[36massets/js/cloud-platforms-B-up1Gnq.js                    [39m[1m[2m 15.03 kB[22m[1m[22m[2m │ gzip:   5.46 kB[22m
 [2mdist/[22m[36massets/js/post-components-WvEslh6B.js                    [39m[1m[2m 15.16 kB[22m[1m[22m[2m │ gzip:   4.53 kB[22m
-[2mdist/[22m[36massets/js/HomePage-vEsC9nOT.js                           [39m[1m[2m 15.77 kB[22m[1m[22m[2m │ gzip:   4.86 kB[22m
-[2mdist/[22m[36massets/js/SqlFormatterPage-DIixU6df.js                   [39m[1m[2m 16.40 kB[22m[1m[22m[2m │ gzip:   5.58 kB[22m
-[2mdist/[22m[36massets/js/CreditCostPage-DVoT_lHQ.js                     [39m[1m[2m 16.55 kB[22m[1m[22m[2m │ gzip:   5.04 kB[22m
+[2mdist/[22m[36massets/js/HomePage-a-NKX4Gy.js                           [39m[1m[2m 15.77 kB[22m[1m[22m[2m │ gzip:   4.86 kB[22m
+[2mdist/[22m[36massets/js/SqlFormatterPage-DxgkjrLO.js                   [39m[1m[2m 16.40 kB[22m[1m[22m[2m │ gzip:   5.58 kB[22m
+[2mdist/[22m[36massets/js/CreditCostPage-DV8Vv4WB.js                     [39m[1m[2m 16.55 kB[22m[1m[22m[2m │ gzip:   5.04 kB[22m
 [2mdist/[22m[36massets/js/data-integration-ClMDGJdn.js                   [39m[1m[2m 16.59 kB[22m[1m[22m[2m │ gzip:   5.90 kB[22m
 [2mdist/[22m[36massets/js/data-quality-KIgozBMa.js                       [39m[1m[2m 16.63 kB[22m[1m[22m[2m │ gzip:   5.60 kB[22m
 [2mdist/[22m[36massets/js/streaming-C2gX6wns.js                          [39m[1m[2m 16.81 kB[22m[1m[22m[2m │ gzip:   5.80 kB[22m
-[2mdist/[22m[36massets/js/CsvToSqlPage-COzAhNWK.js                       [39m[1m[2m 17.07 kB[22m[1m[22m[2m │ gzip:   5.63 kB[22m
-[2mdist/[22m[36massets/js/CronBuilderPage-B67aELDU.js                    [39m[1m[2m 17.38 kB[22m[1m[22m[2m │ gzip:   5.66 kB[22m
-[2mdist/[22m[36massets/js/UnixTimestampPage-CJuVYenh.js                  [39m[1m[2m 17.56 kB[22m[1m[22m[2m │ gzip:   5.23 kB[22m
-[2mdist/[22m[36massets/js/CheatSheetPage-B95mXcse.js                     [39m[1m[2m 17.62 kB[22m[1m[22m[2m │ gzip:   4.67 kB[22m
-[2mdist/[22m[36massets/js/JsonToSqlPage-Bc1MCavB.js                      [39m[1m[2m 17.92 kB[22m[1m[22m[2m │ gzip:   5.62 kB[22m
-[2mdist/[22m[36massets/js/DbtSchemaGeneratorPage-BUzAZR7c.js             [39m[1m[2m 18.69 kB[22m[1m[22m[2m │ gzip:   6.08 kB[22m
+[2mdist/[22m[36massets/js/CsvToSqlPage-BCqY33dC.js                       [39m[1m[2m 17.07 kB[22m[1m[22m[2m │ gzip:   5.63 kB[22m
+[2mdist/[22m[36massets/js/CronBuilderPage-w-mP0RbK.js                    [39m[1m[2m 17.38 kB[22m[1m[22m[2m │ gzip:   5.66 kB[22m
+[2mdist/[22m[36massets/js/UnixTimestampPage-9Xth2Vn9.js                  [39m[1m[2m 17.56 kB[22m[1m[22m[2m │ gzip:   5.23 kB[22m
+[2mdist/[22m[36massets/js/CheatSheetPage-CgRKwnNL.js                     [39m[1m[2m 17.62 kB[22m[1m[22m[2m │ gzip:   4.67 kB[22m
+[2mdist/[22m[36massets/js/JsonToSqlPage-DO_6bvb7.js                      [39m[1m[2m 17.92 kB[22m[1m[22m[2m │ gzip:   5.62 kB[22m
+[2mdist/[22m[36massets/js/DbtSchemaGeneratorPage-CON-K7U5.js             [39m[1m[2m 18.69 kB[22m[1m[22m[2m │ gzip:   6.07 kB[22m
 [2mdist/[22m[36massets/js/pdfExportService-CrR-3uz1.js                   [39m[1m[2m 18.80 kB[22m[1m[22m[2m │ gzip:   6.62 kB[22m
-[2mdist/[22m[36massets/js/QueryCostEstimatorPage-C0RS_FoC.js             [39m[1m[2m 19.15 kB[22m[1m[22m[2m │ gzip:   5.74 kB[22m
-[2mdist/[22m[36massets/js/DbtCloudCostPage-CSNg6sqC.js                   [39m[1m[2m 19.46 kB[22m[1m[22m[2m │ gzip:   6.06 kB[22m
+[2mdist/[22m[36massets/js/QueryCostEstimatorPage-Q5eMiRMJ.js             [39m[1m[2m 19.15 kB[22m[1m[22m[2m │ gzip:   5.74 kB[22m
+[2mdist/[22m[36massets/js/DbtCloudCostPage-C46HVjDB.js                   [39m[1m[2m 19.46 kB[22m[1m[22m[2m │ gzip:   6.06 kB[22m
 [2mdist/[22m[36massets/js/seoScanner-BDjfp29T.js                         [39m[1m[2m 19.73 kB[22m[1m[22m[2m │ gzip:   6.06 kB[22m
-[2mdist/[22m[36massets/js/PracticeQuizPage-DLA2qXJA.js                   [39m[1m[2m 20.31 kB[22m[1m[22m[2m │ gzip:   6.58 kB[22m
-[2mdist/[22m[36massets/js/BigQueryCostPage-BNGFvfgT.js                   [39m[1m[2m 20.42 kB[22m[1m[22m[2m │ gzip:   6.31 kB[22m
-[2mdist/[22m[36massets/js/WarehouseSizingPage-_DpAxIiG.js                [39m[1m[2m 20.66 kB[22m[1m[22m[2m │ gzip:   6.28 kB[22m
-[2mdist/[22m[36massets/js/ToolsHubPage-CFy6OkYA.js                       [39m[1m[2m 20.89 kB[22m[1m[22m[2m │ gzip:   6.62 kB[22m
-[2mdist/[22m[36massets/js/Certification-hG2nKGCc.js                      [39m[1m[2m 21.07 kB[22m[1m[22m[2m │ gzip:   6.11 kB[22m
+[2mdist/[22m[36massets/js/PracticeQuizPage-DZrSY9wB.js                   [39m[1m[2m 20.31 kB[22m[1m[22m[2m │ gzip:   6.58 kB[22m
+[2mdist/[22m[36massets/js/BigQueryCostPage-DXH5RsY1.js                   [39m[1m[2m 20.42 kB[22m[1m[22m[2m │ gzip:   6.31 kB[22m
+[2mdist/[22m[36massets/js/WarehouseSizingPage-DRxzcnNC.js                [39m[1m[2m 20.66 kB[22m[1m[22m[2m │ gzip:   6.28 kB[22m
+[2mdist/[22m[36massets/js/ToolsHubPage-D5Wj4t2w.js                       [39m[1m[2m 20.89 kB[22m[1m[22m[2m │ gzip:   6.62 kB[22m
+[2mdist/[22m[36massets/js/Certification-DH0-rc1w.js                      [39m[1m[2m 21.07 kB[22m[1m[22m[2m │ gzip:   6.11 kB[22m
 [2mdist/[22m[36massets/js/streaming-C0yODEIP.js                          [39m[1m[2m 21.41 kB[22m[1m[22m[2m │ gzip:   7.02 kB[22m
-[2mdist/[22m[36massets/js/FormatConverterPage-BuLvMhLF.js                [39m[1m[2m 21.59 kB[22m[1m[22m[2m │ gzip:   7.08 kB[22m
+[2mdist/[22m[36massets/js/FormatConverterPage-N-Tfi0Dm.js                [39m[1m[2m 21.59 kB[22m[1m[22m[2m │ gzip:   7.08 kB[22m
 [2mdist/[22m[36massets/js/data-governance-CZ8li_Bc.js                    [39m[1m[2m 22.46 kB[22m[1m[22m[2m │ gzip:   7.21 kB[22m
-[2mdist/[22m[36massets/js/DatabricksCostPage-DQPShF1W.js                 [39m[1m[2m 23.33 kB[22m[1m[22m[2m │ gzip:   7.09 kB[22m
-[2mdist/[22m[36massets/js/SqlPlaygroundPage-DN8D2mJc.js                  [39m[1m[2m 23.51 kB[22m[1m[22m[2m │ gzip:   7.45 kB[22m
+[2mdist/[22m[36massets/js/DatabricksCostPage-D0vLjfke.js                 [39m[1m[2m 23.33 kB[22m[1m[22m[2m │ gzip:   7.09 kB[22m
+[2mdist/[22m[36massets/js/SqlPlaygroundPage-BIsqxQBF.js                  [39m[1m[2m 23.51 kB[22m[1m[22m[2m │ gzip:   7.45 kB[22m
 [2mdist/[22m[36massets/js/data-orchestration-DvJky0IH.js                 [39m[1m[2m 23.54 kB[22m[1m[22m[2m │ gzip:   7.79 kB[22m
 [2mdist/[22m[36massets/js/analytics-wR41XTcL.js                          [39m[1m[2m 24.28 kB[22m[1m[22m[2m │ gzip:   8.77 kB[22m
 [2mdist/[22m[36massets/js/data-modeling-D3f5yYZ_.js                      [39m[1m[2m 26.14 kB[22m[1m[22m[2m │ gzip:   8.66 kB[22m
 [2mdist/[22m[36massets/js/duckdb-ClQ_LzAE.js                             [39m[1m[2m 27.19 kB[22m[1m[22m[2m │ gzip:   7.04 kB[22m
-[2mdist/[22m[36massets/js/InterviewPrepHubPage-0Gaotx8c.js               [39m[1m[2m 27.28 kB[22m[1m[22m[2m │ gzip:   7.21 kB[22m
-[2mdist/[22m[36massets/js/CostCalculatorPage-C6yxyrr6.js                 [39m[1m[2m 28.39 kB[22m[1m[22m[2m │ gzip:   8.88 kB[22m
+[2mdist/[22m[36massets/js/InterviewPrepHubPage-TOC3reLp.js               [39m[1m[2m 27.44 kB[22m[1m[22m[2m │ gzip:   7.26 kB[22m
+[2mdist/[22m[36massets/js/CostCalculatorPage-BJLM1zRn.js                 [39m[1m[2m 28.39 kB[22m[1m[22m[2m │ gzip:   8.88 kB[22m
 [2mdist/[22m[36massets/js/analytics-B7PhnNv9.js                          [39m[1m[2m 28.68 kB[22m[1m[22m[2m │ gzip:   9.38 kB[22m
 [2mdist/[22m[36massets/js/data-integration-D8ZGl6gk.js                   [39m[1m[2m 32.09 kB[22m[1m[22m[2m │ gzip:  10.38 kB[22m
 [2mdist/[22m[36massets/js/data-warehousing-aIWHM3u9.js                   [39m[1m[2m 35.89 kB[22m[1m[22m[2m │ gzip:  11.42 kB[22m
-[2mdist/[22m[36massets/js/BulkScanPage-D4c6AqLv.js                       [39m[1m[2m 38.82 kB[22m[1m[22m[2m │ gzip:   9.98 kB[22m
+[2mdist/[22m[36massets/js/BulkScanPage-DFikSsxc.js                       [39m[1m[2m 38.82 kB[22m[1m[22m[2m │ gzip:   9.98 kB[22m
 [2mdist/[22m[36massets/js/markdown-DtYEmT9z.js                           [39m[1m[2m 63.09 kB[22m[1m[22m[2m │ gzip:  20.56 kB[22m
 [2mdist/[22m[36massets/js/data-warehousing-BPT9_eo9.js                   [39m[1m[2m 65.24 kB[22m[1m[22m[2m │ gzip:  19.77 kB[22m
-[2mdist/[22m[36massets/js/ArticlePage-Mr4Ej0l9.js                        [39m[1m[2m 77.20 kB[22m[1m[22m[2m │ gzip:  24.04 kB[22m
+[2mdist/[22m[36massets/js/ArticlePage-B56jjXFr.js                        [39m[1m[2m 77.20 kB[22m[1m[22m[2m │ gzip:  24.04 kB[22m
 [2mdist/[22m[36massets/js/avsc-Bao1diap.js                               [39m[1m[2m104.25 kB[22m[1m[22m[2m │ gzip:  29.94 kB[22m
-[2mdist/[22m[36massets/js/index-B6cJE4Gx.js                              [39m[1m[2m113.49 kB[22m[1m[22m[2m │ gzip:  33.13 kB[22m
+[2mdist/[22m[36massets/js/index-NU3hr_Ix.js                              [39m[1m[2m113.57 kB[22m[1m[22m[2m │ gzip:  33.16 kB[22m
 [2mdist/[22m[36massets/js/framer-motion-CWS9jpDP.js                      [39m[1m[2m116.69 kB[22m[1m[22m[2m │ gzip:  37.50 kB[22m
 [2mdist/[22m[36massets/js/linkingEngine-lFHK8mDo.js                      [39m[1m[2m145.75 kB[22m[1m[22m[2m │ gzip:  43.57 kB[22m
 [2mdist/[22m[36massets/js/cheatsheetData-BIUe9rqw.js                     [39m[1m[2m221.29 kB[22m[1m[22m[2m │ gzip:  75.62 kB[22m
 [2mdist/[22m[36massets/js/vendor-CGlz5CKW.js                             [39m[1m[2m259.03 kB[22m[1m[22m[2m │ gzip:  68.36 kB[22m
 [2mdist/[22m[36massets/js/pdf-vendor-_WFrPK7o.js                         [39m[1m[2m371.44 kB[22m[1m[22m[2m │ gzip: 119.22 kB[22m
-[2mdist/[22m[36massets/js/practiceSeo-CDcMRU5M.js                        [39m[1m[2m428.37 kB[22m[1m[22m[2m │ gzip: 114.83 kB[22m
+[2mdist/[22m[36massets/js/practiceSeo-NWc2gYAp.js                        [39m[1m[2m428.37 kB[22m[1m[22m[2m │ gzip: 114.83 kB[22m
 [2mdist/[22m[36massets/js/react-vendor-BVzDUFDl.js                       [39m[1m[33m637.44 kB[39m[22m[2m │ gzip: 177.13 kB[22m
-[32m✓ built in 26.76s[39m
+[32m✓ built in 24.01s[39m
 
 > dataengineerhub-blog@1.0.0 build:incremental
 > node scripts/generateStaticPagesIncremental.js
 
-[dotenv@17.2.3] injecting env (0) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  override existing env vars with { override: true }
 🚀 Starting FULL CONTENT static generation with images…
    🔥 Articles will include COMPLETE content for SEO/AdSense
    🖼️  Images will be properly linked with absolute URLs
 
-📦 JS bundle: /assets/js/index-B6cJE4Gx.js
-🎨 CSS bundle: /assets/index-DMnp3j57.css
-✅ Verified JS exists at: /assets/js/index-B6cJE4Gx.js
-✅ Verified CSS exists at: /assets/index-DMnp3j57.css
+📦 JS bundle: /assets/js/index-NU3hr_Ix.js
+🎨 CSS bundle: /assets/index-CqZszdp6.css
+✅ Verified JS exists at: /assets/js/index-NU3hr_Ix.js
+✅ Verified CSS exists at: /assets/index-CqZszdp6.css
 📦 Found 2 critical chunks for modulepreload
 🔨 Enabling force rebuild…
 📦 Loaded cache with 258 pages
@@ -308,7 +308,7 @@ computing gzip size...
    ↻ Updated: /articles/query-snowflake-in-duckdb-cut-costs (43.63 KB)
    ↻ Updated: /articles/dbt-tests-pass-bad-data (45.98 KB)
    ↻ Updated: /articles/automation-in-data-engineering (43.36 KB)
-✅ Posts: 0 new, 61 updated, 0 unchanged (5.00s)
+✅ Posts: 0 new, 61 updated, 0 unchanged (6.63s)
    📊 Verified: 61 article directories in dist/articles/
    🎯 SEO Override Coverage: 59/61 articles (96.7%)
    ⚠️  2 articles missing SEO overrides:
@@ -546,7 +546,7 @@ computing gzip size...
    ✨ New pages:       1
    ↻  Updated pages:   257
    ✓  Unchanged pages: 0
-   ⏱️  Build time:      7.08s
+   ⏱️  Build time:      9.85s
 ============================================================
 
 ✅ All articles now contain FULL content for crawlers!
@@ -555,7 +555,7 @@ computing gzip size...
 
 
 > dataengineerhub-blog@1.0.0 faq-schema
-> node scripts/generateFAQSchema.js ; echo "EXIT=$?"; tail build.out; echo "---ERR---"; tail build.err
+> node scripts/generateFAQSchema.js
 
 🤖 Starting FAQ Schema generation...
 
