@@ -255,6 +255,7 @@ export default function CheatSheetCategoryPage() {
         type="website"
       />
       <Helmet>
+        <meta name="robots" content="noindex, follow" />
         <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(itemListSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(collectionPageSchema)}</script>

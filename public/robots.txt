@@ -1,5 +1,5 @@
 # robots.txt - DataEngineer Hub
-# Last updated: 2026-04-06
+# Last updated: 2026-04-27
 
 # Default crawling rules
 User-agent: *
@@ -29,6 +29,18 @@ Allow: /robots.txt
 Allow: /llms.txt
 Allow: /llms-full.txt
 Allow: /rss.xml
+
+# =============================================================================
+# GOOGLE ADSENSE CRAWLERS - required for ad serving and site verification
+# =============================================================================
+User-agent: Mediapartners-Google
+Allow: /
+
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: AdsBot-Google-Mobile
+Allow: /
 
 # =============================================================================
 # SITEMAPS - Google will discover all sub-sitemaps via sitemap-index.xml

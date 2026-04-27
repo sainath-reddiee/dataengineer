@@ -16,7 +16,7 @@ const DisclaimerPage = () => {
         </h1>
 
         <div className="prose prose-invert max-w-none text-gray-300">
-          <p className="text-gray-400">Last Updated: October 6, 2025</p>
+          <p className="text-gray-400">Last Updated: April 27, 2026</p>
 
           <h2 className="text-xl font-bold text-white mt-8">General Information</h2>
           <p>

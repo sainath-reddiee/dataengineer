@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
-        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://dataengineerhub.blog/</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -46,163 +45,163 @@
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/certification</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/snowflake-cost-calculator</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/snowflake-credit-cost</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/snowflake-query-cost-estimator</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/snowflake-warehouse-sizing</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/databricks-cost-calculator</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/dbt-cloud-cost-calculator</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/sql-formatter</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/cron-expression-builder</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/json-to-sql-ddl</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/csv-to-sql</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/dbt-schema-generator</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/unix-timestamp-converter</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/bigquery-cost-calculator</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/cloud-data-warehouse-cost-comparison</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/sql-playground</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/tools/json-parquet-avro-converter</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/interview-prep</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/category/sql</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/category/orchestration</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/category/cloud</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/category/programming</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/category/architecture</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/category/interview</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/category/bestpractices</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
@@ -215,14 +214,6 @@
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Snowflake-zero-copy-clone-issue.jpg</image:loc>
       <image:title>The Problem with Zero-Copy Cloning in Snowflake That Nobody Talks About</image:title>
     </image:image>
-    <news:news>
-      <news:publication>
-        <news:name>DataEngineer Hub</news:name>
-        <news:language>en</news:language>
-      </news:publication>
-      <news:publication_date>2026-04-24T22:05:55.000Z</news:publication_date>
-      <news:title>The Problem with Zero-Copy Cloning in Snowflake That Nobody Talks About</news:title>
-    </news:news>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/claude-code-power-user-guide</loc>
@@ -233,14 +224,6 @@
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Claude-code-user-guide.jpg</image:loc>
       <image:title>Claude Code Power User Guide: Stop Using It Like Autocomplete</image:title>
     </image:image>
-    <news:news>
-      <news:publication>
-        <news:name>DataEngineer Hub</news:name>
-        <news:language>en</news:language>
-      </news:publication>
-      <news:publication_date>2026-04-24T21:28:45.000Z</news:publication_date>
-      <news:title>Claude Code Power User Guide: Stop Using It Like Autocomplete</news:title>
-    </news:news>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/query-snowflake-in-duckdb-cut-costs</loc>
@@ -824,13 +807,13 @@
   </url>
   <url>
     <loc>https://dataengineerhub.blog/glossary</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/compare</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -1418,55 +1401,55 @@
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/snowflake-cortex-ai-interview</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/snowflake-snowpipe-streaming-interview</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/snowflake-governance-interview</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/snowflake-cost-optimization-interview</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/snowflake-performance-deep-dive-interview</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/snowflake-replication-failover-interview</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/snowflake-semi-structured-interview</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/snowflake-stored-procedures-interview</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/cheatsheets/snowflake-external-integrations-interview</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

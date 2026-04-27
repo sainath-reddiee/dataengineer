@@ -17,7 +17,18 @@
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      // EU/UK/EEA: denied by default until user consents
+      // Global default: granted (rest of world, including US where AdSense crawler operates)
+      gtag('consent', 'default', {
+        'ad_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted',
+        'analytics_storage': 'granted',
+        'functionality_storage': 'granted',
+        'personalization_storage': 'granted',
+        'security_storage': 'granted',
+        'wait_for_update': 500
+      });
+      // Region-scoped override: EU/UK/EEA denied by default until user consents via banner
       gtag('consent', 'default', {
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
@@ -28,17 +39,6 @@
         'security_storage': 'granted',
         'wait_for_update': 500,
         'region': ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','GB','IS','LI','NO','CH']
-      });
-      // Rest of world (including US where AdSense crawler operates): granted
-      gtag('consent', 'default', {
-        'ad_storage': 'granted',
-        'ad_user_data': 'granted',
-        'ad_personalization': 'granted',
-        'analytics_storage': 'granted',
-        'functionality_storage': 'granted',
-        'personalization_storage': 'granted',
-        'security_storage': 'granted',
-        'wait_for_update': 500
       });
     </script>
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>

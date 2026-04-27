@@ -235,8 +235,7 @@ function generateSitemapXML(pages) {
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
-        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${pages.map(page => `  <url>
     <loc>${escapeXml(page.url)}</loc>
     <lastmod>${page.lastmod}</lastmod>
@@ -245,15 +244,7 @@ ${pages.map(page => `  <url>
     <image:image>
       <image:loc>${escapeXml(page.image)}</image:loc>
       <image:title>${escapeXml(page.imageTitle || '')}</image:title>
-    </image:image>` : ''}${page.newsDate ? `
-    <news:news>
-      <news:publication>
-        <news:name>DataEngineer Hub</news:name>
-        <news:language>en</news:language>
-      </news:publication>
-      <news:publication_date>${page.newsDate}</news:publication_date>
-      <news:title>${escapeXml(page.newsTitle || '')}</news:title>
-    </news:news>` : ''}
+    </image:image>` : ''}
   </url>`).join('\n')}
 </urlset>`;
 
@@ -447,8 +438,6 @@ async function generateSitemap() {
 
     // Add blog posts with priority differentiation and images
     console.log('📝 Adding blog posts...');
-    const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
-    let newsCount = 0;
     let excludedCount = 0;
     posts.forEach(post => {
       // Skip articles that are noindexed due to thin content
@@ -478,13 +467,6 @@ async function generateSitemap() {
         image: imageUrl,
         imageTitle: decodeHtmlEntities(post.title?.rendered) || post.slug.replace(/-/g, ' '),
       };
-
-      // Add news:news markup for articles published within the last 2 days
-      if (publishDate >= twoDaysAgo) {
-        entry.newsDate = publishDate.toISOString();
-        entry.newsTitle = decodeHtmlEntities(post.title?.rendered) || post.slug.replace(/-/g, ' ');
-        newsCount++;
-      }
 
       sitemapEntries.push(entry);
     });
@@ -562,7 +544,6 @@ async function generateSitemap() {
     console.log(`   - Tags: ${tags.length}`);
     console.log(`   - pSEO pages: ${pseoEntries.length}`);
     console.log(`   - Cheatsheets: ${cheatsheetEntries.length}`);
-    console.log(`   - News entries (last 2 days): ${newsCount}`);
 
     return sitemapEntries;
   } catch (error) {

@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import vitePrerender from 'vite-plugin-prerender';
+
+const PuppeteerRenderer = vitePrerender.PuppeteerRenderer;
 
 export default defineConfig({
   plugins: [
@@ -27,6 +30,38 @@ export default defineConfig({
         }
       }
     },
+
+    // Pre-render essential static pages so AdSense/Mediapartners-Google crawler
+    // sees real content without needing to execute JavaScript.
+    vitePrerender({
+      staticDir: path.join(__dirname, 'dist'),
+      routes: [
+        '/',
+        '/about',
+        '/contact',
+        '/privacy-policy',
+        '/terms-of-service',
+        '/disclaimer',
+        '/contribute',
+        '/newsletter',
+        '/news',
+        '/articles',
+        '/glossary',
+        '/compare',
+        '/cheatsheets',
+        '/tools',
+        '/interview-prep',
+        '/practice',
+        '/certification',
+      ],
+      renderer: new PuppeteerRenderer({
+        headless: true,
+        // Wait for React lazy-loaded components to finish rendering
+        renderAfterTime: 3000,
+        // Block third-party requests (ads, analytics) to speed up rendering
+        skipThirdPartyRequests: true,
+      }),
+    }),
 
   ],
 
