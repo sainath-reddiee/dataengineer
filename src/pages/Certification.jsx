@@ -42,16 +42,6 @@ const FAQ = [
 ];
 
 const Certification = () => {
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://dataengineerhub.blog/' },
-      { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://dataengineerhub.blog/tools' },
-      { '@type': 'ListItem', position: 3, name: 'Snowflake Certification Prep', item: 'https://dataengineerhub.blog/certification' },
-    ],
-  };
-
   const faqSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -104,7 +94,6 @@ const Certification = () => {
         faqSchema={faqSchema}
       />
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(learningSchema)}</script>
       </Helmet>
 

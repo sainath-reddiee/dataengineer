@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import vitePrerender from 'vite-plugin-prerender';
+import vitePrerender from './plugins/vite-plugin-prerender.mjs';
 
 const PuppeteerRenderer = vitePrerender.PuppeteerRenderer;
 

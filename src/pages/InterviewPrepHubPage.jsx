@@ -410,14 +410,6 @@ export default function InterviewPrepHubPage() {
       })
       .filter(Boolean),
   };
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_CONFIG.url },
-      { '@type': 'ListItem', position: 2, name: 'Interview Prep', item: pageUrl },
-    ],
-  };
   const faqSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -465,7 +457,6 @@ export default function InterviewPrepHubPage() {
         faqSchema={faqSchema}
       />
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(itemListSchema)}</script>
       </Helmet>
 

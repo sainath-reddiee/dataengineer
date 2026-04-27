@@ -1260,7 +1260,7 @@ GROUP BY date_day`,
     ],
     relatedSlugs: ['snowflake-interview-questions', 'snowflake-performance-deep-dive-interview', 'snowflake-stored-procedures-interview'],
     relatedArticles: ['/articles/snowflake-interview-questions-answers-2026'],
-  }
+  },
   {
     slug: 'snowflake-snowpipe-streaming-interview',
     title: 'Snowpipe Streaming & Kafka — Expert Interview Questions',
@@ -1363,7 +1363,7 @@ GROUP BY date_day`,
     ],
     relatedSlugs: ['snowflake-interview-questions', 'snowflake-external-integrations-interview', 'snowflake-performance-deep-dive-interview'],
     relatedArticles: ['/articles/snowflake-interview-questions-answers-2026'],
-  }
+  },
   {
     slug: 'snowflake-governance-interview',
     title: 'Snowflake Governance & Masking — Expert Interview Questions',
@@ -1391,7 +1391,7 @@ GROUP BY date_day`,
         items: [
           {
             question: 'How do dynamic data masking policies work and how do they differ from encryption?',
-            answer: 'Masking: a policy is attached to a column; at query time, a SQL expression transforms the value based on the calling role — CASE WHEN CURRENT_ROLE() IN ('PII_ADMIN') THEN val ELSE '***' END. Encryption: at-rest AES-256, the same encrypted value stored for all users, decrypted transparently by Snowflake. Masking supports partial masking, hashing, tokenization, and format-preserving output. Snowflake encrypts all data at rest by default — masking adds the query-time access control layer.',
+            answer: 'Masking: a policy is attached to a column; at query time, a SQL expression transforms the value based on the calling role — CASE WHEN CURRENT_ROLE() IN (\'PII_ADMIN\') THEN val ELSE \'***\' END. Encryption: at-rest AES-256, the same encrypted value stored for all users, decrypted transparently by Snowflake. Masking supports partial masking, hashing, tokenization, and format-preserving output. Snowflake encrypts all data at rest by default — masking adds the query-time access control layer.',
           },
           {
             question: 'How does tag-based masking scale governance across hundreds of tables?',
@@ -1399,7 +1399,7 @@ GROUP BY date_day`,
           },
           {
             question: 'An ETL role needs unmasked data but an ad-hoc analyst role needs masking — how do you implement this?',
-            answer: 'Option 1 (role-based): CASE WHEN CURRENT_ROLE() IN ('ETL_ROLE') THEN val ELSE MASKED_VAL END. Option 2 (warehouse-based): CASE WHEN CURRENT_WAREHOUSE() = 'ETL_WH' THEN val ELSE MASKED END. Option 3: IS_ROLE_IN_SESSION('ETL_ROLE') for full role hierarchy check. Best practice: use role-based, never CURRENT_USER(). Combine with row access policies if ETL also needs cross-region row access.',
+            answer: 'Option 1 (role-based): CASE WHEN CURRENT_ROLE() IN (\'ETL_ROLE\') THEN val ELSE MASKED_VAL END. Option 2 (warehouse-based): CASE WHEN CURRENT_WAREHOUSE() = \'ETL_WH\' THEN val ELSE MASKED END. Option 3: IS_ROLE_IN_SESSION(\'ETL_ROLE\') for full role hierarchy check. Best practice: use role-based, never CURRENT_USER(). Combine with row access policies if ETL also needs cross-region row access.',
           },
           {
             question: 'What are the limitations and bypass risks of dynamic masking policies?',
@@ -1453,7 +1453,7 @@ GROUP BY date_day`,
       },
       {
         question: 'Can a malicious ACCOUNTADMIN bypass dynamic data masking?',
-        answer: 'Yes — ACCOUNTADMIN sees unmasked data by design because masking policies evaluate role membership, and ACCOUNTADMIN inherits all roles. This is by design for administration and emergency access. Mitigate with: (1) minimize ACCOUNTADMIN grant — only grant to break-glass accounts, (2) enable MFA on all admin accounts, (3) audit ACCOUNTADMIN queries via QUERY_HISTORY and ACCESS_HISTORY, (4) use Snowflake's Trust Center for anomaly detection on privileged role usage.',
+        answer: 'Yes — ACCOUNTADMIN sees unmasked data by design because masking policies evaluate role membership, and ACCOUNTADMIN inherits all roles. This is by design for administration and emergency access. Mitigate with: (1) minimize ACCOUNTADMIN grant — only grant to break-glass accounts, (2) enable MFA on all admin accounts, (3) audit ACCOUNTADMIN queries via QUERY_HISTORY and ACCESS_HISTORY, (4) use Snowflake\'s Trust Center for anomaly detection on privileged role usage.',
       },
       {
         question: 'How do you implement column-level security without masking policies?',
@@ -1462,7 +1462,7 @@ GROUP BY date_day`,
     ],
     relatedSlugs: ['snowflake-interview-questions', 'snowflake-cost-optimization-interview', 'snowflake-replication-failover-interview'],
     relatedArticles: ['/articles/snowflake-interview-questions-answers-2026'],
-  }
+  },
   {
     slug: 'snowflake-cost-optimization-interview',
     title: 'Snowflake Cost Optimization — Expert Interview Questions',
@@ -1561,7 +1561,7 @@ GROUP BY date_day`,
     ],
     relatedSlugs: ['snowflake-interview-questions', 'snowflake-performance-deep-dive-interview', 'snowflake-governance-interview'],
     relatedArticles: ['/articles/snowflake-interview-questions-answers-2026'],
-  }
+  },
   {
     slug: 'snowflake-performance-deep-dive-interview',
     title: 'Snowflake Query Tuning — Expert Interview Questions',
@@ -1614,7 +1614,7 @@ GROUP BY date_day`,
         type: 'qna',
         items: [
           {
-            question: 'Describe Snowflake's three cache layers and how to maximize cache benefit.',
+            question: 'Describe Snowflake\'s three cache layers and how to maximize cache benefit.',
             answer: 'Layer 1 — Result cache: identical query + unchanged underlying data = free instant result, 24hr TTL. Maximize: ensure downstream queries are exact text matches. Layer 2 — Local disk cache (warehouse SSD): recently scanned micro-partitions cached in SSD. Warm cache = faster repeated queries on same warehouse. Maximize: avoid suspending the warehouse between similar workloads (BI dashboards). Layer 3 — Remote storage: base data in S3/Azure/GCS. Always slowest. Minimize hits by combining result cache + partition pruning.',
           },
           {
@@ -1660,7 +1660,7 @@ GROUP BY date_day`,
     ],
     relatedSlugs: ['snowflake-interview-questions', 'snowflake-cost-optimization-interview', 'snowflake-semi-structured-interview'],
     relatedArticles: ['/articles/snowflake-interview-questions-answers-2026'],
-  }
+  },
   {
     slug: 'snowflake-replication-failover-interview',
     title: 'Snowflake Replication & Failover — Expert Interview Questions',
@@ -1755,7 +1755,7 @@ GROUP BY date_day`,
     ],
     relatedSlugs: ['snowflake-interview-questions', 'snowflake-governance-interview', 'snowflake-cost-optimization-interview'],
     relatedArticles: ['/articles/snowflake-interview-questions-answers-2026'],
-  }
+  },
   {
     slug: 'snowflake-semi-structured-interview',
     title: 'Snowflake Semi-Structured Data — Expert Interview Questions',
@@ -1809,7 +1809,7 @@ GROUP BY date_day`,
           },
           {
             question: 'How do you aggregate and rebuild JSON structures in SQL?',
-            answer: 'Build objects: OBJECT_CONSTRUCT('key1', val1, 'key2', val2). Build arrays: ARRAY_AGG(col) to aggregate rows back into an array. Combine: SELECT OBJECT_CONSTRUCT('user_id', id, 'orders', ARRAY_AGG(order_id)) FROM orders GROUP BY id. For nested structures: OBJECT_CONSTRUCT can nest other OBJECT_CONSTRUCT and ARRAY_AGG calls. Use ARRAY_DISTINCT, ARRAY_SORT, ARRAY_SLICE for array manipulation.',
+            answer: 'Build objects: OBJECT_CONSTRUCT(\'key1\', val1, \'key2\', val2). Build arrays: ARRAY_AGG(col) to aggregate rows back into an array. Combine: SELECT OBJECT_CONSTRUCT(\'user_id\', id, \'orders\', ARRAY_AGG(order_id)) FROM orders GROUP BY id. For nested structures: OBJECT_CONSTRUCT can nest other OBJECT_CONSTRUCT and ARRAY_AGG calls. Use ARRAY_DISTINCT, ARRAY_SORT, ARRAY_SLICE for array manipulation.',
           },
           {
             question: 'How do you load and query Parquet, Avro, and XML in Snowflake?',
@@ -1845,7 +1845,7 @@ GROUP BY date_day`,
       },
       {
         question: 'How does Snowflake handle NULL vs missing keys in VARIANT?',
-        answer: 'JSON null: a JSON key explicitly set to null stores as a SQL NULL in Snowflake. Missing key: accessing a path that does not exist returns SQL NULL (not an error). This means IS NULL is true for both explicitly-null and missing paths. To distinguish: use TYPEOF(v:key) — returns 'null_value' for JSON null and NULL for a missing path. Important for data quality: always check TYPEOF in data validation to differentiate absent from explicitly-nulled fields.',
+        answer: 'JSON null: a JSON key explicitly set to null stores as a SQL NULL in Snowflake. Missing key: accessing a path that does not exist returns SQL NULL (not an error). This means IS NULL is true for both explicitly-null and missing paths. To distinguish: use TYPEOF(v:key) — returns \'null_value\' for JSON null and NULL for a missing path. Important for data quality: always check TYPEOF in data validation to differentiate absent from explicitly-nulled fields.',
       },
       {
         question: 'What are the performance limits of VARIANT queries on large tables?',
@@ -1854,7 +1854,7 @@ GROUP BY date_day`,
     ],
     relatedSlugs: ['snowflake-interview-questions', 'snowflake-stored-procedures-interview', 'snowflake-performance-deep-dive-interview'],
     relatedArticles: ['/articles/snowflake-interview-questions-answers-2026'],
-  }
+  },
   {
     slug: 'snowflake-stored-procedures-interview',
     title: 'Snowflake Stored Procedures & UDFs — Expert Interview Questions',
@@ -1886,7 +1886,7 @@ GROUP BY date_day`,
           },
           {
             question: 'What is the difference between caller rights and owner rights procedures?',
-            answer: 'Owner rights (default): the procedure executes with the privileges of the role that OWNS it, regardless of who calls it. Allows controlled data access: grant CALL to a low-privilege role without granting direct table access. Caller rights (EXECUTE AS CALLER): the procedure runs with the calling role's privileges. Use for: utility procedures that should respect the caller's permission boundary. Security risk: owner-rights procedures with broad owner role privileges are a lateral-movement vector — audit all EXECUTE AS OWNER procedures that touch PII.',
+            answer: 'Owner rights (default): the procedure executes with the privileges of the role that OWNS it, regardless of who calls it. Allows controlled data access: grant CALL to a low-privilege role without granting direct table access. Caller rights (EXECUTE AS CALLER): the procedure runs with the calling role\'s privileges. Use for: utility procedures that should respect the caller\'s permission boundary. Security risk: owner-rights procedures with broad owner role privileges are a lateral-movement vector — audit all EXECUTE AS OWNER procedures that touch PII.',
           },
           {
             question: 'How do you handle transactions inside a Snowflake stored procedure?',
@@ -1894,11 +1894,11 @@ GROUP BY date_day`,
           },
           {
             question: 'How do you pass arrays, objects, and complex types to procedures and UDFs?',
-            answer: 'Use VARIANT as the parameter type for complex inputs. Caller passes: CALL my_proc(PARSE_JSON('[1, 2, 3]')), procedure receives: VARIANT param. For Python UDFs/procedures: VARIANT maps to a Python dict or list automatically via the Snowpark type system. For returning complex types: RETURNS VARIANT and return an OBJECT_CONSTRUCT or Python dict. Typed arrays (ARRAY) and objects (OBJECT) can also be used but VARIANT is more flexible for ad-hoc shapes.',
+            answer: 'Use VARIANT as the parameter type for complex inputs. Caller passes: CALL my_proc(PARSE_JSON(\'[1, 2, 3]\')), procedure receives: VARIANT param. For Python UDFs/procedures: VARIANT maps to a Python dict or list automatically via the Snowpark type system. For returning complex types: RETURNS VARIANT and return an OBJECT_CONSTRUCT or Python dict. Typed arrays (ARRAY) and objects (OBJECT) can also be used but VARIANT is more flexible for ad-hoc shapes.',
           },
           {
             question: 'How do you write a Python UDF that uses a third-party package?',
-            answer: 'In the CREATE FUNCTION statement: add PACKAGES = ('pandas==2.0.0', 'scikit-learn') and set the RUNTIME_VERSION. Packages come from the Snowflake Anaconda channel (curated, security-reviewed list). For packages not in the Anaconda channel: upload the package as a zip to a stage and reference it with IMPORTS. If heavy ML inference is needed (pandas apply, sklearn predict), use a Snowpark-optimized warehouse for significantly better performance.',
+            answer: 'In the CREATE FUNCTION statement: add PACKAGES = (\'pandas==2.0.0\', \'scikit-learn\') and set the RUNTIME_VERSION. Packages come from the Snowflake Anaconda channel (curated, security-reviewed list). For packages not in the Anaconda channel: upload the package as a zip to a stage and reference it with IMPORTS. If heavy ML inference is needed (pandas apply, sklearn predict), use a Snowpark-optimized warehouse for significantly better performance.',
           },
         ],
       },
@@ -1912,7 +1912,7 @@ GROUP BY date_day`,
           },
           {
             question: 'What are the security risks of stored procedures and how do you mitigate them?',
-            answer: 'Risk 1: overly privileged owner-rights procedures — an attacker with CALL privilege gains the owner role capabilities. Mitigation: minimize the owner role's privileges, use a dedicated service role. Risk 2: SQL injection via string concatenation in dynamic SQL. Mitigation: use parameterized queries, never concatenate user input directly into SQL strings. Risk 3: exfiltration via external stages in JavaScript procedures. Mitigation: audit procedures for PUT/GET commands, use network policies to block unauthorized external access.',
+            answer: 'Risk 1: overly privileged owner-rights procedures — an attacker with CALL privilege gains the owner role capabilities. Mitigation: minimize the owner role\'s privileges, use a dedicated service role. Risk 2: SQL injection via string concatenation in dynamic SQL. Mitigation: use parameterized queries, never concatenate user input directly into SQL strings. Risk 3: exfiltration via external stages in JavaScript procedures. Mitigation: audit procedures for PUT/GET commands, use network policies to block unauthorized external access.',
           },
           {
             question: 'When should you use a Python procedure vs a Snowpark Python DataFrame job?',
@@ -1928,7 +1928,7 @@ GROUP BY date_day`,
           'Understand owner rights vs caller rights with a concrete security example',
           'Know the transaction behavior: DDL implicitly commits, explicit BEGIN/COMMIT/ROLLBACK',
           'Know supported languages: SQL, Python, JavaScript, Java, Scala for procedures',
-          'Know how to use PACKAGES = ('pkg') for third-party Python dependencies',
+          'Know how to use PACKAGES = (\'pkg\') for third-party Python dependencies',
           'Know the Snowpark-optimized warehouse use case: heavy Python/pandas/ML UDFs',
           'Be able to explain SQL injection risk in dynamic SQL procedures and how to prevent it',
           'Know DESCRIBE PROCEDURE and SHOW PROCEDURES for inspecting deployed code',
@@ -1948,12 +1948,12 @@ GROUP BY date_day`,
       },
       {
         question: 'How do you handle errors and logging in Snowflake stored procedures?',
-        answer: 'Error handling: use TRY/CATCH in JavaScript, try/except in Python, or EXCEPTION WHEN in Snowflake Scripting SQL procedures. Log errors by inserting into a dedicated log table: INSERT INTO procedure_log (procedure_name, error_msg, run_time) VALUES (...). For structured observability, use Snowflake's Event Table + SYSTEM$LOG / SYSTEM$TRACE functions to emit structured log events and spans that appear in the Snowsight Monitoring UI. Event Table logging is the production standard for procedure observability.',
+        answer: 'Error handling: use TRY/CATCH in JavaScript, try/except in Python, or EXCEPTION WHEN in Snowflake Scripting SQL procedures. Log errors by inserting into a dedicated log table: INSERT INTO procedure_log (procedure_name, error_msg, run_time) VALUES (...). For structured observability, use Snowflake\'s Event Table + SYSTEM$LOG / SYSTEM$TRACE functions to emit structured log events and spans that appear in the Snowsight Monitoring UI. Event Table logging is the production standard for procedure observability.',
       },
     ],
     relatedSlugs: ['snowflake-interview-questions', 'snowflake-semi-structured-interview', 'snowflake-cortex-ai-interview'],
     relatedArticles: ['/articles/snowflake-interview-questions-answers-2026'],
-  }
+  },
   {
     slug: 'snowflake-external-integrations-interview',
     title: 'Snowflake External Functions & Integrations — Expert Interview Questions',
@@ -1985,7 +1985,7 @@ GROUP BY date_day`,
           },
           {
             question: 'Walk through setting up an external function end-to-end.',
-            answer: 'Step 1: create an API integration: CREATE API INTEGRATION ext_api API_PROVIDER=aws_api_gateway API_AWS_ROLE_ARN=arn:... API_ALLOWED_PREFIXES=(https://...). Step 2: retrieve the Snowflake IAM principal and update your API Gateway resource policy to trust it. Step 3: create the function: CREATE EXTERNAL FUNCTION classify(text VARCHAR) RETURNS VARIANT API_INTEGRATION=ext_api AS 'https://api-id.execute-api.region.amazonaws.com/stage/classify'. Step 4: call it: SELECT classify(description) FROM products. Snowflake sends batches of 1000 rows as JSON, expects JSON rows back.',
+            answer: 'Step 1: create an API integration: CREATE API INTEGRATION ext_api API_PROVIDER=aws_api_gateway API_AWS_ROLE_ARN=arn:... API_ALLOWED_PREFIXES=(https://...). Step 2: retrieve the Snowflake IAM principal and update your API Gateway resource policy to trust it. Step 3: create the function: CREATE EXTERNAL FUNCTION classify(text VARCHAR) RETURNS VARIANT API_INTEGRATION=ext_api AS \'https://api-id.execute-api.region.amazonaws.com/stage/classify\'. Step 4: call it: SELECT classify(description) FROM products. Snowflake sends batches of 1000 rows as JSON, expects JSON rows back.',
           },
           {
             question: 'What are the performance and cost considerations for external functions?',
@@ -2007,7 +2007,7 @@ GROUP BY date_day`,
           },
           {
             question: 'How do storage integrations differ from using access keys for external stages?',
-            answer: 'Access keys (AWS_KEY_ID + AWS_SECRET_KEY): stored in Snowflake metadata, need rotation, risk of credential leak. Storage integration: uses an IAM role trust policy — Snowflake's IAM principal assumes a role in your AWS account. No credentials stored, no rotation needed, follows AWS least-privilege IAM best practices. Storage integrations are the recommended approach for all production external stages. Access keys are only appropriate for quick testing or environments where IAM role trust is not available.',
+            answer: 'Access keys (AWS_KEY_ID + AWS_SECRET_KEY): stored in Snowflake metadata, need rotation, risk of credential leak. Storage integration: uses an IAM role trust policy — Snowflake\'s IAM principal assumes a role in your AWS account. No credentials stored, no rotation needed, follows AWS least-privilege IAM best practices. Storage integrations are the recommended approach for all production external stages. Access keys are only appropriate for quick testing or environments where IAM role trust is not available.',
           },
           {
             question: 'How does Snowflake auto-ingest work with S3 + SQS notifications?',
@@ -2052,7 +2052,7 @@ GROUP BY date_day`,
     ],
     relatedSlugs: ['snowflake-interview-questions', 'snowflake-snowpipe-streaming-interview', 'snowflake-stored-procedures-interview'],
     relatedArticles: ['/articles/snowflake-interview-questions-answers-2026'],
-  }
+  },
 
   // ────────────────────────────────────────────
   // 25. Python for Data Engineers Cheat Sheet
