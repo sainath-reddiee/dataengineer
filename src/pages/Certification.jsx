@@ -374,7 +374,7 @@ const Certification = () => {
               </Link>
             </li>
             <li>
-              <Link to="/cheatsheet" className="hover:underline inline-flex items-center gap-1">
+              <Link to="/cheatsheets" className="hover:underline inline-flex items-center gap-1">
                 <ExternalLink className="w-4 h-4" /> Data Engineering Cheatsheets
               </Link>
             </li>

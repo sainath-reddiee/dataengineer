@@ -40,7 +40,8 @@ const STATIC_PAGES = [
   { url: '/privacy-policy', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/disclaimer', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
-  { url: '/cheatsheets', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
+  // Programmatic hub/category pages TEMPORARILY excluded for AdSense approval:
+  // { url: '/cheatsheets', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
   { url: '/certification', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
   { url: '/tools', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
   { url: '/tools/snowflake-cost-calculator', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
@@ -60,13 +61,14 @@ const STATIC_PAGES = [
   { url: '/tools/sql-playground',   changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
   { url: '/tools/json-parquet-avro-converter', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
   { url: '/interview-prep', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
-  { url: '/cheatsheets/category/sql', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-  { url: '/cheatsheets/category/orchestration', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-  { url: '/cheatsheets/category/cloud', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-  { url: '/cheatsheets/category/programming', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-  { url: '/cheatsheets/category/architecture', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-  { url: '/cheatsheets/category/interview', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
-  { url: '/cheatsheets/category/bestpractices', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  // Cheatsheet category pages TEMPORARILY excluded for AdSense approval:
+  // { url: '/cheatsheets/category/sql', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  // { url: '/cheatsheets/category/orchestration', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  // { url: '/cheatsheets/category/cloud', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  // { url: '/cheatsheets/category/programming', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  // { url: '/cheatsheets/category/architecture', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  // { url: '/cheatsheets/category/interview', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
+  // { url: '/cheatsheets/category/bestpractices', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
 ];
 
 // Article slugs to exclude from sitemap (noindexed due to thin content <400 words)
@@ -483,20 +485,22 @@ async function generateSitemap() {
     // Including noindexed pages in sitemap sends contradictory signals to Google
     console.log('⏭️  Skipping tag pages (all noindexed in React)...');
 
-    // pSEO pages (glossary + comparisons) — now pre-rendered with full static HTML
-    console.log('\n📖 Adding pSEO pages (glossary + comparisons)...');
+    // pSEO pages (glossary + comparisons) — TEMPORARILY excluded from sitemap
+    // to improve editorial-to-programmatic content ratio for AdSense approval.
+    // Re-enable after AdSense approval by uncommenting the block below.
+    console.log('\n⏭️  Skipping pSEO pages (glossary + comparisons) — excluded for AdSense approval...');
     const pseoEntries = loadPSEOData();
-    pseoEntries.forEach(entry => {
-      if (!entry.lastmod) entry.lastmod = today;
-      sitemapEntries.push(entry);
-    });
-    console.log(`✅ Added ${pseoEntries.length} pSEO pages`);
+    // pseoEntries.forEach(entry => {
+    //   if (!entry.lastmod) entry.lastmod = today;
+    //   sitemapEntries.push(entry);
+    // });
+    console.log(`   (${pseoEntries.length} pSEO pages excluded from sitemap)`);
 
-    // Cheatsheet pages — pre-rendered with full static HTML
-    console.log('📋 Adding cheatsheet pages...');
+    // Cheatsheet pages — TEMPORARILY excluded from sitemap for same reason
+    console.log('⏭️  Skipping cheatsheet pages — excluded for AdSense approval...');
     const cheatsheetEntries = loadCheatsheetData();
-    cheatsheetEntries.forEach(entry => sitemapEntries.push(entry));
-    console.log(`✅ Added ${cheatsheetEntries.length} cheatsheet pages`);
+    // cheatsheetEntries.forEach(entry => sitemapEntries.push(entry));
+    console.log(`   (${cheatsheetEntries.length} cheatsheet pages excluded from sitemap)`);
 
     // Validate sitemap entries
     console.log('\n🔍 Validating sitemap...');

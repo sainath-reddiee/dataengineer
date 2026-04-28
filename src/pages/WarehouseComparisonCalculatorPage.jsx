@@ -100,6 +100,47 @@ const softwareAppSchema = {
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
 };
 
+const FAQ_ITEMS = [
+  {
+    q: 'How accurate is this Snowflake vs BigQuery vs Databricks calculator?',
+    a: 'It is intentionally a directional comparison, not a procurement quote. I built it from April 2026 published list prices and assumed defaults most teams actually use — 10% cloud-services allowance on Snowflake, SQL Pro DBU rate on Databricks, and the auto-cheaper pick between BigQuery on-demand and Editions. In most RFPs I have seen, Snowflake and Databricks negotiate 20–40% off list, while BigQuery list is mostly what you pay. Use this tool to shape your architecture decision and frame your budget, then validate the final number with a signed rate card from each vendor.',
+  },
+  {
+    q: 'Why do the three platforms differ so much on identical workloads?',
+    a: 'Because the billing units are fundamentally different. Snowflake bills warehouse-seconds at a credit rate (size-dependent). Databricks bills DBUs consumed (tier-dependent). BigQuery bills either bytes scanned or slot-hours. A workload that is cheap on one model can be expensive on another. For example, a dashboard that re-queries the same 10 TB a hundred times a day is very cheap on Snowflake (warmed warehouse + result cache) but very expensive on BigQuery on-demand (1,000 TB scanned billed).',
+  },
+  {
+    q: 'Does this include network egress or data transfer costs?',
+    a: 'No. Egress is highly account-specific — same-region is free on all three, cross-region and cross-cloud fees vary by your hyperscaler discounts, and most teams get custom network commits. I intentionally excluded egress so the calculator focuses on the 80% of cost that is compute + storage. If you replicate data across regions or clouds regularly, add 10–25% to whichever winner the calculator picks.',
+  },
+  {
+    q: 'How should I find my actual TB scanned and compute hours?',
+    a: 'On Snowflake, query QUERY_HISTORY and WAREHOUSE_METERING_HISTORY for the last 30 days — sum BYTES_SCANNED and EXECUTION_TIME. On BigQuery, check INFORMATION_SCHEMA.JOBS_BY_PROJECT for TOTAL_BYTES_BILLED. On Databricks, pull system.billing.usage for DBU-hours by workspace. If you have none of those because you are pre-adoption, a safe starting profile for a mid-sized analytics team is 20–50 TB scanned per month and 120–200 compute hours.',
+  },
+  {
+    q: 'Why does the calculator sometimes pick BigQuery on-demand and sometimes Editions?',
+    a: 'The break-even is roughly tbScanned ÷ slotHours. If your workload scans a lot of data in short bursts, on-demand wins. If it scans less data but runs nearly continuously, Editions wins because reserved slots amortize across long-running queries. The tool computes both numbers and displays whichever is lower along with a label so you know which pricing mode it picked.',
+  },
+  {
+    q: 'What assumptions does this calculator make that might not match my situation?',
+    a: 'Four big ones. (1) Snowflake at Enterprise edition $3/credit — Business Critical is $4 and some workloads need that. (2) Databricks at SQL Pro DBU rate — Serverless SQL is higher, Jobs compute is lower. (3) BigQuery Editions at Enterprise $0.06/slot-hour — Standard is $0.04 and Enterprise Plus is $0.10. (4) Storage at active tier only — long-term storage on BigQuery and Time Travel on Snowflake can change the storage bill materially. If any of those assumptions are wrong for you, the right answer is still likely the same winner, just at a different absolute number.',
+  },
+  {
+    q: 'Can I share my calculated comparison with my team?',
+    a: 'Yes — the inputs are encoded in the URL query string, so the Share button just copies the current URL to your clipboard. Anyone who opens that link sees the same numbers. I use this pattern so the tool is a living artifact you can paste into a Slack thread or RFP doc, not a one-off calculation that disappears when you close the tab.',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ_ITEMS.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+
 export default function WarehouseComparisonCalculatorPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [inputs, setInputs] = useState(() => {
@@ -154,6 +195,7 @@ export default function WarehouseComparisonCalculatorPage() {
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>
 
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
@@ -327,6 +369,94 @@ export default function WarehouseComparisonCalculatorPage() {
             </motion.div>
           </div>
         </div>
+
+        <section className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">A worked example: mid-sized analytics team</h2>
+          <p className="text-gray-300 text-sm mb-4">
+            Let me walk through a real-ish scenario so the numbers aren't abstract. Say you're running a
+            mid-sized analytics team: around <strong>50 TB scanned per month</strong> (BI dashboards plus
+            a few dbt model builds),{' '}
+            <strong>160 compute hours</strong> (roughly 8 hours a day × 20 business days on a medium warehouse),
+            and <strong>500 GB of active storage</strong>. Workload complexity is <em>mixed</em>.
+          </p>
+          <div className="grid md:grid-cols-3 gap-3 text-sm">
+            <div className="p-4 bg-slate-900/50 rounded-xl border border-slate-700">
+              <div className="text-blue-300 font-semibold mb-1">Snowflake (Enterprise)</div>
+              <div className="text-gray-400 text-xs mb-2">640 credits × $3 + ~$12 storage</div>
+              <div className="text-white font-mono">~$1,972/mo</div>
+            </div>
+            <div className="p-4 bg-slate-900/50 rounded-xl border border-slate-700">
+              <div className="text-orange-300 font-semibold mb-1">Databricks (SQL Pro)</div>
+              <div className="text-gray-400 text-xs mb-2">640 DBUs × $0.55 + ~$12 storage</div>
+              <div className="text-white font-mono">~$364/mo</div>
+            </div>
+            <div className="p-4 bg-slate-900/50 rounded-xl border border-slate-700">
+              <div className="text-cyan-300 font-semibold mb-1">BigQuery (auto-pick)</div>
+              <div className="text-gray-400 text-xs mb-2">Editions cheaper: 200 slots × 160h × $0.06</div>
+              <div className="text-white font-mono">~$1,930/mo</div>
+            </div>
+          </div>
+          <p className="text-gray-400 text-sm mt-4">
+            At first glance Databricks looks like a runaway winner here. In practice that comparison is misleading
+            unless your workload is actually a good fit for SQL Pro — interactive BI dashboards with bursty
+            concurrency often behave better on Snowflake multi-cluster warehouses, and the operational cost of
+            keeping Databricks SQL warehouses healthy isn't zero. That's why this calculator exists as a
+            starting point, not a verdict. Plug in your real numbers (from the data-source queries in the FAQ
+            below) and look at the gap, not the absolute values.
+          </p>
+        </section>
+
+        <section className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">Limitations and what this calculator does <em>not</em> model</h2>
+          <ul className="text-gray-300 text-sm space-y-3 list-disc pl-5">
+            <li>
+              <strong>Contract discounts.</strong> Snowflake and Databricks routinely discount 20–40% off list on
+              annual commits; BigQuery is less negotiable. The calculator shows list pricing.
+            </li>
+            <li>
+              <strong>Serverless surcharges.</strong> Snowflake Serverless tasks, Snowpipe, Cortex, and Search Optimization
+              each have their own rates I did not include. If you lean heavily on those, add 10–20% to the Snowflake line.
+            </li>
+            <li>
+              <strong>Databricks tier mix.</strong> We assume SQL Pro. If most of your compute is Jobs (cheaper) or
+              Serverless SQL (more expensive), your actual number moves in that direction.
+            </li>
+            <li>
+              <strong>BigQuery Editions tier.</strong> We use Enterprise ($0.06/slot-hour). Standard is ~$0.04 and
+              Enterprise Plus is ~$0.10. Commitments (annual or 3-year) drop this 20–40% further.
+            </li>
+            <li>
+              <strong>Storage tiers and Time Travel.</strong> BigQuery long-term storage is half the active rate,
+              and Snowflake Time Travel plus Fail-safe adds a storage multiplier depending on retention. For a
+              quick comparison I treat storage as a single active tier.
+            </li>
+            <li>
+              <strong>Network egress.</strong> Excluded entirely — it's highly account-specific.
+            </li>
+            <li>
+              <strong>Human cost.</strong> Operating Databricks clusters needs more platform-engineering muscle than
+              running Snowflake warehouses. The calculator can't price your team.
+            </li>
+          </ul>
+        </section>
+
+        <section className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
+          <h2 className="text-2xl font-semibold text-white mb-4">Frequently asked questions</h2>
+          <div className="space-y-3">
+            {FAQ_ITEMS.map((f, i) => (
+              <details
+                key={i}
+                className="group bg-slate-900/40 border border-slate-700 rounded-xl p-4 open:border-purple-700/60"
+              >
+                <summary className="cursor-pointer text-white font-semibold text-sm md:text-base list-none flex justify-between items-start gap-3">
+                  <span>{f.q}</span>
+                  <span className="text-purple-400 text-xs mt-1 group-open:rotate-180 transition-transform" aria-hidden="true">▼</span>
+                </summary>
+                <p className="mt-3 text-gray-300 text-sm leading-relaxed">{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </section>
 
         <Suspense fallback={null}>
           <AdPlacement />

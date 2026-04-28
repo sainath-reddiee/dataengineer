@@ -234,6 +234,29 @@
         font-size: 18px;
         text-align: center;
       }
+
+      /* Site Nav (static, visible to crawlers; hidden when React mounts) */
+      .site-nav { background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 12px 20px; position: sticky; top: 0; z-index: 100; }
+      .site-nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+      .site-nav-brand { color: #60a5fa; font-weight: 700; font-size: 1.1rem; text-decoration: none; }
+      .site-nav-links { display: flex; flex-wrap: wrap; gap: 4px 16px; list-style: none; padding: 0; margin: 0; }
+      .site-nav-links a { color: #cbd5e1; text-decoration: none; font-size: 0.875rem; transition: color 0.2s; }
+      .site-nav-links a:hover { color: #60a5fa; }
+      /* Site Footer */
+      .site-footer { max-width: 900px; margin: 3rem auto 0; padding: 2rem 20px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; font-size: 0.85rem; color: #94a3b8; }
+      .site-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; list-style: none; padding: 0; margin: 0 0 0.75rem; }
+      .site-footer-links a { color: #60a5fa; text-decoration: none; }
+      .site-footer-links a:hover { text-decoration: underline; }
+      body.react-loaded .site-nav, body.react-loaded .site-footer { display: none; }
+      @media (max-width: 768px) { .site-nav-links { gap: 4px 12px; } }
+
+      /* E-E-A-T author/about block on homepage */
+      .seo-author-block { max-width: 1200px; margin: 2rem auto 0; padding: 2rem 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; }
+      .seo-author-block h2 { color: #60a5fa; font-size: 1.5rem; margin-bottom: 0.75rem; }
+      .seo-author-block p { color: #cbd5e1; font-size: 1rem; line-height: 1.7; margin-bottom: 0.75rem; }
+      .seo-author-block .author-meta { color: #94a3b8; font-size: 0.9rem; }
+      .seo-author-block a { color: #60a5fa; text-decoration: none; }
+      .seo-author-block a:hover { text-decoration: underline; }
     </style>
     
     <link rel="preload" as="font" type="font/woff2" crossorigin="anonymous" 
@@ -280,6 +303,20 @@
     <div id="root">
       <!-- ✅ CRITICAL: Static content visible by default for SEO.
            Hidden via CSS when body.react-loaded is set by App.jsx after React mounts. -->
+      <nav class="site-nav" aria-label="Site navigation">
+        <div class="site-nav-inner">
+          <a href="https://dataengineerhub.blog" class="site-nav-brand">DataEngineer Hub</a>
+          <ul class="site-nav-links">
+            <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
+            <li><a href="https://dataengineerhub.blog/glossary">Glossary</a></li>
+            <li><a href="https://dataengineerhub.blog/compare">Compare</a></li>
+            <li><a href="https://dataengineerhub.blog/cheatsheets">Cheatsheets</a></li>
+            <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
+            <li><a href="https://dataengineerhub.blog/about">About</a></li>
+            <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
+          </ul>
+        </div>
+      </nav>
       <div class="seo-fallback">
         <h1>DataEngineer Hub - Master Data Engineering</h1>
         
@@ -334,6 +371,30 @@
         </div>
       </div>
 
+      <!-- E-E-A-T: Author/about block visible to AdSense reviewers and crawlers -->
+      <section class="seo-author-block" aria-label="About the author">
+        <h2>About the Author</h2>
+        <p>
+          DataEngineer Hub is written and maintained by <strong>Sainath Reddy</strong>,
+          a practicing data engineer with hands-on experience building production data
+          pipelines on Snowflake, AWS, dbt, and Apache Airflow. Every tutorial on this
+          site is based on real-world engineering work — not reposted material — and is
+          reviewed before publication for technical accuracy.
+        </p>
+        <p>
+          Our editorial focus is narrow and deep: cloud data warehousing (Snowflake,
+          BigQuery), data transformation (dbt, SQL), orchestration (Airflow), and
+          modern data platform best practices. We publish in-depth tutorials, comparison
+          guides, and reference material for engineers shipping data in production.
+        </p>
+        <p class="author-meta">
+          Learn more on our
+          <a href="https://dataengineerhub.blog/about">About page</a>
+          or
+          <a href="https://dataengineerhub.blog/contact">contact us</a>.
+        </p>
+      </section>
+
       <!-- noscript lives OUTSIDE seo-fallback so it is never hidden by the react-loaded class -->
       <noscript>
         <p style="margin-top: 2rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444;">
@@ -346,6 +407,18 @@
         <div class="loading-spinner"></div>
         <p class="loading-text">Loading DataEngineer Hub...</p>
       </div>
+
+      <footer class="site-footer">
+        <ul class="site-footer-links">
+          <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy Policy</a></li>
+          <li><a href="https://dataengineerhub.blog/terms-of-service">Terms</a></li>
+          <li><a href="https://dataengineerhub.blog/disclaimer">Disclaimer</a></li>
+          <li><a href="https://dataengineerhub.blog/about">About</a></li>
+          <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
+          <li><a href="https://dataengineerhub.blog/rss.xml">RSS</a></li>
+        </ul>
+        <p>&copy; 2026 DataEngineer Hub. All rights reserved.</p>
+      </footer>
     </div>
     
     <!-- Load React app -->

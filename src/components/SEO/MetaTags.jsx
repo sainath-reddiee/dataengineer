@@ -11,7 +11,6 @@ import {
   getImageUrl,
   formatDate,
   getArticleSchema,
-  getWebSiteSchema,
   getBreadcrumbSchema,
 } from '@/lib/seoConfig';
 import { optimizeMetaDescription } from '@/lib/metaDescriptionOptimizer';
@@ -94,7 +93,9 @@ const MetaTags = ({
     })
     : null;
 
-  const websiteSchema = type === 'website' ? getWebSiteSchema() : null;
+  // WebSite schema is already emitted statically in index.html for all pages.
+  // Skip Helmet-injected duplicate to avoid structured data duplication.
+  const websiteSchema = null;
 
   const breadcrumbSchema = breadcrumbs && breadcrumbs.length > 0
     ? getBreadcrumbSchema(breadcrumbs)

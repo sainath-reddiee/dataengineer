@@ -15,7 +15,8 @@ import {
     AlertCircle,
     ThumbsUp,
     ThumbsDown,
-    ChevronRight
+    ChevronRight,
+    HelpCircle
 } from 'lucide-react';
 
 // Data
@@ -380,6 +381,30 @@ const ComparisonPage = () => {
                                     >
                                         {t.term}
                                     </Link>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* FAQs */}
+                    {Array.isArray(comparison.faqs) && comparison.faqs.length > 0 && (
+                        <div className="mb-16">
+                            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                                <HelpCircle className="w-6 h-6 text-blue-400" />
+                                Frequently Asked Questions
+                            </h2>
+                            <div className="space-y-3">
+                                {comparison.faqs.map((faq, i) => (
+                                    <details
+                                        key={i}
+                                        className="bg-slate-800/50 border border-slate-700 rounded-xl p-5 group open:border-purple-500/30 transition-colors"
+                                    >
+                                        <summary className="text-white font-semibold cursor-pointer flex items-start justify-between gap-4">
+                                            <span className="flex-1">{faq.question}</span>
+                                            <ChevronRight className="w-5 h-5 text-purple-400 flex-shrink-0 transform group-open:rotate-90 transition-transform" />
+                                        </summary>
+                                        <p className="text-gray-300 mt-3 leading-relaxed">{faq.answer}</p>
+                                    </details>
                                 ))}
                             </div>
                         </div>

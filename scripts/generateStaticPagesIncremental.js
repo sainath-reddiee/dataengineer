@@ -2025,6 +2025,118 @@ function makeImagesAbsolute(content) {
 }
 
 // ============================================================================
+// SHARED NAV/FOOTER HELPERS — used by all page generators for site-wide navigation
+// ============================================================================
+
+function getSiteNavCSS() {
+  return `
+      /* Site Nav */
+      .site-nav {
+        background: rgba(15, 23, 42, 0.95);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding: 12px 20px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .site-nav-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .site-nav-brand {
+        color: #60a5fa;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-decoration: none;
+      }
+      .site-nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 16px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .site-nav-links a {
+        color: #cbd5e1;
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: color 0.2s;
+      }
+      .site-nav-links a:hover { color: #60a5fa; }
+
+      /* Site Footer */
+      .site-footer {
+        max-width: 900px;
+        margin: 3rem auto 0;
+        padding: 2rem 20px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        text-align: center;
+        font-size: 0.85rem;
+        color: #94a3b8;
+      }
+      .site-footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px 20px;
+        list-style: none;
+        padding: 0;
+        margin: 0 0 0.75rem;
+      }
+      .site-footer-links a {
+        color: #60a5fa;
+        text-decoration: none;
+      }
+      .site-footer-links a:hover { text-decoration: underline; }
+
+      body.react-loaded .site-nav,
+      body.react-loaded .site-footer { display: none; }
+
+      @media (max-width: 768px) {
+        .site-nav-links { gap: 4px 12px; }
+      }`;
+}
+
+function getSiteNavHTML() {
+  return `
+      <nav class="site-nav" aria-label="Site navigation">
+        <div class="site-nav-inner">
+          <a href="https://dataengineerhub.blog" class="site-nav-brand">DataEngineer Hub</a>
+          <ul class="site-nav-links">
+            <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
+            <li><a href="https://dataengineerhub.blog/glossary">Glossary</a></li>
+            <li><a href="https://dataengineerhub.blog/compare">Compare</a></li>
+            <li><a href="https://dataengineerhub.blog/cheatsheets">Cheatsheets</a></li>
+            <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
+            <li><a href="https://dataengineerhub.blog/about">About</a></li>
+            <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
+          </ul>
+        </div>
+      </nav>`;
+}
+
+function getSiteFooterHTML() {
+  return `
+      <footer class="site-footer">
+        <ul class="site-footer-links">
+          <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy Policy</a></li>
+          <li><a href="https://dataengineerhub.blog/terms-of-service">Terms</a></li>
+          <li><a href="https://dataengineerhub.blog/disclaimer">Disclaimer</a></li>
+          <li><a href="https://dataengineerhub.blog/about">About</a></li>
+          <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
+          <li><a href="https://dataengineerhub.blog/rss.xml">RSS</a></li>
+        </ul>
+        <p>&copy; ${new Date().getFullYear()} DataEngineer Hub. All rights reserved.</p>
+      </footer>`;
+}
+
+// ============================================================================
 // 🔥 FIXED HTML GENERATION - FULL CONTENT FOR CRAWLERS WITH IMAGES
 // ============================================================================
 
@@ -2943,13 +3055,19 @@ function generateSimpleHTML(pageData, bundleFiles) {
     <meta name="description" content="${description}" />
     <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
     ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
+
+    <style>
+      ${getSiteNavCSS()}
+    </style>
   </head>
   <body>
     <div id="root">
+      ${getSiteNavHTML()}
       <div style="padding: 60px 20px; text-align: center;">
         <h1>${title}</h1>
         <p>${description}</p>
       </div>
+      ${getSiteFooterHTML()}
     </div>
     ${productionJsFile ? `<script type="module" crossorigin src="${productionJsFile}"></script>` : ''}
   </body>
@@ -3142,10 +3260,12 @@ ${CONSENT_MODE_V2_HTML}
         .seo-content { padding: 20px 15px; margin-top: 20px; }
         .seo-content h1 { font-size: 1.8rem; }
       }
+      ${getSiteNavCSS()}
     </style>
   </head>
   <body>
     <div id="root">
+      ${getSiteNavHTML()}
       <nav aria-label="Breadcrumb" class="breadcrumb-nav">
         <ol class="breadcrumb-list">
           <li class="breadcrumb-item"><a href="https://dataengineerhub.blog" class="breadcrumb-link">Home</a></li>
@@ -3182,6 +3302,7 @@ ${CONSENT_MODE_V2_HTML}
 
         <a href="https://dataengineerhub.blog" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 Back to Home</a>
       </div>
+      ${getSiteFooterHTML()}
     </div>
 
     <script type="application/ld+json">
@@ -3315,10 +3436,12 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
   html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
   html += '      @media (max-width: 768px) { .seo-content { padding: 20px 15px; margin-top: 20px; } .seo-content h1 { font-size: 1.8rem; } }\n';
+  html += getSiteNavCSS() + '\n';
   html += '    </style>\n';
   html += '  </head>\n';
   html += '  <body>\n';
   html += '    <div id="root">\n';
+  html += getSiteNavHTML() + '\n';
   html += '      <nav aria-label="Breadcrumb" class="breadcrumb-nav">\n';
   html += '        <ol class="breadcrumb-list">\n';
   html += '          <li class="breadcrumb-item"><a href="https://dataengineerhub.blog" class="breadcrumb-link">Home</a></li>\n';
@@ -3345,6 +3468,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '          <a href="https://dataengineerhub.blog" style="display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; border: 1px solid rgba(255,255,255,0.2);">&#8592; Back to Home</a>\n';
   html += '        </div>\n';
   html += '      </div>\n';
+  html += getSiteFooterHTML() + '\n';
   html += '    </div>\n\n';
   html += '    <script type="application/ld+json">\n';
   html += '    {\n';
@@ -3632,10 +3756,12 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '        .seo-content { padding: 20px 15px; margin-top: 20px; }\n';
   html += '        .seo-content h1 { font-size: 1.8rem; }\n';
   html += '      }\n';
+  html += getSiteNavCSS() + '\n';
   html += '    </style>\n';
   html += '  </head>\n';
   html += '  <body>\n';
   html += '    <div id="root">\n';
+  html += getSiteNavHTML() + '\n';
   html += '      <nav aria-label="Breadcrumb" class="breadcrumb-nav">\n';
   html += '        <ol class="breadcrumb-list">\n';
   html += '          <li class="breadcrumb-item"><a href="https://dataengineerhub.blog" class="breadcrumb-link">Home</a></li>\n';
@@ -3678,6 +3804,7 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '\n';
   html += '        <a href="https://dataengineerhub.blog" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 Back to Home</a>\n';
   html += '      </div>\n';
+  html += getSiteFooterHTML() + '\n';
   html += '    </div>\n';
   html += '\n';
   html += '    <script type="application/ld+json">\n';
@@ -3909,10 +4036,12 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
   html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
   html += '      @media (max-width: 768px) { .seo-content { padding: 20px 15px; margin-top: 20px; } .seo-content h1 { font-size: 1.8rem; } }\n';
+  html += getSiteNavCSS() + '\n';
   html += '    </style>\n';
   html += '  </head>\n';
   html += '  <body>\n';
   html += '    <div id="root">\n';
+  html += getSiteNavHTML() + '\n';
 
   // Breadcrumbs
   html += '      <nav aria-label="Breadcrumb" class="breadcrumb-nav">\n';
@@ -3982,6 +4111,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '          <a href="https://dataengineerhub.blog/articles" style="display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; border: 1px solid rgba(255,255,255,0.2);">Read Articles</a>\n';
   html += '        </div>\n';
   html += '      </div>\n';
+  html += getSiteFooterHTML() + '\n';
   html += '    </div>\n\n';
 
   // Schema.org - DefinedTerm
@@ -4237,10 +4367,12 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '        .seo-content { padding: 20px 15px; margin-top: 20px; }\n';
   html += '        .seo-content h1 { font-size: 1.8rem; }\n';
   html += '      }\n';
+  html += getSiteNavCSS() + '\n';
   html += '    </style>\n';
   html += '  </head>\n';
   html += '  <body>\n';
   html += '    <div id="root">\n';
+  html += getSiteNavHTML() + '\n';
   html += '      <nav aria-label="Breadcrumb" class="breadcrumb-nav">\n';
   html += '        <ol class="breadcrumb-list">\n';
   html += '          <li class="breadcrumb-item"><a href="https://dataengineerhub.blog" class="breadcrumb-link">Home</a></li>\n';
@@ -4282,6 +4414,7 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '\n';
   html += '        <a href="https://dataengineerhub.blog" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 Back to Home</a>\n';
   html += '      </div>\n';
+  html += getSiteFooterHTML() + '\n';
   html += '    </div>\n';
   html += '\n';
   html += '    <script type="application/ld+json">\n';
@@ -4443,6 +4576,21 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   var introHTML = markdownToHTML(comparison.intro || '');
   var verdictHTML = markdownToHTML(comparison.finalVerdict || '');
 
+  // FAQs (render existing faqs[] data + emit FAQPage JSON-LD below)
+  var faqsHTML = '';
+  if (comparison.faqs && comparison.faqs.length > 0) {
+    faqsHTML += '<h2 style="color: #93c5fd; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem;">Frequently Asked Questions</h2>';
+    faqsHTML += '<div style="display: flex; flex-direction: column; gap: 0.75rem;">';
+    for (var fq = 0; fq < comparison.faqs.length; fq++) {
+      var faq = comparison.faqs[fq];
+      faqsHTML += '<details style="background: rgba(0,0,0,0.2); border: 1px solid rgba(96,165,250,0.2); border-radius: 8px; padding: 1rem 1.25rem;">';
+      faqsHTML += '<summary style="color: #f1f5f9; font-weight: 600; cursor: pointer; font-size: 1.05rem;">' + escapeHtml(faq.question) + '</summary>';
+      faqsHTML += '<p style="color: #cbd5e1; margin-top: 0.75rem; line-height: 1.75;">' + escapeHtml(faq.answer) + '</p>';
+      faqsHTML += '</details>';
+    }
+    faqsHTML += '</div>';
+  }
+
   // Related comparisons
   var relatedCompHTML = '';
   if (comparison.relatedComparisons && comparison.relatedComparisons.length > 0) {
@@ -4532,10 +4680,12 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
   html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
   html += '      @media (max-width: 768px) { .seo-content { padding: 20px 15px; margin-top: 20px; } .seo-content h1 { font-size: 1.8rem; } .pros-cons-grid { grid-template-columns: 1fr !important; } }\n';
+  html += getSiteNavCSS() + '\n';
   html += '    </style>\n';
   html += '  </head>\n';
   html += '  <body>\n';
   html += '    <div id="root">\n';
+  html += getSiteNavHTML() + '\n';
 
   // Breadcrumbs
   html += '      <nav aria-label="Breadcrumb" class="breadcrumb-nav">\n';
@@ -4580,6 +4730,11 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
     html += '        </div>\n\n';
   }
 
+  // FAQs
+  if (faqsHTML) {
+    html += '        ' + faqsHTML + '\n\n';
+  }
+
   // Related comparisons
   html += '        ' + relatedCompHTML + '\n\n';
 
@@ -4589,6 +4744,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '          <a href="https://dataengineerhub.blog/glossary" style="display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; border: 1px solid rgba(255,255,255,0.2);">Explore Glossary</a>\n';
   html += '        </div>\n';
   html += '      </div>\n';
+  html += getSiteFooterHTML() + '\n';
   html += '    </div>\n\n';
 
   // Schema.org - Article with comparison
@@ -4618,6 +4774,25 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '      ]\n';
   html += '    }\n';
   html += '    <\/script>\n\n';
+
+  // FAQPage schema (only if faqs exist)
+  if (comparison.faqs && comparison.faqs.length > 0) {
+    var faqEntities = comparison.faqs.map(function(faq) {
+      return {
+        '@type': 'Question',
+        'name': faq.question,
+        'acceptedAnswer': { '@type': 'Answer', 'text': faq.answer }
+      };
+    });
+    var faqSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      'mainEntity': faqEntities
+    };
+    html += '    <script type="application/ld+json">\n';
+    html += '    ' + JSON.stringify(faqSchema, null, 2).split('\n').join('\n    ') + '\n';
+    html += '    <\/script>\n\n';
+  }
 
   // React bootstrap
   if (productionJsFile) {
@@ -4756,10 +4931,12 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
   html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
   html += '      @media (max-width: 768px) { .seo-content { padding: 20px 15px; margin-top: 20px; } .seo-content h1 { font-size: 1.8rem; } }\n';
+  html += getSiteNavCSS() + '\n';
   html += '    </style>\n';
   html += '  </head>\n';
   html += '  <body>\n';
   html += '    <div id="root">\n';
+  html += getSiteNavHTML() + '\n';
   html += '      <nav aria-label="Breadcrumb" class="breadcrumb-nav">\n';
   html += '        <ol class="breadcrumb-list">\n';
   html += '          <li class="breadcrumb-item"><a href="https://dataengineerhub.blog" class="breadcrumb-link">Home</a></li>\n';
@@ -4786,6 +4963,7 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '        </div>\n\n';
   html += '        <a href="https://dataengineerhub.blog" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 Back to Home</a>\n';
   html += '      </div>\n';
+  html += getSiteFooterHTML() + '\n';
   html += '    </div>\n\n';
 
   // CollectionPage schema
@@ -5038,10 +5216,12 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
   html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
   html += '      @media (max-width: 768px) { .seo-content { padding: 20px 15px; margin-top: 20px; } .seo-content h1 { font-size: 1.6rem; } table { font-size: 0.8rem; } }\n';
+  html += getSiteNavCSS() + '\n';
   html += '    </style>\n';
   html += '  </head>\n';
   html += '  <body>\n';
   html += '    <div id="root">\n';
+  html += getSiteNavHTML() + '\n';
   html += '      <nav aria-label="Breadcrumb" class="breadcrumb-nav">\n';
   html += '        <ol class="breadcrumb-list">\n';
   html += '          <li class="breadcrumb-item"><a href="https://dataengineerhub.blog" class="breadcrumb-link">Home</a></li>\n';
@@ -5063,6 +5243,7 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += relatedHTML + '\n';
   html += '        <a href="https://dataengineerhub.blog/cheatsheets" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 All Cheat Sheets</a>\n';
   html += '      </div>\n';
+  html += getSiteFooterHTML() + '\n';
   html += '    </div>\n\n';
 
   // Article schema
@@ -5218,10 +5399,12 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
   html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
   html += '      @media (max-width: 768px) { .seo-content { padding: 20px 15px; margin-top: 20px; } .seo-content h1 { font-size: 1.8rem; } }\n';
+  html += getSiteNavCSS() + '\n';
   html += '    </style>\n';
   html += '  </head>\n';
   html += '  <body>\n';
   html += '    <div id="root">\n';
+  html += getSiteNavHTML() + '\n';
   html += '      <nav aria-label="Breadcrumb" class="breadcrumb-nav">\n';
   html += '        <ol class="breadcrumb-list">\n';
   html += '          <li class="breadcrumb-item"><a href="https://dataengineerhub.blog" class="breadcrumb-link">Home</a></li>\n';
@@ -5251,6 +5434,7 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '          <a href="https://dataengineerhub.blog" style="display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; border: 1px solid rgba(255,255,255,0.2);">&#8592; Back to Home</a>\n';
   html += '        </div>\n';
   html += '      </div>\n';
+  html += getSiteFooterHTML() + '\n';
   html += '    </div>\n\n';
   html += '    <script type="application/ld+json">\n';
   html += '    {\n';
@@ -6032,11 +6216,17 @@ async function buildIncremental(options = {}) {
       console.log(`   Found ${categories.length} categories from API`);
 
       for (const cat of categories) {
-        const pagePath = `/category/${cat.slug}`;
-        currentPages.add(pagePath);
-
         // Find articles belonging to this category
         const categoryArticles = allArticleSummaries.filter(a => a.categories.includes(cat.id));
+
+        // Skip empty categories — pages with "0 articles" trigger AdSense "low value content" rejection
+        if (categoryArticles.length === 0) {
+          console.log(`   ⏭ Skipping empty category: ${cat.name} (0 articles)`);
+          continue;
+        }
+
+        const pagePath = `/category/${cat.slug}`;
+        currentPages.add(pagePath);
 
         const contentHash = hashContent({ cat, articleCount: categoryArticles.length, articles: categoryArticles.map(a => a.slug) });
         const cachedPage = cache.pages[pagePath];
@@ -6162,11 +6352,17 @@ async function buildIncremental(options = {}) {
       console.log(`   Found ${tags.length} tags from API`);
 
       for (const tag of tags) {
-        const pagePath = `/tag/${tag.slug}`;
-        currentPages.add(pagePath);
-
         // Find articles belonging to this tag
         const tagArticles = allArticleSummaries.filter(a => a.tags.includes(tag.id));
+
+        // Skip empty tags — pages with "0 articles" trigger AdSense "low value content" rejection
+        if (tagArticles.length === 0) {
+          console.log(`   ⏭ Skipping empty tag: ${tag.name} (0 articles)`);
+          continue;
+        }
+
+        const pagePath = `/tag/${tag.slug}`;
+        currentPages.add(pagePath);
 
         const contentHash = hashContent({ tag, articleCount: tagArticles.length, articles: tagArticles.map(a => a.slug) });
         const cachedPage = cache.pages[pagePath];
