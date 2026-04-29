@@ -14,6 +14,16 @@
 const seoOverrides = {
   // === 2026 Articles ===
 
+  'snowflake-zero-copy-cloning-problems-2': {
+    title: 'Snowflake Zero-Copy Cloning: The Hidden Problems',
+    description: 'Zero-copy cloning looks magical until it bites you. Storage creep, policy drift, and Time Travel gotchas nobody warns you about — with fixes.'
+  },
+
+  'claude-code-power-user-guide': {
+    title: 'Claude Code Power User Guide: Stop Autocompleting',
+    description: 'Stop using Claude Code as autocomplete. Patterns for multi-file refactors, long sessions, and review loops that actually ship code faster.'
+  },
+
   'query-snowflake-in-duckdb-cut-costs': {
     title: 'Query Snowflake in DuckDB: Cut Dev Costs 80%',
     description: 'Stop burning Snowflake credits on dev queries. Query Snowflake data locally with DuckDB to slash development costs without changing your stack.'
