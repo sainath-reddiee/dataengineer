@@ -25,22 +25,25 @@ export const AI_SOURCES = {
   perplexity: /(^|\.)perplexity\.ai$/i,
   claude:     /(^|\.)claude\.ai$|(^|\.)claude\.com$/i,
   gemini:     /(^|\.)gemini\.google\.com$|(^|\.)bard\.google\.com$/i,
-  copilot:    /(^|\.)copilot\.microsoft\.com$/i,
+  copilot:    /(^|\.)copilot\.microsoft\.com$|(^|\.)bing\.com$/i, // bing.com refined by path guard
   you:        /(^|\.)you\.com$/i,
   phind:      /(^|\.)phind\.com$/i,
-  ddgchat:    /(^|\.)duckduckgo\.com$/i, // only /chat path; refined below
+  ddgchat:    /(^|\.)duck\.ai$|(^|\.)duckduckgo\.com$/i, // duckduckgo.com refined by path guard
   poe:        /(^|\.)poe\.com$/i,
   kagi:       /(^|\.)kagi\.com$/i,       // only /assistant path; refined below
   meta:       /(^|\.)meta\.ai$/i,
 };
 
 // Additional path guards — some hosts only count as AI when a chat path is used.
-const PATH_GUARDS = {
-  ddgchat: /\/chat/i,
-  kagi:    /\/assistant/i,
-};
+// Keyed by { source, hostRegex } so we only apply the guard to the ambiguous host.
+const PATH_GUARDS = [
+  { source: 'copilot', host: /(^|\.)bing\.com$/i,       path: /\/(chat|copilotsearch)/i },
+  { source: 'ddgchat', host: /(^|\.)duckduckgo\.com$/i, path: /\/chat/i },
+  { source: 'kagi',    host: /(^|\.)kagi\.com$/i,       path: /\/assistant/i },
+];
 
 // utm_source values that unambiguously signal an LLM-driven click.
+// Values are lowercased and matched exactly, so dotted hostnames are omitted.
 const UTM_MAP = {
   chatgpt: 'chatgpt',
   openai: 'chatgpt',
@@ -51,11 +54,13 @@ const UTM_MAP = {
   bard: 'gemini',
   copilot: 'copilot',
   bingchat: 'copilot',
-  'you.com': 'you',
+  you: 'you',
   phind: 'phind',
   poe: 'poe',
   kagi: 'kagi',
-  'meta.ai': 'meta',
+  meta: 'meta',
+  metaai: 'meta',
+  duckai: 'ddgchat',
 };
 
 const todayUtcKey = () => new Date().toISOString().slice(0, 10);
@@ -74,6 +79,21 @@ const emptyStats = () => ({
   firstSeen: null,
   lastSeen: null,
 });
+
+// Merge a possibly-partial stored object with empty defaults so downstream code
+// can safely index bySource / byDay / byPage without null checks.
+const normalizeStats = (raw) => {
+  if (!raw || typeof raw !== 'object') return emptyStats();
+  return {
+    total:     typeof raw.total === 'number' ? raw.total : 0,
+    bySource:  raw.bySource && typeof raw.bySource === 'object' ? raw.bySource : {},
+    byPage:    raw.byPage   && typeof raw.byPage   === 'object' ? raw.byPage   : {},
+    byDay:     raw.byDay    && typeof raw.byDay    === 'object' ? raw.byDay    : {},
+    entries:   Array.isArray(raw.entries) ? raw.entries : [],
+    firstSeen: raw.firstSeen || null,
+    lastSeen:  raw.lastSeen  || null,
+  };
+};
 
 const pruneOldDays = (byDay) => {
   const cutoff = Date.now() - RETAIN_DAYS * 86400000;
@@ -117,8 +137,9 @@ export const detectAiReferrer = () => {
 
   for (const [source, re] of Object.entries(AI_SOURCES)) {
     if (!re.test(host)) continue;
-    const guard = PATH_GUARDS[source];
-    if (guard && !guard.test(path)) continue;
+    // Apply any path guards that target this specific (source, host) pair.
+    const guard = PATH_GUARDS.find(g => g.source === source && g.host.test(host));
+    if (guard && !guard.path.test(path)) continue;
     return { source, host, utm: null };
   }
   return null;
@@ -159,7 +180,7 @@ export const recordReferralIfAny = () => {
 
   // localStorage rolling record — always written (no PII, first-party, no cookies).
   try {
-    const stats = safeParse(window.localStorage.getItem(STORAGE_KEY)) || emptyStats();
+    const stats = normalizeStats(safeParse(window.localStorage.getItem(STORAGE_KEY)));
     stats.total = (stats.total || 0) + 1;
     stats.bySource[hit.source] = (stats.bySource[hit.source] || 0) + 1;
     stats.byPage[page] = (stats.byPage[page] || 0) + 1;
@@ -187,7 +208,7 @@ export const recordReferralIfAny = () => {
 export const getLocalReferralStats = () => {
   if (typeof window === 'undefined') return emptyStats();
   try {
-    return safeParse(window.localStorage.getItem(STORAGE_KEY)) || emptyStats();
+    return normalizeStats(safeParse(window.localStorage.getItem(STORAGE_KEY)));
   } catch {
     return emptyStats();
   }
