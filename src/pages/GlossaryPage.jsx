@@ -114,6 +114,9 @@ export function GlossaryPage() {
     const [derivedData, setDerivedData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    // IMPORTANT: must be declared before any early return so hook order is stable across renders (React error #310).
+    const [openFaqs, setOpenFaqs] = useState({});
+    const toggleFaq = (idx) => setOpenFaqs(prev => ({ ...prev, [idx]: !prev[idx] }));
 
     useEffect(() => {
         const loadData = async () => {
@@ -184,10 +187,6 @@ export function GlossaryPage() {
     }
 
     const { meta, breadcrumbs, canonical, category, relatedTerms } = derivedData;
-
-    // Track which FAQs are expanded (accordion)
-    const [openFaqs, setOpenFaqs] = useState({});
-    const toggleFaq = (idx) => setOpenFaqs(prev => ({ ...prev, [idx]: !prev[idx] }));
 
     // Calculate word count for read time and thin content detection
     const wordCount = term.fullDefinition ? term.fullDefinition.split(/\s+/).length : 0;
