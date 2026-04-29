@@ -112,12 +112,15 @@ export function CtrLabPanel() {
     }, [tick]);
 
     const summary = useMemo(() => {
-        if (!rows.length) return { avg: 0, atRisk: 0, quickWinLift: 0 };
+        if (!rows.length) return { avg: 0, atRisk: 0, avgMissedLift: 0 };
         const avg = Math.round(rows.reduce((a, r) => a + r.score, 0) / rows.length);
         const atRisk = rows.filter(r => r.grade === 'D' || r.grade === 'F').length;
-        const top10 = rows.slice(0, 10);
-        const quickWinLift = Math.round(top10.reduce((a, r) => a + r.missingLiftPct, 0) * 10) / 10;
-        return { avg, atRisk, quickWinLift };
+        // Average missed lift per post — a realistic read of opportunity.
+        // The old "sum across top-10" was misleading (looked like compound CTR).
+        const avgMissedLift = Math.round(
+            (rows.reduce((a, r) => a + (r.missingLiftPct || 0), 0) / rows.length) * 10
+        ) / 10;
+        return { avg, atRisk, avgMissedLift };
     }, [rows]);
 
     const visible = useMemo(() => {
@@ -170,10 +173,10 @@ export function CtrLabPanel() {
                 </div>
                 <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30">
                     <div className="text-xs uppercase tracking-wider text-emerald-300 flex items-center gap-1">
-                        <Zap className="w-3 h-3" /> Top-10 quick-win lift
+                        <Zap className="w-3 h-3" /> Avg missed lift / post
                     </div>
-                    <div className="text-3xl font-bold text-white mt-1">+{summary.quickWinLift}%</div>
-                    <div className="text-xs text-gray-400 mt-1">if every missing factor is fixed</div>
+                    <div className="text-3xl font-bold text-white mt-1">+{summary.avgMissedLift}%</div>
+                    <div className="text-xs text-gray-400 mt-1">mean CTR ceiling left on the table</div>
                 </div>
             </div>
 
@@ -237,12 +240,33 @@ export function CtrLabPanel() {
                                                 {r.missingLiftPct ? `+${r.missingLiftPct}%` : '—'}
                                             </td>
                                             <td className="py-3 pr-3">
-                                                <div className="flex flex-wrap gap-1">
-                                                    {r.quickWins.slice(0, 3).map(q => (
-                                                        <span key={q.key} className="px-1.5 py-0.5 rounded bg-slate-700/50 text-[11px] text-gray-300" title={q.label}>
-                                                            {q.label.split('(')[0].trim().slice(0, 30)}
+                                                <div className="flex flex-wrap gap-1 items-center">
+                                                    {r.quickWins[0] && (
+                                                        <span
+                                                            className="px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 text-[11px]"
+                                                            title={r.quickWins[0].label}
+                                                        >
+                                                            Fix: {r.quickWins[0].label.split('(')[0].trim().slice(0, 32)} ({r.quickWins[0].lift})
                                                         </span>
-                                                    ))}
+                                                    )}
+                                                    {(() => {
+                                                        const titleLen = (r.title || '').length;
+                                                        const ok = titleLen >= 50 && titleLen <= 60;
+                                                        const warn = !ok && titleLen >= 40 && titleLen <= 70;
+                                                        const cls = ok
+                                                            ? 'bg-emerald-500/20 text-emerald-300'
+                                                            : warn
+                                                                ? 'bg-amber-500/20 text-amber-300'
+                                                                : 'bg-slate-700/60 text-gray-300';
+                                                        return (
+                                                            <span
+                                                                className={`px-1.5 py-0.5 rounded text-[11px] ${cls}`}
+                                                                title="Ideal title length is 50-60 chars"
+                                                            >
+                                                                {titleLen} chars
+                                                            </span>
+                                                        );
+                                                    })()}
                                                 </div>
                                             </td>
                                             <td className="py-3 pr-3 text-right space-x-2 whitespace-nowrap">

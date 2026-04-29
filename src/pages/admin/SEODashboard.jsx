@@ -47,8 +47,10 @@ export function SEODashboard() {
                 // Run CTR heuristic scorer over the same batch
                 try {
                     const scored = scoreCtrBatch(posts.posts || []);
-                    const top10 = scored.slice(0, 10);
-                    const lift = Math.round(top10.reduce((a, r) => a + (r.missingLiftPct || 0), 0) * 10) / 10;
+                    // Average missed lift per post (not sum) — realistic opportunity read.
+                    const lift = scored.length
+                        ? Math.round((scored.reduce((a, r) => a + (r.missingLiftPct || 0), 0) / scored.length) * 10) / 10
+                        : 0;
                     const atRisk = scored.filter(r => r.grade === 'D' || r.grade === 'F').length;
                     setCtrQuickWin({ lift, atRisk, loading: false });
                 } catch {
@@ -122,7 +124,7 @@ export function SEODashboard() {
                                 {ctrQuickWin.loading ? '...' : `+${ctrQuickWin.lift}%`}
                             </p>
                             <p className="text-sm text-gray-400">
-                                Quick-win CTR lift
+                                Avg missed CTR lift
                                 {!ctrQuickWin.loading && ctrQuickWin.atRisk > 0 && (
                                     <span className="text-gray-500"> · {ctrQuickWin.atRisk} at risk</span>
                                 )}

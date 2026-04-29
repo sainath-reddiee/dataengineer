@@ -158,11 +158,14 @@ export const scoreCtr = ({ title = '', description = '' } = {}) => {
     const denom = total + lenCeiling;
     const score = Math.max(0, Math.min(100, Math.round((earned / denom) * 100)));
 
+    // Grade bands calibrated against real-world titles: most decent topical
+    // titles (e.g. "Star Schema vs Snowflake Schema") land in the 40-60 range
+    // because they skip listicle/year tricks without being objectively bad.
     const grade =
-        score >= 85 ? 'A' :
-        score >= 70 ? 'B' :
-        score >= 55 ? 'C' :
-        score >= 40 ? 'D' : 'F';
+        score >= 70 ? 'A' :
+        score >= 55 ? 'B' :
+        score >= 40 ? 'C' :
+        score >= 25 ? 'D' : 'F';
 
     const parseLift = (s) => {
         const m = String(s || '').match(/([-+]?)(\d+(\.\d+)?)%/);
