@@ -19,13 +19,10 @@ export const SITE_CONFIG = {
     url: 'https://dataengineerhub.blog/about',
     sameAs: [
       'https://www.linkedin.com/in/sainathreddypogaku/',
-      'https://github.com/sainath-reddiee/dataengineer',
-      'https://twitter.com/sainath29'
+      'https://github.com/sainath-reddiee/dataengineer'
     ]
   },
   social: {
-    twitter: '@sainath29',
-    twitterHandle: 'sainath29',
     linkedin: 'https://www.linkedin.com/in/sainathreddypogaku/',
     github: 'https://github.com/sainath-reddiee/dataengineer'
   },
@@ -95,7 +92,6 @@ export function getOrganizationSchema() {
       height: SITE_CONFIG.logo.height,
     },
     sameAs: [
-      `https://twitter.com/${SITE_CONFIG.social.twitterHandle}`,
       SITE_CONFIG.social.linkedin,
       SITE_CONFIG.social.github,
     ],

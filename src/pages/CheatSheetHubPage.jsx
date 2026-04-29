@@ -129,14 +129,6 @@ export default function CheatSheetHubPage() {
         <meta property="og:site_name" content={SITE_CONFIG.name} />
         <meta property="og:locale" content="en_US" />
 
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
-        <meta name="twitter:image" content={SITE_CONFIG.ogImage.url} />
-        <meta name="twitter:image:alt" content={pageTitle} />
-        <meta name="twitter:site" content={SITE_CONFIG.social.twitter} />
-        <meta name="twitter:creator" content={SITE_CONFIG.social.twitter} />
-
         <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(itemListSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(collectionSchema)}</script>

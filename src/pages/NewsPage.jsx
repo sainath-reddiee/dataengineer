@@ -18,6 +18,10 @@ const NewsPage = () => {
 
   const breadcrumbs = generateBreadcrumbs('/news', 'News & Trends');
 
+  // Noindex the page if we've confirmed there are no posts to render — avoids
+  // serving a thin "No news yet" shell to crawlers (AdSense low-content signal).
+  const isEmpty = !loading && !error && posts.length === 0;
+
   return (
     <>
       <MetaTags
@@ -26,6 +30,7 @@ const NewsPage = () => {
         keywords="data engineering news, data engineering trends, snowflake news, cloud data news, data platform updates, tech trends"
         type="website"
         breadcrumbs={breadcrumbs}
+        noindex={isEmpty}
       />
 
       <div className="pt-1 pb-8">
@@ -75,6 +80,28 @@ const NewsPage = () => {
             <p className="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
               The latest updates, product launches, and industry trends shaping the data engineering landscape.
             </p>
+            <div className="text-sm text-gray-400 max-w-3xl mx-auto leading-relaxed mt-4 text-left md:text-center space-y-2">
+              <p>
+                This page tracks announcements that actually change how data engineers work —
+                Snowflake release notes and new Cortex features, Databricks and Unity Catalog
+                updates, BigQuery pricing or engine changes, dbt and Airflow major releases,
+                Apache Iceberg and lakehouse format news, and the AWS / Azure / GCP services
+                that most impact production pipelines.
+              </p>
+              <p>
+                For step-by-step tutorials and deep dives, browse all{' '}
+                <Link to="/articles" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">articles</Link>
+                {' '}or jump to a category like{' '}
+                <Link to="/category/snowflake" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">Snowflake</Link>,{' '}
+                <Link to="/category/databricks" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">Databricks</Link>,{' '}
+                <Link to="/category/dbt" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">dbt</Link>, or{' '}
+                <Link to="/category/airflow" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">Airflow</Link>.
+                For reference material, see the{' '}
+                <Link to="/cheatsheets" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">cheat sheets</Link>
+                {' '}and{' '}
+                <Link to="/glossary" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">glossary</Link>.
+              </p>
+            </div>
             {totalPosts > 0 && (
               <div className="flex items-center justify-center mt-4">
                 <div className="flex items-center space-x-2 text-sm text-gray-400 bg-gray-800/30 px-4 py-2 rounded-full">

@@ -1,6 +1,6 @@
 // src/components/practice/ShareScoreCard.jsx
 import React, { useState } from 'react';
-import { Linkedin, Twitter, Link as LinkIcon, Check } from 'lucide-react';
+import { Linkedin, Link as LinkIcon, Check } from 'lucide-react';
 
 const SITE = 'https://dataengineerhub.blog';
 
@@ -11,7 +11,6 @@ const ShareScoreCard = ({ quizSlug, quizTitle, score, correct, total }) => {
   const message = `I scored ${score}% on the ${quizTitle} practice test at Data Engineer Hub! 🎯`;
 
   const linkedin = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`;
-  const twitter = `https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(message)}`;
 
   const copy = async () => {
     try {
@@ -50,15 +49,6 @@ const ShareScoreCard = ({ quizSlug, quizTitle, score, correct, total }) => {
         >
           <Linkedin className="w-4 h-4" />
           Share on LinkedIn
-        </a>
-        <a
-          href={twitter}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium transition-colors"
-        >
-          <Twitter className="w-4 h-4" />
-          Share on X
         </a>
         <button
           type="button"

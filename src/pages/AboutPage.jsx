@@ -3,7 +3,7 @@ import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
   Users, Target, Code, Database, Cloud, Briefcase, Award, BookOpen,
-  Sparkles, Zap, ArrowRight, Linkedin, Github, Twitter, Mail,
+  Sparkles, Zap, ArrowRight, Linkedin, Github, Mail,
   Cpu, Layers, Settings, ShieldCheck, BarChart3, Workflow, Gauge, Lightbulb,
 } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
@@ -44,7 +44,6 @@ const SKILLS = [
 const SOCIAL_LINKS = [
   { icon: Linkedin, label: 'LinkedIn', href: SITE_CONFIG.social.linkedin },
   { icon: Github,   label: 'GitHub',   href: SITE_CONFIG.social.github },
-  { icon: Twitter,  label: 'Twitter',  href: `https://twitter.com/${SITE_CONFIG.social.twitterHandle}` },
   { icon: Mail,     label: 'Email',    href: 'mailto:sainath@dataengineerhub.blog' },
 ];
 

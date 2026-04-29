@@ -1,7 +1,7 @@
 // src/utils/serpFeatureAudit.js
 // Per-article audit of SERP-feature eligibility. Parses rendered HTML for:
 //   - JSON-LD schema types (Article, FAQPage, HowTo, VideoObject, Review, BreadcrumbList)
-//   - og:image, twitter:image
+//   - og:image
 //   - Valid published/modified datetimes (ISO-8601 with timezone)
 //
 // Used by SerpCoveragePanel to build a gap matrix across the full catalog.
@@ -58,8 +58,7 @@ export const auditHtml = (html) => {
     const schemas = parseSchemas(doc);
 
     const ogImage      = !!doc.querySelector('meta[property="og:image"]')?.getAttribute('content');
-    const twImage      = !!doc.querySelector('meta[name="twitter:image"]')?.getAttribute('content');
-    const image        = ogImage || twImage;
+    const image        = ogImage;
     const article      = schemas.has('Article') || schemas.has('BlogPosting');
     const faq          = schemas.has('FAQPage');
     const howto        = schemas.has('HowTo');

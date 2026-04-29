@@ -263,14 +263,6 @@ export function GlossaryPage() {
                 <meta property="og:locale" content="en_US" />
 
                 {/* Twitter */}
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content={meta.title} />
-                <meta name="twitter:description" content={meta.description} />
-                <meta name="twitter:image" content={ogImage} />
-                <meta name="twitter:image:alt" content={`What is ${term.term}?`} />
-                <meta name="twitter:site" content={SITE_CONFIG.social.twitter} />
-                <meta name="twitter:creator" content={SITE_CONFIG.social.twitter} />
-
                 {/* Structured data */}
                 {breadcrumbSchema && <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>}
                 {faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}

@@ -9,6 +9,7 @@ import RecentPosts from '@/components/RecentPosts';
 import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import { generateBreadcrumbs } from '@/lib/seoConfig';
+import { getFAQSchema } from '@/lib/seoConfig';
 
 // Lazy load AdPlacement
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
@@ -300,6 +301,12 @@ const CategoryPage = () => {
   // Generate breadcrumbs
   const breadcrumbs = generateBreadcrumbs(`/category/${categoryName}`, `${currentCategory.name} Tutorials`);
 
+  // FAQPage JSON-LD — emitted when the category has authored FAQs
+  // so Google can surface FAQ rich results on the category SERP.
+  const faqSchema = Array.isArray(currentCategory.faqs) && currentCategory.faqs.length > 0
+    ? getFAQSchema(currentCategory.faqs)
+    : null;
+
   return (
     <>
       <MetaTags
@@ -308,6 +315,7 @@ const CategoryPage = () => {
         keywords={`${lowerCategoryName}, data engineering, ${currentCategory.name} tutorials`}
         type="website"
         breadcrumbs={breadcrumbs}
+        faqSchema={faqSchema}
         noindex={!isKnownCategory}
       />
 

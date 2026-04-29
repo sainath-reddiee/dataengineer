@@ -62,7 +62,7 @@ export class SEOScanner {
     this.checkImageOptimization();
     this.checkSchemaMarkup();
     this.checkOpenGraphTags();
-    this.checkTwitterCards();
+    // Twitter Cards removed from site-wide SEO — no longer audited
     this.checkCanonicalUrl();
     this.checkRobotsMeta();
     this.checkViewport();
@@ -943,40 +943,7 @@ export class SEOScanner {
     }
   }
 
-  checkTwitterCards() {
-    const card = this.doc.querySelector('meta[name="twitter:card"]')?.content;
-    const title = this.doc.querySelector('meta[name="twitter:title"]')?.content;
-
-    if (!card) {
-      this.addCheck(
-        'Twitter Cards',
-        CATEGORIES.SOCIAL,
-        SEVERITY.INFO,
-        'No Twitter Card tags found',
-        'Add Twitter Card meta tags for better X/Twitter sharing'
-      );
-      return;
-    }
-
-    if (card && title) {
-      this.addCheck(
-        'Twitter Cards',
-        CATEGORIES.SOCIAL,
-        SEVERITY.GOOD,
-        `Twitter Card configured (${card})`,
-        null,
-        { card, title }
-      );
-    } else {
-      this.addCheck(
-        'Twitter Cards',
-        CATEGORIES.SOCIAL,
-        SEVERITY.WARNING,
-        'Incomplete Twitter Card setup',
-        'Add twitter:card, twitter:title, and twitter:description'
-      );
-    }
-  }
+  // checkTwitterCards() removed: site no longer emits twitter:* meta tags.
 
   // ============================================================================
   // CONTENT CHECKS

@@ -12,6 +12,7 @@ import PostListItem from '@/components/PostListItem';
 import PostListItemSkeleton from '@/components/PostListItemSkeleton';
 import FeaturedPosts from '@/components/FeaturedPosts';
 import MetaTags from '@/components/SEO/MetaTags';
+import { generateBreadcrumbs, SITE_CONFIG } from '@/lib/seoConfig';
 import { debounce } from '@/utils/performance';
 import { trackSearch } from '@/utils/analytics';
 
@@ -128,6 +129,27 @@ const AllArticlesPage = () => {
   title="All Articles - DataEngineer Hub"
   description="Browse all articles and tutorials on DataEngineer Hub. Find content on data engineering, Snowflake, AWS, Azure, Databricks, Salesforce, SQL, Python, Airflow, dbt, and analytics."
   keywords="data engineering articles, tutorials, blog posts, Snowflake, AWS, Azure, Databricks, Salesforce, SQL, Python, lakehouse, delta lake, data cloud"
+  breadcrumbs={generateBreadcrumbs('/articles', 'All Articles')}
+  collectionPageSchema={{
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'All Articles - DataEngineer Hub',
+    description:
+      'Browse all articles and tutorials on DataEngineer Hub covering data engineering, Snowflake, AWS, Azure, Databricks, Salesforce, SQL, Python, Airflow, dbt, and analytics.',
+    url: `${SITE_CONFIG.url}/articles`,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: SITE_CONFIG.name,
+      url: SITE_CONFIG.url,
+    },
+  }}
+  noindex={
+    // Avoid serving a thin shell to crawlers when:
+    //   - a ?search= query returns zero results, or
+    //   - the user is deep-paginated past available content
+    (!loading && !error && posts.length === 0 && !!activeSearch) ||
+    (currentPage > 1 && !loading && !error && posts.length === 0)
+  }
 />
       <div className="pt-1 pb-6">
         <div className="container mx-auto px-6">

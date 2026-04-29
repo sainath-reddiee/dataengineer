@@ -108,14 +108,6 @@ export function GlossaryHubPage() {
                 <meta property="og:locale" content="en_US" />
 
                 {/* Twitter */}
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content={meta.title} />
-                <meta name="twitter:description" content={meta.description} />
-                <meta name="twitter:image" content={SITE_CONFIG.ogImage.url} />
-                <meta name="twitter:image:alt" content={meta.title} />
-                <meta name="twitter:site" content={SITE_CONFIG.social.twitter} />
-                <meta name="twitter:creator" content={SITE_CONFIG.social.twitter} />
-
                 <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
             </Helmet>
 

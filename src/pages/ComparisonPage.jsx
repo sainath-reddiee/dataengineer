@@ -161,14 +161,6 @@ const ComparisonPage = () => {
                 <meta property="og:image:alt" content={`${comparison.toolA} vs ${comparison.toolB}`} />
                 <meta property="og:site_name" content={SITE_CONFIG.name} />
                 <meta property="og:locale" content="en_US" />
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content={meta.title} />
-                <meta name="twitter:description" content={meta.description} />
-                <meta name="twitter:image" content={ogImage} />
-                <meta name="twitter:image:alt" content={`${comparison.toolA} vs ${comparison.toolB}`} />
-                <meta name="twitter:site" content={SITE_CONFIG.social.twitter} />
-                <meta name="twitter:creator" content={SITE_CONFIG.social.twitter} />
-
                 <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
                 {faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}
             </Helmet>

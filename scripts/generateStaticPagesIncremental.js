@@ -2354,16 +2354,6 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
     <meta property="article:modified_time" content="${effectiveModified}" />
     <meta property="article:author" content="https://dataengineerhub.blog/about" />
 ${categoryNames.length > 0 ? `    <meta property="article:section" content="${escapeHtml(categoryNames[0])}" />\n` : ''}${tagNames.slice(0, 6).map(t => `    <meta property="article:tag" content="${escapeHtml(t)}" />`).join('\n')}
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@sainath29" />
-    <meta name="twitter:creator" content="@sainath29" />
-    <meta name="twitter:title" content="${title}" />
-    <meta name="twitter:description" content="${description}" />
-    <meta name="twitter:image" content="${ogImageUrl}" />
-    <meta name="twitter:image:alt" content="${title}" />
-
     <!-- Build: ${buildTimestamp} | Hash: ${buildHash} -->
 
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
@@ -2900,9 +2890,7 @@ ${CONSENT_MODE_V2_HTML}
         "name": "Sainath Reddy",
         "url": "https://dataengineerhub.blog/about",
         "jobTitle": "Data Engineer",
-        "sameAs": [
-          "https://twitter.com/sainath29",
-          "https://www.linkedin.com/in/sainathreddypogaku/",
+        "sameAs": [          "https://www.linkedin.com/in/sainathreddypogaku/",
           "https://github.com/sainath-reddiee/dataengineer"
         ]
       },
@@ -2974,9 +2962,7 @@ ${CONSENT_MODE_V2_HTML}
         "width": 250,
         "height": 250
       },
-      "sameAs": [
-        "https://twitter.com/sainath29",
-        "https://www.linkedin.com/in/sainathreddypogaku/",
+      "sameAs": [        "https://www.linkedin.com/in/sainathreddypogaku/",
         "https://github.com/sainath-reddiee/dataengineer"
       ]
     }
@@ -2996,9 +2982,7 @@ ${CONSENT_MODE_V2_HTML}
         "name": "Anblicks"
       },
       "sameAs": [
-        "https://www.linkedin.com/in/sainathreddypogaku/",
-        "https://twitter.com/sainath29",
-        "https://github.com/sainath-reddiee/dataengineer"
+        "https://www.linkedin.com/in/sainathreddypogaku/",        "https://github.com/sainath-reddiee/dataengineer"
       ],
       "knowsAbout": ["Data Engineering", "Snowflake", "AWS", "Azure", "Databricks", "Apache Airflow", "dbt", "ETL/ELT Pipelines", "Data Warehousing", "Cloud Architecture"],
       "description": "Data Engineer with 4+ years of experience specializing in building scalable data pipelines and cloud-native data solutions."
@@ -3201,15 +3185,6 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="en_US" />
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@sainath29" />
-    <meta name="twitter:creator" content="@sainath29" />
-    <meta name="twitter:title" content="All Data Engineering Articles | DataEngineer Hub" />
-    <meta name="twitter:description" content="Browse ${allArticleSummaries.length} in-depth tutorials covering Snowflake, Spark, dbt, Airflow, Python, and modern data engineering." />
-    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />
-    <meta name="twitter:image:alt" content="All Data Engineering Articles | DataEngineer Hub" />
-
     <!-- Build: ${buildTimestamp} -->
 
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
@@ -3403,16 +3378,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';
-  html += '    <!-- Twitter Card -->\n';
-  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
-  html += '    <meta name="twitter:site" content="@sainath29" />\n';
-  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
-  html += '    <meta name="twitter:title" content="' + safeName + ' Articles | DataEngineer Hub" />\n';
-  html += '    <meta name="twitter:description" content="Browse ' + categoryArticles.length + ' ' + safeName + ' tutorials and guides for data engineers." />\n';
-  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
-  html += '    <meta name="twitter:image:alt" content="' + safeName + ' Articles | DataEngineer Hub" />\n\n';
-  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -3696,16 +3662,7 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-glossary.png" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';
-  html += '    <!-- Twitter Card -->\n';
-  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
-  html += '    <meta name="twitter:site" content="@sainath29" />\n';
-  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
-  html += '    <meta name="twitter:title" content="Data Engineering Glossary | ' + totalTerms + ' Key Terms Explained" />\n';
-  html += '    <meta name="twitter:description" content="Comprehensive glossary covering ' + totalTerms + ' essential data engineering terms across ' + categoryKeys.length + ' categories." />\n';
-  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-glossary.png" />\n';
-  html += '    <meta name="twitter:image:alt" content="Data Engineering Glossary | DataEngineer Hub" />\n';
-  html += '\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';  html += '\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n';
   html += '\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
@@ -3976,10 +3933,13 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   var fullDefHTML = markdownToHTML(term.fullDefinition || '');
 
   // Determine if content is thin (< 250 words) — noindex thin pages
+  // AdSense-approval hardening: force noindex on all glossary term pages (pSEO)
   var defWordCount = (term.fullDefinition || '').split(/\s+/).length;
-  var robotsDirective = defWordCount < 250
-    ? 'noindex, follow'
-    : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+  var robotsDirective = 'noindex, follow';
+  // Original gate (kept for easy revert):
+  // var robotsDirective = defWordCount < 250
+  //   ? 'noindex, follow'
+  //   : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
 
   // Category display name
   var categoryDisplay = (term.category || '').replace(/-/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
@@ -4003,16 +3963,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-glossary.png" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';
-  html += '    <!-- Twitter Card -->\n';
-  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
-  html += '    <meta name="twitter:site" content="@sainath29" />\n';
-  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
-  html += '    <meta name="twitter:title" content="What is ' + escapeHtml(term.term) + '? | Data Engineering Glossary" />\n';
-  html += '    <meta name="twitter:description" content="' + escapeHtml(descriptionMeta) + '" />\n';
-  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-glossary.png" />\n';
-  html += '    <meta name="twitter:image:alt" content="What is ' + escapeHtml(term.term) + '? | Data Engineering Glossary" />\n\n';
-  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -4308,16 +4259,7 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-comparison.png" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';
-  html += '    <!-- Twitter Card -->\n';
-  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
-  html += '    <meta name="twitter:site" content="@sainath29" />\n';
-  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
-  html += '    <meta name="twitter:title" content="Data Engineering Tool Comparisons | ' + totalComparisons + ' Head-to-Head Guides" />\n';
-  html += '    <meta name="twitter:description" content="Side-by-side comparisons of ' + totalComparisons + ' data engineering tools across ' + categoryKeys.length + ' categories." />\n';
-  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-comparison.png" />\n';
-  html += '    <meta name="twitter:image:alt" content="Data Engineering Tool Comparisons | DataEngineer Hub" />\n';
-  html += '\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';  html += '\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n';
   html += '\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
@@ -4638,7 +4580,8 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <title>' + escapeHtml(comparison.toolA) + ' vs ' + escapeHtml(comparison.toolB) + ' | Data Engineering Tools Comparison | DataEngineer Hub</title>\n';
   html += '    <meta name="description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n\n';
+  // AdSense-approval hardening: force noindex on comparison detail pages (pSEO)
+  html += '    <meta name="robots" content="noindex, follow" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="article" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
@@ -4648,16 +4591,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-comparison.png" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';
-  html += '    <!-- Twitter Card -->\n';
-  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
-  html += '    <meta name="twitter:site" content="@sainath29" />\n';
-  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
-  html += '    <meta name="twitter:title" content="' + escapeHtml(comparison.toolA) + ' vs ' + escapeHtml(comparison.toolB) + ' Comparison" />\n';
-  html += '    <meta name="twitter:description" content="' + escapeHtml(descriptionMeta) + '" />\n';
-  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-comparison.png" />\n';
-  html += '    <meta name="twitter:image:alt" content="' + escapeHtml(comparison.toolA) + ' vs ' + escapeHtml(comparison.toolB) + ' Comparison" />\n\n';
-  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -4902,15 +4836,7 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';
-  html += '    <!-- Twitter Card -->\n';
-  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
-  html += '    <meta name="twitter:site" content="@sainath29" />\n';
-  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
-  html += '    <meta name="twitter:title" content="Data Engineering Cheat Sheets | ' + totalSheets + ' Quick References" />\n';
-  html += '    <meta name="twitter:description" content="' + totalSheets + ' cheat sheets across ' + categoryKeys.length + ' categories for data engineers." />\n';
-  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />\n\n';
-  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -5077,9 +5003,12 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
     }
   }
 
-  var robotsDirective = totalWords < 250
-    ? 'noindex, follow'
-    : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+  // AdSense-approval hardening: force noindex on all cheatsheet pages (pSEO)
+  var robotsDirective = 'noindex, follow';
+  // Original gate (kept for easy revert):
+  // var robotsDirective = totalWords < 250
+  //   ? 'noindex, follow'
+  //   : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
 
   var descMeta = escapeHtml(sheet.shortDescription || ('Comprehensive ' + sheet.title + ' for data engineers.'));
 
@@ -5187,15 +5116,7 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';
-  html += '    <!-- Twitter Card -->\n';
-  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
-  html += '    <meta name="twitter:site" content="@sainath29" />\n';
-  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
-  html += '    <meta name="twitter:title" content="' + escapeHtml(sheet.title) + '" />\n';
-  html += '    <meta name="twitter:description" content="' + descMeta + '" />\n';
-  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />\n\n';
-  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -5370,16 +5291,7 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';
-  html += '    <!-- Twitter Card -->\n';
-  html += '    <meta name="twitter:card" content="summary_large_image" />\n';
-  html += '    <meta name="twitter:site" content="@sainath29" />\n';
-  html += '    <meta name="twitter:creator" content="@sainath29" />\n';
-  html += '    <meta name="twitter:title" content="' + escapeHtml(tag.name) + ' Articles | DataEngineer Hub" />\n';
-  html += '    <meta name="twitter:description" content="Browse ' + tagArticles.length + ' ' + escapeHtml(tag.name) + ' tutorials and guides for data engineers." />\n';
-  html += '    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
-  html += '    <meta name="twitter:image:alt" content="' + escapeHtml(tag.name) + ' Articles | DataEngineer Hub" />\n\n';
-  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -5522,15 +5434,6 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="en_US" />
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@sainath29" />
-    <meta name="twitter:creator" content="@sainath29" />
-    <meta name="twitter:title" content="${title}" />
-    <meta name="twitter:description" content="${description}" />
-    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />
-    <meta name="twitter:image:alt" content="${title}" />
-
     <!-- Build: ${buildTimestamp} -->
 
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
@@ -5843,9 +5746,7 @@ ${CONSENT_MODE_V2_HTML}
         "width": 250,
         "height": 250
       },
-      "sameAs": [
-        "https://twitter.com/sainath29",
-        "https://www.linkedin.com/in/sainathreddypogaku/",
+      "sameAs": [        "https://www.linkedin.com/in/sainathreddypogaku/",
         "https://github.com/sainath-reddiee/dataengineer"
       ]
     }
@@ -5909,9 +5810,7 @@ ${CONSENT_MODE_V2_HTML}
         "name": "Anblicks"
       },
       "sameAs": [
-        "https://www.linkedin.com/in/sainathreddypogaku/",
-        "https://twitter.com/sainath29",
-        "https://github.com/sainath-reddiee/dataengineer"
+        "https://www.linkedin.com/in/sainathreddypogaku/",        "https://github.com/sainath-reddiee/dataengineer"
       ],
       "knowsAbout": ["Data Engineering", "Snowflake", "AWS", "Azure", "Databricks", "Apache Airflow", "dbt", "ETL/ELT Pipelines", "Data Warehousing", "Cloud Architecture"],
       "description": "Data Engineer with 4+ years of experience specializing in building scalable data pipelines and cloud-native data solutions."

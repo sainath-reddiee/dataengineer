@@ -57,16 +57,7 @@ export const runSEOHealthCheck = () => {
     results.score += 3;
   }
 
-  // 5. Check Twitter Cards
-  const twitterCard = document.querySelector('meta[name="twitter:card"]')?.content;
-  const twitterTitle = document.querySelector('meta[name="twitter:title"]')?.content;
-  
-  if (twitterCard && twitterTitle) {
-    results.passed.push('✅ Twitter Card tags present');
-    results.score += 5;
-  } else {
-    results.warnings.push('⚠️ Twitter Card tags missing or incomplete');
-  }
+  // 5. Twitter Cards removed from site-wide SEO — no longer audited
 
   // 6. Check Structured Data
   const structuredData = document.querySelectorAll('script[type="application/ld+json"]');

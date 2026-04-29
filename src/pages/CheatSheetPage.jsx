@@ -388,14 +388,6 @@ export default function CheatSheetPage() {
         <meta property="og:site_name" content={SITE_CONFIG.name} />
         <meta property="og:locale" content="en_US" />
 
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={sheet.title} />
-        <meta name="twitter:description" content={sheet.shortDescription} />
-        <meta name="twitter:image" content={SITE_CONFIG.ogImage.url} />
-        <meta name="twitter:image:alt" content={sheet.title} />
-        <meta name="twitter:site" content={SITE_CONFIG.social.twitter} />
-        <meta name="twitter:creator" content={SITE_CONFIG.social.twitter} />
-
         <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
         {faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}

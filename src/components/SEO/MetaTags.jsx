@@ -32,6 +32,7 @@ const MetaTags = ({
   faqSchema = null,
   howToSchema = null,
   videoSchema = null,
+  collectionPageSchema = null,
   readTime, // NEW: for meta description optimization
   optimizeDescription = true, // NEW: enable/disable optimization
 }) => {
@@ -133,16 +134,6 @@ const MetaTags = ({
       <meta property="og:site_name" content={SITE_CONFIG.name} />
       <meta property="og:locale" content="en_US" />
 
-      {/* Twitter Card */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:url" content={currentUrl} />
-      <meta name="twitter:title" content={title || SITE_CONFIG.name} />
-      <meta name="twitter:description" content={fullDescription} />
-      <meta name="twitter:image" content={fullImage} />
-      <meta name="twitter:image:alt" content={title || SITE_CONFIG.name} />
-      <meta name="twitter:site" content={SITE_CONFIG.social.twitter} />
-      <meta name="twitter:creator" content={SITE_CONFIG.social.twitter} />
-
       {/* Article-specific meta tags */}
       {type === 'article' && formattedPublishedTime && (
         <>
@@ -208,6 +199,13 @@ const MetaTags = ({
       {videoSchema && (
         <script type="application/ld+json">
           {JSON.stringify(videoSchema)}
+        </script>
+      )}
+
+      {/* Structured Data - CollectionPage (archive / listing pages) */}
+      {collectionPageSchema && (
+        <script type="application/ld+json">
+          {JSON.stringify(collectionPageSchema)}
         </script>
       )}
     </Helmet>

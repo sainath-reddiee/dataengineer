@@ -106,9 +106,41 @@ const ContactPage = () => {
             <h1 className="text-5xl md:text-7xl font-black mb-8 leading-tight">
               Get In <span className="gradient-text">Touch</span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed">
+            <p className="text-xl md:text-2xl text-gray-300 mb-6 leading-relaxed">
               Have a question, suggestion, or just want to say hi? We'd love to hear from you.
             </p>
+            <div className="text-left md:text-center text-gray-400 text-base leading-relaxed max-w-3xl mx-auto space-y-3">
+              <p>
+                DataEngineer Hub is a solo-maintained site focused on practical, working
+                content for data engineers. Most messages come from one of four places:
+                <strong className="text-gray-300"> content feedback</strong> (errors, typos,
+                outdated pricing or syntax in articles, cheat sheets, or tools),{' '}
+                <strong className="text-gray-300">tool bugs</strong> (calculator gives an
+                unexpected result, playground crashes, formatter strips a keyword),{' '}
+                <strong className="text-gray-300">guest-writing pitches</strong>, and{' '}
+                <strong className="text-gray-300">sponsorship / partnership inquiries</strong>.
+                All four are welcome — we reply personally to every real message,
+                usually within 2 business days from India Standard Time.
+              </p>
+              <p>
+                To help us respond faster, please include: the{' '}
+                <strong className="text-gray-300">exact URL</strong> of the article or tool,
+                what you <strong className="text-gray-300">expected</strong> vs what you{' '}
+                <strong className="text-gray-300">saw</strong>, and (for tool bugs) the inputs
+                you used. Screenshots are great. For pitches, a one-paragraph outline plus
+                two links to prior published work is enough to get a fast yes/no.
+              </p>
+              <p>
+                Before writing, check whether your question is already answered in the{' '}
+                <a href="/articles" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">articles library</a>,{' '}
+                <a href="/cheatsheets" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">cheat sheets</a>,{' '}
+                <a href="/glossary" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">glossary</a>, or{' '}
+                <a href="/tools" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">free tools</a>.
+                If you want weekly updates rather than a reply, subscribe to the{' '}
+                <a href="/newsletter" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">newsletter</a>{' '}
+                instead.
+              </p>
+            </div>
           </motion.div>
 
           <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 mt-16">
