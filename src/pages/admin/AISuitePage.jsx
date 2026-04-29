@@ -13,6 +13,8 @@ import { SEOScoreCard } from '@/components/admin/SEOScoreCard';
 import { IssuesList } from '@/components/admin/IssuesList';
 import { ExportButton } from '@/components/admin/ExportButton';
 import { AICitationsPanel } from '@/components/admin/AICitationsPanel';
+import { SerpCoveragePanel } from '@/components/admin/SerpCoveragePanel';
+import { EngagementPanel } from '@/components/admin/EngagementPanel';
 
 const tabs = [
     { id: 'pseo', label: 'PSEO', icon: Bot, desc: 'Programmatic SEO', color: 'purple' },
@@ -123,6 +125,12 @@ export function AISuitePage() {
 
             {/* LLM referral tracker — persistent, independent of the URL analyzer below */}
             <AICitationsPanel />
+
+            {/* Engagement funnel — click-inside and scroll depth per source */}
+            <EngagementPanel />
+
+            {/* SERP feature coverage — rich-result gaps across all articles */}
+            <SerpCoveragePanel />
 
             {/* URL Input */}
             <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6">

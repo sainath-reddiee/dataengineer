@@ -9,11 +9,13 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
     Search, Layers, GitCompare, Code2, Eye, Sparkles,
-    TrendingUp, AlertCircle, CheckCircle, Clock, ArrowRight, Bot
+    TrendingUp, AlertCircle, CheckCircle, Clock, ArrowRight, Bot, Zap, Activity
 } from 'lucide-react';
 import { SEOScoreCard } from '@/components/admin/SEOScoreCard';
 import wordpressApi from '@/services/wordpressApi';
 import { getLastNDays, getLocalReferralStats } from '@/utils/aiReferralTracker';
+import { scoreCtrBatch } from '@/utils/ctrScorer';
+import { getEngagementStats } from '@/utils/engagementTracker';
 
 const quickActions = [
     { path: '/admin/scanner', icon: Search, label: 'Scan URL', desc: 'Analyze any page', color: 'blue' },
@@ -22,25 +24,40 @@ const quickActions = [
     { path: '/admin/schema', icon: Code2, label: 'Schema', desc: 'Generate markup', color: 'orange' },
     { path: '/admin/serp', icon: Eye, label: 'SERP Preview', desc: 'Search preview', color: 'pink' },
     { path: '/admin/ai-suite', icon: Sparkles, label: 'AI Suite', desc: 'PSEO/AEO/GEO', color: 'cyan' },
+    { path: '/admin/ctr-lab', icon: Zap, label: 'CTR Lab', desc: 'Title & meta scorer', color: 'yellow' },
 ];
 
 export function SEODashboard() {
     const [stats, setStats] = useState({ articles: 0, loading: true });
     const [recentArticles, setRecentArticles] = useState([]);
     const [aiReferrals, setAiReferrals] = useState({ last30: 0, total: 0 });
+    const [ctrQuickWin, setCtrQuickWin] = useState({ lift: 0, atRisk: 0, loading: true });
+    const [engagement, setEngagement] = useState({ landings: 0, clickRate: 0 });
 
     useEffect(() => {
         async function loadStats() {
             try {
-                const posts = await wordpressApi.getAllPosts(1, 5);
-                setRecentArticles(posts.posts || []);
+                const posts = await wordpressApi.getAllPosts(1, 100);
+                setRecentArticles((posts.posts || []).slice(0, 5));
                 setStats({
                     articles: posts.totalPosts || posts.posts?.length || 0,
                     loading: false
                 });
+
+                // Run CTR heuristic scorer over the same batch
+                try {
+                    const scored = scoreCtrBatch(posts.posts || []);
+                    const top10 = scored.slice(0, 10);
+                    const lift = Math.round(top10.reduce((a, r) => a + (r.missingLiftPct || 0), 0) * 10) / 10;
+                    const atRisk = scored.filter(r => r.grade === 'D' || r.grade === 'F').length;
+                    setCtrQuickWin({ lift, atRisk, loading: false });
+                } catch {
+                    setCtrQuickWin({ lift: 0, atRisk: 0, loading: false });
+                }
             } catch (err) {
                 console.error('Failed to load stats:', err);
                 setStats({ articles: 0, loading: false });
+                setCtrQuickWin({ lift: 0, atRisk: 0, loading: false });
             }
         }
         loadStats();
@@ -50,6 +67,15 @@ export function SEODashboard() {
             const full = getLocalReferralStats();
             const last30 = getLastNDays(30).reduce((acc, d) => acc + d.count, 0);
             setAiReferrals({ last30, total: full.total || 0 });
+        } catch { /* ignore */ }
+
+        // Engagement summary (local device)
+        try {
+            const e = getEngagementStats();
+            const totals = e.totals || {};
+            const landings = totals.landings || 0;
+            const clickRate = landings > 0 ? Math.round((totals.secondClicks / landings) * 100) : 0;
+            setEngagement({ landings, clickRate });
         } catch { /* ignore */ }
     }, []);
 
@@ -87,15 +113,22 @@ export function SEODashboard() {
                     transition={{ delay: 0.1 }}
                     className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6"
                 >
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 rounded-xl bg-green-500/20">
-                            <TrendingUp className="w-6 h-6 text-green-400" />
+                    <Link to="/admin/ctr-lab" className="flex items-center gap-3 group">
+                        <div className="p-3 rounded-xl bg-yellow-500/20 group-hover:bg-yellow-500/30 transition-colors">
+                            <Zap className="w-6 h-6 text-yellow-400" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-white">30+</p>
-                            <p className="text-sm text-gray-400">SEO Checks</p>
+                            <p className="text-2xl font-bold text-white">
+                                {ctrQuickWin.loading ? '...' : `+${ctrQuickWin.lift}%`}
+                            </p>
+                            <p className="text-sm text-gray-400">
+                                Quick-win CTR lift
+                                {!ctrQuickWin.loading && ctrQuickWin.atRisk > 0 && (
+                                    <span className="text-gray-500"> · {ctrQuickWin.atRisk} at risk</span>
+                                )}
+                            </p>
                         </div>
-                    </div>
+                    </Link>
                 </motion.div>
 
                 <motion.div
@@ -126,15 +159,20 @@ export function SEODashboard() {
                     transition={{ delay: 0.3 }}
                     className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6"
                 >
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 rounded-xl bg-orange-500/20">
-                            <Clock className="w-6 h-6 text-orange-400" />
+                    <Link to="/admin/ai-suite" className="flex items-center gap-3 group">
+                        <div className="p-3 rounded-xl bg-emerald-500/20 group-hover:bg-emerald-500/30 transition-colors">
+                            <Activity className="w-6 h-6 text-emerald-400" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-white">~5s</p>
-                            <p className="text-sm text-gray-400">Scan Time</p>
+                            <p className="text-2xl font-bold text-white">{engagement.clickRate}%</p>
+                            <p className="text-sm text-gray-400">
+                                Click-inside
+                                {engagement.landings > 0 && (
+                                    <span className="text-gray-500"> · {engagement.landings} landings</span>
+                                )}
+                            </p>
                         </div>
-                    </div>
+                    </Link>
                 </motion.div>
             </div>
 

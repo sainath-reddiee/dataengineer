@@ -7,6 +7,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import MobileOptimization from '@/components/MobileOptimization';
 import { trackPageView, trackEvent } from '@/utils/analytics';
 import { recordReferralIfAny } from '@/utils/aiReferralTracker';
+import { recordEngagementRoute, bootstrapEngagementListeners } from '@/utils/engagementTracker';
 import { useApiDebugger } from '@/hooks/useApiDebugger';
 import CookieConsent from '@/components/CookieConsent';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
@@ -76,6 +77,7 @@ const SerpPreviewPage = lazy(() => import('./pages/admin/SerpPreviewPage'));
 const AISuitePage = lazy(() => import('./pages/admin/AISuitePage'));
 const ChecklistPage = lazy(() => import('./pages/admin/ChecklistPage'));
 const ContentOptimizerPage = lazy(() => import('./pages/admin/ContentOptimizerPage'));
+const CtrLabPage = lazy(() => import('./pages/admin/CtrLabPage'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
@@ -190,6 +192,9 @@ const RouteChangeTracker = ({ onRouteChange }) => {
     // Classify landing as an AI-assistant referral (no-op after first session hit).
     try { recordReferralIfAny(); } catch { /* ignore */ }
 
+    // Record engagement funnel signals (first route = landing, later = second-click).
+    try { recordEngagementRoute(); } catch { /* ignore */ }
+
     window.scrollTo({ top: 0, behavior: 'instant' });
 
     // Move focus to main content for keyboard/screen-reader users
@@ -220,6 +225,9 @@ function App() {
     document.body.classList.remove('react-loading');
     document.body.classList.add('react-loaded');
     window.dispatchEvent(new Event('react-mounted'));
+
+    // Wire engagement listeners (scroll, unload, newsletter). Idempotent.
+    try { bootstrapEngagementListeners(); } catch { /* ignore */ }
 
     if (typeof performance !== "undefined" && performance.mark) {
       performance.mark('app-initialized');
@@ -347,6 +355,7 @@ function App() {
           <Route path="ai-suite" element={<SafeRoute><AISuitePage /></SafeRoute>} />
           <Route path="checklist" element={<SafeRoute><ChecklistPage /></SafeRoute>} />
           <Route path="content-optimizer" element={<SafeRoute><ContentOptimizerPage /></SafeRoute>} />
+          <Route path="ctr-lab" element={<SafeRoute><CtrLabPage /></SafeRoute>} />
         </Route>
       </Routes>
       <Toaster />
