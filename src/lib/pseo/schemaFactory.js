@@ -8,6 +8,18 @@
 import { SITE_CONFIG, ensureAbsoluteUrl } from '@/lib/seoConfig';
 
 /**
+ * Convert a YYYY-MM-DD (or any parseable) date into a full ISO 8601 timestamp
+ * with timezone, as required by schema.org Article datePublished/dateModified.
+ * Returns null for falsy/invalid input so the schema field is safely omitted.
+ */
+const toIsoDate = (value) => {
+    if (!value) return null;
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return null;
+    return d.toISOString();
+};
+
+/**
  * Generate DefinedTerm schema for a glossary term
  * @param {Object} term - Term object from glossaryData.js
  * @returns {Object} JSON-LD schema object
@@ -78,8 +90,9 @@ export const generateGlossaryArticleSchema = (term) => {
                 url: `${SITE_CONFIG.url}/logo.png`,
             },
         },
-        datePublished: term.lastUpdated,
-        dateModified: term.lastUpdated,
+        datePublished: toIsoDate(term.lastUpdated),
+        dateModified: toIsoDate(term.lastUpdated),
+        image: SITE_CONFIG.ogImage.url,
         mainEntityOfPage: {
             '@type': 'WebPage',
             '@id': `${SITE_CONFIG.url}/glossary/${term.slug}`,
@@ -219,8 +232,9 @@ export const generateComparisonSchema = (comparison) => {
                 url: `${SITE_CONFIG.url}/logo.png`,
             },
         },
-        datePublished: comparison.lastUpdated,
-        dateModified: comparison.lastUpdated,
+        datePublished: toIsoDate(comparison.lastUpdated),
+        dateModified: toIsoDate(comparison.lastUpdated),
+        image: SITE_CONFIG.ogImage.url,
         mainEntityOfPage: {
             '@type': 'WebPage',
             '@id': `${SITE_CONFIG.url}/compare/${comparison.slug}`,

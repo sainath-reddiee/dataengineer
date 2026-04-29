@@ -27,6 +27,17 @@ if (!ADSENSE_PUBLISHER_ID || !ADSENSE_PUBLISHER_ID.startsWith('ca-pub-')) {
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
 const WORDPRESS_BASE_URL = 'https://app.dataengineerhub.blog';
 
+// Convert a YYYY-MM-DD (or any parseable) date into a full ISO 8601 timestamp
+// with timezone, as required by schema.org Article datePublished/dateModified.
+// Falls back to "now" so the field is always a valid datetime string.
+function toIsoSchemaDate(value) {
+  if (value) {
+    const d = new Date(value);
+    if (!isNaN(d.getTime())) return d.toISOString();
+  }
+  return new Date().toISOString();
+}
+
 // ============================================================================
 // 🔒 GOOGLE CONSENT MODE v2 — single source of truth
 // Emitted in the <head> of every static page. EU/UK/EEA region defaults to
@@ -4138,6 +4149,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '      "headline": "What is ' + term.term.replace(/"/g, '\\"') + '?",\n';
   html += '      "description": "' + (term.shortDefinition || '').replace(/"/g, '\\"') + '",\n';
   html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
+  html += '      "image": "https://dataengineerhub.blog/og-image.jpg",\n';
   html += '      "author": {\n';
   html += '        "@type": "Person",\n';
   html += '        "name": "Sainath Reddy",\n';
@@ -4148,8 +4160,8 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '        "name": "DataEngineer Hub",\n';
   html += '        "url": "https://dataengineerhub.blog"\n';
   html += '      },\n';
-  html += '      "datePublished": "' + (term.lastUpdated || new Date().toISOString().split('T')[0]) + '",\n';
-  html += '      "dateModified": "' + (term.lastUpdated || new Date().toISOString().split('T')[0]) + '"\n';
+  html += '      "datePublished": "' + toIsoSchemaDate(term.lastUpdated) + '",\n';
+  html += '      "dateModified": "' + toIsoSchemaDate(term.lastUpdated) + '"\n';
   html += '    }\n';
   html += '    <\/script>\n\n';
 
@@ -4755,10 +4767,11 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '      "headline": "' + comparison.toolA + ' vs ' + comparison.toolB + ' Comparison",\n';
   html += '      "description": "' + (comparison.shortVerdict || '').replace(/"/g, '\\"') + '",\n';
   html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
+  html += '      "image": "https://dataengineerhub.blog/og-image.jpg",\n';
   html += '      "author": { "@type": "Person", "name": "Sainath Reddy", "url": "https://dataengineerhub.blog/about" },\n';
   html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" },\n';
-  html += '      "datePublished": "' + (comparison.lastUpdated || new Date().toISOString().split('T')[0]) + '",\n';
-  html += '      "dateModified": "' + (comparison.lastUpdated || new Date().toISOString().split('T')[0]) + '"\n';
+  html += '      "datePublished": "' + toIsoSchemaDate(comparison.lastUpdated) + '",\n';
+  html += '      "dateModified": "' + toIsoSchemaDate(comparison.lastUpdated) + '"\n';
   html += '    }\n';
   html += '    <\/script>\n\n';
 
@@ -5254,8 +5267,9 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '      "headline": "' + escapeJsonLd(sheet.title) + '",\n';
   html += '      "description": "' + escapeJsonLd(sheet.shortDescription || '') + '",\n';
   html += '      "url": "https://dataengineerhub.blog' + pagePath + '",\n';
-  html += '      "datePublished": "' + (sheet.lastUpdated || new Date().toISOString().split('T')[0]) + '",\n';
-  html += '      "dateModified": "' + (sheet.lastUpdated || new Date().toISOString().split('T')[0]) + '",\n';
+  html += '      "image": "https://dataengineerhub.blog/og-image.jpg",\n';
+  html += '      "datePublished": "' + toIsoSchemaDate(sheet.lastUpdated) + '",\n';
+  html += '      "dateModified": "' + toIsoSchemaDate(sheet.lastUpdated) + '",\n';
   html += '      "author": { "@type": "Person", "name": "Sainath Reddy", "url": "https://dataengineerhub.blog/about" },\n';
   html += '      "publisher": { "@type": "Organization", "name": "DataEngineer Hub", "url": "https://dataengineerhub.blog" }\n';
   html += '    }\n';
