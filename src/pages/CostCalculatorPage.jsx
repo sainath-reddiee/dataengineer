@@ -78,6 +78,8 @@ function paramsToInputs(searchParams) {
   return next;
 }
 
+const LAST_UPDATED = 'April 2026';
+
 const INTRO = `**Snowflake's pricing is simple to state and devastating to misread.** Credits × credit rate × hours, plus storage, plus a few serverless meters. That's the whole model. The reason teams still end up 3-5x over budget is that every variable in that equation has a non-obvious multiplier attached to it, and the defaults in the UI push you toward the expensive end of each.
 
 This calculator lets you pull every lever — edition, region, warehouse size, hours, auto-suspend, cloud services, Snowpipe, Cortex AI, auto-clustering — and shows the all-in monthly number update live so you can see which dial actually moves the bill.
@@ -86,7 +88,7 @@ This calculator lets you pull every lever — edition, region, warehouse size, h
 
 Monthly compute cost boils down to: \`sum(warehouse_size_credits × hours_active × credit_rate_by_edition_and_region)\`. Three things to internalize:
 
-1. **Warehouse size is exponential, not linear.** Going from \`XS\` (1 credit/hr) to \`XL\` (16 credits/hr) is a **16x** per-hour cost increase — and queries rarely get 16x faster. The right sizing move is usually *one size smaller than your gut says*.
+1. **Warehouse size is exponential, not linear.** Going from \`XS\` (1 credit/hr) to \`XL\` (16 credits/hr) is a **16x** per-hour cost increase — and queries rarely get 16x faster. The right sizing move is usually **one size smaller than your gut says**.
 2. **Edition is a multiplier on every credit.** Business Critical is ~1.5-2x Standard's credit rate. If your data doesn't legally require BC, Enterprise is usually the right answer.
 3. **Region matters more than people think.** AWS \`us-east-1\` is the cheapest; European and APAC regions can add 10-30% per credit. Multi-region replication doubles compute.
 
@@ -466,7 +468,7 @@ export default function CostCalculatorPage() {
         {/* Hero */}
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-blue-300 bg-blue-900/30 border border-blue-700/50 rounded-full">
-            Updated April 2026 · Based on Snowflake list pricing
+            Updated {LAST_UPDATED} · Based on Snowflake list pricing
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Calculator className="w-8 h-8 text-blue-400" aria-hidden="true" />
@@ -481,21 +483,32 @@ export default function CostCalculatorPage() {
 
         {/* Phase 2: practitioner intro + when-to-use (pSEO depth) */}
         <section className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8">
+          <h2 className="sr-only">How Snowflake pricing works and when to use this calculator</h2>
           <div className="prose prose-invert prose-sm md:prose-base max-w-none text-gray-300 leading-relaxed">
             {INTRO.split('\n\n').map((para, i) => {
               if (para.startsWith('### ')) {
                 return <h3 key={i} className="text-xl font-semibold text-white mt-6 mb-3">{para.replace(/^###\s+/, '')}</h3>;
               }
-              const parts = para.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
-              return (
-                <p key={i} className="mb-3 last:mb-0">
-                  {parts.map((part, j) => {
-                    if (part.startsWith('**') && part.endsWith('**')) return <strong key={j} className="text-white">{part.slice(2, -2)}</strong>;
-                    if (part.startsWith('`') && part.endsWith('`')) return <code key={j} className="px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-cyan-300 text-[0.9em]">{part.slice(1, -1)}</code>;
-                    return <React.Fragment key={j}>{part}</React.Fragment>;
-                  })}
-                </p>
-              );
+              const renderInline = (text) => text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((part, j) => {
+                if (part.startsWith('**') && part.endsWith('**')) return <strong key={j} className="text-white">{part.slice(2, -2)}</strong>;
+                if (part.startsWith('`') && part.endsWith('`')) return <code key={j} className="px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-cyan-300 text-[0.9em]">{part.slice(1, -1)}</code>;
+                return <React.Fragment key={j}>{part}</React.Fragment>;
+              });
+              if (/^\d+\.\s/.test(para)) {
+                return (
+                  <ol key={i} className="list-decimal pl-5 space-y-2 mb-3 marker:text-gray-500">
+                    {para.split('\n').map((line, k) => <li key={k}>{renderInline(line.replace(/^\d+\.\s+/, ''))}</li>)}
+                  </ol>
+                );
+              }
+              if (/^-\s/.test(para)) {
+                return (
+                  <ul key={i} className="list-disc pl-5 space-y-2 mb-3 marker:text-gray-500">
+                    {para.split('\n').map((line, k) => <li key={k}>{renderInline(line.replace(/^-\s+/, ''))}</li>)}
+                  </ul>
+                );
+              }
+              return <p key={i} className="mb-3 last:mb-0">{renderInline(para)}</p>;
             })}
           </div>
           <div className="grid md:grid-cols-2 gap-4 mt-8">

@@ -21,6 +21,8 @@ function fmt(n) {
   return '$' + n.toFixed(2);
 }
 
+const LAST_UPDATED = 'April 2026';
+
 const INTRO = `**BigQuery pricing is simple until you try to model it.** Two completely different compute-billing modes (on-demand vs Editions), three Edition tiers with different feature cutlines, separate storage billing with automatic long-term discounts, and streaming ingest with its own free tier — and that's before you get into slot reservations, commitments, and autoscaling. This calculator exists because the official Google Cloud pricing calculator buries BigQuery inside a generic UI that doesn't let you reason clearly about the on-demand vs Editions break-even, which is the single most valuable pricing decision any BigQuery team makes.
 
 ### How to use this calculator
@@ -31,7 +33,7 @@ Then flip between **on-demand** and **Editions** to see the break-even. On-deman
 
 ### What this calculator gets right (and where to be skeptical)
 
-**Gets right**: list prices across on-demand and all three Editions, the 1 TB free on-demand tier, the 90-day long-term storage auto-transition, the 2 TB free Storage Write API tier. These reflect public GCP pricing as of April 2026.
+**Gets right**: list prices across on-demand and all three Editions, the 1 TB free on-demand tier, the 90-day long-term storage auto-transition, the 2 TB free Storage Write API tier. These reflect public GCP pricing as of ${LAST_UPDATED}.
 
 **Be skeptical when**: (1) you have a committed-use discount (CUD) on slots — your effective rate is lower. (2) You're running BigQuery ML, vector search, or multi-statement transactions — those have separate compute accounting. (3) You use cross-region or cross-cloud queries (Enterprise Plus) — there's an additional data-transfer charge the calculator doesn't model. (4) Your workload uses flex slots or autoscaling — variable slot count means the hours/day number becomes an average, not a ceiling.
 
@@ -186,7 +188,7 @@ export default function BigQueryCostPage() {
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-blue-300 bg-blue-900/30 border border-blue-700/50 rounded-full">
-            Last updated: April 2026 &middot; List pricing &middot; Client-side
+            Last updated: {LAST_UPDATED} &middot; List pricing &middot; Client-side
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Cloud className="w-8 h-8 text-blue-400" aria-hidden="true" />
@@ -202,21 +204,32 @@ export default function BigQueryCostPage() {
 
         {/* Phase 2: practitioner intro + when-to-use (pSEO depth) */}
         <section className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8">
+          <h2 className="sr-only">How BigQuery pricing works and when to use this calculator</h2>
           <div className="prose prose-invert prose-sm md:prose-base max-w-none text-gray-300 leading-relaxed">
             {INTRO.split('\n\n').map((para, i) => {
               if (para.startsWith('### ')) {
                 return <h3 key={i} className="text-xl font-semibold text-white mt-6 mb-3">{para.replace(/^###\s+/, '')}</h3>;
               }
-              const parts = para.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
-              return (
-                <p key={i} className="mb-3 last:mb-0">
-                  {parts.map((part, j) => {
-                    if (part.startsWith('**') && part.endsWith('**')) return <strong key={j} className="text-white">{part.slice(2, -2)}</strong>;
-                    if (part.startsWith('`') && part.endsWith('`')) return <code key={j} className="px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-blue-300 text-[0.9em]">{part.slice(1, -1)}</code>;
-                    return <React.Fragment key={j}>{part}</React.Fragment>;
-                  })}
-                </p>
-              );
+              const renderInline = (text) => text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((part, j) => {
+                if (part.startsWith('**') && part.endsWith('**')) return <strong key={j} className="text-white">{part.slice(2, -2)}</strong>;
+                if (part.startsWith('`') && part.endsWith('`')) return <code key={j} className="px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-blue-300 text-[0.9em]">{part.slice(1, -1)}</code>;
+                return <React.Fragment key={j}>{part}</React.Fragment>;
+              });
+              if (/^\d+\.\s/.test(para)) {
+                return (
+                  <ol key={i} className="list-decimal pl-5 space-y-2 mb-3 marker:text-gray-500">
+                    {para.split('\n').map((line, k) => <li key={k}>{renderInline(line.replace(/^\d+\.\s+/, ''))}</li>)}
+                  </ol>
+                );
+              }
+              if (/^-\s/.test(para)) {
+                return (
+                  <ul key={i} className="list-disc pl-5 space-y-2 mb-3 marker:text-gray-500">
+                    {para.split('\n').map((line, k) => <li key={k}>{renderInline(line.replace(/^-\s+/, ''))}</li>)}
+                  </ul>
+                );
+              }
+              return <p key={i} className="mb-3 last:mb-0">{renderInline(para)}</p>;
             })}
           </div>
           <div className="grid md:grid-cols-2 gap-4 mt-8">

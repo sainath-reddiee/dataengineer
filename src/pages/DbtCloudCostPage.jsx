@@ -45,6 +45,8 @@ const PLANS = [
 const formatUSD = (n) =>
   n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
 
+const LAST_UPDATED = 'April 2026';
+
 const INTRO = `**dbt Cloud's pricing is a per-seat trap for small teams and a volume discount for large ones.** The line everyone writes on the PO — "$100/seat/month" — hides the two variables that actually decide whether dbt Cloud is a steal or a mistake: **successful model builds per month** and **how many of your engineers actually need an IDE seat**.
 
 This calculator computes both axes (seats + metered builds + overage) across Developer / Team / Enterprise and lets you compare the all-in number against a dbt Core + Airflow/Dagster self-managed stack.
@@ -203,7 +205,7 @@ export default function DbtCloudCostPage() {
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-emerald-300 bg-emerald-900/30 border border-emerald-700/50 rounded-full">
-            Updated April 2026 · dbt Labs list pricing
+            Updated {LAST_UPDATED} · dbt Labs list pricing
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Users className="w-8 h-8 text-emerald-400" aria-hidden="true" />
@@ -218,21 +220,32 @@ export default function DbtCloudCostPage() {
 
         {/* Phase 2: practitioner intro + when-to-use (pSEO depth) */}
         <section className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8">
+          <h2 className="sr-only">How dbt Cloud pricing works and when to use this calculator</h2>
           <div className="prose prose-invert prose-sm md:prose-base max-w-none text-gray-300 leading-relaxed">
             {INTRO.split('\n\n').map((para, i) => {
               if (para.startsWith('### ')) {
                 return <h3 key={i} className="text-xl font-semibold text-white mt-6 mb-3">{para.replace(/^###\s+/, '')}</h3>;
               }
-              const parts = para.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
-              return (
-                <p key={i} className="mb-3 last:mb-0">
-                  {parts.map((part, j) => {
-                    if (part.startsWith('**') && part.endsWith('**')) return <strong key={j} className="text-white">{part.slice(2, -2)}</strong>;
-                    if (part.startsWith('`') && part.endsWith('`')) return <code key={j} className="px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-pink-300 text-[0.9em]">{part.slice(1, -1)}</code>;
-                    return <React.Fragment key={j}>{part}</React.Fragment>;
-                  })}
-                </p>
-              );
+              const renderInline = (text) => text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((part, j) => {
+                if (part.startsWith('**') && part.endsWith('**')) return <strong key={j} className="text-white">{part.slice(2, -2)}</strong>;
+                if (part.startsWith('`') && part.endsWith('`')) return <code key={j} className="px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-pink-300 text-[0.9em]">{part.slice(1, -1)}</code>;
+                return <React.Fragment key={j}>{part}</React.Fragment>;
+              });
+              if (/^\d+\.\s/.test(para)) {
+                return (
+                  <ol key={i} className="list-decimal pl-5 space-y-2 mb-3 marker:text-gray-500">
+                    {para.split('\n').map((line, k) => <li key={k}>{renderInline(line.replace(/^\d+\.\s+/, ''))}</li>)}
+                  </ol>
+                );
+              }
+              if (/^-\s/.test(para)) {
+                return (
+                  <ul key={i} className="list-disc pl-5 space-y-2 mb-3 marker:text-gray-500">
+                    {para.split('\n').map((line, k) => <li key={k}>{renderInline(line.replace(/^-\s+/, ''))}</li>)}
+                  </ul>
+                );
+              }
+              return <p key={i} className="mb-3 last:mb-0">{renderInline(para)}</p>;
             })}
           </div>
           <div className="grid md:grid-cols-2 gap-4 mt-8">

@@ -100,6 +100,8 @@ const softwareAppSchema = {
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
 };
 
+const LAST_UPDATED = 'April 2026';
+
 const INTRO = `**The "which warehouse is cheapest" question has no single answer — it has a workload shape.** Snowflake, BigQuery, and Databricks each win a specific slice of the workload-shape space, and the wrong choice for your pattern can cost **3-10x** more than the right one. This calculator normalizes your workload onto a common input (\`TB scanned\`, \`compute hours\`, \`storage GB\`, complexity tier) and runs each platform's list-price math so you can see **which platform wins for your actual pattern** — not for the vendor's marketing benchmark.
 
 ### Why each platform wins different workloads
@@ -139,7 +141,7 @@ const WHEN_TO_USE = {
 const FAQ_ITEMS = [
   {
     q: 'How accurate is this Snowflake vs BigQuery vs Databricks calculator?',
-    a: 'It is intentionally a directional comparison, not a procurement quote. I built it from April 2026 published list prices and assumed defaults most teams actually use — 10% cloud-services allowance on Snowflake, SQL Pro DBU rate on Databricks, and the auto-cheaper pick between BigQuery on-demand and Editions. In most RFPs I have seen, Snowflake and Databricks negotiate 20–40% off list, while BigQuery list is mostly what you pay. Use this tool to shape your architecture decision and frame your budget, then validate the final number with a signed rate card from each vendor.',
+    a: `It is intentionally a directional comparison, not a procurement quote. I built it from ${LAST_UPDATED} published list prices and assumed defaults most teams actually use — 10% cloud-services allowance on Snowflake, SQL Pro DBU rate on Databricks, and the auto-cheaper pick between BigQuery on-demand and Editions. In most RFPs I have seen, Snowflake and Databricks negotiate 20–40% off list, while BigQuery list is mostly what you pay. Use this tool to shape your architecture decision and frame your budget, then validate the final number with a signed rate card from each vendor.`,
   },
   {
     q: 'Why do the three platforms differ so much on identical workloads?',
@@ -237,7 +239,7 @@ export default function WarehouseComparisonCalculatorPage() {
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-purple-300 bg-purple-900/30 border border-purple-700/50 rounded-full">
-            Updated April 2026 · Unified comparison · Client-side
+            Updated {LAST_UPDATED} · Unified comparison · Client-side
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Scale className="w-8 h-8 text-purple-400" aria-hidden="true" />
@@ -247,27 +249,38 @@ export default function WarehouseComparisonCalculatorPage() {
             Enter one workload profile — TB scanned, compute hours, storage — and see an
             apples-to-apples cost estimate across <strong>Snowflake</strong>,{' '}
             <strong>Google BigQuery</strong>, and <strong>Databricks</strong>. Uses published list
-            pricing as of April 2026. Great for pre-RFP sizing and migration budget framing.
+            pricing as of {LAST_UPDATED}. Great for pre-RFP sizing and migration budget framing.
           </p>
         </div>
 
         {/* Phase 2: practitioner intro + when-to-use (pSEO depth) */}
         <section className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8">
+          <h2 className="sr-only">Snowflake vs BigQuery vs Databricks pricing and when to use this calculator</h2>
           <div className="prose prose-invert prose-sm md:prose-base max-w-none text-gray-300 leading-relaxed">
             {INTRO.split('\n\n').map((para, i) => {
               if (para.startsWith('### ')) {
                 return <h3 key={i} className="text-xl font-semibold text-white mt-6 mb-3">{para.replace(/^###\s+/, '')}</h3>;
               }
-              const parts = para.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
-              return (
-                <p key={i} className="mb-3 last:mb-0">
-                  {parts.map((part, j) => {
-                    if (part.startsWith('**') && part.endsWith('**')) return <strong key={j} className="text-white">{part.slice(2, -2)}</strong>;
-                    if (part.startsWith('`') && part.endsWith('`')) return <code key={j} className="px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-violet-300 text-[0.9em]">{part.slice(1, -1)}</code>;
-                    return <React.Fragment key={j}>{part}</React.Fragment>;
-                  })}
-                </p>
-              );
+              const renderInline = (text) => text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((part, j) => {
+                if (part.startsWith('**') && part.endsWith('**')) return <strong key={j} className="text-white">{part.slice(2, -2)}</strong>;
+                if (part.startsWith('`') && part.endsWith('`')) return <code key={j} className="px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-violet-300 text-[0.9em]">{part.slice(1, -1)}</code>;
+                return <React.Fragment key={j}>{part}</React.Fragment>;
+              });
+              if (/^\d+\.\s/.test(para)) {
+                return (
+                  <ol key={i} className="list-decimal pl-5 space-y-2 mb-3 marker:text-gray-500">
+                    {para.split('\n').map((line, k) => <li key={k}>{renderInline(line.replace(/^\d+\.\s+/, ''))}</li>)}
+                  </ol>
+                );
+              }
+              if (/^-\s/.test(para)) {
+                return (
+                  <ul key={i} className="list-disc pl-5 space-y-2 mb-3 marker:text-gray-500">
+                    {para.split('\n').map((line, k) => <li key={k}>{renderInline(line.replace(/^-\s+/, ''))}</li>)}
+                  </ul>
+                );
+              }
+              return <p key={i} className="mb-3 last:mb-0">{renderInline(para)}</p>;
             })}
           </div>
           <div className="grid md:grid-cols-2 gap-4 mt-8">

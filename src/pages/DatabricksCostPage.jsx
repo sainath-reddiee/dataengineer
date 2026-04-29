@@ -43,11 +43,13 @@ const INSTANCE_TYPES = [
 const formatUSD = (n) =>
   n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
 
+const LAST_UPDATED = 'April 2026';
+
 const INTRO = `**Databricks looks expensive until you understand DBUs — then it looks terrifying.** The headline \`$/DBU\` rate is only one of three levers that decide what lands on your invoice. The other two — **which SKU you picked** and **which VM family your cluster runs on** — routinely swing the all-in bill by 3-5x for the exact same workload.
 
 This calculator models the full stack: DBU consumption × DBU rate × hours, plus the underlying cloud VM cost (AWS/Azure/GCP bill that separately), so you see the true monthly number instead of the Databricks-only sticker price.
 
-### The pricing mental model that actually matters
+### The Databricks mental model: SKU, rate, and VM
 
 Databricks cost has three multiplicative components, and most teams only optimize one:
 
@@ -228,7 +230,7 @@ export default function DatabricksCostPage() {
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-orange-300 bg-orange-900/30 border border-orange-700/50 rounded-full">
-            Updated April 2026 · Databricks list pricing
+            Updated {LAST_UPDATED} · Databricks list pricing
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Cloud className="w-8 h-8 text-orange-400" aria-hidden="true" />
@@ -243,21 +245,32 @@ export default function DatabricksCostPage() {
 
         {/* Phase 2: practitioner intro + when-to-use (pSEO depth) */}
         <section className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8">
+          <h2 className="sr-only">How Databricks pricing works and when to use this calculator</h2>
           <div className="prose prose-invert prose-sm md:prose-base max-w-none text-gray-300 leading-relaxed">
             {INTRO.split('\n\n').map((para, i) => {
               if (para.startsWith('### ')) {
                 return <h3 key={i} className="text-xl font-semibold text-white mt-6 mb-3">{para.replace(/^###\s+/, '')}</h3>;
               }
-              const parts = para.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
-              return (
-                <p key={i} className="mb-3 last:mb-0">
-                  {parts.map((part, j) => {
-                    if (part.startsWith('**') && part.endsWith('**')) return <strong key={j} className="text-white">{part.slice(2, -2)}</strong>;
-                    if (part.startsWith('`') && part.endsWith('`')) return <code key={j} className="px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-orange-300 text-[0.9em]">{part.slice(1, -1)}</code>;
-                    return <React.Fragment key={j}>{part}</React.Fragment>;
-                  })}
-                </p>
-              );
+              const renderInline = (text) => text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((part, j) => {
+                if (part.startsWith('**') && part.endsWith('**')) return <strong key={j} className="text-white">{part.slice(2, -2)}</strong>;
+                if (part.startsWith('`') && part.endsWith('`')) return <code key={j} className="px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-orange-300 text-[0.9em]">{part.slice(1, -1)}</code>;
+                return <React.Fragment key={j}>{part}</React.Fragment>;
+              });
+              if (/^\d+\.\s/.test(para)) {
+                return (
+                  <ol key={i} className="list-decimal pl-5 space-y-2 mb-3 marker:text-gray-500">
+                    {para.split('\n').map((line, k) => <li key={k}>{renderInline(line.replace(/^\d+\.\s+/, ''))}</li>)}
+                  </ol>
+                );
+              }
+              if (/^-\s/.test(para)) {
+                return (
+                  <ul key={i} className="list-disc pl-5 space-y-2 mb-3 marker:text-gray-500">
+                    {para.split('\n').map((line, k) => <li key={k}>{renderInline(line.replace(/^-\s+/, ''))}</li>)}
+                  </ul>
+                );
+              }
+              return <p key={i} className="mb-3 last:mb-0">{renderInline(para)}</p>;
             })}
           </div>
           <div className="grid md:grid-cols-2 gap-4 mt-8">
