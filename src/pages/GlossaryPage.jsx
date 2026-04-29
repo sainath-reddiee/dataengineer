@@ -119,42 +119,52 @@ export function GlossaryPage() {
     const toggleFaq = (idx) => setOpenFaqs(prev => ({ ...prev, [idx]: !prev[idx] }));
 
     useEffect(() => {
+        let cancelled = false;
+
         const loadData = async () => {
             try {
                 setLoading(true);
+
+                // Phase A — blocking: load the term + synchronous metadata.
+                // Paint the article as soon as this resolves.
                 const data = await getGlossaryTerm(termSlug);
+
+                if (cancelled) return;
 
                 if (!data) {
                     navigate('/glossary', { replace: true });
                     return;
                 }
 
-                // Calculate derived data SAFELY inside try-catch
                 const meta = generateGlossaryMeta(data);
                 const breadcrumbs = generateGlossaryBreadcrumbs(data);
                 const canonical = generateGlossaryCanonical(data.slug);
                 const category = getCategoryById(data.category);
-                const allTerms = await getAllGlossaryTerms();
-                const relatedTerms = getRelatedGlossaryTerms(data.slug, 5, { terms: allTerms });
 
                 setTerm(data);
-                setDerivedData({
-                    meta,
-                    breadcrumbs,
-                    canonical,
-                    category,
-                    relatedTerms
-                });
+                setDerivedData({ meta, breadcrumbs, canonical, category, relatedTerms: null });
+                setLoading(false);
+
+                // Phase B — non-blocking: fetch corpus + compute related terms.
+                // Memoized + parallel after the first visit, so subsequent pages
+                // get this instantly.
+                const allTerms = await getAllGlossaryTerms();
+                if (cancelled) return;
+                const relatedTerms = getRelatedGlossaryTerms(data.slug, 5, { terms: allTerms });
+                if (cancelled) return;
+                setDerivedData(prev => prev ? { ...prev, relatedTerms } : prev);
 
             } catch (err) {
+                if (cancelled) return;
                 console.error("Failed to load glossary term:", err);
                 setError(err.message);
-            } finally {
                 setLoading(false);
             }
         };
 
         if (termSlug) loadData();
+
+        return () => { cancelled = true; };
     }, [termSlug, navigate]);
 
     if (error) {
@@ -417,7 +427,7 @@ export function GlossaryPage() {
                         )}
 
                         {/* Related Terms */}
-                        {relatedTerms.length > 0 && (
+                        {relatedTerms && relatedTerms.length > 0 && (
                             <div className="mt-12">
                                 <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
                                     <Link2 className="w-6 h-6 text-purple-400" />

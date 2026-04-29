@@ -69,30 +69,47 @@ export async function getGlossaryTerm(slug) {
     return term || null;
 }
 
+// Module-scope promise cache — first caller triggers the corpus fetch,
+// every subsequent caller (e.g., navigating between glossary pages) reuses
+// the same resolved promise. Prevents re-importing all category JSONs on
+// every navigation.
+let allTermsPromise = null;
+
 /**
- * Get all terms (Expensive! Loads all files).
- * Only use for SSG or sitemap generation.
+ * Get all terms. Memoized + parallel category imports.
+ * First call: fetches all category chunks in parallel (Promise.all).
+ * Subsequent calls: returns the cached promise instantly.
  */
 export async function getAllGlossaryTerms() {
-    const categories = new Set(
-        searchIndex.glossary.map(item => item.category)
-    );
+    if (allTermsPromise) return allTermsPromise;
 
-    let allTerms = [];
+    const categoryNames = [...new Set(searchIndex.glossary.map(item => item.category))];
 
-    for (const category of categories) {
-        const categoryFilename = category
-            .toLowerCase()
-            .replace(/\s+/g, '-')
-            .replace(/[^a-z0-9-]/g, '');
+    allTermsPromise = Promise.all(
+        categoryNames.map(async (category) => {
+            const categoryFilename = category
+                .toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]/g, '');
 
-        try {
-            const module = await import(`../../data/pseo/glossary/${categoryFilename}.json`);
-            allTerms = [...allTerms, ...module.default];
-        } catch (e) {
-            console.error(`Error loading category ${categoryFilename}`, e);
-        }
-    }
+            // Reuse per-category cache populated by getGlossaryTerm when possible.
+            if (categoryCache.has(categoryFilename)) {
+                return categoryCache.get(categoryFilename);
+            }
 
-    return allTerms;
+            try {
+                const module = await import(`../../data/pseo/glossary/${categoryFilename}.json`);
+                categoryCache.set(categoryFilename, module.default);
+                return module.default;
+            } catch (e) {
+                console.error(`Error loading category ${categoryFilename}`, e);
+                return [];
+            }
+        })
+    ).then(chunks => chunks.flat());
+
+    // If the fetch fails wholesale, clear the cache so the next call can retry.
+    allTermsPromise.catch(() => { allTermsPromise = null; });
+
+    return allTermsPromise;
 }
