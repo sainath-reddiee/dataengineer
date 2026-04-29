@@ -12,6 +12,7 @@ import { GEOAnalyzer } from '@/utils/seo/geoAnalyzer';
 import { SEOScoreCard } from '@/components/admin/SEOScoreCard';
 import { IssuesList } from '@/components/admin/IssuesList';
 import { ExportButton } from '@/components/admin/ExportButton';
+import { AICitationsPanel } from '@/components/admin/AICitationsPanel';
 
 const tabs = [
     { id: 'pseo', label: 'PSEO', icon: Bot, desc: 'Programmatic SEO', color: 'purple' },
@@ -119,6 +120,9 @@ export function AISuitePage() {
                 <h1 className="text-3xl font-bold text-white mb-2">AI Suite</h1>
                 <p className="text-gray-400">PSEO, AEO, and GEO optimization analysis</p>
             </div>
+
+            {/* LLM referral tracker — persistent, independent of the URL analyzer below */}
+            <AICitationsPanel />
 
             {/* URL Input */}
             <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6">

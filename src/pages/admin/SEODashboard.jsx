@@ -9,10 +9,11 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
     Search, Layers, GitCompare, Code2, Eye, Sparkles,
-    TrendingUp, AlertCircle, CheckCircle, Clock, ArrowRight
+    TrendingUp, AlertCircle, CheckCircle, Clock, ArrowRight, Bot
 } from 'lucide-react';
 import { SEOScoreCard } from '@/components/admin/SEOScoreCard';
 import wordpressApi from '@/services/wordpressApi';
+import { getLastNDays, getLocalReferralStats } from '@/utils/aiReferralTracker';
 
 const quickActions = [
     { path: '/admin/scanner', icon: Search, label: 'Scan URL', desc: 'Analyze any page', color: 'blue' },
@@ -26,6 +27,7 @@ const quickActions = [
 export function SEODashboard() {
     const [stats, setStats] = useState({ articles: 0, loading: true });
     const [recentArticles, setRecentArticles] = useState([]);
+    const [aiReferrals, setAiReferrals] = useState({ last30: 0, total: 0 });
 
     useEffect(() => {
         async function loadStats() {
@@ -42,6 +44,13 @@ export function SEODashboard() {
             }
         }
         loadStats();
+
+        // AI referral counters (local device)
+        try {
+            const full = getLocalReferralStats();
+            const last30 = getLastNDays(30).reduce((acc, d) => acc + d.count, 0);
+            setAiReferrals({ last30, total: full.total || 0 });
+        } catch { /* ignore */ }
     }, []);
 
     return (
@@ -95,15 +104,20 @@ export function SEODashboard() {
                     transition={{ delay: 0.2 }}
                     className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6"
                 >
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 rounded-xl bg-purple-500/20">
-                            <Sparkles className="w-6 h-6 text-purple-400" />
+                    <Link to="/admin/ai-suite" className="flex items-center gap-3 group">
+                        <div className="p-3 rounded-xl bg-pink-500/20 group-hover:bg-pink-500/30 transition-colors">
+                            <Bot className="w-6 h-6 text-pink-400" />
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-white">3</p>
-                            <p className="text-sm text-gray-400">AI Analyzers</p>
+                            <p className="text-2xl font-bold text-white">{aiReferrals.last30}</p>
+                            <p className="text-sm text-gray-400">
+                                AI Referrals (30d)
+                                {aiReferrals.total > 0 && (
+                                    <span className="text-gray-500"> · {aiReferrals.total} all-time</span>
+                                )}
+                            </p>
                         </div>
-                    </div>
+                    </Link>
                 </motion.div>
 
                 <motion.div

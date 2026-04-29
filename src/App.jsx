@@ -6,6 +6,7 @@ import Layout from '@/components/Layout';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import MobileOptimization from '@/components/MobileOptimization';
 import { trackPageView, trackEvent } from '@/utils/analytics';
+import { recordReferralIfAny } from '@/utils/aiReferralTracker';
 import { useApiDebugger } from '@/hooks/useApiDebugger';
 import CookieConsent from '@/components/CookieConsent';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
@@ -185,6 +186,9 @@ const RouteChangeTracker = ({ onRouteChange }) => {
     }
 
     trackPageView(location.pathname + location.search);
+
+    // Classify landing as an AI-assistant referral (no-op after first session hit).
+    try { recordReferralIfAny(); } catch { /* ignore */ }
 
     window.scrollTo({ top: 0, behavior: 'instant' });
 
