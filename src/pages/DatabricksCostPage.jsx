@@ -43,6 +43,48 @@ const INSTANCE_TYPES = [
 const formatUSD = (n) =>
   n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
 
+const INTRO = `**Databricks looks expensive until you understand DBUs — then it looks terrifying.** The headline \`$/DBU\` rate is only one of three levers that decide what lands on your invoice. The other two — **which SKU you picked** and **which VM family your cluster runs on** — routinely swing the all-in bill by 3-5x for the exact same workload.
+
+This calculator models the full stack: DBU consumption × DBU rate × hours, plus the underlying cloud VM cost (AWS/Azure/GCP bill that separately), so you see the true monthly number instead of the Databricks-only sticker price.
+
+### The pricing mental model that actually matters
+
+Databricks cost has three multiplicative components, and most teams only optimize one:
+
+1. **SKU tier** — \`Jobs Compute\` is ~55% cheaper per DBU than \`All-Purpose Compute\`. If a pipeline runs on a schedule, it should almost never touch All-Purpose. \`SQL Serverless\` and \`SQL Pro\` have their own tiers entirely.
+2. **DBU rate** — Standard/Premium/Enterprise workspace tiers each have different \`$/DBU\` prices. Photon-enabled jobs consume DBUs ~2-3x faster but usually finish >3x faster, so the net is a win.
+3. **Cloud VM cost** — the instance family (\`i3\`, \`r5d\`, \`m5d\`, \`Standard_DS\`) is billed by the cloud provider and is often 40-60% of total spend. Graviton/Ampere ARM nodes can cut that by ~20%.
+
+### Where teams get the DBU math wrong
+
+The single most common mistake: **benchmarking on All-Purpose then deploying to Jobs without re-measuring.** All-Purpose DBU rates are almost double Jobs rates, so your "this pipeline costs $X" number from a notebook run is wildly wrong for production economics.
+
+Second most common: **ignoring cluster startup time**. A 10-minute job on a cluster that takes 4 minutes to spin up is really a 14-minute billed cluster. For sub-hour jobs, \`Serverless Jobs\` or pooled clusters change the math completely.
+
+Third: **forgetting DLT, Model Serving, and Vector Search are separate DBU meters** with their own rates — they don't roll into your Jobs/All-Purpose budget.
+
+### What this calculator gets right
+
+It separates DBU cost from VM cost so you can model **commit discounts** (15-37% off DBUs with DBCUs) and **cloud savings plans / reserved instances** (up to ~72% off VMs) as independent levers. It lets you change workload tier, node count, and utilization hours per month without rebuilding a spreadsheet every time.`;
+
+const WHEN_TO_USE = {
+  use: [
+    'Budgeting a new Databricks workspace or a workload migration and you need a defensible monthly number',
+    'Comparing Jobs Compute vs All-Purpose vs SQL Warehouse for the same pipeline before committing to a deployment pattern',
+    'Evaluating Photon ROI — estimating whether 2-3x DBU consumption is offset by runtime savings',
+    'Modeling DBCU (Databricks commit) vs on-demand pricing to decide commitment size',
+    'Back-of-envelope FinOps review: "is this pipeline\'s $4k/month reasonable or way off?"',
+    'Comparing Databricks DBU economics against Snowflake credits or BigQuery slots for a cost-parity conversation',
+  ],
+  avoid: [
+    'Private negotiated DBU rates, partner discounts, or startup credit programs — list prices only',
+    'Serverless SQL burst pricing where DBU consumption varies heavily by query pattern (use actual usage reports)',
+    'Delta Live Tables, Mosaic AI Model Serving, or Vector Search meters — those have separate DBU rates not modeled here',
+    'Finance-grade forecasting — this is a planning estimator, not an accrual-accurate billing tool',
+    'Cross-cloud egress, S3/ADLS storage, or Unity Catalog metadata charges — those are cloud-provider line items',
+  ],
+};
+
 const FAQ = [
   {
     q: 'How is Databricks pricing calculated?',
@@ -198,6 +240,49 @@ export default function DatabricksCostPage() {
             uplift so you see the true all-in monthly number — not just the Databricks-only charge.
           </p>
         </div>
+
+        {/* Phase 2: practitioner intro + when-to-use (pSEO depth) */}
+        <section className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8">
+          <div className="prose prose-invert prose-sm md:prose-base max-w-none text-gray-300 leading-relaxed">
+            {INTRO.split('\n\n').map((para, i) => {
+              if (para.startsWith('### ')) {
+                return <h3 key={i} className="text-xl font-semibold text-white mt-6 mb-3">{para.replace(/^###\s+/, '')}</h3>;
+              }
+              const parts = para.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+              return (
+                <p key={i} className="mb-3 last:mb-0">
+                  {parts.map((part, j) => {
+                    if (part.startsWith('**') && part.endsWith('**')) return <strong key={j} className="text-white">{part.slice(2, -2)}</strong>;
+                    if (part.startsWith('`') && part.endsWith('`')) return <code key={j} className="px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-orange-300 text-[0.9em]">{part.slice(1, -1)}</code>;
+                    return <React.Fragment key={j}>{part}</React.Fragment>;
+                  })}
+                </p>
+              );
+            })}
+          </div>
+          <div className="grid md:grid-cols-2 gap-4 mt-8">
+            <div className="bg-emerald-950/30 border border-emerald-800/50 rounded-xl p-5">
+              <h3 className="text-emerald-300 font-semibold mb-3 flex items-center gap-2">
+                <Check className="w-4 h-4" aria-hidden="true" /> Use this calculator when
+              </h3>
+              <ul className="space-y-2 text-sm text-gray-300">
+                {WHEN_TO_USE.use.map((item, i) => (
+                  <li key={i} className="flex gap-2"><span className="text-emerald-400 flex-shrink-0">•</span><span>{item}</span></li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-rose-950/30 border border-rose-800/50 rounded-xl p-5">
+              <h3 className="text-rose-300 font-semibold mb-3 flex items-center gap-2">
+                <span aria-hidden="true">⚠</span> Don't rely on it when
+              </h3>
+              <ul className="space-y-2 text-sm text-gray-300">
+                {WHEN_TO_USE.avoid.map((item, i) => (
+                  <li key={i} className="flex gap-2"><span className="text-rose-400 flex-shrink-0">•</span><span>{item}</span></li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
 
         <div className="grid lg:grid-cols-2 gap-6">
           <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 space-y-5">

@@ -468,6 +468,93 @@ export default function CheatSheetPage() {
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
             {/* Main Sections */}
             <div className="space-y-6">
+              {/* Intro — long-form practitioner context (Phase 2 pSEO depth) */}
+              {sheet.intro && (
+                <motion.section
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-slate-800/40 border border-slate-700 rounded-xl p-6"
+                >
+                  <div className="prose prose-invert prose-sm max-w-none text-gray-300 leading-relaxed">
+                    {sheet.intro.split('\n\n').map((para, i) => {
+                      // Support ### headings inside intro
+                      if (para.startsWith('### ')) {
+                        return (
+                          <h3 key={i} className="text-white text-base font-semibold mt-4 mb-2">
+                            {para.replace(/^###\s+/, '')}
+                          </h3>
+                        );
+                      }
+                      // Render **bold** segments
+                      const parts = para.split(/(\*\*[^*]+\*\*)/g);
+                      return (
+                        <p key={i} className="mb-3 last:mb-0">
+                          {parts.map((part, j) =>
+                            part.startsWith('**') && part.endsWith('**') ? (
+                              <strong key={j} className="text-white font-semibold">
+                                {part.slice(2, -2)}
+                              </strong>
+                            ) : (
+                              <React.Fragment key={j}>{part}</React.Fragment>
+                            )
+                          )}
+                        </p>
+                      );
+                    })}
+                  </div>
+                </motion.section>
+              )}
+
+              {/* When To Use — decision-aid callout (Phase 2 pSEO depth) */}
+              {sheet.whenToUse && (sheet.whenToUse.use?.length > 0 || sheet.whenToUse.avoid?.length > 0) && (
+                <motion.section
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden"
+                >
+                  <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-700">
+                    <span className="text-emerald-400"><CheckSquare className="w-5 h-5" /></span>
+                    <h2 className="text-lg font-semibold text-white">When to Use This Cheat Sheet</h2>
+                  </div>
+                  <div className="p-6 grid gap-6 md:grid-cols-2">
+                    {sheet.whenToUse.use?.length > 0 && (
+                      <div>
+                        <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                          <span className="inline-flex items-center justify-center w-5 h-5 bg-emerald-500/20 text-emerald-400 text-xs rounded">✓</span>
+                          Reach for this when
+                        </h3>
+                        <ul className="space-y-2">
+                          {sheet.whenToUse.use.map((item, i) => (
+                            <li key={i} className="text-sm text-gray-300 leading-relaxed flex gap-2">
+                              <span className="text-emerald-400 shrink-0">•</span>
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {sheet.whenToUse.avoid?.length > 0 && (
+                      <div>
+                        <h3 className="text-sm font-semibold text-amber-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                          <span className="inline-flex items-center justify-center w-5 h-5 bg-amber-500/20 text-amber-400 text-xs rounded">!</span>
+                          Look elsewhere when
+                        </h3>
+                        <ul className="space-y-2">
+                          {sheet.whenToUse.avoid.map((item, i) => (
+                            <li key={i} className="text-sm text-gray-300 leading-relaxed flex gap-2">
+                              <span className="text-amber-400 shrink-0">•</span>
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </motion.section>
+              )}
+
               {sheet.sections.map((section, i) => (
                 <SectionRenderer key={i} section={section} />
               ))}

@@ -100,6 +100,42 @@ const softwareAppSchema = {
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
 };
 
+const INTRO = `**The "which warehouse is cheapest" question has no single answer — it has a workload shape.** Snowflake, BigQuery, and Databricks each win a specific slice of the workload-shape space, and the wrong choice for your pattern can cost **3-10x** more than the right one. This calculator normalizes your workload onto a common input (\`TB scanned\`, \`compute hours\`, \`storage GB\`, complexity tier) and runs each platform's list-price math so you can see **which platform wins for your actual pattern** — not for the vendor's marketing benchmark.
+
+### Why each platform wins different workloads
+
+1. **Snowflake wins on bursty, mixed-query workloads.** Credit-based billing with per-second auto-suspend means you pay for compute only when queries run. A BI dashboard that fires 50 queries an hour during business hours and sits idle overnight is Snowflake's ideal shape.
+2. **BigQuery wins on unpredictable ad-hoc analytics.** On-demand \`$/TB scanned\` has zero idle cost and zero warehouse management. A data scientist running 3 queries a day over a 2 TB table costs almost nothing on BigQuery and requires a dedicated Snowflake warehouse otherwise.
+3. **Databricks wins on long-running ETL, ML, and unstructured data.** DBU pricing on Jobs Compute is the cheapest of the three for \`24/7 pipeline\` or \`multi-hour ML training\` workloads, especially when Photon cuts runtime.
+
+### Where the comparison math gets misleading
+
+- **Cloud services & metadata overhead.** Snowflake gives you 10% free cloud services credit; BigQuery has zero metadata charge; Databricks charges nothing for metadata but you pay Unity Catalog compute. This calculator models Snowflake's 10% free tier explicitly.
+- **Storage is nearly identical.** All three sit on S3/GCS/ADLS at ~$0.020-0.023/GB/month for active data. The storage line rarely decides the platform choice — it's a rounding error vs compute.
+- **Complexity factor matters more than size.** A "heavy" complexity workload (multi-join, window functions, partition explosions) consumes 2-4x more slots, credits, or DBUs than a "light" workload at the same TB. This calculator uses three complexity tiers so you can see the elasticity.
+
+### What this calculator is NOT
+
+It's not a procurement quote. Every real deal has **negotiated discounts** (15-40% on Snowflake, 20-60% on Databricks commits, Enterprise Edition rebates on BigQuery), and those shift the ranking. Use this to get the **list-price ranking** first, then layer your discount math on top — don't start from the vendor's already-discounted number.`;
+
+const WHEN_TO_USE = {
+  use: [
+    'Pre-RFP sizing — getting a defensible list-price ranking before talking to three vendors',
+    'Migration budget framing — e.g., "what would our existing Snowflake workload cost on BigQuery Enterprise?"',
+    'Platform-choice conversations with engineering leadership or finance',
+    'Sensitivity analysis — changing the complexity tier to see which platform is most/least elastic to your query pattern',
+    'Benchmarking a new workload type (streaming, ML, ad-hoc) against your existing platform',
+    'Educational: understanding the three fundamentally different pricing models on one page',
+  ],
+  avoid: [
+    'Privately negotiated discounts, capacity commits, or partner rebates — list prices only',
+    'Feature-level comparisons (security, governance, ML tooling) — this is cost math, not capability scoring',
+    'Finance-grade forecasting — it\'s a sizing estimator, not an accrual-accurate model',
+    'Cross-region data transfer / egress costs — cloud-provider line items not modeled here',
+    'Specific workload nuances like Snowflake cloud-services overages, BigQuery flat-rate reservation waste, or Databricks serverless burst pricing',
+  ],
+};
+
 const FAQ_ITEMS = [
   {
     q: 'How accurate is this Snowflake vs BigQuery vs Databricks calculator?',
@@ -214,6 +250,49 @@ export default function WarehouseComparisonCalculatorPage() {
             pricing as of April 2026. Great for pre-RFP sizing and migration budget framing.
           </p>
         </div>
+
+        {/* Phase 2: practitioner intro + when-to-use (pSEO depth) */}
+        <section className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8">
+          <div className="prose prose-invert prose-sm md:prose-base max-w-none text-gray-300 leading-relaxed">
+            {INTRO.split('\n\n').map((para, i) => {
+              if (para.startsWith('### ')) {
+                return <h3 key={i} className="text-xl font-semibold text-white mt-6 mb-3">{para.replace(/^###\s+/, '')}</h3>;
+              }
+              const parts = para.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+              return (
+                <p key={i} className="mb-3 last:mb-0">
+                  {parts.map((part, j) => {
+                    if (part.startsWith('**') && part.endsWith('**')) return <strong key={j} className="text-white">{part.slice(2, -2)}</strong>;
+                    if (part.startsWith('`') && part.endsWith('`')) return <code key={j} className="px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-violet-300 text-[0.9em]">{part.slice(1, -1)}</code>;
+                    return <React.Fragment key={j}>{part}</React.Fragment>;
+                  })}
+                </p>
+              );
+            })}
+          </div>
+          <div className="grid md:grid-cols-2 gap-4 mt-8">
+            <div className="bg-emerald-950/30 border border-emerald-800/50 rounded-xl p-5">
+              <h3 className="text-emerald-300 font-semibold mb-3 flex items-center gap-2">
+                <Check className="w-4 h-4" aria-hidden="true" /> Use this calculator when
+              </h3>
+              <ul className="space-y-2 text-sm text-gray-300">
+                {WHEN_TO_USE.use.map((item, i) => (
+                  <li key={i} className="flex gap-2"><span className="text-emerald-400 flex-shrink-0">•</span><span>{item}</span></li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-rose-950/30 border border-rose-800/50 rounded-xl p-5">
+              <h3 className="text-rose-300 font-semibold mb-3 flex items-center gap-2">
+                <span aria-hidden="true">⚠</span> Don't rely on it when
+              </h3>
+              <ul className="space-y-2 text-sm text-gray-300">
+                {WHEN_TO_USE.avoid.map((item, i) => (
+                  <li key={i} className="flex gap-2"><span className="text-rose-400 flex-shrink-0">•</span><span>{item}</span></li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
 
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">

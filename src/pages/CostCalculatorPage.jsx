@@ -78,6 +78,47 @@ function paramsToInputs(searchParams) {
   return next;
 }
 
+const INTRO = `**Snowflake's pricing is simple to state and devastating to misread.** Credits × credit rate × hours, plus storage, plus a few serverless meters. That's the whole model. The reason teams still end up 3-5x over budget is that every variable in that equation has a non-obvious multiplier attached to it, and the defaults in the UI push you toward the expensive end of each.
+
+This calculator lets you pull every lever — edition, region, warehouse size, hours, auto-suspend, cloud services, Snowpipe, Cortex AI, auto-clustering — and shows the all-in monthly number update live so you can see which dial actually moves the bill.
+
+### The Snowflake cost equation (and where it hurts)
+
+Monthly compute cost boils down to: \`sum(warehouse_size_credits × hours_active × credit_rate_by_edition_and_region)\`. Three things to internalize:
+
+1. **Warehouse size is exponential, not linear.** Going from \`XS\` (1 credit/hr) to \`XL\` (16 credits/hr) is a **16x** per-hour cost increase — and queries rarely get 16x faster. The right sizing move is usually *one size smaller than your gut says*.
+2. **Edition is a multiplier on every credit.** Business Critical is ~1.5-2x Standard's credit rate. If your data doesn't legally require BC, Enterprise is usually the right answer.
+3. **Region matters more than people think.** AWS \`us-east-1\` is the cheapest; European and APAC regions can add 10-30% per credit. Multi-region replication doubles compute.
+
+### Where teams over-pay on Snowflake
+
+- **Leaving auto-suspend at the 10-minute default.** Every warehouse wakes up, runs a 20-second query, then bills you for another 9:40 of idle time. Drop it to 60s on BI warehouses.
+- **Forgetting Cloud Services is free up to 10% of daily compute.** Past that threshold you pay for it. Heavy metadata operations (\`SHOW TABLES\` loops, over-frequent \`DESCRIBE\`, UI thrashing) can push you over.
+- **Overlooking serverless meters.** Snowpipe, Auto-Clustering, Materialized Views, Search Optimization, and Cortex AI each bill separately. A single \`cortex.complete\` call costs real money — model them explicitly with the toggles here.
+- **Ignoring storage tier.** Time Travel + Fail-safe can easily 2-3x your apparent storage bill. If your retention is 90 days you're paying for 97 days of data.
+
+### What this calculator gets right
+
+It maps the **list-price Credit Consumption Table** (editions × regions × features) onto a realistic monthly workload so you get a defensible budget number before you provision anything. It exposes the serverless meters (Snowpipe files/day, Cortex tokens/month, auto-clustering credits/day) as independent toggles so you can isolate which feature is worth it and which one you should turn off.`;
+
+const WHEN_TO_USE = {
+  use: [
+    'Sizing a new Snowflake account and needing a defensible monthly budget before you provision warehouses',
+    'Comparing Standard vs Enterprise vs Business Critical edition on the exact same workload to justify the tier choice',
+    'Modeling the cost impact of enabling Snowpipe, Cortex AI, or Auto-Clustering — one toggle at a time',
+    'Forecasting a region migration (e.g., us-east-1 → eu-west-1) and needing the credit-rate delta',
+    'Back-of-envelope FinOps review: "is this department\'s $25k/month defensible, or are we leaking credits?"',
+    'Benchmarking Snowflake credit economics against Databricks DBUs, BigQuery slots, or Redshift RA3 for a platform-choice conversation',
+  ],
+  avoid: [
+    'Negotiated enterprise discount programs, capacity commitments, or regional rebates — list prices only',
+    'Query-level tuning and clustering cost deltas — those depend on data-skew specifics this calculator can\'t model',
+    'Data transfer / egress charges across regions or clouds — billed by the cloud provider, not included here',
+    'Snowgrid / replication compute for cross-region DR — separate credit meters not modeled here',
+    'Finance-grade invoicing — this is a list-price planning estimator, not an accrual-accurate billing tool',
+  ],
+};
+
 // --- FAQ content (surfaced as FAQPage schema) -------------------------------
 const FAQ = [
   {
@@ -437,6 +478,49 @@ export default function CostCalculatorPage() {
             your estimate to a teammate.
           </p>
         </div>
+
+        {/* Phase 2: practitioner intro + when-to-use (pSEO depth) */}
+        <section className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8">
+          <div className="prose prose-invert prose-sm md:prose-base max-w-none text-gray-300 leading-relaxed">
+            {INTRO.split('\n\n').map((para, i) => {
+              if (para.startsWith('### ')) {
+                return <h3 key={i} className="text-xl font-semibold text-white mt-6 mb-3">{para.replace(/^###\s+/, '')}</h3>;
+              }
+              const parts = para.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+              return (
+                <p key={i} className="mb-3 last:mb-0">
+                  {parts.map((part, j) => {
+                    if (part.startsWith('**') && part.endsWith('**')) return <strong key={j} className="text-white">{part.slice(2, -2)}</strong>;
+                    if (part.startsWith('`') && part.endsWith('`')) return <code key={j} className="px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-cyan-300 text-[0.9em]">{part.slice(1, -1)}</code>;
+                    return <React.Fragment key={j}>{part}</React.Fragment>;
+                  })}
+                </p>
+              );
+            })}
+          </div>
+          <div className="grid md:grid-cols-2 gap-4 mt-8">
+            <div className="bg-emerald-950/30 border border-emerald-800/50 rounded-xl p-5">
+              <h3 className="text-emerald-300 font-semibold mb-3 flex items-center gap-2">
+                <Check className="w-4 h-4" aria-hidden="true" /> Use this calculator when
+              </h3>
+              <ul className="space-y-2 text-sm text-gray-300">
+                {WHEN_TO_USE.use.map((item, i) => (
+                  <li key={i} className="flex gap-2"><span className="text-emerald-400 flex-shrink-0">•</span><span>{item}</span></li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-rose-950/30 border border-rose-800/50 rounded-xl p-5">
+              <h3 className="text-rose-300 font-semibold mb-3 flex items-center gap-2">
+                <span aria-hidden="true">⚠</span> Don't rely on it when
+              </h3>
+              <ul className="space-y-2 text-sm text-gray-300">
+                {WHEN_TO_USE.avoid.map((item, i) => (
+                  <li key={i} className="flex gap-2"><span className="text-rose-400 flex-shrink-0">•</span><span>{item}</span></li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
 
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Input column (2/3 on desktop) */}

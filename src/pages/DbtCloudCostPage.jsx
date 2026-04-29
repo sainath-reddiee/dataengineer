@@ -45,6 +45,43 @@ const PLANS = [
 const formatUSD = (n) =>
   n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
 
+const INTRO = `**dbt Cloud's pricing is a per-seat trap for small teams and a volume discount for large ones.** The line everyone writes on the PO — "$100/seat/month" — hides the two variables that actually decide whether dbt Cloud is a steal or a mistake: **successful model builds per month** and **how many of your engineers actually need an IDE seat**.
+
+This calculator computes both axes (seats + metered builds + overage) across Developer / Team / Enterprise and lets you compare the all-in number against a dbt Core + Airflow/Dagster self-managed stack.
+
+### The pricing model in one paragraph
+
+dbt Cloud bills on **two meters**: a fixed **per-developer seat charge** ($0 on Developer, ~$100 on Team, ~$125+ on Enterprise) plus **metered successful model builds** above each plan's included quota (~$0.01/build on Team, ~$0.008/build on Enterprise). "Successful model build" means any \`model\`, \`seed\`, \`snapshot\`, or \`test\` that exits cleanly — a project with 100 models run hourly is already 72k builds/month, blowing past Team's 15k included quota.
+
+### Where teams over-pay on dbt Cloud
+
+1. **Buying seats for non-developers.** Analysts who only read dashboards don't need a dbt Cloud seat. Only engineers writing and merging models need IDE access.
+2. **Hourly CI runs on every PR.** A heavy CI workflow that rebuilds the whole DAG on every pull-request push can burn tens of thousands of builds per week. Use \`state:modified+\` to only rebuild changed models.
+3. **Ignoring the 8-seat Team cap.** Team tier is hard-capped at 8 seats. Team 9 means you're on Enterprise whether you wanted to be or not — plan the jump before you hire.
+4. **Forgetting warehouse compute.** dbt Cloud charges for orchestration; the SQL itself still runs on **your** Snowflake/BigQuery/Databricks warehouse and is billed separately.
+
+### dbt Cloud vs dbt Core + Airflow — when to switch
+
+For teams with 5+ engineers who already run an orchestrator (Airflow, Dagster, Prefect), **dbt Core + self-hosted scheduling is often 50-80% cheaper** than equivalent dbt Cloud Team seats. The trade-off is real: no hosted IDE, no Semantic Layer UI, no native CI/CD — you build those yourself. This calculator's comparison column gives you the number to take into that build-vs-buy conversation.`;
+
+const WHEN_TO_USE = {
+  use: [
+    'Planning a dbt Cloud rollout and need a defensible monthly number for finance approval',
+    'Deciding between Team and Enterprise tiers — especially around the 8-seat hard cap',
+    'Modeling the cost impact of a CI/CD workflow change (more PRs, state:modified+, full-refresh frequency)',
+    'Benchmarking dbt Cloud against a dbt Core + Airflow/Dagster self-hosted build',
+    'Forecasting overage charges when your model count or run frequency is scaling fast',
+    'Negotiating renewal — showing your vendor that you\'ve modeled the next tier threshold',
+  ],
+  avoid: [
+    'Privately negotiated enterprise pricing, startup credits, or partner discounts — list prices only',
+    'Semantic Layer query volume pricing and Explorer-specific add-ons — those have separate meters',
+    'Warehouse compute costs (Snowflake credits, BigQuery TB, Databricks DBUs) — those are billed separately by your warehouse vendor',
+    'IDE-run-minutes vs job-run-minutes edge cases for workspaces that heavily use the dbt Cloud IDE terminal',
+    'Finance-grade invoicing — list-price planning estimator, not an accrual-accurate billing tool',
+  ],
+};
+
 const FAQ = [
   {
     q: 'How much does dbt Cloud cost per user?',
@@ -178,6 +215,49 @@ export default function DbtCloudCostPage() {
             comparison table below to benchmark against dbt Core + Airflow TCO.
           </p>
         </div>
+
+        {/* Phase 2: practitioner intro + when-to-use (pSEO depth) */}
+        <section className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8">
+          <div className="prose prose-invert prose-sm md:prose-base max-w-none text-gray-300 leading-relaxed">
+            {INTRO.split('\n\n').map((para, i) => {
+              if (para.startsWith('### ')) {
+                return <h3 key={i} className="text-xl font-semibold text-white mt-6 mb-3">{para.replace(/^###\s+/, '')}</h3>;
+              }
+              const parts = para.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+              return (
+                <p key={i} className="mb-3 last:mb-0">
+                  {parts.map((part, j) => {
+                    if (part.startsWith('**') && part.endsWith('**')) return <strong key={j} className="text-white">{part.slice(2, -2)}</strong>;
+                    if (part.startsWith('`') && part.endsWith('`')) return <code key={j} className="px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-pink-300 text-[0.9em]">{part.slice(1, -1)}</code>;
+                    return <React.Fragment key={j}>{part}</React.Fragment>;
+                  })}
+                </p>
+              );
+            })}
+          </div>
+          <div className="grid md:grid-cols-2 gap-4 mt-8">
+            <div className="bg-emerald-950/30 border border-emerald-800/50 rounded-xl p-5">
+              <h3 className="text-emerald-300 font-semibold mb-3 flex items-center gap-2">
+                <Check className="w-4 h-4" aria-hidden="true" /> Use this calculator when
+              </h3>
+              <ul className="space-y-2 text-sm text-gray-300">
+                {WHEN_TO_USE.use.map((item, i) => (
+                  <li key={i} className="flex gap-2"><span className="text-emerald-400 flex-shrink-0">•</span><span>{item}</span></li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-rose-950/30 border border-rose-800/50 rounded-xl p-5">
+              <h3 className="text-rose-300 font-semibold mb-3 flex items-center gap-2">
+                <span aria-hidden="true">⚠</span> Don't rely on it when
+              </h3>
+              <ul className="space-y-2 text-sm text-gray-300">
+                {WHEN_TO_USE.avoid.map((item, i) => (
+                  <li key={i} className="flex gap-2"><span className="text-rose-400 flex-shrink-0">•</span><span>{item}</span></li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
 
         <div className="grid lg:grid-cols-2 gap-6">
           <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 space-y-5">

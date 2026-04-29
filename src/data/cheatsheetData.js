@@ -25,6 +25,23 @@ export const cheatsheets = [
     category: 'sql',
     difficulty: 'Intermediate',
     lastUpdated: '2026-04-09',
+    intro: "Snowflake's SQL dialect is ANSI-compliant for the 90% of queries that look like standard analytics SQL, but the **10% that's Snowflake-specific is where the platform's real power — and its biggest gotchas — live**. This cheat sheet is the reference I keep open on my second monitor when working against Snowflake: DDL for databases/schemas/warehouses, the DML patterns Snowflake rewards (MERGE, COPY INTO, Streams), the semi-structured superpowers (FLATTEN, PARSE_JSON, LATERAL), and the Snowflake-only features that replace clunky patterns from other warehouses (QUALIFY, RESULT_SCAN, Time Travel, zero-copy cloning).\n\n### How to use this cheat sheet effectively\n\nIf you're migrating from Postgres, Redshift, or BigQuery, start by scanning the **Snowflake-Specific Features** section — those are the primitives that make Snowflake queries faster and simpler than your old dialect. The Time Travel + UNDROP combination alone eliminates 80% of the \"oh no, I dropped the wrong table\" incidents. The FLATTEN + VARIANT combo lets you query JSON columns with native SQL performance, no ETL pre-processing needed. And QUALIFY replaces the ROW_NUMBER() + subquery pattern every other warehouse forces on you.\n\nFor daily engineering work, the **Table Operations** and **DML** sections cover 70% of what you'll type. Key gotchas to internalize before writing production SQL: (1) Transient vs permanent tables have different Time Travel windows (1 day max for transient); (2) MERGE requires a unique matching key or you'll get ambiguous behavior; (3) COPY INTO is the preferred bulk-load path — INSERT SELECT from S3 external tables is an anti-pattern; (4) Warehouse sizing matters more than query tuning for many workloads — double the warehouse size before optimizing a 30-second query.\n\nThe cheat sheet is intentionally syntax-first. Each command shows the minimal form plus a realistic example. For deeper patterns (clustering keys, micro-partition internals, cost optimization, governance), follow the links in the Related Cheat Sheets sidebar.",
+    whenToUse: {
+      use: [
+        "You're writing ad-hoc Snowflake queries and need quick syntax reference for DDL, DML, or functions",
+        "You're migrating from another warehouse (Postgres, Redshift, BigQuery) and need a translation guide for Snowflake-specific features",
+        "You're onboarding to a Snowflake-based data team and want the canonical set of operations you'll use daily",
+        "You're debugging a query and need to quickly look up Time Travel, FLATTEN, QUALIFY, or MERGE syntax",
+        "You're preparing for a Snowflake interview and want a dense review of commonly-tested SQL constructs"
+      ],
+      avoid: [
+        "You need deep Snowflake architecture knowledge (micro-partitions, clustering, pruning) — see the Snowflake Performance Deep Dive cheat sheet",
+        "You need cost optimization patterns — see the Snowflake Cost Optimization cheat sheet",
+        "You're looking for governance, RBAC, or security patterns — see the Snowflake Governance cheat sheet",
+        "You need streaming-specific SQL (Streams, Tasks, Dynamic Tables, Snowpipe) — see the Snowflake Streams & Tasks or Dynamic Tables interview cheat sheets",
+        "You need dbt-specific modeling patterns — see the dbt Commands cheat sheet"
+      ]
+    },
     sections: [
       {
         title: 'Database & Schema Operations',
@@ -114,6 +131,24 @@ export const cheatsheets = [
     category: 'sql',
     difficulty: 'Intermediate',
     lastUpdated: '2026-04-09',
+    intro: "Window functions are the single highest-leverage SQL feature most data engineers learn — and the single most commonly fumbled feature in interviews. They let you compute **per-row aggregates that respect grouping and ordering** without collapsing rows with GROUP BY. Running totals, rolling averages, row rankings, period-over-period deltas, session-ization, deduplication, top-N-per-group, first-value/last-value lookups — all of these become one-liners with window functions, versus the painful self-join + correlated-subquery gymnastics they'd otherwise require.\n\nThis cheat sheet covers the four primitive patterns every data engineer should have in muscle memory: (1) **Ranking** — ROW_NUMBER, RANK, DENSE_RANK, NTILE for ordering within partitions; (2) **Navigation** — LEAD, LAG, FIRST_VALUE, LAST_VALUE, NTH_VALUE for looking forward/backward in a window; (3) **Aggregation with frames** — SUM/AVG/COUNT/MIN/MAX OVER (...) with ROWS BETWEEN / RANGE BETWEEN for running totals and rolling windows; (4) **Analytic distributions** — PERCENT_RANK, CUME_DIST, PERCENTILE_CONT, PERCENTILE_DISC for percentile analysis.\n\n### The three things that trip engineers up\n\n**First**: the difference between RANK and DENSE_RANK and ROW_NUMBER. If two rows tie on the ORDER BY, RANK skips ranks (1, 1, 3), DENSE_RANK doesn't (1, 1, 2), ROW_NUMBER breaks the tie arbitrarily (1, 2, 3). Pick deliberately — the wrong choice silently produces wrong leaderboards. **Second**: the frame clause (ROWS BETWEEN ... AND ...). The default for most aggregate window functions is `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` — cumulative from the start. For rolling 7-day windows, you need explicit `ROWS BETWEEN 6 PRECEDING AND CURRENT ROW`. Forgetting this is a top source of wrong numbers in dashboards. **Third**: PARTITION BY semantics. Each partition is independent; window functions don't cross partition boundaries. Mistake: partitioning by a column that varies within what you thought was one group, producing per-sub-partition ranks instead of per-group ranks.\n\nSnowflake specifically: **QUALIFY** clause lets you filter on window function results without a subquery — `SELECT * FROM t QUALIFY ROW_NUMBER() OVER (PARTITION BY id ORDER BY ts DESC) = 1` for deduplication-keep-latest. Postgres, BigQuery, Databricks all added QUALIFY too; it's the modern standard.",
+    whenToUse: {
+      use: [
+        "You need running totals, rolling averages, or cumulative sums across ordered data",
+        "You need to rank rows within groups (top-N-per-category, leaderboards, per-user-latest)",
+        "You're deduplicating rows and want to keep the latest/first per group (ROW_NUMBER + QUALIFY)",
+        "You need period-over-period deltas (LEAD/LAG for month-over-month, year-over-year growth)",
+        "You're computing percentiles, medians, or distribution metrics within partitions",
+        "You're session-izing events (gap detection using LAG + conditional aggregation)"
+      ],
+      avoid: [
+        "You just need plain GROUP BY aggregates — don't overcomplicate with unnecessary windows",
+        "You need JOIN-based logic that windows can't express (windows don't cross partitions)",
+        "You're on a warehouse that doesn't support QUALIFY — fall back to subquery/CTE wrapping",
+        "Performance matters and data is huge — some window patterns force full partition materialization; benchmark on production scale",
+        "You're new to SQL entirely — learn GROUP BY and JOIN fundamentals first, then tackle windows"
+      ]
+    },
     sections: [
       {
         title: 'Window Function Syntax',
@@ -233,6 +268,24 @@ FROM monthly_revenue;`,
     category: 'orchestration',
     difficulty: 'Intermediate',
     lastUpdated: '2026-04-09',
+    intro: "dbt (**data build tool**) is the transformation layer that turned SQL engineers into software engineers. Instead of scheduling a pile of stored procedures and hoping dependencies run in the right order, you write **modular SELECT statements** as models, dbt figures out the DAG from `ref()` calls, runs them in topological order, tests them, versions them in git, and documents them — all from a handful of CLI commands you'll use hundreds of times a week once it clicks.\n\nThis cheat sheet is organized around the commands you actually run in daily practice, not a dump of every flag the docs list. The big four: **`dbt run`** (build models), **`dbt test`** (run assertions), **`dbt build`** (run + test + snapshot + seed in DAG order — the one you'll mostly use), and **`dbt compile`** (render Jinja to raw SQL without executing — critical for debugging). Then the selector syntax: `dbt build -s my_model+` (downstream), `+my_model` (upstream), `+my_model+` (both), `tag:finance`, `state:modified+` (Slim CI).\n\n### The commands that actually save the day\n\n**`dbt run --defer --state path/to/prod/manifest.json`** is how you run just the models you changed locally while *referring to* production versions of everything upstream — no need to build the whole warehouse for a one-model change. Combined with `state:modified+`, this is Slim CI, and it's the single biggest dbt productivity win after you graduate from `dbt run` on everything.\n\n**`dbt run-operation <macro_name> --args '{key: value}'`** runs any macro as a one-off — backfills, grants, cache clears, admin scripts. Write the logic as a macro, check it into git, run it on demand. Replaces 80% of the stored-procedures-for-ops pattern.\n\n**`dbt docs generate && dbt docs serve`** builds a fully-interactive lineage graph + column-level documentation site from your YAML descriptions. Share it with analysts and they stop asking you what `dim_customer.segment` means. **`dbt ls -s tag:finance --resource-type model`** lists all models matching a selector — invaluable for \"how many models touch X?\" questions.\n\nOne nuance that trips engineers new to dbt: **dbt is stateless between runs unless you tell it otherwise**. `--state` + `--defer` + `state:modified+` is the trio that makes dbt feel \"smart\" in CI. Without them, every CI run rebuilds everything from scratch. With them, CI rebuilds only what changed and its downstream, referring to prod for the rest.",
+    whenToUse: {
+      use: [
+        "You're authoring, testing, or debugging dbt models and need the CLI commands at your fingertips",
+        "You're setting up Slim CI and need the --defer / --state / state:modified+ pattern",
+        "You're writing macros and need run-operation, compile, and selector syntax",
+        "You're debugging a failing DAG and need to isolate specific models with selectors (model+, +model, tag:x)",
+        "You're new to dbt Cloud and need the Core CLI equivalents of the UI buttons",
+        "You're running ops-like tasks (grants, backfills) and need run-operation patterns"
+      ],
+      avoid: [
+        "You need architectural guidance — use the dbt best practices cheat sheet instead",
+        "You need Jinja deep-dives — macros/materializations warrant their own reference",
+        "You're on dbt 1.0 or older — flag syntax may differ; check your version's docs",
+        "You need Snowflake-specific dbt patterns (streams, dynamic tables, Snowpark) — see dbt-projects-on-snowflake guide",
+        "You're deciding whether to use dbt Core vs Cloud — this is a reference, not a decision doc"
+      ]
+    },
     sections: [
       {
         title: 'Core CLI Commands',
@@ -351,6 +404,24 @@ SELECT * FROM {{ source('raw', 'orders') }}
     category: 'orchestration',
     difficulty: 'Intermediate',
     lastUpdated: '2026-04-09',
+    intro: "Apache Airflow is the **incumbent orchestrator** for data pipelines — originally Airbnb-built, now an Apache top-level project and the backbone of managed services like **AWS MWAA**, **Google Cloud Composer**, and **Astronomer**. It's the tool that turned cron-plus-bash-scripts-plus-hope into a real discipline: pipelines-as-Python-code, dependency DAGs, retries, SLAs, backfills, and a UI that actually shows you what ran and why it failed.\n\nThis cheat sheet is structured around the things Airflow engineers actually *do*: author DAGs, pick the right operator, trigger/backfill/clear runs from the CLI, wire up connections and variables, and debug failing tasks. **Don't skip the TaskFlow API section** — the modern `@task` decorator syntax (Airflow 2.0+) replaces XCom push/pull ceremony with plain Python function calls and is what you should be writing in 2026.\n\n### The Airflow concepts that matter in practice\n\n**DAG = Directed Acyclic Graph** — a Python file that defines a schedule, a set of tasks, and their dependencies. Airflow scans your `dags/` folder every few minutes and registers whatever DAGs it finds. **Operator** = a class that does one thing: `BashOperator` runs a shell command, `PythonOperator` calls a function, `SnowflakeOperator` runs SQL, `KubernetesPodOperator` spins up a pod. **Task** = an instance of an operator in a specific DAG. **Task Instance** = a specific run of a task on a specific execution date.\n\n**Three things every Airflow engineer gets wrong at least once**: (1) **`execution_date` is the start of the interval, not the end** — a DAG with `schedule='@daily'` running at midnight on Feb 5 has `execution_date = Feb 4 00:00`. Use `{{ data_interval_end }}` (Airflow 2.2+) to get the end instead. (2) **XCom is for small values only** — pushing a DataFrame through XCom is an antipattern; use S3/GCS/object storage and pass a URI. (3) **Task retries don't reset state** — if a Python task fails halfway through a list, the retry starts from the top, not where it left off. Make tasks idempotent.\n\nOn managed vs self-hosted: **MWAA** and **Composer** handle the scheduler/webserver/metadata DB for you; you just drop DAGs into an S3/GCS bucket. **Astronomer Cloud** adds CI/CD, better observability, and enterprise support. **Self-hosted on Kubernetes** (official Helm chart) gives you the most control but you own the operational burden.",
+    whenToUse: {
+      use: [
+        "You're authoring or debugging Airflow DAGs and need syntax/patterns at your fingertips",
+        "You're migrating from cron + bash and need to understand Airflow's core abstractions",
+        "You're using managed Airflow (MWAA, Composer, Astronomer) and need the Python DAG API, not the infrastructure",
+        "You need the TaskFlow API (@task decorator) patterns for modern Airflow 2.x code",
+        "You're debugging task failures and need CLI commands (airflow tasks test, clear, trigger) and XCom patterns",
+        "You're wiring up Connections and Variables for databases, cloud services, and APIs"
+      ],
+      avoid: [
+        "You need a modern orchestrator comparison (Dagster, Prefect, Argo, Mage) — this is Airflow-specific",
+        "You're on Airflow 1.x — syntax and operator imports differ significantly; upgrade first",
+        "You need deep Kubernetes/Helm operations knowledge — this covers the DAG layer, not the platform",
+        "You need Snowflake-specific Airflow patterns (streams, tasks) — see Snowflake orchestration guides",
+        "You're deciding between Airflow and dbt Cloud / Snowflake Tasks — this is a reference, not a decision doc"
+      ]
+    },
     sections: [
       {
         title: 'CLI Commands',
@@ -484,6 +555,22 @@ with DAG(
     category: 'interview',
     difficulty: 'Intermediate',
     lastUpdated: '2026-04-09',
+    intro: "Snowflake interview prep breaks down into five skill areas: **architecture** (three-layer storage/compute/services separation, micro-partitions, result cache), **performance** (clustering keys, search optimization, warehouse sizing, query profile reading), **security & governance** (RBAC, row access policies, masking policies, network policies), **cost optimization** (auto-suspend, resource monitors, credit accounting by service), and **data engineering features** (Streams, Tasks, Dynamic Tables, Snowpipe, Snowpark). Interviewers at Snowflake customers (Capital One, JPMorgan, EA, Instacart, etc.) and at Snowflake itself probe all five.\n\nThe questions in this sheet are the ones that actually come up — pulled from real interview feedback across FAANG, fintech, and mid-market data teams in 2025-2026. You'll get the what *and* the why.\n\n### What interviewers are really testing\n\n**For junior/mid-level roles**: can you explain the architecture in 60 seconds? Do you know why Snowflake separates storage from compute and what that means for concurrency? Can you write a basic clustering strategy? **For senior roles**: can you diagnose a slow query from a QUERY_PROFILE screenshot? Do you know when **Search Optimization Service** beats a clustering key? Can you architect a **zero-copy cloning** strategy for dev/test environments? **For staff/principal roles**: trade-offs between **Dynamic Tables vs Streams+Tasks vs dbt incremental models**, cost modeling across warehouses + serverless tasks + Snowpipe + Cortex, and governance at enterprise scale (policies, tags, data classification).\n\nThree recurring themes: **credits**, **partitions**, and **caches**. Expect questions like \"walk me through how a SELECT query uses result cache, warehouse cache, and remote storage\" and \"explain micro-partition pruning with a concrete example.\" Memorize the three caches (result, metadata, local disk/warehouse) and their TTLs.",
+    whenToUse: {
+      use: [
+        "You have a Snowflake technical interview coming up",
+        "You're a hiring manager drafting interview rubrics for Snowflake roles",
+        "You're prepping for a Snowflake SnowPro certification",
+        "You want to benchmark your Snowflake knowledge against market expectations",
+        "You're transitioning from another warehouse (Redshift, BigQuery) and need a gap analysis"
+      ],
+      avoid: [
+        "You need hands-on lab exercises — this is Q&A, not hands-on practice",
+        "You need the absolute latest 2026 features (Cortex Agents, Openflow) — check the Snowflake deep-dive cheatsheets",
+        "You're prepping for a non-Snowflake warehouse interview — use the SQL interview cheat sheet instead",
+        "You want SQL syntax reference — use the Snowflake SQL cheat sheet instead"
+      ]
+    },
     sections: [
       {
         title: 'Architecture & Core Concepts',
@@ -555,6 +642,22 @@ with DAG(
     category: 'interview',
     difficulty: 'Intermediate',
     lastUpdated: '2026-04-09',
+    intro: "SQL interviews are where data engineering candidates are made or broken. Regardless of whether the role is nominally about Python, Spark, or a specific warehouse, the interviewer will hand you a schema and ask you to write queries. Your fluency with **joins, window functions, CTEs, aggregation, and subqueries** will tell them more in 30 minutes than any resume bullet.\n\nThis cheat sheet focuses on the question patterns that appear repeatedly: **second-highest salary** (window functions or self-joins), **consecutive logins** (LAG + island/gap detection), **top-N per group** (ROW_NUMBER + PARTITION BY), **cumulative metrics** (SUM OVER with frame clauses), **deduplication** (ROW_NUMBER + QUALIFY), and **hierarchical data** (recursive CTEs). If you can write these from memory, you'll pass 80% of SQL screens.\n\n### How to interview well, not just answer well\n\n**Think out loud**. Interviewers care about your approach more than a memorized answer. Start by restating the question, asking about edge cases (nulls? duplicates? ties?), sketching the schema, then writing the query. **Verify with sample data** — if the interviewer gives you 5 sample rows, trace your query through them before saying you're done. Off-by-one errors in window function frames are the #1 source of \"looks right but is wrong\" SQL answers.\n\n**Common traps**: (1) Using GROUP BY + HAVING when a window function is cleaner — both work but the window approach is faster in real Snowflake/BigQuery/Postgres; (2) Using COUNT(*) when the schema has NULLs — COUNT(col) ignores nulls, COUNT(*) doesn't; (3) Using LEFT JOIN + WHERE where the WHERE clause accidentally turns it into an INNER JOIN by filtering out nulls; (4) Forgetting DISTINCT on COUNT when duplicates exist in the joined data.\n\nThese questions are dialect-portable — they run on Snowflake, BigQuery, Postgres, Redshift, MySQL (mostly) with minor syntax tweaks. Where dialect matters (QUALIFY, LATERAL, date arithmetic), we call it out.",
+    whenToUse: {
+      use: [
+        "You have a SQL-heavy interview (data engineer, analytics engineer, BI dev) coming up",
+        "You're prepping for a live coding SQL screen on HackerRank, CoderPad, or StrataScratch",
+        "You want a breadth review across joins, windows, CTEs, and aggregates",
+        "You're hiring and need a question bank for SQL interviews",
+        "You're transitioning into data engineering and need to benchmark SQL skill"
+      ],
+      avoid: [
+        "You need Snowflake-specific architecture questions — see the Snowflake interview cheat sheet",
+        "You want SQL syntax reference — use a dialect-specific cheat sheet",
+        "You need NoSQL or MongoDB interview prep — this is strictly relational SQL",
+        "You're looking for database internals / indexing deep dives — this is query-focused"
+      ]
+    },
     sections: [
       {
         title: 'Joins & Relationships',
@@ -616,6 +719,22 @@ with DAG(
     category: 'interview',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-09',
+    intro: "Data engineering interviews span five distinct rounds at most companies: **SQL coding** (covered in the SQL cheat sheet), **Python/Spark coding**, **system design** (\"design a Twitter analytics pipeline\"), **data modeling** (star schemas, SCD, normalization tradeoffs), and **behavioral + ownership stories**. This cheat sheet focuses on the **conceptual/theoretical** side — the 50-odd questions that probe whether you actually understand the discipline.\n\nExpect questions like: \"**batch vs stream — when do you pick which?**\", \"**explain exactly-once semantics in Kafka**\", \"**what's the difference between a data lake, warehouse, and lakehouse?**\", \"**walk me through designing a near-real-time CDC pipeline from Postgres to Snowflake**\". These aren't gotchas — they're the vocabulary of the field and interviewers want to see that you can reason about tradeoffs.\n\n### How senior DE interviews actually go\n\n**The system design round is the decisive one for senior+ roles**. You'll be handed a whiteboard and asked to design a system — often: \"build an event analytics pipeline for 1M events/sec, powering both a real-time dashboard and daily batch reports\". Strong candidates: (1) clarify SLAs (freshness, accuracy, completeness) before drawing anything, (2) sketch the ingestion layer (Kafka? Kinesis? direct writes?), (3) split hot path (stream processor → real-time store) from cold path (object storage → warehouse), (4) explicitly discuss late-arriving data, reprocessing, and schema evolution, (5) name-drop specific tools (Flink, Spark Structured Streaming, Iceberg, Snowflake Dynamic Tables) only when they fit.\n\n**Behavioral rounds matter more than juniors expect**. \"Tell me about a time you handled a failed production pipeline\" is actually asking: can you write a clear post-mortem? Do you have opinions on observability? Did you fix the root cause or just the symptom? STAR format (Situation, Task, Action, Result) is still the gold standard — be specific about numbers (\"cut daily compute cost 38%\", not \"saved money\").",
+    whenToUse: {
+      use: [
+        "You have a data engineering interview loop at a mid-to-large company",
+        "You're prepping for system design or conceptual rounds",
+        "You want to benchmark your breadth across ingestion, storage, processing, orchestration, governance",
+        "You're hiring DEs and need a concept-based question bank",
+        "You're a bootcamp grad or cross-functional transfer and need to sound like a DE"
+      ],
+      avoid: [
+        "You need SQL coding drill practice — use the SQL interview cheat sheet",
+        "You want tool-specific interview questions (dbt, Airflow, Snowflake) — see dedicated sheets",
+        "You need ML / data science interview prep — different discipline",
+        "You want behavioral-only prep — this skews technical-conceptual"
+      ]
+    },
     sections: [
       {
         title: 'ETL & Pipeline Design',
@@ -675,6 +794,22 @@ with DAG(
     category: 'bestpractices',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-09',
+    intro: "Snowflake best practices fall into four buckets that every production team eventually has to get right: **cost** (right-size warehouses, set auto-suspend, use resource monitors, avoid serverless where batch works), **performance** (clustering, SOS, QAS, materialized views, micro-partition hygiene), **security** (network policies, RBAC hierarchy, row access + masking, SSO, key pair auth over passwords), and **reliability** (Time Travel, Fail-safe, replication, failover groups, zero-copy cloning for dev/test).\n\nThis cheat sheet is a distillation of patterns seen across hundreds of Snowflake deployments — what works at scale, what fails silently, and what looks clever but costs you. Not feature documentation; it's the **opinionated field guide**.\n\n### The handful of choices that compound into 50% of your bill\n\n**(1) Auto-suspend at 60 seconds, not 10 minutes.** Every warehouse you leave running between queries burns credits. Default to `AUTO_SUSPEND=60`. The 1-2s warm-start penalty is almost always worth it.\n\n**(2) Right-size on average, not peak.** Sizing a warehouse for your one 4-hour monthly report is how people end up with XL warehouses running all day. Use MEDIUM or LARGE for interactive work, spin up XL only for the specific batch job that needs it, suspend immediately after.\n\n**(3) Separate warehouses by workload, not by team.** The right split is: ingestion (small, auto-scale), transformation (medium, multi-cluster), BI (medium, multi-cluster), ad-hoc analytics (small), data science (large, user-controlled). Splitting by team makes cost attribution easy but encourages oversizing.\n\n**(4) Use RESOURCE MONITORS religiously.** At account, warehouse, or user level — set a credit limit, alert at 75%, suspend at 100%. One misbehaving dbt run should not burn     sections: [0K.\n\n**(5) Clustering keys are not a silver bullet.** They cost credits to maintain. Add one only after proving pruning is the bottleneck from QUERY_PROFILE. For selective-predicate tables over 1TB, yes. For <100GB tables, almost never.",
+    whenToUse: {
+      use: [
+        "You're standing up a new Snowflake account and want opinionated defaults",
+        "You're reviewing an existing Snowflake setup for cost/performance/security issues",
+        "You're establishing dev/test/prod conventions, RBAC hierarchy, and tagging strategy",
+        "You're onboarding a team and need a \"here's how we use Snowflake\" doc",
+        "You're prepping a platform-architecture interview and need to sound experienced"
+      ],
+      avoid: [
+        "You need basic syntax reference — use the Snowflake SQL cheat sheet",
+        "You need interview Q&A — use the Snowflake interview cheat sheet",
+        "You need Iceberg / Cortex / Dynamic Tables deep-dives — see dedicated cheatsheets",
+        "You need the absolute latest 2026 features — check Snowflake release notes"
+      ]
+    },
     sections: [
       {
         title: 'Warehouse Management',
@@ -755,6 +890,22 @@ with DAG(
     category: 'bestpractices',
     difficulty: 'Intermediate',
     lastUpdated: '2026-04-09',
+    intro: "dbt best practices separate teams that survive past 500 models from teams that drown under their own tech debt. The patterns that scale: **medallion/layered project structure** (staging → intermediate → marts), **aggressive use of sources and refs** (never hardcode table names), **YAML descriptions and tests as non-negotiable** (a model without documentation is a liability), **Slim CI with state:modified+** (don't rebuild the warehouse on every PR), and **macros for repetition** (DRY your SQL).\n\nThis cheat sheet is the distilled version of the dbt Labs style guide plus lessons learned from large dbt deployments at Snowflake/BigQuery customers. Opinionated defaults, not feature docs.\n\n### The patterns that pay dividends at 1000+ models\n\n**(1) Enforce a three-layer folder structure: staging, intermediate, marts.** `staging/` has one model per source table (rename columns, cast types, light cleanup — nothing else). `intermediate/` has business logic that combines staging models but isn't yet consumer-facing. `marts/` has the final dimensional/fact models organized by business domain (finance, marketing, product). Models in higher layers never reference sources directly; always go through staging.\n\n**(2) Test generic tests aggressively, singular tests sparingly.** Every primary key gets `unique` + `not_null`. Every foreign key gets `relationships`. Status columns get `accepted_values`. Singular tests (custom SQL) are expensive to maintain — reach for them only when generic tests can't express the assertion.\n\n**(3) Materialize by access pattern, not by default.** Staging = view (cheap, always fresh). Intermediate = view or ephemeral. Marts = table or incremental (queried often, recomputing every run wastes credits). Incremental for anything over ~100GB where partition/cluster keys enable efficient merges.\n\n**(4) Slim CI is non-negotiable past 200 models.** `dbt build --select state:modified+ --defer --state path/to/prod-manifest.json` rebuilds only changed models and downstream, using prod for upstream dependencies. Without this, CI takes hours.\n\n**(5) One dbt project per logical business unit, not per team.** Don't create `finance-dbt`, `marketing-dbt` — they'll need to ref each other eventually and you'll end up with a fragile mesh. Use a monorepo with folder-level ownership.",
+    whenToUse: {
+      use: [
+        "You're setting up a new dbt project and want opinionated defaults",
+        "You're reviewing an existing dbt project for sprawl, naming drift, or test gaps",
+        "You're hitting CI times over 30 minutes and need Slim CI patterns",
+        "You're scaling dbt from <100 models to >500 and hitting organizational pain",
+        "You're preparing a \"why should we adopt dbt this way\" proposal"
+      ],
+      avoid: [
+        "You need dbt CLI syntax reference — use the dbt commands cheat sheet",
+        "You need dbt basics — start with the official dbt fundamentals course",
+        "You need dbt-on-Snowflake specifics — see the dbt-projects-on-Snowflake guide",
+        "You're evaluating dbt vs alternatives — this is pro-dbt; do your own eval"
+      ]
+    },
     sections: [
       {
         title: 'Project Structure',
@@ -849,6 +1000,22 @@ GROUP BY date_day`,
     category: 'bestpractices',
     difficulty: 'Intermediate',
     lastUpdated: '2026-04-09',
+    intro: "Airflow at scale is where DAG authoring skill separates from distributed-scheduler operations knowledge. The DAGs that survive production: **idempotent tasks** (rerunning a task produces the same result), **externalized state** (don't store data in XCom; store pointers to S3/GCS), **clear retry semantics** (retry on transient failures, not on logic bugs), **TaskFlow API over the classic operator pattern** in Airflow 2.x, and **sensible DAG parsing** (don't do heavy work at module import time).\n\nThis cheat sheet is opinionated patterns from managed Airflow at scale (MWAA, Composer, Astronomer) and self-hosted Kubernetes deployments. If you follow half of these you'll avoid 80% of Airflow pain.\n\n### The patterns that matter most in production\n\n**(1) Make every task idempotent.** A task that processes yesterday's events must produce the same output whether it runs once or five times. Use MERGE/UPSERT with deduplication keys, not INSERT-only. Delete-then-insert is also idempotent (and easier to reason about for batch).\n\n**(2) Parameterize by data_interval_start / data_interval_end, not execution_date.** In Airflow 2.2+, `execution_date` is deprecated. `data_interval_start` is the start of the interval, `data_interval_end` is the end. For daily DAGs at midnight, `data_interval_start = yesterday 00:00`, `data_interval_end = today 00:00`. This is what your SQL should filter on.\n\n**(3) Heavy imports belong inside task functions, not at module top level.** The scheduler re-parses DAGs every 30 seconds. If your DAG imports pandas/spark at the top, every parse burns CPU. Move heavy imports inside the `@task` function body.\n\n**(4) Use KubernetesPodOperator or ECS/Fargate operators for heavy work.** Don't run pandas pipelines inside the Airflow worker. Spin up a pod/container for the heavy lifting. Airflow becomes the orchestrator, not the compute.\n\n**(5) Use Connections and Variables, never hardcoded secrets.** Store DB creds in Airflow Connections (backed by Secrets Manager in production). Store config in Variables. Code should reference by connection_id and var key only.\n\n**(6) Test DAGs with `airflow dags test` before merging.** `airflow dags test my_dag 2026-04-09` runs a DAG end-to-end locally without scheduler state. It's the closest to \"unit test for a DAG\" Airflow offers.",
+    whenToUse: {
+      use: [
+        "You're setting up a new Airflow deployment and need opinionated defaults",
+        "You're debugging flaky tasks and suspect idempotency issues",
+        "You're on MWAA/Composer/Astronomer and hitting parse timeouts",
+        "You're migrating DAGs from Airflow 1.x to 2.x",
+        "You're reviewing DAGs in PR and need a checklist"
+      ],
+      avoid: [
+        "You need Airflow CLI syntax reference — use the Airflow essentials cheat sheet",
+        "You need to decide between Airflow and Dagster/Prefect — this assumes Airflow",
+        "You need deep Kubernetes/Helm operations — this focuses on the DAG layer",
+        "You're new to Airflow — start with the essentials cheat sheet first"
+      ]
+    },
     sections: [
       {
         title: 'DAG Design Principles',
@@ -920,6 +1087,22 @@ GROUP BY date_day`,
     category: 'interview',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-09',
+    intro: "Snowflake Streams + Tasks = the **change-data-capture + scheduler** pairing that powers near-real-time pipelines natively inside Snowflake, no external orchestrator required. A **Stream** tracks DML changes on a table (inserts/updates/deletes since last consumed), a **Task** is a scheduled SQL job, and together they produce a pull-based CDC pattern: Task wakes up every N minutes, Task reads the Stream's changes, Task merges them downstream, Task consumes the Stream offset.\n\nInterview questions in this area probe your understanding of three things: (1) **Stream offset semantics** (consuming a stream via `CREATE TABLE AS SELECT ... FROM stream` advances the offset atomically with the CTAS), (2) **Task dependencies** (Tasks can trigger other Tasks via `AFTER` clauses, building a DAG entirely in Snowflake), and (3) **Serverless vs warehouse Tasks** (serverless = Snowflake-managed compute billed per-second, warehouse = you pick the warehouse).\n\n### What interviewers really probe\n\n**The core question**: \"explain the Stream offset mechanic\". Good answer: a Stream is a pointer + metadata view over a source table. Reading from a Stream in a statement that modifies Snowflake (INSERT/MERGE/CREATE TABLE) advances the offset *atomically with the statement commit*. If the statement fails, the offset doesn't advance — you'll see the same changes on retry. This is the foundation of exactly-once-per-consumer CDC.\n\n**Trick question**: \"can two consumers read the same Stream?\" Answer: no — a Stream has one offset, shared by all readers. If you need two consumers, you need two Streams (pointing at the same source table). Each advances independently.\n\n**Design question**: \"Dynamic Tables vs Streams+Tasks — when would you pick which?\" Dynamic Tables = declarative, Snowflake figures out the refresh; good for ELT-style transforms. Streams+Tasks = imperative, you control the SQL and the schedule; better for complex CDC, multi-step pipelines, and when you need procedural logic (loops, conditionals via stored procedures).",
+    whenToUse: {
+      use: [
+        "You're interviewing for a senior Snowflake / data engineering role",
+        "You're designing a near-real-time pipeline and comparing Streams+Tasks to Dynamic Tables",
+        "You're debugging Stream offset issues or Task schedule drift",
+        "You're prepping SnowPro Advanced certification",
+        "You're architecting multi-step SQL pipelines inside Snowflake"
+      ],
+      avoid: [
+        "You're new to Snowflake — start with architecture fundamentals first",
+        "You need Snowpipe (ingestion) interview questions — see the Snowpipe cheat sheet",
+        "You need Dynamic Tables specifics — see that interview cheat sheet",
+        "You need orchestration outside Snowflake — use Airflow/dbt cheatsheets"
+      ]
+    },
     sections: [
       {
         title: 'Streams — Change Data Capture',
@@ -972,6 +1155,22 @@ GROUP BY date_day`,
     category: 'interview',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-09',
+    intro: "**Dynamic Tables** (GA in 2024) are Snowflake's declarative answer to the \"incremental pipeline\" problem. Instead of writing Streams + Tasks + MERGE statements by hand, you write a SELECT query, declare a **target lag** (e.g., `LAG = '1 minute'`), and Snowflake figures out how to keep the target table fresh — incrementally when possible, full-refresh when not.\n\nThis is the pattern dbt built a whole product around (incremental materializations), but executed natively inside Snowflake with tighter scheduler integration. Dynamic Tables chain: one Dynamic Table can ref another (via the Automatic refresh DAG), and Snowflake's scheduler infers dependencies from the SQL.\n\n### Interview questions that actually come up\n\n**The definitional question**: \"explain Dynamic Tables and how they differ from regular tables + Streams+Tasks\". Good answer: Dynamic Tables are automatically-refreshed materializations with a declared target lag. Snowflake handles: detecting changes in upstream tables/Dynamic Tables, choosing incremental vs full refresh, scheduling refreshes to hit the target lag, and managing dependencies across a chain. Streams+Tasks are imperative (you write the DML); Dynamic Tables are declarative (you write the SELECT).\n\n**The gotcha question**: \"why might a Dynamic Table full-refresh instead of incremental?\" Answer: incremental isn't always possible. Unsupported patterns force full-refresh — e.g., non-deterministic functions (RANDOM, CURRENT_TIMESTAMP without deterministic binding), certain window functions, some UDFs, and OUTER JOINs in specific patterns. Check `DYNAMIC_TABLE_REFRESH_HISTORY` for the `REFRESH_ACTION` column.\n\n**The architectural question**: \"how would you build a medallion (bronze/silver/gold) architecture with Dynamic Tables?\" Answer: bronze = landing tables populated by Snowpipe or COPY INTO; silver = Dynamic Tables reading bronze with cleanup/conformance logic and TARGET_LAG ~5 min; gold = Dynamic Tables reading silver with business-level aggregations and TARGET_LAG ~15-60 min. Lag propagates downstream — a downstream DT's lag must be >= upstream DT's lag.",
+    whenToUse: {
+      use: [
+        "You're interviewing for Snowflake roles and Dynamic Tables will come up",
+        "You're comparing Dynamic Tables to dbt incremental models for architecture decisions",
+        "You're debugging Dynamic Table refresh failures or unexpected full-refreshes",
+        "You're prepping SnowPro Advanced certification",
+        "You're architecting a medallion or CDC pipeline natively in Snowflake"
+      ],
+      avoid: [
+        "You need Streams+Tasks details — see that interview cheat sheet",
+        "You need dbt incremental model patterns — use the dbt best-practices cheat sheet",
+        "You're new to Snowflake — start with architecture fundamentals first",
+        "You need hands-on labs — see Snowflake's Dynamic Tables Quickstart"
+      ]
+    },
     sections: [
       {
         title: 'Core Concepts & Architecture',
@@ -1021,6 +1220,22 @@ GROUP BY date_day`,
     category: 'interview',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-09',
+    intro: "**Snowpark** = Snowflake's answer to Spark and pandas: a DataFrame-style API for Python (also Scala and Java) that compiles down to Snowflake SQL and runs inside Snowflake's compute, no external Spark cluster needed. Plus **Snowpark UDFs and stored procedures in Python**, **Snowpark Container Services** for long-running Python workloads, and **Snowpark ML** for end-to-end model training and deployment.\n\nInterviewers care about three things: (1) **when Snowpark beats Spark** — when your data is already in Snowflake and you don't want a separate cluster, (2) **when Snowpark doesn't beat pandas** — small datasets where local pandas is simpler, (3) **how Snowpark executes** — understanding that most DataFrame ops become SQL (pushed down to Snowflake compute), but Python UDFs and stored procs run in a secured Python sandbox on warehouse compute.\n\n### The questions that separate casual users from power users\n\n**\"How does `df.filter(...).select(...).collect()` actually execute?\"** Answer: the `.filter()` and `.select()` build a logical plan (lazily). `.collect()` compiles that plan to SQL (`SELECT col1, col2 FROM t WHERE ...`), submits it to the Snowflake warehouse attached to the session, and returns rows as Python objects. No data moves until `.collect()`, `.to_pandas()`, `.count()`, `.show()`, or similar actions.\n\n**\"When would you use a Snowpark UDF vs a stored procedure vs a Dynamic Table?\"** UDF = scalar, per-row, embedded in SQL (like a function). Stored procedure = imperative logic (loops, conditionals, orchestration). Dynamic Table = declarative incremental materialization. If you can express it as SQL, use SQL. If it needs Python logic per-row, use a UDF. If it needs multi-step imperative logic, use a stored procedure.\n\n**\"What's Snowpark Container Services?\"** It lets you run Docker containers directly in Snowflake compute (backed by GPU-capable compute pools). Use for: hosting ML models for low-latency inference, running long-lived Python services, and custom integrations that need more than a stored proc.",
+    whenToUse: {
+      use: [
+        "You're interviewing for roles that combine Snowflake + Python",
+        "You're evaluating Snowpark vs Spark for an existing workload",
+        "You're building ML pipelines in Snowflake with Snowpark ML",
+        "You're learning Snowpark and want conceptual grounding",
+        "You're prepping for SnowPro Advanced with the Python module"
+      ],
+      avoid: [
+        "You're new to Snowflake — start with architecture fundamentals first",
+        "You need pandas/Spark fundamentals — learn those separately",
+        "You need Snowpark syntax reference — use the Snowpark Python cheat sheets",
+        "You need Cortex AI / LLM features — see the Cortex interview cheat sheet"
+      ]
+    },
     sections: [
       {
         title: 'DataFrame API & Execution Model',
@@ -1069,6 +1284,22 @@ GROUP BY date_day`,
     category: 'interview',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-09',
+    intro: "Snowflake's **Secure Data Sharing** is the flagship feature that made the platform a data-exchange product, not just a warehouse. You can share tables, views, and streams with other Snowflake accounts (same region, cross-region, cross-cloud) **without moving data** — the consumer queries directly against your storage, metered against their warehouse, read-only by default.\n\nOn top of basic shares there's the **Snowflake Marketplace** (public directory of free and paid data products), **Private Listings** (internal data products inside an org), and **Data Clean Rooms** (multi-party analysis without revealing underlying data). Interview questions cover all four layers.\n\n### The questions that actually come up\n\n**Foundational**: \"explain how Secure Data Sharing works under the hood — what's shared and how does billing work?\" Answer: a Share is metadata (pointers to objects and grants). When a consumer account mounts a share as a Database, they can SELECT against it using their own warehouse — they pay compute, producer pays storage. No data copy, no file export, no latency (queries hit the same micro-partitions the producer queries).\n\n**Cross-region/cross-cloud**: \"how do you share between AWS us-east-1 and Azure westus?\" Answer: enable Account Replication for the producer, replicate to a Snowflake account in the target region/cloud, and create the share from the replicated account. Replication has cost (egress + storage in target) but it's the only way to share across region boundaries natively.\n\n**Clean rooms**: \"what's a Data Clean Room and when would you use one?\" Answer: a clean room is a multi-party environment where two organizations can run approved queries against each other's data without either party seeing the other's raw rows. Used heavily in media/adtech (publisher + advertiser overlap analysis) and finance (benchmark analytics). Built on Secure Shares + Row Access Policies + approved query templates.",
+    whenToUse: {
+      use: [
+        "You're interviewing for a role that involves data sharing, Marketplace, or B2B data products",
+        "You're evaluating Snowflake Data Sharing for a use case and need conceptual grounding",
+        "You're prepping SnowPro Advanced or Partner certification",
+        "You're architecting a cross-account or cross-org data product",
+        "You're building a Data Clean Room and need the interview-level vocabulary"
+      ],
+      avoid: [
+        "You need Marketplace publisher how-to — see Snowflake's publisher docs",
+        "You need step-by-step setup — see Quickstarts",
+        "You're new to Snowflake — start with architecture fundamentals first",
+        "You need non-Snowflake data sharing (Delta Sharing, Databricks) — different product"
+      ]
+    },
     sections: [
       {
         title: 'Secure Data Sharing Architecture',
@@ -1117,6 +1348,22 @@ GROUP BY date_day`,
     category: 'interview',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-09',
+    intro: "Snowflake **Iceberg Tables** let you use Snowflake's compute and governance on top of Apache Iceberg tables stored in your own S3 / ADLS / GCS. Two flavors: **Snowflake-managed Iceberg** (Snowflake writes the metadata, you own the storage) and **externally-managed Iceberg** (another engine — Glue, Unity Catalog, REST catalog — writes the metadata, Snowflake reads).\n\nThis is the open-table-format bridge: your data sits in Iceberg format in object storage, accessible from Snowflake, Spark, Trino, Flink, Databricks — whichever engine fits the workload. Snowflake's pitch: get Iceberg interoperability without giving up Snowflake's query performance, security model, and time-travel ergonomics.\n\n### The questions interviewers actually ask\n\n**The definitional question**: \"what's an Iceberg Table and how does it differ from a regular Snowflake table?\" Answer: a regular Snowflake table stores data in Snowflake-proprietary micro-partition format in Snowflake-managed storage. An Iceberg Table stores data in Apache Iceberg format (Parquet + Iceberg metadata JSON/Avro) in your external object storage. Snowflake reads and (for managed Iceberg) writes Iceberg-compliant data, so other engines can also read it.\n\n**The tradeoff question**: \"when would you pick Iceberg Tables over regular tables?\" Answer: pick Iceberg when (1) multiple engines need to query the same data (Snowflake + Databricks + Trino), (2) you want to own the storage and bring Snowflake compute to it, (3) you're already invested in a data lake and want Snowflake's SQL+governance on top. Pick regular tables when Snowflake is the primary engine — they're faster, cheaper, and have more features.\n\n**The governance question**: \"how do masking policies, row access policies, and tags work with Iceberg Tables?\" Answer: all three work on managed-Iceberg Tables the same as regular tables. On externally-managed Iceberg, Snowflake enforces policies at query time, but another engine querying the same Iceberg files has its own security model and won't inherit Snowflake's policies — plan accordingly.",
+    whenToUse: {
+      use: [
+        "You're interviewing for a Snowflake + lakehouse role",
+        "You're architecting a multi-engine data platform (Snowflake + Spark + Trino)",
+        "You're evaluating Snowflake-managed vs externally-managed Iceberg",
+        "You're prepping SnowPro Advanced with the Iceberg module",
+        "You're migrating from a legacy data lake to an open table format"
+      ],
+      avoid: [
+        "You need Iceberg fundamentals — see the Apache Iceberg glossary entry first",
+        "You need non-Snowflake Iceberg operations — use Spark/Trino docs",
+        "You need hands-on examples — see Snowflake Quickstarts",
+        "You want a regular-vs-Iceberg decision framework — this is interview-focused"
+      ]
+    },
     sections: [
       {
         title: 'Iceberg Fundamentals in Snowflake',
@@ -1161,6 +1408,22 @@ GROUP BY date_day`,
     category: 'interview',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-27',
+    intro: "**Cortex AI** is Snowflake's LLM + ML-in-the-warehouse umbrella: **Cortex LLM Functions** (COMPLETE, EXTRACT_ANSWER, SUMMARIZE, SENTIMENT, TRANSLATE, EMBED_TEXT_* over Llama/Mistral/Snowflake Arctic/Anthropic/OpenAI/Cohere), **Cortex Search** (hybrid vector + keyword retrieval), **Cortex Analyst** (text-to-SQL over semantic views), **Document AI** (LLM-powered PDF/form extraction), and **Cortex Agents** (multi-tool agentic workflows). All billed via credit consumption, no GPU infra to manage.\n\nInterviewers at data teams adopting Cortex ask: how does it compare to OpenAI API + vector DB? What's the latency? What's the cost model? Can it handle PII safely? How do you evaluate output quality?\n\n### The questions that come up in 2026 interviews\n\n**\"What's the difference between Cortex COMPLETE, Cortex Search, and Cortex Analyst?\"** COMPLETE is raw LLM inference — you give a prompt, you get a completion. Search is RAG retrieval — you give a query, you get the top-K matching chunks from an indexed corpus (vector + keyword hybrid). Analyst is text-to-SQL — you give a business question, a semantic view + instructions, and it generates SQL, runs it, and returns a result + narrative.\n\n**\"How does Cortex handle data privacy?\"** Answer: inference happens inside Snowflake's security boundary (same VPC, same governance, same RBAC). No data leaves Snowflake; the underlying model weights are hosted by Snowflake (or via cross-region if you need Anthropic/OpenAI frontier models, via a privacy-preserving architecture). Your masking policies and row access policies apply before the data hits the model.\n\n**\"How would you build a RAG chatbot over your company wiki inside Snowflake?\"** Answer: (1) parse docs with `PARSE_DOCUMENT` or `ai_parse_document`, (2) chunk + embed with `EMBED_TEXT_768` or `EMBED_TEXT_1024`, (3) store in a VECTOR column, (4) create a **Cortex Search Service** on the table, (5) at query time, call the search service, inject results into a COMPLETE prompt, return the response. All without leaving Snowflake.",
+    whenToUse: {
+      use: [
+        "You're interviewing at a company using or adopting Cortex AI",
+        "You're evaluating Cortex vs OpenAI + pinecone/weaviate",
+        "You're building LLM features on Snowflake and need conceptual grounding",
+        "You're prepping for SnowPro AI or Data Science specialty cert",
+        "You want to understand when Cortex makes sense vs cloud LLM APIs"
+      ],
+      avoid: [
+        "You need ML fundamentals — Cortex assumes LLM basics",
+        "You need cloud LLM API details — this is Snowflake-specific",
+        "You need agent framework comparisons (LangChain, LlamaIndex) — different ecosystem",
+        "You need hands-on labs — see Cortex Quickstarts"
+      ]
+    },
     sections: [
       {
         title: 'Key Facts for Cortex AI Interviews',
@@ -1268,6 +1531,22 @@ GROUP BY date_day`,
     category: 'interview',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-27',
+    intro: "**Snowpipe Streaming** (GA in 2023, heavily evolving through 2026) is Snowflake's **row-set-at-a-time ingestion API** — a lower-latency, lower-cost alternative to classic file-based Snowpipe. Where classic Snowpipe watches a stage for files and triggers a COPY INTO, Snowpipe Streaming opens a persistent channel, accepts rows (or row-sets) over HTTP/2, and commits them to the target table typically in under a second.\n\nThe **Snowflake Connector for Kafka with Snowpipe Streaming** is the most common production pattern: Kafka → Snowpipe Streaming channel → Snowflake table, exactly-once, per-second visibility. No S3 hop, no file-size tuning, no trigger latency.\n\n### What interviewers probe\n\n**\"How does Snowpipe Streaming differ from classic Snowpipe?\"** Classic Snowpipe: files land in a stage (S3/GCS/Azure), event notification triggers COPY INTO, data visible in 30-60s typical. Snowpipe Streaming: client opens a streaming channel via Java/Snowpark SDK, appends rows directly, commits in ~1s. Streaming is cheaper per-row at high throughput and much lower latency, but requires a persistent client (vs. files-in-a-bucket).\n\n**\"How does exactly-once work?\"** Each channel maintains an offset token (client-provided). On reconnect after failure, the client provides its last-known offset; Snowflake deduplicates against its own commit history. Combined with Kafka partition offset tracking, this yields true exactly-once Kafka → Snowflake.\n\n**\"When should I NOT use Snowpipe Streaming?\"** If you're ingesting files anyway (nightly CSV dumps, batch extracts), classic Snowpipe or COPY INTO is simpler. If your throughput is <100 rows/s, the channel overhead may not be worth it. If you need transformations during ingest, land raw with Streaming, then use Streams+Tasks or Dynamic Tables for the transform.",
+    whenToUse: {
+      use: [
+        "You're interviewing for streaming ingestion roles involving Snowflake",
+        "You're architecting Kafka → Snowflake pipelines and need to pick the right connector",
+        "You're comparing Snowpipe Streaming vs classic Snowpipe vs Openflow",
+        "You're prepping SnowPro Advanced with the streaming/ingestion module",
+        "You're debugging latency or cost issues on your ingestion path"
+      ],
+      avoid: [
+        "You need classic Snowpipe (file-based) how-to — see Snowpipe docs",
+        "You need Kafka fundamentals — learn Kafka separately",
+        "You need Openflow / NiFi patterns — see the Openflow skill",
+        "You need hands-on setup — see Snowpipe Streaming Quickstart"
+      ]
+    },
     sections: [
       {
         title: 'Key Facts for Streaming Ingestion Interviews',
@@ -1371,6 +1650,22 @@ GROUP BY date_day`,
     category: 'interview',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-27',
+    intro: "Snowflake governance is the surface area that senior data engineers and platform architects get grilled on: **RBAC hierarchy design**, **masking policies**, **row access policies**, **tag-based masking**, **object tags**, **data classification**, **network policies**, **Trust Center**, **Access History**, **Access Tokens / PATs**, and the **Horizon Catalog** for cross-product governance.\n\nExpect interviewers at regulated industries (finance, healthcare, gov) to probe deeply: can you design a role hierarchy that enforces least privilege? Do you understand the difference between masking via role vs masking via tag? Can you audit all SELECT access on a sensitive table?\n\n### What interviewers probe\n\n**Role design**: \"design an RBAC hierarchy for a 500-person company with finance/marketing/product data\". Good answer uses the three-layer pattern: (1) **functional roles** (granted privileges on objects — e.g., `FINANCE_ANALYST_RO`, `MARKETING_WRITER`), (2) **access roles** granted to functional roles, (3) **user-assigned roles** (the role a user switches into — typically 1:1 with a job function). Functional roles are composable, access roles hide the grants, user roles map to jobs. This scales.\n\n**Masking vs row access**: \"when would you use a masking policy vs a row access policy?\" Masking = column-level (hide SSN for non-privileged roles). Row access = row-level (analysts only see rows for their region). Combined, they implement fine-grained access control. Both are attached to objects via ALTER TABLE / ALTER VIEW.\n\n**Tag-based masking**: \"what's tag-based masking and when is it better than policy-attached masking?\" Answer: you attach a masking policy to a tag (`PII_TAG`) once, then tag columns as PII across hundreds of tables. One policy definition, many applications. Much better than attaching the same policy to each column manually — critical for classification-driven governance at scale.",
+    whenToUse: {
+      use: [
+        "You're interviewing for platform/governance-heavy Snowflake roles",
+        "You're designing an RBAC hierarchy for a new Snowflake account",
+        "You're auditing an existing Snowflake setup for governance gaps",
+        "You're prepping for SnowPro Advanced: Architect certification",
+        "You're working in a regulated industry (HIPAA, PCI, SOX, GDPR)"
+      ],
+      avoid: [
+        "You need basic SQL privileges reference — use the Snowflake SQL cheat sheet",
+        "You need setup walkthroughs — see Snowflake governance docs",
+        "You need compliance-specific checklists (SOC 2, HIPAA) — consult auditors",
+        "You need Trust Center hands-on — see Trust Center skill"
+      ]
+    },
     sections: [
       {
         title: 'Key Facts for Governance Interviews',
@@ -1470,6 +1765,22 @@ GROUP BY date_day`,
     category: 'interview',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-27',
+    intro: "Snowflake cost optimization is where senior DE / platform engineers earn their salary. The credit consumption table is the currency, and the four big levers are: **warehouse right-sizing + auto-suspend**, **serverless feature selection** (Snowpipe, Snowpipe Streaming, Tasks, Cortex, search optimization, replication all bill independently), **storage lifecycle** (Time Travel retention, Fail-safe, transient tables), and **query efficiency** (pruning, caching, result reuse).\n\nInterviews probe all four, often with a real or synthetic cost breakdown: \"here's a month of WAREHOUSE_METERING_HISTORY and QUERY_HISTORY — identify the top three cost drivers and propose fixes.\"\n\n### The questions that come up\n\n**Warehouse sizing**: \"how do you decide a warehouse size?\" Answer: start at XS or S, run your representative workload, measure via `WAREHOUSE_LOAD_HISTORY`. If queuing load > 0 consistently, go multi-cluster before going bigger. If queuing = 0 and CPU < 50%, try smaller. Right-size for the p80-p90 workload, not the peak — peaks get multi-cluster.\n\n**Auto-suspend**: \"what's the tradeoff between AUTO_SUSPEND=60 and AUTO_SUSPEND=600?\" Short auto-suspend saves credits when traffic is bursty; longer keeps the cache warm for better BI latency. For transformation warehouses, short is always right. For BI warehouses where queries arrive steadily, longer (300-600s) may be better because warm local disk cache can cut query time 5-10x.\n\n**Serverless tasks vs warehouse tasks**: \"when to use which?\" Serverless = Snowflake-managed compute, billed per-second, good for bursty low-frequency tasks. Warehouse = you own the warehouse, billed for the warehouse uptime, good for high-frequency tasks that benefit from warehouse reuse. Generally: `SERVERLESS` for <1 task/min; warehouse for steady streams.\n\n**Resource monitors**: \"how do you prevent a runaway dbt run?\" Answer: attach a RESOURCE_MONITOR to the warehouse (or account), set a credit quota per month, action = NOTIFY at 75%, SUSPEND at 100%. Combined with alerts to Slack/PagerDuty, this caps blast radius.",
+    whenToUse: {
+      use: [
+        "You're interviewing for a senior / staff / principal Snowflake role",
+        "You're leading a Snowflake cost-reduction initiative",
+        "You're designing cost-aware architecture decisions",
+        "You're prepping SnowPro Advanced: Architect certification",
+        "You own the Snowflake bill and need to justify or reduce it"
+      ],
+      avoid: [
+        "You need basic Snowflake fundamentals — start with architecture",
+        "You need finance-grade FinOps frameworks — different discipline",
+        "You need per-query tuning — see the performance deep-dive cheat sheet",
+        "You need billing reports — see the billing skill"
+      ]
+    },
     sections: [
       {
         title: 'Key Cost Optimization Facts for Interviews',
@@ -1569,6 +1880,22 @@ GROUP BY date_day`,
     category: 'interview',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-27',
+    intro: "Snowflake performance interviews at the senior level probe your ability to **read a QUERY_PROFILE**, diagnose **spilling**, spot **cartesian joins**, understand **micro-partition pruning**, decide between **clustering key / SOS / QAS / materialized views**, and reason about **warehouse size vs concurrency vs queuing**.\n\nThe interviewer will typically show you a slow query and the profile screenshot, and ask \"what's going on and how would you fix it?\". This is the one interview question where hand-waving gets you eliminated fastest — you either know how to read the profile or you don't.\n\n### What interviewers drill on\n\n**QUERY_PROFILE reading**: the four things to look at immediately are (1) **Most Expensive Nodes** box — which operator is eating the time? (2) **Statistics panel** — partitions scanned vs pruned (poor pruning = add clustering/SOS), bytes spilled to local/remote (spilling = need bigger warehouse or rewrite to avoid), (3) the **execution plan tree** — look for cartesian joins (exploding row counts), outer joins producing NULLs getting aggregated, (4) **Warehouse Load** over the query duration — was the warehouse queuing?\n\n**Spilling**: \"a query is slow with 3TB remote spill — what do you do?\" Answer: (1) size up the warehouse (more memory), (2) rewrite to reduce intermediate result size (filter earlier, avoid SELECT *), (3) split into stages with intermediate tables, (4) check for accidental cartesian joins that are blowing up row counts.\n\n**Pruning**: \"a query scans 10TB to return 100 rows — how do you fix it?\" Answer: the predicate isn't pruning micro-partitions. Check (1) natural clustering (is the predicate column correlated with ingestion order?), (2) consider adding a **CLUSTERING KEY** on the predicate column, (3) for highly selective point-lookups, **Search Optimization Service** may be cheaper than clustering, (4) for range predicates with high cardinality, clustering beats SOS.\n\n**MV vs SOS vs CK**: materialized views = precompute an aggregation or projection; good for repeated complex aggregations. Search Optimization = speeds up point lookups and selective predicates; good for needle-in-haystack queries. Clustering key = physical ordering that helps range scans; good for time-series or entity-keyed tables.",
+    whenToUse: {
+      use: [
+        "You're interviewing for senior+ Snowflake roles",
+        "You're prepping for the \"diagnose this slow query\" interview question",
+        "You're debugging your own slow queries and need the decision tree",
+        "You're prepping SnowPro Advanced: Architect with the performance module",
+        "You're building a Snowflake performance-review runbook for your team"
+      ],
+      avoid: [
+        "You need intro-level Snowflake — start with architecture fundamentals",
+        "You need warehouse DDL syntax — see the warehouse skill",
+        "You need cost optimization — see that cheat sheet",
+        "You need query-authoring patterns — use the Snowflake SQL cheat sheet"
+      ]
+    },
     sections: [
       {
         title: 'Key Performance Facts for Interviews',
@@ -1668,6 +1995,22 @@ GROUP BY date_day`,
     category: 'interview',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-27',
+    intro: "Snowflake **Replication** = keeping databases in sync between accounts (same region, cross-region, cross-cloud). **Failover Groups** bundle databases + shares + roles + warehouses + integrations into a single replicated unit with a secondary that can be promoted atomically. **Business Continuity** = RPO and RTO guarantees against region or cloud outages.\n\nInterviewers at enterprises with strict BCP/DR requirements will ask: what's your RPO? RTO? How do you test failover? How do you handle shares that reference replicated objects? What's the cost model (replication = egress + secondary storage + compute for apply)?\n\n### What interviewers drill on\n\n**Refresh semantics**: \"how does replication propagate changes?\" Answer: each replication target has a refresh schedule (or you refresh manually). Between refreshes, the secondary is stale. RPO = time since last successful refresh. Typical schedule: every 10 minutes for critical, every hour for tier-2.\n\n**Failover group vs database replication**: \"why use failover groups?\" Answer: single-database replication doesn't handle shared metadata (warehouses, roles, shares, integrations). A failover group replicates everything needed for an application to keep running on the secondary. **Promote** a failover group in one SQL statement during an outage; connections reroute via account URL.\n\n**Cost**: \"what does replication cost?\" Answer: (1) egress charges (cloud provider, not Snowflake) for cross-region/cross-cloud, (2) storage in the secondary (pay-per-byte same as primary), (3) compute for the secondary to apply changes (metered as serverless replication credits), (4) any workload running on secondary (read-only queries, monitoring). Typical cross-region replication of a 10TB warehouse: 5-15% of primary compute cost.\n\n**Testing failover**: \"how do you prove failover works?\" Answer: periodic drills. Run `ALTER FAILOVER GROUP ... PRIMARY` on the secondary account in a lower-tier environment, verify apps connect, then flip back. Production drills: coordinate with app teams, 30-minute maintenance window, test promote+rollback.",
+    whenToUse: {
+      use: [
+        "You're interviewing at a BCP/DR-sensitive company (finance, healthcare, gov, retail)",
+        "You're designing cross-region or cross-cloud resilience",
+        "You're prepping SnowPro Advanced: Architect certification",
+        "You need to justify replication cost to finance",
+        "You're running a DR drill and need the concept map"
+      ],
+      avoid: [
+        "You need setup walkthroughs — see Snowflake replication docs",
+        "You need non-Snowflake DR patterns — different ecosystem",
+        "You're new to Snowflake — start with architecture fundamentals",
+        "You need backup-and-restore patterns — Snowflake uses Time Travel+Fail-safe, see those"
+      ]
+    },
     sections: [
       {
         title: 'Key Replication Facts for Interviews',
@@ -1763,6 +2106,22 @@ GROUP BY date_day`,
     category: 'interview',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-27',
+    intro: "Snowflake's semi-structured data support — **VARIANT**, **OBJECT**, **ARRAY**, **FLATTEN**, **PARSE_JSON**, **TRY_PARSE_JSON**, path notation (`col:field.nested[0]`), and the **automatic columnar storage** of VARIANT — is a major reason it displaced Hadoop for JSON/Avro/Parquet workloads.\n\nInterviewers probe: how does VARIANT work on disk? When does querying VARIANT match the performance of querying structured columns? How do you flatten nested arrays efficiently? When should you shred to structured columns vs keep raw in VARIANT?\n\n### What interviewers actually ask\n\n**\"How is VARIANT stored?\"** Answer: Snowflake parses VARIANT at ingest, identifies repeated paths, and materializes each discovered path as its own sub-column (column-pruned on read). Sparse or rare paths fall back to a catch-all. Result: querying `col:field` is often as fast as querying a structured column, without having to define the schema upfront.\n\n**\"FLATTEN — what does it do?\"** Answer: LATERAL FLATTEN explodes a VARIANT array or object into rows, one per element, keeping the parent row's context. Classic pattern: `SELECT p.id, f.value:sku FROM purchases p, LATERAL FLATTEN(input => p.items) f`. Nested FLATTEN handles multi-level arrays.\n\n**\"Shred to columns or keep VARIANT?\"** Rule of thumb: if you query a field frequently, shred it to a typed column (INT, VARCHAR, TIMESTAMP) — you get better stats, cleaner query plans, and explicit schema. Keep VARIANT for rare/exploratory fields and for ingest flexibility. Snowflake's automatic path-based storage makes VARIANT-queries performant, but typed columns still win for stats + clustering.\n\n**\"PARSE_JSON vs TRY_PARSE_JSON?\"** PARSE_JSON errors on invalid JSON (fails the row / query). TRY_PARSE_JSON returns NULL. For ingest, TRY is the safer default; you can then filter out / quarantine NULL rows.",
+    whenToUse: {
+      use: [
+        "You're interviewing for Snowflake roles and handling JSON/Avro/semi-structured data",
+        "You're deciding between VARIANT and shredded columns for a new schema",
+        "You're debugging slow queries on VARIANT and need the mental model",
+        "You're prepping SnowPro Core or Advanced",
+        "You're architecting event-ingest pipelines and need the VARIANT vs Iceberg+Parquet comparison"
+      ],
+      avoid: [
+        "You need JSON fundamentals — learn JSON separately",
+        "You need Iceberg/Parquet internals — see those cheat sheets",
+        "You're new to Snowflake — start with architecture",
+        "You need complex JSON transformation UDFs — see Snowpark Python cheat sheet"
+      ]
+    },
     sections: [
       {
         title: 'Key Facts for Semi-Structured Data Interviews',
@@ -1862,6 +2221,22 @@ GROUP BY date_day`,
     category: 'interview',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-27',
+    intro: "Snowflake **Stored Procedures** come in three flavors in 2026: **SQL Scripting** (SQL with BEGIN...END, variables, conditionals, loops, cursors), **JavaScript** (legacy but still supported), and **Python/Scala/Java via Snowpark**. Interviewers care about when to use which, how transactions work inside procedures, how to pass parameters correctly (the colon-prefix rule inside procedure bodies is a classic gotcha), and when procedures beat dbt models / Tasks / Dynamic Tables.\n\n### What interviewers drill on\n\n**\"SQL Scripting vs Snowpark Python — when?\"** Answer: SQL Scripting for SQL-centric procedural logic (loops over cursors, conditional DML, transactions). Snowpark Python for procedures that need Python libraries (pandas, requests, ML models) or complex data manipulation that SQL would make unwieldy. JavaScript is legacy — don't write new procedures in it.\n\n**\"Colon-prefix rule\"**: inside a SQL Scripting procedure, references to parameters and DECLARE variables **require a colon prefix** when used in DML — `SELECT * FROM t WHERE id = :my_var`. Forgetting the colon silently turns `my_var` into a column reference, yielding `invalid identifier` errors. This is the #1 gotcha.\n\n**\"Transactions\"**: by default each DML inside a procedure is auto-committed. To wrap multiple statements, use `BEGIN TRANSACTION / COMMIT / ROLLBACK`. Caller's transaction context does NOT propagate into the procedure unless you explicitly use `AUTONOMOUS_TRANSACTION` semantics, which Snowflake handles with procedure-level transaction scopes.\n\n**\"Procedures vs Dynamic Tables vs Tasks\"**: Dynamic Tables = declarative target state (\"keep this SELECT materialized\"). Tasks = scheduled SQL. Procedures = imperative logic (loops, conditionals, ad-hoc ops) — often called *by* a Task. Pick procedures for: backfills, complex data migrations, ops scripts, dynamic DDL (generate CREATE TABLE from a catalog). Pick Dynamic Tables or dbt for: \"keep X in sync with Y\".",
+    whenToUse: {
+      use: [
+        "You're interviewing for Snowflake roles that involve procedural SQL",
+        "You're porting stored procedures from Oracle/SQL Server/Postgres to Snowflake",
+        "You're debugging the colon-prefix or transaction gotchas",
+        "You're prepping SnowPro Advanced",
+        "You're designing ops automation or dynamic DDL routines"
+      ],
+      avoid: [
+        "You need Snowpark Python fundamentals — see the Snowpark cheat sheet",
+        "You need dbt model patterns — use dbt cheat sheets",
+        "You need Task scheduling — see the Streams/Tasks cheat sheet",
+        "You're new to Snowflake — start with architecture"
+      ]
+    },
     sections: [
       {
         title: 'Key Facts for Stored Procedures & UDF Interviews',
@@ -1961,6 +2336,22 @@ GROUP BY date_day`,
     category: 'interview',
     difficulty: 'Advanced',
     lastUpdated: '2026-04-27',
+    intro: "Snowflake **External Integrations** are the glue to the outside world: **External Functions** (call an AWS Lambda / Azure Function / GCP Cloud Function from SQL via an API Integration), **External Access Integrations** (let Snowpark UDFs/procs make outbound HTTPS calls to allow-listed hosts), **Storage Integrations** (secure access to S3 / ADLS / GCS without long-lived credentials), **Notification Integrations** (trigger Snowpipe, send events to SNS/EventBridge/Pub/Sub), **Catalog Integrations** (Iceberg REST / AWS Glue), and **Security Integrations** (SAML SSO, SCIM, OAuth).\n\nInterviewers probe: how does the network path work (Snowflake VPC → your VPC)? What's the auth model? What's the cost? When do you use an External Function vs Snowpark Container Services vs a UDF?\n\n### What interviewers probe\n\n**\"External Function — what's the path?\"** Answer: SQL calls `my_ext_func(...)`. Snowflake serializes args to JSON, POSTs to your API Gateway (registered via API Integration with IAM role auth). API Gateway invokes a Lambda. Lambda returns JSON. Snowflake deserializes and returns. Payload is batched (multiple rows per HTTP call) for efficiency. Typical overhead: 50-200ms per batch.\n\n**\"External Access Integration — what's the difference?\"** External Access Integration lets a Python/Java UDF or stored procedure make outbound HTTPS calls directly from the Snowflake compute sandbox, rather than going through a Lambda. You register allowed hosts and optional secrets. Use for: calling third-party APIs during a stored procedure, LLM APIs not on Cortex, webhook dispatch.\n\n**\"Storage Integration — why bother?\"** Without it, you'd have to store AWS access keys in Snowflake, which rotates badly and violates least-privilege. A Storage Integration creates a trust relationship where Snowflake assumes an IAM role (cross-account) for short-lived credentials per query. No long-lived secrets, easy rotation, explicit bucket/prefix scoping.",
+    whenToUse: {
+      use: [
+        "You're interviewing for Snowflake integration / platform roles",
+        "You're architecting Snowflake ↔ external-API integrations",
+        "You're debugging IAM/OAuth/API-Gateway issues with External Functions",
+        "You're prepping SnowPro Advanced: Architect",
+        "You're setting up Storage or Notification Integrations and need the concepts"
+      ],
+      avoid: [
+        "You need step-by-step setup guides — see Snowflake integration docs",
+        "You need AWS/Azure/GCP fundamentals — learn cloud basics separately",
+        "You're new to Snowflake — start with architecture",
+        "You need Snowpark UDF patterns — see the Snowpark cheat sheet"
+      ]
+    },
     sections: [
       {
         title: 'Key Facts for External Integrations Interviews',
@@ -2064,6 +2455,22 @@ GROUP BY date_day`,
     category: 'programming',
     difficulty: 'Intermediate',
     lastUpdated: '2026-04-16',
+    intro: "Python is the **lingua franca of data engineering** in 2026: orchestration (Airflow, Dagster, Prefect), transformation (Snowpark, PySpark, dbt Python models), ML (scikit-learn, PyTorch, XGBoost), data movement (pandas, Polars, DuckDB for local ETL), and gluing it all together. A strong DE doesn't need to be a Python expert, but should be fluent in a specific set of idioms: **typing hints**, **dataclasses / pydantic**, **context managers**, **async/await** (for I/O-bound work), **pandas + polars fundamentals**, and **testing with pytest**.\n\nThis cheat sheet is the DE-relevant subset: not every Python feature, just the ones you reach for weekly. Organized by category so you can jump to \"file I/O\", \"connecting to a database\", \"working with JSON\", etc.\n\n### Where DEs trip up on Python\n\n**(1) Virtual environments and dependency management**. Use `uv` (2026 default, ~100× faster than pip) or `poetry` for anything beyond toy scripts. Never install to system Python. `pyproject.toml` is the standard; `requirements.txt` is legacy-but-still-common.\n\n**(2) pandas perf traps**. `df.iterrows()` is 100× slower than vectorized operations. `df.apply()` with a Python function is slower than native pandas ops. For datasets >10GB, switch to **Polars** (much faster, similar API) or **DuckDB** (embedded analytics engine, SQL over pandas/arrow/parquet).\n\n**(3) f-strings for SQL is a SQL injection waiting to happen**. Use parameterized queries with your database driver (e.g., `cursor.execute(\"SELECT * FROM t WHERE id = %s\", (user_id,))`). Only use f-strings for fixed structural SQL, never user input.\n\n**(4) async/await for I/O, multiprocessing for CPU**. Async = great for hundreds of concurrent HTTP calls or DB queries. Bad for CPU-bound loops — you need `multiprocessing` or Cython/Rust bindings there. Know the difference.",
+    whenToUse: {
+      use: [
+        "You're a DE-ing in Python and want a daily reference",
+        "You're transitioning from SQL-only to Python-augmented DE",
+        "You're prepping DE interviews with Python coding rounds",
+        "You're writing Airflow DAGs, Snowpark UDFs, or dbt Python models",
+        "You're upgrading from pandas to Polars/DuckDB for perf"
+      ],
+      avoid: [
+        "You need Python fundamentals — use a general Python tutorial",
+        "You need web-dev Python (Django, FastAPI) — different discipline",
+        "You need ML-deep Python — see machine-learning skill",
+        "You need PySpark specifics — see the PySpark cheat sheet"
+      ]
+    },
     sections: [
       {
         title: 'Core Libraries Every Data Engineer Needs',
@@ -2259,6 +2666,22 @@ def test_valid_amount(amount, expected):
     category: 'programming',
     difficulty: 'Intermediate',
     lastUpdated: '2026-04-16',
+    intro: "**PySpark** is the Python API for **Apache Spark** — the distributed processing engine that still powers most large-scale batch data workloads outside of cloud-native warehouses. In 2026 it shows up in three main places: **Databricks notebooks**, **EMR / Glue / Dataproc** batch jobs, and as a reference API that other engines (Snowpark Connect, BigQuery Spark, Dataproc Serverless) have adopted as a compatibility target.\n\nThis cheat sheet is focused on the daily-use subset: **DataFrame operations** (select, filter, join, groupBy, agg, window), **I/O** (read/write parquet, CSV, JSON, Delta, Iceberg), **SQL interop** (spark.sql, temp views), **UDFs** (regular, pandas UDFs, vectorized), **partitioning** (repartition, coalesce, bucketing), and **performance patterns** (broadcast joins, skew handling, caching).\n\n### What separates senior PySpark engineers\n\n**(1) Understanding lazy evaluation**. PySpark DataFrame ops are lazy — they build a logical plan, not data. Only actions (show, count, collect, write) trigger execution. This means you can chain 20 transformations without paying any cost until the action. Corollary: `df.count()` in a loop triggers 20 executions; cache first or rethink the pattern.\n\n**(2) Reading the Spark UI**. The DAG tab and Stages tab show you stages, tasks, shuffle sizes, skew. If one task takes 10× longer than others, you have skew — typically a groupBy on a highly-skewed key. Fix: salt the key, use broadcast join, or use skew join hints (Spark 3+).\n\n**(3) Picking the right join strategy**. Broadcast join = small table fits in executor memory, no shuffle; Spark auto-broadcasts up to ~10MB by default (`spark.sql.autoBroadcastJoinThreshold`). Sort-merge join = default for large-large; requires shuffle. Shuffle hash join = rare, usually worse than SMJ. Use `.hint('broadcast')` to force when you know better than the optimizer.\n\n**(4) Pandas UDFs beat regular UDFs**. Regular Python UDFs serialize row-by-row (slow). Pandas UDFs (aka vectorized UDFs) operate on pandas Series/DataFrames in batches via Apache Arrow — 10-100× faster. Use `@pandas_udf` decorator.",
+    whenToUse: {
+      use: [
+        "You're authoring or debugging PySpark jobs",
+        "You're using Databricks notebooks",
+        "You're prepping Spark-heavy DE interviews",
+        "You're tuning Spark perf (broadcasts, skew, shuffle)",
+        "You're comparing Snowpark vs PySpark for a migration decision"
+      ],
+      avoid: [
+        "You need Spark cluster ops (YARN, Kubernetes) — see platform docs",
+        "You need non-PySpark Spark (Scala, SQL-only) — API differs",
+        "You're new to Spark — start with the Spark core concepts",
+        "You need Snowpark-specific patterns — see Snowpark Python cheat sheet"
+      ]
+    },
     sections: [
       {
         title: 'DataFrame API Essentials',
@@ -2430,6 +2853,22 @@ FROM orders o JOIN customers c ON o.customer_id = c.customer_id;`,
     category: 'cloud',
     difficulty: 'Intermediate',
     lastUpdated: '2026-04-16',
+    intro: "AWS is the dominant cloud for data engineering workloads in 2026, and the DE-relevant surface is smaller than the full AWS catalog: **S3** (object storage, lake of record), **Glue** (catalog + ETL), **Athena** (SQL over S3), **Redshift** (warehouse), **EMR** (managed Spark/Hadoop), **MWAA** (managed Airflow), **Kinesis** (streaming), **Lambda** (serverless compute), **IAM** (access control — touches everything), and the supporting cast of **Lake Formation**, **DMS**, **Step Functions**, **EventBridge**, **SNS/SQS**, **Secrets Manager**, **CloudWatch**, and **CloudTrail**.\n\nThis cheat sheet is focused on the services DEs touch daily and the patterns that actually matter — not every AWS service, just the ones that show up in pipelines, interviews, and production incidents.\n\n### The decisions that matter\n\n**(1) S3 layout + partitioning dictates cost and perf for years**. Get it wrong up front, pay forever. Rules: partition by event date (not ingestion date) for time-series; keep partition values low-cardinality (100s, not millions); use Hive-style paths (`year=2026/month=04/day=28/`) so Athena/Glue crawlers pick them up automatically.\n\n**(2) Glue Catalog is the metadata backbone**. Every AWS query engine (Athena, Redshift Spectrum, EMR, Lake Formation) reads from Glue Catalog. Keep it clean: use Iceberg or Delta via Glue for transactional lakehouse; keep schema evolution deliberate (renaming columns in a Glue table without updating queries breaks them silently).\n\n**(3) IAM = the ulcer of AWS DE**. Least-privilege is hard; most teams end up with overly-broad roles. Pattern: per-pipeline IAM role + per-bucket/prefix resource policies + SCP at the org level for guardrails. Use **IAM Access Analyzer** to find unused perms.\n\n**(4) Lambda vs ECS vs EMR vs Glue for compute**. Lambda: event-driven, <15 min, <10GB memory. Glue: Spark jobs without cluster mgmt, per-minute billing. EMR: big Spark at scale, cheaper per-core but operational overhead. ECS/Fargate: containers for custom runtimes.",
+    whenToUse: {
+      use: [
+        "You're a DE working on AWS and need a reference across services",
+        "You're prepping DE interviews where AWS comes up",
+        "You're planning S3 layout, Glue catalog, or IAM roles",
+        "You're choosing compute (Lambda vs Glue vs EMR vs ECS) for a workload",
+        "You're migrating from another cloud and want the AWS equivalents"
+      ],
+      avoid: [
+        "You need the full AWS cert content — use AWS training",
+        "You need app-dev (EC2, ELB, RDS) fundamentals — different audience",
+        "You're new to cloud — start with S3, IAM, and a managed service",
+        "You need GCP/Azure equivalents — use those cheat sheets"
+      ]
+    },
     sections: [
       {
         title: 'Core Services Map',
@@ -2606,6 +3045,22 @@ job.commit()`,
     category: 'cloud',
     difficulty: 'Intermediate',
     lastUpdated: '2026-04-16',
+    intro: "Azure's DE stack in 2026 has consolidated under **Microsoft Fabric** (the unified SaaS platform: OneLake + Data Factory + Spark notebooks + Power BI + Synapse Real-Time Intelligence), alongside the still-widely-used classic services: **ADLS Gen2** (storage), **Azure Data Factory** (orchestration + ingest), **Synapse Analytics** (warehouse + Spark), **Databricks on Azure**, **Event Hubs** (Kafka-compat streaming), **Functions** (serverless), and **Azure SQL / Postgres / Cosmos DB** (operational stores).\n\nThis cheat sheet covers the DE-relevant subset — the services you'll actually use — plus the Fabric vs classic decision framework that matters for new deployments.\n\n### The Azure-specific things that matter\n\n**(1) Fabric vs classic Synapse/ADF**. Fabric is the direction Microsoft is heading: one SKU, one storage layer (OneLake, Delta Lake under the hood), unified identity, tight Power BI integration. Classic services (Synapse Analytics dedicated SQL pools, standalone ADF, standalone Databricks) are still supported and sometimes still the right choice for existing investments. Rule of thumb: new projects → Fabric; existing classic estate with inertia → stay classic until a forcing function.\n\n**(2) ADLS Gen2 = S3 equivalent, but with hierarchical namespace**. HNS means real directories (not just prefix flattening), which matters for some Spark patterns and for POSIX-like permissions. Always enable HNS at account creation — you can't add it later.\n\n**(3) Azure Data Factory = the swiss-army knife for ingest**. Copy Activity for bulk moves, Mapping Data Flows for visual ETL (compiled to Spark under the hood), Integration Runtime options (Azure-hosted for cloud sources, Self-Hosted IR for on-prem). Biggest gotcha: Self-Hosted IR requires a VM you manage, and it's the most common source of \"why is my pipeline broken\" tickets in Azure DE.\n\n**(4) Synapse Dedicated SQL vs Serverless vs Spark**. Dedicated = always-on provisioned warehouse (pricey, powerful). Serverless = pay-per-query over ADLS Parquet (cheap, slower for complex queries). Spark Pool = notebook-style Spark compute. Fabric effectively merges all three under one bill.",
+    whenToUse: {
+      use: [
+        "You're a DE on Azure and need a reference across services",
+        "You're deciding between Fabric and classic Synapse/ADF for a new project",
+        "You're prepping DE interviews where Azure comes up",
+        "You're migrating from AWS/GCP to Azure",
+        "You're on Databricks on Azure and need to understand the surrounding Azure services"
+      ],
+      avoid: [
+        "You need full Azure cert content — use Microsoft Learn",
+        "You need app-dev (AKS, App Service) fundamentals — different audience",
+        "You're new to cloud — start with ADLS, AAD, and a managed service",
+        "You need AWS/GCP equivalents — see those cheat sheets"
+      ]
+    },
     sections: [
       {
         title: 'Core Azure Services for Data',
@@ -2761,6 +3216,22 @@ GROUP BY order_month, country;`,
     category: 'cloud',
     difficulty: 'Intermediate',
     lastUpdated: '2026-04-16',
+    intro: "**Databricks** is the lakehouse platform built around **Delta Lake** and **Spark**, with **Unity Catalog** for governance, **Databricks SQL** for BI, **MLflow** for ML lifecycle, **Mosaic AI** for GenAI, and **Delta Live Tables (DLT)** / **Lakeflow** for declarative pipelines. Runs on AWS, Azure, and GCP; competes with Snowflake for the lakehouse crown.\n\nThis cheat sheet covers the DE-relevant surface: **notebooks and workspaces**, **clusters and SQL warehouses**, **Unity Catalog structure** (metastore → catalog → schema → table), **Delta Lake operations**, **DLT pipelines**, **job scheduling**, **cost management**, and the patterns that distinguish casual users from production-ready engineers.\n\n### What separates Databricks power users\n\n**(1) Use Unity Catalog — don't revert to Hive Metastore habits**. Unity Catalog is the managed metastore + fine-grained access control. Everything new should be `catalog.schema.table`. Legacy `hive_metastore.default.my_table` still works but doesn't inherit Unity's governance.\n\n**(2) All-purpose clusters vs Jobs clusters vs SQL warehouses**. All-purpose = shared interactive clusters (expensive to leave running, fine for dev). Jobs clusters = ephemeral per-job (cheap and right for scheduled ETL). SQL warehouses = serverless-ish SQL compute optimized for BI (pay per query, concurrency scaling). Wrong choice = 2-3× cost overhead.\n\n**(3) Delta Lake ops you should know cold**: `OPTIMIZE table ZORDER BY (col)` for data layout, `VACUUM table RETAIN 168 HOURS` for cleanup, `DESCRIBE HISTORY table` for time travel history, `RESTORE TABLE ... VERSION AS OF n` for rollback. **Auto Optimize** + **Auto Compact** = turn them on for hot tables.\n\n**(4) DLT vs plain notebook jobs**. DLT (Delta Live Tables) is declarative — you write `@dlt.table`-decorated functions, Databricks builds the DAG, handles expectations, streams updates. Plain notebooks = imperative, you write the flow. Use DLT for medallion-architecture pipelines; plain notebooks for ad-hoc / exploratory / one-off work.\n\n**(5) Photon is free speed**. Enable the **Photon** engine on SQL warehouses and Jobs clusters — it's a vectorized C++ execution engine that roughly 2× accelerates most SQL + Delta workloads at no extra cost. No reason to run without it.",
+    whenToUse: {
+      use: [
+        "You're a DE working on Databricks and want a daily reference",
+        "You're deciding cluster type, storage layout, or catalog strategy",
+        "You're prepping DE interviews where Databricks comes up",
+        "You're comparing Databricks to Snowflake for an architecture decision",
+        "You're migrating from EMR / HDInsight / on-prem Spark to Databricks"
+      ],
+      avoid: [
+        "You need Spark fundamentals — see the PySpark cheat sheet",
+        "You need MLflow / Mosaic AI deep dive — different discipline",
+        "You're new to lakehouses — start with Delta Lake glossary entry",
+        "You need cloud-provider specifics (AWS/Azure/GCP) — see those cheat sheets"
+      ]
+    },
     sections: [
       {
         title: 'Delta Lake Essentials',
@@ -2936,6 +3407,22 @@ query.awaitTermination()`,
     category: 'architecture',
     difficulty: 'Intermediate',
     lastUpdated: '2026-04-16',
+    intro: "Data modeling is the most durable skill in data engineering — the schemas you design outlive the warehouse they run on, the orchestrator that builds them, and usually your tenure at the company. The core frameworks: **Kimball dimensional modeling** (star schemas, fact + dimension tables, SCD types), **Data Vault 2.0** (hubs, links, satellites, highly normalized), **Inmon's Corporate Information Factory** (3NF enterprise warehouse → dimensional marts), and **One Big Table / denormalized** (the lakehouse + columnar era favorite for simplicity).\n\nThis cheat sheet covers the patterns and tradeoffs that actually matter in 2026: when to denormalize, when to keep SCD2 history, how to model slowly-changing reference data, how to handle events vs entities, and the **surrogate-key-vs-natural-key** debate that will never die.\n\n### The modeling decisions that matter in 2026\n\n**(1) Star schema still wins for BI**. Dashboards and self-service analytics map cleanly onto dims + facts + measures. Columnar engines (Snowflake, BigQuery, Redshift, Databricks SQL) love wide dimension tables joined to skinny fact tables. Don't over-normalize — 3NF for analytics is fighting the engine.\n\n**(2) SCD Type 2 for things that change + need history; Type 1 for things that change without history; Type 0 for immutable**. Common mistake: Type 2 on every dimension because \"history is nice to have\". The storage is fine but queries get harder, joins require temporal awareness, and your dashboards become inadvertently subtle. Default to Type 1 unless a business requirement forces Type 2.\n\n**(3) Events vs entities**. Fact tables come in three styles: transaction (one row per event, high volume), periodic snapshot (one row per entity per period, medium volume), accumulating snapshot (one row per process instance, updated over its lifecycle). Pick based on the questions you need to answer. Mixing styles in one table is a code smell.\n\n**(4) Natural key vs surrogate key**. Surrogate (generated INT/UUID) = cleaner joins, isolates dimension evolution, essential for SCD2 (natural key isn't unique across versions). Natural = easier debugging, no round-trip to look up IDs. 2026 consensus: surrogate keys in the dim, natural keys preserved as alternate-key columns.\n\n**(5) Data Vault for enterprise raw vaults, not for marts**. Vault excels at loose schema, high-velocity raw ingest, and audit — but consuming Vault directly from BI is painful. Typical pattern: Vault for raw layer, dimensional marts on top for consumption.",
+    whenToUse: {
+      use: [
+        "You're designing a new warehouse or lakehouse schema",
+        "You're refactoring an existing schema that's drowning in tech debt",
+        "You're prepping DE interviews with modeling rounds (Kimball, Vault, SCD)",
+        "You're training a team on dimensional modeling fundamentals",
+        "You're evaluating One Big Table vs dimensional for a lakehouse"
+      ],
+      avoid: [
+        "You need specific dbt syntax — use the dbt cheat sheets",
+        "You need Snowflake-specific modeling — see Snowflake best practices",
+        "You're looking for NoSQL/document modeling — different discipline",
+        "You need ER-diagram software recommendations — out of scope"
+      ]
+    },
     sections: [
       {
         title: 'Modeling Approaches Compared',

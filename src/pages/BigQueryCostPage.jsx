@@ -21,6 +21,42 @@ function fmt(n) {
   return '$' + n.toFixed(2);
 }
 
+const INTRO = `**BigQuery pricing is simple until you try to model it.** Two completely different compute-billing modes (on-demand vs Editions), three Edition tiers with different feature cutlines, separate storage billing with automatic long-term discounts, and streaming ingest with its own free tier — and that's before you get into slot reservations, commitments, and autoscaling. This calculator exists because the official Google Cloud pricing calculator buries BigQuery inside a generic UI that doesn't let you reason clearly about the on-demand vs Editions break-even, which is the single most valuable pricing decision any BigQuery team makes.
+
+### How to use this calculator
+
+The **TB scanned per month** input is the one number you cannot hand-wave. Everything else on the page — storage, streaming, even the Editions slot count — is secondary to the compute cost driven by bytes scanned. If you don't know your TB scanned number, run the validator SQL block below against your \`INFORMATION_SCHEMA.JOBS_BY_PROJECT\` for the last 30 days. That's the number your actual bill cares about.
+
+Then flip between **on-demand** and **Editions** to see the break-even. On-demand is \`(TB - 1) * $6.25\` — one number, easy. Editions is \`slots * hours/day * days/month * slot_rate\`, where slot_rate is $0.04 (Standard), $0.06 (Enterprise), or $0.10 (Enterprise Plus). If the calculator shows Editions cheaper at your current volume, that's your signal to open a Cloud Billing case and discuss a slot reservation.
+
+### What this calculator gets right (and where to be skeptical)
+
+**Gets right**: list prices across on-demand and all three Editions, the 1 TB free on-demand tier, the 90-day long-term storage auto-transition, the 2 TB free Storage Write API tier. These reflect public GCP pricing as of April 2026.
+
+**Be skeptical when**: (1) you have a committed-use discount (CUD) on slots — your effective rate is lower. (2) You're running BigQuery ML, vector search, or multi-statement transactions — those have separate compute accounting. (3) You use cross-region or cross-cloud queries (Enterprise Plus) — there's an additional data-transfer charge the calculator doesn't model. (4) Your workload uses flex slots or autoscaling — variable slot count means the hours/day number becomes an average, not a ceiling.
+
+### The pricing mental model that actually matters
+
+Forget TB/slot/GB rates for a second. The economic question is: **does your workload look like a bursty spike or a steady stream?** Bursty spikes favor on-demand (pay only when you query) or Enterprise Plus with autoscale (slots drop to 0 at idle). Steady streams favor fixed Standard/Enterprise reservations (no overprovisioning needed, lowest slot rate). The calculator lets you prove which category your workload falls into before you commit — which is the entire point of modeling pricing before signing the contract.`;
+
+const WHEN_TO_USE = {
+  use: [
+    "You're budgeting BigQuery spend for the next quarter and need a defensible monthly number to put in the FinOps spreadsheet",
+    "You're evaluating the on-demand vs Editions break-even — especially when monthly scan volume is trending north of 400 TB",
+    "You're comparing BigQuery against Snowflake or Databricks and need an apples-to-apples cost estimate at your actual TB scanned and storage volumes",
+    "You're planning a slot reservation and want to model different commitment scenarios (Standard vs Enterprise vs Enterprise Plus) before signing",
+    "You're auditing why last month's BigQuery bill spiked and need a quick sanity check on whether the scan volume matches the invoice",
+    "You're pitching a BigQuery migration internally and need a back-of-envelope TCO for executives who don't care about slot mechanics"
+  ],
+  avoid: [
+    "You already have a committed-use discount (CUD) — your effective slot rate is lower than list, so Editions numbers here will overstate your real cost",
+    "Your workload is dominated by BigQuery ML training, vector search, or multi-statement transactions — those have separate compute accounting the calculator doesn't model",
+    "You need exact contract-specific pricing for procurement — always validate against your Google Cloud account team's official quote, not a public calculator",
+    "Your workload runs cross-region or cross-cloud queries (Enterprise Plus) — the data-transfer charge is material and not modeled here",
+    "You're in a region with non-US pricing — BigQuery pricing varies by region; these defaults reflect US multi-region list prices"
+  ]
+};
+
 const FAQ = [
   {
     q: 'How does BigQuery pricing work?',
@@ -163,6 +199,49 @@ export default function BigQueryCostPage() {
             Editions break-even analysis.
           </p>
         </div>
+
+        {/* Phase 2: practitioner intro + when-to-use (pSEO depth) */}
+        <section className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8">
+          <div className="prose prose-invert prose-sm md:prose-base max-w-none text-gray-300 leading-relaxed">
+            {INTRO.split('\n\n').map((para, i) => {
+              if (para.startsWith('### ')) {
+                return <h3 key={i} className="text-xl font-semibold text-white mt-6 mb-3">{para.replace(/^###\s+/, '')}</h3>;
+              }
+              const parts = para.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+              return (
+                <p key={i} className="mb-3 last:mb-0">
+                  {parts.map((part, j) => {
+                    if (part.startsWith('**') && part.endsWith('**')) return <strong key={j} className="text-white">{part.slice(2, -2)}</strong>;
+                    if (part.startsWith('`') && part.endsWith('`')) return <code key={j} className="px-1.5 py-0.5 rounded bg-slate-900/70 border border-slate-700 text-blue-300 text-[0.9em]">{part.slice(1, -1)}</code>;
+                    return <React.Fragment key={j}>{part}</React.Fragment>;
+                  })}
+                </p>
+              );
+            })}
+          </div>
+          <div className="grid md:grid-cols-2 gap-4 mt-8">
+            <div className="bg-emerald-950/30 border border-emerald-800/50 rounded-xl p-5">
+              <h3 className="text-emerald-300 font-semibold mb-3 flex items-center gap-2">
+                <Check className="w-4 h-4" aria-hidden="true" /> Use this calculator when
+              </h3>
+              <ul className="space-y-2 text-sm text-gray-300">
+                {WHEN_TO_USE.use.map((item, i) => (
+                  <li key={i} className="flex gap-2"><span className="text-emerald-400 flex-shrink-0">•</span><span>{item}</span></li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-rose-950/30 border border-rose-800/50 rounded-xl p-5">
+              <h3 className="text-rose-300 font-semibold mb-3 flex items-center gap-2">
+                <span aria-hidden="true">⚠</span> Don't rely on it when
+              </h3>
+              <ul className="space-y-2 text-sm text-gray-300">
+                {WHEN_TO_USE.avoid.map((item, i) => (
+                  <li key={i} className="flex gap-2"><span className="text-rose-400 flex-shrink-0">•</span><span>{item}</span></li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
 
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 bg-slate-800/50 rounded-2xl border border-slate-700 p-6 space-y-4">

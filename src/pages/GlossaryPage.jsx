@@ -353,10 +353,36 @@ export function GlossaryPage() {
                             </div>
                         )}
 
+                        {/* Practitioner Intro — field-story framing */}
+                        {term.practitionerIntro && (
+                            <div className="mb-8 bg-gradient-to-br from-blue-900/20 to-purple-900/20 border border-blue-500/30 rounded-xl p-6">
+                                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                    <BookOpen className="w-5 h-5 text-blue-400" />
+                                    From the field
+                                </h2>
+                                <article className="prose-container">
+                                    {renderMarkdown(term.practitionerIntro)}
+                                </article>
+                            </div>
+                        )}
+
                         {/* Full Definition */}
                         <article className="prose-container">
                             {renderMarkdown(term.fullDefinition)}
                         </article>
+
+                        {/* Gotchas / Practical Notes */}
+                        {term.gotchas && (
+                            <div className="mt-8 bg-amber-900/10 border border-amber-500/30 rounded-xl p-6">
+                                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                    <span className="text-amber-400 text-2xl">⚠</span>
+                                    Gotchas &amp; what I'd actually do
+                                </h2>
+                                <article className="prose-container">
+                                    {renderMarkdown(term.gotchas)}
+                                </article>
+                            </div>
+                        )}
 
                         {/* FAQs — Collapsible Accordion */}
                         {term.faqs?.length > 0 && (
