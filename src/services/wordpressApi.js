@@ -538,68 +538,39 @@ class WordPressAPI {
       throw new Error('Newsletter service is not configured');
     }
 
-    const response = await fetch('https://api.buttondown.email/v1/subscribers', {
+    const response = await fetch('https://api.buttondown.com/v1/subscribers', {
       method: 'POST',
       headers: {
         Authorization: `Token ${apiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email_address: email, email, type: 'regular' }),
+      body: JSON.stringify({ email_address: email }),
     });
 
-    if (response.ok) {
+    if (response.ok || response.status === 201) {
       return { success: true };
     }
 
     const data = await response.json().catch(() => ({}));
 
-    // Normalize Buttondown error payloads into a single readable string.
-    // Buttondown may return:
-    //   - { detail: "string" }
-    //   - { detail: [ { msg, loc, type }, ... ] }              (FastAPI-style validation)
-    //   - { detail: { email: ["msg"], ... } }                  (field-keyed)
-    //   - { code: "email_already_exists", ... }
-    //   - { message: "string" }
-    const stringifyLeaf = (v) => {
-      if (v == null) return '';
-      if (typeof v === 'string') return v;
-      if (typeof v === 'number' || typeof v === 'boolean') return String(v);
-      if (typeof v === 'object') {
-        return v.msg || v.message || v.detail || v.error || '';
-      }
-      return '';
-    };
-
-    let detail = null;
-    if (typeof data.detail === 'string') {
-      detail = data.detail;
-    } else if (Array.isArray(data.detail)) {
-      detail = data.detail.map(stringifyLeaf).filter(Boolean).join(', ');
-    } else if (data.detail && typeof data.detail === 'object') {
-      detail = Object.values(data.detail)
-        .flat()
-        .map(stringifyLeaf)
-        .filter(Boolean)
-        .join(', ');
-    }
-
-    const code = typeof data.code === 'string' ? data.code : '';
-    const haystack = `${detail || ''} ${code}`.toLowerCase();
-
-    // Already subscribed / previously unsubscribed — treat as soft success
+    // Already subscribed — treat as soft success
     if (
       response.status === 409 ||
-      haystack.includes('already') ||
-      code === 'email_already_exists' ||
-      code === 'email_unsubscribed'
+      data.code === 'email_already_exists' ||
+      data.code === 'email_unsubscribed'
     ) {
       return { success: true, message: 'Already subscribed' };
     }
 
+    // Blocked by Buttondown firewall (disposable emails, spam filters, etc.)
+    if (data.code === 'subscriber_blocked') {
+      throw new Error('This email address is not allowed. Please use a different email.');
+    }
+
     const message =
-      detail ||
+      (typeof data.detail === 'string' ? data.detail : '') ||
       (typeof data.message === 'string' ? data.message : '') ||
-      code ||
+      data.code ||
       response.statusText ||
       'Subscription failed';
 

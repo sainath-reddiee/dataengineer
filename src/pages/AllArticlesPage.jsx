@@ -174,16 +174,8 @@ const AllArticlesPage = () => {
               <Link to="/category/aws" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">AWS</Link>,{' '}
               <Link to="/category/python" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">Python</Link>, and{' '}
               <Link to="/category/sql" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">SQL</Link>.
-              Looking for quick reference? Skim our{' '}
-              <Link to="/cheatsheets" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">cheat sheets</Link>,{' '}
-              compare tools side-by-side in the{' '}
-              <Link to="/compare" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">comparisons hub</Link>,{' '}
-              or look up terms in the{' '}
-              <Link to="/glossary" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">glossary</Link>.
-              {' '}Catch the latest{' '}
-              <Link to="/news" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">news & trends</Link>
-              {' '}or{' '}
-              <Link to="/contribute" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">write for us</Link>.
+              {' '}Want to contribute?{' '}
+              <Link to="/contribute" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">Write for us</Link>.
             </p>
             
             {/* Search Bar */}

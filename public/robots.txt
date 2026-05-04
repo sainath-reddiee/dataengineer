@@ -38,9 +38,23 @@ Allow: /
 
 User-agent: AdsBot-Google
 Allow: /
+Disallow: /glossary
+Disallow: /compare
+Disallow: /cheatsheets
+Disallow: /practice
+Disallow: /tools
+Disallow: /news
+Disallow: /interview-prep
 
 User-agent: AdsBot-Google-Mobile
 Allow: /
+Disallow: /glossary
+Disallow: /compare
+Disallow: /cheatsheets
+Disallow: /practice
+Disallow: /tools
+Disallow: /news
+Disallow: /interview-prep
 
 # =============================================================================
 # SITEMAPS - Google will discover all sub-sitemaps via sitemap-index.xml

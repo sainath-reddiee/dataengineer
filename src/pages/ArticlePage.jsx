@@ -755,8 +755,8 @@ const ArticlePage = () => {
             })}
           </div>
 
-          {/* Contextual Tool Widget — drives internal traffic & engagement */}
-          <InlineToolWidget post={safePost} />
+          {/* Contextual Tool Widget — TEMPORARILY hidden for AdSense approval */}
+          {/* <InlineToolWidget post={safePost} /> */}
 
           {/* Enhanced Author Footer */}
           <div className="border-t-2 border-gray-700/50 pt-8 mt-12">
@@ -801,7 +801,8 @@ const ArticlePage = () => {
 
         <EmailDigestBanner />
 
-        <RelatedTools post={safePost} />
+        {/* RelatedTools TEMPORARILY hidden for AdSense approval */}
+        {/* <RelatedTools post={safePost} /> */}
 
         <RecommendedCourses post={safePost} />
 

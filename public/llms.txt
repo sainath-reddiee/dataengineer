@@ -48,8 +48,6 @@ DataEngineer Hub publishes practical, production-tested tutorials on modern data
 
 ## Content Structure
 - **/articles** - Main tutorial repository (59+ in-depth articles)
-- **/glossary** - Data engineering terminology glossary (PSEO)
-- **/compare** - Tool comparison guides (e.g., Snowflake vs Databricks)
 - **/category/snowflake** - Snowflake-specific guides
 - **/category/aws** - AWS data engineering
 - **/category/python** - Python for data engineers

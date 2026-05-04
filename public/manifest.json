@@ -33,18 +33,6 @@
       "short_name": "Articles",
       "url": "/articles",
       "description": "Browse all data engineering articles"
-    },
-    {
-      "name": "Glossary",
-      "short_name": "Glossary",
-      "url": "/glossary",
-      "description": "Data engineering glossary"
-    },
-    {
-      "name": "Comparisons",
-      "short_name": "Compare",
-      "url": "/compare",
-      "description": "Side-by-side tool comparisons"
     }
   ]
 }

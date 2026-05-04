@@ -132,10 +132,7 @@ const ContactPage = () => {
               </p>
               <p>
                 Before writing, check whether your question is already answered in the{' '}
-                <a href="/articles" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">articles library</a>,{' '}
-                <a href="/cheatsheets" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">cheat sheets</a>,{' '}
-                <a href="/glossary" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">glossary</a>, or{' '}
-                <a href="/tools" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">free tools</a>.
+                <a href="/articles" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">articles library</a>.
                 If you want weekly updates rather than a reply, subscribe to the{' '}
                 <a href="/newsletter" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">newsletter</a>{' '}
                 instead.

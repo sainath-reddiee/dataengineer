@@ -198,7 +198,8 @@ const HomePage = () => {
             </Suspense>
           </section>
 
-          {/* 📰 NEWS & TRENDS - Latest industry updates */}
+          {/* 📰 NEWS & TRENDS - TEMPORARILY hidden for AdSense approval */}
+          {/*
           <section>
             <SectionHeader
               icon={Newspaper}
@@ -211,6 +212,7 @@ const HomePage = () => {
               <NewsPosts />
             </Suspense>
           </section>
+          */}
 
           {/* 🛠 TECH CATEGORIES - Grid view */}
           <section>
@@ -226,7 +228,8 @@ const HomePage = () => {
             </Suspense>
           </section>
 
-          {/* 📋 CHEAT SHEETS - Quick reference */}
+          {/* 📋 CHEAT SHEETS - TEMPORARILY hidden for AdSense approval */}
+          {/*
           <section>
             <SectionHeader
               icon={BookOpen}
@@ -237,8 +240,10 @@ const HomePage = () => {
             />
             <CheatSheetCards />
           </section>
+          */}
 
-          {/* 🧰 TOOLS & INTERVIEW PREP - Cross-link hubs */}
+          {/* 🧰 TOOLS & INTERVIEW PREP - TEMPORARILY hidden for AdSense approval */}
+          {/*
           <section>
             <SectionHeader
               icon={Wrench}
@@ -286,6 +291,7 @@ const HomePage = () => {
               </Link>
             </div>
           </section>
+          */}
 
           {/* 📚 RECENT POSTS - Compact list */}
           <section>

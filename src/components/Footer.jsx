@@ -19,13 +19,14 @@ const Footer = () => {
       { name: 'Snowflake Guides', href: '/category/snowflake' },
       { name: 'Azure Resources', href: '/category/azure' },
       { name: 'SQL Tips', href: '/category/sql' },
-      { name: 'Glossary', href: '/glossary' },
-      { name: 'Comparisons', href: '/compare' },
-      { name: 'Cheat Sheets', href: '/cheatsheets' },
-      { name: 'Interview Prep', href: '/interview-prep' },
-      { name: 'News & Trends', href: '/news' },
-      { name: 'Tools', href: '/tools' },
-      { name: 'Tags', href: '/tag' }
+      // pSEO links TEMPORARILY removed for AdSense approval:
+      // { name: 'Glossary', href: '/glossary' },
+      // { name: 'Comparisons', href: '/compare' },
+      // { name: 'Cheat Sheets', href: '/cheatsheets' },
+      // { name: 'Interview Prep', href: '/interview-prep' },
+      // { name: 'News & Trends', href: '/news' },
+      // { name: 'Tools', href: '/tools' },
+      // { name: 'Tags', href: '/tag' }
     ],
     tools: [
       { name: 'Airflow', href: '/category/airflow' },

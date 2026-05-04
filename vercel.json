@@ -101,30 +101,6 @@
             "destination": "/articles/index.html"
         },
         {
-            "source": "/glossary",
-            "destination": "/glossary/index.html"
-        },
-        {
-            "source": "/glossary/:term",
-            "destination": "/glossary/:term/index.html"
-        },
-        {
-            "source": "/compare",
-            "destination": "/compare/index.html"
-        },
-        {
-            "source": "/compare/:slug",
-            "destination": "/compare/:slug/index.html"
-        },
-        {
-            "source": "/cheatsheets",
-            "destination": "/cheatsheets/index.html"
-        },
-        {
-            "source": "/cheatsheets/:slug",
-            "destination": "/cheatsheets/:slug/index.html"
-        },
-        {
             "source": "/(.*)",
             "destination": "/index.html"
         }

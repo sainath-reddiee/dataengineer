@@ -3,18 +3,9 @@ import { Link } from 'react-router-dom';
 import { BookOpen, ArrowRight, Layers, PenLine } from 'lucide-react';
 
 const links = [
-  {
-    to: '/glossary',
-    icon: BookOpen,
-    title: 'Data Engineering Glossary',
-    desc: 'Look up key terms and concepts',
-  },
-  {
-    to: '/compare',
-    icon: Layers,
-    title: 'Tool Comparisons',
-    desc: 'Side-by-side technology breakdowns',
-  },
+  // pSEO links TEMPORARILY removed for AdSense approval:
+  // { to: '/glossary', icon: BookOpen, title: 'Data Engineering Glossary', desc: 'Look up key terms and concepts' },
+  // { to: '/compare', icon: Layers, title: 'Tool Comparisons', desc: 'Side-by-side technology breakdowns' },
   {
     to: '/articles',
     icon: ArrowRight,
