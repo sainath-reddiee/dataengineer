@@ -46,9 +46,11 @@ export class SEOScanner {
 
     // Parse document if string
     if (typeof doc === 'string') {
+      this.html = doc;
       const parser = new DOMParser();
       this.doc = parser.parseFromString(doc, 'text/html');
     } else {
+      this.html = doc.documentElement?.outerHTML || '';
       this.doc = doc;
     }
 
@@ -83,6 +85,8 @@ export class SEOScanner {
     this.checkPageSize();
     this.checkLinkAnchors();
     this.checkDuplicateContent();
+    this.checkTwitterCards();
+    this.checkSitemapDetection();
 
     // Calculate overall score
     this.calculateScore();
@@ -944,6 +948,68 @@ export class SEOScanner {
   }
 
   // checkTwitterCards() removed: site no longer emits twitter:* meta tags.
+
+  checkTwitterCards() {
+    const card = this.doc.querySelector('meta[name="twitter:card"]')?.content;
+    const title = this.doc.querySelector('meta[name="twitter:title"]')?.content;
+    const desc = this.doc.querySelector('meta[name="twitter:description"]')?.content;
+    const image = this.doc.querySelector('meta[name="twitter:image"]')?.content;
+
+    const found = [card, title, desc, image].filter(Boolean).length;
+
+    if (found === 0) {
+      this.addCheck(
+        'Twitter Cards',
+        CATEGORIES.SOCIAL,
+        SEVERITY.INFO,
+        'No Twitter Card meta tags found',
+        'Add twitter:card, twitter:title, twitter:description, and twitter:image for better X/Twitter sharing'
+      );
+    } else if (found < 3) {
+      this.addCheck(
+        'Twitter Cards',
+        CATEGORIES.SOCIAL,
+        SEVERITY.WARNING,
+        `Incomplete Twitter Cards (${found}/4 tags)`,
+        'Add missing twitter:card, twitter:title, twitter:description, or twitter:image tags'
+      );
+    } else {
+      this.addCheck(
+        'Twitter Cards',
+        CATEGORIES.SOCIAL,
+        SEVERITY.GOOD,
+        `Twitter Cards configured (${found}/4 tags, type: ${card || 'summary'})`,
+        null,
+        { card, title: !!title, description: !!desc, image: !!image }
+      );
+    }
+  }
+
+  checkSitemapDetection() {
+    // Check for sitemap link in HTML
+    const sitemapLink = this.doc.querySelector('link[rel="sitemap"]');
+    const robotsMeta = this.html || '';
+    const hasSitemapRef = robotsMeta.includes('sitemap.xml') || robotsMeta.includes('sitemap-index.xml');
+
+    if (sitemapLink || hasSitemapRef) {
+      this.addCheck(
+        'Sitemap',
+        CATEGORIES.TECHNICAL,
+        SEVERITY.GOOD,
+        'Sitemap reference detected in page',
+        null,
+        { href: sitemapLink?.getAttribute('href') || 'referenced in content' }
+      );
+    } else {
+      this.addCheck(
+        'Sitemap',
+        CATEGORIES.TECHNICAL,
+        SEVERITY.INFO,
+        'No sitemap link found in page HTML',
+        'Add <link rel="sitemap" href="/sitemap.xml"> or ensure sitemap is listed in robots.txt'
+      );
+    }
+  }
 
   // ============================================================================
   // CONTENT CHECKS

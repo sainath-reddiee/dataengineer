@@ -533,7 +533,7 @@ class ContentOptimizerService {
     }
 
     // Fetch and analyze URL with fallback proxies
-    async analyzeURL(url) {
+    async analyzeURL(url, _retryCount = 0) {
         try {
             // Validate URL
             if (!url || !url.startsWith('http')) {
@@ -575,16 +575,16 @@ class ContentOptimizerService {
                         throw new Error('Invalid HTML content received');
                     }
                 } catch (proxyError) {
-                    // Try next proxy
+                    // Try next proxy (max 3 attempts to prevent infinite recursion)
                     this.currentProxyIndex = (this.currentProxyIndex + 1) % this.corsProxies.length;
 
-                    if (this.currentProxyIndex === 0) {
-                        // We've tried all proxies
+                    if (this.currentProxyIndex === 0 || _retryCount >= 2) {
+                        // We've tried all proxies or hit max retries
                         throw new Error(`Failed to fetch URL. The page may be blocking automated access. Error: ${proxyError.message}`);
                     }
 
                     // Retry with next proxy
-                    return this.analyzeURL(url);
+                    return this.analyzeURL(url, _retryCount + 1);
                 }
             } else {
                 // Same origin fetch

@@ -12,6 +12,7 @@ export function SerpPreviewPage() {
     const [url, setUrl] = useState('');
     const [loading, setLoading] = useState(false);
     const [preview, setPreview] = useState(null);
+    const [error, setError] = useState('');
     const [device, setDevice] = useState('desktop');
     const [mode, setMode] = useState('fetch'); // 'fetch' or 'manual'
     const [manualData, setManualData] = useState({
@@ -25,6 +26,7 @@ export function SerpPreviewPage() {
         if (!url.trim()) return;
 
         setLoading(true);
+        setError('');
         try {
             let finalUrl = url.trim();
             if (!finalUrl.startsWith('http')) finalUrl = 'https://' + finalUrl;
@@ -60,6 +62,7 @@ export function SerpPreviewPage() {
             });
         } catch (err) {
             console.error('Preview failed:', err);
+            setError(`Failed to fetch preview: ${err.message}`);
         } finally {
             setLoading(false);
         }

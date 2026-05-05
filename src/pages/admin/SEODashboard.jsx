@@ -17,6 +17,17 @@ import { getLastNDays, getLocalReferralStats } from '@/utils/aiReferralTracker';
 import { scoreCtrBatch } from '@/utils/ctrScorer';
 import { getEngagementStats } from '@/utils/engagementTracker';
 
+// Tailwind can't detect dynamic classes at build time, so we map them explicitly
+const COLOR_CLASSES = {
+    blue:   { bg: 'bg-blue-500/20',   text: 'text-blue-400' },
+    purple: { bg: 'bg-purple-500/20', text: 'text-purple-400' },
+    green:  { bg: 'bg-green-500/20',  text: 'text-green-400' },
+    orange: { bg: 'bg-orange-500/20', text: 'text-orange-400' },
+    pink:   { bg: 'bg-pink-500/20',   text: 'text-pink-400' },
+    cyan:   { bg: 'bg-cyan-500/20',   text: 'text-cyan-400' },
+    yellow: { bg: 'bg-yellow-500/20', text: 'text-yellow-400' },
+};
+
 const quickActions = [
     { path: '/admin/scanner', icon: Search, label: 'Scan URL', desc: 'Analyze any page', color: 'blue' },
     { path: '/admin/bulk', icon: Layers, label: 'Bulk Scan', desc: 'Scan all articles', color: 'purple' },
@@ -193,8 +204,8 @@ export function SEODashboard() {
                                 to={action.path}
                                 className="block bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-4 hover:border-blue-500/50 hover:bg-slate-700/50 transition-all group"
                             >
-                                <div className={`p-3 rounded-xl bg-${action.color}-500/20 inline-block mb-3`}>
-                                    <action.icon className={`w-6 h-6 text-${action.color}-400`} />
+                                <div className={`p-3 rounded-xl ${COLOR_CLASSES[action.color]?.bg || 'bg-blue-500/20'} inline-block mb-3`}>
+                                    <action.icon className={`w-6 h-6 ${COLOR_CLASSES[action.color]?.text || 'text-blue-400'}`} />
                                 </div>
                                 <h3 className="font-semibold text-white group-hover:text-blue-400 transition-colors">
                                     {action.label}

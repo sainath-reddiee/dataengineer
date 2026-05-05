@@ -31,6 +31,7 @@ export function FreshnessPage() {
             try {
                 const data = await wordpressApi.getAllPosts(1, 100);
                 const posts = (data.posts || []).map(p => ({
+                    id: p.id,
                     slug: p.slug,
                     title: p.title,
                     date: p.date,
@@ -137,7 +138,7 @@ export function FreshnessPage() {
                                 </div>
                                 <div className="col-span-1 text-center">
                                     <a
-                                        href={`https://app.dataengineerhub.blog/wp-admin/post.php?action=edit&post=${article.slug}`}
+                                        href={`https://app.dataengineerhub.blog/wp-admin/post.php?post=${article.id}&action=edit`}
                                         target="_blank"
                                         rel="noopener"
                                         className="text-blue-400 hover:text-blue-300"
