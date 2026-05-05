@@ -9,7 +9,8 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
     LayoutDashboard, Search, Layers, GitCompare,
-    Code2, Eye, Sparkles, LogOut, ChevronLeft, CheckSquare, TrendingUp, Key
+    Code2, Eye, Sparkles, LogOut, ChevronLeft, CheckSquare, TrendingUp, Key,
+    BookOpen, Link2, Clock, Zap
 } from 'lucide-react';
 import { AdminAuth, useAdminAuth } from './AdminAuth';
 import geminiService from '@/services/geminiService';
@@ -24,6 +25,10 @@ const navItems = [
     { path: '/admin/ai-suite', icon: Sparkles, label: 'AI Suite' },
     { path: '/admin/checklist', icon: CheckSquare, label: 'Checklist' },
     { path: '/admin/content-optimizer', icon: TrendingUp, label: 'Content Optimizer' },
+    { path: '/admin/ctr-lab', icon: Zap, label: 'CTR Lab' },
+    { path: '/admin/readability', icon: BookOpen, label: 'Readability' },
+    { path: '/admin/internal-links', icon: Link2, label: 'Internal Links' },
+    { path: '/admin/freshness', icon: Clock, label: 'Freshness' },
 ];
 
 function AdminNav() {

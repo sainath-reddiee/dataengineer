@@ -78,6 +78,9 @@ const AISuitePage = lazy(() => import('./pages/admin/AISuitePage'));
 const ChecklistPage = lazy(() => import('./pages/admin/ChecklistPage'));
 const ContentOptimizerPage = lazy(() => import('./pages/admin/ContentOptimizerPage'));
 const CtrLabPage = lazy(() => import('./pages/admin/CtrLabPage'));
+const ReadabilityPage = lazy(() => import('./pages/admin/ReadabilityPage'));
+const InternalLinksPage = lazy(() => import('./pages/admin/InternalLinksPage'));
+const FreshnessPage = lazy(() => import('./pages/admin/FreshnessPage'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
@@ -356,6 +359,9 @@ function App() {
           <Route path="checklist" element={<SafeRoute><ChecklistPage /></SafeRoute>} />
           <Route path="content-optimizer" element={<SafeRoute><ContentOptimizerPage /></SafeRoute>} />
           <Route path="ctr-lab" element={<SafeRoute><CtrLabPage /></SafeRoute>} />
+          <Route path="readability" element={<SafeRoute><ReadabilityPage /></SafeRoute>} />
+          <Route path="internal-links" element={<SafeRoute><InternalLinksPage /></SafeRoute>} />
+          <Route path="freshness" element={<SafeRoute><FreshnessPage /></SafeRoute>} />
         </Route>
       </Routes>
       <Toaster />
