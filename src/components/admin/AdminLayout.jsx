@@ -10,7 +10,8 @@ import { motion } from 'framer-motion';
 import {
     LayoutDashboard, Search, Layers, GitCompare,
     Code2, Eye, Sparkles, LogOut, ChevronLeft, CheckSquare, TrendingUp, Key,
-    BookOpen, Link2, Clock, Zap, Target, DollarSign
+    BookOpen, Link2, Clock, Zap, Target, DollarSign,
+    Network, Calendar, Users, Sparkle
 } from 'lucide-react';
 import { AdminAuth, useAdminAuth } from './AdminAuth';
 import geminiService from '@/services/geminiService';
@@ -19,6 +20,10 @@ const navItems = [
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
     { path: '/admin/rank-dashboard', icon: Target, label: 'Rank Intelligence', highlight: true },
     { path: '/admin/revenue', icon: DollarSign, label: 'Revenue Projection', highlight: true },
+    { path: '/admin/content-calendar', icon: Calendar, label: 'Content Calendar', highlight: true },
+    { path: '/admin/topic-clusters', icon: Network, label: 'Topic Clusters' },
+    { path: '/admin/competitor-gap', icon: Users, label: 'Competitor Gap (AI)' },
+    { path: '/admin/smart-linking', icon: Sparkle, label: 'Smart Linking (AI)' },
     { path: '/admin/scanner', icon: Search, label: 'SEO Scanner' },
     { path: '/admin/bulk', icon: Layers, label: 'Bulk Scan' },
     { path: '/admin/compare', icon: GitCompare, label: 'Compare URLs' },

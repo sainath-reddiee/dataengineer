@@ -83,6 +83,10 @@ const InternalLinksPage = lazy(() => import('./pages/admin/InternalLinksPage'));
 const FreshnessPage = lazy(() => import('./pages/admin/FreshnessPage'));
 const RankDashboardPage = lazy(() => import('./pages/admin/RankDashboardPage'));
 const RevenueProjectionPage = lazy(() => import('./pages/admin/RevenueProjectionPage'));
+const TopicClustersPage = lazy(() => import('./pages/admin/TopicClustersPage'));
+const ContentCalendarPage = lazy(() => import('./pages/admin/ContentCalendarPage'));
+const CompetitorGapPage = lazy(() => import('./pages/admin/CompetitorGapPage'));
+const SmartLinkingPage = lazy(() => import('./pages/admin/SmartLinkingPage'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
@@ -366,6 +370,10 @@ function App() {
           <Route path="freshness" element={<SafeRoute><FreshnessPage /></SafeRoute>} />
           <Route path="rank-dashboard" element={<SafeRoute><RankDashboardPage /></SafeRoute>} />
           <Route path="revenue" element={<SafeRoute><RevenueProjectionPage /></SafeRoute>} />
+          <Route path="topic-clusters" element={<SafeRoute><TopicClustersPage /></SafeRoute>} />
+          <Route path="content-calendar" element={<SafeRoute><ContentCalendarPage /></SafeRoute>} />
+          <Route path="competitor-gap" element={<SafeRoute><CompetitorGapPage /></SafeRoute>} />
+          <Route path="smart-linking" element={<SafeRoute><SmartLinkingPage /></SafeRoute>} />
         </Route>
       </Routes>
       <Toaster />
