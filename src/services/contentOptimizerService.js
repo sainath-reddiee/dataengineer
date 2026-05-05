@@ -1,6 +1,8 @@
 // Content Optimizer Service
 // Analyzes URLs for AI citation optimization
 
+import { fetchBlogArticleHTML } from '@/utils/fetchBlogArticleHTML';
+
 class ContentOptimizerService {
     constructor() {
         // Use a more reliable CORS proxy
@@ -538,17 +540,21 @@ class ContentOptimizerService {
                 throw new Error('Invalid URL. Please enter a valid HTTP/HTTPS URL.');
             }
 
-            // Try direct fetch first for same-origin URLs
             let html;
-            let fetchUrl = url;
 
+            // For blog article URLs, fetch content from WordPress API directly
+            // (bypasses SPA shell issue where fetch returns empty index.html)
+            const wpHTML = await fetchBlogArticleHTML(url);
+            if (wpHTML) {
+                html = wpHTML;
+            }
             // Check if scanning current page (bypass fetch/CORS)
-            if (url === window.location.href || url === 'current') {
+            else if (url === window.location.href || url === 'current') {
                 html = document.documentElement.outerHTML;
             }
             // If it's an external URL, use CORS proxy
             else if (!url.includes(window.location.hostname)) {
-                fetchUrl = `${this.corsProxies[this.currentProxyIndex]}${encodeURIComponent(url)}`;
+                let fetchUrl = `${this.corsProxies[this.currentProxyIndex]}${encodeURIComponent(url)}`;
 
                 try {
                     const response = await fetch(fetchUrl, {
@@ -582,7 +588,7 @@ class ContentOptimizerService {
                 }
             } else {
                 // Same origin fetch
-                const response = await fetch(fetchUrl);
+                const response = await fetch(url);
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 html = await response.text();
             }

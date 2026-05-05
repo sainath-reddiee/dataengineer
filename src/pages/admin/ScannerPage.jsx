@@ -7,6 +7,7 @@ import { SEOScoreCard } from '@/components/admin/SEOScoreCard';
 import { IssuesList } from '@/components/admin/IssuesList';
 import { ExportButton } from '@/components/admin/ExportButton';
 import scanHistoryService from '@/services/scanHistory';
+import { fetchBlogArticleHTML } from '@/utils/fetchBlogArticleHTML';
 
 export function ScannerPage() {
     const [searchParams] = useSearchParams();
@@ -46,7 +47,13 @@ export function ScannerPage() {
 
         try {
             let html;
-            if (finalUrl === window.location.href || scanUrl === 'current') {
+
+            // For blog article URLs, fetch from WordPress API directly
+            // (bypasses SPA shell issue)
+            const wpHTML = await fetchBlogArticleHTML(finalUrl);
+            if (wpHTML) {
+                html = wpHTML;
+            } else if (finalUrl === window.location.href || scanUrl === 'current') {
                 html = document.documentElement.outerHTML;
                 finalUrl = window.location.href;
             } else {
