@@ -112,9 +112,9 @@ class GSCService {
         const token = this.getAccessToken();
         if (!token) throw new Error('Not connected to Google Search Console');
 
-        // Default: last 28 days
-        const end = endDate || new Date().toISOString().split('T')[0];
-        const start = startDate || new Date(Date.now() - 28 * 86400000).toISOString().split('T')[0];
+        // GSC has a ~3-day data lag — shift endDate back 3 days for accurate data
+        const end = endDate || new Date(Date.now() - 3 * 86400000).toISOString().split('T')[0];
+        const start = startDate || new Date(Date.now() - 31 * 86400000).toISOString().split('T')[0];
 
         const response = await fetch(
             `${API_BASE}/sites/${encodeURIComponent(PROPERTY_URL)}/searchAnalytics/query`,
@@ -160,8 +160,9 @@ class GSCService {
         const token = this.getAccessToken();
         if (!token) throw new Error('Not connected to Google Search Console');
 
-        const end = endDate || new Date().toISOString().split('T')[0];
-        const start = startDate || new Date(Date.now() - 28 * 86400000).toISOString().split('T')[0];
+        // GSC has a ~3-day data lag — shift endDate back 3 days for accurate data
+        const end = endDate || new Date(Date.now() - 3 * 86400000).toISOString().split('T')[0];
+        const start = startDate || new Date(Date.now() - 31 * 86400000).toISOString().split('T')[0];
 
         const body = {
             startDate: start,

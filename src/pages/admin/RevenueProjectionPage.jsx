@@ -30,9 +30,8 @@ export function RevenueProjectionPage() {
     // Recompute revenue with user-specified RPM
     const withRevenue = useMemo(() => {
         return articles.map(a => {
-            const views = 0; // We don't have historical views here; use projections
-            // Keep the model's trafficMultiplier logic but apply current RPM
-            const ratio = rpm / 3; // default RPM in model is $3
+            // Scale the model's projection by the user's RPM (default in model is $3)
+            const ratio = rpm / 3;
             return {
                 ...a,
                 currentMonthly: a.revenueProjection.currentMonthly * ratio,

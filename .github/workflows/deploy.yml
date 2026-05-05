@@ -206,6 +206,7 @@ jobs:
           VITE_GISCUS_CATEGORY_ID: ${{ secrets.VITE_GISCUS_CATEGORY_ID }}
           VITE_BUTTONDOWN_API_KEY: ${{ secrets.VITE_BUTTONDOWN_API_KEY }}
           VITE_WEB3FORMS_KEY: ${{ secrets.VITE_WEB3FORMS_KEY }}
+          VITE_GSC_CLIENT_ID: ${{ secrets.VITE_GSC_CLIENT_ID }}
 
       - name: 🗑️ Delete Build Cache (Force Fresh Build)
         if: |

@@ -8,13 +8,14 @@ import { motion } from 'framer-motion';
 import {
     TrendingUp, Target, AlertTriangle, Zap, ChevronDown, ChevronRight,
     ExternalLink, RefreshCw, Award, Loader2, Link2 as LinkIcon,
-    Activity, BookOpen, DollarSign, BarChart3
+    Activity, BookOpen, DollarSign, BarChart3, LogOut
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import wordpressApi from '@/services/wordpressApi';
 import { scoreArticlesBatch } from '@/utils/rankIntelligence';
 import { getAllRanks, logRank, setTargetKeyword, getAggregateStats } from '@/utils/rankTracker';
 import { getLocalReferralStats } from '@/utils/aiReferralTracker';
+import { getEngagementStats } from '@/utils/engagementTracker';
 import gscService from '@/services/gscService';
 
 const HEALTH_COLORS = {
@@ -60,8 +61,11 @@ export function RankDashboardPage() {
             const posts = data.posts || [];
             const ranks = getAllRanks();
 
-            // Load engagement from localStorage (already ready)
-            const engagement = null; // engagementTracker reads localStorage on demand inside scoring
+            // Load engagement data from localStorage
+            let engagement = null;
+            try {
+                engagement = getEngagementStats();
+            } catch { /* no data yet */ }
 
             const articleResults = scoreArticlesBatch(posts, {
                 engagement,
@@ -160,9 +164,18 @@ export function RankDashboardPage() {
                             <LinkIcon className="w-4 h-4" /> Connect GSC
                         </button>
                     ) : (
-                        <span className="px-3 py-2 bg-emerald-500/20 text-emerald-300 text-xs rounded-lg border border-emerald-500/40 flex items-center gap-1.5">
-                            <Activity className="w-3.5 h-3.5" /> GSC Connected
-                        </span>
+                        <div className="flex items-center gap-2">
+                            <span className="px-3 py-2 bg-emerald-500/20 text-emerald-300 text-xs rounded-lg border border-emerald-500/40 flex items-center gap-1.5">
+                                <Activity className="w-3.5 h-3.5" /> GSC Connected
+                            </span>
+                            <button
+                                onClick={() => { gscService.clearToken(); setGscConnected(false); setGscData(null); }}
+                                className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-gray-300 text-xs rounded-lg flex items-center gap-1.5"
+                                title="Disconnect Google Search Console"
+                            >
+                                <LogOut className="w-3.5 h-3.5" /> Disconnect
+                            </button>
+                        </div>
                     )}
                     <button onClick={loadData} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-lg flex items-center gap-2">
                         <RefreshCw className="w-4 h-4" /> Refresh

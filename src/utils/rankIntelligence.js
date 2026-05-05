@@ -7,6 +7,20 @@
 
 import { scoreCtr } from './ctrScorer';
 
+const VIEW_STORAGE_KEY = 'deh_views';
+
+/**
+ * Read local view counts (populated by usePopularity hook on article page visits).
+ */
+function getStoredViews() {
+    if (typeof localStorage === 'undefined') return {};
+    try {
+        return JSON.parse(localStorage.getItem(VIEW_STORAGE_KEY) || '{}');
+    } catch {
+        return {};
+    }
+}
+
 /**
  * Score a single article across all SEO/AEO/CTR/AI pillars.
  * @param {Object} post - WordPress post object { slug, title, excerpt, content, date, modified, views }
@@ -287,20 +301,30 @@ function generateActions(pillarScores, post, ctrResult) {
 function projectRevenue(post, articleHealth, engagementScore) {
     // Conservative tech-blog RPM (revenue per 1000 pageviews): $3
     const RPM = 3;
-    const views = post.views || 0;
 
-    // Current monthly revenue estimate
-    const currentMonthly = (views / 30) * 30 * (RPM / 1000);
+    // Try to get real local view count first; fall back to age-based estimate.
+    const storedViews = getStoredViews();
+    let monthlyViews = storedViews[post.slug] || 0;
 
-    // Potential: if article hits page 1 (top 10), assume 10x traffic
-    // This is aggressive but realistic for the jump from page 2+ to page 1
-    const trafficMultiplier = articleHealth >= 80 ? 1.2 : articleHealth >= 60 ? 3.0 : 8.0;
-    const potentialViews = views * trafficMultiplier;
-    const potentialMonthly = (potentialViews / 30) * 30 * (RPM / 1000);
+    // If no local data, estimate based on article age + health.
+    // Formula: healthy recent articles get 50-200 monthly views as a baseline.
+    if (monthlyViews === 0) {
+        const ageInDays = post.date ? Math.max(1, (Date.now() - new Date(post.date).getTime()) / (1000 * 60 * 60 * 24)) : 90;
+        const ageMultiplier = Math.min(1, ageInDays / 30); // ramp up over first month
+        monthlyViews = Math.round((articleHealth / 2) * ageMultiplier);
+    }
+
+    const currentMonthly = (monthlyViews * RPM) / 1000;
+
+    // Potential: if article hits page 1 (top 10), assume multiplier based on current health.
+    // Higher health = already close to page 1, so less uplift. Lower health = huge potential.
+    const trafficMultiplier = articleHealth >= 80 ? 1.5 : articleHealth >= 60 ? 4.0 : 10.0;
+    const potentialMonthly = currentMonthly * trafficMultiplier;
 
     return {
         currentMonthly: Math.round(currentMonthly * 100) / 100,
         potentialMonthly: Math.round(potentialMonthly * 100) / 100,
         uplift: Math.round(trafficMultiplier * 10) / 10,
+        monthlyViews, // expose for debugging
     };
 }
