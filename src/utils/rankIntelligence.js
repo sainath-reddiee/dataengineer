@@ -106,13 +106,22 @@ export function scoreArticle(post, options = {}) {
 
 /**
  * Batch score all articles.
+ * Note: `options.rankData` is expected to be a dictionary keyed by slug
+ * (as returned by getAllRanks()). This function extracts the per-article
+ * rank record before passing it down to scoreArticle().
  */
 export function scoreArticlesBatch(posts, options = {}) {
-    return posts.map(p => ({
-        slug: p.slug,
-        title: p.title,
-        ...scoreArticle(p, options),
-    })).sort((a, b) => a.articleHealth - b.articleHealth); // worst first = biggest opportunities
+    const { rankData: rankStore, ...restOpts } = options;
+    return posts.map(p => {
+        const perArticleRank = rankStore && typeof rankStore === 'object'
+            ? (rankStore[p.slug] || null)
+            : null;
+        return {
+            slug: p.slug,
+            title: p.title,
+            ...scoreArticle(p, { ...restOpts, rankData: perArticleRank }),
+        };
+    }).sort((a, b) => a.articleHealth - b.articleHealth); // worst first = biggest opportunities
 }
 
 // ─── Individual Pillar Scorers ──────────────────────────────────

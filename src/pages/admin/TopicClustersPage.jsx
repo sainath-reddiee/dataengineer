@@ -14,6 +14,14 @@ export function TopicClustersPage() {
     const [analysis, setAnalysis] = useState(null);
     const [expandedId, setExpandedId] = useState(null);
 
+    // Memoize missing-topic computation for the currently-expanded cluster
+    // to avoid re-running keyword extraction on every expand/collapse.
+    const expandedMissingTopics = useMemo(() => {
+        if (expandedId === null || !analysis) return [];
+        const cluster = analysis.clusters.find(c => c.id === expandedId);
+        return cluster ? suggestMissingTopics(cluster, posts) : [];
+    }, [expandedId, analysis, posts]);
+
     useEffect(() => {
         async function load() {
             try {
@@ -81,7 +89,7 @@ export function TopicClustersPage() {
                 <h2 className="text-lg font-semibold text-white">Content Pillars</h2>
                 {analysis.clusters.map(cluster => {
                     const expanded = expandedId === cluster.id;
-                    const missingTopics = expanded ? suggestMissingTopics(cluster, posts) : [];
+                    const missingTopics = expanded ? expandedMissingTopics : [];
                     return (
                         <div key={cluster.id} className="bg-slate-800/40 border border-slate-700 rounded-xl overflow-hidden">
                             <div

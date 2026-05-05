@@ -24,12 +24,9 @@ async function fetchWithProxy(url) {
 }
 
 /**
- * Extract key structural elements from HTML for comparison.
+ * Extract key structural elements from an already-parsed Document.
  */
-function extractStructure(html) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-
+function extractStructureFromDoc(doc) {
     const title = doc.querySelector('title')?.textContent?.trim() || '';
     const metaDesc = doc.querySelector('meta[name="description"]')?.content || '';
 
@@ -80,6 +77,14 @@ function extractStructure(html) {
 }
 
 /**
+ * Extract key structural elements from HTML string (competitor page).
+ */
+function extractStructure(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return extractStructureFromDoc(doc);
+}
+
+/**
  * Analyze a competitor URL vs your article.
  * Returns { competitor, yours, aiGapAnalysis }
  */
@@ -92,9 +97,21 @@ export async function analyzeCompetitorGap(competitorUrl, yourArticle) {
     const competitorHtml = await fetchWithProxy(competitorUrl);
     const competitorStructure = extractStructure(competitorHtml);
 
-    // 2. Extract structure from your article (use its content directly)
-    const yourSyntheticHtml = `<!DOCTYPE html><html><head><title>${yourArticle.title}</title><meta name="description" content="${yourArticle.excerpt || ''}"></head><body>${yourArticle.content || ''}</body></html>`;
-    const yourStructure = extractStructure(yourSyntheticHtml);
+    // 2. Extract structure from your article — build DOM programmatically
+    // to avoid HTML injection from unescaped quotes in excerpt/title/content.
+    const yourDoc = new DOMParser().parseFromString(
+        '<!DOCTYPE html><html><head></head><body></body></html>',
+        'text/html'
+    );
+    const titleEl = yourDoc.createElement('title');
+    titleEl.textContent = yourArticle.title || '';
+    yourDoc.head.appendChild(titleEl);
+    const metaEl = yourDoc.createElement('meta');
+    metaEl.setAttribute('name', 'description');
+    metaEl.setAttribute('content', yourArticle.excerpt || '');
+    yourDoc.head.appendChild(metaEl);
+    yourDoc.body.innerHTML = yourArticle.content || '';
+    const yourStructure = extractStructureFromDoc(yourDoc);
 
     // 3. Build a comparison prompt for Gemini
     const prompt = `I'm comparing my data engineering blog article to a competitor article on the same topic. Give me actionable gaps.

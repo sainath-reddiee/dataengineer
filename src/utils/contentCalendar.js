@@ -77,10 +77,10 @@ export function getUpcoming(days = 7) {
     const now = Date.now();
     const cutoff = now + days * 86400000;
     return getTasks().filter(t => {
-        if (t.status === 'done') return false;
+        if (t.status === 'done' || !t.targetDate) return false;
         const taskTime = new Date(t.targetDate).getTime();
         return taskTime >= now - 86400000 && taskTime <= cutoff;
-    }).sort((a, b) => a.targetDate.localeCompare(b.targetDate));
+    }).sort((a, b) => (a.targetDate || '').localeCompare(b.targetDate || ''));
 }
 
 export function getOverdue() {

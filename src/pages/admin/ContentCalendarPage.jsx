@@ -96,7 +96,7 @@ export function ContentCalendarPage() {
 
     const filteredTasks = tasks
         .filter(t => filter === 'all' || t.status === filter)
-        .sort((a, b) => a.targetDate.localeCompare(b.targetDate));
+        .sort((a, b) => (a.targetDate || '').localeCompare(b.targetDate || ''));
 
     const stats = {
         total: tasks.length,

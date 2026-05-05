@@ -28,6 +28,18 @@ function markApplied(articleSlug, linkKey) {
     saveApplied(data);
 }
 
+function unmarkApplied(articleSlug, linkKey) {
+    const data = getApplied();
+    if (data[articleSlug]) {
+        delete data[articleSlug][linkKey];
+        // Clean up empty slug entries
+        if (Object.keys(data[articleSlug]).length === 0) {
+            delete data[articleSlug];
+        }
+        saveApplied(data);
+    }
+}
+
 function isApplied(articleSlug, linkKey) {
     const data = getApplied();
     return !!(data[articleSlug] && data[articleSlug][linkKey]);
@@ -106,9 +118,17 @@ Respond in EXACTLY this JSON format (no markdown fences, just raw JSON):
 
             const response = await geminiService.generateSuggestion(prompt, '');
 
-            // Parse JSON from response (strip any markdown fences Gemini adds despite instructions)
-            const cleaned = response.replace(/```json\s*/g, '').replace(/```\s*$/g, '').trim();
-            const parsed = JSON.parse(cleaned);
+            // Robust JSON extraction: find first { and last } to handle
+            // - Prose before JSON ("Here's the analysis:...")
+            // - Markdown fences in any case (```json, ```JSON, ```)
+            // - Trailing prose after the JSON
+            const firstBrace = response.indexOf('{');
+            const lastBrace = response.lastIndexOf('}');
+            if (firstBrace === -1 || lastBrace === -1 || lastBrace <= firstBrace) {
+                throw new Error('AI returned no valid JSON. Try again or rephrase.');
+            }
+            const jsonText = response.substring(firstBrace, lastBrace + 1);
+            const parsed = JSON.parse(jsonText);
 
             setResult(parsed);
         } catch (err) {
@@ -184,7 +204,8 @@ Respond in EXACTLY this JSON format (no markdown fences, just raw JSON):
                                             link={link}
                                             direction="from"
                                             applied={applied}
-                                            onToggleApplied={() => markApplied(selectedSlug, `from-${link.slug}`)}
+                                            onMarkApplied={() => markApplied(selectedSlug, `from-${link.slug}`)}
+                                            onUnmarkApplied={() => unmarkApplied(selectedSlug, `from-${link.slug}`)}
                                         />
                                     );
                                 })}
@@ -209,7 +230,8 @@ Respond in EXACTLY this JSON format (no markdown fences, just raw JSON):
                                             direction="to"
                                             targetSlug={selectedSlug}
                                             applied={applied}
-                                            onToggleApplied={() => markApplied(selectedSlug, `to-${link.slug}`)}
+                                            onMarkApplied={() => markApplied(selectedSlug, `to-${link.slug}`)}
+                                            onUnmarkApplied={() => unmarkApplied(selectedSlug, `to-${link.slug}`)}
                                         />
                                     );
                                 })}
@@ -226,15 +248,20 @@ Respond in EXACTLY this JSON format (no markdown fences, just raw JSON):
     );
 }
 
-function LinkSuggestion({ link, direction, targetSlug, applied, onToggleApplied }) {
+function LinkSuggestion({ link, direction, targetSlug, applied, onMarkApplied, onUnmarkApplied }) {
     const [localApplied, setLocalApplied] = useState(applied);
-    const articleUrl = direction === 'from'
-        ? `https://dataengineerhub.blog/articles/${link.slug}`
-        : `https://dataengineerhub.blog/articles/${link.slug}`;
-
     const linkHtml = direction === 'from'
         ? `<a href="/articles/${link.slug}">${link.anchorText}</a>`
         : `<a href="/articles/${targetSlug}">${link.anchorText}</a>`;
+
+    const handleToggle = () => {
+        if (localApplied) {
+            onUnmarkApplied?.();
+        } else {
+            onMarkApplied?.();
+        }
+        setLocalApplied(!localApplied);
+    };
 
     return (
         <div className={`p-3 rounded-lg border transition ${
@@ -257,13 +284,13 @@ function LinkSuggestion({ link, direction, targetSlug, applied, onToggleApplied 
                     <div className="text-xs text-gray-500 mt-2 italic">{link.reason}</div>
                 </div>
                 <button
-                    onClick={() => { setLocalApplied(!localApplied); if (!localApplied) onToggleApplied(); }}
+                    onClick={handleToggle}
                     className={`p-1.5 rounded shrink-0 ${
                         localApplied
                             ? 'bg-emerald-500/30 text-emerald-300'
                             : 'bg-slate-700 hover:bg-slate-600 text-gray-400'
                     }`}
-                    title={localApplied ? 'Marked as applied' : 'Mark as applied'}
+                    title={localApplied ? 'Click to unmark' : 'Mark as applied'}
                 >
                     <Check className="w-4 h-4" />
                 </button>
