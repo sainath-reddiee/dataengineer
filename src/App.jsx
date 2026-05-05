@@ -81,6 +81,8 @@ const CtrLabPage = lazy(() => import('./pages/admin/CtrLabPage'));
 const ReadabilityPage = lazy(() => import('./pages/admin/ReadabilityPage'));
 const InternalLinksPage = lazy(() => import('./pages/admin/InternalLinksPage'));
 const FreshnessPage = lazy(() => import('./pages/admin/FreshnessPage'));
+const RankDashboardPage = lazy(() => import('./pages/admin/RankDashboardPage'));
+const RevenueProjectionPage = lazy(() => import('./pages/admin/RevenueProjectionPage'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
@@ -362,6 +364,8 @@ function App() {
           <Route path="readability" element={<SafeRoute><ReadabilityPage /></SafeRoute>} />
           <Route path="internal-links" element={<SafeRoute><InternalLinksPage /></SafeRoute>} />
           <Route path="freshness" element={<SafeRoute><FreshnessPage /></SafeRoute>} />
+          <Route path="rank-dashboard" element={<SafeRoute><RankDashboardPage /></SafeRoute>} />
+          <Route path="revenue" element={<SafeRoute><RevenueProjectionPage /></SafeRoute>} />
         </Route>
       </Routes>
       <Toaster />
