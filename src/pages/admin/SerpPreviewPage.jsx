@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, Globe, Monitor, Smartphone, Loader2 } from 'lucide-react';
+import { fetchBlogArticleHTML } from '@/utils/fetchBlogArticleHTML';
 
 export function SerpPreviewPage() {
     const [url, setUrl] = useState('');
@@ -28,12 +29,21 @@ export function SerpPreviewPage() {
             let finalUrl = url.trim();
             if (!finalUrl.startsWith('http')) finalUrl = 'https://' + finalUrl;
 
-            const proxyUrl = finalUrl.includes(window.location.hostname)
-                ? finalUrl
-                : `https://api.allorigins.win/raw?url=${encodeURIComponent(finalUrl)}`;
+            let html;
 
-            const response = await fetch(proxyUrl);
-            const html = await response.text();
+            // For blog articles, fetch from WordPress API directly
+            const wpHTML = await fetchBlogArticleHTML(finalUrl);
+            if (wpHTML) {
+                html = wpHTML;
+            } else {
+                const proxyUrl = finalUrl.includes(window.location.hostname)
+                    ? finalUrl
+                    : `https://api.allorigins.win/raw?url=${encodeURIComponent(finalUrl)}`;
+
+                const response = await fetch(proxyUrl);
+                html = await response.text();
+            }
+
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
 

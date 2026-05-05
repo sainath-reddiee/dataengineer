@@ -15,6 +15,7 @@ import { ExportButton } from '@/components/admin/ExportButton';
 import { AICitationsPanel } from '@/components/admin/AICitationsPanel';
 import { SerpCoveragePanel } from '@/components/admin/SerpCoveragePanel';
 import { EngagementPanel } from '@/components/admin/EngagementPanel';
+import { fetchBlogArticleHTML } from '@/utils/fetchBlogArticleHTML';
 
 const tabs = [
     { id: 'pseo', label: 'PSEO', icon: Bot, desc: 'Programmatic SEO', color: 'purple' },
@@ -47,8 +48,13 @@ export function AISuitePage() {
             let html;
             let article;
 
+            // For blog articles, fetch from WordPress API directly
+            const wpHTML = await fetchBlogArticleHTML(finalUrl);
+            if (wpHTML) {
+                html = wpHTML;
+            }
             // Check if scanning current page
-            if (finalUrl === window.location.href || scanUrl === 'current') {
+            else if (finalUrl === window.location.href || scanUrl === 'current') {
                 // Scan current page directly - no CORS issues!
                 html = document.documentElement.outerHTML;
                 finalUrl = window.location.href;
