@@ -88,7 +88,6 @@ const Certification = () => {
         type="article"
         breadcrumbs={[
           { name: 'Home', url: '/' },
-          { name: 'Tools', url: '/tools' },
           { name: 'Snowflake Certification Prep', url: '/certification' },
         ]}
         faqSchema={faqSchema}

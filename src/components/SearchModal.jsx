@@ -8,7 +8,11 @@ import searchIndex from '@/data/searchIndex.json';
 
 // Flatten local index (glossary + comparisons) into a unified searchable list.
 // WP articles come in separately from the REST API at query time.
+// TEMPORARILY disabled: pSEO content hidden for AdSense approval.
 const buildLocalIndex = () => {
+  // Return empty — glossary + comparison results disabled until pSEO re-enabled
+  return [];
+  /*
   const out = [];
   for (const g of searchIndex.glossary || []) {
     out.push({
@@ -33,6 +37,7 @@ const buildLocalIndex = () => {
     });
   }
   return out;
+  */
 };
 
 const LOCAL_INDEX = buildLocalIndex();
