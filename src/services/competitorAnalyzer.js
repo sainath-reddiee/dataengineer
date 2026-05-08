@@ -90,7 +90,7 @@ function extractStructure(html) {
  */
 export async function analyzeCompetitorGap(competitorUrl, yourArticle) {
     if (!aiService.isEnabled) {
-        throw new Error('Gemini API key required. Set it in the admin sidebar.');
+        throw new Error('AI API key required. Set it in the admin sidebar.');
     }
 
     // 1. Fetch competitor

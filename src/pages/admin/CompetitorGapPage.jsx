@@ -80,9 +80,8 @@ export function CompetitorGapPage() {
                 <div className="p-4 bg-amber-900/10 border border-amber-800/30 rounded-xl">
                     <div className="flex items-center gap-2 text-amber-300 text-sm">
                         <AlertTriangle className="w-4 h-4" />
-                        <strong>Gemini API key required.</strong> Enter it in the left sidebar to enable AI gap analysis.
+                        <strong>AI API key required.</strong> Select a provider and enter the key in the sidebar.
                     </div>
-                    <p className="text-xs text-gray-400 mt-1 ml-6">Free key at: https://aistudio.google.com/app/apikey</p>
                 </div>
             )}
 
