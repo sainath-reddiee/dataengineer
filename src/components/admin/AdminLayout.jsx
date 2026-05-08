@@ -11,7 +11,7 @@ import {
     LayoutDashboard, Search, Layers, GitCompare,
     Code2, Eye, Sparkles, LogOut, ChevronLeft, CheckSquare, TrendingUp, Key,
     BookOpen, Link2, Clock, Zap, Target, DollarSign,
-    Network, Calendar, Users, Sparkle
+    Network, Calendar, Users, Sparkle, MousePointerClick, TrendingDown, Award
 } from 'lucide-react';
 import { AdminAuth, useAdminAuth } from './AdminAuth';
 import aiService from '@/services/aiService';
@@ -24,6 +24,10 @@ const navItems = [
     { path: '/admin/topic-clusters', icon: Network, label: 'Topic Clusters' },
     { path: '/admin/competitor-gap', icon: Users, label: 'Competitor Gap (AI)' },
     { path: '/admin/smart-linking', icon: Sparkle, label: 'Smart Linking (AI)' },
+    { path: '/admin/ctr-fixer', icon: MousePointerClick, label: 'CTR Fixer', highlight: true },
+    { path: '/admin/striking-distance', icon: Target, label: 'Striking Distance' },
+    { path: '/admin/content-decay', icon: TrendingDown, label: 'Content Decay' },
+    { path: '/admin/snippet-optimizer', icon: Award, label: 'Snippet Optimizer' },
     { path: '/admin/scanner', icon: Search, label: 'SEO Scanner' },
     { path: '/admin/bulk', icon: Layers, label: 'Bulk Scan' },
     { path: '/admin/compare', icon: GitCompare, label: 'Compare URLs' },

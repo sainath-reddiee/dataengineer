@@ -87,6 +87,10 @@ const TopicClustersPage = lazy(() => import('./pages/admin/TopicClustersPage'));
 const ContentCalendarPage = lazy(() => import('./pages/admin/ContentCalendarPage'));
 const CompetitorGapPage = lazy(() => import('./pages/admin/CompetitorGapPage'));
 const SmartLinkingPage = lazy(() => import('./pages/admin/SmartLinkingPage'));
+const CTRFixerPage = lazy(() => import('./pages/admin/CTRFixerPage'));
+const StrikingDistancePage = lazy(() => import('./pages/admin/StrikingDistancePage'));
+const ContentDecayPage = lazy(() => import('./pages/admin/ContentDecayPage'));
+const SnippetOptimizerPage = lazy(() => import('./pages/admin/SnippetOptimizerPage'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
@@ -374,6 +378,10 @@ function App() {
           <Route path="content-calendar" element={<SafeRoute><ContentCalendarPage /></SafeRoute>} />
           <Route path="competitor-gap" element={<SafeRoute><CompetitorGapPage /></SafeRoute>} />
           <Route path="smart-linking" element={<SafeRoute><SmartLinkingPage /></SafeRoute>} />
+          <Route path="ctr-fixer" element={<SafeRoute><CTRFixerPage /></SafeRoute>} />
+          <Route path="striking-distance" element={<SafeRoute><StrikingDistancePage /></SafeRoute>} />
+          <Route path="content-decay" element={<SafeRoute><ContentDecayPage /></SafeRoute>} />
+          <Route path="snippet-optimizer" element={<SafeRoute><SnippetOptimizerPage /></SafeRoute>} />
         </Route>
       </Routes>
       <Toaster />
