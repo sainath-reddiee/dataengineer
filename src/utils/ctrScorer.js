@@ -208,7 +208,7 @@ export const scoreCtrBatch = (posts = []) => {
     const out = posts.map(p => {
         const res = scoreCtr({
             title:       p.title || '',
-            description: p.excerpt || p.description || p.metaDescription || '',
+            description: p.metaDescription || p.excerpt || p.description || '',
         });
         return {
             id:          p.id,

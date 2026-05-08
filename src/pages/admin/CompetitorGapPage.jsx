@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Users, Loader2, AlertTriangle, Sparkles, TrendingUp, FileText } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 import { analyzeCompetitorGap } from '@/services/competitorAnalyzer';
-import geminiService from '@/services/geminiService';
+import aiService from '@/services/aiService';
 
 export function CompetitorGapPage() {
     const [articles, setArticles] = useState([]);
@@ -16,7 +16,7 @@ export function CompetitorGapPage() {
     const [loadingArticles, setLoadingArticles] = useState(true);
     const [result, setResult] = useState(null);
     const [error, setError] = useState('');
-    const [geminiEnabled, setGeminiEnabled] = useState(geminiService.isEnabled);
+    const [geminiEnabled, setGeminiEnabled] = useState(aiService.isEnabled);
 
     useEffect(() => {
         async function load() {
@@ -32,7 +32,7 @@ export function CompetitorGapPage() {
     // Poll gemini state every 2s so button enables when key is set
     useEffect(() => {
         const interval = setInterval(() => {
-            setGeminiEnabled(geminiService.isEnabled);
+            setGeminiEnabled(aiService.isEnabled);
         }, 2000);
         return () => clearInterval(interval);
     }, []);

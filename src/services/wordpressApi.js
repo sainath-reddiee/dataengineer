@@ -260,6 +260,9 @@ class WordPressAPI {
         excerpt = this.cleanExcerpt(wpPost.excerpt.rendered);
       }
 
+      // Pull Yoast SEO meta description (preferred over excerpt for CTR scoring)
+      const metaDescription = wpPost.yoast_head_json?.description || '';
+
       // 🔥 CRITICAL FIX: Handle missing content field gracefully
       let content = '';
       if (wpPost.content?.rendered) {
@@ -280,6 +283,7 @@ class WordPressAPI {
         slug: wpPost.slug || '',
         title: this.decodeHtmlEntities(wpPost.title?.rendered || wpPost.title || 'Untitled'),
         excerpt: excerpt,
+        metaDescription: metaDescription,
         content: content,
         category: primaryCategory,
         tags: tags,

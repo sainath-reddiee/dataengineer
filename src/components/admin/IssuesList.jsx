@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, AlertTriangle, CheckCircle, Info, ChevronDown, ChevronUp, Sparkles, Loader2, Copy } from 'lucide-react';
-import geminiService from '@/services/geminiService';
+import aiService from '@/services/aiService';
 
 const severityConfig = {
     critical: { icon: AlertCircle, color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30', label: 'Critical' },
@@ -26,8 +26,8 @@ function IssueItem({ check }) {
     const Icon = config.icon;
 
     const handleFixWithAI = async () => {
-        if (!geminiService.isEnabled) {
-            alert('Gemini API key not configured. Enter your API key in the admin panel settings.');
+        if (!aiService.isEnabled) {
+            alert('AI API key not configured. Enter your API key in the admin panel sidebar.');
             return;
         }
 
@@ -36,7 +36,7 @@ function IssueItem({ check }) {
         setExpanded(true); // Auto-expand to show result
 
         try {
-            const result = await geminiService.getQuickFix(check.message, JSON.stringify(check.details || ''));
+            const result = await aiService.getQuickFix(check.message, JSON.stringify(check.details || ''));
             setAiSuggestion(result);
         } catch (err) {
             setAiError(err.message);

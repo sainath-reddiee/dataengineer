@@ -14,7 +14,7 @@ import {
     Network, Calendar, Users, Sparkle
 } from 'lucide-react';
 import { AdminAuth, useAdminAuth } from './AdminAuth';
-import geminiService from '@/services/geminiService';
+import aiService from '@/services/aiService';
 
 const navItems = [
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
@@ -41,12 +41,20 @@ const navItems = [
 function AdminNav() {
     const location = useLocation();
     const { logout } = useAdminAuth();
-    const [apiKey, setApiKey] = useState(geminiService.isEnabled ? '••••••••' : '');
-    const [keySet, setKeySet] = useState(geminiService.isEnabled);
+    const [provider, setProvider] = useState(aiService.provider);
+    const [apiKey, setApiKey] = useState(aiService.isEnabled ? '••••••••' : '');
+    const [keySet, setKeySet] = useState(aiService.isEnabled);
+
+    const handleProviderChange = (p) => {
+        aiService.setProvider(p);
+        setProvider(p);
+        setApiKey(aiService.isEnabled ? '••••••••' : '');
+        setKeySet(aiService.isEnabled);
+    };
 
     const handleApiKeySubmit = () => {
         if (apiKey && apiKey !== '••••••••') {
-            geminiService.setApiKey(apiKey);
+            aiService.setApiKey(apiKey);
             setApiKey('••••••••');
             setKeySet(true);
         }
@@ -87,18 +95,40 @@ function AdminNav() {
 
             <div className="p-4 border-t border-slate-700 space-y-3">
                 <div>
-                    <label className="flex items-center gap-2 text-xs text-gray-400 mb-1">
+                    <label className="flex items-center gap-2 text-xs text-gray-400 mb-2">
                         <Key className="w-3 h-3" />
-                        Gemini API Key
+                        AI Provider
                         {keySet && <span className="text-green-400 text-[10px]">Active</span>}
                     </label>
+                    <div className="flex gap-1 mb-2">
+                        <button
+                            onClick={() => handleProviderChange('gemini')}
+                            className={`flex-1 px-2 py-1 text-[10px] font-medium rounded-lg transition-colors ${
+                                provider === 'gemini'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-slate-700/50 text-gray-400 hover:text-white'
+                            }`}
+                        >
+                            Gemini
+                        </button>
+                        <button
+                            onClick={() => handleProviderChange('groq')}
+                            className={`flex-1 px-2 py-1 text-[10px] font-medium rounded-lg transition-colors ${
+                                provider === 'groq'
+                                    ? 'bg-orange-600 text-white'
+                                    : 'bg-slate-700/50 text-gray-400 hover:text-white'
+                            }`}
+                        >
+                            Groq
+                        </button>
+                    </div>
                     <div className="flex gap-1">
                         <input
                             type="password"
                             value={apiKey}
                             onChange={(e) => { setApiKey(e.target.value); setKeySet(false); }}
                             onKeyDown={(e) => e.key === 'Enter' && handleApiKeySubmit()}
-                            placeholder="Paste key..."
+                            placeholder={provider === 'gemini' ? 'Gemini API key...' : 'Groq API key...'}
                             className="flex-1 min-w-0 px-2 py-1.5 text-xs bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
                         />
                         <button

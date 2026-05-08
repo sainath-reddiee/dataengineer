@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Loader2, AlertTriangle, ArrowRight, ArrowLeft, Check } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
-import geminiService from '@/services/geminiService';
+import aiService from '@/services/aiService';
 
 const APPLIED_STORAGE_KEY = 'smart_linking_applied_v1';
 
@@ -52,7 +52,7 @@ export function SmartLinkingPage() {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState('');
-    const [geminiEnabled, setGeminiEnabled] = useState(geminiService.isEnabled);
+    const [geminiEnabled, setGeminiEnabled] = useState(aiService.isEnabled);
 
     useEffect(() => {
         async function load() {
@@ -62,6 +62,7 @@ export function SmartLinkingPage() {
                     slug: p.slug,
                     title: p.title,
                     excerpt: p.excerpt,
+                    content: p.content || '',
                 })));
             } catch { /* ignore */ }
             setLoadingArticles(false);
@@ -71,7 +72,7 @@ export function SmartLinkingPage() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setGeminiEnabled(geminiService.isEnabled);
+            setGeminiEnabled(aiService.isEnabled);
         }, 2000);
         return () => clearInterval(interval);
     }, []);
@@ -91,11 +92,17 @@ export function SmartLinkingPage() {
                 .map(a => `- ${a.title} (slug: ${a.slug})`)
                 .join('\n');
 
+            // Strip HTML tags and truncate content for AI context
+            const stripHtml = (html) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+            const articleContent = stripHtml(selected.content || '').substring(0, 4000);
+
             const prompt = `You are an SEO expert helping with internal linking for a data engineering blog.
 
 TARGET ARTICLE:
 Title: ${selected.title}
 Excerpt: ${selected.excerpt || '(no excerpt)'}
+Content (first ~4000 chars):
+${articleContent || '(content not available)'}
 
 CATALOG OF OTHER ARTICLES ON THIS BLOG:
 ${otherArticles}
@@ -103,20 +110,21 @@ ${otherArticles}
 Respond in EXACTLY this JSON format (no markdown fences, just raw JSON):
 {
   "linkFrom": [
-    {"slug": "target-slug", "title": "Target title", "anchorText": "suggested anchor", "reason": "why this link makes sense"}
+    {"slug": "target-slug", "title": "Target title", "anchorText": "suggested anchor", "placement": "After the paragraph about X / In the section titled Y / Near the sentence mentioning Z", "reason": "why this link makes sense"}
   ],
   "linkTo": [
-    {"slug": "source-slug", "title": "Source title", "anchorText": "suggested anchor", "reason": "why this link makes sense"}
+    {"slug": "source-slug", "title": "Source title", "anchorText": "suggested anchor", "placement": "Suggest which section/paragraph in that source article would be the best place", "reason": "why this link makes sense"}
   ]
 }
 
 - linkFrom = 3-5 articles the TARGET should link TO (add outbound links in the target article)
 - linkTo = 3-5 articles that should link TO the TARGET (add links in those OTHER articles pointing to target)
 - Anchor text should be natural, keyword-rich, 2-6 words
+- placement: Tell the user WHERE in the article to place the link — reference a specific paragraph topic, section heading, or sentence context from the content above
 - Only suggest if topically related. Quality over quantity.
 - Respond ONLY with the JSON object. No prose.`;
 
-            const response = await geminiService.generateSuggestion(prompt, '');
+            const response = await aiService.generateSuggestion(prompt, '');
 
             // Robust JSON extraction: find first { and last } to handle
             // - Prose before JSON ("Here's the analysis:...")
@@ -151,7 +159,7 @@ Respond in EXACTLY this JSON format (no markdown fences, just raw JSON):
                 <div className="p-4 bg-amber-900/10 border border-amber-800/30 rounded-xl">
                     <div className="flex items-center gap-2 text-amber-300 text-sm">
                         <AlertTriangle className="w-4 h-4" />
-                        <strong>Gemini API key required.</strong> Enter it in the left sidebar.
+                        <strong>AI API key required.</strong> Select a provider and enter the key in the sidebar.
                     </div>
                 </div>
             )}
@@ -240,7 +248,7 @@ Respond in EXACTLY this JSON format (no markdown fences, just raw JSON):
                     )}
 
                     <div className="p-3 bg-slate-900/50 border border-slate-700 rounded-lg text-xs text-gray-400">
-                        <strong className="text-gray-300">How to apply:</strong> Copy the anchor text, find the relevant paragraph in WordPress, and wrap the phrase in a link. Mark as applied when done to track progress.
+                        <strong className="text-gray-300">How to apply:</strong> Use the "Where to add" hint to locate the right paragraph in WordPress, wrap the anchor text phrase in the HTML link, and mark as applied.
                     </div>
                 </motion.div>
             )}
@@ -277,6 +285,12 @@ function LinkSuggestion({ link, direction, targetSlug, applied, onMarkApplied, o
                         <div className="text-gray-500 uppercase text-[10px] mb-1">Anchor text:</div>
                         <div className="text-emerald-300 font-mono">"{link.anchorText}"</div>
                     </div>
+                    {link.placement && (
+                        <div className="mt-2 p-2 bg-indigo-900/30 border border-indigo-700/30 rounded text-xs">
+                            <div className="text-indigo-400 uppercase text-[10px] mb-1">Where to add:</div>
+                            <div className="text-indigo-200">{link.placement}</div>
+                        </div>
+                    )}
                     <div className="mt-2 p-2 bg-slate-800 rounded text-xs">
                         <div className="text-gray-500 uppercase text-[10px] mb-1">HTML to paste:</div>
                         <code className="text-blue-300 break-all">{linkHtml}</code>

@@ -2,7 +2,7 @@
 // Fetches competitor articles via CORS proxy and uses Gemini to produce
 // structured gap analysis against one of YOUR articles.
 
-import geminiService from './geminiService';
+import aiService from './aiService';
 
 const CORS_PROXIES = [
     'https://api.allorigins.win/raw?url=',
@@ -89,7 +89,7 @@ function extractStructure(html) {
  * Returns { competitor, yours, aiGapAnalysis }
  */
 export async function analyzeCompetitorGap(competitorUrl, yourArticle) {
-    if (!geminiService.isEnabled) {
+    if (!aiService.isEnabled) {
         throw new Error('Gemini API key required. Set it in the admin sidebar.');
     }
 
@@ -135,7 +135,7 @@ Respond with 3 sections:
 
 Be direct and specific. No fluff.`;
 
-    const aiGapAnalysis = await geminiService.generateSuggestion(prompt, '');
+        const aiGapAnalysis = await aiService.generateSuggestion(prompt, '');
 
     return {
         competitor: { url: competitorUrl, ...competitorStructure },
