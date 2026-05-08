@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import {
     TrendingUp, Target, AlertTriangle, Zap, ChevronDown, ChevronRight,
     ExternalLink, RefreshCw, Award, Loader2, Link2 as LinkIcon,
-    Activity, BookOpen, DollarSign, BarChart3, LogOut
+    Activity, BookOpen, DollarSign, BarChart3, LogOut, Sparkles
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import wordpressApi from '@/services/wordpressApi';
@@ -17,6 +17,7 @@ import { getAllRanks, logRank, setTargetKeyword, getAggregateStats } from '@/uti
 import { getLocalReferralStats } from '@/utils/aiReferralTracker';
 import { getEngagementStats } from '@/utils/engagementTracker';
 import gscService from '@/services/gscService';
+import aiService from '@/services/aiService';
 
 const HEALTH_COLORS = {
     high:   'text-emerald-400 bg-emerald-500/10 border-emerald-500/40',
@@ -116,6 +117,20 @@ export function RankDashboardPage() {
         0
     );
     const aiRefs = getLocalReferralStats();
+
+    // Map GSC data to article slugs for per-article display
+    const gscBySlug = useMemo(() => {
+        if (!gscData || !gscData.length) return {};
+        const map = {};
+        gscData.forEach(row => {
+            // GSC returns full URLs like https://dataengineerhub.blog/articles/my-slug
+            const match = row.page.match(/\/articles\/([^/?#]+)/);
+            if (match) {
+                map[match[1]] = row;
+            }
+        });
+        return map;
+    }, [gscData]);
 
     // Weekly action plan: top 10 actions across all articles
     const weeklyActions = useMemo(() => {
@@ -296,6 +311,7 @@ export function RankDashboardPage() {
                             key={article.slug}
                             article={article}
                             rankData={rankData[article.slug]}
+                            gscArticleData={gscBySlug[article.slug] || null}
                             expanded={expandedSlug === article.slug}
                             onToggle={() => setExpandedSlug(expandedSlug === article.slug ? null : article.slug)}
                             onRankSaved={() => { setRankData(getAllRanks()); setRankStats(getAggregateStats()); }}
@@ -343,10 +359,12 @@ function SortButton({ active, onClick, children }) {
     );
 }
 
-function ArticleRow({ article, rankData, expanded, onToggle, onRankSaved }) {
+function ArticleRow({ article, rankData, gscArticleData, expanded, onToggle, onRankSaved }) {
     const bucket = healthBucket(article.articleHealth);
     const [rankInput, setRankInput] = useState(rankData?.currentPosition || '');
     const [keywordInput, setKeywordInput] = useState(rankData?.targetKeyword || '');
+    const [aiCoachLoading, setAiCoachLoading] = useState(false);
+    const [aiCoachResult, setAiCoachResult] = useState(null);
 
     const saveRank = () => {
         if (keywordInput && keywordInput !== rankData?.targetKeyword) {
@@ -356,6 +374,65 @@ function ArticleRow({ article, rankData, expanded, onToggle, onRankSaved }) {
             logRank(article.slug, parseInt(rankInput, 10));
         }
         onRankSaved?.();
+    };
+
+    const handleAiCoach = async () => {
+        if (!aiService.isEnabled) {
+            alert('AI API key not configured. Set it in the admin sidebar.');
+            return;
+        }
+        setAiCoachLoading(true);
+        try {
+            const stripHtml = (html) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+            const contentSnippet = stripHtml(article.content || '').substring(0, 2500);
+            const position = gscArticleData?.position ?? rankData?.currentPosition ?? 'unknown';
+            const impressions = gscArticleData?.impressions ?? 'unknown';
+            const clicks = gscArticleData?.clicks ?? 'unknown';
+            const pillarSummary = Object.entries(article.pillarScores)
+                .map(([k, v]) => `${PILLAR_LABELS[k]}: ${v}/100`)
+                .join(', ');
+            const currentActions = article.topActions.map(a => `[${a.priority}] ${a.action}`).join('\n');
+
+            const prompt = `You are an expert SEO consultant analyzing why a data engineering article isn't ranking higher and how to push it up.
+
+ARTICLE:
+Title: "${article.title}"
+Slug: /articles/${article.slug}
+Target Keyword: ${rankData?.targetKeyword || '(not set)'}
+Current Google Position: ${position}
+Impressions (28d): ${impressions}
+Clicks (28d): ${clicks}
+CTR: ${gscArticleData ? (gscArticleData.ctr * 100).toFixed(1) + '%' : 'unknown'}
+
+HEALTH SCORES:
+${pillarSummary}
+Bottleneck: ${PILLAR_LABELS[article.bottleneck] || article.bottleneck}
+
+CURRENT RULE-BASED ACTIONS:
+${currentActions || '(none)'}
+
+CONTENT (first ~2500 chars):
+${contentSnippet || '(not available)'}
+
+Provide 4-6 specific, actionable recommendations to improve this article's ranking. For each:
+1. What to do (specific — not generic like "add keywords")
+2. Why it will help (which ranking signal it improves)
+3. Expected impact (high/medium/low)
+
+Focus on:
+- Content gaps competitors likely cover that this article doesn't
+- Specific sections/topics to add based on the content
+- Technical SEO fixes based on the scores
+- SERP feature opportunities (featured snippet, PAA, etc.)
+
+Keep each recommendation to 2-3 sentences max. Be direct and specific to THIS article.`;
+
+            const response = await aiService.generateSuggestion(prompt, '');
+            setAiCoachResult(response);
+        } catch (e) {
+            setAiCoachResult('AI analysis failed: ' + (e.message || 'Unknown error'));
+        }
+        setAiCoachLoading(false);
     };
 
     return (
@@ -435,6 +512,56 @@ function ArticleRow({ article, rankData, expanded, onToggle, onRankSaved }) {
 
                     {/* Rank Tracker Input */}
                     <div className="pt-2 border-t border-slate-700/50">
+
+                        {/* GSC Per-Article Stats */}
+                        {gscArticleData && (
+                            <div className="mb-4">
+                                <div className="text-xs font-semibold text-blue-400 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+                                    <BarChart3 className="w-3.5 h-3.5" /> Google Search Console (28 days)
+                                </div>
+                                <div className="grid grid-cols-4 gap-2">
+                                    <div className="p-2 bg-slate-800/60 rounded-lg text-center">
+                                        <div className="text-[10px] text-gray-500">Position</div>
+                                        <div className="text-lg font-bold text-white">#{gscArticleData.position.toFixed(1)}</div>
+                                    </div>
+                                    <div className="p-2 bg-slate-800/60 rounded-lg text-center">
+                                        <div className="text-[10px] text-gray-500">Impressions</div>
+                                        <div className="text-lg font-bold text-white">{gscArticleData.impressions.toLocaleString()}</div>
+                                    </div>
+                                    <div className="p-2 bg-slate-800/60 rounded-lg text-center">
+                                        <div className="text-[10px] text-gray-500">Clicks</div>
+                                        <div className="text-lg font-bold text-white">{gscArticleData.clicks.toLocaleString()}</div>
+                                    </div>
+                                    <div className="p-2 bg-slate-800/60 rounded-lg text-center">
+                                        <div className="text-[10px] text-gray-500">CTR</div>
+                                        <div className="text-lg font-bold text-white">{(gscArticleData.ctr * 100).toFixed(1)}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* AI Rank Coach */}
+                        <div className="mb-4">
+                            <button
+                                onClick={handleAiCoach}
+                                disabled={aiCoachLoading}
+                                className="flex items-center gap-2 px-3 py-2 text-xs bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 text-white rounded-lg transition-colors"
+                            >
+                                {aiCoachLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                                {aiCoachLoading ? 'Analyzing...' : 'AI: How to rank higher'}
+                            </button>
+                            {aiCoachResult && (
+                                <div className="mt-3 p-3 bg-purple-900/20 border border-purple-800/30 rounded-lg">
+                                    <div className="text-xs font-semibold text-purple-300 mb-2 flex items-center gap-1.5">
+                                        <Sparkles className="w-3 h-3" /> AI Rank Coach
+                                    </div>
+                                    <div className="text-sm text-gray-200 whitespace-pre-wrap leading-relaxed">
+                                        {aiCoachResult}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                         <div className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Rank Tracking</div>
                         <div className="flex gap-2">
                             <input

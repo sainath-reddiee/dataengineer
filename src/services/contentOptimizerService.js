@@ -200,8 +200,9 @@ class ContentOptimizerService {
 
         const currentDomain = this.getDomain(url);
 
-        // 1. Check for TL;DR / Summary
-        const hasTLDR = /(?:^|\n|<p>)(TL;?DR|Summary|Key Takeaways?|In Brief)[:;.\s]/i.test(html);
+        // 1. Check for TL;DR / Summary (matches inside headings, divs, paragraphs, or plain text)
+        const hasTLDR = /(?:TL;?DR|Key Takeaways?|In Brief)[\s:;<\/]/i.test(html) ||
+            /class="[^"]*(?:key-takeaways|tldr|summary)[^"]*"/i.test(html);
         if (!hasTLDR) {
             score -= 15;
             issues.push('Missing TL;DR summary');

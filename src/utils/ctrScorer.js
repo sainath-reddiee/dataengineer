@@ -216,6 +216,7 @@ export const scoreCtrBatch = (posts = []) => {
             category:    p.category,
             title:       p.title,
             excerpt:     p.excerpt || p.description || '',
+            content:     p.content || '',
             score:       res.score,
             grade:       res.grade,
             projectedLiftPct: res.projectedLiftPct,

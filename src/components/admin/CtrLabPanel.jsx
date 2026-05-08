@@ -6,10 +6,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
     TrendingUp, RefreshCw, Zap, AlertTriangle, ChevronDown, ChevronRight,
-    Edit3, X, ExternalLink,
+    Edit3, X, ExternalLink, Sparkles, Loader2,
 } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 import { scoreCtr, scoreCtrBatch } from '@/utils/ctrScorer';
+import aiService from '@/services/aiService';
 
 const GRADE_COLORS = {
     A: 'text-emerald-400 border-emerald-500/40 bg-emerald-500/10',
@@ -22,9 +23,58 @@ const GRADE_COLORS = {
 const RowEditor = ({ row, onClose }) => {
     const [title, setTitle] = useState(row.title || '');
     const [desc, setDesc] = useState(row.excerpt || '');
+    const [aiLoading, setAiLoading] = useState(false);
     const live = useMemo(() => scoreCtr({ title, description: desc }), [title, desc]);
     const deltaScore = live.score - row.score;
     const deltaLift  = live.projectedLiftPct - (row.projectedLiftPct || 0);
+
+    const handleAiSuggest = async () => {
+        if (!aiService.isEnabled) {
+            alert('AI API key not configured. Set it in the admin sidebar.');
+            return;
+        }
+        setAiLoading(true);
+        try {
+            const stripHtml = (html) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+            const contentSnippet = stripHtml(row.content || '').substring(0, 3000);
+
+            const prompt = `You are a CTR optimization expert for a data engineering blog.
+
+CURRENT ARTICLE:
+Title: ${row.title}
+Current description: ${row.excerpt}
+Content (first ~3000 chars): ${contentSnippet || '(not available)'}
+
+Generate an optimized SERP title and meta description based on the article content.
+
+Rules for the title (50-60 chars ideal):
+- Include a number or year if relevant
+- Use a power word (guide, complete, master, proven, essential)
+- Match search intent (how/what/why if tutorial)
+- Keep the primary keyword near the front
+
+Rules for the description (120-155 chars ideal):
+- Start with an action verb (Learn, Discover, Master, Build)
+- Include a benefit phrase (step by step, production-ready, save time)
+- Add a call-to-action feel
+- Summarize what the reader will get from the first paragraph
+
+Respond in EXACTLY this JSON format (no markdown fences):
+{"title": "optimized title here", "description": "optimized meta description here"}`;
+
+            const response = await aiService.generateSuggestion(prompt, '');
+            const firstBrace = response.indexOf('{');
+            const lastBrace = response.lastIndexOf('}');
+            if (firstBrace !== -1 && lastBrace > firstBrace) {
+                const parsed = JSON.parse(response.substring(firstBrace, lastBrace + 1));
+                if (parsed.title) setTitle(parsed.title);
+                if (parsed.description) setDesc(parsed.description);
+            }
+        } catch (e) {
+            console.error('AI suggest failed:', e);
+        }
+        setAiLoading(false);
+    };
 
     return (
         <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-4 space-y-4">
@@ -55,6 +105,14 @@ const RowEditor = ({ row, onClose }) => {
                     className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm text-white"
                 />
             </div>
+            <button
+                onClick={handleAiSuggest}
+                disabled={aiLoading}
+                className="flex items-center gap-2 px-3 py-1.5 text-xs bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 disabled:opacity-50 text-white rounded-lg transition-colors"
+            >
+                {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                {aiLoading ? 'Generating...' : 'AI Suggest Title & Description'}
+            </button>
             <div className="grid grid-cols-3 gap-3">
                 <div className="p-3 rounded-lg bg-slate-800/70">
                     <div className="text-xs text-gray-400">New score</div>

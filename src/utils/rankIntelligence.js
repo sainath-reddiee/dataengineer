@@ -119,6 +119,8 @@ export function scoreArticlesBatch(posts, options = {}) {
         return {
             slug: p.slug,
             title: p.title,
+            content: p.content || '',
+            excerpt: p.excerpt || '',
             ...scoreArticle(p, { ...restOpts, rankData: perArticleRank }),
         };
     }).sort((a, b) => a.articleHealth - b.articleHealth); // worst first = biggest opportunities

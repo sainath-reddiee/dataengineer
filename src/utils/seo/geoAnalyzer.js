@@ -212,8 +212,9 @@ export class GEOAnalyzer {
     // ============================================================================
 
     checkTLDRSummary(content) {
-        // Check for TL;DR or summary at beginning
-        const hasTLDR = /(?:^|\n|<p>)(TL;?DR|Summary|Key Takeaways?|In Brief)[:;.\s]/i.test(content);
+        // Check for TL;DR or summary at beginning (matches inside any HTML tag or plain text)
+        const hasTLDR = /(?:TL;?DR|Key Takeaways?|In Brief)[\s:;<\/]/i.test(content) ||
+            /class="[^"]*(?:key-takeaways|tldr|summary)[^"]*"/i.test(content);
         const firstParagraph = content.match(/<p[^>]*>([^<]+)<\/p>/i);
         const hasOpeningSummary = firstParagraph && firstParagraph[1].split('.').length >= 2;
 
