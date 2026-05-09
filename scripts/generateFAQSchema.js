@@ -194,58 +194,15 @@ function extractQAPairs(content) {
         }
     }
 
-    // Strategy 2: Synthesize FAQ from non-question H2/H3 headings
-    // Converts headings like "Data Masking Best Practices" into
-    // "What are Data Masking Best Practices?" with the content below as answer
-    // GATE: Skip when the article already has a dedicated FAQ section —
-    // synthesized questions from section headings create garbage schema
-    // entries (e.g. "What is 1. Audit Your Credit Consumption Patterns?")
-    // that conflict with the real FAQ and hurt SEO.
-    const hasFAQSection = blocks.some(b =>
-        (b.tag === 'h2' || b.tag === 'h3') &&
-        /^(faq|faqs|frequently\s+asked\s+questions)/i.test(b.text.trim())
-    );
-    if (qaPairs.length < 5 && !hasFAQSection) {
-        for (let i = 0; i < blocks.length; i++) {
-            if (qaPairs.length >= 8) break;
-            const block = blocks[i];
-            if ((block.tag === 'h2' || block.tag === 'h3') && !isQuestionText(block.text)) {
-                // Skip generic/structural headings that make bad FAQ questions
-                const lower = block.text.toLowerCase();
-                if (['introduction', 'conclusion', 'summary', 'references', 'about',
-                     'table of contents', 'tldr', 'tl;dr', 'final thoughts',
-                     'related articles', 'share this', 'prerequisites', 'requirements',
-                     'additional materials', 'resources', 'next steps', 'wrap up',
-                     'key takeaways', 'further reading', 'appendix', 'changelog',
-                     'disclaimer', 'overview'].some(skip => lower.includes(skip))) {
-                    continue;
-                }
-                // Skip numbered step headings (e.g., "Step 1:", "Part 3:", "1. Do X")
-                if (/^(?:step|part)\s*\d/i.test(lower) || /^\d+[\.\)]\s/.test(block.text)) {
-                    continue;
-                }
-                // Collect answer
-                let answer = '';
-                let j = i + 1;
-                while (j < blocks.length && answer.length < 500) {
-                    const next = blocks[j];
-                    if (next.tag.startsWith('h')) break;
-                    if (next.tag === 'p' && next.text.length > 15) {
-                        answer += next.text + ' ';
-                    }
-                    if (next.tag === 'ul' || next.tag === 'ol' || next.tag === 'li') {
-                        answer += next.text + '. ';
-                    }
-                    j++;
-                }
-                if (answer.length >= 50) {
-                    // Synthesize a question from the heading
-                    const q = synthesizeQuestion(block.text);
-                    addPair(q, answer);
-                }
-            }
-        }
-    }
+    // Strategy 2 (DISABLED): synthesizing FAQ from non-question H2/H3 headings
+    // produced FAQPage schema entries that have NO matching visible Q&A on the
+    // rendered page. Google's structured-data guidelines explicitly forbid
+    // marking up content that is not visible to readers (cloaking risk + manual
+    // action trigger). We now only emit FAQPage schema when actual question
+    // headings or inline "Q:/A:" patterns are present in the published article.
+    //
+    // To re-enable, an editorial pass must add a visible accordion/section
+    // rendering these synthesized Q&A pairs in the article HTML first.
 
     // Strategy 3: Inline Q&A patterns (Q: / A:)
     for (let i = 0; i < blocks.length; i++) {

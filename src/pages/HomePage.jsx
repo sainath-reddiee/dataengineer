@@ -198,8 +198,7 @@ const HomePage = () => {
             </Suspense>
           </section>
 
-          {/* 📰 NEWS & TRENDS - TEMPORARILY hidden for AdSense approval */}
-          {/*
+          {/* 📰 NEWS & TRENDS */}
           <section>
             <SectionHeader
               icon={Newspaper}
@@ -212,7 +211,6 @@ const HomePage = () => {
               <NewsPosts />
             </Suspense>
           </section>
-          */}
 
           {/* 🛠 TECH CATEGORIES - Grid view */}
           <section>

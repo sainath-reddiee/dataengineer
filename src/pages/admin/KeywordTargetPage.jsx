@@ -1,9 +1,9 @@
-// src/pages/admin/KeywordTargetPage.jsx
-// Focus Keyphrase Analyzer — Yoast/RankMath equivalent for existing articles.
+﻿// src/pages/admin/KeywordTargetPage.jsx
+// Focus Keyphrase Analyzer â€” Yoast/RankMath equivalent for existing articles.
 // Checks keyword placement in: title, meta, H1, H2s, first paragraph, URL, 
 // image alts, density, and provides AI-powered rewrite suggestions.
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
     Target, Loader2, AlertTriangle, CheckCircle, XCircle, Sparkles,
     RefreshCw, Copy, Check, Search, FileText, ArrowRight,
@@ -110,8 +110,8 @@ function analyzeKeyword(keyword, article) {
             partial: density > 0 && density < 0.5,
             value: `${density.toFixed(2)}% (${occurrences} occurrences in ${wordCount} words)`,
             weight: 10,
-            tip: density < 0.5 ? 'Density too low — use the keyphrase more naturally throughout the content.' :
-                 density > 2.5 ? 'Density too high — reduce usage to avoid keyword stuffing penalty.' :
+            tip: density < 0.5 ? 'Density too low â€” use the keyphrase more naturally throughout the content.' :
+                 density > 2.5 ? 'Density too high â€” reduce usage to avoid keyword stuffing penalty.' :
                  'Good density range (0.5-2.5%).',
         },
         {
@@ -125,9 +125,9 @@ function analyzeKeyword(keyword, article) {
         },
     ];
 
-    // ─── Additional Yoast-style checks (bonus/penalty, don't break 100-scale) ───
+    // â”€â”€â”€ Additional Yoast-style checks (bonus/penalty, don't break 100-scale) â”€â”€â”€
 
-    // 9. Keyphrase Distribution — is the keyword spread evenly across the content?
+    // 9. Keyphrase Distribution â€” is the keyword spread evenly across the content?
     const quarterLen = Math.floor(content.length / 4);
     const quarters = [
         content.substring(0, quarterLen),
@@ -143,10 +143,10 @@ function analyzeKeyword(keyword, article) {
         partial: quartersWithKw === 2,
         value: `Found in ${quartersWithKw}/4 content sections`,
         weight: 8,
-        tip: quartersWithKw < 3 ? 'Spread the keyphrase more evenly — it\'s missing from some sections of your article.' : 'Good distribution across content.',
+        tip: quartersWithKw < 3 ? 'Spread the keyphrase more evenly â€” it\'s missing from some sections of your article.' : 'Good distribution across content.',
     });
 
-    // 10. Subheading Distribution — no section should exceed 300 words without a heading
+    // 10. Subheading Distribution â€” no section should exceed 300 words without a heading
     const contentSections = (article.content || '').split(/<h[2-6][^>]*>/gi);
     const longSections = contentSections.filter(section => {
         const sectionWords = section.replace(/<[^>]*>/g, ' ').trim().split(/\s+/).filter(w => w.length > 0);
@@ -186,7 +186,7 @@ function analyzeKeyword(keyword, article) {
         tip: 'Avoid starting 3+ sentences in a row with the same word. Vary your sentence openings for better flow.',
     });
 
-    // 12. Title Pixel Width (approximate — Google truncates at ~580px)
+    // 12. Title Pixel Width (approximate â€” Google truncates at ~580px)
     const titleRaw = article.title || '';
     const estimatePixelWidth = (text) => {
         let width = 0;
@@ -244,6 +244,8 @@ export function KeywordTargetPage() {
     const [copied, setCopied] = useState(false);
     const [serpCompetitors, setSerpCompetitors] = useState([]);
     const [duplicateWarning, setDuplicateWarning] = useState(null);
+    // Sequence counter to drop stale GSC responses when user switches articles fast
+    const gscReqIdRef = useRef(0);
 
     const slugParam = searchParams.get('slug') || '';
 
@@ -271,15 +273,19 @@ export function KeywordTargetPage() {
         if (!selectedSlug) { setGscKeywords([]); return; }
         if (!gscService.isConnected()) return;
 
+        const myReqId = ++gscReqIdRef.current;
         setGscLoading(true);
         gscService.queryTopKeywords({
             url: `https://dataengineerhub.blog/articles/${selectedSlug}`,
             rowLimit: 20,
         }).then(data => {
+            if (myReqId !== gscReqIdRef.current) return; // stale â€” newer request in flight
             setGscKeywords(data.sort((a, b) => b.impressions - a.impressions));
             // Auto-set keyword to #1 GSC query only if user hasn't typed one yet
             setKeyword(prev => (!prev && data.length > 0) ? data[0].query : prev);
-        }).catch(() => {}).finally(() => setGscLoading(false));
+        }).catch(() => {}).finally(() => {
+            if (myReqId === gscReqIdRef.current) setGscLoading(false);
+        });
     }, [selectedSlug]);
 
     // Run analysis when keyword or article changes
@@ -334,6 +340,11 @@ export function KeywordTargetPage() {
         const failedChecks = analysis.checks.filter(c => !c.passed);
         const post = posts.find(p => p.slug === selectedSlug);
 
+        // Include live SERP competitor data for grounded suggestions
+        const competitorContext = serpCompetitors.length > 0
+            ? `\nCURRENT TOP SERP RESULTS FOR "${keyword}" (real Google data):\n${serpCompetitors.map((c, i) => `${i + 1}. "${c.title}" (${c.url})`).join('\n')}\nBeat these â€” your title/meta must be MORE compelling than what's currently ranking.\n`
+            : '';
+
         const prompt = `You are an SEO keyword targeting expert (like Yoast SEO / RankMath). An article has been analyzed for focus keyphrase optimization.
 
 ARTICLE: "${post?.title}"
@@ -341,9 +352,9 @@ URL: /articles/${selectedSlug}
 FOCUS KEYPHRASE: "${keyword}"
 CURRENT SCORE: ${analysis.score}/100 (Grade: ${analysis.grade})
 KEYWORD DENSITY: ${analysis.density.toFixed(2)}% (${analysis.occurrences} times in ${analysis.wordCount} words)
-
+${competitorContext}
 FAILED CHECKS:
-${failedChecks.map(c => `- ${c.label}: ${c.value} — ${c.tip}`).join('\n')}
+${failedChecks.map(c => `- ${c.label}: ${c.value} â€” ${c.tip}`).join('\n')}
 
 For EACH failed check, provide a SPECIFIC, ACTIONABLE fix:
 
@@ -354,7 +365,7 @@ For EACH failed check, provide a SPECIFIC, ACTIONABLE fix:
 5. If "Keyword Density" is too low: Suggest 5 natural sentences containing "${keyword}" that can be added throughout the article
 6. If "Image Alt Text" failed: Suggest 2-3 descriptive alt texts that include "${keyword}"
 
-Also suggest 5-8 LSI (Latent Semantic Indexing) keywords — related terms that should appear in the content alongside the focus keyphrase for topical relevance.
+Also suggest 5-8 LSI (Latent Semantic Indexing) keywords â€” related terms that should appear in the content alongside the focus keyphrase for topical relevance.
 
 Format clearly with headers for each fix.`;
 
@@ -373,11 +384,11 @@ Format clearly with headers for each fix.`;
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                     <Target className="w-8 h-8 text-blue-400" />
                     Keyword Targeting
                 </h1>
-                <p className="text-gray-400">Analyze how well an article targets a specific focus keyphrase — Yoast-style optimization checks with AI fixes.</p>
+                <p className="text-gray-400">Analyze how well an article targets a specific focus keyphrase â€” Yoast-style optimization checks with AI fixes.</p>
             </div>
 
             {/* Article + Keyword Selection */}
@@ -493,7 +504,7 @@ Format clearly with headers for each fix.`;
                                     </div>
                                 ))}
                             </div>
-                            <p className="text-[10px] text-gray-600 mt-2">Beat these titles — yours needs to be more specific and compelling.</p>
+                            <p className="text-[10px] text-gray-600 mt-2">Beat these titles â€” yours needs to be more specific and compelling.</p>
                         </div>
                     )}
 
@@ -528,7 +539,7 @@ Format clearly with headers for each fix.`;
 
                     {/* AI Fix Suggestions */}
                     <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6">
-                        <div className="flex items-center justify-between mb-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                             <h3 className="text-lg font-bold text-white flex items-center gap-2">
                                 <Sparkles className="w-5 h-5 text-pink-400" />
                                 AI Optimization Suggestions
@@ -548,7 +559,7 @@ Format clearly with headers for each fix.`;
                                 <div className="flex items-center justify-between mb-2">
                                     <span className="text-xs font-semibold text-emerald-400">AI-Generated Optimization Plan</span>
                                     <button
-                                        onClick={() => { navigator.clipboard.writeText(aiSuggestion); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                                        onClick={() => { navigator.clipboard.writeText(aiSuggestion).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
                                         className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
                                     >
                                         {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}

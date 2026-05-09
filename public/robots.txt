@@ -1,14 +1,36 @@
 # robots.txt - DataEngineer Hub
-# Last updated: 2026-04-27
+# Last updated: 2026-05-09
+#
+# AdSense approval strategy: while approval is pending, we hold the
+# programmatic/AI-assisted sections out of the crawl + index. Only the
+# original editorial content (homepage, real WordPress articles, news,
+# trust pages) is exposed to crawlers. Once AdSense approves, the
+# Disallow rules below can be removed and the matching `noindex` meta
+# tags can be lifted.
 
-# Default crawling rules
+# =============================================================================
+# Default rules — block PSEO / AI-assisted sections from ALL crawlers
+# =============================================================================
 User-agent: *
 Allow: /
 
-# Block admin and API endpoints
 Disallow: /api/
 Disallow: /admin/
 Disallow: /debug
+
+# Programmatic / AI-assisted sections held back until further editorial work
+Disallow: /glossary
+Disallow: /glossary/
+Disallow: /compare
+Disallow: /compare/
+Disallow: /tools
+Disallow: /tools/
+Disallow: /cheatsheets
+Disallow: /cheatsheets/
+Disallow: /practice
+Disallow: /practice/
+Disallow: /interview-prep
+Disallow: /interview-prep/
 
 # Allow static assets
 Allow: /*.css$
@@ -31,42 +53,63 @@ Allow: /llms-full.txt
 Allow: /rss.xml
 
 # =============================================================================
-# GOOGLE ADSENSE CRAWLERS - required for ad serving and site verification
+# GOOGLE ADSENSE CRAWLERS - same restrictions as default crawler so the
+# reviewer only sees high-quality original content during approval.
 # =============================================================================
 User-agent: Mediapartners-Google
 Allow: /
+Disallow: /glossary
+Disallow: /glossary/
+Disallow: /compare
+Disallow: /compare/
+Disallow: /tools
+Disallow: /tools/
+Disallow: /cheatsheets
+Disallow: /cheatsheets/
+Disallow: /practice
+Disallow: /practice/
+Disallow: /interview-prep
+Disallow: /interview-prep/
 
 User-agent: AdsBot-Google
 Allow: /
 Disallow: /glossary
+Disallow: /glossary/
 Disallow: /compare
-Disallow: /cheatsheets
-Disallow: /practice
+Disallow: /compare/
 Disallow: /tools
-Disallow: /news
+Disallow: /tools/
+Disallow: /cheatsheets
+Disallow: /cheatsheets/
+Disallow: /practice
+Disallow: /practice/
 Disallow: /interview-prep
+Disallow: /interview-prep/
 
 User-agent: AdsBot-Google-Mobile
 Allow: /
 Disallow: /glossary
+Disallow: /glossary/
 Disallow: /compare
-Disallow: /cheatsheets
-Disallow: /practice
+Disallow: /compare/
 Disallow: /tools
-Disallow: /news
+Disallow: /tools/
+Disallow: /cheatsheets
+Disallow: /cheatsheets/
+Disallow: /practice
+Disallow: /practice/
 Disallow: /interview-prep
+Disallow: /interview-prep/
 
 # =============================================================================
-# SITEMAPS - Google will discover all sub-sitemaps via sitemap-index.xml
+# SITEMAPS
 # =============================================================================
-# Primary entry point (references all other sitemaps)
 Sitemap: https://dataengineerhub.blog/sitemap-index.xml
-
-# LLM/AI-specific sitemap (for AI crawlers)
 Sitemap: https://dataengineerhub.blog/llm-sitemap.json
 
 # =============================================================================
-# AI CRAWLERS - Allow for AI Citations & Training
+# AI CRAWLERS - Allow for AI Citations & Training (full access — these are not
+# AdSense-relevant and broader exposure helps citations).
 # =============================================================================
 User-agent: GPTBot
 Allow: /

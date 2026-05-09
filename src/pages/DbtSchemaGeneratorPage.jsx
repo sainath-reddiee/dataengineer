@@ -1,4 +1,4 @@
-// src/pages/DbtSchemaGeneratorPage.jsx
+﻿// src/pages/DbtSchemaGeneratorPage.jsx
 // Generate dbt schema.yml + staging model from a CREATE TABLE statement.
 // Targets "dbt schema generator", "dbt schema.yml generator", "create table to dbt".
 import React, { useMemo, useState, useCallback, Suspense } from 'react';
@@ -257,6 +257,7 @@ export default function DbtSchemaGeneratorPage() {
           { name: 'dbt Schema Generator', url: '/tools/dbt-schema-generator' },
         ]}
         faqSchema={faqSchema}
+      noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>

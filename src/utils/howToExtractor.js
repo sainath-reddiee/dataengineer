@@ -10,12 +10,17 @@
  */
 
 /**
- * Collect step description text from sibling elements after a heading
+ * Collect step description text from sibling elements after a heading.
+ * Also returns the URL of the first inline image found, so HowTo Rich
+ * Results can attach an image to each step (Google's HowTo guidelines
+ * strongly recommend per-step images for full eligibility).
+ *
  * @param {Element} startSibling
- * @returns {string}
+ * @returns {{ text: string, image: string|null }}
  */
 function collectStepText(startSibling) {
   let text = '';
+  let image = null;
   let sibling = startSibling;
   let count = 0;
 
@@ -24,6 +29,15 @@ function collectStepText(startSibling) {
 
     // Stop at next heading
     if (['H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(tagName)) break;
+
+    // Pick up the first usable image in this step (direct child or descendant).
+    if (!image) {
+      const imgEl = (tagName === 'IMG') ? sibling : sibling.querySelector && sibling.querySelector('img');
+      if (imgEl && imgEl.getAttribute) {
+        const src = imgEl.getAttribute('src') || imgEl.getAttribute('data-src');
+        if (src && /^https?:\/\//i.test(src)) image = src;
+      }
+    }
 
     if (tagName === 'P') {
       const pText = sibling.textContent.trim();
@@ -50,7 +64,7 @@ function collectStepText(startSibling) {
     if (text.length > 400) break;
   }
 
-  return text.trim();
+  return { text: text.trim(), image };
 }
 
 /**
@@ -75,9 +89,11 @@ export function extractHowToSteps(content) {
       const rawText = heading.textContent.trim();
       if (stepPattern.test(rawText)) {
         const stepName = rawText.replace(stepPattern, '').trim() || rawText;
-        const stepText = collectStepText(heading.nextElementSibling);
-        if (stepText.length > 20) {
-          steps.push({ name: stepName, text: stepText.substring(0, 500) });
+        const collected = collectStepText(heading.nextElementSibling);
+        if (collected.text.length > 20) {
+          const step = { name: stepName, text: collected.text.substring(0, 500) };
+          if (collected.image) step.image = collected.image;
+          steps.push(step);
         }
       }
     });

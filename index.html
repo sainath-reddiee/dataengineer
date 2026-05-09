@@ -47,8 +47,8 @@
     <link rel="preconnect" href="https://imagedelivery.net" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     
-    <title>DataEngineer Hub — Learn Snowflake, dbt, Airflow & SQL | Data Engineering Tutorials</title>
-    <meta name="description" content="In-depth tutorials on Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and modern data engineering. Master cloud platforms, data pipelines, and best practices." />
+    <title>Data Engineering Tutorials — Snowflake, Databricks, dbt &amp; AWS</title>
+    <meta name="description" content="In-depth, production-tested data engineering tutorials covering Snowflake, Databricks, AWS, Azure, GCP, Salesforce Data Cloud, dbt, Apache Airflow, Apache Spark, Python, SQL, lakehouse architectures, ETL/ELT pipelines, and modern data stack best practices." />
 
     <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />
     <!-- Canonical URL is set dynamically by MetaTags.jsx per route. No static canonical here to avoid
@@ -97,7 +97,10 @@
       },
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://dataengineerhub.blog/articles?search={search_term_string}",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://dataengineerhub.blog/articles?search={search_term_string}"
+        },
         "query-input": "required name=search_term_string"
       }
     }
@@ -313,55 +316,142 @@
         </div>
       </nav>
       <div class="seo-fallback">
-        <h1>DataEngineer Hub - Master Data Engineering</h1>
-        
+        <h1>Master Modern Data Engineering — Cloud, Lakehouse, Pipelines &amp; AI</h1>
+
         <p>
-          Welcome to DataEngineer Hub, your comprehensive resource for learning data engineering. 
-          Our expert tutorials cover everything from cloud platforms to data orchestration tools, 
-          helping you build a successful career in data engineering.
+          Practical, production-tested data engineering tutorials across the full modern data stack —
+          cloud data warehouses, lakehouses, orchestration, transformation, programming, and the
+          new wave of AI-on-data tooling. Every guide is written by a working data engineer, drawn
+          from real production work, and kept up to date for 2026 cloud-vendor pricing and APIs.
         </p>
 
         <nav aria-label="Main topics">
           <ul style="list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:0.5rem 1rem;">
             <li><a href="/articles">All Articles</a></li>
             <li><a href="/category/snowflake">Snowflake</a></li>
+            <li><a href="/category/databricks">Databricks</a></li>
             <li><a href="/category/aws">AWS</a></li>
-            <li><a href="/category/python">Python</a></li>
+            <li><a href="/category/azure">Azure</a></li>
+            <li><a href="/category/gcp">GCP</a></li>
+            <li><a href="/category/salesforce">Salesforce Data Cloud</a></li>
             <li><a href="/category/dbt">dbt</a></li>
             <li><a href="/category/airflow">Airflow</a></li>
+            <li><a href="/category/python">Python</a></li>
+            <li><a href="/category/sql">SQL</a></li>
+            <li><a href="/category/developer-productivity">Developer Productivity</a></li>
             <li><a href="/about">About</a></li>
           </ul>
         </nav>
-        
+
         <div class="topics">
           <div class="topic-card">
-            <h2>Cloud Platforms</h2>
-            <p>Master Snowflake, AWS, Azure, and Google Cloud Platform with hands-on tutorials and best practices.</p>
+            <h2>Cloud Data Warehouses</h2>
+            <p>
+              Hands-on guides for Snowflake (Cortex, Iceberg, Dynamic Tables, cost optimization),
+              Google BigQuery (slot-based pricing, partitioning), and Amazon Redshift — including
+              warehouse sizing, query tuning, and cost-control playbooks for real production
+              workloads.
+            </p>
           </div>
-          
+
           <div class="topic-card">
-            <h2>Data Orchestration</h2>
-            <p>Learn Apache Airflow, dbt, and modern data pipeline orchestration techniques.</p>
+            <h2>Lakehouse &amp; Databricks</h2>
+            <p>
+              Deep dives on Databricks, Apache Spark, Delta Lake, Apache Iceberg, and Unity
+              Catalog — covering medallion architectures, Auto Loader, structured streaming,
+              Photon, Databricks SQL, and migration patterns from legacy Hadoop / EMR.
+            </p>
           </div>
-          
+
           <div class="topic-card">
-            <h2>Programming</h2>
-            <p>Deep dive into Python, SQL, and other essential programming languages for data engineering.</p>
+            <h2>AWS, Azure &amp; GCP</h2>
+            <p>
+              Multi-cloud data engineering tutorials: AWS (S3, Glue, Lambda, Kinesis, Athena,
+              EMR, Step Functions), Azure (Synapse, ADF, Fabric, Eventhouse, Purview), and GCP
+              (BigQuery, Dataflow, Pub/Sub, Composer) with cost, security, and IAC patterns.
+            </p>
           </div>
-          
+
           <div class="topic-card">
-            <h2>Best Practices</h2>
-            <p>Discover industry best practices, design patterns, and optimization techniques.</p>
+            <h2>Salesforce Data Cloud &amp; CRM Data</h2>
+            <p>
+              Salesforce Data Cloud (CDP), Agentforce, Tableau, and integrating CRM data with
+              Snowflake / Databricks via zero-copy sharing. Practical guides on identity
+              resolution, calculated insights, segmentation, and activation.
+            </p>
           </div>
-          
+
           <div class="topic-card">
-            <h2>Real-world Projects</h2>
-            <p>Build production-ready data pipelines with step-by-step project tutorials.</p>
+            <h2>Transformation &amp; Modeling</h2>
+            <p>
+              dbt Core and dbt Cloud — project structure, macros, tests, exposures, semantic
+              layer, and CI/CD patterns. Plus dimensional modeling, Data Vault, slowly-changing
+              dimensions, and analytics engineering best practices for warehouses and lakehouses.
+            </p>
           </div>
-          
+
           <div class="topic-card">
-            <h2>Career Growth</h2>
-            <p>Get career advice, interview preparation tips, and insights into the data engineering field.</p>
+            <h2>Orchestration &amp; Pipelines</h2>
+            <p>
+              Apache Airflow, Snowflake Tasks, AWS Step Functions, Azure Data Factory, Prefect,
+              and Dagster — with batch, micro-batch, and event-driven pipeline patterns,
+              idempotency, backfills, observability, and SLA management for production schedulers.
+            </p>
+          </div>
+
+          <div class="topic-card">
+            <h2>Programming — Python &amp; SQL</h2>
+            <p>
+              Python for data engineers (PySpark, pandas, Polars, asyncio, type hints, testing),
+              advanced SQL (window functions, CTEs, JSON / VARIANT, performance tuning), plus
+              shell, Git, and developer-productivity tooling that ship faster pipelines.
+            </p>
+          </div>
+
+          <div class="topic-card">
+            <h2>Streaming &amp; Real-Time</h2>
+            <p>
+              Apache Kafka, Kinesis, Pub/Sub, Snowflake Streams &amp; Tasks, Snowpipe Streaming,
+              Spark Structured Streaming, change-data-capture (CDC), and event-driven architectures
+              — including watermarks, exactly-once semantics, and schema evolution.
+            </p>
+          </div>
+
+          <div class="topic-card">
+            <h2>AI on Data — Cortex, Agents, RAG</h2>
+            <p>
+              Snowflake Cortex (AISQL, Search, Analyst, Agents), Databricks Genie / Mosaic AI,
+              Vertex AI, Bedrock, and building production retrieval-augmented generation (RAG)
+              pipelines on top of warehouse and lakehouse data — with grounding, evals, and cost.
+            </p>
+          </div>
+
+          <div class="topic-card">
+            <h2>Data Quality, Governance &amp; Security</h2>
+            <p>
+              Great Expectations, dbt tests, Soda, Monte Carlo, lineage with OpenLineage / Marquez,
+              role-based access control, row/column-level security, masking policies, PII handling,
+              and modern data-governance frameworks across Snowflake, Databricks, and the cloud.
+            </p>
+          </div>
+
+          <div class="topic-card">
+            <h2>Career, Interviews &amp; Certifications</h2>
+            <p>
+              Honest career advice, system-design walk-throughs, salary insights, and structured
+              interview prep for data-engineering roles — plus certification paths (SnowPro Core,
+              Databricks DE Associate, AWS DEA, Azure DP-203, GCP PDE) with real exam-style
+              questions and explanations.
+            </p>
+          </div>
+
+          <div class="topic-card">
+            <h2>Production &amp; FinOps</h2>
+            <p>
+              Reliability, observability, cost-optimization (Snowflake credit math, Databricks DBU
+              tuning, BigQuery slot management), backfill strategies, blue/green deployments, and
+              the operational playbooks that keep data platforms running reliably and affordably.
+            </p>
           </div>
         </div>
       </div>
@@ -370,17 +460,20 @@
       <section class="seo-author-block" aria-label="About the author">
         <h2>About the Author</h2>
         <p>
-          DataEngineer Hub is written and maintained by <strong>Sainath Reddy</strong>,
+          Articles on this site are written and maintained by <strong>Sainath Reddy</strong>,
           a practicing data engineer with hands-on experience building production data
-          pipelines on Snowflake, AWS, dbt, and Apache Airflow. Every tutorial on this
-          site is based on real-world engineering work — not reposted material — and is
-          reviewed before publication for technical accuracy.
+          platforms across Snowflake, Databricks, AWS, Azure, GCP, Salesforce Data Cloud,
+          dbt, Apache Airflow, Apache Spark, and the broader modern data stack. Every
+          tutorial is based on real-world engineering work — not reposted material — and is
+          reviewed before publication for technical accuracy and current vendor behaviour.
         </p>
         <p>
-          Our editorial focus is narrow and deep: cloud data warehousing (Snowflake,
-          BigQuery), data transformation (dbt, SQL), orchestration (Airflow), and
-          modern data platform best practices. We publish in-depth tutorials, comparison
-          guides, and reference material for engineers shipping data in production.
+          Editorial focus spans cloud data warehousing (Snowflake, BigQuery, Redshift),
+          lakehouse architectures (Databricks, Delta Lake, Iceberg), data orchestration
+          (Airflow, Snowflake Tasks, Step Functions), transformation (dbt, SQL, PySpark),
+          streaming (Kafka, Kinesis, Snowpipe Streaming), AI on data (Snowflake Cortex,
+          Databricks Mosaic AI, RAG patterns), data quality &amp; governance, FinOps, and
+          career &amp; certification guidance for data professionals.
         </p>
         <p class="author-meta">
           Learn more on our
@@ -431,18 +524,13 @@
           performance.mark('page-loaded');
 
           setTimeout(() => {
-            const perfData = performance.getEntriesByType('navigation')[0];
-            const paintEntries = performance.getEntriesByType('paint');
-
-            if (perfData) {
-              const metrics = {
-                'Total Load': Math.round(perfData.loadEventEnd - perfData.fetchStart) + 'ms',
-                'DOM Ready': Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart) + 'ms',
-                'FCP': paintEntries[1] ? Math.round(paintEntries[1].startTime) + 'ms' : 'N/A'
-              };
-
-              console.log('📊 Performance:', metrics);
-            }
+            // Performance buffer is kept for analytics/RUM hooks. No
+            // console.log in production — debug spam was removed.
+            try {
+              if (window.performance && window.performance.measure) {
+                window.performance.measure('app-init', 'react-mount-start', 'react-mount-end');
+              }
+            } catch (e) { /* ignore measure errors */ }
           }, 100);
         }
 
@@ -452,15 +540,30 @@
         setTimeout(function() {
           if (!document.body.classList.contains('react-loaded')) {
             document.body.classList.remove('react-loading');
-            console.warn('⚠️  React did not mount within 8s — showing static SEO content');
           }
         }, 8000);
       });
     </script>
 
     <!-- AdSense: moved to end of body so it doesn't compete with critical render path.
-         Bot still finds the tag in raw HTML for verification. -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728"
-            crossorigin="anonymous"></script>
+         Bot still finds the tag in raw HTML for verification.
+         GATED: skip injection on PSEO / noindex'd sections (tools, cheatsheets,
+         glossary, comparisons, practice, interview-prep) so Auto Ads cannot
+         inject ads on low-value pages. AdsBot can still verify the tag from
+         pages it actually crawls. -->
+    <script>
+      (function () {
+        var path = (window.location.pathname || '').toLowerCase();
+        var psePrefixes = ['/glossary', '/compare', '/tools', '/cheatsheets', '/practice', '/interview-prep', '/admin'];
+        var blocked = psePrefixes.some(function (p) { return path === p || path.indexOf(p + '/') === 0; });
+        if (!blocked) {
+          var s = document.createElement('script');
+          s.async = true;
+          s.crossOrigin = 'anonymous';
+          s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728';
+          document.body.appendChild(s);
+        }
+      })();
+    </script>
   </body>
 </html>

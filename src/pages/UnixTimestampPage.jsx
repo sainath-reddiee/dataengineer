@@ -1,4 +1,4 @@
-// src/pages/UnixTimestampPage.jsx
+﻿// src/pages/UnixTimestampPage.jsx
 // Unix timestamp <-> human date converter. High-volume DE / dev search term.
 // Targets: unix timestamp converter, epoch converter, timestamp to date.
 import React, { useMemo, useState, useEffect, useCallback, Suspense } from 'react';
@@ -184,6 +184,7 @@ export default function UnixTimestampPage() {
           { name: 'Unix Timestamp Converter', url: '/tools/unix-timestamp-converter' },
         ]}
         faqSchema={faqSchema}
+      noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>

@@ -1,4 +1,4 @@
-// src/pages/admin/ComparePage.jsx
+﻿// src/pages/admin/ComparePage.jsx
 /**
  * Compare Page - Side-by-side URL comparison with AI citation metrics
  */
@@ -57,7 +57,7 @@ export function ComparePage() {
     };
 
     const getDiffIndicator = (val1, val2) => {
-        const diff = val1 - val2;
+        const diff = Math.round((val1 - val2) * 100) / 100;
         if (diff > 0) return { icon: TrendingUp, color: 'text-green-400', text: `+${diff}` };
         if (diff < 0) return { icon: TrendingDown, color: 'text-red-400', text: `${diff}` };
         return { icon: Minus, color: 'text-gray-400', text: '0' };
@@ -79,7 +79,7 @@ export function ComparePage() {
                             <GitCompare className="w-8 h-8 text-white" />
                         </div>
                     </div>
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+                    <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
                         Competitor Analysis
                     </h1>
                     <p className="text-gray-400 text-lg">Compare your content against competitors</p>
@@ -97,6 +97,7 @@ export function ComparePage() {
                             type="url"
                             value={url1}
                             onChange={(e) => setUrl1(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleCompare()}
                             placeholder="https://your-site.com/article"
                             className="w-full px-4 py-3 bg-gray-900/50 border-2 border-gray-600 rounded-xl focus:ring-4 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-white placeholder-gray-500"
                             disabled={loading}
@@ -113,6 +114,7 @@ export function ComparePage() {
                             type="url"
                             value={url2}
                             onChange={(e) => setUrl2(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleCompare()}
                             placeholder="https://competitor.com/article"
                             className="w-full px-4 py-3 bg-gray-900/50 border-2 border-gray-600 rounded-xl focus:ring-4 focus:ring-purple-500/50 focus:border-purple-500 transition-all text-white placeholder-gray-500"
                             disabled={loading}
@@ -121,7 +123,7 @@ export function ComparePage() {
                 </div>
 
                 {/* Compare Button */}
-                <div className="flex justify-center mb-8">
+                <div className="flex justify-center gap-3 mb-8">
                     <button
                         onClick={handleCompare}
                         disabled={loading}
@@ -139,6 +141,14 @@ export function ComparePage() {
                             </>
                         )}
                     </button>
+                    {results && (
+                        <button
+                            onClick={handleExportPDF}
+                            className="px-6 py-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl flex items-center gap-2 transition-all font-semibold"
+                        >
+                            <Download className="w-5 h-5" /> Export PDF
+                        </button>
+                    )}
                 </div>
 
                 {/* Error Message */}
@@ -163,7 +173,7 @@ export function ComparePage() {
                                 }`}>
                                 <Trophy className="w-12 h-12 mx-auto mb-3 text-yellow-400" />
                                 <h2 className="text-2xl font-bold text-white mb-2">
-                                    {results.report1.score > results.report2.score ? 'Your Page Wins! 🎉' : 'Competitor Wins'}
+                                    {results.report1.score > results.report2.score ? 'Your Page Wins! ðŸŽ‰' : 'Competitor Wins'}
                                 </h2>
                                 <p className="text-gray-300">
                                     Score: {Math.max(results.report1.score, results.report2.score)}/100
@@ -210,7 +220,7 @@ export function ComparePage() {
                                                     <td className={`px-6 py-4 text-center text-lg font-bold ${winner === 'you' ? 'text-green-400' : winner === 'tie' ? 'text-gray-400' : 'text-gray-500'
                                                         }`}>
                                                         {val1}{metric.suffix}
-                                                        {winner === 'you' && ' ✓'}
+                                                        {winner === 'you' && ' âœ“'}
                                                     </td>
                                                     <td className="px-6 py-4 text-center">
                                                         <div className={`inline-flex items-center gap-1 ${diff.color}`}>
@@ -221,7 +231,7 @@ export function ComparePage() {
                                                     <td className={`px-6 py-4 text-center text-lg font-bold ${winner === 'competitor' ? 'text-purple-400' : winner === 'tie' ? 'text-gray-400' : 'text-gray-500'
                                                         }`}>
                                                         {val2}{metric.suffix}
-                                                        {winner === 'competitor' && ' ✓'}
+                                                        {winner === 'competitor' && ' âœ“'}
                                                     </td>
                                                 </tr>
                                             );
@@ -237,10 +247,10 @@ export function ComparePage() {
                             <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-6">
                                 <h3 className="text-xl font-bold text-white mb-4">Your Strengths</h3>
                                 <div className="space-y-2">
-                                    {results.report1.strengths.length > 0 ? (
-                                        results.report1.strengths.map((strength, idx) => (
+                                    {(results.report1.strengths || []).length > 0 ? (
+                                        (results.report1.strengths || []).map((strength, idx) => (
                                             <div key={idx} className="flex items-center gap-2 text-green-300 bg-green-900/20 px-3 py-2 rounded-lg">
-                                                <span className="text-sm">✓ {strength}</span>
+                                                <span className="text-sm">âœ“ {strength}</span>
                                             </div>
                                         ))
                                     ) : (
@@ -253,10 +263,10 @@ export function ComparePage() {
                             <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-6">
                                 <h3 className="text-xl font-bold text-white mb-4">Competitor Strengths</h3>
                                 <div className="space-y-2">
-                                    {results.report2.strengths.length > 0 ? (
-                                        results.report2.strengths.map((strength, idx) => (
+                                    {(results.report2.strengths || []).length > 0 ? (
+                                        (results.report2.strengths || []).map((strength, idx) => (
                                             <div key={idx} className="flex items-center gap-2 text-purple-300 bg-purple-900/20 px-3 py-2 rounded-lg">
-                                                <span className="text-sm">✓ {strength}</span>
+                                                <span className="text-sm">âœ“ {strength}</span>
                                             </div>
                                         ))
                                     ) : (
@@ -267,11 +277,11 @@ export function ComparePage() {
                         </div>
 
                         {/* Recommendations */}
-                        {results.report1.recommendations.length > 0 && (
+                        {(results.report1.recommendations || []).length > 0 && (
                             <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-6">
                                 <h3 className="text-2xl font-bold text-white mb-4">Your Improvement Opportunities</h3>
                                 <div className="space-y-3">
-                                    {results.report1.recommendations.slice(0, 5).map((rec, idx) => (
+                                    {(results.report1.recommendations || []).slice(0, 5).map((rec, idx) => (
                                         <div key={idx} className="bg-gray-900/50 rounded-lg p-4 border border-gray-700/50">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <span className={`px-2 py-1 rounded text-xs font-bold ${rec.priority === 'HIGH' ? 'bg-red-500/20 text-red-300' :

@@ -1,4 +1,4 @@
-// scripts/generateStaticPagesIncremental.js
+﻿// scripts/generateStaticPagesIncremental.js
 // FIXED VERSION - Generates FULL CONTENT for SEO/AdSense with IMAGES
 import fs from 'fs';
 import path from 'path';
@@ -13,11 +13,11 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const ADSENSE_PUBLISHER_ID = process.env.VITE_ADSENSE_PUBLISHER_ID || '';
 
-// 🚨 Hard-fail the build if AdSense publisher ID is missing or malformed.
+// ðŸš¨ Hard-fail the build if AdSense publisher ID is missing or malformed.
 // Shipping pages with client="" silently breaks AdSense verification and
 // poisons the "ad code present" signal used during approval.
 if (!ADSENSE_PUBLISHER_ID || !ADSENSE_PUBLISHER_ID.startsWith('ca-pub-')) {
-  console.error('❌ FATAL: VITE_ADSENSE_PUBLISHER_ID is missing or invalid.');
+  console.error('âŒ FATAL: VITE_ADSENSE_PUBLISHER_ID is missing or invalid.');
   console.error('   Expected format: ca-pub-XXXXXXXXXXXXXXXX');
   console.error(`   Got: "${ADSENSE_PUBLISHER_ID}"`);
   console.error('   Set it in .env before building to avoid shipping broken ad code.');
@@ -39,11 +39,11 @@ function toIsoSchemaDate(value) {
 }
 
 // ============================================================================
-// 🔒 GOOGLE CONSENT MODE v2 — single source of truth
+// ðŸ”’ GOOGLE CONSENT MODE v2 â€” single source of truth
 // Emitted in the <head> of every static page. EU/UK/EEA region defaults to
 // denied (GDPR); rest-of-world (incl. US where AdSense crawler operates)
 // defaults to granted so Googlebot-AdSense can verify ad code without a banner.
-// Mirrors index.html and CookieConsent.jsx — keep them in sync.
+// Mirrors index.html and CookieConsent.jsx â€” keep them in sync.
 // ============================================================================
 const CONSENT_MODE_V2_HTML = `    <!-- Google Consent Mode v2: region-gated. EU denied; rest-of-world (incl. AdSense crawler) granted. -->
     <script>
@@ -84,11 +84,11 @@ let LINKED_ARTICLES = [];
 try {
   LINKED_ARTICLES = JSON.parse(fs.readFileSync(articlesJsonPath, 'utf-8')) || [];
 } catch (e) {
-  console.warn('⚠️  Could not load articles.json for internal linking:', e.message);
+  console.warn('âš ï¸  Could not load articles.json for internal linking:', e.message);
 }
 
 // ============================================================================
-// 🔗 INTERNAL LINKING ENGINE (SSG-compatible standalone version)
+// ðŸ”— INTERNAL LINKING ENGINE (SSG-compatible standalone version)
 // ============================================================================
 
 function escapeRegexSSG(string) {
@@ -155,7 +155,7 @@ function injectInternalLinksSSG(htmlContent, excludeSlug = '') {
 }
 
 // ============================================================================
-// 🛡️ XSS PREVENTION HELPERS
+// ðŸ›¡ï¸ XSS PREVENTION HELPERS
 // ============================================================================
 
 /** Escape a string for safe embedding inside HTML content and attributes. */
@@ -172,7 +172,7 @@ function escapeHtml(str) {
 /** Decode common HTML entities back to their literal characters.
  *  WordPress REST API returns pre-encoded text in `rendered` fields
  *  (e.g. &#8217; for a right single quote).  Decoding first prevents
- *  escapeHtml() from double-encoding them (& → &amp; inside &#8217;). */
+ *  escapeHtml() from double-encoding them (& â†’ &amp; inside &#8217;). */
 function decodeHtmlEntities(str) {
   if (!str) return '';
   return String(str)
@@ -217,26 +217,24 @@ function sanitizeWordPressHTML(html) {
 }
 
 /**
- * Smart title truncation: omit " | DataEngineer Hub" suffix if combined
- * title exceeds 60 chars (Google's typical SERP truncation point).
+ * smartTitle: kept for compatibility — the brand suffix has been removed
+ * site-wide so this is now a passthrough. Returns the title unchanged.
  */
 function smartTitle(title) {
-  const suffix = ' | DataEngineer Hub';
-  const displayLen = decodeHtmlEntities(title).length;
-  return (displayLen + suffix.length) > 60 ? title : title + suffix;
+  return title;
 }
 
 /**
  * Normalize heading hierarchy in WordPress content.
  * If no <h2> exists but <h3> tags do, promote all headings up one level
- * (h3→h2, h4→h3, h5→h4, h6→h5) to avoid hierarchy gaps.
+ * (h3â†’h2, h4â†’h3, h5â†’h4, h6â†’h5) to avoid hierarchy gaps.
  */
 function normalizeHeadings(html) {
   if (!html) return html;
   const hasH2 = /<h2[\s>]/i.test(html);
   const hasH3 = /<h3[\s>]/i.test(html);
   if (!hasH2 && hasH3) {
-    // Promote each level up by one: h3→h2, h4→h3, h5→h4, h6→h5
+    // Promote each level up by one: h3â†’h2, h4â†’h3, h5â†’h4, h6â†’h5
     // Process from lowest to highest to avoid double-promotion
     html = html.replace(/<(\/?)h3([\s>])/gi, '<$1h2$2');
     html = html.replace(/<(\/?)h4([\s>])/gi, '<$1h3$2');
@@ -259,13 +257,13 @@ const ESSENTIAL_PAGES = [
     description: 'Learn about Sainath Reddy, the creator of DataEngineer Hub. Expert in Snowflake, Apache Spark, dbt, Airflow, and modern data engineering.',
     content: `
       <h1>About DataEngineer Hub</h1>
-      <p>Welcome to DataEngineer Hub, created by <strong>Sainath Reddy</strong> — a passionate Data Engineer based in Hyderabad, India with extensive experience in building scalable data pipelines and cloud-native data solutions.</p>
+      <p>Welcome to DataEngineer Hub, created by <strong>Sainath Reddy</strong> â€” a passionate Data Engineer based in Hyderabad, India with extensive experience in building scalable data pipelines and cloud-native data solutions.</p>
 
       <h2>Who Am I?</h2>
       <p>I'm Sainath Reddy, a Data Engineer who specializes in designing and implementing modern data architectures. With years of hands-on experience, I've worked with technologies like <strong>Snowflake</strong>, <strong>Apache Spark</strong>, <strong>Apache Airflow</strong>, <strong>dbt</strong>, <strong>Apache Kafka</strong>, and various cloud platforms including <strong>AWS</strong>, <strong>Azure</strong>, and <strong>GCP</strong>.</p>
 
       <h2>My Mission</h2>
-      <p>DataEngineer Hub was born from my desire to share practical, real-world knowledge about data engineering. I believe in making complex data concepts accessible to everyone — from beginners exploring the field to seasoned professionals looking for advanced techniques.</p>
+      <p>DataEngineer Hub was born from my desire to share practical, real-world knowledge about data engineering. I believe in making complex data concepts accessible to everyone â€” from beginners exploring the field to seasoned professionals looking for advanced techniques.</p>
 
       <h2>What You'll Find Here</h2>
       <ul>
@@ -438,7 +436,7 @@ const ESSENTIAL_PAGES = [
   },
   {
     path: '/contribute',
-    title: 'Write for Us - Contribute a Guest Post | DataEngineer Hub',
+    title: 'Write for Us - Contribute a Guest Post',
     description: 'Share your data engineering expertise with our community. Submit a guest post on Snowflake, dbt, Airflow, cloud platforms, and more. Get published with an author bio and backlink.',
     content: `
       <h1>Write for Us</h1>
@@ -561,7 +559,7 @@ const ESSENTIAL_PAGES = [
       <p><strong>Free, instant Snowflake pricing estimator.</strong> Enter your warehouse size, hours of usage, storage, and edition to see a live monthly and annual cost breakdown across compute, storage, cloud services, and serverless features like Cortex AI and Snowpipe.</p>
 
       <h2>How Snowflake Pricing Works</h2>
-      <p>Snowflake bills three primary categories: <strong>compute</strong> (measured in credits), <strong>storage</strong> (per TB per month), and <strong>cloud services</strong> (metadata, auth, query compilation). Compute credits are consumed by virtual warehouses — X-Small warehouses burn 1 credit per hour, and each size doubles: Small (2), Medium (4), Large (8), X-Large (16), up to 6X-Large (512 credits/hour).</p>
+      <p>Snowflake bills three primary categories: <strong>compute</strong> (measured in credits), <strong>storage</strong> (per TB per month), and <strong>cloud services</strong> (metadata, auth, query compilation). Compute credits are consumed by virtual warehouses â€” X-Small warehouses burn 1 credit per hour, and each size doubles: Small (2), Medium (4), Large (8), X-Large (16), up to 6X-Large (512 credits/hour).</p>
 
       <h2>Credit Prices by Edition</h2>
       <ul>
@@ -729,7 +727,7 @@ const ESSENTIAL_PAGES = [
   },
   {
     path: '/tools',
-    title: 'Free Data Engineering Tools 2026 | DataEngineer Hub',
+    title: 'Free Data Engineering Tools 2026',
     description: 'Free tools for data engineers: Snowflake, Databricks, and dbt Cloud cost calculators, warehouse sizing, SQL formatter, cron builder, JSON-to-SQL DDL. No login.',
     content: `
       <h1>Free Data Engineering Tools and Calculators</h1>
@@ -773,7 +771,7 @@ const ESSENTIAL_PAGES = [
 
       <h3>Data format conversion</h3>
       <ul>
-        <li><strong><a href="/tools/json-parquet-avro-converter">JSON / Parquet / Avro Converter</a></strong> - convert between JSON, Apache Parquet, and Apache Avro directly in your browser. Powered by DuckDB-WASM for Parquet and avsc for Avro. No upload, no server — 100% client-side.</li>
+        <li><strong><a href="/tools/json-parquet-avro-converter">JSON / Parquet / Avro Converter</a></strong> - convert between JSON, Apache Parquet, and Apache Avro directly in your browser. Powered by DuckDB-WASM for Parquet and avsc for Avro. No upload, no server â€” 100% client-side.</li>
       </ul>
 
       <h2>Which tool should I use?</h2>
@@ -790,8 +788,8 @@ const ESSENTIAL_PAGES = [
         <li><strong>Onboarding a new table into dbt?</strong> Run the <a href="/tools/dbt-schema-generator">dbt Schema.yml Generator</a> on the CREATE TABLE to auto-scaffold schema.yml, staging SQL, and sources.yml with freshness checks.</li>
         <li><strong>Debugging timestamp data?</strong> The <a href="/tools/unix-timestamp-converter">Unix Timestamp Converter</a> handles seconds, milliseconds, microseconds, and nanoseconds with SQL examples for every major warehouse.</li>
         <li><strong>Running on Google Cloud?</strong> Use the <a href="/tools/bigquery-cost-calculator">BigQuery Cost Calculator</a> to model on-demand vs capacity Editions pricing and find the break-even point for your workload.</li>
-        <li><strong>Practicing SQL?</strong> Open the <a href="/tools/sql-playground">SQL Playground</a> — run queries on preloaded sample tables directly in your browser with DuckDB-WASM. No setup required.</li>
-        <li><strong>Converting file formats?</strong> The <a href="/tools/json-parquet-avro-converter">JSON / Parquet / Avro Converter</a> handles all six conversion paths between JSON, Parquet, and Avro — powered by DuckDB-WASM and avsc, entirely in your browser.</li>
+        <li><strong>Practicing SQL?</strong> Open the <a href="/tools/sql-playground">SQL Playground</a> â€” run queries on preloaded sample tables directly in your browser with DuckDB-WASM. No setup required.</li>
+        <li><strong>Converting file formats?</strong> The <a href="/tools/json-parquet-avro-converter">JSON / Parquet / Avro Converter</a> handles all six conversion paths between JSON, Parquet, and Avro â€” powered by DuckDB-WASM and avsc, entirely in your browser.</li>
       </ul>
 
       <h2>Are these tools free?</h2>
@@ -1174,13 +1172,13 @@ const ESSENTIAL_PAGES = [
     description: 'Free cross-platform data warehouse cost comparison. Enter one workload profile and see monthly costs side-by-side across Snowflake, Google BigQuery, and Databricks with April 2026 list pricing.',
     content: `
       <h1>Cloud Data Warehouse Cost Comparison</h1>
-      <p><strong>Compare monthly cost across Snowflake, BigQuery, and Databricks with a single unified input.</strong> Enter TB scanned, compute hours, storage GB, and workload complexity — get three side-by-side estimates and see which warehouse is cheapest for your specific pattern. Ideal for pre-RFP sizing, migration budget framing, and answering the "should we switch?" question with numbers instead of vendor slides.</p>
+      <p><strong>Compare monthly cost across Snowflake, BigQuery, and Databricks with a single unified input.</strong> Enter TB scanned, compute hours, storage GB, and workload complexity â€” get three side-by-side estimates and see which warehouse is cheapest for your specific pattern. Ideal for pre-RFP sizing, migration budget framing, and answering the "should we switch?" question with numbers instead of vendor slides.</p>
 
       <h2>How the three platforms charge differently</h2>
       <ul>
         <li><strong>Snowflake</strong> bills per-second of warehouse uptime, at a credit rate driven by edition (1.0x Standard / 1.5x Enterprise / 2.0x Business Critical / 2.5x VPS) and warehouse size (XS = 1 credit/hr, doubling each size). Cloud Services get a 10% free allowance on top of compute.</li>
         <li><strong>Databricks</strong> bills per-DBU (Databricks Unit) consumed. A DBU rate varies by compute tier: SQL Pro, Jobs Compute, and Serverless have different $/DBU prices. Storage is passthrough to S3/ADLS.</li>
-        <li><strong>BigQuery</strong> has two billing models: on-demand ($6.25/TB scanned, first 1 TB/month free) and Editions ($0.04 Standard / $0.06 Enterprise / $0.10 Enterprise Plus per slot-hour). The cheaper of the two applies to your workload — this calculator auto-picks.</li>
+        <li><strong>BigQuery</strong> has two billing models: on-demand ($6.25/TB scanned, first 1 TB/month free) and Editions ($0.04 Standard / $0.06 Enterprise / $0.10 Enterprise Plus per slot-hour). The cheaper of the two applies to your workload â€” this calculator auto-picks.</li>
       </ul>
 
       <h2>When each platform tends to win</h2>
@@ -1196,28 +1194,28 @@ const ESSENTIAL_PAGES = [
       <h2>Platform-specific deep dives</h2>
       <p>After narrowing down, use the platform-specific calculators for a fuller picture:</p>
       <ul>
-        <li><a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a> — edition × warehouse size × hours + serverless (Cortex, Snowpipe, Auto-Clustering).</li>
-        <li><a href="/tools/bigquery-cost-calculator">BigQuery Cost Calculator</a> — on-demand vs Editions break-even, active/long-term storage, streaming ingest.</li>
-        <li><a href="/tools/databricks-cost-calculator">Databricks Cost Calculator</a> — DBU rate by tier, instance types, cluster uptime, Photon.</li>
+        <li><a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a> â€” edition Ã— warehouse size Ã— hours + serverless (Cortex, Snowpipe, Auto-Clustering).</li>
+        <li><a href="/tools/bigquery-cost-calculator">BigQuery Cost Calculator</a> â€” on-demand vs Editions break-even, active/long-term storage, streaming ingest.</li>
+        <li><a href="/tools/databricks-cost-calculator">Databricks Cost Calculator</a> â€” DBU rate by tier, instance types, cluster uptime, Photon.</li>
       </ul>
     `
   },
   {
     path: '/tools/sql-playground',
-    title: 'Free SQL Playground 2026 — Run SQL in Your Browser | DuckDB-WASM',
-    description: 'Practice SQL instantly in your browser with DuckDB-WASM. Sample datasets, window functions, CTEs, QUALIFY — no signup, no server. 100% private and free.',
+    title: 'Free SQL Playground 2026 â€” Run SQL in Your Browser | DuckDB-WASM',
+    description: 'Practice SQL instantly in your browser with DuckDB-WASM. Sample datasets, window functions, CTEs, QUALIFY â€” no signup, no server. 100% private and free.',
     content: `
-      <h1>SQL Playground — Run SQL in Your Browser</h1>
-      <p><strong>Free, in-browser SQL engine powered by DuckDB-WASM.</strong> Write and execute SQL queries instantly on preloaded sample datasets — employees, orders, and web events. No server, no signup, no data leaves your device. Practice window functions, CTEs, QUALIFY, aggregations, joins, and more.</p>
+      <h1>SQL Playground â€” Run SQL in Your Browser</h1>
+      <p><strong>Free, in-browser SQL engine powered by DuckDB-WASM.</strong> Write and execute SQL queries instantly on preloaded sample datasets â€” employees, orders, and web events. No server, no signup, no data leaves your device. Practice window functions, CTEs, QUALIFY, aggregations, joins, and more.</p>
 
       <h2>How It Works</h2>
       <p>This playground loads <a href="https://duckdb.org/docs/api/wasm/overview">DuckDB-WASM</a>, a full analytical SQL engine compiled to WebAssembly, directly in your browser. The ~2 MB engine downloads once and runs entirely client-side. Three sample tables are preloaded with realistic data so you can start writing queries immediately.</p>
 
       <h2>Preloaded Sample Tables</h2>
       <ul>
-        <li><strong>employees</strong> (15 rows) — id, name, department, salary, hire_date. Practice GROUP BY, HAVING, window functions, and top-N per group patterns.</li>
-        <li><strong>orders</strong> (15 rows) — order_id, customer_id, product, quantity, unit_price, order_date, region. Practice aggregations, running totals, and revenue analysis.</li>
-        <li><strong>web_events</strong> (15 rows) — event_id, user_id, event_type, page, ts, device. Practice funnel analysis, sessionization, and conditional aggregation.</li>
+        <li><strong>employees</strong> (15 rows) â€” id, name, department, salary, hire_date. Practice GROUP BY, HAVING, window functions, and top-N per group patterns.</li>
+        <li><strong>orders</strong> (15 rows) â€” order_id, customer_id, product, quantity, unit_price, order_date, region. Practice aggregations, running totals, and revenue analysis.</li>
+        <li><strong>web_events</strong> (15 rows) â€” event_id, user_id, event_type, page, ts, device. Practice funnel analysis, sessionization, and conditional aggregation.</li>
       </ul>
 
       <h2>What You Can Practice</h2>
@@ -1231,7 +1229,7 @@ const ESSENTIAL_PAGES = [
 
       <h3>Advanced SQL</h3>
       <ul>
-        <li>Window functions — ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM OVER, AVG OVER</li>
+        <li>Window functions â€” ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM OVER, AVG OVER</li>
         <li>CTEs (WITH ... AS) and recursive CTEs</li>
         <li>QUALIFY clause (supported by DuckDB and Snowflake)</li>
         <li>CASE expressions, COALESCE, NULLIF</li>
@@ -1257,7 +1255,7 @@ const ESSENTIAL_PAGES = [
       <p>DuckDB supports a PostgreSQL-compatible dialect with modern extensions. Most Snowflake and BigQuery SQL patterns work with minor syntax adjustments. Supported features include: window functions, CTEs, recursive CTEs, QUALIFY, PIVOT/UNPIVOT, LATERAL joins, LIST/STRUCT/MAP types, regex functions, and lambda expressions.</p>
 
       <h2>Privacy and Security</h2>
-      <p>DuckDB runs entirely in your browser via WebAssembly. Your SQL queries and any data you paste never leave your device — there is no server, no database connection, and no logging of queries. You can safely paste proprietary data for testing.</p>
+      <p>DuckDB runs entirely in your browser via WebAssembly. Your SQL queries and any data you paste never leave your device â€” there is no server, no database connection, and no logging of queries. You can safely paste proprietary data for testing.</p>
 
       <h2>Frequently Asked Questions</h2>
       <h3>Is this SQL playground free?</h3>
@@ -1270,52 +1268,52 @@ const ESSENTIAL_PAGES = [
       <p>The playground ships with three preloaded sample tables. You can also use DuckDB's read_csv() function to query CSV data directly.</p>
 
       <h3>How large a dataset can it handle?</h3>
-      <p>DuckDB-WASM runs inside your browser's memory budget — typically 1-4 GB. For sample datasets (15 rows each), performance is instant. For analytical workloads up to ~100 MB, DuckDB-WASM performs well.</p>
+      <p>DuckDB-WASM runs inside your browser's memory budget â€” typically 1-4 GB. For sample datasets (15 rows each), performance is instant. For analytical workloads up to ~100 MB, DuckDB-WASM performs well.</p>
 
       <h3>Does it support Snowflake-specific syntax?</h3>
       <p>DuckDB supports many Snowflake SQL patterns natively: QUALIFY, FLATTEN (as UNNEST), window functions, CTEs, MERGE, and most date/string functions. Snowflake-only functions (GET_DDL, SYSTEM$) are not available.</p>
 
       <h2>Related Tools</h2>
       <ul>
-        <li><a href="/tools/sql-formatter">SQL Formatter</a> — clean up your SQL before running it here.</li>
-        <li><a href="/cheatsheets/snowflake-sql">Snowflake SQL Cheat Sheet</a> — full Snowflake SQL reference with examples you can copy into the playground.</li>
-        <li><a href="/cheatsheets/sql-window-functions">Window Functions Reference</a> — ROW_NUMBER, RANK, LAG, LEAD — all examples are runnable in this playground.</li>
-        <li><a href="/interview-prep">Interview Prep Hub</a> — complete 14-day study plan for data engineer interviews.</li>
+        <li><a href="/tools/sql-formatter">SQL Formatter</a> â€” clean up your SQL before running it here.</li>
+        <li><a href="/cheatsheets/snowflake-sql">Snowflake SQL Cheat Sheet</a> â€” full Snowflake SQL reference with examples you can copy into the playground.</li>
+        <li><a href="/cheatsheets/sql-window-functions">Window Functions Reference</a> â€” ROW_NUMBER, RANK, LAG, LEAD â€” all examples are runnable in this playground.</li>
+        <li><a href="/interview-prep">Interview Prep Hub</a> â€” complete 14-day study plan for data engineer interviews.</li>
       </ul>
     `
   },
   {
     path: '/tools/json-parquet-avro-converter',
-    title: 'Free JSON / Parquet / Avro Converter 2026 — Browser-Based Format Conversion',
-    description: 'Convert between JSON, Apache Parquet, and Apache Avro directly in your browser. Powered by DuckDB-WASM and avsc. No upload, no server — 100% client-side and free.',
+    title: 'Free JSON / Parquet / Avro Converter 2026 â€” Browser-Based Format Conversion',
+    description: 'Convert between JSON, Apache Parquet, and Apache Avro directly in your browser. Powered by DuckDB-WASM and avsc. No upload, no server â€” 100% client-side and free.',
     content: `
-      <h1>JSON / Parquet / Avro Converter — Convert Data Formats in Your Browser</h1>
-      <p><strong>Free, client-side data format converter.</strong> Convert between JSON, Apache Parquet, and Apache Avro instantly — no file uploads, no server processing, no data leaves your device. Powered by DuckDB-WASM for Parquet operations and avsc for Avro serialization.</p>
+      <h1>JSON / Parquet / Avro Converter â€” Convert Data Formats in Your Browser</h1>
+      <p><strong>Free, client-side data format converter.</strong> Convert between JSON, Apache Parquet, and Apache Avro instantly â€” no file uploads, no server processing, no data leaves your device. Powered by DuckDB-WASM for Parquet operations and avsc for Avro serialization.</p>
 
       <h2>Supported Conversion Paths</h2>
       <p>This tool supports all six conversion directions between the three most common data lake and streaming formats:</p>
       <ul>
-        <li><strong>JSON → Parquet</strong> — Compress JSON arrays into columnar Parquet files for efficient analytics. Ideal for loading into Snowflake external tables, AWS Athena, or Spark.</li>
-        <li><strong>Parquet → JSON</strong> — Inspect and preview Parquet files without a query engine. Read column types, row counts, and actual data as human-readable JSON.</li>
-        <li><strong>JSON → Avro</strong> — Encode JSON records into compact Avro binary with auto-inferred schemas. Perfect for Kafka producers and schema registry workflows.</li>
-        <li><strong>Avro → JSON</strong> — Decode Avro container files (OCF) or raw Avro binary back to readable JSON. Debug Kafka consumer output and inspect Avro payloads.</li>
-        <li><strong>Parquet → Avro</strong> — Convert columnar Parquet files to Avro binary for streaming ingestion. The converter chains Parquet → JSON → Avro internally.</li>
-        <li><strong>Avro → Parquet</strong> — Convert Avro container files to columnar Parquet for analytical queries. The converter chains Avro → JSON → Parquet internally.</li>
+        <li><strong>JSON â†’ Parquet</strong> â€” Compress JSON arrays into columnar Parquet files for efficient analytics. Ideal for loading into Snowflake external tables, AWS Athena, or Spark.</li>
+        <li><strong>Parquet â†’ JSON</strong> â€” Inspect and preview Parquet files without a query engine. Read column types, row counts, and actual data as human-readable JSON.</li>
+        <li><strong>JSON â†’ Avro</strong> â€” Encode JSON records into compact Avro binary with auto-inferred schemas. Perfect for Kafka producers and schema registry workflows.</li>
+        <li><strong>Avro â†’ JSON</strong> â€” Decode Avro container files (OCF) or raw Avro binary back to readable JSON. Debug Kafka consumer output and inspect Avro payloads.</li>
+        <li><strong>Parquet â†’ Avro</strong> â€” Convert columnar Parquet files to Avro binary for streaming ingestion. The converter chains Parquet â†’ JSON â†’ Avro internally.</li>
+        <li><strong>Avro â†’ Parquet</strong> â€” Convert Avro container files to columnar Parquet for analytical queries. The converter chains Avro â†’ JSON â†’ Parquet internally.</li>
       </ul>
 
       <h2>How It Works</h2>
       <ol>
-        <li><strong>Select formats</strong> — Choose your source and target formats from the format selector (JSON, Parquet, Avro). Use the swap button to reverse direction instantly.</li>
-        <li><strong>Provide input</strong> — Paste or type JSON directly, or drag-and-drop / browse for binary files (Parquet, Avro). Sample JSON data is preloaded for quick testing.</li>
-        <li><strong>Convert</strong> — Click "Convert" and the tool processes everything in your browser. DuckDB-WASM handles Parquet read/write; avsc handles Avro encode/decode.</li>
-        <li><strong>Preview and download</strong> — View a preview table (up to 50 rows), copy JSON output to clipboard, or download the converted file directly.</li>
+        <li><strong>Select formats</strong> â€” Choose your source and target formats from the format selector (JSON, Parquet, Avro). Use the swap button to reverse direction instantly.</li>
+        <li><strong>Provide input</strong> â€” Paste or type JSON directly, or drag-and-drop / browse for binary files (Parquet, Avro). Sample JSON data is preloaded for quick testing.</li>
+        <li><strong>Convert</strong> â€” Click "Convert" and the tool processes everything in your browser. DuckDB-WASM handles Parquet read/write; avsc handles Avro encode/decode.</li>
+        <li><strong>Preview and download</strong> â€” View a preview table (up to 50 rows), copy JSON output to clipboard, or download the converted file directly.</li>
       </ol>
 
       <h2>Technology</h2>
       <ul>
-        <li><strong>DuckDB-WASM</strong> — A full analytical SQL engine compiled to WebAssembly (~2 MB). Handles native Parquet reading (read_parquet) and writing (COPY TO FORMAT PARQUET). Shared instance with the <a href="/tools/sql-playground">SQL Playground</a> so the engine only downloads once.</li>
-        <li><strong>avsc</strong> — A pure JavaScript implementation of the Apache Avro specification (~264 KB). Handles Avro schema inference, binary serialization (toBuffer), deserialization (fromBuffer), and Avro Object Container File (OCF) decoding.</li>
-        <li><strong>No server</strong> — All processing runs in your browser via WebAssembly and JavaScript. Files are read with the FileReader API and never uploaded anywhere.</li>
+        <li><strong>DuckDB-WASM</strong> â€” A full analytical SQL engine compiled to WebAssembly (~2 MB). Handles native Parquet reading (read_parquet) and writing (COPY TO FORMAT PARQUET). Shared instance with the <a href="/tools/sql-playground">SQL Playground</a> so the engine only downloads once.</li>
+        <li><strong>avsc</strong> â€” A pure JavaScript implementation of the Apache Avro specification (~264 KB). Handles Avro schema inference, binary serialization (toBuffer), deserialization (fromBuffer), and Avro Object Container File (OCF) decoding.</li>
+        <li><strong>No server</strong> â€” All processing runs in your browser via WebAssembly and JavaScript. Files are read with the FileReader API and never uploaded anywhere.</li>
       </ul>
 
       <h2>Format Comparison</h2>
@@ -1345,48 +1343,48 @@ const ESSENTIAL_PAGES = [
       <h3>Choose Parquet when:</h3>
       <ul>
         <li>Data is destined for analytical queries (Snowflake external tables, AWS Athena, Spark, BigQuery)</li>
-        <li>You need columnar pruning — queries that read a subset of columns are dramatically faster</li>
-        <li>Storage cost matters — Parquet typically achieves 5-10x compression vs raw JSON</li>
+        <li>You need columnar pruning â€” queries that read a subset of columns are dramatically faster</li>
+        <li>Storage cost matters â€” Parquet typically achieves 5-10x compression vs raw JSON</li>
         <li>You are building a data lake on S3, GCS, or Azure Blob Storage</li>
       </ul>
 
       <h3>Choose Avro when:</h3>
       <ul>
         <li>Data flows through Apache Kafka or other message brokers with schema registry</li>
-        <li>Schema evolution is critical — Avro supports backward/forward compatible schema changes</li>
+        <li>Schema evolution is critical â€” Avro supports backward/forward compatible schema changes</li>
         <li>Row-level serialization performance matters (streaming writes)</li>
         <li>You need compact binary encoding for change data capture (CDC) pipelines</li>
       </ul>
 
       <h2>Privacy and Security</h2>
-      <p>All conversions run entirely in your browser. DuckDB-WASM and avsc process files locally via WebAssembly and JavaScript — no data is uploaded to any server, no network requests are made during conversion, and no files are stored. You can safely convert proprietary or sensitive data.</p>
+      <p>All conversions run entirely in your browser. DuckDB-WASM and avsc process files locally via WebAssembly and JavaScript â€” no data is uploaded to any server, no network requests are made during conversion, and no files are stored. You can safely convert proprietary or sensitive data.</p>
 
       <h2>Frequently Asked Questions</h2>
       <h3>Is this converter free?</h3>
       <p>Yes, completely free with no signup, no limits, and no tracking. DuckDB-WASM and avsc run 100% in your browser.</p>
 
       <h3>What is the maximum file size?</h3>
-      <p>The converter runs inside your browser's memory budget — typically 1-4 GB depending on your device. For most data engineering workflows (files under 100 MB), performance is fast. Very large files (500 MB+) may be slow or cause out-of-memory errors in the browser tab.</p>
+      <p>The converter runs inside your browser's memory budget â€” typically 1-4 GB depending on your device. For most data engineering workflows (files under 100 MB), performance is fast. Very large files (500 MB+) may be slow or cause out-of-memory errors in the browser tab.</p>
 
       <h3>Does the Parquet output support compression?</h3>
       <p>Yes. DuckDB-WASM writes Parquet files with Snappy compression by default, which provides a good balance of compression ratio and speed. This matches the default used by Spark, Snowflake, and most data lake tools.</p>
 
       <h3>Can I convert Avro files without a schema?</h3>
-      <p>Avro Object Container Files (OCF) embed their schema in the file header — the converter reads it automatically. For raw Avro binary without an embedded schema, you need to provide the schema separately (not currently supported in this tool).</p>
+      <p>Avro Object Container Files (OCF) embed their schema in the file header â€” the converter reads it automatically. For raw Avro binary without an embedded schema, you need to provide the schema separately (not currently supported in this tool).</p>
 
       <h3>How does Parquet-to-Avro conversion work?</h3>
       <p>The converter chains two steps internally: first it reads the Parquet file to JSON using DuckDB-WASM, then encodes the JSON to Avro using avsc. This approach works reliably for typical data sizes and avoids the need for a dedicated Parquet-to-Avro library.</p>
 
       <h3>Can I use this to preview Parquet files?</h3>
-      <p>Yes. Select "Parquet → JSON", drop your .parquet file, and click Convert. The preview table shows the first 50 rows with all columns. You can also copy the full JSON output to clipboard.</p>
+      <p>Yes. Select "Parquet â†’ JSON", drop your .parquet file, and click Convert. The preview table shows the first 50 rows with all columns. You can also copy the full JSON output to clipboard.</p>
 
       <h2>Related Tools</h2>
       <ul>
-        <li><a href="/tools/sql-playground">SQL Playground</a> — query data with SQL directly in your browser using DuckDB-WASM. Shares the same engine as this converter.</li>
-        <li><a href="/tools/json-to-sql-ddl">JSON to SQL DDL</a> — generate CREATE TABLE statements from JSON samples for Snowflake, Postgres, BigQuery, and more.</li>
-        <li><a href="/tools/csv-to-sql">CSV to SQL Converter</a> — convert CSV data to CREATE TABLE + INSERT statements.</li>
-        <li><a href="/cheatsheets/sql-window-functions">Window Functions Reference</a> — SQL window function cheat sheet with runnable examples.</li>
-        <li><a href="/interview-prep">Interview Prep Hub</a> — complete 14-day study plan for data engineer interviews.</li>
+        <li><a href="/tools/sql-playground">SQL Playground</a> â€” query data with SQL directly in your browser using DuckDB-WASM. Shares the same engine as this converter.</li>
+        <li><a href="/tools/json-to-sql-ddl">JSON to SQL DDL</a> â€” generate CREATE TABLE statements from JSON samples for Snowflake, Postgres, BigQuery, and more.</li>
+        <li><a href="/tools/csv-to-sql">CSV to SQL Converter</a> â€” convert CSV data to CREATE TABLE + INSERT statements.</li>
+        <li><a href="/cheatsheets/sql-window-functions">Window Functions Reference</a> â€” SQL window function cheat sheet with runnable examples.</li>
+        <li><a href="/interview-prep">Interview Prep Hub</a> â€” complete 14-day study plan for data engineer interviews.</li>
       </ul>
     `
   },
@@ -1671,11 +1669,11 @@ function loadCache() {
   try {
     if (fs.existsSync(CACHE_FILE)) {
       const cache = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
-      console.log(`📦 Loaded cache with ${Object.keys(cache.pages || {}).length} pages`);
+      console.log(`ðŸ“¦ Loaded cache with ${Object.keys(cache.pages || {}).length} pages`);
       return cache;
     }
   } catch (e) {
-    console.warn('⚠️  Could not load cache:', e.message);
+    console.warn('âš ï¸  Could not load cache:', e.message);
   }
   return { pages: {}, lastBuild: null, stats: {} };
 }
@@ -1684,9 +1682,9 @@ function saveCache(cache) {
   try {
     cache.lastBuild = new Date().toISOString();
     fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2));
-    console.log('💾 Cache saved successfully');
+    console.log('ðŸ’¾ Cache saved successfully');
   } catch (e) {
-    console.error('❌ Failed to save cache:', e.message);
+    console.error('âŒ Failed to save cache:', e.message);
   }
 }
 
@@ -1702,7 +1700,7 @@ function findBundleFiles(distDir) {
   const indexHtmlPath = path.join(distDir, 'index.html');
 
   if (!fs.existsSync(indexHtmlPath)) {
-    console.warn('⚠️  dist/index.html not found');
+    console.warn('âš ï¸  dist/index.html not found');
     return { jsFile: null, cssFile: null };
   }
 
@@ -1716,12 +1714,12 @@ function findBundleFiles(distDir) {
   const jsMatch = indexContent.match(/src="(\/assets\/[^"]+\.js)"/);
   let jsFile = jsMatch ? jsMatch[1] : null;
 
-  // 🔥 CRITICAL: Find the ACTUAL JS file location
+  // ðŸ”¥ CRITICAL: Find the ACTUAL JS file location
   if (jsFile) {
     const directPath = path.join(distDir, jsFile);
 
     if (!fs.existsSync(directPath)) {
-      console.warn(`⚠️  JS file not found at expected path: ${jsFile}`);
+      console.warn(`âš ï¸  JS file not found at expected path: ${jsFile}`);
 
       // Search strategy 1: Look in /assets/js/ subdirectory
       const jsSubdirPath = path.join(distDir, 'assets', 'js');
@@ -1731,7 +1729,7 @@ function findBundleFiles(distDir) {
 
         if (indexJsFile) {
           jsFile = `/assets/js/${indexJsFile}`;
-          console.log(`✅ Found JS in subdirectory: ${jsFile}`);
+          console.log(`âœ… Found JS in subdirectory: ${jsFile}`);
           return { jsFile, cssFile };
         }
       }
@@ -1744,17 +1742,17 @@ function findBundleFiles(distDir) {
 
         if (indexJsFile) {
           jsFile = `/assets/${indexJsFile}`;
-          console.log(`✅ Found JS in assets root: ${jsFile}`);
+          console.log(`âœ… Found JS in assets root: ${jsFile}`);
           return { jsFile, cssFile };
         }
       }
 
-      console.error('❌ Could not locate JS bundle anywhere!');
+      console.error('âŒ Could not locate JS bundle anywhere!');
       jsFile = null;
     }
   } else {
     // No JS match in index.html - try to find it manually
-    console.warn('⚠️  No JS reference found in index.html, searching manually...');
+    console.warn('âš ï¸  No JS reference found in index.html, searching manually...');
 
     // Check /assets/js/ first
     const jsSubdirPath = path.join(distDir, 'assets', 'js');
@@ -1764,7 +1762,7 @@ function findBundleFiles(distDir) {
 
       if (indexJsFile) {
         jsFile = `/assets/js/${indexJsFile}`;
-        console.log(`✅ Manually found JS: ${jsFile}`);
+        console.log(`âœ… Manually found JS: ${jsFile}`);
         return { jsFile, cssFile };
       }
     }
@@ -1777,31 +1775,31 @@ function findBundleFiles(distDir) {
 
       if (indexJsFile) {
         jsFile = `/assets/${indexJsFile}`;
-        console.log(`✅ Manually found JS: ${jsFile}`);
+        console.log(`âœ… Manually found JS: ${jsFile}`);
         return { jsFile, cssFile };
       }
     }
   }
 
-  if (jsFile) console.log(`📦 JS bundle: ${jsFile}`);
-  if (cssFile) console.log(`🎨 CSS bundle: ${cssFile}`);
+  if (jsFile) console.log(`ðŸ“¦ JS bundle: ${jsFile}`);
+  if (cssFile) console.log(`ðŸŽ¨ CSS bundle: ${cssFile}`);
 
   // Final verification
   if (jsFile) {
     const finalPath = path.join(distDir, jsFile);
     if (fs.existsSync(finalPath)) {
-      console.log(`✅ Verified JS exists at: ${jsFile}`);
+      console.log(`âœ… Verified JS exists at: ${jsFile}`);
     } else {
-      console.error(`❌ CRITICAL: JS bundle NOT found at ${jsFile}`);
+      console.error(`âŒ CRITICAL: JS bundle NOT found at ${jsFile}`);
     }
   }
 
   if (cssFile) {
     const finalPath = path.join(distDir, cssFile);
     if (fs.existsSync(finalPath)) {
-      console.log(`✅ Verified CSS exists at: ${cssFile}`);
+      console.log(`âœ… Verified CSS exists at: ${cssFile}`);
     } else {
-      console.error(`❌ CRITICAL: CSS bundle NOT found at ${cssFile}`);
+      console.error(`âŒ CRITICAL: CSS bundle NOT found at ${cssFile}`);
     }
   }
 
@@ -1826,7 +1824,7 @@ function findCriticalChunks(distDir) {
   }
 
   if (chunks.length > 0) {
-    console.log(`📦 Found ${chunks.length} critical chunks for modulepreload`);
+    console.log(`ðŸ“¦ Found ${chunks.length} critical chunks for modulepreload`);
   }
   return chunks;
 }
@@ -1867,13 +1865,13 @@ async function fetchFromWP(endpoint, fields = '') {
         success = true;
       } catch (error) {
         attempt++;
-        console.warn(`⚠️  Fetch failed (Attempt ${attempt}/${RETRY_COUNT}) for ${url}: ${error.message}`);
+        console.warn(`âš ï¸  Fetch failed (Attempt ${attempt}/${RETRY_COUNT}) for ${url}: ${error.message}`);
         if (attempt < RETRY_COUNT) {
           await new Promise(resolve => setTimeout(resolve, 2000 * attempt)); // Linear backoff
         } else {
           // After all retries failed, log error but continue with empty data
-          console.error(`❌ Error fetching ${endpoint}: ${error.message}`);
-          console.log(`ℹ️  Continuing build with empty data for ${endpoint}`);
+          console.error(`âŒ Error fetching ${endpoint}: ${error.message}`);
+          console.log(`â„¹ï¸  Continuing build with empty data for ${endpoint}`);
           return items; // Return whatever we have so far (might be empty)
         }
       }
@@ -1906,7 +1904,7 @@ function stripHTML(html) {
 /**
  * Truncate text at a sentence boundary without exceeding maxLen.
  * Prefers cutting at the last '.', '!', or '?' before maxLen.
- * Falls back to the last space before maxLen with '…' appended.
+ * Falls back to the last space before maxLen with 'â€¦' appended.
  */
 function truncateAtSentence(text, maxLen) {
   if (!text || text.length <= maxLen) return text || '';
@@ -1922,17 +1920,17 @@ function truncateAtSentence(text, maxLen) {
     // Cut right after the punctuation mark
     return region.substring(0, lastSentenceEnd + 1).trim();
   }
-  // No good sentence boundary — cut at last space
+  // No good sentence boundary â€” cut at last space
   const lastSpace = region.lastIndexOf(' ');
   if (lastSpace > maxLen * 0.4) {
-    return region.substring(0, lastSpace).trim() + '…';
+    return region.substring(0, lastSpace).trim() + 'â€¦';
   }
   // Worst case: hard cut
-  return region.trim() + '…';
+  return region.trim() + 'â€¦';
 }
 
 // ============================================================================
-// 🖼️ IMAGE PROCESSING - Make all image URLs absolute & fix CDN issues
+// ðŸ–¼ï¸ IMAGE PROCESSING - Make all image URLs absolute & fix CDN issues
 // ============================================================================
 
 function makeImagesAbsolute(content) {
@@ -2006,7 +2004,7 @@ function makeImagesAbsolute(content) {
     '<img loading="lazy"$1$2'
   );
 
-  // Pattern 9: Alt text fallback — derive from filename when alt is empty or missing
+  // Pattern 9: Alt text fallback â€” derive from filename when alt is empty or missing
   processedContent = processedContent.replace(
     /<img([^>]*?)(\s*\/?>)/gi,
     (match, attrs, close) => {
@@ -2027,7 +2025,7 @@ function makeImagesAbsolute(content) {
         // Replace empty alt=""
         return `<img${attrs.replace(/alt="[^"]*"/i, `alt="${escapeHtml(altText)}`)}${close}`;
       }
-      // No alt attribute at all — add one
+      // No alt attribute at all â€” add one
       return `<img alt="${escapeHtml(altText)}"${attrs}${close}`;
     }
   );
@@ -2036,7 +2034,7 @@ function makeImagesAbsolute(content) {
 }
 
 // ============================================================================
-// SHARED NAV/FOOTER HELPERS — used by all page generators for site-wide navigation
+// SHARED NAV/FOOTER HELPERS â€” used by all page generators for site-wide navigation
 // ============================================================================
 
 function getSiteNavCSS() {
@@ -2148,22 +2146,22 @@ function getSiteFooterHTML() {
 }
 
 // ============================================================================
-// 🔥 FIXED HTML GENERATION - FULL CONTENT FOR CRAWLERS WITH IMAGES
+// ðŸ”¥ FIXED HTML GENERATION - FULL CONTENT FOR CRAWLERS WITH IMAGES
 // ============================================================================
 
 function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const { title: rawTitle, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, featuredImage, categoryNames = [], tagNames = [] } = pageData;
   const { jsFile, cssFile, modulePreloadHtml = '' } = bundleFiles;
 
-  // 🛡️ Sanitize user-supplied strings from WordPress
-  // WordPress REST API returns pre-encoded entities in rendered fields —
+  // ðŸ›¡ï¸ Sanitize user-supplied strings from WordPress
+  // WordPress REST API returns pre-encoded entities in rendered fields â€”
   // decode first, then re-encode to prevent double-encoding.
   const title = escapeHtml(decodeHtmlEntities(rawTitle));
   const description = escapeHtml(decodeHtmlEntities(rawDescription));
   const titleJsonLd = escapeJsonLd(decodeHtmlEntities(rawTitle));
   const descriptionJsonLd = escapeJsonLd(decodeHtmlEntities(rawDescription));
 
-  // 🔥 CRITICAL: Use relative paths from article subdirectory
+  // ðŸ”¥ CRITICAL: Use relative paths from article subdirectory
   const depth = (pagePath.match(/\//g) || []).length - 1;
   const relativePrefix = '../'.repeat(depth);
 
@@ -2183,16 +2181,16 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     effectiveModified = effectivePublished;
   }
 
-  // 🖼️ Process images to make them absolute
+  // ðŸ–¼ï¸ Process images to make them absolute
   const absoluteContent = makeImagesAbsolute(fullContent);
 
-  // 📐 Normalize heading hierarchy (h3→h2 etc. when h2 is missing)
+  // ðŸ“ Normalize heading hierarchy (h3â†’h2 etc. when h2 is missing)
   let processedContent = normalizeHeadings(absoluteContent);
 
-  // 🔗 Inject internal links so crawlers see cross-article links in static HTML
+  // ðŸ”— Inject internal links so crawlers see cross-article links in static HTML
   processedContent = injectInternalLinksSSG(processedContent, slug);
 
-  // 📑 Extract headings for Table of Contents and inject anchor IDs
+  // ðŸ“‘ Extract headings for Table of Contents and inject anchor IDs
   const tocHeadings = [];
   const seenSlugs = new Set();
   processedContent = processedContent.replace(
@@ -2232,22 +2230,22 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     return html;
   })() : '';
 
-  // 🖼️ Determine OG image: use featured image or fallback to default
+  // ðŸ–¼ï¸ Determine OG image: use featured image or fallback to default
   const ogImageUrl = featuredImage || 'https://dataengineerhub.blog/og-image.jpg';
 
-  // 📊 Thin content detection for articles
+  // ðŸ“Š Thin content detection for articles
   const articlePlainText = stripHTML(processedContent || '');
   const articleWordCount = articlePlainText.split(/\s+/).filter(w => w.length > 0).length;
   const articleRobotsDirective = articleWordCount < 400
     ? 'noindex, follow'
     : 'index, follow, max-snippet:-1, max-image-preview:large';
 
-  // 📖 Reading time + formatted publish date for visible byline
+  // ðŸ“– Reading time + formatted publish date for visible byline
   const readingTime = Math.max(1, Math.ceil(articleWordCount / 250));
   const publishDateObj = new Date(effectivePublished);
   const formattedDate = publishDateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
-  // 🎬 Extract YouTube/Vimeo embeds for VideoObject schema
+  // ðŸŽ¬ Extract YouTube/Vimeo embeds for VideoObject schema
   let videoSchemaBlock = '';
   const videoEmbeds = [];
   const seenVideos = new Set();
@@ -2286,17 +2284,17 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   if (videoEmbeds.length > 0) {
     const videoData = videoEmbeds.length === 1 ? videoEmbeds[0] : videoEmbeds;
     videoSchemaBlock = `
-    <!-- 🎬 STRUCTURED DATA - VideoObject Schema -->
+    <!-- ðŸŽ¬ STRUCTURED DATA - VideoObject Schema -->
     <script type="application/ld+json">
     ${JSON.stringify(videoData, null, 2)}
     </script>`;
   }
 
-  // 📋 Extract HowTo steps from article content (regex-based, no DOM parser)
+  // ðŸ“‹ Extract HowTo steps from article content (regex-based, no DOM parser)
   let howToSchemaBlock = '';
   const howToSteps = [];
   // Strategy 1: H2/H3 headings with "Step N:" pattern
-  const stepHeadingRegex = /<h[23][^>]*>\s*(Step\s+\d+\s*[:\-–—]\s*(.+?))\s*<\/h[23]>/gi;
+  const stepHeadingRegex = /<h[23][^>]*>\s*(Step\s+\d+\s*[:\-â€“â€”]\s*(.+?))\s*<\/h[23]>/gi;
   let stepMatch;
   while ((stepMatch = stepHeadingRegex.exec(processedContent)) !== null) {
     const stepName = (stepMatch[2] || stepMatch[1]).replace(/<[^>]+>/g, '').trim();
@@ -2322,7 +2320,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
       }))
     };
     howToSchemaBlock = `
-    <!-- 📋 STRUCTURED DATA - HowTo Schema -->
+    <!-- ðŸ“‹ STRUCTURED DATA - HowTo Schema -->
     <script type="application/ld+json">
     ${JSON.stringify(howToData, null, 2)}
     </script>`;
@@ -2371,7 +2369,7 @@ ${CONSENT_MODE_V2_HTML}
     ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
 
     <style>
-      /* 🎨 STYLED FOR CRAWLER VISIBILITY */
+      /* ðŸŽ¨ STYLED FOR CRAWLER VISIBILITY */
       * { margin: 0; padding: 0; box-sizing: border-box; }
       
       body {
@@ -2382,7 +2380,7 @@ ${CONSENT_MODE_V2_HTML}
         min-height: 100vh;
       }
       
-      /* 🔥 CRITICAL: SEO content is FULLY VISIBLE by default */
+      /* ðŸ”¥ CRITICAL: SEO content is FULLY VISIBLE by default */
       .seo-content {
         max-width: 900px;
         margin: 0 auto;
@@ -2412,7 +2410,7 @@ ${CONSENT_MODE_V2_HTML}
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
       
-      /* 🔥 FULL ARTICLE CONTENT - Visible to crawlers */
+      /* ðŸ”¥ FULL ARTICLE CONTENT - Visible to crawlers */
       .seo-content .article-body {
         color: #e2e8f0;
         font-size: 1.1rem;
@@ -2478,7 +2476,7 @@ ${CONSENT_MODE_V2_HTML}
         color: #cbd5e1;
       }
       
-      /* 🖼️ IMAGE STYLING - Proper display and loading */
+      /* ðŸ–¼ï¸ IMAGE STYLING - Proper display and loading */
       .seo-content .article-body img {
         max-width: 100%;
         height: auto;
@@ -2596,7 +2594,7 @@ ${CONSENT_MODE_V2_HTML}
         opacity: 1;
       }
       
-      /* 🔥 BREADCRUMB STYLES */
+      /* ðŸ”¥ BREADCRUMB STYLES */
       .breadcrumb-nav {
         max-width: 900px;
         margin: 20px auto 0;
@@ -2749,7 +2747,7 @@ ${CONSENT_MODE_V2_HTML}
     </style>
   </head>
   <body>
-    <!-- 🔥 ROOT DIV: React will mount here, but SEO content is visible first -->
+    <!-- ðŸ”¥ ROOT DIV: React will mount here, but SEO content is visible first -->
     <div id="root">
       <nav class="site-nav" aria-label="Site navigation">
         <div class="site-nav-inner">
@@ -2766,7 +2764,7 @@ ${CONSENT_MODE_V2_HTML}
         </div>
       </nav>
 
-      <!-- 🔥 BREADCRUMBS - Visible to crawlers -->
+      <!-- ðŸ”¥ BREADCRUMBS - Visible to crawlers -->
       <nav aria-label="Breadcrumb" class="breadcrumb-nav">
         <ol class="breadcrumb-list">
           <li class="breadcrumb-item">
@@ -2777,26 +2775,26 @@ ${CONSENT_MODE_V2_HTML}
               Home
             </a>
           </li>
-          <li class="breadcrumb-separator">›</li>
+          <li class="breadcrumb-separator">â€º</li>
           <li class="breadcrumb-item">
             <a href="https://dataengineerhub.blog/articles" class="breadcrumb-link">Articles</a>
           </li>
-          <li class="breadcrumb-separator">›</li>
+          <li class="breadcrumb-separator">â€º</li>
           <li class="breadcrumb-item breadcrumb-current" aria-current="page">
             <span>${title}</span>
           </li>
         </ol>
       </nav>
 
-      <!-- 🔥 FULL ARTICLE CONTENT - Visible to Googlebot/AdSense crawlers -->
+      <!-- ðŸ”¥ FULL ARTICLE CONTENT - Visible to Googlebot/AdSense crawlers -->
       <div class="seo-content">
         <article>
           <h1 class="article-title">${title}</h1>
           <div style="display:flex;align-items:center;gap:0.6rem;margin:0.75rem 0 1rem;flex-wrap:wrap;color:#94a3b8;font-size:0.9rem;">
             <a href="/about" style="color:#60a5fa;text-decoration:none;font-weight:500;">Sainath Reddy</a>
-            <span>·</span>
+            <span>Â·</span>
             <time datetime="${effectivePublished}">${formattedDate}</time>
-            <span>·</span>
+            <span>Â·</span>
             <span>${readingTime} min read</span>
           </div>
           <p class="excerpt article-description">${description}</p>
@@ -2807,8 +2805,8 @@ ${CONSENT_MODE_V2_HTML}
           <!-- Contextual CTA: drive readers to the interactive cost calculator -->
           <aside class="calculator-promo" style="background:linear-gradient(90deg,#1e3a8a 0%,#6b21a8 100%);border-radius:12px;padding:1.1rem 1.4rem;margin:0 0 1.75rem 0;box-shadow:0 4px 14px rgba(107,33,168,0.25);">
             <a href="/tools/snowflake-cost-calculator" style="color:#ffffff;text-decoration:none;font-weight:600;font-size:1rem;display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
-              <span style="font-size:1.3rem;" aria-hidden="true">🧮</span>
-              <span>Try our free Snowflake Cost Calculator — estimate your monthly spend in seconds →</span>
+              <span style="font-size:1.3rem;" aria-hidden="true">ðŸ§®</span>
+              <span>Try our free Snowflake Cost Calculator â€” estimate your monthly spend in seconds â†’</span>
             </a>
           </aside>` : ''}
 
@@ -2824,7 +2822,7 @@ ${CONSENT_MODE_V2_HTML}
             </ul>
           </aside>` : ''}
 
-          <!-- 🔥 THIS IS THE KEY: FULL HTML CONTENT WITH IMAGES -->
+          <!-- ðŸ”¥ THIS IS THE KEY: FULL HTML CONTENT WITH IMAGES -->
           <div class="article-body">
             ${sanitizeWordPressHTML(processedContent)}
           </div>
@@ -2847,12 +2845,12 @@ ${CONSENT_MODE_V2_HTML}
           </div>
           ` : ''}
 
-          <a href="${relativePrefix}" class="back-link">← Back to Home</a>
+          <a href="${relativePrefix}" class="back-link">â† Back to Home</a>
         </article>
         
         <noscript>
           <p style="margin-top: 2rem; padding: 1rem; background: rgba(251, 191, 36, 0.2); border-radius: 8px; color: #fbbf24;">
-            ✅ This article is fully accessible without JavaScript.
+            âœ… This article is fully accessible without JavaScript.
             Enable JavaScript for enhanced interactive features.
           </p>
         </noscript>
@@ -2871,7 +2869,7 @@ ${CONSENT_MODE_V2_HTML}
       </footer>
     </div>
 
-    <!-- 🔥 STRUCTURED DATA - Article Schema -->
+    <!-- ðŸ”¥ STRUCTURED DATA - Article Schema -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -2920,7 +2918,7 @@ ${CONSENT_MODE_V2_HTML}
     }
     </script>
 
-    <!-- 🔥 STRUCTURED DATA - BreadcrumbList Schema -->
+    <!-- ðŸ”¥ STRUCTURED DATA - BreadcrumbList Schema -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -2948,7 +2946,7 @@ ${CONSENT_MODE_V2_HTML}
     }
     </script>
 
-    <!-- 🔥 STRUCTURED DATA - Organization Schema -->
+    <!-- ðŸ”¥ STRUCTURED DATA - Organization Schema -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -2968,7 +2966,7 @@ ${CONSENT_MODE_V2_HTML}
     }
     </script>
 
-    <!-- 🔥 STRUCTURED DATA - Person/Author Schema (E-E-A-T) -->
+    <!-- ðŸ”¥ STRUCTURED DATA - Person/Author Schema (E-E-A-T) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -2996,7 +2994,7 @@ ${relativeModulePreload}
     ${productionJsFile ? `<script type="module" crossorigin src="${productionJsFile}"></script>` : ''}
 
     <script>
-      // 🖼️ Image lazy loading handler
+      // ðŸ–¼ï¸ Image lazy loading handler
       document.addEventListener('DOMContentLoaded', function() {
         const images = document.querySelectorAll('.article-body img[loading="lazy"]');
         images.forEach(img => {
@@ -3013,12 +3011,12 @@ ${relativeModulePreload}
       // Gracefully transition from static to React
       window.addEventListener('react-mounted', function() {
         document.body.classList.add('react-loaded');
-        console.log('✅ React app mounted - switching to interactive mode');
+        console.log('âœ… React app mounted - switching to interactive mode');
       }, { once: true });
       // Fallback: If React doesn't load in 5 seconds, keep static content
       setTimeout(function() {
         if (!document.body.classList.contains('react-loaded')) {
-          console.log('⚠️  React not detected - showing static content');
+          console.log('âš ï¸  React not detected - showing static content');
         }
       }, 5000);
     </script>
@@ -3031,7 +3029,7 @@ function generateSimpleHTML(pageData, bundleFiles) {
   const { title: rawTitle, description: rawDescription, path: pagePath } = pageData;
   const { jsFile, cssFile } = bundleFiles;
 
-  // 🛡️ Sanitize user-supplied strings
+  // ðŸ›¡ï¸ Sanitize user-supplied strings
   const title = escapeHtml(rawTitle);
   const description = escapeHtml(rawDescription);
 
@@ -3170,7 +3168,7 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>All Data Engineering Articles | DataEngineer Hub</title>
+    <title>All Data Engineering Articles</title>
     <meta name="description" content="Browse all ${allArticleSummaries.length} data engineering articles on DataEngineer Hub. Tutorials on Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and more." />
     <link rel="canonical" href="https://dataengineerhub.blog/articles" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
@@ -3178,7 +3176,7 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://dataengineerhub.blog/articles" />
-    <meta property="og:title" content="All Data Engineering Articles | DataEngineer Hub" />
+    <meta property="og:title" content="All Data Engineering Articles" />
     <meta property="og:description" content="Browse ${allArticleSummaries.length} in-depth tutorials covering Snowflake, Spark, dbt, Airflow, Python, and modern data engineering." />
     <meta property="og:site_name" content="DataEngineer Hub" />
     <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />
@@ -3330,7 +3328,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   const { jsFile, cssFile } = bundleFiles;
   const pagePath = `/category/${category.slug}`;
 
-  // 🛡️ Sanitize WordPress-sourced category name
+  // ðŸ›¡ï¸ Sanitize WordPress-sourced category name
   const safeName = escapeHtml(category.name);
   const safeNameJsonLd = escapeJsonLd(category.name);
 
@@ -3361,7 +3359,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   let html = '<!doctype html>\n<html lang="en">\n  <head>\n';
   html += '    <meta charset="UTF-8" />\n';
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
-  html += '    <title>' + safeName + ' - Data Engineering Articles | DataEngineer Hub</title>\n';
+  html += '    <title>' + safeName + ' - Data Engineering Articles</title>\n';
   html += '    <meta name="description" content="' + descriptionMeta + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
   // Thin-content mitigation: noindex category pages with fewer than 3 articles (AdSense quality signal)
@@ -3372,7 +3370,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta property="og:title" content="' + safeName + ' Articles | DataEngineer Hub" />\n';
+  html += '    <meta property="og:title" content="' + safeName + ' Articles" />\n';
   html += '    <meta property="og:description" content="Browse ' + categoryArticles.length + ' ' + safeName + ' tutorials and guides for data engineers." />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
@@ -3648,10 +3646,10 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '  <head>\n';
   html += '    <meta charset="UTF-8" />\n';
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
-  html += '    <title>Data Engineering Glossary | ' + totalTerms + ' Key Terms Explained | DataEngineer Hub</title>\n';
+  html += '    <title>Data Engineering Glossary | ' + totalTerms + ' Key Terms Explained</title>\n';
   html += '    <meta name="description" content="Comprehensive data engineering glossary with ' + totalTerms + ' key terms explained. Learn about ETL, data warehousing, streaming, orchestration, cloud platforms, and more." />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog/glossary" />\n';
-  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n';
+  html += '    <meta name="robots" content="noindex, follow" />\n';
   html += '\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
@@ -3932,7 +3930,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   // Convert fullDefinition markdown to HTML
   var fullDefHTML = markdownToHTML(term.fullDefinition || '');
 
-  // Determine if content is thin (< 250 words) — noindex thin pages
+  // Determine if content is thin (< 250 words) â€” noindex thin pages
   // AdSense-approval hardening: force noindex on all glossary term pages (pSEO)
   var defWordCount = (term.fullDefinition || '').split(/\s+/).length;
   var robotsDirective = 'noindex, follow';
@@ -3950,7 +3948,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   var html = '<!doctype html>\n<html lang="en">\n  <head>\n';
   html += '    <meta charset="UTF-8" />\n';
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
-  html += '    <title>What is ' + escapeHtml(term.term) + '? | Data Engineering Glossary | DataEngineer Hub</title>\n';
+  html += '    <title>What is ' + escapeHtml(term.term) + '? | Data Engineering Glossary</title>\n';
   html += '    <meta name="description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
   html += '    <meta name="robots" content="' + robotsDirective + '" />\n\n';
@@ -4245,10 +4243,10 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '  <head>\n';
   html += '    <meta charset="UTF-8" />\n';
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
-  html += '    <title>Data Engineering Tool Comparisons | ' + totalComparisons + ' Head-to-Head Guides | DataEngineer Hub</title>\n';
+  html += '    <title>Data Engineering Tool Comparisons | ' + totalComparisons + ' Head-to-Head Guides</title>\n';
   html += '    <meta name="description" content="Compare ' + totalComparisons + ' popular data engineering tools side by side. Detailed feature comparisons for data warehousing, streaming, orchestration, analytics, and more." />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog/compare" />\n';
-  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n';
+  html += '    <meta name="robots" content="noindex, follow" />\n';
   html += '\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
@@ -4577,7 +4575,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   var html = '<!doctype html>\n<html lang="en">\n  <head>\n';
   html += '    <meta charset="UTF-8" />\n';
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
-  html += '    <title>' + escapeHtml(comparison.toolA) + ' vs ' + escapeHtml(comparison.toolB) + ' | Data Engineering Tools Comparison | DataEngineer Hub</title>\n';
+  html += '    <title>' + escapeHtml(comparison.toolA) + ' vs ' + escapeHtml(comparison.toolB) + ' | Data Engineering Tools Comparison</title>\n';
   html += '    <meta name="description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
   // AdSense-approval hardening: force noindex on comparison detail pages (pSEO)
@@ -4823,10 +4821,10 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   var html = '<!doctype html>\n<html lang="en">\n  <head>\n';
   html += '    <meta charset="UTF-8" />\n';
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
-  html += '    <title>Data Engineering Cheat Sheets | ' + totalSheets + ' Quick References | DataEngineer Hub</title>\n';
+  html += '    <title>Data Engineering Cheat Sheets | ' + totalSheets + ' Quick References</title>\n';
   html += '    <meta name="description" content="' + totalSheets + ' data engineering cheat sheets covering Snowflake SQL, dbt, Airflow, window functions, interview prep, and best practices. Quick reference guides for data engineers." />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog/cheatsheets" />\n';
-  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n\n';
+  html += '    <meta name="robots" content="noindex, follow" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog/cheatsheets" />\n';
@@ -4886,9 +4884,9 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '      <div class="seo-content">\n';
   html += '        <h1>Data Engineering Cheat Sheets</h1>\n';
   html += '        <p>\n';
-  html += '          Quick-reference guides for data engineers — <strong>' + totalSheets + ' cheat sheets</strong> across ' + categoryKeys.length + ' categories.\n';
+  html += '          Quick-reference guides for data engineers â€” <strong>' + totalSheets + ' cheat sheets</strong> across ' + categoryKeys.length + ' categories.\n';
   html += '          From Snowflake SQL syntax to dbt commands, Airflow DAG patterns, window functions, interview questions,\n';
-  html += '          and production best practices — bookmark these for fast lookups during development and interview prep.\n';
+  html += '          and production best practices â€” bookmark these for fast lookups during development and interview prep.\n';
   html += '        </p>\n\n';
   html += '        <h2>Browse by Category</h2>\n';
   html += '        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 1rem;">\n';
@@ -5103,7 +5101,7 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   var html = '<!doctype html>\n<html lang="en">\n  <head>\n';
   html += '    <meta charset="UTF-8" />\n';
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
-  html += '    <title>' + escapeHtml(sheet.title) + ' | DataEngineer Hub</title>\n';
+  html += '    <title>' + escapeHtml(sheet.title) + '</title>\n';
   html += '    <meta name="description" content="' + descMeta + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
   html += '    <meta name="robots" content="' + robotsDirective + '" />\n\n';
@@ -5278,14 +5276,14 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   var html = '<!doctype html>\n<html lang="en">\n  <head>\n';
   html += '    <meta charset="UTF-8" />\n';
   html += '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n';
-  html += '    <title>' + escapeHtml(tag.name) + ' - Tagged Articles | DataEngineer Hub</title>\n';
+  html += '    <title>' + escapeHtml(tag.name) + ' - Tagged Articles</title>\n';
   html += '    <meta name="description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
   html += '    <meta name="robots" content="noindex, follow" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta property="og:title" content="' + escapeHtml(tag.name) + ' Articles | DataEngineer Hub" />\n';
+  html += '    <meta property="og:title" content="' + escapeHtml(tag.name) + ' Articles" />\n';
   html += '    <meta property="og:description" content="Browse ' + tagArticles.length + ' ' + escapeHtml(tag.name) + ' tutorials and guides for data engineers." />\n';
   html += '    <meta property="og:site_name" content="DataEngineer Hub" />\n';
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
@@ -5399,7 +5397,7 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
   const { title: rawTitle, description: rawDescription, path: pagePath, content } = pageData;
   const { jsFile, cssFile } = bundleFiles;
 
-  // 🛡️ Sanitize user-supplied strings
+  // ðŸ›¡ï¸ Sanitize user-supplied strings
   const title = escapeHtml(rawTitle);
   const description = escapeHtml(rawDescription);
   const titleJsonLd = escapeJsonLd(rawTitle);
@@ -5414,6 +5412,15 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
 
   const buildTimestamp = new Date().toISOString();
 
+  // PSEO / AI-assisted sections are held out of the index until further
+  // editorial work + AdSense approval. Match by path prefix so the static
+  // HTML matches the React `<MetaTags noindex={true}>` we set per-page.
+  const PSEO_PREFIXES = ['/tools', '/cheatsheets', '/glossary', '/compare', '/practice', '/interview-prep'];
+  const isPSEO = PSEO_PREFIXES.some((p) => pagePath === p || pagePath.startsWith(p + '/'));
+  const pageRobots = isPSEO
+    ? 'noindex, follow'
+    : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -5422,7 +5429,7 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
     <title>${smartTitle(title)}</title>
     <meta name="description" content="${description}" />
     <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="robots" content="${pageRobots}" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -5663,7 +5670,7 @@ ${CONSENT_MODE_V2_HTML}
               Home
             </a>
           </li>
-          <li class="breadcrumb-separator">›</li>
+          <li class="breadcrumb-separator">â€º</li>
           <li class="breadcrumb-item breadcrumb-current" aria-current="page">
             <span>${title}</span>
           </li>
@@ -5672,7 +5679,7 @@ ${CONSENT_MODE_V2_HTML}
 
       <div class="seo-content">
         ${content}
-        <a href="https://dataengineerhub.blog" class="back-link">← Back to Home</a>
+        <a href="https://dataengineerhub.blog" class="back-link">â† Back to Home</a>
 
         <noscript>
           <p style="margin-top: 2rem; padding: 1rem; background: rgba(251, 191, 36, 0.2); border-radius: 8px; color: #fbbf24;">
@@ -5840,16 +5847,16 @@ ${CONSENT_MODE_V2_HTML}
 async function buildIncremental(options = {}) {
   let { force = false, postsOnly = false } = options;
 
-  console.log('🚀 Starting FULL CONTENT static generation with images…');
-  console.log('   🔥 Articles will include COMPLETE content for SEO/AdSense');
-  console.log('   🖼️  Images will be properly linked with absolute URLs');
-  if (force) console.log('⚡ Force mode: Rebuilding all pages');
+  console.log('ðŸš€ Starting FULL CONTENT static generation with imagesâ€¦');
+  console.log('   ðŸ”¥ Articles will include COMPLETE content for SEO/AdSense');
+  console.log('   ðŸ–¼ï¸  Images will be properly linked with absolute URLs');
+  if (force) console.log('âš¡ Force mode: Rebuilding all pages');
   console.log('');
 
   const distDir = path.join(__dirname, '..', 'dist');
 
   if (!fs.existsSync(distDir)) {
-    console.error('❌ dist/ folder not found. Run "npm run build:vite" first.');
+    console.error('âŒ dist/ folder not found. Run "npm run build:vite" first.');
     process.exit(1);
   }
 
@@ -5860,8 +5867,8 @@ async function buildIncremental(options = {}) {
   const articlesExist = fs.existsSync(articlesDir) && fs.readdirSync(articlesDir).length > 0;
 
   if (!articlesExist && !force) {
-    console.warn('⚠️  articles/ directory not found or empty');
-    console.log('🔨 Enabling force rebuild…');
+    console.warn('âš ï¸  articles/ directory not found or empty');
+    console.log('ðŸ”¨ Enabling force rebuildâ€¦');
     force = true;
   }
 
@@ -5879,37 +5886,37 @@ async function buildIncremental(options = {}) {
   const currentPages = new Set();
 
   // ============================================================================
-  // 🔥 PROCESS POSTS - WITH FULL CONTENT AND IMAGES
+  // ðŸ”¥ PROCESS POSTS - WITH FULL CONTENT AND IMAGES
   // ============================================================================
 
-  console.log('📄 Processing posts with FULL content and images…');
+  console.log('ðŸ“„ Processing posts with FULL content and imagesâ€¦');
   const startTime = Date.now();
 
   // Declared outside try so it's accessible for homepage/articles/category pages
   let allArticleSummaries = [];
 
-  // 🔥 Pre-fetch categories for articleSection mapping
+  // ðŸ”¥ Pre-fetch categories for articleSection mapping
   let catIdToName = {};
   try {
     const cats = await fetchFromWP('/categories', 'id,name');
     cats.forEach(c => { catIdToName[c.id] = c.name; });
     console.log(`   Loaded ${cats.length} category names for articleSection mapping`);
   } catch (err) {
-    console.warn('   ⚠️  Could not fetch categories for articleSection:', err.message);
+    console.warn('   âš ï¸  Could not fetch categories for articleSection:', err.message);
   }
 
-  // 🏷️ Pre-fetch tags for article:tag OG meta
+  // ðŸ·ï¸ Pre-fetch tags for article:tag OG meta
   let tagIdToName = {};
   try {
     const tagsData = await fetchFromWP('/tags', 'id,name');
     tagsData.forEach(t => { tagIdToName[t.id] = t.name; });
     console.log(`   Loaded ${tagsData.length} tag names for article:tag mapping`);
   } catch (err) {
-    console.warn('   ⚠️  Could not fetch tags for article:tag:', err.message);
+    console.warn('   âš ï¸  Could not fetch tags for article:tag:', err.message);
   }
 
   try {
-    // 🔥 CRITICAL: Fetch with _embed to get full content + categories + tags for mapping
+    // ðŸ”¥ CRITICAL: Fetch with _embed to get full content + categories + tags for mapping
     const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content,date,modified,categories,tags,jetpack_featured_media_url');
     console.log(`   Found ${posts.length} posts from API`);
 
@@ -5923,7 +5930,7 @@ async function buildIncremental(options = {}) {
     }));
 
     if (posts.length === 0) {
-      console.warn('⚠️  No posts found from WordPress API!');
+      console.warn('âš ï¸  No posts found from WordPress API!');
     }
 
     for (const post of posts) {
@@ -5955,14 +5962,14 @@ async function buildIncremental(options = {}) {
         }
       }
 
-      // 🔥 KEY FIX: Use FULL content, not just 500 chars!
+      // ðŸ”¥ KEY FIX: Use FULL content, not just 500 chars!
       const fullContent = post.content.rendered; // Complete HTML content
 
       const pageData = {
         title: seoOverride?.title || rawTitle,
         description: seoOverride?.description || optimizedDescription,
         path: pagePath,
-        fullContent: fullContent, // 🔥 FULL content for crawlers
+        fullContent: fullContent, // ðŸ”¥ FULL content for crawlers
         slug: post.slug,
         date: post.date,
         modified: post.modified,
@@ -5977,7 +5984,7 @@ async function buildIncremental(options = {}) {
 
       if (needsRebuild) {
         try {
-          // 🔥 Use the FULL content generator with image processing
+          // ðŸ”¥ Use the FULL content generator with image processing
           // Relevance-rank related articles by shared categories/tags
           const postCats = new Set(post.categories || []);
           const postTags = new Set(post.tags || []);
@@ -6008,16 +6015,16 @@ async function buildIncremental(options = {}) {
           if (cachedPage) {
             stats.updated++;
             if (stats.updated <= 5) {
-              console.log(`   ↻ Updated: ${pagePath} (${fileSizeKB} KB)`);
+              console.log(`   â†» Updated: ${pagePath} (${fileSizeKB} KB)`);
             }
           } else {
             stats.new++;
             if (stats.new <= 5) {
-              console.log(`   ✓ Created: ${pagePath} (${fileSizeKB} KB)`);
+              console.log(`   âœ“ Created: ${pagePath} (${fileSizeKB} KB)`);
             }
           }
         } catch (err) {
-          console.error(`   ❌ Error generating ${pagePath}:`, err.message);
+          console.error(`   âŒ Error generating ${pagePath}:`, err.message);
           stats.errors++;
         }
       } else {
@@ -6033,27 +6040,27 @@ async function buildIncremental(options = {}) {
     }
 
     const postsTime = ((Date.now() - startTime) / 1000).toFixed(2);
-    console.log(`✅ Posts: ${stats.new} new, ${stats.updated} updated, ${stats.unchanged} unchanged (${postsTime}s)`);
+    console.log(`âœ… Posts: ${stats.new} new, ${stats.updated} updated, ${stats.unchanged} unchanged (${postsTime}s)`);
 
     const finalArticleCount = fs.existsSync(articlesDir) ? fs.readdirSync(articlesDir).length : 0;
-    console.log(`   📊 Verified: ${finalArticleCount} article directories in dist/articles/`);
+    console.log(`   ðŸ“Š Verified: ${finalArticleCount} article directories in dist/articles/`);
 
-    // 📝 SEO Override Coverage Report
+    // ðŸ“ SEO Override Coverage Report
     const overrideKeys = Object.keys(seoOverrides);
     const articleSlugs = posts.map(p => p.slug);
     const coveredSlugs = articleSlugs.filter(slug => seoOverrides[slug]);
     const missingSlugs = articleSlugs.filter(slug => !seoOverrides[slug]);
     const coverage = articleSlugs.length > 0 ? ((coveredSlugs.length / articleSlugs.length) * 100).toFixed(1) : 0;
-    console.log(`   🎯 SEO Override Coverage: ${coveredSlugs.length}/${articleSlugs.length} articles (${coverage}%)`);
+    console.log(`   ðŸŽ¯ SEO Override Coverage: ${coveredSlugs.length}/${articleSlugs.length} articles (${coverage}%)`);
     if (missingSlugs.length > 0) {
-      console.log(`   ⚠️  ${missingSlugs.length} articles missing SEO overrides:`);
+      console.log(`   âš ï¸  ${missingSlugs.length} articles missing SEO overrides:`);
       missingSlugs.slice(0, 10).forEach(slug => console.log(`      - ${slug}`));
       if (missingSlugs.length > 10) {
         console.log(`      ... and ${missingSlugs.length - 10} more`);
       }
     }
   } catch (error) {
-    console.error('❌ Error processing posts:', error.message);
+    console.error('âŒ Error processing posts:', error.message);
     stats.errors++;
   }
 
@@ -6061,7 +6068,7 @@ async function buildIncremental(options = {}) {
   // PROCESS ESSENTIAL PAGES - Always runs (critical for AdSense approval)
   // ============================================================================
 
-  console.log('\n📄 Processing essential pages (About, Contact, Privacy, Terms, Disclaimer)…');
+  console.log('\nðŸ“„ Processing essential pages (About, Contact, Privacy, Terms, Disclaimer)â€¦');
 
   for (const page of ESSENTIAL_PAGES) {
     const pagePath = page.path;
@@ -6095,18 +6102,18 @@ async function buildIncremental(options = {}) {
 
         if (cachedPage) {
           stats.updated++;
-          console.log(`   ↻ Updated: ${pagePath} (${fileSizeKB} KB)`);
+          console.log(`   â†» Updated: ${pagePath} (${fileSizeKB} KB)`);
         } else {
           stats.new++;
-          console.log(`   ✓ Created: ${pagePath} (${fileSizeKB} KB)`);
+          console.log(`   âœ“ Created: ${pagePath} (${fileSizeKB} KB)`);
         }
       } catch (err) {
-        console.error(`   ❌ Error generating ${pagePath}:`, err.message);
+        console.error(`   âŒ Error generating ${pagePath}:`, err.message);
         stats.errors++;
       }
     } else {
       stats.unchanged++;
-      console.log(`   ✓ Unchanged: ${pagePath}`);
+      console.log(`   âœ“ Unchanged: ${pagePath}`);
     }
 
     newCache.pages[pagePath] = {
@@ -6116,14 +6123,14 @@ async function buildIncremental(options = {}) {
     };
   }
 
-  console.log(`✅ Essential pages processed: ${ESSENTIAL_PAGES.length} pages`);
+  console.log(`âœ… Essential pages processed: ${ESSENTIAL_PAGES.length} pages`);
 
   // ============================================================================
   // PROCESS CATEGORIES & TAGS (if not postsOnly)
   // ============================================================================
 
   if (!postsOnly) {
-    console.log('\n📂 Processing categories with article listings…');
+    console.log('\nðŸ“‚ Processing categories with article listingsâ€¦');
     try {
       const categories = await fetchFromWP('/categories', 'id,slug,name,description,count');
       console.log(`   Found ${categories.length} categories from API`);
@@ -6132,9 +6139,9 @@ async function buildIncremental(options = {}) {
         // Find articles belonging to this category
         const categoryArticles = allArticleSummaries.filter(a => a.categories.includes(cat.id));
 
-        // Skip empty categories — pages with "0 articles" trigger AdSense "low value content" rejection
+        // Skip empty categories â€” pages with "0 articles" trigger AdSense "low value content" rejection
         if (categoryArticles.length === 0) {
-          console.log(`   ⏭ Skipping empty category: ${cat.name} (0 articles)`);
+          console.log(`   â­ Skipping empty category: ${cat.name} (0 articles)`);
           continue;
         }
 
@@ -6159,7 +6166,7 @@ async function buildIncremental(options = {}) {
 
             const fileStats = fs.statSync(filePath);
             const fileSizeKB = (fileStats.size / 1024).toFixed(2);
-            console.log(`   ${cachedPage ? '↻' : '✓'} ${cat.name}: ${categoryArticles.length} articles (${fileSizeKB} KB)`);
+            console.log(`   ${cachedPage ? 'â†»' : 'âœ“'} ${cat.name}: ${categoryArticles.length} articles (${fileSizeKB} KB)`);
 
             if (cachedPage) {
               stats.updated++;
@@ -6167,7 +6174,7 @@ async function buildIncremental(options = {}) {
               stats.new++;
             }
           } catch (err) {
-            console.error(`   ❌ Error generating ${pagePath}:`, err.message);
+            console.error(`   âŒ Error generating ${pagePath}:`, err.message);
             stats.errors++;
           }
         } else {
@@ -6184,7 +6191,7 @@ async function buildIncremental(options = {}) {
       // ====================================================================
       // GENERATE /articles LISTING PAGE
       // ====================================================================
-      console.log('\n📄 Generating /articles listing page…');
+      console.log('\nðŸ“„ Generating /articles listing pageâ€¦');
       try {
         const articlesPagePath = '/articles';
         currentPages.add(articlesPagePath);
@@ -6206,11 +6213,11 @@ async function buildIncremental(options = {}) {
 
           const fileStats = fs.statSync(articlesFilePath);
           const fileSizeKB = (fileStats.size / 1024).toFixed(2);
-          console.log(`   ✓ Created /articles listing page (${fileSizeKB} KB, ${allArticleSummaries.length} articles)`);
+          console.log(`   âœ“ Created /articles listing page (${fileSizeKB} KB, ${allArticleSummaries.length} articles)`);
           stats.new++;
         } else {
           stats.unchanged++;
-          console.log(`   ✓ Unchanged: /articles listing page`);
+          console.log(`   âœ“ Unchanged: /articles listing page`);
         }
 
         newCache.pages[articlesPagePath] = {
@@ -6219,14 +6226,14 @@ async function buildIncremental(options = {}) {
           type: 'articles-listing'
         };
       } catch (err) {
-        console.error('   ❌ Error generating /articles listing:', err.message);
+        console.error('   âŒ Error generating /articles listing:', err.message);
         stats.errors++;
       }
 
       // ====================================================================
       // ENHANCE HOMEPAGE with article listings
       // ====================================================================
-      console.log('\n🏠 Enhancing homepage with article listings…');
+      console.log('\nðŸ  Enhancing homepage with article listingsâ€¦');
       try {
         const homepagePath = path.join(distDir, 'index.html');
         if (fs.existsSync(homepagePath)) {
@@ -6243,23 +6250,23 @@ async function buildIncremental(options = {}) {
             fs.writeFileSync(homepagePath, homepageHTML);
             const fileStats = fs.statSync(homepagePath);
             const fileSizeKB = (fileStats.size / 1024).toFixed(2);
-            console.log(`   ✓ Homepage enhanced with article listings (${fileSizeKB} KB)`);
+            console.log(`   âœ“ Homepage enhanced with article listings (${fileSizeKB} KB)`);
           } else {
-            console.log(`   ✓ Homepage already enhanced`);
+            console.log(`   âœ“ Homepage already enhanced`);
           }
         } else {
-          console.log(`   ⚠️ dist/index.html not found, skipping homepage enhancement`);
+          console.log(`   âš ï¸ dist/index.html not found, skipping homepage enhancement`);
         }
       } catch (err) {
-        console.error('   ❌ Error enhancing homepage:', err.message);
+        console.error('   âŒ Error enhancing homepage:', err.message);
         stats.errors++;
       }
     } catch (error) {
-      console.error('❌ Error processing categories:', error.message);
+      console.error('âŒ Error processing categories:', error.message);
       stats.errors++;
     }
 
-    console.log('\n🏷️  Processing tags with article listings…');
+    console.log('\nðŸ·ï¸  Processing tags with article listingsâ€¦');
     try {
       const tags = await fetchFromWP('/tags', 'id,slug,name,description');
       console.log(`   Found ${tags.length} tags from API`);
@@ -6268,9 +6275,9 @@ async function buildIncremental(options = {}) {
         // Find articles belonging to this tag
         const tagArticles = allArticleSummaries.filter(a => a.tags.includes(tag.id));
 
-        // Skip empty tags — pages with "0 articles" trigger AdSense "low value content" rejection
+        // Skip empty tags â€” pages with "0 articles" trigger AdSense "low value content" rejection
         if (tagArticles.length === 0) {
-          console.log(`   ⏭ Skipping empty tag: ${tag.name} (0 articles)`);
+          console.log(`   â­ Skipping empty tag: ${tag.name} (0 articles)`);
           continue;
         }
 
@@ -6295,7 +6302,7 @@ async function buildIncremental(options = {}) {
 
             const fileStats = fs.statSync(filePath);
             const fileSizeKB = (fileStats.size / 1024).toFixed(2);
-            console.log(`   ${cachedPage ? '↻' : '✓'} ${tag.name}: ${tagArticles.length} articles (${fileSizeKB} KB)`);
+            console.log(`   ${cachedPage ? 'â†»' : 'âœ“'} ${tag.name}: ${tagArticles.length} articles (${fileSizeKB} KB)`);
 
             if (cachedPage) {
               stats.updated++;
@@ -6303,7 +6310,7 @@ async function buildIncremental(options = {}) {
               stats.new++;
             }
           } catch (err) {
-            console.error(`   ❌ Error generating ${pagePath}:`, err.message);
+            console.error(`   âŒ Error generating ${pagePath}:`, err.message);
             stats.errors++;
           }
         } else {
@@ -6317,7 +6324,7 @@ async function buildIncremental(options = {}) {
         };
       }
     } catch (error) {
-      console.error('❌ Error processing tags:', error.message);
+      console.error('âŒ Error processing tags:', error.message);
       stats.errors++;
     }
 
@@ -6325,7 +6332,7 @@ async function buildIncremental(options = {}) {
     // GLOSSARY PAGES - Pre-rendered from JSON data (pSEO)
     // ============================================================================
 
-    console.log('\n📖 Processing glossary pages from JSON data…');
+    console.log('\nðŸ“– Processing glossary pages from JSON dataâ€¦');
     try {
       const glossaryDir = path.join(__dirname, '..', 'src', 'data', 'pseo', 'glossary');
       const glossaryFiles = fs.readdirSync(glossaryDir).filter(f => f.endsWith('.json'));
@@ -6363,7 +6370,7 @@ async function buildIncremental(options = {}) {
 
             const fileStats = fs.statSync(outputPath);
             const fileSizeKB = (fileStats.size / 1024).toFixed(2);
-            console.log(`   ${cachedPage ? '↻' : '✓'} ${term.term} (${fileSizeKB} KB)`);
+            console.log(`   ${cachedPage ? 'â†»' : 'âœ“'} ${term.term} (${fileSizeKB} KB)`);
 
             if (cachedPage) {
               stats.updated++;
@@ -6371,7 +6378,7 @@ async function buildIncremental(options = {}) {
               stats.new++;
             }
           } catch (err) {
-            console.error(`   ❌ Error generating ${pagePath}:`, err.message);
+            console.error(`   âŒ Error generating ${pagePath}:`, err.message);
             stats.errors++;
           }
         } else {
@@ -6385,7 +6392,7 @@ async function buildIncremental(options = {}) {
         };
       }
 
-      console.log(`   ✅ Glossary pages complete: ${allGlossaryTerms.length} terms processed`);
+      console.log(`   âœ… Glossary pages complete: ${allGlossaryTerms.length} terms processed`);
 
       // Generate glossary hub page (/glossary)
       const glossaryHubPath = '/glossary';
@@ -6404,10 +6411,10 @@ async function buildIncremental(options = {}) {
           }
           fs.writeFileSync(hubOutputPath, hubHtml);
           const hubStats = fs.statSync(hubOutputPath);
-          console.log(`   ✓ Glossary hub page (${(hubStats.size / 1024).toFixed(2)} KB)`);
+          console.log(`   âœ“ Glossary hub page (${(hubStats.size / 1024).toFixed(2)} KB)`);
           if (cachedGlossaryHub) { stats.updated++; } else { stats.new++; }
         } catch (err) {
-          console.error(`   ❌ Error generating glossary hub page:`, err.message);
+          console.error(`   âŒ Error generating glossary hub page:`, err.message);
           stats.errors++;
         }
       } else {
@@ -6420,7 +6427,7 @@ async function buildIncremental(options = {}) {
       };
 
     } catch (error) {
-      console.error('❌ Error processing glossary pages:', error.message);
+      console.error('âŒ Error processing glossary pages:', error.message);
       stats.errors++;
     }
 
@@ -6428,7 +6435,7 @@ async function buildIncremental(options = {}) {
     // COMPARE PAGES - Pre-rendered from JSON data (pSEO)
     // ============================================================================
 
-    console.log('\n⚖️  Processing comparison pages from JSON data…');
+    console.log('\nâš–ï¸  Processing comparison pages from JSON dataâ€¦');
     try {
       const comparisonsDir = path.join(__dirname, '..', 'src', 'data', 'pseo', 'comparisons');
       const comparisonFiles = fs.readdirSync(comparisonsDir).filter(f => f.endsWith('.json'));
@@ -6466,7 +6473,7 @@ async function buildIncremental(options = {}) {
 
             const fileStats = fs.statSync(outputPath);
             const fileSizeKB = (fileStats.size / 1024).toFixed(2);
-            console.log(`   ${cachedPage ? '↻' : '✓'} ${comparison.toolA} vs ${comparison.toolB} (${fileSizeKB} KB)`);
+            console.log(`   ${cachedPage ? 'â†»' : 'âœ“'} ${comparison.toolA} vs ${comparison.toolB} (${fileSizeKB} KB)`);
 
             if (cachedPage) {
               stats.updated++;
@@ -6474,7 +6481,7 @@ async function buildIncremental(options = {}) {
               stats.new++;
             }
           } catch (err) {
-            console.error(`   ❌ Error generating ${pagePath}:`, err.message);
+            console.error(`   âŒ Error generating ${pagePath}:`, err.message);
             stats.errors++;
           }
         } else {
@@ -6488,7 +6495,7 @@ async function buildIncremental(options = {}) {
         };
       }
 
-      console.log(`   ✅ Comparison pages complete: ${allComparisons.length} comparisons processed`);
+      console.log(`   âœ… Comparison pages complete: ${allComparisons.length} comparisons processed`);
 
       // Generate compare hub page (/compare)
       const compareHubPath = '/compare';
@@ -6507,10 +6514,10 @@ async function buildIncremental(options = {}) {
           }
           fs.writeFileSync(hubOutputPath, hubHtml);
           const hubStats = fs.statSync(hubOutputPath);
-          console.log(`   ✓ Compare hub page (${(hubStats.size / 1024).toFixed(2)} KB)`);
+          console.log(`   âœ“ Compare hub page (${(hubStats.size / 1024).toFixed(2)} KB)`);
           if (cachedCompareHub) { stats.updated++; } else { stats.new++; }
         } catch (err) {
-          console.error(`   ❌ Error generating compare hub page:`, err.message);
+          console.error(`   âŒ Error generating compare hub page:`, err.message);
           stats.errors++;
         }
       } else {
@@ -6523,7 +6530,7 @@ async function buildIncremental(options = {}) {
       };
 
     } catch (error) {
-      console.error('❌ Error processing comparison pages:', error.message);
+      console.error('âŒ Error processing comparison pages:', error.message);
       stats.errors++;
     }
 
@@ -6531,7 +6538,7 @@ async function buildIncremental(options = {}) {
     // CHEATSHEET PAGES - Pre-rendered from cheatsheetData.js (pSEO)
     // ============================================================================
 
-    console.log('\n📋 Processing cheatsheet pages from cheatsheetData.js…');
+    console.log('\nðŸ“‹ Processing cheatsheet pages from cheatsheetData.jsâ€¦');
     try {
       // cheatsheetData.js uses ES module exports, so we read & extract via regex
       const cheatsheetDataPath = path.join(__dirname, '..', 'src', 'data', 'cheatsheetData.js');
@@ -6541,7 +6548,7 @@ async function buildIncremental(options = {}) {
       var cheatsheetCategories = [];
       var catMatch = cheatsheetRaw.match(/export\s+const\s+CHEATSHEET_CATEGORIES\s*=\s*(\[[\s\S]*?\]);/);
       if (catMatch) {
-        try { cheatsheetCategories = eval(catMatch[1]); } catch(e) { console.warn('   ⚠️ Could not parse CHEATSHEET_CATEGORIES'); }
+        try { cheatsheetCategories = eval(catMatch[1]); } catch(e) { console.warn('   âš ï¸ Could not parse CHEATSHEET_CATEGORIES'); }
       }
 
       // Extract cheatsheets array
@@ -6554,7 +6561,7 @@ async function buildIncremental(options = {}) {
             var fn = new Function('return ' + csMatch[1]);
             allCheatsheets = fn();
           } catch(e2) {
-            console.error('   ❌ Could not parse cheatsheets array:', e2.message);
+            console.error('   âŒ Could not parse cheatsheets array:', e2.message);
           }
         }
       }
@@ -6584,11 +6591,11 @@ async function buildIncremental(options = {}) {
 
             const fileStats = fs.statSync(outputPath);
             const fileSizeKB = (fileStats.size / 1024).toFixed(2);
-            console.log(`   ${cachedPage ? '↻' : '✓'} ${sheet.title} (${fileSizeKB} KB)`);
+            console.log(`   ${cachedPage ? 'â†»' : 'âœ“'} ${sheet.title} (${fileSizeKB} KB)`);
 
             if (cachedPage) { stats.updated++; } else { stats.new++; }
           } catch (err) {
-            console.error(`   ❌ Error generating ${pagePath}:`, err.message);
+            console.error(`   âŒ Error generating ${pagePath}:`, err.message);
             stats.errors++;
           }
         } else {
@@ -6602,7 +6609,7 @@ async function buildIncremental(options = {}) {
         };
       }
 
-      console.log(`   ✅ Cheatsheet pages complete: ${allCheatsheets.length} sheets processed`);
+      console.log(`   âœ… Cheatsheet pages complete: ${allCheatsheets.length} sheets processed`);
 
       // Generate cheatsheet hub page (/cheatsheets)
       const csHubPath = '/cheatsheets';
@@ -6621,10 +6628,10 @@ async function buildIncremental(options = {}) {
           }
           fs.writeFileSync(hubOutputPath, hubHtml);
           const hubStats = fs.statSync(hubOutputPath);
-          console.log(`   ✓ Cheatsheet hub page (${(hubStats.size / 1024).toFixed(2)} KB)`);
+          console.log(`   âœ“ Cheatsheet hub page (${(hubStats.size / 1024).toFixed(2)} KB)`);
           if (cachedCsHub) { stats.updated++; } else { stats.new++; }
         } catch (err) {
-          console.error(`   ❌ Error generating cheatsheet hub page:`, err.message);
+          console.error(`   âŒ Error generating cheatsheet hub page:`, err.message);
           stats.errors++;
         }
       } else {
@@ -6637,7 +6644,7 @@ async function buildIncremental(options = {}) {
       };
 
     } catch (error) {
-      console.error('❌ Error processing cheatsheet pages:', error.message);
+      console.error('âŒ Error processing cheatsheet pages:', error.message);
       stats.errors++;
     }
   }
@@ -6652,24 +6659,24 @@ async function buildIncremental(options = {}) {
   const totalTime = ((Date.now() - startTime) / 1000).toFixed(2);
 
   console.log('\n' + '='.repeat(60));
-  console.log('✅ FULL CONTENT build complete!');
+  console.log('âœ… FULL CONTENT build complete!');
   console.log('='.repeat(60));
-  console.log(`📊 Summary:`);
-  console.log(`   ✨ New pages:       ${stats.new}`);
-  console.log(`   ↻  Updated pages:   ${stats.updated}`);
-  console.log(`   ✓  Unchanged pages: ${stats.unchanged}`);
+  console.log(`ðŸ“Š Summary:`);
+  console.log(`   âœ¨ New pages:       ${stats.new}`);
+  console.log(`   â†»  Updated pages:   ${stats.updated}`);
+  console.log(`   âœ“  Unchanged pages: ${stats.unchanged}`);
   if (stats.errors > 0) {
-    console.log(`   ❌ Errors:          ${stats.errors}`);
+    console.log(`   âŒ Errors:          ${stats.errors}`);
   }
-  console.log(`   ⏱️  Build time:      ${totalTime}s`);
+  console.log(`   â±ï¸  Build time:      ${totalTime}s`);
   console.log('='.repeat(60));
-  console.log('\n✅ All articles now contain FULL content for crawlers!');
-  console.log('✅ AdSense/Googlebot will see complete articles with images');
-  console.log('🖼️  All image URLs converted to absolute paths');
+  console.log('\nâœ… All articles now contain FULL content for crawlers!');
+  console.log('âœ… AdSense/Googlebot will see complete articles with images');
+  console.log('ðŸ–¼ï¸  All image URLs converted to absolute paths');
   console.log('');
 
   if (stats.errors > 0) {
-    console.log('\n⚠️  Build completed with errors. Please review the logs above.');
+    console.log('\nâš ï¸  Build completed with errors. Please review the logs above.');
     process.exit(1);
   }
 }
@@ -6686,7 +6693,7 @@ const options = {
 
 if (args.includes('--help')) {
   console.log(`
-📚 FULL CONTENT Static Page Generator for AdSense
+ðŸ“š FULL CONTENT Static Page Generator for AdSense
 
 Usage:
   node scripts/generateStaticPagesIncremental.js [options]
@@ -6701,18 +6708,18 @@ Examples:
   npm run build:incremental -- --force       # Force full rebuild
   npm run build:incremental -- --posts-only  # Only rebuild posts
 
-🔥 KEY FEATURES:
-  ✅ FULL article content (not 500 char limit!)
-  ✅ Complete HTML for SEO/AdSense crawlers
-  ✅ Absolute image URLs from WordPress
-  ✅ Relative asset paths for proper loading
-  ✅ Works when accessing /index.html directly
-  ✅ Automatic bundle detection
-  ✅ Enhanced error logging
-  ✅ Safety checks for missing directories
-  ✅ Build timestamp + hash to force FTP uploads
+ðŸ”¥ KEY FEATURES:
+  âœ… FULL article content (not 500 char limit!)
+  âœ… Complete HTML for SEO/AdSense crawlers
+  âœ… Absolute image URLs from WordPress
+  âœ… Relative asset paths for proper loading
+  âœ… Works when accessing /index.html directly
+  âœ… Automatic bundle detection
+  âœ… Enhanced error logging
+  âœ… Safety checks for missing directories
+  âœ… Build timestamp + hash to force FTP uploads
 
-🎯 AdSense Optimization:
+ðŸŽ¯ AdSense Optimization:
   - Every article includes COMPLETE content
   - Crawlers see full HTML (20-50 KB per article)
   - All images properly linked with absolute URLs
@@ -6720,13 +6727,13 @@ Examples:
   - Proper structured data and meta tags
   - Static content visible before JavaScript loads
 
-🖼️ Image Processing:
+ðŸ–¼ï¸ Image Processing:
   - Converts relative WordPress image URLs to absolute
   - Handles /wp-content/uploads/... paths
   - Fixes srcset for responsive images
   - Images load properly from WordPress CDN
 
-🔧 Path Handling:
+ðŸ”§ Path Handling:
   - Uses relative paths (../) for CSS/JS bundles
   - Works when accessing /articles/slug/index.html directly
   - No blue screen errors on direct HTML access
@@ -6743,7 +6750,7 @@ Safety Features:
 }
 
 buildIncremental(options).catch(error => {
-  console.error('\n❌ Build failed:', error);
+  console.error('\nâŒ Build failed:', error);
   console.error(error.stack);
   process.exit(1);
 });

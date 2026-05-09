@@ -1,5 +1,5 @@
-// src/pages/admin/CTRFixerPage.jsx
-// CTR Emergency Tool — surfaces articles with high impressions but terrible CTR.
+﻿// src/pages/admin/CTRFixerPage.jsx
+// CTR Emergency Tool â€” surfaces articles with high impressions but terrible CTR.
 // Uses GSC real data + AI to generate click-optimized title/description variants.
 
 import React, { useEffect, useState } from 'react';
@@ -76,13 +76,13 @@ export function CTRFixerPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                    <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                         <MousePointerClick className="w-8 h-8 text-rose-400" />
                         CTR Fixer
                     </h1>
-                    <p className="text-gray-400">Find articles with high impressions but low clicks — fix titles to unlock traffic you're already earning.</p>
+                    <p className="text-gray-400">Find articles with high impressions but low clicks â€” fix titles to unlock traffic you're already earning.</p>
                 </div>
-                <button onClick={loadData} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-lg flex items-center gap-2">
+                <button onClick={loadData} disabled={loading} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-lg flex items-center gap-2">
                     <RefreshCw className="w-4 h-4" /> Refresh
                 </button>
             </div>
@@ -173,7 +173,7 @@ function CTRArticleRow({ article, expanded, onToggle }) {
                         .filter(r => !r.url?.includes('dataengineerhub.blog'))
                         .slice(0, 5);
                     if (competitors.length > 0) {
-                        competitorContext = `\n\nCOMPETITOR TITLES CURRENTLY RANKING (what's winning in SERP right now):\n${competitors.map((c, i) => `${i + 1}. "${c.title}" — ${c.snippet || ''}`).join('\n')}\n\nUse these as inspiration. Beat them with more compelling, specific titles.`;
+                        competitorContext = `\n\nCOMPETITOR TITLES CURRENTLY RANKING (what's winning in SERP right now):\n${competitors.map((c, i) => `${i + 1}. "${c.title}" â€” ${c.snippet || ''}`).join('\n')}\n\nUse these as inspiration. Beat them with more compelling, specific titles.`;
                     }
                 } catch { /* search enrichment is optional */ }
             }
@@ -238,8 +238,8 @@ Respond in EXACTLY this JSON (no markdown):
                     <div className="flex items-center justify-between pt-2">
                         <div className="text-xs text-gray-500">
                             Expected CTR for position #{Math.round(article.position)}: <span className="text-blue-300">{(getExpectedCTR(article.position) * 100).toFixed(1)}%</span>
-                            {' '}· You're at <span className={ctrColor}>{(article.ctr * 100).toFixed(2)}%</span>
-                            {' '}· Missing <span className="text-emerald-400">{article.clickGap} clicks/month</span>
+                            {' '}Â· You're at <span className={ctrColor}>{(article.ctr * 100).toFixed(2)}%</span>
+                            {' '}Â· Missing <span className="text-emerald-400">{article.clickGap} clicks/month</span>
                         </div>
                         <button
                             onClick={handleAIFix}
@@ -271,7 +271,7 @@ Respond in EXACTLY this JSON (no markdown):
                                     <div className="text-sm text-white font-medium">{v.title}</div>
                                     <div className="text-xs text-gray-400 mt-1">{v.description}</div>
                                     <div className="text-[10px] text-gray-600 mt-1">
-                                        Title: {v.title.length} chars · Desc: {v.description.length} chars
+                                        Title: {v.title.length} chars Â· Desc: {v.description.length} chars
                                     </div>
                                 </div>
                             ))}

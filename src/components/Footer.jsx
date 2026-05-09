@@ -46,6 +46,8 @@ const Footer = () => {
       { name: 'Terms of Service', href: '/terms-of-service' },
       { name: 'Disclaimer', href: '/disclaimer' },
       { name: 'Write for Us', href: '/contribute' },
+      { name: 'Sitemap', href: '/sitemap-index.xml', external: true },
+      { name: 'RSS Feed', href: '/rss.xml', external: true },
       { name: 'Manage Cookies', action: () => { revokeConsent(); window.location.reload(); } }
     ]
   };
@@ -128,6 +130,14 @@ const Footer = () => {
                         {link.name}
                         <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
                       </button>
+                    ) : link.external ? (
+                      <a
+                        href={link.href}
+                        className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group"
+                      >
+                        {link.name}
+                        <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                      </a>
                     ) : (
                       <Link
                         to={link.href}

@@ -12,6 +12,39 @@ const FETCH_URL = 'https://api.fetch.tinyfish.ai';
 const SEARCH_URL = 'https://api.search.tinyfish.ai';
 const SESSION_KEY = 'tinyfish_api_key';
 
+const SEARCH_TIMEOUT_MS = 20000;
+const FETCH_TIMEOUT_MS = 30000;
+const AGENT_TIMEOUT_MS = 60000; // Agent runs can be slow (real browser)
+
+/**
+ * Run a fetch with timeout + single 429 retry honoring Retry-After header.
+ */
+async function timedFetch(url, options, timeoutMs, label) {
+    let lastError;
+    for (let attempt = 0; attempt < 2; attempt++) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+            const response = await fetch(url, { ...options, signal: controller.signal });
+            if (response.status === 429 && attempt === 0) {
+                const retryAfter = parseFloat(response.headers.get('Retry-After')) || 1.5;
+                await new Promise(r => setTimeout(r, Math.min(retryAfter * 1000, 5000)));
+                continue;
+            }
+            return response;
+        } catch (error) {
+            lastError = error;
+            if (error.name === 'AbortError') {
+                throw new Error(`${label} timed out after ${timeoutMs / 1000}s.`);
+            }
+            if (attempt === 1) throw error;
+        } finally {
+            clearTimeout(timer);
+        }
+    }
+    throw lastError || new Error(`${label} failed.`);
+}
+
 class TinyFishService {
     constructor() {
         this._apiKey = (typeof sessionStorage !== 'undefined' && sessionStorage.getItem(SESSION_KEY)) || '';
@@ -49,14 +82,14 @@ class TinyFishService {
         // We omit it and parse JSON from the agent's text response instead.
         const body = { url, goal };
 
-        const response = await fetch(AGENT_URL, {
+        const response = await timedFetch(AGENT_URL, {
             method: 'POST',
             headers: {
                 'X-API-Key': this._apiKey,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(body),
-        });
+        }, AGENT_TIMEOUT_MS, 'TinyFish Agent');
 
         if (!response.ok) {
             const err = await response.text();
@@ -96,7 +129,7 @@ class TinyFishService {
     async fetchContent(urls, { format = 'markdown', links = false, image_links = false } = {}) {
         if (!this.isEnabled) throw new Error('TinyFish API key not configured');
 
-        const response = await fetch(FETCH_URL, {
+        const response = await timedFetch(FETCH_URL, {
             method: 'POST',
             headers: {
                 'X-API-Key': this._apiKey,
@@ -108,7 +141,7 @@ class TinyFishService {
                 links,
                 image_links,
             }),
-        });
+        }, FETCH_TIMEOUT_MS, 'TinyFish Fetch');
 
         if (!response.ok) {
             const err = await response.text();
@@ -142,10 +175,10 @@ class TinyFishService {
         if (!this.isEnabled) throw new Error('TinyFish API key not configured');
 
         const params = new URLSearchParams({ query, location, language, page });
-        const response = await fetch(`${SEARCH_URL}?${params}`, {
+        const response = await timedFetch(`${SEARCH_URL}?${params}`, {
             method: 'GET',
             headers: { 'X-API-Key': this._apiKey },
-        });
+        }, SEARCH_TIMEOUT_MS, 'TinyFish Search');
 
         if (!response.ok) {
             const err = await response.text();

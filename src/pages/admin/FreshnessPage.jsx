@@ -1,4 +1,4 @@
-// src/pages/admin/FreshnessPage.jsx
+﻿// src/pages/admin/FreshnessPage.jsx
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, Loader2, AlertTriangle, CheckCircle, RefreshCw, ExternalLink } from 'lucide-react';
@@ -71,7 +71,7 @@ export function FreshnessPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Content Freshness</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Content Freshness</h1>
                 <p className="text-gray-400">Track which articles need updating. Google rewards fresh content with higher rankings.</p>
             </div>
 

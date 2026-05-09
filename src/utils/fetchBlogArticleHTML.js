@@ -1,4 +1,4 @@
-// src/utils/fetchBlogArticleHTML.js
+﻿// src/utils/fetchBlogArticleHTML.js
 // Fetches blog article content from WordPress API and constructs a complete HTML
 // document for SEO analysis. This bypasses the SPA shell problem where fetch()
 // returns the empty index.html instead of rendered article content.
@@ -39,7 +39,7 @@ export async function fetchBlogArticleHTML(url) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title} | DataEngineer Hub</title>
+  <title>${title}</title>
   <link rel="canonical" href="${canonical}">
   <link rel="sitemap" href="https://dataengineerhub.blog/sitemap.xml">
   <link rel="icon" type="image/png" href="https://dataengineerhub.blog/logo.png">
@@ -76,7 +76,7 @@ export async function fetchBlogArticleHTML(url) {
 <body>
   <article>
     <h1>${title}</h1>
-    <p class="meta">By ${author} · Updated: ${modified.split('T')[0]}</p>
+    <p class="meta">By ${author} Â· Updated: ${modified.split('T')[0]}</p>
     ${content}
   </article>
 </body>

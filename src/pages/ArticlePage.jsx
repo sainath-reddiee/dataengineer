@@ -111,19 +111,71 @@ const processWordPressContent = (content) => {
   return cleanContent;
 };
 
-// Extract key takeaways from H2 headings in article content
+// Extract key takeaways for AEO / featured-snippet eligibility.
+//
+// Strategy (in order):
+//   1. If the article has an explicit `<!-- key-takeaways -->...<!-- /key-takeaways -->`
+//      block, extract its <li> items verbatim.
+//   2. Otherwise look for a heading whose text starts with "Key Takeaways" /
+//      "TL;DR" / "Summary" and pull the <li> items in the immediately following
+//      <ul>/<ol>.
+//   3. Fall back to extracting the first complete sentence under each H2
+//      (NOT the heading text itself — heading text is a section label, not a
+//      standalone factual answer that voice search / featured snippets can use).
 const extractKeyTakeaways = (html) => {
   if (!html) return [];
-  const h2Regex = /<h2[^>]*>(.*?)<\/h2>/gi;
-  const takeaways = [];
-  let match;
-  while ((match = h2Regex.exec(html)) !== null) {
-    const text = match[1].replace(/<[^>]+>/g, '').trim();
-    if (text && text.length > 3 && text.length < 150) {
-      takeaways.push(text);
+
+  const cleanLi = (s) => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+
+  // Strategy 1: explicit comment-marked block
+  const block = html.match(/<!--\s*key-takeaways\s*-->([\s\S]*?)<!--\s*\/?key-takeaways\s*-->/i);
+  if (block) {
+    const items = [];
+    const liRe = /<li[^>]*>([\s\S]*?)<\/li>/gi;
+    let m;
+    while ((m = liRe.exec(block[1])) !== null) {
+      const t = cleanLi(m[1]);
+      if (t.length >= 8 && t.length <= 240) items.push(t);
+    }
+    if (items.length > 0) return items.slice(0, 8);
+  }
+
+  // Strategy 2: heading-flagged TL;DR / Key Takeaways / Summary list
+  const flagRe = /<h[1-3][^>]*>\s*(?:Key\s*Takeaways|TL;?DR|Summary|At\s*a\s*Glance)\s*<\/h[1-3]>([\s\S]*?)<h[1-3]/i;
+  const flagged = html.match(flagRe);
+  if (flagged) {
+    const list = flagged[1].match(/<(ul|ol)[\s\S]*?<\/\1>/i);
+    if (list) {
+      const items = [];
+      const liRe = /<li[^>]*>([\s\S]*?)<\/li>/gi;
+      let m;
+      while ((m = liRe.exec(list[0])) !== null) {
+        const t = cleanLi(m[1]);
+        if (t.length >= 8 && t.length <= 240) items.push(t);
+      }
+      if (items.length > 0) return items.slice(0, 8);
     }
   }
-  return takeaways.slice(0, 8);
+
+  // Strategy 3: first complete sentence under each H2.
+  const takeaways = [];
+  const h2Re = /<h2[^>]*>[\s\S]*?<\/h2>([\s\S]*?)(?=<h2[^>]*>|$)/gi;
+  let m;
+  while ((m = h2Re.exec(html)) !== null) {
+    const sectionHtml = m[1] || '';
+    const firstP = sectionHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+    if (!firstP) continue;
+    const text = cleanLi(firstP[1]);
+    if (!text) continue;
+    // Take the first sentence (or the whole paragraph if short).
+    const sentenceMatch = text.match(/^[^.!?]{20,240}[.!?]/);
+    const sentence = (sentenceMatch ? sentenceMatch[0] : text).trim();
+    if (sentence.length >= 30 && sentence.length <= 240) {
+      takeaways.push(sentence);
+    }
+    if (takeaways.length >= 6) break;
+  }
+  return takeaways;
 };
 
 const ErrorDisplay = ({ error, onRetry, slug }) => {
@@ -577,7 +629,16 @@ const ArticlePage = () => {
     image: post.image || 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop'
   };
 
-  const isThinArticle = (parseInt(safePost.readTime) || 1) <= 2;
+  // Thin-article gate: noindex articles that look thin to AdSense.
+  // Combine the readTime heuristic with an explicit word-count check so we
+  // catch low-content posts even when readTime is inflated by long titles.
+  const articleWordCount = (() => {
+    const raw = (safePost.content || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    return raw ? raw.split(' ').length : 0;
+  })();
+  const isThinArticle =
+    (parseInt(safePost.readTime) || 1) <= 2 ||
+    articleWordCount < 300;
 
   // Dynamic author display helper
   const isOwner = ['sainath reddy', 'sainath'].includes(safePost.author.toLowerCase().trim());
@@ -624,7 +685,7 @@ const ArticlePage = () => {
 
     // Auto-extract VideoObject schema from YouTube/Vimeo embeds
     const videoSchema = getVideoSchema(
-      extractVideosFromContent(safePost.content, safePost.title, safePost.excerpt, safePost.image)
+      extractVideosFromContent(safePost.content, safePost.title, safePost.excerpt, safePost.image, safePost.date)
     );
 
     // Extract key takeaways from H2 headings for AEO visibility

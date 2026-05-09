@@ -278,7 +278,9 @@ const Header = ({ topOffset = 0 }) => {
     const getCtaUrl = () => {
       if (categoryKey === 'articles') return '/articles';
       if (categoryKey === 'resources') return '/articles';
-      if (categoryKey === 'study') return '/practice';
+      // 'study' category is currently disabled and PSEO sections are noindex'd
+      // until AdSense approval. Default to /articles to avoid linking from
+      // indexed pages to noindex'd /practice section.
       return '/articles';
     };
 

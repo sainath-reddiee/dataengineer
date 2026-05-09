@@ -244,6 +244,7 @@ const PracticeHubPage = () => {
         url="/practice"
         breadcrumbs={crumbs}
         faqSchema={faqSchema}
+        noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(hubSchema)}</script>

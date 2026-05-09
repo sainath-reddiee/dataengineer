@@ -8,7 +8,7 @@ const NewsletterPage = () => {
   return (
     <>
       <MetaTags
-        title="Weekly Data Digest - Subscribe to DataEngineer Hub"
+        title="Weekly Data Digest - Subscribe"
         description="Subscribe to the DataEngineer Hub weekly digest. Get tutorials, tool deep-dives, and data engineering insights on Snowflake, dbt, Airflow, and the modern data stack delivered to your inbox."
         keywords="data engineering newsletter, weekly digest, Snowflake tutorials, dbt guides, data engineering updates"
       />

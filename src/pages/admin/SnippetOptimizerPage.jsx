@@ -1,4 +1,4 @@
-// src/pages/admin/SnippetOptimizerPage.jsx
+﻿// src/pages/admin/SnippetOptimizerPage.jsx
 // Analyzes articles for featured snippet / PAA readiness and helps reformat content.
 
 import React, { useEffect, useState } from 'react';
@@ -86,13 +86,13 @@ export function SnippetOptimizerPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                    <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                         <Award className="w-8 h-8 text-indigo-400" />
                         Featured Snippet Optimizer
                     </h1>
-                    <p className="text-gray-400">Score each article's readiness for featured snippets & People Also Ask — AI reformats content for the win.</p>
+                    <p className="text-gray-400">Score each article's readiness for featured snippets & People Also Ask â€” AI reformats content for the win.</p>
                 </div>
-                <button onClick={loadData} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-lg flex items-center gap-2">
+                <button onClick={loadData} disabled={loading} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-lg flex items-center gap-2">
                     <RefreshCw className="w-4 h-4" /> Refresh
                 </button>
             </div>
@@ -152,7 +152,7 @@ Only generate content for the MISSING elements. Make it directly paste-ready for
 
             const response = await aiService.generateSuggestion(prompt, '');
             setAiResult(response);
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error(e); setAiResult(`Error: ${e.message || 'Failed to generate snippet content'}`); }
         setAiLoading(false);
     };
 

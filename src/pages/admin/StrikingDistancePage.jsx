@@ -1,5 +1,5 @@
-// src/pages/admin/StrikingDistancePage.jsx
-// Finds keywords where you rank #8-20 with high impressions — low-hanging fruit for page 1.
+﻿// src/pages/admin/StrikingDistancePage.jsx
+// Finds keywords where you rank #8-20 with high impressions â€” low-hanging fruit for page 1.
 
 import React, { useEffect, useState } from 'react';
 import { Target, Loader2, AlertTriangle, RefreshCw, Sparkles } from 'lucide-react';
@@ -50,13 +50,13 @@ export function StrikingDistancePage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                    <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                         <Target className="w-8 h-8 text-amber-400" />
                         Striking Distance Keywords
                     </h1>
-                    <p className="text-gray-400">Keywords ranking #8-20 with high impressions — a content refresh or optimization could push these to page 1.</p>
+                    <p className="text-gray-400">Keywords ranking #8-20 with high impressions â€” a content refresh or optimization could push these to page 1.</p>
                 </div>
-                <button onClick={loadData} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-lg flex items-center gap-2">
+                <button onClick={loadData} disabled={loading} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-lg flex items-center gap-2">
                     <RefreshCw className="w-4 h-4" /> Refresh
                 </button>
             </div>
@@ -127,11 +127,11 @@ Current position: #${kw.position.toFixed(1)}
 Impressions: ${kw.impressions}/month
 Current clicks: ${kw.clicks}
 
-This keyword is in "striking distance" (position 8-20). Give me 3-4 specific actions to push it to page 1 (position 1-5). Be concrete — what content to add, what to optimize, what format Google prefers for this query. Keep each point to 1-2 sentences.`;
+This keyword is in "striking distance" (position 8-20). Give me 3-4 specific actions to push it to page 1 (position 1-5). Be concrete â€” what content to add, what to optimize, what format Google prefers for this query. Keep each point to 1-2 sentences.`;
 
             const response = await aiService.generateSuggestion(prompt, '');
             setAiTips(response);
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error(e); setAiTips(`Error: ${e.message || 'Failed to generate AI tips'}`); }
         setAiLoading(false);
     };
 
@@ -149,7 +149,7 @@ This keyword is in "striking distance" (position 8-20). Give me 3-4 specific act
                 <div className="px-6 pb-3 bg-slate-900/40 space-y-2">
                     <div className="flex items-center justify-between pt-2">
                         <div className="text-xs text-gray-500">
-                            Move to top 3 → estimated <span className="text-emerald-300">+{kw.uplift} clicks/month</span>
+                            Move to top 3 â†’ estimated <span className="text-emerald-300">+{kw.uplift} clicks/month</span>
                         </div>
                         <button onClick={handleAI} disabled={aiLoading} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 disabled:opacity-50 text-white rounded-lg">
                             {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}

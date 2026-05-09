@@ -1,4 +1,4 @@
-// src/pages/DbtCloudCostPage.jsx
+﻿// src/pages/DbtCloudCostPage.jsx
 // dbt Cloud seat + run based cost calculator. Targets "dbt cloud cost",
 // "dbt cloud pricing calculator", "dbt cloud vs dbt core cost".
 import React, { useMemo, useState, useEffect, useCallback, Suspense } from 'react';
@@ -18,7 +18,7 @@ const PLANS = [
     label: 'Developer (Free)',
     pricePerSeat: 0,
     includedBuilds: 3000,
-    overageRate: 0, // No paid overage on free tier — you get cut off.
+    overageRate: 0, // No paid overage on free tier â€” you get cut off.
     seatsCap: 1,
     features: 'Single developer, 3,000 successful model builds/month, basic IDE',
   },
@@ -47,40 +47,40 @@ const formatUSD = (n) =>
 
 const LAST_UPDATED = 'April 2026';
 
-const INTRO = `**dbt Cloud's pricing is a per-seat trap for small teams and a volume discount for large ones.** The line everyone writes on the PO — "$100/seat/month" — hides the two variables that actually decide whether dbt Cloud is a steal or a mistake: **successful model builds per month** and **how many of your engineers actually need an IDE seat**.
+const INTRO = `**dbt Cloud's pricing is a per-seat trap for small teams and a volume discount for large ones.** The line everyone writes on the PO â€” "$100/seat/month" â€” hides the two variables that actually decide whether dbt Cloud is a steal or a mistake: **successful model builds per month** and **how many of your engineers actually need an IDE seat**.
 
 This calculator computes both axes (seats + metered builds + overage) across Developer / Team / Enterprise and lets you compare the all-in number against a dbt Core + Airflow/Dagster self-managed stack.
 
 ### The pricing model in one paragraph
 
-dbt Cloud bills on **two meters**: a fixed **per-developer seat charge** ($0 on Developer, ~$100 on Team, ~$125+ on Enterprise) plus **metered successful model builds** above each plan's included quota (~$0.01/build on Team, ~$0.008/build on Enterprise). "Successful model build" means any \`model\`, \`seed\`, \`snapshot\`, or \`test\` that exits cleanly — a project with 100 models run hourly is already 72k builds/month, blowing past Team's 15k included quota.
+dbt Cloud bills on **two meters**: a fixed **per-developer seat charge** ($0 on Developer, ~$100 on Team, ~$125+ on Enterprise) plus **metered successful model builds** above each plan's included quota (~$0.01/build on Team, ~$0.008/build on Enterprise). "Successful model build" means any \`model\`, \`seed\`, \`snapshot\`, or \`test\` that exits cleanly â€” a project with 100 models run hourly is already 72k builds/month, blowing past Team's 15k included quota.
 
 ### Where teams over-pay on dbt Cloud
 
 1. **Buying seats for non-developers.** Analysts who only read dashboards don't need a dbt Cloud seat. Only engineers writing and merging models need IDE access.
 2. **Hourly CI runs on every PR.** A heavy CI workflow that rebuilds the whole DAG on every pull-request push can burn tens of thousands of builds per week. Use \`state:modified+\` to only rebuild changed models.
-3. **Ignoring the 8-seat Team cap.** Team tier is hard-capped at 8 seats. Team 9 means you're on Enterprise whether you wanted to be or not — plan the jump before you hire.
+3. **Ignoring the 8-seat Team cap.** Team tier is hard-capped at 8 seats. Team 9 means you're on Enterprise whether you wanted to be or not â€” plan the jump before you hire.
 4. **Forgetting warehouse compute.** dbt Cloud charges for orchestration; the SQL itself still runs on **your** Snowflake/BigQuery/Databricks warehouse and is billed separately.
 
-### dbt Cloud vs dbt Core + Airflow — when to switch
+### dbt Cloud vs dbt Core + Airflow â€” when to switch
 
-For teams with 5+ engineers who already run an orchestrator (Airflow, Dagster, Prefect), **dbt Core + self-hosted scheduling is often 50-80% cheaper** than equivalent dbt Cloud Team seats. The trade-off is real: no hosted IDE, no Semantic Layer UI, no native CI/CD — you build those yourself. This calculator's comparison column gives you the number to take into that build-vs-buy conversation.`;
+For teams with 5+ engineers who already run an orchestrator (Airflow, Dagster, Prefect), **dbt Core + self-hosted scheduling is often 50-80% cheaper** than equivalent dbt Cloud Team seats. The trade-off is real: no hosted IDE, no Semantic Layer UI, no native CI/CD â€” you build those yourself. This calculator's comparison column gives you the number to take into that build-vs-buy conversation.`;
 
 const WHEN_TO_USE = {
   use: [
     'Planning a dbt Cloud rollout and need a defensible monthly number for finance approval',
-    'Deciding between Team and Enterprise tiers — especially around the 8-seat hard cap',
+    'Deciding between Team and Enterprise tiers â€” especially around the 8-seat hard cap',
     'Modeling the cost impact of a CI/CD workflow change (more PRs, state:modified+, full-refresh frequency)',
     'Benchmarking dbt Cloud against a dbt Core + Airflow/Dagster self-hosted build',
     'Forecasting overage charges when your model count or run frequency is scaling fast',
-    'Negotiating renewal — showing your vendor that you\'ve modeled the next tier threshold',
+    'Negotiating renewal â€” showing your vendor that you\'ve modeled the next tier threshold',
   ],
   avoid: [
-    'Privately negotiated enterprise pricing, startup credits, or partner discounts — list prices only',
-    'Semantic Layer query volume pricing and Explorer-specific add-ons — those have separate meters',
-    'Warehouse compute costs (Snowflake credits, BigQuery TB, Databricks DBUs) — those are billed separately by your warehouse vendor',
+    'Privately negotiated enterprise pricing, startup credits, or partner discounts â€” list prices only',
+    'Semantic Layer query volume pricing and Explorer-specific add-ons â€” those have separate meters',
+    'Warehouse compute costs (Snowflake credits, BigQuery TB, Databricks DBUs) â€” those are billed separately by your warehouse vendor',
     'IDE-run-minutes vs job-run-minutes edge cases for workspaces that heavily use the dbt Cloud IDE terminal',
-    'Finance-grade invoicing — list-price planning estimator, not an accrual-accurate billing tool',
+    'Finance-grade invoicing â€” list-price planning estimator, not an accrual-accurate billing tool',
   ],
 };
 
@@ -91,23 +91,23 @@ const FAQ = [
   },
   {
     q: 'What counts as a successful model build?',
-    a: 'Each model, seed, snapshot, or test that completes successfully counts as one build. Failed runs still consume IDE-run minutes but not job-run minutes. A typical medium-sized dbt project (100 models) run hourly could rack up 70k+ builds/month — well above Team tier\'s included volume.',
+    a: 'Each model, seed, snapshot, or test that completes successfully counts as one build. Failed runs still consume IDE-run minutes but not job-run minutes. A typical medium-sized dbt project (100 models) run hourly could rack up 70k+ builds/month â€” well above Team tier\'s included volume.',
   },
   {
     q: 'When does dbt Cloud Team become more expensive than Enterprise?',
-    a: 'Crossover point is usually around 8–10 developers (Team is hard-capped at 8 seats). If you need 9+ engineers or features like SSO, audit logs, and multi-tenancy, Enterprise is the only option. Pricing negotiable.',
+    a: 'Crossover point is usually around 8â€“10 developers (Team is hard-capped at 8 seats). If you need 9+ engineers or features like SSO, audit logs, and multi-tenancy, Enterprise is the only option. Pricing negotiable.',
   },
   {
     q: 'Can I use dbt Core for free instead?',
-    a: 'Yes. dbt Core is open-source and free. You run it via CLI, Airflow, Dagster, or Prefect. You pay only for your orchestration + compute. For teams of 5+ engineers who already have an orchestrator, dbt Core + existing infra is often 50–80% cheaper than dbt Cloud Team. The trade-off: no hosted IDE, no semantic layer UI, no native CI/CD — you build those yourself.',
+    a: 'Yes. dbt Core is open-source and free. You run it via CLI, Airflow, Dagster, or Prefect. You pay only for your orchestration + compute. For teams of 5+ engineers who already have an orchestrator, dbt Core + existing infra is often 50â€“80% cheaper than dbt Cloud Team. The trade-off: no hosted IDE, no semantic layer UI, no native CI/CD â€” you build those yourself.',
   },
   {
     q: 'What if I only need the IDE but no scheduled jobs?',
-    a: 'dbt Cloud\'s Team tier is bundled — you cannot buy "IDE only". A common workaround: free Developer tier for individual exploration, dbt Core for production via Airflow/Dagster. Some teams use the Developer tier for architects and dbt Core for everyone else.',
+    a: 'dbt Cloud\'s Team tier is bundled â€” you cannot buy "IDE only". A common workaround: free Developer tier for individual exploration, dbt Core for production via Airflow/Dagster. Some teams use the Developer tier for architects and dbt Core for everyone else.',
   },
   {
     q: 'How is dbt Cloud usage metered under the hood?',
-    a: 'Two axes: (1) Seats — monthly per-user charge. (2) Model-build minutes — time spent by the job runner. IDE time is free on paid plans. Overages are billed per successful model over your plan\'s included quota (Team ~$0.01/build, Enterprise ~$0.008/build).',
+    a: 'Two axes: (1) Seats â€” monthly per-user charge. (2) Model-build minutes â€” time spent by the job runner. IDE time is free on paid plans. Overages are billed per successful model over your plan\'s included quota (Team ~$0.01/build, Enterprise ~$0.008/build).',
   },
 ];
 
@@ -186,7 +186,7 @@ export default function DbtCloudCostPage() {
   return (
     <>
       <MetaTags
-        title="dbt Cloud Cost Calculator 2026 — Seat + Build Pricing"
+        title="dbt Cloud Cost Calculator 2026 â€” Seat + Build Pricing"
         description="Free dbt Cloud cost calculator. Model Developer, Team, and Enterprise plans. Factor seats, model-builds, and overages. Compare dbt Cloud vs dbt Core TCO."
         keywords="dbt cloud cost, dbt cloud pricing, dbt cloud calculator, dbt cloud vs dbt core, dbt cloud team pricing, dbt cloud enterprise pricing"
         url="/tools/dbt-cloud-cost-calculator"
@@ -197,6 +197,7 @@ export default function DbtCloudCostPage() {
           { name: 'dbt Cloud Cost Calculator', url: '/tools/dbt-cloud-cost-calculator' },
         ]}
         faqSchema={faqSchema}
+      noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
@@ -205,7 +206,7 @@ export default function DbtCloudCostPage() {
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-emerald-300 bg-emerald-900/30 border border-emerald-700/50 rounded-full">
-            Updated {LAST_UPDATED} · dbt Labs list pricing
+            Updated {LAST_UPDATED} Â· dbt Labs list pricing
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Users className="w-8 h-8 text-emerald-400" aria-hidden="true" />
@@ -255,17 +256,17 @@ export default function DbtCloudCostPage() {
               </h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 {WHEN_TO_USE.use.map((item, i) => (
-                  <li key={i} className="flex gap-2"><span className="text-emerald-400 flex-shrink-0">•</span><span>{item}</span></li>
+                  <li key={i} className="flex gap-2"><span className="text-emerald-400 flex-shrink-0">â€¢</span><span>{item}</span></li>
                 ))}
               </ul>
             </div>
             <div className="bg-rose-950/30 border border-rose-800/50 rounded-xl p-5">
               <h3 className="text-rose-300 font-semibold mb-3 flex items-center gap-2">
-                <span aria-hidden="true">⚠</span> Don't rely on it when
+                <span aria-hidden="true">âš </span> Don't rely on it when
               </h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 {WHEN_TO_USE.avoid.map((item, i) => (
-                  <li key={i} className="flex gap-2"><span className="text-rose-400 flex-shrink-0">•</span><span>{item}</span></li>
+                  <li key={i} className="flex gap-2"><span className="text-rose-400 flex-shrink-0">â€¢</span><span>{item}</span></li>
                 ))}
               </ul>
             </div>
@@ -285,7 +286,7 @@ export default function DbtCloudCostPage() {
               >
                 {PLANS.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.label} — ${p.pricePerSeat}/seat/mo
+                    {p.label} â€” ${p.pricePerSeat}/seat/mo
                   </option>
                 ))}
               </select>
@@ -387,7 +388,7 @@ export default function DbtCloudCostPage() {
           <ul className="space-y-3 text-sm text-gray-300">
             <li className="flex gap-3">
               <span className="text-emerald-400 font-semibold shrink-0">Choose dbt Cloud if</span>
-              <span>you have no Airflow/Dagster, want to ship fast, have 1–8 engineers, need semantic layer UI, or need native CI/CD and SSO without building them.</span>
+              <span>you have no Airflow/Dagster, want to ship fast, have 1â€“8 engineers, need semantic layer UI, or need native CI/CD and SSO without building them.</span>
             </li>
             <li className="flex gap-3">
               <span className="text-red-400 font-semibold shrink-0">Choose dbt Core if</span>
@@ -406,15 +407,15 @@ export default function DbtCloudCostPage() {
             Model-builds are the trickiest input. A rough formula:
           </p>
           <div className="bg-slate-900 border border-slate-700 rounded-lg p-4 font-mono text-sm text-emerald-300 mb-3">
-            builds_per_month ≈ models × runs_per_day × 30 × 1.15
+            builds_per_month â‰ˆ models Ã— runs_per_day Ã— 30 Ã— 1.15
           </div>
           <ul className="list-disc pl-5 text-gray-300 space-y-1 text-sm">
             <li><strong className="text-white">models</strong>: count from <code>dbt ls --resource-type model | wc -l</code> in your repo.</li>
             <li><strong className="text-white">runs_per_day</strong>: hourly = 24, every 4h = 6, daily = 1. Include tests and snapshots.</li>
-            <li><strong className="text-white">× 1.15</strong>: accounts for tests (each test = 1 build), CI runs, and re-runs on failure.</li>
+            <li><strong className="text-white">Ã— 1.15</strong>: accounts for tests (each test = 1 build), CI runs, and re-runs on failure.</li>
           </ul>
           <p className="text-xs text-gray-500 mt-3">
-            Example: a 120-model project run hourly → 120 × 24 × 30 × 1.15 ≈ 99,360 builds/month — way over Team&apos;s 15,000 quota.
+            Example: a 120-model project run hourly â†’ 120 Ã— 24 Ã— 30 Ã— 1.15 â‰ˆ 99,360 builds/month â€” way over Team&apos;s 15,000 quota.
           </p>
         </div>
 
@@ -424,15 +425,15 @@ export default function DbtCloudCostPage() {
             <p>
               dbt Cloud's bill has two components layered on top of the free Developer tier:
               <strong> seats</strong> and <strong>successful model builds</strong>. A "build" is any
-              successful run of a model or test — reruns after a failure don't count, but each test
+              successful run of a model or test â€” reruns after a failure don't count, but each test
               does.
             </p>
             <p className="font-mono text-xs bg-slate-900/70 border border-slate-700 rounded-lg p-3 text-emerald-300">
-              monthly = (developer_seats × $100) + (read_only_seats × $0) + overage_builds × $0.01
+              monthly = (developer_seats Ã— $100) + (read_only_seats Ã— $0) + overage_builds Ã— $0.01
             </p>
             <p>
               Team ($100/developer/mo) includes <strong>15,000 builds/month</strong>; Enterprise is
-              custom-negotiated but generally lands between $4k–$15k/mo for typical mid-market teams
+              custom-negotiated but generally lands between $4kâ€“$15k/mo for typical mid-market teams
               depending on seat count and SSO/audit requirements.
             </p>
             <p>
@@ -451,18 +452,18 @@ export default function DbtCloudCostPage() {
               check on every PR (~50 PRs/month):
             </p>
             <ul className="list-disc pl-6 space-y-1">
-              <li>Daily builds: 220 × 12 × 30 ≈ 79,200</li>
+              <li>Daily builds: 220 Ã— 12 Ã— 30 â‰ˆ 79,200</li>
               <li>+ tests (~1 per model): ~79,200 more</li>
-              <li>+ CI runs: 50 × 220 × 2 ≈ 22,000</li>
+              <li>+ CI runs: 50 Ã— 220 Ã— 2 â‰ˆ 22,000</li>
               <li><strong>Monthly total: ~180,000 builds</strong></li>
-              <li>Team plan covers 15,000 + 8 seats × $100 = $800 base</li>
-              <li>Overage: 165,000 × $0.01 = <span className="font-mono text-yellow-400">$1,650</span></li>
-              <li><strong>Team all-in: ~$2,450/month</strong> — Enterprise custom contract often cheaper at this volume</li>
+              <li>Team plan covers 15,000 + 8 seats Ã— $100 = $800 base</li>
+              <li>Overage: 165,000 Ã— $0.01 = <span className="font-mono text-yellow-400">$1,650</span></li>
+              <li><strong>Team all-in: ~$2,450/month</strong> â€” Enterprise custom contract often cheaper at this volume</li>
             </ul>
             <p>
               At this volume, consider: (1) enabling <strong>state:modified+</strong> in CI to only
               build changed models (cuts CI builds 80%+), (2) moving hourly-ish jobs to every 4 hours
-              on non-critical marts, (3) requesting an Enterprise quote — the flat-fee tier often
+              on non-critical marts, (3) requesting an Enterprise quote â€” the flat-fee tier often
               wins past ~100k builds/month.
             </p>
           </div>
@@ -472,19 +473,19 @@ export default function DbtCloudCostPage() {
           <h2 className="text-2xl font-semibold text-white mb-4">Related tools & guides</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link to="/tools/databricks-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-emerald-500 rounded-xl">
-              <div className="text-emerald-300 font-medium mb-1 flex items-center gap-2"><Calculator className="w-4 h-4" /> Databricks Cost Calculator →</div>
+              <div className="text-emerald-300 font-medium mb-1 flex items-center gap-2"><Calculator className="w-4 h-4" /> Databricks Cost Calculator â†’</div>
               <div className="text-gray-400 text-sm">Estimate your compute cost underneath dbt.</div>
             </Link>
             <Link to="/tools/snowflake-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-emerald-500 rounded-xl">
-              <div className="text-emerald-300 font-medium mb-1 flex items-center gap-2"><DollarSign className="w-4 h-4" /> Snowflake Cost Calculator →</div>
+              <div className="text-emerald-300 font-medium mb-1 flex items-center gap-2"><DollarSign className="w-4 h-4" /> Snowflake Cost Calculator â†’</div>
               <div className="text-gray-400 text-sm">Snowflake is by far the most common dbt target.</div>
             </Link>
             <Link to="/cheatsheets/dbt-commands" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-emerald-500 rounded-xl">
-              <div className="text-emerald-300 font-medium mb-1 flex items-center gap-2"><BookOpen className="w-4 h-4" /> dbt Commands Cheat Sheet →</div>
+              <div className="text-emerald-300 font-medium mb-1 flex items-center gap-2"><BookOpen className="w-4 h-4" /> dbt Commands Cheat Sheet â†’</div>
               <div className="text-gray-400 text-sm">Every dbt CLI command with flags and examples.</div>
             </Link>
             <Link to="/cheatsheets/dbt-best-practices" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-emerald-500 rounded-xl">
-              <div className="text-emerald-300 font-medium mb-1">dbt Best Practices →</div>
+              <div className="text-emerald-300 font-medium mb-1">dbt Best Practices â†’</div>
               <div className="text-gray-400 text-sm">Layered modeling, tests, documentation patterns.</div>
             </Link>
           </div>

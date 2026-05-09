@@ -3,6 +3,24 @@
 
 import { fetchBlogArticleHTML } from '@/utils/fetchBlogArticleHTML';
 
+const FETCH_TIMEOUT_MS = 25000;
+
+/** fetch with timeout so a hung CORS proxy doesn't lock the UI indefinitely. */
+async function timedFetch(url, options = {}, timeoutMs = FETCH_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+        return await fetch(url, { ...options, signal: controller.signal });
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw new Error(`Request timed out after ${timeoutMs / 1000}s`);
+        }
+        throw error;
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
 class ContentOptimizerService {
     constructor() {
         // Use a more reliable CORS proxy
@@ -11,7 +29,6 @@ class ContentOptimizerService {
             'https://corsproxy.io/?',
             'https://api.codetabs.com/v1/proxy?quest='
         ];
-        this.currentProxyIndex = 0;
     }
 
     // Strip HTML tags
@@ -534,7 +551,7 @@ class ContentOptimizerService {
     }
 
     // Fetch and analyze URL with fallback proxies
-    async analyzeURL(url, _retryCount = 0) {
+    async analyzeURL(url) {
         try {
             // Validate URL
             if (!url || !url.startsWith('http')) {
@@ -553,43 +570,42 @@ class ContentOptimizerService {
             else if (url === window.location.href || url === 'current') {
                 html = document.documentElement.outerHTML;
             }
-            // If it's an external URL, use CORS proxy
+            // If it's an external URL, walk through CORS proxies sequentially.
+            // Proxy index is local to this call so concurrent analyzeURL calls don't race.
             else if (!url.includes(window.location.hostname)) {
-                let fetchUrl = `${this.corsProxies[this.currentProxyIndex]}${encodeURIComponent(url)}`;
+                let lastError;
+                for (let i = 0; i < this.corsProxies.length; i++) {
+                    const fetchUrl = `${this.corsProxies[i]}${encodeURIComponent(url)}`;
+                    try {
+                        const response = await timedFetch(fetchUrl, {
+                            headers: {
+                                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                            },
+                            mode: 'cors'
+                        });
 
-                try {
-                    const response = await fetch(fetchUrl, {
-                        headers: {
-                            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                        },
-                        mode: 'cors'
-                    });
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
 
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
+                        html = await response.text();
+
+                        // Check if we got actual HTML content
+                        if (!html || html.length < 100 || !html.includes('<')) {
+                            throw new Error('Invalid HTML content received');
+                        }
+                        break; // success — stop walking proxies
+                    } catch (proxyError) {
+                        lastError = proxyError;
+                        html = undefined;
                     }
-
-                    html = await response.text();
-
-                    // Check if we got actual HTML content
-                    if (!html || html.length < 100 || !html.includes('<')) {
-                        throw new Error('Invalid HTML content received');
-                    }
-                } catch (proxyError) {
-                    // Try next proxy (max 3 attempts to prevent infinite recursion)
-                    this.currentProxyIndex = (this.currentProxyIndex + 1) % this.corsProxies.length;
-
-                    if (this.currentProxyIndex === 0 || _retryCount >= 2) {
-                        // We've tried all proxies or hit max retries
-                        throw new Error(`Failed to fetch URL. The page may be blocking automated access. Error: ${proxyError.message}`);
-                    }
-
-                    // Retry with next proxy
-                    return this.analyzeURL(url, _retryCount + 1);
+                }
+                if (!html) {
+                    throw new Error(`Failed to fetch URL. The page may be blocking automated access. Error: ${lastError?.message || 'unknown'}`);
                 }
             } else {
                 // Same origin fetch
-                const response = await fetch(url);
+                const response = await timedFetch(url);
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 html = await response.text();
             }

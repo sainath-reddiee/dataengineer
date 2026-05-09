@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Newspaper, ArrowLeft, AlertCircle, RefreshCw } from 'lucide-react';
@@ -18,19 +18,21 @@ const NewsPage = () => {
 
   const breadcrumbs = generateBreadcrumbs('/news', 'News & Trends');
 
-  // Noindex the page if we've confirmed there are no posts to render — avoids
-  // serving a thin "No news yet" shell to crawlers (AdSense low-content signal).
-  const isEmpty = !loading && !error && posts.length === 0;
+  // Noindex the page UNLESS we have confirmed posts to render. This is the
+  // safer default â€” during loading, errors, or empty states the page only
+  // shows skeletons or a "No news yet" shell which AdSense flags as thin
+  // content. Only flip to indexable once posts.length > 0.
+  const hasContent = !loading && !error && posts.length > 0;
 
   return (
     <>
       <MetaTags
-        title="Data Engineering News & Trends | DataEngineer Hub"
+        title="Data Engineering News & Trends"
         description="Stay up to date with the latest data engineering news, industry trends, product launches, and technology updates across Snowflake, AWS, Azure, Databricks, and more."
         keywords="data engineering news, data engineering trends, snowflake news, cloud data news, data platform updates, tech trends"
         type="website"
         breadcrumbs={breadcrumbs}
-        noindex={isEmpty}
+        noindex={!hasContent}
       />
 
       <div className="pt-1 pb-8">
@@ -82,7 +84,7 @@ const NewsPage = () => {
             </p>
             <div className="text-sm text-gray-400 max-w-3xl mx-auto leading-relaxed mt-4 text-left md:text-center space-y-2">
               <p>
-                This page tracks announcements that actually change how data engineers work —
+                This page tracks announcements that actually change how data engineers work â€”
                 Snowflake release notes and new Cortex features, Databricks and Unity Catalog
                 updates, BigQuery pricing or engine changes, dbt and Airflow major releases,
                 Apache Iceberg and lakehouse format news, and the AWS / Azure / GCP services

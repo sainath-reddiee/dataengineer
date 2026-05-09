@@ -47,8 +47,9 @@ class KeywordTrendService {
         const baselineEnd = recentStart;
         const baselineStart = new Date(now - (lagDays + recentDays + baselineDays) * dayMs).toISOString().split('T')[0];
 
-        // Fetch both periods in parallel
-        const [recentData, baselineData] = await Promise.all([
+        // Fetch both periods in parallel — use allSettled so one period's failure
+        // (e.g. transient GSC error) does not lose the other period's data.
+        const [recentRes, baselineRes] = await Promise.allSettled([
             gscService.queryTopKeywords({
                 startDate: recentStart,
                 endDate: recentEnd,
@@ -60,6 +61,14 @@ class KeywordTrendService {
                 rowLimit: 500,
             }),
         ]);
+        const recentData = recentRes.status === 'fulfilled' ? recentRes.value : [];
+        const baselineData = baselineRes.status === 'fulfilled' ? baselineRes.value : [];
+        if (recentRes.status === 'rejected') {
+            console.warn('GSC recent-period query failed:', recentRes.reason?.message || recentRes.reason);
+        }
+        if (baselineRes.status === 'rejected') {
+            console.warn('GSC baseline-period query failed:', baselineRes.reason?.message || baselineRes.reason);
+        }
 
         // Build baseline lookup (normalize per-day for fair comparison)
         const baselineMap = {};
@@ -79,13 +88,15 @@ class KeywordTrendService {
                 const recentPerDay = row.impressions / recentDays;
 
                 if (!baseline || baseline.impressionsPerDay === 0) {
-                    // New keyword (not in baseline) — treat as 100% growth if enough impressions
+                    // No baseline traffic — treat as exploding/new keyword. Use a finite
+                    // sentinel so JSON.stringify doesn't lose it. Consumers should branch
+                    // on `isNew` for the UI label.
                     return {
                         query: row.query,
                         recentImpressions: row.impressions,
                         recentPerDay: Math.round(recentPerDay * 10) / 10,
                         baselinePerDay: 0,
-                        growthRate: baseline ? 0 : Infinity,
+                        growthRate: 99,
                         isNew: !baseline,
                         position: Math.round(row.position),
                         clicks: row.clicks,
@@ -156,7 +167,7 @@ class KeywordTrendService {
                 const baseline = baselineMap[row.query];
                 const recentPerDay = row.impressions / recentDays;
                 const basePerDay = baseline?.impressionsPerDay || 0;
-                const growthRate = basePerDay === 0 ? (row.impressions > 10 ? Infinity : 0) : (recentPerDay - basePerDay) / basePerDay;
+                const growthRate = basePerDay === 0 ? (row.impressions > 10 ? 99 : 0) : (recentPerDay - basePerDay) / basePerDay;
 
                 return {
                     query: row.query,

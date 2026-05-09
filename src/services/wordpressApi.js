@@ -7,6 +7,7 @@ class WordPressAPI {
     this.baseURL = WP_API_BASE;
     this.cache = new Map();
     this.cacheTimeout = 60 * 1000; // 60 seconds cache
+    this.cacheMaxEntries = 200; // LRU cap to bound long-running admin sessions
     this.requestQueue = new Map();
     this.prefetchedData = new Map();
   }
@@ -113,6 +114,13 @@ class WordPressAPI {
         };
 
         this.cache.set(cacheKey, result);
+        // Simple LRU eviction: drop oldest entries when over the cap.
+        // Map preserves insertion order, so the first key is the oldest.
+        while (this.cache.size > this.cacheMaxEntries) {
+          const oldestKey = this.cache.keys().next().value;
+          if (oldestKey === undefined) break;
+          this.cache.delete(oldestKey);
+        }
         return result;
 
       } catch (error) {

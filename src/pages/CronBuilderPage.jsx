@@ -1,4 +1,4 @@
-// src/pages/CronBuilderPage.jsx
+﻿// src/pages/CronBuilderPage.jsx
 // Visual cron expression builder with human-readable parsing and next-run preview.
 // Targets "cron expression builder", "cron generator", "airflow cron", "snowflake task cron".
 import React, { useMemo, useState, useEffect, useCallback, Suspense } from 'react';
@@ -146,7 +146,7 @@ function nextRuns(parsed, fromDate, count) {
 const FAQ = [
   {
     q: 'What cron format does this builder use?',
-    a: 'Standard 5-field Unix cron: minute (0–59), hour (0–23), day of month (1–31), month (1–12 or JAN–DEC), day of week (0–6 or SUN–SAT; 0 and 7 both mean Sunday). This is the format used by Unix crond, Airflow, dbt Cloud, Snowflake TASK USING CRON, GitHub Actions, and most orchestrators.',
+    a: 'Standard 5-field Unix cron: minute (0â€“59), hour (0â€“23), day of month (1â€“31), month (1â€“12 or JANâ€“DEC), day of week (0â€“6 or SUNâ€“SAT; 0 and 7 both mean Sunday). This is the format used by Unix crond, Airflow, dbt Cloud, Snowflake TASK USING CRON, GitHub Actions, and most orchestrators.',
   },
   {
     q: 'How do I schedule an Airflow DAG with this?',
@@ -154,7 +154,7 @@ const FAQ = [
   },
   {
     q: 'How do I use this in a Snowflake TASK?',
-    a: 'CREATE TASK my_task WAREHOUSE=wh SCHEDULE = \'USING CRON 0 2 * * * America/Los_Angeles\' AS SELECT ...;. Snowflake cron uses the same 5-field format but requires a timezone. The preview in this tool uses your browser timezone — if your warehouse is in a different TZ, double-check the next-run times.',
+    a: 'CREATE TASK my_task WAREHOUSE=wh SCHEDULE = \'USING CRON 0 2 * * * America/Los_Angeles\' AS SELECT ...;. Snowflake cron uses the same 5-field format but requires a timezone. The preview in this tool uses your browser timezone â€” if your warehouse is in a different TZ, double-check the next-run times.',
   },
   {
     q: 'Why does 0 0 * * 1-5 not run on weekends?',
@@ -162,7 +162,7 @@ const FAQ = [
   },
   {
     q: 'Can I schedule down to the second?',
-    a: 'No — standard cron has minute resolution. For sub-minute schedules, use a streaming approach (Kafka consumer, Snowflake Streams+Tasks with SYSTEM$STREAM_HAS_DATA, a continuous process). Do not try to schedule faster than every minute in cron.',
+    a: 'No â€” standard cron has minute resolution. For sub-minute schedules, use a streaming approach (Kafka consumer, Snowflake Streams+Tasks with SYSTEM$STREAM_HAS_DATA, a continuous process). Do not try to schedule faster than every minute in cron.',
   },
   {
     q: 'What is the difference between 0 * * * * and */60 * * * *?',
@@ -229,7 +229,7 @@ export default function CronBuilderPage() {
   return (
     <>
       <MetaTags
-        title="Cron Expression Builder 2026 — Airflow, Snowflake, dbt, Unix"
+        title="Cron Expression Builder 2026 â€” Airflow, Snowflake, dbt, Unix"
         description="Free cron expression builder. Validate 5-field cron, see the next 5 run times, copy-paste into Airflow, Snowflake TASK, dbt Cloud, or crontab. Preset library included."
         keywords="cron expression builder, cron generator, airflow cron, snowflake task cron, dbt cloud schedule, crontab generator, cron validator"
         url="/tools/cron-expression-builder"
@@ -240,6 +240,7 @@ export default function CronBuilderPage() {
           { name: 'Cron Expression Builder', url: '/tools/cron-expression-builder' },
         ]}
         faqSchema={faqSchema}
+      noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
@@ -248,7 +249,7 @@ export default function CronBuilderPage() {
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-cyan-300 bg-cyan-900/30 border border-cyan-700/50 rounded-full">
-            5-field Unix cron · Airflow / Snowflake / dbt / crontab compatible
+            5-field Unix cron Â· Airflow / Snowflake / dbt / crontab compatible
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Clock className="w-8 h-8 text-cyan-400" />
@@ -256,7 +257,7 @@ export default function CronBuilderPage() {
           </h1>
           <p className="text-gray-300 text-lg max-w-3xl">
             Build, validate, and preview cron schedules. Type any 5-field expression and see the
-            next 5 run times in your timezone — or start from a preset. Copy directly into Airflow
+            next 5 run times in your timezone â€” or start from a preset. Copy directly into Airflow
             DAG schedules, Snowflake TASK clauses, dbt Cloud schedules, or crontab entries.
           </p>
         </div>
@@ -358,13 +359,13 @@ export default function CronBuilderPage() {
         <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
           <h2 className="text-2xl font-semibold text-white mb-4">Cron syntax quick reference</h2>
           <ul className="space-y-2 text-sm text-gray-300">
-            <li><code className="text-cyan-300 font-mono">*</code> — any value (wildcard)</li>
-            <li><code className="text-cyan-300 font-mono">,</code> — list separator (e.g., <code>1,15,30</code>)</li>
-            <li><code className="text-cyan-300 font-mono">-</code> — range (e.g., <code>1-5</code> = Mon-Fri)</li>
-            <li><code className="text-cyan-300 font-mono">/</code> — step (e.g., <code>*/15</code> = every 15)</li>
-            <li><code className="text-cyan-300 font-mono">0 0 * * 0</code> — every Sunday at midnight</li>
-            <li><code className="text-cyan-300 font-mono">0 2 1 * *</code> — 2 AM on the 1st of every month</li>
-            <li><code className="text-cyan-300 font-mono">0 9 * * 1-5</code> — 9 AM weekdays</li>
+            <li><code className="text-cyan-300 font-mono">*</code> â€” any value (wildcard)</li>
+            <li><code className="text-cyan-300 font-mono">,</code> â€” list separator (e.g., <code>1,15,30</code>)</li>
+            <li><code className="text-cyan-300 font-mono">-</code> â€” range (e.g., <code>1-5</code> = Mon-Fri)</li>
+            <li><code className="text-cyan-300 font-mono">/</code> â€” step (e.g., <code>*/15</code> = every 15)</li>
+            <li><code className="text-cyan-300 font-mono">0 0 * * 0</code> â€” every Sunday at midnight</li>
+            <li><code className="text-cyan-300 font-mono">0 2 1 * *</code> â€” 2 AM on the 1st of every month</li>
+            <li><code className="text-cyan-300 font-mono">0 9 * * 1-5</code> â€” 9 AM weekdays</li>
           </ul>
         </div>
 
@@ -384,21 +385,21 @@ export default function CronBuilderPage() {
               <p>
                 <code>SCHEDULE = &apos;USING CRON 0 2 * * * America/Los_Angeles&apos;</code>. You
                 must include a valid IANA timezone. Snowflake does NOT run on the wildcard minute
-                within an hour — it runs exactly at the crontab time.
+                within an hour â€” it runs exactly at the crontab time.
               </p>
             </div>
             <div>
               <h3 className="text-white font-semibold mb-1">dbt Cloud</h3>
               <p>
                 In Job settings, choose "Custom cron schedule" and paste the expression. dbt Cloud
-                uses UTC by default — account for TZ offset when scheduling business-hour runs.
+                uses UTC by default â€” account for TZ offset when scheduling business-hour runs.
               </p>
             </div>
             <div>
               <h3 className="text-white font-semibold mb-1">Unix crontab</h3>
               <p>
                 Standard. The left-most field is minute. 6-field variants (with seconds) are
-                non-standard and NOT supported in crontab(5) — use them only with tools that
+                non-standard and NOT supported in crontab(5) â€” use them only with tools that
                 explicitly accept them (Spring Scheduler, Quartz).
               </p>
             </div>
@@ -409,19 +410,19 @@ export default function CronBuilderPage() {
           <h2 className="text-2xl font-semibold text-white mb-4">Related tools & guides</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link to="/tools/dbt-cloud-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-cyan-500 rounded-xl">
-              <div className="text-cyan-300 font-medium mb-1 flex items-center gap-2"><Calculator className="w-4 h-4" /> dbt Cloud Cost Calculator →</div>
+              <div className="text-cyan-300 font-medium mb-1 flex items-center gap-2"><Calculator className="w-4 h-4" /> dbt Cloud Cost Calculator â†’</div>
               <div className="text-gray-400 text-sm">See how your schedule maps to builds/month.</div>
             </Link>
             <Link to="/cheatsheets/airflow-essentials" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-cyan-500 rounded-xl">
-              <div className="text-cyan-300 font-medium mb-1 flex items-center gap-2"><BookOpen className="w-4 h-4" /> Airflow Essentials →</div>
+              <div className="text-cyan-300 font-medium mb-1 flex items-center gap-2"><BookOpen className="w-4 h-4" /> Airflow Essentials â†’</div>
               <div className="text-gray-400 text-sm">DAG patterns, operators, scheduling pitfalls.</div>
             </Link>
             <Link to="/cheatsheets/snowflake-streams-tasks-interview" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-cyan-500 rounded-xl">
-              <div className="text-cyan-300 font-medium mb-1 flex items-center gap-2"><Zap className="w-4 h-4" /> Snowflake Streams & Tasks →</div>
+              <div className="text-cyan-300 font-medium mb-1 flex items-center gap-2"><Zap className="w-4 h-4" /> Snowflake Streams & Tasks â†’</div>
               <div className="text-gray-400 text-sm">Event-driven alternative to cron scheduling.</div>
             </Link>
             <Link to="/cheatsheets/dbt-commands" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-cyan-500 rounded-xl">
-              <div className="text-cyan-300 font-medium mb-1">dbt Commands Reference →</div>
+              <div className="text-cyan-300 font-medium mb-1">dbt Commands Reference â†’</div>
               <div className="text-gray-400 text-sm">All dbt CLI commands for scheduled runs.</div>
             </Link>
           </div>

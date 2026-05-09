@@ -1,4 +1,4 @@
-// src/pages/admin/SEODashboard.jsx
+﻿// src/pages/admin/SEODashboard.jsx
 /**
  * SEO Dashboard - Main Admin Page
  * Overview of all SEO metrics with quick actions
@@ -9,10 +9,12 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
     Search, Layers, GitCompare, Code2, Eye, Sparkles,
-    TrendingUp, AlertCircle, CheckCircle, Clock, ArrowRight, Bot, Zap, Activity
+    TrendingUp, AlertCircle, CheckCircle, Clock, ArrowRight, Bot, Zap, Activity,
+    MousePointerClick, Target, Wrench, FileText,
 } from 'lucide-react';
 import { SEOScoreCard } from '@/components/admin/SEOScoreCard';
 import wordpressApi from '@/services/wordpressApi';
+import gscService from '@/services/gscService';
 import { getLastNDays, getLocalReferralStats } from '@/utils/aiReferralTracker';
 import { scoreCtrBatch } from '@/utils/ctrScorer';
 import { getEngagementStats } from '@/utils/engagementTracker';
@@ -44,6 +46,7 @@ export function SEODashboard() {
     const [aiReferrals, setAiReferrals] = useState({ last30: 0, total: 0 });
     const [ctrQuickWin, setCtrQuickWin] = useState({ lift: 0, atRisk: 0, loading: true });
     const [engagement, setEngagement] = useState({ landings: 0, clickRate: 0 });
+    const [gscMetrics, setGscMetrics] = useState(null);
 
     useEffect(() => {
         async function loadStats() {
@@ -58,7 +61,7 @@ export function SEODashboard() {
                 // Run CTR heuristic scorer over the same batch
                 try {
                     const scored = scoreCtrBatch(posts.posts || []);
-                    // Average missed lift per post (not sum) — realistic opportunity read.
+                    // Average missed lift per post (not sum) â€” realistic opportunity read.
                     const lift = scored.length
                         ? Math.round((scored.reduce((a, r) => a + (r.missingLiftPct || 0), 0) / scored.length) * 10) / 10
                         : 0;
@@ -87,17 +90,92 @@ export function SEODashboard() {
             const e = getEngagementStats();
             const totals = e.totals || {};
             const landings = totals.landings || 0;
-            const clickRate = landings > 0 ? Math.round((totals.secondClicks / landings) * 100) : 0;
+            const secondClicks = totals.secondClicks || 0;
+            const clickRate = landings > 0 ? Math.round((secondClicks / landings) * 100) : 0;
             setEngagement({ landings, clickRate });
         } catch { /* ignore */ }
+
+        // GSC live metrics
+        if (gscService.isConnected()) {
+            gscService.queryTopPages({ rowLimit: 100 }).then(pages => {
+                const totalImpressions = pages.reduce((s, p) => s + p.impressions, 0);
+                const totalClicks = pages.reduce((s, p) => s + p.clicks, 0);
+                const avgCTR = totalImpressions > 0 ? totalClicks / totalImpressions : 0;
+                const avgPosition = pages.length > 0 ? pages.reduce((s, p) => s + p.position, 0) / pages.length : 0;
+                const strikingDistance = pages.filter(p => p.position >= 5 && p.position <= 20).length;
+                setGscMetrics({ totalImpressions, totalClicks, avgCTR, avgPosition, strikingDistance, pageCount: pages.length });
+            }).catch(() => {});
+        }
     }, []);
 
     return (
         <div className="space-y-8">
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold text-white mb-2">SEO Dashboard</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">SEO Dashboard</h1>
                 <p className="text-gray-400">Monitor and optimize your blog's search performance</p>
+            </div>
+
+            {/* GSC Live Performance (when connected) */}
+            {gscMetrics && (
+                <div className="bg-gradient-to-r from-blue-900/20 to-cyan-900/20 border border-blue-500/30 rounded-2xl p-5">
+                    <div className="text-xs text-blue-300 font-semibold uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <Activity className="w-3.5 h-3.5" /> Google Search Console â€” Last 28 Days
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div>
+                            <div className="text-2xl font-bold text-white">{gscMetrics.totalImpressions.toLocaleString()}</div>
+                            <div className="text-[10px] text-gray-400">Impressions</div>
+                        </div>
+                        <div>
+                            <div className="text-2xl font-bold text-white">{gscMetrics.totalClicks.toLocaleString()}</div>
+                            <div className="text-[10px] text-gray-400">Clicks</div>
+                        </div>
+                        <div>
+                            <div className="text-2xl font-bold text-white">{(gscMetrics.avgCTR * 100).toFixed(1)}%</div>
+                            <div className="text-[10px] text-gray-400">Avg CTR</div>
+                        </div>
+                        <div>
+                            <div className="text-2xl font-bold text-white">#{gscMetrics.avgPosition.toFixed(1)}</div>
+                            <div className="text-[10px] text-gray-400">Avg Position</div>
+                        </div>
+                        <div>
+                            <div className="text-2xl font-bold text-amber-400">{gscMetrics.strikingDistance}</div>
+                            <div className="text-[10px] text-gray-400">Striking Distance (pos 5-20)</div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Priority Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <Link to="/admin/article-fixer" className="p-4 bg-red-900/20 border border-red-800/30 rounded-xl hover:border-red-500/50 transition-all group">
+                    <div className="flex items-center gap-3">
+                        <Wrench className="w-5 h-5 text-red-400" />
+                        <div>
+                            <div className="text-sm font-semibold text-white group-hover:text-red-300">Fix Articles</div>
+                            <div className="text-[10px] text-gray-500">Priority: CTR gaps + keyword issues</div>
+                        </div>
+                    </div>
+                </Link>
+                <Link to="/admin/trend-intelligence" className="p-4 bg-cyan-900/20 border border-cyan-800/30 rounded-xl hover:border-cyan-500/50 transition-all group">
+                    <div className="flex items-center gap-3">
+                        <TrendingUp className="w-5 h-5 text-cyan-400" />
+                        <div>
+                            <div className="text-sm font-semibold text-white group-hover:text-cyan-300">Discover Trends</div>
+                            <div className="text-[10px] text-gray-500">Find what to write next</div>
+                        </div>
+                    </div>
+                </Link>
+                <Link to="/admin/article-writer" className="p-4 bg-pink-900/20 border border-pink-800/30 rounded-xl hover:border-pink-500/50 transition-all group">
+                    <div className="flex items-center gap-3">
+                        <FileText className="w-5 h-5 text-pink-400" />
+                        <div>
+                            <div className="text-sm font-semibold text-white group-hover:text-pink-300">Write Article</div>
+                            <div className="text-[10px] text-gray-500">AI writer with your format</div>
+                        </div>
+                    </div>
+                </Link>
             </div>
 
             {/* Quick Stats */}
@@ -137,7 +215,7 @@ export function SEODashboard() {
                             <p className="text-sm text-gray-400">
                                 Avg missed CTR lift
                                 {!ctrQuickWin.loading && ctrQuickWin.atRisk > 0 && (
-                                    <span className="text-gray-500"> · {ctrQuickWin.atRisk} at risk</span>
+                                    <span className="text-gray-500"> Â· {ctrQuickWin.atRisk} at risk</span>
                                 )}
                             </p>
                         </div>
@@ -159,7 +237,7 @@ export function SEODashboard() {
                             <p className="text-sm text-gray-400">
                                 AI Referrals (30d)
                                 {aiReferrals.total > 0 && (
-                                    <span className="text-gray-500"> · {aiReferrals.total} all-time</span>
+                                    <span className="text-gray-500"> Â· {aiReferrals.total} all-time</span>
                                 )}
                             </p>
                         </div>
@@ -181,7 +259,7 @@ export function SEODashboard() {
                             <p className="text-sm text-gray-400">
                                 Click-inside
                                 {engagement.landings > 0 && (
-                                    <span className="text-gray-500"> · {engagement.landings} landings</span>
+                                    <span className="text-gray-500"> Â· {engagement.landings} landings</span>
                                 )}
                             </p>
                         </div>
@@ -232,7 +310,8 @@ export function SEODashboard() {
                             No articles found. Create some content to analyze!
                         </div>
                     ) : (
-                        <table className="w-full">
+                        <div className="overflow-x-auto">
+                        <table className="w-full min-w-[640px]">
                             <thead className="bg-slate-900/50">
                                 <tr>
                                     <th className="text-left px-6 py-3 text-xs font-medium text-gray-400 uppercase">Title</th>
@@ -262,7 +341,7 @@ export function SEODashboard() {
                                                 rel="noopener noreferrer"
                                                 className="text-purple-400 hover:text-purple-300 text-sm font-medium"
                                             >
-                                                Open →
+                                                Open â†’
                                             </a>
                                             <Link
                                                 to={`/admin/scanner?url=${encodeURIComponent(`${window.location.origin}/articles/${article.slug}`)}`}
@@ -275,6 +354,7 @@ export function SEODashboard() {
                                 ))}
                             </tbody>
                         </table>
+                        </div>
                     )}
                 </div>
             </div>

@@ -12,12 +12,13 @@ const CONTEXT_KEY = 'admin_article_context';
 class AdminContextService {
     /**
      * Set the current article context (call before navigating to another tool).
-     * Also copies the article URL to clipboard for convenience.
      *
      * @param {Object} article - { slug, title, url, id? }
-     * @param {Object} options - { copyToClipboard: boolean }
+     * @param {Object} options - { copyToClipboard: boolean } — only honored when
+     *   the call is made inside a user gesture (click handler). Most browsers
+     *   block clipboard writes outside a gesture, so callers must opt in.
      */
-    setArticle(article, { copyToClipboard = true } = {}) {
+    setArticle(article, { copyToClipboard = false } = {}) {
         if (!article?.slug) return;
 
         const ctx = {
@@ -29,11 +30,12 @@ class AdminContextService {
         };
 
         if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.setItem(CONTEXT_KEY, JSON.stringify(ctx));
+            try { sessionStorage.setItem(CONTEXT_KEY, JSON.stringify(ctx)); } catch { /* quota */ }
         }
 
-        // Auto-copy article URL to clipboard
-        if (copyToClipboard && navigator.clipboard) {
+        // Clipboard write only when explicitly requested by the caller
+        // (and inside a user gesture). Auto-write was unreliable across browsers.
+        if (copyToClipboard && typeof navigator !== 'undefined' && navigator.clipboard) {
             navigator.clipboard.writeText(ctx.url).catch(() => {});
         }
 

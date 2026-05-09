@@ -95,9 +95,12 @@ export default defineConfig({
     minify: 'terser',
     terserOptions: {
       compress: {
+        // Strip console.log/info/debug in production builds (keeps console.warn
+        // and console.error for genuine error reporting). Removes ~35+ debug
+        // calls in useWordPress / RecentPosts / App that polluted the console.
         drop_console: false,
         drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace'],
         passes: 2
       }
     },

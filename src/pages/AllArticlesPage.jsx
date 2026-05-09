@@ -126,7 +126,7 @@ const AllArticlesPage = () => {
   return (
     <>
       <MetaTags 
-  title="All Articles - DataEngineer Hub"
+  title="All Articles"
   description="Browse all articles and tutorials on DataEngineer Hub. Find content on data engineering, Snowflake, AWS, Azure, Databricks, Salesforce, SQL, Python, Airflow, dbt, and analytics."
   keywords="data engineering articles, tutorials, blog posts, Snowflake, AWS, Azure, Databricks, Salesforce, SQL, Python, lakehouse, delta lake, data cloud"
   breadcrumbs={generateBreadcrumbs('/articles', 'All Articles')}
@@ -144,11 +144,13 @@ const AllArticlesPage = () => {
     },
   }}
   noindex={
-    // Avoid serving a thin shell to crawlers when:
-    //   - a ?search= query returns zero results, or
+    // Avoid serving thin or duplicate shells to crawlers when:
+    //   - a ?search= query returns zero results
     //   - the user is deep-paginated past available content
+    //   - any non-first page (page>1) — paginated lists are nav-only
+    //     and offer no unique editorial content for AdSense.
     (!loading && !error && posts.length === 0 && !!activeSearch) ||
-    (currentPage > 1 && !loading && !error && posts.length === 0)
+    (currentPage > 1)
   }
 />
       <div className="pt-1 pb-6">

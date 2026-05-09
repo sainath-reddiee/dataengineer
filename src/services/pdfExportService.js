@@ -267,7 +267,9 @@ class PDFExportService {
         yPos += 15;
 
         // Summary Statistics
-        const avgScore = Math.round(results.reduce((sum, r) => sum + (r.score || 0), 0) / results.length);
+        const avgScore = results.length > 0
+            ? Math.round(results.reduce((sum, r) => sum + (r.score || 0), 0) / results.length)
+            : 0;
         const highScores = results.filter(r => r.score >= 85).length;
         const mediumScores = results.filter(r => r.score >= 70 && r.score < 85).length;
         const lowScores = results.filter(r => r.score < 70).length;
@@ -373,16 +375,18 @@ class PDFExportService {
         doc.text(result2.url, 20, yPos + 5);
         yPos += 15;
 
-        // Comparison Table
+        // Comparison Table — guard each subtraction so undefined fields don't render as "NaN"
+        const safeNum = (v) => Number.isFinite(v) ? v : 0;
+        const diff = (a, b) => (safeNum(a) - safeNum(b)).toString();
         const comparison = [
             ['Metric', 'You', 'Competitor', 'Difference'],
-            ['Score', result1.score?.toString() || '0', result2.score?.toString() || '0', (result1.score - result2.score).toString()],
-            ['Word Count', result1.wordCount?.toString() || '0', result2.wordCount?.toString() || '0', (result1.wordCount - result2.wordCount).toString()],
-            ['Statistics', result1.statistics?.toString() || '0', result2.statistics?.toString() || '0', (result1.statistics - result2.statistics).toString()],
-            ['Questions', result1.questions?.toString() || '0', result2.questions?.toString() || '0', (result1.questions - result2.questions).toString()],
-            ['Authority Links', result1.authorityLinks?.toString() || '0', result2.authorityLinks?.toString() || '0', (result1.authorityLinks - result2.authorityLinks).toString()],
-            ['Internal Links', result1.internalLinks?.toString() || '0', result2.internalLinks?.toString() || '0', (result1.internalLinks - result2.internalLinks).toString()],
-            ['External Links', result1.externalLinks?.toString() || '0', result2.externalLinks?.toString() || '0', (result1.externalLinks - result2.externalLinks).toString()]
+            ['Score', safeNum(result1.score).toString(), safeNum(result2.score).toString(), diff(result1.score, result2.score)],
+            ['Word Count', safeNum(result1.wordCount).toString(), safeNum(result2.wordCount).toString(), diff(result1.wordCount, result2.wordCount)],
+            ['Statistics', safeNum(result1.statistics).toString(), safeNum(result2.statistics).toString(), diff(result1.statistics, result2.statistics)],
+            ['Questions', safeNum(result1.questions).toString(), safeNum(result2.questions).toString(), diff(result1.questions, result2.questions)],
+            ['Authority Links', safeNum(result1.authorityLinks).toString(), safeNum(result2.authorityLinks).toString(), diff(result1.authorityLinks, result2.authorityLinks)],
+            ['Internal Links', safeNum(result1.internalLinks).toString(), safeNum(result2.internalLinks).toString(), diff(result1.internalLinks, result2.internalLinks)],
+            ['External Links', safeNum(result1.externalLinks).toString(), safeNum(result2.externalLinks).toString(), diff(result1.externalLinks, result2.externalLinks)]
         ];
 
         doc.autoTable({

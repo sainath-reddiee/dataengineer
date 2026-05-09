@@ -7,6 +7,22 @@ const CORS_PROXIES = [
     'https://api.codetabs.com/v1/proxy?quest='
 ];
 
+const FETCH_TIMEOUT_MS = 20000;
+const SITEMAP_INDEX_FANOUT_LIMIT = 5; // max child sitemaps to recurse into
+
+async function timedFetch(url, options = {}, timeoutMs = FETCH_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+        return await fetch(url, { ...options, signal: controller.signal });
+    } catch (error) {
+        if (error.name === 'AbortError') throw new Error(`Request timed out after ${timeoutMs / 1000}s`);
+        throw error;
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
 class FeedParser {
     constructor() {
         this.proxyIndex = 0;
@@ -19,7 +35,7 @@ class FeedParser {
             if (format === 'auto') format = this.detectFormat(content);
 
             switch (format) {
-                case 'sitemap': return this.parseSitemap(content);
+                case 'sitemap': return await this.parseSitemap(content);
                 case 'rss': return this.parseRSS(content);
                 case 'json': return this.parseJSON(content);
                 case 'text': return this.parseText(content);
@@ -34,7 +50,7 @@ class FeedParser {
     async fetchContent(url) {
         // Try direct fetch first
         try {
-            const res = await fetch(url);
+            const res = await timedFetch(url);
             if (res.ok) return await res.text();
         } catch (e) {
             // Continue to proxies
@@ -44,7 +60,7 @@ class FeedParser {
         for (let i = 0; i < CORS_PROXIES.length; i++) {
             const proxy = CORS_PROXIES[(this.proxyIndex + i) % CORS_PROXIES.length];
             try {
-                const res = await fetch(proxy + encodeURIComponent(url));
+                const res = await timedFetch(proxy + encodeURIComponent(url));
                 if (res.ok) {
                     const content = await res.text();
                     if (content && content.length > 100) {
@@ -68,29 +84,47 @@ class FeedParser {
         return 'text';
     }
 
-    // Parse XML Sitemap
-    parseSitemap(xml) {
-        const urls = [];
-
-        // Handle sitemap index (multiple sitemaps)
-        const sitemapLocs = xml.match(/<sitemap>\s*<loc>([^<]+)<\/loc>/gi) || [];
-        if (sitemapLocs.length > 0) {
-            console.log(`Found sitemap index with ${sitemapLocs.length} sitemaps`);
-            // For now, just extract URLs from each sitemap entry
+    // Parse XML Sitemap (recurses one level into sitemap indexes)
+    async parseSitemap(xml) {
+        // Sitemap index — extract child sitemap URLs and fetch each
+        const sitemapLocRegex = /<sitemap>\s*<loc>([^<]+)<\/loc>/gi;
+        const childSitemaps = [];
+        let m;
+        while ((m = sitemapLocRegex.exec(xml)) !== null) {
+            childSitemaps.push(m[1].trim());
         }
 
-        // Extract all <loc> tags
+        if (childSitemaps.length > 0) {
+            const collected = new Set();
+            const targets = childSitemaps.slice(0, SITEMAP_INDEX_FANOUT_LIMIT);
+            // Sequential fetch to avoid hammering the proxy with N parallel calls
+            for (const childUrl of targets) {
+                try {
+                    const childXml = await this.fetchContent(childUrl);
+                    this.extractLocs(childXml).forEach(u => collected.add(u));
+                } catch (e) {
+                    console.warn('Failed to fetch child sitemap', childUrl, e.message);
+                }
+            }
+            return Array.from(collected);
+        }
+
+        // Plain urlset — extract <loc> directly
+        return this.extractLocs(xml);
+    }
+
+    // Pull article URLs from a sitemap urlset (filters out sitemap.xml refs).
+    extractLocs(xml) {
+        const urls = [];
         const locRegex = /<loc>([^<]+)<\/loc>/gi;
         let match;
         while ((match = locRegex.exec(xml)) !== null) {
             const url = match[1].trim();
-            // Filter out sitemap.xml files themselves
-            if (!url.endsWith('sitemap.xml') && !url.endsWith('sitemap_index.xml')) {
+            if (!url.endsWith('sitemap.xml') && !url.endsWith('sitemap_index.xml') && !url.match(/\/sitemap[^/]*\.xml$/i)) {
                 urls.push(url);
             }
         }
-
-        return [...new Set(urls)]; // Remove duplicates
+        return [...new Set(urls)];
     }
 
     // Parse RSS/Atom Feed

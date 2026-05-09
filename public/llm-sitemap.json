@@ -11,11 +11,89 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-04-29",
-  "totalArticles": 61,
+  "lastUpdated": "2026-05-09",
+  "totalArticles": 55,
   "pages": [
     {
-      "url": "https://dataengineerhub.blog/articles/snowflake-zero-copy-cloning-problems-2",
+      "url": "https://dataengineerhub.blog/articles/airflow-vs-prefect",
+      "title": "“Apache Airflow vs Prefect: Why I Chose Airflow “",
+      "summary": "Last Updated: May 5, 2026 I evaluated Prefect seriously. Ran it in a staging environment for six weeks. Built three real flows. Had the internal conversation about migrating. And then…",
+      "keyFacts": [
+        "That 20% platform overhead we were experiencing would likely have dropped to under 5%",
+        "This is the honest breakdown of both tools from someone who actually ran the evaluation, not someone summarising the docs",
+        "TL;DR → Airflow is the industry standard — 80,000+ organisations, proven at massive scale, every integration you’ll ever need → Prefect is genuinely easier — local testing, cleaner Python, better monitoring out of the box → Airflow 3",
+        "A Python developer who has never seen Prefect before can read it immediately"
+      ],
+      "entities": [
+        "airflow",
+        "python",
+        "kubernetes",
+        "snowflake",
+        "aws",
+        "dbt",
+        "spark"
+      ],
+      "questionAnswered": "What are the differences between “Apache Airflow and Prefect: Why I Chose Airflow “?",
+      "lastUpdated": "2026-05-08",
+      "published": "2026-05-05",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Airflow",
+      "wordCount": 2089
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/delta-lake-vs-iceberg",
+      "title": "Delta Lake vs Apache Iceberg — Why I Chose Iceberg for Our Data Lakehouse",
+      "summary": "TL;DR→ Delta Lake is easier to start with, especially if you’re already on Databricks→ Iceberg wins on engine flexibility — works natively with Spark, Flink, Trino, Snowflake, and more without…",
+      "keyFacts": [
+        "This isn’t a “here are the specs” comparison",
+        "Changing a partition scheme means rewriting the table"
+      ],
+      "entities": [
+        "databricks",
+        "spark",
+        "snowflake",
+        "dbt",
+        "airflow",
+        "aws"
+      ],
+      "questionAnswered": "What is the main difference between Delta Lake and Apache Iceberg?",
+      "lastUpdated": "2026-05-08",
+      "published": "2026-05-04",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Airflow",
+      "wordCount": 1512
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/the-problem-with-data-engineering-certifications-that-nobody-talks-about",
+      "title": "The Problem with Data Engineering Certifications That Nobody Talks About",
+      "summary": "I passed the SnowPro Gen AI certification not too long ago. Within the same week I was back at my desk staring at a broken pipeline that no multiple-choice question…",
+      "keyFacts": [
+        "I’m saying the industry has developed a quietly dishonest relationship with them — one where vendors, hiring managers, and candidates all play along with a fiction that a passed exam means something it doesn’t",
+        "Those are the problems data engineers actually face",
+        "And production is always adversarial"
+      ],
+      "entities": [
+        "databricks",
+        "spark",
+        "aws",
+        "azure",
+        "dbt",
+        "snowflake",
+        "gcp",
+        "bigquery"
+      ],
+      "questionAnswered": "How do you prepare for the The Problem with Data Engineering Certifications That Nobody Talks About?",
+      "lastUpdated": "2026-05-08",
+      "published": "2026-05-01",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AWS",
+      "wordCount": 2065
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-zero-copy-cloning-problems",
       "title": "The Problem with Zero-Copy Cloning in Snowflake That Nobody Talks About",
       "summary": "Every time I demo Snowflake to someone new, zero-copy cloning gets the biggest reaction. You type one line. You get an instant copy of a table — or an entire…",
       "keyFacts": [
@@ -28,7 +106,7 @@
         "dbt"
       ],
       "questionAnswered": "What is The Problem with Zero-Copy Cloning in Snowflake That Nobody Talks About?",
-      "lastUpdated": "2026-04-25",
+      "lastUpdated": "2026-05-05",
       "published": "2026-04-25",
       "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
@@ -45,13 +123,13 @@
         "Paste a bug, get a fix, repeat — never building on anything"
       ],
       "entities": [],
-      "questionAnswered": "What does the Claude Code Power User Guide: Stop Using It Like Autocomplete cover?",
-      "lastUpdated": "2026-04-25",
+      "questionAnswered": "What is CLAUDE.md and why does it matter?",
+      "lastUpdated": "2026-05-08",
       "published": "2026-04-25",
       "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Developer Productivity",
-      "wordCount": 2261
+      "wordCount": 2262
     },
     {
       "url": "https://dataengineerhub.blog/articles/query-snowflake-in-duckdb-cut-costs",
@@ -153,8 +231,8 @@
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-cortex-code-cost-control-2026",
-      "title": "Snowflake Cortex Code Cost Control in 2026",
-      "summary": "Snowflake Cortex Code Cost Control in 2026 — The Right Way to Set Limits When I first started using Cortex Code, cost was the last thing on my mind. It’s…",
+      "title": "2026 Guide: Snowflake Cortex Code Cost Control",
+      "summary": "When I first started using Cortex Code, cost was the last thing on my mind. It’s right there in the Snowsight UI, it feels like a built-in feature, and nothing…",
       "keyFacts": [
         "Setting them to 0 explicitly means even if someone accidentally grants CORTEX_AGENT_USER to a service role, the credit limit acts as a safety net",
         "How Cortex Code Billing Works If you’re new to Cortex Code, I’d recommend reading my earlier post What Is Snowflake Cortex Code and How I Taught Myself to Use It first — it covers what the tool actually does and how to access it in Snowsight"
@@ -166,12 +244,12 @@
         "sql"
       ],
       "questionAnswered": "How do you control Snowflake Cortex Code costs?",
-      "lastUpdated": "2026-04-11",
+      "lastUpdated": "2026-05-09",
       "published": "2026-04-11",
       "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
-      "wordCount": 1379
+      "wordCount": 1366
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-expert-interview-questions",
@@ -218,7 +296,7 @@
         "python"
       ],
       "questionAnswered": "What does the Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide cover?",
-      "lastUpdated": "2026-04-11",
+      "lastUpdated": "2026-05-05",
       "published": "2026-04-07",
       "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
@@ -250,7 +328,7 @@
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide",
-      "title": "Snowflake Cortex Code for dbt: Cut Build Time 48% | 2026 Guide",
+      "title": "2026 Guide: Cut dbt Build Time 48% with Snowflake Cortex Code",
       "summary": "The Moment Everything Changed It was a Tuesday morning when I finally snapped. My dbt project had grown to 147 models, and the daily run was taking 2 hours and…",
       "keyFacts": [
         "Three months later, my dbt runs average 1 hour 23 minutes—a 48% improvement",
@@ -267,12 +345,12 @@
         "tableau"
       ],
       "questionAnswered": "How can Snowflake Cortex Code optimize dbt build times?",
-      "lastUpdated": "2026-04-11",
+      "lastUpdated": "2026-05-09",
       "published": "2026-03-08",
       "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Airflow",
-      "wordCount": 5026
+      "wordCount": 5030
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-managed-iceberg-tables-complete-guide-2026",
@@ -306,6 +384,7 @@
       "title": "Snowflake AI_PARSE_DOCUMENT: Full Guide 2026",
       "summary": "Why Document Processing Matters in 2026 Enterprises store approximately 80-90% of their business data in unstructured formats—PDFs, Word documents, scanned images, contracts, invoices, and reports. Yet most enterprise data warehouses,…",
       "keyFacts": [
+        "For more AI-powered optimization techniques, see how Cortex Code can cut dbt build times by 48%",
         "AI_PARSE_DOCUMENT is a fully managed SQL function that transforms unstructured documents into AI-ready structured data",
         "LAYOUT Mode: Perfect for Retaining Precise Layout and Formatting The preferred choice for most use cases, especially for complex documents is the Layout mode",
         ", charts, signatures) for regulatory and audit workflows Important: There is no additional cost for image extraction beyond the standard page-based billing for AI_PARSE_DOCUMENT"
@@ -313,15 +392,16 @@
       "entities": [
         "snowflake",
         "sql",
-        "azure"
+        "azure",
+        "dbt"
       ],
       "questionAnswered": "What is AI_PARSE_DOCUMENT?",
-      "lastUpdated": "2026-04-07",
+      "lastUpdated": "2026-05-08",
       "published": "2026-01-28",
       "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
-      "wordCount": 2372
+      "wordCount": 2389
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-cortex-cost-comparison",
@@ -363,29 +443,6 @@
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 3017
-    },
-    {
-      "url": "https://dataengineerhub.blog/articles/how-i-passed-snowpro-gen-ai-certification-guide",
-      "title": "How I passed the “SnowPro® Specialty: Gen AI” certification exam 2026",
-      "summary": "Let’s be real for a second. When Snowflake announced the SnowPro Specialty: Generative AI (GES-C01) certification, I knew I had to take it. GenAI isn’t just a buzzword anymore; it’s…",
-      "keyFacts": [
-        "Snowflake for Gen AI Overview (26%) This covers the high-level stuff",
-        "Snowflake Gen AI Governance (22%) Snowflake is big on security",
-        "Here is the no-fluff breakdown of how I prepared, the resources I actually used, and the practice tests that saved my life",
-        "Here is the exact roadmap I followed",
-        "Pro Tip: Don’t just read it; run it"
-      ],
-      "entities": [
-        "snowflake",
-        "sql"
-      ],
-      "questionAnswered": "How do you pass the SnowPro Gen AI certification exam?",
-      "lastUpdated": "2026-04-11",
-      "published": "2026-01-14",
-      "author": "Sainath Reddy",
-      "expertise": "Data Engineering Expert",
-      "category": "Snowflake",
-      "wordCount": 954
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-cost-optimization-techniques-2026",
@@ -436,28 +493,28 @@
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-interview-questions-answers-2026",
-      "title": "10 Snowflake Interview Questions and Answers 2026 (Real Questions Asked)",
+      "title": "Snowflake Interview Questions and Answers 2026",
       "summary": "Last year, I interviewed for a Senior Data Engineer role at three different companies. All three used Snowflake heavily. All three asked completely different questions. The first interview? They grilled…",
       "keyFacts": [
-        "Why this matters in production: I’ve seen companies cut their data warehouse costs by 60% after migrating from traditional systems, simply because they only spin up large warehouses when needed instead of running them 24/7",
-        "If your query processes 1MB of data, a 6X-Large warehouse won’t finish much faster than a Small one",
-        "Part 1: Fundamentals (Junior to Mid-Level) These are the baseline questions",
-        "Snowflake’s multi-cluster architecture means the marketing team running reports doesn’t slow down the engineering team loading data",
-        "Common misconception: Bigger warehouses aren’t always faster"
+        "Understanding these is critical for cost optimization — result caching alone can save 30%+ on repetitive dashboard queries",
+        "Cloud data engineering skills command a premium, and Snowflake-specific expertise adds 10-20% over general data engineering roles due to high demand and limited talent pool",
+        "This separation means you can scale compute without affecting storage costs, and multiple warehouses query the same data concurrently without contention",
+        "What is the difference between Snowpipe and COPY INTO",
+        "Pro tip: Use SYSTEM$CLUSTERING_INFORMATION('table') to check clustering depth and overlap"
       ],
       "entities": [
         "snowflake",
-        "sql",
         "azure",
-        "aws"
+        "sql",
+        "dbt"
       ],
       "questionAnswered": "What Snowflake interview questions should you prepare for?",
-      "lastUpdated": "2026-01-02",
+      "lastUpdated": "2026-05-09",
       "published": "2026-01-02",
       "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
-      "wordCount": 3529
+      "wordCount": 2386
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-cortex-ai-complete-guide-2026",
@@ -741,27 +798,6 @@
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 3146
-    },
-    {
-      "url": "https://dataengineerhub.blog/articles/snowflake-hybrid-tables-unify-transactional-analytical-data",
-      "title": "Snowflake Hybrid Tables: End of the ETL Era?",
-      "summary": "Snowflake Hybrid Tables: Is This the End of the ETL Era? For decades, the data world has been split in two. On one side, you have transactional (OLTP) databases—the fast,…",
-      "keyFacts": [
-        "Ultimately , this is the promise of Snowflake Hybrid Tables , and it’s a revolution in the making",
-        "The key differences are the HYBRID keyword and the requirement for a PRIMARY KEY , which is crucial for fast transactional lookups",
-        "As a result , the data is always live"
-      ],
-      "entities": [
-        "snowflake",
-        "airflow"
-      ],
-      "questionAnswered": "What are Snowflake Hybrid Tables?",
-      "lastUpdated": "2025-10-14",
-      "published": "2025-10-13",
-      "author": "Sainath Reddy",
-      "expertise": "Data Engineering Expert",
-      "category": "Snowflake",
-      "wordCount": 771
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-sql-tutorial-2025-complete-guide",
@@ -1055,87 +1091,6 @@
       "wordCount": 1524
     },
     {
-      "url": "https://dataengineerhub.blog/articles/what-is-incremental-data-processing-a-data-engineers-guide",
-      "title": "What is Incremental Data Processing? A Data Engineer’s Guide",
-      "summary": "As a data engineer, your goal is to build pipelines that are not just accurate, but also efficient, scalable, and cost-effective. One of the biggest challenges in achieving this is…",
-      "keyFacts": [
-        "High-Watermark Incremental Loads This is the most common technique for sources that have a reliable, incrementing key or a timestamp that indicates when a record was last updated",
-        "How it Works: CDC is a more advanced technique that directly taps into the transaction log of a source database (like a PostgreSQL or MySQL binlog )",
-        "This is where incremental data processing becomes a critical strategy"
-      ],
-      "entities": [
-        "sql",
-        "kafka"
-      ],
-      "questionAnswered": "What is incremental data processing?",
-      "lastUpdated": "2025-10-08",
-      "published": "2025-09-30",
-      "author": "Sainath Reddy",
-      "expertise": "Data Engineering Expert",
-      "category": "SQL",
-      "wordCount": 649
-    },
-    {
-      "url": "https://dataengineerhub.blog/articles/data-modeling-modern-data-warehouse",
-      "title": "Data Modeling for the Modern Data Warehouse: A Guide",
-      "summary": "In the world of data engineering, it’s easy to get excited about the latest tools and technologies. But before you can build powerful pipelines and insightful dashboards, you need a solid…",
-      "keyFacts": [
-        "” Data modeling is the process of structuring your data to be stored in a database",
-        "SCD Type 1: Overwrite the Old Value This is the simplest approach",
-        "This guide will walk you through the most important concepts of data modeling for the modern data warehouse, focusing on the time-tested star schema and the crucial concept of Slowly Changing Dimensions (SCDs)"
-      ],
-      "entities": [],
-      "questionAnswered": "What does the Data Modeling for the Modern Data Warehouse: A Guide cover?",
-      "lastUpdated": "2025-10-08",
-      "published": "2025-09-30",
-      "author": "Sainath Reddy",
-      "expertise": "Data Engineering Expert",
-      "category": "SQL",
-      "wordCount": 682
-    },
-    {
-      "url": "https://dataengineerhub.blog/articles/dynamic-data-masking-snowflake",
-      "title": "How to Implement Dynamic Data Masking in Snowflake",
-      "summary": "In today’s data-driven world, providing access to data is undoubtedly crucial. However, what happens when that data contains sensitive Personally Identifiable Information (PII) like emails, phone numbers, or credit card…",
-      "keyFacts": [
-        "A masking policy is a schema-level object that uses a CASE statement to apply conditional logic",
-        "Ultimately , this is a fundamental component of building a secure and well-governed data platform in Snowflake",
-        "Step 1: Create the Masking Policy First, we define the rules of how the data should be masked"
-      ],
-      "entities": [
-        "snowflake",
-        "sql"
-      ],
-      "questionAnswered": "How do you implement dynamic data masking in Snowflake?",
-      "lastUpdated": "2025-10-08",
-      "published": "2025-09-30",
-      "author": "Sainath Reddy",
-      "expertise": "Data Engineering Expert",
-      "category": "Snowflake",
-      "wordCount": 715
-    },
-    {
-      "url": "https://dataengineerhub.blog/articles/snowflake-data-sharing-governance",
-      "title": "Snowflake Data Sharing and Governance",
-      "summary": "In the final part of our Snowflake guide, we move beyond the technical implementation and into one of the most powerful strategic advantages of the platform: governance and secure data sharing. So far,…",
-      "keyFacts": [
-        "This is a highly scalable and manageable way to control access to your data",
-        "How RBAC Works Objects: These are the things you want to secure, like databases, schemas, tables, and warehouses",
-        "Pillar 1: Governance with Role-Based Access Control (RBAC) In Snowflake, you never grant permissions directly to a user"
-      ],
-      "entities": [
-        "snowflake",
-        "sql"
-      ],
-      "questionAnswered": "What is Snowflake Data Sharing and Governance?",
-      "lastUpdated": "2025-10-08",
-      "published": "2025-09-29",
-      "author": "Sainath Reddy",
-      "expertise": "Data Engineering Expert",
-      "category": "Snowflake",
-      "wordCount": 726
-    },
-    {
       "url": "https://dataengineerhub.blog/articles/querying-data-in-snowflake",
       "title": "Querying data in snowflake: A Guide to JSON and Time Travel",
       "summary": "In Part 1 of our guide, we explored Snowflake’s unique architecture, and in Part 2, we learned how to load data. Now comes the most important part: turning that raw…",
@@ -1178,29 +1133,6 @@
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 846
-    },
-    {
-      "url": "https://dataengineerhub.blog/articles/what-is-snowflake-guide",
-      "title": "What is Snowflake? A Beginners Guide to the Cloud Data Platform",
-      "summary": "If you work in the world of data, you’ve undoubtedly heard the name Snowflake. It has rapidly become one of the most dominant platforms in the cloud data ecosystem. But what is…",
-      "keyFacts": [
-        "Snowflake is a cloud-native data platform that provides a single, unified system for data warehousing, data lakes, data engineering , data science, and data sharing",
-        "This is the foundation for everything that makes Snowflake powerful",
-        "The Secret Sauce: Snowflake’s Decoupled Architecture The single most important concept to understand about Snowflake is its unique, patented architecture that separates storage from compute"
-      ],
-      "entities": [
-        "snowflake",
-        "aws",
-        "azure",
-        "sql"
-      ],
-      "questionAnswered": "What is Snowflake and how does it work?",
-      "lastUpdated": "2025-10-08",
-      "published": "2025-09-29",
-      "author": "Sainath Reddy",
-      "expertise": "Data Engineering Expert",
-      "category": "Snowflake",
-      "wordCount": 715
     },
     {
       "url": "https://dataengineerhub.blog/articles/aws-data-pipeline-cost-optimization-strategies",
@@ -1275,26 +1207,6 @@
       "wordCount": 855
     },
     {
-      "url": "https://dataengineerhub.blog/articles/sql-window-functions-guide",
-      "title": "SQL Window Functions: The Ultimate Guide for Data Analysts",
-      "summary": "Every data professional knows the power of GROUP BY. It’s the trusty tool we all learn first, allowing us to aggregate data and calculate metrics like total sales per category or…",
-      "keyFacts": [
-        "What are the top 3 best-selling products within each category",
-        "What is the running total of sales day-by-day",
-        "The magic happens with the OVER() clause, which defines the “window” of rows the function should consider"
-      ],
-      "entities": [
-        "sql"
-      ],
-      "questionAnswered": "What Are Window Functions, Really?",
-      "lastUpdated": "2025-10-08",
-      "published": "2025-09-28",
-      "author": "Sainath Reddy",
-      "expertise": "Data Engineering Expert",
-      "category": "SQL",
-      "wordCount": 749
-    },
-    {
       "url": "https://dataengineerhub.blog/articles/build-data-lakehouse-on-azure",
       "title": "How to Build a Data Lakehouse on Azure",
       "summary": "For years, data teams have faced a difficult choice: the structured, high-performance world of the data warehouse, or the flexible, low-cost scalability of the data lake. But what if you could have…",
@@ -1364,27 +1276,6 @@
       "expertise": "Data Engineering Expert",
       "category": "dbt",
       "wordCount": 1111
-    },
-    {
-      "url": "https://dataengineerhub.blog/articles/snowflake-architecture",
-      "title": "Snowflake Architecture Explained: A Simple Breakdown",
-      "summary": "In the world of data, Snowflake’s rapid rise to a leader in the cloud data space is a well-known story. However, what’s the secret behind its success? The answer isn’t…",
-      "keyFacts": [
-        "In the world of data, Snowflake’s rapid rise to a leader in the cloud data space is a well-known story",
-        "Specifically , this unique three-layer design makes it fundamentally different from traditional data warehouses and is the key to its powerful performance and scalability"
-      ],
-      "entities": [
-        "snowflake",
-        "gcp",
-        "sql"
-      ],
-      "questionAnswered": "What is Snowflake Architecture?",
-      "lastUpdated": "2025-10-08",
-      "published": "2025-09-23",
-      "author": "Sainath Reddy",
-      "expertise": "Data Engineering Expert",
-      "category": "Snowflake",
-      "wordCount": 679
     }
   ]
 }

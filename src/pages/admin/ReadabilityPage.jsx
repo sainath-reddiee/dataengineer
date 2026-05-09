@@ -1,4 +1,4 @@
-// src/pages/admin/ReadabilityPage.jsx
+﻿// src/pages/admin/ReadabilityPage.jsx
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, Loader2, AlertTriangle, CheckCircle, Info, BarChart3 } from 'lucide-react';
@@ -14,6 +14,7 @@ export function ReadabilityPage() {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [loadingArticles, setLoadingArticles] = useState(true);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         async function load() {
@@ -29,16 +30,20 @@ export function ReadabilityPage() {
     const handleAnalyze = async () => {
         if (!selected) return;
         setLoading(true);
+        setError('');
         setResult(null);
         try {
-            const res = await fetch(`https://app.dataengineerhub.blog/wp-json/wp/v2/posts?slug=${selected}&_fields=content`);
+            const res = await fetch(`https://app.dataengineerhub.blog/wp-json/wp/v2/posts?slug=${encodeURIComponent(selected)}&_fields=content`);
+            if (!res.ok) throw new Error(`WordPress API returned HTTP ${res.status}`);
             const posts = await res.json();
-            if (posts.length > 0) {
-                const analysis = analyzeReadability(posts[0].content.rendered);
-                setResult(analysis);
+            if (!Array.isArray(posts) || posts.length === 0) {
+                throw new Error('Article not found');
             }
+            const analysis = analyzeReadability(posts[0].content.rendered);
+            setResult(analysis);
         } catch (err) {
             console.error(err);
+            setError(err.message || 'Analysis failed. Please try again.');
         }
         setLoading(false);
     };
@@ -53,7 +58,7 @@ export function ReadabilityPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Readability Analyzer</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Readability Analyzer</h1>
                 <p className="text-gray-400">Analyze reading difficulty, sentence length, and passive voice usage for any article.</p>
             </div>
 
@@ -61,6 +66,7 @@ export function ReadabilityPage() {
                 <select
                     value={selected}
                     onChange={(e) => setSelected(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAnalyze()}
                     className="flex-1 px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white text-sm"
                 >
                     <option value="">
@@ -79,6 +85,12 @@ export function ReadabilityPage() {
                     Analyze
                 </button>
             </div>
+
+            {error && (
+                <div className="p-3 bg-red-900/20 border border-red-800/30 rounded-lg text-sm text-red-300 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4" /> {error}
+                </div>
+            )}
 
             {result && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">

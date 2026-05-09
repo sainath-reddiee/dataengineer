@@ -1,5 +1,5 @@
-// src/pages/admin/RevenueProjectionPage.jsx
-// AdSense revenue potential calculator — shows current vs projected
+﻿// src/pages/admin/RevenueProjectionPage.jsx
+// AdSense revenue potential calculator â€” shows current vs projected
 // earnings per article based on view counts and rank potential.
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -29,16 +29,20 @@ export function RevenueProjectionPage() {
 
     // Recompute revenue with user-specified RPM
     const withRevenue = useMemo(() => {
-        return articles.map(a => {
-            // Scale the model's projection by the user's RPM (default in model is $3)
-            const ratio = rpm / 3;
-            return {
-                ...a,
-                currentMonthly: a.revenueProjection.currentMonthly * ratio,
-                potentialMonthly: a.revenueProjection.potentialMonthly * ratio,
-                uplift: a.revenueProjection.potentialMonthly * ratio - a.revenueProjection.currentMonthly * ratio,
-            };
-        });
+        // Scale the model's projection by the user's RPM (default in model is $3)
+        const ratio = rpm / 3;
+        return articles
+            .filter(a => a && a.revenueProjection)
+            .map(a => {
+                const cur = (a.revenueProjection.currentMonthly ?? 0) * ratio;
+                const pot = (a.revenueProjection.potentialMonthly ?? 0) * ratio;
+                return {
+                    ...a,
+                    currentMonthly: cur,
+                    potentialMonthly: pot,
+                    uplift: pot - cur,
+                };
+            });
     }, [articles, rpm]);
 
     const totals = useMemo(() => {
@@ -69,7 +73,7 @@ export function RevenueProjectionPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                     <DollarSign className="w-8 h-8 text-emerald-400" />
                     Revenue Projection
                 </h1>

@@ -11,10 +11,30 @@ const CORS_PROXIES = [
     'https://api.codetabs.com/v1/proxy?quest=',
 ];
 
+const FETCH_TIMEOUT_MS = 25000;
+
+// Short-TTL in-memory cache so re-running gap analysis on the same competitor
+// within a session doesn't re-fetch + re-parse from scratch.
+const FETCH_CACHE = new Map();
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 min
+
+async function timedFetch(url, options = {}, timeoutMs = FETCH_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+        return await fetch(url, { ...options, signal: controller.signal });
+    } catch (error) {
+        if (error.name === 'AbortError') throw new Error(`Request timed out after ${timeoutMs / 1000}s`);
+        throw error;
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
 async function fetchWithProxy(url) {
     for (const proxy of CORS_PROXIES) {
         try {
-            const resp = await fetch(`${proxy}${encodeURIComponent(url)}`);
+            const resp = await timedFetch(`${proxy}${encodeURIComponent(url)}`);
             if (resp.ok) {
                 const html = await resp.text();
                 if (html && html.length > 100) return html;
@@ -28,15 +48,25 @@ async function fetchWithProxy(url) {
  * Fetch competitor page HTML — tries TinyFish first (real browser), falls back to CORS proxies.
  */
 async function fetchCompetitorPage(url) {
+    // Cache hit
+    const cached = FETCH_CACHE.get(url);
+    if (cached && Date.now() - cached.ts < CACHE_TTL_MS) {
+        return cached.html;
+    }
     // Prefer TinyFish Fetch API (uses real browser, handles SPAs and JS rendering)
     if (tinyfishService.isEnabled) {
         try {
             const result = await tinyfishService.fetchContent([url], { format: 'html', links: true });
             const page = result.results?.[0];
-            if (page?.text && page.text.length > 100) return page.text;
+            if (page?.text && page.text.length > 100) {
+                FETCH_CACHE.set(url, { html: page.text, ts: Date.now() });
+                return page.text;
+            }
         } catch { /* fall through to CORS proxies */ }
     }
-    return fetchWithProxy(url);
+    const html = await fetchWithProxy(url);
+    FETCH_CACHE.set(url, { html, ts: Date.now() });
+    return html;
 }
 
 /**

@@ -1,4 +1,4 @@
-// src/pages/admin/ContentDecayPage.jsx
+﻿// src/pages/admin/ContentDecayPage.jsx
 // Detects articles losing traffic by comparing GSC data across two 28-day periods.
 
 import React, { useEffect, useState } from 'react';
@@ -90,13 +90,13 @@ export function ContentDecayPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                    <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                         <TrendingDown className="w-8 h-8 text-red-400" />
                         Content Decay Detector
                     </h1>
-                    <p className="text-gray-400">Compares last 28 days vs. previous 28 days — catches articles losing traffic before they fall off page 1.</p>
+                    <p className="text-gray-400">Compares last 28 days vs. previous 28 days â€” catches articles losing traffic before they fall off page 1.</p>
                 </div>
-                <button onClick={loadData} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-lg flex items-center gap-2">
+                <button onClick={loadData} disabled={loading} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-lg flex items-center gap-2">
                     <RefreshCw className="w-4 h-4" /> Refresh
                 </button>
             </div>
@@ -171,7 +171,7 @@ Why might this article be declining? Give 3-4 specific possible causes and what 
 
             const response = await aiService.generateSuggestion(prompt, '');
             setAiTips(response);
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error(e); setAiTips(`Error: ${e.message || 'Failed to generate AI tips'}`); }
         setAiLoading(false);
     };
 
@@ -180,24 +180,24 @@ Why might this article be declining? Give 3-4 specific possible causes and what 
             <div onClick={onToggle} className="grid grid-cols-12 gap-2 px-4 py-2.5 items-center hover:bg-slate-800/60 cursor-pointer">
                 <div className="col-span-4 text-sm text-gray-200 truncate">{article.slug.replace(/-/g, ' ')}</div>
                 <div className="col-span-2 text-center text-xs text-gray-400">
-                    {article.previous.impressions} → {article.current.impressions}
+                    {article.previous.impressions} â†’ {article.current.impressions}
                 </div>
                 <div className={`col-span-2 text-center text-xs font-bold flex items-center justify-center gap-1 ${impColor}`}>
                     <ImpIcon className="w-3 h-3" /> {article.impChange > 0 ? '+' : ''}{article.impChange.toFixed(0)}%
                 </div>
                 <div className="col-span-2 text-center text-xs text-gray-400">
-                    #{article.previous.position.toFixed(1)} → #{article.current.position.toFixed(1)}
+                    #{article.previous.position.toFixed(1)} â†’ #{article.current.position.toFixed(1)}
                 </div>
                 <div className={`col-span-2 text-right text-xs ${article.isDecaying ? 'text-red-400' : article.isGrowing ? 'text-emerald-400' : 'text-gray-500'}`}>
-                    {article.isDecaying ? '⚠ Decaying' : article.isGrowing ? '✓ Growing' : 'Stable'}
+                    {article.isDecaying ? 'âš  Decaying' : article.isGrowing ? 'âœ“ Growing' : 'Stable'}
                 </div>
             </div>
             {expanded && (
                 <div className="px-6 pb-3 bg-slate-900/40 space-y-2">
                     <div className="flex items-center justify-between pt-2">
                         <div className="text-xs text-gray-500">
-                            Clicks: {article.previous.clicks} → {article.current.clicks} ({article.clickChange > 0 ? '+' : ''}{article.clickChange.toFixed(0)}%)
-                            · CTR: {(article.previous.ctr * 100).toFixed(1)}% → {(article.current.ctr * 100).toFixed(1)}%
+                            Clicks: {article.previous.clicks} â†’ {article.current.clicks} ({article.clickChange > 0 ? '+' : ''}{article.clickChange.toFixed(0)}%)
+                            Â· CTR: {(article.previous.ctr * 100).toFixed(1)}% â†’ {(article.current.ctr * 100).toFixed(1)}%
                         </div>
                         <button onClick={handleAI} disabled={aiLoading} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 disabled:opacity-50 text-white rounded-lg">
                             {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}

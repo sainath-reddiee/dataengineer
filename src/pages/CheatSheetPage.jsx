@@ -1,4 +1,4 @@
-// src/pages/CheatSheetPage.jsx
+﻿// src/pages/CheatSheetPage.jsx
 /**
  * Individual Cheat Sheet Detail Page
  * Renders sections (tables, code, tips) with SEO schema
@@ -42,7 +42,7 @@ const CATEGORY_TOOLS = {
   sql: [
     { slug: 'sql-formatter', title: 'SQL Formatter', tagline: 'Clean up messy queries' },
     { slug: 'snowflake-query-cost-estimator', title: 'Query Cost Estimator', tagline: 'Forecast spend per query' },
-    { slug: 'json-to-sql-ddl', title: 'JSON → SQL DDL', tagline: 'Generate CREATE TABLE from JSON' },
+    { slug: 'json-to-sql-ddl', title: 'JSON â†’ SQL DDL', tagline: 'Generate CREATE TABLE from JSON' },
   ],
   orchestration: [
     { slug: 'cron-expression-builder', title: 'Cron Expression Builder', tagline: 'Build & test schedules' },
@@ -54,7 +54,7 @@ const CATEGORY_TOOLS = {
     { slug: 'snowflake-warehouse-sizing', title: 'Warehouse Sizing Tool', tagline: 'Right-size your workload' },
   ],
   programming: [
-    { slug: 'json-to-sql-ddl', title: 'JSON → SQL DDL', tagline: 'Schema inference from JSON' },
+    { slug: 'json-to-sql-ddl', title: 'JSON â†’ SQL DDL', tagline: 'Schema inference from JSON' },
     { slug: 'sql-formatter', title: 'SQL Formatter', tagline: 'Standardize SQL style' },
   ],
   architecture: [
@@ -78,7 +78,7 @@ const DIFFICULTY_COLORS = {
   Advanced: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
 };
 
-// ─── Section Renderers ──────────────────────────────────────
+// â”€â”€â”€ Section Renderers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function TableSection({ section }) {
   return (
@@ -187,7 +187,7 @@ function ChecklistSection({ section }) {
       {section.items.map((item, i) => (
         <div key={i} className="flex items-start gap-3 bg-slate-800/50 border border-slate-700 rounded-lg p-4">
           <span className={`flex items-center justify-center w-6 h-6 rounded shrink-0 mt-0.5 ${item.checked === false ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
-            {item.checked === false ? '✗' : '✓'}
+            {item.checked === false ? 'âœ—' : 'âœ“'}
           </span>
           <div>
             <p className={`text-sm font-medium ${item.checked === false ? 'text-red-300' : 'text-white'}`}>
@@ -262,7 +262,7 @@ function SectionRenderer({ section }) {
   );
 }
 
-// ─── Main Page ──────────────────────────────────────────────
+// â”€â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function CheatSheetPage() {
   const { slug } = useParams();
@@ -273,7 +273,7 @@ export default function CheatSheetPage() {
     [slug, sheet]
   );
 
-  // Calculate word count for thin content detection (must be before early return — hooks rules)
+  // Calculate word count for thin content detection (must be before early return â€” hooks rules)
   const wordCount = useMemo(() => {
     if (!sheet) return 0;
     const text = (sheet.sections || [])
@@ -372,10 +372,11 @@ export default function CheatSheetPage() {
   return (
     <>
       <Helmet>
-        <title>{`${sheet.title} — Free Reference Guide | DataEngineer Hub`}</title>
+        <title>{`${sheet.title} â€” Free Reference Guide`}</title>
         <meta name="description" content={sheet.shortDescription} />
         <link rel="canonical" href={canonicalUrl} />
-        {isThin && <meta name="robots" content="noindex, follow" />}
+        {/* PSEO/AI-assisted section â€” held out of the index until further editorial work. */}
+        <meta name="robots" content="noindex, follow" />
 
         <meta property="og:type" content="article" />
         <meta property="og:title" content={sheet.title} />
@@ -460,7 +461,7 @@ export default function CheatSheetPage() {
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
             {/* Main Sections */}
             <div className="space-y-6">
-              {/* Intro — long-form practitioner context (Phase 2 pSEO depth) */}
+              {/* Intro â€” long-form practitioner context (Phase 2 pSEO depth) */}
               {sheet.intro && (
                 <motion.section
                   initial={{ opacity: 0, y: 15 }}
@@ -498,7 +499,7 @@ export default function CheatSheetPage() {
                 </motion.section>
               )}
 
-              {/* When To Use — decision-aid callout (Phase 2 pSEO depth) */}
+              {/* When To Use â€” decision-aid callout (Phase 2 pSEO depth) */}
               {sheet.whenToUse && (sheet.whenToUse.use?.length > 0 || sheet.whenToUse.avoid?.length > 0) && (
                 <motion.section
                   initial={{ opacity: 0, y: 15 }}
@@ -514,13 +515,13 @@ export default function CheatSheetPage() {
                     {sheet.whenToUse.use?.length > 0 && (
                       <div>
                         <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                          <span className="inline-flex items-center justify-center w-5 h-5 bg-emerald-500/20 text-emerald-400 text-xs rounded">✓</span>
+                          <span className="inline-flex items-center justify-center w-5 h-5 bg-emerald-500/20 text-emerald-400 text-xs rounded">âœ“</span>
                           Reach for this when
                         </h3>
                         <ul className="space-y-2">
                           {sheet.whenToUse.use.map((item, i) => (
                             <li key={i} className="text-sm text-gray-300 leading-relaxed flex gap-2">
-                              <span className="text-emerald-400 shrink-0">•</span>
+                              <span className="text-emerald-400 shrink-0">â€¢</span>
                               <span>{item}</span>
                             </li>
                           ))}
@@ -536,7 +537,7 @@ export default function CheatSheetPage() {
                         <ul className="space-y-2">
                           {sheet.whenToUse.avoid.map((item, i) => (
                             <li key={i} className="text-sm text-gray-300 leading-relaxed flex gap-2">
-                              <span className="text-amber-400 shrink-0">•</span>
+                              <span className="text-amber-400 shrink-0">â€¢</span>
                               <span>{item}</span>
                             </li>
                           ))}
@@ -551,7 +552,7 @@ export default function CheatSheetPage() {
                 <SectionRenderer key={i} section={section} />
               ))}
 
-              {/* Prose cross-link block — contextual internal linking for SEO + UX */}
+              {/* Prose cross-link block â€” contextual internal linking for SEO + UX */}
               {(relatedSheets.length > 0 || relatedTools.length > 0) && (
                 <motion.section
                   initial={{ opacity: 0, y: 15 }}
@@ -668,7 +669,7 @@ export default function CheatSheetPage() {
                 </div>
               )}
 
-              {/* Related Tools — hands-on calculators/utilities mapped from category */}
+              {/* Related Tools â€” hands-on calculators/utilities mapped from category */}
               {relatedTools.length > 0 && (
                 <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
                   <h3 className="text-sm font-semibold text-white mb-3 uppercase tracking-wider flex items-center gap-2">

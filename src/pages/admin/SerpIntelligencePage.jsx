@@ -1,5 +1,5 @@
-// src/pages/admin/SerpIntelligencePage.jsx
-// TinyFish-powered SERP Intelligence — live competitor analysis, SERP feature
+﻿// src/pages/admin/SerpIntelligencePage.jsx
+// TinyFish-powered SERP Intelligence â€” live competitor analysis, SERP feature
 // detection, PAA extraction, page validation, and competitor monitoring.
 
 import React, { useState } from 'react';
@@ -23,7 +23,7 @@ const TABS = [
 function ApiKeyStatus() {
     return !tinyfishService.isEnabled ? (
         <div className="px-3 py-1.5 bg-amber-500/20 text-amber-300 text-[10px] rounded-lg border border-amber-500/40">
-            Set TinyFish key in sidebar →
+            Set TinyFish key in sidebar â†’
         </div>
     ) : (
         <div className="px-3 py-1.5 bg-emerald-500/20 text-emerald-300 text-[10px] rounded-lg border border-emerald-500/40">
@@ -52,7 +52,7 @@ function SerpFeaturesTab() {
 
     return (
         <div className="space-y-4">
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
                 <input type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleCheck()} placeholder="Enter keyword (e.g., snowflake interview questions)" className="flex-1 px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-gray-500" />
                 <button onClick={handleCheck} disabled={loading} className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 text-white font-semibold rounded-xl flex items-center gap-2">
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
@@ -131,7 +131,7 @@ function CompetitorScrapeTab() {
 
     return (
         <div className="space-y-4">
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
                 <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleScrape()} placeholder="https://competitor.com/their-article" className="flex-1 px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-gray-500" />
                 <button onClick={handleScrape} disabled={loading} className="px-6 py-2.5 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 disabled:opacity-50 text-white font-semibold rounded-xl flex items-center gap-2">
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Users className="w-4 h-4" />}
@@ -206,7 +206,7 @@ function PAAExtractionTab() {
 
     return (
         <div className="space-y-4">
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
                 <input type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleExtract()} placeholder="Enter keyword to find PAA questions" className="flex-1 px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-gray-500" />
                 <button onClick={handleExtract} disabled={loading} className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 text-white font-semibold rounded-xl flex items-center gap-2">
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageCircleQuestion className="w-4 h-4" />}
@@ -218,7 +218,7 @@ function PAAExtractionTab() {
                 <div className="bg-slate-900/50 rounded-xl border border-slate-700/50 p-4">
                     <div className="flex items-center justify-between mb-3">
                         <h4 className="text-sm font-semibold text-purple-400">{questions.length} PAA Questions Found</h4>
-                        <button onClick={() => { navigator.clipboard.writeText(questions.join('\n')); setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="text-xs text-blue-400 flex items-center gap-1">
+                        <button onClick={() => { navigator.clipboard.writeText(questions.join('\n')).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="text-xs text-blue-400 flex items-center gap-1">
                             {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}{copied ? 'Copied!' : 'Copy All'}
                         </button>
                     </div>
@@ -257,7 +257,7 @@ function PageValidationTab() {
 
     return (
         <div className="space-y-4">
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
                 <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleValidate()} placeholder="https://dataengineerhub.blog/articles/your-article" className="flex-1 px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-gray-500" />
                 <button onClick={handleValidate} disabled={loading} className="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50 text-white font-semibold rounded-xl flex items-center gap-2">
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
@@ -375,11 +375,11 @@ export function SerpIntelligencePage() {
         <div className="space-y-6">
             <div className="flex items-start justify-between flex-wrap gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                    <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                         <Globe className="w-8 h-8 text-cyan-400" />
                         SERP Intelligence
                     </h1>
-                    <p className="text-gray-400">Powered by TinyFish — live Google SERP analysis, competitor scraping, PAA extraction, and page validation using a real browser.</p>
+                    <p className="text-gray-400">Powered by TinyFish â€” live Google SERP analysis, competitor scraping, PAA extraction, and page validation using a real browser.</p>
                 </div>
                 <ApiKeyStatus />
             </div>

@@ -230,6 +230,7 @@ export default function WarehouseComparisonCalculatorPage() {
         title="Snowflake vs BigQuery vs Databricks Cost Calculator (2026)"
         description="Compare monthly costs across Snowflake, Google BigQuery, and Databricks with a single unified input. See which warehouse is cheapest for your workload pattern."
         canonical="/tools/cloud-data-warehouse-cost-comparison"
+        noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>

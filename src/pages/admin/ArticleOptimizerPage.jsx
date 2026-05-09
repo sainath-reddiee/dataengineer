@@ -1,5 +1,5 @@
-// src/pages/admin/ArticleOptimizerPage.jsx
-// Unified single-article optimization dashboard — runs CTR scoring, GSC keyword
+﻿// src/pages/admin/ArticleOptimizerPage.jsx
+// Unified single-article optimization dashboard â€” runs CTR scoring, GSC keyword
 // analysis, and content optimization in parallel, then displays a consolidated
 // health score with prioritized actions.
 
@@ -109,10 +109,10 @@ export function ArticleOptimizerPage() {
         }
     }, [slugParam, posts]);
 
-    // Run analysis when article changes
+    // Run analysis when article changes (and posts have loaded)
     useEffect(() => {
-        if (selectedSlug) runAnalysis(selectedSlug);
-    }, [selectedSlug]);
+        if (selectedSlug && posts.length > 0) runAnalysis(selectedSlug);
+    }, [selectedSlug, posts.length]);
 
     async function runAnalysis(slug) {
         setLoading(true);
@@ -284,7 +284,7 @@ Generate a READY-TO-IMPLEMENT fix package. For each issue, provide the specific 
 Format:
 ---
 FIX 1: [Issue category]
-[The actual fix content — ready to paste]
+[The actual fix content â€” ready to paste]
 
 FIX 2: [Issue category]
 [The actual fix content]
@@ -304,7 +304,7 @@ FIX 2: [Issue category]
 
     const handleCopy = () => {
         if (fixes) {
-            navigator.clipboard.writeText(fixes);
+            navigator.clipboard.writeText(fixes).catch(() => {});
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         }
@@ -314,12 +314,12 @@ FIX 2: [Issue category]
         <div className="space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                    <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                         <BarChart3 className="w-8 h-8 text-blue-400" />
                         Article Optimizer
                     </h1>
                     <p className="text-gray-400">
-                        Unified health dashboard — CTR, AI visibility, keywords, and content depth in one view.
+                        Unified health dashboard â€” CTR, AI visibility, keywords, and content depth in one view.
                     </p>
                 </div>
                 {selectedSlug && (
@@ -362,7 +362,7 @@ FIX 2: [Issue category]
 
             {!gscService.isConnected() && selectedSlug && (
                 <div className="p-4 bg-blue-900/10 border border-blue-800/30 rounded-xl flex items-center gap-2 text-blue-300 text-sm">
-                    <AlertTriangle className="w-4 h-4" /> GSC not connected — keyword coverage unavailable. Connect GSC for full analysis.
+                    <AlertTriangle className="w-4 h-4" /> GSC not connected â€” keyword coverage unavailable. Connect GSC for full analysis.
                 </div>
             )}
 

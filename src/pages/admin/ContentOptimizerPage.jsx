@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { Search, TrendingUp, AlertCircle, CheckCircle, Clock, FileText, Sparkles, Target, Zap, Link as LinkIcon, ArrowRight, Loader2, Copy, Check, Globe } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import contentOptimizerService from '../../services/contentOptimizerService';
@@ -13,6 +13,8 @@ const ContentOptimizerPage = () => {
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
     const [serpLandscape, setSerpLandscape] = useState(null);
+    // Sequence counter to drop stale analyze responses if user re-runs quickly
+    const analyzeReqIdRef = useRef(0);
 
     // Auto-fill URL from query params (when navigated from Rank Dashboard or other tools)
     useEffect(() => {
@@ -26,18 +28,28 @@ const ContentOptimizerPage = () => {
     }, [searchParams]);
 
     const handleAnalyze = async () => {
-        if (!url.trim()) {
+        const trimmed = url.trim();
+        if (!trimmed) {
             setError('Please enter a URL');
             return;
         }
+        // Validate URL shape so the service doesn't get garbage input
+        try {
+            new URL(trimmed.startsWith('http') ? trimmed : `https://${trimmed}`);
+        } catch {
+            setError('Please enter a valid URL (e.g. https://example.com/article)');
+            return;
+        }
 
+        const myReqId = ++analyzeReqIdRef.current;
         setLoading(true);
         setError(null);
         setResult(null);
         setSerpLandscape(null);
 
         try {
-            const analysis = await contentOptimizerService.analyzeURL(url);
+            const analysis = await contentOptimizerService.analyzeURL(trimmed);
+            if (myReqId !== analyzeReqIdRef.current) return; // stale
 
             if (analysis.success) {
                 setResult(analysis.data);
@@ -45,10 +57,11 @@ const ContentOptimizerPage = () => {
                 // Fetch SERP landscape in background (non-blocking, optional)
                 if (tinyfishService.isEnabled) {
                     // Extract keyword from URL slug
-                    const slugMatch = url.match(/\/articles\/([^/?#]+)/);
+                    const slugMatch = trimmed.match(/\/articles\/([^/?#]+)/);
                     const keyword = slugMatch ? slugMatch[1].replace(/-/g, ' ') : '';
                     if (keyword) {
                         tinyfishService.search(keyword).then(searchData => {
+                            if (myReqId !== analyzeReqIdRef.current) return; // stale
                             const competitors = (searchData.results || [])
                                 .filter(r => !r.url?.includes('dataengineerhub.blog'))
                                 .slice(0, 5);
@@ -60,9 +73,11 @@ const ContentOptimizerPage = () => {
                 setError(analysis.error);
             }
         } catch (e) {
-            setError(e.message || 'Analysis failed. Please check the URL and try again.');
+            if (myReqId === analyzeReqIdRef.current) {
+                setError(e.message || 'Analysis failed. Please check the URL and try again.');
+            }
         }
-        setLoading(false);
+        if (myReqId === analyzeReqIdRef.current) setLoading(false);
     };
 
     const getScoreGradient = (score) => {
@@ -133,9 +148,9 @@ Rules:
 Format:
 ---
 FIX TYPE: [what this content block is]
-PASTE LOCATION: [where in the article to add this — be specific]
+PASTE LOCATION: [where in the article to add this â€” be specific]
 CONTENT:
-[The actual content to paste into WordPress — formatted in HTML]
+[The actual content to paste into WordPress â€” formatted in HTML]
 ---`;
 
         try {
@@ -156,7 +171,7 @@ CONTENT:
             path: '/admin/ctr-lab',
             label: 'CTR Lab',
             reason: 'Optimize title & meta description for click-through rate',
-            icon: '⚡',
+            icon: 'âš¡',
         });
 
         // If low internal links, recommend Smart Linking
@@ -164,8 +179,8 @@ CONTENT:
             tools.push({
                 path: '/admin/smart-linking',
                 label: 'Smart Linking (AI)',
-                reason: `Only ${result.internalLinks || 0} internal links found — get AI suggestions for relevant connections`,
-                icon: '🔗',
+                reason: `Only ${result.internalLinks || 0} internal links found â€” get AI suggestions for relevant connections`,
+                icon: 'ðŸ”—',
                 urgent: true,
             });
         }
@@ -175,8 +190,8 @@ CONTENT:
             tools.push({
                 path: '/admin/smart-linking',
                 label: 'Smart Linking (External)',
-                reason: `Only ${result.authorityLinks} authority links — add external citations for E-E-A-T`,
-                icon: '🌐',
+                reason: `Only ${result.authorityLinks} authority links â€” add external citations for E-E-A-T`,
+                icon: 'ðŸŒ',
                 urgent: true,
             });
         }
@@ -186,7 +201,7 @@ CONTENT:
             path: '/admin/keyword-injector',
             label: 'Keyword Injector',
             reason: 'Check if rising keywords can be injected to capture trending search demand',
-            icon: '📈',
+            icon: 'ðŸ“ˆ',
         });
 
         // Striking Distance for keyword position opportunities
@@ -194,7 +209,7 @@ CONTENT:
             path: '/admin/striking-distance',
             label: 'Striking Distance',
             reason: 'Find keywords ranking #8-20 that a content refresh could push to page 1',
-            icon: '🎯',
+            icon: 'ðŸŽ¯',
         });
 
         // CTR Fixer if content might have high impressions but low clicks
@@ -202,7 +217,7 @@ CONTENT:
             path: '/admin/ctr-fixer',
             label: 'CTR Fixer',
             reason: 'Check if this article has high impressions but low click-through rate',
-            icon: '🖱️',
+            icon: 'ðŸ–±ï¸',
         });
 
         // Content Decay if freshness is an issue
@@ -210,8 +225,8 @@ CONTENT:
             tools.push({
                 path: '/admin/content-decay',
                 label: 'Content Decay',
-                reason: 'No freshness signal found — check if this article is losing rankings over time',
-                icon: '📉',
+                reason: 'No freshness signal found â€” check if this article is losing rankings over time',
+                icon: 'ðŸ“‰',
                 urgent: true,
             });
         }
@@ -229,21 +244,21 @@ CONTENT:
                             <Sparkles className="w-8 h-8 text-white" />
                         </div>
                     </div>
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent mb-2">
+                    <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent mb-2">
                         Content Optimizer
                     </h1>
                     <p className="text-gray-400 text-lg">Analyze any URL for AI citation optimization</p>
                 </div>
 
                 {/* URL Input Card */}
-                <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-8 mb-8">
-                    <div className="flex gap-4">
+                <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-4 sm:p-8 mb-8">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                         <div className="flex-1 relative">
                             <input
                                 type="url"
                                 value={url}
                                 onChange={(e) => setUrl(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleAnalyze()}
+                                onKeyDown={(e) => e.key === 'Enter' && handleAnalyze()}
                                 placeholder="https://example.com/article"
                                 className="w-full px-6 py-4 bg-gray-900/50 border-2 border-gray-600 rounded-xl focus:ring-4 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-lg text-white placeholder-gray-500"
                                 disabled={loading}
@@ -295,7 +310,7 @@ CONTENT:
                                     </h2>
                                     <p className="text-gray-400 text-sm truncate max-w-md">{result.url}</p>
                                 </div>
-                                <div className={`text-7xl font-black bg-gradient-to-r ${getScoreGradient(result.score)} bg-clip-text text-transparent`}>
+                                <div className={`text-4xl md:text-7xl font-black bg-gradient-to-r ${getScoreGradient(result.score)} bg-clip-text text-transparent`}>
                                     {result.score}
                                     <span className="text-4xl">/100</span>
                                 </div>
@@ -340,7 +355,7 @@ CONTENT:
                                         <p className="text-gray-400 text-sm">Probability of AI citation</p>
                                     </div>
                                     <div className="text-right">
-                                        <div className="text-5xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                                        <div className="text-3xl md:text-5xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                                             {result.aiVisibility.score}%
                                         </div>
                                         <div className={`text-sm font-bold mt-1 ${result.aiVisibility.citationProbability === 'Very High' ? 'text-green-400' :
@@ -407,7 +422,7 @@ CONTENT:
                                             <p className="text-xs text-gray-400 mb-3">{suggestion.reason}</p>
                                             <div className="flex items-center gap-1 text-xs text-purple-400 font-semibold">
                                                 <Search className="w-4 h-4" />
-                                                Find similar articles →
+                                                Find similar articles â†’
                                             </div>
                                         </a>
                                     ))}
@@ -460,7 +475,7 @@ CONTENT:
                             <div className="bg-cyan-900/10 backdrop-blur-xl rounded-2xl border border-cyan-500/30 p-5">
                                 <h3 className="text-sm font-bold text-cyan-300 mb-3 flex items-center gap-2">
                                     <Globe className="w-4 h-4" />
-                                    SERP Landscape — What You're Competing Against
+                                    SERP Landscape â€” What You're Competing Against
                                 </h3>
                                 <div className="space-y-2">
                                     {serpLandscape.map((c, i) => (
@@ -501,7 +516,7 @@ CONTENT:
 
                         {/* GEO Citation Rewriter */}
                         {result && result.aiVisibility && result.aiVisibility.score < 70 && (
-                            <GEORewriterPanel url={result.url} keywords={result.keywords} aiVisibility={result.aiVisibility} />
+                            <GEORewriterPanel url={result.url} keywords={result.keywords} aiVisibility={result.aiVisibility} serpData={serpLandscape} />
                         )}
 
                         {/* Cross-Links to Other Admin Tools */}
@@ -605,15 +620,21 @@ function RecommendationCard({ rec, onGenerateFix, getPriorityBadge }) {
 
     const handleFix = async () => {
         setLoading(true);
-        const result = await onGenerateFix();
-        setFix(result);
-        setExpanded(true);
-        setLoading(false);
+        try {
+            const result = await onGenerateFix();
+            setFix(result);
+            setExpanded(true);
+        } catch (e) {
+            setFix({ error: e?.message || 'Failed to generate fix' });
+            setExpanded(true);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCopy = () => {
         if (fix?.content) {
-            navigator.clipboard.writeText(fix.content);
+            navigator.clipboard.writeText(fix.content).catch(() => {});
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         }
@@ -681,8 +702,8 @@ function RecommendationCard({ rec, onGenerateFix, getPriorityBadge }) {
     );
 }
 
-// GEO Citation Rewriter panel — rewrites weak sections for AI citation
-function GEORewriterPanel({ url, keywords, aiVisibility }) {
+// GEO Citation Rewriter panel â€” rewrites weak sections for AI citation
+function GEORewriterPanel({ url, keywords, aiVisibility, serpData }) {
     const [loading, setLoading] = useState(false);
     const [rewrite, setRewrite] = useState(null);
     const [copied, setCopied] = useState(false);
@@ -691,12 +712,18 @@ function GEORewriterPanel({ url, keywords, aiVisibility }) {
         if (!aiService.isEnabled) { alert('Set AI API key in sidebar first.'); return; }
         setLoading(true);
         const weakFactors = (aiVisibility.factors || []).filter(f => f.status === 'weak' || f.status === 'missing');
+
+        // Include SERP competitor context for grounded rewrites
+        const serpContext = serpData && serpData.length > 0
+            ? `\nCOMPETITOR CONTENT (from live Google results â€” use as reference for what Google currently ranks):\n${serpData.slice(0, 3).map((c, i) => `${i + 1}. "${c.title}" â€” ${c.snippet || ''}`).join('\n')}\n`
+            : '';
+
         const prompt = `You are a GEO (Generative Engine Optimization) expert. Rewrite content to maximize AI citation probability.
 
 ARTICLE: ${url}
 KEYWORDS: ${(keywords || []).slice(0, 8).join(', ')}
 AI VISIBILITY SCORE: ${aiVisibility.score}/100 (${aiVisibility.citationProbability} citation probability)
-
+${serpContext}
 WEAK FACTORS TO FIX:
 ${weakFactors.map(f => `- ${f.factor}: ${f.impact} (status: ${f.status})`).join('\n')}
 
@@ -734,7 +761,7 @@ Format output as HTML blocks ready to paste into WordPress.`;
                         <Sparkles className="w-7 h-7 text-purple-400" />
                         GEO Citation Rewriter
                     </h3>
-                    <p className="text-gray-400 text-sm">AI visibility score is {aiVisibility.score}/100 — rewrite for higher AI citation probability</p>
+                    <p className="text-gray-400 text-sm">AI visibility score is {aiVisibility.score}/100 â€” rewrite for higher AI citation probability</p>
                 </div>
                 <button
                     onClick={handleRewrite}
@@ -750,7 +777,7 @@ Format output as HTML blocks ready to paste into WordPress.`;
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-xs font-semibold text-emerald-400">Citation-Optimized Content</span>
                         <button
-                            onClick={() => { navigator.clipboard.writeText(rewrite); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                            onClick={() => { navigator.clipboard.writeText(rewrite).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
                             className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
                         >
                             {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}

@@ -1,4 +1,4 @@
-// src/lib/seoConfig.js
+﻿// src/lib/seoConfig.js
 /**
  * Centralized SEO Configuration
  * Single source of truth for all SEO-related constants and utilities
@@ -28,7 +28,7 @@ export const SITE_CONFIG = {
   },
   logo: {
     url: 'https://dataengineerhub.blog/logo.png',
-    width: 246,
+    width: 250,
     height: 250,
   },
   ogImage: {
@@ -43,11 +43,11 @@ export const SITE_CONFIG = {
 // ============================================================================
 
 export const SEO_DEFAULTS = {
-  titleTemplate: '%s | DataEngineer Hub',
+  titleTemplate: '%s',
   titleSeparator: '|',
   maxTitleLength: 60,
   maxDescriptionLength: 155,
-  defaultTitle: 'DataEngineer Hub - Data Engineering Tutorials',
+  defaultTitle: 'Data Engineering Tutorials — Snowflake, AWS, Azure, dbt & More',
   defaultDescription: 'Learn data engineering with expert tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow & dbt. Practical guides for data professionals.',
   defaultKeywords: [
     'data engineering',
@@ -128,6 +128,12 @@ export function getPersonSchema() {
       },
     ],
     sameAs: SITE_CONFIG.author.sameAs,
+    hasOccupation: {
+      '@type': 'Occupation',
+      name: 'Data Engineer',
+      occupationLocation: { '@type': 'Country', name: 'India' },
+      skills: 'Snowflake, Databricks, AWS, Azure, GCP, dbt, Apache Airflow, Apache Spark, Python, SQL, ETL/ELT pipelines',
+    },
     knowsAbout: [
       'Data Engineering',
       'Snowflake',
@@ -170,6 +176,22 @@ export function getWebSiteSchema() {
 }
 
 /**
+ * Pick the most appropriate Article subtype for the given category.
+ * `TechArticle` for engineering tutorials, `NewsArticle` for news, otherwise `Article`.
+ */
+function pickArticleType(category) {
+  if (!category) return 'Article';
+  const c = String(category).toLowerCase();
+  if (c === 'news' || c.includes('news') || c.includes('trends')) return 'NewsArticle';
+  // Most categories on this blog are technical tutorials.
+  const techCats = ['snowflake', 'databricks', 'aws', 'azure', 'gcp', 'salesforce',
+    'python', 'sql', 'dbt', 'airflow', 'data engineering', 'developer-productivity',
+    'developer productivity', 'lakehouse', 'kafka', 'spark'];
+  if (techCats.some((t) => c.includes(t))) return 'TechArticle';
+  return 'Article';
+}
+
+/**
  * Generate Article schema
  */
 export function getArticleSchema({
@@ -184,9 +206,21 @@ export function getArticleSchema({
   author = SITE_CONFIG.author.name,
   wordCount,
 }) {
+  // Build `about` list (entity grounding helps AI citation eligibility).
+  const tagNames = Array.isArray(tags)
+    ? tags.map((t) => (typeof t === 'string' ? t : t && t.name)).filter(Boolean)
+    : [];
+  const aboutList = [];
+  if (category) aboutList.push({ '@type': 'Thing', name: category });
+  for (const tag of tagNames) {
+    if (!aboutList.some((a) => a.name.toLowerCase() === tag.toLowerCase())) {
+      aboutList.push({ '@type': 'Thing', name: tag });
+    }
+  }
+
   return {
     '@context': 'https://schema.org',
-    '@type': 'Article',
+    '@type': pickArticleType(category),
     headline: title,
     description: description,
     image: {
@@ -225,27 +259,35 @@ export function getArticleSchema({
         ? tags.map(t => (typeof t === 'string' ? t : t.name)).filter(Boolean).join(', ')
         : tags,
     }),
+    ...(aboutList.length > 0 && { about: aboutList }),
     ...(wordCount && Number(wordCount) > 0 && { wordCount: Number(wordCount) }),
     speakable: {
       '@type': 'SpeakableSpecification',
-      cssSelector: ['.article-summary', '.key-takeaways', 'h1', 'h2', '.tldr'],
+      // Only include selectors that actually exist in the rendered DOM.
+      // `.article-summary` and `.tldr` were dead targets — Google Assistant
+      // would find nothing to speak on those.
+      cssSelector: ['.key-takeaways', 'h1', '.article-content > p:first-of-type'],
     },
   };
 }
 
 /**
  * Generate BreadcrumbList schema
+ * Per Google's spec, the LAST item (current page) should NOT have an `item` URL.
  */
 export function getBreadcrumbSchema(breadcrumbs) {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: breadcrumbs.map((crumb, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: crumb.name,
-      item: ensureAbsoluteUrl(crumb.url),
-    })),
+    itemListElement: breadcrumbs.map((crumb, index) => {
+      const isLast = index === breadcrumbs.length - 1;
+      return {
+        '@type': 'ListItem',
+        position: index + 1,
+        name: crumb.name,
+        ...(isLast ? {} : { item: ensureAbsoluteUrl(crumb.url) }),
+      };
+    }),
   };
 }
 
@@ -300,11 +342,21 @@ export function getVideoSchema(videos) {
 
 /**
  * Extract YouTube/Vimeo videos from HTML content
+ *
+ * `articlePublishedTime` should be passed as the article's datePublished. We
+ * use it as the VideoObject `uploadDate`. Falling back to "today" caused the
+ * uploadDate to fluctuate on every render and Google to suppress video rich
+ * results — so we OMIT uploadDate when no real date is available.
  */
-export function extractVideosFromContent(html, articleTitle, articleDescription, articleThumbnail) {
+export function extractVideosFromContent(html, articleTitle, articleDescription, articleThumbnail, articlePublishedTime) {
   if (!html) return [];
   const videos = [];
   const seen = new Set();
+
+  // Stable date — only emit when we have a real article publish date.
+  const stableDate = articlePublishedTime
+    ? String(articlePublishedTime).split('T')[0]
+    : null;
 
   // Match YouTube iframes
   const ytRegex = /src=["'](?:https?:)?\/\/(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})[^"']*["']/gi;
@@ -319,7 +371,7 @@ export function extractVideosFromContent(html, articleTitle, articleDescription,
       name: articleTitle,
       description: articleDescription,
       thumbnailUrl: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-      uploadDate: new Date().toISOString().split('T')[0],
+      ...(stableDate && { uploadDate: stableDate }),
       embedUrl: `https://www.youtube.com/embed/${videoId}`,
       contentUrl: `https://www.youtube.com/watch?v=${videoId}`,
     });
@@ -337,7 +389,7 @@ export function extractVideosFromContent(html, articleTitle, articleDescription,
       name: articleTitle,
       description: articleDescription,
       thumbnailUrl: articleThumbnail,
-      uploadDate: new Date().toISOString().split('T')[0],
+      ...(stableDate && { uploadDate: stableDate }),
       embedUrl: `https://player.vimeo.com/video/${videoId}`,
     });
   }
@@ -362,28 +414,20 @@ export function getCanonicalUrl(path = '') {
  * OPTIMIZED: Avoids "..." truncation which reduces CTR by 20-30%
  */
 export function formatTitle(title, options = {}) {
-  const { includeBrand = true, maxLength = SEO_DEFAULTS.maxTitleLength } = options;
+  // Brand suffix removed per request â€” page titles render exactly as the
+  // page provides them, with no automatic "" appended.
+  const { maxLength = SEO_DEFAULTS.maxTitleLength } = options;
 
   if (!title) return SEO_DEFAULTS.defaultTitle;
 
-  const brandSuffix = ` ${SEO_DEFAULTS.titleSeparator} ${SITE_CONFIG.name}`;
-  const effectiveMax = includeBrand ? maxLength - brandSuffix.length : maxLength;
-
-  // Front-load keywords - truncate at word boundary, never use "..."
-  let formattedTitle = title;
-  if (title.length > effectiveMax) {
-    // Find last complete word before limit
-    const truncated = title.substring(0, effectiveMax);
+  // Truncate at word boundary if over the limit (no ellipsis).
+  if (title.length > maxLength) {
+    const truncated = title.substring(0, maxLength);
     const lastSpace = truncated.lastIndexOf(' ');
-    formattedTitle = lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated;
+    return lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated;
   }
 
-  // Only add brand if space allows and requested
-  if (includeBrand && (formattedTitle.length + brandSuffix.length) <= maxLength) {
-    formattedTitle += brandSuffix;
-  }
-
-  return formattedTitle;
+  return title;
 }
 
 /**

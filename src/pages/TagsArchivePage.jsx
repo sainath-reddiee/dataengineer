@@ -18,7 +18,7 @@ const TagsArchivePage = () => {
   return (
     <>
       <MetaTags
-        title="Browse All Tags - DataEngineer Hub"
+        title="Browse All Tags"
         description="Explore all tags on DataEngineer Hub. Find articles by topic including data engineering, cloud platforms, databases, and more."
         keywords="tags, topics, data engineering, cloud, databases, tutorials"
         type="website"

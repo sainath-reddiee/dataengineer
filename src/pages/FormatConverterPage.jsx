@@ -1,6 +1,6 @@
-// src/pages/FormatConverterPage.jsx
+﻿// src/pages/FormatConverterPage.jsx
 // Client-side JSON / Parquet / Avro converter powered by DuckDB-WASM + avsc.
-// No upload — all processing runs in-browser via WebAssembly.
+// No upload â€” all processing runs in-browser via WebAssembly.
 import React, { useState, useCallback, useRef, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -37,11 +37,11 @@ const SAMPLE_JSON = `[
 const FAQ = [
   {
     q: 'Is this converter free and private?',
-    a: 'Yes. Everything runs in your browser via WebAssembly (DuckDB-WASM) and JavaScript (avsc). Your files never leave your device — there is no server upload, no logging, and no storage.',
+    a: 'Yes. Everything runs in your browser via WebAssembly (DuckDB-WASM) and JavaScript (avsc). Your files never leave your device â€” there is no server upload, no logging, and no storage.',
   },
   {
     q: 'What file size limit can it handle?',
-    a: 'The practical limit is your browser\'s available memory — typically 1-4 GB depending on device and browser. Files up to ~200 MB convert reliably on modern machines. For larger files, use a local DuckDB CLI or Apache Spark.',
+    a: 'The practical limit is your browser\'s available memory â€” typically 1-4 GB depending on device and browser. Files up to ~200 MB convert reliably on modern machines. For larger files, use a local DuckDB CLI or Apache Spark.',
   },
   {
     q: 'Does it preserve schema and types?',
@@ -49,11 +49,11 @@ const FAQ = [
   },
   {
     q: 'Which Parquet compression is used?',
-    a: 'Output Parquet files use ZSTD compression by default — the best balance of compression ratio and speed. DuckDB also supports Snappy, Gzip, and LZ4 for reading input Parquet files.',
+    a: 'Output Parquet files use ZSTD compression by default â€” the best balance of compression ratio and speed. DuckDB also supports Snappy, Gzip, and LZ4 for reading input Parquet files.',
   },
   {
     q: 'Can I convert between Parquet and Avro directly?',
-    a: 'Yes. The converter chains through an intermediate representation: Parquet → JSON (via DuckDB) → Avro (via avsc), or Avro → JSON → Parquet. The intermediate step is in-memory and instant for typical file sizes.',
+    a: 'Yes. The converter chains through an intermediate representation: Parquet â†’ JSON (via DuckDB) â†’ Avro (via avsc), or Avro â†’ JSON â†’ Parquet. The intermediate step is in-memory and instant for typical file sizes.',
   },
   {
     q: 'What Avro features are supported?',
@@ -135,7 +135,7 @@ async function jsonToAvro(jsonStr) {
   const avsc = await import('avsc');
   const data = JSON.parse(jsonStr);
   const arr = Array.isArray(data) ? data : [data];
-  if (arr.length === 0) throw new Error('Input JSON is empty — need at least one record to infer schema.');
+  if (arr.length === 0) throw new Error('Input JSON is empty â€” need at least one record to infer schema.');
   // Infer Avro type from the first record
   const type = avsc.Type.forValue(arr[0]);
   // Wrap in array type for encoding all records
@@ -154,7 +154,7 @@ async function avroToJson(uint8Array) {
                       uint8Array[2] === 0x6a && uint8Array[3] === 0x01;
   let records = [];
   if (isContainer) {
-    // Avro Object Container File — decode with BlockDecoder
+    // Avro Object Container File â€” decode with BlockDecoder
     const decoder = avsc.createBlobDecoder(new Blob([uint8Array]));
     records = await new Promise((resolve, reject) => {
       const rows = [];
@@ -163,7 +163,7 @@ async function avroToJson(uint8Array) {
       decoder.on('error', reject);
     });
   } else {
-    // Raw Avro binary — try to decode with auto-inferred schema
+    // Raw Avro binary â€” try to decode with auto-inferred schema
     // This is a best-effort fallback; structured container files are preferred
     throw new Error('Avro file does not appear to be an Object Container File (OCF). Please use a .avro file with the standard Obj\\x01 header. Raw binary Avro without an embedded schema cannot be auto-decoded.');
   }
@@ -174,14 +174,14 @@ async function avroToJson(uint8Array) {
 }
 
 async function parquetToAvro(uint8Array) {
-  // Parquet → JSON via DuckDB, then JSON → Avro
+  // Parquet â†’ JSON via DuckDB, then JSON â†’ Avro
   const jsonResult = await parquetToJson(uint8Array);
   const avroResult = await jsonToAvro(jsonResult.text);
   return { ...avroResult, preview: jsonResult.preview, columns: jsonResult.columns, totalRows: jsonResult.totalRows };
 }
 
 async function avroToParquet(uint8Array) {
-  // Avro → JSON, then JSON → Parquet via DuckDB
+  // Avro â†’ JSON, then JSON â†’ Parquet via DuckDB
   const jsonResult = await avroToJson(uint8Array);
   const parquetResult = await jsonToParquet(jsonResult.text);
   return { ...parquetResult };
@@ -341,7 +341,7 @@ export default function FormatConverterPage() {
     name: 'JSON / Parquet / Avro Converter',
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'Web',
-    description: 'Free in-browser converter between JSON, Parquet, and Avro formats. Powered by DuckDB-WASM. No upload, no server — 100% client-side.',
+    description: 'Free in-browser converter between JSON, Parquet, and Avro formats. Powered by DuckDB-WASM. No upload, no server â€” 100% client-side.',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
     url: 'https://dataengineerhub.blog/tools/json-parquet-avro-converter',
     publisher: {
@@ -364,7 +364,7 @@ export default function FormatConverterPage() {
   return (
     <>
       <MetaTags
-        title="JSON / Parquet / Avro Converter 2026 — Free Browser Tool"
+        title="JSON / Parquet / Avro Converter 2026 â€” Free Browser Tool"
         description="Convert between JSON, Parquet, and Avro instantly in your browser. Powered by DuckDB-WASM and avsc. No upload, no server, 100% private."
         keywords="json to parquet, parquet to json, json to avro, avro to json, parquet to avro, avro to parquet, file converter, data format converter, duckdb wasm, browser converter"
         url="/tools/json-parquet-avro-converter"
@@ -375,6 +375,7 @@ export default function FormatConverterPage() {
           { name: 'JSON / Parquet / Avro Converter', url: '/tools/json-parquet-avro-converter' },
         ]}
         faqSchema={faqSchema}
+      noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
@@ -393,7 +394,7 @@ export default function FormatConverterPage() {
           <p className="text-gray-300 text-lg max-w-3xl mt-3">
             Convert between JSON, Apache Parquet, and Apache Avro directly in your browser.
             Powered by DuckDB-WASM for Parquet and <code className="text-amber-300">avsc</code> for Avro.
-            No file upload, no server — everything runs locally.
+            No file upload, no server â€” everything runs locally.
           </p>
         </div>
 
@@ -463,7 +464,7 @@ export default function FormatConverterPage() {
           {/* Left: Source */}
           <div className="space-y-2">
             <h2 className="text-sm font-medium text-gray-400 uppercase tracking-wide">
-              Input — {sourceFormat}
+              Input â€” {sourceFormat}
             </h2>
             {isBinarySource ? (
               <div
@@ -508,7 +509,7 @@ export default function FormatConverterPage() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-medium text-gray-400 uppercase tracking-wide">
-                Output — {targetFormat}
+                Output â€” {targetFormat}
               </h2>
               <div className="flex gap-2">
                 {result?.text && (
@@ -550,7 +551,7 @@ export default function FormatConverterPage() {
               {result && !converting && !result.text && result.preview && (
                 <div>
                   <p className="text-gray-400 text-xs mb-2">
-                    Binary output — {result.buffer?.length ? `${(result.buffer.length / 1024).toFixed(1)} KB` : ''} &middot; {result.totalRows} row{result.totalRows !== 1 ? 's' : ''} &middot; Preview below
+                    Binary output â€” {result.buffer?.length ? `${(result.buffer.length / 1024).toFixed(1)} KB` : ''} &middot; {result.totalRows} row{result.totalRows !== 1 ? 's' : ''} &middot; Preview below
                   </p>
                   <div className="overflow-x-auto">
                     <table className="min-w-full text-xs font-mono">
@@ -636,9 +637,9 @@ export default function FormatConverterPage() {
               <BookOpen className="w-5 h-5 text-amber-400" /> When to Use Each Format
             </h2>
             <ul className="space-y-2 text-gray-300 text-sm">
-              <li><strong className="text-amber-300">JSON</strong> — Universal interchange. Use for REST APIs, configuration files, small datasets, and anywhere human readability matters. Poor compression and slow scans make it unsuitable for analytics at scale.</li>
-              <li><strong className="text-amber-300">Parquet</strong> — The standard for analytical workloads. Columnar layout enables predicate pushdown and column pruning. Used by Snowflake, BigQuery, Databricks, Spark, DuckDB, and every modern data lake. Ideal for large datasets queried repeatedly.</li>
-              <li><strong className="text-amber-300">Avro</strong> — Row-oriented binary format with strong schema evolution support. The default for Apache Kafka, Hadoop, and event streaming pipelines. Compact, fast to serialize/deserialize, and supports schema registries.</li>
+              <li><strong className="text-amber-300">JSON</strong> â€” Universal interchange. Use for REST APIs, configuration files, small datasets, and anywhere human readability matters. Poor compression and slow scans make it unsuitable for analytics at scale.</li>
+              <li><strong className="text-amber-300">Parquet</strong> â€” The standard for analytical workloads. Columnar layout enables predicate pushdown and column pruning. Used by Snowflake, BigQuery, Databricks, Spark, DuckDB, and every modern data lake. Ideal for large datasets queried repeatedly.</li>
+              <li><strong className="text-amber-300">Avro</strong> â€” Row-oriented binary format with strong schema evolution support. The default for Apache Kafka, Hadoop, and event streaming pipelines. Compact, fast to serialize/deserialize, and supports schema registries.</li>
             </ul>
           </div>
         </div>

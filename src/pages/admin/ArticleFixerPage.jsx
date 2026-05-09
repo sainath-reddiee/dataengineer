@@ -1,5 +1,5 @@
-// src/pages/admin/ArticleFixerPage.jsx
-// Batch Article Fixer — analyzes all articles against focus keyphrases,
+﻿// src/pages/admin/ArticleFixerPage.jsx
+// Batch Article Fixer â€” analyzes all articles against focus keyphrases,
 // uses GSC performance data for smart prioritization, and generates ready-to-paste AI fixes.
 
 import React, { useEffect, useState, useMemo } from 'react';
@@ -12,6 +12,7 @@ import wordpressApi from '@/services/wordpressApi';
 import gscService from '@/services/gscService';
 import aiService from '@/services/aiService';
 import tinyfishService from '@/services/tinyfishService';
+import { useMountedRef } from '@/hooks/useMountedRef';
 
 // Expected CTR by position (Google averages)
 function getExpectedCTR(pos) {
@@ -83,10 +84,12 @@ export function ArticleFixerPage() {
     const [batchFixing, setBatchFixing] = useState(false);
     const [batchResult, setBatchResult] = useState('');
     const [batchCopied, setBatchCopied] = useState(false);
+    const mounted = useMountedRef();
 
     useEffect(() => { loadData(); }, []);
 
     async function loadData() {
+        if (!mounted.current) return;
         setLoading(true);
         setError('');
         setArticles([]);
@@ -94,6 +97,7 @@ export function ArticleFixerPage() {
         try {
             setProgress('Fetching articles...');
             const wpData = await wordpressApi.getAllPosts(1, 100);
+            if (!mounted.current) return;
             const posts = wpData.posts || [];
             if (posts.length === 0) { setError('No articles found.'); setLoading(false); return; }
 
@@ -105,6 +109,7 @@ export function ArticleFixerPage() {
                 try {
                     // Page-level metrics (impressions, clicks, CTR, position)
                     const pages = await gscService.queryTopPages({ rowLimit: 200 });
+                    if (!mounted.current) return;
                     pages.forEach(p => {
                         const slugMatch = p.page.match(/\/articles\/([^/?#]+)/);
                         if (slugMatch) gscPages[slugMatch[1]] = p;
@@ -116,12 +121,14 @@ export function ArticleFixerPage() {
                         .slice(0, 20);
 
                     for (let i = 0; i < topSlugs.length; i++) {
+                        if (!mounted.current) return;
                         setProgress(`Fetching keywords ${i + 1}/${topSlugs.length}...`);
                         try {
                             const kws = await gscService.queryTopKeywords({
                                 url: `https://dataengineerhub.blog/articles/${topSlugs[i]}`,
                                 rowLimit: 5,
                             });
+                            if (!mounted.current) return;
                             if (kws.length > 0) {
                                 gscMap[topSlugs[i]] = kws.sort((a, b) => b.impressions - a.impressions);
                             }
@@ -132,6 +139,7 @@ export function ArticleFixerPage() {
                 }
             }
 
+            if (!mounted.current) return;
             setProgress('Analyzing articles...');
 
             // Analyze each article with GSC data
@@ -176,8 +184,9 @@ export function ArticleFixerPage() {
 
             setArticles(analyzed);
         } catch (e) {
-            setError(e.message || 'Failed to load data');
+            if (mounted.current) setError(e.message || 'Failed to load data');
         }
+        if (!mounted.current) return;
         setLoading(false);
         setProgress('');
     }
@@ -213,7 +222,7 @@ export function ArticleFixerPage() {
     const strikingCount = articles.filter(a => a.position >= 5 && a.position <= 20).length;
     const avgCTR = articles.filter(a => a.ctr > 0).length > 0
         ? (articles.filter(a => a.ctr > 0).reduce((s, a) => s + a.ctr, 0) / articles.filter(a => a.ctr > 0).length * 100).toFixed(1)
-        : '—';
+        : 'â€”';
     const needsWork = articles.filter(a => a.score < 70).length;
 
     // Batch fix top 5
@@ -254,9 +263,9 @@ Generate CONCISELY:
 Be specific. Include "${article.focusKeyword}" naturally.`;
 
                 const response = await aiService.generateSuggestion(prompt, '');
-                combined += `\n${'═'.repeat(60)}\n📝 ${article.title}\n   URL: /articles/${article.slug}\n   Score: ${article.score}/100 | Position: #${article.position?.toFixed(1) || '?'} | Missed clicks: ${article.missedClicks}\n${'─'.repeat(60)}\n${response}\n`;
+                combined += `\n${'â•'.repeat(60)}\nðŸ“ ${article.title}\n   URL: /articles/${article.slug}\n   Score: ${article.score}/100 | Position: #${article.position?.toFixed(1) || '?'} | Missed clicks: ${article.missedClicks}\n${'â”€'.repeat(60)}\n${response}\n`;
             } catch (e) {
-                combined += `\n${'═'.repeat(60)}\n📝 ${article.title}\n   ERROR: ${e.message}\n`;
+                combined += `\n${'â•'.repeat(60)}\nðŸ“ ${article.title}\n   ERROR: ${e.message}\n`;
             }
         }
 
@@ -269,11 +278,11 @@ Be specific. Include "${article.focusKeyword}" naturally.`;
         <div className="space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                    <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                         <Wrench className="w-8 h-8 text-orange-400" />
                         Article Fixer
                     </h1>
-                    <p className="text-gray-400">Prioritize articles by real traffic opportunity — fix what matters most.</p>
+                    <p className="text-gray-400">Prioritize articles by real traffic opportunity â€” fix what matters most.</p>
                 </div>
                 <button onClick={loadData} disabled={loading} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-white text-sm rounded-lg flex items-center gap-2">
                     <RefreshCw className="w-4 h-4" /> Refresh
@@ -356,7 +365,7 @@ Be specific. Include "${article.focusKeyword}" naturally.`;
                                     <Sparkles className="w-4 h-4" /> Batch Fixes (Top 5 Priority Articles)
                                 </span>
                                 <button
-                                    onClick={() => { navigator.clipboard.writeText(batchResult); setBatchCopied(true); setTimeout(() => setBatchCopied(false), 2000); }}
+                                    onClick={() => { navigator.clipboard.writeText(batchResult).catch(() => {}); setBatchCopied(true); setTimeout(() => setBatchCopied(false), 2000); }}
                                     className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
                                 >
                                     {batchCopied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
@@ -409,7 +418,7 @@ function ArticleRow({ article, expanded, onToggle }) {
                     const results = await tinyfishService.search(article.focusKeyword);
                     const top5 = (results.results || []).filter(r => !r.url?.includes('dataengineerhub.blog')).slice(0, 5);
                     if (top5.length > 0) {
-                        competitorContext = `\nCURRENT TOP SERP RESULTS FOR "${article.focusKeyword}":\n${top5.map((r, i) => `${i + 1}. "${r.title}" — ${r.snippet || ''}`).join('\n')}\n`;
+                        competitorContext = `\nCURRENT TOP SERP RESULTS FOR "${article.focusKeyword}":\n${top5.map((r, i) => `${i + 1}. "${r.title}" â€” ${r.snippet || ''}`).join('\n')}\n`;
                     }
                 } catch { /* optional */ }
             }
@@ -458,7 +467,7 @@ Format clearly with headers. Be specific, not generic. Every suggestion must con
 
     const handleCopy = () => {
         if (fix) {
-            navigator.clipboard.writeText(fix);
+            navigator.clipboard.writeText(fix).catch(() => {});
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         }
@@ -523,7 +532,7 @@ Format clearly with headers. Be specific, not generic. Every suggestion must con
                     <div className="flex flex-wrap gap-1.5">
                         {Object.entries(article.analysis?.checks || {}).map(([key, passed]) => (
                             <span key={key} className={`px-2 py-0.5 rounded text-[10px] ${passed ? 'bg-emerald-900/30 text-emerald-300 border border-emerald-500/30' : 'bg-red-900/30 text-red-300 border border-red-500/30'}`}>
-                                {key}: {passed ? '✓' : '✗'}
+                                {key}: {passed ? 'âœ“' : 'âœ—'}
                             </span>
                         ))}
                     </div>
@@ -531,7 +540,7 @@ Format clearly with headers. Be specific, not generic. Every suggestion must con
                     {/* GSC keywords */}
                     {article.gscKeywords?.length > 0 && (
                         <div className="text-xs text-gray-500">
-                            Top queries: {article.gscKeywords.slice(0, 5).map(k => k.query).join(' · ')}
+                            Top queries: {article.gscKeywords.slice(0, 5).map(k => k.query).join(' Â· ')}
                         </div>
                     )}
 

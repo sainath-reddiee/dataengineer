@@ -5,7 +5,7 @@
  * optimized for CTR in Google search results.
  * 
  * Rules applied:
- * - Titles: Under 60 chars (before " | DataEngineer Hub" suffix), 
+ * - Titles: Under 60 chars (no brand suffix is appended automatically), 
  *   use numbers, power words, and clear value props
  * - Descriptions: 120-155 chars, lead with value/outcome, end with CTA
  * - No keyword stuffing — natural, compelling copy

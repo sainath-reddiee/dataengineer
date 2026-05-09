@@ -1,4 +1,4 @@
-// src/pages/BigQueryCostPage.jsx
+﻿// src/pages/BigQueryCostPage.jsx
 // BigQuery cost calculator: on-demand (per TB scanned) + flat-rate (slot-hours).
 // Targets: bigquery cost calculator, bigquery pricing, bigquery slot cost.
 import React, { useMemo, useState, useEffect, useCallback, Suspense } from 'react';
@@ -23,39 +23,39 @@ function fmt(n) {
 
 const LAST_UPDATED = 'April 2026';
 
-const INTRO = `**BigQuery pricing is simple until you try to model it.** Two completely different compute-billing modes (on-demand vs Editions), three Edition tiers with different feature cutlines, separate storage billing with automatic long-term discounts, and streaming ingest with its own free tier — and that's before you get into slot reservations, commitments, and autoscaling. This calculator exists because the official Google Cloud pricing calculator buries BigQuery inside a generic UI that doesn't let you reason clearly about the on-demand vs Editions break-even, which is the single most valuable pricing decision any BigQuery team makes.
+const INTRO = `**BigQuery pricing is simple until you try to model it.** Two completely different compute-billing modes (on-demand vs Editions), three Edition tiers with different feature cutlines, separate storage billing with automatic long-term discounts, and streaming ingest with its own free tier â€” and that's before you get into slot reservations, commitments, and autoscaling. This calculator exists because the official Google Cloud pricing calculator buries BigQuery inside a generic UI that doesn't let you reason clearly about the on-demand vs Editions break-even, which is the single most valuable pricing decision any BigQuery team makes.
 
 ### How to use this calculator
 
-The **TB scanned per month** input is the one number you cannot hand-wave. Everything else on the page — storage, streaming, even the Editions slot count — is secondary to the compute cost driven by bytes scanned. If you don't know your TB scanned number, run the validator SQL block below against your \`INFORMATION_SCHEMA.JOBS_BY_PROJECT\` for the last 30 days. That's the number your actual bill cares about.
+The **TB scanned per month** input is the one number you cannot hand-wave. Everything else on the page â€” storage, streaming, even the Editions slot count â€” is secondary to the compute cost driven by bytes scanned. If you don't know your TB scanned number, run the validator SQL block below against your \`INFORMATION_SCHEMA.JOBS_BY_PROJECT\` for the last 30 days. That's the number your actual bill cares about.
 
-Then flip between **on-demand** and **Editions** to see the break-even. On-demand is \`(TB - 1) * $6.25\` — one number, easy. Editions is \`slots * hours/day * days/month * slot_rate\`, where slot_rate is $0.04 (Standard), $0.06 (Enterprise), or $0.10 (Enterprise Plus). If the calculator shows Editions cheaper at your current volume, that's your signal to open a Cloud Billing case and discuss a slot reservation.
+Then flip between **on-demand** and **Editions** to see the break-even. On-demand is \`(TB - 1) * $6.25\` â€” one number, easy. Editions is \`slots * hours/day * days/month * slot_rate\`, where slot_rate is $0.04 (Standard), $0.06 (Enterprise), or $0.10 (Enterprise Plus). If the calculator shows Editions cheaper at your current volume, that's your signal to open a Cloud Billing case and discuss a slot reservation.
 
 ### What this calculator gets right (and where to be skeptical)
 
 **Gets right**: list prices across on-demand and all three Editions, the 1 TB free on-demand tier, the 90-day long-term storage auto-transition, the 2 TB free Storage Write API tier. These reflect public GCP pricing as of ${LAST_UPDATED}.
 
-**Be skeptical when**: (1) you have a committed-use discount (CUD) on slots — your effective rate is lower. (2) You're running BigQuery ML, vector search, or multi-statement transactions — those have separate compute accounting. (3) You use cross-region or cross-cloud queries (Enterprise Plus) — there's an additional data-transfer charge the calculator doesn't model. (4) Your workload uses flex slots or autoscaling — variable slot count means the hours/day number becomes an average, not a ceiling.
+**Be skeptical when**: (1) you have a committed-use discount (CUD) on slots â€” your effective rate is lower. (2) You're running BigQuery ML, vector search, or multi-statement transactions â€” those have separate compute accounting. (3) You use cross-region or cross-cloud queries (Enterprise Plus) â€” there's an additional data-transfer charge the calculator doesn't model. (4) Your workload uses flex slots or autoscaling â€” variable slot count means the hours/day number becomes an average, not a ceiling.
 
 ### The pricing mental model that actually matters
 
-Forget TB/slot/GB rates for a second. The economic question is: **does your workload look like a bursty spike or a steady stream?** Bursty spikes favor on-demand (pay only when you query) or Enterprise Plus with autoscale (slots drop to 0 at idle). Steady streams favor fixed Standard/Enterprise reservations (no overprovisioning needed, lowest slot rate). The calculator lets you prove which category your workload falls into before you commit — which is the entire point of modeling pricing before signing the contract.`;
+Forget TB/slot/GB rates for a second. The economic question is: **does your workload look like a bursty spike or a steady stream?** Bursty spikes favor on-demand (pay only when you query) or Enterprise Plus with autoscale (slots drop to 0 at idle). Steady streams favor fixed Standard/Enterprise reservations (no overprovisioning needed, lowest slot rate). The calculator lets you prove which category your workload falls into before you commit â€” which is the entire point of modeling pricing before signing the contract.`;
 
 const WHEN_TO_USE = {
   use: [
     "You're budgeting BigQuery spend for the next quarter and need a defensible monthly number to put in the FinOps spreadsheet",
-    "You're evaluating the on-demand vs Editions break-even — especially when monthly scan volume is trending north of 400 TB",
+    "You're evaluating the on-demand vs Editions break-even â€” especially when monthly scan volume is trending north of 400 TB",
     "You're comparing BigQuery against Snowflake or Databricks and need an apples-to-apples cost estimate at your actual TB scanned and storage volumes",
     "You're planning a slot reservation and want to model different commitment scenarios (Standard vs Enterprise vs Enterprise Plus) before signing",
     "You're auditing why last month's BigQuery bill spiked and need a quick sanity check on whether the scan volume matches the invoice",
     "You're pitching a BigQuery migration internally and need a back-of-envelope TCO for executives who don't care about slot mechanics"
   ],
   avoid: [
-    "You already have a committed-use discount (CUD) — your effective slot rate is lower than list, so Editions numbers here will overstate your real cost",
-    "Your workload is dominated by BigQuery ML training, vector search, or multi-statement transactions — those have separate compute accounting the calculator doesn't model",
-    "You need exact contract-specific pricing for procurement — always validate against your Google Cloud account team's official quote, not a public calculator",
-    "Your workload runs cross-region or cross-cloud queries (Enterprise Plus) — the data-transfer charge is material and not modeled here",
-    "You're in a region with non-US pricing — BigQuery pricing varies by region; these defaults reflect US multi-region list prices"
+    "You already have a committed-use discount (CUD) â€” your effective slot rate is lower than list, so Editions numbers here will overstate your real cost",
+    "Your workload is dominated by BigQuery ML training, vector search, or multi-statement transactions â€” those have separate compute accounting the calculator doesn't model",
+    "You need exact contract-specific pricing for procurement â€” always validate against your Google Cloud account team's official quote, not a public calculator",
+    "Your workload runs cross-region or cross-cloud queries (Enterprise Plus) â€” the data-transfer charge is material and not modeled here",
+    "You're in a region with non-US pricing â€” BigQuery pricing varies by region; these defaults reflect US multi-region list prices"
   ]
 };
 
@@ -180,6 +180,7 @@ export default function BigQueryCostPage() {
           { name: 'BigQuery Cost Calculator', url: '/tools/bigquery-cost-calculator' },
         ]}
         faqSchema={faqSchema}
+      noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
@@ -239,17 +240,17 @@ export default function BigQueryCostPage() {
               </h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 {WHEN_TO_USE.use.map((item, i) => (
-                  <li key={i} className="flex gap-2"><span className="text-emerald-400 flex-shrink-0">•</span><span>{item}</span></li>
+                  <li key={i} className="flex gap-2"><span className="text-emerald-400 flex-shrink-0">â€¢</span><span>{item}</span></li>
                 ))}
               </ul>
             </div>
             <div className="bg-rose-950/30 border border-rose-800/50 rounded-xl p-5">
               <h3 className="text-rose-300 font-semibold mb-3 flex items-center gap-2">
-                <span aria-hidden="true">⚠</span> Don't rely on it when
+                <span aria-hidden="true">âš </span> Don't rely on it when
               </h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 {WHEN_TO_USE.avoid.map((item, i) => (
-                  <li key={i} className="flex gap-2"><span className="text-rose-400 flex-shrink-0">•</span><span>{item}</span></li>
+                  <li key={i} className="flex gap-2"><span className="text-rose-400 flex-shrink-0">â€¢</span><span>{item}</span></li>
                 ))}
               </ul>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Globe, Loader2, RefreshCw, History, Clock, ArrowRight, Trash2 } from 'lucide-react';
@@ -70,8 +70,8 @@ export function ScannerPage() {
                         html = await response.text();
                     } catch (proxyError) {
                         setError(
-                            `❌ Cannot scan external URL due to CORS restrictions.\n\n` +
-                            `💡 Solutions:\n` +
+                            `âŒ Cannot scan external URL due to CORS restrictions.\n\n` +
+                            `ðŸ’¡ Solutions:\n` +
                             `1. Click "Scan Current Page" to analyze this page\n` +
                             `2. For your blog articles, navigate to the article and scan it\n` +
                             `3. Use Bulk Scan to analyze all articles at once`
@@ -118,7 +118,7 @@ export function ScannerPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-white mb-2">SEO Scanner</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">SEO Scanner</h1>
                 <p className="text-gray-400">Analyze any URL for 30+ SEO factors</p>
             </div>
 

@@ -1,4 +1,4 @@
-// src/pages/CheatSheetHubPage.jsx
+﻿// src/pages/CheatSheetHubPage.jsx
 /**
  * Cheat Sheet Hub Page
  * Lists all cheat sheets organized by category
@@ -68,7 +68,7 @@ export default function CheatSheetHubPage() {
   }, [filteredSheets, selectedCategory]);
 
   // SEO
-  const pageTitle = 'Data Engineering Cheat Sheets — Free Quick Reference Guides | DataEngineer Hub';
+  const pageTitle = 'Data Engineering Cheat Sheets â€” Free Quick Reference Guides';
   const pageDescription = 'Free cheat sheets for Snowflake SQL, dbt, Airflow, window functions, and more. Quick-reference guides built for data engineers.';
   const canonicalUrl = `${SITE_CONFIG.url}/cheatsheets`;
 
@@ -117,6 +117,8 @@ export default function CheatSheetHubPage() {
         <meta name="description" content={pageDescription} />
         <meta name="keywords" content="data engineering cheat sheet, snowflake sql cheat sheet, dbt cheat sheet, airflow cheat sheet, sql window functions, data engineering reference" />
         <link rel="canonical" href={canonicalUrl} />
+        {/* PSEO/AI-assisted section â€” held out of the index until further editorial work. */}
+        <meta name="robots" content="noindex, follow" />
 
         <meta property="og:type" content="website" />
         <meta property="og:title" content={pageTitle} />
@@ -233,7 +235,7 @@ export default function CheatSheetHubPage() {
                   >
                     {cat.name}
                   </Link>
-                  {idx < CHEATSHEET_CATEGORIES.length - 1 ? ' · ' : ''}
+                  {idx < CHEATSHEET_CATEGORIES.length - 1 ? ' Â· ' : ''}
                 </React.Fragment>
               ))}
             </div>

@@ -1,5 +1,5 @@
-// src/pages/admin/CompetitorGapPage.jsx
-// Compare your article against any competitor URL — AI-powered gap analysis.
+﻿// src/pages/admin/CompetitorGapPage.jsx
+// Compare your article against any competitor URL â€” AI-powered gap analysis.
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -44,9 +44,10 @@ export function CompetitorGapPage() {
         setResult(null);
         try {
             // Fetch full article content
-            const data = await fetch(`https://app.dataengineerhub.blog/wp-json/wp/v2/posts?slug=${selectedSlug}&_fields=slug,title,content,excerpt`);
+            const data = await fetch(`https://app.dataengineerhub.blog/wp-json/wp/v2/posts?slug=${encodeURIComponent(selectedSlug)}&_fields=slug,title,content,excerpt`);
+            if (!data.ok) throw new Error(`WordPress API returned HTTP ${data.status}`);
             const posts = await data.json();
-            if (!posts.length) throw new Error('Article not found');
+            if (!Array.isArray(posts) || !posts.length) throw new Error('Article not found');
 
             const yourArticle = {
                 slug: posts[0].slug,
@@ -69,11 +70,11 @@ export function CompetitorGapPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                     <Users className="w-8 h-8 text-orange-400" />
                     Competitor Gap Analyzer
                 </h1>
-                <p className="text-gray-400">Paste any competitor URL and see exactly what they cover that you don't — AI-powered.</p>
+                <p className="text-gray-400">Paste any competitor URL and see exactly what they cover that you don't â€” AI-powered.</p>
             </div>
 
             {!geminiEnabled && (
@@ -107,6 +108,7 @@ export function CompetitorGapPage() {
                         type="url"
                         value={competitorUrl}
                         onChange={(e) => setCompetitorUrl(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleAnalyze()}
                         placeholder="https://medium.com/@author/article-slug"
                         className="w-full mt-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded text-white text-sm"
                     />
@@ -153,7 +155,7 @@ export function CompetitorGapPage() {
                             </summary>
                             <div className="mt-3 space-y-1">
                                 {result.competitor.h2.map((h, i) => (
-                                    <div key={i} className="text-sm text-gray-300 pl-4">• {h}</div>
+                                    <div key={i} className="text-sm text-gray-300 pl-4">â€¢ {h}</div>
                                 ))}
                             </div>
                         </details>

@@ -107,7 +107,7 @@ function IssueItem({ check }) {
                                                 <Sparkles className="w-3 h-3" /> AI Suggestion
                                             </span>
                                             <button
-                                                onClick={() => navigator.clipboard.writeText(aiSuggestion)}
+                                                onClick={() => navigator.clipboard.writeText(aiSuggestion).catch(() => {})}
                                                 className="text-gray-400 hover:text-white"
                                                 title="Copy"
                                             >

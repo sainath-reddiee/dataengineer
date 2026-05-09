@@ -1,4 +1,4 @@
-// src/pages/JsonToSqlPage.jsx
+﻿// src/pages/JsonToSqlPage.jsx
 // JSON sample -> SQL CREATE TABLE DDL generator. Type inference over nested JSON.
 // Targets "json to sql", "json to create table", "json schema to sql", "snowflake variant ddl".
 import React, { useMemo, useState, useCallback, Suspense } from 'react';
@@ -154,15 +154,15 @@ const FAQ = [
   },
   {
     q: 'How is type inference done?',
-    a: 'The generator scans every sample in the input array. For each field: integers → NUMBER(38,0)/BIGINT/INT64, floats → NUMBER(38,10)/NUMERIC, booleans → BOOLEAN, ISO timestamps → TIMESTAMP, dates → DATE, strings → VARCHAR/STRING/TEXT by length, nested objects/arrays → VARIANT/JSONB/JSON. When types conflict across samples, the generator promotes to the most permissive type.',
+    a: 'The generator scans every sample in the input array. For each field: integers â†’ NUMBER(38,0)/BIGINT/INT64, floats â†’ NUMBER(38,10)/NUMERIC, booleans â†’ BOOLEAN, ISO timestamps â†’ TIMESTAMP, dates â†’ DATE, strings â†’ VARCHAR/STRING/TEXT by length, nested objects/arrays â†’ VARIANT/JSONB/JSON. When types conflict across samples, the generator promotes to the most permissive type.',
   },
   {
     q: 'How does it handle nested objects and arrays?',
-    a: 'On Snowflake, nested objects become OBJECT and arrays become ARRAY (use FLATTEN to unpack). On Postgres, both become JSONB. On BigQuery, both become JSON. On ANSI, they fall back to TEXT (you will need to store serialized JSON). The DDL does not attempt to flatten nested structures automatically — that is an ETL decision.',
+    a: 'On Snowflake, nested objects become OBJECT and arrays become ARRAY (use FLATTEN to unpack). On Postgres, both become JSONB. On BigQuery, both become JSON. On ANSI, they fall back to TEXT (you will need to store serialized JSON). The DDL does not attempt to flatten nested structures automatically â€” that is an ETL decision.',
   },
   {
     q: 'Does it infer nullability?',
-    a: 'Yes. A column is marked NULL if any sample has that field as null/undefined or omits the field entirely. Otherwise NOT NULL is added. Review before deploying — if your sample is not representative, nullability may be wrong.',
+    a: 'Yes. A column is marked NULL if any sample has that field as null/undefined or omits the field entirely. Otherwise NOT NULL is added. Review before deploying â€” if your sample is not representative, nullability may be wrong.',
   },
   {
     q: 'What about PK, FK, and indexes?',
@@ -219,7 +219,7 @@ export default function JsonToSqlPage() {
   return (
     <>
       <MetaTags
-        title="JSON to SQL DDL Generator 2026 — Snowflake, Postgres, BigQuery"
+        title="JSON to SQL DDL Generator 2026 â€” Snowflake, Postgres, BigQuery"
         description="Paste JSON, get CREATE TABLE DDL with inferred types. Supports Snowflake VARIANT, PostgreSQL JSONB, BigQuery JSON. Handles nested objects and arrays. Free, client-side."
         keywords="json to sql, json to create table, json schema to sql, snowflake variant ddl, postgres jsonb from json, bigquery json ddl"
         url="/tools/json-to-sql-ddl"
@@ -230,6 +230,7 @@ export default function JsonToSqlPage() {
           { name: 'JSON to SQL DDL', url: '/tools/json-to-sql-ddl' },
         ]}
         faqSchema={faqSchema}
+      noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
@@ -238,14 +239,14 @@ export default function JsonToSqlPage() {
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-pink-300 bg-pink-900/30 border border-pink-700/50 rounded-full">
-            Client-side type inference · No data leaves your browser
+            Client-side type inference Â· No data leaves your browser
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <FileJson className="w-8 h-8 text-pink-400" />
-            JSON → SQL DDL Generator
+            JSON â†’ SQL DDL Generator
           </h1>
           <p className="text-gray-300 text-lg max-w-3xl">
-            Paste a JSON sample — a single object or an array of objects — and get a CREATE TABLE
+            Paste a JSON sample â€” a single object or an array of objects â€” and get a CREATE TABLE
             statement with inferred types. Supports Snowflake (VARIANT/OBJECT/ARRAY), PostgreSQL
             (JSONB), BigQuery (JSON), and ANSI SQL. Handles nested structures, nullability, and
             timestamp detection.
@@ -360,7 +361,7 @@ export default function JsonToSqlPage() {
           <ol className="list-decimal pl-5 text-gray-300 space-y-2 text-sm leading-relaxed">
             <li>
               <strong className="text-white">Review the types.</strong> Type inference is as good
-              as your sample. Bring at least 5-10 representative rows — especially ones with nulls
+              as your sample. Bring at least 5-10 representative rows â€” especially ones with nulls
               and edge-case values.
             </li>
             <li>
@@ -391,19 +392,19 @@ export default function JsonToSqlPage() {
           <h2 className="text-2xl font-semibold text-white mb-4">Related tools & guides</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link to="/tools/sql-formatter" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-pink-500 rounded-xl">
-              <div className="text-pink-300 font-medium mb-1 flex items-center gap-2"><Wand2 className="w-4 h-4" /> SQL Formatter →</div>
+              <div className="text-pink-300 font-medium mb-1 flex items-center gap-2"><Wand2 className="w-4 h-4" /> SQL Formatter â†’</div>
               <div className="text-gray-400 text-sm">Clean up the generated DDL to match your style.</div>
             </Link>
             <Link to="/tools/snowflake-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-pink-500 rounded-xl">
-              <div className="text-pink-300 font-medium mb-1 flex items-center gap-2"><Calculator className="w-4 h-4" /> Snowflake Cost Calculator →</div>
+              <div className="text-pink-300 font-medium mb-1 flex items-center gap-2"><Calculator className="w-4 h-4" /> Snowflake Cost Calculator â†’</div>
               <div className="text-gray-400 text-sm">Storage and compute for ingesting this new table.</div>
             </Link>
             <Link to="/cheatsheets/snowflake-semi-structured-interview" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-pink-500 rounded-xl">
-              <div className="text-pink-300 font-medium mb-1 flex items-center gap-2"><BookOpen className="w-4 h-4" /> Snowflake Semi-Structured Data →</div>
+              <div className="text-pink-300 font-medium mb-1 flex items-center gap-2"><BookOpen className="w-4 h-4" /> Snowflake Semi-Structured Data â†’</div>
               <div className="text-gray-400 text-sm">VARIANT, OBJECT, ARRAY, FLATTEN in depth.</div>
             </Link>
             <Link to="/cheatsheets/snowflake-sql" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-pink-500 rounded-xl">
-              <div className="text-pink-300 font-medium mb-1">Snowflake SQL Reference →</div>
+              <div className="text-pink-300 font-medium mb-1">Snowflake SQL Reference â†’</div>
               <div className="text-gray-400 text-sm">DDL, DML, semi-structured access patterns.</div>
             </Link>
           </div>

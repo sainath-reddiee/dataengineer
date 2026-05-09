@@ -248,7 +248,8 @@ export function GlossaryPage() {
                 <meta name="description" content={meta.description} />
                 <meta name="keywords" content={meta.keywords} />
                 <link rel="canonical" href={canonical} />
-                {isThinContent && <meta name="robots" content="noindex, follow" />}
+                {/* Programmatic SEO section — held out of the index until further editorial work. */}
+                <meta name="robots" content="noindex, follow" />
 
                 {/* Open Graph */}
                 <meta property="og:type" content="article" />

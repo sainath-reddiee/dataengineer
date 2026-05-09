@@ -1,5 +1,5 @@
-// src/pages/admin/PAAOptimizerPage.jsx
-// People Also Ask Optimizer — discovers question keywords from GSC data,
+﻿// src/pages/admin/PAAOptimizerPage.jsx
+// People Also Ask Optimizer â€” discovers question keywords from GSC data,
 // predicts additional PAA questions via AI, and generates snippet-optimized answers.
 
 import React, { useEffect, useState, useMemo } from 'react';
@@ -21,30 +21,19 @@ function stripHtml(html) {
     return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-function QuestionCard({ question, onGenerateAnswer }) {
+function QuestionCard({ question, answer, jsonLd, loading, onGenerate }) {
     const [expanded, setExpanded] = useState(false);
-    const [answer, setAnswer] = useState(null);
-    const [jsonLd, setJsonLd] = useState(null);
-    const [loading, setLoading] = useState(false);
     const [copied, setCopied] = useState(false);
     const [showSchema, setShowSchema] = useState(false);
 
-    const handleGenerate = async () => {
-        setLoading(true);
-        try {
-            const result = await onGenerateAnswer(question);
-            setAnswer(result.answer);
-            setJsonLd(result.jsonLd);
-            setExpanded(true);
-        } catch (e) {
-            setAnswer(`Error: ${e.message || 'Failed to generate answer'}`);
-            setExpanded(true);
-        }
-        setLoading(false);
-    };
+    // Auto-expand the first time an answer becomes available (e.g. after batch generate)
+    useEffect(() => {
+        if (answer && !expanded) setExpanded(true);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [answer]);
 
     const handleCopy = (text) => {
-        navigator.clipboard.writeText(text);
+        navigator.clipboard.writeText(text).catch(() => {});
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -90,7 +79,7 @@ function QuestionCard({ question, onGenerateAnswer }) {
                     </div>
                 </div>
                 <button
-                    onClick={answer ? () => setExpanded(!expanded) : handleGenerate}
+                    onClick={answer ? () => setExpanded(!expanded) : () => onGenerate(question)}
                     disabled={loading}
                     className="flex-shrink-0 px-3 py-1.5 text-xs rounded-lg bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 disabled:opacity-50 text-white flex items-center gap-1.5"
                 >
@@ -162,6 +151,10 @@ export function PAAOptimizerPage() {
     const [postsLoading, setPostsLoading] = useState(true);
     const [questions, setQuestions] = useState([]);
     const [error, setError] = useState('');
+    // Parent-owned answer state so individual cards + "Generate All" both feed the same map.
+    // Keyed by question.text; each entry is { answer, jsonLd } | { loading: true }.
+    const [answersMap, setAnswersMap] = useState({});
+    const [batchProgress, setBatchProgress] = useState(null); // { done, total } when running
 
     const slugParam = searchParams.get('slug') || '';
 
@@ -199,6 +192,8 @@ export function PAAOptimizerPage() {
         setLoading(true);
         setError('');
         setQuestions([]);
+        setAnswersMap({});
+        setBatchProgress(null);
 
         const post = posts.find(p => p.slug === slug);
         if (!post) {
@@ -262,7 +257,7 @@ Return the JSON array and nothing else.`;
                         // Fallback: split by newlines
                         aiQuestions = aiResult
                             .split('\n')
-                            .map(line => line.replace(/^\d+[\.\)]\s*/, '').replace(/^[-•]\s*/, '').trim())
+                            .map(line => line.replace(/^\d+[\.\)]\s*/, '').replace(/^[-â€¢]\s*/, '').trim())
                             .filter(line => line.length > 10 && QUESTION_WORDS.test(line))
                             .slice(0, 10)
                             .map(q => ({
@@ -278,7 +273,7 @@ Return the JSON array and nothing else.`;
                 }
             }
 
-            // Fetch related questions from web search (FREE — TinyFish Search API)
+            // Fetch related questions from web search (FREE â€” TinyFish Search API)
             let webQuestions = [];
             if (tinyfishService.isEnabled) {
                 try {
@@ -290,7 +285,7 @@ Return the JSON array and nothing else.`;
                     // Find question-like snippets from search results
                     const questionSnippets = [...relatedSearches, ...allSnippets]
                         .filter(s => QUESTION_WORDS.test(s) && s.length > 15 && s.length < 120)
-                        .map(s => s.replace(/^[.…\s]+/, '').trim());
+                        .map(s => s.replace(/^[.â€¦\s]+/, '').trim());
 
                     webQuestions = questionSnippets.slice(0, 5).map(q => ({
                         text: q.endsWith('?') ? q : q + '?',
@@ -378,11 +373,35 @@ Format your response EXACTLY as:
         }
     };
 
+    // Run a single generation and store result in answersMap
+    const runGenerate = async (question) => {
+        const key = question.text;
+        setAnswersMap(prev => ({ ...prev, [key]: { ...(prev[key] || {}), loading: true } }));
+        const result = await handleGenerateAnswer(question);
+        setAnswersMap(prev => ({ ...prev, [key]: { answer: result.answer, jsonLd: result.jsonLd, loading: false } }));
+    };
+
+    // Generate answers for every question that doesn't already have one. Sequential
+    // with a small delay so we don't blow rate limits on Groq/Gemini.
+    const handleGenerateAll = async () => {
+        if (!aiService.isEnabled) { alert('Set AI API key in sidebar first.'); return; }
+        const pending = questions.filter(q => !answersMap[q.text]?.answer);
+        if (pending.length === 0) return;
+        setBatchProgress({ done: 0, total: pending.length });
+        for (let i = 0; i < pending.length; i++) {
+            await runGenerate(pending[i]);
+            setBatchProgress({ done: i + 1, total: pending.length });
+            // Small delay between calls to ease rate limits
+            if (i < pending.length - 1) await new Promise(r => setTimeout(r, 400));
+        }
+        setBatchProgress(null);
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                    <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                         <HelpCircle className="w-8 h-8 text-purple-400" />
                         PAA Optimizer
                     </h1>
@@ -421,7 +440,7 @@ Format your response EXACTLY as:
 
             {!gscService.isConnected() && selectedSlug && (
                 <div className="p-4 bg-blue-900/10 border border-blue-800/30 rounded-xl flex items-center gap-2 text-blue-300 text-sm">
-                    <AlertTriangle className="w-4 h-4" /> GSC not connected — showing AI predictions only. Connect GSC for real question data.
+                    <AlertTriangle className="w-4 h-4" /> GSC not connected â€” showing AI predictions only. Connect GSC for real question data.
                 </div>
             )}
 
@@ -456,15 +475,38 @@ Format your response EXACTLY as:
 
             {/* Questions list */}
             {!loading && questions.length > 0 && (
-                <div className="space-y-3">
-                    {questions.map((q, i) => (
-                        <QuestionCard
-                            key={`${q.text}-${i}`}
-                            question={q}
-                            onGenerateAnswer={handleGenerateAnswer}
-                        />
-                    ))}
-                </div>
+                <>
+                    <div className="flex items-center justify-between flex-wrap gap-3">
+                        <div className="text-xs text-gray-400">
+                            {Object.values(answersMap).filter(v => v?.answer).length} of {questions.length} answered
+                        </div>
+                        <button
+                            onClick={handleGenerateAll}
+                            disabled={!!batchProgress || !aiService.isEnabled || questions.every(q => answersMap[q.text]?.answer)}
+                            className="px-4 py-2 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 disabled:opacity-50 text-white text-sm font-semibold rounded-lg flex items-center gap-2"
+                        >
+                            {batchProgress ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                            {batchProgress
+                                ? `Generating ${batchProgress.done}/${batchProgress.total}...`
+                                : 'Generate All Answers'}
+                        </button>
+                    </div>
+                    <div className="space-y-3">
+                        {questions.map((q, i) => {
+                            const entry = answersMap[q.text] || {};
+                            return (
+                                <QuestionCard
+                                    key={`${q.text}-${i}`}
+                                    question={q}
+                                    answer={entry.answer || null}
+                                    jsonLd={entry.jsonLd || null}
+                                    loading={!!entry.loading}
+                                    onGenerate={runGenerate}
+                                />
+                            );
+                        })}
+                    </div>
+                </>
             )}
 
             {!loading && selectedSlug && questions.length === 0 && !error && (

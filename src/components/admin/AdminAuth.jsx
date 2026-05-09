@@ -15,32 +15,61 @@ async function sha256(str) {
     return Array.from(new Uint8Array(buf)).map(x => x.toString(16).padStart(2, '0')).join('');
 }
 
-const AUTH_KEY = 'seo_admin_auth';
+// The session verifier is sha256(ADMIN_PASS_HASH + ':' + timestamp).
+// An attacker without ADMIN_PASS_HASH cannot forge a valid verifier, so a
+// hand-crafted sessionStorage entry will fail validation.
+async function makeVerifier(timestamp) {
+    if (!ADMIN_PASS_HASH) return '';
+    return sha256(`${ADMIN_PASS_HASH}:${timestamp}`);
+}
+
+const AUTH_VERIFIER_KEY = 'seo_admin_auth_v';
 const AUTH_TIMESTAMP_KEY = 'seo_admin_auth_ts';
+// Lockout in localStorage (persists across tab close); still client-side, so
+// not a hard guarantee, but raises the bar over sessionStorage which is
+// wiped by simply opening a new tab/incognito window.
 const LOCKOUT_KEY = 'seo_admin_lockout';
+const ATTEMPTS_KEY = 'seo_admin_attempts';
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 const SESSION_DURATION_MS = 4 * 60 * 60 * 1000; // 4 hours
+
+function safeLocalGet(key) {
+    try { return localStorage.getItem(key); } catch { return null; }
+}
+function safeLocalSet(key, value) {
+    try { localStorage.setItem(key, value); } catch { /* ignore */ }
+}
+function safeLocalRemove(key) {
+    try { localStorage.removeItem(key); } catch { /* ignore */ }
+}
 
 export function useAdminAuth() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Check if session is still valid (not expired)
-        const saved = sessionStorage.getItem(AUTH_KEY);
-        const savedTs = sessionStorage.getItem(AUTH_TIMESTAMP_KEY);
-        if (saved === 'true' && savedTs) {
-            const elapsed = Date.now() - parseInt(savedTs, 10);
-            if (elapsed < SESSION_DURATION_MS) {
-                setIsAuthenticated(true);
-            } else {
-                // Session expired — clear
-                sessionStorage.removeItem(AUTH_KEY);
+        let cancelled = false;
+        (async () => {
+            const verifier = sessionStorage.getItem(AUTH_VERIFIER_KEY);
+            const savedTs = sessionStorage.getItem(AUTH_TIMESTAMP_KEY);
+            if (verifier && savedTs) {
+                const elapsed = Date.now() - parseInt(savedTs, 10);
+                if (elapsed < SESSION_DURATION_MS) {
+                    const expected = await makeVerifier(savedTs);
+                    if (expected && expected === verifier && !cancelled) {
+                        setIsAuthenticated(true);
+                        setIsLoading(false);
+                        return;
+                    }
+                }
+                // Either expired or tampered — clear
+                sessionStorage.removeItem(AUTH_VERIFIER_KEY);
                 sessionStorage.removeItem(AUTH_TIMESTAMP_KEY);
             }
-        }
-        setIsLoading(false);
+            if (!cancelled) setIsLoading(false);
+        })();
+        return () => { cancelled = true; };
     }, []);
 
     const login = async (username, password) => {
@@ -62,8 +91,10 @@ export function useAdminAuth() {
 
         const [userHash, passHash] = await Promise.all([sha256(username), sha256(password)]);
         if (userHash === ADMIN_USER_HASH && passHash === ADMIN_PASS_HASH) {
-            sessionStorage.setItem(AUTH_KEY, 'true');
-            sessionStorage.setItem(AUTH_TIMESTAMP_KEY, String(Date.now()));
+            const ts = String(Date.now());
+            const verifier = await makeVerifier(ts);
+            sessionStorage.setItem(AUTH_VERIFIER_KEY, verifier);
+            sessionStorage.setItem(AUTH_TIMESTAMP_KEY, ts);
             clearLockout();
             setIsAuthenticated(true);
             return { success: true };
@@ -79,7 +110,7 @@ export function useAdminAuth() {
     };
 
     const logout = () => {
-        sessionStorage.removeItem(AUTH_KEY);
+        sessionStorage.removeItem(AUTH_VERIFIER_KEY);
         sessionStorage.removeItem(AUTH_TIMESTAMP_KEY);
         setIsAuthenticated(false);
     };
@@ -87,27 +118,27 @@ export function useAdminAuth() {
     return { isAuthenticated, isLoading, login, logout };
 }
 
-// Rate-limiting helpers (stored in sessionStorage so lockout survives page refreshes)
+// Rate-limiting helpers (stored in localStorage so lockout survives page refresh and new tabs)
 function getLockout() {
     try {
-        const raw = sessionStorage.getItem(LOCKOUT_KEY);
+        const raw = safeLocalGet(LOCKOUT_KEY);
         return raw ? JSON.parse(raw) : null;
     } catch { return null; }
 }
 
 function setLockout() {
-    sessionStorage.setItem(LOCKOUT_KEY, JSON.stringify({ timestamp: Date.now() }));
+    safeLocalSet(LOCKOUT_KEY, JSON.stringify({ timestamp: Date.now() }));
 }
 
 function clearLockout() {
-    sessionStorage.removeItem(LOCKOUT_KEY);
-    sessionStorage.removeItem('seo_admin_attempts');
+    safeLocalRemove(LOCKOUT_KEY);
+    safeLocalRemove(ATTEMPTS_KEY);
 }
 
 function incrementAttempts() {
-    const current = parseInt(sessionStorage.getItem('seo_admin_attempts') || '0', 10);
-    const next = current + 1;
-    sessionStorage.setItem('seo_admin_attempts', String(next));
+    const current = parseInt(safeLocalGet(ATTEMPTS_KEY) || '0', 10);
+    const next = (Number.isFinite(current) ? current : 0) + 1;
+    safeLocalSet(ATTEMPTS_KEY, String(next));
     return next;
 }
 

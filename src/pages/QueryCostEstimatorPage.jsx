@@ -1,4 +1,4 @@
-// src/pages/QueryCostEstimatorPage.jsx
+﻿// src/pages/QueryCostEstimatorPage.jsx
 // Estimate the cost of a single Snowflake query based on warehouse size and runtime.
 // Targets: "snowflake query cost", "snowflake cost per query", "how much does a snowflake query cost".
 import React, { useMemo, useState, useEffect, useCallback, Suspense } from 'react';
@@ -15,7 +15,7 @@ const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 const FAQ = [
   {
     q: 'How is query cost calculated in Snowflake?',
-    a: 'Query cost = (warehouse credits/hour × query runtime in hours) × price per credit. A 60-second minimum applies when a suspended warehouse resumes. Bytes scanned does not directly appear in pricing, but larger scans typically take longer to execute, driving up cost.',
+    a: 'Query cost = (warehouse credits/hour Ã— query runtime in hours) Ã— price per credit. A 60-second minimum applies when a suspended warehouse resumes. Bytes scanned does not directly appear in pricing, but larger scans typically take longer to execute, driving up cost.',
   },
   {
     q: 'Why does bytes scanned matter if Snowflake bills by time?',
@@ -23,7 +23,7 @@ const FAQ = [
   },
   {
     q: 'Does the 60-second minimum really matter?',
-    a: 'Yes — every time a warehouse resumes from auto-suspend, you are billed for at least 60 seconds even if your query takes 2 seconds. For bursty workloads this can inflate real costs 10x vs. the theoretical runtime.',
+    a: 'Yes â€” every time a warehouse resumes from auto-suspend, you are billed for at least 60 seconds even if your query takes 2 seconds. For bursty workloads this can inflate real costs 10x vs. the theoretical runtime.',
   },
   {
     q: 'Are serverless / Snowpipe queries priced the same?',
@@ -31,7 +31,7 @@ const FAQ = [
   },
   {
     q: 'How can I reduce a specific query cost?',
-    a: 'Top 4 levers: (1) add clustering keys on high-cardinality filter columns; (2) use search optimization service for point lookups; (3) right-size the warehouse — bigger is often cheaper because queries finish faster; (4) review the query profile for remote disk spillage.',
+    a: 'Top 4 levers: (1) add clustering keys on high-cardinality filter columns; (2) use search optimization service for point lookups; (3) right-size the warehouse â€” bigger is often cheaper because queries finish faster; (4) review the query profile for remote disk spillage.',
   },
 ];
 
@@ -132,7 +132,7 @@ export default function QueryCostEstimatorPage() {
   return (
     <>
       <MetaTags
-        title="Snowflake Query Cost Estimator 2026 — Price per Query Calculator"
+        title="Snowflake Query Cost Estimator 2026 â€” Price per Query Calculator"
         description="Estimate Snowflake query cost from bytes scanned and warehouse size. See cost per query, daily cost and monthly projection. Free tool."
         keywords="snowflake query cost, snowflake cost per query, snowflake query pricing, bytes scanned cost, query cost calculator"
         url="/tools/snowflake-query-cost-estimator"
@@ -143,6 +143,7 @@ export default function QueryCostEstimatorPage() {
           { name: 'Query Cost Estimator', url: '/tools/snowflake-query-cost-estimator' },
         ]}
         faqSchema={faqSchema}
+      noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
@@ -151,7 +152,7 @@ export default function QueryCostEstimatorPage() {
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-blue-300 bg-blue-900/30 border border-blue-700/50 rounded-full">
-            Heuristic estimate · Throughput ~100 MB/s per credit/hour · Updated April 2026
+            Heuristic estimate Â· Throughput ~100 MB/s per credit/hour Â· Updated April 2026
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Database className="w-8 h-8 text-blue-400" aria-hidden="true" />
@@ -193,7 +194,7 @@ export default function QueryCostEstimatorPage() {
                   >
                     {WAREHOUSE_SIZES.map(sz => (
                       <option key={sz.id} value={sz.id}>
-                        {sz.label} — {sz.creditsPerHour} credit{sz.creditsPerHour > 1 ? 's' : ''}/hr
+                        {sz.label} â€” {sz.creditsPerHour} credit{sz.creditsPerHour > 1 ? 's' : ''}/hr
                       </option>
                     ))}
                   </select>
@@ -254,7 +255,7 @@ export default function QueryCostEstimatorPage() {
                     onChange={e => setDaysPerMonth(Number(e.target.value) || 0)}
                     className="w-full accent-blue-500"
                   />
-                  <div className="text-[11px] text-gray-500 mt-1">22 = business days · 30 = calendar days</div>
+                  <div className="text-[11px] text-gray-500 mt-1">22 = business days Â· 30 = calendar days</div>
                 </div>
                 <div>
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
@@ -297,7 +298,7 @@ export default function QueryCostEstimatorPage() {
               </div>
               <div className="mt-4 p-3 bg-slate-900/60 rounded-xl">
                 <div className="flex justify-between text-sm mb-1"><span className="text-gray-400">Daily ({queriesPerDay} queries)</span><span className="text-white font-mono">{formatUSD(result.dailyCost)}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-gray-400">Monthly (×{daysPerMonth} days)</span><span className="text-white font-mono">{formatUSD(result.monthlyCost)}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-gray-400">Monthly (Ã—{daysPerMonth} days)</span><span className="text-white font-mono">{formatUSD(result.monthlyCost)}</span></div>
               </div>
               <button
                 onClick={handleShare}
@@ -318,7 +319,7 @@ export default function QueryCostEstimatorPage() {
 
         <ValidateWithSqlBlock
           title="Validate this query cost against Snowflake's actual ACCOUNT_USAGE"
-          description="Paste a real QUERY_ID from your Query History. This returns bytes scanned, execution time, and cloud services credits — compare to the estimate above."
+          description="Paste a real QUERY_ID from your Query History. This returns bytes scanned, execution time, and cloud services credits â€” compare to the estimate above."
           sql={`-- Snowflake: real bytes scanned, runtime, and credits for a given query
 SELECT
   QUERY_ID,
@@ -331,15 +332,15 @@ SELECT
   CREDITS_USED_CLOUD_SERVICES
 FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
 WHERE QUERY_ID = '<PASTE_QUERY_ID_HERE>';`}
-          note="Cloud Services credits get a 10% free allowance netted against compute — see WAREHOUSE_METERING_HISTORY for the rolled-up monthly view."
+          note="Cloud Services credits get a 10% free allowance netted against compute â€” see WAREHOUSE_METERING_HISTORY for the rolled-up monthly view."
         />
 
         <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6">
           <h2 className="text-2xl font-semibold text-white mb-4">How to find bytes scanned for your query</h2>
           <ol className="list-decimal pl-6 space-y-2 text-gray-300">
-            <li>Open Snowsight → <strong>Activity</strong> → <strong>Query History</strong>.</li>
+            <li>Open Snowsight â†’ <strong>Activity</strong> â†’ <strong>Query History</strong>.</li>
             <li>Click the query ID you want to estimate.</li>
-            <li>In the <strong>Query Profile</strong> pane, look for the <strong>TableScan</strong> nodes — the "Bytes scanned" stat is the value to enter above.</li>
+            <li>In the <strong>Query Profile</strong> pane, look for the <strong>TableScan</strong> nodes â€” the "Bytes scanned" stat is the value to enter above.</li>
             <li>Alternatively, run <code className="px-1 py-0.5 bg-slate-900 rounded">SELECT BYTES_SCANNED FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY WHERE QUERY_ID = '...';</code></li>
           </ol>
         </div>
@@ -353,13 +354,13 @@ WHERE QUERY_ID = '<PASTE_QUERY_ID_HERE>';`}
               resumes). The estimator uses:
             </p>
             <p className="font-mono text-xs bg-slate-900/70 border border-slate-700 rounded-lg p-3 text-blue-300">
-              query_cost = (bytes_scanned / scan_throughput) × (credits_per_hour / 3600) × $/credit
+              query_cost = (bytes_scanned / scan_throughput) Ã— (credits_per_hour / 3600) Ã— $/credit
             </p>
             <p>
-              <strong>Scan throughput</strong> varies by warehouse size — Snowflake roughly doubles
+              <strong>Scan throughput</strong> varies by warehouse size â€” Snowflake roughly doubles
               throughput each size step. <strong>Partition pruning</strong> and
               <strong> clustering</strong> are the two largest levers: a well-clustered date column
-              can reduce bytes_scanned by 10–100x on time-series tables.
+              can reduce bytes_scanned by 10â€“100x on time-series tables.
             </p>
           </div>
         </div>
@@ -373,12 +374,12 @@ WHERE QUERY_ID = '<PASTE_QUERY_ID_HERE>';`}
             </p>
             <ul className="list-disc pl-6 space-y-1">
               <li>Runtime: <span className="font-mono text-white">18s</span></li>
-              <li>Credits consumed: <span className="font-mono text-white">4 × (18/3600) = 0.020</span></li>
-              <li>Cost per run: <span className="font-mono text-green-400">0.020 × $3 = $0.06</span></li>
-              <li>Ran 500× per day by 30 analysts: <span className="font-mono text-green-400">$30/day → ~$900/month</span></li>
+              <li>Credits consumed: <span className="font-mono text-white">4 Ã— (18/3600) = 0.020</span></li>
+              <li>Cost per run: <span className="font-mono text-green-400">0.020 Ã— $3 = $0.06</span></li>
+              <li>Ran 500Ã— per day by 30 analysts: <span className="font-mono text-green-400">$30/day â†’ ~$900/month</span></li>
             </ul>
             <p>
-              Adding a clustering key that prunes the scan to 25 GB cuts runtime 10x → <strong>$90/month</strong>.
+              Adding a clustering key that prunes the scan to 25 GB cuts runtime 10x â†’ <strong>$90/month</strong>.
               That single change often pays for several hours of engineering time in a week.
             </p>
           </div>
@@ -388,20 +389,20 @@ WHERE QUERY_ID = '<PASTE_QUERY_ID_HERE>';`}
           <h2 className="text-2xl font-semibold text-white mb-4">Related tools & guides</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link to="/tools/snowflake-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">Full Snowflake Cost Calculator →</div>
+              <div className="text-blue-300 font-medium mb-1">Full Snowflake Cost Calculator â†’</div>
               <div className="text-gray-400 text-sm">Monthly spend across compute, storage, cloud services, and serverless.</div>
             </Link>
             <Link to="/tools/snowflake-warehouse-sizing" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">Warehouse Sizing Estimator →</div>
+              <div className="text-blue-300 font-medium mb-1">Warehouse Sizing Estimator â†’</div>
               <div className="text-gray-400 text-sm">Pick the right warehouse size for your workload shape.</div>
             </Link>
             <Link to="/articles/snowflake-query-optimization-guide-2026" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">Snowflake query optimization guide (2026) →</div>
+              <div className="text-blue-300 font-medium mb-1">Snowflake query optimization guide (2026) â†’</div>
               <div className="text-gray-400 text-sm">Partition pruning, clustering, and materialized views done right.</div>
             </Link>
             <Link to="/articles/snowflake-cost-optimization-techniques-2026" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">12 cost optimization techniques →</div>
-              <div className="text-gray-400 text-sm">Cut bills 30–60% without hurting performance.</div>
+              <div className="text-blue-300 font-medium mb-1">12 cost optimization techniques â†’</div>
+              <div className="text-gray-400 text-sm">Cut bills 30â€“60% without hurting performance.</div>
             </Link>
           </div>
         </div>

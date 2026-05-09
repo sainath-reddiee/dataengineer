@@ -1,5 +1,5 @@
-// src/pages/admin/RankDashboardPage.jsx
-// Rank Intelligence Dashboard — the flagship admin view.
+﻿// src/pages/admin/RankDashboardPage.jsx
+// Rank Intelligence Dashboard â€” the flagship admin view.
 // Combines SEO, AEO, CTR, AI visibility, engagement, and freshness signals
 // into a single health score per article, with prioritized actions.
 
@@ -156,7 +156,7 @@ export function RankDashboardPage() {
             {/* Header */}
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                    <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                         <Target className="w-8 h-8 text-blue-400" />
                         Rank Intelligence
                     </h1>
@@ -181,14 +181,14 @@ export function RankDashboardPage() {
             {/* Site-Wide Health Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <HealthCard icon={Award}    value={avgHealth}            label="Avg Article Health" accent="blue"    suffix="/100" />
-                <HealthCard icon={TrendingUp} value={highHealth}         label="High-Health Articles" accent="emerald" subtext={`${Math.round(highHealth/scored.length*100)}% of library`} />
+                <HealthCard icon={TrendingUp} value={highHealth}         label="High-Health Articles" accent="emerald" subtext={scored.length > 0 ? `${Math.round(highHealth/scored.length*100)}% of library` : '0% of library'} />
                 <HealthCard icon={AlertTriangle} value={needsWork}       label="Needs Work" accent="amber" subtext="< 55 health score" />
                 <HealthCard icon={DollarSign} value={`$${totalUplift.toFixed(0)}`} label="Monthly Revenue Uplift" accent="purple" subtext="if all hit page 1" />
             </div>
 
             {/* Rank Tracker Stats */}
             {rankStats.tracked > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
                     <div className="p-3 bg-slate-800/40 border border-slate-700 rounded-xl text-center">
                         <div className="text-xl font-bold text-white">{rankStats.tracked}</div>
                         <div className="text-[11px] text-gray-400 uppercase tracking-wider">Tracked</div>
@@ -216,7 +216,7 @@ export function RankDashboardPage() {
             {gscData && gscData.length > 0 && (
                 <div className="p-4 bg-blue-900/10 border border-blue-800/30 rounded-xl">
                     <h3 className="text-sm font-semibold text-blue-400 flex items-center gap-2 mb-3">
-                        <BarChart3 className="w-4 h-4" /> Google Search Console — Last 28 Days
+                        <BarChart3 className="w-4 h-4" /> Google Search Console â€” Last 28 Days
                     </h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <div className="p-2">
@@ -229,11 +229,11 @@ export function RankDashboardPage() {
                         </div>
                         <div className="p-2">
                             <div className="text-xs text-gray-400">Avg Position</div>
-                            <div className="text-lg font-bold text-white">{(gscData.reduce((s, p) => s + p.position, 0) / gscData.length).toFixed(1)}</div>
+                            <div className="text-lg font-bold text-white">{gscData.length > 0 ? (gscData.reduce((s, p) => s + p.position, 0) / gscData.length).toFixed(1) : 'â€”'}</div>
                         </div>
                         <div className="p-2">
                             <div className="text-xs text-gray-400">Avg CTR</div>
-                            <div className="text-lg font-bold text-white">{((gscData.reduce((s, p) => s + p.ctr, 0) / gscData.length) * 100).toFixed(2)}%</div>
+                            <div className="text-lg font-bold text-white">{gscData.length > 0 ? ((gscData.reduce((s, p) => s + p.ctr, 0) / gscData.length) * 100).toFixed(2) : '0.00'}%</div>
                         </div>
                     </div>
                 </div>
@@ -255,7 +255,7 @@ export function RankDashboardPage() {
                                 }`}>{a.priority}</span>
                                 <div className="flex-1 min-w-0">
                                     <div className="text-sm text-gray-200">{a.action}</div>
-                                    <div className="text-xs text-gray-500 mt-0.5">For: <span className="text-blue-300">{a.articleTitle}</span> · {a.projectedLift}</div>
+                                    <div className="text-xs text-gray-500 mt-0.5">For: <span className="text-blue-300">{a.articleTitle}</span> Â· {a.projectedLift}</div>
                                 </div>
                                 {a.link && (
                                     a.link.startsWith('http') ? (
@@ -276,9 +276,9 @@ export function RankDashboardPage() {
 
             {/* Articles Table */}
             <div className="bg-slate-800/40 border border-slate-700 rounded-xl overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-3 border-b border-slate-700">
                     <h3 className="text-sm font-semibold text-white">All Articles ({scored.length})</h3>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
                         <SortButton active={sortBy === 'opportunity'} onClick={() => setSortBy('opportunity')}>Biggest Opportunity</SortButton>
                         <SortButton active={sortBy === 'health'}      onClick={() => setSortBy('health')}>Health Score</SortButton>
                         <SortButton active={sortBy === 'rank'}        onClick={() => setSortBy('rank')}>Rank Position</SortButton>
@@ -351,7 +351,10 @@ function ArticleRow({ article, rankData, gscArticleData, expanded, onToggle, onR
             setTargetKeyword(article.slug, keywordInput);
         }
         if (rankInput) {
-            logRank(article.slug, parseInt(rankInput, 10));
+            const pos = parseInt(rankInput, 10);
+            if (Number.isFinite(pos) && pos > 0 && pos <= 200) {
+                logRank(article.slug, pos);
+            }
         }
         onRankSaved?.();
     };
@@ -395,7 +398,7 @@ CONTENT (first ~2500 chars):
 ${contentSnippet || '(not available)'}
 
 Provide 4-6 specific, actionable recommendations to improve this article's ranking. For each:
-1. What to do (specific — not generic like "add keywords")
+1. What to do (specific â€” not generic like "add keywords")
 2. Why it will help (which ranking signal it improves)
 3. Expected impact (high/medium/low)
 
@@ -417,23 +420,49 @@ Keep each recommendation to 2-3 sentences max. Be direct and specific to THIS ar
 
     return (
         <div className="border-b border-slate-700/50 last:border-0">
+            {/* Mobile: stacked card. Desktop (md+): 12-column grid row. */}
             <div
                 onClick={onToggle}
-                className="grid grid-cols-12 gap-2 px-4 py-3 items-center hover:bg-slate-800/60 cursor-pointer transition"
+                className="px-3 py-3 md:px-4 md:grid md:grid-cols-12 md:gap-2 md:items-center hover:bg-slate-800/60 cursor-pointer transition"
             >
-                <div className="col-span-5 text-sm text-gray-200 truncate flex items-center gap-2">
-                    {expanded ? <ChevronDown className="w-4 h-4 text-gray-500 shrink-0" /> : <ChevronRight className="w-4 h-4 text-gray-500 shrink-0" />}
-                    {article.title}
+                {/* Title row (mobile + desktop col-span-5) */}
+                <div className="flex items-start gap-2 md:col-span-5 text-sm text-gray-200">
+                    {expanded ? <ChevronDown className="w-4 h-4 text-gray-500 shrink-0 mt-0.5" /> : <ChevronRight className="w-4 h-4 text-gray-500 shrink-0 mt-0.5" />}
+                    <span className="md:truncate flex-1 break-words">{article.title}</span>
                 </div>
-                <div className="col-span-1 text-center">
+
+                {/* Mobile-only metric row: health + bottleneck + rank + revenue chips */}
+                <div className="mt-2 flex flex-wrap items-center gap-2 text-xs md:hidden">
+                    <span className={`inline-block px-2 py-0.5 rounded-full font-bold border ${HEALTH_COLORS[bucket]}`}>
+                        Health {article.articleHealth}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-slate-700/50 text-gray-300 capitalize">
+                        {PILLAR_LABELS[article.bottleneck] || article.bottleneck}
+                    </span>
+                    <span className={
+                        'px-2 py-0.5 rounded-full ' + (
+                            article.rankEstimate.includes('Page 1') ? 'bg-emerald-500/20 text-emerald-300' :
+                            article.rankEstimate.includes('Page 2') ? 'bg-amber-500/20 text-amber-300' :
+                            'bg-slate-700/50 text-gray-400'
+                        )
+                    }>
+                        {article.currentPosition ? `#${article.currentPosition}` : article.rankEstimate}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-mono">
+                        +${(article.revenueProjection.potentialMonthly - article.revenueProjection.currentMonthly).toFixed(0)}/mo
+                    </span>
+                </div>
+
+                {/* Desktop-only column cells */}
+                <div className="hidden md:block md:col-span-1 text-center">
                     <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-bold border ${HEALTH_COLORS[bucket]}`}>
                         {article.articleHealth}
                     </span>
                 </div>
-                <div className="col-span-2 text-xs text-gray-400 text-center capitalize">
+                <div className="hidden md:block md:col-span-2 text-xs text-gray-400 text-center capitalize">
                     {PILLAR_LABELS[article.bottleneck] || article.bottleneck}
                 </div>
-                <div className="col-span-2 text-xs text-center">
+                <div className="hidden md:block md:col-span-2 text-xs text-center">
                     <span className={
                         article.rankEstimate.includes('Page 1') ? 'text-emerald-400' :
                         article.rankEstimate.includes('Page 2') ? 'text-amber-400' :
@@ -442,7 +471,7 @@ Keep each recommendation to 2-3 sentences max. Be direct and specific to THIS ar
                         {article.currentPosition ? `#${article.currentPosition}` : article.rankEstimate}
                     </span>
                 </div>
-                <div className="col-span-2 text-xs text-emerald-400 text-right font-mono">
+                <div className="hidden md:block md:col-span-2 text-xs text-emerald-400 text-right font-mono">
                     +${(article.revenueProjection.potentialMonthly - article.revenueProjection.currentMonthly).toFixed(0)}/mo
                 </div>
             </div>
@@ -480,7 +509,7 @@ Keep each recommendation to 2-3 sentences max. Be direct and specific to THIS ar
                                     </div>
                                     {a.link && (
                                         a.link.startsWith('http') ? (
-                                            <a href={a.link} target="_blank" rel="noopener" className="text-blue-400 hover:text-blue-300 text-xs">Open ↗</a>
+                                            <a href={a.link} target="_blank" rel="noopener" className="text-blue-400 hover:text-blue-300 text-xs">Open â†—</a>
                                         ) : (
                                             <Link
                                                 to={a.link}
@@ -491,7 +520,7 @@ Keep each recommendation to 2-3 sentences max. Be direct and specific to THIS ar
                                                 }}
                                                 className="text-blue-400 hover:text-blue-300 text-xs"
                                             >
-                                                Fix →
+                                                Fix â†’
                                             </Link>
                                         )
                                     )}
@@ -509,7 +538,7 @@ Keep each recommendation to 2-3 sentences max. Be direct and specific to THIS ar
                                 <div className="text-xs font-semibold text-blue-400 mb-2 uppercase tracking-wider flex items-center gap-1.5">
                                     <BarChart3 className="w-3.5 h-3.5" /> Google Search Console (28 days)
                                 </div>
-                                <div className="grid grid-cols-4 gap-2">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                                     <div className="p-2 bg-slate-800/60 rounded-lg text-center">
                                         <div className="text-[10px] text-gray-500">Position</div>
                                         <div className="text-lg font-bold text-white">#{gscArticleData.position.toFixed(1)}</div>
@@ -577,7 +606,7 @@ Keep each recommendation to 2-3 sentences max. Be direct and specific to THIS ar
                         </div>
                         {rankData?.history?.length > 0 && (
                             <div className="mt-2 text-xs text-gray-500">
-                                History: {rankData.history.slice(-5).map(h => `#${h.position} (${h.date.split('-').slice(1).join('/')})`).join(' → ')}
+                                History: {rankData.history.slice(-5).map(h => `#${h.position} (${h.date.split('-').slice(1).join('/')})`).join(' â†’ ')}
                                 {rankData.bestPosition && <span className="ml-3 text-emerald-400">Best: #{rankData.bestPosition}</span>}
                             </div>
                         )}

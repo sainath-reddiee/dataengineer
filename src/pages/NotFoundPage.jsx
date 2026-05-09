@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, ArrowRight } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
@@ -37,7 +37,7 @@ const NotFoundPage = () => {
   return (
     <>
       <MetaTags
-        title="Page Not Found | DataEngineer Hub"
+        title="Page Not Found"
         description="The page you are looking for does not exist or has been moved. Explore popular cheat sheets, comparisons, and articles."
         noindex={true}
       />
@@ -59,7 +59,7 @@ const NotFoundPage = () => {
               type="text"
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search articles, cheat sheets, comparisons…"
+              placeholder="Search articles, cheat sheets, comparisonsâ€¦"
               aria-label="Search the site"
               className="flex-1 bg-transparent outline-none text-white placeholder:text-gray-500 py-1"
             />

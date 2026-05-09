@@ -128,11 +128,26 @@ const MetaTags = ({
       <meta property="og:title" content={title || SITE_CONFIG.name} />
       <meta property="og:description" content={fullDescription} />
       <meta property="og:image" content={fullImage} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
+      {/* Width/height only emitted for the default site og-image (which IS 1200x630).
+          Custom WordPress hero images may be different aspect ratios; emitting wrong
+          dimensions causes social platforms to crop or reject the image. */}
+      {fullImage && fullImage.includes('/og-image.jpg') && (
+        <>
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+        </>
+      )}
       <meta property="og:image:alt" content={title || SITE_CONFIG.name} />
       <meta property="og:site_name" content={SITE_CONFIG.name} />
       <meta property="og:locale" content="en_US" />
+
+      {/* Twitter / X Card — without these tags, all shares render as plain links
+          with no rich preview. summary_large_image renders a big-card preview. */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title || SITE_CONFIG.name} />
+      <meta name="twitter:description" content={fullDescription} />
+      <meta name="twitter:image" content={fullImage} />
+      <meta name="twitter:image:alt" content={title || SITE_CONFIG.name} />
 
       {/* Article-specific meta tags */}
       {type === 'article' && formattedPublishedTime && (

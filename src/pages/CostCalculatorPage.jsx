@@ -1,5 +1,5 @@
-// src/pages/CostCalculatorPage.jsx
-// Snowflake Cost Calculator — public interactive tool.
+﻿// src/pages/CostCalculatorPage.jsx
+// Snowflake Cost Calculator â€” public interactive tool.
 // Targets "snowflake cost calculator" / "snowflake pricing calculator" queries.
 import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
@@ -80,15 +80,15 @@ function paramsToInputs(searchParams) {
 
 const LAST_UPDATED = 'April 2026';
 
-const INTRO = `**Snowflake's pricing is simple to state and devastating to misread.** Credits × credit rate × hours, plus storage, plus a few serverless meters. That's the whole model. The reason teams still end up 3-5x over budget is that every variable in that equation has a non-obvious multiplier attached to it, and the defaults in the UI push you toward the expensive end of each.
+const INTRO = `**Snowflake's pricing is simple to state and devastating to misread.** Credits Ã— credit rate Ã— hours, plus storage, plus a few serverless meters. That's the whole model. The reason teams still end up 3-5x over budget is that every variable in that equation has a non-obvious multiplier attached to it, and the defaults in the UI push you toward the expensive end of each.
 
-This calculator lets you pull every lever — edition, region, warehouse size, hours, auto-suspend, cloud services, Snowpipe, Cortex AI, auto-clustering — and shows the all-in monthly number update live so you can see which dial actually moves the bill.
+This calculator lets you pull every lever â€” edition, region, warehouse size, hours, auto-suspend, cloud services, Snowpipe, Cortex AI, auto-clustering â€” and shows the all-in monthly number update live so you can see which dial actually moves the bill.
 
 ### The Snowflake cost equation (and where it hurts)
 
-Monthly compute cost boils down to: \`sum(warehouse_size_credits × hours_active × credit_rate_by_edition_and_region)\`. Three things to internalize:
+Monthly compute cost boils down to: \`sum(warehouse_size_credits Ã— hours_active Ã— credit_rate_by_edition_and_region)\`. Three things to internalize:
 
-1. **Warehouse size is exponential, not linear.** Going from \`XS\` (1 credit/hr) to \`XL\` (16 credits/hr) is a **16x** per-hour cost increase — and queries rarely get 16x faster. The right sizing move is usually **one size smaller than your gut says**.
+1. **Warehouse size is exponential, not linear.** Going from \`XS\` (1 credit/hr) to \`XL\` (16 credits/hr) is a **16x** per-hour cost increase â€” and queries rarely get 16x faster. The right sizing move is usually **one size smaller than your gut says**.
 2. **Edition is a multiplier on every credit.** Business Critical is ~1.5-2x Standard's credit rate. If your data doesn't legally require BC, Enterprise is usually the right answer.
 3. **Region matters more than people think.** AWS \`us-east-1\` is the cheapest; European and APAC regions can add 10-30% per credit. Multi-region replication doubles compute.
 
@@ -96,28 +96,28 @@ Monthly compute cost boils down to: \`sum(warehouse_size_credits × hours_active
 
 - **Leaving auto-suspend at the 10-minute default.** Every warehouse wakes up, runs a 20-second query, then bills you for another 9:40 of idle time. Drop it to 60s on BI warehouses.
 - **Forgetting Cloud Services is free up to 10% of daily compute.** Past that threshold you pay for it. Heavy metadata operations (\`SHOW TABLES\` loops, over-frequent \`DESCRIBE\`, UI thrashing) can push you over.
-- **Overlooking serverless meters.** Snowpipe, Auto-Clustering, Materialized Views, Search Optimization, and Cortex AI each bill separately. A single \`cortex.complete\` call costs real money — model them explicitly with the toggles here.
+- **Overlooking serverless meters.** Snowpipe, Auto-Clustering, Materialized Views, Search Optimization, and Cortex AI each bill separately. A single \`cortex.complete\` call costs real money â€” model them explicitly with the toggles here.
 - **Ignoring storage tier.** Time Travel + Fail-safe can easily 2-3x your apparent storage bill. If your retention is 90 days you're paying for 97 days of data.
 
 ### What this calculator gets right
 
-It maps the **list-price Credit Consumption Table** (editions × regions × features) onto a realistic monthly workload so you get a defensible budget number before you provision anything. It exposes the serverless meters (Snowpipe files/day, Cortex tokens/month, auto-clustering credits/day) as independent toggles so you can isolate which feature is worth it and which one you should turn off.`;
+It maps the **list-price Credit Consumption Table** (editions Ã— regions Ã— features) onto a realistic monthly workload so you get a defensible budget number before you provision anything. It exposes the serverless meters (Snowpipe files/day, Cortex tokens/month, auto-clustering credits/day) as independent toggles so you can isolate which feature is worth it and which one you should turn off.`;
 
 const WHEN_TO_USE = {
   use: [
     'Sizing a new Snowflake account and needing a defensible monthly budget before you provision warehouses',
     'Comparing Standard vs Enterprise vs Business Critical edition on the exact same workload to justify the tier choice',
-    'Modeling the cost impact of enabling Snowpipe, Cortex AI, or Auto-Clustering — one toggle at a time',
-    'Forecasting a region migration (e.g., us-east-1 → eu-west-1) and needing the credit-rate delta',
+    'Modeling the cost impact of enabling Snowpipe, Cortex AI, or Auto-Clustering â€” one toggle at a time',
+    'Forecasting a region migration (e.g., us-east-1 â†’ eu-west-1) and needing the credit-rate delta',
     'Back-of-envelope FinOps review: "is this department\'s $25k/month defensible, or are we leaking credits?"',
     'Benchmarking Snowflake credit economics against Databricks DBUs, BigQuery slots, or Redshift RA3 for a platform-choice conversation',
   ],
   avoid: [
-    'Negotiated enterprise discount programs, capacity commitments, or regional rebates — list prices only',
-    'Query-level tuning and clustering cost deltas — those depend on data-skew specifics this calculator can\'t model',
-    'Data transfer / egress charges across regions or clouds — billed by the cloud provider, not included here',
-    'Snowgrid / replication compute for cross-region DR — separate credit meters not modeled here',
-    'Finance-grade invoicing — this is a list-price planning estimator, not an accrual-accurate billing tool',
+    'Negotiated enterprise discount programs, capacity commitments, or regional rebates â€” list prices only',
+    'Query-level tuning and clustering cost deltas â€” those depend on data-skew specifics this calculator can\'t model',
+    'Data transfer / egress charges across regions or clouds â€” billed by the cloud provider, not included here',
+    'Snowgrid / replication compute for cross-region DR â€” separate credit meters not modeled here',
+    'Finance-grade invoicing â€” this is a list-price planning estimator, not an accrual-accurate billing tool',
   ],
 };
 
@@ -133,19 +133,19 @@ const FAQ = [
   },
   {
     q: 'Does auto-suspend really save money?',
-    a: 'Yes — significantly. A warehouse running 24/7 at size Medium costs roughly 4 credits/hour × 720 hours = 2,880 credits/month (~$5,760 at Enterprise rates). Auto-suspend after 60 seconds of idle can cut compute costs by 70–90% for bursty workloads.',
+    a: 'Yes â€” significantly. A warehouse running 24/7 at size Medium costs roughly 4 credits/hour Ã— 720 hours = 2,880 credits/month (~$5,760 at Enterprise rates). Auto-suspend after 60 seconds of idle can cut compute costs by 70â€“90% for bursty workloads.',
   },
   {
     q: 'What counts as "cloud services" billing?',
-    a: 'Cloud Services handle query compilation, metadata management, authentication, and transaction coordination. Snowflake includes a 10% free allowance against your compute credits — only usage above 10% is billed.',
+    a: 'Cloud Services handle query compilation, metadata management, authentication, and transaction coordination. Snowflake includes a 10% free allowance against your compute credits â€” only usage above 10% is billed.',
   },
   {
     q: 'Is on-demand or capacity storage cheaper?',
-    a: 'On-demand storage is ~$23/TB/month (pay-as-you-go). Capacity storage requires a pre-purchased commitment but drops to roughly $40/TB/month on flat terms — not always cheaper; it depends on contract length and volume.',
+    a: 'On-demand storage is ~$23/TB/month (pay-as-you-go). Capacity storage requires a pre-purchased commitment but drops to roughly $40/TB/month on flat terms â€” not always cheaper; it depends on contract length and volume.',
   },
   {
     q: 'How do I estimate Cortex AI costs?',
-    a: 'Cortex AI is billed per million tokens at roughly 3 credits per million tokens (varies by model). A chatbot handling 10M prompt+response tokens/month would cost about 30 credits (~$60–$90 depending on edition and region).',
+    a: 'Cortex AI is billed per million tokens at roughly 3 credits per million tokens (varies by model). A chatbot handling 10M prompt+response tokens/month would cost about 30 credits (~$60â€“$90 depending on edition and region).',
   },
   {
     q: 'Why is my Snowflake bill higher than the calculator estimate?',
@@ -153,7 +153,7 @@ const FAQ = [
   },
   {
     q: 'Does this calculator include multi-cluster warehouses?',
-    a: 'Yes — the cluster count multiplies compute credits linearly. A Medium warehouse with 3 clusters running 8 hours consumes 4 × 8 × 3 = 96 credits (before edition multiplier).',
+    a: 'Yes â€” the cluster count multiplies compute credits linearly. A Medium warehouse with 3 clusters running 8 hours consumes 4 Ã— 8 Ã— 3 = 96 credits (before edition multiplier).',
   },
 ];
 
@@ -177,7 +177,7 @@ const HOWTO_STEPS = [
   },
   {
     name: 'Review monthly and annual estimate',
-    text: 'The calculator shows compute, storage, cloud services, and serverless costs — plus potential savings from right-sizing.',
+    text: 'The calculator shows compute, storage, cloud services, and serverless costs â€” plus potential savings from right-sizing.',
   },
 ];
 
@@ -447,7 +447,7 @@ export default function CostCalculatorPage() {
   return (
     <>
       <MetaTags
-        title="Snowflake Cost Calculator 2026 — Free Pricing Estimator"
+        title="Snowflake Cost Calculator 2026 â€” Free Pricing Estimator"
         description="Free Snowflake cost calculator. Estimate warehouse credits, storage, and cloud services costs by edition (Standard/Enterprise/BC) and region. Instant monthly + annual estimates."
         keywords="snowflake cost calculator, snowflake pricing calculator, snowflake credit cost, warehouse cost estimator, snowflake pricing, snowflake credits price"
         url="/tools/snowflake-cost-calculator"
@@ -459,6 +459,7 @@ export default function CostCalculatorPage() {
         ]}
         howToSchema={howToSchema}
         faqSchema={faqSchema}
+      noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
@@ -468,7 +469,7 @@ export default function CostCalculatorPage() {
         {/* Hero */}
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-blue-300 bg-blue-900/30 border border-blue-700/50 rounded-full">
-            Updated {LAST_UPDATED} · Based on Snowflake list pricing
+            Updated {LAST_UPDATED} Â· Based on Snowflake list pricing
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Calculator className="w-8 h-8 text-blue-400" aria-hidden="true" />
@@ -518,17 +519,17 @@ export default function CostCalculatorPage() {
               </h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 {WHEN_TO_USE.use.map((item, i) => (
-                  <li key={i} className="flex gap-2"><span className="text-emerald-400 flex-shrink-0">•</span><span>{item}</span></li>
+                  <li key={i} className="flex gap-2"><span className="text-emerald-400 flex-shrink-0">â€¢</span><span>{item}</span></li>
                 ))}
               </ul>
             </div>
             <div className="bg-rose-950/30 border border-rose-800/50 rounded-xl p-5">
               <h3 className="text-rose-300 font-semibold mb-3 flex items-center gap-2">
-                <span aria-hidden="true">⚠</span> Don't rely on it when
+                <span aria-hidden="true">âš </span> Don't rely on it when
               </h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 {WHEN_TO_USE.avoid.map((item, i) => (
-                  <li key={i} className="flex gap-2"><span className="text-rose-400 flex-shrink-0">•</span><span>{item}</span></li>
+                  <li key={i} className="flex gap-2"><span className="text-rose-400 flex-shrink-0">â€¢</span><span>{item}</span></li>
                 ))}
               </ul>
             </div>
@@ -626,7 +627,7 @@ export default function CostCalculatorPage() {
                 </div>
                 <div className="md:col-span-2">
                   <Label icon={Info}>
-                    Cloud Services usage (% of compute) — first 10% is free
+                    Cloud Services usage (% of compute) â€” first 10% is free
                   </Label>
                   <Slider
                     value={inputs.cloudServicesPct}
@@ -760,7 +761,7 @@ export default function CostCalculatorPage() {
 
               <p className="text-[11px] text-gray-500 mt-4 leading-relaxed">
                 Estimate based on public list pricing. Enterprise contracts often include
-                discounts of 20–40%.
+                discounts of 20â€“40%.
               </p>
             </motion.div>
           </div>
@@ -791,11 +792,11 @@ ORDER BY 1 DESC, total_credits DESC;`}
         {/* Optimization tips */}
         <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6">
           <h2 className="text-2xl font-semibold text-white mb-4">
-            Cut your Snowflake bill — proven techniques
+            Cut your Snowflake bill â€” proven techniques
           </h2>
           <p className="text-gray-300 mb-5">
             These strategies from our most popular guides consistently reduce Snowflake costs by
-            30–60% without hurting performance:
+            30â€“60% without hurting performance:
           </p>
           <div className="grid md:grid-cols-2 gap-4">
             <TipLink
@@ -831,20 +832,20 @@ ORDER BY 1 DESC, total_credits DESC;`}
               calculator adds them together and applies your edition multiplier.
             </p>
             <p className="font-mono text-xs bg-slate-900/70 border border-slate-700 rounded-lg p-3 text-blue-300">
-              monthly_bill = (warehouse_credits × hours × edition_mult × credit_price)<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;+ (storage_TB × $23)<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;+ serverless_credits × credit_price
+              monthly_bill = (warehouse_credits Ã— hours Ã— edition_mult Ã— credit_price)<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;+ (storage_TB Ã— $23)<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;+ serverless_credits Ã— credit_price
             </p>
             <p>
               <strong>Warehouse credits</strong> follow the T-shirt scale: XS = 1 cr/hr, S = 2, M = 4,
               L = 8, XL = 16, doubling each step up to 6XL = 512. <strong>Auto-suspend</strong> kills
-              idle charges — a warehouse set to suspend after 60 seconds can cut compute by 30–50%
+              idle charges â€” a warehouse set to suspend after 60 seconds can cut compute by 30â€“50%
               vs. the default 10 minutes.
             </p>
             <p>
               <strong>Storage</strong> is $23/TB/month on-demand (cheaper on capacity), covering both
               active + time-travel + fail-safe. <strong>Cloud services</strong> are free up to 10% of
-              daily compute — above that you pay per credit.
+              daily compute â€” above that you pay per credit.
             </p>
           </div>
         </div>
@@ -857,16 +858,16 @@ ORDER BY 1 DESC, total_credits DESC;`}
               A 30-person analytics team running Enterprise (1.5x) on AWS us-east-1 ($2/credit):
             </p>
             <ul className="list-disc pl-6 space-y-1">
-              <li>One <strong>Medium</strong> BI warehouse (4 cr/hr) × 10 business hours × 22 days = 880 credits</li>
-              <li>One <strong>Large</strong> ETL warehouse (8 cr/hr) × 2 hours × 30 days = 480 credits</li>
-              <li>Snowpipe + Tasks + auto-clustering serverless ≈ 150 credits/mo</li>
-              <li><strong>Total credits:</strong> ~1,510 × $2 × 1.5 = <span className="text-green-400 font-mono">$4,530</span> compute</li>
-              <li>Storage: 8 TB × $23 = <span className="text-green-400 font-mono">$184</span></li>
+              <li>One <strong>Medium</strong> BI warehouse (4 cr/hr) Ã— 10 business hours Ã— 22 days = 880 credits</li>
+              <li>One <strong>Large</strong> ETL warehouse (8 cr/hr) Ã— 2 hours Ã— 30 days = 480 credits</li>
+              <li>Snowpipe + Tasks + auto-clustering serverless â‰ˆ 150 credits/mo</li>
+              <li><strong>Total credits:</strong> ~1,510 Ã— $2 Ã— 1.5 = <span className="text-green-400 font-mono">$4,530</span> compute</li>
+              <li>Storage: 8 TB Ã— $23 = <span className="text-green-400 font-mono">$184</span></li>
               <li><strong>All-in monthly: ~$4,714</strong></li>
             </ul>
             <p>
               Switch the BI warehouse to <strong>auto-suspend at 60s</strong> and right-size the ETL
-              warehouse to Medium with multi-cluster (max=2) and you can typically trim 25–35% —
+              warehouse to Medium with multi-cluster (max=2) and you can typically trim 25â€“35% â€”
               bringing the same workload to ~$3,100/month.
             </p>
           </div>
@@ -877,27 +878,27 @@ ORDER BY 1 DESC, total_credits DESC;`}
           <h2 className="text-2xl font-semibold text-white mb-4">Related calculators & tools</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link to="/tools/snowflake-credit-cost" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl transition-colors">
-              <div className="text-blue-300 font-medium mb-1">Credit → USD converter →</div>
+              <div className="text-blue-300 font-medium mb-1">Credit â†’ USD converter â†’</div>
               <div className="text-gray-400 text-sm">Quick credit-to-dollar conversion by edition and region.</div>
             </Link>
             <Link to="/tools/snowflake-query-cost-estimator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl transition-colors">
-              <div className="text-blue-300 font-medium mb-1">Query Cost Estimator →</div>
+              <div className="text-blue-300 font-medium mb-1">Query Cost Estimator â†’</div>
               <div className="text-gray-400 text-sm">Estimate the cost of a single query from bytes scanned.</div>
             </Link>
             <Link to="/tools/snowflake-warehouse-sizing" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl transition-colors">
-              <div className="text-blue-300 font-medium mb-1">Warehouse Sizing Estimator →</div>
+              <div className="text-blue-300 font-medium mb-1">Warehouse Sizing Estimator â†’</div>
               <div className="text-gray-400 text-sm">Pick the right T-shirt size for your workload.</div>
             </Link>
             <Link to="/tools/databricks-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl transition-colors">
-              <div className="text-blue-300 font-medium mb-1">Databricks Cost Calculator →</div>
+              <div className="text-blue-300 font-medium mb-1">Databricks Cost Calculator â†’</div>
               <div className="text-gray-400 text-sm">Compare DBU-based pricing head-to-head.</div>
             </Link>
             <Link to="/tools/bigquery-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl transition-colors">
-              <div className="text-blue-300 font-medium mb-1">BigQuery Cost Calculator →</div>
+              <div className="text-blue-300 font-medium mb-1">BigQuery Cost Calculator â†’</div>
               <div className="text-gray-400 text-sm">On-demand ($6.25/TB) vs. Editions slot pricing.</div>
             </Link>
             <Link to="/tools/dbt-cloud-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl transition-colors">
-              <div className="text-blue-300 font-medium mb-1">dbt Cloud Cost Calculator →</div>
+              <div className="text-blue-300 font-medium mb-1">dbt Cloud Cost Calculator â†’</div>
               <div className="text-gray-400 text-sm">Price out Developer, Team and Enterprise seats.</div>
             </Link>
           </div>
@@ -948,7 +949,7 @@ function TipLink({ to, title, desc }) {
       to={to}
       className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl transition-colors"
     >
-      <div className="text-blue-300 font-medium mb-1">{title} →</div>
+      <div className="text-blue-300 font-medium mb-1">{title} â†’</div>
       <div className="text-gray-400 text-sm">{desc}</div>
     </Link>
   );

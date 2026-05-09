@@ -1,4 +1,4 @@
-// src/pages/admin/BulkScanPage.jsx
+﻿// src/pages/admin/BulkScanPage.jsx
 /**
  * Advanced Bulk Scan Page
  * Features:
@@ -174,8 +174,6 @@ export function BulkScanPage() {
 
     // Run the scan queue
     const runScanQueue = async (queueItems, startIndex) => {
-        const newResults = [...results];
-
         for (let i = startIndex; i < queueItems.length; i++) {
             // Check for pause/cancel
             if (!scanningRef.current) {
@@ -272,16 +270,15 @@ export function BulkScanPage() {
                     aiVisibility: analysis.aiVisibility
                 };
 
-                newResults.push(result);
                 updatedQueue[i] = { ...updatedQueue[i], status: 'done', score: result.score };
                 setQueue([...updatedQueue]);
-                setResults([...newResults]);
+                setResults(prev => [...prev, result]);
 
             } catch (err) {
                 console.error(`Failed to analyze ${item.title}:`, err);
                 updatedQueue[i] = { ...updatedQueue[i], status: 'error', error: err.message };
                 setQueue([...updatedQueue]);
-                newResults.push({
+                setResults(prev => [...prev, {
                     id: item.id,
                     title: item.title,
                     slug: item.slug,
@@ -291,8 +288,7 @@ export function BulkScanPage() {
                     trend: 0,
                     error: err.message,
                     critical: 0, warning: 0, topIssues: []
-                });
-                setResults([...newResults]);
+                }]);
             }
 
             // Small delay to prevent overwhelming
@@ -334,12 +330,21 @@ export function BulkScanPage() {
 
     // Load competitor data
     const handleLoadCompetitor = async (url) => {
-        const urls = await feedParser.parseUrl(url, 'auto');
-        const competitorQueue = urls.slice(0, 10).map((u, i) => ({
-            id: `comp-${i}`,
-            url: u,
-            title: new URL(u).pathname.split('/').filter(Boolean).pop() || 'Untitled'
-        }));
+        let urls = [];
+        try {
+            urls = await feedParser.parseUrl(url, 'auto');
+        } catch (e) {
+            console.error('Failed to parse competitor feed:', e);
+            setCompetitorResults([{ id: 'err', url, score: 0, error: e.message || 'Failed to fetch feed' }]);
+            return;
+        }
+        const competitorQueue = urls.slice(0, 10).map((u, i) => {
+            let title = 'Untitled';
+            try {
+                title = new URL(u).pathname.split('/').filter(Boolean).pop() || 'Untitled';
+            } catch { /* keep default */ }
+            return { id: `comp-${i}`, url: u, title };
+        });
 
         // Quick scan competitor URLs
         const compResults = [];
@@ -412,7 +417,7 @@ export function BulkScanPage() {
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-white mb-2">Advanced Bulk Scan</h1>
+                        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Advanced Bulk Scan</h1>
                         <p className="text-gray-400">Analyze multiple articles with AI-powered insights</p>
                     </div>
                     <div className="flex gap-3">
@@ -658,7 +663,7 @@ export function BulkScanPage() {
                                                                     ))}
                                                                 </div>
                                                             ) : (
-                                                                <p className="text-sm text-gray-500 italic">No critical issues found! 🎉</p>
+                                                                <p className="text-sm text-gray-500 italic">No critical issues found! ðŸŽ‰</p>
                                                             )}
                                                         </div>
                                                     </td>

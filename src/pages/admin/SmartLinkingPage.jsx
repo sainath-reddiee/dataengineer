@@ -1,4 +1,4 @@
-// src/pages/admin/SmartLinkingPage.jsx
+﻿// src/pages/admin/SmartLinkingPage.jsx
 // AI-powered internal linking suggestions. Uses Gemini to recommend
 // which articles to link TO and FROM, with exact anchor text.
 
@@ -102,12 +102,27 @@ export function SmartLinkingPage() {
             // Get full content of selected article (up to 6000 chars for better context)
             const articleContent = stripHtml(selected.content || '').substring(0, 6000);
 
+            // TinyFish: search for related external authority pages to suggest as links
+            let serpContext = '';
+            if (tinyfishService.isEnabled) {
+                try {
+                    const topicKeyword = selected.title.replace(/[^a-zA-Z0-9 ]/g, '').split(' ').slice(0, 4).join(' ');
+                    const searchResults = await tinyfishService.search(`${topicKeyword} documentation tutorial`);
+                    const authorityResults = (searchResults.results || [])
+                        .filter(r => r.url && (r.url.includes('docs.') || r.url.includes('official') || r.url.includes('.io/docs') || r.url.includes('github.com')))
+                        .slice(0, 5);
+                    if (authorityResults.length > 0) {
+                        serpContext = `\n\nREAL AUTHORITY PAGES FOUND VIA WEB SEARCH (use these for external link suggestions â€” they are verified live URLs):\n${authorityResults.map(r => `- "${r.title}" â†’ ${r.url}`).join('\n')}\n`;
+                    }
+                } catch { /* optional enrichment */ }
+            }
+
             // Build a richer catalog with excerpts so AI can understand what each article covers
             const otherArticles = articles
                 .filter(a => a.slug !== selectedSlug)
                 .map(a => {
                     const excerpt = stripHtml(a.excerpt || a.content || '').substring(0, 150);
-                    return `- "${a.title}" [/articles/${a.slug}] — ${excerpt}`;
+                    return `- "${a.title}" [/articles/${a.slug}] â€” ${excerpt}`;
                 })
                 .join('\n');
 
@@ -127,11 +142,11 @@ ${otherArticles}
 YOUR TASK: Recommend internal links AND external authority links.
 
 INTERNAL LINKING RULES:
-1. Only suggest links where there is GENUINE topical overlap — the linked article must ADD VALUE to the reader
+1. Only suggest links where there is GENUINE topical overlap â€” the linked article must ADD VALUE to the reader
 2. Anchor text must be NATURAL phrases that already exist (or could naturally fit) in the target article's content
-3. For "linkFrom" — find specific sentences/paragraphs in the target article where another article would be a perfect "learn more" or "deep dive" follow-up
-4. For "linkTo" — identify articles on the blog that discuss related topics and would benefit from linking to this target
-5. Placement must be SPECIFIC — reference an actual sentence, paragraph topic, or section from the content above (not vague like "in the introduction")
+3. For "linkFrom" â€” find specific sentences/paragraphs in the target article where another article would be a perfect "learn more" or "deep dive" follow-up
+4. For "linkTo" â€” identify articles on the blog that discuss related topics and would benefit from linking to this target
+5. Placement must be SPECIFIC â€” reference an actual sentence, paragraph topic, or section from the content above (not vague like "in the introduction")
 6. Each link should serve a clear reader journey purpose: prerequisite knowledge, deeper dive, related technique, or alternative approach
 
 EXTERNAL LINKING RULES:
@@ -139,6 +154,7 @@ EXTERNAL LINKING RULES:
 2. Only recommend well-known, stable URLs: official documentation (Snowflake docs, AWS docs, dbt docs), research papers, official blog posts from major companies, or widely-cited industry references
 3. External links should support specific claims or concepts mentioned in the article
 4. Prefer official documentation URLs that are unlikely to change
+${serpContext}
 
 Respond in EXACTLY this JSON format (no markdown fences, just raw JSON):
 {
@@ -146,7 +162,7 @@ Respond in EXACTLY this JSON format (no markdown fences, just raw JSON):
     {"slug": "article-slug", "title": "Article Title", "anchorText": "natural 2-6 word phrase from the target article", "placement": "In the paragraph where you discuss [specific topic from content]. After the sentence about [quote or paraphrase specific line].", "reason": "This article explains [concept] in detail, which the reader needs to understand [related concept mentioned in target]"}
   ],
   "linkTo": [
-    {"slug": "source-article-slug", "title": "Source Article Title", "anchorText": "suggested anchor text for the link pointing to target", "placement": "In that article's section about [topic], where it mentions [concept] — add link to target as a practical example/deep dive", "reason": "Readers of that article would benefit from this target because [specific connection]"}
+    {"slug": "source-article-slug", "title": "Source Article Title", "anchorText": "suggested anchor text for the link pointing to target", "placement": "In that article's section about [topic], where it mentions [concept] â€” add link to target as a practical example/deep dive", "reason": "Readers of that article would benefit from this target because [specific connection]"}
   ],
   "externalLinks": [
     {"url": "https://docs.example.com/page", "title": "Resource Title", "anchorText": "natural anchor text", "placement": "After the paragraph discussing [specific topic] where you mention [concept]", "reason": "Official documentation that supports the claim about [specific point made in article]", "authority": "Official Snowflake/AWS/dbt documentation"}
@@ -174,7 +190,7 @@ QUALITY CHECKS:
 
             setResult(parsed);
         } catch (err) {
-            setError(err.message || 'Analysis failed. AI may have returned invalid JSON — try again.');
+            setError(err.message || 'Analysis failed. AI may have returned invalid JSON â€” try again.');
         }
         setLoading(false);
     };
@@ -182,7 +198,7 @@ QUALITY CHECKS:
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                     <Sparkles className="w-8 h-8 text-pink-400" />
                     Smart Internal Linking
                 </h1>
@@ -338,7 +354,7 @@ function LinkSuggestion({ link, direction, targetSlug, applied, onMarkApplied, o
             <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-white truncate">{link.title}</div>
-                    <div className="text-xs text-blue-300 mt-0.5">→ /articles/{link.slug}</div>
+                    <div className="text-xs text-blue-300 mt-0.5">â†’ /articles/{link.slug}</div>
                     <div className="mt-2 p-2 bg-slate-800 rounded text-xs">
                         <div className="text-gray-500 uppercase text-[10px] mb-1">Anchor text:</div>
                         <div className="text-emerald-300 font-mono">"{link.anchorText}"</div>
@@ -411,7 +427,7 @@ function ExternalLinkSuggestion({ link, applied, onMarkApplied, onUnmarkApplied 
                         {link.title}
                     </div>
                     <div className="text-xs text-purple-300 mt-0.5 truncate flex items-center gap-2">
-                        → {link.url}
+                        â†’ {link.url}
                         {tinyfishService.isEnabled && verified === null && (
                             <button onClick={handleVerify} className="text-[9px] px-1.5 py-0.5 bg-cyan-900/30 border border-cyan-700/30 text-cyan-300 rounded hover:bg-cyan-800/30">verify</button>
                         )}

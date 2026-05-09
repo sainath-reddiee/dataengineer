@@ -1,4 +1,4 @@
-// src/pages/CreditCostPage.jsx
+﻿// src/pages/CreditCostPage.jsx
 // Snowflake Credit -> USD Converter. Minimal, single-purpose tool.
 // Targets queries like "snowflake credit cost", "snowflake credit price",
 // "how much does a snowflake credit cost".
@@ -16,7 +16,7 @@ const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 const FAQ = [
   {
     q: 'How much does one Snowflake credit cost?',
-    a: 'A single credit costs between $2.00 (AWS US East, Standard edition) and $7.25 (AWS Asia Pacific, VPS). Price = region base price × edition multiplier. Standard = 1.0x, Enterprise = 1.5x, Business Critical = 2.0x, VPS = 2.5x.',
+    a: 'A single credit costs between $2.00 (AWS US East, Standard edition) and $7.25 (AWS Asia Pacific, VPS). Price = region base price Ã— edition multiplier. Standard = 1.0x, Enterprise = 1.5x, Business Critical = 2.0x, VPS = 2.5x.',
   },
   {
     q: 'Why are credit prices different across regions?',
@@ -24,7 +24,7 @@ const FAQ = [
   },
   {
     q: 'Can I get a discount on credit price?',
-    a: 'Yes — enterprise capacity contracts (annual or multi-year commitments) typically see 20-40% off list price. Short-term on-demand customers pay full list rate.',
+    a: 'Yes â€” enterprise capacity contracts (annual or multi-year commitments) typically see 20-40% off list price. Short-term on-demand customers pay full list rate.',
   },
   {
     q: 'Is there a free Snowflake credit tier?',
@@ -32,7 +32,7 @@ const FAQ = [
   },
   {
     q: 'Do different warehouses use different credit prices?',
-    a: 'No — the price-per-credit depends only on edition and region. Warehouse size changes how many credits are consumed per hour, not the price per credit.',
+    a: 'No â€” the price-per-credit depends only on edition and region. Warehouse size changes how many credits are consumed per hour, not the price per credit.',
   },
 ];
 
@@ -99,7 +99,7 @@ export default function CreditCostPage() {
   return (
     <>
       <MetaTags
-        title="Snowflake Credit Cost Converter 2026 — Instant USD Calculator"
+        title="Snowflake Credit Cost Converter 2026 â€” Instant USD Calculator"
         description="How much does a Snowflake credit cost? Convert credits to USD by edition (Standard/Enterprise/BC/VPS) and region. Live price calculator."
         keywords="snowflake credit cost, snowflake credit price, snowflake credit to usd, how much is a snowflake credit, snowflake pricing per credit"
         url="/tools/snowflake-credit-cost"
@@ -110,6 +110,7 @@ export default function CreditCostPage() {
           { name: 'Credit Cost Converter', url: '/tools/snowflake-credit-cost' },
         ]}
         faqSchema={faqSchema}
+      noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
@@ -118,11 +119,11 @@ export default function CreditCostPage() {
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-blue-300 bg-blue-900/30 border border-blue-700/50 rounded-full">
-            Updated April 2026 · Snowflake list pricing
+            Updated April 2026 Â· Snowflake list pricing
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Coins className="w-8 h-8 text-yellow-400" aria-hidden="true" />
-            Snowflake Credit → USD Converter
+            Snowflake Credit â†’ USD Converter
           </h1>
           <p className="text-gray-300 text-lg max-w-3xl">
             Convert any number of Snowflake credits to US dollars. Price depends on edition
@@ -184,7 +185,7 @@ export default function CreditCostPage() {
               >
                 {REGIONS.map(r => (
                   <option key={r.id} value={r.id}>
-                    {r.label} — ${r.creditPrice.toFixed(2)}/credit (Standard)
+                    {r.label} â€” ${r.creditPrice.toFixed(2)}/credit (Standard)
                   </option>
                 ))}
               </select>
@@ -215,7 +216,7 @@ export default function CreditCostPage() {
             </button>
 
             <p className="text-[11px] text-gray-500 mt-4">
-              List pricing. Enterprise capacity contracts typically see 20–40% discounts.
+              List pricing. Enterprise capacity contracts typically see 20â€“40% discounts.
             </p>
           </motion.div>
         </div>
@@ -226,7 +227,7 @@ export default function CreditCostPage() {
 
         <ValidateWithSqlBlock
           title="Validate your actual effective $/credit from your contract"
-          description="ORGANIZATION_USAGE.RATE_SHEET_DAILY shows the contract rate your org is paying per credit — by usage type, service, and date. Compare to the list price above to see your effective discount."
+          description="ORGANIZATION_USAGE.RATE_SHEET_DAILY shows the contract rate your org is paying per credit â€” by usage type, service, and date. Compare to the list price above to see your effective discount."
           sql={`-- Snowflake: your effective $/credit rate (includes contract discounts)
 SELECT
   USAGE_DATE,
@@ -277,18 +278,18 @@ LIMIT 20;`}
           <div className="prose prose-invert max-w-none text-gray-300 text-sm leading-relaxed space-y-3">
             <p>
               Snowflake bills compute in <strong>credits</strong>. A credit is not a fixed dollar
-              amount — its USD value is a product of three inputs: the <strong>region base price</strong>
+              amount â€” its USD value is a product of three inputs: the <strong>region base price</strong>
               {' '}(what AWS us-east-1 charges vs. Azure West Europe), the <strong>edition multiplier</strong>
-              {' '}(Standard 1.0x → Enterprise 1.5x → Business Critical 2.0x → VPS 2.5x), and the
+              {' '}(Standard 1.0x â†’ Enterprise 1.5x â†’ Business Critical 2.0x â†’ VPS 2.5x), and the
               number of credits consumed.
             </p>
             <p className="font-mono text-xs bg-slate-900/70 border border-slate-700 rounded-lg p-3 text-blue-300">
-              total_usd = credits × region.base_price × edition.multiplier
+              total_usd = credits Ã— region.base_price Ã— edition.multiplier
             </p>
             <p>
-              This calculator applies <em>list</em> pricing — the same number Snowflake shows on its
+              This calculator applies <em>list</em> pricing â€” the same number Snowflake shows on its
               public pricing page. On-demand accounts pay list. Capacity (committed) contracts
-              typically see 20–40% negotiated discounts on top of these numbers.
+              typically see 20â€“40% negotiated discounts on top of these numbers.
             </p>
           </div>
         </div>
@@ -303,12 +304,12 @@ LIMIT 20;`}
             <ul className="list-disc pl-6 space-y-1">
               <li>Base rate: <span className="font-mono text-white">$2.00/credit</span></li>
               <li>Edition multiplier (Enterprise): <span className="font-mono text-white">1.5x</span></li>
-              <li>Effective rate: <span className="font-mono text-white">$2.00 × 1.5 = $3.00/credit</span></li>
-              <li>Monthly bill: <span className="font-mono text-green-400">5,000 × $3.00 = $15,000</span></li>
+              <li>Effective rate: <span className="font-mono text-white">$2.00 Ã— 1.5 = $3.00/credit</span></li>
+              <li>Monthly bill: <span className="font-mono text-green-400">5,000 Ã— $3.00 = $15,000</span></li>
             </ul>
             <p>
               Upgrading that same workload to Business Critical (2.0x) would move the bill to
-              $20,000 — a 33% increase — which is why you should only elect Business Critical when
+              $20,000 â€” a 33% increase â€” which is why you should only elect Business Critical when
               you genuinely need HIPAA/PCI compliance, tri-secret-secure, or failover.
             </p>
           </div>
@@ -318,31 +319,31 @@ LIMIT 20;`}
           <h2 className="text-2xl font-semibold text-white mb-4">Related tools & guides</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link to="/tools/snowflake-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1 flex items-center gap-2"><Calculator className="w-4 h-4" /> Full Snowflake Cost Calculator →</div>
+              <div className="text-blue-300 font-medium mb-1 flex items-center gap-2"><Calculator className="w-4 h-4" /> Full Snowflake Cost Calculator â†’</div>
               <div className="text-gray-400 text-sm">Factor in warehouse size, hours, storage and serverless features.</div>
             </Link>
             <Link to="/tools/snowflake-warehouse-sizing" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">Warehouse Sizing Estimator →</div>
+              <div className="text-blue-300 font-medium mb-1">Warehouse Sizing Estimator â†’</div>
               <div className="text-gray-400 text-sm">Pick the right T-shirt size for your workload.</div>
             </Link>
             <Link to="/articles/snowflake-cost-optimization-techniques-2026" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">12 proven Snowflake cost optimization techniques →</div>
-              <div className="text-gray-400 text-sm">Cut credit consumption by 30–60% without hurting performance.</div>
+              <div className="text-blue-300 font-medium mb-1">12 proven Snowflake cost optimization techniques â†’</div>
+              <div className="text-gray-400 text-sm">Cut credit consumption by 30â€“60% without hurting performance.</div>
             </Link>
             <Link to="/tools/snowflake-query-cost-estimator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">Query Cost Estimator →</div>
+              <div className="text-blue-300 font-medium mb-1">Query Cost Estimator â†’</div>
               <div className="text-gray-400 text-sm">Estimate the cost of a single query from bytes scanned.</div>
             </Link>
             <Link to="/tools/databricks-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">Databricks Cost Calculator →</div>
+              <div className="text-blue-300 font-medium mb-1">Databricks Cost Calculator â†’</div>
               <div className="text-gray-400 text-sm">Compare Snowflake credits to Databricks DBUs + VM hours.</div>
             </Link>
             <Link to="/tools/bigquery-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">BigQuery Cost Calculator →</div>
+              <div className="text-blue-300 font-medium mb-1">BigQuery Cost Calculator â†’</div>
               <div className="text-gray-400 text-sm">Compare on-demand $/TB vs slot-based editions.</div>
             </Link>
             <Link to="/tools/dbt-cloud-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">dbt Cloud Cost Calculator →</div>
+              <div className="text-blue-300 font-medium mb-1">dbt Cloud Cost Calculator â†’</div>
               <div className="text-gray-400 text-sm">Price the transformation layer running on top of Snowflake.</div>
             </Link>
           </div>

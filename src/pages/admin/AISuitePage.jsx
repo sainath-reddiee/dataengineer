@@ -1,9 +1,9 @@
-// src/pages/admin/AISuitePage.jsx
+﻿// src/pages/admin/AISuitePage.jsx
 /**
  * AI Suite Page - PSEO, AEO, GEO Analysis
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Bot, Mic, Search as SearchIcon, Loader2, Globe, Copy, Check } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
@@ -25,6 +25,14 @@ const tabs = [
     { id: 'geo', label: 'GEO', icon: Sparkles, desc: 'Generative Engine', color: 'blue' },
 ];
 
+// Static class lookups so Tailwind's JIT keeps them in the production build
+// (dynamic `bg-${color}-...` strings are purged).
+const TAB_COLOR_CLASSES = {
+    purple: { bg: 'bg-purple-500/20', text: 'text-purple-400' },
+    green: { bg: 'bg-green-500/20', text: 'text-green-400' },
+    blue: { bg: 'bg-blue-500/20', text: 'text-blue-400' },
+};
+
 export function AISuitePage() {
     const [searchParams] = useSearchParams();
     const [url, setUrl] = useState(searchParams.get('url') || (searchParams.get('slug') ? `https://dataengineerhub.blog/articles/${searchParams.get('slug')}` : ''));
@@ -35,6 +43,29 @@ export function AISuitePage() {
     const [aiFixLoading, setAiFixLoading] = useState(false);
     const [aiFix, setAiFix] = useState(null);
     const [copied, setCopied] = useState(false);
+
+    // Persist analysis results across navigation within the same session.
+    // Only restore if it's <30 min old AND for the same URL the user is now on.
+    useEffect(() => {
+        try {
+            const raw = sessionStorage.getItem('admin_ai_suite_state');
+            if (!raw) return;
+            const saved = JSON.parse(raw);
+            if (Date.now() - (saved.savedAt || 0) > 30 * 60 * 1000) return;
+            if (saved.results) setResults(saved.results);
+            if (saved.aiFix) setAiFix(saved.aiFix);
+            if (saved.activeTab) setActiveTab(saved.activeTab);
+        } catch { /* ignore corrupt state */ }
+    }, []);
+
+    useEffect(() => {
+        if (!results && !aiFix) return;
+        try {
+            sessionStorage.setItem('admin_ai_suite_state', JSON.stringify({
+                results, aiFix, activeTab, savedAt: Date.now(),
+            }));
+        } catch { /* quota â€” silently drop */ }
+    }, [results, aiFix, activeTab]);
 
     const handleAnalyze = async (scanUrl = url) => {
         if (!scanUrl.trim() && scanUrl !== 'current') {
@@ -72,12 +103,12 @@ export function AISuitePage() {
                     html = await response.text();
                 } catch (fetchError) {
                     setError(
-                        `❌ Cannot scan external URL due to CORS restrictions.\n\n` +
-                        `💡 Solutions:\n` +
+                        `âŒ Cannot scan external URL due to CORS restrictions.\n\n` +
+                        `ðŸ’¡ Solutions:\n` +
                         `1. Click "Scan Current Page" to analyze this page\n` +
                         `2. Navigate to an article and scan it\n` +
                         `3. Use Bulk Scan for all articles\n\n` +
-                        `ℹ️ This tool uses pattern analysis - no AI involved!`
+                        `â„¹ï¸ This tool uses pattern analysis - no AI involved!`
                     );
                     setLoading(false);
                     return;
@@ -131,17 +162,17 @@ export function AISuitePage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-white mb-2">AI Suite</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">AI Suite</h1>
                 <p className="text-gray-400">PSEO, AEO, and GEO optimization analysis</p>
             </div>
 
-            {/* LLM referral tracker — persistent, independent of the URL analyzer below */}
+            {/* LLM referral tracker â€” persistent, independent of the URL analyzer below */}
             <AICitationsPanel />
 
-            {/* Engagement funnel — click-inside and scroll depth per source */}
+            {/* Engagement funnel â€” click-inside and scroll depth per source */}
             <EngagementPanel />
 
-            {/* SERP feature coverage — rich-result gaps across all articles */}
+            {/* SERP feature coverage â€” rich-result gaps across all articles */}
             <SerpCoveragePanel />
 
             {/* URL Input */}
@@ -226,9 +257,9 @@ export function AISuitePage() {
                                         setAiFixLoading(true);
                                         setAiFix(null);
                                         const failedChecks = (getActiveReport()?.checks || []).filter(c => !c.passed);
-                                        const issueList = failedChecks.map(c => `- [${c.category}] ${c.message}${c.recommendation ? ` → Fix: ${c.recommendation}` : ''}`).join('\n');
+                                        const issueList = failedChecks.map(c => `- [${c.category}] ${c.message}${c.recommendation ? ` â†’ Fix: ${c.recommendation}` : ''}`).join('\n');
                                         const tabName = tabs.find(t => t.id === activeTab)?.label || activeTab;
-                                        const prompt = `You are a ${tabName} optimization expert. An article has been analyzed and these issues were found:\n\nARTICLE: ${results?.url || url}\n\nISSUES:\n${issueList}\n\nFor EACH issue, generate a READY-TO-PASTE fix. Format as:\n\n## [Issue Category]: [Issue Name]\n**Problem:** [what's wrong]\n**Fix (paste this into your article):**\n[actual HTML/content to add]\n\n---\n\nBe specific, actionable, and provide real content — not placeholders.`;
+                                        const prompt = `You are a ${tabName} optimization expert. An article has been analyzed and these issues were found:\n\nARTICLE: ${results?.url || url}\n\nISSUES:\n${issueList}\n\nFor EACH issue, generate a READY-TO-PASTE fix. Format as:\n\n## [Issue Category]: [Issue Name]\n**Problem:** [what's wrong]\n**Fix (paste this into your article):**\n[actual HTML/content to add]\n\n---\n\nBe specific, actionable, and provide real content â€” not placeholders.`;
                                         try {
                                             const response = await aiService.generateSuggestion(prompt, '');
                                             setAiFix(response);
@@ -249,7 +280,7 @@ export function AISuitePage() {
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="text-xs font-semibold text-emerald-400">AI-Generated Fixes</span>
                                             <button
-                                                onClick={() => { navigator.clipboard.writeText(aiFix); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                                                onClick={() => { navigator.clipboard.writeText(aiFix).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
                                                 className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
                                             >
                                                 {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
@@ -270,38 +301,41 @@ export function AISuitePage() {
             {/* Info Cards */}
             {!results && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {tabs.map(tab => (
-                        <div key={tab.id} className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6">
-                            <div className={`p-3 rounded-xl bg-${tab.color}-500/20 inline-block mb-4`}>
-                                <tab.icon className={`w-6 h-6 text-${tab.color}-400`} />
+                    {tabs.map(tab => {
+                        const colors = TAB_COLOR_CLASSES[tab.color] || { bg: 'bg-slate-700/50', text: 'text-gray-300' };
+                        return (
+                            <div key={tab.id} className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6">
+                                <div className={`p-3 rounded-xl ${colors.bg} inline-block mb-4`}>
+                                    <tab.icon className={`w-6 h-6 ${colors.text}`} />
+                                </div>
+                                <h3 className="text-lg font-bold text-white mb-2">{tab.label}</h3>
+                                <p className="text-sm text-gray-400">{tab.desc} Optimization</p>
+                                <ul className="mt-4 text-sm text-gray-500 space-y-1">
+                                    {tab.id === 'pseo' && (
+                                        <>
+                                            <li>â€¢ Template consistency</li>
+                                            <li>â€¢ Automation quality</li>
+                                            <li>â€¢ Scalability patterns</li>
+                                        </>
+                                    )}
+                                    {tab.id === 'aeo' && (
+                                        <>
+                                            <li>â€¢ Featured snippet potential</li>
+                                            <li>â€¢ Voice search optimization</li>
+                                            <li>â€¢ FAQ schema detection</li>
+                                        </>
+                                    )}
+                                    {tab.id === 'geo' && (
+                                        <>
+                                            <li>â€¢ AI readability score</li>
+                                            <li>â€¢ Entity optimization</li>
+                                            <li>â€¢ Citation worthiness</li>
+                                        </>
+                                    )}
+                                </ul>
                             </div>
-                            <h3 className="text-lg font-bold text-white mb-2">{tab.label}</h3>
-                            <p className="text-sm text-gray-400">{tab.desc} Optimization</p>
-                            <ul className="mt-4 text-sm text-gray-500 space-y-1">
-                                {tab.id === 'pseo' && (
-                                    <>
-                                        <li>• Template consistency</li>
-                                        <li>• Automation quality</li>
-                                        <li>• Scalability patterns</li>
-                                    </>
-                                )}
-                                {tab.id === 'aeo' && (
-                                    <>
-                                        <li>• Featured snippet potential</li>
-                                        <li>• Voice search optimization</li>
-                                        <li>• FAQ schema detection</li>
-                                    </>
-                                )}
-                                {tab.id === 'geo' && (
-                                    <>
-                                        <li>• AI readability score</li>
-                                        <li>• Entity optimization</li>
-                                        <li>• Citation worthiness</li>
-                                    </>
-                                )}
-                            </ul>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>

@@ -11,8 +11,51 @@ const __dirname = path.dirname(__filename);
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
 const SITE_URL = 'https://dataengineerhub.blog';
 
+// Map of common HTML entities → their plain-text equivalents.
+// LLMs ingesting llms-full.txt see garbled text otherwise (e.g. `&#8217;`
+// instead of an apostrophe), which damages citation quality.
+const ENTITY_MAP = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&apos;': "'",
+    '&nbsp;': ' ',
+    '&#8211;': '–', // en dash
+    '&#8212;': '—', // em dash
+    '&#8216;': '\u2018',
+    '&#8217;': '\u2019',
+    '&#8220;': '\u201C',
+    '&#8221;': '\u201D',
+    '&#8230;': '…',
+    '&#039;': "'",
+    '&#39;': "'",
+    '&hellip;': '…',
+    '&mdash;': '—',
+    '&ndash;': '–',
+    '&lsquo;': '\u2018',
+    '&rsquo;': '\u2019',
+    '&ldquo;': '\u201C',
+    '&rdquo;': '\u201D',
+};
+
+function decodeEntities(s) {
+    if (!s) return '';
+    return s
+        .replace(/&(amp|lt|gt|quot|apos|nbsp|hellip|mdash|ndash|lsquo|rsquo|ldquo|rdquo);/g, (m) => ENTITY_MAP[m] || m)
+        .replace(/&#(\d+);/g, (m, dec) => {
+            const code = parseInt(dec, 10);
+            return Number.isFinite(code) ? String.fromCharCode(code) : m;
+        })
+        .replace(/&#x([0-9a-f]+);/gi, (m, hex) => {
+            const code = parseInt(hex, 16);
+            return Number.isFinite(code) ? String.fromCharCode(code) : m;
+        });
+}
+
 function stripHTML(html) {
-    return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!html) return '';
+    return decodeEntities(html.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
 }
 
 async function fetchAllPosts() {

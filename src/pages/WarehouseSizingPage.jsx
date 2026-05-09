@@ -1,4 +1,4 @@
-// src/pages/WarehouseSizingPage.jsx
+﻿// src/pages/WarehouseSizingPage.jsx
 // Warehouse Sizing Estimator. Suggest an XS-6XL T-shirt size based on workload shape.
 // Targets: "snowflake warehouse size", "how to size snowflake warehouse", "snowflake warehouse sizing guide".
 import React, { useMemo, useState, useEffect, useCallback, Suspense } from 'react';
@@ -23,11 +23,11 @@ const WORKLOAD_TYPES = [
 const FAQ = [
   {
     q: 'How should I choose a Snowflake warehouse size?',
-    a: 'Start small (XS or S) and monitor query runtimes. If queries routinely exceed your latency SLA or spill to remote disk, bump up one size. Bigger warehouses finish faster and often cost the same — a 2XL running 30s may equal an S running 8 minutes. Size to your critical-path query, not your tiny ones.',
+    a: 'Start small (XS or S) and monitor query runtimes. If queries routinely exceed your latency SLA or spill to remote disk, bump up one size. Bigger warehouses finish faster and often cost the same â€” a 2XL running 30s may equal an S running 8 minutes. Size to your critical-path query, not your tiny ones.',
   },
   {
     q: 'Is a larger warehouse always more expensive?',
-    a: 'No — because warehouses are billed per second, a larger warehouse that finishes 4x faster costs the same as a smaller one on many workloads. The larger size wins when queries spill to remote disk on the smaller size.',
+    a: 'No â€” because warehouses are billed per second, a larger warehouse that finishes 4x faster costs the same as a smaller one on many workloads. The larger size wins when queries spill to remote disk on the smaller size.',
   },
   {
     q: 'When do I need multi-cluster warehouses?',
@@ -35,7 +35,7 @@ const FAQ = [
   },
   {
     q: 'What about auto-suspend?',
-    a: 'Set auto-suspend to 60 seconds for interactive dashboards (fast resume, low waste) and 300–600 seconds for ETL pipelines (avoid repeated cold-start overhead). Never run a warehouse 24/7 unless it is genuinely busy 24/7.',
+    a: 'Set auto-suspend to 60 seconds for interactive dashboards (fast resume, low waste) and 300â€“600 seconds for ETL pipelines (avoid repeated cold-start overhead). Never run a warehouse 24/7 unless it is genuinely busy 24/7.',
   },
   {
     q: 'Should dev and prod share a warehouse?',
@@ -63,7 +63,7 @@ function recommendSize(workload, dataGB, concurrency) {
   else if (concurrency <= 40) concurrencyIdx = 2;
   else concurrencyIdx = 3;
 
-  // For dashboards, latency SLA is tight — nudge up one size on large data
+  // For dashboards, latency SLA is tight â€” nudge up one size on large data
   let idx = Math.max(volumeIdx, concurrencyIdx);
   if (workload === 'dashboard' && dataGB > 20) idx = Math.min(idx + 1, WAREHOUSE_SIZES.length - 1);
   if (workload === 'dev') idx = 0; // force XS for dev
@@ -149,7 +149,7 @@ export default function WarehouseSizingPage() {
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
     description:
-      'Free Snowflake warehouse sizing estimator. Pick workload type, data volume, and concurrency — get the right T-shirt size.',
+      'Free Snowflake warehouse sizing estimator. Pick workload type, data volume, and concurrency â€” get the right T-shirt size.',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
     url: 'https://dataengineerhub.blog/tools/snowflake-warehouse-sizing',
     publisher: { '@type': 'Organization', name: 'DataEngineer Hub', url: 'https://dataengineerhub.blog' },
@@ -167,8 +167,8 @@ export default function WarehouseSizingPage() {
   return (
     <>
       <MetaTags
-        title="Snowflake Warehouse Sizing Estimator 2026 — Pick XS–6XL by Workload"
-        description="Which Snowflake warehouse size should you use? Enter workload type, data volume and concurrency — get an instant XS–6XL recommendation plus monthly cost."
+        title="Snowflake Warehouse Sizing Estimator 2026 â€” Pick XSâ€“6XL by Workload"
+        description="Which Snowflake warehouse size should you use? Enter workload type, data volume and concurrency â€” get an instant XSâ€“6XL recommendation plus monthly cost."
         keywords="snowflake warehouse size, snowflake warehouse sizing, snowflake warehouse recommendation, which warehouse size snowflake, t-shirt size snowflake"
         url="/tools/snowflake-warehouse-sizing"
         type="website"
@@ -178,6 +178,7 @@ export default function WarehouseSizingPage() {
           { name: 'Warehouse Sizing Estimator', url: '/tools/snowflake-warehouse-sizing' },
         ]}
         faqSchema={faqSchema}
+      noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
@@ -186,7 +187,7 @@ export default function WarehouseSizingPage() {
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-blue-300 bg-blue-900/30 border border-blue-700/50 rounded-full">
-            Heuristic recommendation · Based on public Snowflake sizing patterns · Updated April 2026
+            Heuristic recommendation Â· Based on public Snowflake sizing patterns Â· Updated April 2026
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Layers className="w-8 h-8 text-purple-400" aria-hidden="true" />
@@ -302,7 +303,7 @@ export default function WarehouseSizingPage() {
               <div className="text-sm text-gray-300 mb-4">
                 {result.size.creditsPerHour} credit{result.size.creditsPerHour > 1 ? 's' : ''}/hour
                 {result.multiCluster && (
-                  <> · <span className="text-purple-300">multi-cluster × {result.clusters}</span></>
+                  <> Â· <span className="text-purple-300">multi-cluster Ã— {result.clusters}</span></>
                 )}
               </div>
 
@@ -357,7 +358,7 @@ LIMIT 72;`}
           <h2 className="text-2xl font-semibold text-white mb-4">How to validate your size</h2>
           <ol className="list-decimal pl-6 space-y-2 text-gray-300">
             <li>Create the recommended warehouse and run your top 10 queries against production data.</li>
-            <li>Open each query's <strong>Query Profile</strong> — check for "Bytes spilled to remote storage". Any remote spill means the size is too small.</li>
+            <li>Open each query's <strong>Query Profile</strong> â€” check for "Bytes spilled to remote storage". Any remote spill means the size is too small.</li>
             <li>Check the <strong>WAREHOUSE_LOAD_HISTORY</strong> view. If average load is consistently &gt;1.0, consider multi-cluster.</li>
             <li>For BI workloads, watch <strong>QUEUED_LOAD_PERCENTAGE</strong>. If queries sit in queue &gt;10s, enable multi-cluster auto-scale.</li>
             <li>After one week, review <strong>WAREHOUSE_METERING_HISTORY</strong> and right-size down if utilization is low.</li>
@@ -373,9 +374,9 @@ LIMIT 72;`}
               local SSD). The recommendation engine balances three signals:
             </p>
             <ul className="list-disc pl-6 space-y-1">
-              <li><strong>Working-set size</strong> vs. local cache — if your hottest data fits in the warehouse's SSD, scans go 5–10x faster.</li>
-              <li><strong>Concurrency</strong> — BI workloads with &gt;8 concurrent users usually need multi-cluster, not a bigger single warehouse.</li>
-              <li><strong>Query shape</strong> — heavy joins and window functions benefit most from size bumps; simple filters rarely do.</li>
+              <li><strong>Working-set size</strong> vs. local cache â€” if your hottest data fits in the warehouse's SSD, scans go 5â€“10x faster.</li>
+              <li><strong>Concurrency</strong> â€” BI workloads with &gt;8 concurrent users usually need multi-cluster, not a bigger single warehouse.</li>
+              <li><strong>Query shape</strong> â€” heavy joins and window functions benefit most from size bumps; simple filters rarely do.</li>
             </ul>
             <p className="font-mono text-xs bg-slate-900/70 border border-slate-700 rounded-lg p-3 text-blue-300">
               Size up when queries spill to remote storage. Add clusters when queries queue. Never both at once.
@@ -388,14 +389,14 @@ LIMIT 72;`}
           <div className="text-gray-300 text-sm leading-relaxed space-y-3">
             <p>
               A Tableau deployment where 40 analysts hit dashboards sporadically throughout the day
-              (avg 3 concurrent, peak 15). Data volume per query: 2–20 GB. Current setup:
-              <strong> 1× Large (8 cr/hr)</strong>, always-on during business hours = $1,920/month on Enterprise.
+              (avg 3 concurrent, peak 15). Data volume per query: 2â€“20 GB. Current setup:
+              <strong> 1Ã— Large (8 cr/hr)</strong>, always-on during business hours = $1,920/month on Enterprise.
             </p>
             <p>The estimator recommends:</p>
             <ul className="list-disc pl-6 space-y-1">
               <li>Drop to <strong>Medium</strong> (4 cr/hr) with <strong>multi-cluster max=3</strong></li>
               <li>Set auto-suspend to <strong>60s</strong> (default 10 min wastes money between clicks)</li>
-              <li>Expected monthly: ~$850 — <span className="text-green-400">~56% savings</span></li>
+              <li>Expected monthly: ~$850 â€” <span className="text-green-400">~56% savings</span></li>
             </ul>
             <p>
               Why it works: with bursty BI traffic, you only pay for the extra clusters when queries
@@ -409,31 +410,31 @@ LIMIT 72;`}
           <h2 className="text-2xl font-semibold text-white mb-4">Related tools & guides</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link to="/tools/snowflake-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">Full Snowflake Cost Calculator →</div>
+              <div className="text-blue-300 font-medium mb-1">Full Snowflake Cost Calculator â†’</div>
               <div className="text-gray-400 text-sm">Monthly spend across compute, storage, cloud services, and serverless.</div>
             </Link>
             <Link to="/tools/snowflake-query-cost-estimator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">Query Cost Estimator →</div>
+              <div className="text-blue-300 font-medium mb-1">Query Cost Estimator â†’</div>
               <div className="text-gray-400 text-sm">Estimate single-query cost from bytes scanned.</div>
             </Link>
             <Link to="/tools/snowflake-credit-cost" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">Credit → USD Converter →</div>
+              <div className="text-blue-300 font-medium mb-1">Credit â†’ USD Converter â†’</div>
               <div className="text-gray-400 text-sm">Convert credits to dollars by edition and region.</div>
             </Link>
             <Link to="/articles/snowflake-cost-optimization-techniques-2026" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">12 cost optimization techniques →</div>
-              <div className="text-gray-400 text-sm">Warehouse right-sizing is #1 lever — full playbook.</div>
+              <div className="text-blue-300 font-medium mb-1">12 cost optimization techniques â†’</div>
+              <div className="text-gray-400 text-sm">Warehouse right-sizing is #1 lever â€” full playbook.</div>
             </Link>
             <Link to="/tools/databricks-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">Databricks Cost Calculator →</div>
+              <div className="text-blue-300 font-medium mb-1">Databricks Cost Calculator â†’</div>
               <div className="text-gray-400 text-sm">Equivalent cluster-sizing problem on the lakehouse side.</div>
             </Link>
             <Link to="/tools/bigquery-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">BigQuery Cost Calculator →</div>
+              <div className="text-blue-300 font-medium mb-1">BigQuery Cost Calculator â†’</div>
               <div className="text-gray-400 text-sm">Slot-based vs on-demand sizing for BigQuery.</div>
             </Link>
             <Link to="/cheatsheets/snowflake-cost-optimization-interview" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl">
-              <div className="text-blue-300 font-medium mb-1">Cost Optimization Interview Q&A →</div>
+              <div className="text-blue-300 font-medium mb-1">Cost Optimization Interview Q&A â†’</div>
               <div className="text-gray-400 text-sm">Expert-level sizing, auto-suspend, and resource-monitor questions.</div>
             </Link>
           </div>

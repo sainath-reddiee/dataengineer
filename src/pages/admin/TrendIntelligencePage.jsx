@@ -1,5 +1,5 @@
-// src/pages/admin/TrendIntelligencePage.jsx
-// Trend Intelligence — discover what to write, what to update, and what competitors are doing.
+﻿// src/pages/admin/TrendIntelligencePage.jsx
+// Trend Intelligence â€” discover what to write, what to update, and what competitors are doing.
 // Uses TinyFish FREE Search + GSC + AI for comprehensive content strategy.
 
 import React, { useState } from 'react';
@@ -14,12 +14,12 @@ import aiService from '@/services/aiService';
 
 const TABS = [
     { id: 'trending', label: 'Trending Now', icon: TrendingUp, desc: 'New article ideas from web trends + community buzz' },
-    { id: 'update', label: 'Update Existing', icon: RefreshCw, desc: 'Rising keywords — update your articles to capture demand' },
-    { id: 'competitors', label: 'Competitor Watch', icon: Users, desc: 'What competitors are publishing — find your angle' },
+    { id: 'update', label: 'Update Existing', icon: RefreshCw, desc: 'Rising keywords â€” update your articles to capture demand' },
+    { id: 'competitors', label: 'Competitor Watch', icon: Users, desc: 'What competitors are publishing â€” find your angle' },
     { id: 'gaps', label: 'Content Gaps', icon: Target, desc: 'Topics they rank for that you don\'t cover yet' },
 ];
 
-// ─── Tab 1: Trending Now ───────────────────────────────────────────────────
+// â”€â”€â”€ Tab 1: Trending Now â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function TrendingTab() {
     const [loading, setLoading] = useState(false);
@@ -60,7 +60,7 @@ function TrendingTab() {
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <p className="text-sm text-gray-400">Search the web for trending data engineering topics, community discussions, and new article opportunities.</p>
                 <button onClick={handleDiscover} disabled={loading} className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl flex items-center gap-2">
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
@@ -105,7 +105,7 @@ function TrendingTab() {
                         <div className="relative">
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-xs font-semibold text-emerald-400">AI-Generated Article Ideas</span>
-                                <button onClick={() => { navigator.clipboard.writeText(ideas); setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                                <button onClick={() => { navigator.clipboard.writeText(ideas).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
                                     {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />} {copied ? 'Copied!' : 'Copy'}
                                 </button>
                             </div>
@@ -120,7 +120,7 @@ function TrendingTab() {
     );
 }
 
-// ─── Tab 2: Update Existing ────────────────────────────────────────────────
+// â”€â”€â”€ Tab 2: Update Existing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function UpdateTab() {
     const [loading, setLoading] = useState(false);
@@ -141,8 +141,8 @@ function UpdateTab() {
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-400">Keywords growing in impressions — update your articles to capture this rising demand.</p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <p className="text-sm text-gray-400">Keywords growing in impressions â€” update your articles to capture this rising demand.</p>
                 <button onClick={handleLoad} disabled={loading} className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl flex items-center gap-2">
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <TrendingUp className="w-4 h-4" />}
                     {loading ? 'Analyzing...' : 'Find Rising Keywords'}
@@ -168,7 +168,7 @@ function UpdateTab() {
                                     +{Math.round((kw.growthRate || 0) * 100)}%
                                 </span>
                                 <a href={`/admin/keyword-target?slug=${kw.matchedSlug || ''}`} className="text-xs text-blue-400 hover:text-blue-300">
-                                    Optimize →
+                                    Optimize â†’
                                 </a>
                             </div>
                         </div>
@@ -183,7 +183,7 @@ function UpdateTab() {
     );
 }
 
-// ─── Tab 3: Competitor Watch ───────────────────────────────────────────────
+// â”€â”€â”€ Tab 3: Competitor Watch â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function CompetitorTab() {
     const [loading, setLoading] = useState(false);
@@ -226,8 +226,8 @@ function CompetitorTab() {
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-400">See what competitors are publishing — find your differentiated angle.</p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <p className="text-sm text-gray-400">See what competitors are publishing â€” find your differentiated angle.</p>
                 <button onClick={handleMonitor} disabled={loading} className="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl flex items-center gap-2">
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Users className="w-4 h-4" />}
                     {loading ? 'Scanning...' : 'Scan Competitors'}
@@ -279,7 +279,7 @@ function CompetitorTab() {
                             <span className="text-xs font-semibold text-pink-300">Your Better Version</span>
                             <div className="text-[10px] text-gray-500 mt-0.5">Based on: {outline.for}</div>
                         </div>
-                        <button onClick={() => navigator.clipboard.writeText(outline.content)} className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                        <button onClick={() => navigator.clipboard.writeText(outline.content).catch(() => {})} className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
                             <Copy className="w-3 h-3" /> Copy
                         </button>
                     </div>
@@ -292,7 +292,7 @@ function CompetitorTab() {
     );
 }
 
-// ─── Tab 4: Content Gaps ───────────────────────────────────────────────────
+// â”€â”€â”€ Tab 4: Content Gaps â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function GapsTab() {
     const [loading, setLoading] = useState(false);
@@ -330,8 +330,8 @@ function GapsTab() {
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-400">Topics competitors rank for that you haven't covered yet — your biggest growth opportunities.</p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <p className="text-sm text-gray-400">Topics competitors rank for that you haven't covered yet â€” your biggest growth opportunities.</p>
                 <button onClick={handleFindGaps} disabled={loading} className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl flex items-center gap-2">
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Target className="w-4 h-4" />}
                     {loading ? 'Scanning...' : 'Find Content Gaps'}
@@ -367,7 +367,7 @@ function GapsTab() {
                                         href={`/admin/article-writer?topic=${encodeURIComponent(gap.keyword)}`}
                                         className="px-3 py-1.5 bg-pink-600/30 hover:bg-pink-600/50 text-pink-300 text-xs rounded-lg border border-pink-500/30"
                                     >
-                                        Write →
+                                        Write â†’
                                     </a>
                                     <button
                                         onClick={() => handlePlanArticle(gap)}
@@ -391,7 +391,7 @@ function GapsTab() {
                             <span className="text-xs font-semibold text-purple-300">Article Plan</span>
                             <div className="text-[10px] text-gray-500 mt-0.5">Target: "{outline.keyword}"</div>
                         </div>
-                        <button onClick={() => navigator.clipboard.writeText(outline.content)} className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                        <button onClick={() => navigator.clipboard.writeText(outline.content).catch(() => {})} className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
                             <Copy className="w-3 h-3" /> Copy
                         </button>
                     </div>
@@ -408,7 +408,7 @@ function GapsTab() {
     );
 }
 
-// ─── Main Page ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function TrendIntelligencePage() {
     const [activeTab, setActiveTab] = useState('trending');
@@ -416,11 +416,11 @@ export function TrendIntelligencePage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                     <TrendingUp className="w-8 h-8 text-cyan-400" />
                     Trend Intelligence
                 </h1>
-                <p className="text-gray-400">Discover what to write, what to update, and where competitors are winning — powered by live web search + GSC data.</p>
+                <p className="text-gray-400">Discover what to write, what to update, and where competitors are winning â€” powered by live web search + GSC data.</p>
             </div>
 
             {/* Service status */}

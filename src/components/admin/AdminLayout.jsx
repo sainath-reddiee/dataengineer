@@ -1,6 +1,6 @@
 // src/components/admin/AdminLayout.jsx
 /**
- * Admin Layout with Sidebar Navigation
+ * Admin Layout with Sidebar Navigation (responsive: desktop sidebar + mobile drawer)
  */
 
 import React, { useState, useEffect } from 'react';
@@ -12,7 +12,8 @@ import {
     Code2, Eye, Sparkles, LogOut, ChevronLeft, CheckSquare, TrendingUp, Key,
     BookOpen, Link2, Clock, Zap, Target, DollarSign,
     Network, Calendar, Users, Sparkle, MousePointerClick, TrendingDown, Award,
-    FileSearch, MessageCircleQuestion, Wand2, Globe, Activity, Fish, Wrench
+    FileSearch, MessageCircleQuestion, Wand2, Globe, Activity, Fish, Wrench,
+    Menu, X
 } from 'lucide-react';
 import { AdminAuth, useAdminAuth } from './AdminAuth';
 import aiService from '@/services/aiService';
@@ -54,7 +55,11 @@ const navItems = [
     { path: '/admin/freshness', icon: Clock, label: 'Freshness' },
 ];
 
-function AdminNav() {
+/**
+ * NavContent — the actual sidebar contents. Shared between desktop sidebar and
+ * mobile off-canvas drawer so we never drift.
+ */
+function NavContent({ onNavigate }) {
     const location = useLocation();
     const { logout } = useAdminAuth();
     const [provider, setProvider] = useState(aiService.provider);
@@ -64,7 +69,6 @@ function AdminNav() {
     const [tfKey, setTfKey] = useState(tinyfishService.isEnabled ? '••••••••' : '');
     const [tfSet, setTfSet] = useState(tinyfishService.isEnabled);
 
-    // Handle GSC OAuth callback on any admin page load
     useEffect(() => {
         const handled = gscService.handleOAuthCallback();
         if (handled) setGscConnected(true);
@@ -95,7 +99,7 @@ function AdminNav() {
     };
 
     return (
-        <aside className="w-64 bg-slate-800/50 backdrop-blur-xl border-r border-slate-700 min-h-screen flex flex-col">
+        <div className="flex flex-col h-full">
             <div className="p-4 border-b border-slate-700">
                 <Link to="/" className="flex items-center gap-2 text-gray-400 hover:text-white mb-4">
                     <ChevronLeft className="w-4 h-4" />
@@ -105,7 +109,7 @@ function AdminNav() {
                 <p className="text-xs text-gray-500">Admin Dashboard</p>
             </div>
 
-            <nav className="flex-1 p-4 space-y-1">
+            <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
                 {navItems.map((item) => {
                     const isActive = item.exact
                         ? location.pathname === item.path
@@ -115,13 +119,14 @@ function AdminNav() {
                         <Link
                             key={item.path}
                             to={item.path}
+                            onClick={onNavigate}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${isActive
                                 ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-white border border-blue-500/30'
                                 : 'text-gray-400 hover:text-white hover:bg-slate-700/50'
                                 }`}
                         >
-                            <item.icon className="w-5 h-5" />
-                            <span className="font-medium">{item.label}</span>
+                            <item.icon className="w-5 h-5 flex-shrink-0" />
+                            <span className="font-medium text-sm">{item.label}</span>
                         </Link>
                     );
                 })}
@@ -140,7 +145,7 @@ function AdminNav() {
                             onClick={() => gscService.startOAuth()}
                             disabled={!gscService.isConfigured()}
                             title={!gscService.isConfigured() ? 'Set VITE_GSC_CLIENT_ID in .env' : 'Connect Google Search Console'}
-                            className="w-full px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg flex items-center justify-center gap-1.5 transition-colors"
+                            className="w-full px-3 py-2 text-xs bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg flex items-center justify-center gap-1.5 transition-colors"
                         >
                             <Link2 className="w-3 h-3" /> Connect GSC
                         </button>
@@ -170,7 +175,7 @@ function AdminNav() {
                     <div className="flex gap-1 mb-2">
                         <button
                             onClick={() => handleProviderChange('gemini')}
-                            className={`flex-1 px-2 py-1 text-[10px] font-medium rounded-lg transition-colors ${
+                            className={`flex-1 px-2 py-1.5 text-[10px] font-medium rounded-lg transition-colors ${
                                 provider === 'gemini'
                                     ? 'bg-blue-600 text-white'
                                     : 'bg-slate-700/50 text-gray-400 hover:text-white'
@@ -180,7 +185,7 @@ function AdminNav() {
                         </button>
                         <button
                             onClick={() => handleProviderChange('groq')}
-                            className={`flex-1 px-2 py-1 text-[10px] font-medium rounded-lg transition-colors ${
+                            className={`flex-1 px-2 py-1.5 text-[10px] font-medium rounded-lg transition-colors ${
                                 provider === 'groq'
                                     ? 'bg-orange-600 text-white'
                                     : 'bg-slate-700/50 text-gray-400 hover:text-white'
@@ -196,11 +201,11 @@ function AdminNav() {
                             onChange={(e) => { setApiKey(e.target.value); setKeySet(false); }}
                             onKeyDown={(e) => e.key === 'Enter' && handleApiKeySubmit()}
                             placeholder={provider === 'gemini' ? 'Gemini API key...' : 'Groq API key...'}
-                            className="flex-1 min-w-0 px-2 py-1.5 text-xs bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                            className="flex-1 min-w-0 px-2 py-2 text-xs bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
                         />
                         <button
                             onClick={handleApiKeySubmit}
-                            className="px-2 py-1.5 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                            className="px-3 py-2 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                         >
                             Set
                         </button>
@@ -221,11 +226,11 @@ function AdminNav() {
                             onChange={(e) => { setTfKey(e.target.value); setTfSet(false); }}
                             onKeyDown={(e) => e.key === 'Enter' && handleTfKeySubmit()}
                             placeholder="sk-tinyfish-..."
-                            className="flex-1 min-w-0 px-2 py-1.5 text-xs bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
+                            className="flex-1 min-w-0 px-2 py-2 text-xs bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
                         />
                         <button
                             onClick={handleTfKeySubmit}
-                            className="px-2 py-1.5 text-xs bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors"
+                            className="px-3 py-2 text-xs bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors"
                         >
                             Set
                         </button>
@@ -241,27 +246,89 @@ function AdminNav() {
                     <span>Logout</span>
                 </button>
             </div>
-        </aside>
+        </div>
     );
 }
 
 export function AdminLayout() {
+    const [mobileNavOpen, setMobileNavOpen] = useState(false);
+    const location = useLocation();
+
+    // Close drawer on route change
+    useEffect(() => {
+        setMobileNavOpen(false);
+    }, [location.pathname]);
+
+    // Lock body scroll while drawer is open
+    useEffect(() => {
+        if (typeof document === 'undefined') return;
+        document.body.style.overflow = mobileNavOpen ? 'hidden' : '';
+        return () => { document.body.style.overflow = ''; };
+    }, [mobileNavOpen]);
+
     return (
         <AdminAuth>
             <Helmet>
                 <meta name="robots" content="noindex, nofollow" />
             </Helmet>
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex">
-                <AdminNav />
-                <main className="flex-1 p-6 overflow-auto">
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
+
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+                {/* Mobile sticky top bar — hidden on md+ */}
+                <header className="md:hidden sticky top-0 z-30 flex items-center justify-between px-3 py-2 bg-slate-900/95 backdrop-blur-xl border-b border-slate-700">
+                    <button
+                        onClick={() => setMobileNavOpen(true)}
+                        aria-label="Open admin menu"
+                        className="p-2 -ml-1 rounded-lg text-gray-300 hover:text-white hover:bg-slate-800 active:bg-slate-700"
                     >
-                        <Outlet />
-                    </motion.div>
-                </main>
+                        <Menu className="w-6 h-6" />
+                    </button>
+                    <span className="text-sm font-bold gradient-text">SEO Toolkit</span>
+                    <Link
+                        to="/"
+                        className="p-2 -mr-1 rounded-lg text-gray-400 hover:text-white"
+                        aria-label="Back to blog"
+                    >
+                        <Globe className="w-5 h-5" />
+                    </Link>
+                </header>
+
+                <div className="flex">
+                    {/* Desktop sidebar — hidden on mobile */}
+                    <aside className="hidden md:flex w-64 bg-slate-800/50 backdrop-blur-xl border-r border-slate-700 min-h-screen flex-col flex-shrink-0">
+                        <NavContent />
+                    </aside>
+
+                    {/* Mobile off-canvas drawer */}
+                    {mobileNavOpen && (
+                        <div className="md:hidden fixed inset-0 z-50 flex">
+                            <div
+                                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                                onClick={() => setMobileNavOpen(false)}
+                                aria-hidden="true"
+                            />
+                            <div className="relative w-[85%] max-w-xs bg-slate-900 border-r border-slate-700 shadow-2xl animate-slide-in-left flex flex-col">
+                                <button
+                                    onClick={() => setMobileNavOpen(false)}
+                                    className="absolute top-3 right-3 z-10 p-2 rounded-lg text-gray-400 hover:text-white hover:bg-slate-800"
+                                    aria-label="Close menu"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                                <NavContent onNavigate={() => setMobileNavOpen(false)} />
+                            </div>
+                        </div>
+                    )}
+
+                    <main className="flex-1 min-w-0 p-3 md:p-6 overflow-auto">
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <Outlet />
+                        </motion.div>
+                    </main>
+                </div>
             </div>
         </AdminAuth>
     );

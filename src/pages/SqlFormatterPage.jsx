@@ -1,4 +1,4 @@
-// src/pages/SqlFormatterPage.jsx
+﻿// src/pages/SqlFormatterPage.jsx
 // Client-side SQL formatter. Targets "sql formatter", "sql beautifier",
 // "format sql online", "snowflake sql formatter".
 import React, { useMemo, useState, useCallback, Suspense } from 'react';
@@ -104,7 +104,7 @@ const EXAMPLES = {
 const FAQ = [
   {
     q: 'Is this SQL formatter free and private?',
-    a: 'Yes. The formatter runs 100% in your browser — your SQL never leaves your device. No server roundtrip, no storage, no analytics on the SQL content. Paste proprietary queries safely.',
+    a: 'Yes. The formatter runs 100% in your browser â€” your SQL never leaves your device. No server roundtrip, no storage, no analytics on the SQL content. Paste proprietary queries safely.',
   },
   {
     q: 'Which SQL dialects are supported?',
@@ -116,15 +116,15 @@ const FAQ = [
   },
   {
     q: 'Does it validate the SQL?',
-    a: 'No — this is a pure formatter, not a parser/linter. It re-indents and re-cases your query but does not check syntax correctness. Use dbt compile, your warehouse\'s EXPLAIN, or a validator (SQLFluff, sqlglot) for that.',
+    a: 'No â€” this is a pure formatter, not a parser/linter. It re-indents and re-cases your query but does not check syntax correctness. Use dbt compile, your warehouse\'s EXPLAIN, or a validator (SQLFluff, sqlglot) for that.',
   },
   {
     q: 'How does it handle string literals and comments?',
-    a: 'String literals (single-quoted) and comments (-- line, /* block */) are protected from keyword-case conversion. A query like WHERE status = \'select\' stays intact — the literal \'select\' is not capitalized.',
+    a: 'String literals (single-quoted) and comments (-- line, /* block */) are protected from keyword-case conversion. A query like WHERE status = \'select\' stays intact â€” the literal \'select\' is not capitalized.',
   },
   {
     q: 'Can I use this in my CI pipeline?',
-    a: 'Not directly — for CI, use SQLFluff (Python) or sqlglot (Python). This web formatter is for quick one-off cleanup, PR review, and interactive work. For production style enforcement, add a pre-commit hook running SQLFluff on changed .sql files.',
+    a: 'Not directly â€” for CI, use SQLFluff (Python) or sqlglot (Python). This web formatter is for quick one-off cleanup, PR review, and interactive work. For production style enforcement, add a pre-commit hook running SQLFluff on changed .sql files.',
   },
 ];
 
@@ -172,8 +172,8 @@ export default function SqlFormatterPage() {
   return (
     <>
       <MetaTags
-        title="Free SQL Formatter 2026 — Snowflake, Postgres, BigQuery, Redshift"
-        description="Format and beautify SQL online. Configurable indent and keyword case. Works with Snowflake, PostgreSQL, BigQuery, Redshift, MySQL. 100% client-side — your SQL never leaves your browser."
+        title="Free SQL Formatter 2026 â€” Snowflake, Postgres, BigQuery, Redshift"
+        description="Format and beautify SQL online. Configurable indent and keyword case. Works with Snowflake, PostgreSQL, BigQuery, Redshift, MySQL. 100% client-side â€” your SQL never leaves your browser."
         keywords="sql formatter, sql beautifier, format sql online, snowflake sql formatter, postgres sql formatter, free sql formatter"
         url="/tools/sql-formatter"
         type="website"
@@ -183,6 +183,7 @@ export default function SqlFormatterPage() {
           { name: 'SQL Formatter', url: '/tools/sql-formatter' },
         ]}
         faqSchema={faqSchema}
+      noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
@@ -191,7 +192,7 @@ export default function SqlFormatterPage() {
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-purple-300 bg-purple-900/30 border border-purple-700/50 rounded-full">
-            100% client-side · No data leaves your browser
+            100% client-side Â· No data leaves your browser
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Code2 className="w-8 h-8 text-purple-400" />
@@ -199,7 +200,7 @@ export default function SqlFormatterPage() {
           </h1>
           <p className="text-gray-300 text-lg max-w-3xl">
             Paste messy SQL, get consistent formatting. Supports Snowflake, PostgreSQL, BigQuery,
-            Redshift, Databricks, MySQL. Runs entirely in your browser — safe for proprietary
+            Redshift, Databricks, MySQL. Runs entirely in your browser â€” safe for proprietary
             queries. No signup, no file upload, no tracking of your SQL content.
           </p>
         </div>
@@ -322,10 +323,10 @@ export default function SqlFormatterPage() {
             Refactor (not just format) when:
           </p>
           <ul className="list-disc pl-5 text-gray-300 space-y-1 text-sm">
-            <li>A query has 5+ nested subqueries — flatten to CTEs.</li>
-            <li>The same logic is duplicated in WHERE and HAVING — pull into a CTE.</li>
-            <li>Window functions are recomputed — use a CTE to compute once.</li>
-            <li>You see SELECT * — enumerate columns for stable contracts.</li>
+            <li>A query has 5+ nested subqueries â€” flatten to CTEs.</li>
+            <li>The same logic is duplicated in WHERE and HAVING â€” pull into a CTE.</li>
+            <li>Window functions are recomputed â€” use a CTE to compute once.</li>
+            <li>You see SELECT * â€” enumerate columns for stable contracts.</li>
           </ul>
         </div>
 
@@ -333,20 +334,20 @@ export default function SqlFormatterPage() {
           <h2 className="text-2xl font-semibold text-white mb-4">Related tools & guides</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link to="/tools/snowflake-query-cost-estimator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-purple-500 rounded-xl">
-              <div className="text-purple-300 font-medium mb-1 flex items-center gap-2"><Calculator className="w-4 h-4" /> Query Cost Estimator →</div>
+              <div className="text-purple-300 font-medium mb-1 flex items-center gap-2"><Calculator className="w-4 h-4" /> Query Cost Estimator â†’</div>
               <div className="text-gray-400 text-sm">Once your SQL is clean, check what it costs to run.</div>
             </Link>
             <Link to="/tools/json-to-sql-ddl" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-purple-500 rounded-xl">
-              <div className="text-purple-300 font-medium mb-1 flex items-center gap-2"><Wand2 className="w-4 h-4" /> JSON → SQL DDL →</div>
+              <div className="text-purple-300 font-medium mb-1 flex items-center gap-2"><Wand2 className="w-4 h-4" /> JSON â†’ SQL DDL â†’</div>
               <div className="text-gray-400 text-sm">Generate CREATE TABLE from a JSON sample.</div>
             </Link>
             <Link to="/cheatsheets/snowflake-sql" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-purple-500 rounded-xl">
-              <div className="text-purple-300 font-medium mb-1 flex items-center gap-2"><BookOpen className="w-4 h-4" /> Snowflake SQL Cheat Sheet →</div>
+              <div className="text-purple-300 font-medium mb-1 flex items-center gap-2"><BookOpen className="w-4 h-4" /> Snowflake SQL Cheat Sheet â†’</div>
               <div className="text-gray-400 text-sm">Every Snowflake-specific SQL construct, indexed.</div>
             </Link>
             <Link to="/cheatsheets/sql-window-functions" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-purple-500 rounded-xl">
-              <div className="text-purple-300 font-medium mb-1">Window Functions Reference →</div>
-              <div className="text-gray-400 text-sm">ROW_NUMBER, RANK, LAG, frame syntax — all examples.</div>
+              <div className="text-purple-300 font-medium mb-1">Window Functions Reference â†’</div>
+              <div className="text-gray-400 text-sm">ROW_NUMBER, RANK, LAG, frame syntax â€” all examples.</div>
             </Link>
           </div>
         </div>

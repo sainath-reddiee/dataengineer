@@ -1,4 +1,4 @@
-// scripts/generateStaticPages.js
+﻿// scripts/generateStaticPages.js
 // MINIMAL VERSION: Only generate static pages for article posts
 // Let React handle category/tag pages dynamically
 import fs from 'fs';
@@ -50,7 +50,7 @@ function generateHTML(pageData) {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${title} | DataEngineer Hub</title>
+    <title>${title}</title>
     <meta name="description" content="${description}" />
     <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
     <meta name="robots" content="index, follow" />
@@ -114,22 +114,22 @@ function generateHTML(pageData) {
 }
 
 async function generatePages() {
-  console.log('🚀 Generating static pages for article posts only...\n');
-  console.log('ℹ️  Categories and tags will be handled by React dynamically.\n');
+  console.log('ðŸš€ Generating static pages for article posts only...\n');
+  console.log('â„¹ï¸  Categories and tags will be handled by React dynamically.\n');
 
   const distDir = path.join(__dirname, '..', 'dist');
 
   if (!fs.existsSync(distDir)) {
-    console.error('❌ dist/ folder not found. Run "npm run build:vite" first.');
+    console.error('âŒ dist/ folder not found. Run "npm run build:vite" first.');
     process.exit(1);
   }
 
   // Only generate pages for posts (articles)
-  console.log('📄 Fetching posts...');
+  console.log('ðŸ“„ Fetching posts...');
   const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content');
 
-  console.log(`✅ Found ${posts.length} posts\n`);
-  console.log('💾 Writing HTML files...');
+  console.log(`âœ… Found ${posts.length} posts\n`);
+  console.log('ðŸ’¾ Writing HTML files...');
 
   let generated = 0;
 
@@ -160,18 +160,18 @@ async function generatePages() {
     }
   }
 
-  console.log(`\n✅ Successfully generated ${generated} static HTML pages!`);
-  console.log('\n📊 What was generated:');
-  console.log(`   ✅ Article posts: ${posts.length}`);
-  console.log(`   ⚠️  Categories: Handled by React (no static HTML)`);
-  console.log(`   ⚠️  Tags: Handled by React (no static HTML)`);
-  console.log('\n✨ This is better because:');
+  console.log(`\nâœ… Successfully generated ${generated} static HTML pages!`);
+  console.log('\nðŸ“Š What was generated:');
+  console.log(`   âœ… Article posts: ${posts.length}`);
+  console.log(`   âš ï¸  Categories: Handled by React (no static HTML)`);
+  console.log(`   âš ï¸  Tags: Handled by React (no static HTML)`);
+  console.log('\nâœ¨ This is better because:');
   console.log('   - Article pages get full SEO benefits');
   console.log('   - Category/tag pages load instantly with React');
   console.log('   - No conflicts between static HTML and React routes\n');
 }
 
 generatePages().catch(error => {
-  console.error('❌ Error generating pages:', error);
+  console.error('âŒ Error generating pages:', error);
   process.exit(1);
 });

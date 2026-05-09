@@ -1,11 +1,11 @@
-import React from 'react';
+﻿import React from 'react';
 import MetaTags from '@/components/SEO/MetaTags';
 
 const PrivacyPolicyPage = () => {
   return (
     <>
       <MetaTags
-        title="Privacy Policy | DataEngineer Hub - How We Protect Your Data"
+        title="Privacy Policy - How We Protect Your Data"
         description="Read DataEngineer Hub's privacy policy to understand how we collect, use, and protect your personal information. Learn about our data practices, cookies, and your privacy rights."
         keywords="privacy policy, data protection, user privacy, cookies policy, GDPR, data security"
       />
@@ -45,6 +45,74 @@ const PrivacyPolicyPage = () => {
           </p>
           <p>
             When you first visit our website, a cookie consent banner is displayed at the bottom of the page. We implement Google Consent Mode v2: by default, users in the EU, UK, and EEA have advertising, analytics, and personalization storage set to "denied" until consent is granted. Advertising scripts (such as Google AdSense) may still load to comply with Google's verification and delivery requirements, but will not store or read personalized advertising cookies until you accept cookies through the banner. If you decline, only essential cookies required for the website to function are used, and any ads served will be non-personalized. You can revoke your consent at any time via the "Manage Cookies" link in the footer.
+          </p>
+
+          <h3 className="text-lg font-semibold text-white mt-6">Cookies in use</h3>
+          <p>
+            The table below lists the cookies and similar storage mechanisms commonly set when you visit the Site.
+            Specific cookie names from third parties (Google, Cloudflare) may change without notice; this list
+            documents categories and typical examples.
+          </p>
+          <div className="overflow-x-auto my-4">
+            <table className="min-w-full text-sm border border-slate-700">
+              <thead className="bg-slate-800/50">
+                <tr>
+                  <th className="px-3 py-2 text-left border border-slate-700">Name / Pattern</th>
+                  <th className="px-3 py-2 text-left border border-slate-700">Provider</th>
+                  <th className="px-3 py-2 text-left border border-slate-700">Purpose</th>
+                  <th className="px-3 py-2 text-left border border-slate-700">Type</th>
+                  <th className="px-3 py-2 text-left border border-slate-700">Duration</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="px-3 py-2 border border-slate-700"><code>cookie_consent</code></td>
+                  <td className="px-3 py-2 border border-slate-700">dataengineerhub.blog</td>
+                  <td className="px-3 py-2 border border-slate-700">Stores your cookie-consent choice (accept / deny) so the banner does not reappear.</td>
+                  <td className="px-3 py-2 border border-slate-700">Strictly necessary</td>
+                  <td className="px-3 py-2 border border-slate-700">12 months</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2 border border-slate-700"><code>theme</code>, <code>seo_admin_*</code></td>
+                  <td className="px-3 py-2 border border-slate-700">dataengineerhub.blog</td>
+                  <td className="px-3 py-2 border border-slate-700">UI preferences and admin-area session (admin users only).</td>
+                  <td className="px-3 py-2 border border-slate-700">Functional</td>
+                  <td className="px-3 py-2 border border-slate-700">Session — 1 year</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2 border border-slate-700"><code>_ga</code>, <code>_ga_*</code>, <code>_gid</code></td>
+                  <td className="px-3 py-2 border border-slate-700">Google Analytics 4</td>
+                  <td className="px-3 py-2 border border-slate-700">Distinguish unique users, count visits, and measure aggregate traffic patterns. Loaded only when you grant analytics consent.</td>
+                  <td className="px-3 py-2 border border-slate-700">Analytics</td>
+                  <td className="px-3 py-2 border border-slate-700">Up to 2 years</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2 border border-slate-700"><code>__gads</code>, <code>__gpi</code>, <code>IDE</code>, <code>NID</code>, DART cookie</td>
+                  <td className="px-3 py-2 border border-slate-700">Google AdSense / DoubleClick</td>
+                  <td className="px-3 py-2 border border-slate-700">Ad delivery, frequency capping, and (when consented) interest-based advertising.</td>
+                  <td className="px-3 py-2 border border-slate-700">Advertising</td>
+                  <td className="px-3 py-2 border border-slate-700">Up to 13 months</td>
+                </tr>
+                <tr>
+                  <td className="px-3 py-2 border border-slate-700"><code>__cf_bm</code></td>
+                  <td className="px-3 py-2 border border-slate-700">Cloudflare</td>
+                  <td className="px-3 py-2 border border-slate-700">Bot management and DDoS protection; helps distinguish humans from bots.</td>
+                  <td className="px-3 py-2 border border-slate-700">Strictly necessary</td>
+                  <td className="px-3 py-2 border border-slate-700">30 minutes</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 className="text-lg font-semibold text-white mt-6">Google Analytics</h3>
+          <p>
+            We use Google Analytics 4 to understand aggregate site traffic and reading patterns (which articles are
+            popular, average time on page, country-level visitor counts). Analytics data is anonymized — IP
+            anonymization is enabled and we do not collect personally identifiable information through Analytics. The
+            Analytics script only loads after you grant "analytics_storage" consent via our cookie banner. You can opt
+            out at any time using the official{' '}
+            <a className="text-blue-400 underline" href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">Google Analytics opt-out browser add-on</a>{' '}
+            or by clearing cookies and choosing "Decline" when the banner reappears.
           </p>
 
           <h2 className="text-xl font-bold text-white mt-8">5. HOW DO WE KEEP YOUR INFORMATION SAFE?</h2>

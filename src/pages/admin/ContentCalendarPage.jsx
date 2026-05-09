@@ -1,4 +1,4 @@
-// src/pages/admin/ContentCalendarPage.jsx
+﻿// src/pages/admin/ContentCalendarPage.jsx
 // Content calendar with AI-free auto-suggestions based on article analysis.
 
 import React, { useState, useEffect } from 'react';
@@ -118,11 +118,11 @@ export function ContentCalendarPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                    <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                         <Calendar className="w-8 h-8 text-blue-400" />
                         Content Calendar
                     </h1>
-                    <p className="text-gray-400">Plan what to write, update, and optimize — with AI-free suggestions from your data.</p>
+                    <p className="text-gray-400">Plan what to write, update, and optimize â€” with AI-free suggestions from your data.</p>
                 </div>
                 <button
                     onClick={() => setShowAddForm(!showAddForm)}
@@ -163,6 +163,7 @@ export function ContentCalendarPage() {
                         type="text"
                         value={newTask.title}
                         onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                        onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
                         placeholder="Task title (e.g., Write: Snowflake Cortex Search guide)"
                         className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded text-white text-sm"
                     />

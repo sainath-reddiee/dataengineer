@@ -38,8 +38,17 @@ export function ExportButton({ report, filename = 'seo-report' }) {
                 setTimeout(() => setCopied(false), 2000);
                 setOpen(false);
                 return;
+            default:
+                console.warn('ExportButton: unknown format', format);
+                setOpen(false);
+                return;
         }
 
+        if (!content) {
+            console.error('ExportButton: empty content for format', format);
+            setOpen(false);
+            return;
+        }
         downloadFile(content, `${filename}.${ext}`, type);
         setOpen(false);
     };

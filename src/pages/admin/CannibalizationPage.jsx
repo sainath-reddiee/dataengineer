@@ -1,5 +1,5 @@
-// src/pages/admin/CannibalizationPage.jsx
-// Keyword Cannibalization Detector — finds keywords ranking on multiple pages
+﻿// src/pages/admin/CannibalizationPage.jsx
+// Keyword Cannibalization Detector â€” finds keywords ranking on multiple pages
 // and recommends consolidation strategies via AI.
 
 import React, { useEffect, useState, useMemo } from 'react';
@@ -20,15 +20,21 @@ function CannibalizationRow({ item, onRecommend }) {
 
     const handleRecommend = async () => {
         setLoading(true);
-        const result = await onRecommend(item);
-        setRecommendation(result);
-        setExpanded(true);
-        setLoading(false);
+        try {
+            const result = await onRecommend(item);
+            setRecommendation(result);
+            setExpanded(true);
+        } catch (e) {
+            setRecommendation(`Error: ${e?.message || 'Failed to generate recommendation'}`);
+            setExpanded(true);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCopy = () => {
         if (recommendation) {
-            navigator.clipboard.writeText(recommendation);
+            navigator.clipboard.writeText(recommendation).catch(() => {});
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         }
@@ -125,7 +131,7 @@ export function CannibalizationPage() {
             }
 
             // For each post, fetch its top keywords from GSC
-            const keywordMap = {}; // keyword → [{ slug, title, position, impressions }]
+            const keywordMap = {}; // keyword â†’ [{ slug, title, position, impressions }]
 
             for (let i = 0; i < posts.length; i++) {
                 const post = posts[i];
@@ -199,7 +205,7 @@ export function CannibalizationPage() {
         }
 
         const pagesDesc = item.pages.map(p =>
-            `- "${p.title}" (slug: ${p.slug}) — position ${p.position.toFixed(1)}, ${p.impressions} impressions`
+            `- "${p.title}" (slug: ${p.slug}) â€” position ${p.position.toFixed(1)}, ${p.impressions} impressions`
         ).join('\n');
 
         const prompt = `You are an SEO expert specializing in keyword cannibalization resolution.
@@ -221,7 +227,7 @@ PRIMARY PAGE: [slug]
 REASON: [1-2 sentences why this should be primary]
 
 ACTION FOR EACH OTHER PAGE:
-- [slug]: [MERGE/301/DIFFERENTIATE] — [brief explanation of what to do]
+- [slug]: [MERGE/301/DIFFERENTIATE] â€” [brief explanation of what to do]
 
 IMPLEMENTATION STEPS:
 1. [specific first step]
@@ -240,12 +246,12 @@ IMPLEMENTATION STEPS:
         <div className="space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                    <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                         <Split className="w-8 h-8 text-red-400" />
                         Keyword Cannibalization
                     </h1>
                     <p className="text-gray-400">
-                        Detect keywords ranking on multiple pages — consolidate to stop splitting impressions.
+                        Detect keywords ranking on multiple pages â€” consolidate to stop splitting impressions.
                     </p>
                 </div>
                 <button
@@ -327,7 +333,7 @@ IMPLEMENTATION STEPS:
                 <strong className="text-gray-400">How it works:</strong>{' '}
                 Fetches your top 20 articles and their GSC keywords, then cross-references to find
                 keywords that appear on multiple pages. When the same keyword ranks on 2+ URLs, Google
-                splits the ranking signal — consolidating fixes this "cannibalization" and can boost
+                splits the ranking signal â€” consolidating fixes this "cannibalization" and can boost
                 the surviving page significantly.
             </div>
         </div>

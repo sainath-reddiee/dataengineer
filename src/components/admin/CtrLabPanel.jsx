@@ -26,6 +26,7 @@ const RowEditor = ({ row, onClose }) => {
     const [title, setTitle] = useState(row.title || '');
     const [desc, setDesc] = useState(row.excerpt || '');
     const [aiLoading, setAiLoading] = useState(false);
+    const [aiError, setAiError] = useState('');
     const [keywords, setKeywords] = useState([]);
     const [kwLoading, setKwLoading] = useState(false);
     const [kwError, setKwError] = useState('');
@@ -114,13 +115,16 @@ Respond in EXACTLY this JSON format (no markdown fences):
             const response = await aiService.generateSuggestion(prompt, '');
             const firstBrace = response.indexOf('{');
             const lastBrace = response.lastIndexOf('}');
-            if (firstBrace !== -1 && lastBrace > firstBrace) {
-                const parsed = JSON.parse(response.substring(firstBrace, lastBrace + 1));
-                if (parsed.title) setTitle(parsed.title);
-                if (parsed.description) setDesc(parsed.description);
+            if (firstBrace === -1 || lastBrace <= firstBrace) {
+                throw new Error('AI response did not contain JSON');
             }
+            const parsed = JSON.parse(response.substring(firstBrace, lastBrace + 1));
+            if (parsed.title) setTitle(parsed.title);
+            if (parsed.description) setDesc(parsed.description);
+            setAiError('');
         } catch (e) {
             console.error('AI suggest failed:', e);
+            setAiError(e?.message || 'AI suggestion failed. Try again.');
         }
         setAiLoading(false);
     };
@@ -233,6 +237,11 @@ Respond in EXACTLY this JSON format (no markdown fences):
                 {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
                 {aiLoading ? 'Generating...' : keywords.length > 0 ? 'AI Suggest (Keyword-Aware)' : 'AI Suggest Title & Description'}
             </button>
+            {aiError && (
+                <div className="text-xs text-red-300 bg-red-900/20 border border-red-800/30 px-2 py-1 rounded">
+                    {aiError}
+                </div>
+            )}
             <div className="grid grid-cols-3 gap-3">
                 <div className="p-3 rounded-lg bg-slate-800/70">
                     <div className="text-xs text-gray-400">New score</div>

@@ -1,4 +1,4 @@
-// src/pages/admin/SerpPreviewPage.jsx
+﻿// src/pages/admin/SerpPreviewPage.jsx
 /**
  * SERP Preview Page - See how pages look in search results
  */
@@ -31,6 +31,16 @@ export function SerpPreviewPage() {
             let finalUrl = url.trim();
             if (!finalUrl.startsWith('http')) finalUrl = 'https://' + finalUrl;
 
+            // Validate URL shape before any fetching
+            let parsedUrl;
+            try {
+                parsedUrl = new URL(finalUrl);
+            } catch {
+                setError('Please enter a valid URL (e.g. https://example.com/article)');
+                setLoading(false);
+                return;
+            }
+
             let html;
 
             // For blog articles, fetch from WordPress API directly
@@ -43,6 +53,9 @@ export function SerpPreviewPage() {
                     : `https://api.allorigins.win/raw?url=${encodeURIComponent(finalUrl)}`;
 
                 const response = await fetch(proxyUrl);
+                if (!response.ok) {
+                    throw new Error(`Fetch returned HTTP ${response.status}`);
+                }
                 html = await response.text();
             }
 
@@ -51,14 +64,20 @@ export function SerpPreviewPage() {
 
             const title = doc.querySelector('title')?.textContent || 'No title found';
             const description = doc.querySelector('meta[name="description"]')?.content || 'No description found';
-            const favicon = doc.querySelector('link[rel="icon"]')?.href || '';
+            // Resolve favicon relative to the target site (otherwise relative paths
+            // like /favicon.ico get resolved against our own origin and 404).
+            const rawFavicon = doc.querySelector('link[rel="icon"]')?.getAttribute('href') || '';
+            let favicon = '';
+            if (rawFavicon) {
+                try { favicon = new URL(rawFavicon, parsedUrl).href; } catch { favicon = ''; }
+            }
 
             setPreview({
                 url: finalUrl,
                 title,
                 description,
                 favicon,
-                displayUrl: new URL(finalUrl).hostname + new URL(finalUrl).pathname
+                displayUrl: parsedUrl.hostname + parsedUrl.pathname
             });
         } catch (err) {
             console.error('Preview failed:', err);
@@ -81,7 +100,7 @@ export function SerpPreviewPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-white mb-2">SERP Preview</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">SERP Preview</h1>
                 <p className="text-gray-400">See how your page appears in search results</p>
             </div>
 
@@ -111,6 +130,7 @@ export function SerpPreviewPage() {
                                 type="text"
                                 value={url}
                                 onChange={(e) => setUrl(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handlePreview()}
                                 placeholder="Enter URL to preview"
                                 className="w-full pl-12 pr-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                             />
@@ -124,6 +144,11 @@ export function SerpPreviewPage() {
                             Preview
                         </button>
                     </div>
+                    {error && (
+                        <div className="mt-3 p-3 bg-red-900/20 border border-red-800/30 rounded-lg text-sm text-red-300">
+                            {error}
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -220,12 +245,12 @@ export function SerpPreviewPage() {
                             <div className="text-xs text-gray-500 space-y-1">
                                 <p>
                                     Title: {activePreview.title.length} characters
-                                    {activePreview.title.length > 60 && ' ⚠️ Too long (Google cuts off at ~60)'}
-                                    {activePreview.title.length < 30 && ' ⚠️ Too short'}
+                                    {activePreview.title.length > 60 && ' âš ï¸ Too long (Google cuts off at ~60)'}
+                                    {activePreview.title.length < 30 && ' âš ï¸ Too short'}
                                 </p>
                                 <p>
                                     Description: {activePreview.description.length} characters
-                                    {(activePreview.description.length < 120 || activePreview.description.length > 160) && ' ⚠️ Recommended: 120-160 chars'}
+                                    {(activePreview.description.length < 120 || activePreview.description.length > 160) && ' âš ï¸ Recommended: 120-160 chars'}
                                 </p>
                             </div>
                         </div>

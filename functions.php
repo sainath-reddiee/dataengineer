@@ -49,6 +49,24 @@ remove_action('init', 'handle_cors_requests');
 add_action('init', 'handle_cors_requests', 9);
 
 // ============================================================================
+// SECURITY HARDENING — strip information leaks from <head> output
+// ============================================================================
+// Suppress the default <meta name="generator" content="WordPress X.Y.Z">.
+// This prevents version disclosure in REST/HTML responses and removes a
+// fingerprinting signal flagged by basic security scans.
+remove_action('wp_head', 'wp_generator');
+add_filter('the_generator', '__return_empty_string');
+// Also strip the WP version query string from enqueued scripts/styles.
+function dehub_remove_version_strings($src) {
+    if (strpos($src, 'ver=') !== false) {
+        $src = remove_query_arg('ver', $src);
+    }
+    return $src;
+}
+add_filter('script_loader_src', 'dehub_remove_version_strings', 9999);
+add_filter('style_loader_src', 'dehub_remove_version_strings', 9999);
+
+// ============================================================================
 // CACHE MANAGEMENT SYSTEM
 // ============================================================================
 

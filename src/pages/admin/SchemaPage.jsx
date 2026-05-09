@@ -1,11 +1,11 @@
-// src/pages/admin/SchemaPage.jsx
+﻿// src/pages/admin/SchemaPage.jsx
 /**
  * Schema Generator Page
  */
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Code2, Copy, Check, FileJson } from 'lucide-react';
+import { Code2, Copy, Check, FileJson, Trash2 } from 'lucide-react';
 import { copyToClipboard } from '@/utils/seo/exportUtils';
 
 const schemaTypes = [
@@ -100,15 +100,28 @@ export function SchemaPage() {
     };
 
     const updateItem = (key, index, field, value) => {
-        const items = [...form[key]];
-        items[index][field] = value;
+        const items = form[key].map((item, i) =>
+            i === index ? { ...item, [field]: value } : item
+        );
+        updateForm(key, items);
+    };
+
+    const removeItem = (key, index) => {
+        const items = form[key].filter((_, i) => i !== index);
+        // Always keep at least one row so the form stays usable
+        if (items.length === 0) {
+            const empty = key === 'faqs' ? { question: '', answer: '' } :
+                key === 'steps' ? { name: '', text: '' } :
+                    { name: '', url: '' };
+            items.push(empty);
+        }
         updateForm(key, items);
     };
 
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Schema Generator</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Schema Generator</h1>
                 <p className="text-gray-400">Generate JSON-LD structured data</p>
             </div>
 
@@ -154,8 +167,11 @@ export function SchemaPage() {
                         {type === 'faq' && (
                             <div className="space-y-3">
                                 {form.faqs.map((faq, i) => (
-                                    <div key={i} className="space-y-2 p-3 bg-slate-900/50 rounded-lg">
-                                        <input type="text" placeholder={`Question ${i + 1}`} value={faq.question} onChange={(e) => updateItem('faqs', i, 'question', e.target.value)} className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-400 text-sm" />
+                                    <div key={i} className="space-y-2 p-3 bg-slate-900/50 rounded-lg relative">
+                                        <button onClick={() => removeItem('faqs', i)} className="absolute top-2 right-2 text-gray-500 hover:text-red-400" title="Remove">
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                        <input type="text" placeholder={`Question ${i + 1}`} value={faq.question} onChange={(e) => updateItem('faqs', i, 'question', e.target.value)} className="w-full px-3 py-2 pr-8 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-400 text-sm" />
                                         <textarea placeholder="Answer" value={faq.answer} onChange={(e) => updateItem('faqs', i, 'answer', e.target.value)} className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-400 text-sm h-16" />
                                     </div>
                                 ))}
@@ -166,8 +182,11 @@ export function SchemaPage() {
                         {type === 'howto' && (
                             <div className="space-y-3">
                                 {form.steps.map((step, i) => (
-                                    <div key={i} className="space-y-2 p-3 bg-slate-900/50 rounded-lg">
-                                        <input type="text" placeholder={`Step ${i + 1} Name`} value={step.name} onChange={(e) => updateItem('steps', i, 'name', e.target.value)} className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-400 text-sm" />
+                                    <div key={i} className="space-y-2 p-3 bg-slate-900/50 rounded-lg relative">
+                                        <button onClick={() => removeItem('steps', i)} className="absolute top-2 right-2 text-gray-500 hover:text-red-400" title="Remove">
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                        <input type="text" placeholder={`Step ${i + 1} Name`} value={step.name} onChange={(e) => updateItem('steps', i, 'name', e.target.value)} className="w-full px-3 py-2 pr-8 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-400 text-sm" />
                                         <textarea placeholder="Instructions" value={step.text} onChange={(e) => updateItem('steps', i, 'text', e.target.value)} className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-400 text-sm h-16" />
                                     </div>
                                 ))}
@@ -178,9 +197,12 @@ export function SchemaPage() {
                         {type === 'breadcrumb' && (
                             <div className="space-y-3">
                                 {form.breadcrumbs.map((crumb, i) => (
-                                    <div key={i} className="flex gap-2">
+                                    <div key={i} className="flex gap-2 items-center">
                                         <input type="text" placeholder="Name" value={crumb.name} onChange={(e) => updateItem('breadcrumbs', i, 'name', e.target.value)} className="flex-1 px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-400 text-sm" />
                                         <input type="text" placeholder="URL" value={crumb.url} onChange={(e) => updateItem('breadcrumbs', i, 'url', e.target.value)} className="flex-1 px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-400 text-sm" />
+                                        <button onClick={() => removeItem('breadcrumbs', i)} className="text-gray-500 hover:text-red-400 px-1" title="Remove">
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
                                     </div>
                                 ))}
                                 <button onClick={() => addItem('breadcrumbs')} className="text-blue-400 text-sm">+ Add Breadcrumb</button>

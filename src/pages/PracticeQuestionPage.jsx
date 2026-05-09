@@ -29,6 +29,7 @@ const PracticeQuestionPage = () => {
         url={`/practice/${slug}/q/${questionSlug}`}
         breadcrumbs={crumbs}
         faqSchema={faqSchema}
+        noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(qSchema)}</script>

@@ -455,6 +455,7 @@ export default function InterviewPrepHubPage() {
           { name: 'Interview Prep', url: '/interview-prep' },
         ]}
         faqSchema={faqSchema}
+        noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(itemListSchema)}</script>

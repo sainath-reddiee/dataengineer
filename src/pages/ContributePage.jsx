@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -96,7 +96,7 @@ const ContributePage = () => {
     {
       icon: MessageSquare,
       title: 'Editorial Support',
-      desc: 'Our team helps refine your article with feedback on structure, clarity, and SEO — making your best work even better.',
+      desc: 'Our team helps refine your article with feedback on structure, clarity, and SEO â€” making your best work even better.',
       color: 'from-indigo-500 to-blue-500',
     },
   ];
@@ -149,14 +149,14 @@ const ContributePage = () => {
   return (
     <>
       <MetaTags
-        title="Write for Us - Contribute a Guest Post | DataEngineer Hub"
+        title="Write for Us - Contribute a Guest Post"
         description="Share your data engineering expertise with our community of 10K+ monthly readers. Submit a guest post on Snowflake, dbt, Airflow, cloud platforms, and more. Get published with an author bio, backlinks, and multi-channel promotion."
         keywords="write for us, guest post, contribute, data engineering blog, submit article, technical writing, guest author"
         type="website"
       />
       <div className="pt-4 pb-16 overflow-hidden">
         <div className="container mx-auto px-6">
-          {/* ═══════════════════ HERO ═══════════════════ */}
+          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• HERO â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -191,7 +191,7 @@ const ContributePage = () => {
             </div>
           </motion.div>
 
-          {/* ═══════════════════ STATS BAR ═══════════════════ */}
+          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• STATS BAR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -213,7 +213,7 @@ const ContributePage = () => {
             ))}
           </motion.div>
 
-          {/* ═══════════════════ WHY CONTRIBUTE ═══════════════════ */}
+          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• WHY CONTRIBUTE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -225,7 +225,7 @@ const ContributePage = () => {
                 Why Write for <span className="gradient-text">DataEngineer Hub</span>?
               </h2>
               <p className="text-gray-400 max-w-2xl mx-auto">
-                More than just a guest post — it's an investment in your professional brand.
+                More than just a guest post â€” it's an investment in your professional brand.
               </p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -247,7 +247,7 @@ const ContributePage = () => {
             </div>
           </motion.div>
 
-          {/* ═══════════════════ HOW IT WORKS ═══════════════════ */}
+          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• HOW IT WORKS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -287,9 +287,9 @@ const ContributePage = () => {
             </div>
           </motion.div>
 
-          {/* ═══════════════════ GUIDELINES + FORM (2-col) ═══════════════════ */}
+          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• GUIDELINES + FORM (2-col) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           <div id="submit-form" className="grid lg:grid-cols-2 gap-10 max-w-6xl mx-auto">
-            {/* Left — Guidelines & Topics */}
+            {/* Left â€” Guidelines & Topics */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -339,7 +339,7 @@ const ContributePage = () => {
               </div>
             </motion.div>
 
-            {/* Right — Proposal Form */}
+            {/* Right â€” Proposal Form */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -399,7 +399,7 @@ const ContributePage = () => {
             </motion.div>
           </div>
 
-          {/* ═══════════════════ CTA BANNER ═══════════════════ */}
+          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• CTA BANNER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

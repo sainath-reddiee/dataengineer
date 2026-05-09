@@ -1,4 +1,4 @@
-// src/pages/admin/TopicClustersPage.jsx
+﻿// src/pages/admin/TopicClustersPage.jsx
 // Visualizes content clusters and suggests missing sub-topics.
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -57,7 +57,7 @@ export function TopicClustersPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2">
                     <Network className="w-8 h-8 text-purple-400" />
                     Topic Clusters
                 </h1>
@@ -101,7 +101,7 @@ export function TopicClustersPage() {
                                     <div className="flex-1 min-w-0">
                                         <div className="text-sm font-semibold text-white truncate capitalize">{cluster.name}</div>
                                         <div className="text-xs text-gray-500 mt-0.5">
-                                            {cluster.size} articles · Pillar: <span className="text-blue-300">{cluster.pillar.title}</span>
+                                            {cluster.size} articles Â· Pillar: <span className="text-blue-300">{cluster.pillar.title}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -157,7 +157,7 @@ export function TopicClustersPage() {
                                             <div className="flex flex-wrap gap-2">
                                                 {missingTopics.map(t => (
                                                     <span key={t.topic} className="text-xs px-2 py-1 bg-blue-500/20 text-blue-200 rounded border border-blue-500/30">
-                                                        {t.topic} <span className="text-blue-400/60">×{t.frequency}</span>
+                                                        {t.topic} <span className="text-blue-400/60">Ã—{t.frequency}</span>
                                                     </span>
                                                 ))}
                                             </div>
@@ -178,7 +178,7 @@ export function TopicClustersPage() {
                 <div className="p-4 bg-amber-900/10 border border-amber-800/30 rounded-xl">
                     <h3 className="text-sm font-semibold text-amber-400 flex items-center gap-2 mb-3">
                         <AlertTriangle className="w-4 h-4" />
-                        Orphan Articles ({analysis.orphans.length}) — don't fit any cluster
+                        Orphan Articles ({analysis.orphans.length}) â€” don't fit any cluster
                     </h3>
                     <div className="space-y-1 max-h-60 overflow-y-auto">
                         {analysis.orphans.map(o => (

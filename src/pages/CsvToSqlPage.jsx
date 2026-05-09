@@ -1,4 +1,4 @@
-// src/pages/CsvToSqlPage.jsx
+﻿// src/pages/CsvToSqlPage.jsx
 // CSV -> SQL INSERT / CREATE TABLE generator. Client-side, no upload.
 // Targets "csv to sql", "csv to insert statement", "csv to create table".
 import React, { useMemo, useState, useCallback, Suspense } from 'react';
@@ -217,6 +217,7 @@ export default function CsvToSqlPage() {
           { name: 'CSV to SQL', url: '/tools/csv-to-sql' },
         ]}
         faqSchema={faqSchema}
+      noindex={true}
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
