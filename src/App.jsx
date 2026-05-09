@@ -96,6 +96,8 @@ const CannibalizationPage = lazy(() => import('./pages/admin/CannibalizationPage
 const PAAOptimizerPage = lazy(() => import('./pages/admin/PAAOptimizerPage'));
 const ArticleOptimizerPage = lazy(() => import('./pages/admin/ArticleOptimizerPage'));
 const KeywordTargetPage = lazy(() => import('./pages/admin/KeywordTargetPage'));
+const ArticleFixerPage = lazy(() => import('./pages/admin/ArticleFixerPage'));
+const TrendIntelligencePage = lazy(() => import('./pages/admin/TrendIntelligencePage'));
 const SerpIntelligencePage = lazy(() => import('./pages/admin/SerpIntelligencePage'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
@@ -415,7 +417,9 @@ function App() {
           <Route path="cannibalization" element={<SafeRoute><CannibalizationPage /></SafeRoute>} />
           <Route path="paa-optimizer" element={<SafeRoute><PAAOptimizerPage /></SafeRoute>} />
           <Route path="article-optimizer" element={<SafeRoute><ArticleOptimizerPage /></SafeRoute>} />
-          <Route path="keyword-target" element={<SafeRoute><KeywordTargetPage /></SafeRoute>} />
+                    <Route path="keyword-target" element={<SafeRoute><KeywordTargetPage /></SafeRoute>} />
+                    <Route path="article-fixer" element={<SafeRoute><ArticleFixerPage /></SafeRoute>} />
+                    <Route path="trend-intelligence" element={<SafeRoute><TrendIntelligencePage /></SafeRoute>} />
           <Route path="serp-intelligence" element={<SafeRoute><SerpIntelligencePage /></SafeRoute>} />
         </Route>
       </Routes>

@@ -12,6 +12,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import wordpressApi from '@/services/wordpressApi';
 import aiService from '@/services/aiService';
 import gscService from '@/services/gscService';
+import tinyfishService from '@/services/tinyfishService';
 
 // Keyword analysis engine
 function analyzeKeyword(keyword, article) {
@@ -124,6 +125,93 @@ function analyzeKeyword(keyword, article) {
         },
     ];
 
+    // ─── Additional Yoast-style checks (bonus/penalty, don't break 100-scale) ───
+
+    // 9. Keyphrase Distribution — is the keyword spread evenly across the content?
+    const quarterLen = Math.floor(content.length / 4);
+    const quarters = [
+        content.substring(0, quarterLen),
+        content.substring(quarterLen, quarterLen * 2),
+        content.substring(quarterLen * 2, quarterLen * 3),
+        content.substring(quarterLen * 3),
+    ];
+    const quartersWithKw = quarters.filter(q => q.includes(kw)).length;
+    checks.push({
+        id: 'distribution',
+        label: 'Keyphrase Distribution',
+        passed: quartersWithKw >= 3,
+        partial: quartersWithKw === 2,
+        value: `Found in ${quartersWithKw}/4 content sections`,
+        weight: 8,
+        tip: quartersWithKw < 3 ? 'Spread the keyphrase more evenly — it\'s missing from some sections of your article.' : 'Good distribution across content.',
+    });
+
+    // 10. Subheading Distribution — no section should exceed 300 words without a heading
+    const contentSections = (article.content || '').split(/<h[2-6][^>]*>/gi);
+    const longSections = contentSections.filter(section => {
+        const sectionWords = section.replace(/<[^>]*>/g, ' ').trim().split(/\s+/).filter(w => w.length > 0);
+        return sectionWords.length > 300;
+    });
+    checks.push({
+        id: 'subheadingDist',
+        label: 'Subheading Distribution',
+        passed: longSections.length === 0,
+        partial: longSections.length === 1,
+        value: longSections.length === 0 ? 'All sections under 300 words' : `${longSections.length} section(s) exceed 300 words`,
+        weight: 7,
+        tip: 'Add a subheading every 250-300 words to improve readability and scannability.',
+    });
+
+    // 11. Consecutive Same-Start Sentences
+    const sentences = contentRaw.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 10);
+    let maxConsecutive = 1;
+    let currentStreak = 1;
+    for (let i = 1; i < sentences.length; i++) {
+        const prevFirst = sentences[i - 1].split(/\s+/)[0]?.toLowerCase();
+        const currFirst = sentences[i].split(/\s+/)[0]?.toLowerCase();
+        if (prevFirst && currFirst && prevFirst === currFirst) {
+            currentStreak++;
+            maxConsecutive = Math.max(maxConsecutive, currentStreak);
+        } else {
+            currentStreak = 1;
+        }
+    }
+    checks.push({
+        id: 'consecutiveSentences',
+        label: 'Sentence Variety',
+        passed: maxConsecutive < 3,
+        partial: maxConsecutive === 3,
+        value: maxConsecutive >= 3 ? `${maxConsecutive} consecutive sentences start with same word` : 'Good variety',
+        weight: 5,
+        tip: 'Avoid starting 3+ sentences in a row with the same word. Vary your sentence openings for better flow.',
+    });
+
+    // 12. Title Pixel Width (approximate — Google truncates at ~580px)
+    const titleRaw = article.title || '';
+    const estimatePixelWidth = (text) => {
+        let width = 0;
+        for (const ch of text) {
+            if (/[A-Z]/.test(ch)) width += 9;
+            else if (/[a-z]/.test(ch)) width += 7;
+            else if (/[0-9]/.test(ch)) width += 7.5;
+            else if (ch === ' ') width += 4;
+            else if (/[mwMW]/.test(ch)) width += 10;
+            else if (/[il|!.,;:]/.test(ch)) width += 4;
+            else width += 7;
+        }
+        return Math.round(width);
+    };
+    const titlePixels = estimatePixelWidth(titleRaw);
+    checks.push({
+        id: 'titleWidth',
+        label: 'Title Display Width',
+        passed: titlePixels <= 580,
+        partial: titlePixels > 580 && titlePixels <= 620,
+        value: `~${titlePixels}px (max 580px)`,
+        weight: 5,
+        tip: titlePixels > 580 ? 'Title may be truncated in Google results. Shorten it or move key info to the front.' : 'Title fits within Google\'s display width.',
+    });
+
     // Calculate overall score
     const maxScore = checks.reduce((sum, c) => sum + c.weight, 0);
     const earned = checks.reduce((sum, c) => sum + (c.passed ? c.weight : c.partial ? c.weight * 0.4 : 0), 0);
@@ -136,6 +224,8 @@ function analyzeKeyword(keyword, article) {
         density,
         occurrences,
         wordCount,
+        titlePixels,
+        quartersWithKw,
         grade: score >= 80 ? 'A' : score >= 60 ? 'B' : score >= 40 ? 'C' : score >= 20 ? 'D' : 'F',
     };
 }
@@ -152,6 +242,8 @@ export function KeywordTargetPage() {
     const [aiSuggestion, setAiSuggestion] = useState(null);
     const [aiLoading, setAiLoading] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [serpCompetitors, setSerpCompetitors] = useState([]);
+    const [duplicateWarning, setDuplicateWarning] = useState(null);
 
     const slugParam = searchParams.get('slug') || '';
 
@@ -192,13 +284,46 @@ export function KeywordTargetPage() {
 
     // Run analysis when keyword or article changes
     useEffect(() => {
-        if (!keyword || !selectedSlug) { setAnalysis(null); return; }
+        if (!keyword || !selectedSlug) { setAnalysis(null); setDuplicateWarning(null); return; }
         const post = posts.find(p => p.slug === selectedSlug);
         if (!post) return;
         const result = analyzeKeyword(keyword, post);
         setAnalysis(result);
         setAiSuggestion(null);
+
+        // Check if another article already targets this keyphrase (duplicate warning)
+        const kwLower = keyword.toLowerCase().trim();
+        const otherTargeting = posts.filter(p =>
+            p.slug !== selectedSlug &&
+            (p.title || '').toLowerCase().includes(kwLower)
+        );
+        setDuplicateWarning(otherTargeting.length > 0
+            ? `"${keyword}" is also targeted by: ${otherTargeting.slice(0, 3).map(p => p.title).join(', ')}${otherTargeting.length > 3 ? ` (+${otherTargeting.length - 3} more)` : ''}`
+            : null
+        );
     }, [keyword, selectedSlug, posts]);
+
+    // Fetch SERP competitors for the keyword (FREE web search)
+    useEffect(() => {
+        if (!keyword || keyword.length < 3 || !tinyfishService.isEnabled) {
+            setSerpCompetitors([]);
+            return;
+        }
+        let cancelled = false;
+        const timer = setTimeout(async () => {
+            try {
+                const results = await tinyfishService.search(keyword);
+                if (!cancelled) {
+                    const competitors = (results.results || [])
+                        .filter(r => !r.url?.includes('dataengineerhub.blog'))
+                        .slice(0, 5)
+                        .map(r => ({ title: r.title, url: r.url, position: r.position }));
+                    setSerpCompetitors(competitors);
+                }
+            } catch { if (!cancelled) setSerpCompetitors([]); }
+        }, 800); // Debounce 800ms
+        return () => { cancelled = true; clearTimeout(timer); };
+    }, [keyword]);
 
     // AI optimization suggestions
     const handleAISuggest = async () => {
@@ -307,6 +432,17 @@ Format clearly with headers for each fix.`;
                 )}
             </div>
 
+            {/* Duplicate Keyphrase Warning */}
+            {duplicateWarning && (
+                <div className="p-4 bg-amber-900/10 border border-amber-800/30 rounded-xl flex items-start gap-2 text-amber-300 text-sm">
+                    <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <strong>Keyword Cannibalization Risk:</strong> {duplicateWarning}
+                        <div className="text-xs text-gray-500 mt-1">Multiple articles targeting the same keyphrase compete against each other in Google. Consider differentiating or consolidating.</div>
+                    </div>
+                </div>
+            )}
+
             {/* Analysis Results */}
             {analysis && (
                 <div className="space-y-4">
@@ -338,6 +474,28 @@ Format clearly with headers for each fix.`;
                             <div><span className="text-gray-500">Word Count</span><br /><span className="text-white font-bold">{analysis.wordCount.toLocaleString()}</span></div>
                         </div>
                     </div>
+
+                    {/* SERP Competitors (live web search) */}
+                    {serpCompetitors.length > 0 && (
+                        <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-cyan-500/30 p-5">
+                            <h3 className="text-sm font-bold text-cyan-300 mb-3 flex items-center gap-2">
+                                <Search className="w-4 h-4" />
+                                Currently Ranking for &ldquo;{keyword}&rdquo;
+                            </h3>
+                            <div className="space-y-2">
+                                {serpCompetitors.map((c, i) => (
+                                    <div key={i} className="flex items-start gap-3 p-2.5 rounded-lg bg-slate-900/50">
+                                        <span className="text-xs font-bold text-gray-500 w-5 text-center pt-0.5">#{c.position}</span>
+                                        <div className="min-w-0 flex-1">
+                                            <div className="text-xs text-white truncate">{c.title}</div>
+                                            <div className="text-[10px] text-gray-500 truncate">{c.url}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="text-[10px] text-gray-600 mt-2">Beat these titles — yours needs to be more specific and compelling.</p>
+                        </div>
+                    )}
 
                     {/* Individual Checks */}
                     <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6">

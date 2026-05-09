@@ -12,6 +12,7 @@ import { useSearchParams } from 'react-router-dom';
 import gscService from '@/services/gscService';
 import wordpressApi from '@/services/wordpressApi';
 import aiService from '@/services/aiService';
+import tinyfishService from '@/services/tinyfishService';
 
 const QUESTION_WORDS = /\b(how|what|why|when|can|does|is|should|which)\b/i;
 
@@ -61,9 +62,11 @@ function QuestionCard({ question, onGenerateAnswer }) {
                         <span className={`px-1.5 py-0.5 rounded text-[10px] ${
                             question.source === 'gsc'
                                 ? 'bg-blue-500/20 text-blue-300'
+                                : question.source === 'web'
+                                ? 'bg-cyan-500/20 text-cyan-300'
                                 : 'bg-purple-500/20 text-purple-300'
                         }`}>
-                            {question.source === 'gsc' ? 'FROM GSC' : 'AI PREDICTED'}
+                            {question.source === 'gsc' ? 'FROM GSC' : question.source === 'web' ? 'WEB SEARCH' : 'AI PREDICTED'}
                         </span>
                         {/* Position */}
                         {question.position && (
@@ -275,9 +278,33 @@ Return the JSON array and nothing else.`;
                 }
             }
 
+            // Fetch related questions from web search (FREE — TinyFish Search API)
+            let webQuestions = [];
+            if (tinyfishService.isEnabled) {
+                try {
+                    const topicKeyword = post.title.replace(/[^a-zA-Z0-9 ]/g, '').split(' ').slice(0, 4).join(' ');
+                    const searchResults = await tinyfishService.search(topicKeyword);
+                    // Extract related searches that look like questions
+                    const relatedSearches = searchResults.related_searches || [];
+                    const allSnippets = (searchResults.results || []).map(r => r.snippet || '');
+                    // Find question-like snippets from search results
+                    const questionSnippets = [...relatedSearches, ...allSnippets]
+                        .filter(s => QUESTION_WORDS.test(s) && s.length > 15 && s.length < 120)
+                        .map(s => s.replace(/^[.…\s]+/, '').trim());
+
+                    webQuestions = questionSnippets.slice(0, 5).map(q => ({
+                        text: q.endsWith('?') ? q : q + '?',
+                        source: 'web',
+                        position: null,
+                        impressions: null,
+                        alreadyAnswered: contentText.includes(q.toLowerCase().replace(/\?$/, '')),
+                    }));
+                } catch { /* web enrichment is optional */ }
+            }
+
             // Deduplicate by question text
             const seen = new Set();
-            const allQuestions = [...gscQuestions, ...aiQuestions].filter(q => {
+            const allQuestions = [...gscQuestions, ...webQuestions, ...aiQuestions].filter(q => {
                 const key = q.text.toLowerCase();
                 if (seen.has(key)) return false;
                 seen.add(key);

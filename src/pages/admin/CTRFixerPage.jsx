@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { Loader2, AlertTriangle, Sparkles, RefreshCw, MousePointerClick } from 'lucide-react';
 import gscService from '@/services/gscService';
 import aiService from '@/services/aiService';
+import tinyfishService from '@/services/tinyfishService';
 import { scoreCtr } from '@/utils/ctrScorer';
 import wordpressApi from '@/services/wordpressApi';
 
@@ -159,6 +160,22 @@ function CTRArticleRow({ article, expanded, onToggle }) {
             const stripHtml = (html) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
             const contentSnippet = stripHtml(article.content || '').substring(0, 2000);
 
+            // Fetch competitor titles from web search if TinyFish is available
+            let competitorContext = '';
+            if (tinyfishService.isEnabled) {
+                try {
+                    // Use the article's slug as a keyword proxy
+                    const keyword = article.title.replace(/[^a-zA-Z0-9 ]/g, '').split(' ').slice(0, 5).join(' ');
+                    const searchResults = await tinyfishService.search(keyword);
+                    const competitors = (searchResults.results || [])
+                        .filter(r => !r.url?.includes('dataengineerhub.blog'))
+                        .slice(0, 5);
+                    if (competitors.length > 0) {
+                        competitorContext = `\n\nCOMPETITOR TITLES CURRENTLY RANKING (what's winning in SERP right now):\n${competitors.map((c, i) => `${i + 1}. "${c.title}" — ${c.snippet || ''}`).join('\n')}\n\nUse these as inspiration. Beat them with more compelling, specific titles.`;
+                    }
+                } catch { /* search enrichment is optional */ }
+            }
+
             const prompt = `You are a CTR optimization specialist. An article has HIGH impressions (${article.impressions}) but VERY LOW CTR (${(article.ctr * 100).toFixed(2)}%) at position #${article.position.toFixed(1)}.
 
 CURRENT:
@@ -166,7 +183,7 @@ Title: "${article.title}"
 Description: "${article.excerpt}"
 Content preview: ${contentSnippet.substring(0, 500)}
 
-The expected CTR for position #${Math.round(article.position)} is ~${(getExpectedCTR(article.position) * 100).toFixed(1)}%. This article is massively underperforming.
+The expected CTR for position #${Math.round(article.position)} is ~${(getExpectedCTR(article.position) * 100).toFixed(1)}%. This article is massively underperforming.${competitorContext}
 
 Generate 3 title + description variants that will dramatically improve CTR. Each variant should use different psychological triggers:
 

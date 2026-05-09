@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Search, TrendingUp, AlertCircle, CheckCircle, Clock, FileText, Sparkles, Target, Zap, Link as LinkIcon, Download, ArrowRight, Loader2, Copy, Check } from 'lucide-react';
+import { Search, TrendingUp, AlertCircle, CheckCircle, Clock, FileText, Sparkles, Target, Zap, Link as LinkIcon, Download, ArrowRight, Loader2, Copy, Check, Globe } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import contentOptimizerService from '../../services/contentOptimizerService';
 import pdfExportService from '../../services/pdfExportService';
 import aiService from '../../services/aiService';
+import tinyfishService from '../../services/tinyfishService';
 
 const ContentOptimizerPage = () => {
     const [searchParams] = useSearchParams();
@@ -11,6 +12,7 @@ const ContentOptimizerPage = () => {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
+    const [serpLandscape, setSerpLandscape] = useState(null);
 
     // Auto-fill URL from query params (when navigated from Rank Dashboard or other tools)
     useEffect(() => {
@@ -32,12 +34,28 @@ const ContentOptimizerPage = () => {
         setLoading(true);
         setError(null);
         setResult(null);
+        setSerpLandscape(null);
 
         try {
             const analysis = await contentOptimizerService.analyzeURL(url);
 
             if (analysis.success) {
                 setResult(analysis.data);
+
+                // Fetch SERP landscape in background (non-blocking, optional)
+                if (tinyfishService.isEnabled) {
+                    // Extract keyword from URL slug
+                    const slugMatch = url.match(/\/articles\/([^/?#]+)/);
+                    const keyword = slugMatch ? slugMatch[1].replace(/-/g, ' ') : '';
+                    if (keyword) {
+                        tinyfishService.search(keyword).then(searchData => {
+                            const competitors = (searchData.results || [])
+                                .filter(r => !r.url?.includes('dataengineerhub.blog'))
+                                .slice(0, 5);
+                            if (competitors.length > 0) setSerpLandscape(competitors);
+                        }).catch(() => {});
+                    }
+                }
             } else {
                 setError(analysis.error);
             }
@@ -76,7 +94,9 @@ const ContentOptimizerPage = () => {
 
     const handleExportPDF = () => {
         if (!result) return;
-        const filename = `seo-analysis-${new URL(result.url).hostname}-${Date.now()}.pdf`;
+        let hostname = 'page';
+        try { hostname = new URL(result.url).hostname; } catch { /* fallback */ }
+        const filename = `seo-analysis-${hostname}-${Date.now()}.pdf`;
         pdfExportService.exportSingleAnalysis(result, filename);
     };
 
@@ -429,6 +449,28 @@ CONTENT:
                                         <div key={index} className="flex items-center gap-3 text-red-300 bg-gradient-to-r from-red-900/30 to-pink-900/30 px-4 py-3 rounded-xl border border-red-500/30 shadow-sm">
                                             <AlertCircle className="w-5 h-5 flex-shrink-0" />
                                             <span className="text-sm font-medium">{issue}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* SERP Landscape (from TinyFish web search) */}
+                        {serpLandscape && (
+                            <div className="bg-cyan-900/10 backdrop-blur-xl rounded-2xl border border-cyan-500/30 p-5">
+                                <h3 className="text-sm font-bold text-cyan-300 mb-3 flex items-center gap-2">
+                                    <Globe className="w-4 h-4" />
+                                    SERP Landscape — What You're Competing Against
+                                </h3>
+                                <div className="space-y-2">
+                                    {serpLandscape.map((c, i) => (
+                                        <div key={i} className="flex items-start gap-3 p-2 rounded-lg bg-slate-900/50">
+                                            <span className="text-xs font-bold text-gray-500 w-5 text-center pt-0.5">#{c.position}</span>
+                                            <div className="min-w-0 flex-1">
+                                                <div className="text-xs text-white truncate">{c.title}</div>
+                                                <div className="text-[10px] text-gray-500 truncate">{c.url}</div>
+                                                {c.snippet && <div className="text-[10px] text-gray-400 mt-0.5 line-clamp-1">{c.snippet}</div>}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>

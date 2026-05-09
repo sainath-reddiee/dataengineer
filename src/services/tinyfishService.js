@@ -45,8 +45,9 @@ class TinyFishService {
     async runAgent(url, goal, outputSchema = null) {
         if (!this.isEnabled) throw new Error('TinyFish API key not configured');
 
+        // Note: output_schema requires account-level feature access.
+        // We omit it and parse JSON from the agent's text response instead.
         const body = { url, goal };
-        if (outputSchema) body.output_schema = outputSchema;
 
         const response = await fetch(AGENT_URL, {
             method: 'POST',
@@ -62,7 +63,25 @@ class TinyFishService {
             throw new Error(`TinyFish Agent error (${response.status}): ${err}`);
         }
 
-        return response.json();
+        const data = await response.json();
+
+        // If the agent returned structured result directly, use it
+        if (data.result && typeof data.result === 'object') return data;
+
+        // Otherwise, try to extract JSON from the agent's text output
+        const text = data.result || data.output || data.text || '';
+        if (outputSchema && typeof text === 'string') {
+            const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/) ||
+                              text.match(/(\[[\s\S]*\])/) ||
+                              text.match(/(\{[\s\S]*\})/);
+            if (jsonMatch) {
+                try {
+                    data.result = JSON.parse(jsonMatch[1]);
+                } catch { /* leave as text */ }
+            }
+        }
+
+        return data;
     }
 
     // ─── Fetch API (content extraction with real browser) ──────────

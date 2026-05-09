@@ -8,7 +8,8 @@
 // 1. Go to https://console.cloud.google.com/
 // 2. Create OAuth 2.0 Client ID (type: Web application)
 // 3. Add authorized JS origin: https://dataengineerhub.blog
-// 4. Add authorized redirect URI: https://dataengineerhub.blog/admin/rank-dashboard
+// 4. Add authorized redirect URIs for all admin pages (e.g., /admin, /admin/rank-dashboard, etc.)
+//    — OAuth is triggered from the sidebar so the redirect lands on whichever page the user was on
 // 5. Set VITE_GSC_CLIENT_ID in .env
 // 6. In Google Search Console, verify the property and grant the client ID access
 //

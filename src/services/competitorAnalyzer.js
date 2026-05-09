@@ -1,8 +1,9 @@
 // src/services/competitorAnalyzer.js
-// Fetches competitor articles via CORS proxy and uses Gemini to produce
-// structured gap analysis against one of YOUR articles.
+// Fetches competitor articles via TinyFish Fetch (real browser) or CORS proxy fallback,
+// then uses AI to produce structured gap analysis against one of YOUR articles.
 
 import aiService from './aiService';
+import tinyfishService from './tinyfishService';
 
 const CORS_PROXIES = [
     'https://api.allorigins.win/raw?url=',
@@ -21,6 +22,21 @@ async function fetchWithProxy(url) {
         } catch { /* try next */ }
     }
     throw new Error('All CORS proxies failed. The competitor site may be blocking automated access.');
+}
+
+/**
+ * Fetch competitor page HTML — tries TinyFish first (real browser), falls back to CORS proxies.
+ */
+async function fetchCompetitorPage(url) {
+    // Prefer TinyFish Fetch API (uses real browser, handles SPAs and JS rendering)
+    if (tinyfishService.isEnabled) {
+        try {
+            const result = await tinyfishService.fetchContent([url], { format: 'html', links: true });
+            const page = result.results?.[0];
+            if (page?.text && page.text.length > 100) return page.text;
+        } catch { /* fall through to CORS proxies */ }
+    }
+    return fetchWithProxy(url);
 }
 
 /**
@@ -94,7 +110,7 @@ export async function analyzeCompetitorGap(competitorUrl, yourArticle) {
     }
 
     // 1. Fetch competitor
-    const competitorHtml = await fetchWithProxy(competitorUrl);
+    const competitorHtml = await fetchCompetitorPage(competitorUrl);
     const competitorStructure = extractStructure(competitorHtml);
 
     // 2. Extract structure from your article — build DOM programmatically

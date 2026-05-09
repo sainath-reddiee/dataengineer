@@ -7,8 +7,8 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
     TrendingUp, Target, AlertTriangle, Zap, ChevronDown, ChevronRight,
-    ExternalLink, RefreshCw, Award, Loader2, Link2 as LinkIcon,
-    Activity, BookOpen, DollarSign, BarChart3, LogOut, Sparkles
+    ExternalLink, RefreshCw, Award, Loader2,
+    Activity, BookOpen, DollarSign, BarChart3, Sparkles
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import wordpressApi from '@/services/wordpressApi';
@@ -43,15 +43,10 @@ export function RankDashboardPage() {
     const [rankData, setRankData] = useState({});
     const [rankStats, setRankStats] = useState({});
     const [sortBy, setSortBy] = useState('opportunity'); // 'opportunity' | 'health' | 'rank'
-    const [gscConnected, setGscConnected] = useState(false);
     const [gscData, setGscData] = useState(null);
     const [gscError, setGscError] = useState('');
 
     useEffect(() => {
-        // Handle GSC OAuth callback if present
-        gscService.handleOAuthCallback();
-        setGscConnected(gscService.isConnected());
-
         loadData();
     }, []);
 
@@ -84,7 +79,6 @@ export function RankDashboardPage() {
                     setGscData(pages);
                 } catch (err) {
                     setGscError(err.message);
-                    if (err.message.includes('expired')) setGscConnected(false);
                 }
             }
         } catch (err) {
@@ -169,28 +163,14 @@ export function RankDashboardPage() {
                     <p className="text-gray-400">Where each article stands on SEO, AEO, CTR, AI & how to push it to page 1.</p>
                 </div>
                 <div className="flex gap-2">
-                    {!gscConnected ? (
-                        <button
-                            onClick={() => gscService.startOAuth()}
-                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg flex items-center gap-2"
-                            disabled={!gscService.isConfigured()}
-                            title={!gscService.isConfigured() ? 'Set VITE_GSC_CLIENT_ID in .env to enable' : 'Connect Google Search Console'}
-                        >
-                            <LinkIcon className="w-4 h-4" /> Connect GSC
-                        </button>
+                    {gscService.isConnected() ? (
+                        <span className="px-3 py-2 bg-emerald-500/20 text-emerald-300 text-xs rounded-lg border border-emerald-500/40 flex items-center gap-1.5">
+                            <Activity className="w-3.5 h-3.5" /> GSC Live
+                        </span>
                     ) : (
-                        <div className="flex items-center gap-2">
-                            <span className="px-3 py-2 bg-emerald-500/20 text-emerald-300 text-xs rounded-lg border border-emerald-500/40 flex items-center gap-1.5">
-                                <Activity className="w-3.5 h-3.5" /> GSC Connected
-                            </span>
-                            <button
-                                onClick={() => { gscService.clearToken(); setGscConnected(false); setGscData(null); }}
-                                className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-gray-300 text-xs rounded-lg flex items-center gap-1.5"
-                                title="Disconnect Google Search Console"
-                            >
-                                <LogOut className="w-3.5 h-3.5" /> Disconnect
-                            </button>
-                        </div>
+                        <span className="px-3 py-2 bg-amber-500/20 text-amber-300 text-xs rounded-lg border border-amber-500/40 flex items-center gap-1.5">
+                            GSC Not Connected
+                        </span>
                     )}
                     <button onClick={loadData} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-lg flex items-center gap-2">
                         <RefreshCw className="w-4 h-4" /> Refresh
@@ -233,7 +213,7 @@ export function RankDashboardPage() {
             )}
 
             {/* GSC Real Data Preview */}
-            {gscConnected && gscData && gscData.length > 0 && (
+            {gscData && gscData.length > 0 && (
                 <div className="p-4 bg-blue-900/10 border border-blue-800/30 rounded-xl">
                     <h3 className="text-sm font-semibold text-blue-400 flex items-center gap-2 mb-3">
                         <BarChart3 className="w-4 h-4" /> Google Search Console — Last 28 Days

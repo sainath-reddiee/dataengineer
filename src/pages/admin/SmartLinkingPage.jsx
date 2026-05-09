@@ -4,10 +4,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Loader2, AlertTriangle, ArrowRight, ArrowLeft, Check, ExternalLink, Globe } from 'lucide-react';
+import { Sparkles, Loader2, AlertTriangle, ArrowRight, ArrowLeft, Check, ExternalLink, Globe, CheckCircle } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import wordpressApi from '@/services/wordpressApi';
 import aiService from '@/services/aiService';
+import tinyfishService from '@/services/tinyfishService';
 
 const APPLIED_STORAGE_KEY = 'smart_linking_applied_v1';
 
@@ -372,6 +373,7 @@ function LinkSuggestion({ link, direction, targetSlug, applied, onMarkApplied, o
 
 function ExternalLinkSuggestion({ link, applied, onMarkApplied, onUnmarkApplied }) {
     const [localApplied, setLocalApplied] = useState(applied);
+    const [verified, setVerified] = useState(null); // null | 'loading' | true | false
     const linkHtml = `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.anchorText}</a>`;
 
     const handleToggle = () => {
@@ -381,6 +383,19 @@ function ExternalLinkSuggestion({ link, applied, onMarkApplied, onUnmarkApplied 
             onMarkApplied?.();
         }
         setLocalApplied(!localApplied);
+    };
+
+    const handleVerify = async () => {
+        if (!tinyfishService.isEnabled) return;
+        setVerified('loading');
+        try {
+            // Use search to check if the URL is indexed/live
+            const domain = new URL(link.url).hostname;
+            const results = await tinyfishService.search(`site:${domain} ${link.title || link.anchorText}`);
+            setVerified((results.results || []).length > 0);
+        } catch {
+            setVerified(false);
+        }
     };
 
     return (
@@ -395,7 +410,15 @@ function ExternalLinkSuggestion({ link, applied, onMarkApplied, onUnmarkApplied 
                         <ExternalLink className="w-3 h-3 text-purple-400 flex-shrink-0" />
                         {link.title}
                     </div>
-                    <div className="text-xs text-purple-300 mt-0.5 truncate">→ {link.url}</div>
+                    <div className="text-xs text-purple-300 mt-0.5 truncate flex items-center gap-2">
+                        → {link.url}
+                        {tinyfishService.isEnabled && verified === null && (
+                            <button onClick={handleVerify} className="text-[9px] px-1.5 py-0.5 bg-cyan-900/30 border border-cyan-700/30 text-cyan-300 rounded hover:bg-cyan-800/30">verify</button>
+                        )}
+                        {verified === 'loading' && <Loader2 className="w-3 h-3 text-cyan-400 animate-spin" />}
+                        {verified === true && <CheckCircle className="w-3 h-3 text-emerald-400" title="URL verified live" />}
+                        {verified === false && <span className="text-[9px] text-red-400">not found</span>}
+                    </div>
                     {link.authority && (
                         <div className="text-[10px] text-gray-500 mt-0.5">{link.authority}</div>
                     )}

@@ -19,32 +19,15 @@ const TABS = [
     { id: 'monitor', label: 'Competitor Monitor', icon: Eye, desc: 'Track competitor content updates' },
 ];
 
-// API Key Input Component
-function ApiKeyInput({ onKeySet }) {
-    const [key, setKey] = useState(tinyfishService.isEnabled ? '••••••••' : '');
-    const [saved, setSaved] = useState(tinyfishService.isEnabled);
-
-    const handleSave = () => {
-        if (key && key !== '••••••••') {
-            tinyfishService.setApiKey(key);
-            setKey('••••••••');
-            setSaved(true);
-            onKeySet?.();
-        }
-    };
-
-    return (
-        <div className="flex items-center gap-2">
-            <input
-                type="password"
-                value={key}
-                onChange={(e) => { setKey(e.target.value); setSaved(false); }}
-                placeholder="sk-tinyfish-..."
-                className="px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white w-48"
-            />
-            <button onClick={handleSave} disabled={!key || key === '••••••••'} className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs rounded-lg">
-                {saved ? 'Saved' : 'Save'}
-            </button>
+// API Key status check (key is now set via sidebar)
+function ApiKeyStatus() {
+    return !tinyfishService.isEnabled ? (
+        <div className="px-3 py-1.5 bg-amber-500/20 text-amber-300 text-[10px] rounded-lg border border-amber-500/40">
+            Set TinyFish key in sidebar →
+        </div>
+    ) : (
+        <div className="px-3 py-1.5 bg-emerald-500/20 text-emerald-300 text-[10px] rounded-lg border border-emerald-500/40">
+            TinyFish Active
         </div>
     );
 }
@@ -387,7 +370,6 @@ function ValidationCheck({ label, passed, detail }) {
 export function SerpIntelligencePage() {
     const [searchParams] = useSearchParams();
     const [activeTab, setActiveTab] = useState('serp');
-    const [apiKeySet, setApiKeySet] = useState(tinyfishService.isEnabled);
 
     return (
         <div className="space-y-6">
@@ -399,10 +381,10 @@ export function SerpIntelligencePage() {
                     </h1>
                     <p className="text-gray-400">Powered by TinyFish — live Google SERP analysis, competitor scraping, PAA extraction, and page validation using a real browser.</p>
                 </div>
-                <ApiKeyInput onKeySet={() => setApiKeySet(true)} />
+                <ApiKeyStatus />
             </div>
 
-            {!apiKeySet && (
+            {!tinyfishService.isEnabled && (
                 <div className="p-4 bg-amber-900/10 border border-amber-800/30 rounded-xl flex items-center gap-2 text-amber-300 text-sm">
                     <AlertTriangle className="w-4 h-4" />
                     Enter your TinyFish API key above to enable SERP intelligence features.
