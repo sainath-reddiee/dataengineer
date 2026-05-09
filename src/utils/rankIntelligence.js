@@ -242,6 +242,8 @@ function scoreFreshness(dateStr) {
 
 function generateActions(pillarScores, post, ctrResult) {
     const actions = [];
+    const slug = post.slug || '';
+    const titleParam = encodeURIComponent((post.title || '').substring(0, 80));
 
     // Pillar-weighted action suggestions (biggest impact first)
     if (pillarScores.ctr < 70) {
@@ -250,7 +252,7 @@ function generateActions(pillarScores, post, ctrResult) {
             category: 'CTR',
             action: 'Rewrite title and meta description (use CTR Lab)',
             projectedLift: `+${Math.round((70 - pillarScores.ctr) * 0.5)}% clicks`,
-            link: '/admin/ctr-lab',
+            link: `/admin/ctr-lab?slug=${slug}&title=${titleParam}`,
         });
     }
 
@@ -270,7 +272,7 @@ function generateActions(pillarScores, post, ctrResult) {
             category: 'SEO',
             action: 'Expand content, add H2/H3 headings, internal links',
             projectedLift: `+${Math.round((60 - pillarScores.seo) * 0.4)}% rank potential`,
-            link: `/admin/scanner?url=https://dataengineerhub.blog/articles/${post.slug}`,
+            link: `/admin/scanner?url=https://dataengineerhub.blog/articles/${slug}`,
         });
     }
 
@@ -280,7 +282,7 @@ function generateActions(pillarScores, post, ctrResult) {
             category: 'AEO',
             action: 'Add FAQ section, TL;DR summary, and question-based headings',
             projectedLift: '+30% AI citation rate',
-            link: `/admin/content-optimizer`,
+            link: `/admin/content-optimizer?slug=${slug}&url=${encodeURIComponent(`https://dataengineerhub.blog/articles/${slug}`)}`,
         });
     }
 
@@ -290,7 +292,7 @@ function generateActions(pillarScores, post, ctrResult) {
             category: 'AI Visibility',
             action: 'Add statistics, authority links, and structured data',
             projectedLift: '+20% ChatGPT/Perplexity citations',
-            link: `/admin/ai-suite`,
+            link: `/admin/content-optimizer?slug=${slug}&url=${encodeURIComponent(`https://dataengineerhub.blog/articles/${slug}`)}`,
         });
     }
 
@@ -300,7 +302,7 @@ function generateActions(pillarScores, post, ctrResult) {
             category: 'Engagement',
             action: 'Add more internal links and improve content flow',
             projectedLift: '+10% time-on-page',
-            link: `/admin/internal-links`,
+            link: `/admin/smart-linking?slug=${slug}&title=${titleParam}`,
         });
     }
 

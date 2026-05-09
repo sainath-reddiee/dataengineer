@@ -502,7 +502,17 @@ Keep each recommendation to 2-3 sentences max. Be direct and specific to THIS ar
                                         a.link.startsWith('http') ? (
                                             <a href={a.link} target="_blank" rel="noopener" className="text-blue-400 hover:text-blue-300 text-xs">Open ↗</a>
                                         ) : (
-                                            <Link to={a.link} className="text-blue-400 hover:text-blue-300 text-xs">Open →</Link>
+                                            <Link
+                                                to={a.link}
+                                                onClick={() => {
+                                                    // Copy article URL to clipboard when navigating to another tool
+                                                    const articleUrl = `https://dataengineerhub.blog/articles/${article.slug}`;
+                                                    navigator.clipboard?.writeText(articleUrl).catch(() => {});
+                                                }}
+                                                className="text-blue-400 hover:text-blue-300 text-xs"
+                                            >
+                                                Fix →
+                                            </Link>
                                         )
                                     )}
                                 </div>

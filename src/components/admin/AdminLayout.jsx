@@ -11,13 +11,15 @@ import {
     LayoutDashboard, Search, Layers, GitCompare,
     Code2, Eye, Sparkles, LogOut, ChevronLeft, CheckSquare, TrendingUp, Key,
     BookOpen, Link2, Clock, Zap, Target, DollarSign,
-    Network, Calendar, Users, Sparkle, MousePointerClick, TrendingDown, Award
+    Network, Calendar, Users, Sparkle, MousePointerClick, TrendingDown, Award,
+    FileSearch, MessageCircleQuestion, Wand2
 } from 'lucide-react';
 import { AdminAuth, useAdminAuth } from './AdminAuth';
 import aiService from '@/services/aiService';
 
 const navItems = [
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
+    { path: '/admin/article-optimizer', icon: Wand2, label: 'Article Optimizer', highlight: true },
     { path: '/admin/rank-dashboard', icon: Target, label: 'Rank Intelligence', highlight: true },
     { path: '/admin/revenue', icon: DollarSign, label: 'Revenue Projection', highlight: true },
     { path: '/admin/content-calendar', icon: Calendar, label: 'Content Calendar', highlight: true },
@@ -26,6 +28,8 @@ const navItems = [
     { path: '/admin/smart-linking', icon: Sparkle, label: 'Smart Linking (AI)' },
     { path: '/admin/ctr-fixer', icon: MousePointerClick, label: 'CTR Fixer', highlight: true },
     { path: '/admin/striking-distance', icon: Target, label: 'Striking Distance' },
+    { path: '/admin/cannibalization', icon: FileSearch, label: 'Cannibalization', highlight: true },
+    { path: '/admin/paa-optimizer', icon: MessageCircleQuestion, label: 'PAA Optimizer', highlight: true },
     { path: '/admin/content-decay', icon: TrendingDown, label: 'Content Decay' },
     { path: '/admin/snippet-optimizer', icon: Award, label: 'Snippet Optimizer' },
     { path: '/admin/scanner', icon: Search, label: 'SEO Scanner' },

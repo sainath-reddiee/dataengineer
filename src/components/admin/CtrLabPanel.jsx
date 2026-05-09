@@ -8,6 +8,7 @@ import {
     TrendingUp, RefreshCw, Zap, AlertTriangle, ChevronDown, ChevronRight,
     Edit3, X, ExternalLink, Sparkles, Loader2, Search,
 } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import wordpressApi from '@/services/wordpressApi';
 import { scoreCtr, scoreCtrBatch } from '@/utils/ctrScorer';
 import aiService from '@/services/aiService';
@@ -261,6 +262,7 @@ Respond in EXACTLY this JSON format (no markdown fences):
 };
 
 export function CtrLabPanel() {
+    const [searchParams] = useSearchParams();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [rows, setRows] = useState([]);
@@ -277,7 +279,19 @@ export function CtrLabPanel() {
                 const r = await wordpressApi.getAllPosts(1, 100);
                 const posts = r.posts || [];
                 const scored = scoreCtrBatch(posts);
-                if (!cancelled) setRows(scored);
+                if (!cancelled) {
+                    setRows(scored);
+                    // Auto-expand article if slug is in URL params (from Rank Dashboard)
+                    const targetSlug = searchParams.get('slug');
+                    if (targetSlug) {
+                        const match = scored.find(s => s.slug === targetSlug);
+                        if (match) {
+                            setExpanded({ [match.id || match.slug]: true });
+                            // Copy article URL to clipboard for convenience
+                            navigator.clipboard?.writeText(`https://dataengineerhub.blog/articles/${targetSlug}`).catch(() => {});
+                        }
+                    }
+                }
             } catch (e) {
                 if (!cancelled) setError(e?.message || 'Failed to load posts');
             } finally {
@@ -286,7 +300,7 @@ export function CtrLabPanel() {
         };
         load();
         return () => { cancelled = true; };
-    }, [tick]);
+    }, [tick, searchParams]);
 
     const summary = useMemo(() => {
         if (!rows.length) return { avg: 0, atRisk: 0, avgMissedLift: 0 };

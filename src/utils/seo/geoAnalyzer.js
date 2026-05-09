@@ -43,6 +43,7 @@ export class GEOAnalyzer {
         this.checkLastUpdated(content);
         this.checkFirstAnswerLength(content);
         this.checkExternalCitations(content);
+        this.checkEntityCoverage(content);
 
         this.calculateScore();
         return this.getReport();
@@ -468,6 +469,54 @@ export class GEOAnalyzer {
         if (total === 0) { this.score = 0; return; }
         const raw = this.checks.reduce((acc, c) => acc + (weights[c.severity] || 0), 0);
         this.score = Math.round((raw / total) * 100);
+    }
+
+    checkEntityCoverage(content) {
+        // Known entities in the data engineering space
+        const ENTITIES = [
+            { name: 'Snowflake', domains: ['docs.snowflake.com', 'snowflake.com'] },
+            { name: 'dbt', domains: ['docs.getdbt.com', 'getdbt.com'] },
+            { name: 'Airflow', domains: ['airflow.apache.org'] },
+            { name: 'AWS', domains: ['aws.amazon.com', 'docs.aws.amazon.com'] },
+            { name: 'Azure', domains: ['azure.microsoft.com', 'learn.microsoft.com'] },
+            { name: 'GCP', domains: ['cloud.google.com'] },
+            { name: 'BigQuery', domains: ['cloud.google.com/bigquery'] },
+            { name: 'Spark', domains: ['spark.apache.org'] },
+            { name: 'Kafka', domains: ['kafka.apache.org'] },
+            { name: 'Databricks', domains: ['docs.databricks.com', 'databricks.com'] },
+            { name: 'Terraform', domains: ['terraform.io', 'developer.hashicorp.com'] },
+            { name: 'Docker', domains: ['docs.docker.com'] },
+            { name: 'Kubernetes', domains: ['kubernetes.io'] },
+            { name: 'Python', domains: ['docs.python.org', 'python.org'] },
+            { name: 'Redshift', domains: ['docs.aws.amazon.com/redshift'] },
+            { name: 'Fivetran', domains: ['fivetran.com'] },
+            { name: 'Iceberg', domains: ['iceberg.apache.org'] },
+        ];
+
+        const contentLc = content.toLowerCase();
+        const mentionedEntities = ENTITIES.filter(e => contentLc.includes(e.name.toLowerCase()));
+        const linkedEntities = mentionedEntities.filter(e =>
+            e.domains.some(d => content.includes(d))
+        );
+        const unlinkedEntities = mentionedEntities.filter(e =>
+            !e.domains.some(d => content.includes(d))
+        );
+
+        if (mentionedEntities.length === 0) {
+            this.addCheck('Entity Coverage', GEO_CATEGORIES.AUTHORITY, SEVERITY.WARNING,
+                'No recognized tech entities mentioned — content may lack topical signals',
+                'Reference specific tools, platforms, or technologies with links to official docs');
+        } else if (unlinkedEntities.length > 2) {
+            this.addCheck('Entity Coverage', GEO_CATEGORIES.AUTHORITY, SEVERITY.WARNING,
+                `${unlinkedEntities.length} entities mentioned without authority links: ${unlinkedEntities.map(e => e.name).join(', ')}`,
+                `Add links to official documentation for: ${unlinkedEntities.slice(0, 5).map(e => `${e.name} (${e.domains[0]})`).join(', ')}`,
+                { mentioned: mentionedEntities.length, linked: linkedEntities.length, unlinked: unlinkedEntities.map(e => e.name) });
+        } else {
+            this.addCheck('Entity Coverage', GEO_CATEGORIES.AUTHORITY, SEVERITY.GOOD,
+                `${mentionedEntities.length} entities mentioned, ${linkedEntities.length} linked to authority sources`,
+                null,
+                { mentioned: mentionedEntities.length, linked: linkedEntities.length });
+        }
     }
 
     getReport() {

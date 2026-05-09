@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
-import { Search, TrendingUp, AlertCircle, CheckCircle, Clock, FileText, Sparkles, Target, Zap, Link as LinkIcon, Download } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, TrendingUp, AlertCircle, CheckCircle, Clock, FileText, Sparkles, Target, Zap, Link as LinkIcon, Download, ArrowRight, Loader2, Copy, Check } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
 import contentOptimizerService from '../../services/contentOptimizerService';
 import pdfExportService from '../../services/pdfExportService';
+import aiService from '../../services/aiService';
 
 const ContentOptimizerPage = () => {
+    const [searchParams] = useSearchParams();
     const [url, setUrl] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
+
+    // Auto-fill URL from query params (when navigated from Rank Dashboard or other tools)
+    useEffect(() => {
+        const paramUrl = searchParams.get('url');
+        const paramSlug = searchParams.get('slug');
+        if (paramUrl) {
+            setUrl(decodeURIComponent(paramUrl));
+        } else if (paramSlug) {
+            setUrl(`https://dataengineerhub.blog/articles/${paramSlug}`);
+        }
+    }, [searchParams]);
 
     const handleAnalyze = async () => {
         if (!url.trim()) {
@@ -61,6 +75,125 @@ const ContentOptimizerPage = () => {
         if (!result) return;
         const filename = `seo-analysis-${new URL(result.url).hostname}-${Date.now()}.pdf`;
         pdfExportService.exportSingleAnalysis(result, filename);
+    };
+
+    // AI-powered fix generation for a specific recommendation
+    const generateAIFix = async (rec, articleUrl) => {
+        if (!aiService.isEnabled) {
+            return { error: 'AI API key not configured. Set it in the admin sidebar.' };
+        }
+
+        const prompt = `You are a content optimization expert. An article has been analyzed and a specific issue was found. Generate a READY-TO-USE fix.
+
+ARTICLE URL: ${articleUrl}
+ARTICLE KEYWORDS: ${result?.keywords?.join(', ') || 'N/A'}
+WORD COUNT: ${result?.wordCount || 'unknown'}
+
+ISSUE FOUND:
+- Type: ${rec.type}
+- Problem: ${rec.issue}
+- Recommended Action: ${rec.action}
+- Impact: ${rec.impact}
+- Priority: ${rec.priority}
+
+YOUR TASK: Generate the actual content that fixes this issue. Be SPECIFIC and READY-TO-PASTE.
+
+Rules:
+- If the fix is a TL;DR section, write it (3-5 bullet points summarizing key takeaways)
+- If the fix is FAQ questions, write 3-5 Q&A pairs with detailed answers
+- If the fix is statistics/data, suggest where to find relevant stats and write example sentences with placeholders
+- If the fix is about freshness, write an "Updated" header with current date context
+- If the fix is about authority links, suggest 3-5 specific URLs to link to (official docs, research)
+- If the fix is about code examples, write a relevant code snippet
+- Keep the writing style conversational, data-engineering focused, first person
+
+Format:
+---
+FIX TYPE: [what this content block is]
+PASTE LOCATION: [where in the article to add this — be specific]
+CONTENT:
+[The actual content to paste into WordPress — formatted in HTML]
+---`;
+
+        try {
+            const response = await aiService.generateSuggestion(prompt, '');
+            return { content: response };
+        } catch (e) {
+            return { error: e.message || 'AI generation failed' };
+        }
+    };
+
+    // Determine which admin tools are relevant based on analysis results
+    const getRelevantTools = () => {
+        if (!result) return [];
+        const tools = [];
+
+        // Always recommend CTR Lab for title/description optimization
+        tools.push({
+            path: '/admin/ctr-lab',
+            label: 'CTR Lab',
+            reason: 'Optimize title & meta description for click-through rate',
+            icon: '⚡',
+        });
+
+        // If low internal links, recommend Smart Linking
+        if ((result.internalLinks || 0) < 5) {
+            tools.push({
+                path: '/admin/smart-linking',
+                label: 'Smart Linking (AI)',
+                reason: `Only ${result.internalLinks || 0} internal links found — get AI suggestions for relevant connections`,
+                icon: '🔗',
+                urgent: true,
+            });
+        }
+
+        // If low authority links, recommend Smart Linking (for external links)
+        if (result.authorityLinks < 3) {
+            tools.push({
+                path: '/admin/smart-linking',
+                label: 'Smart Linking (External)',
+                reason: `Only ${result.authorityLinks} authority links — add external citations for E-E-A-T`,
+                icon: '🌐',
+                urgent: true,
+            });
+        }
+
+        // Keyword Injector for rising keyword opportunities
+        tools.push({
+            path: '/admin/keyword-injector',
+            label: 'Keyword Injector',
+            reason: 'Check if rising keywords can be injected to capture trending search demand',
+            icon: '📈',
+        });
+
+        // Striking Distance for keyword position opportunities
+        tools.push({
+            path: '/admin/striking-distance',
+            label: 'Striking Distance',
+            reason: 'Find keywords ranking #8-20 that a content refresh could push to page 1',
+            icon: '🎯',
+        });
+
+        // CTR Fixer if content might have high impressions but low clicks
+        tools.push({
+            path: '/admin/ctr-fixer',
+            label: 'CTR Fixer',
+            reason: 'Check if this article has high impressions but low click-through rate',
+            icon: '🖱️',
+        });
+
+        // Content Decay if freshness is an issue
+        if (!result.hasLastUpdated) {
+            tools.push({
+                path: '/admin/content-decay',
+                label: 'Content Decay',
+                reason: 'No freshness signal found — check if this article is losing rankings over time',
+                icon: '📉',
+                urgent: true,
+            });
+        }
+
+        return tools;
     };
 
     return (
@@ -299,7 +432,7 @@ const ContentOptimizerPage = () => {
                             </div>
                         )}
 
-                        {/* Recommendations */}
+                        {/* Recommendations with AI Fix */}
                         {result.recommendations.length > 0 && (
                             <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-6">
                                 <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
@@ -310,27 +443,59 @@ const ContentOptimizerPage = () => {
                                 </h3>
                                 <div className="space-y-4">
                                     {result.recommendations.map((rec, index) => (
-                                        <div key={index} className="border-2 border-gray-700/50 rounded-xl p-5 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/20 transition-all bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm">
-                                            <div className="flex items-start justify-between mb-3">
-                                                <div className="flex items-center gap-3">
-                                                    <span className={`px-3 py-1 rounded-lg text-xs font-bold ${getPriorityBadge(rec.priority)}`}>
-                                                        {rec.priority}
-                                                    </span>
-                                                    <span className="font-bold text-white text-lg">{rec.type}</span>
+                                        <RecommendationCard
+                                            key={index}
+                                            rec={rec}
+                                            onGenerateFix={() => generateAIFix(rec, result.url)}
+                                            getPriorityBadge={getPriorityBadge}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* GEO Citation Rewriter */}
+                        {result && result.aiVisibility && result.aiVisibility.score < 70 && (
+                            <GEORewriterPanel url={result.url} keywords={result.keywords} aiVisibility={result.aiVisibility} />
+                        )}
+
+                        {/* Cross-Links to Other Admin Tools */}
+                        {result && (
+                            <div className="bg-gray-800/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 p-6">
+                                <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
+                                    <div className="p-2 bg-indigo-500/20 rounded-lg">
+                                        <ArrowRight className="w-6 h-6 text-indigo-400" />
+                                    </div>
+                                    Continue Optimization
+                                </h3>
+                                <p className="text-gray-400 text-sm mb-4">Based on this analysis, these tools can help improve your content further:</p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                    {getRelevantTools().map((tool, idx) => (
+                                        <Link
+                                            key={idx}
+                                            to={tool.path}
+                                            className={`group p-4 rounded-xl border transition-all hover:shadow-lg ${
+                                                tool.urgent
+                                                    ? 'border-red-500/30 bg-red-900/10 hover:border-red-400/50 hover:shadow-red-500/20'
+                                                    : 'border-gray-700/50 bg-gray-900/30 hover:border-blue-500/50 hover:shadow-blue-500/20'
+                                            }`}
+                                        >
+                                            <div className="flex items-start gap-3">
+                                                <span className="text-xl">{tool.icon}</span>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-semibold text-white group-hover:text-blue-300 transition-colors text-sm">
+                                                            {tool.label}
+                                                        </span>
+                                                        {tool.urgent && (
+                                                            <span className="px-1.5 py-0.5 rounded text-[9px] bg-red-500/30 text-red-300 font-bold">FIX</span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-xs text-gray-400 mt-1 line-clamp-2">{tool.reason}</p>
                                                 </div>
+                                                <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-blue-400 transition-colors flex-shrink-0 mt-1" />
                                             </div>
-                                            <div className="space-y-2">
-                                                <p className="text-sm text-gray-300">
-                                                    <strong className="text-white">Issue:</strong> {rec.issue}
-                                                </p>
-                                                <p className="text-sm text-gray-300">
-                                                    <strong className="text-white">Action:</strong> {rec.action}
-                                                </p>
-                                                <p className="text-sm text-blue-300 bg-gradient-to-r from-blue-900/30 to-indigo-900/30 px-4 py-2 rounded-lg border border-blue-500/30">
-                                                    <strong>Impact:</strong> {rec.impact}
-                                                </p>
-                                            </div>
-                                        </div>
+                                        </Link>
                                     ))}
                                 </div>
                             </div>
@@ -385,5 +550,175 @@ const ContentOptimizerPage = () => {
         </div>
     );
 };
+
+// Recommendation card with AI "Fix It" button
+function RecommendationCard({ rec, onGenerateFix, getPriorityBadge }) {
+    const [fix, setFix] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [expanded, setExpanded] = useState(false);
+    const [copied, setCopied] = useState(false);
+
+    const handleFix = async () => {
+        setLoading(true);
+        const result = await onGenerateFix();
+        setFix(result);
+        setExpanded(true);
+        setLoading(false);
+    };
+
+    const handleCopy = () => {
+        if (fix?.content) {
+            navigator.clipboard.writeText(fix.content);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+    };
+
+    return (
+        <div className="border-2 border-gray-700/50 rounded-xl p-5 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/20 transition-all bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm">
+            <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                    <span className={`px-3 py-1 rounded-lg text-xs font-bold ${getPriorityBadge(rec.priority)}`}>
+                        {rec.priority}
+                    </span>
+                    <span className="font-bold text-white text-lg">{rec.type}</span>
+                </div>
+                <button
+                    onClick={fix ? () => setExpanded(!expanded) : handleFix}
+                    disabled={loading}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 disabled:opacity-50 text-white transition-colors"
+                >
+                    {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                    {loading ? 'Generating...' : fix ? (expanded ? 'Hide Fix' : 'Show Fix') : 'AI Fix It'}
+                </button>
+            </div>
+            <div className="space-y-2">
+                <p className="text-sm text-gray-300">
+                    <strong className="text-white">Issue:</strong> {rec.issue}
+                </p>
+                <p className="text-sm text-gray-300">
+                    <strong className="text-white">Action:</strong> {rec.action}
+                </p>
+                <p className="text-sm text-blue-300 bg-gradient-to-r from-blue-900/30 to-indigo-900/30 px-4 py-2 rounded-lg border border-blue-500/30">
+                    <strong>Impact:</strong> {rec.impact}
+                </p>
+            </div>
+
+            {/* AI-Generated Fix */}
+            {expanded && fix && (
+                <div className="mt-4 pt-4 border-t border-gray-700/50">
+                    {fix.error ? (
+                        <div className="text-sm text-amber-400 flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4" /> {fix.error}
+                        </div>
+                    ) : (
+                        <div>
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
+                                    <Sparkles className="w-3 h-3" /> AI-Generated Fix
+                                </span>
+                                <button
+                                    onClick={handleCopy}
+                                    className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                                >
+                                    {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                                    {copied ? 'Copied!' : 'Copy'}
+                                </button>
+                            </div>
+                            <div className="bg-gray-900/80 rounded-lg p-4 text-xs text-gray-300 whitespace-pre-wrap max-h-72 overflow-y-auto font-mono leading-relaxed">
+                                {fix.content}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// GEO Citation Rewriter panel — rewrites weak sections for AI citation
+function GEORewriterPanel({ url, keywords, aiVisibility }) {
+    const [loading, setLoading] = useState(false);
+    const [rewrite, setRewrite] = useState(null);
+    const [copied, setCopied] = useState(false);
+
+    const handleRewrite = async () => {
+        if (!aiService.isEnabled) { alert('Set AI API key in sidebar first.'); return; }
+        setLoading(true);
+        const weakFactors = (aiVisibility.factors || []).filter(f => f.status === 'weak' || f.status === 'missing');
+        const prompt = `You are a GEO (Generative Engine Optimization) expert. Rewrite content to maximize AI citation probability.
+
+ARTICLE: ${url}
+KEYWORDS: ${(keywords || []).slice(0, 8).join(', ')}
+AI VISIBILITY SCORE: ${aiVisibility.score}/100 (${aiVisibility.citationProbability} citation probability)
+
+WEAK FACTORS TO FIX:
+${weakFactors.map(f => `- ${f.factor}: ${f.impact} (status: ${f.status})`).join('\n')}
+
+Generate content patches that fix ALL weak factors. For each:
+
+1. **TL;DR Summary** (if missing): Write 4-5 bullet point key takeaways
+2. **FAQ Section** (if missing): Write 3-5 Q&A pairs with direct, definitive answers
+3. **Statistics** (if weak): Write 3-5 sentences with specific numbers, percentages, benchmarks (with [source] attribution)
+4. **Authority Citations** (if weak): Suggest 3-5 inline citations in "[According to Official Docs]" format
+5. **Last Updated** (if missing): Write an update notice with today's context
+
+CITATION OPTIMIZATION RULES:
+- Every statement should be citable: "X is Y" not "X can be Y"
+- Add "[Source: Official Docs]" patterns after claims
+- First sentence of each section must directly answer the heading
+- Use specific numbers: "reduces latency by 47%" not "significantly reduces latency"
+- Write in a tone AI systems prefer to quote: authoritative, concise, factual
+
+Format output as HTML blocks ready to paste into WordPress.`;
+
+        try {
+            const response = await aiService.generateSuggestion(prompt, '');
+            setRewrite(response);
+        } catch (e) {
+            setRewrite(`Error: ${e.message}`);
+        }
+        setLoading(false);
+    };
+
+    return (
+        <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-xl rounded-2xl shadow-2xl border-2 border-purple-500/30 p-6">
+            <div className="flex items-center justify-between mb-4">
+                <div>
+                    <h3 className="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+                        <Sparkles className="w-7 h-7 text-purple-400" />
+                        GEO Citation Rewriter
+                    </h3>
+                    <p className="text-gray-400 text-sm">AI visibility score is {aiVisibility.score}/100 — rewrite for higher AI citation probability</p>
+                </div>
+                <button
+                    onClick={handleRewrite}
+                    disabled={loading}
+                    className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 text-white font-semibold rounded-xl flex items-center gap-2"
+                >
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                    {loading ? 'Rewriting...' : 'Rewrite for AI Citations'}
+                </button>
+            </div>
+            {rewrite && (
+                <div className="mt-4">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-semibold text-emerald-400">Citation-Optimized Content</span>
+                        <button
+                            onClick={() => { navigator.clipboard.writeText(rewrite); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                            className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                        >
+                            {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                            {copied ? 'Copied!' : 'Copy All'}
+                        </button>
+                    </div>
+                    <div className="bg-gray-900/80 rounded-lg p-4 text-xs text-gray-300 whitespace-pre-wrap max-h-96 overflow-y-auto font-mono leading-relaxed">
+                        {rewrite}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
 
 export default ContentOptimizerPage;

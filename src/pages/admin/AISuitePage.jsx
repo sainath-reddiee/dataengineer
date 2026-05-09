@@ -5,7 +5,8 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Bot, Mic, Search as SearchIcon, Loader2, Globe } from 'lucide-react';
+import { Sparkles, Bot, Mic, Search as SearchIcon, Loader2, Globe, Copy, Check } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { PSEOAnalyzer } from '@/utils/seo/pseoAnalyzer';
 import { AEOAnalyzer } from '@/utils/seo/aeoAnalyzer';
 import { GEOAnalyzer } from '@/utils/seo/geoAnalyzer';
@@ -16,6 +17,7 @@ import { AICitationsPanel } from '@/components/admin/AICitationsPanel';
 import { SerpCoveragePanel } from '@/components/admin/SerpCoveragePanel';
 import { EngagementPanel } from '@/components/admin/EngagementPanel';
 import { fetchBlogArticleHTML } from '@/utils/fetchBlogArticleHTML';
+import aiService from '@/services/aiService';
 
 const tabs = [
     { id: 'pseo', label: 'PSEO', icon: Bot, desc: 'Programmatic SEO', color: 'purple' },
@@ -24,11 +26,15 @@ const tabs = [
 ];
 
 export function AISuitePage() {
-    const [url, setUrl] = useState('');
+    const [searchParams] = useSearchParams();
+    const [url, setUrl] = useState(searchParams.get('url') || (searchParams.get('slug') ? `https://dataengineerhub.blog/articles/${searchParams.get('slug')}` : ''));
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [results, setResults] = useState(null);
     const [activeTab, setActiveTab] = useState('pseo');
+    const [aiFixLoading, setAiFixLoading] = useState(false);
+    const [aiFix, setAiFix] = useState(null);
+    const [copied, setCopied] = useState(false);
 
     const handleAnalyze = async (scanUrl = url) => {
         if (!scanUrl.trim() && scanUrl !== 'current') {
@@ -211,6 +217,51 @@ export function AISuitePage() {
                                 <ExportButton report={getActiveReport()} filename={`${activeTab}-analysis`} />
                             </div>
                             <IssuesList checks={getActiveReport()?.checks || []} />
+
+                            {/* AI Fix All Button */}
+                            <div className="mt-6 pt-4 border-t border-slate-700/50">
+                                <button
+                                    onClick={async () => {
+                                        if (!aiService.isEnabled) { alert('Set AI API key in sidebar first.'); return; }
+                                        setAiFixLoading(true);
+                                        setAiFix(null);
+                                        const failedChecks = (getActiveReport()?.checks || []).filter(c => !c.passed);
+                                        const issueList = failedChecks.map(c => `- [${c.category}] ${c.message}${c.recommendation ? ` → Fix: ${c.recommendation}` : ''}`).join('\n');
+                                        const tabName = tabs.find(t => t.id === activeTab)?.label || activeTab;
+                                        const prompt = `You are a ${tabName} optimization expert. An article has been analyzed and these issues were found:\n\nARTICLE: ${results?.url || url}\n\nISSUES:\n${issueList}\n\nFor EACH issue, generate a READY-TO-PASTE fix. Format as:\n\n## [Issue Category]: [Issue Name]\n**Problem:** [what's wrong]\n**Fix (paste this into your article):**\n[actual HTML/content to add]\n\n---\n\nBe specific, actionable, and provide real content — not placeholders.`;
+                                        try {
+                                            const response = await aiService.generateSuggestion(prompt, '');
+                                            setAiFix(response);
+                                        } catch (e) {
+                                            setAiFix(`Error: ${e.message}`);
+                                        }
+                                        setAiFixLoading(false);
+                                    }}
+                                    disabled={aiFixLoading || !(getActiveReport()?.checks || []).some(c => !c.passed)}
+                                    className="w-full px-4 py-3 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 disabled:opacity-50 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors"
+                                >
+                                    {aiFixLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                                    {aiFixLoading ? 'Generating fixes...' : `AI Fix All ${activeTab.toUpperCase()} Issues`}
+                                </button>
+
+                                {aiFix && (
+                                    <div className="mt-4 bg-slate-900/80 rounded-xl border border-slate-700/50 p-4">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-xs font-semibold text-emerald-400">AI-Generated Fixes</span>
+                                            <button
+                                                onClick={() => { navigator.clipboard.writeText(aiFix); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                                                className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                                            >
+                                                {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                                                {copied ? 'Copied!' : 'Copy All'}
+                                            </button>
+                                        </div>
+                                        <div className="text-xs text-gray-300 whitespace-pre-wrap max-h-96 overflow-y-auto font-mono leading-relaxed">
+                                            {aiFix}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
                 </motion.div>

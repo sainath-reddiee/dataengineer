@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Loader2, AlertTriangle, ArrowRight, ArrowLeft, Check, ExternalLink, Globe } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import wordpressApi from '@/services/wordpressApi';
 import aiService from '@/services/aiService';
 
@@ -46,6 +47,7 @@ function isApplied(articleSlug, linkKey) {
 }
 
 export function SmartLinkingPage() {
+    const [searchParams] = useSearchParams();
     const [articles, setArticles] = useState([]);
     const [selectedSlug, setSelectedSlug] = useState('');
     const [loadingArticles, setLoadingArticles] = useState(true);
@@ -58,17 +60,24 @@ export function SmartLinkingPage() {
         async function load() {
             try {
                 const data = await wordpressApi.getAllPosts(1, 100);
-                setArticles((data.posts || []).map(p => ({
+                const posts = (data.posts || []).map(p => ({
                     slug: p.slug,
                     title: p.title,
                     excerpt: p.excerpt,
                     content: p.content || '',
-                })));
+                }));
+                setArticles(posts);
+
+                // Auto-select article from URL params (when navigated from another tool)
+                const paramSlug = searchParams.get('slug');
+                if (paramSlug && posts.some(p => p.slug === paramSlug)) {
+                    setSelectedSlug(paramSlug);
+                }
             } catch { /* ignore */ }
             setLoadingArticles(false);
         }
         load();
-    }, []);
+    }, [searchParams]);
 
     useEffect(() => {
         const interval = setInterval(() => {

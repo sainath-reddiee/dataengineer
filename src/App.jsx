@@ -92,6 +92,9 @@ const StrikingDistancePage = lazy(() => import('./pages/admin/StrikingDistancePa
 const ContentDecayPage = lazy(() => import('./pages/admin/ContentDecayPage'));
 const SnippetOptimizerPage = lazy(() => import('./pages/admin/SnippetOptimizerPage'));
 const KeywordInjectorPage = lazy(() => import('./pages/admin/KeywordInjectorPage'));
+const CannibalizationPage = lazy(() => import('./pages/admin/CannibalizationPage'));
+const PAAOptimizerPage = lazy(() => import('./pages/admin/PAAOptimizerPage'));
+const ArticleOptimizerPage = lazy(() => import('./pages/admin/ArticleOptimizerPage'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
@@ -115,11 +118,16 @@ const LoadingFallback = ({ text = "Loading..." }) => (
 class RouteErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, isChunkError: false };
   }
 
   static getDerivedStateFromError(error) {
-    return { hasError: true, error };
+    // Detect chunk/module loading failures (happens after deploys with stale cache)
+    const isChunkError = error?.message?.includes('Failed to fetch dynamically imported module') ||
+                         error?.message?.includes('Loading chunk') ||
+                         error?.message?.includes('Loading CSS chunk') ||
+                         error?.name === 'ChunkLoadError';
+    return { hasError: true, error, isChunkError };
   }
 
   componentDidCatch(error, errorInfo) {
@@ -127,10 +135,24 @@ class RouteErrorBoundary extends React.Component {
     if (window.Sentry) {
       window.Sentry.captureException(error, { extra: errorInfo });
     }
+
+    // Auto-reload once for chunk errors (stale deployment cache)
+    const isChunkError = error?.message?.includes('Failed to fetch dynamically imported module') ||
+                         error?.message?.includes('Loading chunk');
+    if (isChunkError && !sessionStorage.getItem('chunk_reload_attempted')) {
+      sessionStorage.setItem('chunk_reload_attempted', '1');
+      window.location.reload();
+    }
   }
 
   handleRetry = () => {
-    this.setState({ hasError: false, error: null });
+    // For chunk errors, a hard reload is needed to get fresh asset URLs
+    if (this.state.isChunkError) {
+      sessionStorage.removeItem('chunk_reload_attempted');
+      window.location.reload();
+      return;
+    }
+    this.setState({ hasError: false, error: null, isChunkError: false });
   };
 
   render() {
@@ -141,9 +163,13 @@ class RouteErrorBoundary extends React.Component {
             <div className="mx-auto w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
               <AlertTriangle className="w-8 h-8 text-red-400" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">This page ran into a problem</h2>
+            <h2 className="text-2xl font-bold text-white mb-3">
+              {this.state.isChunkError ? 'New version available' : 'This page ran into a problem'}
+            </h2>
             <p className="text-gray-400 mb-6">
-              Something went wrong loading this page. The rest of the site still works fine.
+              {this.state.isChunkError
+                ? 'The site has been updated since your last visit. Click below to load the latest version.'
+                : 'Something went wrong loading this page. The rest of the site still works fine.'}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
@@ -384,6 +410,9 @@ function App() {
           <Route path="content-decay" element={<SafeRoute><ContentDecayPage /></SafeRoute>} />
           <Route path="snippet-optimizer" element={<SafeRoute><SnippetOptimizerPage /></SafeRoute>} />
           <Route path="keyword-injector" element={<SafeRoute><KeywordInjectorPage /></SafeRoute>} />
+          <Route path="cannibalization" element={<SafeRoute><CannibalizationPage /></SafeRoute>} />
+          <Route path="paa-optimizer" element={<SafeRoute><PAAOptimizerPage /></SafeRoute>} />
+          <Route path="article-optimizer" element={<SafeRoute><ArticleOptimizerPage /></SafeRoute>} />
         </Route>
       </Routes>
       <Toaster />
