@@ -1,4 +1,4 @@
-﻿// src/utils/fetchBlogArticleHTML.js
+// src/utils/fetchBlogArticleHTML.js
 // Fetches blog article content from WordPress API and constructs a complete HTML
 // document for SEO analysis. This bypasses the SPA shell problem where fetch()
 // returns the empty index.html instead of rendered article content.
@@ -28,11 +28,40 @@ export async function fetchBlogArticleHTML(url) {
     const title = (post.title?.rendered || '').replace(/<[^>]*>/g, '');
     const content = post.content?.rendered || '';
     const excerpt = (post.excerpt?.rendered || '').replace(/<[^>]*>/g, '').trim();
-    const image = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '';
+    const featuredMedia = post._embedded?.['wp:featuredmedia']?.[0];
+    const image = featuredMedia?.source_url || 'https://dataengineerhub.blog/logo.png';
+    const imgWidth = featuredMedia?.media_details?.width || 250;
+    const imgHeight = featuredMedia?.media_details?.height || 250;
     const author = post._embedded?.author?.[0]?.name || 'Sainath Reddy';
     const date = post.date || '';
     const modified = post.modified || date;
     const canonical = `https://dataengineerhub.blog/articles/${slug}`;
+
+    // Extract categories and tags from embedded terms
+    const categories = post._embedded?.['wp:term']?.[0] || [];
+    const tags = post._embedded?.['wp:term']?.[1] || [];
+    const primaryCategory = categories.find(c => c.name !== 'Uncategorized')?.name || categories[0]?.name || '';
+    const tagNames = tags.map(t => t.name);
+
+    // Build category/tag meta tags
+    const categoryMeta = primaryCategory ? `\n  <meta property="article:section" content="${primaryCategory}">` : '';
+    const tagsMeta = tagNames.map(t => `\n  <meta property="article:tag" content="${t}">`).join('');
+
+    // Detect FAQ-worthy Q&A headings for schema
+    const questionHeadings = [...content.matchAll(/<h[2-3][^>]*>([\s\S]*?)<\/h[2-3]>/gi)]
+      .map(m => m[1].replace(/<[^>]*>/g, '').trim())
+      .filter(h => /^(what|why|how|when|where|who|can|is|does|do|should)\b/i.test(h));
+
+    const faqSchema = questionHeadings.length >= 2 ? `
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [${questionHeadings.slice(0, 5).map(q => `
+      {"@type": "Question", "name": "${q.replace(/"/g, '\\"')}", "acceptedAnswer": {"@type": "Answer", "text": "See article for detailed answer."}}`).join(',')}
+    ]
+  }
+  </script>` : '';
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -49,11 +78,13 @@ export async function fetchBlogArticleHTML(url) {
   <meta property="og:title" content="${title}">
   <meta property="og:description" content="${excerpt.substring(0, 200)}">
   <meta property="og:image" content="${image}">
+  <meta property="og:image:width" content="${imgWidth}">
+  <meta property="og:image:height" content="${imgHeight}">
   <meta property="og:url" content="${canonical}">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="DataEngineer Hub">
   <meta property="article:published_time" content="${date}">
-  <meta property="article:modified_time" content="${modified}">
+  <meta property="article:modified_time" content="${modified}">${categoryMeta}${tagsMeta}
   <meta property="article:author" content="${author}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${title}">
@@ -62,27 +93,31 @@ export async function fetchBlogArticleHTML(url) {
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "TechArticle",
     "headline": "${title.replace(/"/g, '\\"')}",
     "author": { "@type": "Person", "name": "${author}" },
     "datePublished": "${date}",
     "dateModified": "${modified}",
     "image": "${image}",
     "url": "${canonical}",
-    "publisher": { "@type": "Organization", "name": "DataEngineer Hub" }
+    "publisher": { "@type": "Organization", "name": "DataEngineer Hub" },
+    "mainEntityOfPage": "${canonical}"
   }
-  </script>
+  </script>${faqSchema}
 </head>
 <body>
   <article>
-    <h1>${title}</h1>
-    <p class="meta">By ${author} Â· Updated: ${modified.split('T')[0]}</p>
-    ${content}
+    <header>
+      <h1>${title}</h1>
+      <p class="meta">By ${author} · Updated: ${modified.split('T')[0]}</p>
+    </header>
+    <section>
+      ${content}
+    </section>
   </article>
 </body>
 </html>`;
   } catch (err) {
-    console.warn('[fetchBlogArticleHTML] Failed for slug:', slug, err.message);
     return null;
   }
 }

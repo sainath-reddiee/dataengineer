@@ -23,7 +23,8 @@ export class GEOAnalyzer {
     analyze(article, doc = null) {
         this.checks = [];
         this.article = article;
-        this.doc = doc || (typeof document !== 'undefined' ? document : null);
+        // Only use explicitly passed doc — never fall back to admin page's own document
+        this.doc = doc;
         const content = article.content || '';
 
         // Existing checks
@@ -81,10 +82,14 @@ export class GEOAnalyzer {
             const scripts = this.doc.querySelectorAll('script[type="application/ld+json"]');
             scripts.forEach(s => { schemaText += s.textContent + ' '; });
         }
-        // Fallback: also check article content
+        // Also check article.schema field (enriched by callers)
+        if (this.article.schema) {
+            schemaText += ' ' + this.article.schema;
+        }
+        // Fallback: also check article content (JSON-LD sometimes in body)
         const searchText = schemaText || content;
         const patterns = [
-            { type: 'Article', pattern: /"@type"\s*:\s*"Article"/i },
+            { type: 'Article', pattern: /"@type"\s*:\s*"(?:Tech)?Article"/i },
             { type: 'FAQPage', pattern: /FAQPage/i },
             { type: 'HowTo', pattern: /"@type"\s*:\s*"HowTo"/i },
             { type: 'BreadcrumbList', pattern: /BreadcrumbList/i },
@@ -216,8 +221,10 @@ export class GEOAnalyzer {
         // Check for TL;DR or summary at beginning (matches inside any HTML tag or plain text)
         const hasTLDR = /(?:TL;?DR|Key Takeaways?|In Brief)[\s:;<\/]/i.test(content) ||
             /class="[^"]*(?:key-takeaways|tldr|summary)[^"]*"/i.test(content);
-        const firstParagraph = content.match(/<p[^>]*>([^<]+)<\/p>/i);
-        const hasOpeningSummary = firstParagraph && firstParagraph[1].split('.').length >= 2;
+        // Match first paragraph even with inline elements (links, code, strong)
+        const firstParagraph = content.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+        const firstPText = firstParagraph ? firstParagraph[1].replace(/<[^>]+>/g, '').trim() : '';
+        const hasOpeningSummary = firstPText.split('.').filter(s => s.trim().length > 5).length >= 2;
 
         if (hasTLDR) {
             this.addCheck(
@@ -368,9 +375,10 @@ export class GEOAnalyzer {
     }
 
     checkFirstAnswerLength(content) {
-        // Find question headings followed by paragraphs
-        const questionPattern = /<h[2-3][^>]*>([^<]*\?[^<]*)<\/h[2-3]>\s*<p[^>]*>([^<]+)<\/p>/gi;
-        const matches = [...content.matchAll(questionPattern)];
+        // Find question headings followed by paragraphs (support inline elements in both)
+        const questionPattern = /<h[2-3][^>]*>([\s\S]*?)<\/h[2-3]>\s*<p[^>]*>([\s\S]*?)<\/p>/gi;
+        const matches = [...content.matchAll(questionPattern)]
+            .filter(m => m[1].replace(/<[^>]+>/g, '').includes('?'));
 
         if (matches.length === 0) {
             this.addCheck(
@@ -383,8 +391,8 @@ export class GEOAnalyzer {
             return;
         }
 
-        // Check first answer length
-        const firstAnswer = matches[0][2];
+        // Check first answer length (strip HTML from the paragraph)
+        const firstAnswer = matches[0][2].replace(/<[^>]+>/g, '');
         const wordCount = firstAnswer.trim().split(/\s+/).length;
 
         if (wordCount >= 40 && wordCount <= 80) {

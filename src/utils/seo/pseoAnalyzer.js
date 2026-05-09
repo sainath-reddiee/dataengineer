@@ -102,9 +102,9 @@ export class PSEOAnalyzer {
             );
         }
 
-        // Check for consistent heading patterns
-        const headingMatches = content.match(/<h[2-3][^>]*>([^<]+)<\/h[2-3]>/gi) || [];
-        const headings = headingMatches.map(h => h.replace(/<\/?h[2-3][^>]*>/gi, ''));
+        // Check for consistent heading patterns (support inline elements in headings)
+        const headingMatches = content.match(/<h[2-3][^>]*>[\s\S]*?<\/h[2-3]>/gi) || [];
+        const headings = headingMatches.map(h => h.replace(/<[^>]+>/g, '').trim());
 
         if (headings.length >= 3) {
             this.addCheck(

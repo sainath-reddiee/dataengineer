@@ -199,11 +199,39 @@ export function BulkScanPage() {
 
                 // Different analysis for different sources
                 if (scanSource === 'wordpress') {
-                    // Use existing WordPress analysis
+                    // Build a complete synthetic HTML with OG tags for accurate scanning
+                    const articleUrl = item.url || `https://dataengineerhub.blog/articles/${item.slug}`;
+                    const ogImage = item.featuredImage || item.image || 'https://dataengineerhub.blog/logo.png';
+                    const excerpt = (item.excerpt || '').replace(/<[^>]*>/g, '').trim();
+                    const categoryMeta = item.category ? `<meta property="article:section" content="${item.category}">` : '';
+                    const tagsMeta = (item.tags || []).map(t => `<meta property="article:tag" content="${t.name || t}">`).join('\n  ');
+                    const syntheticHTML = `<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${item.title}</title>
+<link rel="canonical" href="${articleUrl}">
+<meta name="description" content="${excerpt.substring(0, 160)}">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="${item.title}">
+<meta property="og:description" content="${excerpt.substring(0, 200)}">
+<meta property="og:image" content="${ogImage}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="${articleUrl}">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="${item.date || ''}">
+  ${categoryMeta}
+  ${tagsMeta}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"TechArticle","headline":"${(item.title || '').replace(/"/g, '\\"')}","url":"${articleUrl}","image":"${ogImage}"}
+</script>
+</head><body><article><header><h1>${item.title}</h1></header><section>${item.content}</section></article></body></html>`;
+
                     analysis = await analyzeArticleFull({
                         ...item,
                         content: item.content
-                    }, `<!DOCTYPE html><html><head><title>${item.title}</title></head><body>${item.content}</body></html>`);
+                    }, syntheticHTML);
                 } else {
                     // Fetch and analyze external URL
                     try {

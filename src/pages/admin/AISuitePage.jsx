@@ -119,21 +119,30 @@ export function AISuitePage() {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
 
+            // Extract body content + head JSON-LD so analyzers can find schema
+            const bodyHTML = doc.body?.innerHTML || '';
+            const headScripts = Array.from(doc.querySelectorAll('script[type="application/ld+json"]'))
+                .map(s => s.textContent).join(' ');
+            const wordCount = (doc.body?.textContent || '').split(/\s+/).filter(Boolean).length;
+
             article = {
                 url: finalUrl,
                 title: doc.querySelector('title')?.textContent || '',
-                content: doc.body?.innerHTML || '',
+                content: bodyHTML,
                 excerpt: doc.querySelector('meta[name="description"]')?.content || '',
                 category: doc.querySelector('meta[property="article:section"]')?.content || '',
                 tags: Array.from(doc.querySelectorAll('meta[property="article:tag"]')).map(tag => ({ name: tag.content })),
                 date: doc.querySelector('meta[property="article:published_time"]')?.content || '',
-                slug: new URL(finalUrl).pathname.split('/').pop() || ''
+                slug: new URL(finalUrl).pathname.split('/').pop() || '',
+                featuredImage: doc.querySelector('meta[property="og:image"]')?.content || '',
+                readTime: Math.ceil(wordCount / 200),
+                schema: headScripts
             };
 
-            // Run all analyzers
+            // Run all analyzers — pass doc to GEO so it can check structured data & semantic HTML
             const pseo = new PSEOAnalyzer().analyze(article);
-            const aeo = new AEOAnalyzer().analyze(article);
-            const geo = new GEOAnalyzer().analyze(article);
+            const aeo = new AEOAnalyzer().analyze(article, doc);
+            const geo = new GEOAnalyzer().analyze(article, doc);
 
             const overall = Math.round((pseo.score + aeo.score + geo.score) / 3);
 

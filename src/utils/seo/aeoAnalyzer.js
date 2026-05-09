@@ -23,6 +23,7 @@ export class AEOAnalyzer {
     analyze(article, doc = null) {
         this.checks = [];
         this.article = article;
+        this.doc = doc;
         const content = article.content || '';
 
         this.checkFeaturedSnippetPotential(content);
@@ -57,8 +58,12 @@ export class AEOAnalyzer {
     }
 
     checkQuestionBasedHeadings(content) {
-        const headings = content.match(/<h[2-4][^>]*>[^<]+<\/h[2-4]>/gi) || [];
-        const questions = headings.filter(h => /^(what|why|how|when|where|who|can|is)\s/i.test(h.replace(/<[^>]+>/g, '')));
+        // Match headings with inline elements (links, code, strong, etc.)
+        const headings = content.match(/<h[2-4][^>]*>[\s\S]*?<\/h[2-4]>/gi) || [];
+        const questions = headings.filter(h => {
+            const text = h.replace(/<[^>]+>/g, '').trim();
+            return /^(what|why|how|when|where|who|can|is|does|do|should)\s/i.test(text);
+        });
 
         if (questions.length >= 2) {
             this.addCheck('Question Headings', AEO_CATEGORIES.QA_FORMAT, SEVERITY.GOOD, `${questions.length} question headings`, null);
@@ -77,7 +82,26 @@ export class AEOAnalyzer {
     }
 
     checkFAQSchema(content) {
-        const hasFAQ = content.includes('FAQPage') || content.includes('"@type":"Question"');
+        // Check in body content
+        let hasFAQ = content.includes('FAQPage') || content.includes('"@type":"Question"') || content.includes('"@type": "Question"');
+
+        // Also check in head JSON-LD (if doc was passed) since schema is typically in <head>
+        if (!hasFAQ && this.doc) {
+            const scripts = this.doc.querySelectorAll('script[type="application/ld+json"]');
+            for (const script of scripts) {
+                const text = script.textContent || '';
+                if (text.includes('FAQPage') || text.includes('"Question"')) {
+                    hasFAQ = true;
+                    break;
+                }
+            }
+        }
+
+        // Also check article.schema field (enriched by AISuitePage)
+        if (!hasFAQ && this.article.schema) {
+            hasFAQ = this.article.schema.includes('FAQPage') || this.article.schema.includes('"Question"');
+        }
+
         if (hasFAQ) {
             this.addCheck('FAQ Schema', AEO_CATEGORIES.FAQ_SCHEMA, SEVERITY.GOOD, 'FAQ schema detected', null);
         } else {
@@ -96,7 +120,8 @@ export class AEOAnalyzer {
     }
 
     checkParagraphLength(content) {
-        const paragraphs = content.match(/<p[^>]*>([^<]+)<\/p>/gi) || [];
+        // Match paragraphs even if they contain inline elements
+        const paragraphs = content.match(/<p[^>]*>[\s\S]*?<\/p>/gi) || [];
         const short = paragraphs.filter(p => p.replace(/<[^>]+>/g, '').length <= 300).length;
         const ratio = paragraphs.length > 0 ? short / paragraphs.length : 0;
 

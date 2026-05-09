@@ -437,7 +437,7 @@ Output ONLY this section's content in markdown. No preamble.`;
             </div>
 
             {/* Step Indicator */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
                 {STEPS.map((s, i) => (
                     <div key={i} className="flex items-center gap-2">
                         <button
@@ -450,9 +450,9 @@ Output ONLY this section's content in markdown. No preamble.`;
                                     : 'bg-slate-800/50 text-gray-500 border border-slate-700'
                             }`}
                         >
-                            {step > i ? 'âœ“' : i + 1}. {s}
+                            {step > i ? '✓' : i + 1}. <span className="hidden sm:inline">{s}</span>
                         </button>
-                        {i < STEPS.length - 1 && <ArrowRight className="w-3 h-3 text-gray-600" />}
+                        {i < STEPS.length - 1 && <ArrowRight className="w-3 h-3 text-gray-600 hidden sm:block" />}
                     </div>
                 ))}
             </div>
@@ -461,7 +461,7 @@ Output ONLY this section's content in markdown. No preamble.`;
             {step === 0 && (
                 <div className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 space-y-4">
                     <h2 className="text-lg font-bold text-white">What do you want to write about?</h2>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                         <input
                             type="text"
                             value={topic}
@@ -503,7 +503,7 @@ Output ONLY this section's content in markdown. No preamble.`;
             {/* â•â•â• STEP 2: OUTLINE â•â•â• */}
             {step === 1 && (
                 <div className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 space-y-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <h2 className="text-lg font-bold text-white">Article Outline</h2>
                         <button onClick={handleGenerateOutline} disabled={outlineLoading} className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl flex items-center gap-2">
                             {outlineLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}

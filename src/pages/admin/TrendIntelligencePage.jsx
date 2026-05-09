@@ -84,9 +84,17 @@ function TrendingTab() {
                                     </div>
                                     <div className="flex flex-col items-end gap-1">
                                         {sourceBadge(t.source)}
-                                        <a href={t.url} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-400">
-                                            <ExternalLink className="w-3 h-3" />
-                                        </a>
+                                        <div className="flex items-center gap-1.5 mt-1">
+                                            <a
+                                                href={`/admin/article-writer?topic=${encodeURIComponent(t.title)}`}
+                                                className="px-2 py-0.5 text-[9px] bg-pink-600/30 hover:bg-pink-600/50 text-pink-300 rounded border border-pink-500/30"
+                                            >
+                                                Write →
+                                            </a>
+                                            <a href={t.url} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-400">
+                                                <ExternalLink className="w-3 h-3" />
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -251,7 +259,7 @@ function CompetitorTab() {
                                             <div className="text-xs text-white truncate">{a.title}</div>
                                             {a.snippet && <div className="text-[10px] text-gray-500 truncate mt-0.5">{a.snippet}</div>}
                                         </div>
-                                        <div className="flex items-center gap-2 shrink-0">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 shrink-0 mt-2 sm:mt-0">
                                             <a href={a.url} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-400">
                                                 <ExternalLink className="w-3 h-3" />
                                             </a>
@@ -362,7 +370,7 @@ function GapsTab() {
                                         ))}
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2 shrink-0">
+                                <div className="flex flex-wrap items-center gap-2 shrink-0 mt-2 sm:mt-0">
                                     <a
                                         href={`/admin/article-writer?topic=${encodeURIComponent(gap.keyword)}`}
                                         className="px-3 py-1.5 bg-pink-600/30 hover:bg-pink-600/50 text-pink-300 text-xs rounded-lg border border-pink-500/30"
