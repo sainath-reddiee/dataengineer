@@ -362,13 +362,21 @@ function GapsTab() {
                                         ))}
                                     </div>
                                 </div>
-                                <button
-                                    onClick={() => handlePlanArticle(gap)}
-                                    disabled={outlineLoading === gap.keyword}
-                                    className="px-3 py-1.5 bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 text-xs rounded-lg border border-purple-500/30 shrink-0"
-                                >
-                                    {outlineLoading === gap.keyword ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Plan Article'}
-                                </button>
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <a
+                                        href={`/admin/article-writer?topic=${encodeURIComponent(gap.keyword)}`}
+                                        className="px-3 py-1.5 bg-pink-600/30 hover:bg-pink-600/50 text-pink-300 text-xs rounded-lg border border-pink-500/30"
+                                    >
+                                        Write →
+                                    </a>
+                                    <button
+                                        onClick={() => handlePlanArticle(gap)}
+                                        disabled={outlineLoading === gap.keyword}
+                                        className="px-3 py-1.5 bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 text-xs rounded-lg border border-purple-500/30"
+                                    >
+                                        {outlineLoading === gap.keyword ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Plan Article'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}

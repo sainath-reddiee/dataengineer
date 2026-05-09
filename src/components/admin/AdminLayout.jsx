@@ -24,6 +24,7 @@ const navItems = [
     { path: '/admin/article-optimizer', icon: Wand2, label: 'Article Optimizer', highlight: true },
     { path: '/admin/article-fixer', icon: Wrench, label: 'Article Fixer', highlight: true },
     { path: '/admin/trend-intelligence', icon: TrendingUp, label: 'Trend Intelligence', highlight: true },
+    { path: '/admin/article-writer', icon: FileSearch, label: 'AI Article Writer', highlight: true },
     { path: '/admin/serp-intelligence', icon: Globe, label: 'SERP Intelligence', highlight: true },
     { path: '/admin/rank-dashboard', icon: Target, label: 'Rank Intelligence', highlight: true },
     { path: '/admin/revenue', icon: DollarSign, label: 'Revenue Projection', highlight: true },

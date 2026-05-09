@@ -98,6 +98,7 @@ const ArticleOptimizerPage = lazy(() => import('./pages/admin/ArticleOptimizerPa
 const KeywordTargetPage = lazy(() => import('./pages/admin/KeywordTargetPage'));
 const ArticleFixerPage = lazy(() => import('./pages/admin/ArticleFixerPage'));
 const TrendIntelligencePage = lazy(() => import('./pages/admin/TrendIntelligencePage'));
+const ArticleWriterPage = lazy(() => import('./pages/admin/ArticleWriterPage'));
 const SerpIntelligencePage = lazy(() => import('./pages/admin/SerpIntelligencePage'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
@@ -420,6 +421,7 @@ function App() {
                     <Route path="keyword-target" element={<SafeRoute><KeywordTargetPage /></SafeRoute>} />
                     <Route path="article-fixer" element={<SafeRoute><ArticleFixerPage /></SafeRoute>} />
                     <Route path="trend-intelligence" element={<SafeRoute><TrendIntelligencePage /></SafeRoute>} />
+                    <Route path="article-writer" element={<SafeRoute><ArticleWriterPage /></SafeRoute>} />
           <Route path="serp-intelligence" element={<SafeRoute><SerpIntelligencePage /></SafeRoute>} />
         </Route>
       </Routes>

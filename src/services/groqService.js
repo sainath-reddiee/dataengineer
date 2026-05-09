@@ -53,7 +53,7 @@ class GroqService {
                 body: JSON.stringify({
                     model: MODEL,
                     messages: [
-                        { role: 'system', content: 'You are a Senior SEO Expert. Provide concise, actionable, and direct answers. No fluff.' },
+                        { role: 'system', content: 'You are an expert content writer and SEO strategist. Write human-quality content that is specific, opinionated, and technically accurate. Never use AI-sounding filler phrases. Follow all instructions precisely.' },
                         { role: 'user', content: userMessage },
                     ],
                     temperature: 0.4,

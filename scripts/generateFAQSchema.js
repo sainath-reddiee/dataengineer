@@ -359,14 +359,23 @@ function injectFAQSchema(htmlPath, faqSchema) {
     try {
         let html = fs.readFileSync(htmlPath, 'utf8');
 
-        // Remove any existing FAQ schema blocks to avoid duplicates
+        // Check if a valid FAQPage schema already exists — skip injection to avoid duplicates
+        const existingFAQCount = (html.match(/"@type"\s*:\s*"FAQPage"/g) || []).length;
+        if (existingFAQCount > 0) {
+            // Already has a FAQPage schema — don't inject another one
+            return false;
+        }
+
+        // Remove any leftover FAQ comment markers from previous runs
         html = html.replace(
-            /<!--[^>]*FAQ[^>]*-->\s*/gi,
+            /\s*<!-- FAQ Schema - Auto-generated -->\s*/gi,
             ''
         );
+
+        // Remove any existing FAQ schema script blocks (safety net for re-runs)
         html = html.replace(
-            /<script type="application\/ld\+json">[\s\S]*?<\/script>/gi,
-            (match) => match.includes('FAQPage') ? '' : match
+            /<script type="application\/ld\+json">[^<]*"FAQPage"[^<]*<\/script>/gi,
+            ''
         );
 
         // Find the position to inject (before closing </body> tag)

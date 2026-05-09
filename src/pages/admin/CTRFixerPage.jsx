@@ -147,6 +147,7 @@ export function CTRFixerPage() {
 function CTRArticleRow({ article, expanded, onToggle }) {
     const [aiLoading, setAiLoading] = useState(false);
     const [variants, setVariants] = useState(null);
+    const [aiError, setAiError] = useState('');
 
     const ctrColor = article.ctr < 0.02 ? 'text-red-400' : article.ctr < 0.05 ? 'text-amber-400' : 'text-emerald-400';
 
@@ -156,6 +157,7 @@ function CTRArticleRow({ article, expanded, onToggle }) {
             return;
         }
         setAiLoading(true);
+        setAiError('');
         try {
             const stripHtml = (html) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
             const contentSnippet = stripHtml(article.content || '').substring(0, 2000);
@@ -211,9 +213,11 @@ Respond in EXACTLY this JSON (no markdown):
                     score: scoreCtr({ title: v.title, description: v.description }).score,
                 }));
                 setVariants(scored);
+            } else {
+                setAiError('AI returned no valid suggestions. Try again.');
             }
         } catch (e) {
-            console.error('AI CTR fix failed:', e);
+            setAiError(e.message || 'AI generation failed. Try again.');
         }
         setAiLoading(false);
     };
@@ -246,6 +250,10 @@ Respond in EXACTLY this JSON (no markdown):
                             {aiLoading ? 'Generating...' : 'AI: Generate Click-Optimized Variants'}
                         </button>
                     </div>
+
+                    {aiError && (
+                        <div className="text-xs text-red-400 mt-2 p-2 bg-red-900/10 border border-red-800/30 rounded-lg">{aiError}</div>
+                    )}
 
                     {variants && (
                         <div className="space-y-2 mt-3">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, TrendingUp, AlertCircle, CheckCircle, Clock, FileText, Sparkles, Target, Zap, Link as LinkIcon, Download, ArrowRight, Loader2, Copy, Check, Globe } from 'lucide-react';
+import { Search, TrendingUp, AlertCircle, CheckCircle, Clock, FileText, Sparkles, Target, Zap, Link as LinkIcon, ArrowRight, Loader2, Copy, Check, Globe } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import contentOptimizerService from '../../services/contentOptimizerService';
 import pdfExportService from '../../services/pdfExportService';

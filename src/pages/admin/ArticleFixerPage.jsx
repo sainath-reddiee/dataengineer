@@ -1,18 +1,26 @@
 // src/pages/admin/ArticleFixerPage.jsx
 // Batch Article Fixer — analyzes all articles against focus keyphrases,
-// prioritizes by score, and generates ready-to-paste AI fixes.
+// uses GSC performance data for smart prioritization, and generates ready-to-paste AI fixes.
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
     Wrench, Loader2, AlertTriangle, Sparkles, RefreshCw, Copy, Check,
-    ChevronDown, ChevronRight, Target,
+    ChevronDown, ChevronRight, Target, TrendingUp, MousePointerClick,
+    Zap, BarChart3,
 } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 import gscService from '@/services/gscService';
 import aiService from '@/services/aiService';
 import tinyfishService from '@/services/tinyfishService';
 
-// Lightweight inline keyword analysis (same logic as KeywordTargetPage)
+// Expected CTR by position (Google averages)
+function getExpectedCTR(pos) {
+    const rates = [0.32, 0.24, 0.18, 0.12, 0.08, 0.05, 0.04, 0.03, 0.025, 0.02];
+    const p = Math.max(1, Math.min(10, Math.round(pos))) - 1;
+    return rates[p] || 0.015;
+}
+
+// Lightweight inline keyword analysis
 function quickAnalyze(keyword, article) {
     if (!keyword || !article) return null;
     const kw = keyword.toLowerCase().trim();
@@ -58,12 +66,23 @@ function quickAnalyze(keyword, article) {
     return { keyword: kw, score, passedCount, failedList, density, wordCount, checks };
 }
 
+const SORT_MODES = [
+    { id: 'ctr-gap', label: 'CTR Gap', icon: MousePointerClick, desc: 'High impressions + low CTR' },
+    { id: 'striking', label: 'Striking Distance', icon: Target, desc: 'Position 5-20 (almost page 1)' },
+    { id: 'impressions', label: 'Top Impressions', icon: BarChart3, desc: 'Most-seen articles' },
+    { id: 'score', label: 'Worst Score', icon: Wrench, desc: 'Lowest keyword targeting' },
+];
+
 export function ArticleFixerPage() {
     const [loading, setLoading] = useState(true);
     const [articles, setArticles] = useState([]);
     const [error, setError] = useState('');
     const [expandedSlug, setExpandedSlug] = useState(null);
     const [progress, setProgress] = useState('');
+    const [sortMode, setSortMode] = useState('ctr-gap');
+    const [batchFixing, setBatchFixing] = useState(false);
+    const [batchResult, setBatchResult] = useState('');
+    const [batchCopied, setBatchCopied] = useState(false);
 
     useEffect(() => { loadData(); }, []);
 
@@ -71,39 +90,40 @@ export function ArticleFixerPage() {
         setLoading(true);
         setError('');
         setArticles([]);
+        setBatchResult('');
         try {
             setProgress('Fetching articles...');
             const wpData = await wordpressApi.getAllPosts(1, 100);
             const posts = wpData.posts || [];
             if (posts.length === 0) { setError('No articles found.'); setLoading(false); return; }
 
-            // Get GSC keyword data if connected
+            // Get GSC page-level performance data + keywords
+            let gscPages = {};
             let gscMap = {};
             if (gscService.isConnected()) {
-                setProgress('Fetching GSC keywords...');
+                setProgress('Fetching GSC performance data...');
                 try {
-                    const keywords = await gscService.queryTopKeywords({ rowLimit: 500 });
-                    // Group keywords by matching article slug
-                    keywords.forEach(kw => {
-                        // Try to match the URL to a post slug
-                        posts.forEach(post => {
-                            const articleUrl = `https://dataengineerhub.blog/articles/${post.slug}`;
-                            // Check by page dimension if available, or fuzzy match
-                            if (!gscMap[post.slug]) gscMap[post.slug] = [];
-                        });
+                    // Page-level metrics (impressions, clicks, CTR, position)
+                    const pages = await gscService.queryTopPages({ rowLimit: 200 });
+                    pages.forEach(p => {
+                        const slugMatch = p.page.match(/\/articles\/([^/?#]+)/);
+                        if (slugMatch) gscPages[slugMatch[1]] = p;
                     });
 
-                    // Fetch per-article keywords for top 20 articles
-                    const topPosts = posts.slice(0, 20);
-                    for (let i = 0; i < topPosts.length; i++) {
-                        setProgress(`Fetching keywords for ${i + 1}/${topPosts.length}...`);
+                    // Fetch per-article keywords for top 20
+                    const topSlugs = Object.keys(gscPages)
+                        .sort((a, b) => (gscPages[b]?.impressions || 0) - (gscPages[a]?.impressions || 0))
+                        .slice(0, 20);
+
+                    for (let i = 0; i < topSlugs.length; i++) {
+                        setProgress(`Fetching keywords ${i + 1}/${topSlugs.length}...`);
                         try {
                             const kws = await gscService.queryTopKeywords({
-                                url: `https://dataengineerhub.blog/articles/${topPosts[i].slug}`,
+                                url: `https://dataengineerhub.blog/articles/${topSlugs[i]}`,
                                 rowLimit: 5,
                             });
                             if (kws.length > 0) {
-                                gscMap[topPosts[i].slug] = kws.sort((a, b) => b.impressions - a.impressions);
+                                gscMap[topSlugs[i]] = kws.sort((a, b) => b.impressions - a.impressions);
                             }
                         } catch { /* skip */ }
                     }
@@ -114,26 +134,46 @@ export function ArticleFixerPage() {
 
             setProgress('Analyzing articles...');
 
-            // Analyze each article
+            // Analyze each article with GSC data
             const analyzed = posts.map(post => {
-                // Determine focus keyword: GSC top query or slug-derived
                 const gscKws = gscMap[post.slug] || [];
+                const gscPerf = gscPages[post.slug] || null;
                 const focusKeyword = gscKws.length > 0
                     ? gscKws[0].query
                     : post.slug.replace(/-/g, ' ').replace(/\d{4}$/, '').trim();
 
                 const result = quickAnalyze(focusKeyword, post);
+
+                // Calculate opportunity metrics
+                const impressions = gscPerf?.impressions || 0;
+                const clicks = gscPerf?.clicks || 0;
+                const ctr = gscPerf?.ctr || 0;
+                const position = gscPerf?.position || 0;
+                const expectedCTR = position > 0 ? getExpectedCTR(position) : 0;
+                const missedClicks = Math.max(0, Math.round(impressions * expectedCTR) - clicks);
+                const ctrGap = expectedCTR > 0 ? Math.max(0, expectedCTR - ctr) : 0;
+
                 return {
                     ...post,
                     focusKeyword,
                     gscKeywords: gscKws,
                     analysis: result,
                     score: result?.score || 0,
+                    impressions,
+                    clicks,
+                    ctr,
+                    position,
+                    missedClicks,
+                    ctrGap,
+                    // Priority score (0-100): combines keyword score gap + CTR opportunity + position potential
+                    priority: Math.round(
+                        (100 - (result?.score || 0)) * 0.3 +
+                        Math.min(100, missedClicks / 5) * 0.4 +
+                        (position >= 5 && position <= 20 ? 80 : position > 0 && position <= 5 ? 30 : 0) * 0.3
+                    ),
                 };
             });
 
-            // Sort: worst scores first (biggest opportunity)
-            analyzed.sort((a, b) => a.score - b.score);
             setArticles(analyzed);
         } catch (e) {
             setError(e.message || 'Failed to load data');
@@ -142,8 +182,88 @@ export function ArticleFixerPage() {
         setProgress('');
     }
 
-    const needsWork = articles.filter(a => a.score < 70);
-    const avgScore = articles.length > 0 ? Math.round(articles.reduce((s, a) => s + a.score, 0) / articles.length) : 0;
+    // Sort articles based on selected mode
+    const sortedArticles = useMemo(() => {
+        const arr = [...articles];
+        switch (sortMode) {
+            case 'ctr-gap':
+                arr.sort((a, b) => b.missedClicks - a.missedClicks);
+                break;
+            case 'striking':
+                arr.sort((a, b) => {
+                    const aStriking = a.position >= 5 && a.position <= 20 ? 1 : 0;
+                    const bStriking = b.position >= 5 && b.position <= 20 ? 1 : 0;
+                    if (bStriking !== aStriking) return bStriking - aStriking;
+                    return a.position - b.position;
+                });
+                break;
+            case 'impressions':
+                arr.sort((a, b) => b.impressions - a.impressions);
+                break;
+            case 'score':
+            default:
+                arr.sort((a, b) => a.score - b.score);
+                break;
+        }
+        return arr;
+    }, [articles, sortMode]);
+
+    // Stats
+    const totalMissedClicks = articles.reduce((s, a) => s + a.missedClicks, 0);
+    const strikingCount = articles.filter(a => a.position >= 5 && a.position <= 20).length;
+    const avgCTR = articles.filter(a => a.ctr > 0).length > 0
+        ? (articles.filter(a => a.ctr > 0).reduce((s, a) => s + a.ctr, 0) / articles.filter(a => a.ctr > 0).length * 100).toFixed(1)
+        : '—';
+    const needsWork = articles.filter(a => a.score < 70).length;
+
+    // Batch fix top 5
+    const handleBatchFix = async () => {
+        if (!aiService.isEnabled) { alert('Set AI API key in sidebar first.'); return; }
+        setBatchFixing(true);
+        setBatchResult('');
+        const top5 = sortedArticles.filter(a => a.score < 85).slice(0, 5);
+        let combined = '';
+
+        for (let i = 0; i < top5.length; i++) {
+            const article = top5[i];
+            setProgress(`Generating fix ${i + 1}/5: ${article.title.substring(0, 30)}...`);
+
+            try {
+                let competitorContext = '';
+                if (tinyfishService.isEnabled && article.focusKeyword) {
+                    try {
+                        const results = await tinyfishService.search(article.focusKeyword);
+                        const top3 = (results.results || []).filter(r => !r.url?.includes('dataengineerhub.blog')).slice(0, 3);
+                        if (top3.length > 0) {
+                            competitorContext = `\nTOP COMPETITORS: ${top3.map(r => `"${r.title}"`).join(', ')}\n`;
+                        }
+                    } catch { /* optional */ }
+                }
+
+                const failedStr = (article.analysis?.failedList || []).join(', ');
+                const prompt = `Fix this article for "${article.focusKeyword}" (score: ${article.score}/100, position: #${article.position?.toFixed(1) || '?'}, CTR: ${(article.ctr * 100).toFixed(1)}%).
+Title: "${article.title}"
+Failed: ${failedStr || 'none'}
+${competitorContext}
+Generate CONCISELY:
+1. TITLE (50-60 chars, keyphrase front): 1 best option
+2. META (120-155 chars): 1 best option
+3. FIRST PARAGRAPH (2 sentences with keyphrase)
+4. Add "Updated May 2026" freshness notice
+
+Be specific. Include "${article.focusKeyword}" naturally.`;
+
+                const response = await aiService.generateSuggestion(prompt, '');
+                combined += `\n${'═'.repeat(60)}\n📝 ${article.title}\n   URL: /articles/${article.slug}\n   Score: ${article.score}/100 | Position: #${article.position?.toFixed(1) || '?'} | Missed clicks: ${article.missedClicks}\n${'─'.repeat(60)}\n${response}\n`;
+            } catch (e) {
+                combined += `\n${'═'.repeat(60)}\n📝 ${article.title}\n   ERROR: ${e.message}\n`;
+            }
+        }
+
+        setBatchResult(combined);
+        setBatchFixing(false);
+        setProgress('');
+    };
 
     return (
         <div className="space-y-6">
@@ -153,7 +273,7 @@ export function ArticleFixerPage() {
                         <Wrench className="w-8 h-8 text-orange-400" />
                         Article Fixer
                     </h1>
-                    <p className="text-gray-400">Batch keyword analysis of all articles — prioritized by optimization opportunity. Fix the worst first.</p>
+                    <p className="text-gray-400">Prioritize articles by real traffic opportunity — fix what matters most.</p>
                 </div>
                 <button onClick={loadData} disabled={loading} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-white text-sm rounded-lg flex items-center gap-2">
                     <RefreshCw className="w-4 h-4" /> Refresh
@@ -175,25 +295,83 @@ export function ArticleFixerPage() {
 
             {!loading && articles.length > 0 && (
                 <>
-                    {/* Summary */}
-                    <div className="grid grid-cols-3 gap-4">
-                        <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-xl text-center">
-                            <div className="text-3xl font-bold text-white">{avgScore}%</div>
-                            <div className="text-xs text-gray-400 mt-1">Avg Keyword Score</div>
-                        </div>
+                    {/* Stats Dashboard */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <div className="p-4 bg-red-900/20 border border-red-800/30 rounded-xl text-center">
-                            <div className="text-3xl font-bold text-red-400">{needsWork.length}</div>
-                            <div className="text-xs text-gray-400 mt-1">Articles Need Fixing</div>
+                            <div className="text-2xl font-bold text-red-400">+{totalMissedClicks.toLocaleString()}</div>
+                            <div className="text-[10px] text-gray-400 mt-1">Missed Clicks/Month</div>
+                            <div className="text-[9px] text-gray-600">(if CTR matched position)</div>
                         </div>
-                        <div className="p-4 bg-emerald-900/20 border border-emerald-800/30 rounded-xl text-center">
-                            <div className="text-3xl font-bold text-emerald-400">{articles.filter(a => a.score >= 70).length}</div>
-                            <div className="text-xs text-gray-400 mt-1">Well Optimized</div>
+                        <div className="p-4 bg-amber-900/20 border border-amber-800/30 rounded-xl text-center">
+                            <div className="text-2xl font-bold text-amber-400">{strikingCount}</div>
+                            <div className="text-[10px] text-gray-400 mt-1">Striking Distance</div>
+                            <div className="text-[9px] text-gray-600">(position 5-20)</div>
+                        </div>
+                        <div className="p-4 bg-blue-900/20 border border-blue-800/30 rounded-xl text-center">
+                            <div className="text-2xl font-bold text-blue-400">{avgCTR}%</div>
+                            <div className="text-[10px] text-gray-400 mt-1">Average CTR</div>
+                            <div className="text-[9px] text-gray-600">(across all articles)</div>
+                        </div>
+                        <div className="p-4 bg-purple-900/20 border border-purple-800/30 rounded-xl text-center">
+                            <div className="text-2xl font-bold text-purple-400">{needsWork}</div>
+                            <div className="text-[10px] text-gray-400 mt-1">Need Keyword Fixes</div>
+                            <div className="text-[9px] text-gray-600">(score &lt; 70%)</div>
                         </div>
                     </div>
 
+                    {/* Sort Mode + Batch Fix */}
+                    <div className="flex items-center justify-between flex-wrap gap-3">
+                        <div className="flex gap-1.5 bg-slate-800/50 p-1 rounded-lg">
+                            {SORT_MODES.map(mode => (
+                                <button
+                                    key={mode.id}
+                                    onClick={() => setSortMode(mode.id)}
+                                    className={`px-3 py-1.5 rounded-md text-[10px] font-medium flex items-center gap-1.5 transition-all ${
+                                        sortMode === mode.id
+                                            ? 'bg-blue-600/30 text-white border border-blue-500/40'
+                                            : 'text-gray-400 hover:text-white hover:bg-slate-700/50'
+                                    }`}
+                                    title={mode.desc}
+                                >
+                                    <mode.icon className="w-3 h-3" />
+                                    {mode.label}
+                                </button>
+                            ))}
+                        </div>
+                        <button
+                            onClick={handleBatchFix}
+                            disabled={batchFixing}
+                            className="px-4 py-2 bg-gradient-to-r from-orange-600 to-rose-600 hover:from-orange-700 hover:to-rose-700 disabled:opacity-50 text-white text-xs font-semibold rounded-lg flex items-center gap-2"
+                        >
+                            {batchFixing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+                            {batchFixing ? progress || 'Generating...' : 'Batch Fix Top 5'}
+                        </button>
+                    </div>
+
+                    {/* Batch Result */}
+                    {batchResult && (
+                        <div className="bg-gradient-to-br from-orange-900/20 to-rose-900/20 border border-orange-500/30 rounded-xl p-5">
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-sm font-bold text-orange-300 flex items-center gap-2">
+                                    <Sparkles className="w-4 h-4" /> Batch Fixes (Top 5 Priority Articles)
+                                </span>
+                                <button
+                                    onClick={() => { navigator.clipboard.writeText(batchResult); setBatchCopied(true); setTimeout(() => setBatchCopied(false), 2000); }}
+                                    className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                                >
+                                    {batchCopied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                                    {batchCopied ? 'Copied!' : 'Copy All Fixes'}
+                                </button>
+                            </div>
+                            <div className="bg-slate-900/80 rounded-lg p-4 text-xs text-gray-300 whitespace-pre-wrap max-h-[500px] overflow-y-auto font-mono leading-relaxed">
+                                {batchResult}
+                            </div>
+                        </div>
+                    )}
+
                     {/* Article List */}
                     <div className="space-y-2">
-                        {articles.map(article => (
+                        {sortedArticles.map(article => (
                             <ArticleRow
                                 key={article.slug}
                                 article={article}
@@ -219,12 +397,12 @@ function ArticleRow({ article, expanded, onToggle }) {
 
     const scoreColor = article.score >= 70 ? 'text-emerald-400' : article.score >= 40 ? 'text-amber-400' : 'text-red-400';
     const scoreBg = article.score >= 70 ? 'bg-emerald-500/20' : article.score >= 40 ? 'bg-amber-500/20' : 'bg-red-500/20';
+    const posColor = article.position <= 3 ? 'text-emerald-400' : article.position <= 10 ? 'text-blue-400' : article.position <= 20 ? 'text-amber-400' : 'text-gray-500';
 
     const handleGenerateFix = async () => {
         if (!aiService.isEnabled) { alert('Set AI API key in sidebar first.'); return; }
         setFixing(true);
         try {
-            // Get competitor context from web search
             let competitorContext = '';
             if (tinyfishService.isEnabled && article.focusKeyword) {
                 try {
@@ -245,10 +423,13 @@ CURRENT STATE:
 - URL: /articles/${article.slug}
 - Word count: ${article.analysis?.wordCount || 'unknown'}
 - Keyword score: ${article.score}/100
+- GSC Position: #${article.position?.toFixed(1) || '?'}
+- CTR: ${(article.ctr * 100).toFixed(2)}% (expected ${(getExpectedCTR(article.position) * 100).toFixed(1)}% for this position)
+- Impressions: ${article.impressions.toLocaleString()} | Missed clicks: ${article.missedClicks}
 - FAILED CHECKS: ${failedStr || 'none'}
 - Keyword density: ${article.analysis?.density?.toFixed(2) || '?'}%
 ${competitorContext}
-GENERATE THESE FIXES (ready to copy-paste):
+GENERATE THESE FIXES (ready to copy-paste into WordPress):
 
 1. **OPTIMIZED TITLE** (50-60 chars, keyphrase near front, compelling, with number/power word):
    Write 2 options.
@@ -262,6 +443,8 @@ GENERATE THESE FIXES (ready to copy-paste):
 4. **H2 HEADINGS WITH KEYPHRASE** (suggest 3 natural H2 headings that include "${article.focusKeyword}" or close variants):
 
 5. **IMAGE ALT TEXT** (2 suggestions containing the keyphrase):
+
+6. **FRESHNESS UPDATE** (Write a "Last Updated: May 2026" paragraph + suggest 1-2 new sections to add for freshness):
 
 Format clearly with headers. Be specific, not generic. Every suggestion must contain "${article.focusKeyword}" naturally.`;
 
@@ -292,16 +475,19 @@ Format clearly with headers. Be specific, not generic. Every suggestion must con
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="text-sm text-white truncate">{article.title}</div>
-                    <div className="text-xs text-gray-500 flex items-center gap-2 mt-0.5">
-                        <span>Focus: <span className="text-blue-300">{article.focusKeyword}</span></span>
-                        {article.analysis?.failedList?.length > 0 && (
-                            <span className="text-red-400">· Missing: {article.analysis.failedList.slice(0, 3).join(', ')}</span>
-                        )}
+                    <div className="text-xs text-gray-500 flex items-center gap-3 mt-0.5">
+                        <span>KW: <span className="text-blue-300">{article.focusKeyword}</span></span>
+                        {article.position > 0 && <span className={posColor}>#{article.position.toFixed(1)}</span>}
+                        {article.impressions > 0 && <span>{article.impressions.toLocaleString()} imp</span>}
+                        {article.missedClicks > 0 && <span className="text-red-400">+{article.missedClicks} missed</span>}
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    {article.score < 70 && (
-                        <span className="px-2 py-0.5 bg-red-500/20 text-red-300 text-[10px] rounded-full border border-red-500/30">NEEDS FIX</span>
+                    {article.position >= 5 && article.position <= 20 && (
+                        <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 text-[9px] rounded-full border border-amber-500/30">PAGE 2</span>
+                    )}
+                    {article.missedClicks > 50 && (
+                        <span className="px-2 py-0.5 bg-red-500/20 text-red-300 text-[9px] rounded-full border border-red-500/30">HIGH OPP</span>
                     )}
                     {expanded ? <ChevronDown className="w-4 h-4 text-gray-500" /> : <ChevronRight className="w-4 h-4 text-gray-500" />}
                 </div>
@@ -309,8 +495,32 @@ Format clearly with headers. Be specific, not generic. Every suggestion must con
 
             {expanded && (
                 <div className="px-5 pb-4 border-t border-slate-700/50 space-y-3 pt-3">
-                    {/* Quick stats */}
-                    <div className="flex flex-wrap gap-2">
+                    {/* GSC Performance */}
+                    {article.position > 0 && (
+                        <div className="grid grid-cols-4 gap-2 text-center">
+                            <div className="p-2 bg-slate-900/50 rounded-lg">
+                                <div className="text-xs font-bold text-white">{article.impressions.toLocaleString()}</div>
+                                <div className="text-[9px] text-gray-500">Impressions</div>
+                            </div>
+                            <div className="p-2 bg-slate-900/50 rounded-lg">
+                                <div className="text-xs font-bold text-white">{article.clicks}</div>
+                                <div className="text-[9px] text-gray-500">Clicks</div>
+                            </div>
+                            <div className="p-2 bg-slate-900/50 rounded-lg">
+                                <div className={`text-xs font-bold ${article.ctr < getExpectedCTR(article.position) ? 'text-red-400' : 'text-emerald-400'}`}>
+                                    {(article.ctr * 100).toFixed(1)}%
+                                </div>
+                                <div className="text-[9px] text-gray-500">CTR (exp: {(getExpectedCTR(article.position) * 100).toFixed(1)}%)</div>
+                            </div>
+                            <div className="p-2 bg-slate-900/50 rounded-lg">
+                                <div className={`text-xs font-bold ${posColor}`}>#{article.position.toFixed(1)}</div>
+                                <div className="text-[9px] text-gray-500">Position</div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Keyword checks */}
+                    <div className="flex flex-wrap gap-1.5">
                         {Object.entries(article.analysis?.checks || {}).map(([key, passed]) => (
                             <span key={key} className={`px-2 py-0.5 rounded text-[10px] ${passed ? 'bg-emerald-900/30 text-emerald-300 border border-emerald-500/30' : 'bg-red-900/30 text-red-300 border border-red-500/30'}`}>
                                 {key}: {passed ? '✓' : '✗'}
@@ -321,11 +531,11 @@ Format clearly with headers. Be specific, not generic. Every suggestion must con
                     {/* GSC keywords */}
                     {article.gscKeywords?.length > 0 && (
                         <div className="text-xs text-gray-500">
-                            Top GSC queries: {article.gscKeywords.slice(0, 5).map(k => k.query).join(' · ')}
+                            Top queries: {article.gscKeywords.slice(0, 5).map(k => k.query).join(' · ')}
                         </div>
                     )}
 
-                    {/* Generate Fix */}
+                    {/* Actions */}
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handleGenerateFix}
