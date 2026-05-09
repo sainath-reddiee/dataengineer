@@ -95,6 +95,8 @@ const KeywordInjectorPage = lazy(() => import('./pages/admin/KeywordInjectorPage
 const CannibalizationPage = lazy(() => import('./pages/admin/CannibalizationPage'));
 const PAAOptimizerPage = lazy(() => import('./pages/admin/PAAOptimizerPage'));
 const ArticleOptimizerPage = lazy(() => import('./pages/admin/ArticleOptimizerPage'));
+const KeywordTargetPage = lazy(() => import('./pages/admin/KeywordTargetPage'));
+const SerpIntelligencePage = lazy(() => import('./pages/admin/SerpIntelligencePage'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
@@ -413,6 +415,8 @@ function App() {
           <Route path="cannibalization" element={<SafeRoute><CannibalizationPage /></SafeRoute>} />
           <Route path="paa-optimizer" element={<SafeRoute><PAAOptimizerPage /></SafeRoute>} />
           <Route path="article-optimizer" element={<SafeRoute><ArticleOptimizerPage /></SafeRoute>} />
+          <Route path="keyword-target" element={<SafeRoute><KeywordTargetPage /></SafeRoute>} />
+          <Route path="serp-intelligence" element={<SafeRoute><SerpIntelligencePage /></SafeRoute>} />
         </Route>
       </Routes>
       <Toaster />

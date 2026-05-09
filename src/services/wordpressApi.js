@@ -548,7 +548,7 @@ class WordPressAPI {
         Authorization: `Token ${apiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email_address: email }),
+      body: JSON.stringify({ email_address: email.trim() }),
     });
 
     if (response.ok || response.status === 201) {

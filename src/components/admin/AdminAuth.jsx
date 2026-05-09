@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Lock, User, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 // SHA-256 hashes of credentials - plaintext never stored in the bundle.
-// To update: run in browser console:
+// SECURITY: No fallback defaults — if env vars are missing, login is impossible.
+// To generate hashes, run in browser console:
 //   crypto.subtle.digest('SHA-256', new TextEncoder().encode('your-value'))
 //     .then(b => console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')))
-const ADMIN_USER_HASH = import.meta.env.VITE_ADMIN_USER_HASH || '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'; // sha256('admin')
-const ADMIN_PASS_HASH = import.meta.env.VITE_ADMIN_PASS_HASH || 'a0eac1b8e4d1e8c6c3f07db3e0d2a5c4f5b6a7e8d9c0b1a2f3e4d5c6b7a8e9d0'; // fallback disabled - won't match anything
+const ADMIN_USER_HASH = import.meta.env.VITE_ADMIN_USER_HASH || '';
+const ADMIN_PASS_HASH = import.meta.env.VITE_ADMIN_PASS_HASH || '';
 
 async function sha256(str) {
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
@@ -15,35 +16,94 @@ async function sha256(str) {
 }
 
 const AUTH_KEY = 'seo_admin_auth';
+const AUTH_TIMESTAMP_KEY = 'seo_admin_auth_ts';
+const LOCKOUT_KEY = 'seo_admin_lockout';
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS = 5 * 60 * 1000; // 5 minutes
+const SESSION_DURATION_MS = 4 * 60 * 60 * 1000; // 4 hours
 
 export function useAdminAuth() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        // Check if session is still valid (not expired)
         const saved = sessionStorage.getItem(AUTH_KEY);
-        if (saved === 'true') {
-            setIsAuthenticated(true);
+        const savedTs = sessionStorage.getItem(AUTH_TIMESTAMP_KEY);
+        if (saved === 'true' && savedTs) {
+            const elapsed = Date.now() - parseInt(savedTs, 10);
+            if (elapsed < SESSION_DURATION_MS) {
+                setIsAuthenticated(true);
+            } else {
+                // Session expired — clear
+                sessionStorage.removeItem(AUTH_KEY);
+                sessionStorage.removeItem(AUTH_TIMESTAMP_KEY);
+            }
         }
         setIsLoading(false);
     }, []);
 
     const login = async (username, password) => {
+        // Check lockout
+        const lockoutData = getLockout();
+        if (lockoutData && Date.now() - lockoutData.timestamp < LOCKOUT_DURATION_MS) {
+            return { success: false, locked: true, remainingMs: LOCKOUT_DURATION_MS - (Date.now() - lockoutData.timestamp) };
+        }
+
+        // No fallback hashes — if env vars missing, auth is impossible
+        if (!ADMIN_USER_HASH || !ADMIN_PASS_HASH) {
+            return { success: false };
+        }
+
         const [userHash, passHash] = await Promise.all([sha256(username), sha256(password)]);
         if (userHash === ADMIN_USER_HASH && passHash === ADMIN_PASS_HASH) {
             sessionStorage.setItem(AUTH_KEY, 'true');
+            sessionStorage.setItem(AUTH_TIMESTAMP_KEY, String(Date.now()));
+            clearLockout();
             setIsAuthenticated(true);
-            return true;
+            return { success: true };
         }
-        return false;
+
+        // Failed attempt — increment counter
+        const attempts = incrementAttempts();
+        if (attempts >= MAX_ATTEMPTS) {
+            setLockout();
+            return { success: false, locked: true, remainingMs: LOCKOUT_DURATION_MS };
+        }
+        return { success: false, attemptsLeft: MAX_ATTEMPTS - attempts };
     };
 
     const logout = () => {
         sessionStorage.removeItem(AUTH_KEY);
+        sessionStorage.removeItem(AUTH_TIMESTAMP_KEY);
         setIsAuthenticated(false);
     };
 
     return { isAuthenticated, isLoading, login, logout };
+}
+
+// Rate-limiting helpers (stored in sessionStorage so lockout survives page refreshes)
+function getLockout() {
+    try {
+        const raw = sessionStorage.getItem(LOCKOUT_KEY);
+        return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+}
+
+function setLockout() {
+    sessionStorage.setItem(LOCKOUT_KEY, JSON.stringify({ timestamp: Date.now() }));
+}
+
+function clearLockout() {
+    sessionStorage.removeItem(LOCKOUT_KEY);
+    sessionStorage.removeItem('seo_admin_attempts');
+}
+
+function incrementAttempts() {
+    const current = parseInt(sessionStorage.getItem('seo_admin_attempts') || '0', 10);
+    const next = current + 1;
+    sessionStorage.setItem('seo_admin_attempts', String(next));
+    return next;
 }
 
 export function AdminAuth({ children }) {
@@ -55,10 +115,15 @@ export function AdminAuth({ children }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (await login(username, password)) {
+        const result = await login(username, password);
+        if (result.success) {
             setError('');
+        } else if (result.locked) {
+            const mins = Math.ceil(result.remainingMs / 60000);
+            setError(`Too many failed attempts. Locked for ${mins} minute${mins > 1 ? 's' : ''}.`);
+            setPassword('');
         } else {
-            setError('Invalid credentials');
+            setError(result.attemptsLeft != null ? `Invalid credentials. ${result.attemptsLeft} attempt${result.attemptsLeft !== 1 ? 's' : ''} remaining.` : 'Invalid credentials');
             setPassword('');
         }
     };
