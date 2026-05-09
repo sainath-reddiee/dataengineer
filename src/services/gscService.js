@@ -8,8 +8,8 @@
 // 1. Go to https://console.cloud.google.com/
 // 2. Create OAuth 2.0 Client ID (type: Web application)
 // 3. Add authorized JS origin: https://dataengineerhub.blog
-// 4. Add authorized redirect URIs for all admin pages (e.g., /admin, /admin/rank-dashboard, etc.)
-//    — OAuth is triggered from the sidebar so the redirect lands on whichever page the user was on
+// 4. Add authorized redirect URI: https://dataengineerhub.blog/admin/rank-dashboard
+//    (single canonical redirect — the code handles returning to the original page)
 // 5. Set VITE_GSC_CLIENT_ID in .env
 // 6. In Google Search Console, verify the property and grant the client ID access
 //
@@ -60,6 +60,15 @@ class GSCService {
     }
 
     /**
+     * Fixed redirect URI — must match exactly what's registered in Google Cloud Console.
+     * Using a single canonical callback path avoids redirect_uri_mismatch errors
+     * when OAuth is triggered from different admin pages.
+     */
+    getRedirectUri() {
+        return window.location.origin + '/admin/rank-dashboard';
+    }
+
+    /**
      * Redirect to Google OAuth consent screen.
      * After user approves, they're redirected back with `access_token` in the URL hash.
      * Call handleOAuthCallback() on the redirect page.
@@ -69,9 +78,14 @@ class GSCService {
             throw new Error('GSC Client ID not configured. Set VITE_GSC_CLIENT_ID in .env');
         }
 
+        // Remember the current page so we can navigate back after OAuth
+        if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.setItem('gsc_return_path', window.location.pathname);
+        }
+
         const params = new URLSearchParams({
             client_id: this.clientId,
-            redirect_uri: window.location.origin + window.location.pathname,
+            redirect_uri: this.getRedirectUri(),
             response_type: 'token',
             scope: 'https://www.googleapis.com/auth/webmasters.readonly',
             include_granted_scopes: 'true',
@@ -99,6 +113,15 @@ class GSCService {
             this.setAccessToken(token, expiresIn);
             // Clean the URL
             window.history.replaceState(null, '', window.location.pathname);
+
+            // Navigate back to the page the user was on before OAuth
+            const returnPath = sessionStorage.getItem('gsc_return_path');
+            if (returnPath && returnPath !== window.location.pathname) {
+                sessionStorage.removeItem('gsc_return_path');
+                window.location.replace(returnPath);
+            } else {
+                sessionStorage.removeItem('gsc_return_path');
+            }
             return true;
         }
         return false;
