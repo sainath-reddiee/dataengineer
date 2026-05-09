@@ -91,6 +91,7 @@ const CTRFixerPage = lazy(() => import('./pages/admin/CTRFixerPage'));
 const StrikingDistancePage = lazy(() => import('./pages/admin/StrikingDistancePage'));
 const ContentDecayPage = lazy(() => import('./pages/admin/ContentDecayPage'));
 const SnippetOptimizerPage = lazy(() => import('./pages/admin/SnippetOptimizerPage'));
+const KeywordInjectorPage = lazy(() => import('./pages/admin/KeywordInjectorPage'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
@@ -382,6 +383,7 @@ function App() {
           <Route path="striking-distance" element={<SafeRoute><StrikingDistancePage /></SafeRoute>} />
           <Route path="content-decay" element={<SafeRoute><ContentDecayPage /></SafeRoute>} />
           <Route path="snippet-optimizer" element={<SafeRoute><SnippetOptimizerPage /></SafeRoute>} />
+          <Route path="keyword-injector" element={<SafeRoute><KeywordInjectorPage /></SafeRoute>} />
         </Route>
       </Routes>
       <Toaster />

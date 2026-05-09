@@ -32,6 +32,12 @@ export const BENCHMARKS = {
     DESC_HAS_YEAR:        { points:  4, lift: '+5%',   label: 'Contains year (freshness signal)' },
     DESC_HAS_BENEFIT:     { points:  4, lift: '+6%',   label: 'Contains a benefit phrase' },
     DESC_STARTS_ACTION:   { points:  4, lift: '+4%',   label: 'Starts with an action verb' },
+
+    // Keyword alignment rules (only scored when GSC keywords are provided)
+    KW_PRIMARY_IN_TITLE:    { points: 20, lift: '+25%',  label: 'Primary keyword appears in title (GSC #1 query)' },
+    KW_PRIMARY_FRONT:       { points: 10, lift: '+12%',  label: 'Primary keyword is in first half of title' },
+    KW_SECONDARY_IN_DESC:   { points:  8, lift: '+8%',   label: 'Secondary keyword appears in description' },
+    KW_COVERAGE:            { points:  6, lift: '+6%',   label: '3+ top keywords present in title+description' },
 };
 
 const POWER_WORDS = [
@@ -114,12 +120,61 @@ const scoreDescription = (desc = '') => {
     return { hits, misses, len };
 };
 
+/* ---------- keyword alignment scorer ---------- */
+
+/**
+ * Score keyword alignment between title/description and actual GSC search queries.
+ * Only invoked when gscKeywords array is provided.
+ *
+ * @param {string} title
+ * @param {string} description
+ * @param {Array} gscKeywords - [{ query, impressions, clicks, ctr, position }] sorted by impressions desc
+ * @returns {{ hits: string[], misses: string[] }}
+ */
+const scoreKeywords = (title = '', description = '', gscKeywords = []) => {
+    if (!gscKeywords || gscKeywords.length === 0) return { hits: [], misses: [] };
+
+    const hits = [];
+    const misses = [];
+    const add = (k, ok) => (ok ? hits : misses).push(k);
+    const titleLc = title.toLowerCase();
+    const descLc = description.toLowerCase();
+    const combined = titleLc + ' ' + descLc;
+
+    // Primary keyword = highest impression query
+    const primary = gscKeywords[0]?.query?.toLowerCase() || '';
+    const primaryInTitle = primary && titleLc.includes(primary);
+    add('KW_PRIMARY_IN_TITLE', primaryInTitle);
+
+    // Primary keyword front-loaded (in first half of title)
+    if (primaryInTitle) {
+        const firstHalf = titleLc.substring(0, Math.ceil(titleLc.length / 2));
+        add('KW_PRIMARY_FRONT', firstHalf.includes(primary));
+    } else {
+        add('KW_PRIMARY_FRONT', false);
+    }
+
+    // Secondary keyword in description (2nd highest impression query)
+    const secondary = gscKeywords[1]?.query?.toLowerCase() || '';
+    add('KW_SECONDARY_IN_DESC', secondary && descLc.includes(secondary));
+
+    // Coverage: 3+ of top 5 keywords present in title+description
+    const top5 = gscKeywords.slice(0, 5).map(kw => kw.query.toLowerCase());
+    const presentCount = top5.filter(q => combined.includes(q)).length;
+    add('KW_COVERAGE', presentCount >= 3);
+
+    return { hits, misses };
+};
+
 /* ---------- public api ---------- */
 
 /**
- * Score a (title, description) pair.
+ * Score a (title, description) pair, optionally against real GSC keywords.
  *
- * @param {object} input                { title, description, url? }
+ * @param {object} input  { title, description, url?, gscKeywords? }
+ *   gscKeywords: optional array of [{ query, impressions, clicks, ctr, position }]
+ *   sorted by impressions descending. When provided, keyword alignment factors
+ *   are included in the score (KW_PRIMARY_IN_TITLE, KW_PRIMARY_FRONT, etc.)
  * @returns {object} {
  *   score:          0..100 composite
  *   grade:          'A'|'B'|'C'|'D'|'F'
@@ -129,11 +184,13 @@ const scoreDescription = (desc = '') => {
  *   projectedLiftPct: number — sum of positive benchmark lifts for hits
  *   missingLiftPct:   number — sum of positive benchmark lifts for misses
  *   quickWins:      top-3 missing factors by lift magnitude
+ *   keywordFactors: [{ key, ok, points, lift, label }] (only when gscKeywords provided)
  * }
  */
-export const scoreCtr = ({ title = '', description = '' } = {}) => {
+export const scoreCtr = ({ title = '', description = '', gscKeywords = null } = {}) => {
     const titleR = scoreTitle(title);
     const descR  = scoreDescription(description);
+    const kwR    = gscKeywords ? scoreKeywords(title, description, gscKeywords) : { hits: [], misses: [] };
 
     const allKeys = [...titleR.hits, ...titleR.misses, ...descR.hits, ...descR.misses];
     const factors = allKeys.map(key => {
@@ -142,10 +199,20 @@ export const scoreCtr = ({ title = '', description = '' } = {}) => {
         return { key, ok, points: b.points, lift: b.lift, label: b.label };
     });
 
+    // Keyword alignment factors (only when GSC data is available)
+    const keywordFactors = [...kwR.hits, ...kwR.misses].map(key => {
+        const b = BENCHMARKS[key] || { points: 0, lift: '0%', label: key };
+        const ok = kwR.hits.includes(key);
+        return { key, ok, points: b.points, lift: b.lift, label: b.label };
+    });
+
+    // Merge keyword factors into the main factors list for unified scoring
+    const allFactors = [...factors, ...keywordFactors];
+
     // Composite out of 100. Sum available points across hits divided by the
     // total possible across all rule keys we actually evaluated.
-    const earned = factors.filter(f => f.ok).reduce((a, f) => a + f.points, 0);
-    const total  = factors.reduce((a, f) => {
+    const earned = allFactors.filter(f => f.ok).reduce((a, f) => a + f.points, 0);
+    const total  = allFactors.reduce((a, f) => {
         // For LEN rules only one of IDEAL/ACCEPTABLE/BAD fires — use the ideal points as the ceiling
         if (f.key.endsWith('_LEN_ACCEPTABLE') || f.key.endsWith('_LEN_BAD')) return a;
         return a + (BENCHMARKS[f.key]?.points ?? 0);
@@ -174,15 +241,15 @@ export const scoreCtr = ({ title = '', description = '' } = {}) => {
         return sign * parseFloat(m[2]);
     };
 
-    const projectedLiftPct = factors
+    const projectedLiftPct = allFactors
         .filter(f => f.ok && parseLift(f.lift) > 0)
         .reduce((a, f) => a + parseLift(f.lift), 0);
 
-    const missingLiftPct = factors
+    const missingLiftPct = allFactors
         .filter(f => !f.ok && parseLift(f.lift) > 0)
         .reduce((a, f) => a + parseLift(f.lift), 0);
 
-    const quickWins = factors
+    const quickWins = allFactors
         .filter(f => !f.ok && parseLift(f.lift) > 0)
         .sort((a, b) => parseLift(b.lift) - parseLift(a.lift))
         .slice(0, 3);
@@ -192,7 +259,8 @@ export const scoreCtr = ({ title = '', description = '' } = {}) => {
         grade,
         title:       titleR,
         description: descR,
-        factors,
+        factors:     allFactors,
+        keywordFactors,
         projectedLiftPct: Math.round(projectedLiftPct * 10) / 10,
         missingLiftPct:   Math.round(missingLiftPct * 10) / 10,
         quickWins,

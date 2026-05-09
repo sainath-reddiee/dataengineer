@@ -37,6 +37,7 @@ const navItems = [
     { path: '/admin/checklist', icon: CheckSquare, label: 'Checklist' },
     { path: '/admin/content-optimizer', icon: TrendingUp, label: 'Content Optimizer' },
     { path: '/admin/ctr-lab', icon: Zap, label: 'CTR Lab' },
+    { path: '/admin/keyword-injector', icon: TrendingUp, label: 'Keyword Injector', highlight: true },
     { path: '/admin/readability', icon: BookOpen, label: 'Readability' },
     { path: '/admin/internal-links', icon: Link2, label: 'Internal Links' },
     { path: '/admin/freshness', icon: Clock, label: 'Freshness' },

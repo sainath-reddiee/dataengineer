@@ -115,8 +115,8 @@ const seoOverrides = {
   },
 
   'snowflake-interview-questions-answers-2026': {
-    title: '10 Snowflake Interview Questions + Answers (2026)',
-    description: '10 real Snowflake interview questions asked in 2026 Senior DE interviews. Detailed answers, SQL examples, and the reasoning interviewers expect.'
+    title: 'Snowflake Interview Questions and Answers 2026',
+    description: 'Prepare for your Snowflake interview with 15 real questions and detailed answers covering architecture, performance tuning, and data engineering.'
   },
 
   'snowflake-cortex-ai-complete-guide-2026': {
