@@ -33,15 +33,18 @@ const ContentOptimizerPage = () => {
         setError(null);
         setResult(null);
 
-        const analysis = await contentOptimizerService.analyzeURL(url);
+        try {
+            const analysis = await contentOptimizerService.analyzeURL(url);
 
-        setLoading(false);
-
-        if (analysis.success) {
-            setResult(analysis.data);
-        } else {
-            setError(analysis.error);
+            if (analysis.success) {
+                setResult(analysis.data);
+            } else {
+                setError(analysis.error);
+            }
+        } catch (e) {
+            setError(e.message || 'Analysis failed. Please check the URL and try again.');
         }
+        setLoading(false);
     };
 
     const getScoreGradient = (score) => {

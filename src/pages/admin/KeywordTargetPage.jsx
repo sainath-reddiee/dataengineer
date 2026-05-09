@@ -185,10 +185,8 @@ export function KeywordTargetPage() {
             rowLimit: 20,
         }).then(data => {
             setGscKeywords(data.sort((a, b) => b.impressions - a.impressions));
-            // Auto-set keyword to #1 GSC query if none set
-            if (!keyword && data.length > 0) {
-                setKeyword(data[0].query);
-            }
+            // Auto-set keyword to #1 GSC query only if user hasn't typed one yet
+            setKeyword(prev => (!prev && data.length > 0) ? data[0].query : prev);
         }).catch(() => {}).finally(() => setGscLoading(false));
     }, [selectedSlug]);
 

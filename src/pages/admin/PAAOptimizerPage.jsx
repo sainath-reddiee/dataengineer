@@ -30,10 +30,15 @@ function QuestionCard({ question, onGenerateAnswer }) {
 
     const handleGenerate = async () => {
         setLoading(true);
-        const result = await onGenerateAnswer(question);
-        setAnswer(result.answer);
-        setJsonLd(result.jsonLd);
-        setExpanded(true);
+        try {
+            const result = await onGenerateAnswer(question);
+            setAnswer(result.answer);
+            setJsonLd(result.jsonLd);
+            setExpanded(true);
+        } catch (e) {
+            setAnswer(`Error: ${e.message || 'Failed to generate answer'}`);
+            setExpanded(true);
+        }
         setLoading(false);
     };
 

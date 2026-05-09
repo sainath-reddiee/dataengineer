@@ -20,7 +20,7 @@ const TABS = [
 ];
 
 // API Key Input Component
-function ApiKeyInput() {
+function ApiKeyInput({ onKeySet }) {
     const [key, setKey] = useState(tinyfishService.isEnabled ? '••••••••' : '');
     const [saved, setSaved] = useState(tinyfishService.isEnabled);
 
@@ -29,6 +29,7 @@ function ApiKeyInput() {
             tinyfishService.setApiKey(key);
             setKey('••••••••');
             setSaved(true);
+            onKeySet?.();
         }
     };
 
@@ -386,6 +387,7 @@ function ValidationCheck({ label, passed, detail }) {
 export function SerpIntelligencePage() {
     const [searchParams] = useSearchParams();
     const [activeTab, setActiveTab] = useState('serp');
+    const [apiKeySet, setApiKeySet] = useState(tinyfishService.isEnabled);
 
     return (
         <div className="space-y-6">
@@ -397,10 +399,10 @@ export function SerpIntelligencePage() {
                     </h1>
                     <p className="text-gray-400">Powered by TinyFish — live Google SERP analysis, competitor scraping, PAA extraction, and page validation using a real browser.</p>
                 </div>
-                <ApiKeyInput />
+                <ApiKeyInput onKeySet={() => setApiKeySet(true)} />
             </div>
 
-            {!tinyfishService.isEnabled && (
+            {!apiKeySet && (
                 <div className="p-4 bg-amber-900/10 border border-amber-800/30 rounded-xl flex items-center gap-2 text-amber-300 text-sm">
                     <AlertTriangle className="w-4 h-4" />
                     Enter your TinyFish API key above to enable SERP intelligence features.

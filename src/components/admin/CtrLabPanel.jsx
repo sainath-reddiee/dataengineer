@@ -413,9 +413,10 @@ export function CtrLabPanel() {
                         </thead>
                         <tbody>
                             {visible.map((r, i) => {
-                                const open = !!expanded[r.id];
+                                const rowKey = r.id || r.slug || `row-${i}`;
+                                const open = !!expanded[rowKey];
                                 return (
-                                    <React.Fragment key={r.id || r.slug || i}>
+                                    <React.Fragment key={rowKey}>
                                         <tr className="border-b border-slate-800/60 align-top">
                                             <td className="py-3 pr-3 text-gray-500">{i + 1}</td>
                                             <td className="py-3 pr-3">
@@ -462,7 +463,7 @@ export function CtrLabPanel() {
                                             </td>
                                             <td className="py-3 pr-3 text-right space-x-2 whitespace-nowrap">
                                                 <button
-                                                    onClick={() => setExpanded(e => ({ ...e, [r.id]: !e[r.id] }))}
+                                                    onClick={() => setExpanded(e => ({ ...e, [rowKey]: !e[rowKey] }))}
                                                     className="text-blue-400 hover:text-blue-300 text-xs inline-flex items-center gap-1"
                                                 >
                                                     {open ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
@@ -482,7 +483,7 @@ export function CtrLabPanel() {
                                             <tr className="border-b border-slate-800/60">
                                                 <td />
                                                 <td colSpan={5} className="py-3 pr-3">
-                                                    <RowEditor row={r} onClose={() => setExpanded(e => ({ ...e, [r.id]: false }))} />
+                                                    <RowEditor row={r} onClose={() => setExpanded(e => ({ ...e, [rowKey]: false }))} />
                                                 </td>
                                             </tr>
                                         )}

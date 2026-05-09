@@ -50,6 +50,11 @@ export function useAdminAuth() {
             return { success: false, locked: true, remainingMs: LOCKOUT_DURATION_MS - (Date.now() - lockoutData.timestamp) };
         }
 
+        // If lockout expired, clear the counter so user gets a fresh set of attempts
+        if (lockoutData && Date.now() - lockoutData.timestamp >= LOCKOUT_DURATION_MS) {
+            clearLockout();
+        }
+
         // No fallback hashes — if env vars missing, auth is impossible
         if (!ADMIN_USER_HASH || !ADMIN_PASS_HASH) {
             return { success: false };
