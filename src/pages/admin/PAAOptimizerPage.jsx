@@ -239,7 +239,8 @@ Return ONLY a JSON array of question strings. Example:
 Return the JSON array and nothing else.`;
 
                 try {
-                    const aiResult = await aiService.generateSuggestion(prompt, '');
+                    const articleText = stripHtml(post.content || '').substring(0, 6000);
+                    const aiResult = await aiService.generateSuggestion(prompt, articleText);
                     // Try to parse as JSON
                     const jsonMatch = aiResult.match(/\[[\s\S]*?\]/);
                     if (jsonMatch) {
@@ -347,7 +348,8 @@ Format your response EXACTLY as:
 ---END---`;
 
         try {
-            const result = await aiService.generateSuggestion(prompt, '');
+            const articleText = stripHtml(post?.content || '').substring(0, 6000);
+            const result = await aiService.generateSuggestion(prompt, articleText);
 
             // Parse response
             const answerMatch = result.match(/---ANSWER---\s*([\s\S]*?)---SCHEMA---/);

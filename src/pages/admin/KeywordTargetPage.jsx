@@ -11,6 +11,7 @@ import {
 import { Link, useSearchParams } from 'react-router-dom';
 import wordpressApi from '@/services/wordpressApi';
 import aiService from '@/services/aiService';
+import { AIOutputSections } from '@/components/admin/AIOutputSections';
 import gscService from '@/services/gscService';
 import tinyfishService from '@/services/tinyfishService';
 
@@ -241,7 +242,6 @@ export function KeywordTargetPage() {
     const [analysis, setAnalysis] = useState(null);
     const [aiSuggestion, setAiSuggestion] = useState(null);
     const [aiLoading, setAiLoading] = useState(false);
-    const [copied, setCopied] = useState(false);
     const [serpCompetitors, setSerpCompetitors] = useState([]);
     const [duplicateWarning, setDuplicateWarning] = useState(null);
     // Sequence counter to drop stale GSC responses when user switches articles fast
@@ -367,10 +367,12 @@ For EACH failed check, provide a SPECIFIC, ACTIONABLE fix:
 
 Also suggest 5-8 LSI (Latent Semantic Indexing) keywords â€” related terms that should appear in the content alongside the focus keyphrase for topical relevance.
 
-Format clearly with headers for each fix.`;
+Format clearly with headers for each fix. Base ALL suggestions on the actual article content provided — match its voice, technical depth, and existing style.`;
 
         try {
-            const response = await aiService.generateSuggestion(prompt, '');
+            // Pass article content as context so fixes are grounded in actual content
+            const articleText = (post?.content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+            const response = await aiService.generateSuggestion(prompt, articleText.substring(0, 10000));
             setAiSuggestion(response);
         } catch (e) {
             setAiSuggestion(`Error: ${e.message}`);
@@ -555,21 +557,7 @@ Format clearly with headers for each fix.`;
                         </div>
 
                         {aiSuggestion && (
-                            <div>
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-xs font-semibold text-emerald-400">AI-Generated Optimization Plan</span>
-                                    <button
-                                        onClick={() => { navigator.clipboard.writeText(aiSuggestion).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-                                        className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
-                                    >
-                                        {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                                        {copied ? 'Copied!' : 'Copy'}
-                                    </button>
-                                </div>
-                                <div className="bg-slate-900/80 rounded-lg p-4 text-xs text-gray-300 whitespace-pre-wrap max-h-96 overflow-y-auto font-mono leading-relaxed">
-                                    {aiSuggestion}
-                                </div>
-                            </div>
+                            <AIOutputSections text={aiSuggestion} className="mt-4" />
                         )}
                     </div>
 

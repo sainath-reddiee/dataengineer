@@ -2,6 +2,7 @@
 import { Search, TrendingUp, AlertCircle, CheckCircle, Clock, FileText, Sparkles, Target, Zap, Link as LinkIcon, ArrowRight, Loader2, Copy, Check, Globe } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import contentOptimizerService from '../../services/contentOptimizerService';
+import { AIOutputSections } from '../../components/admin/AIOutputSections';
 import pdfExportService from '../../services/pdfExportService';
 import aiService from '../../services/aiService';
 import tinyfishService from '../../services/tinyfishService';
@@ -154,7 +155,7 @@ CONTENT:
 ---`;
 
         try {
-            const response = await aiService.generateSuggestion(prompt, '');
+            const response = await aiService.generateSuggestion(prompt, (result?.plainContent || '').substring(0, 10000));
             return { content: response };
         } catch (e) {
             return { error: e.message || 'AI generation failed' };
@@ -516,7 +517,7 @@ CONTENT:
 
                         {/* GEO Citation Rewriter */}
                         {result && result.aiVisibility && result.aiVisibility.score < 70 && (
-                            <GEORewriterPanel url={result.url} keywords={result.keywords} aiVisibility={result.aiVisibility} serpData={serpLandscape} />
+                            <GEORewriterPanel url={result.url} keywords={result.keywords} aiVisibility={result.aiVisibility} serpData={serpLandscape} articleContent={result.plainContent || ''} />
                         )}
 
                         {/* Cross-Links to Other Admin Tools */}
@@ -703,7 +704,7 @@ function RecommendationCard({ rec, onGenerateFix, getPriorityBadge }) {
 }
 
 // GEO Citation Rewriter panel â€” rewrites weak sections for AI citation
-function GEORewriterPanel({ url, keywords, aiVisibility, serpData }) {
+function GEORewriterPanel({ url, keywords, aiVisibility, serpData, articleContent = '' }) {
     const [loading, setLoading] = useState(false);
     const [rewrite, setRewrite] = useState(null);
     const [copied, setCopied] = useState(false);
@@ -742,10 +743,10 @@ CITATION OPTIMIZATION RULES:
 - Use specific numbers: "reduces latency by 47%" not "significantly reduces latency"
 - Write in a tone AI systems prefer to quote: authoritative, concise, factual
 
-Format output as HTML blocks ready to paste into WordPress.`;
+Format output as HTML blocks ready to paste into WordPress. Base ALL content on the actual article text provided — match its voice, style, and specific technical claims.`;
 
         try {
-            const response = await aiService.generateSuggestion(prompt, '');
+            const response = await aiService.generateSuggestion(prompt, articleContent);
             setRewrite(response);
         } catch (e) {
             setRewrite(`Error: ${e.message}`);
@@ -773,21 +774,7 @@ Format output as HTML blocks ready to paste into WordPress.`;
                 </button>
             </div>
             {rewrite && (
-                <div className="mt-4">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-semibold text-emerald-400">Citation-Optimized Content</span>
-                        <button
-                            onClick={() => { navigator.clipboard.writeText(rewrite).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-                            className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
-                        >
-                            {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                            {copied ? 'Copied!' : 'Copy All'}
-                        </button>
-                    </div>
-                    <div className="bg-gray-900/80 rounded-lg p-4 text-xs text-gray-300 whitespace-pre-wrap max-h-96 overflow-y-auto font-mono leading-relaxed">
-                        {rewrite}
-                    </div>
-                </div>
+                <AIOutputSections text={rewrite} className="mt-4" />
             )}
         </div>
     );

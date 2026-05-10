@@ -546,6 +546,7 @@ class ContentOptimizerService {
         const competitorSuggestions = this.generateCompetitorSuggestions(keywords, url);
         analysis.competitorSuggestions = competitorSuggestions;
         analysis.keywords = keywords;
+        analysis.plainContent = plainContent.substring(0, 12000); // Store for AI fix context
 
         return analysis;
     }

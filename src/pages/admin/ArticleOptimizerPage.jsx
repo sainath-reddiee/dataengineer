@@ -292,7 +292,8 @@ FIX 2: [Issue category]
 ---`;
 
         try {
-            const result = await aiService.generateSuggestion(prompt, '');
+            const articleText = (post?.content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+            const result = await aiService.generateSuggestion(prompt, articleText.substring(0, 10000));
             setFixes(result);
             setFixesExpanded(true);
         } catch (e) {

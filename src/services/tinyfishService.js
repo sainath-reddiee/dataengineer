@@ -16,6 +16,25 @@ const SEARCH_TIMEOUT_MS = 20000;
 const FETCH_TIMEOUT_MS = 30000;
 const AGENT_TIMEOUT_MS = 60000; // Agent runs can be slow (real browser)
 
+// Rate limiting — TinyFish free tier: 30 requests/minute for Search, fewer for Agent/Fetch.
+// Space requests to avoid 429s.
+const RATE_LIMIT_MS = {
+    search: 2200,   // ~27 req/min (under the 30/min limit)
+    fetch: 3000,    // conservative for paid endpoints
+    agent: 5000,    // agents are heavy — space them out
+};
+let lastRequestTime = { search: 0, fetch: 0, agent: 0 };
+
+async function rateLimitWait(type) {
+    const now = Date.now();
+    const minGap = RATE_LIMIT_MS[type] || 2000;
+    const elapsed = now - (lastRequestTime[type] || 0);
+    if (elapsed < minGap) {
+        await new Promise(r => setTimeout(r, minGap - elapsed));
+    }
+    lastRequestTime[type] = Date.now();
+}
+
 /**
  * Run a fetch with timeout + single 429 retry honoring Retry-After header.
  */
@@ -77,6 +96,7 @@ class TinyFishService {
      */
     async runAgent(url, goal, outputSchema = null) {
         if (!this.isEnabled) throw new Error('TinyFish API key not configured');
+        await rateLimitWait('agent');
 
         // Note: output_schema requires account-level feature access.
         // We omit it and parse JSON from the agent's text response instead.
@@ -128,6 +148,7 @@ class TinyFishService {
      */
     async fetchContent(urls, { format = 'markdown', links = false, image_links = false } = {}) {
         if (!this.isEnabled) throw new Error('TinyFish API key not configured');
+        await rateLimitWait('fetch');
 
         const response = await timedFetch(FETCH_URL, {
             method: 'POST',
@@ -173,6 +194,7 @@ class TinyFishService {
      */
     async search(query, { location = 'US', language = 'en', page = 0 } = {}) {
         if (!this.isEnabled) throw new Error('TinyFish API key not configured');
+        await rateLimitWait('search');
 
         const params = new URLSearchParams({ query, location, language, page });
         const response = await timedFetch(`${SEARCH_URL}?${params}`, {

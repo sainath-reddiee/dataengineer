@@ -18,6 +18,7 @@ import { SerpCoveragePanel } from '@/components/admin/SerpCoveragePanel';
 import { EngagementPanel } from '@/components/admin/EngagementPanel';
 import { fetchBlogArticleHTML } from '@/utils/fetchBlogArticleHTML';
 import aiService from '@/services/aiService';
+import { AIOutputSections } from '@/components/admin/AIOutputSections';
 
 const tabs = [
     { id: 'pseo', label: 'PSEO', icon: Bot, desc: 'Programmatic SEO', color: 'purple' },
@@ -39,10 +40,10 @@ export function AISuitePage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [results, setResults] = useState(null);
+    const [articleContent, setArticleContent] = useState('');
     const [activeTab, setActiveTab] = useState('pseo');
     const [aiFixLoading, setAiFixLoading] = useState(false);
     const [aiFix, setAiFix] = useState(null);
-    const [copied, setCopied] = useState(false);
 
     // Persist analysis results across navigation within the same session.
     // Only restore if it's <30 min old AND for the same URL the user is now on.
@@ -121,6 +122,8 @@ export function AISuitePage() {
 
             // Extract body content + head JSON-LD so analyzers can find schema
             const bodyHTML = doc.body?.innerHTML || '';
+            const bodyText = (doc.body?.textContent || '').replace(/\s+/g, ' ').trim();
+            setArticleContent(bodyText);
             const headScripts = Array.from(doc.querySelectorAll('script[type="application/ld+json"]'))
                 .map(s => s.textContent).join(' ');
             const wordCount = (doc.body?.textContent || '').split(/\s+/).filter(Boolean).length;
@@ -268,9 +271,9 @@ export function AISuitePage() {
                                         const failedChecks = (getActiveReport()?.checks || []).filter(c => !c.passed);
                                         const issueList = failedChecks.map(c => `- [${c.category}] ${c.message}${c.recommendation ? ` â†’ Fix: ${c.recommendation}` : ''}`).join('\n');
                                         const tabName = tabs.find(t => t.id === activeTab)?.label || activeTab;
-                                        const prompt = `You are a ${tabName} optimization expert. An article has been analyzed and these issues were found:\n\nARTICLE: ${results?.url || url}\n\nISSUES:\n${issueList}\n\nFor EACH issue, generate a READY-TO-PASTE fix. Format as:\n\n## [Issue Category]: [Issue Name]\n**Problem:** [what's wrong]\n**Fix (paste this into your article):**\n[actual HTML/content to add]\n\n---\n\nBe specific, actionable, and provide real content â€” not placeholders.`;
+                                        const prompt = `You are a ${tabName} optimization expert. An article has been analyzed and these issues were found:\n\nARTICLE: ${results?.url || url}\n\nISSUES:\n${issueList}\n\nFor EACH issue, generate a READY-TO-PASTE fix. Format as:\n\n## [Issue Category]: [Issue Name]\n**Problem:** [what's wrong]\n**Fix (paste this into your article):**\n[actual HTML/content to add]\n\n---\n\nBe specific, actionable, and provide real content â€” not placeholders. Every fix must reference specific topics, tools, or claims from the article content provided.`;
                                         try {
-                                            const response = await aiService.generateSuggestion(prompt, '');
+                                            const response = await aiService.generateSuggestion(prompt, articleContent.substring(0, 10000));
                                             setAiFix(response);
                                         } catch (e) {
                                             setAiFix(`Error: ${e.message}`);
@@ -285,21 +288,7 @@ export function AISuitePage() {
                                 </button>
 
                                 {aiFix && (
-                                    <div className="mt-4 bg-slate-900/80 rounded-xl border border-slate-700/50 p-4">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <span className="text-xs font-semibold text-emerald-400">AI-Generated Fixes</span>
-                                            <button
-                                                onClick={() => { navigator.clipboard.writeText(aiFix).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-                                                className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
-                                            >
-                                                {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                                                {copied ? 'Copied!' : 'Copy All'}
-                                            </button>
-                                        </div>
-                                        <div className="text-xs text-gray-300 whitespace-pre-wrap max-h-96 overflow-y-auto font-mono leading-relaxed">
-                                            {aiFix}
-                                        </div>
-                                    </div>
+                                    <AIOutputSections text={aiFix} className="mt-4" />
                                 )}
                             </div>
                         </div>

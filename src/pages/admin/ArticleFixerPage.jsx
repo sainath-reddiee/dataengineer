@@ -13,6 +13,7 @@ import gscService from '@/services/gscService';
 import aiService from '@/services/aiService';
 import tinyfishService from '@/services/tinyfishService';
 import { useMountedRef } from '@/hooks/useMountedRef';
+import { AIOutputSections } from '@/components/admin/AIOutputSections';
 
 // Expected CTR by position (Google averages)
 function getExpectedCTR(pos) {
@@ -83,7 +84,6 @@ export function ArticleFixerPage() {
     const [sortMode, setSortMode] = useState('ctr-gap');
     const [batchFixing, setBatchFixing] = useState(false);
     const [batchResult, setBatchResult] = useState('');
-    const [batchCopied, setBatchCopied] = useState(false);
     const mounted = useMountedRef();
 
     useEffect(() => { loadData(); }, []);
@@ -250,19 +250,20 @@ export function ArticleFixerPage() {
                 }
 
                 const failedStr = (article.analysis?.failedList || []).join(', ');
+                const articleText = (article.content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
                 const prompt = `Fix this article for "${article.focusKeyword}" (score: ${article.score}/100, position: #${article.position?.toFixed(1) || '?'}, CTR: ${(article.ctr * 100).toFixed(1)}%).
 Title: "${article.title}"
 Failed: ${failedStr || 'none'}
 ${competitorContext}
-Generate CONCISELY:
+Generate CONCISELY (match the article's existing voice and technical style):
 1. TITLE (50-60 chars, keyphrase front): 1 best option
 2. META (120-155 chars): 1 best option
-3. FIRST PARAGRAPH (2 sentences with keyphrase)
+3. FIRST PARAGRAPH (2 sentences with keyphrase, grounded in the actual article topic)
 4. Add "Updated May 2026" freshness notice
 
-Be specific. Include "${article.focusKeyword}" naturally.`;
+Be specific. Include "${article.focusKeyword}" naturally. Base ALL suggestions on the article content below.`;
 
-                const response = await aiService.generateSuggestion(prompt, '');
+                const response = await aiService.generateSuggestion(prompt, articleText.substring(0, 8000));
                 combined += `\n${'â•'.repeat(60)}\nðŸ“ ${article.title}\n   URL: /articles/${article.slug}\n   Score: ${article.score}/100 | Position: #${article.position?.toFixed(1) || '?'} | Missed clicks: ${article.missedClicks}\n${'â”€'.repeat(60)}\n${response}\n`;
             } catch (e) {
                 combined += `\n${'â•'.repeat(60)}\nðŸ“ ${article.title}\n   ERROR: ${e.message}\n`;
@@ -364,17 +365,8 @@ Be specific. Include "${article.focusKeyword}" naturally.`;
                                 <span className="text-sm font-bold text-orange-300 flex items-center gap-2">
                                     <Sparkles className="w-4 h-4" /> Batch Fixes (Top 5 Priority Articles)
                                 </span>
-                                <button
-                                    onClick={() => { navigator.clipboard.writeText(batchResult).catch(() => {}); setBatchCopied(true); setTimeout(() => setBatchCopied(false), 2000); }}
-                                    className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
-                                >
-                                    {batchCopied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                                    {batchCopied ? 'Copied!' : 'Copy All Fixes'}
-                                </button>
                             </div>
-                            <div className="bg-slate-900/80 rounded-lg p-4 text-xs text-gray-300 whitespace-pre-wrap max-h-[500px] overflow-y-auto font-mono leading-relaxed">
-                                {batchResult}
-                            </div>
+                            <AIOutputSections text={batchResult} />
                         </div>
                     )}
 
@@ -402,7 +394,6 @@ Be specific. Include "${article.focusKeyword}" naturally.`;
 function ArticleRow({ article, expanded, onToggle }) {
     const [fixing, setFixing] = useState(false);
     const [fix, setFix] = useState(null);
-    const [copied, setCopied] = useState(false);
 
     const scoreColor = article.score >= 70 ? 'text-emerald-400' : article.score >= 40 ? 'text-amber-400' : 'text-red-400';
     const scoreBg = article.score >= 70 ? 'bg-emerald-500/20' : article.score >= 40 ? 'bg-amber-500/20' : 'bg-red-500/20';
@@ -455,22 +446,17 @@ GENERATE THESE FIXES (ready to copy-paste into WordPress):
 
 6. **FRESHNESS UPDATE** (Write a "Last Updated: May 2026" paragraph + suggest 1-2 new sections to add for freshness):
 
-Format clearly with headers. Be specific, not generic. Every suggestion must contain "${article.focusKeyword}" naturally.`;
+Format clearly with headers. Be specific, not generic. Every suggestion must contain "${article.focusKeyword}" naturally.
+Base your fixes on the ACTUAL article content provided below — match its tone, technical depth, and style.`;
 
-            const response = await aiService.generateSuggestion(prompt, '');
+            // Pass actual article content as context so AI doesn't hallucinate
+            const articleText = (article.content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+            const response = await aiService.generateSuggestion(prompt, articleText);
             setFix(response);
         } catch (e) {
             setFix(`Error: ${e.message}`);
         }
         setFixing(false);
-    };
-
-    const handleCopy = () => {
-        if (fix) {
-            navigator.clipboard.writeText(fix).catch(() => {});
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        }
     };
 
     return (
@@ -564,18 +550,7 @@ Format clearly with headers. Be specific, not generic. Every suggestion must con
 
                     {/* Fix output */}
                     {fix && (
-                        <div className="relative">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-xs font-semibold text-emerald-400">AI-Generated Fixes</span>
-                                <button onClick={handleCopy} className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
-                                    {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                                    {copied ? 'Copied!' : 'Copy All'}
-                                </button>
-                            </div>
-                            <div className="bg-slate-900/80 rounded-lg p-4 text-xs text-gray-300 whitespace-pre-wrap max-h-80 overflow-y-auto font-mono leading-relaxed">
-                                {fix}
-                            </div>
-                        </div>
+                        <AIOutputSections text={fix} className="mt-3" />
                     )}
                 </div>
             )}

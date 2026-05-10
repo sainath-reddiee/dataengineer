@@ -272,7 +272,17 @@ Output the outline and NOTHING else. Be specific â€” no generic placeholder
 
             // Include research context in every section for grounding
             const researchContext = researchResults.length > 0
-                ? `\n\nGROUNDING DATA (real competitor articles from Google â€” use these facts, don't hallucinate):\n${researchResults.slice(0, 4).map((r, i) => `${i + 1}. "${r.title}" â€” ${r.snippet || ''}`).join('\n')}\n`
+                ? `\n\nGROUNDING DATA (real competitor articles from Google — use these facts, don't hallucinate):\n${researchResults.slice(0, 4).map((r, i) => `${i + 1}. "${r.title}" — ${r.snippet || ''}`).join('\n')}\n`
+                : '';
+
+            // Cross-section context: feed previously written sections so AI maintains narrative continuity
+            const previousSections = Object.entries(writtenSections)
+                .filter(([i]) => parseInt(i) < index)
+                .sort(([a], [b]) => parseInt(a) - parseInt(b))
+                .map(([i, text]) => `[Section ${parseInt(i) + 1}: ${sections[parseInt(i)]}]\n${text.substring(0, 800)}`)
+                .join('\n\n');
+            const continuityContext = previousSections
+                ? `\n\nPREVIOUSLY WRITTEN SECTIONS (maintain continuity, don't repeat, build on these):\n${previousSections}\n`
                 : '';
 
             let sectionPrompt = '';
@@ -285,29 +295,30 @@ OUTLINE CONTEXT:
 ${outline.substring(0, 2000)}
 
 Write the OPENING of this article:
-1. A compelling first-person hook paragraph (specific incident/situation â€” NOT "As a data engineer...")
+1. A compelling first-person hook paragraph (specific incident/situation — NOT "As a data engineer...")
 2. A second paragraph explaining what this article covers and why it's different
-3. The TL;DR section with 5 bullet points (use â†’ prefix)
+3. The TL;DR section with 5 bullet points (use → prefix)
 
-Format in markdown. 300-400 words total.`;
+Format in markdown. 300-500 words total.`;
             } else if (isFAQ) {
                 sectionPrompt = `${STYLE_PROMPT}
 
-TOPIC: "${topic}"${researchContext}
+TOPIC: "${topic}"${researchContext}${continuityContext}
 OUTLINE:
 ${outline.substring(0, 3000)}
 
 Write the FAQ section. Generate 5-6 Q&A pairs following these rules:
 - Questions in natural language (how a user would ask Google/Alexa)
 - First sentence of each answer is a DIRECT standalone response (works for voice search)
-- Then 2-3 sentences of elaboration
+- Then 2-3 sentences of elaboration with specific technical detail
 - Include the focus keyword naturally in at least 3 answers
+- Reference specific versions, commands, or configs mentioned earlier in the article
 
 Format:
 ## Frequently Asked Questions
 
 Q: [question]
-A: [direct answer. Elaboration.]
+A: [direct answer. Elaboration with specifics.]
 
 (repeat 5-6 times)`;
             } else if (isMeta) {
@@ -320,7 +331,7 @@ ${outline.substring(0, 2000)}
 Generate the WordPress metadata section:
 
 WORDPRESS METADATA
-Yoast Title: [title | Data Engineer Hub] (under 60 chars before suffix)
+Yoast Title: [title] (under 60 chars, no brand suffix)
 Meta Description: [120-155 chars, action verb, includes keyphrase]
 Slug: [url-slug]
 Focus Keyword: [primary keyphrase]
@@ -330,7 +341,7 @@ Featured Image Prompt: [Hand-drawn watercolor. No text. Horizontal.]`;
                 sectionPrompt = `${STYLE_PROMPT}
 
 TOPIC: "${topic}"
-SECTION TO WRITE: "${sectionName}"${researchContext}
+SECTION TO WRITE: "${sectionName}"${researchContext}${continuityContext}
 OUTLINE CONTEXT:
 ${outline.substring(0, 2000)}
 
@@ -338,22 +349,27 @@ ${sectionName.includes('Comparison') ? `Write this section with a comparison TAB
 ## ${sectionName}
 
 Feature | [Option A] | [Option B]
-[8 rows with specific, concrete values â€” not vague]
+[8 rows with specific, concrete values — not vague]
 
-Then 1-2 paragraphs of analysis after the table.` :
+Then 2-3 paragraphs of opinionated analysis after the table. Pick a winner. Explain why.
+Total: 400-600 words.` :
 sectionName.includes("What I'd Do Differently") ? `Write this section:
 ## ${sectionName}
 
-2-3 paragraphs of honest, first-person reflection. What you'd change knowing what you know now. Specific recommendations for someone starting fresh in 2026. No hedging.` :
+3-4 paragraphs of honest, first-person reflection. What you'd change knowing what you know now. Specific recommendations for someone starting fresh in 2026. Name exact tools, versions, configurations. No hedging.
+Total: 300-500 words.` :
 `Write this section:
 ## ${sectionName}
 
-Write 200-400 words. Include:
-- 2-3 paragraphs (short, punchy, specific)
-- Code example if relevant (real syntax, with comments)
-- Use ### subsections if the section is complex
+Write 300-600 words. Include:
+- 3-4 paragraphs (short, punchy, specific — real production examples)
+- Code example if the topic is technical (real syntax, with comments explaining WHY not just WHAT)
+- Use ### subsections if the section covers multiple sub-topics
 - Bold key terms on first mention
-- End with a transition to the next topic`}
+- Where you'd link to related content, write: [INTERNAL LINK: suggested topic] so I can add real links later
+- End with a natural transition to the next section (don't use "In the next section...")`}
+
+CRITICAL: Do NOT include generic filler paragraphs. Every sentence must teach something specific. If you can't be specific, skip it.
 
 Output ONLY this section's content in markdown. No preamble.`;
             }
@@ -615,6 +631,14 @@ Output ONLY this section's content in markdown. No preamble.`;
 // â”€â”€â”€ Section Card Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function SectionCard({ index, title, content, isWriting, onWrite, onRegenerate }) {
     const [expanded, setExpanded] = useState(false);
+    const [sectionCopied, setSectionCopied] = useState(false);
+
+    const handleCopySection = (e) => {
+        e.stopPropagation();
+        navigator.clipboard.writeText(content).catch(() => {});
+        setSectionCopied(true);
+        setTimeout(() => setSectionCopied(false), 2000);
+    };
 
     return (
         <div className={`border rounded-xl overflow-hidden transition-all ${
@@ -638,6 +662,10 @@ function SectionCard({ index, title, content, isWriting, onWrite, onRegenerate }
                     )}
                     {content && (
                         <>
+                            <button onClick={handleCopySection} className="px-2 py-1 text-[10px] bg-blue-600/20 hover:bg-blue-600/40 text-blue-300 rounded border border-blue-500/30 flex items-center gap-1">
+                                {sectionCopied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                                {sectionCopied ? 'Copied' : 'Copy'}
+                            </button>
                             <button onClick={(e) => { e.stopPropagation(); onRegenerate(); }} className="px-2 py-1 text-[10px] bg-slate-700 hover:bg-slate-600 text-gray-400 rounded">
                                 <RefreshCw className="w-3 h-3" />
                             </button>

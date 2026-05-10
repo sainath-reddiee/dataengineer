@@ -42,6 +42,42 @@
             "headers": [
                 { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
             ]
+        },
+        {
+            "source": "/glossary/:path*",
+            "headers": [
+                { "key": "X-Robots-Tag", "value": "noindex, follow" }
+            ]
+        },
+        {
+            "source": "/compare/:path*",
+            "headers": [
+                { "key": "X-Robots-Tag", "value": "noindex, follow" }
+            ]
+        },
+        {
+            "source": "/tools/:path*",
+            "headers": [
+                { "key": "X-Robots-Tag", "value": "noindex, follow" }
+            ]
+        },
+        {
+            "source": "/cheatsheets/:path*",
+            "headers": [
+                { "key": "X-Robots-Tag", "value": "noindex, follow" }
+            ]
+        },
+        {
+            "source": "/practice/:path*",
+            "headers": [
+                { "key": "X-Robots-Tag", "value": "noindex, follow" }
+            ]
+        },
+        {
+            "source": "/interview-prep/:path*",
+            "headers": [
+                { "key": "X-Robots-Tag", "value": "noindex, follow" }
+            ]
         }
     ],
     "rewrites": [

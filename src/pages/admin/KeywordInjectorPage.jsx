@@ -195,10 +195,11 @@ CONTENT:
 [The actual content to paste]
 ---
 
-Keep it concise (150-300 words max for paragraphs, shorter for titles/FAQs).`;
+Keep it concise (150-300 words max for paragraphs, shorter for titles/FAQs). Base your suggestions on the actual article content provided — match its tone and technical depth.`;
 
         try {
-            const result = await aiService.generateSuggestion(prompt, '');
+            const articleText = (opp.article.content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+            const result = await aiService.generateSuggestion(prompt, articleText.substring(0, 8000));
             return result;
         } catch (e) {
             return `Error generating patch: ${e.message}`;
