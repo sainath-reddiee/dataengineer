@@ -15,6 +15,15 @@ import wordpressApi from '@/services/wordpressApi';
 import aiService from '@/services/aiService';
 import contentOptimizerService from '@/services/contentOptimizerService';
 import { scoreCtr } from '@/utils/ctrScorer';
+import { buildLinkGraph } from '@/utils/linkAnalysis';
+import { LinkHealthPanel } from '@/components/admin/LinkHealthPanel';
+import { runDoctorDiagnosis } from '@/utils/articleDoctor';
+import { recordPosition } from '@/utils/positionHistory';
+import { findBacklinks } from '@/services/backlinkService';
+import tinyfishService from '@/services/tinyfishService';
+import { DoctorVerdict } from '@/components/admin/DoctorVerdict';
+import { BacklinkIntelligencePanel } from '@/components/admin/BacklinkIntelligencePanel';
+import { CompetitorGapCard } from '@/components/admin/CompetitorGapCard';
 
 function getScoreColor(score) {
     if (score >= 70) return 'text-emerald-400';
@@ -77,6 +86,13 @@ export function ArticleOptimizerPage() {
     const [ctrResult, setCtrResult] = useState(null);
     const [gscKeywords, setGscKeywords] = useState([]);
     const [contentResult, setContentResult] = useState(null);
+    const [gscPageData, setGscPageData] = useState(null); // { position, ctr, impressions, clicks }
+
+    // Doctor diagnostics
+    const [backlinkData, setBacklinkData] = useState(null);
+    const [backlinkLoading, setBacklinkLoading] = useState(false);
+    const [competitorGap, setCompetitorGap] = useState(null);
+    const [competitorLoading, setCompetitorLoading] = useState(false);
 
     // AI fixes
     const [fixesLoading, setFixesLoading] = useState(false);
@@ -120,6 +136,9 @@ export function ArticleOptimizerPage() {
         setCtrResult(null);
         setGscKeywords([]);
         setContentResult(null);
+        setGscPageData(null);
+        setBacklinkData(null);
+        setCompetitorGap(null);
         setFixes(null);
 
         const post = posts.find(p => p.slug === slug);
@@ -138,18 +157,40 @@ export function ArticleOptimizerPage() {
                 contentOptimizerService.analyzeURL(articleUrl).catch(e => ({ success: false, error: e.message })),
             ];
 
-            // GSC keywords (only if connected)
+            // GSC keywords + page metrics (only if connected)
             if (gscService.isConnected()) {
                 promises.push(
                     gscService.queryTopKeywords({ url: articleUrl, rowLimit: 50 }).catch(() => [])
                 );
+                promises.push(
+                    gscService.queryTopPages({ rowLimit: 200 }).catch(() => [])
+                );
             } else {
+                promises.push(Promise.resolve([]));
                 promises.push(Promise.resolve([]));
             }
 
-            const [contentAnalysis, keywords] = await Promise.all(promises);
+            const [contentAnalysis, keywords, pages] = await Promise.all(promises);
 
             setGscKeywords(keywords);
+
+            // Find this article in queryTopPages results
+            if (Array.isArray(pages)) {
+                const match = pages.find(p => {
+                    const pageUrl = p.page || p.url || '';
+                    // Match exact slug as a path segment to avoid false positives
+                    // (e.g. slug "etl" matching "etl-vs-elt")
+                    return pageUrl.endsWith(`/${slug}`) || pageUrl.endsWith(`/${slug}/`);
+                });
+                if (match) {
+                    setGscPageData({
+                        position: match.position,
+                        ctr: match.ctr,
+                        impressions: match.impressions,
+                        clicks: match.clicks,
+                    });
+                }
+            }
 
             // Content result
             if (contentAnalysis.success) {
@@ -199,6 +240,105 @@ export function ArticleOptimizerPage() {
 
         return { ctrScore, aiVisScore, kwCoverage, depthScore, overall };
     }, [ctrResult, contentResult, gscKeywords, posts, selectedSlug]);
+
+    // Build link graph once for the whole post set
+    const linkGraph = useMemo(() => {
+        if (!posts || posts.length === 0) return null;
+        return buildLinkGraph(posts);
+    }, [posts]);
+
+    const selectedPost = useMemo(() => posts.find(p => p.slug === selectedSlug), [posts, selectedSlug]);
+
+    // Article Doctor verdict — combines all signals into one diagnosis
+    const verdict = useMemo(() => {
+        if (!selectedPost || !dimensions) return null;
+        return runDoctorDiagnosis(selectedPost, {
+            linkGraph,
+            position: gscPageData?.position,
+            ctr: gscPageData?.ctr,
+            impressions: gscPageData?.impressions,
+            clicks: gscPageData?.clicks,
+            gscKeywords,
+            contentScore: dimensions.depthScore,
+            aiVisScore: dimensions.aiVisScore,
+            ctrScore: dimensions.ctrScore,
+            cannibalization: null, // Cannibalization detection deferred to dedicated page
+            competitorGap: competitorGap || null,
+            backlinkData,
+        });
+    }, [selectedPost, dimensions, linkGraph, gscPageData, gscKeywords, competitorGap, backlinkData]);
+
+    // Persist position to history once per analysis (side effect kept out of useMemo)
+    useEffect(() => {
+        if (selectedPost?.slug && Number.isFinite(gscPageData?.position) && gscPageData.position > 0) {
+            recordPosition(selectedPost.slug, gscPageData.position);
+        }
+    }, [selectedPost?.slug, gscPageData?.position]);
+
+    async function discoverBacklinks(forceRefresh = false) {
+        if (!selectedPost) return;
+        setBacklinkLoading(true);
+        try {
+            const data = await findBacklinks(selectedPost.slug, selectedPost.title, { forceRefresh });
+            setBacklinkData(data);
+        } catch (e) {
+            setBacklinkData({ error: e.message, available: false, linkedMentions: [], unlinkedMentions: [], referringDomains: [] });
+        }
+        setBacklinkLoading(false);
+    }
+
+    async function analyzeCompetitor() {
+        if (!selectedPost) return;
+        const topKeyword = gscKeywords?.[0]?.query;
+        if (!topKeyword) {
+            setCompetitorGap({ error: 'No GSC keyword available — connect GSC to find competitor.' });
+            return;
+        }
+        setCompetitorLoading(true);
+        try {
+            // Find #1 competitor for top keyword
+            const competitors = await tinyfishService.findCompetitorArticles(topKeyword);
+            if (!competitors || competitors.length === 0) {
+                setCompetitorGap({ error: 'No competitors found for this keyword.' });
+                setCompetitorLoading(false);
+                return;
+            }
+            const topCompetitor = competitors[0];
+            // Analyze competitor structure
+            const compStructure = await tinyfishService.analyzeCompetitor(topCompetitor.url);
+
+            // Compute your own structure from selected post
+            const yourHtml = selectedPost.content || '';
+            const yourWordCount = (yourHtml.replace(/<[^>]+>/g, ' ').match(/\S+/g) || []).length;
+            // Count H2 + H3 to match TinyFish's heading extraction (apples-to-apples)
+            const yourHeadings = (yourHtml.match(/<h[23][^>]*>/gi) || []).length;
+            const yourImages = (yourHtml.match(/<img[^>]*>/gi) || []).length;
+            const yourLinks = (yourHtml.match(/<a[^>]*href=["']https?:\/\/(?!dataengineerhub\.blog)/gi) || []).length;
+            const yourFaqs = (yourHtml.match(/<h[23][^>]*>[^<]*\?[^<]*<\/h[23]>/gi) || []).length;
+
+            setCompetitorGap({
+                competitorUrl: topCompetitor.url,
+                competitorDomain: topCompetitor.domain,
+                competitorWordCount: compStructure.wordCount || 0,
+                // Count H2+H3 from competitor (matches our local count above)
+                competitorHeadings: compStructure.headings?.length || 0,
+                competitorImages: compStructure.images?.length || 0,
+                competitorFaqs: compStructure.faqs?.length || 0,
+                competitorLinks: (compStructure.externalLinks || 0),
+                competitorSchema: compStructure.schemaTypes || [],
+                yourWordCount,
+                yourHeadings,
+                yourImages,
+                yourFaqs,
+                yourLinks,
+                yourSchema: [], // We don't compute our own schema here yet
+                wordCountGap: Math.max(0, (compStructure.wordCount || 0) - yourWordCount),
+            });
+        } catch (e) {
+            setCompetitorGap({ error: e.message || 'Competitor analysis failed.' });
+        }
+        setCompetitorLoading(false);
+    }
 
     // Build prioritized action list
     const actions = useMemo(() => {
@@ -378,6 +518,9 @@ FIX 2: [Issue category]
             {/* Results */}
             {!loading && dimensions && (
                 <div className="space-y-6">
+                    {/* Article Doctor Verdict — hero card */}
+                    {verdict && <DoctorVerdict verdict={verdict} />}
+
                     {/* Overall health score */}
                     <div className={`rounded-2xl p-6 border ${getScoreBg(dimensions.overall)}`}>
                         <div className="flex items-center justify-between">
@@ -463,6 +606,32 @@ FIX 2: [Issue category]
                                 ))}
                             </div>
                         </div>
+                    )}
+
+                    {/* Link Health Panel */}
+                    {selectedPost && linkGraph && (
+                        <LinkHealthPanel article={selectedPost} linkGraph={linkGraph} />
+                    )}
+
+                    {/* Backlink Intelligence */}
+                    {selectedPost && (
+                        <BacklinkIntelligencePanel
+                            slug={selectedPost.slug}
+                            title={selectedPost.title}
+                            backlinkData={backlinkData}
+                            loading={backlinkLoading}
+                            onDiscover={discoverBacklinks}
+                        />
+                    )}
+
+                    {/* Competitor Gap */}
+                    {selectedPost && (
+                        <CompetitorGapCard
+                            gap={competitorGap}
+                            keyword={gscKeywords?.[0]?.query}
+                            loading={competitorLoading}
+                            onAnalyze={analyzeCompetitor}
+                        />
                     )}
 
                     {/* Generate All Fixes */}

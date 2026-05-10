@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { AdminAuth, useAdminAuth } from './AdminAuth';
 import aiService from '@/services/aiService';
+import { groqService } from '@/services/groqService';
 import gscService from '@/services/gscService';
 import tinyfishService from '@/services/tinyfishService';
 
@@ -68,6 +69,18 @@ function NavContent({ onNavigate }) {
     const [gscConnected, setGscConnected] = useState(gscService.isConnected());
     const [tfKey, setTfKey] = useState(tinyfishService.isEnabled ? '••••••••' : '');
     const [tfSet, setTfSet] = useState(tinyfishService.isEnabled);
+    const [cooldown, setCooldown] = useState(groqService.getCooldownSeconds());
+
+    // Update cooldown timer every second when active
+    useEffect(() => {
+        if (cooldown <= 0) return;
+        const interval = setInterval(() => {
+            const remaining = groqService.getCooldownSeconds();
+            setCooldown(remaining);
+            if (remaining <= 0) clearInterval(interval);
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [cooldown]);
 
     useEffect(() => {
         const handled = gscService.handleOAuthCallback();
@@ -210,6 +223,13 @@ function NavContent({ onNavigate }) {
                             Set
                         </button>
                     </div>
+                    {/* Rate limit cooldown indicator */}
+                    {cooldown > 0 && (
+                        <div className="mt-2 flex items-center gap-2 px-2 py-1.5 bg-amber-900/30 border border-amber-600/30 rounded-lg">
+                            <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                            <span className="text-[10px] text-amber-300">Groq cooldown: {cooldown}s</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* TinyFish Web Search */}
@@ -245,8 +265,8 @@ function NavContent({ onNavigate }) {
                     <LogOut className="w-5 h-5" />
                     <span>Logout</span>
                 </button>
-            </div>
-        </div>
+                    </div>
+                </div>
     );
 }
 

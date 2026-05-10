@@ -9,6 +9,8 @@ import {
     Zap, BarChart3,
 } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
+import { buildLinkGraph } from '@/utils/linkAnalysis';
+import { LinkHealthPanel } from '@/components/admin/LinkHealthPanel';
 import gscService from '@/services/gscService';
 import aiService from '@/services/aiService';
 import tinyfishService from '@/services/tinyfishService';
@@ -190,6 +192,12 @@ export function ArticleFixerPage() {
         setLoading(false);
         setProgress('');
     }
+
+    // Build link graph from articles for link health analysis
+    const linkGraph = useMemo(() => {
+        if (!articles || articles.length === 0) return null;
+        return buildLinkGraph(articles);
+    }, [articles]);
 
     // Sort articles based on selected mode
     const sortedArticles = useMemo(() => {
@@ -376,6 +384,7 @@ Be specific. Include "${article.focusKeyword}" naturally. Base ALL suggestions o
                             <ArticleRow
                                 key={article.slug}
                                 article={article}
+                                linkGraph={linkGraph}
                                 expanded={expandedSlug === article.slug}
                                 onToggle={() => setExpandedSlug(expandedSlug === article.slug ? null : article.slug)}
                             />
@@ -391,7 +400,7 @@ Be specific. Include "${article.focusKeyword}" naturally. Base ALL suggestions o
     );
 }
 
-function ArticleRow({ article, expanded, onToggle }) {
+function ArticleRow({ article, linkGraph, expanded, onToggle }) {
     const [fixing, setFixing] = useState(false);
     const [fix, setFix] = useState(null);
 
@@ -446,6 +455,15 @@ GENERATE THESE FIXES (ready to copy-paste into WordPress):
 
 6. **FRESHNESS UPDATE** (Write a "Last Updated: May 2026" paragraph + suggest 1-2 new sections to add for freshness):
 
+7. **AUTHORITY LINKS** (3-5 specific outbound links to add for E-E-A-T + GEO citations):
+   Suggest specific URLs from official documentation that match this article's actual topic.
+   Format each as: [Anchor text](URL) — Where to add it: "after the paragraph about X"
+   Use REAL URLs from these authority domains: docs.snowflake.com, docs.getdbt.com, docs.aws.amazon.com, cloud.google.com, learn.microsoft.com, docs.databricks.com, airflow.apache.org, kafka.apache.org, github.com, kubernetes.io, docs.python.org
+
+8. **INTERNAL LINK PATTERNS** (3-5 anchor text + topic patterns to add):
+   Suggest natural internal link spots in the format: "Add a link with anchor text '[X]' pointing to a related article on [topic]"
+   These should appear contextually in the article's body, not as a "Related Articles" list.
+
 Format clearly with headers. Be specific, not generic. Every suggestion must contain "${article.focusKeyword}" naturally.
 Base your fixes on the ACTUAL article content provided below — match its tone, technical depth, and style.`;
 
@@ -478,6 +496,7 @@ Base your fixes on the ACTUAL article content provided below — match its tone,
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
+                    {linkGraph && <LinkHealthPanel article={article} linkGraph={linkGraph} compact />}
                     {article.position >= 5 && article.position <= 20 && (
                         <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 text-[9px] rounded-full border border-amber-500/30">PAGE 2</span>
                     )}
@@ -526,12 +545,15 @@ Base your fixes on the ACTUAL article content provided below — match its tone,
                     {/* GSC keywords */}
                     {article.gscKeywords?.length > 0 && (
                         <div className="text-xs text-gray-500">
-                            Top queries: {article.gscKeywords.slice(0, 5).map(k => k.query).join(' Â· ')}
+                            Top queries: {article.gscKeywords.slice(0, 5).map(k => k.query).join(' · ')}
                         </div>
                     )}
 
+                    {/* Link Health Panel */}
+                    {linkGraph && <LinkHealthPanel article={article} linkGraph={linkGraph} />}
+
                     {/* Actions */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                         <button
                             onClick={handleGenerateFix}
                             disabled={fixing}

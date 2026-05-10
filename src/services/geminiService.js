@@ -5,7 +5,8 @@
  * API key is NOT bundled - admin enters it at runtime via setApiKey().
  */
 
-const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+const API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/';
+const DEFAULT_MODEL = 'gemini-2.0-flash';  // Free tier: 15 RPM, 1M TPM
 
 const SESSION_KEY = 'gemini_api_key';
 const REQUEST_TIMEOUT_MS = 30000;
@@ -76,7 +77,7 @@ class GeminiService {
             const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
             try {
-                const response = await fetch(API_URL, {
+                const response = await fetch(`${API_BASE}${DEFAULT_MODEL}:generateContent`, {
                     method: 'POST',
                     signal: controller.signal,
                     headers: {
