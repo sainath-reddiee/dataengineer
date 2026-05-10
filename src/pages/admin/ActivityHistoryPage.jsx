@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Activity, Trash2, ChevronDown, ChevronRight, Filter,
     Clock, Sparkle, TrendingUp, FileSearch, Search, Zap,
-    Wrench, MousePointerClick, ExternalLink, AlertTriangle,
+    Wrench, MousePointerClick, ExternalLink, Download,
 } from 'lucide-react';
 import activityHistory from '@/services/activityHistory';
 
@@ -143,6 +143,7 @@ export function ActivityHistoryPage() {
     const [filterTool, setFilterTool] = useState('all');
     const [filterSlug, setFilterSlug] = useState('');
     const [showClearConfirm, setShowClearConfirm] = useState(false);
+    const [stats, setStats] = useState({ total: 0, byTool: {} });
 
     useEffect(() => {
         loadEntries();
@@ -153,6 +154,10 @@ export function ActivityHistoryPage() {
         if (filterTool !== 'all') opts.tool = filterTool;
         if (filterSlug.trim()) opts.slug = filterSlug.trim();
         setEntries(activityHistory.getHistory(opts));
+        setStats({
+            total: activityHistory.getCount(),
+            byTool: activityHistory.getStatsByTool(),
+        });
     }
 
     function handleDelete(id) {
@@ -161,12 +166,32 @@ export function ActivityHistoryPage() {
     }
 
     function handleClearAll() {
-        activityHistory.clearHistory();
-        setEntries([]);
+        // If a filter is active, only delete the filtered entries; otherwise clear all
+        const isFiltered = filterTool !== 'all' || filterSlug.trim() !== '';
+        if (isFiltered) {
+            entries.forEach(e => activityHistory.deleteEntry(e.id));
+        } else {
+            activityHistory.clearHistory();
+        }
+        loadEntries();
         setShowClearConfirm(false);
     }
 
+    function handleExport() {
+        const json = activityHistory.exportJSON();
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `admin-activity-history-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
     const tools = activityHistory.getTools();
+    const isFiltered = filterTool !== 'all' || filterSlug.trim() !== '';
 
     return (
         <div className="space-y-6">
@@ -180,6 +205,36 @@ export function ActivityHistoryPage() {
                     Everything you've done across admin tools — review past results, track decisions, pick up where you left off.
                 </p>
             </div>
+
+            {/* Stats summary */}
+            {stats.total > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+                    <button
+                        onClick={() => setFilterTool('all')}
+                        className={`p-3 rounded-xl border transition text-left ${filterTool === 'all' ? 'bg-blue-500/15 border-blue-500/40' : 'bg-slate-800/40 border-slate-700 hover:border-slate-600'}`}
+                    >
+                        <div className="text-xl font-bold text-white">{stats.total}</div>
+                        <div className="text-[10px] text-gray-500 uppercase tracking-wider">Total</div>
+                    </button>
+                    {Object.entries(stats.byTool)
+                        .sort(([, a], [, b]) => b - a)
+                        .slice(0, 5)
+                        .map(([tool, count]) => {
+                            const meta = TOOL_META[tool] || { label: tool, color: 'gray' };
+                            const active = filterTool === tool;
+                            return (
+                                <button
+                                    key={tool}
+                                    onClick={() => setFilterTool(active ? 'all' : tool)}
+                                    className={`p-3 rounded-xl border transition text-left ${active ? COLOR_MAP[meta.color] : 'bg-slate-800/40 border-slate-700 hover:border-slate-600'}`}
+                                >
+                                    <div className="text-xl font-bold text-white">{count}</div>
+                                    <div className="text-[10px] text-gray-500 uppercase tracking-wider truncate">{meta.label}</div>
+                                </button>
+                            );
+                        })}
+                </div>
+            )}
 
             {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
@@ -209,10 +264,21 @@ export function ActivityHistoryPage() {
 
                 <div className="flex items-center gap-2 ml-auto">
                     <span className="text-[11px] text-gray-500">{entries.length} entries</span>
+                    {stats.total > 0 && (
+                        <button
+                            onClick={handleExport}
+                            className="px-2 py-1 text-[10px] text-gray-400 hover:text-blue-400 flex items-center gap-1 transition"
+                            title="Download all history as JSON"
+                        >
+                            <Download className="w-3 h-3" /> Export
+                        </button>
+                    )}
                     {entries.length > 0 && (
                         showClearConfirm ? (
                             <div className="flex items-center gap-2">
-                                <span className="text-[11px] text-red-400">Clear all?</span>
+                                <span className="text-[11px] text-red-400">
+                                    {isFiltered ? `Clear ${entries.length} filtered?` : 'Clear all?'}
+                                </span>
                                 <button onClick={handleClearAll} className="px-2 py-1 text-[10px] bg-red-600/30 hover:bg-red-600/50 text-red-300 rounded border border-red-500/30">Yes</button>
                                 <button onClick={() => setShowClearConfirm(false)} className="px-2 py-1 text-[10px] bg-slate-700 hover:bg-slate-600 text-gray-300 rounded">No</button>
                             </div>
@@ -220,8 +286,9 @@ export function ActivityHistoryPage() {
                             <button
                                 onClick={() => setShowClearConfirm(true)}
                                 className="px-2 py-1 text-[10px] text-gray-500 hover:text-red-400 flex items-center gap-1 transition"
+                                title={isFiltered ? 'Delete only filtered entries' : 'Clear all history'}
                             >
-                                <Trash2 className="w-3 h-3" /> Clear
+                                <Trash2 className="w-3 h-3" /> {isFiltered ? 'Clear filtered' : 'Clear'}
                             </button>
                         )
                     )}

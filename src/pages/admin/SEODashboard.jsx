@@ -296,7 +296,7 @@ export function SEODashboard() {
                 </div>
             </div>
 
-            {/* Recent Articles for Quick Scan */}
+            {/* Recent Activity (admin tool history) */}
             {(() => {
                 const recentActivity = activityHistory.getHistory({ limit: 5 });
                 if (recentActivity.length === 0) return null;

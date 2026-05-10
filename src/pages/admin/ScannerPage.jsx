@@ -94,9 +94,9 @@ export function ScannerPage() {
                 good: result.summary.good
             });
             activityHistory.addEntry('seo-scanner', 'scanned', {
-                slug: finalUrl.replace(/.*\/articles\//, '').replace(/\/$/, '') || finalUrl,
+                slug: finalUrl.match(/\/articles\/([^/?#]+)/)?.[1] || null,
                 title: `Score ${result.score} — ${result.summary.critical} critical, ${result.summary.warning} warnings`,
-                data: { score: result.score, summary: result.summary },
+                data: { url: finalUrl, score: result.score, summary: result.summary },
             });
         } catch (err) {
             setError(`Failed to scan: ${err.message}`);

@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Loader2, AlertTriangle, ArrowRight, ArrowLeft, Check, ExternalLink, Globe, CheckCircle } from 'lucide-react';
+import { Sparkles, Loader2, AlertTriangle, ArrowRight, ArrowLeft, Check, ExternalLink, Globe, CheckCircle, Clock } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import wordpressApi from '@/services/wordpressApi';
 import aiService from '@/services/aiService';
@@ -275,7 +275,7 @@ FINAL CHECK before responding:
             activityHistory.addEntry('smart-linking', 'analyzed', {
                 slug: selectedSlug,
                 title: `${(cleaned.linkFrom?.length || 0) + (cleaned.linkTo?.length || 0)} link suggestions`,
-                data: { suggestions: cleaned, topicTerms: analysisMeta?.topicTerms },
+                data: { suggestions: cleaned, topicTerms: targetTerms?.terms || [] },
             });
         } catch (err) {
             setError(err.message || 'Analysis failed. AI may have returned invalid JSON — try again.');
@@ -292,6 +292,26 @@ FINAL CHECK before responding:
                 </h1>
                 <p className="text-gray-400">AI-powered link recommendations with exact anchor text and context.</p>
             </div>
+
+            {/* Resume banner — show last analysis for the currently-selected article */}
+            {(() => {
+                const slugForBanner = selectedSlug;
+                if (!slugForBanner) return null;
+                const previous = activityHistory.getHistory({ tool: 'smart-linking', slug: slugForBanner, limit: 1 })[0];
+                if (!previous) return null;
+                return (
+                    <div className="flex items-center gap-3 p-3 bg-purple-900/15 border border-purple-500/20 rounded-xl">
+                        <Clock className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                        <span className="text-xs text-gray-300 flex-1">
+                            Last analyzed for this article: <strong className="text-white">{previous.title}</strong>
+                            <span className="text-gray-500 ml-2">
+                                {new Date(previous.timestamp).toLocaleDateString()} {new Date(previous.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                        </span>
+                        <a href="/admin/history" className="text-[10px] text-purple-400 hover:text-purple-300">View history</a>
+                    </div>
+                );
+            })()}
 
             {!aiStatus.enabled && (
                 <div className="p-4 bg-amber-900/10 border border-amber-800/30 rounded-xl">

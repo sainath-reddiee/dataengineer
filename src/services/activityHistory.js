@@ -16,6 +16,7 @@ class ActivityHistoryService {
     }
 
     _load() {
+        if (typeof localStorage === 'undefined') return [];
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
             return raw ? JSON.parse(raw) : [];
@@ -26,6 +27,7 @@ class ActivityHistoryService {
     }
 
     _save() {
+        if (typeof localStorage === 'undefined') return;
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(this.entries));
         } catch (e) {
@@ -36,6 +38,15 @@ class ActivityHistoryService {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(this.entries));
                 } catch {
                     console.error('Activity history: still full after cleanup');
+                }
+            } else if (e instanceof TypeError) {
+                // Circular reference or non-serializable data — strip the data field on the latest entry and retry
+                console.warn('Activity history: serialization failed, stripping data', e);
+                if (this.entries[0]) this.entries[0].data = { _serializationError: e.message };
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.entries));
+                } catch {
+                    console.error('Activity history: retry after strip failed');
                 }
             } else {
                 console.error('Failed to save activity history', e);
@@ -99,7 +110,9 @@ class ActivityHistoryService {
             results = results.filter(e => e.tool === tool);
         }
         if (slug) {
-            results = results.filter(e => e.slug === slug);
+            // Contains-match for partial slug filtering
+            const needle = slug.toLowerCase();
+            results = results.filter(e => e.slug && e.slug.toLowerCase().includes(needle));
         }
         if (limit && limit > 0) {
             results = results.slice(0, limit);
@@ -177,6 +190,30 @@ class ActivityHistoryService {
      */
     getTools() {
         return [...new Set(this.entries.map(e => e.tool))];
+    }
+
+    /**
+     * Get count of entries grouped by tool.
+     * @returns {Object} { 'tool-name': count, ... }
+     */
+    getStatsByTool() {
+        const stats = {};
+        this.entries.forEach(e => {
+            stats[e.tool] = (stats[e.tool] || 0) + 1;
+        });
+        return stats;
+    }
+
+    /**
+     * Export all history as a downloadable JSON blob.
+     * @returns {string} JSON string
+     */
+    exportJSON() {
+        return JSON.stringify({
+            exportedAt: new Date().toISOString(),
+            count: this.entries.length,
+            entries: this.entries,
+        }, null, 2);
     }
 }
 

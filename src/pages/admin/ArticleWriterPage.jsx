@@ -26,8 +26,8 @@ SEO (Search Engine Optimization):
 - Keyword density: 0.8-1.5% (natural, not stuffed)
 - Title: 50-60 chars, includes number OR year OR power word, keyphrase within first 5 words
 - Meta description: 120-155 chars, starts with action verb, includes keyphrase, ends with benefit/CTA
-- Internal links: 3-5 natural links to related articles on dataengineerhub.blog
-- External authority links: 2-3 links to official docs (Snowflake, dbt, AWS, etc.)
+- Internal links: 3-5 links to related articles on dataengineerhub.blog using [text](/articles/slug-here) format
+- External authority links: 2-3 links to official docs using full URLs: [text](https://docs.snowflake.com/...) or [text](https://docs.getdbt.com/...)
 - URL slug: short, keyphrase-only, hyphens, no stop words
 - Image alt text: descriptive, includes keyphrase naturally
 
@@ -94,7 +94,7 @@ GROUNDING WITH TINYFISH RESEARCH:
 - Include specific claims from competitor snippets when relevant (to argue for/against)
 
 STRUCTURE (your exact template):
-- ## for H2, ### for H3
+- ## for H2, ### for H3 — the focus keyphrase MUST appear in at least 2 of the ## headings naturally (e.g., "## How [Keyphrase] Works" or "## Why [Keyphrase] Matters in 2026")
 - â†’ for TL;DR bullets (4-6 bullets, each a standalone insight)
 - Tables: Feature | Option A | Option B (with REAL numbers/versions)
 - âš ï¸ for warnings/gotchas
@@ -297,8 +297,10 @@ ${outline.substring(0, 2000)}
 
 Write the OPENING of this article:
 1. A compelling first-person hook paragraph (specific incident/situation — NOT "As a data engineer...")
+   SEO CRITICAL: The topic keyword "${topic}" (or a natural close variant) MUST appear within the first 150 characters. Weave it into the hook — e.g., "The first time I tried [topic], I..." or "Nobody warned me about [topic] before I..."
 2. A second paragraph explaining what this article covers and why it's different
 3. The TL;DR section with 5 bullet points (use → prefix)
+4. Include at least 1 internal link: [text](/articles/related-slug) to a related dataengineerhub.blog article
 
 Format in markdown. 300-500 words total.`;
             } else if (isFAQ) {
@@ -367,10 +369,13 @@ Write 300-600 words. Include:
 - Code example if the topic is technical (real syntax, with comments explaining WHY not just WHAT)
 - Use ### subsections if the section covers multiple sub-topics
 - Bold key terms on first mention
-- Where you'd link to related content, write: [INTERNAL LINK: suggested topic] so I can add real links later
+- Include 1-2 internal links to related articles using markdown format: [link text](/articles/related-slug-here) — pick real topics from dataengineerhub.blog (Snowflake, dbt, Airflow, Python, SQL articles exist)
+- Include at least 1 external link to official documentation: [text](https://docs.snowflake.com/en/...) or [text](https://docs.getdbt.com/docs/...) or similar official source
 - End with a natural transition to the next section (don't use "In the next section...")`}
 
 CRITICAL: Do NOT include generic filler paragraphs. Every sentence must teach something specific. If you can't be specific, skip it.
+
+SEO DENSITY: Use the topic keyword "${topic}" (or natural variants like abbreviations/synonyms) 2-4 times in this section. Don't stuff — but don't avoid the keyword either. The full article needs 0.8-1.5% keyword density to rank.
 
 Output ONLY this section's content in markdown. No preamble.`;
             }
@@ -637,7 +642,10 @@ Output ONLY this section's content in markdown. No preamble.`;
 
                     {/* Quality Gate â€” pre-publish check */}
                     {fullArticle && (
-                        <QualityGate content={fullArticle} focusKeyword={topic.split(' ').slice(0, 4).join(' ').toLowerCase()} />
+                        <QualityGate content={fullArticle} focusKeyword={
+                            (outline?.match(/FOCUS KEYWORD:\s*(.+)/i)?.[1]?.trim().toLowerCase()) ||
+                            topic.split(' ').slice(0, 3).join(' ').toLowerCase()
+                        } />
                     )}
 
                     <div className="flex gap-2">
