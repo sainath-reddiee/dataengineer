@@ -5,12 +5,13 @@
 import React, { useState } from 'react';
 import {
     TrendingUp, Loader2, RefreshCw, Sparkles, Copy, Check,
-    Search, Users, Target, ExternalLink, ArrowUpRight,
+    Search, Users, Target, ExternalLink, ArrowUpRight, Clock,
 } from 'lucide-react';
 import trendIntelligenceService from '@/services/trendIntelligenceService';
 import tinyfishService from '@/services/tinyfishService';
 import gscService from '@/services/gscService';
 import aiService from '@/services/aiService';
+import activityHistory from '@/services/activityHistory';
 
 const TABS = [
     { id: 'trending', label: 'Trending Now', icon: TrendingUp, desc: 'New article ideas from web trends + community buzz' },
@@ -35,6 +36,10 @@ function TrendingTab() {
         try {
             const data = await trendIntelligenceService.discoverTrendingTopics();
             setTrends(data);
+            activityHistory.addEntry('trend-intelligence', 'discovered-trends', {
+                title: `${data.length} trending topics found`,
+                data: { trends: data.slice(0, 20) },
+            });
         } catch (e) {
             setError(e.message);
         }
@@ -47,6 +52,10 @@ function TrendingTab() {
         try {
             const result = await trendIntelligenceService.generateArticleIdeas(trends);
             setIdeas(result);
+            activityHistory.addEntry('trend-intelligence', 'generated-ideas', {
+                title: 'AI article ideas generated',
+                data: { ideas: result.slice(0, 2000) },
+            });
         } catch (e) {
             setError(e.message);
         }
@@ -420,6 +429,7 @@ function GapsTab() {
 
 export function TrendIntelligencePage() {
     const [activeTab, setActiveTab] = useState('trending');
+    const lastRun = activityHistory.getLatest('trend-intelligence');
 
     return (
         <div className="space-y-6">
@@ -428,8 +438,22 @@ export function TrendIntelligencePage() {
                     <TrendingUp className="w-8 h-8 text-cyan-400" />
                     Trend Intelligence
                 </h1>
-                <p className="text-gray-400">Discover what to write, what to update, and where competitors are winning â€” powered by live web search + GSC data.</p>
+                <p className="text-gray-400">Discover what to write, what to update, and where competitors are winning â€" powered by live web search + GSC data.</p>
             </div>
+
+            {/* Resume banner */}
+            {lastRun && (
+                <div className="flex items-center gap-3 p-3 bg-blue-900/15 border border-blue-500/20 rounded-xl">
+                    <Clock className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                    <span className="text-xs text-gray-300 flex-1">
+                        Last run: <strong className="text-white">{lastRun.title}</strong>
+                        <span className="text-gray-500 ml-2">
+                            {new Date(lastRun.timestamp).toLocaleDateString()} {new Date(lastRun.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                    </span>
+                    <a href="/admin/history" className="text-[10px] text-blue-400 hover:text-blue-300">View history</a>
+                </div>
+            )}
 
             {/* Service status */}
             <div className="flex flex-wrap gap-2">

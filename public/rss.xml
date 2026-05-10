@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Sat, 09 May 2026 09:22:16 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 10 May 2026 10:28:14 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -19,10 +19,10 @@
     <webMaster>contact@dataengineerhub.blog (Sainath Reddy)</webMaster>
     <ttl>60</ttl>
     <item>
-      <title>“Apache Airflow vs Prefect: Why I Chose Airflow “</title>
+      <title>Airflow vs Prefect: 2026 Comparison Guide</title>
       <link>https://dataengineerhub.blog/articles/airflow-vs-prefect</link>
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/airflow-vs-prefect</guid>
-      <description>Last Updated: May 5, 2026 I evaluated Prefect seriously. Ran it in a staging environment for six weeks. Built three real flows. Had the internal conversation about migrating. And then…</description>
+      <description>I evaluated Prefect seriously. Ran it in a staging environment for six weeks. Built three real flows. Had the internal conversation about migrating. And then stayed with Airflow. That was…</description>
       <pubDate>Tue, 05 May 2026 09:26:26 GMT</pubDate>
       <dc:creator>Sainath Reddy</dc:creator>
       <category>Airflow</category>
@@ -198,7 +198,7 @@
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/01/Snowflake-ai_parse_document.jpg" type="image/jpeg" />
     </item>
     <item>
-      <title>Snowflake Cortex Cost Comparison 2026: Complete Pricing Guide</title>
+      <title>Snowflake Cortex Cost 2026: The Definitive Expert’s Guide</title>
       <link>https://dataengineerhub.blog/articles/snowflake-cortex-cost-comparison</link>
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-cortex-cost-comparison</guid>
       <description>Snowflake Cortex AI matured significantly between 2023-2026, expanding from simple LLM functions to a comprehensive AI platform with AISQL, Cortex Search, Cortex Analyst, Document AI, and Agents. As adoption accelerates,…</description>
@@ -428,7 +428,7 @@
       <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Azure-synapse.jpg" type="image/jpeg" />
     </item>
     <item>
-      <title>AI Data Agent Guide 2025: Snowflake Cortex Tutorial</title>
+      <title>Cortex Agents 2026: Build AI Bots with Snowflake</title>
       <link>https://dataengineerhub.blog/articles/build-snowflake-cortex-ai-agent-guide</link>
       <guid isPermaLink="true">https://dataengineerhub.blog/articles/build-snowflake-cortex-ai-agent-guide</guid>
       <description>The world of data analytics is changing. For years, accessing insights required writing complex SQL queries. However, the industry is now shifting towards a more intuitive, conversational approach. At the…</description>

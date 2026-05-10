@@ -11,15 +11,16 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-05-09",
+  "lastUpdated": "2026-05-10",
   "totalArticles": 55,
   "pages": [
     {
       "url": "https://dataengineerhub.blog/articles/airflow-vs-prefect",
-      "title": "“Apache Airflow vs Prefect: Why I Chose Airflow “",
-      "summary": "Last Updated: May 5, 2026 I evaluated Prefect seriously. Ran it in a staging environment for six weeks. Built three real flows. Had the internal conversation about migrating. And then…",
+      "title": "Airflow vs Prefect: 2026 Comparison Guide",
+      "summary": "I evaluated Prefect seriously. Ran it in a staging environment for six weeks. Built three real flows. Had the internal conversation about migrating. And then stayed with Airflow. That was…",
       "keyFacts": [
         "That 20% platform overhead we were experiencing would likely have dropped to under 5%",
+        "For instance, Airflow has been shown to improve workflow efficiency by up to 30% through its automated task scheduling and monitoring capabilities",
         "This is the honest breakdown of both tools from someone who actually ran the evaluation, not someone summarising the docs",
         "TL;DR → Airflow is the industry standard — 80,000+ organisations, proven at massive scale, every integration you’ll ever need → Prefect is genuinely easier — local testing, cleaner Python, better monitoring out of the box → Airflow 3",
         "A Python developer who has never seen Prefect before can read it immediately"
@@ -33,13 +34,13 @@
         "dbt",
         "spark"
       ],
-      "questionAnswered": "What are the differences between “Apache Airflow and Prefect: Why I Chose Airflow “?",
-      "lastUpdated": "2026-05-08",
+      "questionAnswered": "What is Airflow and How Does it Compare to Prefect?",
+      "lastUpdated": "2026-05-10",
       "published": "2026-05-05",
       "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Airflow",
-      "wordCount": 2089
+      "wordCount": 2607
     },
     {
       "url": "https://dataengineerhub.blog/articles/delta-lake-vs-iceberg",
@@ -405,11 +406,11 @@
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-cortex-cost-comparison",
-      "title": "Snowflake Cortex Cost Comparison 2026: Complete Pricing Guide",
+      "title": "Snowflake Cortex Cost 2026: The Definitive Expert’s Guide",
       "summary": "Snowflake Cortex AI matured significantly between 2023-2026, expanding from simple LLM functions to a comprehensive AI platform with AISQL, Cortex Search, Cortex Analyst, Document AI, and Agents. As adoption accelerates,…",
       "keyFacts": [
         "AI_SENTIMENT(text) FROM data_queue WHERE processed = false; Result: 15-20% reduction in compute overhead",
-        "(2026 Overview) Snowflake Cortex AI is a suite of integrated generative AI capabilities built directly into Snowflake",
+        "(2026 Overview) Snowflake Cortex AI is a suite of integrated generative AI Cortex AI capabilities built directly into Snowflake",
         "These are the most commonly used Cortex features",
         "As adoption accelerates, controlling costs becomes critical—not because Cortex is expensive, but because its pricing model differs fundamentally from traditional Snowflake compute"
       ],
@@ -418,12 +419,12 @@
         "sql"
       ],
       "questionAnswered": "How much do Snowflake Cortex AI functions cost?",
-      "lastUpdated": "2026-01-21",
+      "lastUpdated": "2026-05-10",
       "published": "2026-01-21",
       "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
-      "wordCount": 2116
+      "wordCount": 2122
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-streams-tasks-pipeline-guide",
@@ -496,25 +497,28 @@
       "title": "Snowflake Interview Questions and Answers 2026",
       "summary": "Last year, I interviewed for a Senior Data Engineer role at three different companies. All three used Snowflake heavily. All three asked completely different questions. The first interview? They grilled…",
       "keyFacts": [
+        "“We cut warehouse credits 38% by right-sizing and AUTO_SUSPEND” is a complete answer to half the cost questions",
         "Understanding these is critical for cost optimization — result caching alone can save 30%+ on repetitive dashboard queries",
-        "Cloud data engineering skills command a premium, and Snowflake-specific expertise adds 10-20% over general data engineering roles due to high demand and limited talent pool",
-        "This separation means you can scale compute without affecting storage costs, and multiple warehouses query the same data concurrently without contention",
-        "What is the difference between Snowpipe and COPY INTO",
-        "Pro tip: Use SYSTEM$CLUSTERING_INFORMATION('table') to check clustering depth and overlap"
+        "The depth and overlap interpretation is the single most-asked follow-up after any clustering question",
+        "If you can’t explain why depth = 1 is good and depth = 100 is a problem, you’ll lose the senior signal",
+        ") “A warehouse is racking up cost and you can’t suspend it because it’s running a critical job"
       ],
       "entities": [
         "snowflake",
-        "azure",
+        "aws",
         "sql",
-        "dbt"
+        "spark",
+        "bigquery",
+        "dbt",
+        "azure"
       ],
       "questionAnswered": "What Snowflake interview questions should you prepare for?",
-      "lastUpdated": "2026-05-09",
+      "lastUpdated": "2026-05-10",
       "published": "2026-01-02",
       "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
-      "wordCount": 2386
+      "wordCount": 4385
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-cortex-ai-complete-guide-2026",
@@ -888,7 +892,7 @@
     },
     {
       "url": "https://dataengineerhub.blog/articles/build-snowflake-cortex-ai-agent-guide",
-      "title": "AI Data Agent Guide 2025: Snowflake Cortex Tutorial",
+      "title": "Cortex Agents 2026: Build AI Bots with Snowflake",
       "summary": "The world of data analytics is changing. For years, accessing insights required writing complex SQL queries. However, the industry is now shifting towards a more intuitive, conversational approach. At the…",
       "keyFacts": [
         "We aimed for a sales target of over $2,000 for this product",
@@ -900,8 +904,8 @@
         "sql",
         "snowflake"
       ],
-      "questionAnswered": "What does the AI Data Agent Guide 2025: Snowflake Cortex Tutorial cover?",
-      "lastUpdated": "2025-10-08",
+      "questionAnswered": "What is Cortex Agents 2026: Build AI Bots with Snowflake?",
+      "lastUpdated": "2026-05-09",
       "published": "2025-10-08",
       "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",

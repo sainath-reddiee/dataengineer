@@ -18,6 +18,7 @@ import gscService from '@/services/gscService';
 import { getLastNDays, getLocalReferralStats } from '@/utils/aiReferralTracker';
 import { scoreCtrBatch } from '@/utils/ctrScorer';
 import { getEngagementStats } from '@/utils/engagementTracker';
+import activityHistory from '@/services/activityHistory';
 
 // Tailwind can't detect dynamic classes at build time, so we map them explicitly
 const COLOR_CLASSES = {
@@ -294,6 +295,36 @@ export function SEODashboard() {
                     ))}
                 </div>
             </div>
+
+            {/* Recent Articles for Quick Scan */}
+            {(() => {
+                const recentActivity = activityHistory.getHistory({ limit: 5 });
+                if (recentActivity.length === 0) return null;
+                return (
+                    <div>
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                <Clock className="w-5 h-5 text-blue-400" /> Recent Activity
+                            </h2>
+                            <Link to="/admin/history" className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                                View All <ArrowRight className="w-4 h-4" />
+                            </Link>
+                        </div>
+                        <div className="space-y-2">
+                            {recentActivity.map(entry => (
+                                <Link key={entry.id} to="/admin/history" className="flex items-center gap-3 p-3 bg-slate-800/40 border border-slate-700 rounded-xl hover:border-blue-500/30 transition">
+                                    <div className="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0" />
+                                    <div className="flex-1 min-w-0">
+                                        <span className="text-xs text-white font-medium truncate block">{entry.title || entry.action}</span>
+                                        <span className="text-[10px] text-gray-500">{entry.tool} · {new Date(entry.timestamp).toLocaleDateString()}</span>
+                                    </div>
+                                    {entry.slug && <span className="text-[10px] text-gray-600 truncate max-w-[120px]">{entry.slug}</span>}
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                );
+            })()}
 
             {/* Recent Articles for Quick Scan */}
             <div>

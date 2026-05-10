@@ -8,6 +8,7 @@ import { IssuesList } from '@/components/admin/IssuesList';
 import { ExportButton } from '@/components/admin/ExportButton';
 import scanHistoryService from '@/services/scanHistory';
 import { fetchBlogArticleHTML } from '@/utils/fetchBlogArticleHTML';
+import activityHistory from '@/services/activityHistory';
 
 export function ScannerPage() {
     const [searchParams] = useSearchParams();
@@ -91,6 +92,11 @@ export function ScannerPage() {
                 critical: result.summary.critical,
                 warning: result.summary.warning,
                 good: result.summary.good
+            });
+            activityHistory.addEntry('seo-scanner', 'scanned', {
+                slug: finalUrl.replace(/.*\/articles\//, '').replace(/\/$/, '') || finalUrl,
+                title: `Score ${result.score} — ${result.summary.critical} critical, ${result.summary.warning} warnings`,
+                data: { score: result.score, summary: result.summary },
             });
         } catch (err) {
             setError(`Failed to scan: ${err.message}`);

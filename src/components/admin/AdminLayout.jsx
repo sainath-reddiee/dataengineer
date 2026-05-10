@@ -26,6 +26,7 @@ import tinyfishService from '@/services/tinyfishService';
 
 const navItems = [
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
+    { path: '/admin/history', icon: Activity, label: 'Activity History' },
     { path: '/admin/article-optimizer', icon: Wand2, label: 'Article Optimizer', highlight: true },
     { path: '/admin/article-fixer', icon: Wrench, label: 'Article Fixer', highlight: true },
     { path: '/admin/trend-intelligence', icon: TrendingUp, label: 'Trend Intelligence', highlight: true },

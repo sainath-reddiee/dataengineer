@@ -100,6 +100,7 @@ const ArticleFixerPage = lazy(() => import('./pages/admin/ArticleFixerPage'));
 const TrendIntelligencePage = lazy(() => import('./pages/admin/TrendIntelligencePage'));
 const ArticleWriterPage = lazy(() => import('./pages/admin/ArticleWriterPage'));
 const SerpIntelligencePage = lazy(() => import('./pages/admin/SerpIntelligencePage'));
+const ActivityHistoryPage = lazy(() => import('./pages/admin/ActivityHistoryPage'));
 
 const LoadingFallback = ({ text = "Loading..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
@@ -423,6 +424,7 @@ function App() {
                     <Route path="trend-intelligence" element={<SafeRoute><TrendIntelligencePage /></SafeRoute>} />
                     <Route path="article-writer" element={<SafeRoute><ArticleWriterPage /></SafeRoute>} />
           <Route path="serp-intelligence" element={<SafeRoute><SerpIntelligencePage /></SafeRoute>} />
+          <Route path="history" element={<SafeRoute><ActivityHistoryPage /></SafeRoute>} />
         </Route>
       </Routes>
       <Toaster />

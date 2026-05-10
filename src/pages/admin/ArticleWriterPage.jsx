@@ -5,13 +5,14 @@
 import React, { useState, useEffect } from 'react';
 import {
     FileText, Loader2, Sparkles, Copy, Check, Search, ArrowRight,
-    ArrowLeft, RefreshCw, ChevronDown, ChevronRight, Zap, Download,
+    ArrowLeft, RefreshCw, ChevronDown, ChevronRight, Zap, Download, Clock,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import aiService from '@/services/aiService';
 import tinyfishService from '@/services/tinyfishService';
 import { QualityGate } from '@/components/admin/QualityGate';
 import { useMountedRef } from '@/hooks/useMountedRef';
+import activityHistory from '@/services/activityHistory';
 
 const STEPS = ['Topic & Research', 'Outline', 'Write Sections', 'Preview & Export'];
 
@@ -404,6 +405,10 @@ Output ONLY this section's content in markdown. No preamble.`;
             .join('\n\n---\n\n');
         setFullArticle(compiled);
         setStep(3);
+        activityHistory.addEntry('article-writer', 'wrote-article', {
+            title: topic || 'Untitled article',
+            data: { sections: sections, wordCount: compiled.split(/\s+/).length },
+        });
     };
 
     const handleCopy = (text, label) => {
@@ -449,8 +454,26 @@ Output ONLY this section's content in markdown. No preamble.`;
                     <FileText className="w-8 h-8 text-pink-400" />
                     AI Article Writer
                 </h1>
-                <p className="text-gray-400">Write full articles in your exact format â€” topic â†’ outline â†’ write section-by-section â†’ export to WordPress.</p>
+                <p className="text-gray-400">Write full articles in your exact format â€" topic â†' outline â†' write section-by-section â†' export to WordPress.</p>
             </div>
+
+            {/* Resume banner */}
+            {(() => {
+                const lastRun = activityHistory.getLatest('article-writer');
+                if (!lastRun) return null;
+                return (
+                    <div className="flex items-center gap-3 p-3 bg-pink-900/15 border border-pink-500/20 rounded-xl">
+                        <Clock className="w-4 h-4 text-pink-400 flex-shrink-0" />
+                        <span className="text-xs text-gray-300 flex-1">
+                            Last article: <strong className="text-white">{lastRun.title}</strong>
+                            <span className="text-gray-500 ml-2">
+                                {new Date(lastRun.timestamp).toLocaleDateString()} {new Date(lastRun.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                        </span>
+                        <a href="/admin/history" className="text-[10px] text-pink-400 hover:text-pink-300">View history</a>
+                    </div>
+                );
+            })()}
 
             {/* Step Indicator */}
             <div className="flex flex-wrap items-center gap-2">

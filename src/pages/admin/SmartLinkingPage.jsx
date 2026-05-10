@@ -11,6 +11,7 @@ import aiService from '@/services/aiService';
 import tinyfishService from '@/services/tinyfishService';
 import { rankCandidates } from '@/utils/articleSimilarity';
 import { buildLinkGraph } from '@/utils/linkAnalysis';
+import activityHistory from '@/services/activityHistory';
 
 const APPLIED_STORAGE_KEY = 'smart_linking_applied_v1';
 
@@ -271,6 +272,11 @@ FINAL CHECK before responding:
             };
 
             setResult(cleaned);
+            activityHistory.addEntry('smart-linking', 'analyzed', {
+                slug: selectedSlug,
+                title: `${(cleaned.linkFrom?.length || 0) + (cleaned.linkTo?.length || 0)} link suggestions`,
+                data: { suggestions: cleaned, topicTerms: analysisMeta?.topicTerms },
+            });
         } catch (err) {
             setError(err.message || 'Analysis failed. AI may have returned invalid JSON — try again.');
         }
