@@ -16,7 +16,7 @@ export function CompetitorGapPage() {
     const [loadingArticles, setLoadingArticles] = useState(true);
     const [result, setResult] = useState(null);
     const [error, setError] = useState('');
-    const [geminiEnabled, setGeminiEnabled] = useState(aiService.isEnabled);
+    const [aiStatus, setAiStatus] = useState(() => aiService.getStatus());
 
     useEffect(() => {
         async function load() {
@@ -29,11 +29,11 @@ export function CompetitorGapPage() {
         load();
     }, []);
 
-    // Poll gemini state every 2s so button enables when key is set
+    // Poll AI status every second so button/badge update in real-time
     useEffect(() => {
         const interval = setInterval(() => {
-            setGeminiEnabled(aiService.isEnabled);
-        }, 2000);
+            setAiStatus(aiService.getStatus());
+        }, 1000);
         return () => clearInterval(interval);
     }, []);
 
@@ -77,7 +77,7 @@ export function CompetitorGapPage() {
                 <p className="text-gray-400">Paste any competitor URL and see exactly what they cover that you don't â€” AI-powered.</p>
             </div>
 
-            {!geminiEnabled && (
+            {!aiStatus.enabled && (
                 <div className="p-4 bg-amber-900/10 border border-amber-800/30 rounded-xl">
                     <div className="flex items-center gap-2 text-amber-300 text-sm">
                         <AlertTriangle className="w-4 h-4" />
@@ -115,7 +115,7 @@ export function CompetitorGapPage() {
                 </div>
                 <button
                     onClick={handleAnalyze}
-                    disabled={!selectedSlug || !competitorUrl || loading || !geminiEnabled}
+                    disabled={!selectedSlug || !competitorUrl || loading || !aiStatus.enabled}
                     className="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg flex items-center gap-2"
                 >
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}

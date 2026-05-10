@@ -206,7 +206,7 @@ QUALITY CHECKS:
                 <p className="text-gray-400">AI-powered link recommendations with exact anchor text and context.</p>
             </div>
 
-            {!geminiEnabled && (
+            {!aiStatus.enabled && (
                 <div className="p-4 bg-amber-900/10 border border-amber-800/30 rounded-xl">
                     <div className="flex items-center gap-2 text-amber-300 text-sm">
                         <AlertTriangle className="w-4 h-4" />
