@@ -9,6 +9,8 @@ import { useSearchParams } from 'react-router-dom';
 import wordpressApi from '@/services/wordpressApi';
 import aiService from '@/services/aiService';
 import tinyfishService from '@/services/tinyfishService';
+import { rankCandidates } from '@/utils/articleSimilarity';
+import { buildLinkGraph } from '@/utils/linkAnalysis';
 
 const APPLIED_STORAGE_KEY = 'smart_linking_applied_v1';
 
@@ -54,6 +56,7 @@ export function SmartLinkingPage() {
     const [loadingArticles, setLoadingArticles] = useState(true);
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
+    const [analysisMeta, setAnalysisMeta] = useState(null);
     const [error, setError] = useState('');
     const [aiStatus, setAiStatus] = useState(() => aiService.getStatus());
 
@@ -93,6 +96,7 @@ export function SmartLinkingPage() {
         setLoading(true);
         setError('');
         setResult(null);
+        setAnalysisMeta(null);
         try {
             const selected = articles.find(a => a.slug === selectedSlug);
             if (!selected) throw new Error('Article not found');
@@ -100,10 +104,32 @@ export function SmartLinkingPage() {
             // Strip HTML tags helper
             const stripHtml = (html) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
+            // ---- STAGE 1: Local relevance pre-filter (no AI) ----
+            // Rank all other articles by topical similarity to target. Only the
+            // top 15 candidates go into the AI prompt — this dramatically cuts
+            // false positives caused by the AI seeing thin 150-char excerpts.
+            const { targetTerms, ranked } = rankCandidates(selected, articles, 15);
+
+            // Build link graph so we know which articles already link to/from target
+            const { outboundLinks } = buildLinkGraph(articles);
+            const existingOutbound = new Set(outboundLinks[selectedSlug] || []);
+            const existingInbound = new Set();
+            Object.entries(outboundLinks).forEach(([sourceSlug, targets]) => {
+                if (targets.includes(selectedSlug)) existingInbound.add(sourceSlug);
+            });
+
+            // Stash for UI
+            setAnalysisMeta({
+                targetTerms: targetTerms.terms,
+                ranked,
+                existingOutbound: [...existingOutbound],
+                existingInbound: [...existingInbound],
+            });
+
             // Get full content of selected article (up to 6000 chars for better context)
             const articleContent = stripHtml(selected.content || '').substring(0, 6000);
 
-            // TinyFish: search for related external authority pages to suggest as links
+            // TinyFish: search for related external authority pages
             let serpContext = '';
             if (tinyfishService.isEnabled) {
                 try {
@@ -113,70 +139,91 @@ export function SmartLinkingPage() {
                         .filter(r => r.url && (r.url.includes('docs.') || r.url.includes('official') || r.url.includes('.io/docs') || r.url.includes('github.com')))
                         .slice(0, 5);
                     if (authorityResults.length > 0) {
-                        serpContext = `\n\nREAL AUTHORITY PAGES FOUND VIA WEB SEARCH (use these for external link suggestions â€” they are verified live URLs):\n${authorityResults.map(r => `- "${r.title}" â†’ ${r.url}`).join('\n')}\n`;
+                        serpContext = `\n\nREAL AUTHORITY PAGES FOUND VIA WEB SEARCH (use these for external link suggestions — verified live URLs):\n${authorityResults.map(r => `- "${r.title}" → ${r.url}`).join('\n')}\n`;
                     }
                 } catch { /* optional enrichment */ }
             }
 
-            // Build a richer catalog with excerpts so AI can understand what each article covers
-            const otherArticles = articles
-                .filter(a => a.slug !== selectedSlug)
-                .map(a => {
-                    const excerpt = stripHtml(a.excerpt || a.content || '').substring(0, 150);
-                    return `- "${a.title}" [/articles/${a.slug}] â€” ${excerpt}`;
-                })
-                .join('\n');
+            // ---- STAGE 2: Build retrieval-augmented AI prompt ----
+            // Only the top 15 ranked candidates with rich 400-char excerpts.
+            const candidatesBlock = ranked.map(c => {
+                const excerpt = stripHtml(c.content || c.excerpt || '').substring(0, 400);
+                const matched = c.relevance.matchedTerms.length > 0
+                    ? ` | shared terms: ${c.relevance.matchedTerms.join(', ')}`
+                    : '';
+                const inboundFlag = existingInbound.has(c.slug) ? ' [ALREADY LINKS TO TARGET]' : '';
+                const outboundFlag = existingOutbound.has(c.slug) ? ' [TARGET ALREADY LINKS TO THIS]' : '';
+                return `- "${c.title}" [/articles/${c.slug}] (relevance ${c.relevance.score}%${matched})${inboundFlag}${outboundFlag}\n  Excerpt: ${excerpt}`;
+            }).join('\n\n');
 
-            const prompt = `You are a senior SEO strategist specializing in internal linking for topical authority. You need to provide HIGHLY SPECIFIC link recommendations based on actual content overlap and user journey logic.
+            const skipBlock = (existingOutbound.size > 0 || existingInbound.size > 0)
+                ? `\n\nEXISTING LINKS — DO NOT SUGGEST THESE AGAIN:\n${
+                    [...existingOutbound].map(s => `- target already links TO: ${s}`).join('\n')
+                }${existingOutbound.size && existingInbound.size ? '\n' : ''}${
+                    [...existingInbound].map(s => `- already links FROM: ${s}`).join('\n')
+                }`
+                : '';
+
+            const topicTermsLine = targetTerms.terms.slice(0, 12).join(', ');
+
+            const prompt = `You are a senior SEO strategist specializing in internal linking for topical authority.
 
 TARGET ARTICLE TO OPTIMIZE:
 Title: "${selected.title}"
 URL: /articles/${selected.slug}
+Core topics (extracted from headings, code, and proper nouns): ${topicTermsLine}
 Full content (first ~6000 chars):
 ---
 ${articleContent || '(content not available)'}
 ---
 
-ALL OTHER ARTICLES ON THIS BLOG (title + URL + short summary):
-${otherArticles}
+PRE-RANKED CANDIDATE ARTICLES (top 15 by topical similarity to target):
+${candidatesBlock}
+${skipBlock}
+${serpContext}
 
-YOUR TASK: Recommend internal links AND external authority links.
+YOUR TASK: Recommend internal links AND external authority links — but ONLY where the topical match is genuinely strong.
 
-INTERNAL LINKING RULES:
-1. Only suggest links where there is GENUINE topical overlap â€” the linked article must ADD VALUE to the reader
-2. Anchor text must be NATURAL phrases that already exist (or could naturally fit) in the target article's content
-3. For "linkFrom" â€” find specific sentences/paragraphs in the target article where another article would be a perfect "learn more" or "deep dive" follow-up
-4. For "linkTo" â€” identify articles on the blog that discuss related topics and would benefit from linking to this target
-5. Placement must be SPECIFIC â€” reference an actual sentence, paragraph topic, or section from the content above (not vague like "in the introduction")
-6. Each link should serve a clear reader journey purpose: prerequisite knowledge, deeper dive, related technique, or alternative approach
+CRITICAL RELEVANCE RULES:
+1. ONLY suggest a candidate if it directly relates to one of the target's core topics listed above. Surface-level overlap (e.g. "both about Snowflake") is NOT enough.
+2. Reject any candidate where the only connection is a shared broad category or technology name.
+3. Reject any candidate that's a generic intro article when the target is advanced (or vice versa).
+4. The anchor text MUST be a phrase that already appears (or could naturally fit in one specific sentence) in the target article's content above. Don't invent anchor text that requires rewriting the article.
+5. Do NOT suggest any link in the "EXISTING LINKS" list above — those already exist.
+6. Each suggestion's "placement" must reference an actual sentence, paragraph topic, or section from the content above (not vague hints like "in the introduction").
+
+QUOTA RULES (no padding):
+- Return AT MOST 6 outbound (linkFrom) and AT MOST 4 inbound (linkTo) suggestions.
+- Return FEWER if fewer truly relevant matches exist. Returning 0 or 1 suggestion is acceptable when the target is highly niche.
+- Quality over quantity. A single excellent suggestion beats 6 weak ones.
+
+INTERNAL LINKING:
+- linkFrom — places in the TARGET article where you'd add an outbound link to one of the candidates.
+- linkTo — candidates that should add an INBOUND link pointing to the target. Only suggest these when the candidate's excerpt clearly shows a natural place to link to this target.
 
 EXTERNAL LINKING RULES:
-1. Suggest 3-5 authoritative external resources that would add credibility and value
-2. Only recommend well-known, stable URLs: official documentation (Snowflake docs, AWS docs, dbt docs), research papers, official blog posts from major companies, or widely-cited industry references
-3. External links should support specific claims or concepts mentioned in the article
-4. Prefer official documentation URLs that are unlikely to change
-${serpContext}
+1. Suggest 0-5 authoritative external resources (only if they add real value — don't pad).
+2. Use only well-known stable URLs: official documentation (Snowflake, AWS, dbt, Apache, Google), research papers, official blog posts.
+3. External links must support specific claims or concepts in the target article.
 
 Respond in EXACTLY this JSON format (no markdown fences, just raw JSON):
 {
   "linkFrom": [
-    {"slug": "article-slug", "title": "Article Title", "anchorText": "natural 2-6 word phrase from the target article", "placement": "In the paragraph where you discuss [specific topic from content]. After the sentence about [quote or paraphrase specific line].", "reason": "This article explains [concept] in detail, which the reader needs to understand [related concept mentioned in target]"}
+    {"slug": "candidate-slug", "title": "Candidate Title", "anchorText": "natural 2-6 word phrase from the target article", "placement": "In the paragraph discussing [specific topic from target content]. After the sentence about [quote or paraphrase]", "reason": "Reader needs [concept candidate covers] to fully understand [related concept in target]"}
   ],
   "linkTo": [
-    {"slug": "source-article-slug", "title": "Source Article Title", "anchorText": "suggested anchor text for the link pointing to target", "placement": "In that article's section about [topic], where it mentions [concept] â€” add link to target as a practical example/deep dive", "reason": "Readers of that article would benefit from this target because [specific connection]"}
+    {"slug": "source-candidate-slug", "title": "Source Candidate Title", "anchorText": "anchor text that fits naturally in that source article", "placement": "In that article's section about [topic from its excerpt above], where it mentions [concept] — link to target as a deep-dive", "reason": "Specific reason why readers of that source would benefit from target"}
   ],
   "externalLinks": [
-    {"url": "https://docs.example.com/page", "title": "Resource Title", "anchorText": "natural anchor text", "placement": "After the paragraph discussing [specific topic] where you mention [concept]", "reason": "Official documentation that supports the claim about [specific point made in article]", "authority": "Official Snowflake/AWS/dbt documentation"}
+    {"url": "https://docs.example.com/page", "title": "Resource Title", "anchorText": "natural anchor text", "placement": "After the paragraph discussing [specific topic]", "reason": "Supports the claim about [specific point]", "authority": "Official Snowflake/AWS/dbt documentation"}
   ]
 }
 
-QUALITY CHECKS:
-- linkFrom: 4-6 high-quality internal outbound links
-- linkTo: 3-5 inbound link opportunities from other articles
-- externalLinks: 3-5 authoritative external resources
-- Every suggestion must reference SPECIFIC content from the article above
-- Anchor text must sound natural in a sentence, not like a keyword stuff
-- Reject any link that's only tangentially related`;
+FINAL CHECK before responding:
+- Every linkFrom slug MUST be one of the candidate slugs listed above.
+- Every linkTo slug MUST be one of the candidate slugs listed above.
+- No suggestion may duplicate an "EXISTING LINKS" entry.
+- If you cannot find genuinely relevant matches for any category, return an empty array for that category.`;
 
             const response = await aiService.generateSuggestion(prompt, '');
 
@@ -189,9 +236,43 @@ QUALITY CHECKS:
             const jsonText = response.substring(firstBrace, lastBrace + 1);
             const parsed = JSON.parse(jsonText);
 
-            setResult(parsed);
+            // ---- STAGE 3: Post-filter — drop hallucinations and existing links ----
+            const validSlugs = new Set(ranked.map(c => c.slug));
+            const relevanceBySlug = new Map(ranked.map(c => [c.slug, c.relevance]));
+
+            const filterAndAnnotate = (arr, isInbound) => {
+                if (!Array.isArray(arr)) return [];
+                return arr
+                    .filter(s => s && typeof s.slug === 'string')
+                    // Drop hallucinated slugs (AI invented something not in candidate list)
+                    .filter(s => validSlugs.has(s.slug))
+                    // Drop existing link duplicates
+                    .filter(s => {
+                        if (isInbound) return !existingInbound.has(s.slug);
+                        return !existingOutbound.has(s.slug);
+                    })
+                    // Annotate with relevance score from local ranker
+                    .map(s => {
+                        const rel = relevanceBySlug.get(s.slug);
+                        return {
+                            ...s,
+                            relevanceScore: rel?.score ?? 0,
+                            matchedTerms: rel?.matchedTerms ?? [],
+                        };
+                    })
+                    // Sort by relevance descending
+                    .sort((a, b) => b.relevanceScore - a.relevanceScore);
+            };
+
+            const cleaned = {
+                linkFrom: filterAndAnnotate(parsed.linkFrom, false),
+                linkTo: filterAndAnnotate(parsed.linkTo, true),
+                externalLinks: Array.isArray(parsed.externalLinks) ? parsed.externalLinks : [],
+            };
+
+            setResult(cleaned);
         } catch (err) {
-            setError(err.message || 'Analysis failed. AI may have returned invalid JSON â€” try again.');
+            setError(err.message || 'Analysis failed. AI may have returned invalid JSON — try again.');
         }
         setLoading(false);
     };
@@ -258,6 +339,36 @@ QUALITY CHECKS:
             {error && (
                 <div className="p-4 bg-red-900/10 border border-red-800/30 rounded-xl text-red-400 text-sm">
                     {error}
+                </div>
+            )}
+
+            {analysisMeta && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-4 bg-slate-800/40 border border-slate-700 rounded-xl space-y-3">
+                    <div>
+                        <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-1.5">Detected topics in target article</div>
+                        <div className="flex flex-wrap gap-1.5">
+                            {analysisMeta.targetTerms.slice(0, 15).map((t, i) => (
+                                <span key={i} className="px-2 py-0.5 bg-pink-900/20 border border-pink-800/30 rounded text-xs text-pink-200">
+                                    {t}
+                                </span>
+                            ))}
+                            {analysisMeta.targetTerms.length === 0 && (
+                                <span className="text-xs text-gray-500 italic">No clear topic terms detected — article may be too short.</span>
+                            )}
+                        </div>
+                    </div>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-400">
+                        <span>Top candidates ranked: <strong className="text-gray-200">{analysisMeta.ranked.length}</strong></span>
+                        <span>Best relevance: <strong className="text-gray-200">{analysisMeta.ranked[0]?.relevance.score ?? 0}%</strong></span>
+                        <span>Existing inbound: <strong className="text-gray-200">{analysisMeta.existingInbound.length}</strong></span>
+                        <span>Existing outbound: <strong className="text-gray-200">{analysisMeta.existingOutbound.length}</strong></span>
+                    </div>
+                </motion.div>
+            )}
+
+            {result && (result.linkFrom?.length === 0 && result.linkTo?.length === 0 && (result.externalLinks?.length || 0) === 0) && (
+                <div className="p-4 bg-amber-900/10 border border-amber-800/30 rounded-xl text-sm text-amber-200">
+                    <strong>No high-confidence link suggestions found.</strong> The AI didn't find any candidates with strong enough topical match. This is the expected outcome for highly niche articles — quality over quantity.
                 </div>
             )}
 
@@ -362,6 +473,17 @@ function LinkSuggestion({ link, direction, targetSlug, applied, onMarkApplied, o
         setLocalApplied(!localApplied);
     };
 
+    const score = typeof link.relevanceScore === 'number' ? link.relevanceScore : null;
+    const scoreColor = score === null
+        ? 'bg-slate-700 text-gray-300'
+        : score >= 70
+            ? 'bg-emerald-500/20 border-emerald-700/40 text-emerald-300'
+            : score >= 50
+                ? 'bg-blue-500/20 border-blue-700/40 text-blue-300'
+                : score >= 30
+                    ? 'bg-amber-500/20 border-amber-700/40 text-amber-300'
+                    : 'bg-slate-700/40 border-slate-700 text-gray-400';
+
     return (
         <div className={`p-3 rounded-lg border transition ${
             localApplied
@@ -370,8 +492,24 @@ function LinkSuggestion({ link, direction, targetSlug, applied, onMarkApplied, o
         }`}>
             <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-white truncate">{link.title}</div>
-                    <div className="text-xs text-blue-300 mt-0.5">â†’ /articles/{link.slug}</div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <div className="text-sm font-medium text-white truncate">{link.title}</div>
+                        {score !== null && (
+                            <span className={`px-1.5 py-0.5 rounded border text-[10px] font-semibold ${scoreColor}`} title="Topical relevance score (computed from target topics overlap)">
+                                {score}% relevant
+                            </span>
+                        )}
+                    </div>
+                    <div className="text-xs text-blue-300 mt-0.5">→ /articles/{link.slug}</div>
+                    {Array.isArray(link.matchedTerms) && link.matchedTerms.length > 0 && (
+                        <div className="mt-1.5 flex flex-wrap gap-1">
+                            {link.matchedTerms.slice(0, 6).map((t, i) => (
+                                <span key={i} className="px-1.5 py-0 bg-slate-800 border border-slate-700 rounded text-[9px] text-gray-400">
+                                    {t}
+                                </span>
+                            ))}
+                        </div>
+                    )}
                     <div className="mt-2 p-2 bg-slate-800 rounded text-xs">
                         <div className="text-gray-500 uppercase text-[10px] mb-1">Anchor text:</div>
                         <div className="text-emerald-300 font-mono">"{link.anchorText}"</div>

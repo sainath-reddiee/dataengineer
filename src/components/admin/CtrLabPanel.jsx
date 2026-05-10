@@ -1,18 +1,19 @@
 // src/components/admin/CtrLabPanel.jsx
-// Batch CTR scorer over all published articles. Lists biggest-opportunity
-// pages first, with an inline editor that lets the owner rewrite a title or
-// description and see the projected lift update in real time.
+// Batch CTR scorer over all published articles. Merges real GSC data (position,
+// impressions, clicks, CTR) when connected. Sorted by click-gap opportunity when
+// GSC available, by heuristic score otherwise. Expands into CtrLabDetail for
+// full diagnostic per article.
 
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     TrendingUp, RefreshCw, Zap, AlertTriangle, ChevronDown, ChevronRight,
-    Edit3, X, ExternalLink, Sparkles, Loader2, Search,
+    ExternalLink, Search, MousePointerClick,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import wordpressApi from '@/services/wordpressApi';
 import { scoreCtr, scoreCtrBatch } from '@/utils/ctrScorer';
-import aiService from '@/services/aiService';
 import gscService from '@/services/gscService';
+import { CtrLabDetail } from './CtrLabDetail';
 
 const GRADE_COLORS = {
     A: 'text-emerald-400 border-emerald-500/40 bg-emerald-500/10',
@@ -22,253 +23,14 @@ const GRADE_COLORS = {
     F: 'text-red-400    border-red-500/40    bg-red-500/10',
 };
 
-const RowEditor = ({ row, onClose }) => {
-    const [title, setTitle] = useState(row.title || '');
-    const [desc, setDesc] = useState(row.excerpt || '');
-    const [aiLoading, setAiLoading] = useState(false);
-    const [aiError, setAiError] = useState('');
-    const [keywords, setKeywords] = useState([]);
-    const [kwLoading, setKwLoading] = useState(false);
-    const [kwError, setKwError] = useState('');
-    const live = useMemo(() => scoreCtr({ title, description: desc }), [title, desc]);
-    const deltaScore = live.score - row.score;
-    const deltaLift  = live.projectedLiftPct - (row.projectedLiftPct || 0);
-
-    // Identify keywords missing from title/description
-    const missingKeywords = useMemo(() => {
-        if (!keywords.length) return [];
-        const combined = (title + ' ' + desc).toLowerCase();
-        return keywords.filter(kw => !combined.includes(kw.query.toLowerCase()));
-    }, [keywords, title, desc]);
-
-    // Fetch GSC keywords for this article
-    const fetchKeywords = useCallback(async () => {
-        if (!gscService.isConnected()) {
-            setKwError('GSC not connected. Connect in Rank Intelligence first.');
-            return;
-        }
-        setKwLoading(true);
-        setKwError('');
-        try {
-            const articleUrl = `https://dataengineerhub.blog/articles/${row.slug}`;
-            const data = await gscService.queryTopKeywords({ url: articleUrl, rowLimit: 20 });
-            setKeywords(data.sort((a, b) => b.impressions - a.impressions));
-        } catch (e) {
-            setKwError(e.message || 'Failed to fetch keywords');
-        }
-        setKwLoading(false);
-    }, [row.slug]);
-
-    // Auto-fetch keywords on mount if GSC is connected
-    useEffect(() => {
-        if (gscService.isConnected()) fetchKeywords();
-    }, [fetchKeywords]);
-
-    const handleAiSuggest = async () => {
-        if (!aiService.isEnabled) {
-            alert('AI API key not configured. Set it in the admin sidebar.');
-            return;
-        }
-        setAiLoading(true);
-        try {
-            const stripHtml = (html) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-            const contentSnippet = stripHtml(row.content || '').substring(0, 3000);
-
-            // Build keyword context from GSC data
-            const keywordContext = keywords.length > 0
-                ? `\nREAL SEARCH KEYWORDS (from Google Search Console — these are the actual queries people use to find this article):
-${keywords.slice(0, 10).map((kw, i) => `  ${i + 1}. "${kw.query}" — ${kw.impressions} impressions, ${kw.clicks} clicks, position ${Math.round(kw.position)}, CTR ${(kw.ctr * 100).toFixed(1)}%`).join('\n')}
-
-MISSING FROM TITLE/DESCRIPTION (high-priority keywords to incorporate):
-${missingKeywords.slice(0, 5).map(kw => `  - "${kw.query}" (${kw.impressions} impressions, not in title or description)`).join('\n') || '  (none — all top keywords are already present)'}
-`
-                : '\n(No GSC keyword data available — optimize based on content topic)\n';
-
-            const prompt = `You are a CTR optimization expert for a data engineering blog. You have access to REAL Google Search Console data showing exactly what people search to find this article.
-
-CURRENT ARTICLE:
-Title: ${row.title}
-Current description: ${row.excerpt}
-Category: ${row.category || 'data engineering'}
-Content (first ~3000 chars): ${contentSnippet || '(not available)'}
-${keywordContext}
-YOUR TASK: Generate an optimized SERP title and meta description that SPECIFICALLY targets the highest-impression keywords.
-
-Rules for the title (50-60 chars ideal):
-- MUST include the #1 impression keyword (or close variant) near the FRONT of the title
-- Include a number or year if the keyword data shows year-related searches
-- Use a power word that matches search intent (guide for tutorials, fix/avoid for troubleshooting)
-- Do NOT use generic patterns like "Complete Guide" unless the keyword data supports it
-- Prioritize exact-match keywords that are currently MISSING from the title
-
-Rules for the description (120-155 chars ideal):
-- Include 2-3 secondary keywords naturally (from the keyword list above)
-- Start with a benefit or outcome the searcher wants
-- Include specificity: numbers, tools, or techniques mentioned in the content
-- Target the "People Also Ask" intent behind the top keywords
-
-IMPORTANT: Your suggestion must be SPECIFIC to the keyword data above. Do NOT give generic SEO advice. Every word should be chosen to capture the real search queries shown.
-
-Respond in EXACTLY this JSON format (no markdown fences):
-{"title": "keyword-optimized title here", "description": "keyword-rich meta description here", "reasoning": "brief explanation of which keywords you targeted and why"}`;
-
-            const response = await aiService.generateSuggestion(prompt, '');
-            const firstBrace = response.indexOf('{');
-            const lastBrace = response.lastIndexOf('}');
-            if (firstBrace === -1 || lastBrace <= firstBrace) {
-                throw new Error('AI response did not contain JSON');
-            }
-            const parsed = JSON.parse(response.substring(firstBrace, lastBrace + 1));
-            if (parsed.title) setTitle(parsed.title);
-            if (parsed.description) setDesc(parsed.description);
-            setAiError('');
-        } catch (e) {
-            console.error('AI suggest failed:', e);
-            setAiError(e?.message || 'AI suggestion failed. Try again.');
-        }
-        setAiLoading(false);
-    };
-
-    return (
-        <div className="bg-slate-900/60 border border-slate-700 rounded-xl p-4 space-y-4">
-            <div className="flex items-center justify-between">
-                <h4 className="text-sm font-semibold text-white flex items-center gap-2">
-                    <Edit3 className="w-4 h-4 text-blue-400" />
-                    Rewrite &amp; re-score
-                </h4>
-                <button onClick={onClose} className="text-gray-400 hover:text-white">
-                    <X className="w-4 h-4" />
-                </button>
-            </div>
-
-            {/* GSC Keywords Panel */}
-            <div className="p-3 rounded-lg bg-slate-800/50 border border-slate-700/50">
-                <div className="flex items-center justify-between mb-2">
-                    <h5 className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
-                        <Search className="w-3 h-3 text-blue-400" />
-                        Real Search Keywords (GSC)
-                    </h5>
-                    {!keywords.length && !kwLoading && (
-                        <button
-                            onClick={fetchKeywords}
-                            className="text-[10px] text-blue-400 hover:text-blue-300"
-                        >
-                            Fetch keywords
-                        </button>
-                    )}
-                </div>
-                {kwLoading && <div className="text-xs text-gray-500 flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" /> Loading GSC data...</div>}
-                {kwError && <div className="text-xs text-amber-400">{kwError}</div>}
-                {keywords.length > 0 && (
-                    <div className="space-y-1.5 max-h-40 overflow-y-auto">
-                        {keywords.slice(0, 10).map((kw, i) => {
-                            const inTitle = title.toLowerCase().includes(kw.query.toLowerCase());
-                            const inDesc = desc.toLowerCase().includes(kw.query.toLowerCase());
-                            const present = inTitle || inDesc;
-                            return (
-                                <div key={i} className="flex items-center justify-between text-[11px] gap-2">
-                                    <div className="flex items-center gap-1.5 min-w-0">
-                                        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${present ? 'bg-emerald-400' : 'bg-red-400'}`} />
-                                        <span className={`truncate ${present ? 'text-gray-300' : 'text-white font-medium'}`}>
-                                            {kw.query}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-2 flex-shrink-0 text-gray-500">
-                                        <span>{kw.impressions} imp</span>
-                                        <span>pos {Math.round(kw.position)}</span>
-                                        <span className={kw.ctr > 0.05 ? 'text-emerald-400' : kw.ctr > 0.02 ? 'text-amber-400' : 'text-red-400'}>
-                                            {(kw.ctr * 100).toFixed(1)}%
-                                        </span>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-                {keywords.length > 0 && missingKeywords.length > 0 && (
-                    <div className="mt-2 pt-2 border-t border-slate-700/50">
-                        <div className="text-[10px] text-red-300 font-medium mb-1">
-                            ⚠ {missingKeywords.length} keyword{missingKeywords.length > 1 ? 's' : ''} missing from title/description:
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                            {missingKeywords.slice(0, 5).map((kw, i) => (
-                                <span
-                                    key={i}
-                                    className="px-1.5 py-0.5 rounded bg-red-500/15 text-red-300 text-[10px] cursor-pointer hover:bg-red-500/25"
-                                    title={`${kw.impressions} impressions, position ${Math.round(kw.position)} — click to add to title`}
-                                    onClick={() => setTitle(prev => prev + ' ' + kw.query)}
-                                >
-                                    +{kw.query} ({kw.impressions})
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                )}
-                {keywords.length > 0 && missingKeywords.length === 0 && (
-                    <div className="mt-2 pt-2 border-t border-slate-700/50 text-[10px] text-emerald-400">
-                        ✓ All top keywords present in title/description
-                    </div>
-                )}
-            </div>
-
-            <div>
-                <label className="block text-xs text-gray-400 mb-1">Title ({title.length} chars)</label>
-                <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm text-white"
-                />
-            </div>
-            <div>
-                <label className="block text-xs text-gray-400 mb-1">Meta description ({desc.length} chars)</label>
-                <textarea
-                    value={desc}
-                    onChange={(e) => setDesc(e.target.value)}
-                    rows={3}
-                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm text-white"
-                />
-            </div>
-            <button
-                onClick={handleAiSuggest}
-                disabled={aiLoading}
-                className="flex items-center gap-2 px-3 py-1.5 text-xs bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 disabled:opacity-50 text-white rounded-lg transition-colors"
-            >
-                {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                {aiLoading ? 'Generating...' : keywords.length > 0 ? 'AI Suggest (Keyword-Aware)' : 'AI Suggest Title & Description'}
-            </button>
-            {aiError && (
-                <div className="text-xs text-red-300 bg-red-900/20 border border-red-800/30 px-2 py-1 rounded">
-                    {aiError}
-                </div>
-            )}
-            <div className="grid grid-cols-3 gap-3">
-                <div className="p-3 rounded-lg bg-slate-800/70">
-                    <div className="text-xs text-gray-400">New score</div>
-                    <div className="text-xl font-bold text-white">{live.score} <span className="text-xs text-gray-500">({live.grade})</span></div>
-                    <div className={`text-xs ${deltaScore >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {deltaScore >= 0 ? '+' : ''}{deltaScore} vs current
-                    </div>
-                </div>
-                <div className="p-3 rounded-lg bg-slate-800/70">
-                    <div className="text-xs text-gray-400">Projected CTR lift</div>
-                    <div className="text-xl font-bold text-white">+{live.projectedLiftPct}%</div>
-                    <div className={`text-xs ${deltaLift >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {deltaLift >= 0 ? '+' : ''}{deltaLift.toFixed(1)} pt vs current
-                    </div>
-                </div>
-                <div className="p-3 rounded-lg bg-slate-800/70">
-                    <div className="text-xs text-gray-400">Missed lift remaining</div>
-                    <div className="text-xl font-bold text-white">{live.missingLiftPct}%</div>
-                    <div className="text-xs text-gray-500">lower is better</div>
-                </div>
-            </div>
-            <div className="text-xs text-gray-500">
-                Copy the improved title/description into WordPress (Yoast / Rank Math or post meta). The preview above is live and does not save anywhere.
-            </div>
-        </div>
-    );
-};
+// Expected CTR by position (industry averages)
+function getExpectedCTR(position) {
+    const table = [0, 0.28, 0.15, 0.11, 0.08, 0.06, 0.045, 0.035, 0.03, 0.025, 0.02];
+    const pos = Math.max(1, Math.min(10, Math.round(position || 999)));
+    if (pos <= 10) return table[pos];
+    if (pos <= 20) return 0.01;
+    return 0.005;
+}
 
 export function CtrLabPanel() {
     const [searchParams] = useSearchParams();
@@ -276,8 +38,10 @@ export function CtrLabPanel() {
     const [error, setError] = useState('');
     const [rows, setRows] = useState([]);
     const [expanded, setExpanded] = useState({});
-    const [filter, setFilter] = useState('all'); // all | red | yellow | green
+    const [filter, setFilter] = useState('all');
+    const [sortBy, setSortBy] = useState('opportunity'); // opportunity | score | impressions
     const [tick, setTick] = useState(0);
+    const [gscAvailable, setGscAvailable] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -285,20 +49,51 @@ export function CtrLabPanel() {
             setLoading(true);
             setError('');
             try {
-                const r = await wordpressApi.getAllPosts(1, 100);
-                const posts = r.posts || [];
+                const hasGsc = gscService.isConnected();
+                setGscAvailable(hasGsc);
+
+                // Fetch WP posts + GSC data in parallel
+                const promises = [wordpressApi.getAllPosts(1, 100)];
+                if (hasGsc) promises.push(gscService.queryTopPages({ rowLimit: 200 }).catch(() => []));
+                else promises.push(Promise.resolve([]));
+
+                const [wpResult, gscPages] = await Promise.all(promises);
+                const posts = wpResult.posts || [];
+
+                // Build scored rows from heuristic scorer
                 const scored = scoreCtrBatch(posts);
+
+                // Merge GSC data
+                const gscMap = {};
+                (gscPages || []).forEach(row => {
+                    const m = (row.page || '').match(/\/articles\/([^/?#]+)/);
+                    if (m) gscMap[m[1]] = row;
+                });
+
+                const merged = scored.map(r => {
+                    const gsc = gscMap[r.slug];
+                    if (gsc) {
+                        const expected = getExpectedCTR(gsc.position);
+                        return {
+                            ...r,
+                            position: gsc.position,
+                            impressions: gsc.impressions,
+                            clicks: gsc.clicks,
+                            ctr: gsc.ctr,
+                            expectedCtr: expected,
+                            clickGap: Math.max(0, Math.round(gsc.impressions * expected) - gsc.clicks),
+                        };
+                    }
+                    return { ...r, position: null, impressions: 0, clicks: 0, ctr: null, expectedCtr: null, clickGap: 0 };
+                });
+
                 if (!cancelled) {
-                    setRows(scored);
-                    // Auto-expand article if slug is in URL params (from Rank Dashboard)
+                    setRows(merged);
+                    // Auto-expand from URL param
                     const targetSlug = searchParams.get('slug');
                     if (targetSlug) {
-                        const match = scored.find(s => s.slug === targetSlug);
-                        if (match) {
-                            setExpanded({ [match.id || match.slug]: true });
-                            // Copy article URL to clipboard for convenience
-                            navigator.clipboard?.writeText(`https://dataengineerhub.blog/articles/${targetSlug}`).catch(() => {});
-                        }
+                        const match = merged.find(s => s.slug === targetSlug);
+                        if (match) setExpanded({ [match.slug]: true });
                     }
                 }
             } catch (e) {
@@ -312,39 +107,41 @@ export function CtrLabPanel() {
     }, [tick, searchParams]);
 
     const summary = useMemo(() => {
-        if (!rows.length) return { avg: 0, atRisk: 0, avgMissedLift: 0 };
+        if (!rows.length) return { avg: 0, atRisk: 0, totalMissedClicks: 0, totalImpressions: 0 };
         const avg = Math.round(rows.reduce((a, r) => a + r.score, 0) / rows.length);
         const atRisk = rows.filter(r => r.grade === 'D' || r.grade === 'F').length;
-        // Average missed lift per post — a realistic read of opportunity.
-        // The old "sum across top-10" was misleading (looked like compound CTR).
-        const avgMissedLift = Math.round(
-            (rows.reduce((a, r) => a + (r.missingLiftPct || 0), 0) / rows.length) * 10
-        ) / 10;
-        return { avg, atRisk, avgMissedLift };
+        const totalMissedClicks = rows.reduce((a, r) => a + (r.clickGap || 0), 0);
+        const totalImpressions = rows.reduce((a, r) => a + (r.impressions || 0), 0);
+        return { avg, atRisk, totalMissedClicks, totalImpressions };
     }, [rows]);
 
     const visible = useMemo(() => {
-        if (filter === 'all') return rows;
-        return rows.filter(r => {
-            if (filter === 'red')    return r.grade === 'D' || r.grade === 'F';
-            if (filter === 'yellow') return r.grade === 'C';
-            if (filter === 'green')  return r.grade === 'A' || r.grade === 'B';
-            return true;
-        });
-    }, [rows, filter]);
+        let filtered = rows;
+        if (filter === 'red')    filtered = rows.filter(r => r.grade === 'D' || r.grade === 'F');
+        if (filter === 'yellow') filtered = rows.filter(r => r.grade === 'C');
+        if (filter === 'green')  filtered = rows.filter(r => r.grade === 'A' || r.grade === 'B');
+
+        // Sort
+        if (sortBy === 'opportunity') filtered = [...filtered].sort((a, b) => (b.clickGap || 0) - (a.clickGap || 0));
+        else if (sortBy === 'score') filtered = [...filtered].sort((a, b) => a.score - b.score); // worst first
+        else if (sortBy === 'impressions') filtered = [...filtered].sort((a, b) => (b.impressions || 0) - (a.impressions || 0));
+
+        return filtered;
+    }, [rows, filter, sortBy]);
 
     return (
         <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 p-6 space-y-6">
+            {/* Header */}
             <div className="flex items-start justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-3">
                     <div className="p-3 rounded-xl bg-blue-500/20">
-                        <TrendingUp className="w-6 h-6 text-blue-400" />
+                        <MousePointerClick className="w-6 h-6 text-blue-400" />
                     </div>
                     <div>
                         <h2 className="text-xl font-bold text-white">CTR Lab</h2>
                         <p className="text-sm text-gray-400">
-                            Heuristic scorer for every article title + meta description. Finds the biggest
-                            projected CTR lift per post based on Backlinko / Moz / AdvancedWebRanking benchmarks.
+                            Diagnose why articles underperform in clicks — fix titles, descriptions, and keyword alignment.
+                            {!gscAvailable && ' Connect GSC for real position + click gap data.'}
                         </p>
                     </div>
                 </div>
@@ -358,141 +155,153 @@ export function CtrLabPanel() {
             </div>
 
             {/* Summary cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/30">
-                    <div className="text-xs uppercase tracking-wider text-blue-300">Average score</div>
-                    <div className="text-3xl font-bold text-white mt-1">{summary.avg || '—'}<span className="text-sm text-gray-400"> / 100</span></div>
-                    <div className="text-xs text-gray-400 mt-1">across {rows.length} posts</div>
+                    <div className="text-xs uppercase tracking-wider text-blue-300">Avg CTR Score</div>
+                    <div className="text-3xl font-bold text-white mt-1">{summary.avg}<span className="text-sm text-gray-400"> / 100</span></div>
+                    <div className="text-xs text-gray-400 mt-1">across {rows.length} articles</div>
                 </div>
                 <div className="p-4 rounded-xl bg-gradient-to-br from-red-500/20 to-orange-500/20 border border-red-500/30">
                     <div className="text-xs uppercase tracking-wider text-red-300 flex items-center gap-1">
-                        <AlertTriangle className="w-3 h-3" /> At-risk posts
+                        <AlertTriangle className="w-3 h-3" /> At-Risk
                     </div>
                     <div className="text-3xl font-bold text-white mt-1">{summary.atRisk}</div>
-                    <div className="text-xs text-gray-400 mt-1">grade D or F</div>
+                    <div className="text-xs text-gray-400 mt-1">grade D or F — fix first</div>
+                </div>
+                <div className="p-4 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30">
+                    <div className="text-xs uppercase tracking-wider text-amber-300">Missed Clicks</div>
+                    <div className="text-3xl font-bold text-white mt-1">{summary.totalMissedClicks.toLocaleString()}</div>
+                    <div className="text-xs text-gray-400 mt-1">recoverable clicks/month</div>
                 </div>
                 <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30">
-                    <div className="text-xs uppercase tracking-wider text-emerald-300 flex items-center gap-1">
-                        <Zap className="w-3 h-3" /> Avg missed lift / post
-                    </div>
-                    <div className="text-3xl font-bold text-white mt-1">+{summary.avgMissedLift}%</div>
-                    <div className="text-xs text-gray-400 mt-1">mean CTR ceiling left on the table</div>
+                    <div className="text-xs uppercase tracking-wider text-emerald-300">Impressions</div>
+                    <div className="text-3xl font-bold text-white mt-1">{(summary.totalImpressions / 1000).toFixed(1)}k</div>
+                    <div className="text-xs text-gray-400 mt-1">monthly search visibility</div>
                 </div>
             </div>
 
-            {/* Filters */}
-            <div className="flex items-center gap-2 flex-wrap">
-                {[
-                    { k: 'all',    label: `All (${rows.length})` },
-                    { k: 'red',    label: `Red (${rows.filter(r => r.grade === 'D' || r.grade === 'F').length})` },
-                    { k: 'yellow', label: `Yellow (${rows.filter(r => r.grade === 'C').length})` },
-                    { k: 'green',  label: `Green (${rows.filter(r => r.grade === 'A' || r.grade === 'B').length})` },
-                ].map(f => (
-                    <button
-                        key={f.k}
-                        onClick={() => setFilter(f.k)}
-                        className={`px-3 py-1.5 rounded-lg text-xs ${filter === f.k
-                            ? 'bg-blue-600/40 text-white border border-blue-500/50'
-                            : 'bg-slate-700/40 text-gray-400 hover:text-white border border-transparent'}`}
-                    >
-                        {f.label}
-                    </button>
-                ))}
+            {/* Filters + Sort */}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                    {[
+                        { k: 'all',    label: `All (${rows.length})` },
+                        { k: 'red',    label: `Red (${rows.filter(r => r.grade === 'D' || r.grade === 'F').length})` },
+                        { k: 'yellow', label: `Yellow (${rows.filter(r => r.grade === 'C').length})` },
+                        { k: 'green',  label: `Green (${rows.filter(r => r.grade === 'A' || r.grade === 'B').length})` },
+                    ].map(f => (
+                        <button
+                            key={f.k}
+                            onClick={() => setFilter(f.k)}
+                            className={`px-3 py-1.5 rounded-lg text-xs ${filter === f.k
+                                ? 'bg-blue-600/40 text-white border border-blue-500/50'
+                                : 'bg-slate-700/40 text-gray-400 hover:text-white border border-transparent'}`}
+                        >
+                            {f.label}
+                        </button>
+                    ))}
+                </div>
+                <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] text-gray-500">Sort:</span>
+                    {[
+                        { k: 'opportunity', label: 'Click Gap' },
+                        { k: 'score', label: 'Worst Score' },
+                        { k: 'impressions', label: 'Impressions' },
+                    ].map(s => (
+                        <button
+                            key={s.k}
+                            onClick={() => setSortBy(s.k)}
+                            className={`px-2 py-1 rounded text-[10px] ${sortBy === s.k
+                                ? 'bg-blue-600/30 text-blue-300'
+                                : 'bg-slate-700/40 text-gray-500 hover:text-gray-300'}`}
+                        >
+                            {s.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
+            {/* GSC not connected banner */}
+            {!gscAvailable && !loading && (
+                <div className="p-3 bg-blue-900/10 border border-blue-800/30 rounded-lg flex items-center gap-2 text-blue-300 text-xs">
+                    <Search className="w-3.5 h-3.5 flex-shrink-0" />
+                    Connect GSC in the sidebar for real position data, click gaps, and keyword-aware diagnostics.
+                </div>
+            )}
+
             {/* Table */}
-            {loading && <div className="text-sm text-gray-400">Loading posts…</div>}
-            {error   && <div className="text-sm text-red-400">Error: {error}</div>}
+            {loading && <div className="text-sm text-gray-400 flex items-center gap-2"><RefreshCw className="w-4 h-4 animate-spin" /> Loading posts…</div>}
+            {error && <div className="text-sm text-red-400">Error: {error}</div>}
             {!loading && !error && visible.length === 0 && (
-                <div className="text-sm text-gray-500 italic">No posts match this filter.</div>
+                <div className="text-sm text-gray-500 italic py-8 text-center">No posts match this filter.</div>
             )}
 
             {!loading && !error && visible.length > 0 && (
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="text-left text-xs uppercase tracking-wider text-gray-500 border-b border-slate-700">
-                                <th className="py-2 pr-3">#</th>
+                            <tr className="text-left text-[10px] uppercase tracking-wider text-gray-500 border-b border-slate-700">
+                                <th className="py-2 pr-2 w-8">#</th>
                                 <th className="py-2 pr-3">Title</th>
-                                <th className="py-2 pr-3">Score</th>
-                                <th className="py-2 pr-3 text-right">Missed lift</th>
-                                <th className="py-2 pr-3">Quick wins</th>
-                                <th className="py-2 pr-3 text-right">Actions</th>
+                                <th className="py-2 pr-3 text-center">Score</th>
+                                {gscAvailable && <th className="py-2 pr-3 text-center">Pos</th>}
+                                {gscAvailable && <th className="py-2 pr-3 text-right">Imp</th>}
+                                {gscAvailable && <th className="py-2 pr-3 text-right">Gap</th>}
+                                <th className="py-2 pr-3">Top Issue</th>
+                                <th className="py-2 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {visible.map((r, i) => {
-                                const rowKey = r.id || r.slug || `row-${i}`;
-                                const open = !!expanded[rowKey];
+                                const open = !!expanded[r.slug];
                                 return (
-                                    <React.Fragment key={rowKey}>
-                                        <tr className="border-b border-slate-800/60 align-top">
-                                            <td className="py-3 pr-3 text-gray-500">{i + 1}</td>
+                                    <React.Fragment key={r.slug || `row-${i}`}>
+                                        <tr className="border-b border-slate-800/60 align-top hover:bg-slate-800/30 cursor-pointer" onClick={() => setExpanded(e => ({ ...e, [r.slug]: !e[r.slug] }))}>
+                                            <td className="py-3 pr-2 text-gray-600 text-xs">{i + 1}</td>
                                             <td className="py-3 pr-3">
-                                                <div className="text-white line-clamp-2 max-w-md">{r.title}</div>
-                                                <div className="text-xs text-gray-500">{r.category || '—'}</div>
+                                                <div className="text-white line-clamp-1 max-w-xs">{r.title}</div>
+                                                <div className="text-[10px] text-gray-600 mt-0.5">{r.slug}</div>
                                             </td>
-                                            <td className="py-3 pr-3">
-                                                <span className={`inline-flex items-center gap-1 px-2 py-1 rounded border text-xs font-semibold ${GRADE_COLORS[r.grade]}`}>
+                                            <td className="py-3 pr-3 text-center">
+                                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-semibold ${GRADE_COLORS[r.grade]}`}>
                                                     {r.score} · {r.grade}
                                                 </span>
                                             </td>
-                                            <td className="py-3 pr-3 text-right text-red-300 tabular-nums">
-                                                {r.missingLiftPct ? `+${r.missingLiftPct}%` : '—'}
-                                            </td>
+                                            {gscAvailable && (
+                                                <td className="py-3 pr-3 text-center text-xs text-gray-400">
+                                                    {r.position ? `#${Math.round(r.position)}` : '—'}
+                                                </td>
+                                            )}
+                                            {gscAvailable && (
+                                                <td className="py-3 pr-3 text-right text-xs text-gray-400 tabular-nums">
+                                                    {r.impressions ? r.impressions.toLocaleString() : '—'}
+                                                </td>
+                                            )}
+                                            {gscAvailable && (
+                                                <td className="py-3 pr-3 text-right">
+                                                    {r.clickGap > 0
+                                                        ? <span className="text-xs text-emerald-400 font-mono">+{r.clickGap}</span>
+                                                        : <span className="text-xs text-gray-600">—</span>}
+                                                </td>
+                                            )}
                                             <td className="py-3 pr-3">
-                                                <div className="flex flex-wrap gap-1 items-center">
-                                                    {r.quickWins[0] && (
-                                                        <span
-                                                            className="px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 text-[11px]"
-                                                            title={r.quickWins[0].label}
-                                                        >
-                                                            Fix: {r.quickWins[0].label.split('(')[0].trim().slice(0, 32)} ({r.quickWins[0].lift})
-                                                        </span>
-                                                    )}
-                                                    {(() => {
-                                                        const titleLen = (r.title || '').length;
-                                                        const ok = titleLen >= 50 && titleLen <= 60;
-                                                        const warn = !ok && titleLen >= 40 && titleLen <= 70;
-                                                        const cls = ok
-                                                            ? 'bg-emerald-500/20 text-emerald-300'
-                                                            : warn
-                                                                ? 'bg-amber-500/20 text-amber-300'
-                                                                : 'bg-slate-700/60 text-gray-300';
-                                                        return (
-                                                            <span
-                                                                className={`px-1.5 py-0.5 rounded text-[11px] ${cls}`}
-                                                                title="Ideal title length is 50-60 chars"
-                                                            >
-                                                                {titleLen} chars
-                                                            </span>
-                                                        );
-                                                    })()}
-                                                </div>
+                                                {r.quickWins?.[0] && (
+                                                    <span className="px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 text-[10px]">
+                                                        {r.quickWins[0].label.split('(')[0].trim().slice(0, 28)}
+                                                    </span>
+                                                )}
                                             </td>
-                                            <td className="py-3 pr-3 text-right space-x-2 whitespace-nowrap">
-                                                <button
-                                                    onClick={() => setExpanded(e => ({ ...e, [rowKey]: !e[rowKey] }))}
-                                                    className="text-blue-400 hover:text-blue-300 text-xs inline-flex items-center gap-1"
-                                                >
+                                            <td className="py-3 text-right whitespace-nowrap">
+                                                <button className="text-blue-400 hover:text-blue-300 text-xs inline-flex items-center gap-1">
                                                     {open ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-                                                    {open ? 'Close' : 'Rewrite'}
+                                                    {open ? 'Close' : 'Diagnose'}
                                                 </button>
-                                                <a
-                                                    href={`/articles/${r.slug}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-purple-400 hover:text-purple-300 text-xs inline-flex items-center gap-1"
-                                                >
-                                                    Open <ExternalLink className="w-3 h-3" />
-                                                </a>
                                             </td>
                                         </tr>
                                         {open && (
                                             <tr className="border-b border-slate-800/60">
                                                 <td />
-                                                <td colSpan={5} className="py-3 pr-3">
-                                                    <RowEditor row={r} onClose={() => setExpanded(e => ({ ...e, [rowKey]: false }))} />
+                                                <td colSpan={gscAvailable ? 7 : 4} className="py-3 pr-3">
+                                                    <CtrLabDetail row={r} onClose={() => setExpanded(e => ({ ...e, [r.slug]: false }))} />
                                                 </td>
                                             </tr>
                                         )}
@@ -504,12 +313,12 @@ export function CtrLabPanel() {
                 </div>
             )}
 
+            {/* Footer */}
             <div className="text-xs text-gray-500 border-t border-slate-700 pt-3 leading-relaxed">
-                <strong className="text-gray-400">Benchmarks used:</strong>{' '}
-                Title length 50-60 (ideal SERP width), numbers +15%, year +12%, brackets +16%,
-                power words +10%, emotion +7%, How/Why/What +5%. Meta 120-160, CTA +8%, year +5%,
-                benefit phrase +6%, action-verb start +4%. Lifts are industry medians, not guarantees —
-                treat them as priority signals, not predictions.
+                <strong className="text-gray-400">How it works:</strong>{' '}
+                Scores every article against CTR benchmarks (title length, numbers, year, power words, keyword alignment).
+                When GSC is connected, merges real position + impressions data to compute missed-click opportunities.
+                Click "Diagnose" on any article for SERP preview, keyword map, competitor titles, AI variants, and before/after comparison.
             </div>
         </div>
     );
