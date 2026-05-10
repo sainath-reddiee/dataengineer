@@ -245,7 +245,10 @@ function NavContent({ onNavigate }) {
                 <p className="text-xs text-gray-500">Admin Dashboard</p>
             </div>
 
-            <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+            {/* Single scroll area for nav + provider config so the API-key inputs are
+                always reachable even when many keys + Models section are expanded. */}
+            <div className="flex-1 overflow-y-auto">
+                <nav className="p-4 space-y-1">
                 {navItems.map((item) => {
                     const isActive = item.exact
                         ? location.pathname === item.path
@@ -534,6 +537,7 @@ function NavContent({ onNavigate }) {
                     <span>Logout</span>
                 </button>
                     </div>
+                </div>{/* end flex-1 overflow-y-auto */}
                 </div>
     );
 }
