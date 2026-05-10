@@ -55,7 +55,7 @@ export function SmartLinkingPage() {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(null);
     const [error, setError] = useState('');
-    const [geminiEnabled, setGeminiEnabled] = useState(aiService.isEnabled);
+    const [aiStatus, setAiStatus] = useState(() => aiService.getStatus());
 
     useEffect(() => {
         async function load() {
@@ -81,9 +81,10 @@ export function SmartLinkingPage() {
     }, [searchParams]);
 
     useEffect(() => {
+        // Refresh AI status every second so cooldown countdown ticks
         const interval = setInterval(() => {
-            setGeminiEnabled(aiService.isEnabled);
-        }, 2000);
+            setAiStatus(aiService.getStatus());
+        }, 1000);
         return () => clearInterval(interval);
     }, []);
 
@@ -230,13 +231,29 @@ QUALITY CHECKS:
                 </select>
                 <button
                     onClick={handleAnalyze}
-                    disabled={!selectedSlug || loading || !geminiEnabled}
-                    className="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 disabled:opacity-50 text-white font-semibold rounded-lg flex items-center gap-2"
+                    disabled={!selectedSlug || loading || !aiStatus.enabled || aiStatus.isRateLimited}
+                    className="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg flex items-center gap-2"
+                    title={aiStatus.isRateLimited ? `${aiStatus.provider === 'groq' ? 'Groq' : 'Gemini'} rate-limited — wait ${aiStatus.cooldownSeconds}s` : ''}
                 >
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                    {loading ? 'Analyzing...' : 'Get AI Link Suggestions'}
+                    {loading
+                        ? 'Analyzing...'
+                        : aiStatus.isRateLimited
+                            ? `Rate limited (${aiStatus.cooldownSeconds}s)`
+                            : 'Get AI Link Suggestions'}
                 </button>
             </div>
+
+            {aiStatus.enabled && (
+                <div className="text-xs text-gray-500 -mt-2">
+                    Active provider: <span className="text-gray-300 font-medium capitalize">{aiStatus.provider}</span>
+                    {aiStatus.isRateLimited && (
+                        <span className="ml-2 text-amber-400">
+                            • cooldown {aiStatus.cooldownSeconds}s remaining
+                        </span>
+                    )}
+                </div>
+            )}
 
             {error && (
                 <div className="p-4 bg-red-900/10 border border-red-800/30 rounded-xl text-red-400 text-sm">

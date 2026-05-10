@@ -18,6 +18,9 @@ import {
 import { AdminAuth, useAdminAuth } from './AdminAuth';
 import aiService from '@/services/aiService';
 import { groqService } from '@/services/groqService';
+import { geminiService } from '@/services/geminiService';
+import aiKeyRing from '@/services/aiKeyRing';
+import modelRegistry from '@/services/modelRegistry';
 import gscService from '@/services/gscService';
 import tinyfishService from '@/services/tinyfishService';
 
@@ -64,23 +67,38 @@ function NavContent({ onNavigate }) {
     const location = useLocation();
     const { logout } = useAdminAuth();
     const [provider, setProvider] = useState(aiService.provider);
-    const [apiKey, setApiKey] = useState(aiService.isEnabled ? '••••••••' : '');
-    const [keySet, setKeySet] = useState(aiService.isEnabled);
+    const [apiKey, setApiKey] = useState(''); // input buffer for adding new keys
+    const [keyList, setKeyList] = useState({
+        gemini: aiKeyRing.listKeys('gemini'),
+        groq: aiKeyRing.listKeys('groq'),
+    });
     const [gscConnected, setGscConnected] = useState(gscService.isConnected());
     const [tfKey, setTfKey] = useState(tinyfishService.isEnabled ? '••••••••' : '');
     const [tfSet, setTfSet] = useState(tinyfishService.isEnabled);
-    const [cooldown, setCooldown] = useState(groqService.getCooldownSeconds());
+    const [status, setStatus] = useState(aiService.getStatus());
+    const [models, setModels] = useState(modelRegistry.getAllModels());
+    const [modelsExpanded, setModelsExpanded] = useState(false);
+    const [testing, setTesting] = useState({}); // map keyIdx -> bool
+    const [testResults, setTestResults] = useState({}); // map keyIdx -> result
+    const [refreshing, setRefreshing] = useState(false);
+    const [refreshResult, setRefreshResult] = useState(null);
+    const [autoSyncDone, setAutoSyncDone] = useState(false);
+    const [addFeedback, setAddFeedback] = useState(''); // duplicate-warning message
 
-    // Update cooldown timer every second when active
+    // Poll status every second so cooldown timers tick
     useEffect(() => {
-        if (cooldown <= 0) return;
-        const interval = setInterval(() => {
-            const remaining = groqService.getCooldownSeconds();
-            setCooldown(remaining);
-            if (remaining <= 0) clearInterval(interval);
-        }, 1000);
+        const tick = () => {
+            setStatus(aiService.getStatus());
+            setKeyList({
+                gemini: aiKeyRing.listKeys('gemini'),
+                groq: aiKeyRing.listKeys('groq'),
+            });
+            setModels(modelRegistry.getAllModels());
+        };
+        tick();
+        const interval = setInterval(tick, 1000);
         return () => clearInterval(interval);
-    }, [cooldown]);
+    }, []);
 
     useEffect(() => {
         const handled = gscService.handleOAuthCallback();
@@ -88,19 +106,79 @@ function NavContent({ onNavigate }) {
         else setGscConnected(gscService.isConnected());
     }, [location]);
 
+    // Auto-sync model discovery once per tab if last sync > 24h ago and at least one key exists
+    useEffect(() => {
+        if (autoSyncDone) return;
+        if (!aiService.isEnabled) return;
+        const ONE_DAY = 24 * 60 * 60 * 1000;
+        const lastGemini = modelRegistry.getLastSync('gemini');
+        const lastGroq = modelRegistry.getLastSync('groq');
+        const stale = (Date.now() - Math.max(lastGemini, lastGroq)) > ONE_DAY;
+        if (!stale) { setAutoSyncDone(true); return; }
+        setAutoSyncDone(true);
+        aiService.refreshAvailableModels()
+            .then(result => setRefreshResult(result))
+            .catch(() => { /* silent */ });
+    }, [autoSyncDone]);
+
     const handleProviderChange = (p) => {
         aiService.setProvider(p);
         setProvider(p);
-        setApiKey(aiService.isEnabled ? '••••••••' : '');
-        setKeySet(aiService.isEnabled);
     };
 
-    const handleApiKeySubmit = () => {
-        if (apiKey && apiKey !== '••••••••') {
-            aiService.setApiKey(apiKey);
-            setApiKey('••••••••');
-            setKeySet(true);
+    const handleAddKey = () => {
+        const trimmed = apiKey.trim();
+        if (!trimmed) return;
+        const beforeCount = aiKeyRing.getKeyCount(provider);
+        aiKeyRing.addKey(provider, trimmed);
+        const afterCount = aiKeyRing.getKeyCount(provider);
+        if (afterCount === beforeCount) {
+            // Duplicate — addKey returned existing index without inserting
+            setAddFeedback('That key is already added.');
+            setTimeout(() => setAddFeedback(''), 2500);
+        } else {
+            setAddFeedback('');
         }
+        setApiKey('');
+        setKeyList({
+            gemini: aiKeyRing.listKeys('gemini'),
+            groq: aiKeyRing.listKeys('groq'),
+        });
+    };
+
+    /**
+     * Rebuild a per-key map ({"provider:index": value}) so its indices stay in
+     * sync with aiKeyRing after a key at `removedIndex` is spliced out.
+     */
+    const reindexMap = (map, p, removedIndex) => {
+        const next = {};
+        Object.entries(map).forEach(([k, v]) => {
+            const m = k.match(/^([^:]+):(\d+)$/);
+            if (!m) { next[k] = v; return; }
+            const [, mp, iStr] = m;
+            const i = parseInt(iStr, 10);
+            if (mp !== p) { next[k] = v; return; }
+            if (i === removedIndex) return;        // drop stale entry
+            if (i > removedIndex) next[`${mp}:${i - 1}`] = v;
+            else next[k] = v;
+        });
+        return next;
+    };
+
+    const handleRemoveKey = (p, index) => {
+        aiKeyRing.removeKey(p, index);
+        setKeyList({
+            gemini: aiKeyRing.listKeys('gemini'),
+            groq: aiKeyRing.listKeys('groq'),
+        });
+        // Shift testResults + testing maps so they keep matching the right key
+        setTestResults(prev => reindexMap(prev, p, index));
+        setTesting(prev => reindexMap(prev, p, index));
+    };
+
+    const handleToggleModel = (modelProvider, modelId, enabled) => {
+        modelRegistry.setEnabled(modelProvider, modelId, enabled);
+        setModels(modelRegistry.getAllModels());
     };
 
     const handleTfKeySubmit = () => {
@@ -109,6 +187,51 @@ function NavContent({ onNavigate }) {
             setTfKey('••••••••');
             setTfSet(true);
         }
+    };
+
+    const handleTestKey = async (p, index) => {
+        const tag = `${p}:${index}`;
+        setTesting(prev => ({ ...prev, [tag]: true }));
+        try {
+            const svc = p === 'groq' ? groqService : geminiService;
+            const defaultModel = p === 'groq' ? groqService.model : geminiService.model;
+            // Use a model that's enabled for this provider, or the default
+            const enabledModel = models.find(m => m.provider === p && m.enabled);
+            const model = enabledModel?.model || defaultModel;
+            const result = await svc.testConnection({ keyIndex: index, model });
+            setTestResults(prev => ({ ...prev, [tag]: result }));
+        } catch (e) {
+            setTestResults(prev => ({ ...prev, [tag]: { ok: false, error: e.message } }));
+        } finally {
+            setTesting(prev => ({ ...prev, [tag]: false }));
+        }
+    };
+
+    const handleTogglePersist = (p, index, currentPersist) => {
+        aiKeyRing.setPersist(p, index, !currentPersist);
+        setKeyList({
+            gemini: aiKeyRing.listKeys('gemini'),
+            groq: aiKeyRing.listKeys('groq'),
+        });
+    };
+
+    const handleRefreshModels = async () => {
+        setRefreshing(true);
+        setRefreshResult(null);
+        try {
+            const result = await aiService.refreshAvailableModels();
+            setRefreshResult(result);
+            setModels(modelRegistry.getAllModels());
+        } catch (e) {
+            setRefreshResult({ error: e.message });
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
+    const handleClearDeprecated = () => {
+        modelRegistry.clearDeprecated();
+        setModels(modelRegistry.getAllModels());
     };
 
     return (
@@ -178,13 +301,20 @@ function NavContent({ onNavigate }) {
                     )}
                 </div>
 
-                {/* AI Provider */}
+                {/* AI Provider — multi-key + multi-model */}
                 <div>
-                    <label className="flex items-center gap-2 text-xs text-gray-400 mb-2">
-                        <Key className="w-3 h-3" />
-                        AI Provider
-                        {keySet && <span className="text-green-400 text-[10px]">Active</span>}
+                    <label className="flex items-center justify-between gap-2 text-xs text-gray-400 mb-2">
+                        <span className="flex items-center gap-2">
+                            <Key className="w-3 h-3" />
+                            AI Providers
+                        </span>
+                        <span className="text-[10px] text-gray-500">
+                            {status.availableLanes}/{status.totalLanes} lanes
+                            {status.cooldownSeconds > 0 ? ` · ${status.cooldownSeconds}s` : ''}
+                        </span>
                     </label>
+
+                    {/* Provider tab — picks which provider new keys + tests target */}
                     <div className="flex gap-1 mb-2">
                         <button
                             onClick={() => handleProviderChange('gemini')}
@@ -194,7 +324,7 @@ function NavContent({ onNavigate }) {
                                     : 'bg-slate-700/50 text-gray-400 hover:text-white'
                             }`}
                         >
-                            Gemini
+                            Gemini ({keyList.gemini.length})
                         </button>
                         <button
                             onClick={() => handleProviderChange('groq')}
@@ -204,32 +334,170 @@ function NavContent({ onNavigate }) {
                                     : 'bg-slate-700/50 text-gray-400 hover:text-white'
                             }`}
                         >
-                            Groq
+                            Groq ({keyList.groq.length})
                         </button>
                     </div>
+
+                    {/* Existing keys for the active provider — chips with persist toggle, remove + test.
+                        Wrapped in a scroll container so 50+ keys don't overflow the sidebar. */}
+                    {keyList[provider].length > 0 && (
+                        <div className="space-y-1 mb-2 max-h-48 overflow-y-auto pr-0.5 -mr-0.5">
+                            {keyList[provider].map((k) => {
+                                const tag = `${provider}:${k.index}`;
+                                const result = testResults[tag];
+                                const isTesting = testing[tag];
+                                const isCooling = k.cooldownSeconds > 0;
+                                return (
+                                    <div key={k.index} className="flex items-center gap-1 px-2 py-1.5 bg-slate-700/30 border border-slate-600/50 rounded-lg">
+                                        <button
+                                            onClick={() => handleTogglePersist(provider, k.index, k.persist)}
+                                            aria-label={k.persist ? 'Saved across sessions, click to make session-only' : 'Session only, click to save across sessions'}
+                                            className={`text-[12px] leading-none flex-shrink-0 ${k.persist ? 'text-amber-400' : 'text-gray-500 hover:text-gray-300'}`}
+                                            title={k.persist ? 'Saved across sessions (click to make session-only)' : 'Session only (click to save across sessions)'}
+                                        >
+                                            {k.persist ? '★' : '☆'}
+                                        </button>
+                                        <span className="text-[10px] font-mono text-gray-300 flex-1 min-w-0 truncate">
+                                            {k.masked}
+                                            {isCooling && (
+                                                <span className="ml-1.5 text-amber-400">· {k.cooldownSeconds}s</span>
+                                            )}
+                                        </span>
+                                        {result && (
+                                            <span className={`text-[9px] truncate max-w-[80px] ${result.ok ? 'text-green-400' : 'text-red-400'}`} title={result.error || result.response}>
+                                                {result.ok ? `✓${result.latencyMs}ms` : `✗${(result.error || '').slice(0, 12)}`}
+                                            </span>
+                                        )}
+                                        <button
+                                            onClick={() => handleTestKey(provider, k.index)}
+                                            disabled={isTesting || isCooling}
+                                            title={isCooling ? `Cooldown ${k.cooldownSeconds}s` : 'Test this key'}
+                                            className="px-1.5 py-0.5 text-[9px] bg-slate-700/50 hover:bg-slate-700 text-gray-400 hover:text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {isTesting ? '…' : 'Test'}
+                                        </button>
+                                        <button
+                                            onClick={() => handleRemoveKey(provider, k.index)}
+                                            aria-label="Remove key"
+                                            className="px-1.5 py-0.5 text-[9px] bg-slate-700/50 hover:bg-red-500/20 text-gray-400 hover:text-red-300 rounded"
+                                            title="Remove key"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {/* Add new key */}
                     <div className="flex gap-1">
                         <input
                             type="password"
                             value={apiKey}
-                            onChange={(e) => { setApiKey(e.target.value); setKeySet(false); }}
-                            onKeyDown={(e) => e.key === 'Enter' && handleApiKeySubmit()}
-                            placeholder={provider === 'gemini' ? 'Gemini API key...' : 'Groq API key...'}
+                            onChange={(e) => setApiKey(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleAddKey()}
+                            placeholder={provider === 'gemini' ? 'Add Gemini API key...' : 'Add Groq API key...'}
                             className="flex-1 min-w-0 px-2 py-2 text-xs bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
                         />
                         <button
-                            onClick={handleApiKeySubmit}
-                            className="px-3 py-2 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                            onClick={handleAddKey}
+                            disabled={!apiKey.trim()}
+                            className="px-3 py-2 text-xs bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
                         >
-                            Set
+                            Add
                         </button>
                     </div>
-                    {/* Rate limit cooldown indicator */}
-                    {cooldown > 0 && (
+                    <p className="text-[9px] text-gray-600 mt-1">
+                        Add multiple keys to multiply free-tier quota via round-robin.
+                        ★ = saved across sessions (this browser only, never bundled). ☆ = session only.
+                    </p>
+                    {addFeedback && (
+                        <p className="text-[10px] text-amber-400 mt-1" role="status">{addFeedback}</p>
+                    )}
+
+                    {/* Aggregate cooldown badge */}
+                    {status.isRateLimited && (
                         <div className="mt-2 flex items-center gap-2 px-2 py-1.5 bg-amber-900/30 border border-amber-600/30 rounded-lg">
                             <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                            <span className="text-[10px] text-amber-300">Groq cooldown: {cooldown}s</span>
+                            <span className="text-[10px] text-amber-300">
+                                All lanes cooling — next free in {status.cooldownSeconds}s
+                            </span>
                         </div>
                     )}
+
+                    {/* Models toggle section */}
+                    <div className="mt-3 border-t border-slate-700/50 pt-3">
+                        <button
+                            onClick={() => setModelsExpanded(!modelsExpanded)}
+                            className="w-full flex items-center justify-between text-[10px] text-gray-400 hover:text-white"
+                        >
+                            <span className="flex items-center gap-1.5">
+                                <Sparkle className="w-3 h-3" />
+                                Models ({status.modelStats.enabled} enabled / {status.modelStats.total}
+                                {status.modelStats.deprecated > 0 ? ` · ${status.modelStats.deprecated} deprecated` : ''})
+                            </span>
+                            <span>{modelsExpanded ? '▾' : '▸'}</span>
+                        </button>
+                        {modelsExpanded && (
+                            <div className="mt-2 space-y-2">
+                                {/* Refresh + last-synced */}
+                                <div className="flex items-center justify-between gap-2">
+                                    <button
+                                        onClick={handleRefreshModels}
+                                        disabled={refreshing || !aiService.isEnabled}
+                                        className="px-2 py-1 text-[9px] font-medium bg-blue-600/30 hover:bg-blue-600/50 disabled:opacity-40 disabled:cursor-not-allowed text-blue-200 rounded transition-colors"
+                                    >
+                                        {refreshing ? 'Refreshing…' : '⟳ Refresh available models'}
+                                    </button>
+                                    {refreshResult && !refreshing && (
+                                        <span className="text-[9px] text-gray-500 truncate" title={JSON.stringify(refreshResult)}>
+                                            {refreshResult.gemini?.ok && `G:${refreshResult.gemini.count}`}
+                                            {refreshResult.gemini?.ok && refreshResult.groq?.ok && ' · '}
+                                            {refreshResult.groq?.ok && `Gq:${refreshResult.groq.count}`}
+                                            {!refreshResult.gemini?.ok && !refreshResult.groq?.ok && '✗ failed'}
+                                        </span>
+                                    )}
+                                </div>
+                                {status.modelStats.deprecated > 0 && (
+                                    <button
+                                        onClick={handleClearDeprecated}
+                                        className="text-[9px] text-amber-400 hover:text-amber-300 underline"
+                                    >
+                                        Clear {status.modelStats.deprecated} deprecated
+                                    </button>
+                                )}
+                                {['gemini', 'groq'].map(p => (
+                                    <div key={p}>
+                                        <div className="text-[9px] uppercase tracking-wide text-gray-500 mb-1 capitalize">{p}</div>
+                                        {models.filter(m => m.provider === p).map(m => (
+                                            <label
+                                                key={`${m.provider}:${m.model}`}
+                                                className={`flex items-center gap-2 px-1.5 py-1 hover:bg-slate-700/30 rounded cursor-pointer ${m.deprecated ? 'opacity-60' : ''}`}
+                                                title={m.deprecated ? 'Provider removed this model — disable to clean up' : m.model}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={m.enabled}
+                                                    onChange={(e) => handleToggleModel(m.provider, m.model, e.target.checked)}
+                                                    className="w-3 h-3 accent-blue-500"
+                                                />
+                                                <span className={`text-[10px] flex-1 truncate ${m.deprecated ? 'line-through text-gray-500' : m.enabled ? 'text-gray-200' : 'text-gray-500'}`}>
+                                                    {m.label}
+                                                </span>
+                                                {m.deprecated && (
+                                                    <span className="text-[9px] text-amber-400 flex-shrink-0">⚠ deprecated</span>
+                                                )}
+                                                {!m.deprecated && m.cooldownSeconds > 0 && (
+                                                    <span className="text-[9px] text-amber-400">{m.cooldownSeconds}s</span>
+                                                )}
+                                            </label>
+                                        ))}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* TinyFish Web Search */}
