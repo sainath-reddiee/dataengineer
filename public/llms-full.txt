@@ -1,5 +1,5 @@
 # DataEngineer Hub - Full Content Index for LLMs
-> Last generated: 2026-05-10
+> Last generated: 2026-05-31
 > Total articles: 55
 > Source: https://dataengineerhub.blog
 > Compact version: https://dataengineerhub.blog/llms.txt

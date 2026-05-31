@@ -3,26 +3,26 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://dataengineerhub.blog/</loc>
-    <lastmod>2026-05-10</lastmod>
+    <lastmod>2026-05-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles</loc>
-    <lastmod>2026-05-10</lastmod>
+    <lastmod>2026-05-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/about</loc>
     <lastmod>2026-03-01</lastmod>
-    <changefreq>monthly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/contact</loc>
     <lastmod>2026-03-01</lastmod>
-    <changefreq>monthly</changefreq>
+    <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
@@ -45,15 +45,15 @@
   </url>
   <url>
     <loc>https://dataengineerhub.blog/certification</loc>
-    <lastmod>2026-05-10</lastmod>
+    <lastmod>2026-05-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/airflow-vs-prefect</loc>
     <lastmod>2026-05-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/05/Airflow-vs-Perfect.jpg</image:loc>
       <image:title>Airflow vs Prefect: 2026 Comparison Guide</image:title>
@@ -62,14 +62,14 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/delta-lake-vs-iceberg</loc>
     <lastmod>2026-05-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/the-problem-with-data-engineering-certifications-that-nobody-talks-about</loc>
     <lastmod>2026-05-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/05/IMG_9688_11zon.jpg</image:loc>
       <image:title>The Problem with Data Engineering Certifications That Nobody Talks About</image:title>
@@ -78,8 +78,8 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-zero-copy-cloning-problems</loc>
     <lastmod>2026-05-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Snowflake-zero-copy-clone-issue.jpg</image:loc>
       <image:title>The Problem with Zero-Copy Cloning in Snowflake That Nobody Talks About</image:title>
@@ -88,8 +88,8 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/claude-code-power-user-guide</loc>
     <lastmod>2026-05-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Claude-code-user-guide.jpg</image:loc>
       <image:title>Claude Code Power User Guide: Stop Using It Like Autocomplete</image:title>
@@ -99,7 +99,7 @@
     <loc>https://dataengineerhub.blog/articles/query-snowflake-in-duckdb-cut-costs</loc>
     <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/19D3D99C-0012-453B-B706-032B99A24AAB_11zon.jpg</image:loc>
       <image:title>How to Query Snowflake in DuckDB (And Cut Your Bill While Doing It)</image:title>
@@ -109,7 +109,7 @@
     <loc>https://dataengineerhub.blog/articles/dbt-tests-pass-bad-data</loc>
     <lastmod>2026-04-17</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/dbt-tests-bad-data.jpg</image:loc>
       <image:title>The Problem with dbt Tests Nobody Talks About — They Pass and You Still Ship Bad Data</image:title>
@@ -119,7 +119,7 @@
     <loc>https://dataengineerhub.blog/articles/automation-in-data-engineering</loc>
     <lastmod>2026-04-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Data-Engineering-automation.jpg</image:loc>
       <image:title>It’s Not AI You Should Worry About—It’s Automation</image:title>
@@ -129,7 +129,7 @@
     <loc>https://dataengineerhub.blog/articles/why-i-stopped-using-snowflake-tasks-orchestration</loc>
     <lastmod>2026-04-12</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Snowflake-tasks.jpg</image:loc>
       <image:title>Why I Stopped Using Snowflake Tasks for Orchestration</image:title>
@@ -138,8 +138,8 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-code-cost-control-2026</loc>
     <lastmod>2026-05-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Snowflake-cortex-code-cost.jpg</image:loc>
       <image:title>2026 Guide: Snowflake Cortex Code Cost Control</image:title>
@@ -158,7 +158,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration</loc>
     <lastmod>2026-05-05</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Dbt-projects-in-snowflake.jpg</image:loc>
@@ -178,7 +178,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide</loc>
     <lastmod>2026-05-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/03/Snowflake-cortex-code.jpg</image:loc>
@@ -198,7 +198,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-parse-document-complete-guide-2026</loc>
     <lastmod>2026-05-08</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/Snowflake-ai_parse_document.jpg</image:loc>
@@ -208,7 +208,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-cost-comparison</loc>
     <lastmod>2026-05-10</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/Snowflake-cortex-cost-comparison.jpg</image:loc>
@@ -248,7 +248,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/snowflake-interview-questions-answers-2026</loc>
     <lastmod>2026-05-10</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/IMG_8310.jpeg</image:loc>
@@ -418,7 +418,7 @@
   <url>
     <loc>https://dataengineerhub.blog/articles/build-snowflake-cortex-ai-agent-guide</loc>
     <lastmod>2026-05-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Designer_img.jpg</image:loc>

@@ -1,4 +1,4 @@
-﻿// scripts/generateStaticPagesIncremental.js
+// scripts/generateStaticPagesIncremental.js
 // FIXED VERSION - Generates FULL CONTENT for SEO/AdSense with IMAGES
 import fs from 'fs';
 import path from 'path';
@@ -3382,8 +3382,12 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
   html += CONSENT_MODE_V2_HTML + '\n';
-  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
-  html += '            crossorigin="anonymous"></script>\n';
+  if (catRobots.indexOf('noindex') === -1) {
+    html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+    html += '            crossorigin="anonymous"></script>\n';
+  } else {
+    html += '    <!-- AdSense loader omitted on noindex category -->\n';
+  };
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -3668,8 +3672,7 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
   html += CONSENT_MODE_V2_HTML + '\n';
-  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
-  html += '            crossorigin="anonymous"></script>\n';
+  html += '    <!-- AdSense loader omitted on noindex glossary hub -->\n';;
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -3967,8 +3970,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
   html += CONSENT_MODE_V2_HTML + '\n';
-  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
-  html += '            crossorigin="anonymous"></script>\n';
+  html += '    <!-- AdSense loader omitted on noindex glossary page -->\n';;
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -4265,8 +4267,7 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
   html += CONSENT_MODE_V2_HTML + '\n';
-  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
-  html += '            crossorigin="anonymous"></script>\n';
+  html += '    <!-- AdSense loader omitted on noindex compare hub -->\n';;
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -4595,8 +4596,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
   html += CONSENT_MODE_V2_HTML + '\n';
-  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
-  html += '            crossorigin="anonymous"></script>\n';
+  html += '    <!-- AdSense loader omitted on noindex comparison page -->\n';;
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -4840,8 +4840,7 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
   html += CONSENT_MODE_V2_HTML + '\n';
-  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
-  html += '            crossorigin="anonymous"></script>\n';
+  html += '    <!-- AdSense loader omitted on noindex cheatsheet hub -->\n';;
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -5120,8 +5119,7 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
   html += CONSENT_MODE_V2_HTML + '\n';
-  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
-  html += '            crossorigin="anonymous"></script>\n';
+  html += '    <!-- AdSense loader omitted on noindex cheatsheet page -->\n';;
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -5448,8 +5446,8 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
     <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">
 ${CONSENT_MODE_V2_HTML}
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}"
-            crossorigin="anonymous"></script>
+    ${isPSEO ? '<!-- AdSense loader omitted on noindex pSEO page -->' : `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}"
+            crossorigin="anonymous"></script>`}
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png">
     <link rel="manifest" href="/manifest.json">
@@ -5849,10 +5847,8 @@ async function buildIncremental(options = {}) {
 
   console.log('ðŸš€ Starting FULL CONTENT static generation with imagesâ€¦');
   console.log('   ðŸ”¥ Articles will include COMPLETE content for SEO/AdSense');
-  console.log('   ðŸ–¼ï¸  Images will be properly linked with absolute URLs');
-  if (force) console.log('âš¡ Force mode: Rebuilding all pages');
-  console.log('');
-
+  console.log('   ðŸ–¼ï¸   Images will be properly linked with absolute URLs');
+  
   const distDir = path.join(__dirname, '..', 'dist');
 
   if (!fs.existsSync(distDir)) {
@@ -5864,7 +5860,9 @@ async function buildIncremental(options = {}) {
   const criticalChunks = findCriticalChunks(distDir);
   bundleFiles.modulePreloadHtml = criticalChunks.map(c => `    <link rel="modulepreload" href="${c}" />`).join('\n');
   const articlesDir = path.join(distDir, 'articles');
-  const articlesExist = fs.existsSync(articlesDir) && fs.readdirSync(articlesDir).length > 0;
+  const articlesExist = fs.existsSync(articlesDir) && fs.readdirSync(articlesDir).some(entry => {
+    return fs.statSync(path.join(articlesDir, entry)).isDirectory();
+  });
 
   if (!articlesExist && !force) {
     console.warn('âš ï¸  articles/ directory not found or empty');

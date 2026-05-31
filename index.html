@@ -47,7 +47,50 @@
     <link rel="preconnect" href="https://imagedelivery.net" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     
-    <title>Data Engineering Tutorials — Snowflake, Databricks, dbt &amp; AWS</title>
+    <script>
+      (function() {
+        var path = (window.location.pathname || '').toLowerCase();
+        var title = 'Data Engineering Tutorials \u2014 Snowflake, Databricks, dbt & AWS';
+        var desc = 'In-depth, production-tested data engineering tutorials covering Snowflake, Databricks, AWS, Azure, GCP, Salesforce Data Cloud, dbt, Apache Airflow, Apache Spark, Python, SQL, lakehouse architectures, ETL/ELT pipelines, and modern data stack best practices.';
+
+        if (path === '/about' || path === '/about/') {
+          title = 'About Sainath Reddy \u2014 Data Engineer';
+          desc = 'Learn about Sainath Reddy, a data engineer specializing in Snowflake, Spark, dbt, Airflow, and modern data platforms.';
+        } else if (path === '/contact' || path === '/contact/') {
+          title = 'Contact \u2014 DataEngineer Hub';
+          desc = 'Contact Sainath Reddy for data engineering queries, collaboration, or feedback.';
+        } else if (path === '/privacy-policy' || path === '/privacy-policy/') {
+          title = 'Privacy Policy \u2014 DataEngineer Hub';
+          desc = 'Privacy Policy for DataEngineer Hub. How we collect, use, and protect your data.';
+        } else if (path === '/terms-of-service' || path === '/terms-of-service/') {
+          title = 'Terms of Service \u2014 DataEngineer Hub';
+          desc = 'Terms of Service governing your use of DataEngineer Hub.';
+        } else if (path === '/disclaimer' || path === '/disclaimer/') {
+          title = 'Disclaimer \u2014 DataEngineer Hub';
+          desc = 'Disclaimer for DataEngineer Hub. Affiliate disclosure, content limitations, and terms.';
+        } else if (path === '/articles' || path === '/articles/') {
+          title = 'All Articles \u2014 Data Engineering Tutorials';
+          desc = 'Browse all data engineering tutorials covering Snowflake, Databricks, dbt, Airflow, AWS, Azure, GCP, Python, and SQL.';
+        } else if (path === '/contribute' || path === '/contribute/') {
+          title = 'Write for Us \u2014 DataEngineer Hub';
+          desc = 'Contribute a guest post on data engineering topics. Share your expertise with our community.';
+        } else if (path === '/certification' || path === '/certification/') {
+          title = 'Snowflake Certification Prep \u2014 SnowPro Core & Advanced';
+          desc = 'Free Snowflake certification prep resources including SnowPro Core, Advanced, and Specialty exams.';
+        } else if (path.match(/^\/articles\//)) {
+          title = 'Article \u2014 DataEngineer Hub';
+          desc = 'Read this data engineering article on DataEngineer Hub.';
+        } else if (path === '/newsletter' || path === '/newsletter/') {
+          title = 'Newsletter \u2014 DataEngineer Hub';
+          desc = 'Subscribe to the DataEngineer Hub newsletter for weekly data engineering insights.';
+        }
+
+        document.title = title;
+        var meta = document.querySelector('meta[name="description"]');
+        if (meta) meta.setAttribute('content', desc);
+      })();
+    </script>
+    <title>Data Engineering Tutorials \u2014 Snowflake, Databricks, dbt &amp; AWS</title>
     <meta name="description" content="In-depth, production-tested data engineering tutorials covering Snowflake, Databricks, AWS, Azure, GCP, Salesforce Data Cloud, dbt, Apache Airflow, Apache Spark, Python, SQL, lakehouse architectures, ETL/ELT pipelines, and modern data stack best practices." />
 
     <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />
