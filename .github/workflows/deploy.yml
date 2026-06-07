@@ -400,6 +400,16 @@ jobs:
           echo "⚠️ FTP sync state cleared - all files will be re-uploaded regardless of changes" >> $GITHUB_STEP_SUMMARY
           echo "📝 Each HTML file contains unique build timestamp to ensure file content differs" >> $GITHUB_STEP_SUMMARY
 
+      - name: 📋 Copy FTP Sync State to dist/
+        if: steps.changes.outputs.skip_deploy != 'true' && steps.changes.outputs.dry_run != 'true'
+        run: |
+          if [ -f ".ftp-deploy-sync-state.json" ]; then
+            cp .ftp-deploy-sync-state.json dist/
+            echo "✅ FTP sync state copied to dist/"
+          else
+            echo "ℹ️ No FTP sync state found in root"
+          fi
+
       - name: 🚀 Deploy to Hostinger (FTPS)
         if: steps.changes.outputs.skip_deploy != 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -426,6 +436,16 @@ jobs:
             **/Thumbs.db
             **/.build-cache.json
             **/*.map
+
+      - name: 💾 Copy FTP Sync State to Root for Caching
+        if: steps.changes.outputs.skip_deploy != 'true' && steps.changes.outputs.dry_run != 'true' && always()
+        run: |
+          if [ -f "dist/.ftp-deploy-sync-state.json" ]; then
+            cp dist/.ftp-deploy-sync-state.json .ftp-deploy-sync-state.json
+            echo "✅ FTP sync state copied back to root for caching"
+          else
+            echo "⚠️ No FTP sync state found in dist/"
+          fi
 
       - name: ⏭️ Deployment Skipped
         if: steps.changes.outputs.skip_deploy == 'true'
