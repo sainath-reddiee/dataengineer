@@ -277,13 +277,16 @@ const ESSENTIAL_PAGES = [
     description: 'Learn about Sainath Reddy, the creator of DataEngineer Hub. Expert in Snowflake, Apache Spark, dbt, Airflow, and modern data engineering.',
     content: `
       <h1>About DataEngineer Hub</h1>
-      <p>Welcome to DataEngineer Hub, created by <strong>Sainath Reddy</strong> — a passionate Data Engineer based in Hyderabad, India with extensive experience in building scalable data pipelines and cloud-native data solutions.</p>
+      <p>Welcome to DataEngineer Hub, created by <strong>Sainath Reddy</strong> — a passionate Data Engineer based in Hyderabad, India with extensive experience in building scalable data pipelines, data warehouses, and cloud-native solutions.</p>
 
       <h2>Who Am I?</h2>
-      <p>I'm Sainath Reddy, a Data Engineer who specializes in designing and implementing modern data architectures. With years of hands-on experience, I've worked with technologies like <strong>Snowflake</strong>, <strong>Apache Spark</strong>, <strong>Apache Airflow</strong>, <strong>dbt</strong>, <strong>Apache Kafka</strong>, and various cloud platforms including <strong>AWS</strong>, <strong>Azure</strong>, and <strong>GCP</strong>.</p>
+      <p>I'm Sainath Reddy, a Data Engineer specializing in modern data architecture, cloud databases, and data orchestration. I have spent my career designing and implementing robust data platforms for diverse business sectors, translating complex raw data into actionable warehouse structures. Throughout my professional journey, I have managed high-throughput streaming systems, migrated legacy database setups to scalable cloud architectures, and optimized cloud data warehouse workloads to save organizations substantial operational spend. My technical expertise spans technologies like Snowflake, Databricks, Apache Spark, Apache Airflow, dbt, Apache Kafka, and cloud infrastructure across AWS, Azure, and GCP.</p>
 
       <h2>My Mission</h2>
-      <p>DataEngineer Hub was born from my desire to share practical, real-world knowledge about data engineering. I believe in making complex data concepts accessible to everyone — from beginners exploring the field to seasoned professionals looking for advanced techniques.</p>
+      <p>DataEngineer Hub was born from my desire to share practical, real-world knowledge about data engineering. I believe in making complex data concepts accessible to everyone — from beginners exploring the field to seasoned professionals looking for advanced techniques. The modern data stack is evolving rapidly, and my goal is to provide clear, unbiased, and actionable guides that cut through vendor hype and focus on solid engineering fundamentals.</p>
+
+      <h2>Editorial Standards & Code Quality</h2>
+      <p>At DataEngineer Hub, every tutorial, code example, and architecture comparison is written with production reliability in mind. I personally build, test, and run the code snippets in dedicated staging environments before publishing to ensure correctness. Rather than presenting generic documentation summaries, my mission is to share real-world engineering insights, architectural trade-offs, and cost-efficiency strategies that I have gathered from years of hands-on industry experience. This ensures you receive clean, authoritative, and battle-tested guidance that can be directly applied to your data platforms.</p>
 
       <h2>What You'll Find Here</h2>
       <ul>
@@ -307,10 +310,10 @@ const ESSENTIAL_PAGES = [
       </ul>
 
       <h2>My Philosophy</h2>
-      <p>I believe that great data engineering is about more than just writing code. It's about understanding business requirements, designing maintainable systems, and building trust in data. Every article I write aims to bridge the gap between theory and practice.</p>
+      <p>I believe that great data engineering is about more than just writing code. It's about understanding business requirements, designing maintainable systems, and building trust in data. Every article I write aims to bridge the gap between theory and practice, focusing on cost efficiency, observability, and scalability.</p>
 
       <h2>Connect With Me</h2>
-      <p>Have questions or want to collaborate? Reach out at <strong>sainath@dataengineerhub.blog</strong>. I'm always happy to discuss data engineering challenges and share insights.</p>
+      <p>Have questions, suggestions, or want to collaborate? Reach out at <strong>sainath@dataengineerhub.blog</strong>. I'm always happy to discuss data engineering challenges, help troubleshoot pipeline issues, or share insights on architecture design.</p>
     `
   },
   {
@@ -469,12 +472,18 @@ const ESSENTIAL_PAGES = [
         <li><strong>Community Recognition:</strong> Join a growing community of contributors and establish yourself as a thought leader in data engineering.</li>
       </ul>
 
+      <h2>What We Look For</h2>
+      <p>We are seeking practitioners who want to share practical, real-world data engineering insights. We avoid generic, surface-level articles that simply rephrase documentation. Instead, we look for detailed walkthroughs of real problems you solved, deep dives into tool performance optimizations, cost control strategies, or design patterns for complex streaming/batch pipelines. If you have spent hours debugging a strange error, successfully migrated a pipeline, or optimized a slow query, we want to hear your story and share it with our global reader base of fellow engineers, architects, and data practitioners.</p>
+
       <h2>Submission Guidelines</h2>
       <ul>
         <li>1,000+ words of original, unpublished content</li>
         <li>Code samples, diagrams, or screenshots encouraged</li>
         <li>Practical tutorials, how-tos, or architecture deep-dives preferred</li>
       </ul>
+
+      <h2>Our Editorial Review Process</h2>
+      <p>To ensure our readers receive the highest quality tutorials, we put every submission through a collaborative peer-review process. When you submit a draft, our technical editors review it for clarity, technical accuracy, code validity, and formatting. We work closely with you to refine the structure, add diagrams if necessary, and ensure all code blocks are easy to copy and run. This cooperative process not only guarantees that the published piece is polished and authoritative, but also helps contributors refine their technical writing skills. Once finalized, your article goes live with full credit, a bio, and links back to your personal portfolio or social channels.</p>
 
       <h2>Topics We Cover</h2>
       <p>Snowflake, dbt, Apache Airflow, Apache Spark, AWS / Azure / GCP, Data Modeling, ETL/ELT Pipelines, Data Quality, Data Governance, Streaming (Kafka, Flink), Python for Data Engineering, SQL Optimization.</p>
@@ -3379,6 +3388,20 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   const buildTimestamp = new Date().toISOString();
   const catDescription = stripHTML(category.description || '').trim();
 
+  // Automatic default descriptions based on category slug to enrich listing pages for crawlers
+  const categoryIntroMap = {
+    airflow: "Apache Airflow is the leading open-source platform for workflow orchestration in data engineering. It allows you to programmatically author, schedule, and monitor complex data pipelines as Directed Acyclic Graphs (DAGs). Airflow is highly extensible and integrates with almost every modern data warehouse, processing engine, and cloud provider, making it an essential tool for orchestrating enterprise data workflows.",
+    aws: "Amazon Web Services (AWS) is the foundation of many cloud-based data engineering platforms. Services like Amazon S3, AWS Glue, AWS EMR, and Amazon Redshift enable data teams to build scalable data lakes, process massive datasets, and run high-performance analytical queries. Master cloud-native architectures, serverless ETL pipelines, and cost-optimization strategies on AWS.",
+    azure: "Microsoft Azure provides a comprehensive suite of cloud services for big data analytics and engineering. From Azure Data Lake Storage (ADLS) and Azure Data Factory (ADF) to Synapse Analytics and Azure Databricks, the platform allows you to ingest, transform, and analyze enterprise data at scale. Discover best practices for integrating and running workloads on Microsoft's cloud platform.",
+    databricks: "Databricks is an industry-leading unified analytics platform built on top of Apache Spark and lakehouse architecture (Delta Lake). It enables collaborative data science, real-time streaming, and high-performance SQL analytics. Learn how to optimize Databricks clusters, deploy AI/ML agents, write PySpark jobs, and design robust Delta Lake architectures.",
+    dbt: "dbt (data build tool) is the standard framework for data transformation inside the warehouse. It enables data teams to build, test, document, and deploy SQL-based transformation pipelines using software engineering best practices. Master dbt models, custom testing, documentation generation, and native data warehouse integrations (like Snowflake and BigQuery).",
+    python: "Python is the primary programming language for modern data engineering. It is used to write data pipelines, interact with REST APIs, parse semi-structured file formats (like JSON, Parquet, and Avro), and orchestrate big data processing jobs. Learn PySpark, data manipulation with pandas/Polars, API integration patterns, and clean scripting best practices.",
+    snowflake: "Snowflake is a cloud-based data platform that offers a unique multi-cluster shared-data architecture. It supports elastic compute scaling, zero-copy cloning, secure data sharing, and native semi-structured data support. Learn how to optimize query performance, manage costs, structure dbt projects, utilize Cortex AI, and build real-time streaming pipelines with Snowflake."
+  };
+
+  const defaultIntro = categoryIntroMap[category.slug.toLowerCase()] || '';
+  const finalCatDescription = catDescription || defaultIntro;
+
   // Build article list HTML
   let articleListHTML = '';
   for (const article of categoryArticles) {
@@ -3391,7 +3414,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
               </li>`;
   }
 
-  const descriptionMeta = catDescription || 'Browse ' + categoryArticles.length + ' articles about ' + safeName + ' on DataEngineer Hub. In-depth tutorials and guides for data engineers.';
+  const descriptionMeta = finalCatDescription || 'Browse ' + categoryArticles.length + ' articles about ' + safeName + ' on DataEngineer Hub. In-depth tutorials and guides for data engineers.';
 
   // Build the HTML using string concatenation to avoid template literal issues
   let html = '<!doctype html>\n<html lang="en">\n  <head>\n';
@@ -3469,7 +3492,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '      <div class="seo-content">\n';
   html += '        <h1>' + safeName + ' Articles</h1>\n';
   html += '        <p>\n';
-  html += '          ' + (catDescription ? catDescription + ' ' : '') + 'Explore our collection of <strong>' + categoryArticles.length + ' in-depth articles</strong> about ' + safeName + '\n';
+  html += '          ' + (finalCatDescription ? finalCatDescription + ' ' : '') + 'Explore our collection of <strong>' + categoryArticles.length + ' in-depth articles</strong> about ' + safeName + '\n';
   html += '          on DataEngineer Hub. Each tutorial provides practical, hands-on guidance with real-world examples\n';
   html += '          to help you master ' + safeName + ' concepts and best practices.\n';
   html += '        </p>\n\n';
