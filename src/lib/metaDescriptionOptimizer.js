@@ -29,13 +29,11 @@ const POWER_WORDS = [
  * Call-to-action phrases
  */
 const CTA_PHRASES = [
-  'Start now →',
-  'Get started today →',
-  'Learn more →',
-  'Read the full guide →',
-  'Try it yourself →',
-  'See examples →',
-  'Download code →',
+  'With real examples and production tips.',
+  'Practical guide with code examples.',
+  'Includes step-by-step examples.',
+  'Production-tested approach with SQL examples.',
+  'Full guide with working code.',
 ];
 
 /**
@@ -126,15 +124,13 @@ function isInterviewArticle(title, tags) {
  */
 function generateTutorialDescription({ title, excerpt, readTime }) {
   const cleanExcerpt = cleanText(excerpt);
+  // Use the excerpt directly — it reads naturally and avoids generic template patterns
+  if (cleanExcerpt && cleanExcerpt.length > 60) {
+    return truncateToLimit(cleanExcerpt, 155);
+  }
   const topic = extractMainTopic(title);
-
-  // Inject power word based on topic
   const powerWord = selectPowerWord(topic);
-  const hook = `${powerWord} ${topic} with this comprehensive guide.`;
-  const value = `${cleanExcerpt.substring(0, 75)}...`;
-  const cta = `${readTime} min read. Start learning →`;
-
-  return truncateToLimit(`${hook} ${value} ${cta}`, 155);
+  return truncateToLimit(`${powerWord} ${topic} with practical examples and production-ready code.`, 155);
 }
 
 /**
@@ -164,11 +160,10 @@ function selectPowerWord(topic) {
  */
 function generateComparisonDescription({ title, excerpt }) {
   const cleanExcerpt = cleanText(excerpt);
-  const hook = `Detailed comparison to help you choose the right solution.`;
-  const value = `${cleanExcerpt.substring(0, 70)}...`;
-  const cta = `See the full analysis →`;
-
-  return truncateToLimit(`${hook} ${value} ${cta}`, 155);
+  if (cleanExcerpt && cleanExcerpt.length > 60) {
+    return truncateToLimit(cleanExcerpt, 155);
+  }
+  return truncateToLimit(`Detailed comparison to help you choose the right solution for your data engineering stack.`, 155);
 }
 
 /**
@@ -176,11 +171,10 @@ function generateComparisonDescription({ title, excerpt }) {
  */
 function generateHowToDescription({ title, excerpt, readTime }) {
   const cleanExcerpt = cleanText(excerpt);
-  const hook = `Step-by-step guide with code examples.`;
-  const value = `${cleanExcerpt.substring(0, 75)}...`;
-  const cta = `${readTime} min tutorial →`;
-
-  return truncateToLimit(`${hook} ${value} ${cta}`, 155);
+  if (cleanExcerpt && cleanExcerpt.length > 60) {
+    return truncateToLimit(cleanExcerpt, 155);
+  }
+  return truncateToLimit(`Step-by-step guide with real code examples. ${readTime}-minute read.`, 155);
 }
 
 /**
@@ -188,11 +182,10 @@ function generateHowToDescription({ title, excerpt, readTime }) {
  */
 function generateInterviewDescription({ title, excerpt }) {
   const cleanExcerpt = cleanText(excerpt);
-  const hook = `Ace your interview with expert answers and proven strategies.`;
-  const value = `${cleanExcerpt.substring(0, 65)}...`;
-  const cta = `Prepare now →`;
-
-  return truncateToLimit(`${hook} ${value} ${cta}`, 155);
+  if (cleanExcerpt && cleanExcerpt.length > 60) {
+    return truncateToLimit(cleanExcerpt, 155);
+  }
+  return truncateToLimit(`Detailed interview questions with answers for data engineering roles. Covers architecture, optimization, and system design.`, 155);
 }
 
 /**
@@ -200,11 +193,14 @@ function generateInterviewDescription({ title, excerpt }) {
  */
 function generateDefaultDescription({ title, excerpt, readTime }) {
   const cleanExcerpt = cleanText(excerpt);
-  const hook = `Expert insights on ${extractMainTopic(title)}.`;
-  const value = `${cleanExcerpt.substring(0, 80)}...`;
-  const cta = `Read more →`;
-
-  return truncateToLimit(`${hook} ${value} ${cta}`, 155);
+  // Use the excerpt directly — it's real content and avoids template-like patterns
+  // that trigger Google's programmatic content detection
+  if (cleanExcerpt && cleanExcerpt.length > 60) {
+    return truncateToLimit(cleanExcerpt, 155);
+  }
+  // Fallback: construct a natural description from the title topic
+  const topic = extractMainTopic(title);
+  return truncateToLimit(`${topic} — practical guide for data engineers with real-world examples and production tips.`, 155);
 }
 
 /**

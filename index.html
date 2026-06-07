@@ -85,12 +85,14 @@
           desc = 'Subscribe to the DataEngineer Hub newsletter for weekly data engineering insights.';
         }
 
-        document.title = title;
         var meta = document.querySelector('meta[name="description"]');
         if (meta) meta.setAttribute('content', desc);
+        // Note: document.title is managed by React's MetaTags component per route.
+        // The direct assignment was removed to prevent Vite's prerender plugin
+        // from injecting a duplicate <title> tag during SSR pre-rendering.
       })();
     </script>
-    <title>Data Engineering Tutorials \u2014 Snowflake, Databricks, dbt &amp; AWS</title>
+    <title>Data Engineering Tutorials — Snowflake, Databricks, dbt &amp; AWS</title>
     <meta name="description" content="In-depth, production-tested data engineering tutorials covering Snowflake, Databricks, AWS, Azure, GCP, Salesforce Data Cloud, dbt, Apache Airflow, Apache Spark, Python, SQL, lakehouse architectures, ETL/ELT pipelines, and modern data stack best practices." />
 
     <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />

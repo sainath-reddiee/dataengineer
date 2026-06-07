@@ -1,4 +1,4 @@
-// scripts/generateStaticPagesIncremental.js
+﻿// scripts/generateStaticPagesIncremental.js
 // FIXED VERSION - Generates FULL CONTENT for SEO/AdSense with IMAGES
 import fs from 'fs';
 import path from 'path';
@@ -2764,7 +2764,7 @@ ${CONSENT_MODE_V2_HTML}
         </div>
       </nav>
 
-      <!-- ðŸ”¥ BREADCRUMBS - Visible to crawlers -->
+      <!-- 🔥 BREADCRUMBS - Visible to crawlers -->
       <nav aria-label="Breadcrumb" class="breadcrumb-nav">
         <ol class="breadcrumb-list">
           <li class="breadcrumb-item">
