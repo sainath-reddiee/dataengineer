@@ -400,62 +400,32 @@ jobs:
           echo "⚠️ FTP sync state cleared - all files will be re-uploaded regardless of changes" >> $GITHUB_STEP_SUMMARY
           echo "📝 Each HTML file contains unique build timestamp to ensure file content differs" >> $GITHUB_STEP_SUMMARY
 
-      - name: 🚀 Deploy to Hostinger via SFTP/Rsync
+      - name: 🚀 Deploy to Hostinger (FTPS)
         if: steps.changes.outputs.skip_deploy != 'true'
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          
-          # Setup SSH configuration for Hostinger
-          cat <<EOF > ~/.ssh/config
-          Host hostinger
-            HostName ${{ secrets.FTP_SERVER }}
-            User ${{ secrets.FTP_USERNAME }}
-            Port 65002
-            IdentityFile ~/.ssh/id_ed25519
-            StrictHostKeyChecking no
-            ConnectTimeout 15
-          EOF
-          
-          # Auto-detect target directory
-          TARGET_DIR=""
-          if ssh hostinger "[ -d domains/dataengineerhub.blog/public_html ]"; then
-            TARGET_DIR="domains/dataengineerhub.blog/public_html/"
-            echo "✅ Auto-detected addon domain path: $TARGET_DIR"
-          elif ssh hostinger "[ -d public_html ]"; then
-            TARGET_DIR="public_html/"
-            echo "✅ Auto-detected primary domain path: $TARGET_DIR"
-          else
-            echo "❌ ERROR: Could not find target directory!"
-            echo "Listing home directory contents for debug:"
-            ssh hostinger "ls -la"
-            exit 1
-          fi
-          
-          # Determine if clean slate / delete is needed
-          DELETE_FLAG=""
-          if [ "${{ steps.changes.outputs.use_clean_slate }}" == "true" ]; then
-            DELETE_FLAG="--delete"
-            echo "☢️ Clean slate / delete enabled"
-          fi
-          
-          # Determine if dry run is needed
-          DRY_RUN_FLAG=""
-          if [ "${{ steps.changes.outputs.dry_run }}" == "true" ]; then
-            DRY_RUN_FLAG="--dry-run"
-            echo "🧪 DRY RUN MODE ENABLED"
-          fi
-          
-          # Run rsync over SSH
-          rsync -avz $DELETE_FLAG $DRY_RUN_FLAG \
-            --exclude='**/.git*' \
-            --exclude='**/node_modules/**' \
-            --exclude='**/.env' \
-            --exclude='**/.DS_Store' \
-            --exclude='**/Thumbs.db' \
-            --exclude='**/*.map' \
-            ./dist/ hostinger:$TARGET_DIR
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          protocol: ftps
+          security: loose
+          local-dir: ./dist/
+          server-dir: /public_html/
+          dangerous-clean-slate: ${{ steps.changes.outputs.use_clean_slate == 'true' }}
+          state-name: .ftp-deploy-sync-state.json
+          dry-run: ${{ steps.changes.outputs.dry_run == 'true' }}
+          timeout: 300000
+          log-level: minimal
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.env
+            **/.DS_Store
+            **/Thumbs.db
+            **/.build-cache.json
+            **/*.map
 
       - name: ⏭️ Deployment Skipped
         if: steps.changes.outputs.skip_deploy == 'true'
