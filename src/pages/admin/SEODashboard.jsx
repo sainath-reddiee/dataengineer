@@ -62,7 +62,7 @@ export function SEODashboard() {
                 // Run CTR heuristic scorer over the same batch
                 try {
                     const scored = scoreCtrBatch(posts.posts || []);
-                    // Average missed lift per post (not sum) â€” realistic opportunity read.
+                    // Average missed lift per post (not sum) — realistic opportunity read.
                     const lift = scored.length
                         ? Math.round((scored.reduce((a, r) => a + (r.missingLiftPct || 0), 0) / scored.length) * 10) / 10
                         : 0;
@@ -121,7 +121,7 @@ export function SEODashboard() {
             {gscMetrics && (
                 <div className="bg-gradient-to-r from-blue-900/20 to-cyan-900/20 border border-blue-500/30 rounded-2xl p-5">
                     <div className="text-xs text-blue-300 font-semibold uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <Activity className="w-3.5 h-3.5" /> Google Search Console â€” Last 28 Days
+                        <Activity className="w-3.5 h-3.5" /> Google Search Console — Last 28 Days
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                         <div>
@@ -216,7 +216,7 @@ export function SEODashboard() {
                             <p className="text-sm text-gray-400">
                                 Avg missed CTR lift
                                 {!ctrQuickWin.loading && ctrQuickWin.atRisk > 0 && (
-                                    <span className="text-gray-500"> Â· {ctrQuickWin.atRisk} at risk</span>
+                                    <span className="text-gray-500"> · {ctrQuickWin.atRisk} at risk</span>
                                 )}
                             </p>
                         </div>
@@ -238,7 +238,7 @@ export function SEODashboard() {
                             <p className="text-sm text-gray-400">
                                 AI Referrals (30d)
                                 {aiReferrals.total > 0 && (
-                                    <span className="text-gray-500"> Â· {aiReferrals.total} all-time</span>
+                                    <span className="text-gray-500"> · {aiReferrals.total} all-time</span>
                                 )}
                             </p>
                         </div>
@@ -260,7 +260,7 @@ export function SEODashboard() {
                             <p className="text-sm text-gray-400">
                                 Click-inside
                                 {engagement.landings > 0 && (
-                                    <span className="text-gray-500"> Â· {engagement.landings} landings</span>
+                                    <span className="text-gray-500"> · {engagement.landings} landings</span>
                                 )}
                             </p>
                         </div>
@@ -372,7 +372,7 @@ export function SEODashboard() {
                                                 rel="noopener noreferrer"
                                                 className="text-purple-400 hover:text-purple-300 text-sm font-medium"
                                             >
-                                                Open â†’
+                                                Open →
                                             </a>
                                             <Link
                                                 to={`/admin/scanner?url=${encodeURIComponent(`${window.location.origin}/articles/${article.slug}`)}`}

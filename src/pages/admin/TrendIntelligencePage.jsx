@@ -1,5 +1,5 @@
 ﻿// src/pages/admin/TrendIntelligencePage.jsx
-// Trend Intelligence â€” discover what to write, what to update, and what competitors are doing.
+// Trend Intelligence — discover what to write, what to update, and what competitors are doing.
 // Uses TinyFish FREE Search + GSC + AI for comprehensive content strategy.
 
 import React, { useState } from 'react';
@@ -15,8 +15,8 @@ import activityHistory from '@/services/activityHistory';
 
 const TABS = [
     { id: 'trending', label: 'Trending Now', icon: TrendingUp, desc: 'New article ideas from web trends + community buzz' },
-    { id: 'update', label: 'Update Existing', icon: RefreshCw, desc: 'Rising keywords â€” update your articles to capture demand' },
-    { id: 'competitors', label: 'Competitor Watch', icon: Users, desc: 'What competitors are publishing â€” find your angle' },
+    { id: 'update', label: 'Update Existing', icon: RefreshCw, desc: 'Rising keywords — update your articles to capture demand' },
+    { id: 'competitors', label: 'Competitor Watch', icon: Users, desc: 'What competitors are publishing — find your angle' },
     { id: 'gaps', label: 'Content Gaps', icon: Target, desc: 'Topics they rank for that you don\'t cover yet' },
 ];
 
@@ -159,7 +159,7 @@ function UpdateTab() {
     return (
         <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <p className="text-sm text-gray-400">Keywords growing in impressions â€” update your articles to capture this rising demand.</p>
+                <p className="text-sm text-gray-400">Keywords growing in impressions — update your articles to capture this rising demand.</p>
                 <button onClick={handleLoad} disabled={loading} className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl flex items-center gap-2">
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <TrendingUp className="w-4 h-4" />}
                     {loading ? 'Analyzing...' : 'Find Rising Keywords'}
@@ -185,7 +185,7 @@ function UpdateTab() {
                                     +{Math.round((kw.growthRate || 0) * 100)}%
                                 </span>
                                 <a href={`/admin/keyword-target?slug=${kw.matchedSlug || ''}`} className="text-xs text-blue-400 hover:text-blue-300">
-                                    Optimize â†’
+                                    Optimize →
                                 </a>
                             </div>
                         </div>
@@ -244,7 +244,7 @@ function CompetitorTab() {
     return (
         <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <p className="text-sm text-gray-400">See what competitors are publishing â€” find your differentiated angle.</p>
+                <p className="text-sm text-gray-400">See what competitors are publishing — find your differentiated angle.</p>
                 <button onClick={handleMonitor} disabled={loading} className="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl flex items-center gap-2">
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Users className="w-4 h-4" />}
                     {loading ? 'Scanning...' : 'Scan Competitors'}
@@ -348,7 +348,7 @@ function GapsTab() {
     return (
         <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <p className="text-sm text-gray-400">Topics competitors rank for that you haven't covered yet â€” your biggest growth opportunities.</p>
+                <p className="text-sm text-gray-400">Topics competitors rank for that you haven't covered yet — your biggest growth opportunities.</p>
                 <button onClick={handleFindGaps} disabled={loading} className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl flex items-center gap-2">
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Target className="w-4 h-4" />}
                     {loading ? 'Scanning...' : 'Find Content Gaps'}
@@ -384,7 +384,7 @@ function GapsTab() {
                                         href={`/admin/article-writer?topic=${encodeURIComponent(gap.keyword)}`}
                                         className="px-3 py-1.5 bg-pink-600/30 hover:bg-pink-600/50 text-pink-300 text-xs rounded-lg border border-pink-500/30"
                                     >
-                                        Write â†’
+                                        Write →
                                     </a>
                                     <button
                                         onClick={() => handlePlanArticle(gap)}

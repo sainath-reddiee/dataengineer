@@ -149,9 +149,9 @@ Rules:
 Format:
 ---
 FIX TYPE: [what this content block is]
-PASTE LOCATION: [where in the article to add this â€” be specific]
+PASTE LOCATION: [where in the article to add this — be specific]
 CONTENT:
-[The actual content to paste into WordPress â€” formatted in HTML]
+[The actual content to paste into WordPress — formatted in HTML]
 ---`;
 
         try {
@@ -180,7 +180,7 @@ CONTENT:
             tools.push({
                 path: '/admin/smart-linking',
                 label: 'Smart Linking (AI)',
-                reason: `Only ${result.internalLinks || 0} internal links found â€” get AI suggestions for relevant connections`,
+                reason: `Only ${result.internalLinks || 0} internal links found — get AI suggestions for relevant connections`,
                 icon: 'ðŸ”—',
                 urgent: true,
             });
@@ -191,7 +191,7 @@ CONTENT:
             tools.push({
                 path: '/admin/smart-linking',
                 label: 'Smart Linking (External)',
-                reason: `Only ${result.authorityLinks} authority links â€” add external citations for E-E-A-T`,
+                reason: `Only ${result.authorityLinks} authority links — add external citations for E-E-A-T`,
                 icon: 'ðŸŒ',
                 urgent: true,
             });
@@ -226,7 +226,7 @@ CONTENT:
             tools.push({
                 path: '/admin/content-decay',
                 label: 'Content Decay',
-                reason: 'No freshness signal found â€” check if this article is losing rankings over time',
+                reason: 'No freshness signal found — check if this article is losing rankings over time',
                 icon: 'ðŸ“‰',
                 urgent: true,
             });
@@ -423,7 +423,7 @@ CONTENT:
                                             <p className="text-xs text-gray-400 mb-3">{suggestion.reason}</p>
                                             <div className="flex items-center gap-1 text-xs text-purple-400 font-semibold">
                                                 <Search className="w-4 h-4" />
-                                                Find similar articles â†’
+                                                Find similar articles →
                                             </div>
                                         </a>
                                     ))}
@@ -476,7 +476,7 @@ CONTENT:
                             <div className="bg-cyan-900/10 backdrop-blur-xl rounded-2xl border border-cyan-500/30 p-5">
                                 <h3 className="text-sm font-bold text-cyan-300 mb-3 flex items-center gap-2">
                                     <Globe className="w-4 h-4" />
-                                    SERP Landscape â€” What You're Competing Against
+                                    SERP Landscape — What You're Competing Against
                                 </h3>
                                 <div className="space-y-2">
                                     {serpLandscape.map((c, i) => (
@@ -703,7 +703,7 @@ function RecommendationCard({ rec, onGenerateFix, getPriorityBadge }) {
     );
 }
 
-// GEO Citation Rewriter panel â€” rewrites weak sections for AI citation
+// GEO Citation Rewriter panel — rewrites weak sections for AI citation
 function GEORewriterPanel({ url, keywords, aiVisibility, serpData, articleContent = '' }) {
     const [loading, setLoading] = useState(false);
     const [rewrite, setRewrite] = useState(null);
@@ -716,7 +716,7 @@ function GEORewriterPanel({ url, keywords, aiVisibility, serpData, articleConten
 
         // Include SERP competitor context for grounded rewrites
         const serpContext = serpData && serpData.length > 0
-            ? `\nCOMPETITOR CONTENT (from live Google results â€” use as reference for what Google currently ranks):\n${serpData.slice(0, 3).map((c, i) => `${i + 1}. "${c.title}" â€” ${c.snippet || ''}`).join('\n')}\n`
+            ? `\nCOMPETITOR CONTENT (from live Google results — use as reference for what Google currently ranks):\n${serpData.slice(0, 3).map((c, i) => `${i + 1}. "${c.title}" — ${c.snippet || ''}`).join('\n')}\n`
             : '';
 
         const prompt = `You are a GEO (Generative Engine Optimization) expert. Rewrite content to maximize AI citation probability.
@@ -762,7 +762,7 @@ Format output as HTML blocks ready to paste into WordPress. Base ALL content on 
                         <Sparkles className="w-7 h-7 text-purple-400" />
                         GEO Citation Rewriter
                     </h3>
-                    <p className="text-gray-400 text-sm">AI visibility score is {aiVisibility.score}/100 â€” rewrite for higher AI citation probability</p>
+                    <p className="text-gray-400 text-sm">AI visibility score is {aiVisibility.score}/100 — rewrite for higher AI citation probability</p>
                 </div>
                 <button
                     onClick={handleRewrite}

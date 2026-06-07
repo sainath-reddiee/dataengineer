@@ -99,7 +99,7 @@ const ContributePage = () => {
     {
       icon: MessageSquare,
       title: 'Editorial Support',
-      desc: 'Our team helps refine your article with feedback on structure, clarity, and SEO â€” making your best work even better.',
+      desc: 'Our team helps refine your article with feedback on structure, clarity, and SEO — making your best work even better.',
       color: 'from-indigo-500 to-blue-500',
     },
   ];
@@ -228,7 +228,7 @@ const ContributePage = () => {
                 Why Write for <span className="gradient-text">DataEngineer Hub</span>?
               </h2>
               <p className="text-gray-400 max-w-2xl mx-auto">
-                More than just a guest post â€” it's an investment in your professional brand.
+                More than just a guest post — it's an investment in your professional brand.
               </p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -292,7 +292,7 @@ const ContributePage = () => {
 
           {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• GUIDELINES + FORM (2-col) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           <div id="submit-form" className="grid lg:grid-cols-2 gap-10 max-w-6xl mx-auto">
-            {/* Left â€” Guidelines & Topics */}
+            {/* Left — Guidelines & Topics */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -342,7 +342,7 @@ const ContributePage = () => {
               </div>
             </motion.div>
 
-            {/* Right â€” Proposal Form */}
+            {/* Right — Proposal Form */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}

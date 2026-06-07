@@ -414,7 +414,7 @@ export function getCanonicalUrl(path = '') {
  * OPTIMIZED: Avoids "..." truncation which reduces CTR by 20-30%
  */
 export function formatTitle(title, options = {}) {
-  // Brand suffix removed per request â€” page titles render exactly as the
+  // Brand suffix removed per request — page titles render exactly as the
   // page provides them, with no automatic "" appended.
   const { maxLength = SEO_DEFAULTS.maxTitleLength } = options;
 

@@ -10,16 +10,20 @@ import dotenv from 'dotenv';
 const originalWriteFileSync = fs.writeFileSync;
 fs.writeFileSync = function(filePath, data, options) {
   if (typeof filePath === 'string' && filePath.endsWith('.html') && typeof data === 'string') {
+    const original = data;
     data = data
-      .replace(/\u00e2\u20ac\u00ba/g, '&rsaquo;') // â€º
-      .replace(/\u00e2\u2020\u0090/g, '&larr;')  // â† 
-      .replace(/\u00e2\u20ac\u201d/g, '&mdash;') // â€”
-      .replace(/\u00e2\u2020\u2019/g, '&rarr;')  // â†’
-      .replace(/\u00e2\u0153\u2026/g, '&#9989;') // âœ… (✅)
-      .replace(/\u00e2\u0161\u00a0\u00ef\u00b8\u008f/g, '&#9888;&#65039;') // âš ï¸  (⚠️)
-      .replace(/\u00c3\u0097/g, '&times;');      // Ã— (×)
+      .replace(/\u00e2\u20ac\u00ba/g, '&rsaquo;') // ›
+      .replace(/\u00e2\u2020\u0090/g, '&larr;')  // ←
+      .replace(/\u00e2\u20ac\u201d/g, '&mdash;') // —
+      .replace(/\u00e2\u2020\u2019/g, '&rarr;')  // →
+      .replace(/\u00e2\u0153\u2026/g, '&#9989;') // ✅ (✅)
+      .replace(/\u00e2\u0161\u00a0\u00ef\u00b8\u008f/g, '&#9888;&#65039;') // ⚠️ (⚠️)
+      .replace(/\u00c3\u0097/g, '&times;');      // × (×)
+    if (data !== original) {
+      console.log(`[DEBUG-REPLACE] Cleaned up mojibake in file: ${filePath}`);
+    }
   }
-  return originalWriteFileSync.apply(this, arguments);
+  return originalWriteFileSync(filePath, data, options);
 };
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -55,11 +59,11 @@ function toIsoSchemaDate(value) {
 }
 
 // ============================================================================
-// ðŸ”’ GOOGLE CONSENT MODE v2 â€” single source of truth
+// ðŸ”’ GOOGLE CONSENT MODE v2 — single source of truth
 // Emitted in the <head> of every static page. EU/UK/EEA region defaults to
 // denied (GDPR); rest-of-world (incl. US where AdSense crawler operates)
 // defaults to granted so Googlebot-AdSense can verify ad code without a banner.
-// Mirrors index.html and CookieConsent.jsx â€” keep them in sync.
+// Mirrors index.html and CookieConsent.jsx — keep them in sync.
 // ============================================================================
 const CONSENT_MODE_V2_HTML = `    <!-- Google Consent Mode v2: region-gated. EU denied; rest-of-world (incl. AdSense crawler) granted. -->
     <script>
@@ -188,7 +192,7 @@ function escapeHtml(str) {
 /** Decode common HTML entities back to their literal characters.
  *  WordPress REST API returns pre-encoded text in `rendered` fields
  *  (e.g. &#8217; for a right single quote).  Decoding first prevents
- *  escapeHtml() from double-encoding them (& â†’ &amp; inside &#8217;). */
+ *  escapeHtml() from double-encoding them (& → &amp; inside &#8217;). */
 function decodeHtmlEntities(str) {
   if (!str) return '';
   return String(str)
@@ -243,14 +247,14 @@ function smartTitle(title) {
 /**
  * Normalize heading hierarchy in WordPress content.
  * If no <h2> exists but <h3> tags do, promote all headings up one level
- * (h3â†’h2, h4â†’h3, h5â†’h4, h6â†’h5) to avoid hierarchy gaps.
+ * (h3→h2, h4→h3, h5→h4, h6→h5) to avoid hierarchy gaps.
  */
 function normalizeHeadings(html) {
   if (!html) return html;
   const hasH2 = /<h2[\s>]/i.test(html);
   const hasH3 = /<h3[\s>]/i.test(html);
   if (!hasH2 && hasH3) {
-    // Promote each level up by one: h3â†’h2, h4â†’h3, h5â†’h4, h6â†’h5
+    // Promote each level up by one: h3→h2, h4→h3, h5→h4, h6→h5
     // Process from lowest to highest to avoid double-promotion
     html = html.replace(/<(\/?)h3([\s>])/gi, '<$1h2$2');
     html = html.replace(/<(\/?)h4([\s>])/gi, '<$1h3$2');
@@ -273,13 +277,13 @@ const ESSENTIAL_PAGES = [
     description: 'Learn about Sainath Reddy, the creator of DataEngineer Hub. Expert in Snowflake, Apache Spark, dbt, Airflow, and modern data engineering.',
     content: `
       <h1>About DataEngineer Hub</h1>
-      <p>Welcome to DataEngineer Hub, created by <strong>Sainath Reddy</strong> â€” a passionate Data Engineer based in Hyderabad, India with extensive experience in building scalable data pipelines and cloud-native data solutions.</p>
+      <p>Welcome to DataEngineer Hub, created by <strong>Sainath Reddy</strong> — a passionate Data Engineer based in Hyderabad, India with extensive experience in building scalable data pipelines and cloud-native data solutions.</p>
 
       <h2>Who Am I?</h2>
       <p>I'm Sainath Reddy, a Data Engineer who specializes in designing and implementing modern data architectures. With years of hands-on experience, I've worked with technologies like <strong>Snowflake</strong>, <strong>Apache Spark</strong>, <strong>Apache Airflow</strong>, <strong>dbt</strong>, <strong>Apache Kafka</strong>, and various cloud platforms including <strong>AWS</strong>, <strong>Azure</strong>, and <strong>GCP</strong>.</p>
 
       <h2>My Mission</h2>
-      <p>DataEngineer Hub was born from my desire to share practical, real-world knowledge about data engineering. I believe in making complex data concepts accessible to everyone â€” from beginners exploring the field to seasoned professionals looking for advanced techniques.</p>
+      <p>DataEngineer Hub was born from my desire to share practical, real-world knowledge about data engineering. I believe in making complex data concepts accessible to everyone — from beginners exploring the field to seasoned professionals looking for advanced techniques.</p>
 
       <h2>What You'll Find Here</h2>
       <ul>
@@ -593,7 +597,7 @@ const ESSENTIAL_PAGES = [
       <p><strong>Free, instant Snowflake pricing estimator.</strong> Enter your warehouse size, hours of usage, storage, and edition to see a live monthly and annual cost breakdown across compute, storage, cloud services, and serverless features like Cortex AI and Snowpipe.</p>
 
       <h2>How Snowflake Pricing Works</h2>
-      <p>Snowflake bills three primary categories: <strong>compute</strong> (measured in credits), <strong>storage</strong> (per TB per month), and <strong>cloud services</strong> (metadata, auth, query compilation). Compute credits are consumed by virtual warehouses â€” X-Small warehouses burn 1 credit per hour, and each size doubles: Small (2), Medium (4), Large (8), X-Large (16), up to 6X-Large (512 credits/hour).</p>
+      <p>Snowflake bills three primary categories: <strong>compute</strong> (measured in credits), <strong>storage</strong> (per TB per month), and <strong>cloud services</strong> (metadata, auth, query compilation). Compute credits are consumed by virtual warehouses — X-Small warehouses burn 1 credit per hour, and each size doubles: Small (2), Medium (4), Large (8), X-Large (16), up to 6X-Large (512 credits/hour).</p>
 
       <h2>Credit Prices by Edition</h2>
       <ul>
@@ -805,7 +809,7 @@ const ESSENTIAL_PAGES = [
 
       <h3>Data format conversion</h3>
       <ul>
-        <li><strong><a href="/tools/json-parquet-avro-converter">JSON / Parquet / Avro Converter</a></strong> - convert between JSON, Apache Parquet, and Apache Avro directly in your browser. Powered by DuckDB-WASM for Parquet and avsc for Avro. No upload, no server â€” 100% client-side.</li>
+        <li><strong><a href="/tools/json-parquet-avro-converter">JSON / Parquet / Avro Converter</a></strong> - convert between JSON, Apache Parquet, and Apache Avro directly in your browser. Powered by DuckDB-WASM for Parquet and avsc for Avro. No upload, no server — 100% client-side.</li>
       </ul>
 
       <h2>Which tool should I use?</h2>
@@ -822,8 +826,8 @@ const ESSENTIAL_PAGES = [
         <li><strong>Onboarding a new table into dbt?</strong> Run the <a href="/tools/dbt-schema-generator">dbt Schema.yml Generator</a> on the CREATE TABLE to auto-scaffold schema.yml, staging SQL, and sources.yml with freshness checks.</li>
         <li><strong>Debugging timestamp data?</strong> The <a href="/tools/unix-timestamp-converter">Unix Timestamp Converter</a> handles seconds, milliseconds, microseconds, and nanoseconds with SQL examples for every major warehouse.</li>
         <li><strong>Running on Google Cloud?</strong> Use the <a href="/tools/bigquery-cost-calculator">BigQuery Cost Calculator</a> to model on-demand vs capacity Editions pricing and find the break-even point for your workload.</li>
-        <li><strong>Practicing SQL?</strong> Open the <a href="/tools/sql-playground">SQL Playground</a> â€” run queries on preloaded sample tables directly in your browser with DuckDB-WASM. No setup required.</li>
-        <li><strong>Converting file formats?</strong> The <a href="/tools/json-parquet-avro-converter">JSON / Parquet / Avro Converter</a> handles all six conversion paths between JSON, Parquet, and Avro â€” powered by DuckDB-WASM and avsc, entirely in your browser.</li>
+        <li><strong>Practicing SQL?</strong> Open the <a href="/tools/sql-playground">SQL Playground</a> — run queries on preloaded sample tables directly in your browser with DuckDB-WASM. No setup required.</li>
+        <li><strong>Converting file formats?</strong> The <a href="/tools/json-parquet-avro-converter">JSON / Parquet / Avro Converter</a> handles all six conversion paths between JSON, Parquet, and Avro — powered by DuckDB-WASM and avsc, entirely in your browser.</li>
       </ul>
 
       <h2>Are these tools free?</h2>
@@ -1206,13 +1210,13 @@ const ESSENTIAL_PAGES = [
     description: 'Free cross-platform data warehouse cost comparison. Enter one workload profile and see monthly costs side-by-side across Snowflake, Google BigQuery, and Databricks with April 2026 list pricing.',
     content: `
       <h1>Cloud Data Warehouse Cost Comparison</h1>
-      <p><strong>Compare monthly cost across Snowflake, BigQuery, and Databricks with a single unified input.</strong> Enter TB scanned, compute hours, storage GB, and workload complexity â€” get three side-by-side estimates and see which warehouse is cheapest for your specific pattern. Ideal for pre-RFP sizing, migration budget framing, and answering the "should we switch?" question with numbers instead of vendor slides.</p>
+      <p><strong>Compare monthly cost across Snowflake, BigQuery, and Databricks with a single unified input.</strong> Enter TB scanned, compute hours, storage GB, and workload complexity — get three side-by-side estimates and see which warehouse is cheapest for your specific pattern. Ideal for pre-RFP sizing, migration budget framing, and answering the "should we switch?" question with numbers instead of vendor slides.</p>
 
       <h2>How the three platforms charge differently</h2>
       <ul>
         <li><strong>Snowflake</strong> bills per-second of warehouse uptime, at a credit rate driven by edition (1.0x Standard / 1.5x Enterprise / 2.0x Business Critical / 2.5x VPS) and warehouse size (XS = 1 credit/hr, doubling each size). Cloud Services get a 10% free allowance on top of compute.</li>
         <li><strong>Databricks</strong> bills per-DBU (Databricks Unit) consumed. A DBU rate varies by compute tier: SQL Pro, Jobs Compute, and Serverless have different $/DBU prices. Storage is passthrough to S3/ADLS.</li>
-        <li><strong>BigQuery</strong> has two billing models: on-demand ($6.25/TB scanned, first 1 TB/month free) and Editions ($0.04 Standard / $0.06 Enterprise / $0.10 Enterprise Plus per slot-hour). The cheaper of the two applies to your workload â€” this calculator auto-picks.</li>
+        <li><strong>BigQuery</strong> has two billing models: on-demand ($6.25/TB scanned, first 1 TB/month free) and Editions ($0.04 Standard / $0.06 Enterprise / $0.10 Enterprise Plus per slot-hour). The cheaper of the two applies to your workload — this calculator auto-picks.</li>
       </ul>
 
       <h2>When each platform tends to win</h2>
@@ -1228,28 +1232,28 @@ const ESSENTIAL_PAGES = [
       <h2>Platform-specific deep dives</h2>
       <p>After narrowing down, use the platform-specific calculators for a fuller picture:</p>
       <ul>
-        <li><a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a> â€” edition Ã— warehouse size Ã— hours + serverless (Cortex, Snowpipe, Auto-Clustering).</li>
-        <li><a href="/tools/bigquery-cost-calculator">BigQuery Cost Calculator</a> â€” on-demand vs Editions break-even, active/long-term storage, streaming ingest.</li>
-        <li><a href="/tools/databricks-cost-calculator">Databricks Cost Calculator</a> â€” DBU rate by tier, instance types, cluster uptime, Photon.</li>
+        <li><a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a> — edition × warehouse size × hours + serverless (Cortex, Snowpipe, Auto-Clustering).</li>
+        <li><a href="/tools/bigquery-cost-calculator">BigQuery Cost Calculator</a> — on-demand vs Editions break-even, active/long-term storage, streaming ingest.</li>
+        <li><a href="/tools/databricks-cost-calculator">Databricks Cost Calculator</a> — DBU rate by tier, instance types, cluster uptime, Photon.</li>
       </ul>
     `
   },
   {
     path: '/tools/sql-playground',
-    title: 'Free SQL Playground 2026 â€” Run SQL in Your Browser | DuckDB-WASM',
-    description: 'Practice SQL instantly in your browser with DuckDB-WASM. Sample datasets, window functions, CTEs, QUALIFY â€” no signup, no server. 100% private and free.',
+    title: 'Free SQL Playground 2026 — Run SQL in Your Browser | DuckDB-WASM',
+    description: 'Practice SQL instantly in your browser with DuckDB-WASM. Sample datasets, window functions, CTEs, QUALIFY — no signup, no server. 100% private and free.',
     content: `
-      <h1>SQL Playground â€” Run SQL in Your Browser</h1>
-      <p><strong>Free, in-browser SQL engine powered by DuckDB-WASM.</strong> Write and execute SQL queries instantly on preloaded sample datasets â€” employees, orders, and web events. No server, no signup, no data leaves your device. Practice window functions, CTEs, QUALIFY, aggregations, joins, and more.</p>
+      <h1>SQL Playground — Run SQL in Your Browser</h1>
+      <p><strong>Free, in-browser SQL engine powered by DuckDB-WASM.</strong> Write and execute SQL queries instantly on preloaded sample datasets — employees, orders, and web events. No server, no signup, no data leaves your device. Practice window functions, CTEs, QUALIFY, aggregations, joins, and more.</p>
 
       <h2>How It Works</h2>
       <p>This playground loads <a href="https://duckdb.org/docs/api/wasm/overview">DuckDB-WASM</a>, a full analytical SQL engine compiled to WebAssembly, directly in your browser. The ~2 MB engine downloads once and runs entirely client-side. Three sample tables are preloaded with realistic data so you can start writing queries immediately.</p>
 
       <h2>Preloaded Sample Tables</h2>
       <ul>
-        <li><strong>employees</strong> (15 rows) â€” id, name, department, salary, hire_date. Practice GROUP BY, HAVING, window functions, and top-N per group patterns.</li>
-        <li><strong>orders</strong> (15 rows) â€” order_id, customer_id, product, quantity, unit_price, order_date, region. Practice aggregations, running totals, and revenue analysis.</li>
-        <li><strong>web_events</strong> (15 rows) â€” event_id, user_id, event_type, page, ts, device. Practice funnel analysis, sessionization, and conditional aggregation.</li>
+        <li><strong>employees</strong> (15 rows) — id, name, department, salary, hire_date. Practice GROUP BY, HAVING, window functions, and top-N per group patterns.</li>
+        <li><strong>orders</strong> (15 rows) — order_id, customer_id, product, quantity, unit_price, order_date, region. Practice aggregations, running totals, and revenue analysis.</li>
+        <li><strong>web_events</strong> (15 rows) — event_id, user_id, event_type, page, ts, device. Practice funnel analysis, sessionization, and conditional aggregation.</li>
       </ul>
 
       <h2>What You Can Practice</h2>
@@ -1263,7 +1267,7 @@ const ESSENTIAL_PAGES = [
 
       <h3>Advanced SQL</h3>
       <ul>
-        <li>Window functions â€” ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM OVER, AVG OVER</li>
+        <li>Window functions — ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, SUM OVER, AVG OVER</li>
         <li>CTEs (WITH ... AS) and recursive CTEs</li>
         <li>QUALIFY clause (supported by DuckDB and Snowflake)</li>
         <li>CASE expressions, COALESCE, NULLIF</li>
@@ -1289,7 +1293,7 @@ const ESSENTIAL_PAGES = [
       <p>DuckDB supports a PostgreSQL-compatible dialect with modern extensions. Most Snowflake and BigQuery SQL patterns work with minor syntax adjustments. Supported features include: window functions, CTEs, recursive CTEs, QUALIFY, PIVOT/UNPIVOT, LATERAL joins, LIST/STRUCT/MAP types, regex functions, and lambda expressions.</p>
 
       <h2>Privacy and Security</h2>
-      <p>DuckDB runs entirely in your browser via WebAssembly. Your SQL queries and any data you paste never leave your device â€” there is no server, no database connection, and no logging of queries. You can safely paste proprietary data for testing.</p>
+      <p>DuckDB runs entirely in your browser via WebAssembly. Your SQL queries and any data you paste never leave your device — there is no server, no database connection, and no logging of queries. You can safely paste proprietary data for testing.</p>
 
       <h2>Frequently Asked Questions</h2>
       <h3>Is this SQL playground free?</h3>
@@ -1302,52 +1306,52 @@ const ESSENTIAL_PAGES = [
       <p>The playground ships with three preloaded sample tables. You can also use DuckDB's read_csv() function to query CSV data directly.</p>
 
       <h3>How large a dataset can it handle?</h3>
-      <p>DuckDB-WASM runs inside your browser's memory budget â€” typically 1-4 GB. For sample datasets (15 rows each), performance is instant. For analytical workloads up to ~100 MB, DuckDB-WASM performs well.</p>
+      <p>DuckDB-WASM runs inside your browser's memory budget — typically 1-4 GB. For sample datasets (15 rows each), performance is instant. For analytical workloads up to ~100 MB, DuckDB-WASM performs well.</p>
 
       <h3>Does it support Snowflake-specific syntax?</h3>
       <p>DuckDB supports many Snowflake SQL patterns natively: QUALIFY, FLATTEN (as UNNEST), window functions, CTEs, MERGE, and most date/string functions. Snowflake-only functions (GET_DDL, SYSTEM$) are not available.</p>
 
       <h2>Related Tools</h2>
       <ul>
-        <li><a href="/tools/sql-formatter">SQL Formatter</a> â€” clean up your SQL before running it here.</li>
-        <li><a href="/cheatsheets/snowflake-sql">Snowflake SQL Cheat Sheet</a> â€” full Snowflake SQL reference with examples you can copy into the playground.</li>
-        <li><a href="/cheatsheets/sql-window-functions">Window Functions Reference</a> â€” ROW_NUMBER, RANK, LAG, LEAD â€” all examples are runnable in this playground.</li>
-        <li><a href="/interview-prep">Interview Prep Hub</a> â€” complete 14-day study plan for data engineer interviews.</li>
+        <li><a href="/tools/sql-formatter">SQL Formatter</a> — clean up your SQL before running it here.</li>
+        <li><a href="/cheatsheets/snowflake-sql">Snowflake SQL Cheat Sheet</a> — full Snowflake SQL reference with examples you can copy into the playground.</li>
+        <li><a href="/cheatsheets/sql-window-functions">Window Functions Reference</a> — ROW_NUMBER, RANK, LAG, LEAD — all examples are runnable in this playground.</li>
+        <li><a href="/interview-prep">Interview Prep Hub</a> — complete 14-day study plan for data engineer interviews.</li>
       </ul>
     `
   },
   {
     path: '/tools/json-parquet-avro-converter',
-    title: 'Free JSON / Parquet / Avro Converter 2026 â€” Browser-Based Format Conversion',
-    description: 'Convert between JSON, Apache Parquet, and Apache Avro directly in your browser. Powered by DuckDB-WASM and avsc. No upload, no server â€” 100% client-side and free.',
+    title: 'Free JSON / Parquet / Avro Converter 2026 — Browser-Based Format Conversion',
+    description: 'Convert between JSON, Apache Parquet, and Apache Avro directly in your browser. Powered by DuckDB-WASM and avsc. No upload, no server — 100% client-side and free.',
     content: `
-      <h1>JSON / Parquet / Avro Converter â€” Convert Data Formats in Your Browser</h1>
-      <p><strong>Free, client-side data format converter.</strong> Convert between JSON, Apache Parquet, and Apache Avro instantly â€” no file uploads, no server processing, no data leaves your device. Powered by DuckDB-WASM for Parquet operations and avsc for Avro serialization.</p>
+      <h1>JSON / Parquet / Avro Converter — Convert Data Formats in Your Browser</h1>
+      <p><strong>Free, client-side data format converter.</strong> Convert between JSON, Apache Parquet, and Apache Avro instantly — no file uploads, no server processing, no data leaves your device. Powered by DuckDB-WASM for Parquet operations and avsc for Avro serialization.</p>
 
       <h2>Supported Conversion Paths</h2>
       <p>This tool supports all six conversion directions between the three most common data lake and streaming formats:</p>
       <ul>
-        <li><strong>JSON â†’ Parquet</strong> â€” Compress JSON arrays into columnar Parquet files for efficient analytics. Ideal for loading into Snowflake external tables, AWS Athena, or Spark.</li>
-        <li><strong>Parquet â†’ JSON</strong> â€” Inspect and preview Parquet files without a query engine. Read column types, row counts, and actual data as human-readable JSON.</li>
-        <li><strong>JSON â†’ Avro</strong> â€” Encode JSON records into compact Avro binary with auto-inferred schemas. Perfect for Kafka producers and schema registry workflows.</li>
-        <li><strong>Avro â†’ JSON</strong> â€” Decode Avro container files (OCF) or raw Avro binary back to readable JSON. Debug Kafka consumer output and inspect Avro payloads.</li>
-        <li><strong>Parquet â†’ Avro</strong> â€” Convert columnar Parquet files to Avro binary for streaming ingestion. The converter chains Parquet â†’ JSON â†’ Avro internally.</li>
-        <li><strong>Avro â†’ Parquet</strong> â€” Convert Avro container files to columnar Parquet for analytical queries. The converter chains Avro â†’ JSON â†’ Parquet internally.</li>
+        <li><strong>JSON → Parquet</strong> — Compress JSON arrays into columnar Parquet files for efficient analytics. Ideal for loading into Snowflake external tables, AWS Athena, or Spark.</li>
+        <li><strong>Parquet → JSON</strong> — Inspect and preview Parquet files without a query engine. Read column types, row counts, and actual data as human-readable JSON.</li>
+        <li><strong>JSON → Avro</strong> — Encode JSON records into compact Avro binary with auto-inferred schemas. Perfect for Kafka producers and schema registry workflows.</li>
+        <li><strong>Avro → JSON</strong> — Decode Avro container files (OCF) or raw Avro binary back to readable JSON. Debug Kafka consumer output and inspect Avro payloads.</li>
+        <li><strong>Parquet → Avro</strong> — Convert columnar Parquet files to Avro binary for streaming ingestion. The converter chains Parquet → JSON → Avro internally.</li>
+        <li><strong>Avro → Parquet</strong> — Convert Avro container files to columnar Parquet for analytical queries. The converter chains Avro → JSON → Parquet internally.</li>
       </ul>
 
       <h2>How It Works</h2>
       <ol>
-        <li><strong>Select formats</strong> â€” Choose your source and target formats from the format selector (JSON, Parquet, Avro). Use the swap button to reverse direction instantly.</li>
-        <li><strong>Provide input</strong> â€” Paste or type JSON directly, or drag-and-drop / browse for binary files (Parquet, Avro). Sample JSON data is preloaded for quick testing.</li>
-        <li><strong>Convert</strong> â€” Click "Convert" and the tool processes everything in your browser. DuckDB-WASM handles Parquet read/write; avsc handles Avro encode/decode.</li>
-        <li><strong>Preview and download</strong> â€” View a preview table (up to 50 rows), copy JSON output to clipboard, or download the converted file directly.</li>
+        <li><strong>Select formats</strong> — Choose your source and target formats from the format selector (JSON, Parquet, Avro). Use the swap button to reverse direction instantly.</li>
+        <li><strong>Provide input</strong> — Paste or type JSON directly, or drag-and-drop / browse for binary files (Parquet, Avro). Sample JSON data is preloaded for quick testing.</li>
+        <li><strong>Convert</strong> — Click "Convert" and the tool processes everything in your browser. DuckDB-WASM handles Parquet read/write; avsc handles Avro encode/decode.</li>
+        <li><strong>Preview and download</strong> — View a preview table (up to 50 rows), copy JSON output to clipboard, or download the converted file directly.</li>
       </ol>
 
       <h2>Technology</h2>
       <ul>
-        <li><strong>DuckDB-WASM</strong> â€” A full analytical SQL engine compiled to WebAssembly (~2 MB). Handles native Parquet reading (read_parquet) and writing (COPY TO FORMAT PARQUET). Shared instance with the <a href="/tools/sql-playground">SQL Playground</a> so the engine only downloads once.</li>
-        <li><strong>avsc</strong> â€” A pure JavaScript implementation of the Apache Avro specification (~264 KB). Handles Avro schema inference, binary serialization (toBuffer), deserialization (fromBuffer), and Avro Object Container File (OCF) decoding.</li>
-        <li><strong>No server</strong> â€” All processing runs in your browser via WebAssembly and JavaScript. Files are read with the FileReader API and never uploaded anywhere.</li>
+        <li><strong>DuckDB-WASM</strong> — A full analytical SQL engine compiled to WebAssembly (~2 MB). Handles native Parquet reading (read_parquet) and writing (COPY TO FORMAT PARQUET). Shared instance with the <a href="/tools/sql-playground">SQL Playground</a> so the engine only downloads once.</li>
+        <li><strong>avsc</strong> — A pure JavaScript implementation of the Apache Avro specification (~264 KB). Handles Avro schema inference, binary serialization (toBuffer), deserialization (fromBuffer), and Avro Object Container File (OCF) decoding.</li>
+        <li><strong>No server</strong> — All processing runs in your browser via WebAssembly and JavaScript. Files are read with the FileReader API and never uploaded anywhere.</li>
       </ul>
 
       <h2>Format Comparison</h2>
@@ -1377,48 +1381,48 @@ const ESSENTIAL_PAGES = [
       <h3>Choose Parquet when:</h3>
       <ul>
         <li>Data is destined for analytical queries (Snowflake external tables, AWS Athena, Spark, BigQuery)</li>
-        <li>You need columnar pruning â€” queries that read a subset of columns are dramatically faster</li>
-        <li>Storage cost matters â€” Parquet typically achieves 5-10x compression vs raw JSON</li>
+        <li>You need columnar pruning — queries that read a subset of columns are dramatically faster</li>
+        <li>Storage cost matters — Parquet typically achieves 5-10x compression vs raw JSON</li>
         <li>You are building a data lake on S3, GCS, or Azure Blob Storage</li>
       </ul>
 
       <h3>Choose Avro when:</h3>
       <ul>
         <li>Data flows through Apache Kafka or other message brokers with schema registry</li>
-        <li>Schema evolution is critical â€” Avro supports backward/forward compatible schema changes</li>
+        <li>Schema evolution is critical — Avro supports backward/forward compatible schema changes</li>
         <li>Row-level serialization performance matters (streaming writes)</li>
         <li>You need compact binary encoding for change data capture (CDC) pipelines</li>
       </ul>
 
       <h2>Privacy and Security</h2>
-      <p>All conversions run entirely in your browser. DuckDB-WASM and avsc process files locally via WebAssembly and JavaScript â€” no data is uploaded to any server, no network requests are made during conversion, and no files are stored. You can safely convert proprietary or sensitive data.</p>
+      <p>All conversions run entirely in your browser. DuckDB-WASM and avsc process files locally via WebAssembly and JavaScript — no data is uploaded to any server, no network requests are made during conversion, and no files are stored. You can safely convert proprietary or sensitive data.</p>
 
       <h2>Frequently Asked Questions</h2>
       <h3>Is this converter free?</h3>
       <p>Yes, completely free with no signup, no limits, and no tracking. DuckDB-WASM and avsc run 100% in your browser.</p>
 
       <h3>What is the maximum file size?</h3>
-      <p>The converter runs inside your browser's memory budget â€” typically 1-4 GB depending on your device. For most data engineering workflows (files under 100 MB), performance is fast. Very large files (500 MB+) may be slow or cause out-of-memory errors in the browser tab.</p>
+      <p>The converter runs inside your browser's memory budget — typically 1-4 GB depending on your device. For most data engineering workflows (files under 100 MB), performance is fast. Very large files (500 MB+) may be slow or cause out-of-memory errors in the browser tab.</p>
 
       <h3>Does the Parquet output support compression?</h3>
       <p>Yes. DuckDB-WASM writes Parquet files with Snappy compression by default, which provides a good balance of compression ratio and speed. This matches the default used by Spark, Snowflake, and most data lake tools.</p>
 
       <h3>Can I convert Avro files without a schema?</h3>
-      <p>Avro Object Container Files (OCF) embed their schema in the file header â€” the converter reads it automatically. For raw Avro binary without an embedded schema, you need to provide the schema separately (not currently supported in this tool).</p>
+      <p>Avro Object Container Files (OCF) embed their schema in the file header — the converter reads it automatically. For raw Avro binary without an embedded schema, you need to provide the schema separately (not currently supported in this tool).</p>
 
       <h3>How does Parquet-to-Avro conversion work?</h3>
       <p>The converter chains two steps internally: first it reads the Parquet file to JSON using DuckDB-WASM, then encodes the JSON to Avro using avsc. This approach works reliably for typical data sizes and avoids the need for a dedicated Parquet-to-Avro library.</p>
 
       <h3>Can I use this to preview Parquet files?</h3>
-      <p>Yes. Select "Parquet â†’ JSON", drop your .parquet file, and click Convert. The preview table shows the first 50 rows with all columns. You can also copy the full JSON output to clipboard.</p>
+      <p>Yes. Select "Parquet → JSON", drop your .parquet file, and click Convert. The preview table shows the first 50 rows with all columns. You can also copy the full JSON output to clipboard.</p>
 
       <h2>Related Tools</h2>
       <ul>
-        <li><a href="/tools/sql-playground">SQL Playground</a> â€” query data with SQL directly in your browser using DuckDB-WASM. Shares the same engine as this converter.</li>
-        <li><a href="/tools/json-to-sql-ddl">JSON to SQL DDL</a> â€” generate CREATE TABLE statements from JSON samples for Snowflake, Postgres, BigQuery, and more.</li>
-        <li><a href="/tools/csv-to-sql">CSV to SQL Converter</a> â€” convert CSV data to CREATE TABLE + INSERT statements.</li>
-        <li><a href="/cheatsheets/sql-window-functions">Window Functions Reference</a> â€” SQL window function cheat sheet with runnable examples.</li>
-        <li><a href="/interview-prep">Interview Prep Hub</a> â€” complete 14-day study plan for data engineer interviews.</li>
+        <li><a href="/tools/sql-playground">SQL Playground</a> — query data with SQL directly in your browser using DuckDB-WASM. Shares the same engine as this converter.</li>
+        <li><a href="/tools/json-to-sql-ddl">JSON to SQL DDL</a> — generate CREATE TABLE statements from JSON samples for Snowflake, Postgres, BigQuery, and more.</li>
+        <li><a href="/tools/csv-to-sql">CSV to SQL Converter</a> — convert CSV data to CREATE TABLE + INSERT statements.</li>
+        <li><a href="/cheatsheets/sql-window-functions">Window Functions Reference</a> — SQL window function cheat sheet with runnable examples.</li>
+        <li><a href="/interview-prep">Interview Prep Hub</a> — complete 14-day study plan for data engineer interviews.</li>
       </ul>
     `
   },
@@ -1748,7 +1752,7 @@ function findBundleFiles(distDir) {
   const jsMatch = indexContent.match(/src="(\/assets\/[^"]+\.js)"/);
   let jsFile = jsMatch ? jsMatch[1] : null;
 
-  // ðŸ”¥ CRITICAL: Find the ACTUAL JS file location
+  // 🔥 CRITICAL: Find the ACTUAL JS file location
   if (jsFile) {
     const directPath = path.join(distDir, jsFile);
 
@@ -1763,7 +1767,7 @@ function findBundleFiles(distDir) {
 
         if (indexJsFile) {
           jsFile = `/assets/js/${indexJsFile}`;
-          console.log(`âœ… Found JS in subdirectory: ${jsFile}`);
+          console.log(`✅ Found JS in subdirectory: ${jsFile}`);
           return { jsFile, cssFile };
         }
       }
@@ -1776,7 +1780,7 @@ function findBundleFiles(distDir) {
 
         if (indexJsFile) {
           jsFile = `/assets/${indexJsFile}`;
-          console.log(`âœ… Found JS in assets root: ${jsFile}`);
+          console.log(`✅ Found JS in assets root: ${jsFile}`);
           return { jsFile, cssFile };
         }
       }
@@ -1796,7 +1800,7 @@ function findBundleFiles(distDir) {
 
       if (indexJsFile) {
         jsFile = `/assets/js/${indexJsFile}`;
-        console.log(`âœ… Manually found JS: ${jsFile}`);
+        console.log(`✅ Manually found JS: ${jsFile}`);
         return { jsFile, cssFile };
       }
     }
@@ -1809,20 +1813,20 @@ function findBundleFiles(distDir) {
 
       if (indexJsFile) {
         jsFile = `/assets/${indexJsFile}`;
-        console.log(`âœ… Manually found JS: ${jsFile}`);
+        console.log(`✅ Manually found JS: ${jsFile}`);
         return { jsFile, cssFile };
       }
     }
   }
 
   if (jsFile) console.log(`ðŸ“¦ JS bundle: ${jsFile}`);
-  if (cssFile) console.log(`ðŸŽ¨ CSS bundle: ${cssFile}`);
+  if (cssFile) console.log(`🎨 CSS bundle: ${cssFile}`);
 
   // Final verification
   if (jsFile) {
     const finalPath = path.join(distDir, jsFile);
     if (fs.existsSync(finalPath)) {
-      console.log(`âœ… Verified JS exists at: ${jsFile}`);
+      console.log(`✅ Verified JS exists at: ${jsFile}`);
     } else {
       console.error(`âŒ CRITICAL: JS bundle NOT found at ${jsFile}`);
     }
@@ -1831,7 +1835,7 @@ function findBundleFiles(distDir) {
   if (cssFile) {
     const finalPath = path.join(distDir, cssFile);
     if (fs.existsSync(finalPath)) {
-      console.log(`âœ… Verified CSS exists at: ${cssFile}`);
+      console.log(`✅ Verified CSS exists at: ${cssFile}`);
     } else {
       console.error(`âŒ CRITICAL: CSS bundle NOT found at ${cssFile}`);
     }
@@ -1938,7 +1942,7 @@ function stripHTML(html) {
 /**
  * Truncate text at a sentence boundary without exceeding maxLen.
  * Prefers cutting at the last '.', '!', or '?' before maxLen.
- * Falls back to the last space before maxLen with 'â€¦' appended.
+ * Falls back to the last space before maxLen with '…' appended.
  */
 function truncateAtSentence(text, maxLen) {
   if (!text || text.length <= maxLen) return text || '';
@@ -1954,13 +1958,13 @@ function truncateAtSentence(text, maxLen) {
     // Cut right after the punctuation mark
     return region.substring(0, lastSentenceEnd + 1).trim();
   }
-  // No good sentence boundary â€” cut at last space
+  // No good sentence boundary — cut at last space
   const lastSpace = region.lastIndexOf(' ');
   if (lastSpace > maxLen * 0.4) {
-    return region.substring(0, lastSpace).trim() + 'â€¦';
+    return region.substring(0, lastSpace).trim() + '…';
   }
   // Worst case: hard cut
-  return region.trim() + 'â€¦';
+  return region.trim() + '…';
 }
 
 // ============================================================================
@@ -2038,7 +2042,7 @@ function makeImagesAbsolute(content) {
     '<img loading="lazy"$1$2'
   );
 
-  // Pattern 9: Alt text fallback â€” derive from filename when alt is empty or missing
+  // Pattern 9: Alt text fallback — derive from filename when alt is empty or missing
   processedContent = processedContent.replace(
     /<img([^>]*?)(\s*\/?>)/gi,
     (match, attrs, close) => {
@@ -2059,7 +2063,7 @@ function makeImagesAbsolute(content) {
         // Replace empty alt=""
         return `<img${attrs.replace(/alt="[^"]*"/i, `alt="${escapeHtml(altText)}`)}${close}`;
       }
-      // No alt attribute at all â€” add one
+      // No alt attribute at all — add one
       return `<img alt="${escapeHtml(altText)}"${attrs}${close}`;
     }
   );
@@ -2068,7 +2072,7 @@ function makeImagesAbsolute(content) {
 }
 
 // ============================================================================
-// SHARED NAV/FOOTER HELPERS â€” used by all page generators for site-wide navigation
+// SHARED NAV/FOOTER HELPERS — used by all page generators for site-wide navigation
 // ============================================================================
 
 function getSiteNavCSS() {
@@ -2180,7 +2184,7 @@ function getSiteFooterHTML() {
 }
 
 // ============================================================================
-// ðŸ”¥ FIXED HTML GENERATION - FULL CONTENT FOR CRAWLERS WITH IMAGES
+// 🔥 FIXED HTML GENERATION - FULL CONTENT FOR CRAWLERS WITH IMAGES
 // ============================================================================
 
 function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
@@ -2188,14 +2192,14 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const { jsFile, cssFile, modulePreloadHtml = '' } = bundleFiles;
 
   // ðŸ›¡ï¸ Sanitize user-supplied strings from WordPress
-  // WordPress REST API returns pre-encoded entities in rendered fields â€”
+  // WordPress REST API returns pre-encoded entities in rendered fields —
   // decode first, then re-encode to prevent double-encoding.
   const title = escapeHtml(decodeHtmlEntities(rawTitle));
   const description = escapeHtml(decodeHtmlEntities(rawDescription));
   const titleJsonLd = escapeJsonLd(decodeHtmlEntities(rawTitle));
   const descriptionJsonLd = escapeJsonLd(decodeHtmlEntities(rawDescription));
 
-  // ðŸ”¥ CRITICAL: Use relative paths from article subdirectory
+  // 🔥 CRITICAL: Use relative paths from article subdirectory
   const depth = (pagePath.match(/\//g) || []).length - 1;
   const relativePrefix = '../'.repeat(depth);
 
@@ -2218,7 +2222,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   // ðŸ–¼ï¸ Process images to make them absolute
   const absoluteContent = makeImagesAbsolute(fullContent);
 
-  // ðŸ“ Normalize heading hierarchy (h3â†’h2 etc. when h2 is missing)
+  // ðŸ“ Normalize heading hierarchy (h3→h2 etc. when h2 is missing)
   let processedContent = normalizeHeadings(absoluteContent);
 
   // ðŸ”— Inject internal links so crawlers see cross-article links in static HTML
@@ -2328,7 +2332,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   let howToSchemaBlock = '';
   const howToSteps = [];
   // Strategy 1: H2/H3 headings with "Step N:" pattern
-  const stepHeadingRegex = /<h[23][^>]*>\s*(Step\s+\d+\s*[:\-â€“â€”]\s*(.+?))\s*<\/h[23]>/gi;
+  const stepHeadingRegex = /<h[23][^>]*>\s*(Step\s+\d+\s*[:\-–—]\s*(.+?))\s*<\/h[23]>/gi;
   let stepMatch;
   while ((stepMatch = stepHeadingRegex.exec(processedContent)) !== null) {
     const stepName = (stepMatch[2] || stepMatch[1]).replace(/<[^>]+>/g, '').trim();
@@ -2403,7 +2407,7 @@ ${CONSENT_MODE_V2_HTML}
     ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
 
     <style>
-      /* ðŸŽ¨ STYLED FOR CRAWLER VISIBILITY */
+      /* 🎨 STYLED FOR CRAWLER VISIBILITY */
       * { margin: 0; padding: 0; box-sizing: border-box; }
       
       body {
@@ -2414,7 +2418,7 @@ ${CONSENT_MODE_V2_HTML}
         min-height: 100vh;
       }
       
-      /* ðŸ”¥ CRITICAL: SEO content is FULLY VISIBLE by default */
+      /* 🔥 CRITICAL: SEO content is FULLY VISIBLE by default */
       .seo-content {
         max-width: 900px;
         margin: 0 auto;
@@ -2444,7 +2448,7 @@ ${CONSENT_MODE_V2_HTML}
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
       
-      /* ðŸ”¥ FULL ARTICLE CONTENT - Visible to crawlers */
+      /* 🔥 FULL ARTICLE CONTENT - Visible to crawlers */
       .seo-content .article-body {
         color: #e2e8f0;
         font-size: 1.1rem;
@@ -2628,7 +2632,7 @@ ${CONSENT_MODE_V2_HTML}
         opacity: 1;
       }
       
-      /* ðŸ”¥ BREADCRUMB STYLES */
+      /* 🔥 BREADCRUMB STYLES */
       .breadcrumb-nav {
         max-width: 900px;
         margin: 20px auto 0;
@@ -2781,7 +2785,7 @@ ${CONSENT_MODE_V2_HTML}
     </style>
   </head>
   <body>
-    <!-- ðŸ”¥ ROOT DIV: React will mount here, but SEO content is visible first -->
+    <!-- 🔥 ROOT DIV: React will mount here, but SEO content is visible first -->
     <div id="root">
       <nav class="site-nav" aria-label="Site navigation">
         <div class="site-nav-inner">
@@ -2809,26 +2813,26 @@ ${CONSENT_MODE_V2_HTML}
               Home
             </a>
           </li>
-          <li class="breadcrumb-separator">â€º</li>
+          <li class="breadcrumb-separator">›</li>
           <li class="breadcrumb-item">
             <a href="https://dataengineerhub.blog/articles" class="breadcrumb-link">Articles</a>
           </li>
-          <li class="breadcrumb-separator">â€º</li>
+          <li class="breadcrumb-separator">›</li>
           <li class="breadcrumb-item breadcrumb-current" aria-current="page">
             <span>${title}</span>
           </li>
         </ol>
       </nav>
 
-      <!-- ðŸ”¥ FULL ARTICLE CONTENT - Visible to Googlebot/AdSense crawlers -->
+      <!-- 🔥 FULL ARTICLE CONTENT - Visible to Googlebot/AdSense crawlers -->
       <div class="seo-content">
         <article>
           <h1 class="article-title">${title}</h1>
           <div style="display:flex;align-items:center;gap:0.6rem;margin:0.75rem 0 1rem;flex-wrap:wrap;color:#94a3b8;font-size:0.9rem;">
             <a href="/about" style="color:#60a5fa;text-decoration:none;font-weight:500;">Sainath Reddy</a>
-            <span>Â·</span>
+            <span>·</span>
             <time datetime="${effectivePublished}">${formattedDate}</time>
-            <span>Â·</span>
+            <span>·</span>
             <span>${readingTime} min read</span>
           </div>
           <p class="excerpt article-description">${description}</p>
@@ -2840,7 +2844,7 @@ ${CONSENT_MODE_V2_HTML}
           <aside class="calculator-promo" style="background:linear-gradient(90deg,#1e3a8a 0%,#6b21a8 100%);border-radius:12px;padding:1.1rem 1.4rem;margin:0 0 1.75rem 0;box-shadow:0 4px 14px rgba(107,33,168,0.25);">
             <a href="/tools/snowflake-cost-calculator" style="color:#ffffff;text-decoration:none;font-weight:600;font-size:1rem;display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
               <span style="font-size:1.3rem;" aria-hidden="true">ðŸ§®</span>
-              <span>Try our free Snowflake Cost Calculator â€” estimate your monthly spend in seconds â†’</span>
+              <span>Try our free Snowflake Cost Calculator — estimate your monthly spend in seconds →</span>
             </a>
           </aside>` : ''}
 
@@ -2856,7 +2860,7 @@ ${CONSENT_MODE_V2_HTML}
             </ul>
           </aside>` : ''}
 
-          <!-- ðŸ”¥ THIS IS THE KEY: FULL HTML CONTENT WITH IMAGES -->
+          <!-- 🔥 THIS IS THE KEY: FULL HTML CONTENT WITH IMAGES -->
           <div class="article-body">
             ${sanitizeWordPressHTML(processedContent)}
           </div>
@@ -2884,7 +2888,7 @@ ${CONSENT_MODE_V2_HTML}
         
         <noscript>
           <p style="margin-top: 2rem; padding: 1rem; background: rgba(251, 191, 36, 0.2); border-radius: 8px; color: #fbbf24;">
-            âœ… This article is fully accessible without JavaScript.
+            ✅ This article is fully accessible without JavaScript.
             Enable JavaScript for enhanced interactive features.
           </p>
         </noscript>
@@ -2903,7 +2907,7 @@ ${CONSENT_MODE_V2_HTML}
       </footer>
     </div>
 
-    <!-- ðŸ”¥ STRUCTURED DATA - Article Schema -->
+    <!-- 🔥 STRUCTURED DATA - Article Schema -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -2952,7 +2956,7 @@ ${CONSENT_MODE_V2_HTML}
     }
     </script>
 
-    <!-- ðŸ”¥ STRUCTURED DATA - BreadcrumbList Schema -->
+    <!-- 🔥 STRUCTURED DATA - BreadcrumbList Schema -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -2980,7 +2984,7 @@ ${CONSENT_MODE_V2_HTML}
     }
     </script>
 
-    <!-- ðŸ”¥ STRUCTURED DATA - Organization Schema -->
+    <!-- 🔥 STRUCTURED DATA - Organization Schema -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -3000,7 +3004,7 @@ ${CONSENT_MODE_V2_HTML}
     }
     </script>
 
-    <!-- ðŸ”¥ STRUCTURED DATA - Person/Author Schema (E-E-A-T) -->
+    <!-- 🔥 STRUCTURED DATA - Person/Author Schema (E-E-A-T) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -3045,7 +3049,7 @@ ${relativeModulePreload}
       // Gracefully transition from static to React
       window.addEventListener('react-mounted', function() {
         document.body.classList.add('react-loaded');
-        console.log('âœ… React app mounted - switching to interactive mode');
+        console.log('✅ React app mounted - switching to interactive mode');
       }, { once: true });
       // Fallback: If React doesn't load in 5 seconds, keep static content
       setTimeout(function() {
@@ -3967,7 +3971,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   // Convert fullDefinition markdown to HTML
   var fullDefHTML = markdownToHTML(term.fullDefinition || '');
 
-  // Determine if content is thin (< 250 words) â€” noindex thin pages
+  // Determine if content is thin (< 250 words) — noindex thin pages
   // AdSense-approval hardening: force noindex on all glossary term pages (pSEO)
   var defWordCount = (term.fullDefinition || '').split(/\s+/).length;
   var robotsDirective = 'noindex, follow';
@@ -4917,9 +4921,9 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '      <div class="seo-content">\n';
   html += '        <h1>Data Engineering Cheat Sheets</h1>\n';
   html += '        <p>\n';
-  html += '          Quick-reference guides for data engineers â€” <strong>' + totalSheets + ' cheat sheets</strong> across ' + categoryKeys.length + ' categories.\n';
+  html += '          Quick-reference guides for data engineers — <strong>' + totalSheets + ' cheat sheets</strong> across ' + categoryKeys.length + ' categories.\n';
   html += '          From Snowflake SQL syntax to dbt commands, Airflow DAG patterns, window functions, interview questions,\n';
-  html += '          and production best practices â€” bookmark these for fast lookups during development and interview prep.\n';
+  html += '          and production best practices — bookmark these for fast lookups during development and interview prep.\n';
   html += '        </p>\n\n';
   html += '        <h2>Browse by Category</h2>\n';
   html += '        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 1rem;">\n';
@@ -5702,7 +5706,7 @@ ${CONSENT_MODE_V2_HTML}
               Home
             </a>
           </li>
-          <li class="breadcrumb-separator">â€º</li>
+          <li class="breadcrumb-separator">›</li>
           <li class="breadcrumb-item breadcrumb-current" aria-current="page">
             <span>${title}</span>
           </li>
@@ -5879,9 +5883,9 @@ ${CONSENT_MODE_V2_HTML}
 async function buildIncremental(options = {}) {
   let { force = false, postsOnly = false } = options;
 
-  console.log('ðŸš€ Starting FULL CONTENT static generation with imagesâ€¦');
-  console.log('   ðŸ”¥ Articles will include COMPLETE content for SEO/AdSense');
-  console.log('   ðŸ–¼ï¸   Images will be properly linked with absolute URLs');
+  console.log('ðŸš€ Starting FULL CONTENT static generation with images…');
+  console.log('   🔥 Articles will include COMPLETE content for SEO/AdSense');
+  console.log('   🖼️  Images will be properly linked with absolute URLs');
   
   const distDir = path.join(__dirname, '..', 'dist');
 
@@ -5900,7 +5904,7 @@ async function buildIncremental(options = {}) {
 
   if (!articlesExist && !force) {
     console.warn('âš ï¸  articles/ directory not found or empty');
-    console.log('ðŸ”¨ Enabling force rebuildâ€¦');
+    console.log('ðŸ”¨ Enabling force rebuild…');
     force = true;
   }
 
@@ -5918,16 +5922,16 @@ async function buildIncremental(options = {}) {
   const currentPages = new Set();
 
   // ============================================================================
-  // ðŸ”¥ PROCESS POSTS - WITH FULL CONTENT AND IMAGES
+  // 🔥 PROCESS POSTS - WITH FULL CONTENT AND IMAGES
   // ============================================================================
 
-  console.log('ðŸ“„ Processing posts with FULL content and imagesâ€¦');
+  console.log('ðŸ“„ Processing posts with FULL content and images…');
   const startTime = Date.now();
 
   // Declared outside try so it's accessible for homepage/articles/category pages
   let allArticleSummaries = [];
 
-  // ðŸ”¥ Pre-fetch categories for articleSection mapping
+  // 🔥 Pre-fetch categories for articleSection mapping
   let catIdToName = {};
   try {
     const cats = await fetchFromWP('/categories', 'id,name');
@@ -5948,7 +5952,7 @@ async function buildIncremental(options = {}) {
   }
 
   try {
-    // ðŸ”¥ CRITICAL: Fetch with _embed to get full content + categories + tags for mapping
+    // 🔥 CRITICAL: Fetch with _embed to get full content + categories + tags for mapping
     const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content,date,modified,categories,tags,jetpack_featured_media_url');
     console.log(`   Found ${posts.length} posts from API`);
 
@@ -5994,14 +5998,14 @@ async function buildIncremental(options = {}) {
         }
       }
 
-      // ðŸ”¥ KEY FIX: Use FULL content, not just 500 chars!
+      // 🔥 KEY FIX: Use FULL content, not just 500 chars!
       const fullContent = post.content.rendered; // Complete HTML content
 
       const pageData = {
         title: seoOverride?.title || rawTitle,
         description: seoOverride?.description || optimizedDescription,
         path: pagePath,
-        fullContent: fullContent, // ðŸ”¥ FULL content for crawlers
+        fullContent: fullContent, // 🔥 FULL content for crawlers
         slug: post.slug,
         date: post.date,
         modified: post.modified,
@@ -6016,7 +6020,7 @@ async function buildIncremental(options = {}) {
 
       if (needsRebuild) {
         try {
-          // ðŸ”¥ Use the FULL content generator with image processing
+          // 🔥 Use the FULL content generator with image processing
           // Relevance-rank related articles by shared categories/tags
           const postCats = new Set(post.categories || []);
           const postTags = new Set(post.tags || []);
@@ -6047,7 +6051,7 @@ async function buildIncremental(options = {}) {
           if (cachedPage) {
             stats.updated++;
             if (stats.updated <= 5) {
-              console.log(`   â†» Updated: ${pagePath} (${fileSizeKB} KB)`);
+              console.log(`   ↻ Updated: ${pagePath} (${fileSizeKB} KB)`);
             }
           } else {
             stats.new++;
@@ -6072,7 +6076,7 @@ async function buildIncremental(options = {}) {
     }
 
     const postsTime = ((Date.now() - startTime) / 1000).toFixed(2);
-    console.log(`âœ… Posts: ${stats.new} new, ${stats.updated} updated, ${stats.unchanged} unchanged (${postsTime}s)`);
+    console.log(`✅ Posts: ${stats.new} new, ${stats.updated} updated, ${stats.unchanged} unchanged (${postsTime}s)`);
 
     const finalArticleCount = fs.existsSync(articlesDir) ? fs.readdirSync(articlesDir).length : 0;
     console.log(`   ðŸ“Š Verified: ${finalArticleCount} article directories in dist/articles/`);
@@ -6100,7 +6104,7 @@ async function buildIncremental(options = {}) {
   // PROCESS ESSENTIAL PAGES - Always runs (critical for AdSense approval)
   // ============================================================================
 
-  console.log('\nðŸ“„ Processing essential pages (About, Contact, Privacy, Terms, Disclaimer)â€¦');
+  console.log('\nðŸ“„ Processing essential pages (About, Contact, Privacy, Terms, Disclaimer)…');
 
   for (const page of ESSENTIAL_PAGES) {
     const pagePath = page.path;
@@ -6134,7 +6138,7 @@ async function buildIncremental(options = {}) {
 
         if (cachedPage) {
           stats.updated++;
-          console.log(`   â†» Updated: ${pagePath} (${fileSizeKB} KB)`);
+          console.log(`   ↻ Updated: ${pagePath} (${fileSizeKB} KB)`);
         } else {
           stats.new++;
           console.log(`   âœ“ Created: ${pagePath} (${fileSizeKB} KB)`);
@@ -6155,14 +6159,14 @@ async function buildIncremental(options = {}) {
     };
   }
 
-  console.log(`âœ… Essential pages processed: ${ESSENTIAL_PAGES.length} pages`);
+  console.log(`✅ Essential pages processed: ${ESSENTIAL_PAGES.length} pages`);
 
   // ============================================================================
   // PROCESS CATEGORIES & TAGS (if not postsOnly)
   // ============================================================================
 
   if (!postsOnly) {
-    console.log('\nðŸ“‚ Processing categories with article listingsâ€¦');
+    console.log('\nðŸ“‚ Processing categories with article listings…');
     try {
       const categories = await fetchFromWP('/categories', 'id,slug,name,description,count');
       console.log(`   Found ${categories.length} categories from API`);
@@ -6171,7 +6175,7 @@ async function buildIncremental(options = {}) {
         // Find articles belonging to this category
         const categoryArticles = allArticleSummaries.filter(a => a.categories.includes(cat.id));
 
-        // Skip empty categories â€” pages with "0 articles" trigger AdSense "low value content" rejection
+        // Skip empty categories — pages with "0 articles" trigger AdSense "low value content" rejection
         if (categoryArticles.length === 0) {
           console.log(`   â­ Skipping empty category: ${cat.name} (0 articles)`);
           continue;
@@ -6198,7 +6202,7 @@ async function buildIncremental(options = {}) {
 
             const fileStats = fs.statSync(filePath);
             const fileSizeKB = (fileStats.size / 1024).toFixed(2);
-            console.log(`   ${cachedPage ? 'â†»' : 'âœ“'} ${cat.name}: ${categoryArticles.length} articles (${fileSizeKB} KB)`);
+            console.log(`   ${cachedPage ? '↻' : 'âœ“'} ${cat.name}: ${categoryArticles.length} articles (${fileSizeKB} KB)`);
 
             if (cachedPage) {
               stats.updated++;
@@ -6223,7 +6227,7 @@ async function buildIncremental(options = {}) {
       // ====================================================================
       // GENERATE /articles LISTING PAGE
       // ====================================================================
-      console.log('\nðŸ“„ Generating /articles listing pageâ€¦');
+      console.log('\nðŸ“„ Generating /articles listing page…');
       try {
         const articlesPagePath = '/articles';
         currentPages.add(articlesPagePath);
@@ -6265,7 +6269,7 @@ async function buildIncremental(options = {}) {
       // ====================================================================
       // ENHANCE HOMEPAGE with article listings
       // ====================================================================
-      console.log('\nðŸ  Enhancing homepage with article listingsâ€¦');
+      console.log('\nðŸ  Enhancing homepage with article listings…');
       try {
         const homepagePath = path.join(distDir, 'index.html');
         if (fs.existsSync(homepagePath)) {
@@ -6298,7 +6302,7 @@ async function buildIncremental(options = {}) {
       stats.errors++;
     }
 
-    console.log('\nðŸ·ï¸  Processing tags with article listingsâ€¦');
+    console.log('\nðŸ·ï¸  Processing tags with article listings…');
     try {
       const tags = await fetchFromWP('/tags', 'id,slug,name,description');
       console.log(`   Found ${tags.length} tags from API`);
@@ -6307,7 +6311,7 @@ async function buildIncremental(options = {}) {
         // Find articles belonging to this tag
         const tagArticles = allArticleSummaries.filter(a => a.tags.includes(tag.id));
 
-        // Skip empty tags â€” pages with "0 articles" trigger AdSense "low value content" rejection
+        // Skip empty tags — pages with "0 articles" trigger AdSense "low value content" rejection
         if (tagArticles.length === 0) {
           console.log(`   â­ Skipping empty tag: ${tag.name} (0 articles)`);
           continue;
@@ -6334,7 +6338,7 @@ async function buildIncremental(options = {}) {
 
             const fileStats = fs.statSync(filePath);
             const fileSizeKB = (fileStats.size / 1024).toFixed(2);
-            console.log(`   ${cachedPage ? 'â†»' : 'âœ“'} ${tag.name}: ${tagArticles.length} articles (${fileSizeKB} KB)`);
+            console.log(`   ${cachedPage ? '↻' : 'âœ“'} ${tag.name}: ${tagArticles.length} articles (${fileSizeKB} KB)`);
 
             if (cachedPage) {
               stats.updated++;
@@ -6364,7 +6368,7 @@ async function buildIncremental(options = {}) {
     // GLOSSARY PAGES - Pre-rendered from JSON data (pSEO)
     // ============================================================================
 
-    console.log('\nðŸ“– Processing glossary pages from JSON dataâ€¦');
+    console.log('\nðŸ“– Processing glossary pages from JSON data…');
     try {
       const glossaryDir = path.join(__dirname, '..', 'src', 'data', 'pseo', 'glossary');
       const glossaryFiles = fs.readdirSync(glossaryDir).filter(f => f.endsWith('.json'));
@@ -6402,7 +6406,7 @@ async function buildIncremental(options = {}) {
 
             const fileStats = fs.statSync(outputPath);
             const fileSizeKB = (fileStats.size / 1024).toFixed(2);
-            console.log(`   ${cachedPage ? 'â†»' : 'âœ“'} ${term.term} (${fileSizeKB} KB)`);
+            console.log(`   ${cachedPage ? '↻' : 'âœ“'} ${term.term} (${fileSizeKB} KB)`);
 
             if (cachedPage) {
               stats.updated++;
@@ -6424,7 +6428,7 @@ async function buildIncremental(options = {}) {
         };
       }
 
-      console.log(`   âœ… Glossary pages complete: ${allGlossaryTerms.length} terms processed`);
+      console.log(`   ✅ Glossary pages complete: ${allGlossaryTerms.length} terms processed`);
 
       // Generate glossary hub page (/glossary)
       const glossaryHubPath = '/glossary';
@@ -6467,7 +6471,7 @@ async function buildIncremental(options = {}) {
     // COMPARE PAGES - Pre-rendered from JSON data (pSEO)
     // ============================================================================
 
-    console.log('\nâš–ï¸  Processing comparison pages from JSON dataâ€¦');
+    console.log('\nâš–ï¸  Processing comparison pages from JSON data…');
     try {
       const comparisonsDir = path.join(__dirname, '..', 'src', 'data', 'pseo', 'comparisons');
       const comparisonFiles = fs.readdirSync(comparisonsDir).filter(f => f.endsWith('.json'));
@@ -6505,7 +6509,7 @@ async function buildIncremental(options = {}) {
 
             const fileStats = fs.statSync(outputPath);
             const fileSizeKB = (fileStats.size / 1024).toFixed(2);
-            console.log(`   ${cachedPage ? 'â†»' : 'âœ“'} ${comparison.toolA} vs ${comparison.toolB} (${fileSizeKB} KB)`);
+            console.log(`   ${cachedPage ? '↻' : 'âœ“'} ${comparison.toolA} vs ${comparison.toolB} (${fileSizeKB} KB)`);
 
             if (cachedPage) {
               stats.updated++;
@@ -6527,7 +6531,7 @@ async function buildIncremental(options = {}) {
         };
       }
 
-      console.log(`   âœ… Comparison pages complete: ${allComparisons.length} comparisons processed`);
+      console.log(`   ✅ Comparison pages complete: ${allComparisons.length} comparisons processed`);
 
       // Generate compare hub page (/compare)
       const compareHubPath = '/compare';
@@ -6570,7 +6574,7 @@ async function buildIncremental(options = {}) {
     // CHEATSHEET PAGES - Pre-rendered from cheatsheetData.js (pSEO)
     // ============================================================================
 
-    console.log('\nðŸ“‹ Processing cheatsheet pages from cheatsheetData.jsâ€¦');
+    console.log('\nðŸ“‹ Processing cheatsheet pages from cheatsheetData.js…');
     try {
       // cheatsheetData.js uses ES module exports, so we read & extract via regex
       const cheatsheetDataPath = path.join(__dirname, '..', 'src', 'data', 'cheatsheetData.js');
@@ -6623,7 +6627,7 @@ async function buildIncremental(options = {}) {
 
             const fileStats = fs.statSync(outputPath);
             const fileSizeKB = (fileStats.size / 1024).toFixed(2);
-            console.log(`   ${cachedPage ? 'â†»' : 'âœ“'} ${sheet.title} (${fileSizeKB} KB)`);
+            console.log(`   ${cachedPage ? '↻' : 'âœ“'} ${sheet.title} (${fileSizeKB} KB)`);
 
             if (cachedPage) { stats.updated++; } else { stats.new++; }
           } catch (err) {
@@ -6641,7 +6645,7 @@ async function buildIncremental(options = {}) {
         };
       }
 
-      console.log(`   âœ… Cheatsheet pages complete: ${allCheatsheets.length} sheets processed`);
+      console.log(`   ✅ Cheatsheet pages complete: ${allCheatsheets.length} sheets processed`);
 
       // Generate cheatsheet hub page (/cheatsheets)
       const csHubPath = '/cheatsheets';
@@ -6691,19 +6695,19 @@ async function buildIncremental(options = {}) {
   const totalTime = ((Date.now() - startTime) / 1000).toFixed(2);
 
   console.log('\n' + '='.repeat(60));
-  console.log('âœ… FULL CONTENT build complete!');
+  console.log('✅ FULL CONTENT build complete!');
   console.log('='.repeat(60));
   console.log(`ðŸ“Š Summary:`);
   console.log(`   âœ¨ New pages:       ${stats.new}`);
-  console.log(`   â†»  Updated pages:   ${stats.updated}`);
+  console.log(`   ↻  Updated pages:   ${stats.updated}`);
   console.log(`   âœ“  Unchanged pages: ${stats.unchanged}`);
   if (stats.errors > 0) {
     console.log(`   âŒ Errors:          ${stats.errors}`);
   }
   console.log(`   â±ï¸  Build time:      ${totalTime}s`);
   console.log('='.repeat(60));
-  console.log('\nâœ… All articles now contain FULL content for crawlers!');
-  console.log('âœ… AdSense/Googlebot will see complete articles with images');
+  console.log('\n✅ All articles now contain FULL content for crawlers!');
+  console.log('✅ AdSense/Googlebot will see complete articles with images');
   console.log('ðŸ–¼ï¸  All image URLs converted to absolute paths');
   console.log('');
 
@@ -6740,16 +6744,16 @@ Examples:
   npm run build:incremental -- --force       # Force full rebuild
   npm run build:incremental -- --posts-only  # Only rebuild posts
 
-ðŸ”¥ KEY FEATURES:
-  âœ… FULL article content (not 500 char limit!)
-  âœ… Complete HTML for SEO/AdSense crawlers
-  âœ… Absolute image URLs from WordPress
-  âœ… Relative asset paths for proper loading
-  âœ… Works when accessing /index.html directly
-  âœ… Automatic bundle detection
-  âœ… Enhanced error logging
-  âœ… Safety checks for missing directories
-  âœ… Build timestamp + hash to force FTP uploads
+🔥 KEY FEATURES:
+  ✅ FULL article content (not 500 char limit!)
+  ✅ Complete HTML for SEO/AdSense crawlers
+  ✅ Absolute image URLs from WordPress
+  ✅ Relative asset paths for proper loading
+  ✅ Works when accessing /index.html directly
+  ✅ Automatic bundle detection
+  ✅ Enhanced error logging
+  ✅ Safety checks for missing directories
+  ✅ Build timestamp + hash to force FTP uploads
 
 ðŸŽ¯ AdSense Optimization:
   - Every article includes COMPLETE content

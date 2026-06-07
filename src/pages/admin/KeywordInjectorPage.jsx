@@ -57,9 +57,9 @@ function OpportunityCard({ opp, onGeneratePatch }) {
     };
 
     const actionLabels = {
-        inject: 'Missing â€” inject into content',
-        promote: 'In content but not title â€” promote',
-        boost: 'Present â€” reinforce prominence',
+        inject: 'Missing — inject into content',
+        promote: 'In content but not title — promote',
+        boost: 'Present — reinforce prominence',
     };
 
     return (
@@ -71,7 +71,7 @@ function OpportunityCard({ opp, onGeneratePatch }) {
                         <TrendBadge trend={opp.keyword.isNew ? 'new' : 'rising'} />
                     </div>
                     <div className="text-xs text-gray-400 mb-2">
-                        {opp.keyword.recentImpressions} impressions/week Â· pos {opp.keyword.position} Â· {growthLabel}
+                        {opp.keyword.recentImpressions} impressions/week · pos {opp.keyword.position} · {growthLabel}
                     </div>
                     <div className="flex items-center gap-2 text-xs">
                         <FileText className="w-3 h-3 text-gray-500" />
@@ -222,7 +222,7 @@ Keep it concise (150-300 words max for paragraphs, shorter for titles/FAQs). Bas
                         Keyword Injector
                     </h1>
                     <p className="text-gray-400">
-                        Rising keywords detected from GSC trends â€” inject them into existing articles to capture growing search demand.
+                        Rising keywords detected from GSC trends — inject them into existing articles to capture growing search demand.
                     </p>
                 </div>
                 <button
@@ -311,7 +311,7 @@ Keep it concise (150-300 words max for paragraphs, shorter for titles/FAQs). Bas
                 <div className="text-center py-12 text-gray-500">
                     <TrendingUp className="w-12 h-12 mx-auto mb-3 text-gray-700" />
                     <p className="text-lg">No rising keyword opportunities detected</p>
-                    <p className="text-sm mt-1">Check back in a few days â€” trends are computed weekly from GSC data.</p>
+                    <p className="text-sm mt-1">Check back in a few days — trends are computed weekly from GSC data.</p>
                 </div>
             )}
 

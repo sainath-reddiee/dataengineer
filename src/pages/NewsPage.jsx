@@ -19,7 +19,7 @@ const NewsPage = () => {
   const breadcrumbs = generateBreadcrumbs('/news', 'News & Trends');
 
   // Noindex the page UNLESS we have confirmed posts to render. This is the
-  // safer default â€” during loading, errors, or empty states the page only
+  // safer default — during loading, errors, or empty states the page only
   // shows skeletons or a "No news yet" shell which AdSense flags as thin
   // content. Only flip to indexable once posts.length > 0.
   const hasContent = !loading && !error && posts.length > 0;
@@ -84,7 +84,7 @@ const NewsPage = () => {
             </p>
             <div className="text-sm text-gray-400 max-w-3xl mx-auto leading-relaxed mt-4 text-left md:text-center space-y-2">
               <p>
-                This page tracks announcements that actually change how data engineers work â€”
+                This page tracks announcements that actually change how data engineers work —
                 Snowflake release notes and new Cortex features, Databricks and Unity Catalog
                 updates, BigQuery pricing or engine changes, dbt and Airflow major releases,
                 Apache Iceberg and lakehouse format news, and the AWS / Azure / GCP services

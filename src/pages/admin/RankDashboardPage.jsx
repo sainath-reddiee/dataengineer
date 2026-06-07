@@ -1,5 +1,5 @@
 ﻿// src/pages/admin/RankDashboardPage.jsx
-// Rank Intelligence Dashboard â€” the flagship admin view.
+// Rank Intelligence Dashboard — the flagship admin view.
 // Combines SEO, AEO, CTR, AI visibility, engagement, and freshness signals
 // into a single health score per article, with prioritized actions.
 
@@ -216,7 +216,7 @@ export function RankDashboardPage() {
             {gscData && gscData.length > 0 && (
                 <div className="p-4 bg-blue-900/10 border border-blue-800/30 rounded-xl">
                     <h3 className="text-sm font-semibold text-blue-400 flex items-center gap-2 mb-3">
-                        <BarChart3 className="w-4 h-4" /> Google Search Console â€” Last 28 Days
+                        <BarChart3 className="w-4 h-4" /> Google Search Console — Last 28 Days
                     </h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <div className="p-2">
@@ -229,7 +229,7 @@ export function RankDashboardPage() {
                         </div>
                         <div className="p-2">
                             <div className="text-xs text-gray-400">Avg Position</div>
-                            <div className="text-lg font-bold text-white">{gscData.length > 0 ? (gscData.reduce((s, p) => s + p.position, 0) / gscData.length).toFixed(1) : 'â€”'}</div>
+                            <div className="text-lg font-bold text-white">{gscData.length > 0 ? (gscData.reduce((s, p) => s + p.position, 0) / gscData.length).toFixed(1) : '—'}</div>
                         </div>
                         <div className="p-2">
                             <div className="text-xs text-gray-400">Avg CTR</div>
@@ -255,7 +255,7 @@ export function RankDashboardPage() {
                                 }`}>{a.priority}</span>
                                 <div className="flex-1 min-w-0">
                                     <div className="text-sm text-gray-200">{a.action}</div>
-                                    <div className="text-xs text-gray-500 mt-0.5">For: <span className="text-blue-300">{a.articleTitle}</span> Â· {a.projectedLift}</div>
+                                    <div className="text-xs text-gray-500 mt-0.5">For: <span className="text-blue-300">{a.articleTitle}</span> · {a.projectedLift}</div>
                                 </div>
                                 {a.link && (
                                     a.link.startsWith('http') ? (
@@ -398,7 +398,7 @@ CONTENT (first ~2500 chars):
 ${contentSnippet || '(not available)'}
 
 Provide 4-6 specific, actionable recommendations to improve this article's ranking. For each:
-1. What to do (specific â€” not generic like "add keywords")
+1. What to do (specific — not generic like "add keywords")
 2. Why it will help (which ranking signal it improves)
 3. Expected impact (high/medium/low)
 
@@ -520,7 +520,7 @@ Keep each recommendation to 2-3 sentences max. Be direct and specific to THIS ar
                                                 }}
                                                 className="text-blue-400 hover:text-blue-300 text-xs"
                                             >
-                                                Fix â†’
+                                                Fix →
                                             </Link>
                                         )
                                     )}
@@ -606,7 +606,7 @@ Keep each recommendation to 2-3 sentences max. Be direct and specific to THIS ar
                         </div>
                         {rankData?.history?.length > 0 && (
                             <div className="mt-2 text-xs text-gray-500">
-                                History: {rankData.history.slice(-5).map(h => `#${h.position} (${h.date.split('-').slice(1).join('/')})`).join(' â†’ ')}
+                                History: {rankData.history.slice(-5).map(h => `#${h.position} (${h.date.split('-').slice(1).join('/')})`).join(' → ')}
                                 {rankData.bestPosition && <span className="ml-3 text-emerald-400">Best: #{rankData.bestPosition}</span>}
                             </div>
                         )}

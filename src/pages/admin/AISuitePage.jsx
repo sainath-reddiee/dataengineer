@@ -65,7 +65,7 @@ export function AISuitePage() {
             sessionStorage.setItem('admin_ai_suite_state', JSON.stringify({
                 results, aiFix, activeTab, savedAt: Date.now(),
             }));
-        } catch { /* quota â€” silently drop */ }
+        } catch { /* quota — silently drop */ }
     }, [results, aiFix, activeTab]);
 
     const handleAnalyze = async (scanUrl = url) => {
@@ -178,13 +178,13 @@ export function AISuitePage() {
                 <p className="text-gray-400">PSEO, AEO, and GEO optimization analysis</p>
             </div>
 
-            {/* LLM referral tracker â€” persistent, independent of the URL analyzer below */}
+            {/* LLM referral tracker — persistent, independent of the URL analyzer below */}
             <AICitationsPanel />
 
-            {/* Engagement funnel â€” click-inside and scroll depth per source */}
+            {/* Engagement funnel — click-inside and scroll depth per source */}
             <EngagementPanel />
 
-            {/* SERP feature coverage â€” rich-result gaps across all articles */}
+            {/* SERP feature coverage — rich-result gaps across all articles */}
             <SerpCoveragePanel />
 
             {/* URL Input */}
@@ -269,9 +269,9 @@ export function AISuitePage() {
                                         setAiFixLoading(true);
                                         setAiFix(null);
                                         const failedChecks = (getActiveReport()?.checks || []).filter(c => !c.passed);
-                                        const issueList = failedChecks.map(c => `- [${c.category}] ${c.message}${c.recommendation ? ` â†’ Fix: ${c.recommendation}` : ''}`).join('\n');
+                                        const issueList = failedChecks.map(c => `- [${c.category}] ${c.message}${c.recommendation ? ` → Fix: ${c.recommendation}` : ''}`).join('\n');
                                         const tabName = tabs.find(t => t.id === activeTab)?.label || activeTab;
-                                        const prompt = `You are a ${tabName} optimization expert. An article has been analyzed and these issues were found:\n\nARTICLE: ${results?.url || url}\n\nISSUES:\n${issueList}\n\nFor EACH issue, generate a READY-TO-PASTE fix. Format as:\n\n## [Issue Category]: [Issue Name]\n**Problem:** [what's wrong]\n**Fix (paste this into your article):**\n[actual HTML/content to add]\n\n---\n\nBe specific, actionable, and provide real content â€” not placeholders. Every fix must reference specific topics, tools, or claims from the article content provided.`;
+                                        const prompt = `You are a ${tabName} optimization expert. An article has been analyzed and these issues were found:\n\nARTICLE: ${results?.url || url}\n\nISSUES:\n${issueList}\n\nFor EACH issue, generate a READY-TO-PASTE fix. Format as:\n\n## [Issue Category]: [Issue Name]\n**Problem:** [what's wrong]\n**Fix (paste this into your article):**\n[actual HTML/content to add]\n\n---\n\nBe specific, actionable, and provide real content — not placeholders. Every fix must reference specific topics, tools, or claims from the article content provided.`;
                                         try {
                                             const response = await aiService.generateSuggestion(prompt, articleContent.substring(0, 10000));
                                             setAiFix(response);
@@ -311,23 +311,23 @@ export function AISuitePage() {
                                 <ul className="mt-4 text-sm text-gray-500 space-y-1">
                                     {tab.id === 'pseo' && (
                                         <>
-                                            <li>â€¢ Template consistency</li>
-                                            <li>â€¢ Automation quality</li>
-                                            <li>â€¢ Scalability patterns</li>
+                                            <li>• Template consistency</li>
+                                            <li>• Automation quality</li>
+                                            <li>• Scalability patterns</li>
                                         </>
                                     )}
                                     {tab.id === 'aeo' && (
                                         <>
-                                            <li>â€¢ Featured snippet potential</li>
-                                            <li>â€¢ Voice search optimization</li>
-                                            <li>â€¢ FAQ schema detection</li>
+                                            <li>• Featured snippet potential</li>
+                                            <li>• Voice search optimization</li>
+                                            <li>• FAQ schema detection</li>
                                         </>
                                     )}
                                     {tab.id === 'geo' && (
                                         <>
-                                            <li>â€¢ AI readability score</li>
-                                            <li>â€¢ Entity optimization</li>
-                                            <li>â€¢ Citation worthiness</li>
+                                            <li>• AI readability score</li>
+                                            <li>• Entity optimization</li>
+                                            <li>• Citation worthiness</li>
                                         </>
                                     )}
                                 </ul>

@@ -122,7 +122,7 @@ export function ContentCalendarPage() {
                         <Calendar className="w-8 h-8 text-blue-400" />
                         Content Calendar
                     </h1>
-                    <p className="text-gray-400">Plan what to write, update, and optimize â€” with AI-free suggestions from your data.</p>
+                    <p className="text-gray-400">Plan what to write, update, and optimize — with AI-free suggestions from your data.</p>
                 </div>
                 <button
                     onClick={() => setShowAddForm(!showAddForm)}

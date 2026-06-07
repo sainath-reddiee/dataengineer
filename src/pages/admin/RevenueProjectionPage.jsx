@@ -1,5 +1,5 @@
 ﻿// src/pages/admin/RevenueProjectionPage.jsx
-// AdSense revenue potential calculator â€” shows current vs projected
+// AdSense revenue potential calculator — shows current vs projected
 // earnings per article based on view counts and rank potential.
 
 import React, { useState, useEffect, useMemo } from 'react';

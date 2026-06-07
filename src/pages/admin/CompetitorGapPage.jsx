@@ -1,5 +1,5 @@
 ﻿// src/pages/admin/CompetitorGapPage.jsx
-// Compare your article against any competitor URL â€” AI-powered gap analysis.
+// Compare your article against any competitor URL — AI-powered gap analysis.
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -74,7 +74,7 @@ export function CompetitorGapPage() {
                     <Users className="w-8 h-8 text-orange-400" />
                     Competitor Gap Analyzer
                 </h1>
-                <p className="text-gray-400">Paste any competitor URL and see exactly what they cover that you don't â€” AI-powered.</p>
+                <p className="text-gray-400">Paste any competitor URL and see exactly what they cover that you don't — AI-powered.</p>
             </div>
 
             {!aiStatus.enabled && (
@@ -155,7 +155,7 @@ export function CompetitorGapPage() {
                             </summary>
                             <div className="mt-3 space-y-1">
                                 {result.competitor.h2.map((h, i) => (
-                                    <div key={i} className="text-sm text-gray-300 pl-4">â€¢ {h}</div>
+                                    <div key={i} className="text-sm text-gray-300 pl-4">• {h}</div>
                                 ))}
                             </div>
                         </details>

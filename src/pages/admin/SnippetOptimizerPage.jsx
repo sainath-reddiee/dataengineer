@@ -90,7 +90,7 @@ export function SnippetOptimizerPage() {
                         <Award className="w-8 h-8 text-indigo-400" />
                         Featured Snippet Optimizer
                     </h1>
-                    <p className="text-gray-400">Score each article's readiness for featured snippets & People Also Ask â€” AI reformats content for the win.</p>
+                    <p className="text-gray-400">Score each article's readiness for featured snippets & People Also Ask — AI reformats content for the win.</p>
                 </div>
                 <button onClick={loadData} disabled={loading} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm rounded-lg flex items-center gap-2">
                     <RefreshCw className="w-4 h-4" /> Refresh

@@ -59,7 +59,7 @@ const NotFoundPage = () => {
               type="text"
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search articles, cheat sheets, comparisonsâ€¦"
+              placeholder="Search articles, cheat sheets, comparisons…"
               aria-label="Search the site"
               className="flex-1 bg-transparent outline-none text-white placeholder:text-gray-500 py-1"
             />

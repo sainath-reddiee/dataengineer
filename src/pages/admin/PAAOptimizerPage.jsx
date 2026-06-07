@@ -1,5 +1,5 @@
 ﻿// src/pages/admin/PAAOptimizerPage.jsx
-// People Also Ask Optimizer â€” discovers question keywords from GSC data,
+// People Also Ask Optimizer — discovers question keywords from GSC data,
 // predicts additional PAA questions via AI, and generates snippet-optimized answers.
 
 import React, { useEffect, useState, useMemo } from 'react';
@@ -258,7 +258,7 @@ Return the JSON array and nothing else.`;
                         // Fallback: split by newlines
                         aiQuestions = aiResult
                             .split('\n')
-                            .map(line => line.replace(/^\d+[\.\)]\s*/, '').replace(/^[-â€¢]\s*/, '').trim())
+                            .map(line => line.replace(/^\d+[\.\)]\s*/, '').replace(/^[-•]\s*/, '').trim())
                             .filter(line => line.length > 10 && QUESTION_WORDS.test(line))
                             .slice(0, 10)
                             .map(q => ({
@@ -274,7 +274,7 @@ Return the JSON array and nothing else.`;
                 }
             }
 
-            // Fetch related questions from web search (FREE â€” TinyFish Search API)
+            // Fetch related questions from web search (FREE — TinyFish Search API)
             let webQuestions = [];
             if (tinyfishService.isEnabled) {
                 try {
@@ -286,7 +286,7 @@ Return the JSON array and nothing else.`;
                     // Find question-like snippets from search results
                     const questionSnippets = [...relatedSearches, ...allSnippets]
                         .filter(s => QUESTION_WORDS.test(s) && s.length > 15 && s.length < 120)
-                        .map(s => s.replace(/^[.â€¦\s]+/, '').trim());
+                        .map(s => s.replace(/^[.…\s]+/, '').trim());
 
                     webQuestions = questionSnippets.slice(0, 5).map(q => ({
                         text: q.endsWith('?') ? q : q + '?',
@@ -442,7 +442,7 @@ Format your response EXACTLY as:
 
             {!gscService.isConnected() && selectedSlug && (
                 <div className="p-4 bg-blue-900/10 border border-blue-800/30 rounded-xl flex items-center gap-2 text-blue-300 text-sm">
-                    <AlertTriangle className="w-4 h-4" /> GSC not connected â€” showing AI predictions only. Connect GSC for real question data.
+                    <AlertTriangle className="w-4 h-4" /> GSC not connected — showing AI predictions only. Connect GSC for real question data.
                 </div>
             )}
 

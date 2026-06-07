@@ -128,7 +128,7 @@ async function generatePages() {
   console.log('ðŸ“„ Fetching posts...');
   const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content');
 
-  console.log(`âœ… Found ${posts.length} posts\n`);
+  console.log(`✅ Found ${posts.length} posts\n`);
   console.log('ðŸ’¾ Writing HTML files...');
 
   let generated = 0;
@@ -160,9 +160,9 @@ async function generatePages() {
     }
   }
 
-  console.log(`\nâœ… Successfully generated ${generated} static HTML pages!`);
+  console.log(`\n✅ Successfully generated ${generated} static HTML pages!`);
   console.log('\nðŸ“Š What was generated:');
-  console.log(`   âœ… Article posts: ${posts.length}`);
+  console.log(`   ✅ Article posts: ${posts.length}`);
   console.log(`   âš ï¸  Categories: Handled by React (no static HTML)`);
   console.log(`   âš ï¸  Tags: Handled by React (no static HTML)`);
   console.log('\nâœ¨ This is better because:');

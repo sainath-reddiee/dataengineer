@@ -608,7 +608,7 @@ function ExternalLinkSuggestion({ link, applied, onMarkApplied, onUnmarkApplied 
                         {link.title}
                     </div>
                     <div className="text-xs text-purple-300 mt-0.5 truncate flex items-center gap-2">
-                        â†’ {link.url}
+                        → {link.url}
                         {tinyfishService.isEnabled && verified === null && (
                             <button onClick={handleVerify} className="text-[9px] px-1.5 py-0.5 bg-cyan-900/30 border border-cyan-700/30 text-cyan-300 rounded hover:bg-cyan-800/30">verify</button>
                         )}

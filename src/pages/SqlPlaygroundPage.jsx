@@ -1,6 +1,6 @@
 ﻿// src/pages/SqlPlaygroundPage.jsx
 // In-browser SQL playground powered by DuckDB-WASM.
-// Zero backend â€” the entire database engine runs client-side via WebAssembly.
+// Zero backend — the entire database engine runs client-side via WebAssembly.
 import React, { useState, useCallback, useRef, useEffect, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -23,7 +23,7 @@ import { getDb as getSharedDb } from '@/lib/duckdb';
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
 // ---------------------------------------------------------------------------
-// Sample datasets â€” small enough to inline, big enough to be useful
+// Sample datasets — small enough to inline, big enough to be useful
 // ---------------------------------------------------------------------------
 const SAMPLE_DATASETS = {
   employees: {
@@ -154,7 +154,7 @@ ORDER BY department, dept_rank;`,
 const FAQ = [
   {
     q: 'Is this SQL playground free and private?',
-    a: 'Yes. DuckDB runs entirely in your browser via WebAssembly. Your SQL and data never leave your device â€” there is no server, no database connection, no logging of queries. Paste proprietary data safely.',
+    a: 'Yes. DuckDB runs entirely in your browser via WebAssembly. Your SQL and data never leave your device — there is no server, no database connection, no logging of queries. Paste proprietary data safely.',
   },
   {
     q: 'What SQL dialect does DuckDB support?',
@@ -162,11 +162,11 @@ const FAQ = [
   },
   {
     q: 'Can I load my own data?',
-    a: 'The playground ships with three sample tables (employees, orders, web_events). You can also paste a CSV into the editor and use DuckDB\'s read_csv() function, e.g. SELECT * FROM read_csv(\'data.csv\') â€” though for this playground the built-in tables are preloaded for convenience.',
+    a: 'The playground ships with three sample tables (employees, orders, web_events). You can also paste a CSV into the editor and use DuckDB\'s read_csv() function, e.g. SELECT * FROM read_csv(\'data.csv\') — though for this playground the built-in tables are preloaded for convenience.',
   },
   {
     q: 'How large a dataset can it handle?',
-    a: 'DuckDB-WASM runs inside your browser\'s memory budget â€” typically 1-4 GB depending on device and browser. For the sample datasets in this playground (15 rows each), performance is instant. For real analytical workloads up to ~100 MB of data, DuckDB-WASM performs well.',
+    a: 'DuckDB-WASM runs inside your browser\'s memory budget — typically 1-4 GB depending on device and browser. For the sample datasets in this playground (15 rows each), performance is instant. For real analytical workloads up to ~100 MB of data, DuckDB-WASM performs well.',
   },
   {
     q: 'Does it support Snowflake-specific syntax?',
@@ -179,7 +179,7 @@ const FAQ = [
 ];
 
 // ---------------------------------------------------------------------------
-// DuckDB initialization â€” uses shared singleton, loads sample datasets once
+// DuckDB initialization — uses shared singleton, loads sample datasets once
 // ---------------------------------------------------------------------------
 let playgroundDbPromise = null;
 
@@ -340,7 +340,7 @@ export default function SqlPlaygroundPage() {
     name: 'SQL Playground',
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'Web',
-    description: 'Free in-browser SQL playground powered by DuckDB-WASM. Practice SQL with sample datasets â€” no signup, no server, 100% client-side.',
+    description: 'Free in-browser SQL playground powered by DuckDB-WASM. Practice SQL with sample datasets — no signup, no server, 100% client-side.',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
     url: 'https://dataengineerhub.blog/tools/sql-playground',
     publisher: { '@type': 'Organization', name: 'DataEngineer Hub', url: 'https://dataengineerhub.blog' },
@@ -358,8 +358,8 @@ export default function SqlPlaygroundPage() {
   return (
     <>
       <MetaTags
-        title="Free SQL Playground 2026 â€” Run SQL in Your Browser | DuckDB-WASM"
-        description="Practice SQL instantly in your browser with DuckDB-WASM. Sample datasets, window functions, CTEs, QUALIFY â€” no signup, no server. 100% private and free."
+        title="Free SQL Playground 2026 — Run SQL in Your Browser | DuckDB-WASM"
+        description="Practice SQL instantly in your browser with DuckDB-WASM. Sample datasets, window functions, CTEs, QUALIFY — no signup, no server. 100% private and free."
         keywords="sql playground, sql practice online, duckdb wasm, run sql in browser, free sql editor, sql sandbox, practice sql online, data engineer sql practice"
         url="/tools/sql-playground"
         type="website"
@@ -386,14 +386,14 @@ export default function SqlPlaygroundPage() {
             <span className="text-blue-400">SQL Playground</span>
           </nav>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-emerald-300 bg-emerald-900/30 border border-emerald-700/50 rounded-full">
-            DuckDB-WASM Â· 100% in-browser Â· No data leaves your device
+            DuckDB-WASM · 100% in-browser · No data leaves your device
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Database className="w-8 h-8 text-emerald-400" />
             SQL Playground
           </h1>
           <p className="text-gray-300 text-lg max-w-3xl">
-            Write and run SQL instantly â€” powered by{' '}
+            Write and run SQL instantly — powered by{' '}
             <span className="text-emerald-400 font-medium">DuckDB-WASM</span>.
             Three sample tables preloaded. Practice window functions, CTEs, QUALIFY,
             aggregations, and joins. No server, no signup, no tracking.
@@ -489,7 +489,7 @@ export default function SqlPlaygroundPage() {
                 {results && (
                   <span className="text-xs font-normal text-gray-400">
                     {results.length} row{results.length !== 1 ? 's' : ''}
-                    {execTime != null && ` Â· ${execTime < 1 ? '<1' : Math.round(execTime)}ms`}
+                    {execTime != null && ` · ${execTime < 1 ? '<1' : Math.round(execTime)}ms`}
                   </span>
                 )}
               </h2>
@@ -570,7 +570,7 @@ export default function SqlPlaygroundPage() {
                   className="block w-full text-left p-2 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 rounded-lg text-xs"
                 >
                   <div className="text-gray-200 font-mono truncate">{h.sql}</div>
-                  <div className="text-gray-500 mt-1">{h.rowCount} rows Â· {Math.round(h.time)}ms</div>
+                  <div className="text-gray-500 mt-1">{h.rowCount} rows · {Math.round(h.time)}ms</div>
                 </button>
               ))}
             </div>
@@ -652,7 +652,7 @@ export default function SqlPlaygroundPage() {
             </Link>
             <Link to="/cheatsheets/snowflake-sql" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-emerald-500 rounded-xl">
               <div className="text-emerald-300 font-medium mb-1 flex items-center gap-2"><BookOpen className="w-4 h-4" /> Snowflake SQL Cheat Sheet</div>
-              <div className="text-gray-400 text-sm">Full Snowflake SQL reference â€” copy examples into the playground.</div>
+              <div className="text-gray-400 text-sm">Full Snowflake SQL reference — copy examples into the playground.</div>
             </Link>
             <Link to="/interview-prep" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-emerald-500 rounded-xl">
               <div className="text-emerald-300 font-medium mb-1 flex items-center gap-2"><BookOpen className="w-4 h-4" /> Interview Prep Hub</div>
@@ -660,7 +660,7 @@ export default function SqlPlaygroundPage() {
             </Link>
             <Link to="/cheatsheets/sql-window-functions" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-emerald-500 rounded-xl">
               <div className="text-emerald-300 font-medium mb-1">Window Functions Reference</div>
-              <div className="text-gray-400 text-sm">ROW_NUMBER, RANK, LAG â€” all examples, runnable here.</div>
+              <div className="text-gray-400 text-sm">ROW_NUMBER, RANK, LAG — all examples, runnable here.</div>
             </Link>
           </div>
         </div>

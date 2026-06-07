@@ -47,7 +47,7 @@ const TOOLS = [
   },
   {
     slug: 'snowflake-credit-cost',
-    title: 'Credit â†’ USD Converter',
+    title: 'Credit → USD Converter',
     icon: DollarSign,
     tagline: 'Instant credit price lookup',
     description:
@@ -67,7 +67,7 @@ const TOOLS = [
     slug: 'snowflake-warehouse-sizing',
     title: 'Warehouse Sizing Estimator',
     icon: Gauge,
-    tagline: 'Pick XS â†’ 6XL by workload',
+    tagline: 'Pick XS → 6XL by workload',
     description:
       'Recommends a starting warehouse size (XS to 6XL) from workload type, data volume, and concurrency. Shows one-size-up and one-size-down cost comparison.',
     primaryFor: 'Right-sizing, new workload setup, ETL vs BI tradeoffs',
@@ -96,7 +96,7 @@ const TOOLS = [
     icon: Code2,
     tagline: 'Beautify + standardize SQL',
     description:
-      'Paste any SQL â€” Snowflake, PostgreSQL, BigQuery, Redshift, or ANSI â€” and get consistent formatting with configurable indentation, keyword case, and line length. 100% client-side.',
+      'Paste any SQL — Snowflake, PostgreSQL, BigQuery, Redshift, or ANSI — and get consistent formatting with configurable indentation, keyword case, and line length. 100% client-side.',
     primaryFor: 'Code review cleanup, PR hygiene, pre-commit style enforcement',
   },
   {
@@ -110,16 +110,16 @@ const TOOLS = [
   },
   {
     slug: 'json-to-sql-ddl',
-    title: 'JSON â†’ SQL DDL Generator',
+    title: 'JSON → SQL DDL Generator',
     icon: FileJson,
     tagline: 'Schema inference from sample',
     description:
       'Paste a JSON sample (or array of samples) and get a CREATE TABLE DDL with inferred types. Supports Snowflake VARIANT, PostgreSQL JSONB, and standard SQL types. Handles nested objects and arrays.',
-    primaryFor: 'Ingestion pipeline bootstrapping, schema design, API â†’ warehouse mapping',
+    primaryFor: 'Ingestion pipeline bootstrapping, schema design, API → warehouse mapping',
   },
   {
     slug: 'csv-to-sql',
-    title: 'CSV â†’ SQL Converter',
+    title: 'CSV → SQL Converter',
     icon: FileSpreadsheet,
     tagline: 'INSERT + CREATE TABLE from CSV',
     description:
@@ -130,7 +130,7 @@ const TOOLS = [
     slug: 'dbt-schema-generator',
     title: 'dbt Schema.yml Generator',
     icon: FileCode2,
-    tagline: 'CREATE TABLE â†’ dbt scaffold',
+    tagline: 'CREATE TABLE → dbt scaffold',
     description:
       'Paste a CREATE TABLE statement, get a complete dbt scaffold: schema.yml with inferred unique/not_null tests, staging SQL model, and sources.yml with freshness checks. Zero warehouse connection required.',
     primaryFor: 'dbt onboarding, staging layer bootstrapping, schema.yml generation without codegen',
@@ -168,7 +168,7 @@ const TOOLS = [
     icon: ArrowLeftRight,
     tagline: 'Convert between data formats',
     description:
-      'Convert JSON, Apache Parquet, and Apache Avro files directly in your browser. Powered by DuckDB-WASM for Parquet and avsc for Avro. No upload, no server â€” 100% client-side.',
+      'Convert JSON, Apache Parquet, and Apache Avro files directly in your browser. Powered by DuckDB-WASM for Parquet and avsc for Avro. No upload, no server — 100% client-side.',
     primaryFor: 'Data lake format conversion, Kafka/Avro inspection, Parquet previewing, format migration',
   },
   {
@@ -177,7 +177,7 @@ const TOOLS = [
     icon: Scale,
     tagline: 'Snowflake vs BigQuery vs Databricks',
     description:
-      'Enter one workload profile â€” TB scanned, compute hours, storage â€” and get an apples-to-apples monthly cost estimate across Snowflake, BigQuery, and Databricks. Uses published list pricing (April 2026). Great for pre-RFP sizing and migration budget framing.',
+      'Enter one workload profile — TB scanned, compute hours, storage — and get an apples-to-apples monthly cost estimate across Snowflake, BigQuery, and Databricks. Uses published list pricing (April 2026). Great for pre-RFP sizing and migration budget framing.',
     primaryFor: 'Platform selection, migration cost modeling, vendor negotiations, multi-cloud strategy',
   },
   {
@@ -200,7 +200,7 @@ const FAQS = [
   },
   {
     q: 'How accurate are the cost estimates?',
-    a: 'Each calculator uses publicly documented list pricing (as of 2026) for the relevant platform â€” Snowflake credit rates, BigQuery on-demand/slot pricing, Databricks DBU rates, and dbt Cloud seat pricing. Actual invoiced cost depends on your contract, region, and real usage. Always cross-check with your platform\'s billing dashboard for authoritative numbers.',
+    a: 'Each calculator uses publicly documented list pricing (as of 2026) for the relevant platform — Snowflake credit rates, BigQuery on-demand/slot pricing, Databricks DBU rates, and dbt Cloud seat pricing. Actual invoiced cost depends on your contract, region, and real usage. Always cross-check with your platform\'s billing dashboard for authoritative numbers.',
   },
   {
     q: 'Which platforms do these tools cover?',
@@ -219,7 +219,7 @@ const FAQS = [
 export default function ToolsHubPage() {
   const pageTitle = 'Free Data Engineering Calculators & Tools 2026';
   const pageDescription =
-    'Free cost calculators for Snowflake, Databricks, BigQuery, and dbt Cloud â€” plus a SQL playground, cron builder, and format converter. No login, instant results, shareable URLs.';
+    'Free cost calculators for Snowflake, Databricks, BigQuery, and dbt Cloud — plus a SQL playground, cron builder, and format converter. No login, instant results, shareable URLs.';
   const canonicalUrl = `${SITE_CONFIG.url}/tools`;
 
   const breadcrumbSchema = {
@@ -280,7 +280,7 @@ export default function ToolsHubPage() {
           content="snowflake cost calculator, databricks cost calculator, bigquery pricing calculator, dbt cloud cost estimator, snowflake credit cost, snowflake warehouse sizing, cloud data warehouse comparison, sql playground, cron expression builder, free data engineering tools, json parquet avro converter"
         />
         <link rel="canonical" href={canonicalUrl} />
-        {/* PSEO/AI-assisted section â€” held out of the index until further editorial work. */}
+        {/* PSEO/AI-assisted section — held out of the index until further editorial work. */}
         <meta name="robots" content="noindex, follow" />
 
         <meta property="og:type" content="website" />
@@ -326,8 +326,8 @@ export default function ToolsHubPage() {
               </h1>
 
               <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-                Estimate costs for Snowflake, Databricks, BigQuery, and dbt Cloud â€” format data,
-                build cron expressions, and run SQL â€” all in your browser, no login required.
+                Estimate costs for Snowflake, Databricks, BigQuery, and dbt Cloud — format data,
+                build cron expressions, and run SQL — all in your browser, no login required.
               </p>
             </motion.div>
           </div>
@@ -462,7 +462,7 @@ export default function ToolsHubPage() {
                 <strong className="text-white">Reviewing an invoice?</strong> Plug credit counts
                 from ACCOUNT_USAGE into the{' '}
                 <Link to="/tools/snowflake-credit-cost" className="text-blue-400 hover:underline">
-                  Credit â†’ USD Converter
+                  Credit → USD Converter
                 </Link>{' '}
                 for quick dollar-value checks.
               </li>
@@ -470,7 +470,7 @@ export default function ToolsHubPage() {
           </div>
         </div>
 
-        {/* Related Cheat Sheets â€” cross-link to reference material */}
+        {/* Related Cheat Sheets — cross-link to reference material */}
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex items-center gap-2 mb-6">
             <BookOpen className="w-6 h-6 text-blue-400" />
@@ -478,7 +478,7 @@ export default function ToolsHubPage() {
           </div>
           <p className="text-gray-400 mb-6 max-w-3xl">
             Tools turn concepts into numbers, but you still need the concepts. Pair each calculator
-            with the matching reference cheat sheet â€” all free, all indexed for fast lookup.
+            with the matching reference cheat sheet — all free, all indexed for fast lookup.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
@@ -565,7 +565,7 @@ export default function ToolsHubPage() {
             </h2>
             <p className="text-gray-300 mb-6 max-w-xl mx-auto">
               Read our in-depth articles on Snowflake, Databricks, BigQuery, dbt, and data
-              engineering best practices â€” built for engineers shipping to production.
+              engineering best practices — built for engineers shipping to production.
             </p>
             <Link
               to="/blog"

@@ -14,23 +14,23 @@ const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 // Databricks DBU rates as of early 2026 (list pricing).
 // Sources: publicly documented on databricks.com/product/pricing
 const DBU_RATES = [
-  { id: 'all-purpose-standard',   label: 'All-Purpose Compute â€” Standard',    dbuRate: 0.40 },
-  { id: 'all-purpose-premium',    label: 'All-Purpose Compute â€” Premium',     dbuRate: 0.55 },
-  { id: 'all-purpose-enterprise', label: 'All-Purpose Compute â€” Enterprise',  dbuRate: 0.65 },
-  { id: 'jobs-standard',          label: 'Jobs Compute â€” Standard',           dbuRate: 0.15 },
-  { id: 'jobs-premium',           label: 'Jobs Compute â€” Premium',            dbuRate: 0.22 },
-  { id: 'jobs-photon',            label: 'Jobs Compute â€” Photon (Premium)',   dbuRate: 0.22 },
-  { id: 'sql-classic',            label: 'SQL Compute â€” Classic (Premium)',   dbuRate: 0.22 },
-  { id: 'sql-pro',                label: 'SQL Compute â€” Pro (Premium)',       dbuRate: 0.55 },
-  { id: 'sql-serverless',         label: 'SQL Compute â€” Serverless (Premium)', dbuRate: 0.70 },
-  { id: 'dlt-core',               label: 'Delta Live Tables â€” Core',          dbuRate: 0.20 },
-  { id: 'dlt-pro',                label: 'Delta Live Tables â€” Pro',           dbuRate: 0.25 },
-  { id: 'dlt-advanced',           label: 'Delta Live Tables â€” Advanced',      dbuRate: 0.36 },
+  { id: 'all-purpose-standard',   label: 'All-Purpose Compute — Standard',    dbuRate: 0.40 },
+  { id: 'all-purpose-premium',    label: 'All-Purpose Compute — Premium',     dbuRate: 0.55 },
+  { id: 'all-purpose-enterprise', label: 'All-Purpose Compute — Enterprise',  dbuRate: 0.65 },
+  { id: 'jobs-standard',          label: 'Jobs Compute — Standard',           dbuRate: 0.15 },
+  { id: 'jobs-premium',           label: 'Jobs Compute — Premium',            dbuRate: 0.22 },
+  { id: 'jobs-photon',            label: 'Jobs Compute — Photon (Premium)',   dbuRate: 0.22 },
+  { id: 'sql-classic',            label: 'SQL Compute — Classic (Premium)',   dbuRate: 0.22 },
+  { id: 'sql-pro',                label: 'SQL Compute — Pro (Premium)',       dbuRate: 0.55 },
+  { id: 'sql-serverless',         label: 'SQL Compute — Serverless (Premium)', dbuRate: 0.70 },
+  { id: 'dlt-core',               label: 'Delta Live Tables — Core',          dbuRate: 0.20 },
+  { id: 'dlt-pro',                label: 'Delta Live Tables — Pro',           dbuRate: 0.25 },
+  { id: 'dlt-advanced',           label: 'Delta Live Tables — Advanced',      dbuRate: 0.36 },
   { id: 'model-serving',          label: 'Model Serving (Serverless)',        dbuRate: 0.07 },
 ];
 
 // Representative instance DBU-per-hour values for common cluster sizes.
-// These are approximations â€” real DBU consumption varies by instance family.
+// These are approximations — real DBU consumption varies by instance family.
 const INSTANCE_TYPES = [
   { id: 'small',   label: 'Small (m5.xlarge, ~4 vCPU / 16 GB)',   dbuPerHour: 1.0 },
   { id: 'medium',  label: 'Medium (m5.2xlarge, ~8 vCPU / 32 GB)', dbuPerHour: 2.0 },
@@ -45,17 +45,17 @@ const formatUSD = (n) =>
 
 const LAST_UPDATED = 'April 2026';
 
-const INTRO = `**Databricks looks expensive until you understand DBUs â€” then it looks terrifying.** The headline \`$/DBU\` rate is only one of three levers that decide what lands on your invoice. The other two â€” **which SKU you picked** and **which VM family your cluster runs on** â€” routinely swing the all-in bill by 3-5x for the exact same workload.
+const INTRO = `**Databricks looks expensive until you understand DBUs — then it looks terrifying.** The headline \`$/DBU\` rate is only one of three levers that decide what lands on your invoice. The other two — **which SKU you picked** and **which VM family your cluster runs on** — routinely swing the all-in bill by 3-5x for the exact same workload.
 
-This calculator models the full stack: DBU consumption Ã— DBU rate Ã— hours, plus the underlying cloud VM cost (AWS/Azure/GCP bill that separately), so you see the true monthly number instead of the Databricks-only sticker price.
+This calculator models the full stack: DBU consumption × DBU rate × hours, plus the underlying cloud VM cost (AWS/Azure/GCP bill that separately), so you see the true monthly number instead of the Databricks-only sticker price.
 
 ### The Databricks mental model: SKU, rate, and VM
 
 Databricks cost has three multiplicative components, and most teams only optimize one:
 
-1. **SKU tier** â€” \`Jobs Compute\` is ~55% cheaper per DBU than \`All-Purpose Compute\`. If a pipeline runs on a schedule, it should almost never touch All-Purpose. \`SQL Serverless\` and \`SQL Pro\` have their own tiers entirely.
-2. **DBU rate** â€” Standard/Premium/Enterprise workspace tiers each have different \`$/DBU\` prices. Photon-enabled jobs consume DBUs ~2-3x faster but usually finish >3x faster, so the net is a win.
-3. **Cloud VM cost** â€” the instance family (\`i3\`, \`r5d\`, \`m5d\`, \`Standard_DS\`) is billed by the cloud provider and is often 40-60% of total spend. Graviton/Ampere ARM nodes can cut that by ~20%.
+1. **SKU tier** — \`Jobs Compute\` is ~55% cheaper per DBU than \`All-Purpose Compute\`. If a pipeline runs on a schedule, it should almost never touch All-Purpose. \`SQL Serverless\` and \`SQL Pro\` have their own tiers entirely.
+2. **DBU rate** — Standard/Premium/Enterprise workspace tiers each have different \`$/DBU\` prices. Photon-enabled jobs consume DBUs ~2-3x faster but usually finish >3x faster, so the net is a win.
+3. **Cloud VM cost** — the instance family (\`i3\`, \`r5d\`, \`m5d\`, \`Standard_DS\`) is billed by the cloud provider and is often 40-60% of total spend. Graviton/Ampere ARM nodes can cut that by ~20%.
 
 ### Where teams get the DBU math wrong
 
@@ -63,7 +63,7 @@ The single most common mistake: **benchmarking on All-Purpose then deploying to 
 
 Second most common: **ignoring cluster startup time**. A 10-minute job on a cluster that takes 4 minutes to spin up is really a 14-minute billed cluster. For sub-hour jobs, \`Serverless Jobs\` or pooled clusters change the math completely.
 
-Third: **forgetting DLT, Model Serving, and Vector Search are separate DBU meters** with their own rates â€” they don't roll into your Jobs/All-Purpose budget.
+Third: **forgetting DLT, Model Serving, and Vector Search are separate DBU meters** with their own rates — they don't roll into your Jobs/All-Purpose budget.
 
 ### What this calculator gets right
 
@@ -73,44 +73,44 @@ const WHEN_TO_USE = {
   use: [
     'Budgeting a new Databricks workspace or a workload migration and you need a defensible monthly number',
     'Comparing Jobs Compute vs All-Purpose vs SQL Warehouse for the same pipeline before committing to a deployment pattern',
-    'Evaluating Photon ROI â€” estimating whether 2-3x DBU consumption is offset by runtime savings',
+    'Evaluating Photon ROI — estimating whether 2-3x DBU consumption is offset by runtime savings',
     'Modeling DBCU (Databricks commit) vs on-demand pricing to decide commitment size',
     'Back-of-envelope FinOps review: "is this pipeline\'s $4k/month reasonable or way off?"',
     'Comparing Databricks DBU economics against Snowflake credits or BigQuery slots for a cost-parity conversation',
   ],
   avoid: [
-    'Private negotiated DBU rates, partner discounts, or startup credit programs â€” list prices only',
+    'Private negotiated DBU rates, partner discounts, or startup credit programs — list prices only',
     'Serverless SQL burst pricing where DBU consumption varies heavily by query pattern (use actual usage reports)',
-    'Delta Live Tables, Mosaic AI Model Serving, or Vector Search meters â€” those have separate DBU rates not modeled here',
-    'Finance-grade forecasting â€” this is a planning estimator, not an accrual-accurate billing tool',
-    'Cross-cloud egress, S3/ADLS storage, or Unity Catalog metadata charges â€” those are cloud-provider line items',
+    'Delta Live Tables, Mosaic AI Model Serving, or Vector Search meters — those have separate DBU rates not modeled here',
+    'Finance-grade forecasting — this is a planning estimator, not an accrual-accurate billing tool',
+    'Cross-cloud egress, S3/ADLS storage, or Unity Catalog metadata charges — those are cloud-provider line items',
   ],
 };
 
 const FAQ = [
   {
     q: 'How is Databricks pricing calculated?',
-    a: 'Databricks charges in DBUs (Databricks Units) per hour. Total cost = DBUs consumed Ã— DBU rate Ã— hours, plus the underlying cloud VM cost (billed separately by AWS/Azure/GCP). A DBU is a unit of processing capability â€” roughly 1 DBU/hour for a small cluster. Rates differ by workload (Jobs, All-Purpose, SQL) and tier (Standard, Premium, Enterprise).',
+    a: 'Databricks charges in DBUs (Databricks Units) per hour. Total cost = DBUs consumed × DBU rate × hours, plus the underlying cloud VM cost (billed separately by AWS/Azure/GCP). A DBU is a unit of processing capability — roughly 1 DBU/hour for a small cluster. Rates differ by workload (Jobs, All-Purpose, SQL) and tier (Standard, Premium, Enterprise).',
   },
   {
     q: 'What is the difference between Jobs Compute and All-Purpose Compute?',
-    a: 'Jobs Compute is for automated, scheduled workloads (ETL, scheduled notebooks) and is cheapest at $0.15â€“$0.22/DBU. All-Purpose Compute is for interactive notebook work and ad-hoc exploration and costs $0.40â€“$0.65/DBU â€” roughly 2â€“3x more. Always use Jobs Compute for production pipelines.',
+    a: 'Jobs Compute is for automated, scheduled workloads (ETL, scheduled notebooks) and is cheapest at $0.15–$0.22/DBU. All-Purpose Compute is for interactive notebook work and ad-hoc exploration and costs $0.40–$0.65/DBU — roughly 2–3x more. Always use Jobs Compute for production pipelines.',
   },
   {
     q: 'Does this calculator include cloud VM costs?',
-    a: 'No. Databricks DBUs cover the Databricks software charge only. You also pay the underlying EC2/Azure VM/GCE compute cost directly to the cloud provider. As a rough rule, VM cost is roughly 30â€“60% on top of the DBU cost for most workloads. Factor that in when comparing with Snowflake (whose credits are all-in).',
+    a: 'No. Databricks DBUs cover the Databricks software charge only. You also pay the underlying EC2/Azure VM/GCE compute cost directly to the cloud provider. As a rough rule, VM cost is roughly 30–60% on top of the DBU cost for most workloads. Factor that in when comparing with Snowflake (whose credits are all-in).',
   },
   {
     q: 'How does Databricks pricing compare to Snowflake?',
-    a: 'Snowflake charges per credit consumed; a credit is warehouse-size independent in price but size-dependent in credits-per-hour (XS = 1/hr, S = 2/hr, M = 4/hr, doubling each step). Databricks charges DBU Ã— rate + VM cost. For similar compute capacity, Databricks Jobs Compute is often cheaper on paper but requires separate VM billing and more tuning. Snowflake is simpler to budget, Databricks more flexible.',
+    a: 'Snowflake charges per credit consumed; a credit is warehouse-size independent in price but size-dependent in credits-per-hour (XS = 1/hr, S = 2/hr, M = 4/hr, doubling each step). Databricks charges DBU × rate + VM cost. For similar compute capacity, Databricks Jobs Compute is often cheaper on paper but requires separate VM billing and more tuning. Snowflake is simpler to budget, Databricks more flexible.',
   },
   {
     q: 'What is Photon and how does it affect cost?',
-    a: 'Photon is Databricks\' vectorized query engine. It is 2â€“5x faster on analytical SQL than classic Spark but consumes DBUs at the same Premium rate ($0.22/DBU for Jobs Photon). Net effect: lower cost for analytical workloads because faster completion outweighs the equal rate.',
+    a: 'Photon is Databricks\' vectorized query engine. It is 2–5x faster on analytical SQL than classic Spark but consumes DBUs at the same Premium rate ($0.22/DBU for Jobs Photon). Net effect: lower cost for analytical workloads because faster completion outweighs the equal rate.',
   },
   {
     q: 'Are there discounts on list DBU rates?',
-    a: 'Yes â€” Databricks commitment contracts (DB Commit Units, annual/multi-year) typically discount 15â€“40% off list. On-demand workloads pay full list. Large enterprise deals can reach 50%+ via pre-purchase of DBU pools.',
+    a: 'Yes — Databricks commitment contracts (DB Commit Units, annual/multi-year) typically discount 15–40% off list. On-demand workloads pay full list. Large enterprise deals can reach 50%+ via pre-purchase of DBU pools.',
   },
   {
     q: 'How accurate is the DBU-per-hour estimate for an instance?',
@@ -211,7 +211,7 @@ export default function DatabricksCostPage() {
   return (
     <>
       <MetaTags
-        title="Databricks Cost Calculator 2026 â€” DBU Pricing + VM Cost"
+        title="Databricks Cost Calculator 2026 — DBU Pricing + VM Cost"
         description="Free Databricks cost calculator. Estimate monthly DBU spend by cluster type (Jobs, All-Purpose, SQL, Serverless), instance size, and hours. Includes VM uplift."
         keywords="databricks cost calculator, databricks dbu cost, databricks pricing calculator, databricks vs snowflake cost, dbu calculator"
         url="/tools/databricks-cost-calculator"
@@ -231,7 +231,7 @@ export default function DatabricksCostPage() {
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-orange-300 bg-orange-900/30 border border-orange-700/50 rounded-full">
-            Updated {LAST_UPDATED} Â· Databricks list pricing
+            Updated {LAST_UPDATED} · Databricks list pricing
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 flex items-center gap-3">
             <Cloud className="w-8 h-8 text-orange-400" aria-hidden="true" />
@@ -240,7 +240,7 @@ export default function DatabricksCostPage() {
           <p className="text-gray-300 text-lg max-w-3xl">
             Model Databricks spend by DBU tier (Jobs, All-Purpose, SQL Compute, Serverless SQL,
             DLT, Model Serving) across cluster size and hours. Includes an adjustable VM cost
-            uplift so you see the true all-in monthly number â€” not just the Databricks-only charge.
+            uplift so you see the true all-in monthly number — not just the Databricks-only charge.
           </p>
         </div>
 
@@ -281,7 +281,7 @@ export default function DatabricksCostPage() {
               </h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 {WHEN_TO_USE.use.map((item, i) => (
-                  <li key={i} className="flex gap-2"><span className="text-emerald-400 flex-shrink-0">â€¢</span><span>{item}</span></li>
+                  <li key={i} className="flex gap-2"><span className="text-emerald-400 flex-shrink-0">•</span><span>{item}</span></li>
                 ))}
               </ul>
             </div>
@@ -291,7 +291,7 @@ export default function DatabricksCostPage() {
               </h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 {WHEN_TO_USE.avoid.map((item, i) => (
-                  <li key={i} className="flex gap-2"><span className="text-rose-400 flex-shrink-0">â€¢</span><span>{item}</span></li>
+                  <li key={i} className="flex gap-2"><span className="text-rose-400 flex-shrink-0">•</span><span>{item}</span></li>
                 ))}
               </ul>
             </div>
@@ -311,7 +311,7 @@ export default function DatabricksCostPage() {
               >
                 {DBU_RATES.map((r) => (
                   <option key={r.id} value={r.id}>
-                    {r.label} â€” ${r.dbuRate.toFixed(2)}/DBU
+                    {r.label} — ${r.dbuRate.toFixed(2)}/DBU
                   </option>
                 ))}
               </select>
@@ -328,7 +328,7 @@ export default function DatabricksCostPage() {
               >
                 {INSTANCE_TYPES.map((i) => (
                   <option key={i.id} value={i.id}>
-                    {i.label} â€” {i.dbuPerHour} DBU/hr
+                    {i.label} — {i.dbuPerHour} DBU/hr
                   </option>
                 ))}
               </select>
@@ -386,7 +386,7 @@ export default function DatabricksCostPage() {
                 className="w-full bg-slate-700/50 border border-slate-600 rounded-xl text-white px-4 py-3 font-mono focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Typical: 30â€“60% for on-demand, 10â€“25% with Spot / Reserved / Savings Plans.
+                Typical: 30–60% for on-demand, 10–25% with Spot / Reserved / Savings Plans.
               </p>
             </div>
           </div>
@@ -418,7 +418,7 @@ export default function DatabricksCostPage() {
             </button>
 
             <p className="text-[11px] text-gray-500 mt-4">
-              List pricing. DB Commit contracts typically discount 15â€“40%. Cloud Spot / RIs can cut VM uplift to 10â€“15%.
+              List pricing. DB Commit contracts typically discount 15–40%. Cloud Spot / RIs can cut VM uplift to 10–15%.
             </p>
           </motion.div>
         </div>
@@ -467,8 +467,8 @@ ORDER BY 1 DESC, dbus_consumed DESC;`}
             </li>
             <li>
               <strong className="text-white">Enter hours and days.</strong> Don't forget idle-cluster
-              hours â€” if you don't terminate clusters promptly, you pay for them. Use the
-              "Auto-termination" setting aggressively (15â€“30 min) to avoid bleeding DBUs.
+              hours — if you don't terminate clusters promptly, you pay for them. Use the
+              "Auto-termination" setting aggressively (15–30 min) to avoid bleeding DBUs.
             </li>
             <li>
               <strong className="text-white">Set VM uplift.</strong> This is the underlying EC2 /
@@ -493,9 +493,9 @@ ORDER BY 1 DESC, dbus_consumed DESC;`}
                 <tr><td>Pricing unit</td><td>DBU/hour + VM cost</td><td>Credit/hour (all-in)</td></tr>
                 <tr><td>Cheapest tier</td><td>Jobs Standard ($0.15/DBU)</td><td>Standard edition ($2.00/credit us-east)</td></tr>
                 <tr><td>Billing transparency</td><td>Two bills (DBU + cloud VM)</td><td>One bill (credits)</td></tr>
-                <tr><td>Auto-pause default</td><td>Configurable (15mâ€“2h)</td><td>60 seconds default</td></tr>
+                <tr><td>Auto-pause default</td><td>Configurable (15m–2h)</td><td>60 seconds default</td></tr>
                 <tr><td>Photon / vectorized engine</td><td>Photon (Premium tiers)</td><td>Built-in by default</td></tr>
-                <tr><td>Typical discount range</td><td>15â€“40% (DB Commit)</td><td>20â€“40% (capacity contracts)</td></tr>
+                <tr><td>Typical discount range</td><td>15–40% (DB Commit)</td><td>20–40% (capacity contracts)</td></tr>
                 <tr><td>Best for</td><td>ML, streaming, Lakehouse, custom Spark</td><td>SQL analytics, BI, low-maintenance</td></tr>
               </tbody>
             </table>
@@ -506,18 +506,18 @@ ORDER BY 1 DESC, dbus_consumed DESC;`}
           <h2 className="text-2xl font-semibold text-white mb-4">How Databricks pricing works</h2>
           <div className="text-gray-300 text-sm leading-relaxed space-y-3">
             <p>
-              Databricks bills in <strong>DBUs</strong> (Databricks Units) â€” a normalized unit of
+              Databricks bills in <strong>DBUs</strong> (Databricks Units) — a normalized unit of
               compute-hours. Your total bill is always the sum of two parallel invoices:
             </p>
             <p className="font-mono text-xs bg-slate-900/70 border border-slate-700 rounded-lg p-3 text-orange-300">
-              total = (DBUs Ã— $/DBU rate) + (cloud VM hours Ã— VM $/hr)
+              total = (DBUs × $/DBU rate) + (cloud VM hours × VM $/hr)
             </p>
             <p>
               The <strong>DBU rate</strong> depends on three factors: the SKU (Jobs, All-Purpose,
               SQL), the tier (Standard / Premium / Enterprise), and whether you're running Photon.
               Classic All-Purpose compute on Premium is ~$0.55/DBU; Photon Jobs compute can be under
               $0.22. <strong>Serverless</strong> SQL bundles DBU + VM into one line item but is
-              usually 30â€“40% more per effective compute-hour.
+              usually 30–40% more per effective compute-hour.
             </p>
           </div>
         </div>
@@ -526,18 +526,18 @@ ORDER BY 1 DESC, dbus_consumed DESC;`}
           <h2 className="text-2xl font-semibold text-white mb-4">Worked example: nightly ETL cluster</h2>
           <div className="text-gray-300 text-sm leading-relaxed space-y-3">
             <p>
-              A nightly Spark job runs on a <strong>Jobs compute</strong> cluster with 8Ã— i3.2xlarge
+              A nightly Spark job runs on a <strong>Jobs compute</strong> cluster with 8× i3.2xlarge
               workers for 2 hours, Premium tier ($0.15/DBU), Photon enabled:
             </p>
             <ul className="list-disc pl-6 space-y-1">
-              <li>Worker DBU rate per node: ~2 DBU/hr Ã— 8 nodes = 16 DBU/hr</li>
-              <li>+ driver: ~2 DBU/hr â†’ <strong>18 DBU/hr total</strong></li>
-              <li>Compute (DBU): 18 Ã— 2h Ã— $0.15 = <span className="font-mono text-green-400">$5.40</span></li>
-              <li>Cloud VMs (AWS on-demand): ~$0.624/hr Ã— 9 nodes Ã— 2h = <span className="font-mono text-green-400">$11.23</span></li>
-              <li><strong>Per run: $16.63 Â· 30 runs/month: ~$499</strong></li>
+              <li>Worker DBU rate per node: ~2 DBU/hr × 8 nodes = 16 DBU/hr</li>
+              <li>+ driver: ~2 DBU/hr → <strong>18 DBU/hr total</strong></li>
+              <li>Compute (DBU): 18 × 2h × $0.15 = <span className="font-mono text-green-400">$5.40</span></li>
+              <li>Cloud VMs (AWS on-demand): ~$0.624/hr × 9 nodes × 2h = <span className="font-mono text-green-400">$11.23</span></li>
+              <li><strong>Per run: $16.63 · 30 runs/month: ~$499</strong></li>
             </ul>
             <p>
-              Switching that cluster to <strong>spot instances</strong> can cut the VM line ~70% â†’
+              Switching that cluster to <strong>spot instances</strong> can cut the VM line ~70% →
               monthly drops to ~$235. The DBU side doesn't change unless you switch SKU or tier.
             </p>
           </div>
@@ -547,19 +547,19 @@ ORDER BY 1 DESC, dbus_consumed DESC;`}
           <h2 className="text-2xl font-semibold text-white mb-4">Related tools & guides</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <Link to="/tools/snowflake-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-orange-500 rounded-xl">
-              <div className="text-orange-300 font-medium mb-1 flex items-center gap-2"><Calculator className="w-4 h-4" /> Snowflake Cost Calculator â†’</div>
+              <div className="text-orange-300 font-medium mb-1 flex items-center gap-2"><Calculator className="w-4 h-4" /> Snowflake Cost Calculator →</div>
               <div className="text-gray-400 text-sm">Compare apples-to-apples with Snowflake pricing.</div>
             </Link>
             <Link to="/tools/dbt-cloud-cost-calculator" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-orange-500 rounded-xl">
-              <div className="text-orange-300 font-medium mb-1 flex items-center gap-2"><DollarSign className="w-4 h-4" /> dbt Cloud Cost Calculator â†’</div>
+              <div className="text-orange-300 font-medium mb-1 flex items-center gap-2"><DollarSign className="w-4 h-4" /> dbt Cloud Cost Calculator →</div>
               <div className="text-gray-400 text-sm">Factor in your transformation layer cost too.</div>
             </Link>
             <Link to="/cheatsheets/databricks" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-orange-500 rounded-xl">
-              <div className="text-orange-300 font-medium mb-1">Databricks Cheat Sheet â†’</div>
+              <div className="text-orange-300 font-medium mb-1">Databricks Cheat Sheet →</div>
               <div className="text-gray-400 text-sm">Quick reference for clusters, notebooks, and Delta Lake commands.</div>
             </Link>
             <Link to="/cheatsheets/snowflake-cost-optimization-interview" className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-orange-500 rounded-xl">
-              <div className="text-orange-300 font-medium mb-1">Cost Optimization Interview Questions â†’</div>
+              <div className="text-orange-300 font-medium mb-1">Cost Optimization Interview Questions →</div>
               <div className="text-gray-400 text-sm">Interview-grade reference on cloud DW + lakehouse cost tuning.</div>
             </Link>
           </div>

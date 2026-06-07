@@ -42,7 +42,7 @@ const CATEGORY_TOOLS = {
   sql: [
     { slug: 'sql-formatter', title: 'SQL Formatter', tagline: 'Clean up messy queries' },
     { slug: 'snowflake-query-cost-estimator', title: 'Query Cost Estimator', tagline: 'Forecast spend per query' },
-    { slug: 'json-to-sql-ddl', title: 'JSON â†’ SQL DDL', tagline: 'Generate CREATE TABLE from JSON' },
+    { slug: 'json-to-sql-ddl', title: 'JSON → SQL DDL', tagline: 'Generate CREATE TABLE from JSON' },
   ],
   orchestration: [
     { slug: 'cron-expression-builder', title: 'Cron Expression Builder', tagline: 'Build & test schedules' },
@@ -54,7 +54,7 @@ const CATEGORY_TOOLS = {
     { slug: 'snowflake-warehouse-sizing', title: 'Warehouse Sizing Tool', tagline: 'Right-size your workload' },
   ],
   programming: [
-    { slug: 'json-to-sql-ddl', title: 'JSON â†’ SQL DDL', tagline: 'Schema inference from JSON' },
+    { slug: 'json-to-sql-ddl', title: 'JSON → SQL DDL', tagline: 'Schema inference from JSON' },
     { slug: 'sql-formatter', title: 'SQL Formatter', tagline: 'Standardize SQL style' },
   ],
   architecture: [
@@ -273,7 +273,7 @@ export default function CheatSheetPage() {
     [slug, sheet]
   );
 
-  // Calculate word count for thin content detection (must be before early return â€” hooks rules)
+  // Calculate word count for thin content detection (must be before early return — hooks rules)
   const wordCount = useMemo(() => {
     if (!sheet) return 0;
     const text = (sheet.sections || [])
@@ -372,10 +372,10 @@ export default function CheatSheetPage() {
   return (
     <>
       <Helmet>
-        <title>{`${sheet.title} â€” Free Reference Guide`}</title>
+        <title>{`${sheet.title} — Free Reference Guide`}</title>
         <meta name="description" content={sheet.shortDescription} />
         <link rel="canonical" href={canonicalUrl} />
-        {/* PSEO/AI-assisted section â€” held out of the index until further editorial work. */}
+        {/* PSEO/AI-assisted section — held out of the index until further editorial work. */}
         <meta name="robots" content="noindex, follow" />
 
         <meta property="og:type" content="article" />
@@ -461,7 +461,7 @@ export default function CheatSheetPage() {
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
             {/* Main Sections */}
             <div className="space-y-6">
-              {/* Intro â€” long-form practitioner context (Phase 2 pSEO depth) */}
+              {/* Intro — long-form practitioner context (Phase 2 pSEO depth) */}
               {sheet.intro && (
                 <motion.section
                   initial={{ opacity: 0, y: 15 }}
@@ -499,7 +499,7 @@ export default function CheatSheetPage() {
                 </motion.section>
               )}
 
-              {/* When To Use â€” decision-aid callout (Phase 2 pSEO depth) */}
+              {/* When To Use — decision-aid callout (Phase 2 pSEO depth) */}
               {sheet.whenToUse && (sheet.whenToUse.use?.length > 0 || sheet.whenToUse.avoid?.length > 0) && (
                 <motion.section
                   initial={{ opacity: 0, y: 15 }}
@@ -521,7 +521,7 @@ export default function CheatSheetPage() {
                         <ul className="space-y-2">
                           {sheet.whenToUse.use.map((item, i) => (
                             <li key={i} className="text-sm text-gray-300 leading-relaxed flex gap-2">
-                              <span className="text-emerald-400 shrink-0">â€¢</span>
+                              <span className="text-emerald-400 shrink-0">•</span>
                               <span>{item}</span>
                             </li>
                           ))}
@@ -537,7 +537,7 @@ export default function CheatSheetPage() {
                         <ul className="space-y-2">
                           {sheet.whenToUse.avoid.map((item, i) => (
                             <li key={i} className="text-sm text-gray-300 leading-relaxed flex gap-2">
-                              <span className="text-amber-400 shrink-0">â€¢</span>
+                              <span className="text-amber-400 shrink-0">•</span>
                               <span>{item}</span>
                             </li>
                           ))}
@@ -552,7 +552,7 @@ export default function CheatSheetPage() {
                 <SectionRenderer key={i} section={section} />
               ))}
 
-              {/* Prose cross-link block â€” contextual internal linking for SEO + UX */}
+              {/* Prose cross-link block — contextual internal linking for SEO + UX */}
               {(relatedSheets.length > 0 || relatedTools.length > 0) && (
                 <motion.section
                   initial={{ opacity: 0, y: 15 }}
@@ -669,7 +669,7 @@ export default function CheatSheetPage() {
                 </div>
               )}
 
-              {/* Related Tools â€” hands-on calculators/utilities mapped from category */}
+              {/* Related Tools — hands-on calculators/utilities mapped from category */}
               {relatedTools.length > 0 && (
                 <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-5">
                   <h3 className="text-sm font-semibold text-white mb-3 uppercase tracking-wider flex items-center gap-2">

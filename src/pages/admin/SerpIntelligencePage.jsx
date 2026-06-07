@@ -1,5 +1,5 @@
 ﻿// src/pages/admin/SerpIntelligencePage.jsx
-// TinyFish-powered SERP Intelligence â€” live competitor analysis, SERP feature
+// TinyFish-powered SERP Intelligence — live competitor analysis, SERP feature
 // detection, PAA extraction, page validation, and competitor monitoring.
 
 import React, { useState } from 'react';
@@ -23,7 +23,7 @@ const TABS = [
 function ApiKeyStatus() {
     return !tinyfishService.isEnabled ? (
         <div className="px-3 py-1.5 bg-amber-500/20 text-amber-300 text-[10px] rounded-lg border border-amber-500/40">
-            Set TinyFish key in sidebar â†’
+            Set TinyFish key in sidebar →
         </div>
     ) : (
         <div className="px-3 py-1.5 bg-emerald-500/20 text-emerald-300 text-[10px] rounded-lg border border-emerald-500/40">
@@ -379,7 +379,7 @@ export function SerpIntelligencePage() {
                         <Globe className="w-8 h-8 text-cyan-400" />
                         SERP Intelligence
                     </h1>
-                    <p className="text-gray-400">Powered by TinyFish â€” live Google SERP analysis, competitor scraping, PAA extraction, and page validation using a real browser.</p>
+                    <p className="text-gray-400">Powered by TinyFish — live Google SERP analysis, competitor scraping, PAA extraction, and page validation using a real browser.</p>
                 </div>
                 <ApiKeyStatus />
             </div>

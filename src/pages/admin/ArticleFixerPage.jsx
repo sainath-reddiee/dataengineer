@@ -1,5 +1,5 @@
 ﻿// src/pages/admin/ArticleFixerPage.jsx
-// Batch Article Fixer â€” analyzes all articles against focus keyphrases,
+// Batch Article Fixer — analyzes all articles against focus keyphrases,
 // uses GSC performance data for smart prioritization, and generates ready-to-paste AI fixes.
 
 import React, { useEffect, useState, useMemo } from 'react';
@@ -230,7 +230,7 @@ export function ArticleFixerPage() {
     const strikingCount = articles.filter(a => a.position >= 5 && a.position <= 20).length;
     const avgCTR = articles.filter(a => a.ctr > 0).length > 0
         ? (articles.filter(a => a.ctr > 0).reduce((s, a) => s + a.ctr, 0) / articles.filter(a => a.ctr > 0).length * 100).toFixed(1)
-        : 'â€”';
+        : '—';
     const needsWork = articles.filter(a => a.score < 70).length;
 
     // Batch fix top 5
@@ -291,7 +291,7 @@ Be specific. Include "${article.focusKeyword}" naturally. Base ALL suggestions o
                         <Wrench className="w-8 h-8 text-orange-400" />
                         Article Fixer
                     </h1>
-                    <p className="text-gray-400">Prioritize articles by real traffic opportunity â€” fix what matters most.</p>
+                    <p className="text-gray-400">Prioritize articles by real traffic opportunity — fix what matters most.</p>
                 </div>
                 <button onClick={loadData} disabled={loading} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-white text-sm rounded-lg flex items-center gap-2">
                     <RefreshCw className="w-4 h-4" /> Refresh
@@ -418,7 +418,7 @@ function ArticleRow({ article, linkGraph, expanded, onToggle }) {
                     const results = await tinyfishService.search(article.focusKeyword);
                     const top5 = (results.results || []).filter(r => !r.url?.includes('dataengineerhub.blog')).slice(0, 5);
                     if (top5.length > 0) {
-                        competitorContext = `\nCURRENT TOP SERP RESULTS FOR "${article.focusKeyword}":\n${top5.map((r, i) => `${i + 1}. "${r.title}" â€” ${r.snippet || ''}`).join('\n')}\n`;
+                        competitorContext = `\nCURRENT TOP SERP RESULTS FOR "${article.focusKeyword}":\n${top5.map((r, i) => `${i + 1}. "${r.title}" — ${r.snippet || ''}`).join('\n')}\n`;
                     }
                 } catch { /* optional */ }
             }

@@ -30,7 +30,7 @@ export function InternalLinksPage() {
 
             posts.forEach(post => {
                 const content = post.content || '';
-                // Find all internal article links â€” match both relative and absolute,
+                // Find all internal article links — match both relative and absolute,
                 // with optional www., optional trailing slash/query/hash, and tolerate
                 // both single & double quotes.
                 const linkRegex = /href=["'](?:https?:\/\/(?:www\.)?dataengineerhub\.blog)?\/articles\/([a-z0-9-]+)\/?(?:[?#][^"']*)?["']/gi;
@@ -138,7 +138,7 @@ export function InternalLinksPage() {
                 <div className="p-4 bg-red-900/10 border border-red-800/30 rounded-xl">
                     <h3 className="text-sm font-semibold text-red-400 flex items-center gap-2 mb-3">
                         <AlertTriangle className="w-4 h-4" />
-                        Orphan Pages ({analysis.orphans.length}) â€” No other article links to these
+                        Orphan Pages ({analysis.orphans.length}) — No other article links to these
                     </h3>
                     <div className="space-y-2 max-h-60 overflow-y-auto">
                         {analysis.orphans.map(o => (
@@ -166,7 +166,7 @@ export function InternalLinksPage() {
                                 <div className="text-sm text-white font-medium mb-1">{s.orphan.title}</div>
                                 <div className="text-xs text-gray-500 mb-2">Add a link to this article from:</div>
                                 {s.suggestLinkFrom.map(f => (
-                                    <div key={f.slug} className="text-xs text-blue-300 pl-4">â†’ {f.title}</div>
+                                    <div key={f.slug} className="text-xs text-blue-300 pl-4">→ {f.title}</div>
                                 ))}
                             </div>
                         ))}
