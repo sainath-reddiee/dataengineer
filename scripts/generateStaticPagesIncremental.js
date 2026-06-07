@@ -488,6 +488,24 @@ const ESSENTIAL_PAGES = [
     `
   },
   {
+    path: '/newsletter',
+    title: 'Weekly Data Engineering Digest - Subscribe',
+    description: 'Subscribe to the DataEngineer Hub weekly digest. Get tutorials, tool deep-dives, and data engineering insights on Snowflake, dbt, Airflow, and the modern data stack delivered to your inbox.',
+    content: `
+      <h1>Weekly Data Engineering Digest</h1>
+      <p>Stay current with the tools, techniques, and platforms that matter most in modern data engineering. Every week we distil what's new across Snowflake, Databricks, BigQuery, dbt, Airflow, and SQL into one concise email — so you can spend less time browsing and more time building.</p>
+
+      <h2>What You'll Get</h2>
+      <ul>
+        <li><strong>In-depth tutorials:</strong> Step-by-step guides on cost optimization, warehouse tuning, pipeline design, and query performance across cloud platforms.</li>
+        <li><strong>Tool deep-dives:</strong> Hands-on walkthroughs of our free calculators, SQL playground, cron builder, format converter, and new releases.</li>
+        <li><strong>Weekly cadence:</strong> One email per week — no daily noise, no promotional fluff. Unsubscribe any time with a single click.</li>
+        <li><strong>Privacy first:</strong> We never share your address. No tracking pixels, no third-party ad lists. Just content.</li>
+      </ul>
+      <p>Subscribe using the interactive signup form on this page.</p>
+    `
+  },
+  {
     path: '/certification',
     title: 'Snowflake Certification Prep 2026 - Free SnowPro Core, Advanced & Gen AI Practice',
     description: 'Free Snowflake certification prep for SnowPro Core (COF-C02), SnowPro Advanced: Data Engineer, Architect, and SnowPro Specialty: Gen AI. Study plan, exam breakdown, and interactive practice questions.',
@@ -5429,7 +5447,7 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
   // PSEO / AI-assisted sections are held out of the index until further
   // editorial work + AdSense approval. Match by path prefix so the static
   // HTML matches the React `<MetaTags noindex={true}>` we set per-page.
-  const PSEO_PREFIXES = ['/tools', '/cheatsheets', '/glossary', '/compare', '/practice', '/interview-prep'];
+  const PSEO_PREFIXES = ['/tools', '/cheatsheets', '/glossary', '/compare', '/practice', '/interview-prep', '/newsletter'];
   const isPSEO = PSEO_PREFIXES.some((p) => pagePath === p || pagePath.startsWith(p + '/'));
   const pageRobots = isPSEO
     ? 'noindex, follow'

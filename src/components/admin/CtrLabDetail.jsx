@@ -80,7 +80,7 @@ function QuickActions({ title, setTitle, description, setDesc, topKeyword, curre
             disabled: !topKeyword || hasKeywordFront,
             action: () => {
                 if (!topKeyword) return;
-                const cleaned = title.replace(new RegExp(topKeyword, 'i'), '').replace(/^\s*[-:|–]\s*/, '').trim();
+                const cleaned = title.replace(new RegExp(topKeyword, 'i'), '').replace(new RegExp('^\\s*[-:' + '|–]\\s*'), '').trim();
                 setTitle(`${topKeyword}: ${cleaned}`);
             },
             tooltip: !topKeyword ? 'No GSC keyword' : hasKeywordFront ? 'Already front-loaded' : `Move "${topKeyword}" to front`,

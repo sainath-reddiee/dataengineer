@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -14,8 +14,11 @@ import { useToast } from '@/components/ui/use-toast';
 import { trackEvent } from '@/utils/analytics';
 import MetaTags from '@/components/SEO/MetaTags';
 
+import { usePosts } from '@/hooks/useWordPress';
+
 const ContributePage = () => {
   const { toast } = useToast();
+  const { totalPosts } = usePosts({ per_page: 1 });
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -56,7 +59,7 @@ const ContributePage = () => {
   };
 
   const stats = [
-    { value: '50+', label: 'Published Articles', icon: FileText },
+    { value: totalPosts ? `${totalPosts}` : '56', label: 'Published Articles', icon: FileText },
     { value: '10K+', label: 'Monthly Readers', icon: Users },
     { value: '100+', label: 'Community Members', icon: Heart },
     { value: '15+', label: 'Tech Topics', icon: Code },
