@@ -3,13 +3,13 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://dataengineerhub.blog/</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -45,15 +45,25 @@
   </url>
   <url>
     <loc>https://dataengineerhub.blog/certification</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://dataengineerhub.blog/articles/snowflake-coco-desktop</loc>
+    <lastmod>2026-06-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/06/Cortex-code-desktop.jpg</image:loc>
+      <image:title>Snowflake CoCo Desktop — What It Is, How It Works, and Whether It’s Worth It</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/airflow-vs-prefect</loc>
     <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/05/Airflow-vs-Perfect.jpg</image:loc>
       <image:title>Airflow vs Prefect: 2026 Comparison Guide</image:title>
@@ -63,7 +73,11 @@
     <loc>https://dataengineerhub.blog/articles/delta-lake-vs-iceberg</loc>
     <lastmod>2026-05-08</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/05/IMG_9741_11zon.jpg</image:loc>
+      <image:title>Delta Lake vs Apache Iceberg — Why I Chose Iceberg for Our Data Lakehouse</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://dataengineerhub.blog/articles/the-problem-with-data-engineering-certifications-that-nobody-talks-about</loc>
@@ -179,7 +193,7 @@
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide</loc>
     <lastmod>2026-05-08</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.6</priority>
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/03/Snowflake-cortex-code.jpg</image:loc>
       <image:title>2026 Guide: Cut dbt Build Time 48% with Snowflake Cortex Code</image:title>

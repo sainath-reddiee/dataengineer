@@ -1,10 +1,26 @@
-﻿// scripts/generateStaticPagesIncremental.js
+// scripts/generateStaticPagesIncremental.js
 // FIXED VERSION - Generates FULL CONTENT for SEO/AdSense with IMAGES
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+
+// Monkey-patch fs.writeFileSync to automatically clean up UTF-8 mojibake in generated HTML files
+const originalWriteFileSync = fs.writeFileSync;
+fs.writeFileSync = function(filePath, data, options) {
+  if (typeof filePath === 'string' && filePath.endsWith('.html') && typeof data === 'string') {
+    data = data
+      .replace(/\u00e2\u20ac\u00ba/g, '&rsaquo;') // â€º
+      .replace(/\u00e2\u2020\u0090/g, '&larr;')  // â† 
+      .replace(/\u00e2\u20ac\u201d/g, '&mdash;') // â€”
+      .replace(/\u00e2\u2020\u2019/g, '&rarr;')  // â†’
+      .replace(/\u00e2\u0153\u2026/g, '&#9989;') // âœ… (✅)
+      .replace(/\u00e2\u0161\u00a0\u00ef\u00b8\u008f/g, '&#9888;&#65039;') // âš ï¸  (⚠️)
+      .replace(/\u00c3\u0097/g, '&times;');      // Ã— (×)
+  }
+  return originalWriteFileSync.apply(this, arguments);
+};
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

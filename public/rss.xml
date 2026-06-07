@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Sun, 31 May 2026 07:46:17 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 07 Jun 2026 03:20:08 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -18,6 +18,16 @@
     <managingEditor>contact@dataengineerhub.blog (Sainath Reddy)</managingEditor>
     <webMaster>contact@dataengineerhub.blog (Sainath Reddy)</webMaster>
     <ttl>60</ttl>
+    <item>
+      <title>Snowflake CoCo Desktop — What It Is, How It Works, and Whether It’s Worth It</title>
+      <link>https://dataengineerhub.blog/articles/snowflake-coco-desktop</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-coco-desktop</guid>
+      <description>Snowflake just announced a lot at Summit 2026. Most of it was the usual conference noise. CoCo Desktop isn’t. I’ve been following Cortex Code — now officially rebranded as CoCo…</description>
+      <pubDate>Sat, 06 Jun 2026 21:40:32 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Snowflake</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/06/Cortex-code-desktop.jpg" type="image/jpeg" />
+    </item>
     <item>
       <title>Airflow vs Prefect: 2026 Comparison Guide</title>
       <link>https://dataengineerhub.blog/articles/airflow-vs-prefect</link>
@@ -41,6 +51,7 @@
       <category>dbt</category>
       <category>Snowflake</category>
       <category>SQL</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/05/IMG_9741_11zon.jpg" type="image/jpeg" />
     </item>
     <item>
       <title>The Problem with Data Engineering Certifications That Nobody Talks About</title>

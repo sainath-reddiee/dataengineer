@@ -1,6 +1,6 @@
 # DataEngineer Hub - Full Content Index for LLMs
-> Last generated: 2026-05-31
-> Total articles: 55
+> Last generated: 2026-06-07
+> Total articles: 56
 > Source: https://dataengineerhub.blog
 > Compact version: https://dataengineerhub.blog/llms.txt
 > Structured data: https://dataengineerhub.blog/llm-sitemap.json
@@ -10,72 +10,14 @@ Each article includes its URL, summary, key headings, and primary topics.
 
 ---
 
-## Airflow (5 articles)
+## Snowflake (34 articles)
 
-### Airflow vs Prefect: 2026 Comparison Guide
-- URL: https://dataengineerhub.blog/articles/airflow-vs-prefect
-- Published: 2026-05-05 | Updated: 2026-05-10
-- Word count: ~2607
-- Summary: I evaluated Prefect seriously. Ran it in a staging environment for six weeks. Built three real flows. Had the internal conversation about migrating. And then stayed with Airflow .
-- Key sections: TL;DR | What We Were Running When We Evaluated | The Core Difference Nobody Explains Clearly | What This Means for Local Development | What This Means for Dynamic Workflows | Airflow Version | Prefect Version | Where Airflow Still Wins
-
-### Delta Lake vs Apache Iceberg — Why I Chose Iceberg for Our Data Lakehouse
-- URL: https://dataengineerhub.blog/articles/delta-lake-vs-iceberg
-- Published: 2026-05-04 | Updated: 2026-05-08
-- Word count: ~1512
-- Summary: TL;DR → Delta Lake is easier to start with, especially if you’re already on Databricks → Iceberg wins on engine flexibility — works natively with Spark, Flink, Trino, Snowflake, and more without custom connectors → Delta Lake’s vendor coupling with Databricks is a real cost if you’re multi-cloud or 
-- Key sections: Partition Management Was Getting Messy | Hidden Partitioning Changed How We Design Tables | THE MIGRATION: WHAT IT ACTUALLY COST US | Downstream dependency mapping. | Metadata catalog updates. | Frequently Asked Questions | What is the main difference between Delta Lake and Apache Iceberg? | Is Apache Iceberg better than Delta Lake?
-
-### Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide
-- URL: https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration
-- Published: 2026-04-07 | Updated: 2026-05-05
-- Word count: ~3374
-- Summary: How I Wired Snowflake’s Native dbt Projects to Airflow — And Finally Got True End-to-End Orchestration
-- Key sections: First — What Exactly Is a dbt Project on Snowflake ? | The Architecture We’re Building | Step 1: Snowflake Setup — Roles, Warehouse, and Permissions | Step 2: Deploy Your dbt Project as a Native Snowflake Object | Step 3: Set Up a Real dbt Project Structure | Step 4: Wire It All Together in Airflow | Step 5: Running Specific dbt Selectors from Airflow | Step 6: Handling New Versions of Your dbt Project
-
-### 2026 Guide: Cut dbt Build Time 48% with Snowflake Cortex Code
-- URL: https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide
-- Published: 2026-03-08 | Updated: 2026-05-09
-- Word count: ~5030
-- Summary: It was a Tuesday morning when I finally snapped. My dbt project had grown to 147 models, and the daily run was taking 2 hours and 47 minutes. Our Airflow DAG was timing out. The business team was complaining about stale dashboards. And I was spending my entire morning investigating why dim_customer 
-- Key sections: The Moment Everything Changed | Part 1: What Is Snowflake Cortex Code? (The Simple Truth) | Part 2: Getting Started (5-Minute Setup) | Cortex Code is available in Snowflake (check your edition—Enterprise or higher typically has it). | Part 3: Core Capabilities (The Quick Tour) | Part 4: dbt + Cortex Code – The Real Game Changer | 4.1: Quick Overview – Beyond Basic Generation | 4.2: Performance Optimization – The Killer Feature
-
-### Automated ETL with Airflow and Python: A Practical Guide
-- URL: https://dataengineerhub.blog/articles/automated-etl-airflow-python
-- Published: 2025-09-28 | Updated: 2025-10-08
-- Word count: ~855
-- Summary: In the world of data, consistency is king. Manually running scripts to fetch and process data is not just tedious; it’s prone to errors, delays, and gaps in your analytics. To build a reliable data-driven culture, you need automation. This is where building an automated ETL with Airflow and Python b
-- Key sections: The Architecture: A Simple, Powerful Workflow | Step 1: The Python ETL Script | Step 2: Creating the Airflow DAG | Step 3: The Analytics Payoff | Conclusion: Build Once, Benefit Forever
-
-## AWS (4 articles)
-
-### The Problem with Data Engineering Certifications That Nobody Talks About
-- URL: https://dataengineerhub.blog/articles/the-problem-with-data-engineering-certifications-that-nobody-talks-about
-- Published: 2026-05-01 | Updated: 2026-05-08
-- Word count: ~2065
-- Summary: I passed the SnowPro Gen AI certification not too long ago. Within the same week I was back at my desk staring at a broken pipeline that no multiple-choice question had ever prepared me for. The cert looked great on my profile. It fixed exactly nothing about the actual problem in front of me.
-
-### How to Query Snowflake in DuckDB (And Cut Your Bill While Doing It)
-- URL: https://dataengineerhub.blog/articles/query-snowflake-in-duckdb-cut-costs
-- Published: 2026-04-19 | Updated: 2026-04-20
-- Word count: ~1633
-- Summary: I’ve been building on Snowflake long enough to know the ritual. Warehouse wakes up. Query runs in three seconds. Warehouse idles. You get billed for sixty seconds anyway. Multiply that by every analyst, every BI dashboard refresh, every dbt run in your dev environment — and suddenly you’re staring a
-
-### AWS Data Pipeline Cost Optimization Strategies
-- URL: https://dataengineerhub.blog/articles/aws-data-pipeline-cost-optimization-strategies
-- Published: 2025-09-29 | Updated: 2025-10-08
-- Word count: ~985
-- Summary: Building a powerful data pipeline on AWS is one thing. Building one that doesn’t burn a hole in your company’s budget is another. As data volumes grow, the costs associated with storage, compute, and data transfer can quickly spiral out of control. For an experienced data engineer, mastering AWS dat
-- Key sections: 2. Go Serverless with AWS Glue and Lambda | 3. Use Spot Instances for Batch Workloads | 4. Choose the Right File Format (Hello, Parquet!) | 5. Monitor and Alert with AWS Budgets | Conclusion
-
-### Building a Serverless Data Pipeline on AWS: A Step-by-Step Guide
-- URL: https://dataengineerhub.blog/articles/serverless-data-pipeline-aws
-- Published: 2025-09-26 | Updated: 2025-10-08
-- Word count: ~1107
-- Summary: For data engineers, the dream is to build pipelines that are robust, scalable, and cost-effective. For years, this meant managing complex clusters and servers. But with the power of the cloud, a new paradigm has emerged: the serverless data pipeline on AWS . This approach allows you to process massi
-- Key sections: The Architecture: A Four-Part Harmony | Step 1: Setting Up the S3 Data Lake Buckets | Step 2: Creating the Lambda Trigger | Step 3: Transforming Data with AWS Glue | Step 4: Querying Processed Data with Amazon Athena | Conclusion: The Power of Serverless
-
-## Snowflake (33 articles)
+### Snowflake CoCo Desktop — What It Is, How It Works, and Whether It’s Worth It
+- URL: https://dataengineerhub.blog/articles/snowflake-coco-desktop
+- Published: 2026-06-07 | Updated: 2026-06-07
+- Word count: ~2146
+- Summary: Snowflake just announced a lot at Summit 2026. Most of it was the usual conference noise. CoCo Desktop isn’t.
+- Key sections: TL;DR | What CoCo Actually Is (And What Changed at Summit 2026) | The Data-Native Context Advantage | CoCo Desktop — Schema-Grounded dbt Model Generation | Cloud Agents — Async Scheduled Tasks | The Benchmark Reality Check | Where CoCo Desktop Has Limits | The Comparison You Actually Need
 
 ### The Problem with Zero-Copy Cloning in Snowflake That Nobody Talks About
 - URL: https://dataengineerhub.blog/articles/snowflake-zero-copy-cloning-problems
@@ -302,6 +244,71 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Word count: ~1215
 - Summary: Stop memorizing the difference between a VARCHAR and a TEXT field. If you’re an experienced data engineer, you know that real Snowflake interviews go much deeper. Hiring managers aren’t just looking for someone who knows the syntax; they’re looking for an architect who understands performance, cost 
 - Key sections: 1. Architecture & Design Questions | 2. Performance Tuning & Cost Optimization Questions | 3. Data Ingestion & Integration Questions | 4. Scenario-Based & Problem-Solving Questions | Conclusion
+
+## Airflow (5 articles)
+
+### Airflow vs Prefect: 2026 Comparison Guide
+- URL: https://dataengineerhub.blog/articles/airflow-vs-prefect
+- Published: 2026-05-05 | Updated: 2026-05-10
+- Word count: ~2607
+- Summary: I evaluated Prefect seriously. Ran it in a staging environment for six weeks. Built three real flows. Had the internal conversation about migrating. And then stayed with Airflow .
+- Key sections: TL;DR | What We Were Running When We Evaluated | The Core Difference Nobody Explains Clearly | What This Means for Local Development | What This Means for Dynamic Workflows | Airflow Version | Prefect Version | Where Airflow Still Wins
+
+### Delta Lake vs Apache Iceberg — Why I Chose Iceberg for Our Data Lakehouse
+- URL: https://dataengineerhub.blog/articles/delta-lake-vs-iceberg
+- Published: 2026-05-04 | Updated: 2026-05-08
+- Word count: ~1512
+- Summary: TL;DR → Delta Lake is easier to start with, especially if you’re already on Databricks → Iceberg wins on engine flexibility — works natively with Spark, Flink, Trino, Snowflake, and more without custom connectors → Delta Lake’s vendor coupling with Databricks is a real cost if you’re multi-cloud or 
+- Key sections: Partition Management Was Getting Messy | Hidden Partitioning Changed How We Design Tables | THE MIGRATION: WHAT IT ACTUALLY COST US | Downstream dependency mapping. | Metadata catalog updates. | Frequently Asked Questions | What is the main difference between Delta Lake and Apache Iceberg? | Is Apache Iceberg better than Delta Lake?
+
+### Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide
+- URL: https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration
+- Published: 2026-04-07 | Updated: 2026-05-05
+- Word count: ~3374
+- Summary: How I Wired Snowflake’s Native dbt Projects to Airflow — And Finally Got True End-to-End Orchestration
+- Key sections: First — What Exactly Is a dbt Project on Snowflake ? | The Architecture We’re Building | Step 1: Snowflake Setup — Roles, Warehouse, and Permissions | Step 2: Deploy Your dbt Project as a Native Snowflake Object | Step 3: Set Up a Real dbt Project Structure | Step 4: Wire It All Together in Airflow | Step 5: Running Specific dbt Selectors from Airflow | Step 6: Handling New Versions of Your dbt Project
+
+### 2026 Guide: Cut dbt Build Time 48% with Snowflake Cortex Code
+- URL: https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide
+- Published: 2026-03-08 | Updated: 2026-05-09
+- Word count: ~5030
+- Summary: It was a Tuesday morning when I finally snapped. My dbt project had grown to 147 models, and the daily run was taking 2 hours and 47 minutes. Our Airflow DAG was timing out. The business team was complaining about stale dashboards. And I was spending my entire morning investigating why dim_customer 
+- Key sections: The Moment Everything Changed | Part 1: What Is Snowflake Cortex Code? (The Simple Truth) | Part 2: Getting Started (5-Minute Setup) | Cortex Code is available in Snowflake (check your edition—Enterprise or higher typically has it). | Part 3: Core Capabilities (The Quick Tour) | Part 4: dbt + Cortex Code – The Real Game Changer | 4.1: Quick Overview – Beyond Basic Generation | 4.2: Performance Optimization – The Killer Feature
+
+### Automated ETL with Airflow and Python: A Practical Guide
+- URL: https://dataengineerhub.blog/articles/automated-etl-airflow-python
+- Published: 2025-09-28 | Updated: 2025-10-08
+- Word count: ~855
+- Summary: In the world of data, consistency is king. Manually running scripts to fetch and process data is not just tedious; it’s prone to errors, delays, and gaps in your analytics. To build a reliable data-driven culture, you need automation. This is where building an automated ETL with Airflow and Python b
+- Key sections: The Architecture: A Simple, Powerful Workflow | Step 1: The Python ETL Script | Step 2: Creating the Airflow DAG | Step 3: The Analytics Payoff | Conclusion: Build Once, Benefit Forever
+
+## AWS (4 articles)
+
+### The Problem with Data Engineering Certifications That Nobody Talks About
+- URL: https://dataengineerhub.blog/articles/the-problem-with-data-engineering-certifications-that-nobody-talks-about
+- Published: 2026-05-01 | Updated: 2026-05-08
+- Word count: ~2065
+- Summary: I passed the SnowPro Gen AI certification not too long ago. Within the same week I was back at my desk staring at a broken pipeline that no multiple-choice question had ever prepared me for. The cert looked great on my profile. It fixed exactly nothing about the actual problem in front of me.
+
+### How to Query Snowflake in DuckDB (And Cut Your Bill While Doing It)
+- URL: https://dataengineerhub.blog/articles/query-snowflake-in-duckdb-cut-costs
+- Published: 2026-04-19 | Updated: 2026-04-20
+- Word count: ~1633
+- Summary: I’ve been building on Snowflake long enough to know the ritual. Warehouse wakes up. Query runs in three seconds. Warehouse idles. You get billed for sixty seconds anyway. Multiply that by every analyst, every BI dashboard refresh, every dbt run in your dev environment — and suddenly you’re staring a
+
+### AWS Data Pipeline Cost Optimization Strategies
+- URL: https://dataengineerhub.blog/articles/aws-data-pipeline-cost-optimization-strategies
+- Published: 2025-09-29 | Updated: 2025-10-08
+- Word count: ~985
+- Summary: Building a powerful data pipeline on AWS is one thing. Building one that doesn’t burn a hole in your company’s budget is another. As data volumes grow, the costs associated with storage, compute, and data transfer can quickly spiral out of control. For an experienced data engineer, mastering AWS dat
+- Key sections: 2. Go Serverless with AWS Glue and Lambda | 3. Use Spot Instances for Batch Workloads | 4. Choose the Right File Format (Hello, Parquet!) | 5. Monitor and Alert with AWS Budgets | Conclusion
+
+### Building a Serverless Data Pipeline on AWS: A Step-by-Step Guide
+- URL: https://dataengineerhub.blog/articles/serverless-data-pipeline-aws
+- Published: 2025-09-26 | Updated: 2025-10-08
+- Word count: ~1107
+- Summary: For data engineers, the dream is to build pipelines that are robust, scalable, and cost-effective. For years, this meant managing complex clusters and servers. But with the power of the cloud, a new paradigm has emerged: the serverless data pipeline on AWS . This approach allows you to process massi
+- Key sections: The Architecture: A Four-Part Harmony | Step 1: Setting Up the S3 Data Lake Buckets | Step 2: Creating the Lambda Trigger | Step 3: Transforming Data with AWS Glue | Step 4: Querying Processed Data with Amazon Athena | Conclusion: The Power of Serverless
 
 ## Developer Productivity (1 articles)
 

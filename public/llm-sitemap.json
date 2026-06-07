@@ -11,9 +11,36 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-05-31",
-  "totalArticles": 55,
+  "lastUpdated": "2026-06-07",
+  "totalArticles": 56,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-coco-desktop",
+      "title": "Snowflake CoCo Desktop — What It Is, How It Works, and Whether It’s Worth It",
+      "summary": "Snowflake just announced a lot at Summit 2026. Most of it was the usual conference noise. CoCo Desktop isn’t. I’ve been following Cortex Code — now officially rebranded as CoCo…",
+      "keyFacts": [
+        "1% on dbt’s ADE-Bench versus 65",
+        "1% on dbt’s ADE-Bench versus 65",
+        "I want to be honest about what this means and doesn’t mean",
+        "It means CoCo is genuinely better at Snowflake-specific SQL and dbt model generation than Claude Code in a controlled evaluation",
+        "Here’s my honest take on what CoCo Desktop actually is, how it compares to what you’re probably already using, and whether data engineers should care"
+      ],
+      "entities": [
+        "snowflake",
+        "dbt",
+        "sql",
+        "python",
+        "airflow",
+        "kafka"
+      ],
+      "questionAnswered": "What is Snowflake CoCo Desktop — What It Is, How It Works, and Whether It’s Worth It?",
+      "lastUpdated": "2026-06-07",
+      "published": "2026-06-07",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2146
+    },
     {
       "url": "https://dataengineerhub.blog/articles/airflow-vs-prefect",
       "title": "Airflow vs Prefect: 2026 Comparison Guide",
