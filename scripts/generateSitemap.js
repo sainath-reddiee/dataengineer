@@ -40,6 +40,8 @@ const STATIC_PAGES = [
   { url: '/privacy-policy', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/disclaimer', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
+  { url: '/contribute', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
+  { url: '/newsletter', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
   // Programmatic hub/category pages TEMPORARILY excluded for AdSense approval:
   // { url: '/cheatsheets', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
   { url: '/certification', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
@@ -121,25 +123,46 @@ async function fetchAllPosts() {
     let hasMore = true;
 
     while (hasMore && page <= 20) {
-      const response = await fetch(
-        `${WORDPRESS_API_URL}/posts?page=${page}&per_page=100&_embed`,
-        {
-          headers: {
-            'Accept': 'application/json',
-            'User-Agent': 'DataEngineerHub-Sitemap-Generator'
+      const url = `${WORDPRESS_API_URL}/posts?page=${page}&per_page=100&_embed&_fields=slug,title,modified,date,_links,_embedded`;
+      let posts = null;
+      let lastErr = null;
+
+      // Retry up to 3 times with exponential backoff
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const response = await fetch(url, {
+            headers: {
+              'Accept': 'application/json',
+              'User-Agent': 'DataEngineerHub-Sitemap-Generator'
+            }
+          });
+
+          if (!response.ok) {
+            if (response.status === 400) {
+              hasMore = false;
+              break;
+            }
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          posts = await response.json();
+          break; // success
+        } catch (err) {
+          lastErr = err;
+          if (attempt < 3) {
+            const delay = 500 * Math.pow(2, attempt - 1);
+            console.warn(`⚠️  Page ${page} attempt ${attempt} failed (${err.message}) — retrying in ${delay}ms`);
+            await new Promise(r => setTimeout(r, delay));
           }
         }
-      );
-
-      if (!response.ok) {
-        if (response.status === 400) {
-          hasMore = false;
-          break;
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const posts = await response.json();
+      if (!hasMore) break;
+
+      if (posts === null) {
+        console.error(`❌ Page ${page} failed after 3 attempts: ${lastErr?.message}`);
+        break; // Keep what we fetched so far rather than aborting completely
+      }
 
       if (!Array.isArray(posts) || posts.length === 0) {
         hasMore = false;
