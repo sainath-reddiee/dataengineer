@@ -65,10 +65,22 @@ function toIsoSchemaDate(value) {
 // defaults to granted so Googlebot-AdSense can verify ad code without a banner.
 // Mirrors index.html and CookieConsent.jsx — keep them in sync.
 // ============================================================================
-const CONSENT_MODE_V2_HTML = `    <!-- Google Consent Mode v2: region-gated. EU denied; rest-of-world (incl. AdSense crawler) granted. -->
+const CONSENT_MODE_V2_HTML = `    <!-- Google Consent Mode v2: region-gated. Rest-of-world granted; EU/EEA denied. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      // Global default: granted (rest of world, including US where AdSense crawler operates)
+      gtag('consent', 'default', {
+        'ad_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted',
+        'analytics_storage': 'granted',
+        'functionality_storage': 'granted',
+        'personalization_storage': 'granted',
+        'security_storage': 'granted',
+        'wait_for_update': 500
+      });
+      // Region-scoped override: EU/UK/EEA denied by default until user consents via banner
       gtag('consent', 'default', {
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
@@ -79,16 +91,6 @@ const CONSENT_MODE_V2_HTML = `    <!-- Google Consent Mode v2: region-gated. EU 
         'security_storage': 'granted',
         'wait_for_update': 500,
         'region': ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','GB','IS','LI','NO','CH']
-      });
-      gtag('consent', 'default', {
-        'ad_storage': 'granted',
-        'ad_user_data': 'granted',
-        'ad_personalization': 'granted',
-        'analytics_storage': 'granted',
-        'functionality_storage': 'granted',
-        'personalization_storage': 'granted',
-        'security_storage': 'granted',
-        'wait_for_update': 500
       });
     </script>`;
 
@@ -233,7 +235,13 @@ function sanitizeWordPressHTML(html) {
     // Remove javascript: URIs
     .replace(/href\s*=\s*["']?\s*javascript:/gi, 'href="')
     // Remove data: URIs in src attributes (potential XSS vector)
-    .replace(/src\s*=\s*["']?\s*data:/gi, 'src="');
+    .replace(/src\s*=\s*["']?\s*data:/gi, 'src="')
+    // Fix invalid HTML: remove <p> wrapping around block elements (h1-h6, div, ul, ol, table, blockquote)
+    .replace(/<p>\s*(<(?:h[1-6]|div|ul|ol|table|blockquote)\b)/gi, '$1')
+    .replace(/(<\/(?:h[1-6]|div|ul|ol|table|blockquote)>)\s*<\/p>/gi, '$1')
+    // Fix invalid bare <h> tags (not a valid HTML element) → <strong>
+    .replace(/<h>([^<]*)<\/h>/gi, '<strong>$1</strong>')
+    .replace(/<h>([^<]*)<\/strong>/gi, '<strong>$1</strong>');
 }
 
 /**
@@ -5998,7 +6006,7 @@ async function buildIncremental(options = {}) {
 
       const rawTitle = stripHTML(post.title.rendered);
       const rawDescription = truncateAtSentence(stripHTML(post.excerpt.rendered), 160) ||
-        'Read this article on DataEngineer Hub';
+        `${rawTitle} — a comprehensive, production-tested guide on DataEngineer Hub.`;
 
       // Apply SEO overrides for CTR-optimized titles and descriptions
       const seoOverride = getSEOOverride(post.slug);

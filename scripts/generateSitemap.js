@@ -40,6 +40,8 @@ const STATIC_PAGES = [
   { url: '/privacy-policy', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/disclaimer', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
+  { url: '/contribute', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
+  { url: '/newsletter', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
   // Programmatic hub/category pages TEMPORARILY excluded for AdSense approval:
   // { url: '/cheatsheets', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
   { url: '/certification', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },

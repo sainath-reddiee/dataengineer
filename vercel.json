@@ -78,6 +78,30 @@
             "headers": [
                 { "key": "X-Robots-Tag", "value": "noindex, follow" }
             ]
+        },
+        {
+            "source": "/admin/:path*",
+            "headers": [
+                { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+            ]
+        },
+        {
+            "source": "/admin",
+            "headers": [
+                { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+            ]
+        },
+        {
+            "source": "/debug",
+            "headers": [
+                { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+            ]
+        },
+        {
+            "source": "/news",
+            "headers": [
+                { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+            ]
         }
     ],
     "rewrites": [
@@ -98,8 +122,6 @@
         { "source": "/contribute", "destination": "/contribute/index.html" },
         { "source": "/newsletter", "destination": "/newsletter/index.html" },
         { "source": "/certification", "destination": "/certification/index.html" },
-        { "source": "/news", "destination": "/index.html" },
-        { "source": "/debug", "destination": "/index.html" },
 
         { "source": "/glossary", "destination": "/glossary/index.html" },
         { "source": "/glossary/:term", "destination": "/glossary/:term/index.html" },

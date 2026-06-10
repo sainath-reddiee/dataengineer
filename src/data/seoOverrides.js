@@ -358,6 +358,16 @@ const seoOverrides = {
   'snowflake-architecture': {
     title: 'Snowflake Architecture Explained Simply',
     description: 'Understand Snowflake\'s 3-layer architecture — storage, compute, and services. How separation of concerns enables performance and scalability.'
+  },
+
+  'snowflake-zero-copy-cloning-problems': {
+    title: 'Snowflake Zero-Copy Cloning: 5 Hidden Pitfalls',
+    description: 'Zero-copy cloning looks free until storage bills spike. Learn the 5 hidden pitfalls — Time Travel bloat, policy drift, and runaway clones — with production fixes.'
+  },
+
+  'delta-lake-vs-iceberg': {
+    title: 'Delta Lake vs Apache Iceberg: Honest Comparison 2026',
+    description: 'Delta Lake vs Iceberg compared on engine support, partitioning, performance, and community. Practical guidance for choosing the right lakehouse format.'
   }
 };
 
