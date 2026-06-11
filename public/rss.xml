@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Wed, 10 Jun 2026 04:57:44 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 11 Jun 2026 07:01:37 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -18,6 +18,28 @@
     <managingEditor>contact@dataengineerhub.blog (Sainath Reddy)</managingEditor>
     <webMaster>contact@dataengineerhub.blog (Sainath Reddy)</webMaster>
     <ttl>60</ttl>
+    <item>
+      <title>Everyone Said SQL Was Dead. It’s Now the Most Valuable Skill in AI (2026)</title>
+      <link>https://dataengineerhub.blog/articles/sql-most-valuable-skill-ai-2026</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/sql-most-valuable-skill-ai-2026</guid>
+      <description>In 2018, a wave of Medium posts declared SQL obsolete. NoSQL was the future. Python would handle everything. Data lakes would make relational thinking irrelevant. The hot take had a…</description>
+      <pubDate>Thu, 11 Jun 2026 01:26:58 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>SQL</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/06/SQL-AI.jpg" type="image/jpeg" />
+    </item>
+    <item>
+      <title>The Hidden Architecture Behind Snowflake Time Travel: Why It’s Not Really a Backup Feature</title>
+      <link>https://dataengineerhub.blog/articles/snowflake-time-travel-architecture</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-time-travel-architecture</guid>
+      <description>TL;DR → Time Travel is not a backup — it’s a versioned metadata pointer to immutable micro-partitions you already paid to store→ Snowflake never overwrites data in place. Every UPDATE…</description>
+      <pubDate>Wed, 10 Jun 2026 08:30:27 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Azure</category>
+      <category>Snowflake</category>
+      <category>SQL</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/06/Snowflake-time-travel-architecture.jpg" type="image/jpeg" />
+    </item>
     <item>
       <title>Snowflake CoCo Desktop — What It Is, How It Works, and Whether It’s Worth It</title>
       <link>https://dataengineerhub.blog/articles/snowflake-coco-desktop</link>

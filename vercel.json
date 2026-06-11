@@ -195,15 +195,6 @@
                     "value": "noindex, follow"
                 }
             ]
-        },
-        {
-            "source": "/news",
-            "headers": [
-                {
-                    "key": "X-Robots-Tag",
-                    "value": "noindex, follow"
-                }
-            ]
         }
     ],
     "rewrites": [
