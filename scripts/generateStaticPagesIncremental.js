@@ -2166,10 +2166,6 @@ function getSiteNavHTML() {
           <a href="https://dataengineerhub.blog" class="site-nav-brand">DataEngineer Hub</a>
           <ul class="site-nav-links">
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
-            <li><a href="https://dataengineerhub.blog/glossary">Glossary</a></li>
-            <li><a href="https://dataengineerhub.blog/compare">Compare</a></li>
-            <li><a href="https://dataengineerhub.blog/cheatsheets">Cheatsheets</a></li>
-            <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
             <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
           </ul>
@@ -2190,6 +2186,59 @@ function getSiteFooterHTML() {
         </ul>
         <p>&copy; ${new Date().getFullYear()} DataEngineer Hub. All rights reserved.</p>
       </footer>`;
+}
+
+function sortCategoriesByPriority(categories) {
+  if (!categories || categories.length <= 1) return categories;
+  
+  // Define priority weights (higher number = more specific database/tool, should be primary)
+  const priority = {
+    // Specific technologies / databases / tools
+    'snowflake': 100,
+    'databricks': 100,
+    'apache airflow': 100,
+    'airflow': 100,
+    'dbt': 100,
+    'apache spark': 100,
+    'spark': 100,
+    'kafka': 100,
+    'postgresql': 100,
+    'duckdb': 100,
+    'prefect': 100,
+    'delta lake': 100,
+    'iceberg': 100,
+    'kubernetes': 100,
+    'docker': 100,
+    
+    // Languages / query engines / general frameworks
+    'python': 85,
+    'sql': 85,
+    'scala': 85,
+    'bash': 80,
+    
+    // Architecture / Concepts
+    'data warehousing': 70,
+    'data lakehouse': 70,
+    'etl/elt': 70,
+    'data pipeline': 70,
+    'data modeling': 70,
+    'data engineering': 60,
+    
+    // Cloud providers (general category)
+    'aws': 50,
+    'azure': 50,
+    'gcp': 50,
+    'cloud': 40,
+    
+    // Very general categories
+    'uncategorized': 0
+  };
+  
+  return [...categories].sort((a, b) => {
+    const scoreA = priority[a.toLowerCase()] || 30; // default to 30 for unrecognized specific categories
+    const scoreB = priority[b.toLowerCase()] || 30;
+    return scoreB - scoreA;
+  });
 }
 
 // ============================================================================
@@ -2801,10 +2850,6 @@ ${CONSENT_MODE_V2_HTML}
           <a href="https://dataengineerhub.blog" class="site-nav-brand">DataEngineer Hub</a>
           <ul class="site-nav-links">
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
-            <li><a href="https://dataengineerhub.blog/glossary">Glossary</a></li>
-            <li><a href="https://dataengineerhub.blog/compare">Compare</a></li>
-            <li><a href="https://dataengineerhub.blog/cheatsheets">Cheatsheets</a></li>
-            <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
             <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
           </ul>
@@ -3423,10 +3468,8 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <title>' + safeName + ' - Data Engineering Articles</title>\n';
   html += '    <meta name="description" content="' + descriptionMeta + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  // Thin-content mitigation: noindex category pages with fewer than 3 articles (AdSense quality signal)
-  var catRobots = (categoryArticles.length < 3)
-    ? 'noindex, follow'
-    : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+  // Under AdSense approval review, we noindex all category pages to prevent thin aggregation issues
+  var catRobots = 'noindex, follow';
   html += '    <meta name="robots" content="' + catRobots + '" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
@@ -5474,7 +5517,7 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
   // PSEO / AI-assisted sections are held out of the index until further
   // editorial work + AdSense approval. Match by path prefix so the static
   // HTML matches the React `<MetaTags noindex={true}>` we set per-page.
-  const PSEO_PREFIXES = ['/tools', '/cheatsheets', '/glossary', '/compare', '/practice', '/interview-prep', '/newsletter'];
+  const PSEO_PREFIXES = ['/tools', '/cheatsheets', '/glossary', '/compare', '/practice', '/interview-prep', '/newsletter', '/tag', '/category', '/contribute', '/certification', '/news'];
   const isPSEO = PSEO_PREFIXES.some((p) => pagePath === p || pagePath.startsWith(p + '/'));
   const pageRobots = isPSEO
     ? 'noindex, follow'
@@ -5709,10 +5752,6 @@ ${CONSENT_MODE_V2_HTML}
           <a href="https://dataengineerhub.blog" class="site-nav-brand">DataEngineer Hub</a>
           <ul class="site-nav-links">
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
-            <li><a href="https://dataengineerhub.blog/glossary">Glossary</a></li>
-            <li><a href="https://dataengineerhub.blog/compare">Compare</a></li>
-            <li><a href="https://dataengineerhub.blog/cheatsheets">Cheatsheets</a></li>
-            <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
             <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
           </ul>
@@ -6011,7 +6050,7 @@ async function buildIncremental(options = {}) {
           optimizedDescription = optimizeMetaDescription({
             title: seoOverride?.title || rawTitle,
             excerpt: rawDescription,
-            category: (post.categories || []).map(id => catIdToName[id]).filter(Boolean)[0] || '',
+            category: sortCategoriesByPriority((post.categories || []).map(id => catIdToName[id]).filter(Boolean))[0] || '',
             tags: tagNamesList,
             readTime: Math.max(1, Math.ceil((stripHTML(post.content.rendered || '').split(/\s+/).filter(w => w.length > 0).length) / 250))
           }) || rawDescription;
@@ -6033,7 +6072,7 @@ async function buildIncremental(options = {}) {
         date: post.date,
         modified: post.modified,
         featuredImage: post.jetpack_featured_media_url || null,
-        categoryNames: (post.categories || []).map(id => catIdToName[id]).filter(Boolean),
+        categoryNames: sortCategoriesByPriority((post.categories || []).map(id => catIdToName[id]).filter(Boolean)),
         tagNames: (post.tags || []).map(id => tagIdToName[id]).filter(Boolean)
       };
 

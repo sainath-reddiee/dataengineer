@@ -128,10 +128,13 @@ function extractQAPairs(content) {
         }
     }
 
-    // Strategy 1: H2/H3 headings that look like questions
+    // Strategy 1: H2/H3 headings that are EXPLICITLY questions (end with ?)
+    // We only match headings that end with '?' to avoid turning article section
+    // headings like "How Snowflake stores data" into fake FAQ entries that have
+    // no matching visible Q&A on the page (Google structured-data policy violation).
     for (let i = 0; i < blocks.length; i++) {
         const block = blocks[i];
-        if ((block.tag === 'h2' || block.tag === 'h3') && isQuestionText(block.text)) {
+        if ((block.tag === 'h2' || block.tag === 'h3') && block.text.trim().endsWith('?')) {
             // Collect answer from following paragraphs, lists
             let answer = '';
             let j = i + 1;
@@ -147,8 +150,7 @@ function extractQAPairs(content) {
                 }
                 j++;
             }
-            const q = block.text.endsWith('?') ? block.text : block.text + '?';
-            addPair(q, answer);
+            addPair(block.text.trim(), answer);
         }
     }
 
