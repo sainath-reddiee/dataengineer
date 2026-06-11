@@ -111,6 +111,18 @@ const processWordPressContent = (content) => {
   return cleanContent;
 };
 
+const decodeHtmlEntities = (str) => {
+  if (!str) return '';
+  return String(str)
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&');
+};
+
 // Extract key takeaways for AEO / featured-snippet eligibility.
 //
 // Strategy (in order):
@@ -125,7 +137,10 @@ const processWordPressContent = (content) => {
 const extractKeyTakeaways = (html) => {
   if (!html) return [];
 
-  const cleanLi = (s) => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const cleanLi = (s) => {
+    const text = s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    return decodeHtmlEntities(text);
+  };
 
   // Strategy 1: explicit comment-marked block
   const block = html.match(/<!--\s*key-takeaways\s*-->([\s\S]*?)<!--\s*\/?key-takeaways\s*-->/i);

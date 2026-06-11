@@ -103,6 +103,12 @@ function extractQAPairs(content) {
         const qLower = q.toLowerCase();
         if (seenQuestions.has(qLower)) return;
         if (q.length < 10 || a.length < 30) return;
+        // Reject questions that are too long (likely Q+A concatenated)
+        if (q.length > 200) return;
+        // Reject questions containing embedded answer patterns (e.g., "Q: ... A: ...")
+        if (/\bA\s*[:\-]\s/i.test(q) && /\bQ\s*[:\-]\s/i.test(q)) return;
+        // Reject if the question contains "A:" after some initial text (Q+A in one field)
+        if (/.\s+A\s*:\s/.test(q)) return;
         seenQuestions.add(qLower);
         // Truncate answer at sentence boundary
         let finalAnswer = a.substring(0, 500);

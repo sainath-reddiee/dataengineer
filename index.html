@@ -96,8 +96,10 @@
     <meta name="description" content="In-depth, production-tested data engineering tutorials covering Snowflake, Databricks, AWS, Azure, GCP, Salesforce Data Cloud, dbt, Apache Airflow, Apache Spark, Python, SQL, lakehouse architectures, ETL/ELT pipelines, and modern data stack best practices." />
 
     <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />
-    <!-- Canonical URL is set dynamically by MetaTags.jsx per route. No static canonical here to avoid
-         crawlers seeing the wrong canonical on non-pre-rendered pages. -->
+    <!-- Canonical URL: static for homepage; MetaTags.jsx overrides dynamically for SPA routes -->
+    <link rel="canonical" href="https://dataengineerhub.blog/" />
+    <!-- AdSense: async script in head so crawlers see ad code without JS execution -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728" crossorigin="anonymous"></script>
 
     <!-- JSON-LD: Organization + WebSite schemas in static HTML so Googlebot sees them without JS -->
     <script type="application/ld+json">
