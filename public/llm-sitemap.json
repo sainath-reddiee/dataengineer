@@ -12,8 +12,31 @@
     "ETL/ELT"
   ],
   "lastUpdated": "2026-06-10",
-  "totalArticles": 56,
+  "totalArticles": 57,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-time-travel-architecture",
+      "title": "The Hidden Architecture Behind Snowflake Time Travel: Why It’s Not Really a Backup Feature",
+      "summary": "TL;DR → Time Travel is not a backup — it’s a versioned metadata pointer to immutable micro-partitions you already paid to store→ Snowflake never overwrites data in place. Every UPDATE…",
+      "keyFacts": [
+        "High-churn tables on 90-day retention can cost 10x more storage than the active data alone",
+        "Every micro-partition is a read-only snapshot of the data at the moment it was created",
+        "’ This is Copy-on-Write, and it’s the architectural foundation that makes Time Travel possible essentially for free",
+        "TL;DR → Time Travel is not a backup — it’s a versioned metadata pointer to immutable micro-partitions you already paid to store → Snowflake never overwrites data in place"
+      ],
+      "entities": [
+        "snowflake",
+        "azure",
+        "sql"
+      ],
+      "questionAnswered": "What is The Hidden Architecture Behind Snowflake Time Travel: Why It’s Not Really a Backup Feature?",
+      "lastUpdated": "2026-06-10",
+      "published": "2026-06-10",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Azure",
+      "wordCount": 1428
+    },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-coco-desktop",
       "title": "Snowflake CoCo Desktop — What It Is, How It Works, and Whether It’s Worth It",

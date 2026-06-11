@@ -1,6 +1,6 @@
 # DataEngineer Hub - Full Content Index for LLMs
 > Last generated: 2026-06-10
-> Total articles: 56
+> Total articles: 57
 > Source: https://dataengineerhub.blog
 > Compact version: https://dataengineerhub.blog/llms.txt
 > Structured data: https://dataengineerhub.blog/llm-sitemap.json
@@ -9,6 +9,28 @@ This file provides a comprehensive content index designed for large language mod
 Each article includes its URL, summary, key headings, and primary topics.
 
 ---
+
+## Azure (3 articles)
+
+### The Hidden Architecture Behind Snowflake Time Travel: Why It’s Not Really a Backup Feature
+- URL: https://dataengineerhub.blog/articles/snowflake-time-travel-architecture
+- Published: 2026-06-10 | Updated: 2026-06-10
+- Word count: ~1428
+- Summary: → Time Travel is not a backup — it’s a versioned metadata pointer to immutable micro-partitions you already paid to store → Snowflake never overwrites data in place. Every UPDATE or DELETE creates new micro-partitions and marks old ones as expired → Standard edition gives you 1 day. Enterprise gives
+- Key sections: TL;DR | The misconception that costs people money | How Snowflake stores data: micro-partitions | What Time Travel actually is | The three-zone model: Active, Time Travel, Fail-safe | Time Travel vs Fail-safe — the comparison you need | The storage cost nobody warns you about | Zero-copy clones: same architecture, surprising implications
+
+### Synapse to Fabric: Your ADX Migration Guide 2025
+- URL: https://dataengineerhub.blog/articles/synapse-to-fabric-migration-adx-eventhouse-guide
+- Published: 2025-10-08 | Updated: 2025-10-08
+- Word count: ~958
+- Summary: The clock is ticking for Azure Synapse Data Explorer (ADX). With its retirement announced, a strategic Synapse to Fabric migration is now a critical task for data teams. This move to Microsoft Fabric’s Real-Time Analytics and its Eventhouse database unlocks a unified, AI-powered experience, and this
+- Key sections: Why This is Happening: The Drive Behind the Synapse to Fabric Migration | Phase 1: Assess and Plan Your Migration | Phase 2: The Migration – Data and Schema | Phase 3: Update Queries and Reports | Embracing the Future | Further Reading & Official Resources
+
+### How to Build a Data Lakehouse on Azure
+- URL: https://dataengineerhub.blog/articles/build-data-lakehouse-on-azure
+- Published: 2025-09-27 | Updated: 2025-10-08
+- Word count: ~992
+- Summary: For years, data teams have faced a difficult choice: the structured, high-performance world of the data warehouse, or the flexible, low-cost scalability of the data lake. But what if you could have the best of both worlds? Enter the Data Lakehouse, an architectural pattern that combines the reliabil
 
 ## Snowflake (34 articles)
 
@@ -389,21 +411,6 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Word count: ~927
 - Summary: The age of AI chatbots is evolving into the era of AI doers . Instead of just answering questions, modern AI can now execute tasks, interact with systems, and solve multi-step problems. At the forefront of this revolution on the Databricks platform is the Mosaic AI Agent Framework .
 - Key sections: What is a Databricks AI Agent? | Our Project: The “Data Analyst” Agent | Step 1: Setting Up Your Tools (Python Functions) | Step 2: Assembling Your Databricks AI Agent | Step 3: Interacting with Your Agent | Conclusion: Your Gateway to Autonomous Data Tasks
-
-## Azure (2 articles)
-
-### Synapse to Fabric: Your ADX Migration Guide 2025
-- URL: https://dataengineerhub.blog/articles/synapse-to-fabric-migration-adx-eventhouse-guide
-- Published: 2025-10-08 | Updated: 2025-10-08
-- Word count: ~958
-- Summary: The clock is ticking for Azure Synapse Data Explorer (ADX). With its retirement announced, a strategic Synapse to Fabric migration is now a critical task for data teams. This move to Microsoft Fabric’s Real-Time Analytics and its Eventhouse database unlocks a unified, AI-powered experience, and this
-- Key sections: Why This is Happening: The Drive Behind the Synapse to Fabric Migration | Phase 1: Assess and Plan Your Migration | Phase 2: The Migration – Data and Schema | Phase 3: Update Queries and Reports | Embracing the Future | Further Reading & Official Resources
-
-### How to Build a Data Lakehouse on Azure
-- URL: https://dataengineerhub.blog/articles/build-data-lakehouse-on-azure
-- Published: 2025-09-27 | Updated: 2025-10-08
-- Word count: ~992
-- Summary: For years, data teams have faced a difficult choice: the structured, high-performance world of the data warehouse, or the flexible, low-cost scalability of the data lake. But what if you could have the best of both worlds? Enter the Data Lakehouse, an architectural pattern that combines the reliabil
 
 ## GCP (1 articles)
 
