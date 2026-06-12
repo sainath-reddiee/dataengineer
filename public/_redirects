@@ -1,5 +1,5 @@
 // public/_redirects - Netlify/Vercel redirects for canonical URLs
-// This ensures all URLs redirect to canonical versions
+// This ensuress all URLs redirect to canonical versions
 
 # Force HTTPS
 http://dataengineerhub.blog/* https://dataengineerhub.blog/:splat 301!
