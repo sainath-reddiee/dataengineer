@@ -19,103 +19,354 @@
             "source": "https://www.dataengineerhub.blog/:path*",
             "destination": "https://dataengineerhub.blog/:path*",
             "permanent": true
+        },
+        {
+            "source": "/glossary",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/glossary/:term",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/compare",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/compare/:slug",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/cheatsheets",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/cheatsheets/:path*",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/tools",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/tools/:slug",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/interview-prep",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/practice/:path*",
+            "destination": "/articles",
+            "permanent": false
         }
     ],
     "headers": [
         {
             "source": "/(.*)",
             "headers": [
-                { "key": "X-Content-Type-Options", "value": "nosniff" },
-                { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-                { "key": "X-XSS-Protection", "value": "1; mode=block" },
-                { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+                {
+                    "key": "X-Content-Type-Options",
+                    "value": "nosniff"
+                },
+                {
+                    "key": "X-Frame-Options",
+                    "value": "SAMEORIGIN"
+                },
+                {
+                    "key": "X-XSS-Protection",
+                    "value": "1; mode=block"
+                },
+                {
+                    "key": "Referrer-Policy",
+                    "value": "strict-origin-when-cross-origin"
+                }
             ]
         },
         {
             "source": "/assets/(.*)",
             "headers": [
-                { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=31536000, immutable"
+                }
             ]
         },
         {
             "source": "/(.*).html",
             "headers": [
-                { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=0, must-revalidate"
+                }
             ]
         },
         {
             "source": "/glossary/:path*",
             "headers": [
-                { "key": "X-Robots-Tag", "value": "noindex, follow" }
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, follow"
+                }
             ]
         },
         {
             "source": "/compare/:path*",
             "headers": [
-                { "key": "X-Robots-Tag", "value": "noindex, follow" }
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, follow"
+                }
             ]
         },
         {
             "source": "/tools/:path*",
             "headers": [
-                { "key": "X-Robots-Tag", "value": "noindex, follow" }
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, follow"
+                }
             ]
         },
         {
             "source": "/cheatsheets/:path*",
             "headers": [
-                { "key": "X-Robots-Tag", "value": "noindex, follow" }
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, follow"
+                }
             ]
         },
         {
             "source": "/practice/:path*",
             "headers": [
-                { "key": "X-Robots-Tag", "value": "noindex, follow" }
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, follow"
+                }
             ]
         },
         {
             "source": "/interview-prep/:path*",
             "headers": [
-                { "key": "X-Robots-Tag", "value": "noindex, follow" }
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, follow"
+                }
             ]
         },
         {
             "source": "/admin/:path*",
             "headers": [
-                { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, nofollow"
+                }
             ]
         },
         {
             "source": "/admin",
             "headers": [
-                { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, nofollow"
+                }
             ]
         },
         {
             "source": "/debug",
             "headers": [
-                { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, nofollow"
+                }
             ]
         },
         {
             "source": "/news",
             "headers": [
-                { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, nofollow"
+                }
+            ]
+        },
+        {
+            "source": "/tag/:path*",
+            "headers": [
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, follow"
+                }
+            ]
+        },
+        {
+            "source": "/category/:path*",
+            "headers": [
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, follow"
+                }
+            ]
+        },
+        {
+            "source": "/newsletter",
+            "headers": [
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, follow"
+                }
+            ]
+        },
+        {
+            "source": "/contribute",
+            "headers": [
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, follow"
+                }
+            ]
+        },
+        {
+            "source": "/certification",
+            "headers": [
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, follow"
+                }
             ]
         }
     ],
-    {
-  "redirects": [
-    { "source": "/glossary",            "destination": "/articles", "permanent": false },
-    { "source": "/glossary/:term",      "destination": "/articles", "permanent": false },
-    { "source": "/compare",             "destination": "/articles", "permanent": false },
-    { "source": "/compare/:slug",       "destination": "/articles", "permanent": false },
-    { "source": "/cheatsheets",         "destination": "/articles", "permanent": false },
-    { "source": "/cheatsheets/:path*",  "destination": "/articles", "permanent": false },
-    { "source": "/tools",               "destination": "/articles", "permanent": false },
-    { "source": "/tools/:slug",         "destination": "/articles", "permanent": false },
-    { "source": "/interview-prep",      "destination": "/articles", "permanent": false },
-    { "source": "/practice/:path*",     "destination": "/articles", "permanent": false }
-  ]
-   }
+    "rewrites": [
+        {
+            "source": "/",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/articles",
+            "destination": "/articles/index.html"
+        },
+        {
+            "source": "/articles/:slug",
+            "destination": "/articles/:slug/index.html"
+        },
+        {
+            "source": "/category/:slug",
+            "destination": "/category/:slug/index.html"
+        },
+        {
+            "source": "/tag",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/tag/:slug",
+            "destination": "/tag/:slug/index.html"
+        },
+        {
+            "source": "/about",
+            "destination": "/about/index.html"
+        },
+        {
+            "source": "/contact",
+            "destination": "/contact/index.html"
+        },
+        {
+            "source": "/privacy-policy",
+            "destination": "/privacy-policy/index.html"
+        },
+        {
+            "source": "/terms-of-service",
+            "destination": "/terms-of-service/index.html"
+        },
+        {
+            "source": "/disclaimer",
+            "destination": "/disclaimer/index.html"
+        },
+        {
+            "source": "/contribute",
+            "destination": "/contribute/index.html"
+        },
+        {
+            "source": "/newsletter",
+            "destination": "/newsletter/index.html"
+        },
+        {
+            "source": "/certification",
+            "destination": "/certification/index.html"
+        },
+        {
+            "source": "/glossary",
+            "destination": "/glossary/index.html"
+        },
+        {
+            "source": "/glossary/:term",
+            "destination": "/glossary/:term/index.html"
+        },
+        {
+            "source": "/compare",
+            "destination": "/compare/index.html"
+        },
+        {
+            "source": "/compare/:slug",
+            "destination": "/compare/:slug/index.html"
+        },
+        {
+            "source": "/cheatsheets",
+            "destination": "/cheatsheets/index.html"
+        },
+        {
+            "source": "/cheatsheets/:slug",
+            "destination": "/cheatsheets/:slug/index.html"
+        },
+        {
+            "source": "/cheatsheets/category/:cat",
+            "destination": "/cheatsheets/category/:cat/index.html"
+        },
+        {
+            "source": "/tools",
+            "destination": "/tools/index.html"
+        },
+        {
+            "source": "/tools/:slug",
+            "destination": "/tools/:slug/index.html"
+        },
+        {
+            "source": "/interview-prep",
+            "destination": "/interview-prep/index.html"
+        },
+        {
+            "source": "/practice",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/practice/:slug",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/practice/:slug/topics/:topicSlug",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/practice/:slug/q/:questionSlug",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/admin",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/admin/:path*",
+            "destination": "/index.html"
+        }
+    ]
 }

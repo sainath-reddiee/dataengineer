@@ -93,6 +93,8 @@ function decodeHtmlEntities(str) {
   return String(str)
     .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
     .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\u00A0/g, ' ')
     .replace(/&quot;/g, '"')
     .replace(/&apos;/g, "'")
     .replace(/&lt;/g, '<')
@@ -512,10 +514,10 @@ async function generateSitemap() {
     ];
     for (const slug of CATEGORY_SLUGS) {
       sitemapEntries.push({
-        loc: `https://dataengineerhub.blog/category/${slug}`,
+        url: `https://dataengineerhub.blog/category/${slug}`,
         lastmod: today,
         changefreq: 'weekly',
-        priority: '0.7',
+        priority: 0.7,
       });
     }
 

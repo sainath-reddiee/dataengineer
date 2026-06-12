@@ -28,19 +28,22 @@ class WordPressAPI {
   decodeHtmlEntities(text) {
     if (!text || typeof text !== 'string') return '';
 
+    let decoded = text;
     if (typeof window !== 'undefined') {
       const textarea = document.createElement('textarea');
       textarea.innerHTML = text;
-      return textarea.value;
+      decoded = textarea.value;
+    } else {
+      decoded = text
+        .replace(/&#8217;/g, "'")
+        .replace(/&amp;/g, "&")
+        .replace(/&quot;/g, '"')
+        .replace(/&#039;/g, "'")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">");
     }
 
-    return text
-      .replace(/&#8217;/g, "'")
-      .replace(/&amp;/g, "&")
-      .replace(/&quot;/g, '"')
-      .replace(/&#039;/g, "'")
-      .replace(/&lt;/g, "<")
-      .replace(/&gt;/g, ">");
+    return decoded.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' ');
   }
 
   async makeRequest(endpoint, options = {}) {

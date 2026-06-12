@@ -11,9 +11,37 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-06-10",
-  "totalArticles": 57,
+  "lastUpdated": "2026-06-12",
+  "totalArticles": 58,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/sql-most-valuable-skill-ai-2026",
+      "title": "Everyone Said SQL Was Dead. It’s Now the Most Valuable Skill in AI (2026)",
+      "summary": "In 2018, a wave of Medium posts declared SQL obsolete. NoSQL was the future. Python would handle everything. Data lakes would make relational thinking irrelevant. The hot take had a…",
+      "keyFacts": [
+        "The data engineering sector now employs over 150,000 professionals with more than 20,000 new jobs created in the past year alone",
+        "Today, SQL is the connective tissue of every serious AI data stack",
+        "And in 2026, the rise of text-to-SQL AI agents means that understanding SQL deeply is now more important than ever — not less",
+        "The Death of SQL Was Always a Myth The “SQL is dying” narrative was never based on actual hiring data"
+      ],
+      "entities": [
+        "sql",
+        "python",
+        "dbt",
+        "snowflake",
+        "airflow",
+        "bigquery",
+        "kafka",
+        "databricks"
+      ],
+      "questionAnswered": "What is Everyone Said SQL Was Dead. It’s Now the Most Valuable Skill in AI (2026)?",
+      "lastUpdated": "2026-06-11",
+      "published": "2026-06-11",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "SQL",
+      "wordCount": 1844
+    },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-time-travel-architecture",
       "title": "The Hidden Architecture Behind Snowflake Time Travel: Why It’s Not Really a Backup Feature",

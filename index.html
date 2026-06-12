@@ -486,7 +486,7 @@
     <script>
       (function () {
         var path = (window.location.pathname || '').toLowerCase();
-        var psePrefixes = ['/glossary', '/compare', '/tools', '/cheatsheets', '/practice', '/interview-prep', '/admin'];
+        var psePrefixes = ['/glossary', '/compare', '/tools', '/cheatsheets', '/practice', '/interview-prep', '/admin', '/tag', '/category', '/newsletter', '/contribute', '/certification', '/news'];
         var blocked = psePrefixes.some(function (p) { return path === p || path.indexOf(p + '/') === 0; });
         if (!blocked) {
           var s = document.createElement('script');

@@ -1,6 +1,6 @@
 # DataEngineer Hub - Full Content Index for LLMs
-> Last generated: 2026-06-10
-> Total articles: 57
+> Last generated: 2026-06-12
+> Total articles: 58
 > Source: https://dataengineerhub.blog
 > Compact version: https://dataengineerhub.blog/llms.txt
 > Structured data: https://dataengineerhub.blog/llm-sitemap.json
@@ -9,6 +9,15 @@ This file provides a comprehensive content index designed for large language mod
 Each article includes its URL, summary, key headings, and primary topics.
 
 ---
+
+## SQL (1 articles)
+
+### Everyone Said SQL Was Dead. It’s Now the Most Valuable Skill in AI (2026)
+- URL: https://dataengineerhub.blog/articles/sql-most-valuable-skill-ai-2026
+- Published: 2026-06-11 | Updated: 2026-06-11
+- Word count: ~1844
+- Summary: In 2018, a wave of Medium posts declared SQL obsolete. NoSQL was the future. Python would handle everything. Data lakes would make relational thinking irrelevant. The hot take had a good run.
+- Key sections: The Death of SQL Was Always a Myth | Why AI Made SQL More Valuable, Not Less | 1. LLMs Speak SQL | 2. AI Models Are Trained on SQL Pipelines | 3. The Semantic Layer Runs on SQL | The Modern SQL Skill Set Is Not What You Learned in 2015 | SQL vs. Python: The False Choice That Hurt Careers | What the Job Market Is Actually Saying
 
 ## Azure (3 articles)
 

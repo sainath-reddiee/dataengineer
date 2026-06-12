@@ -1,15 +1,14 @@
 # robots.txt - DataEngineer Hub
-# Last updated: 2026-05-09
+# Last updated: 2026-06-11
 #
 # AdSense approval strategy: while approval is pending, we hold the
-# programmatic/AI-assisted sections out of the crawl + index. Only the
-# original editorial content (homepage, real WordPress articles, news,
-# trust pages) is exposed to crawlers. Once AdSense approves, the
-# Disallow rules below can be removed and the matching `noindex` meta
-# tags can be lifted.
+# programmatic/AI-assisted sections AND thin aggregation pages out of
+# the crawl + index. Only the original editorial content (homepage,
+# real WordPress articles, trust pages) is exposed to crawlers. Once
+# AdSense approves, the Disallow rules below can be relaxed.
 
 # =============================================================================
-# Default rules — block PSEO / AI-assisted sections from ALL crawlers
+# Default rules — block PSEO / AI-assisted / thin sections from ALL crawlers
 # =============================================================================
 User-agent: *
 Allow: /
@@ -31,6 +30,16 @@ Disallow: /practice
 Disallow: /practice/
 Disallow: /interview-prep
 Disallow: /interview-prep/
+
+# Thin aggregation / utility pages (no substantive unique content)
+Disallow: /tag
+Disallow: /tag/
+Disallow: /category
+Disallow: /category/
+Disallow: /news
+Disallow: /newsletter
+Disallow: /contribute
+Disallow: /certification
 
 # Allow static assets
 Allow: /*.css$
@@ -70,6 +79,14 @@ Disallow: /practice
 Disallow: /practice/
 Disallow: /interview-prep
 Disallow: /interview-prep/
+Disallow: /tag
+Disallow: /tag/
+Disallow: /category
+Disallow: /category/
+Disallow: /news
+Disallow: /newsletter
+Disallow: /contribute
+Disallow: /certification
 
 User-agent: AdsBot-Google
 Allow: /
@@ -85,6 +102,14 @@ Disallow: /practice
 Disallow: /practice/
 Disallow: /interview-prep
 Disallow: /interview-prep/
+Disallow: /tag
+Disallow: /tag/
+Disallow: /category
+Disallow: /category/
+Disallow: /news
+Disallow: /newsletter
+Disallow: /contribute
+Disallow: /certification
 
 User-agent: AdsBot-Google-Mobile
 Allow: /
@@ -100,6 +125,14 @@ Disallow: /practice
 Disallow: /practice/
 Disallow: /interview-prep
 Disallow: /interview-prep/
+Disallow: /tag
+Disallow: /tag/
+Disallow: /category
+Disallow: /category/
+Disallow: /news
+Disallow: /newsletter
+Disallow: /contribute
+Disallow: /certification
 
 # =============================================================================
 # SITEMAPS

@@ -245,6 +245,7 @@ function decodeHtmlEntities(str) {
     if (!str) return '';
     return String(str)
         .replace(/&nbsp;/g, ' ')
+        .replace(/\u00A0/g, ' ')
         .replace(/&hellip;/g, '...')
         .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
         .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
