@@ -19,6 +19,56 @@
             "source": "https://www.dataengineerhub.blog/:path*",
             "destination": "https://dataengineerhub.blog/:path*",
             "permanent": true
+        },
+        {
+            "source": "/glossary",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/glossary/:term",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/compare",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/compare/:slug",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/cheatsheets",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/cheatsheets/:path*",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/tools",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/tools/:slug",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/interview-prep",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/practice/:path*",
+            "destination": "/articles",
+            "permanent": false
         }
     ],
     "headers": [

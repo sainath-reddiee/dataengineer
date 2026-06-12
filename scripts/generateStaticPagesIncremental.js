@@ -274,7 +274,12 @@ function normalizeHeadings(html) {
   return html;
 }
 const CACHE_FILE = path.join(__dirname, '..', '.build-cache.json');
-
+// ⛔ ADSENSE REVIEW MODE — when true, all pSEO output (glossary, compare,
+// cheatsheets, tools, interview-prep, practice) is deleted from dist/ after
+// the build so no low-value templated HTML is ever deployed.
+// Flip to false after AdSense approval.
+const ADSENSE_REVIEW_MODE = true;
+const PSEO_DIST_DIRS = ['glossary', 'compare', 'cheatsheets', 'tools', 'interview-prep', 'practice'];
 // ============================================================================
 // ESSENTIAL PAGES - Static content for AdSense/SEO crawlers
 // These pages currently serve the same SPA fallback HTML, causing "low value content"
@@ -2990,7 +2995,8 @@ ${CONSENT_MODE_V2_HTML}
         "name": "Sainath Reddy",
         "url": "https://dataengineerhub.blog/about",
         "jobTitle": "Data Engineer",
-        "sameAs": [          "https://www.linkedin.com/in/sainathreddypogaku/",
+        "sameAs": [
+          "https://www.linkedin.com/in/sainathreddypogaku/",
           "https://github.com/sainath-reddiee/dataengineer"
         ]
       },
@@ -3062,7 +3068,8 @@ ${CONSENT_MODE_V2_HTML}
         "width": 250,
         "height": 250
       },
-      "sameAs": [        "https://www.linkedin.com/in/sainathreddypogaku/",
+      "sameAs": [
+        "https://www.linkedin.com/in/sainathreddypogaku/",
         "https://github.com/sainath-reddiee/dataengineer"
       ]
     }
@@ -3082,7 +3089,8 @@ ${CONSENT_MODE_V2_HTML}
         "name": "Anblicks"
       },
       "sameAs": [
-        "https://www.linkedin.com/in/sainathreddypogaku/",        "https://github.com/sainath-reddiee/dataengineer"
+        "https://www.linkedin.com/in/sainathreddypogaku/",
+        "https://github.com/sainath-reddiee/dataengineer"
       ],
       "knowsAbout": ["Data Engineering", "Snowflake", "AWS", "Azure", "Databricks", "Apache Airflow", "dbt", "ETL/ELT Pipelines", "Data Warehousing", "Cloud Architecture"],
       "description": "Data Engineer with 4+ years of experience specializing in building scalable data pipelines and cloud-native data solutions."
@@ -3490,7 +3498,8 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -3778,7 +3787,8 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-glossary.png" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';  html += '\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n';
   html += '\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
@@ -4078,7 +4088,8 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-glossary.png" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -4373,7 +4384,8 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-comparison.png" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';  html += '\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '\n';
   html += '    <!-- Build: ' + buildTimestamp + ' -->\n';
   html += '\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
@@ -4704,7 +4716,8 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-comparison.png" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -4948,7 +4961,8 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -5227,7 +5241,8 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -5401,7 +5416,8 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />\n';
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
-  html += '    <meta property="og:locale" content="en_US" />\n';  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
+  html += '    <meta property="og:locale" content="en_US" />\n';
+  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -5861,7 +5877,8 @@ ${CONSENT_MODE_V2_HTML}
         "width": 250,
         "height": 250
       },
-      "sameAs": [        "https://www.linkedin.com/in/sainathreddypogaku/",
+      "sameAs": [
+        "https://www.linkedin.com/in/sainathreddypogaku/",
         "https://github.com/sainath-reddiee/dataengineer"
       ]
     }
@@ -5925,7 +5942,8 @@ ${CONSENT_MODE_V2_HTML}
         "name": "Anblicks"
       },
       "sameAs": [
-        "https://www.linkedin.com/in/sainathreddypogaku/",        "https://github.com/sainath-reddiee/dataengineer"
+        "https://www.linkedin.com/in/sainathreddypogaku/",
+        "https://github.com/sainath-reddiee/dataengineer"
       ],
       "knowsAbout": ["Data Engineering", "Snowflake", "AWS", "Azure", "Databricks", "Apache Airflow", "dbt", "ETL/ELT Pipelines", "Data Warehousing", "Cloud Architecture"],
       "description": "Data Engineer with 4+ years of experience specializing in building scalable data pipelines and cloud-native data solutions."
@@ -6857,8 +6875,28 @@ Safety Features:
   process.exit(0);
 }
 
-buildIncremental(options).catch(error => {
-  console.error('\nâŒ Build failed:', error);
-  console.error(error.stack);
-  process.exit(1);
-});
+// ⛔ ADSENSE REVIEW MODE: purge all pSEO output from dist/ after the build
+// so no templated low-value pages ever get deployed. Controlled by the
+// ADSENSE_REVIEW_MODE flag at the top of this file.
+function purgePseoDirs() {
+  if (!ADSENSE_REVIEW_MODE) return;
+  console.log('\n🧹 AdSense review mode: removing pSEO directories from dist/...');
+  const purgeDistDir = path.join(__dirname, '..', 'dist');
+  for (const dirName of PSEO_DIST_DIRS) {
+    const dirPath = path.join(purgeDistDir, dirName);
+    if (fs.existsSync(dirPath)) {
+      fs.rmSync(dirPath, { recursive: true, force: true });
+      console.log(`   🗑️  Removed dist/${dirName}/`);
+    }
+  }
+}
+
+buildIncremental(options)
+  .then(() => {
+    purgePseoDirs();
+  })
+  .catch(error => {
+    console.error('\n❌ Build failed:', error);
+    console.error(error.stack);
+    process.exit(1);
+  });

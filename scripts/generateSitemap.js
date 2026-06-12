@@ -505,7 +505,21 @@ async function generateSitemap() {
     // Category pages excluded from sitemap — no pre-rendered HTML exists,
     // so Googlebot receives the SPA shell (soft 404 / thin content).
     // Re-add once category pages are pre-rendered with unique content.
-    console.log('⏭️  Skipping category pages (no pre-rendered HTML, soft 404 for Googlebot)...');
+    // Category pages — pre-rendered with intro + full article listings,
+    // so they're safe to include in the sitemap.
+    console.log('📂 Adding category pages...');
+    const CATEGORY_SLUGS = [
+      'snowflake', 'databricks', 'aws', 'azure', 'gcp', 'salesforce',
+      'dbt', 'airflow', 'python', 'sql', 'developer-productivity'
+    ];
+    for (const slug of CATEGORY_SLUGS) {
+      sitemapEntries.push({
+        url: `https://dataengineerhub.blog/category/${slug}`,
+        lastmod: today,
+        changefreq: 'weekly',
+        priority: 0.7,
+      });
+    }
 
     // Tag pages excluded from sitemap — all have noindex={true} in TagPage.jsx
     // Including noindexed pages in sitemap sends contradictory signals to Google

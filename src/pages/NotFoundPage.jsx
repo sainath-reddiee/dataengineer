@@ -4,25 +4,26 @@ import { Search, ArrowRight } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
 
 // Curated evergreen landings so a 404 still converts traffic.
+// REPLACE the two constants at the top:
 const POPULAR_ARTICLES = [
-  { href: '/cheatsheets/snowflake-sql',             title: 'Snowflake SQL Cheat Sheet' },
-  { href: '/cheatsheets/dbt-commands',              title: 'dbt Commands Cheat Sheet' },
-  { href: '/cheatsheets/airflow-essentials',        title: 'Airflow Essentials Cheat Sheet' },
-  { href: '/compare/snowflake-vs-databricks',       title: 'Snowflake vs Databricks' },
+  { href: '/articles/snowflake-zero-copy-cloning-problems', title: 'The Problem with Zero-Copy Cloning in Snowflake' },
+  { href: '/articles/delta-lake-vs-iceberg',                title: 'Delta Lake vs Apache Iceberg' },
+  { href: '/articles/dbt-tests-pass-bad-data',              title: 'The Problem with dbt Tests Nobody Talks About' },
+  { href: '/articles/why-i-stopped-using-snowflake-tasks-orchestration', title: 'Why I Stopped Using Snowflake Tasks' },
 ];
 
 const CATEGORY_CHIPS = [
-  { href: '/category/snowflake',   label: 'Snowflake' },
-  { href: '/category/dbt',         label: 'dbt' },
-  { href: '/category/airflow',     label: 'Airflow' },
-  { href: '/category/python',      label: 'Python' },
-  { href: '/category/aws',         label: 'AWS' },
-  { href: '/category/data-engineering', label: 'Data Engineering' },
-  { href: '/cheatsheets',          label: 'All Cheat Sheets' },
-  { href: '/compare',              label: 'All Comparisons' },
-  { href: '/glossary',             label: 'Glossary' },
+  { href: '/category/snowflake',  label: 'Snowflake' },
+  { href: '/category/dbt',        label: 'dbt' },
+  { href: '/category/airflow',    label: 'Airflow' },
+  { href: '/category/python',     label: 'Python' },
+  { href: '/category/aws',        label: 'AWS' },
+  { href: '/articles',            label: 'All Articles' },
+  // pSEO chips removed for AdSense review:
+  // { href: '/cheatsheets', label: 'All Cheat Sheets' },
+  // { href: '/compare',     label: 'All Comparisons' },
+  // { href: '/glossary',    label: 'Glossary' },
 ];
-
 const NotFoundPage = () => {
   const navigate = useNavigate();
   const [q, setQ] = useState('');
