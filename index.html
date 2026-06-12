@@ -98,8 +98,6 @@
     <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />
     <!-- Canonical URL: static for homepage; MetaTags.jsx overrides dynamically for SPA routes -->
     <link rel="canonical" href="https://dataengineerhub.blog/" />
-    <!-- AdSense: async script in head so crawlers see ad code without JS execution -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728" crossorigin="anonymous"></script>
 
     <!-- JSON-LD: Organization + WebSite schemas in static HTML so Googlebot sees them without JS -->
     <script type="application/ld+json">
@@ -389,119 +387,6 @@
             <li><a href="/about">About</a></li>
           </ul>
         </nav>
-
-        <div class="topics">
-          <div class="topic-card">
-            <h2>Cloud Data Warehouses</h2>
-            <p>
-              Hands-on guides for Snowflake (Cortex, Iceberg, Dynamic Tables, cost optimization),
-              Google BigQuery (slot-based pricing, partitioning), and Amazon Redshift — including
-              warehouse sizing, query tuning, and cost-control playbooks for real production
-              workloads.
-            </p>
-          </div>
-
-          <div class="topic-card">
-            <h2>Lakehouse &amp; Databricks</h2>
-            <p>
-              Deep dives on Databricks, Apache Spark, Delta Lake, Apache Iceberg, and Unity
-              Catalog — covering medallion architectures, Auto Loader, structured streaming,
-              Photon, Databricks SQL, and migration patterns from legacy Hadoop / EMR.
-            </p>
-          </div>
-
-          <div class="topic-card">
-            <h2>AWS, Azure &amp; GCP</h2>
-            <p>
-              Multi-cloud data engineering tutorials: AWS (S3, Glue, Lambda, Kinesis, Athena,
-              EMR, Step Functions), Azure (Synapse, ADF, Fabric, Eventhouse, Purview), and GCP
-              (BigQuery, Dataflow, Pub/Sub, Composer) with cost, security, and IAC patterns.
-            </p>
-          </div>
-
-          <div class="topic-card">
-            <h2>Salesforce Data Cloud &amp; CRM Data</h2>
-            <p>
-              Salesforce Data Cloud (CDP), Agentforce, Tableau, and integrating CRM data with
-              Snowflake / Databricks via zero-copy sharing. Practical guides on identity
-              resolution, calculated insights, segmentation, and activation.
-            </p>
-          </div>
-
-          <div class="topic-card">
-            <h2>Transformation &amp; Modeling</h2>
-            <p>
-              dbt Core and dbt Cloud — project structure, macros, tests, exposures, semantic
-              layer, and CI/CD patterns. Plus dimensional modeling, Data Vault, slowly-changing
-              dimensions, and analytics engineering best practices for warehouses and lakehouses.
-            </p>
-          </div>
-
-          <div class="topic-card">
-            <h2>Orchestration &amp; Pipelines</h2>
-            <p>
-              Apache Airflow, Snowflake Tasks, AWS Step Functions, Azure Data Factory, Prefect,
-              and Dagster — with batch, micro-batch, and event-driven pipeline patterns,
-              idempotency, backfills, observability, and SLA management for production schedulers.
-            </p>
-          </div>
-
-          <div class="topic-card">
-            <h2>Programming — Python &amp; SQL</h2>
-            <p>
-              Python for data engineers (PySpark, pandas, Polars, asyncio, type hints, testing),
-              advanced SQL (window functions, CTEs, JSON / VARIANT, performance tuning), plus
-              shell, Git, and developer-productivity tooling that ship faster pipelines.
-            </p>
-          </div>
-
-          <div class="topic-card">
-            <h2>Streaming &amp; Real-Time</h2>
-            <p>
-              Apache Kafka, Kinesis, Pub/Sub, Snowflake Streams &amp; Tasks, Snowpipe Streaming,
-              Spark Structured Streaming, change-data-capture (CDC), and event-driven architectures
-              — including watermarks, exactly-once semantics, and schema evolution.
-            </p>
-          </div>
-
-          <div class="topic-card">
-            <h2>AI on Data — Cortex, Agents, RAG</h2>
-            <p>
-              Snowflake Cortex (AISQL, Search, Analyst, Agents), Databricks Genie / Mosaic AI,
-              Vertex AI, Bedrock, and building production retrieval-augmented generation (RAG)
-              pipelines on top of warehouse and lakehouse data — with grounding, evals, and cost.
-            </p>
-          </div>
-
-          <div class="topic-card">
-            <h2>Data Quality, Governance &amp; Security</h2>
-            <p>
-              Great Expectations, dbt tests, Soda, Monte Carlo, lineage with OpenLineage / Marquez,
-              role-based access control, row/column-level security, masking policies, PII handling,
-              and modern data-governance frameworks across Snowflake, Databricks, and the cloud.
-            </p>
-          </div>
-
-          <div class="topic-card">
-            <h2>Career, Interviews &amp; Certifications</h2>
-            <p>
-              Honest career advice, system-design walk-throughs, salary insights, and structured
-              interview prep for data-engineering roles — plus certification paths (SnowPro Core,
-              Databricks DE Associate, AWS DEA, Azure DP-203, GCP PDE) with real exam-style
-              questions and explanations.
-            </p>
-          </div>
-
-          <div class="topic-card">
-            <h2>Production &amp; FinOps</h2>
-            <p>
-              Reliability, observability, cost-optimization (Snowflake credit math, Databricks DBU
-              tuning, BigQuery slot management), backfill strategies, blue/green deployments, and
-              the operational playbooks that keep data platforms running reliably and affordably.
-            </p>
-          </div>
-        </div>
-      </div>
 
       <!-- E-E-A-T: Author/about block visible to AdSense reviewers and crawlers -->
       <section class="seo-author-block" aria-label="About the author">
