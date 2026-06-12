@@ -12,8 +12,7 @@ async function fetchFromWP(endpoint, fields = '') {
   const items = [];
   let page = 1;
 
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
+  while (page <= 100) {
     try {
       const url = `${WORDPRESS_API_URL}${endpoint}?per_page=100&page=${page}${fields ? `&_fields=${fields}` : ''}`;
       const res = await fetch(url);

@@ -22,7 +22,7 @@ function log(message, color = 'reset') {
   console.log(`${colors[color]}${message}${colors.reset}`);
 }
 
-function countFiles(dir, pattern = /\.html$/) {
+function countFiles(dir, pattern = /\.html$/, shouldCount = null) {
   if (!fs.existsSync(dir)) return 0;
   
   let count = 0;
@@ -33,7 +33,7 @@ function countFiles(dir, pattern = /\.html$/) {
       const stat = fs.statSync(fullPath);
       if (stat.isDirectory()) {
         traverse(fullPath);
-      } else if (pattern.test(item)) {
+      } else if (pattern.test(item) && (!shouldCount || shouldCount(fullPath))) {
         count++;
       }
     }
@@ -70,6 +70,22 @@ function formatBytes(bytes) {
   const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function stripHtmlForWordCount(html) {
+  if (!html) return '';
+  return html
+    .replace(/<script\b[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style\b[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 async function verifyBuild() {
@@ -163,7 +179,7 @@ async function verifyBuild() {
       return fs.statSync(itemPath).isDirectory();
     });
     
-    const articleFiles = countFiles(articlesDir, /index\.html$/);
+    const articleFiles = countFiles(articlesDir, /index\.html$/, (filePath) => path.dirname(filePath) !== articlesDir);
     const articlesSize = getDirectorySize(articlesDir);
     
     log(`   ✅ articles/ exists`, 'green');
@@ -217,6 +233,12 @@ async function verifyBuild() {
           const hasAdInsSlot = /<ins\s+class="adsbygoogle"/i.test(content);
           // Catches the invalid data-ad-slot="auto" string (must be numeric)
           const hasInvalidSlot = /data-ad-slot\s*=\s*"auto"/i.test(content);
+          const hasStaticSeoContent = /class="seo-content"/i.test(content);
+          const hasStaticArticleBody = /class="article-body"/i.test(content);
+          const isLoadingShell = /Loading Article\.\.\./i.test(content) && !hasStaticArticleBody;
+          const crawlerContentMatch = content.match(/<div\s+class="seo-content"[\s\S]*?<\/div>\s*<footer\s+class="site-footer"/i);
+          const crawlerText = stripHtmlForWordCount(crawlerContentMatch ? crawlerContentMatch[0] : '');
+          const crawlerWordCount = crawlerText ? crawlerText.split(/\s+/).filter(Boolean).length : 0;
 
           const failed = [];
           if (!checks.title) failed.push('title');
@@ -225,10 +247,22 @@ async function verifyBuild() {
           if (!checks.ogImage) failed.push('og:image');
           if (!checks.articleSchema) failed.push('Article JSON-LD');
           if (!checks.productionBundle) failed.push('production JS bundle');
+          if (!hasStaticSeoContent) failed.push('crawler-visible SEO content');
+          if (!hasStaticArticleBody) failed.push('static article body');
           // AdSense loader is only required on indexable pages
           if (!isNoindex) {
             if (!checks.adsenseScript) failed.push('AdSense loader script');
             if (!checks.adsenseClientValid) failed.push('valid ca-pub- client ID');
+          }
+
+          if (isLoadingShell) {
+            issues.push(`❌ ${dir}: article page is a React loading shell, not crawler-visible article HTML`);
+            log(`   ❌ ${dir}: only loading shell detected — AdSense will see thin content`, 'red');
+          }
+
+          if (!isNoindex && crawlerWordCount < 400) {
+            issues.push(`❌ ${dir}: indexable article has only ${crawlerWordCount} crawler-visible words`);
+            log(`   ❌ ${dir}: only ${crawlerWordCount} crawler-visible words`, 'red');
           }
 
           // Invalid slot ID is an AdSense approval blocker
@@ -285,7 +319,7 @@ async function verifyBuild() {
       
       // Verify cache matches actual files
       if (fs.existsSync(articlesDir)) {
-        const actualArticles = countFiles(articlesDir, /index\.html$/);
+        const actualArticles = countFiles(articlesDir, /index\.html$/, (filePath) => path.dirname(filePath) !== articlesDir);
         const cachedArticles = Object.keys(cache.pages).filter(p => p.startsWith('/articles/')).length;
         
         if (cachedArticles !== actualArticles) {
