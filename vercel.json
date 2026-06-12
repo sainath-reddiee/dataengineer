@@ -66,6 +66,16 @@
             "permanent": false
         },
         {
+            "source": "/interview-prep/:path*",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/practice",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
             "source": "/practice/:path*",
             "destination": "/articles",
             "permanent": false

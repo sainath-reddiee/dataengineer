@@ -40,11 +40,11 @@ const STATIC_PAGES = [
   { url: '/privacy-policy', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/disclaimer', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
-  { url: '/contribute', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
-  { url: '/newsletter', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
+  // { url: '/contribute', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
+  // { url: '/newsletter', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
   // Programmatic hub/category pages TEMPORARILY excluded for AdSense approval:
   // { url: '/cheatsheets', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
-  { url: '/certification', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
+  // { url: '/certification', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
   // Tools & Interview Prep TEMPORARILY excluded for AdSense approval:
   // { url: '/tools', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
   // { url: '/tools/snowflake-cost-calculator', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
@@ -505,21 +505,20 @@ async function generateSitemap() {
     // Category pages excluded from sitemap — no pre-rendered HTML exists,
     // so Googlebot receives the SPA shell (soft 404 / thin content).
     // Re-add once category pages are pre-rendered with unique content.
-    // Category pages — pre-rendered with intro + full article listings,
-    // so they're safe to include in the sitemap.
-    console.log('📂 Adding category pages...');
-    const CATEGORY_SLUGS = [
-      'snowflake', 'databricks', 'aws', 'azure', 'gcp', 'salesforce',
-      'dbt', 'airflow', 'python', 'sql', 'developer-productivity'
-    ];
-    for (const slug of CATEGORY_SLUGS) {
-      sitemapEntries.push({
-        url: `https://dataengineerhub.blog/category/${slug}`,
-        lastmod: today,
-        changefreq: 'weekly',
-        priority: 0.7,
-      });
-    }
+    // Category pages — TEMPORARILY excluded for AdSense review to prevent crawling of aggregates
+    console.log('⏭️  Skipping category pages (disallowed in robots.txt)...');
+    // const CATEGORY_SLUGS = [
+    //   'snowflake', 'databricks', 'aws', 'azure', 'gcp', 'salesforce',
+    //   'dbt', 'airflow', 'python', 'sql', 'developer-productivity'
+    // ];
+    // for (const slug of CATEGORY_SLUGS) {
+    //   sitemapEntries.push({
+    //     url: `https://dataengineerhub.blog/category/${slug}`,
+    //     lastmod: today,
+    //     changefreq: 'weekly',
+    //     priority: 0.7,
+    //   });
+    // }
 
     // Tag pages excluded from sitemap — all have noindex={true} in TagPage.jsx
     // Including noindexed pages in sitemap sends contradictory signals to Google
