@@ -26,7 +26,7 @@
             "permanent": false
         },
         {
-            "source": "/glossary/:term",
+            "source": "/glossary/:path*",
             "destination": "/articles",
             "permanent": false
         },
@@ -36,7 +36,7 @@
             "permanent": false
         },
         {
-            "source": "/compare/:slug",
+            "source": "/compare/:path*",
             "destination": "/articles",
             "permanent": false
         },
@@ -56,7 +56,7 @@
             "permanent": false
         },
         {
-            "source": "/tools/:slug",
+            "source": "/tools/:path*",
             "destination": "/articles",
             "permanent": false
         },
@@ -77,6 +77,16 @@
         },
         {
             "source": "/practice/:path*",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/news",
+            "destination": "/articles",
+            "permanent": false
+        },
+        {
+            "source": "/news/:path*",
             "destination": "/articles",
             "permanent": false
         }

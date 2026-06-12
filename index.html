@@ -387,6 +387,7 @@
             <li><a href="/about">About</a></li>
           </ul>
         </nav>
+      </div>
 
       <!-- E-E-A-T: Author/about block visible to AdSense reviewers and crawlers -->
       <section class="seo-author-block" aria-label="About the author">
@@ -477,25 +478,10 @@
       });
     </script>
 
-    <!-- AdSense: moved to end of body so it doesn't compete with critical render path.
-         Bot still finds the tag in raw HTML for verification.
-         GATED: skip injection on PSEO / noindex'd sections (tools, cheatsheets,
-         glossary, comparisons, practice, interview-prep) so Auto Ads cannot
-         inject ads on low-value pages. AdsBot can still verify the tag from
-         pages it actually crawls. -->
-    <script>
-      (function () {
-        var path = (window.location.pathname || '').toLowerCase();
-        var psePrefixes = ['/glossary', '/compare', '/tools', '/cheatsheets', '/practice', '/interview-prep', '/admin', '/tag', '/category', '/newsletter', '/contribute', '/certification', '/news'];
-        var blocked = psePrefixes.some(function (p) { return path === p || path.indexOf(p + '/') === 0; });
-        if (!blocked) {
-          var s = document.createElement('script');
-          s.async = true;
-          s.crossOrigin = 'anonymous';
-          s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728';
-          document.body.appendChild(s);
-        }
-      })();
-    </script>
+    <!-- AdSense verification + Auto Ads. Static markup lets AdSense reviewers
+         verify the publisher tag from raw HTML without waiting for app JS. -->
+    <script async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728"
+      crossorigin="anonymous"></script>
   </body>
 </html>

@@ -17,22 +17,17 @@ export const initGA = () => {
     return;
   }
   
-  // Check if gtag is already loaded from index.html
-  if (typeof window.gtag !== 'undefined') {
-    isInitialized = true;
-    console.log('✅ Google Analytics already initialized');
-    return;
-  }
-
-  // Fallback: Load gtag if not already loaded
+  // Consent Mode defines a gtag stub before GA loads. Queue GA commands against
+  // that stub; scriptLoader is responsible for loading gtag/js after consent.
   window.dataLayer = window.dataLayer || [];
-  function gtag() {
-    window.dataLayer.push(arguments);
+  if (typeof window.gtag !== 'function') {
+    window.gtag = function gtag() {
+      window.dataLayer.push(arguments);
+    };
   }
-  window.gtag = gtag;
   
-  gtag('js', new Date());
-  gtag('config', GA_MEASUREMENT_ID, {
+  window.gtag('js', new Date());
+  window.gtag('config', GA_MEASUREMENT_ID, {
     send_page_view: false, // We handle this manually
     anonymize_ip: true,
     cookie_flags: 'SameSite=None;Secure'
