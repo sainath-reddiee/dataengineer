@@ -19,9 +19,6 @@ fs.writeFileSync = function(filePath, data, options) {
       .replace(/\u00e2\u0153\u2026/g, '&#9989;') // ✅ (✅)
       .replace(/\u00e2\u0161\u00a0\u00ef\u00b8\u008f/g, '&#9888;&#65039;') // ⚠️ (⚠️)
       .replace(/\u00c3\u0097/g, '&times;');      // × (×)
-    if (data !== original) {
-      console.log(`[DEBUG-REPLACE] Cleaned up mojibake in file: ${filePath}`);
-    }
   }
   return originalWriteFileSync(filePath, data, options);
 };

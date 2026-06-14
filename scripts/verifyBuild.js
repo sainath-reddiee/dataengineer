@@ -295,6 +295,26 @@ async function verifyBuild() {
       if (Object.keys(missCounts).length > 0) {
         log(`   ⚠️  Missing counts: ${Object.entries(missCounts).map(([k,v]) => `${k}=${v}`).join(', ')}`, 'yellow');
       }
+
+      // -------------------------------------------------------------------------
+      // Noindex ratio check — catch silent mass-noindex regressions
+      // -------------------------------------------------------------------------
+      const noindexCount = sampleDirs.filter(dir => {
+        const p = path.join(articlesDir, dir, 'index.html');
+        if (!fs.existsSync(p)) return false;
+        const c = fs.readFileSync(p, 'utf8');
+        const m = c.match(/<meta\s+name="robots"\s+content="([^"]+)"/i);
+        return m && /noindex/i.test(m[1]);
+      }).length;
+      const noindexPct = sampleDirs.length > 0 ? Math.round((noindexCount / sampleDirs.length) * 100) : 0;
+      log(`\n   📊 Noindex ratio: ${noindexCount}/${sampleDirs.length} articles (${noindexPct}%)`, 'cyan');
+      info.push(`Noindex ratio: ${noindexCount}/${sampleDirs.length} (${noindexPct}%)`);
+      if (noindexPct > 20) {
+        warnings.push(`⚠️  High noindex ratio: ${noindexPct}% of articles are noindexed — check 400-word threshold`);
+        log(`   ⚠️  High noindex ratio: ${noindexPct}% — AdSense may see thin site`, 'yellow');
+      } else {
+        log(`   ✅ Noindex ratio is acceptable (${noindexPct}%)`, 'green');
+      }
     }
   }
   
@@ -369,6 +389,28 @@ async function verifyBuild() {
   } else {
     warnings.push('⚠️  og-image.jpg not found in dist/ — essential pages reference it');
     log('   ⚠️  og-image.jpg not found in dist/', 'yellow');
+  }
+
+  // ============================================================================
+  // Check 8: Homepage static OG tags
+  // ============================================================================
+  log('\n🏠 Checking homepage OG tags...', 'blue');
+  const homepageIndexPath = path.join(distDir, 'index.html');
+  if (fs.existsSync(homepageIndexPath)) {
+    const homepageContent = fs.readFileSync(homepageIndexPath, 'utf8');
+    const hasOgTitle = /property="og:title"/i.test(homepageContent);
+    const hasOgDescription = /property="og:description"/i.test(homepageContent);
+    const hasOgImage = /property="og:image"/i.test(homepageContent);
+    const missingOg = [];
+    if (!hasOgTitle) missingOg.push('og:title');
+    if (!hasOgDescription) missingOg.push('og:description');
+    if (!hasOgImage) missingOg.push('og:image');
+    if (missingOg.length === 0) {
+      log('   ✅ Homepage has all required OG tags', 'green');
+    } else {
+      issues.push(`❌ Homepage missing static OG tags: ${missingOg.join(', ')} — crawlers cannot see social previews`);
+      log(`   ❌ Homepage missing: ${missingOg.join(', ')}`, 'red');
+    }
   }
   
   // ============================================================================
