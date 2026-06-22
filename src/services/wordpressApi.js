@@ -29,21 +29,28 @@ class WordPressAPI {
     if (!text || typeof text !== 'string') return '';
 
     let decoded = text;
-    if (typeof window !== 'undefined') {
-      const textarea = document.createElement('textarea');
-      textarea.innerHTML = text;
-      decoded = textarea.value;
-    } else {
-      decoded = text
-        .replace(/&#8217;/g, "'")
-        .replace(/&amp;/g, "&")
+    let prev;
+    // Loop to resolve any level of nested/double encoding (e.g. &amp;#8217; -> &#8217; -> ’)
+    do {
+      prev = decoded;
+      decoded = decoded
+        .replace(/&amp;/g, '&')
+        .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
+        .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+        .replace(/&nbsp;/g, ' ')
+        .replace(/\u00A0/g, ' ')
         .replace(/&quot;/g, '"')
+        .replace(/&apos;/g, "'")
         .replace(/&#039;/g, "'")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">");
-    }
+        .replace(/&middot;/g, '·')
+        .replace(/&bull;/g, '•')
+        .replace(/&ndash;/g, '–')
+        .replace(/&mdash;/g, '—')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>');
+    } while (decoded !== prev);
 
-    return decoded.replace(/&nbsp;/g, ' ').replace(/\u00A0/g, ' ');
+    return decoded;
   }
 
   async makeRequest(endpoint, options = {}) {

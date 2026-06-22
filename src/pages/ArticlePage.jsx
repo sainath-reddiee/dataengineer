@@ -113,16 +113,27 @@ const processWordPressContent = (content) => {
 
 const decodeHtmlEntities = (str) => {
   if (!str) return '';
-  return String(str)
-    .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
-    .replace(/&nbsp;/g, ' ')
-    .replace(/\u00A0/g, ' ')
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&');
+  let decoded = String(str);
+  let prev;
+  // Loop to resolve any level of nested/double encoding (e.g. &amp;#8217; -> &#8217; -> ’)
+  do {
+    prev = decoded;
+    decoded = decoded
+      .replace(/&amp;/g, '&')
+      .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
+      .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+      .replace(/&nbsp;/g, ' ')
+      .replace(/\u00A0/g, ' ')
+      .replace(/&quot;/g, '"')
+      .replace(/&apos;/g, "'")
+      .replace(/&middot;/g, '·')
+      .replace(/&bull;/g, '•')
+      .replace(/&ndash;/g, '–')
+      .replace(/&mdash;/g, '—')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>');
+  } while (decoded !== prev);
+  return decoded;
 };
 
 // Extract key takeaways for AEO / featured-snippet eligibility.
@@ -140,7 +151,11 @@ const extractKeyTakeaways = (html) => {
   if (!html) return [];
 
   const cleanLi = (s) => {
-    const text = s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    const withSpaces = s
+      .replace(/<br\s*\/?>/gi, ' ')
+      .replace(/<\/p>/gi, ' ')
+      .replace(/<\/li>/gi, ' ');
+    const text = withSpaces.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
     return decodeHtmlEntities(text);
   };
 
@@ -157,11 +172,13 @@ const extractKeyTakeaways = (html) => {
     if (items.length > 0) return items.slice(0, 8);
   }
 
-  // Strategy 2: heading-flagged TL;DR / Key Takeaways / Summary list
-  const flagRe = /<h[1-3][^>]*>\s*(?:Key\s*Takeaways|TL;?DR|Summary|At\s*a\s*Glance)\s*<\/h[1-3]>([\s\S]*?)<h[1-3]/i;
+  // Strategy 2: heading-flagged TL;DR / Key Takeaways / Summary list (or paragraph with line breaks)
+  const flagRe = /<h[1-3][^>]*>\s*(?:Key\s*Takeaways|TL;?DR|Summary|At\s*a\s*Glance)\s*<\/h[1-3]>([\s\S]*?)(?=<h[1-3]|$)/i;
   const flagged = html.match(flagRe);
   if (flagged) {
-    const list = flagged[1].match(/<(ul|ol)[\s\S]*?<\/\1>/i);
+    const sectionHtml = flagged[1];
+    // 2a. Check for list tags
+    const list = sectionHtml.match(/<(ul|ol)[\s\S]*?<\/\1>/i);
     if (list) {
       const items = [];
       const liRe = /<li[^>]*>([\s\S]*?)<\/li>/gi;
@@ -169,6 +186,20 @@ const extractKeyTakeaways = (html) => {
       while ((m = liRe.exec(list[0])) !== null) {
         const t = cleanLi(m[1]);
         if (t.length >= 8 && t.length <= 240) items.push(t);
+      }
+      if (items.length > 0) return items.slice(0, 8);
+    }
+    
+    // 2b. Fallback to paragraph splitting if separated by <br> or bullets
+    const firstP = sectionHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+    if (firstP) {
+      const rawLines = firstP[1].split(/<br\s*\/?>|\n/gi);
+      const items = [];
+      for (const line of rawLines) {
+        const t = cleanLi(line).replace(/^[→•\-\*\s]+/, '').trim();
+        if (t.length >= 8 && t.length <= 240) {
+          items.push(t);
+        }
       }
       if (items.length > 0) return items.slice(0, 8);
     }

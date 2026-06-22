@@ -208,16 +208,27 @@ function escapeHtml(str) {
  *  escapeHtml() from double-encoding them (& → &amp; inside &#8217;). */
 function decodeHtmlEntities(str) {
   if (!str) return '';
-  return String(str)
-    .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
-    .replace(/&nbsp;/g, ' ')
-    .replace(/\u00A0/g, ' ')
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&');  // must be last
+  let decoded = String(str);
+  let prev;
+  // Loop to resolve any level of nested/double encoding (e.g. &amp;#8217; -> &#8217; -> ’)
+  do {
+    prev = decoded;
+    decoded = decoded
+      .replace(/&amp;/g, '&')
+      .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
+      .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+      .replace(/&nbsp;/g, ' ')
+      .replace(/\u00A0/g, ' ')
+      .replace(/&quot;/g, '"')
+      .replace(/&apos;/g, "'")
+      .replace(/&middot;/g, '·')
+      .replace(/&bull;/g, '•')
+      .replace(/&ndash;/g, '–')
+      .replace(/&mdash;/g, '—')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>');
+  } while (decoded !== prev);
+  return decoded;
 }
 
 /** Escape a string for safe embedding inside a JSON-LD <script> block value. */
