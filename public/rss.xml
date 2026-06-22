@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Fri, 12 Jun 2026 13:22:52 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 22 Jun 2026 04:15:24 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -18,6 +18,26 @@
     <managingEditor>contact@dataengineerhub.blog (Sainath Reddy)</managingEditor>
     <webMaster>contact@dataengineerhub.blog (Sainath Reddy)</webMaster>
     <ttl>60</ttl>
+    <item>
+      <title>Snowflake Query Execution: what really happens under the hood</title>
+      <link>https://dataengineerhub.blog/articles/snowflake-query-execution-architecture</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-query-execution-architecture</guid>
+      <description>Ask ten data engineers what happens when you run a query in Snowflake and most of them will tell you the same thing: the warehouse runs it. SQL goes in,…</description>
+      <pubDate>Sun, 21 Jun 2026 03:21:58 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Snowflake</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/06/featured.png" type="image/png" />
+    </item>
+    <item>
+      <title>How the Warehouse Cache Actually Works in Snowflake</title>
+      <link>https://dataengineerhub.blog/articles/snowflake-warehouse-cache-explained</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-warehouse-cache-explained</guid>
+      <description>A dashboard that ran in four seconds on Monday took nineteen seconds on Tuesday. Same query, same data, same warehouse size. I spent the better part of an hour convinced…</description>
+      <pubDate>Wed, 17 Jun 2026 23:58:11 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Snowflake</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/06/Snowflake-Warehouse-cache.jpg" type="image/jpeg" />
+    </item>
     <item>
       <title>Everyone Said SQL Was Dead. It’s Now the Most Valuable Skill in AI (2026)</title>
       <link>https://dataengineerhub.blog/articles/sql-most-valuable-skill-ai-2026</link>

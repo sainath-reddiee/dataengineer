@@ -2166,8 +2166,7 @@ function getSiteNavCSS() {
       }
       .site-footer-links a:hover { text-decoration: underline; }
 
-      body.react-loaded .site-nav,
-      body.react-loaded .site-footer { display: none; }
+      /* Static nav/footer stay visible for crawlers/AdSense. DO NOT hide via CSS. */
 
       @media (max-width: 768px) {
         .site-nav-links { gap: 4px 12px; }
@@ -2690,10 +2689,10 @@ ${CONSENT_MODE_V2_HTML}
         text-decoration: underline;
       }
       
-      /* Hide SEO content when React loads (for interactive experience) */
-      body.react-loaded .seo-content {
-        display: none;
-      }
+      /* SEO content stays visible for crawlers/AdSense.
+         React's createRoot().render() naturally replaces #root children,
+         so the static content is removed when React finishes rendering.
+         DO NOT add display:none here — it causes AdSense 'Low Value Content' rejections. */
       
       /* Loading state for images */
       .seo-content .article-body img[loading="lazy"] {
@@ -2849,8 +2848,8 @@ ${CONSENT_MODE_V2_HTML}
       }
       .site-footer-links a:hover { text-decoration: underline; }
 
-      body.react-loaded .site-nav,
-      body.react-loaded .site-footer { display: none; }
+      /* Static nav/footer stay visible for crawlers/AdSense.
+         React replaces #root children on mount. DO NOT hide via CSS. */
 
       @media (max-width: 768px) {
         .site-nav-links { gap: 4px 12px; }
@@ -3341,8 +3340,7 @@ ${CONSENT_MODE_V2_HTML}
       .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }
       .seo-content a { color: #60a5fa; text-decoration: none; }
       .seo-content a:hover { text-decoration: underline; }
-      body.react-loaded .seo-content { display: none; }
-      body.react-loaded .breadcrumb-nav { display: none; }
+      /* SEO content + breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */
       .breadcrumb-nav { max-width: 900px; margin: 20px auto 0; padding: 0 20px; }
       .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }
       .breadcrumb-item { display: flex; align-items: center; }
@@ -3528,8 +3526,8 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
   html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
-  html += '      body.react-loaded .seo-content { display: none; }\n';
-  html += '      body.react-loaded .breadcrumb-nav { display: none; }\n';
+  html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
+  html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 900px; margin: 20px auto 0; padding: 0 20px; }\n';
   html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
@@ -3836,8 +3834,8 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
   html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
-  html += '      body.react-loaded .seo-content { display: none; }\n';
-  html += '      body.react-loaded .breadcrumb-nav { display: none; }\n';
+  html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
+  html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 1000px; margin: 20px auto 0; padding: 0 20px; }\n';
   html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
@@ -4113,8 +4111,8 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
   html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
-  html += '      body.react-loaded .seo-content { display: none; }\n';
-  html += '      body.react-loaded .breadcrumb-nav { display: none; }\n';
+  html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
+  html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 900px; margin: 20px auto 0; padding: 0 20px; }\n';
   html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
@@ -4433,8 +4431,8 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
   html += '      .seo-content a { color: #a78bfa; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
-  html += '      body.react-loaded .seo-content { display: none; }\n';
-  html += '      body.react-loaded .breadcrumb-nav { display: none; }\n';
+  html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
+  html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 1000px; margin: 20px auto 0; padding: 0 20px; }\n';
   html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
@@ -4741,8 +4739,8 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
   html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
-  html += '      body.react-loaded .seo-content { display: none; }\n';
-  html += '      body.react-loaded .breadcrumb-nav { display: none; }\n';
+  html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
+  html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 900px; margin: 20px auto 0; padding: 0 20px; }\n';
   html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
@@ -4985,8 +4983,8 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
   html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
-  html += '      body.react-loaded .seo-content { display: none; }\n';
-  html += '      body.react-loaded .breadcrumb-nav { display: none; }\n';
+  html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
+  html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 1000px; margin: 20px auto 0; padding: 0 20px; }\n';
   html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
@@ -5265,8 +5263,8 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '      .seo-content p { color: #e2e8f0; font-size: 1.05rem; margin-bottom: 1rem; line-height: 1.8; }\n';
   html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
-  html += '      body.react-loaded .seo-content { display: none; }\n';
-  html += '      body.react-loaded .breadcrumb-nav { display: none; }\n';
+  html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
+  html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 900px; margin: 20px auto 0; padding: 0 20px; }\n';
   html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
@@ -5441,8 +5439,8 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
   html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
-  html += '      body.react-loaded .seo-content { display: none; }\n';
-  html += '      body.react-loaded .breadcrumb-nav { display: none; }\n';
+  html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
+  html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 900px; margin: 20px auto 0; padding: 0 20px; }\n';
   html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
@@ -5666,9 +5664,8 @@ ${CONSENT_MODE_V2_HTML}
         transform: translateY(-2px);
       }
 
-      body.react-loaded .seo-content {
-        display: none;
-      }
+      /* SEO content stays visible for crawlers/AdSense.
+         React replaces #root children on mount. DO NOT hide via CSS. */
 
       .breadcrumb-nav {
         max-width: 900px;
@@ -5763,8 +5760,7 @@ ${CONSENT_MODE_V2_HTML}
       }
       .site-footer-links a:hover { text-decoration: underline; }
 
-      body.react-loaded .site-nav,
-      body.react-loaded .site-footer { display: none; }
+      /* Static nav/footer stay visible for crawlers/AdSense. DO NOT hide via CSS. */
 
       @media (max-width: 768px) {
         .site-nav-links { gap: 4px 12px; }

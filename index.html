@@ -99,6 +99,21 @@
     <!-- Canonical URL: static for homepage; MetaTags.jsx overrides dynamically for SPA routes -->
     <link rel="canonical" href="https://dataengineerhub.blog/" />
 
+    <!-- Open Graph: static values for homepage so crawlers get OG data without executing JS -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://dataengineerhub.blog/" />
+    <meta property="og:title" content="Data Engineering Tutorials — Snowflake, Databricks, dbt &amp; AWS" />
+    <meta property="og:description" content="In-depth, production-tested data engineering tutorials covering Snowflake, Databricks, AWS, dbt, Airflow, Spark, Python, SQL, and modern data stack best practices." />
+    <meta property="og:site_name" content="DataEngineer Hub" />
+    <meta property="og:image" content="https://dataengineerhub.blog/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="DataEngineer Hub — Data Engineering Tutorials" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Data Engineering Tutorials — Snowflake, Databricks, dbt &amp; AWS" />
+    <meta name="twitter:description" content="In-depth, production-tested data engineering tutorials covering Snowflake, Databricks, AWS, dbt, Airflow, Spark, Python, SQL, and modern data stack best practices." />
+    <meta name="twitter:image" content="https://dataengineerhub.blog/og-image.jpg" />
     <!-- JSON-LD: Organization + WebSite schemas in static HTML so Googlebot sees them without JS -->
     <script type="application/ld+json">
     {
@@ -229,10 +244,9 @@
         color: #94a3b8;
       }
       
-      /* Hide fallback content only when React fully loads */
-      body.react-loaded .seo-fallback {
-        display: none;
-      }
+      /* SEO fallback stays visible for crawlers/AdSense.
+         React's createRoot().render() naturally replaces #root children.
+         DO NOT add display:none here — it causes AdSense 'Low Value Content' rejections. */
       
       /* Loading spinner - hidden by default for SEO */
       .loading-container {
@@ -256,9 +270,7 @@
         display: flex;
       }
       
-      body.react-loading .seo-fallback {
-        display: none;
-      }
+      /* SEO fallback stays visible even during loading for crawlers. */
       
       @keyframes spin {
         0% { transform: rotate(0deg); }
@@ -294,7 +306,7 @@
       .site-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; list-style: none; padding: 0; margin: 0 0 0.75rem; }
       .site-footer-links a { color: #60a5fa; text-decoration: none; }
       .site-footer-links a:hover { text-decoration: underline; }
-      body.react-loaded .site-nav, body.react-loaded .site-footer { display: none; }
+      /* Static nav/footer stay visible for crawlers/AdSense. DO NOT hide via CSS. */
       @media (max-width: 768px) { .site-nav-links { gap: 4px 12px; } }
 
       /* E-E-A-T author/about block on homepage */

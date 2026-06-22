@@ -11,9 +11,54 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-06-12",
-  "totalArticles": 58,
+  "lastUpdated": "2026-06-22",
+  "totalArticles": 60,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-query-execution-architecture",
+      "title": "Snowflake Query Execution: what really happens under the hood",
+      "summary": "Ask ten data engineers what happens when you run a query in Snowflake and most of them will tell you the same thing: the warehouse runs it. SQL goes in,…",
+      "keyFacts": [
+        "If you’re chewing through 95% of them, no warehouse size on earth is going to save you",
+        "The parsing, planning, and pruning in the cloud services layer is free — but only while it stays under 10% of your daily warehouse compute",
+        "The truth is that Snowflake query execution is a trip through three separate layers, and the one you actually pay for is the last to get involved — if it gets involved at all",
+        "It’s a trip through three layers that scale independently, and the compute you pay for is the last one to wake up",
+        "A bigger warehouse fixes the second problem and never the first"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "azure"
+      ],
+      "questionAnswered": "What is Snowflake Query Execution: what really happens under the hood?",
+      "lastUpdated": "2026-06-21",
+      "published": "2026-06-21",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2906
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-warehouse-cache-explained",
+      "title": "How the Warehouse Cache Actually Works in Snowflake",
+      "summary": "A dashboard that ran in four seconds on Monday took nineteen seconds on Tuesday. Same query, same data, same warehouse size. I spent the better part of an hour convinced…",
+      "keyFacts": [
+        "The only real lever you control is the auto-suspend timer",
+        "The warehouse cache is the third one, and it’s the one this article is actually about",
+        "Teams chasing consistent query latency under high concurrency often get surprised by this — the warehouse “should” be warm, and on average it is, but any individual query can still land on a cold cluster"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "How the Warehouse Cache Actually Works in Snowflake?",
+      "lastUpdated": "2026-06-18",
+      "published": "2026-06-18",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 1980
+    },
     {
       "url": "https://dataengineerhub.blog/articles/sql-most-valuable-skill-ai-2026",
       "title": "Everyone Said SQL Was Dead. It’s Now the Most Valuable Skill in AI (2026)",

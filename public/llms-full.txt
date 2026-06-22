@@ -1,6 +1,6 @@
 # DataEngineer Hub - Full Content Index for LLMs
-> Last generated: 2026-06-12
-> Total articles: 58
+> Last generated: 2026-06-22
+> Total articles: 60
 > Source: https://dataengineerhub.blog
 > Compact version: https://dataengineerhub.blog/llms.txt
 > Structured data: https://dataengineerhub.blog/llm-sitemap.json
@@ -10,38 +10,21 @@ Each article includes its URL, summary, key headings, and primary topics.
 
 ---
 
-## SQL (1 articles)
+## Snowflake (36 articles)
 
-### Everyone Said SQL Was Dead. It’s Now the Most Valuable Skill in AI (2026)
-- URL: https://dataengineerhub.blog/articles/sql-most-valuable-skill-ai-2026
-- Published: 2026-06-11 | Updated: 2026-06-11
-- Word count: ~1844
-- Summary: In 2018, a wave of Medium posts declared SQL obsolete. NoSQL was the future. Python would handle everything. Data lakes would make relational thinking irrelevant. The hot take had a good run.
-- Key sections: The Death of SQL Was Always a Myth | Why AI Made SQL More Valuable, Not Less | 1. LLMs Speak SQL | 2. AI Models Are Trained on SQL Pipelines | 3. The Semantic Layer Runs on SQL | The Modern SQL Skill Set Is Not What You Learned in 2015 | SQL vs. Python: The False Choice That Hurt Careers | What the Job Market Is Actually Saying
+### Snowflake Query Execution: what really happens under the hood
+- URL: https://dataengineerhub.blog/articles/snowflake-query-execution-architecture
+- Published: 2026-06-21 | Updated: 2026-06-21
+- Word count: ~2906
+- Summary: Ask ten data engineers what happens when you run a query in Snowflake and most of them will tell you the same thing: the warehouse runs it. SQL goes in, the warehouse chews on it, results come out. Clean, simple, and just wrong enough to cost you money. The truth is that Snowflake query execution is
+- Key sections: TL;DR | The mental model that’s quietly costing you money | The three layers a query passes through | Step 1: The cloud services layer does the thinking | Step 2: The result cache check, before any compute | Step 3: The virtual warehouse finally runs it | Step 4: Storage, and the cache that disappears | Three caches, one comparison to bookmark
 
-## Azure (3 articles)
-
-### The Hidden Architecture Behind Snowflake Time Travel: Why It’s Not Really a Backup Feature
-- URL: https://dataengineerhub.blog/articles/snowflake-time-travel-architecture
-- Published: 2026-06-10 | Updated: 2026-06-10
-- Word count: ~1428
-- Summary: → Time Travel is not a backup — it’s a versioned metadata pointer to immutable micro-partitions you already paid to store → Snowflake never overwrites data in place. Every UPDATE or DELETE creates new micro-partitions and marks old ones as expired → Standard edition gives you 1 day. Enterprise gives
-- Key sections: TL;DR | The misconception that costs people money | How Snowflake stores data: micro-partitions | What Time Travel actually is | The three-zone model: Active, Time Travel, Fail-safe | Time Travel vs Fail-safe — the comparison you need | The storage cost nobody warns you about | Zero-copy clones: same architecture, surprising implications
-
-### Synapse to Fabric: Your ADX Migration Guide 2025
-- URL: https://dataengineerhub.blog/articles/synapse-to-fabric-migration-adx-eventhouse-guide
-- Published: 2025-10-08 | Updated: 2025-10-08
-- Word count: ~958
-- Summary: The clock is ticking for Azure Synapse Data Explorer (ADX). With its retirement announced, a strategic Synapse to Fabric migration is now a critical task for data teams. This move to Microsoft Fabric’s Real-Time Analytics and its Eventhouse database unlocks a unified, AI-powered experience, and this
-- Key sections: Why This is Happening: The Drive Behind the Synapse to Fabric Migration | Phase 1: Assess and Plan Your Migration | Phase 2: The Migration – Data and Schema | Phase 3: Update Queries and Reports | Embracing the Future | Further Reading & Official Resources
-
-### How to Build a Data Lakehouse on Azure
-- URL: https://dataengineerhub.blog/articles/build-data-lakehouse-on-azure
-- Published: 2025-09-27 | Updated: 2025-10-08
-- Word count: ~992
-- Summary: For years, data teams have faced a difficult choice: the structured, high-performance world of the data warehouse, or the flexible, low-cost scalability of the data lake. But what if you could have the best of both worlds? Enter the Data Lakehouse, an architectural pattern that combines the reliabil
-
-## Snowflake (34 articles)
+### How the Warehouse Cache Actually Works in Snowflake
+- URL: https://dataengineerhub.blog/articles/snowflake-warehouse-cache-explained
+- Published: 2026-06-18 | Updated: 2026-06-18
+- Word count: ~1980
+- Summary: A dashboard that ran in four seconds on Monday took nineteen seconds on Tuesday. Same query, same data, same warehouse size. I spent the better part of an hour convinced Snowflake was having a bad day, checking the status page, refreshing query history, muttering about “platform issues” in our team 
+- Key sections: Three caches, one name people use for all of them | Why this distinction actually matters | What a micro-partition actually is | The actual lifecycle of the warehouse cache | Then the warehouse suspends, and it’s gone | How to actually see this working | Result cache, warehouse cache, metadata cache — side by side | The auto-suspend tradeoff nobody explains clearly
 
 ### Snowflake CoCo Desktop — What It Is, How It Works, and Whether It’s Worth It
 - URL: https://dataengineerhub.blog/articles/snowflake-coco-desktop
@@ -275,6 +258,37 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Word count: ~1215
 - Summary: Stop memorizing the difference between a VARCHAR and a TEXT field. If you’re an experienced data engineer, you know that real Snowflake interviews go much deeper. Hiring managers aren’t just looking for someone who knows the syntax; they’re looking for an architect who understands performance, cost 
 - Key sections: 1. Architecture & Design Questions | 2. Performance Tuning & Cost Optimization Questions | 3. Data Ingestion & Integration Questions | 4. Scenario-Based & Problem-Solving Questions | Conclusion
+
+## SQL (1 articles)
+
+### Everyone Said SQL Was Dead. It’s Now the Most Valuable Skill in AI (2026)
+- URL: https://dataengineerhub.blog/articles/sql-most-valuable-skill-ai-2026
+- Published: 2026-06-11 | Updated: 2026-06-11
+- Word count: ~1844
+- Summary: In 2018, a wave of Medium posts declared SQL obsolete. NoSQL was the future. Python would handle everything. Data lakes would make relational thinking irrelevant. The hot take had a good run.
+- Key sections: The Death of SQL Was Always a Myth | Why AI Made SQL More Valuable, Not Less | 1. LLMs Speak SQL | 2. AI Models Are Trained on SQL Pipelines | 3. The Semantic Layer Runs on SQL | The Modern SQL Skill Set Is Not What You Learned in 2015 | SQL vs. Python: The False Choice That Hurt Careers | What the Job Market Is Actually Saying
+
+## Azure (3 articles)
+
+### The Hidden Architecture Behind Snowflake Time Travel: Why It’s Not Really a Backup Feature
+- URL: https://dataengineerhub.blog/articles/snowflake-time-travel-architecture
+- Published: 2026-06-10 | Updated: 2026-06-10
+- Word count: ~1428
+- Summary: → Time Travel is not a backup — it’s a versioned metadata pointer to immutable micro-partitions you already paid to store → Snowflake never overwrites data in place. Every UPDATE or DELETE creates new micro-partitions and marks old ones as expired → Standard edition gives you 1 day. Enterprise gives
+- Key sections: TL;DR | The misconception that costs people money | How Snowflake stores data: micro-partitions | What Time Travel actually is | The three-zone model: Active, Time Travel, Fail-safe | Time Travel vs Fail-safe — the comparison you need | The storage cost nobody warns you about | Zero-copy clones: same architecture, surprising implications
+
+### Synapse to Fabric: Your ADX Migration Guide 2025
+- URL: https://dataengineerhub.blog/articles/synapse-to-fabric-migration-adx-eventhouse-guide
+- Published: 2025-10-08 | Updated: 2025-10-08
+- Word count: ~958
+- Summary: The clock is ticking for Azure Synapse Data Explorer (ADX). With its retirement announced, a strategic Synapse to Fabric migration is now a critical task for data teams. This move to Microsoft Fabric’s Real-Time Analytics and its Eventhouse database unlocks a unified, AI-powered experience, and this
+- Key sections: Why This is Happening: The Drive Behind the Synapse to Fabric Migration | Phase 1: Assess and Plan Your Migration | Phase 2: The Migration – Data and Schema | Phase 3: Update Queries and Reports | Embracing the Future | Further Reading & Official Resources
+
+### How to Build a Data Lakehouse on Azure
+- URL: https://dataengineerhub.blog/articles/build-data-lakehouse-on-azure
+- Published: 2025-09-27 | Updated: 2025-10-08
+- Word count: ~992
+- Summary: For years, data teams have faced a difficult choice: the structured, high-performance world of the data warehouse, or the flexible, low-cost scalability of the data lake. But what if you could have the best of both worlds? Enter the Data Lakehouse, an architectural pattern that combines the reliabil
 
 ## Airflow (5 articles)
 
