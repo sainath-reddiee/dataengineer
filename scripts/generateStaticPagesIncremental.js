@@ -58,6 +58,8 @@ if (!ADSENSE_PUBLISHER_ID || !ADSENSE_PUBLISHER_ID.startsWith('ca-pub-')) {
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog/wp-json/wp/v2';
 const WORDPRESS_BASE_URL = 'https://app.dataengineerhub.blog';
 
+const globalPostSlugs = new Set();
+
 // Convert a YYYY-MM-DD (or any parseable) date into a full ISO 8601 timestamp
 // with timezone, as required by schema.org Article datePublished/dateModified.
 // Falls back to "now" so the field is always a valid datetime string.
@@ -303,6 +305,104 @@ function sanitizeWordPressHTML(html) {
  */
 function smartTitle(title) {
   return title;
+}
+
+/**
+ * Strip pSEO links pointing to missing/purged directories in review mode.
+ * Replaces <a href="/tools/...">Text</a> with just Text.
+ */
+function stripPseoLinks(htmlContent) {
+  if (!ADSENSE_REVIEW_MODE) return htmlContent;
+  if (!htmlContent || typeof htmlContent !== 'string') return htmlContent;
+  
+  const anchorRegex = /<a\s+[^>]*href=["']([^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  
+  return htmlContent.replace(anchorRegex, (match, href, text) => {
+    const cleanHref = href.trim().replace(/^https?:\/\/(?:app\.)?dataengineerhub\.blog/, '');
+    const isPseoLink = PSEO_DIST_DIRS.some(dir => cleanHref.startsWith('/' + dir));
+    if (isPseoLink) {
+      return text;
+    }
+    return match;
+  });
+}
+
+/**
+ * Normalize legacy database permalinks pointing to /slug to correctly resolve to /articles/slug.
+ */
+function normalizeArticleLinks(htmlContent, postSlugs) {
+  if (!htmlContent || typeof htmlContent !== 'string') return htmlContent;
+  if (!postSlugs || postSlugs.size === 0) return htmlContent;
+  
+  // Match complete anchor elements to enable stripping
+  const anchorRegex = /(<a\s+[^>]*href=["']([^"']*)["'][^>]*>)([\s\S]*?)<\/a>/gi;
+  
+  return htmlContent.replace(anchorRegex, (match, openTag, href, text) => {
+    try {
+      const trimmedHref = href.trim();
+      if (trimmedHref.startsWith('mailto:') || trimmedHref.startsWith('tel:') || trimmedHref.startsWith('javascript:')) {
+        return match;
+      }
+      
+      let urlPath = trimmedHref;
+      let hash = '';
+      
+      if (urlPath.includes('#')) {
+        const parts = urlPath.split('#');
+        urlPath = parts[0];
+        hash = parts[1];
+      }
+      
+      let relativePath = urlPath;
+      if (urlPath.startsWith('http')) {
+        if (urlPath.includes('dataengineerhub.blog')) {
+          relativePath = urlPath.substring(urlPath.indexOf('dataengineerhub.blog') + 'dataengineerhub.blog'.length);
+        } else {
+          return match;
+        }
+      }
+      
+      const slug = relativePath.split('/').filter(Boolean).pop() || '';
+      
+      if (slug) {
+        if (postSlugs.has(slug)) {
+          const newHref = `/articles/${slug}${hash ? '#' + hash : ''}`;
+          return match.replace(href, newHref);
+        }
+        
+        // If it's a known alias, redirect it
+        const aliasMap = {
+          'structuring-dbt-projects-snowflake-structure': 'dbt-projects-snowflake-structure',
+          'snowflake-openflow-tutorial': 'snowflake-openflow-ai-data-ingestion-guide',
+          'build-first-snowflake-agent-cortex-guide': 'build-snowflake-cortex-ai-agent-guide',
+          'build-a-snowflake-agent-in-10-minutes': 'build-snowflake-cortex-ai-agent-guide',
+          'how-i-passed-snowpro-gen-ai-certification-guide': 'snowpro-specialty-gen-ai-practice-exams',
+          'snowflake-performance': 'snowflake-optima-automatic-query-optimization-guide',
+          'snowflake-performance-tuning-techniques': 'snowflake-optima-automatic-query-optimization-guide',
+          'what-is-snowflake-guide': 'load-data-into-snowflake'
+        };
+        
+        if (aliasMap[slug]) {
+          const newHref = `/articles/${aliasMap[slug]}${hash ? '#' + hash : ''}`;
+          return match.replace(href, newHref);
+        }
+        
+        // If the slug does not exist on disk, it's a broken link.
+        // Strip the anchor tags and leave the inner text so we don't serve 404s.
+        const essentialPaths = ['/about', '/contact', '/privacy-policy', '/terms-of-service', '/disclaimer', '/contribute', '/newsletter', '/certification', '/rss.xml', '/articles', '/'];
+        const cleanPath = relativePath.trim().replace(/\/$/, '');
+        const isEssential = essentialPaths.includes(cleanPath);
+        
+        const isArticleLink = href.includes('/articles/') || href.includes('dataengineerhub.blog') || !href.startsWith('/') || href.includes('app.dataengineerhub.blog') || (!isEssential && relativePath.startsWith('/'));
+        if (isArticleLink) {
+          return text;
+        }
+      }
+    } catch (e) {
+      console.warn('   ⚠️ Error normalising link href:', href, e.message);
+    }
+    return match;
+  });
 }
 
 /**
@@ -2311,7 +2411,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const { title: rawTitle, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, featuredImage, categoryNames = [], tagNames = [] } = pageData;
   const { jsFile, cssFile, modulePreloadHtml = '' } = bundleFiles;
 
-  // ðŸ›¡ï¸ Sanitize user-supplied strings from WordPress
+  // 🛡️ Sanitize user-supplied strings from WordPress
   // WordPress REST API returns pre-encoded entities in rendered fields —
   // decode first, then re-encode to prevent double-encoding.
   const title = escapeHtml(decodeHtmlEntities(rawTitle));
@@ -2320,7 +2420,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const descriptionJsonLd = escapeJsonLd(decodeHtmlEntities(rawDescription));
 
   // 🔥 CRITICAL: Use relative paths from article subdirectory
-  const depth = (pagePath.match(/\//g) || []).length - 1;
+  const depth = pagePath.split('/').filter(Boolean).length;
   const relativePrefix = '../'.repeat(depth);
 
   // Remove leading slash and prepend relative prefix
@@ -2342,12 +2442,14 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   // 🖼️ Process images to make them absolute
   const absoluteContent = makeImagesAbsolute(fullContent);
 
-  // ðŸ“ Normalize heading hierarchy (h3→h2 etc. when h2 is missing)
+  // 📑 Normalize heading hierarchy (h3→h2 etc. when h2 is missing)
   let processedContent = normalizeHeadings(absoluteContent);
   processedContent = decodeTypographicEntities(processedContent);
 
-  // ðŸ”— Inject internal links so crawlers see cross-article links in static HTML
+  // 🔗 Inject internal links so crawlers see cross-article links in static HTML
   processedContent = injectInternalLinksSSG(processedContent, slug);
+  processedContent = normalizeArticleLinks(processedContent, globalPostSlugs);
+  processedContent = stripPseoLinks(processedContent);
 
   // ðŸ“‘ Extract headings for Table of Contents and inject anchor IDs
   const tocHeadings = [];
@@ -2357,19 +2459,26 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     (match, tag, attrs, inner) => {
       const text = decodeHtmlEntities(inner.replace(/<[^>]+>/g, '')).trim();
       if (!text || text.length < 3) return match;
-      // Generate unique slug
-      let baseSlug = text.toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .substring(0, 60);
-      let slug = baseSlug;
-      let counter = 2;
-      while (seenSlugs.has(slug)) { slug = baseSlug + '-' + counter++; }
-      seenSlugs.add(slug);
+      
+      const idMatch = attrs.match(/id\s*=\s*['"]([^'"]+)['"]/i);
+      let slug;
+      if (idMatch) {
+        slug = idMatch[1];
+      } else {
+        // Generate unique slug
+        let baseSlug = text.toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-')
+          .substring(0, 60);
+        slug = baseSlug;
+        let counter = 2;
+        while (seenSlugs.has(slug)) { slug = baseSlug + '-' + counter++; }
+        seenSlugs.add(slug);
+      }
       tocHeadings.push({ tag: tag.toLowerCase(), text, slug });
-      // Inject id attribute into heading (preserve existing attrs)
-      if (/id\s*=/i.test(attrs)) return match; // already has id
+      
+      if (idMatch) return match; // already has id
       return `<${tag}${attrs} id="${slug}">${inner}</${tag}>`;
     }
   );
@@ -2956,7 +3065,7 @@ ${CONSENT_MODE_V2_HTML}
 
           ${tocHtml}
 
-          ${slug === 'snowflake-cost-optimization-techniques-2026' ? `
+          ${slug === 'snowflake-cost-optimization-techniques-2026' && !ADSENSE_REVIEW_MODE ? `
           <!-- Contextual CTA: drive readers to the interactive cost calculator -->
           <aside class="calculator-promo" style="background:linear-gradient(90deg,#1e3a8a 0%,#6b21a8 100%);border-radius:12px;padding:1.1rem 1.4rem;margin:0 0 1.75rem 0;box-shadow:0 4px 14px rgba(107,33,168,0.25);">
             <a href="/tools/snowflake-cost-calculator" style="color:#ffffff;text-decoration:none;font-weight:600;font-size:1rem;display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
@@ -2965,7 +3074,7 @@ ${CONSENT_MODE_V2_HTML}
             </a>
           </aside>` : ''}
 
-          ${(categoryNames || []).some(c => String(c).toLowerCase() === 'snowflake') ? `
+          ${(categoryNames || []).some(c => String(c).toLowerCase() === 'snowflake') && !ADSENSE_REVIEW_MODE ? `
           <!-- Related Tools aside: every Snowflake article gets 4 tool links for internal linking + user discovery -->
           <aside class="related-tools" style="background:#0f172a;border:1px solid rgba(96,165,250,0.25);border-radius:12px;padding:1.1rem 1.4rem;margin:0 0 1.75rem 0;">
             <h3 style="color:#93c5fd;font-size:1rem;margin:0 0 0.6rem;font-weight:600;">Free Snowflake Tools</h3>
@@ -3191,7 +3300,7 @@ function generateSimpleHTML(pageData, bundleFiles) {
   const title = escapeHtml(rawTitle);
   const description = escapeHtml(rawDescription);
 
-  const depth = (pagePath.match(/\//g) || []).length - 1;
+  const depth = pagePath.split('/').filter(Boolean).length;
   const relativePrefix = '../'.repeat(depth);
 
   const productionJsFile = jsFile;
@@ -3489,7 +3598,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   const safeName = escapeHtml(category.name);
   const safeNameJsonLd = escapeJsonLd(category.name);
 
-  const depth = (pagePath.match(/\//g) || []).length - 1;
+  const depth = pagePath.split('/').filter(Boolean).length;
   const relativePrefix = '../'.repeat(depth);
 
   const productionJsFile = jsFile;
@@ -4022,7 +4131,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   var cssFile = bundleFiles.cssFile;
   var pagePath = '/glossary/' + term.slug;
 
-  var depth = (pagePath.match(/\//g) || []).length - 1;
+  var depth = pagePath.split('/').filter(Boolean).length;
   var relativePrefix = '../'.repeat(depth);
 
   var productionJsFile = jsFile;
@@ -4618,7 +4727,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   var cssFile = bundleFiles.cssFile;
   var pagePath = '/compare/' + comparison.slug;
 
-  var depth = (pagePath.match(/\//g) || []).length - 1;
+  var depth = pagePath.split('/').filter(Boolean).length;
   var relativePrefix = '../'.repeat(depth);
 
   var productionJsFile = jsFile;
@@ -5423,7 +5532,7 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   const { jsFile, cssFile } = bundleFiles;
   const pagePath = '/tag/' + tag.slug;
 
-  const depth = (pagePath.match(/\//g) || []).length - 1;
+  const depth = pagePath.split('/').filter(Boolean).length;
   const relativePrefix = '../'.repeat(depth);
 
   const productionJsFile = jsFile;
@@ -5579,7 +5688,7 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
   const descriptionJsonLd = escapeJsonLd(rawDescription);
 
   // Essential pages are at root level (depth = 0), so no relative prefix needed
-  const depth = (pagePath.match(/\//g) || []).length - 1;
+  const depth = pagePath.split('/').filter(Boolean).length;
   const relativePrefix = depth > 0 ? '../'.repeat(depth) : './';
 
   const productionJsFile = jsFile;
@@ -6090,6 +6199,9 @@ async function buildIncremental(options = {}) {
     // 🔥 CRITICAL: Fetch with _embed to get full content + categories + tags for mapping
     const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content,date,modified,categories,tags,jetpack_featured_media_url');
     console.log(`   Found ${posts.length} posts from API`);
+
+    // Populate post slugs for link normalization
+    posts.forEach(p => globalPostSlugs.add(p.slug));
 
     // Build article list for "More Articles" section and listing pages
     allArticleSummaries = posts.map(p => ({
