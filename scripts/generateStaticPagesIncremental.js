@@ -301,7 +301,7 @@ const CACHE_FILE = path.join(__dirname, '..', '.build-cache.json');
 // the build so no low-value templated HTML is ever deployed.
 // Flip to false after AdSense approval.
 const ADSENSE_REVIEW_MODE = true;
-const PSEO_DIST_DIRS = ['glossary', 'compare', 'cheatsheets', 'tools', 'interview-prep', 'practice', 'category', 'tag', 'news'];
+const PSEO_DIST_DIRS = ['glossary', 'compare', 'cheatsheets', 'tools', 'interview-prep', 'practice', 'news'];
 // ============================================================================
 // ESSENTIAL PAGES - Static content for AdSense/SEO crawlers
 // These pages currently serve the same SPA fallback HTML, causing "low value content"

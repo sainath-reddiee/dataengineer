@@ -32,10 +32,6 @@ Disallow: /interview-prep
 Disallow: /interview-prep/
 
 # Thin aggregation / utility pages (no substantive unique content)
-Disallow: /tag
-Disallow: /tag/
-Disallow: /category
-Disallow: /category/
 Disallow: /news
 Disallow: /newsletter
 Disallow: /contribute
@@ -79,10 +75,6 @@ Disallow: /practice
 Disallow: /practice/
 Disallow: /interview-prep
 Disallow: /interview-prep/
-Disallow: /tag
-Disallow: /tag/
-Disallow: /category
-Disallow: /category/
 Disallow: /news
 Disallow: /newsletter
 Disallow: /contribute
@@ -102,10 +94,6 @@ Disallow: /practice
 Disallow: /practice/
 Disallow: /interview-prep
 Disallow: /interview-prep/
-Disallow: /tag
-Disallow: /tag/
-Disallow: /category
-Disallow: /category/
 Disallow: /news
 Disallow: /newsletter
 Disallow: /contribute
@@ -125,10 +113,6 @@ Disallow: /practice
 Disallow: /practice/
 Disallow: /interview-prep
 Disallow: /interview-prep/
-Disallow: /tag
-Disallow: /tag/
-Disallow: /category
-Disallow: /category/
 Disallow: /news
 Disallow: /newsletter
 Disallow: /contribute
