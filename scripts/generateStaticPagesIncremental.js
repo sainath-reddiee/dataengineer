@@ -231,6 +231,35 @@ function decodeHtmlEntities(str) {
   return decoded;
 }
 
+/** Safely decode typographic entities in the full article content body.
+ *  Only decodes non-markup entities like quotes, dashes, bullets, and ellipses
+ *  so it doesn't break code blocks or HTML tags (which rely on &lt;, &gt;, etc.) */
+function decodeTypographicEntities(str) {
+  if (!str) return '';
+  return String(str)
+    // First, resolve double-escaped ampersands in entities (e.g. &amp;#8217; -> &#8217;)
+    .replace(/&amp;(#\d+;)/g, '&$1')
+    .replace(/&amp;(#x[0-9a-fA-F]+;)/g, '&$1')
+    // Typographic curly quotes
+    .replace(/&#8217;/g, '’')
+    .replace(/&#8216;/g, '‘')
+    .replace(/&#8220;/g, '“')
+    .replace(/&#8221;/g, '”')
+    // Dashes & ellipses
+    .replace(/&#8211;/g, '–')
+    .replace(/&#8212;/g, '—')
+    .replace(/&#8230;/g, '…')
+    // Other common typographic entities
+    .replace(/&#8226;/g, '•')
+    .replace(/&#038;/g, '&')
+    .replace(/&amp;amp;/g, '&')
+    .replace(/&amp;hellip;/g, '…')
+    .replace(/&amp;ndash;/g, '–')
+    .replace(/&amp;mdash;/g, '—')
+    .replace(/&amp;middot;/g, '·')
+    .replace(/&amp;bull;/g, '•');
+}
+
 /** Escape a string for safe embedding inside a JSON-LD <script> block value. */
 function escapeJsonLd(str) {
   if (!str) return '';
@@ -2310,11 +2339,12 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     effectiveModified = effectivePublished;
   }
 
-  // ðŸ–¼ï¸ Process images to make them absolute
+  // 🖼️ Process images to make them absolute
   const absoluteContent = makeImagesAbsolute(fullContent);
 
   // ðŸ“ Normalize heading hierarchy (h3→h2 etc. when h2 is missing)
   let processedContent = normalizeHeadings(absoluteContent);
+  processedContent = decodeTypographicEntities(processedContent);
 
   // ðŸ”— Inject internal links so crawlers see cross-article links in static HTML
   processedContent = injectInternalLinksSSG(processedContent, slug);
