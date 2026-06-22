@@ -3,7 +3,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Hero from '../components/Hero';
 import MetaTags from '../components/SEO/MetaTags';
-import { Sparkles, TrendingUp, FileText, Zap, BookOpen, Wrench, GraduationCap, Newspaper } from 'lucide-react';
+import { Sparkles, TrendingUp, FileText, Zap, BookOpen, Wrench, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 // cheatsheetData is large (~all cheat sheet content). We dynamic-import it so
@@ -11,7 +11,6 @@ import { Link } from 'react-router-dom';
 
 const FeaturedPosts = React.lazy(() => import('../components/FeaturedPosts'));
 const TrendingPosts = React.lazy(() => import('../components/TrendingPosts'));
-const NewsPosts = React.lazy(() => import('../components/NewsPosts'));
 const RecentPosts = React.lazy(() => import('../components/RecentPosts'));
 const TechCategories = React.lazy(() => import('../components/TechCategories'));
 const Newsletter = React.lazy(() => import('../components/Newsletter'));
@@ -198,19 +197,8 @@ const HomePage = () => {
             </Suspense>
           </section>
 
-          {/* 📰 NEWS & TRENDS */}
-          <section>
-            <SectionHeader
-              icon={Newspaper}
-              title="News & Trends"
-              subtitle="Latest industry updates"
-              actionText="View all"
-              actionLink="/news"
-            />
-            <Suspense fallback={<SectionSkeleton height="h-40" />}>
-              <NewsPosts />
-            </Suspense>
-          </section>
+          {/* News is temporarily withheld during AdSense approval to avoid
+              exposing a thin/indexable fallback route before static generation. */}
 
           {/* 🛠 TECH CATEGORIES - Grid view */}
           <section>

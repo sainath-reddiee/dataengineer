@@ -26,6 +26,14 @@
     RewriteCond %{HTTPS} off
     RewriteCond %{HTTP_HOST} !^www\. [NC]
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    # ========================================================================
+    # ADSENSE REVIEW MODE: keep thin/programmatic routes out of review scope
+    # ========================================================================
+
+    # These sections are intentionally withheld during AdSense approval. Redirect
+    # before the SPA fallback so crawlers never see indexable homepage fallback
+    # HTML at these URLs.
+    RewriteRule ^(glossary|compare|tools|cheatsheets|practice|interview-prep|news)(/.*)?$ /articles [R=302,L]
     
     # ========================================================================
     # KEYWORD CANNIBALIZATION: 301 redirects for consolidated articles
@@ -139,7 +147,7 @@
     # ========================================================================
     
     # Don't rewrite robots.txt, sitemap.xml, favicon.ico
-    RewriteRule ^(robots\.txt|sitemap\.xml|sitemap-index\.xml|sitemap-pseo-1\.xml|favicon\.ico)$ - [L]
+    RewriteRule ^(robots\.txt|sitemap\.xml|sitemap-index\.xml|favicon\.ico)$ - [L]
     
     # ========================================================================
     # IMPORTANT: Allow real files and directories to be served directly

@@ -365,6 +365,31 @@ const seoOverrides = {
     description: 'Zero-copy cloning looks free until storage bills spike. Learn the 5 hidden pitfalls — Time Travel bloat, policy drift, and runaway clones — with production fixes.'
   },
 
+  'sql-most-valuable-skill-ai-2026': {
+    title: 'SQL Is the Most Valuable AI Skill in 2026',
+    description: 'SQL is not dead — it is the control layer for AI data work. Learn why data engineers who master SQL stay valuable as AI tooling spreads.'
+  },
+
+  'snowflake-time-travel-architecture': {
+    title: 'Snowflake Time Travel: The Real Architecture',
+    description: 'Snowflake Time Travel is not a simple backup feature. Understand immutable micro-partitions, metadata pointers, retention, and cost tradeoffs.'
+  },
+
+  'snowflake-coco-desktop': {
+    title: 'Snowflake CoCo Desktop: What Data Teams Need to Know',
+    description: 'Snowflake CoCo Desktop explained for data engineers. See what it does, where it fits, and whether it is useful beyond conference hype.'
+  },
+
+  'airflow-vs-prefect': {
+    title: 'Airflow vs Prefect: 2026 Comparison Guide',
+    description: 'Airflow vs Prefect compared from real staging use. Understand orchestration tradeoffs, reliability, migration cost, and when each tool wins.'
+  },
+
+  'the-problem-with-data-engineering-certifications-that-nobody-talks-about': {
+    title: 'The Problem With Data Engineering Certifications',
+    description: 'Data engineering certifications can help, but they do not prove production skill. Learn what exams miss and how to evaluate real readiness.'
+  },
+
   'delta-lake-vs-iceberg': {
     title: 'Delta Lake vs Apache Iceberg: Honest Comparison 2026',
     description: 'Delta Lake vs Iceberg compared on engine support, partitioning, performance, and community. Practical guidance for choosing the right lakehouse format.'

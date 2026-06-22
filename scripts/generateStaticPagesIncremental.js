@@ -19,9 +19,6 @@ fs.writeFileSync = function(filePath, data, options) {
       .replace(/\u00e2\u0153\u2026/g, '&#9989;') // ✅ (✅)
       .replace(/\u00e2\u0161\u00a0\u00ef\u00b8\u008f/g, '&#9888;&#65039;') // ⚠️ (⚠️)
       .replace(/\u00c3\u0097/g, '&times;');      // × (×)
-    if (data !== original) {
-      console.log(`[DEBUG-REPLACE] Cleaned up mojibake in file: ${filePath}`);
-    }
   }
   return originalWriteFileSync(filePath, data, options);
 };
@@ -31,7 +28,21 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Load .env so build script can read VITE_ADSENSE_PUBLISHER_ID
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-const ADSENSE_PUBLISHER_ID = process.env.VITE_ADSENSE_PUBLISHER_ID || '';
+function getAdsensePublisherId() {
+  const configured = process.env.VITE_ADSENSE_PUBLISHER_ID || process.env.ADSENSE_PUBLISHER_ID || '';
+  if (configured.startsWith('ca-pub-')) return configured;
+
+  const adsTxtPath = path.resolve(__dirname, '../public/ads.txt');
+  if (fs.existsSync(adsTxtPath)) {
+    const adsTxt = fs.readFileSync(adsTxtPath, 'utf8');
+    const match = adsTxt.match(/google\.com\s*,\s*(pub-\d+)/i);
+    if (match) return `ca-${match[1]}`;
+  }
+
+  return configured;
+}
+
+const ADSENSE_PUBLISHER_ID = getAdsensePublisherId();
 
 // ðŸš¨ Hard-fail the build if AdSense publisher ID is missing or malformed.
 // Shipping pages with client="" silently breaks AdSense verification and
@@ -279,7 +290,7 @@ const CACHE_FILE = path.join(__dirname, '..', '.build-cache.json');
 // the build so no low-value templated HTML is ever deployed.
 // Flip to false after AdSense approval.
 const ADSENSE_REVIEW_MODE = true;
-const PSEO_DIST_DIRS = ['glossary', 'compare', 'cheatsheets', 'tools', 'interview-prep', 'practice'];
+const PSEO_DIST_DIRS = ['glossary', 'compare', 'cheatsheets', 'tools', 'interview-prep', 'practice', 'category', 'tag', 'news'];
 // ============================================================================
 // ESSENTIAL PAGES - Static content for AdSense/SEO crawlers
 // These pages currently serve the same SPA fallback HTML, causing "low value content"
@@ -1897,8 +1908,7 @@ async function fetchFromWP(endpoint, fields = '') {
   const RETRY_COUNT = 3;
   const TIMEOUT = 15000; // 15 seconds
 
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
+  while (page <= 100) {
     const url = `${WORDPRESS_API_URL}${endpoint}?per_page=100&page=${page}${fields ? `&_fields=${fields}` : ''}`;
 
     let attempt = 0;
@@ -1951,8 +1961,6 @@ async function fetchFromWP(endpoint, fields = '') {
     items.push(...data);
     page++;
 
-    // Safety break for infinite loops
-    if (page > 100) break;
   }
 
   return items;

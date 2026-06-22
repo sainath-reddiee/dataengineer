@@ -1,5 +1,5 @@
 // public/_redirects - Netlify/Vercel redirects for canonical URLs
-// This ensures all URLs redirect to canonical versions
+// This ensuress all URLs redirect to canonical versions
 
 # Force HTTPS
 http://dataengineerhub.blog/* https://dataengineerhub.blog/:splat 301!
@@ -23,6 +23,22 @@ https://www.dataengineerhub.blog/* https://dataengineerhub.blog/:splat 301!
 /cheatsheets/ /cheatsheets 301!
 /certification/ /certification 301!
 /tags/ /tags 301!
+
+# AdSense approval mode: do not expose thin/programmatic route fallbacks
+/glossary/* /articles 302!
+/glossary /articles 302!
+/compare/* /articles 302!
+/compare /articles 302!
+/tools/* /articles 302!
+/tools /articles 302!
+/cheatsheets/* /articles 302!
+/cheatsheets /articles 302!
+/practice/* /articles 302!
+/practice /articles 302!
+/interview-prep/* /articles 302!
+/interview-prep /articles 302!
+/news/* /articles 302!
+/news /articles 302!
 
 # SPA fallback - Must be last
 /* /index.html 200

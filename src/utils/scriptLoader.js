@@ -63,6 +63,8 @@ export function loadScriptDelayed(src, options = {}) {
   } = options;
 
   return new Promise((resolve, reject) => {
+    let loadStarted = false;
+
     // Check if already loaded
     if (id && document.getElementById(id)) {
       console.log(`✅ Script already loaded: ${id}`);
@@ -71,6 +73,11 @@ export function loadScriptDelayed(src, options = {}) {
     }
 
     const loadScript = () => {
+      if (loadStarted || (id && document.getElementById(id))) {
+        return;
+      }
+      loadStarted = true;
+
       console.log(`📥 Loading script: ${src}`);
       const script = document.createElement('script');
       script.src = src;
@@ -116,20 +123,13 @@ export function loadScriptDelayed(src, options = {}) {
 
 /**
  * Initialize AdSense ad queue.
- * The adsbygoogle.js script is loaded statically in <head> (with Consent Mode v2
- * defaulting ad_storage to 'denied'). This function only ensures the push queue
- * exists so AdPlacement components can call adsbygoogle.push({}).
+ * The adsbygoogle.js script is loaded statically in index.html so AdSense can
+ * verify the publisher tag from raw HTML. This only ensures the push queue exists.
  */
 export function loadAdSense() {
   if (!areAdsEnabled()) {
     console.log('🚫 AdSense skipped - ads disabled');
     return Promise.resolve();
-  }
-
-  const publisherId = getAdSensePublisherId();
-  if (!publisherId) {
-    console.error('❌ Cannot init AdSense - Publisher ID not configured');
-    return Promise.reject(new Error('AdSense Publisher ID not configured'));
   }
 
   window.adsbygoogle = window.adsbygoogle || [];
@@ -152,8 +152,8 @@ export function loadGoogleAnalytics(measurementId) {
     return Promise.resolve();
   }
   
-  if (window.gtag) {
-    console.log('✅ Google Analytics already initialized');
+  if (document.getElementById('ga-script')) {
+    console.log('✅ Google Analytics script already loaded');
     return Promise.resolve();
   }
 
@@ -240,7 +240,7 @@ export function initThirdPartyScripts() {
 
       preconnectDomain('https://www.googletagmanager.com');
       
-      const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+      const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-MTMNP6EV9C';
       if (gaId) {
         loadGoogleAnalytics(gaId).catch(err => 
           console.error('Failed to load Google Analytics:', err)
