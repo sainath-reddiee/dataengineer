@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import MetaTags from '@/components/SEO/MetaTags';
 
 const PrivacyPolicyPage = () => {
@@ -128,52 +128,67 @@ const PrivacyPolicyPage = () => {
 <p>
   If you are a California resident, you have the right to opt-out of the "sale" of your personal information. DataEngineer Hub does not directly sell your personal information in the conventional sense. However, the use of advertising cookies may be considered a "sale" under the CCPA. You can exercise your right to opt-out by using the opt-out links provided in the "Google AdSense" section of this policy.
 </p>
-<h2 className="text-xl font-bold text-white mt-8">Google AdSense and DoubleClick DART Cookie</h2>
-<p>
-  We use Google AdSense Advertising on our website. Google, as a third-party vendor, uses cookies to serve ads on our Site. Google's use of the DART cookie enables it and its partners to serve ads to our users based on their visit to our Site and/or other sites on the Internet.
-</p>
-<p>
-  Users may opt out of the use of the DART cookie for interest-based advertising by visiting the <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer">Google ad settings page</a>.
-</p>
-<p>
-  Alternatively, users can opt out of a third-party vendor's use of cookies for personalized advertising by visiting <a href="http://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer">www.aboutads.info/choices</a>.
-</p>
-<h2 className="text-xl font-bold text-white mt-8">Google AdSense Advertising</h2>
-<p>
-  We use Google AdSense to display advertisements on our website. Google AdSense uses cookies and web beacons to serve ads based on your prior visits to our website or other websites on the Internet.
-</p>
-
-<h3 className="text-lg font-semibold text-white mt-6">Cookies and Tracking</h3>
-<p>
-  Google uses cookies to serve ads on our site. Google's use of advertising cookies enables it and its partners to serve ads based on your visit to our sites and/or other sites on the Internet.
-</p>
-
-<h3 className="text-lg font-semibold text-white mt-6">Opt-Out Options</h3>
-<p>
-  You may opt out of personalized advertising by visiting:
-</p>
-<ul className="list-disc pl-8 mb-4">
-  <li>
-    <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">
-      Google Ads Settings
-    </a> - Control ads on Google services
-  </li>
-  <li>
-    <a href="http://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">
-      Digital Advertising Alliance
-    </a> - Opt out of participating companies
-  </li>
-  <li>
-    <a href="http://www.youronlinechoices.eu/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">
-      European Interactive Digital Advertising Alliance
-    </a> - For EU users
-  </li>
-</ul>
-
-<h3 className="text-lg font-semibold text-white mt-6">Third-Party Vendors</h3>
-<p>
-  Google, as a third-party vendor, uses cookies to serve ads on our site. These cookies enable Google and its partners to serve ads based on your visits to our site and/or other sites on the Internet. Google may also use web beacons and other technologies for analytics and ad serving purposes.
-</p>
+          {/* ── Google AdSense Disclosure — Required by AdSense Program Policies ── */}
+          <div className="mt-8 p-5 rounded-xl border-2 border-blue-500/40 bg-blue-500/10">
+            <h2 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
+              <span className="inline-block w-3 h-3 rounded-full bg-blue-400 flex-shrink-0" />
+              Google AdSense &amp; Third-Party Advertising Disclosure
+            </h2>
+            <p className="mb-3">
+              <strong className="text-white">We use Google AdSense</strong> to display advertisements on this website.
+              Google AdSense is an advertising service provided by Google LLC. Third-party vendors, including Google,
+              use cookies to serve ads based on your prior visits to this website or other websites on the Internet.
+            </p>
+            <p className="mb-3">
+              <strong className="text-white">DoubleClick DART Cookie:</strong> Google's use of the DoubleClick DART
+              cookie enables it and its partners to serve ads to users based on their visit to this site and/or other
+              sites on the Internet. The DART cookie is used for interest-based (personalized) advertising.
+            </p>
+            <p className="mb-3">
+              <strong className="text-white">What data is collected:</strong> Google AdSense may collect your IP
+              address, browser type, pages visited, time spent on pages, and other usage data to serve relevant
+              advertisements. This data is processed by Google in accordance with their privacy policy.
+            </p>
+            <p className="mb-3">
+              <strong className="text-white">Non-personalized ads:</strong> If you decline cookies via our consent
+              banner (or are located in the EU/UK/EEA), only non-personalized ads will be served. Non-personalized
+              ads do not use cookies for ad targeting.
+            </p>
+            <h3 className="text-base font-semibold text-white mt-4 mb-2">Opt-Out of Personalized Advertising</h3>
+            <ul className="list-disc pl-6 space-y-1 mb-3">
+              <li>
+                <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300 underline font-medium">
+                  Google Ads Settings
+                </a>{' '}— Control Google's interest-based ads
+              </li>
+              <li>
+                <a href="http://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300 underline font-medium">
+                  www.aboutads.info/choices
+                </a>{' '}— Digital Advertising Alliance opt-out (all participating vendors)
+              </li>
+              <li>
+                <a href="http://www.youronlinechoices.eu/" target="_blank" rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300 underline font-medium">
+                  www.youronlinechoices.eu
+                </a>{' '}— European Interactive Digital Advertising Alliance (EU users)
+              </li>
+              <li>
+                <a href="https://optout.networkadvertising.org/" target="_blank" rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300 underline font-medium">
+                  optout.networkadvertising.org
+                </a>{' '}— Network Advertising Initiative opt-out
+              </li>
+            </ul>
+            <p className="text-sm text-gray-400">
+              For more information about how Google uses data when you use their partners' sites or apps, visit{' '}
+              <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 underline">
+                Google's Privacy &amp; Terms
+              </a>.
+            </p>
+          </div>
 
 <p className="mt-4">
   For more information about Google's privacy practices, please visit the{' '}

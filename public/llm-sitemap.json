@@ -11,9 +11,231 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-06-22",
-  "totalArticles": 60,
+  "lastUpdated": "2026-07-07",
+  "totalArticles": 69,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/rag-retrieval-augumented-generation-production-guide",
+      "title": "Why your RAG Pipeline Fails ( and how to fix it in Production )",
+      "summary": "You built a RAG pipeline. You retrieved relevant documents. You fed them to Claude. You got back a confident, well-structured answer. The answer sounds great. It cites sources. It reads…",
+      "keyFacts": [
+        "Accuracy improves 2-5x on complex reasoning questions",
+        "001) but catches 35-40% more edge cases",
+        "This is the guide that fixes it",
+        "The retrieval stage, not generation, is the bottleneck",
+        "Embedding similarity captures surface-level meaning, but not always the meaning you actually need"
+      ],
+      "entities": [],
+      "questionAnswered": "Why your RAG Pipeline Fails ( and how to fix it in Production )?",
+      "lastUpdated": "2026-07-07",
+      "published": "2026-07-07",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "SQL",
+      "wordCount": 1719
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/airflow-dbt-snowflake-orchestration-guide",
+      "title": "Orchestrating dbt with Airflow on Snowflake: Job vs Model-Level in 2026",
+      "summary": "For years, the pattern was: Airflow sits in one corner of your infrastructure, dbt runs on a server somewhere else, they pass data between each other via manual credential handoffs…",
+      "keyFacts": [
+        "12 minutes wall-clock time (33% faster)",
+        "This is the new default architecture",
+        "The `GRANT EXECUTE DBT PROJECT ON SCHEMA` is the easy line to miss",
+        "The question you’ve been asking for three years is whether dbt should be one big task in Airflow (job-level) or broken into one task per model (model-level)"
+      ],
+      "entities": [
+        "airflow",
+        "dbt",
+        "snowflake",
+        "aws",
+        "sql"
+      ],
+      "questionAnswered": "What are the differences between Orchestrating dbt with Airflow on Snowflake: Job and Model-Level?",
+      "lastUpdated": "2026-07-04",
+      "published": "2026-07-04",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Airflow",
+      "wordCount": 1748
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/dbt-state-snowflake-configuration",
+      "title": "How to setup DBT state in Your Snowflake project (step-by-step Config Guide)",
+      "summary": "You read about dbt State. You understood the pitch — skip unchanged models, cut compute, stop paying to rebuild what didn’t change. Then you opened your project and stared at…",
+      "keyFacts": [
+        "If your overall skip rate is below 30%, your lag_tolerance is probably too tight — data is changing within the tolerance window and everything is rebuilding",
+        "Related reading: dbt State: The concept, the cost math, and when it pays off · Official dbt State setup docs · lag_tolerance config reference · dbt Fusion: 30x Faster Parsing · Snowflake Query Execution: What Really Happens",
+        "Below 30% means your lag_tolerance is too tight",
+        "Above 80% means you’re missing rebuilds you actually need",
+        "→ The most important config is lag_tolerance"
+      ],
+      "entities": [
+        "dbt",
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "How to setup DBT state in Your Snowflake project (step-by-step Config Guide)?",
+      "lastUpdated": "2026-07-04",
+      "published": "2026-07-04",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "dbt",
+      "wordCount": 2146
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/duckdb-vs-spark-when-to-switch",
+      "title": "Stop Spinning Up Spark clusters for 50GB Datasets",
+      "summary": "Your team has a 200GB Parquet file on S3. Someone suggests running the analysis in Spark. You spin up a four-node cluster, configure executors, tune shuffle partitions, wait three minutes…",
+      "keyFacts": [
+        "→ For 50GB–1TB OLAP workloads on Parquet, DuckDB is typically 3–10x faster than Spark and 10–20x cheaper because it eliminates network shuffle, JVM overhead, and cluster management overhead",
+        "30 wasted per run), the 20% of engineer time spent debugging shuffle OOM errors and executor failures, the CI runs that take 12 minutes instead of 2 because you’re testing against a Spark local context instead of DuckDB",
+        "This is the most expensive habit in modern data engineering , and it’s happening in thousands of production pipelines right now",
+        "TL;DR → DuckDB is an embedded, in-process, columnar OLAP database",
+        "It shuffles data across network to prepare for cross-node joins that will never happen because the data fits on one machine"
+      ],
+      "entities": [
+        "spark",
+        "sql",
+        "python",
+        "aws",
+        "snowflake",
+        "dbt"
+      ],
+      "questionAnswered": "What is Stop Spinning Up Spark clusters for 50GB Datasets?",
+      "lastUpdated": "2026-07-03",
+      "published": "2026-07-03",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Python",
+      "wordCount": 2032
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide",
+      "title": "Someone renamed a column.Your Pipeline Died.Here’s the fix",
+      "summary": "Someone on the backend team renamed order_total to order_amount. Clean name. Makes total sense for their domain model. They shipped it on a Thursday afternoon. By Friday morning, your revenue dashboard was showing…",
+      "keyFacts": [
+        "Related reading: Open Data Contract Standard (ODCS) · datacontract-cli on GitHub · dbt State: Skip Unchanged Nodes, Cut Runtime by 60% · dbt Fusion: 30x Faster Parsing · Snowflake Query Execution: What Really Happens",
+        "This is the most common production incident in data engineering in 2026, and it’s almost never caused by bad code",
+        "” The reality is that the teams who move fastest are the ones with contracts, because they stop discovering breaking changes from directors on Friday mornings and start catching them in CI on Thursday afternoons, before anything ships",
+        "” That Slack message is always sent on a Friday"
+      ],
+      "entities": [
+        "snowflake",
+        "dbt",
+        "kafka",
+        "aws"
+      ],
+      "questionAnswered": "What is Someone renamed a column.Your Pipeline Died.Here’s the fix?",
+      "lastUpdated": "2026-07-01",
+      "published": "2026-07-01",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Data Engineer",
+      "wordCount": 2373
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/why-ai-agents-forget-memory-architecture",
+      "title": "Why AI Agents Forget: The Architecture behind Memory failures",
+      "summary": "Your AI agent isn’t getting dumber over time. It’s getting amnesiac. It forgets a constraint you set ten turns ago, even though it followed it perfectly at turn three. It contradicts…",
+      "keyFacts": [
+        "You can have a million-token window and still watch an agent forget a name mentioned at token 40,000 because it’s buried under everything that came after",
+        "A well-built retrieval layer holds that flat: leading 2026 systems achieve strong recall on multi-session benchmarks while retrieving roughly 6,900 tokens per call, regardless of how long the relationship has run",
+        "This statelessness is a deliberate design choice, and it has real upside: reproducibility, simplicity, no hidden corrupted state between calls",
+        "And it’s expensive per byte — every token you keep “just in case” is a token you pay to process on every single call, forever, for the life of that conversation",
+        "It treats a fact you corrected last week as if it never heard the correction"
+      ],
+      "entities": [
+        "snowflake",
+        "bigquery",
+        "dbt"
+      ],
+      "questionAnswered": "Why AI Agents Forget: The Architecture behind Memory failures?",
+      "lastUpdated": "2026-06-30",
+      "published": "2026-06-30",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 2267
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/dbt-state-skip-unchanged-nodes",
+      "title": "dbt state: Skip Unchanged Nodes, Cut Warehouse Compute 30%",
+      "summary": "You have a 400-model dbt project. A junior analyst tweaks one source definition. Every. Single. Model. Rebuilds. Ninety minutes later, you’ve burned $1,200 in warehouse compute for a change that…",
+      "keyFacts": [
+        "5% faster) Hotfix to 1 model: ~8 models run (with `+`) = 2 minutes (95",
+        "8% faster) Daily incremental run: ~15 models run = 4 minutes (91",
+        "dbt’s State feature is the principled answer: compare your current project against a previously saved manifest, identify what has actually changed, and run only those models",
+        "The manifest is the source of truth for what changed",
+        "Complex DAGs spanning raw ingestion to business-critical marts"
+      ],
+      "entities": [
+        "dbt",
+        "sql",
+        "azure",
+        "aws",
+        "snowflake"
+      ],
+      "questionAnswered": "What is dbt state: Skip Unchanged Nodes, Cut Warehouse Compute 30%?",
+      "lastUpdated": "2026-06-23",
+      "published": "2026-06-23",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "dbt",
+      "wordCount": 2036
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/dbr-fusion-engine-migration-guide",
+      "title": "dbt Fusion: 30x Faster parsing(And why Migration matters)",
+      "summary": "You’ve probably heard the buzz: dbt’s new Fusion engine is 30x faster. But what nobody says clearly is faster at what, for whom, and does it break your project? The answer is…",
+      "keyFacts": [
+        "You’ve probably heard the buzz: dbt’s new Fusion engine is 30x faster",
+        "Parse times up to 30x faster (vs Python)",
+        "The Fusion engine is a complete rewrite of dbt Core in Rust, released last year and hitting 4,500+ projects already",
+        "What does change is the developer experience: real-time error feedback in VS Code, instant file recompilation, the ability to catch typos before you run a job",
+        "→ Always upgrade dev first, test for a week, then staging, then production"
+      ],
+      "entities": [
+        "dbt",
+        "python",
+        "sql",
+        "snowflake"
+      ],
+      "questionAnswered": "What is dbt Fusion: 30x Faster parsing(And why Migration matters)?",
+      "lastUpdated": "2026-06-22",
+      "published": "2026-06-22",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "dbt",
+      "wordCount": 2020
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-aiceberg-v3-migration-guide",
+      "title": "Snowflake Iceberg V3: When to Actually Migrate(vs Native Tables)",
+      "summary": "Most data engineers I talk to still store everything in Snowflake native format. It’s simple: load data, query data, done. But here’s what nobody’s talking about: if you’re querying that…",
+      "keyFacts": [
+        "New features: deletion vectors (10x faster DML), row lineage for CDC, VARIANT type for semi-structured data, nanosecond timestamps, default column values",
+        "Result: 10x faster DML operations on large tables",
+        "But migrating is a choice, not a reflex — and there are specific gotchas that’ll bite you if you don’t plan right",
+        "→ Real win: Snowflake Storage for Iceberg (GA April 2026) means you don’t manage S3 buckets",
+        "Critical for SCD2 and CDC pipelines"
+      ],
+      "entities": [
+        "snowflake",
+        "spark",
+        "databricks",
+        "python",
+        "dbt",
+        "azure"
+      ],
+      "questionAnswered": "What are the differences between Snowflake Iceberg V3: When to Actually Migrate( and Native Tables)?",
+      "lastUpdated": "2026-06-22",
+      "published": "2026-06-22",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 1825
+    },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-query-execution-architecture",
       "title": "Snowflake Query Execution: what really happens under the hood",

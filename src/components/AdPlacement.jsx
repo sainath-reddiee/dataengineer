@@ -1,38 +1,85 @@
 // src/components/AdPlacement.jsx
-// Auto-Ads-only placeholder. We intentionally do NOT render an <ins class="adsbygoogle">
-// because we don't have a real numeric ad slot ID yet. Shipping data-ad-slot="auto"
-// (a string, not a number) is INVALID AdSense markup and fails AdSense review.
+// Renders a Google AdSense Display Ad unit.
 //
-// AdSense loader script (in <head> of every page) + "Auto Ads" enabled in the
-// AdSense UI is sufficient for:
-//   1. AdSense crawler verification during approval
-//   2. Automatic ad placement after approval
+// Environment variables (set in Vercel / GitHub secrets, NOT in .env):
+//   VITE_ADS_ENABLED=true          — must be "true" to render ads in production
+//   VITE_ADSENSE_SLOT_ID=<number>  — numeric slot ID from AdSense UI → Ads → By Ad Unit
 //
-// When you have a real ad unit (numeric slot from AdSense UI), replace this
-// component with a proper <ins> that uses that slot ID.
-import React from 'react';
+// How to get your slot ID:
+//   1. AdSense UI → Ads → By Ad Unit → Create a "Display" ad unit
+//   2. Copy the numeric data-ad-slot value (e.g. "1234567890")
+//   3. Add VITE_ADSENSE_SLOT_ID as a Vercel environment variable (Production only)
+//   4. Add VITE_ADS_ENABLED=true as a Vercel environment variable
+//   5. Redeploy → this component renders the real <ins> unit
+//
+// Without both vars set in production, falls back to Auto Ads via index.html script.
+import React, { useEffect, useRef } from 'react';
 
-const AdPlacement = ({ className = '' }) => {
-  const IS_DEV = import.meta.env.DEV;
+const CLIENT_ID   = 'ca-pub-8624144810216728';
+const SLOT_ID     = import.meta.env.VITE_ADSENSE_SLOT_ID;
+const ADS_ENABLED = import.meta.env.VITE_ADS_ENABLED === 'true';
+const IS_DEV      = import.meta.env.DEV;
 
+const AdPlacement = ({ className = '', format = 'auto', style = {} }) => {
+  const pushed = useRef(false);
+
+  useEffect(() => {
+    // Push to adsbygoogle once per mount — only when fully configured
+    if (!ADS_ENABLED || !SLOT_ID || IS_DEV || pushed.current) return;
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+      pushed.current = true;
+    } catch (_) {
+      // adsbygoogle not yet loaded — Auto Ads covers it
+    }
+  }, []);
+
+  // ── Development placeholder ──────────────────────────────────
   if (IS_DEV) {
+    const fullyConfigured = ADS_ENABLED && !!SLOT_ID;
     return (
-      <div className={`dev-ad-placeholder my-8 p-4 border-2 border-dashed border-yellow-500 rounded-lg bg-yellow-500/10 ${className}`}>
-        <div className="text-center text-yellow-300 text-sm">
-          <p className="font-semibold mb-1">Ad Placeholder (Auto Ads)</p>
-          <p className="text-xs">
-            Auto Ads handles placement in production. Enable Auto Ads in your
-            AdSense UI after approval. No manual ad unit needed.
+      <div
+        className={`my-8 p-4 border-2 border-dashed rounded-lg ${
+          fullyConfigured
+            ? 'border-green-500 bg-green-500/10'
+            : 'border-yellow-500 bg-yellow-500/10'
+        } ${className}`}
+      >
+        <div className={`text-center text-sm ${fullyConfigured ? 'text-green-300' : 'text-yellow-300'}`}>
+          <p className="font-semibold mb-1">
+            {fullyConfigured
+              ? `✅ Ad Unit ready (slot: ${SLOT_ID})`
+              : '⚠️ Ad Placeholder — configure via Vercel env vars'}
+          </p>
+          <p className="text-xs opacity-75">
+            {fullyConfigured
+              ? 'Real <ins> ad unit will render in production.'
+              : 'Set VITE_ADS_ENABLED=true and VITE_ADSENSE_SLOT_ID in Vercel → Settings → Environment Variables.'}
           </p>
         </div>
       </div>
     );
   }
 
-  // Production: Auto Ads handles placement automatically via the script
-  // in index.html. No need to render empty placeholder divs that create
-  // blank 280px gaps on every page. Once you have a real ad unit (numeric
-  // slot ID from AdSense UI), replace this with a proper <ins> element.
+  // ── Production: only render when both flags are set ──────────
+  if (ADS_ENABLED && SLOT_ID) {
+    return (
+      <div className={`text-center overflow-hidden ${className}`}>
+        <ins
+          className="adsbygoogle"
+          style={{ display: 'block', ...style }}
+          data-ad-client={CLIENT_ID}
+          data-ad-slot={SLOT_ID}
+          data-ad-format={format}
+          data-full-width-responsive="true"
+        />
+      </div>
+    );
+  }
+
+  // ── Fallback: Auto Ads via index.html script ─────────────────
+  // Neither flag is set → Auto Ads handles placement automatically.
+  // Return null to avoid blank gap divs on every page.
   return null;
 };
 

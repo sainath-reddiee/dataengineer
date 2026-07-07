@@ -96,48 +96,75 @@ const AboutPage = () => {
         <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
 
           {/* ── HERO ────────────────────────────────────── */}
-          <motion.section
-            aria-labelledby="about-hero-title"
+          <motion.section aria-labelledby="about-hero-title" className="text-center mb-6 sm:mb-8">
+
+          {/* ── Author Avatar (E-E-A-T: real identified author) ── */}
+          <motion.div
             {...mv(0)}
-            className="text-center mb-6 sm:mb-8"
+            className="flex flex-col items-center mb-4"
           >
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 px-4 py-1.5 rounded-full mb-3 border border-blue-500/30">
-              <Sparkles className="h-4 w-4 text-blue-400" aria-hidden="true" />
-              <span className="text-xs sm:text-sm font-medium text-blue-300">Data Engineering Expert</span>
+            <div className="relative mb-3">
+              {/* Outer glow ring */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 blur-md opacity-60 scale-110" />
+              {/* Avatar */}
+              <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center border-4 border-slate-900 shadow-2xl">
+                <span className="text-3xl md:text-4xl font-black text-white tracking-tight select-none">SR</span>
+              </div>
+              {/* Verified / active badge */}
+              <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-green-500 rounded-full flex items-center justify-center border-2 border-slate-900">
+                <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              </div>
             </div>
 
-            <h1 id="about-hero-title" className="text-4xl sm:text-5xl md:text-6xl font-black mb-2 leading-tight">
+            {/* Name + title */}
+            <h1 id="about-hero-title" className="text-4xl sm:text-5xl md:text-6xl font-black mb-1 leading-tight">
               Hi, I'm{' '}
               <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Sainath Reddy
               </span>
             </h1>
 
-            <p className="text-sm sm:text-base text-gray-300 mb-2">
+            <p className="text-sm sm:text-base text-gray-300 mb-1">
               Data Engineer at <span className="text-blue-400 font-bold">Anblicks</span>
             </p>
 
-            <p className="text-sm sm:text-base text-gray-400 leading-relaxed max-w-2xl mx-auto mb-4">
-              Transforming raw data into business intelligence through modern engineering.
-              Cloud-native architectures • Real-time pipelines • Scalable solutions.
-            </p>
+            {/* Location + experience pill */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-xs text-gray-400">
+                <svg className="w-3 h-3 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+                Hyderabad, India
+              </span>
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-500/30 text-xs text-blue-300 font-medium">
+                4+ Years Experience
+              </span>
+            </div>
+          </motion.div>
 
-            {/* Social proof strip — real URLs from SITE_CONFIG */}
-            <nav aria-label="Social profiles" className="flex flex-wrap items-center justify-center gap-2">
-              {SOCIAL_LINKS.map(({ icon: Icon, label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target={href.startsWith('mailto:') ? undefined : '_blank'}
-                  rel={href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
-                  aria-label={label}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700/60 bg-slate-800/60 hover:bg-slate-700/60 hover:border-blue-500/50 text-gray-300 hover:text-white text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400/60"
-                >
-                  <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-                  <span>{label}</span>
-                </a>
-              ))}
-            </nav>
+          <motion.p {...mv(0.05)} className="text-sm sm:text-base text-gray-400 leading-relaxed max-w-2xl mx-auto mb-4">
+            Transforming raw data into business intelligence through modern engineering.
+            Cloud-native architectures • Real-time pipelines • Scalable solutions.
+          </motion.p>
+
+          {/* Social proof strip — real URLs from SITE_CONFIG */}
+          <nav aria-label="Social profiles" className="flex flex-wrap items-center justify-center gap-2">
+            {SOCIAL_LINKS.map(({ icon: Icon, label, href }) => (
+              <a
+                key={label}
+                href={href}
+                target={href.startsWith('mailto:') ? undefined : '_blank'}
+                rel={href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+                aria-label={label}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-700/60 bg-slate-800/60 hover:bg-slate-700/60 hover:border-blue-500/50 text-gray-300 hover:text-white text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400/60"
+              >
+                <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                <span>{label}</span>
+              </a>
+            ))}
+          </nav>
           </motion.section>
 
           {/* ── STATS ─────────────────────────────────────── */}

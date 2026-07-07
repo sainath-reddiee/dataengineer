@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 22 Jun 2026 05:01:35 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 07 Jul 2026 08:21:01 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -18,6 +18,102 @@
     <managingEditor>contact@dataengineerhub.blog (Sainath Reddy)</managingEditor>
     <webMaster>contact@dataengineerhub.blog (Sainath Reddy)</webMaster>
     <ttl>60</ttl>
+    <item>
+      <title>Why your RAG Pipeline Fails ( and how to fix it in Production )</title>
+      <link>https://dataengineerhub.blog/articles/rag-retrieval-augumented-generation-production-guide</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/rag-retrieval-augumented-generation-production-guide</guid>
+      <description>You built a RAG pipeline. You retrieved relevant documents. You fed them to Claude. You got back a confident, well-structured answer. The answer sounds great. It cites sources. It reads…</description>
+      <pubDate>Tue, 07 Jul 2026 02:25:42 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>SQL</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/rag_featured_illustration-scaled.png" type="image/png" />
+    </item>
+    <item>
+      <title>Orchestrating dbt with Airflow on Snowflake: Job vs Model-Level in 2026</title>
+      <link>https://dataengineerhub.blog/articles/airflow-dbt-snowflake-orchestration-guide</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/airflow-dbt-snowflake-orchestration-guide</guid>
+      <description>For years, the pattern was: Airflow sits in one corner of your infrastructure, dbt runs on a server somewhere else, they pass data between each other via manual credential handoffs…</description>
+      <pubDate>Sat, 04 Jul 2026 08:42:11 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Airflow</category>
+      <category>AWS</category>
+      <category>dbt</category>
+      <category>Python</category>
+      <category>Snowflake</category>
+      <category>SQL</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/airflow_dbt_featured.png" type="image/png" />
+    </item>
+    <item>
+      <title>How to setup DBT state in Your Snowflake project (step-by-step Config Guide)</title>
+      <link>https://dataengineerhub.blog/articles/dbt-state-snowflake-configuration</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/dbt-state-snowflake-configuration</guid>
+      <description>You read about dbt State. You understood the pitch — skip unchanged models, cut compute, stop paying to rebuild what didn’t change. Then you opened your project and stared at…</description>
+      <pubDate>Fri, 03 Jul 2026 21:41:14 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>dbt</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/dbt_state_snowflake_featured.png" type="image/png" />
+    </item>
+    <item>
+      <title>Stop Spinning Up Spark clusters for 50GB Datasets</title>
+      <link>https://dataengineerhub.blog/articles/duckdb-vs-spark-when-to-switch</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/duckdb-vs-spark-when-to-switch</guid>
+      <description>Your team has a 200GB Parquet file on S3. Someone suggests running the analysis in Spark. You spin up a four-node cluster, configure executors, tune shuffle partitions, wait three minutes…</description>
+      <pubDate>Fri, 03 Jul 2026 09:57:26 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Python</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/duckdb_featured.png" type="image/png" />
+    </item>
+    <item>
+      <title>Someone renamed a column.Your Pipeline Died.Here’s the fix</title>
+      <link>https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide</guid>
+      <description>Someone on the backend team renamed order_total to order_amount. Clean name. Makes total sense for their domain model. They shipped it on a Thursday afternoon. By Friday morning, your revenue dashboard was showing…</description>
+      <pubDate>Tue, 30 Jun 2026 23:26:43 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Data Engineer</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/contracts_featured.png" type="image/png" />
+    </item>
+    <item>
+      <title>Why AI Agents Forget: The Architecture behind Memory failures</title>
+      <link>https://dataengineerhub.blog/articles/why-ai-agents-forget-memory-architecture</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/why-ai-agents-forget-memory-architecture</guid>
+      <description>Your AI agent isn’t getting dumber over time. It’s getting amnesiac. It forgets a constraint you set ten turns ago, even though it followed it perfectly at turn three. It contradicts…</description>
+      <pubDate>Tue, 30 Jun 2026 11:05:10 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>AI</category>
+      <category>Developer Productivity</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/06/agent_memory_featured.png" type="image/png" />
+    </item>
+    <item>
+      <title>dbt state: Skip Unchanged Nodes, Cut Warehouse Compute 30%</title>
+      <link>https://dataengineerhub.blog/articles/dbt-state-skip-unchanged-nodes</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/dbt-state-skip-unchanged-nodes</guid>
+      <description>You have a 400-model dbt project. A junior analyst tweaks one source definition. Every. Single. Model. Rebuilds. Ninety minutes later, you’ve burned $1,200 in warehouse compute for a change that…</description>
+      <pubDate>Tue, 23 Jun 2026 13:11:42 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>dbt</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/06/state_featured.png" type="image/png" />
+    </item>
+    <item>
+      <title>dbt Fusion: 30x Faster parsing(And why Migration matters)</title>
+      <link>https://dataengineerhub.blog/articles/dbr-fusion-engine-migration-guide</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/dbr-fusion-engine-migration-guide</guid>
+      <description>You’ve probably heard the buzz: dbt’s new Fusion engine is 30x faster. But what nobody says clearly is faster at what, for whom, and does it break your project? The answer is…</description>
+      <pubDate>Mon, 22 Jun 2026 14:07:55 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>dbt</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/06/fusion_featured.jpg" type="image/jpeg" />
+    </item>
+    <item>
+      <title>Snowflake Iceberg V3: When to Actually Migrate(vs Native Tables)</title>
+      <link>https://dataengineerhub.blog/articles/snowflake-aiceberg-v3-migration-guide</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-aiceberg-v3-migration-guide</guid>
+      <description>Most data engineers I talk to still store everything in Snowflake native format. It’s simple: load data, query data, done. But here’s what nobody’s talking about: if you’re querying that…</description>
+      <pubDate>Mon, 22 Jun 2026 13:56:56 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Snowflake</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/06/iceberg_featured.jpg" type="image/jpeg" />
+    </item>
     <item>
       <title>Snowflake Query Execution: what really happens under the hood</title>
       <link>https://dataengineerhub.blog/articles/snowflake-query-execution-architecture</link>

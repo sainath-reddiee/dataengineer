@@ -12,6 +12,7 @@ import PostCard from '@/components/PostCard';
 import PostCardSkeleton from '@/components/PostCardSkeleton';
 import PostListItem from '@/components/PostListItem';
 import PostListItemSkeleton from '@/components/PostListItemSkeleton';
+import EmptyCategoryState from '@/components/EmptyCategoryState';
 
 const RecentPosts = ({
   category = null,
@@ -158,27 +159,7 @@ const RecentPosts = ({
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold gradient-text">{title}</h2>
         </div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-8 text-center"
-        >
-          <h3 className="text-lg font-semibold text-yellow-300 mb-2">
-            {category 
-              ? `No posts found in "${category}" category` 
-              : tag
-              ? `No posts found with tag "${tag}"`
-              : 'No posts available'}
-          </h3>
-          <p className="text-yellow-200/80 mb-4">
-            {category
-              ? 'This category exists but has no published posts yet.'
-              : tag
-              ? 'This tag exists but has no published posts yet.'
-              : 'No posts have been published yet.'
-            }
-          </p>
-        </motion.div>
+        <EmptyCategoryState category={category || tag} title={title} />
       </div>
     );
   }

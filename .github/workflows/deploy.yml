@@ -197,6 +197,7 @@ jobs:
           NODE_ENV: production
           VITE_ADS_ENABLED: ${{ secrets.VITE_ADS_ENABLED }}
           VITE_ADSENSE_PUBLISHER_ID: ${{ secrets.VITE_ADSENSE_PUBLISHER_ID }}
+          VITE_ADSENSE_SLOT_ID: ${{ secrets.VITE_ADSENSE_SLOT_ID }}
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
           VITE_ADMIN_USER_HASH: ${{ secrets.VITE_ADMIN_USER_HASH }}
           VITE_ADMIN_PASS_HASH: ${{ secrets.VITE_ADMIN_PASS_HASH }}
@@ -223,6 +224,7 @@ jobs:
           NODE_ENV: production
           VITE_ADS_ENABLED: ${{ secrets.VITE_ADS_ENABLED }}
           VITE_ADSENSE_PUBLISHER_ID: ${{ secrets.VITE_ADSENSE_PUBLISHER_ID }}
+          VITE_ADSENSE_SLOT_ID: ${{ secrets.VITE_ADSENSE_SLOT_ID }}
           VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
         run: |
           # Get build flags from previous step
