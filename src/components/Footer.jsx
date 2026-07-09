@@ -19,12 +19,14 @@ const Footer = () => {
       { name: 'Snowflake Guides', href: '/category/snowflake' },
       { name: 'Azure Resources', href: '/category/azure' },
       { name: 'SQL Tips', href: '/category/sql' },
-      { name: 'Cheat Sheets', href: '/cheatsheets' },
-      { name: 'Interview Prep', href: '/interview-prep' },
-      { name: 'Comparisons', href: '/compare' },
-      { name: 'Tools', href: '/tools' },
-      { name: 'Glossary', href: '/glossary' },
-      { name: 'News & Trends', href: '/news' },
+      // Hub pages below are blocked in robots.txt until they have full content.
+      // Re-enable here AND in robots.txt together once pages are content-complete.
+      // { name: 'Cheat Sheets', href: '/cheatsheets' },
+      // { name: 'Interview Prep', href: '/interview-prep' },
+      // { name: 'Comparisons', href: '/compare' },
+      // { name: 'Tools', href: '/tools' },
+      // { name: 'Glossary', href: '/glossary' },
+      // { name: 'News & Trends', href: '/news' },
     ],
     tools: [
       { name: 'Airflow', href: '/category/airflow' },
