@@ -51,6 +51,9 @@ add_action('init', 'handle_cors_requests', 9);
 // ============================================================================
 // GUEST AUTHOR — Expose custom user meta fields in the REST API
 // ============================================================================
+// Paste this block AFTER the CORS section in your live functions.php
+// (after: add_action('init', 'handle_cors_requests', 9);)
+//
 // These fields let you add LinkedIn, Twitter, and job title for any WordPress
 // user (including guest authors). Fill them in WP Admin → Users → Edit User.
 // The frontend reads them via the embedded author object (_embed=author).
@@ -75,7 +78,7 @@ function dehub_register_author_meta_fields() {
     }
 }
 
-// Add the custom fields to the WP Admin user edit form so you can fill them in easily.
+// Add the custom fields to the WP Admin user edit form.
 add_action( 'show_user_profile',  'dehub_author_social_fields' );
 add_action( 'edit_user_profile',  'dehub_author_social_fields' );
 function dehub_author_social_fields( $user ) {
@@ -123,25 +126,6 @@ function dehub_save_author_social_fields( $user_id ) {
         }
     }
 }
-
-// ============================================================================
-// SECURITY HARDENING — strip information leaks from <head> output
-// ============================================================================
-// Suppress the default <meta name="generator" content="WordPress X.Y.Z">.
-// This prevents version disclosure in REST/HTML responses and removes a
-// fingerprinting signal flagged by basic security scans.
-remove_action('wp_head', 'wp_generator');
-add_filter('the_generator', '__return_empty_string');
-// Also strip the WP version query string from enqueued scripts/styles.
-function dehub_remove_version_strings($src) {
-    if (strpos($src, 'ver=') !== false) {
-        $src = remove_query_arg('ver', $src);
-    }
-    return $src;
-}
-add_filter('script_loader_src', 'dehub_remove_version_strings', 9999);
-add_filter('style_loader_src', 'dehub_remove_version_strings', 9999);
-
 // ============================================================================
 // CACHE MANAGEMENT SYSTEM
 // ============================================================================
@@ -2981,7 +2965,7 @@ function render_certification_dashboard_widget() {
 
 add_action('admin_init', 'create_default_certification_terms');
 function create_default_certification_terms() {
-    $providers = array('AWS', 'Azure', 'Snowflake', 'GCP', 'dbt', 'Databricks', 'Apache');
+    $providers = array('AWS', 'Azure', 'Snowflake', 'GCP', 'dbt', 'Databricks', 'Apache','Salesforce');
     foreach ($providers as $provider) {
         if (!term_exists($provider, 'cert_provider')) {
             wp_insert_term($provider, 'cert_provider');
@@ -3018,6 +3002,112 @@ function certification_hub_setup_notice() {
             echo '</div>';
         }
     }
+}
+// Add Flashcards Meta Box
+add_action('add_meta_boxes', 'add_flashcards_meta_box');
+function add_flashcards_meta_box() {
+    add_meta_box(
+        'certification_flashcards',
+        '🎴 Flashcards',
+        'render_flashcards_meta_box',
+        'certification',
+        'normal',
+        'default'
+    );
+}
+
+function render_flashcards_meta_box($post) {
+    wp_nonce_field('flashcards_meta_box', 'flashcards_meta_nonce');
+    
+    $flashcards = get_post_meta($post->ID, '_flashcards_data', true);
+    $flashcards = $flashcards ? json_decode($flashcards, true) : [];
+    
+    ?>
+    <div id="flashcards-container">
+        <p>Add flashcard questions and answers for interactive study:</p>
+        <div id="flashcards-list">
+            <?php foreach ($flashcards as $index => $card) : ?>
+                <div class="flashcard-item" data-index="<?php echo $index; ?>" style="margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 5px;">
+                    <h4>Card <?php echo $index + 1; ?></h4>
+                    <p><strong>Question:</strong></p>
+                    <textarea name="flashcards[<?php echo $index; ?>][question]" rows="2" style="width: 100%; margin-bottom: 10px;"><?php echo esc_textarea($card['question']); ?></textarea>
+                    
+                    <p><strong>Answer:</strong></p>
+                    <textarea name="flashcards[<?php echo $index; ?>][answer]" rows="2" style="width: 100%; margin-bottom: 10px;"><?php echo esc_textarea($card['answer']); ?></textarea>
+                    
+                    <p><strong>Explanation (optional):</strong></p>
+                    <textarea name="flashcards[<?php echo $index; ?>][explanation]" rows="3" style="width: 100%; margin-bottom: 10px;"><?php echo esc_textarea($card['explanation']); ?></textarea>
+                    
+                    <button type="button" class="button remove-flashcard">Remove Card</button>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <button type="button" id="add-flashcard" class="button button-primary">Add Flashcard</button>
+    </div>
+    
+    <script>
+    jQuery(document).ready(function($) {
+        let cardIndex = <?php echo count($flashcards); ?>;
+        
+        $('#add-flashcard').click(function() {
+            const html = `
+                <div class="flashcard-item" data-index="${cardIndex}" style="margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 5px;">
+                    <h4>Card ${cardIndex + 1}</h4>
+                    <p><strong>Question:</strong></p>
+                    <textarea name="flashcards[${cardIndex}][question]" rows="2" style="width: 100%; margin-bottom: 10px;"></textarea>
+                    
+                    <p><strong>Answer:</strong></p>
+                    <textarea name="flashcards[${cardIndex}][answer]" rows="2" style="width: 100%; margin-bottom: 10px;"></textarea>
+                    
+                    <p><strong>Explanation (optional):</strong></p>
+                    <textarea name="flashcards[${cardIndex}][explanation]" rows="3" style="width: 100%; margin-bottom: 10px;"></textarea>
+                    
+                    <button type="button" class="button remove-flashcard">Remove Card</button>
+                </div>
+            `;
+            $('#flashcards-list').append(html);
+            cardIndex++;
+        });
+        
+        $(document).on('click', '.remove-flashcard', function() {
+            $(this).closest('.flashcard-item').remove();
+        });
+    });
+    </script>
+    <?php
+}
+
+// Save Flashcards
+add_action('save_post', 'save_flashcards_meta_box');
+function save_flashcards_meta_box($post_id) {
+    if (!isset($_POST['flashcards_meta_nonce']) || !wp_verify_nonce($_POST['flashcards_meta_nonce'], 'flashcards_meta_box')) {
+        return;
+    }
+    
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+    
+    if (isset($_POST['flashcards'])) {
+        $flashcards = array_values($_POST['flashcards']); // Reindex array
+        update_post_meta($post_id, '_flashcards_data', json_encode($flashcards));
+    } else {
+        delete_post_meta($post_id, '_flashcards_data');
+    }
+}
+
+// Expose flashcards in REST API
+add_action('rest_api_init', 'add_flashcards_to_api');
+function add_flashcards_to_api() {
+    register_rest_field('certification', 'flashcards', array(
+        'get_callback' => function($post) {
+            $flashcards = get_post_meta($post['id'], '_flashcards_data', true);
+            return $flashcards ? json_decode($flashcards, true) : [];
+        },
+        'schema' => array(
+            'description' => 'Flashcards for certification',
+            'type' => 'array',
+        )
+    ));
 }
 
 // ============================================================================
