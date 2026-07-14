@@ -34,6 +34,7 @@ import { injectInternalLinks } from '@/lib/pseo/linkingEngine';
 import { getRelatedTools } from '@/data/articleToolMap';
 import { getRecommendedCourses, getPlatformColor } from '@/data/courseRecommendations';
 import InlineToolWidget from '@/components/InlineToolWidget';
+import AuthorBioCard from '@/components/AuthorBioCard';
 import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap, Megaphone, MessageCircleQuestion, Send } from 'lucide-react';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
@@ -497,10 +498,11 @@ const RelatedPosts = ({ currentPostId, category }) => {
 // 🎨 OPTION 1: MINIMALIST AUTHOR CHIP + FLOATING ACTION (RECOMMENDED)
 // ============================================================================
 const MetadataOption1 = ({ safePost, formatDate }) => {
-  const isOwner = ['sainath reddy', 'sainath'].includes(safePost.author.toLowerCase().trim());
-  const authorDisplayName = isOwner ? 'Sainath Reddy' : safePost.author;
+  const isOwner = ['sainath reddy', 'sainath'].includes((safePost.author?.name || '').toLowerCase().trim());
+  const authorDisplayName = isOwner ? 'Sainath Reddy' : (safePost.author?.name || 'Unknown Author');
   const authorInitials = authorDisplayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : 'Guest Author';
+  const authorAvatarUrl = safePost.author?.avatarUrl || '';
+  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : (safePost.author?.role || 'Guest Author');
   const authorLink = isOwner ? '/about' : null;
   const AuthorWrapper = ({ children, className }) =>
     authorLink ? <Link to={authorLink} className={className}>{children}</Link>
@@ -533,9 +535,19 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
         <AuthorWrapper
           className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-800 hover:to-slate-700 border border-slate-600/40 hover:border-slate-500/60 transition-all backdrop-blur-sm group/chip"
         >
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
-            {authorInitials}
-          </div>
+          {authorAvatarUrl ? (
+            <img
+              src={authorAvatarUrl}
+              alt={authorDisplayName}
+              width={40}
+              height={40}
+              className="w-10 h-10 rounded-full object-cover border border-blue-500/30 shadow-lg"
+            />
+          ) : (
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+              {authorInitials}
+            </div>
+          )}
           <div className="flex flex-col gap-0.5">
             <span className="text-sm font-bold text-white group-hover/chip:text-blue-300">{authorDisplayName}</span>
             <span className="text-xs text-gray-400">{authorSubtitle}</span>
@@ -670,7 +682,9 @@ const ArticlePage = () => {
     content: post.content || '<p>Content not available</p>',
     category: post.category || 'Uncategorized',
     tags: post.tags || [],
-    author: post.author || 'Sainath Reddy',
+    author: post.author && typeof post.author === 'object'
+      ? post.author
+      : { name: post.author || 'Sainath Reddy', bio: '', avatarUrl: '', website: '', linkedin: '', twitter: '', role: '' },
     date: post.date || new Date().toISOString(),
     modified: post.modified || post.date || new Date().toISOString(),
     readTime: post.readTime || '1 min read',
@@ -688,16 +702,16 @@ const ArticlePage = () => {
     (parseInt(safePost.readTime) || 1) <= 2 ||
     articleWordCount < 300;
 
-  // Dynamic author display helper
-  const isOwner = ['sainath reddy', 'sainath'].includes(safePost.author.toLowerCase().trim());
-  const authorDisplayName = isOwner ? 'Sainath Reddy' : safePost.author;
+  // Dynamic author display helpers
+  const isOwner = ['sainath reddy', 'sainath'].includes((safePost.author?.name || '').toLowerCase().trim());
+  const authorDisplayName = isOwner ? 'Sainath Reddy' : (safePost.author?.name || 'Unknown Author');
   const authorInitials = authorDisplayName
     .split(' ')
     .map(w => w[0])
     .join('')
     .toUpperCase()
     .slice(0, 2);
-  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : 'Guest Author';
+  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : (safePost.author?.role || 'Guest Author');
   const authorLink = isOwner ? '/about' : null;
 
   const AuthorWrapper = ({ children, className }) =>
@@ -880,43 +894,8 @@ const ArticlePage = () => {
           {/* Contextual Tool Widget — TEMPORARILY hidden for AdSense approval */}
           {/* <InlineToolWidget post={safePost} /> */}
 
-          {/* Enhanced Author Footer */}
-          <div className="border-t-2 border-gray-700/50 pt-8 mt-12">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 p-6 bg-gradient-to-r from-blue-900/10 to-purple-900/10 rounded-2xl border border-blue-500/20">
-              <div className="space-y-3">
-                <p className="text-sm text-gray-400 uppercase tracking-wider">Published by</p>
-                <AuthorWrapper
-                  className="font-bold text-2xl text-white hover:text-blue-400 transition-colors inline-flex items-center gap-2 group"
-                >
-                  {authorDisplayName}
-                  {authorLink && <ArrowRight className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" />}
-                </AuthorWrapper>
-                <p className="text-base text-blue-400 font-semibold">{authorSubtitle}</p>
-                <div className="flex items-center gap-4 text-sm">
-                  <span className="text-gray-400">📅 {formatDate(safePost.date)}</span>
-                  {isOwner && (
-                  <>
-                  <span className="text-gray-700">•</span>
-                  <span className="text-yellow-400 font-semibold">🎯 4+ years experience</span>
-                  </>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col gap-3">
-                <Button asChild className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold shadow-lg">
-                  <Link to="/articles">
-                    <ArrowRight className="mr-2 h-5 w-5" />
-                    More Articles
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" className="border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 font-semibold">
-                  <Link to="/contact">
-                    Get in Touch
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </div>
+          {/* Rich Author Bio Card */}
+          <AuthorBioCard author={safePost.author} />
         </motion.article>
 
         <InArticleCTA />

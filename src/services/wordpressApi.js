@@ -269,7 +269,21 @@ class WordPressAPI {
         }));
       }
 
-      const author = wpPost._embedded?.author?.[0]?.name || 'DataEngineer Hub';
+      // Extract full author object so the UI can render avatar, bio, and social links
+      const authorEmbed = wpPost._embedded?.author?.[0] || {};
+      const author = {
+        name: authorEmbed.name || 'DataEngineer Hub',
+        bio: authorEmbed.description || '',
+        // Prefer 96×96 Gravatar, fall back to 48×48, then nothing
+        avatarUrl: authorEmbed.avatar_urls?.['96'] || authorEmbed.avatar_urls?.['48'] || '',
+        website: authorEmbed.url || '',
+        // Custom user meta fields — exposed via WP REST API user meta registration
+        // (e.g. register_meta with show_in_rest: true, or via ACF / Yoast user fields)
+        linkedin: authorEmbed.meta?.linkedin_url || authorEmbed.acf?.linkedin_url || '',
+        twitter: authorEmbed.meta?.twitter_url || authorEmbed.acf?.twitter_url
+          || authorEmbed.meta?.['wpseo_profile_twitter'] || '',
+        role: authorEmbed.meta?.job_title || authorEmbed.acf?.job_title || '',
+      };
       const featured = wpPost.meta?.featured === '1' || wpPost.meta?.featured === 1;
       const trending = wpPost.meta?.trending === '1' || wpPost.meta?.trending === 1;
 
@@ -339,7 +353,7 @@ class WordPressAPI {
         image: 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop',
         featured: false,
         trending: false,
-        author: 'DataEngineer Hub',
+        author: { name: 'DataEngineer Hub', bio: '', avatarUrl: '', website: '', linkedin: '', twitter: '', role: '' },
       };
     }
   }

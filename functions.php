@@ -49,6 +49,82 @@ remove_action('init', 'handle_cors_requests');
 add_action('init', 'handle_cors_requests', 9);
 
 // ============================================================================
+// GUEST AUTHOR — Expose custom user meta fields in the REST API
+// ============================================================================
+// These fields let you add LinkedIn, Twitter, and job title for any WordPress
+// user (including guest authors). Fill them in WP Admin → Users → Edit User.
+// The frontend reads them via the embedded author object (_embed=author).
+// ============================================================================
+
+add_action( 'rest_api_init', 'dehub_register_author_meta_fields' );
+function dehub_register_author_meta_fields() {
+    $fields = [
+        'linkedin_url' => 'LinkedIn profile URL for this author.',
+        'twitter_url'  => 'Twitter / X profile URL or @handle for this author.',
+        'job_title'    => 'Job title or role shown below the author name.',
+    ];
+
+    foreach ( $fields as $key => $description ) {
+        register_meta( 'user', $key, [
+            'show_in_rest'  => true,
+            'single'        => true,
+            'type'          => 'string',
+            'description'   => $description,
+            'auth_callback' => function() { return current_user_can( 'edit_users' ); },
+        ] );
+    }
+}
+
+// Add the custom fields to the WP Admin user edit form so you can fill them in easily.
+add_action( 'show_user_profile',  'dehub_author_social_fields' );
+add_action( 'edit_user_profile',  'dehub_author_social_fields' );
+function dehub_author_social_fields( $user ) {
+    ?>
+    <h3>📝 Author Profile — DataEngineer Hub</h3>
+    <table class="form-table">
+        <tr>
+            <th><label for="linkedin_url">LinkedIn URL</label></th>
+            <td>
+                <input type="url" name="linkedin_url" id="linkedin_url"
+                    value="<?php echo esc_attr( get_user_meta( $user->ID, 'linkedin_url', true ) ); ?>"
+                    class="regular-text" placeholder="https://linkedin.com/in/username" />
+            </td>
+        </tr>
+        <tr>
+            <th><label for="twitter_url">Twitter / X URL</label></th>
+            <td>
+                <input type="url" name="twitter_url" id="twitter_url"
+                    value="<?php echo esc_attr( get_user_meta( $user->ID, 'twitter_url', true ) ); ?>"
+                    class="regular-text" placeholder="https://twitter.com/username" />
+            </td>
+        </tr>
+        <tr>
+            <th><label for="job_title">Job Title / Role</label></th>
+            <td>
+                <input type="text" name="job_title" id="job_title"
+                    value="<?php echo esc_attr( get_user_meta( $user->ID, 'job_title', true ) ); ?>"
+                    class="regular-text" placeholder="e.g. Senior Data Engineer at Acme Corp" />
+            </td>
+        </tr>
+    </table>
+    <?php
+}
+
+// Save the custom fields when the user profile is updated.
+add_action( 'personal_options_update',  'dehub_save_author_social_fields' );
+add_action( 'edit_user_profile_update', 'dehub_save_author_social_fields' );
+function dehub_save_author_social_fields( $user_id ) {
+    if ( ! current_user_can( 'edit_user', $user_id ) ) return;
+
+    foreach ( [ 'linkedin_url', 'twitter_url', 'job_title' ] as $field ) {
+        if ( isset( $_POST[ $field ] ) ) {
+            $value = sanitize_text_field( $_POST[ $field ] );
+            update_user_meta( $user_id, $field, $value );
+        }
+    }
+}
+
+// ============================================================================
 // SECURITY HARDENING — strip information leaks from <head> output
 // ============================================================================
 // Suppress the default <meta name="generator" content="WordPress X.Y.Z">.
