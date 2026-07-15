@@ -24,18 +24,18 @@ const AuthorBioCard = ({ author }) => {
     .slice(0, 2);
 
   // For the owner, use a fixed role + a default bio if WP profile bio is empty
-  const role = isOwner
-    ? 'Data Engineer at Anblicks'
-    : author.role || 'Guest Author';
-
+  const role = isOwner ? 'Data Engineer at Anblicks' : (author.role || 'Guest Author');
   const bio = isOwner
     ? author.bio ||
       'Data Engineer with 4+ years of experience building scalable data pipelines, cloud data warehouses, and end-to-end analytics solutions. Passionate about making complex data engineering concepts accessible to everyone.'
     : author.bio;
 
+  // For the owner always show the main domain, not the WP admin subdomain
+  const websiteUrl = isOwner ? 'https://dataengineerhub.blog' : author.website;
+
   const hasLinkedin = Boolean(author.linkedin);
-  const hasTwitter = Boolean(author.twitter);
-  const hasWebsite = Boolean(author.website);
+  const hasTwitter  = Boolean(author.twitter);
+  const hasWebsite  = isOwner || Boolean(author.website);
 
   return (
     <motion.div
@@ -148,7 +148,7 @@ const AuthorBioCard = ({ author }) => {
 
               {hasWebsite && (
                 <a
-                  href={author.website}
+                  href={websiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`${displayName}'s website`}
