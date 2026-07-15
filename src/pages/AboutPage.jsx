@@ -13,9 +13,11 @@ import MetaTags from '@/components/SEO/MetaTags';
 import { getPersonSchema, getBreadcrumbSchema, getFAQSchema, SITE_CONFIG } from '@/lib/seoConfig';
 import { Button } from '@/components/ui/button';
 
+const YOE = Math.max(5, new Date().getFullYear() - 2021);
+
 // ── Static data ───────────────────────────────────────────────
 const STATS = [
-  { icon: Briefcase,   value: '4+',       label: 'Years Experience',    color: 'from-blue-500 to-purple-600' },
+  { icon: Briefcase,   value: `${YOE}+`,  label: 'Years Experience',    color: 'from-blue-500 to-purple-600' },
   { icon: Database,    value: '15+',      label: 'Tools Mastered',      color: 'from-green-500 to-teal-500' },
   { icon: Cloud,       value: '3',        label: 'Cloud Platforms',     color: 'from-orange-500 to-red-500' },
   { icon: PenLine,     value: '20+',      label: 'Articles Published',  color: 'from-pink-500 to-rose-500' },
@@ -23,8 +25,8 @@ const STATS = [
 
 const TIMELINE = [
   {
-    year: '2024 – Present',
-    role: 'Data Engineer',
+    year: 'Oct 2025 – Present',
+    role: 'Engineer III - Data & AI',
     company: 'Anblicks',
     location: 'Hyderabad, India',
     color: 'from-blue-500 to-purple-600',
@@ -35,27 +37,26 @@ const TIMELINE = [
     ],
   },
   {
-    year: '2022 – 2024',
-    role: 'Data Engineer',
-    company: 'Previous Role',
+    year: 'Jun 2025 – Oct 2025',
+    role: 'Senior Data Engineer',
+    company: 'Relanto',
     location: 'Hyderabad, India',
     color: 'from-teal-500 to-cyan-500',
     highlights: [
-      'ETL/ELT pipeline development with Apache Airflow & dbt',
-      'Azure Synapse Analytics data warehouse implementation',
-      'Python-based data quality frameworks',
+      'ETL/ELT pipeline development with advanced analytics',
+      'Data warehouse implementation and query optimization',
     ],
   },
   {
-    year: '2020 – 2022',
-    role: 'Junior Data Engineer',
-    company: 'Early Career',
+    year: '2021 – 2025',
+    role: 'Data Engineer',
+    company: 'Cognizant',
     location: 'India',
     color: 'from-purple-500 to-pink-500',
     highlights: [
-      'SQL analytics and reporting for business intelligence',
-      'Learned core data warehousing and ETL patterns',
-      'Built foundational expertise in Python & SQL',
+      'Progressed from Trainee to Associate Data Engineer',
+      'Built scalable data integration and Python workflows',
+      'Functional testing and Snowflake Cloud implementations',
     ],
   },
 ];
@@ -106,7 +107,7 @@ const SOCIAL_LINKS = [
 const FAQS = [
   {
     question: 'Who is Sainath Reddy?',
-    answer: 'Sainath Reddy is a Data Engineer at Anblicks with 4+ years of experience specializing in cloud-native data architectures, ETL/ELT pipelines, and modern data stack technologies.',
+    answer: `Sainath Reddy is a Data Engineer at Anblicks with ${YOE}+ years of experience specializing in cloud-native data architectures, ETL/ELT pipelines, and modern data stack technologies.`,
   },
   {
     question: 'What technologies does Sainath specialize in?',
@@ -164,7 +165,11 @@ const AboutPage = () => {
                   <div className="relative">
                     <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 blur-md opacity-60 scale-110" />
                     <div className="relative w-28 h-28 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center border-4 border-slate-900 shadow-2xl">
-                      <span className="text-4xl md:text-5xl font-black text-white tracking-tight select-none">SR</span>
+                      <img 
+                        src="https://secure.gravatar.com/avatar/344a01fa4bf69414fd1de0aee6e1fce9d00a2400bdf76d73f895120142dbd47a?s=256&d=mm&r=g" 
+                        alt="Sainath Reddy" 
+                        className="w-full h-full object-cover rounded-full"
+                      />
                     </div>
                     {/* Online badge */}
                     <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center border-2 border-slate-900 shadow-lg">
@@ -189,7 +194,7 @@ const AboutPage = () => {
                   </span>
                   <span className="text-gray-600">•</span>
                   <span className="inline-flex items-center gap-1">
-                    <Calendar className="h-3.5 w-3.5 text-blue-400" /> 4+ Years Experience
+                    <Calendar className="h-3.5 w-3.5 text-blue-400" /> {YOE}+ Years Experience
                   </span>
                   <span className="text-gray-600">•</span>
                   <span className="inline-flex items-center gap-1">
