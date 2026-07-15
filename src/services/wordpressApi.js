@@ -269,16 +269,20 @@ class WordPressAPI {
         }));
       }
 
-      // Extract full author object so the UI can render avatar, bio, and social links
+      // Keep author as a plain string for backward compatibility with list
+      // components (PostCard, PostListItem, RecentPosts, etc.) that render
+      // {post.author} directly. Rich data lives in authorData, consumed only
+      // by ArticlePage's AuthorBioCard.
       const authorEmbed = wpPost._embedded?.author?.[0] || {};
-      const author = {
-        name: authorEmbed.name || 'DataEngineer Hub',
+      const authorName = authorEmbed.name || 'DataEngineer Hub';
+      const author = authorName; // string — DO NOT change to object
+      const authorData = {
+        name: authorName,
         bio: authorEmbed.description || '',
         // Prefer 96×96 Gravatar, fall back to 48×48, then nothing
         avatarUrl: authorEmbed.avatar_urls?.['96'] || authorEmbed.avatar_urls?.['48'] || '',
         website: authorEmbed.url || '',
-        // Custom user meta fields — exposed via WP REST API user meta registration
-        // (e.g. register_meta with show_in_rest: true, or via ACF / Yoast user fields)
+        // Custom user meta fields exposed via WP REST API (register_meta with show_in_rest: true)
         linkedin: authorEmbed.meta?.linkedin_url || authorEmbed.acf?.linkedin_url || '',
         twitter: authorEmbed.meta?.twitter_url || authorEmbed.acf?.twitter_url
           || authorEmbed.meta?.['wpseo_profile_twitter'] || '',
@@ -325,7 +329,8 @@ class WordPressAPI {
         image: imageUrl,
         featured: featured,
         trending: trending,
-        author: author,
+        author: author,       // string — safe to render in any component
+        authorData: authorData, // object — used only by ArticlePage AuthorBioCard
       };
 
       console.log('✅ Transformed post:', {
@@ -353,7 +358,8 @@ class WordPressAPI {
         image: 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop',
         featured: false,
         trending: false,
-        author: { name: 'DataEngineer Hub', bio: '', avatarUrl: '', website: '', linkedin: '', twitter: '', role: '' },
+        author: 'DataEngineer Hub',
+        authorData: { name: 'DataEngineer Hub', bio: '', avatarUrl: '', website: '', linkedin: '', twitter: '', role: '' },
       };
     }
   }

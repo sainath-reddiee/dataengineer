@@ -498,11 +498,11 @@ const RelatedPosts = ({ currentPostId, category }) => {
 // 🎨 OPTION 1: MINIMALIST AUTHOR CHIP + FLOATING ACTION (RECOMMENDED)
 // ============================================================================
 const MetadataOption1 = ({ safePost, formatDate }) => {
-  const isOwner = ['sainath reddy', 'sainath'].includes((safePost.author?.name || '').toLowerCase().trim());
-  const authorDisplayName = isOwner ? 'Sainath Reddy' : (safePost.author?.name || 'Unknown Author');
+  const isOwner = ['sainath reddy', 'sainath'].includes((safePost.author || '').toLowerCase().trim());
+  const authorDisplayName = isOwner ? 'Sainath Reddy' : (safePost.author || 'Unknown Author');
   const authorInitials = authorDisplayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-  const authorAvatarUrl = safePost.author?.avatarUrl || '';
-  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : (safePost.author?.role || 'Guest Author');
+  const authorAvatarUrl = safePost.authorData?.avatarUrl || '';
+  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : (safePost.authorData?.role || 'Guest Author');
   const authorLink = isOwner ? '/about' : null;
   const AuthorWrapper = ({ children, className }) =>
     authorLink ? <Link to={authorLink} className={className}>{children}</Link>
@@ -682,9 +682,8 @@ const ArticlePage = () => {
     content: post.content || '<p>Content not available</p>',
     category: post.category || 'Uncategorized',
     tags: post.tags || [],
-    author: post.author && typeof post.author === 'object'
-      ? post.author
-      : { name: post.author || 'Sainath Reddy', bio: '', avatarUrl: '', website: '', linkedin: '', twitter: '', role: '' },
+    author: post.author || 'Sainath Reddy',
+    authorData: post.authorData || { name: post.author || 'Sainath Reddy', bio: '', avatarUrl: '', website: '', linkedin: '', twitter: '', role: '' },
     date: post.date || new Date().toISOString(),
     modified: post.modified || post.date || new Date().toISOString(),
     readTime: post.readTime || '1 min read',
@@ -703,15 +702,15 @@ const ArticlePage = () => {
     articleWordCount < 300;
 
   // Dynamic author display helpers
-  const isOwner = ['sainath reddy', 'sainath'].includes((safePost.author?.name || '').toLowerCase().trim());
-  const authorDisplayName = isOwner ? 'Sainath Reddy' : (safePost.author?.name || 'Unknown Author');
+  const isOwner = ['sainath reddy', 'sainath'].includes((safePost.author || '').toLowerCase().trim());
+  const authorDisplayName = isOwner ? 'Sainath Reddy' : (safePost.author || 'Unknown Author');
   const authorInitials = authorDisplayName
     .split(' ')
     .map(w => w[0])
     .join('')
     .toUpperCase()
     .slice(0, 2);
-  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : (safePost.author?.role || 'Guest Author');
+  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : (safePost.authorData?.role || 'Guest Author');
   const authorLink = isOwner ? '/about' : null;
 
   const AuthorWrapper = ({ children, className }) =>
@@ -895,7 +894,7 @@ const ArticlePage = () => {
           {/* <InlineToolWidget post={safePost} /> */}
 
           {/* Rich Author Bio Card */}
-          <AuthorBioCard author={safePost.author} />
+          <AuthorBioCard author={safePost.authorData} />
         </motion.article>
 
         <InArticleCTA />
