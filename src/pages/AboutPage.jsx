@@ -31,43 +31,46 @@ const TIMELINE = [
     location: 'Hyderabad, India',
     color: 'from-blue-500 to-purple-600',
     highlights: [
-      'Building cloud-native data pipelines on Snowflake & AWS',
-      'Salesforce Data Cloud integrations at enterprise scale',
-      'Architecting real-time streaming solutions with Kafka',
+      'Architected groundbreaking Agentic AI accelerators natively on Snowflake Cortex, boosting team engineering efficiency by 60-70%.',
+      'Built the "AI Silver Modeler" and "AI dbt Code Generator", reducing data modeling and pipeline development from weeks to minutes.',
+      'Developed an AI-powered Data Model Validator in Streamlit that orchestrates multiple agents to ensure OSCRE industry standard compliance.',
+      'Engineered a DQ Accelerator that automates data quality rule generation through seamless integration with Collibra and SODA CL.',
+      'Delivered intelligent Data Quality analytics using Cortex LLMs for automated root-cause summaries and >60% accurate CDE-to-Rule semantic mapping.'
     ],
   },
   {
     year: 'Jun 2025 – Oct 2025',
     role: 'Senior Data Engineer',
-    company: 'Relanto',
+    company: 'Relanto (Client: The Hartford)',
     location: 'Hyderabad, India',
     color: 'from-teal-500 to-cyan-500',
     highlights: [
-      'ETL/ELT pipeline development with advanced analytics',
-      'Data warehouse implementation and query optimization',
+      'Architected real-time and batch ingestion pipelines using Snowflake Streams, Tasks, and Snowpipe, improving data freshness by 30%.',
+      'Optimized query execution time for large datasets by 50% utilizing advanced Snowflake features like clustering keys and zero-copy cloning.',
+      'Automated complex ETL workflows across Informatica and Talend using Autosys to seamlessly load data from S3 to Snowflake.',
     ],
   },
   {
     year: '2021 – 2025',
     role: 'Data Engineer',
-    company: 'Cognizant',
+    company: 'Cognizant (Client: The Hartford)',
     location: 'India',
     color: 'from-purple-500 to-pink-500',
     highlights: [
-      'Progressed from Trainee to Associate Data Engineer',
-      'Built scalable data integration and Python workflows',
-      'Functional testing and Snowflake Cloud implementations',
+      'Engineered and optimized complex Oracle database structures (normalized tables, indexed views), accelerating data retrieval by 30%.',
+      'Implemented rigorous SQL-based end-to-end data validation frameworks between Oracle and Snowflake to guarantee 100% data accuracy.',
+      'Reduced system downtime by 40% through proactive monitoring, log analysis, and robust cross-environment synchronization.',
     ],
   },
 ];
 
 const TECH_GROUPS = [
   { icon: Cloud,    title: 'Cloud Platforms', tone: 'blue',   items: ['AWS', 'Azure', 'GCP'] },
-  { icon: Layers,   title: 'Data Warehouses', tone: 'purple', items: ['Snowflake', 'Databricks', 'BigQuery', 'Redshift'] },
-  { icon: Settings, title: 'ETL / ELT',       tone: 'teal',  items: ['Apache Airflow', 'dbt', 'Glue', 'ADF'] },
-  { icon: Cpu,      title: 'Languages & Tools', tone: 'cyan', items: ['Python', 'SQL', 'Spark', 'Kafka'] },
-  { icon: Database, title: 'Specializations',  tone: 'rose',  items: ['Salesforce Data Cloud', 'Delta Lake', 'Unity Catalog'] },
-  { icon: ShieldCheck, title: 'Practices',     tone: 'green', items: ['Data Governance', 'CI/CD', 'DataOps'] },
+  { icon: Layers,   title: 'Data Warehouses', tone: 'purple', items: ['Snowflake', 'Databricks', 'BigQuery', 'Oracle'] },
+  { icon: Settings, title: 'ETL / ELT',       tone: 'teal',   items: ['Apache Airflow', 'dbt', 'Informatica', 'Autosys'] },
+  { icon: Cpu,      title: 'Languages & APIs',tone: 'cyan',   items: ['Python', 'SQL', 'Snowpark API', 'Kafka'] },
+  { icon: Sparkles, title: 'AI & Analytics',  tone: 'rose',   items: ['Snowflake Cortex (LLMs)', 'AI-Assisted DQ', 'Semantic Mapping'] },
+  { icon: ShieldCheck, title: 'Practices',    tone: 'green',  items: ['Data Governance', 'CI/CD', 'DataOps'] },
 ];
 
 const TONE_CLASSES = {
@@ -80,12 +83,12 @@ const TONE_CLASSES = {
 };
 
 const SKILLS = [
-  { icon: Layers,      title: 'Data Architecture',  desc: 'Scalable end-to-end systems from ingestion to BI' },
-  { icon: Workflow,    title: 'Pipeline Dev',        desc: 'ETL/ELT with Airflow, dbt, Glue & ADF' },
-  { icon: Gauge,       title: 'Performance Tuning',  desc: 'Query & warehouse optimization at scale' },
-  { icon: Cloud,       title: 'Multi-Cloud',         desc: 'AWS · Azure · GCP native architectures' },
-  { icon: BarChart3,   title: 'Data Modeling',       desc: 'Star schema, OBT, lakehouse patterns' },
-  { icon: ShieldCheck, title: 'Governance & Quality', desc: 'DQ frameworks, lineage & compliance' },
+  { icon: Sparkles,    title: 'AI in DataOps',       desc: 'Snowflake Cortex for JSON analytics & LLM-driven executive summaries' },
+  { icon: Workflow,    title: 'Pipeline Automation', desc: 'ETL/ELT orchestration with Airflow, dbt, and Snowpark Python' },
+  { icon: ShieldCheck, title: 'Data Quality & Gov.', desc: 'End-to-end DQ pipelines, CDE-to-Rule mapping, and automated lineage' },
+  { icon: Gauge,       title: 'Advanced SQL',        desc: 'Dynamic SQL, LATERAL FLATTEN, RESULT_SCAN & performance tuning' },
+  { icon: Layers,      title: 'Data Architecture',   desc: 'Scalable cloud-native models across Snowflake & Oracle ecosystems' },
+  { icon: BarChart3,   title: 'Dashboard Scorecards',desc: 'Parameterized procedures for aggregated KPI and remediation reporting' },
 ];
 
 const WHAT_I_WRITE = [
