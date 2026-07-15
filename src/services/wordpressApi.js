@@ -1,4 +1,4 @@
-// src/services/wordpressApi.js - FIXED READ TIME CALCULATION
+// src/services/wordpressApi.js - FIXED READ TIME CALCULATION + GUEST AUTHOR SUPPORT
 const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog';
 const WP_API_BASE = `${WORDPRESS_API_URL}/wp-json/wp/v2`;
 
