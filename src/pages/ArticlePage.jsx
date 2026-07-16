@@ -26,6 +26,7 @@ import ShareButtons from '@/components/ShareButtons';
 import KeyTakeaways from '@/components/KeyTakeaways';
 import GiscusComments from '@/components/GiscusComments';
 import InArticleCTA from '@/components/InArticleCTA';
+import AudioReader from '@/components/AudioReader';
 import EmailDigestBanner from '@/components/EmailDigestBanner';
 import useCopyCodeButtons from '@/hooks/useCopyCodeButtons';
 import useReactions from '@/hooks/useReactions';
@@ -809,6 +810,9 @@ const ArticlePage = () => {
 
           {/* Key Takeaways — AEO/AI visibility, Speakable schema target */}
           <KeyTakeaways items={keyTakeaways} />
+
+          {/* ── Listen to this Article — Native Audio Reader ── */}
+          <AudioReader content={safePost.content} title={safePost.title} />
 
           {/* ── Advertising Disclosure (AdSense policy requirement) ── */}
           <div className="flex items-center gap-2 text-xs text-gray-500 bg-slate-800/40 border border-slate-700/40 rounded-lg px-3 py-2">
