@@ -16,6 +16,7 @@ const ANNOUNCEMENT = {
 const STORAGE_KEY = `announcement_dismissed_${ANNOUNCEMENT.id}`;
 
 const AnnouncementBar = ({ onVisibilityChange }) => {
+  return null;
   // Read dismissal state synchronously on the very first render so the parent
   // layout can reserve padding without a visible layout shift when the bar
   // actually needs to be shown. During SSG/prerender there is no localStorage;

@@ -25,9 +25,10 @@ const AuthorBioCard = ({ author }) => {
 
   // For the owner, use a fixed role + a default bio if WP profile bio is empty
   const role = isOwner ? 'Data Engineer at Anblicks' : (author.role || 'Guest Author');
+  const YOE = Math.max(5, new Date().getFullYear() - 2021);
   const bio = isOwner
     ? author.bio ||
-      'Data Engineer with 4+ years of experience building scalable data pipelines, cloud data warehouses, and end-to-end analytics solutions. Passionate about making complex data engineering concepts accessible to everyone.'
+      `Data Engineer with ${YOE}+ years of experience building scalable data pipelines, cloud data warehouses, and end-to-end analytics solutions. Passionate about making complex data engineering concepts accessible to everyone.`
     : author.bio;
 
   // For the owner always show the main domain, not the WP admin subdomain
@@ -35,7 +36,7 @@ const AuthorBioCard = ({ author }) => {
 
   const hasLinkedin = Boolean(author.linkedin);
   const hasTwitter  = Boolean(author.twitter);
-  const hasWebsite  = isOwner || Boolean(author.website);
+  const hasWebsite  = !isOwner && Boolean(author.website);
 
   return (
     <motion.div

@@ -53,7 +53,7 @@ const Footer = () => {
   };
 
   const socialLinks = [
-    { name: 'GitHub', icon: Github, href: 'https://github.com/sainath-reddiee/dataengineer' },
+    { name: 'GitHub', icon: Github, href: 'https://github.com/sainath-reddiee' },
     { name: 'LinkedIn', icon: Linkedin, href: 'https://www.linkedin.com/in/sainathreddypogaku/' },
     { name: 'Email', icon: Mail, href: 'mailto:sainath@dataengineerhub.blog' }
   ];

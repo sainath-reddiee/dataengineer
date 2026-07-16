@@ -25,16 +25,7 @@ const COURSES = {
     difficulty: 'Intermediate',
     isFree: false,
   },
-  snowproGenAI: {
-    id: 'snowpro-gen-ai',
-    title: 'SnowPro Specialty: Gen AI Practice Tests',
-    platform: 'Udemy',
-    url: 'https://www.udemy.com/course/snowpro-specialty-generative-ai-practice-exams-ges-c01/?referralCode=54600677AA1322EA8749',
-    description: 'Practice exams for the SnowPro Specialty Generative AI (GES-C01) certification — Cortex LLM, ML, vector search.',
-    tags: ['snowflake', 'ai', 'certification'],
-    difficulty: 'Advanced',
-    isFree: false,
-  },
+
   // dbt
   dbtFundamentals: {
     id: 'dbt-fundamentals',
@@ -145,15 +136,11 @@ export function getPlatformColor(platform) {
 // ── Sponsored slot (set to null to disable) ─────────────────
 // The sponsored course is pinned as the first card in the grid
 // when its targetKeys match the current article's category/tags.
-export const SPONSORED_SLOT = {
-  ...COURSES.snowproGenAI,
-  isSponsored: true,
-  targetKeys: ['snowflake', 'cortex', 'ai', 'data-warehousing', 'data-engineering', 'iceberg'],
-};
+export const SPONSORED_SLOT = null;
 
 // ── Category / tag → course mapping ─────────────────────────
 const COURSE_MAP = {
-  snowflake: [COURSES.snowproCore, COURSES.snowproGenAI],
+  snowflake: [COURSES.snowproCore],
   dbt:       [COURSES.dbtFundamentals],
   airflow:   [COURSES.astronomerCert, COURSES.airflowIntro],
   sql:       [COURSES.sqlTutorialMode, COURSES.snowproCore],
@@ -168,8 +155,8 @@ const COURSE_MAP = {
   etl:       [COURSES.dbtFundamentals, COURSES.astronomerCert, COURSES.pythonCoursera],
   orchestration: [COURSES.astronomerCert, COURSES.airflowIntro],
   iceberg:   [COURSES.databricksLakehouse, COURSES.snowproCore],
-  ai:        [COURSES.snowproGenAI],
-  cortex:    [COURSES.snowproGenAI, COURSES.snowproCore],
+  ai:        [],
+  cortex:    [COURSES.snowproCore],
 };
 
 /**

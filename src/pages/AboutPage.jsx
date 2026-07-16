@@ -103,7 +103,6 @@ const WHAT_I_WRITE = [
 const SOCIAL_LINKS = [
   { icon: Linkedin, label: 'LinkedIn', href: SITE_CONFIG.social.linkedin,        color: 'hover:border-blue-500/60 hover:text-blue-300' },
   { icon: Github,   label: 'GitHub',   href: SITE_CONFIG.social.github,          color: 'hover:border-gray-500/60 hover:text-gray-200' },
-  { icon: Globe,    label: 'Website',  href: 'https://dataengineerhub.blog',     color: 'hover:border-teal-500/60 hover:text-teal-300' },
   { icon: Mail,     label: 'Email',    href: 'mailto:sainath@dataengineerhub.blog', color: 'hover:border-pink-500/60 hover:text-pink-300' },
 ];
 
@@ -142,7 +141,7 @@ const AboutPage = () => {
     <>
       <MetaTags
         title="About Sainath Reddy — Data Engineer & DataEngineer Hub Founder"
-        description="Meet Sainath Reddy, a Data Engineer at Anblicks with 4+ years of experience in Snowflake, AWS, Azure, Databricks, Salesforce Data Cloud, and modern data engineering."
+        description={`Meet Sainath Reddy, a Data Engineer at Anblicks with ${YOE}+ years of experience in Snowflake, AWS, Azure, Databricks, Salesforce Data Cloud, and modern data engineering.`}
         keywords="sainath reddy, data engineer, anblicks, snowflake expert, databricks expert, aws data engineer, azure data engineer, salesforce data cloud, dataengineer hub"
         type="website"
       />

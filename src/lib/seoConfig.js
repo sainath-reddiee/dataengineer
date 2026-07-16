@@ -1,4 +1,4 @@
-﻿// src/lib/seoConfig.js
+// src/lib/seoConfig.js
 /**
  * Centralized SEO Configuration
  * Single source of truth for all SEO-related constants and utilities
@@ -8,6 +8,8 @@
 // SITE CONFIGURATION
 // ============================================================================
 
+export const YOE = Math.max(5, new Date().getFullYear() - 2021);
+
 export const SITE_CONFIG = {
   name: 'DataEngineer Hub',
   url: 'https://dataengineerhub.blog',
@@ -15,16 +17,16 @@ export const SITE_CONFIG = {
   author: {
     name: 'Sainath Reddy',
     role: 'Data Engineer at Anblicks',
-    experience: '4+ years',
+    experience: `${YOE}+ years`,
     url: 'https://dataengineerhub.blog/about',
     sameAs: [
       'https://www.linkedin.com/in/sainathreddypogaku/',
-      'https://github.com/sainath-reddiee/dataengineer'
+      'https://github.com/sainath-reddiee'
     ]
   },
   social: {
     linkedin: 'https://www.linkedin.com/in/sainathreddypogaku/',
-    github: 'https://github.com/sainath-reddiee/dataengineer'
+    github: 'https://github.com/sainath-reddiee'
   },
   logo: {
     url: 'https://dataengineerhub.blog/logo.png',
@@ -146,7 +148,7 @@ export function getPersonSchema() {
       'Data Warehousing',
       'Cloud Architecture',
     ],
-    description: 'Data Engineer with 4+ years of experience specializing in cloud-native data architectures, ETL/ELT pipelines, and modern data stack technologies.',
+    description: `Data Engineer with ${YOE}+ years of experience specializing in cloud-native data architectures, ETL/ELT pipelines, and modern data stack technologies.`,
   };
 }
 

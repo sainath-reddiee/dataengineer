@@ -15,12 +15,7 @@ const ANNOUNCEMENT_BAR_HEIGHT = 40;
 const ANNOUNCEMENT_STORAGE_KEY = 'announcement_dismissed_snowpro-gen-ai-2026';
 
 const readInitialBarVisible = () => {
-  if (typeof window === 'undefined') return false;
-  try {
-    return !localStorage.getItem(ANNOUNCEMENT_STORAGE_KEY);
-  } catch {
-    return false;
-  }
+  return false;
 };
 
 const Layout = () => {
