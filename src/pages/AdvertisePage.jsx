@@ -69,39 +69,6 @@ const OPPORTUNITIES = [
     durations: [
       { key: 'permanent', label: 'Permanent', price: 25 }
     ]
-  },
-  {
-    title: 'Calculator Partner Placement',
-    packageKey: 'calculator',
-    popular: false,
-    description: 'Feature your platform as a recommended cost suspension or optimization integration inside our cost calculator tools.',
-    bullets: [
-      'Placed on relevant sizing calculator dashboards',
-      'Target users calculating Snowflake or Databricks spend',
-      'Plain text recommendation matching user queries',
-      'High-intent B2B target audience'
-    ],
-    cta: 'Book Calculator Placement',
-    durations: [
-      { key: 'weekly', label: 'Weekly', price: 20 },
-      { key: 'monthly', label: 'Monthly', price: 60 }
-    ]
-  },
-  {
-    title: 'Developer Digest Discovery',
-    packageKey: 'digest',
-    popular: false,
-    description: 'A plain-text digest recommendation inside our weekly developer update sent directly to active engineers.',
-    bullets: [
-      'Recommended tool category segment',
-      'Up to 80 words of developer-focused copy',
-      'Single links with clean tracking attributes',
-      'Highly engaged engineering subscriber base'
-    ],
-    cta: 'Book Digest Placement',
-    durations: [
-      { key: 'per_issue', label: 'Per Issue', price: 35 }
-    ]
   }
 ];
 
@@ -153,9 +120,7 @@ const AdvertisePage = () => {
   const [selectedDurations, setSelectedDurations] = useState({
     resource_reference: 'monthly',
     directory: 'monthly',
-    content: 'permanent',
-    calculator: 'monthly',
-    digest: 'per_issue'
+    content: 'permanent'
   });
 
   // Fetch Live Global Currency Exchange Rates
@@ -708,8 +673,6 @@ const AdvertisePage = () => {
                         <option value="resource_reference">Developer Resource Reference</option>
                         <option value="directory">Ecosystem Showcase</option>
                         <option value="content">Technical Integration Guide</option>
-                        <option value="calculator">Calculator Partner Placement</option>
-                        <option value="digest">Developer Digest Discovery</option>
                         <option value="other">Custom Campaign</option>
                       </select>
                     </div>
