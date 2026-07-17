@@ -29,6 +29,7 @@ const NewsPage = lazy(() => import('./pages/NewsPage'));
 const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 const TagsArchivePage = lazy(() => import('./pages/TagsArchivePage'));
 const Certification = lazy(() => import('./pages/Certification'));
+const AdvertisePage = lazy(() => import('./pages/AdvertisePage'));
 
 // PSEO Pages (Programmatic SEO)
 const GlossaryHubPage = lazy(() => import('./pages/GlossaryHubPage'));
@@ -292,6 +293,7 @@ function App() {
       import('./pages/CategoryPage'); // This covers all categories including new ones
 
       // ✅ Prefetch Tools hub (frequent nav target, cold chunk causes visible lag)
+      import('./pages/ToolsHubPage');
     }, prefetchDelay);
 
     const logPerformance = () => {
@@ -340,19 +342,36 @@ function App() {
           <Route path="category/:categoryName" element={<SafeRoute fallbackText="Loading Category..."><CategoryPage /></SafeRoute>} />
           <Route path="tag" element={<SafeRoute fallbackText="Loading Tags..."><TagsArchivePage /></SafeRoute>} />
           <Route path="tag/:tagSlug" element={<SafeRoute fallbackText="Loading Tag..."><TagPage /></SafeRoute>} />
-          {/* PSEO Routes — TEMPORARILY redirected to /articles for AdSense approval.
-              Restore the original routes from git history after approval. */}
-          <Route path="glossary" element={<Navigate to="/articles" replace />} />
-          <Route path="glossary/*" element={<Navigate to="/articles" replace />} />
-          <Route path="compare" element={<Navigate to="/articles" replace />} />
-          <Route path="compare/*" element={<Navigate to="/articles" replace />} />
-          <Route path="cheatsheets" element={<Navigate to="/articles" replace />} />
-          <Route path="cheatsheets/*" element={<Navigate to="/articles" replace />} />
-          <Route path="tools" element={<Navigate to="/articles" replace />} />
-          <Route path="tools/*" element={<Navigate to="/articles" replace />} />
-          <Route path="interview-prep" element={<Navigate to="/articles" replace />} />
-          <Route path="practice" element={<Navigate to="/articles" replace />} />
-          <Route path="practice/*" element={<Navigate to="/articles" replace />} />
+          {/* PSEO Routes */}
+          <Route path="glossary" element={<SafeRoute fallbackText="Loading Glossary..."><GlossaryHubPage /></SafeRoute>} />
+          <Route path="glossary/:term" element={<SafeRoute fallbackText="Loading Term..."><GlossaryPage /></SafeRoute>} />
+          <Route path="compare" element={<SafeRoute fallbackText="Loading Comparisons..."><ComparisonHubPage /></SafeRoute>} />
+          <Route path="compare/:slug" element={<SafeRoute fallbackText="Loading Comparison..."><ComparisonPage /></SafeRoute>} />
+          <Route path="cheatsheets" element={<SafeRoute fallbackText="Loading Cheat Sheets..."><CheatSheetHubPage /></SafeRoute>} />
+          <Route path="cheatsheets/:slug" element={<SafeRoute fallbackText="Loading Cheat Sheet..."><CheatSheetPage /></SafeRoute>} />
+          <Route path="tools" element={<SafeRoute fallbackText="Loading Tools..."><ToolsHubPage /></SafeRoute>} />
+          <Route path="tools/snowflake-cost-calculator" element={<SafeRoute fallbackText="Loading Calculator..."><CostCalculatorPage /></SafeRoute>} />
+          <Route path="tools/snowflake-credit-cost" element={<SafeRoute fallbackText="Loading Credit Converter..."><CreditCostPage /></SafeRoute>} />
+          <Route path="tools/snowflake-query-cost-estimator" element={<SafeRoute fallbackText="Loading Query Cost Estimator..."><QueryCostEstimatorPage /></SafeRoute>} />
+          <Route path="tools/snowflake-warehouse-sizing" element={<SafeRoute fallbackText="Loading Warehouse Sizing..."><WarehouseSizingPage /></SafeRoute>} />
+          <Route path="tools/databricks-cost-calculator" element={<SafeRoute fallbackText="Loading Databricks Cost Calculator..."><DatabricksCostPage /></SafeRoute>} />
+          <Route path="tools/dbt-cloud-cost-calculator" element={<SafeRoute fallbackText="Loading dbt Cloud Cost Calculator..."><DbtCloudCostPage /></SafeRoute>} />
+          <Route path="tools/sql-formatter" element={<SafeRoute fallbackText="Loading SQL Formatter..."><SqlFormatterPage /></SafeRoute>} />
+          <Route path="tools/cron-expression-builder" element={<SafeRoute fallbackText="Loading Cron Builder..."><CronBuilderPage /></SafeRoute>} />
+          <Route path="tools/json-to-sql-ddl" element={<SafeRoute fallbackText="Loading JSON→SQL DDL..."><JsonToSqlPage /></SafeRoute>} />
+          <Route path="tools/csv-to-sql" element={<SafeRoute fallbackText="Loading CSV→SQL..."><CsvToSqlPage /></SafeRoute>} />
+          <Route path="tools/dbt-schema-generator" element={<SafeRoute fallbackText="Loading dbt Schema Generator..."><DbtSchemaGeneratorPage /></SafeRoute>} />
+          <Route path="tools/unix-timestamp-converter" element={<SafeRoute fallbackText="Loading Unix Timestamp Converter..."><UnixTimestampPage /></SafeRoute>} />
+          <Route path="tools/bigquery-cost-calculator" element={<SafeRoute fallbackText="Loading BigQuery Cost Calculator..."><BigQueryCostPage /></SafeRoute>} />
+          <Route path="tools/sql-playground" element={<SafeRoute fallbackText="Loading SQL Playground..."><SqlPlaygroundPage /></SafeRoute>} />
+          <Route path="tools/json-parquet-avro-converter" element={<SafeRoute fallbackText="Loading Format Converter..."><FormatConverterPage /></SafeRoute>} />
+          <Route path="tools/cloud-data-warehouse-cost-comparison" element={<SafeRoute fallbackText="Loading Warehouse Comparison..."><WarehouseComparisonCalculatorPage /></SafeRoute>} />
+          <Route path="cheatsheets/category/:categoryId" element={<SafeRoute fallbackText="Loading Category..."><CheatSheetCategoryPage /></SafeRoute>} />
+          <Route path="interview-prep" element={<SafeRoute fallbackText="Loading Interview Prep Hub..."><InterviewPrepHubPage /></SafeRoute>} />
+          <Route path="practice" element={<SafeRoute fallbackText="Loading Practice Tests..."><PracticeHubPage /></SafeRoute>} />
+          <Route path="practice/:slug" element={<SafeRoute fallbackText="Loading Quiz..."><PracticeQuizPage /></SafeRoute>} />
+          <Route path="practice/:slug/topics/:topicSlug" element={<SafeRoute fallbackText="Loading Topic..."><PracticeTopicPage /></SafeRoute>} />
+          <Route path="practice/:slug/q/:questionSlug" element={<SafeRoute fallbackText="Loading Question..."><PracticeQuestionPage /></SafeRoute>} />
           <Route path="about" element={<SafeRoute fallbackText="Loading About..."><AboutPage /></SafeRoute>} />
           <Route path="certification" element={<SafeRoute fallbackText="Loading Certification..."><Certification /></SafeRoute>} />
           <Route path="contact" element={<SafeRoute fallbackText="Loading Contact..."><ContactPage /></SafeRoute>} />
@@ -362,6 +381,7 @@ function App() {
           <Route path="contribute" element={<SafeRoute fallbackText="Loading..."><ContributePage /></SafeRoute>} />
           <Route path="news" element={<SafeRoute fallbackText="Loading News..."><NewsPage /></SafeRoute>} />
           <Route path="newsletter" element={<SafeRoute fallbackText="Loading Newsletter..."><NewsletterPage /></SafeRoute>} />
+          <Route path="advertise" element={<SafeRoute fallbackText="Loading Advertise..."><AdvertisePage /></SafeRoute>} />
           {debugMode && (
             <Route path="debug" element={<SafeRoute fallbackText="Loading Debug..."><ApiDebugger /></SafeRoute>} />
           )}

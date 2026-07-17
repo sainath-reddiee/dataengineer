@@ -429,7 +429,7 @@ const CACHE_FILE = path.join(__dirname, '..', '.build-cache.json');
 // cheatsheets, tools, interview-prep, practice) is deleted from dist/ after
 // the build so no low-value templated HTML is ever deployed.
 // Flip to false after AdSense approval.
-const ADSENSE_REVIEW_MODE = true;
+const ADSENSE_REVIEW_MODE = false;
 const PSEO_DIST_DIRS = ['glossary', 'compare', 'cheatsheets', 'tools', 'interview-prep', 'practice', 'news'];
 // ============================================================================
 // ESSENTIAL PAGES - Static content for AdSense/SEO crawlers

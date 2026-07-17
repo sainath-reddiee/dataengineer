@@ -40,38 +40,35 @@ const STATIC_PAGES = [
   { url: '/privacy-policy', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/disclaimer', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
-  // { url: '/contribute', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
-  // { url: '/newsletter', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
-  // Programmatic hub/category pages TEMPORARILY excluded for AdSense approval:
-  // { url: '/cheatsheets', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
-  // { url: '/certification', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
-  // Tools & Interview Prep TEMPORARILY excluded for AdSense approval:
-  // { url: '/tools', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
-  // { url: '/tools/snowflake-cost-calculator', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
-  // { url: '/tools/snowflake-credit-cost', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
-  // { url: '/tools/snowflake-query-cost-estimator', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
-  // { url: '/tools/snowflake-warehouse-sizing', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
-  // { url: '/tools/databricks-cost-calculator', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
-  // { url: '/tools/dbt-cloud-cost-calculator', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
-  // { url: '/tools/sql-formatter', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
-  // { url: '/tools/cron-expression-builder', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
-  // { url: '/tools/json-to-sql-ddl', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
-  // { url: '/tools/csv-to-sql', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
-  // { url: '/tools/dbt-schema-generator', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
-  // { url: '/tools/unix-timestamp-converter', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
-  // { url: '/tools/bigquery-cost-calculator', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
-  // { url: '/tools/cloud-data-warehouse-cost-comparison', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
-  // { url: '/tools/sql-playground',   changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
-  // { url: '/tools/json-parquet-avro-converter', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
-  // { url: '/interview-prep', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
-  // Cheatsheet category pages TEMPORARILY excluded for AdSense approval:
-  // { url: '/cheatsheets/category/sql', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-  // { url: '/cheatsheets/category/orchestration', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-  // { url: '/cheatsheets/category/cloud', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-  // { url: '/cheatsheets/category/programming', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-  // { url: '/cheatsheets/category/architecture', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-  // { url: '/cheatsheets/category/interview', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
-  // { url: '/cheatsheets/category/bestpractices', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  { url: '/contribute', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
+  { url: '/newsletter', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
+  { url: '/cheatsheets', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
+  { url: '/certification', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
+  { url: '/tools', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
+  { url: '/tools/snowflake-cost-calculator', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
+  { url: '/tools/snowflake-credit-cost', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
+  { url: '/tools/snowflake-query-cost-estimator', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
+  { url: '/tools/snowflake-warehouse-sizing', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
+  { url: '/tools/databricks-cost-calculator', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
+  { url: '/tools/dbt-cloud-cost-calculator', changefreq: 'monthly', priority: 0.85, lastmod: 'today' },
+  { url: '/tools/sql-formatter', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
+  { url: '/tools/cron-expression-builder', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
+  { url: '/tools/json-to-sql-ddl', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
+  { url: '/tools/csv-to-sql', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
+  { url: '/tools/dbt-schema-generator', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
+  { url: '/tools/unix-timestamp-converter', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
+  { url: '/tools/bigquery-cost-calculator', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
+  { url: '/tools/cloud-data-warehouse-cost-comparison', changefreq: 'monthly', priority: 0.9, lastmod: 'today' },
+  { url: '/tools/sql-playground',   changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
+  { url: '/tools/json-parquet-avro-converter', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
+  { url: '/interview-prep', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
+  { url: '/cheatsheets/category/sql', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  { url: '/cheatsheets/category/orchestration', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  { url: '/cheatsheets/category/cloud', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  { url: '/cheatsheets/category/programming', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  { url: '/cheatsheets/category/architecture', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  { url: '/cheatsheets/category/interview', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
+  { url: '/cheatsheets/category/bestpractices', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
 ];
 
 // Article slugs to exclude from sitemap (noindexed due to thin content <400 words)
@@ -517,19 +514,19 @@ async function generateSitemap() {
     // so Googlebot receives the SPA shell (soft 404 / thin content).
     // Re-add once category pages are pre-rendered with unique content.
     // Category pages — TEMPORARILY excluded for AdSense review to prevent crawling of aggregates
-    console.log('⏭️  Skipping category pages (disallowed in robots.txt)...');
-    // const CATEGORY_SLUGS = [
-    //   'snowflake', 'databricks', 'aws', 'azure', 'gcp', 'salesforce',
-    //   'dbt', 'airflow', 'python', 'sql', 'developer-productivity'
-    // ];
-    // for (const slug of CATEGORY_SLUGS) {
-    //   sitemapEntries.push({
-    //     url: `https://dataengineerhub.blog/category/${slug}`,
-    //     lastmod: today,
-    //     changefreq: 'weekly',
-    //     priority: 0.7,
-    //   });
-    // }
+    console.log('📝 Adding category pages...');
+    const CATEGORY_SLUGS = [
+      'snowflake', 'databricks', 'aws', 'azure', 'gcp', 'salesforce',
+      'dbt', 'airflow', 'python', 'sql', 'developer-productivity'
+    ];
+    for (const slug of CATEGORY_SLUGS) {
+      sitemapEntries.push({
+        url: `https://dataengineerhub.blog/category/${slug}`,
+        lastmod: today,
+        changefreq: 'weekly',
+        priority: 0.7,
+      });
+    }
 
     // Tag pages excluded from sitemap — all have noindex={true} in TagPage.jsx
     // Including noindexed pages in sitemap sends contradictory signals to Google
@@ -538,18 +535,17 @@ async function generateSitemap() {
     // pSEO pages (glossary + comparisons) — TEMPORARILY excluded from sitemap
     // to improve editorial-to-programmatic content ratio for AdSense approval.
     // Re-enable after AdSense approval by uncommenting the block below.
-    console.log('\n⏭️  Skipping pSEO pages (glossary + comparisons) — excluded for AdSense approval...');
+    console.log('\n📝 Adding pSEO pages (glossary + comparisons)...');
     const pseoEntries = loadPSEOData();
-    // pseoEntries.forEach(entry => {
-    //   if (!entry.lastmod) entry.lastmod = today;
-    //   sitemapEntries.push(entry);
-    // });
+    pseoEntries.forEach(entry => {
+      if (!entry.lastmod) entry.lastmod = today;
+      sitemapEntries.push(entry);
+    });
     console.log(`   (${pseoEntries.length} pSEO pages excluded from sitemap)`);
 
-    // Cheatsheet pages — TEMPORARILY excluded from sitemap for same reason
-    console.log('⏭️  Skipping cheatsheet pages — excluded for AdSense approval...');
+    console.log('📝 Adding cheatsheet pages...');
     const cheatsheetEntries = loadCheatsheetData();
-    // cheatsheetEntries.forEach(entry => sitemapEntries.push(entry));
+    cheatsheetEntries.forEach(entry => sitemapEntries.push(entry));
     console.log(`   (${cheatsheetEntries.length} cheatsheet pages excluded from sitemap)`);
 
     // Validate sitemap entries

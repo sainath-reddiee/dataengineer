@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Wrench, Info, Search, BookOpen, GitCompareArrows, FileText, GraduationCap, Newspaper, Target } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Wrench, Info, Search, BookOpen, GitCompareArrows, FileText, GraduationCap, Newspaper, Target, Megaphone } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
 
 // Helper component for the "Corner Burst" sparks animation
@@ -143,7 +143,6 @@ const Header = ({ topOffset = 0 }) => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Check if a category group is active
   const isCategoryActive = (categoryKey) => {
     const path = currentPath.toLowerCase();
 
@@ -151,11 +150,25 @@ const Header = ({ topOffset = 0 }) => {
       return path.startsWith('/category/');
     }
 
+    if (categoryKey === 'resources') {
+      return path.startsWith('/glossary') ||
+             path.startsWith('/compare') ||
+             path.startsWith('/news');
+    }
+
+    if (categoryKey === 'study') {
+      return path.startsWith('/interview-prep') ||
+             path.startsWith('/practice') ||
+             path.startsWith('/cheatsheet');
+    }
+
     return false;
   };
 
   const isHomeActive = currentPath === '/';
   const isAboutActive = currentPath.includes('/about');
+  const isAdvertiseActive = currentPath.includes('/advertise');
+  const isToolsActive = currentPath.startsWith('/tools');
   // Grouped category structure (3 mega-menu groups)
   const categories = {
   articles: {
@@ -196,9 +209,26 @@ const Header = ({ topOffset = 0 }) => {
       }
     ]
   },
-  // Resources & Study menus TEMPORARILY removed for AdSense approval
-  // resources: { ... },
-  // study: { ... },
+  resources: {
+    title: 'Resources',
+    shortTitle: 'Resources',
+    icon: FileText,
+    items: [
+      { name: 'Glossary', path: '/glossary', color: 'from-purple-500 to-pink-500', desc: 'Data Engineering Terms', lucide: BookOpen },
+      { name: 'Comparisons', path: '/compare', color: 'from-amber-500 to-orange-500', desc: 'Tool & Tech Face-offs', lucide: GitCompareArrows },
+      { name: 'News', path: '/news', color: 'from-blue-500 to-cyan-500', desc: 'Latest Industry Updates', lucide: Newspaper }
+    ]
+  },
+  study: {
+    title: 'Study',
+    shortTitle: 'Study',
+    icon: GraduationCap,
+    items: [
+      { name: 'Interview Prep', path: '/interview-prep', color: 'from-indigo-500 to-purple-500', desc: 'Q&A + Mock Sessions', lucide: GraduationCap },
+      { name: 'Practice Tests', path: '/practice', color: 'from-pink-500 to-rose-500', desc: 'SnowPro & Databricks Quizzes', lucide: Target },
+      { name: 'Cheat Sheets', path: '/cheatsheets', color: 'from-green-500 to-emerald-500', desc: 'Quick Reference Guides', lucide: FileText }
+    ]
+  }
 };
 
   // 🔥 FIX 1: Close dropdown on scroll with passive listener
@@ -507,7 +537,23 @@ const Header = ({ topOffset = 0 }) => {
               );
             })}
 
-            {/* Tools - TEMPORARILY hidden for AdSense approval */}
+            {/* Tools */}
+            <motion.div whileHover={{ y: -2 }}>
+              <Link 
+                to="/tools" 
+                onMouseEnter={() => { import('@/pages/ToolsHubPage'); }}
+                onFocus={() => { import('@/pages/ToolsHubPage'); }}
+                className={`whitespace-nowrap font-semibold text-xs 2xl:text-base transition-all duration-200 flex items-center gap-2 px-1.5 2xl:px-0 ${
+                  isToolsActive 
+                    ? 'text-blue-400' 
+                    : 'text-gray-300 hover:text-blue-400'
+                }`}
+                style={isToolsActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+              >
+                <Wrench className="w-4 h-4 hidden 2xl:inline-block" />
+                Tools
+              </Link>
+            </motion.div>
             {/* About */}
             <motion.div whileHover={{ y: -2 }}>
               <Link 
@@ -521,6 +567,22 @@ const Header = ({ topOffset = 0 }) => {
               >
                 <Info className="w-4 h-4 hidden 2xl:inline-block" />
                 About
+              </Link>
+            </motion.div>
+
+            {/* Advertise */}
+            <motion.div whileHover={{ y: -2 }}>
+              <Link 
+                to="/advertise" 
+                className={`whitespace-nowrap font-semibold text-xs 2xl:text-base transition-all duration-200 flex items-center gap-2 px-1.5 2xl:px-0 ${
+                  isAdvertiseActive 
+                    ? 'text-blue-400' 
+                    : 'text-gray-300 hover:text-blue-400'
+                }`}
+                style={isAdvertiseActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
+              >
+                <Megaphone className="w-4 h-4 hidden 2xl:inline-block" />
+                Advertise
               </Link>
             </motion.div>
 
@@ -638,10 +700,17 @@ const Header = ({ topOffset = 0 }) => {
                   </div>
                 ))}
 
-                {/* Tools link TEMPORARILY hidden for AdSense approval */}
+                <Link to="/tools" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
+                  <Wrench className="w-5 h-5" />
+                  Tools
+                </Link>
                 <Link to="/about" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
                   <Info className="w-5 h-5" />
                   About
+                </Link>
+                <Link to="/advertise" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
+                  <Megaphone className="w-5 h-5" />
+                  Advertise
                 </Link>
                 <button
                   onClick={() => { setMobileMenuOpen(false); setIsSearchOpen(true); }}

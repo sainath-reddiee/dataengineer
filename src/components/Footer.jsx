@@ -19,14 +19,12 @@ const Footer = () => {
       { name: 'Snowflake Guides', href: '/category/snowflake' },
       { name: 'Azure Resources', href: '/category/azure' },
       { name: 'SQL Tips', href: '/category/sql' },
-      // Hub pages below are blocked in robots.txt until they have full content.
-      // Re-enable here AND in robots.txt together once pages are content-complete.
-      // { name: 'Cheat Sheets', href: '/cheatsheets' },
-      // { name: 'Interview Prep', href: '/interview-prep' },
-      // { name: 'Comparisons', href: '/compare' },
-      // { name: 'Tools', href: '/tools' },
-      // { name: 'Glossary', href: '/glossary' },
-      // { name: 'News & Trends', href: '/news' },
+      { name: 'Cheat Sheets', href: '/cheatsheets' },
+      { name: 'Interview Prep', href: '/interview-prep' },
+      { name: 'Comparisons', href: '/compare' },
+      { name: 'Tools', href: '/tools' },
+      { name: 'Glossary', href: '/glossary' },
+      { name: 'News & Trends', href: '/news' },
     ],
     tools: [
       { name: 'Airflow', href: '/category/airflow' },
@@ -46,6 +44,7 @@ const Footer = () => {
       { name: 'Terms of Service', href: '/terms-of-service' },
       { name: 'Disclaimer', href: '/disclaimer' },
       { name: 'Write for Us', href: '/contribute' },
+      { name: 'Advertise', href: '/advertise' },
       { name: 'Sitemap', href: '/sitemap-index.xml', external: true },
       { name: 'RSS Feed', href: '/rss.xml', external: true },
       { name: 'Manage Cookies', action: () => { revokeConsent(); window.location.reload(); } }
