@@ -20,50 +20,47 @@ const STATS = [
 
 const OPPORTUNITIES = [
   {
-    title: 'Newsletter Sponsorship',
-    price: '$45',
-    frequency: 'per issue (Beta Rate)',
-    availability: 'Only 2 slots left this month',
-    description: 'Get featured in our weekly newsletter. Showcase your data tools or open-source projects directly to active data engineers. (Normally $150)',
+    title: 'Newsletter Placement',
+    price: '$75',
+    frequency: 'per issue',
+    description: 'Get featured at the top of our weekly community email. Showcase your developer tooling or platforms with a clean text link and custom summary.',
     bullets: [
-      'Top-of-email placement',
-      'Up to 150 words of custom copy',
-      'Exclusive: Only 1 sponsor per issue',
-      'Sponsor badge & click tracking'
+      'Top-of-email recommendation slot',
+      'Up to 100 words of developer-focused copy',
+      'Exclusive: Only 1 sponsor per weekly email',
+      'Plain text link format (no heavy banners)'
     ],
-    cta: 'Book Newsletter Spot',
+    cta: 'Book Newsletter Slot',
     packageKey: 'newsletter',
     popular: true
   },
   {
-    title: 'Contextual Tool Banner',
-    price: '$75',
-    frequency: 'per month (Beta Rate)',
-    availability: '3 slots remaining',
-    description: 'Place a native text ad or small banner directly within our popular interactive cost calculators and tools. (Normally $200)',
+    title: 'Contextual Tool Sponsor',
+    price: '$90',
+    frequency: 'per month',
+    description: 'A native, text-based recommendation link integrated directly inside our interactive cost calculators and tools.',
     bullets: [
-      'Visible on cost calculator pages',
-      'Reach users calculating platform spend',
-      'Static native placement (no intrusive ads)',
-      'Highly targeted B2B traffic'
+      'Contextual placement on utility calculator pages',
+      'Reach users evaluating Snowflake or Databricks spend',
+      'Non-intrusive plain text format',
+      'High-intent B2B target audience'
     ],
-    cta: 'Book Banner Spot',
+    cta: 'Sponsor Calculator Page',
     packageKey: 'banner',
     popular: false
   },
   {
-    title: 'Sponsored Content / Review',
-    price: '$190',
-    frequency: 'one-time fee (Beta Rate)',
-    availability: '1 slot open next month',
-    description: 'A deep-dive tutorial or product review of your data tool written by an expert data engineer. (Normally $500)',
+    title: 'Technical Deep-Dive',
+    price: '$280',
+    frequency: 'one-time fee',
+    description: 'A hands-on, highly technical tutorial showing how to build pipelines or integrate your API, written by developers.',
     bullets: [
-      'In-depth 1,500+ word article',
-      'SEO optimized long-tail focus',
-      'Permanent post with clear disclaimer',
-      'Shared across newsletter & social channels'
+      'Step-by-step hands-on tutorial (1,000+ words)',
+      'GitHub repository with working example code',
+      'Permanent page placement with proper sponsored disclaimer',
+      'Shared with our newsletter subscribers'
     ],
-    cta: 'Submit Content Brief',
+    cta: 'Propose Technical Article',
     packageKey: 'content',
     popular: false
   }
@@ -261,15 +258,15 @@ const AdvertisePage = () => {
                 </div>
                 <input 
                   type="range" 
-                  min="45" 
+                  min="75" 
                   max="1000" 
-                  step="15"
+                  step="25"
                   value={calcBudget}
                   onChange={(e) => setCalcBudget(Number(e.target.value))}
                   className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500 focus:outline-none"
                 />
                 <div className="flex justify-between text-[10px] text-gray-500">
-                  <span>Min: $45</span>
+                  <span>Min: $75</span>
                   <span>Max: $1,000</span>
                 </div>
               </div>
@@ -339,11 +336,6 @@ const AdvertisePage = () => {
                   <div className="flex items-baseline gap-1.5 mb-2 border-b border-white/10 pb-4">
                     <span className="text-3xl font-black text-white">{opp.price}</span>
                     <span className="text-sm text-gray-400">{opp.frequency}</span>
-                  </div>
-                  
-                  {/* Availability Badge */}
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 text-[10px] font-semibold mb-5">
-                    <AlertCircle className="h-3 w-3" /> {opp.availability}
                   </div>
                   
                   <p className="text-sm text-gray-400 mb-6 leading-relaxed">
