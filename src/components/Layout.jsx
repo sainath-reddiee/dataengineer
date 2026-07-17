@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import MetaTags from '@/components/SEO/MetaTags';
 import ScrollToTop from '@/components/ScrollToTop';
 import AnnouncementBar from '@/components/AnnouncementBar';
+import NewsletterPopup from '@/components/NewsletterPopup';
 
 const ANNOUNCEMENT_BAR_HEIGHT = 40;
 // Keep this key in sync with AnnouncementBar.jsx so Layout can reserve the
@@ -42,6 +43,7 @@ const Layout = () => {
         <Footer />
         <Toaster />
         <ScrollToTop />
+        <NewsletterPopup />
       </div>
     </>
   );
