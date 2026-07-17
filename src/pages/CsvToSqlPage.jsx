@@ -217,7 +217,7 @@ export default function CsvToSqlPage() {
           { name: 'CSV to SQL', url: '/tools/csv-to-sql' },
         ]}
         faqSchema={faqSchema}
-      noindex={true}
+      
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>

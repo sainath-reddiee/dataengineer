@@ -11,9 +11,166 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-07-07",
-  "totalArticles": 69,
+  "lastUpdated": "2026-07-17",
+  "totalArticles": 76,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/governing-ai-agents-snowflake-coco-mcp-security",
+      "title": "Governing the AI Agent: Securing Snowflake CoCo and MCP Workflows in Production",
+      "summary": "In March 2026, two days after Snowflake shipped Cortex Code, security researchers at PromptArmor published something that should have changed how every data team thinks about AI agents. They didn’t…",
+      "keyFacts": [
+        "” This is the practitioner’s guide to governing agentic workflows in production: the identity model, data-movement controls, and multi-party approvals that let you use CoCo and MCP without turning every agent into an unaudited superuser",
+        "Over-scoped roles are the root risk",
+        "In March 2026, two days after Snowflake shipped Cortex Code, security researchers at PromptArmor published something that should have changed how every data team thinks about AI agents"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "airflow"
+      ],
+      "questionAnswered": "What is Governing the AI Agent: Securing Snowflake CoCo and MCP Workflows in Production?",
+      "lastUpdated": "2026-07-16",
+      "published": "2026-07-16",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2451
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/dbt-unit-testing-snowflake-credit-cost",
+      "title": "The Dark Side of dbt Unit Testing in Snowflake: Managing Credit Burn on Large Test Suites",
+      "summary": "Our CI got slower and more expensive at exactly the same rate our test suite got better, and for a while nobody connected the two. We’d done everything the best-practice…",
+      "keyFacts": [
+        "Two teams with identical test coverage can have a 10x difference in test spend based purely on --empty , warehouse size, and whether they run the whole suite or just what changed",
+        "Keeping the safety net without the bill Two teams with identical coverage can differ 10x in spend",
+        "This is the honest accounting of where that cost comes from, and how to keep the safety net without the bill",
+        "Naively, that means building upstream models just to test one — you pay to materialize parents you don’t care about",
+        "→ dbt Labs is explicit: only run unit tests in development and CI, never in production"
+      ],
+      "entities": [
+        "dbt",
+        "snowflake",
+        "python",
+        "sql",
+        "airflow"
+      ],
+      "questionAnswered": "What is The Dark Side of dbt Unit Testing in Snowflake: Managing Credit Burn on Large Test Suites?",
+      "lastUpdated": "2026-07-16",
+      "published": "2026-07-15",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "dbt",
+      "wordCount": 2182
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/dynamic-airflow-dags-snowflake-metadata",
+      "title": "Dynamic Airflow DAGs via Snowflake Metadata: Eliminating Hardcoded Pipeline Tasks",
+      "summary": "I once inherited an Airflow repo with 214 DAG files that were, functionally, the same DAG. Each one extracted a table from a source system, loaded it into Snowflake, and…",
+      "keyFacts": [
+        "That repo is the case against hardcoded pipeline tasks in a single painful sentence: if the only thing that changes between your DAGs is data, then your DAGs should be generated from data",
+        "The distinction that trips everyone up Before any code, get this straight, because conflating the two is the single most common source of confusion I see",
+        "Note trigger_rule=ALWAYS is not allowed on task-generated mapped tasks"
+      ],
+      "entities": [
+        "airflow",
+        "snowflake",
+        "sql",
+        "python",
+        "dbt"
+      ],
+      "questionAnswered": "What is Dynamic Airflow DAGs via Snowflake Metadata: Eliminating Hardcoded Pipeline Tasks?",
+      "lastUpdated": "2026-07-15",
+      "published": "2026-07-15",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Airflow",
+      "wordCount": 2149
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-zero-copy-clone-storage-cicd",
+      "title": "Debugging Zero-Copy Clone Storage Costs in CI/CD",
+      "summary": "The Snowflake bill for our CI account had roughly tripled over a quarter, and nobody could point to why. We hadn’t loaded meaningfully more data. Compute was flat. But storage…",
+      "keyFacts": [
+        "The problem is that “zero-copy” describes the moment of creation and nothing after it, and “drop” doesn’t mean what you think it means when clones are involved",
+        "This is the guide to why that happens, how to find it in your own account, and how to stop it",
+        "The culprit was the feature I’d been recommending to everyone as “basically free”: zero-copy clones"
+      ],
+      "entities": [
+        "snowflake",
+        "dbt"
+      ],
+      "questionAnswered": "What is Debugging Zero-Copy Clone Storage Costs in CI/CD?",
+      "lastUpdated": "2026-07-16",
+      "published": "2026-07-14",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2093
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-coco-mcp-guide",
+      "title": "How to Use MCP in Snowflake CoCo Desktop",
+      "summary": "The first thing I tried to do in CoCo Desktop was ask it to pull the open tickets for a data pipeline I was debugging. It couldn’t. Not because it…",
+      "keyFacts": [
+        "This is the practical guide to doing that: the setup flow, where the config actually lives, how credentials are handled, and the operational limits that will trip you up on day one if nobody warns you",
+        "A quick naming note before we start, because it confused me too: CoCo is the new name for Cortex Code",
+        "Use Global for tools you always want (your personal GitHub); use Workspace for project-specific servers that should live in version control with the code"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "dbt",
+        "airflow"
+      ],
+      "questionAnswered": "How to Use MCP in Snowflake CoCo Desktop?",
+      "lastUpdated": "2026-07-10",
+      "published": "2026-07-10",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2093
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/why-llms-give-different-answers",
+      "title": "Why LLMs give different answers to the same question",
+      "summary": "The bug report said: “The model is broken. It gives a different answer every time I ask the same question.” I’ve gotten some version of this from three different engineers…",
+      "keyFacts": [
+        "On an open-ended prompt, results ranged from around 70% identical on one model down to essentially 0% on others — the longer and more open-ended the prompt, the faster determinism collapsed",
+        "” I’ve gotten some version of this from three different engineers now, and each time the fix is the same — not a code change, but a change in how they think about what a language model actually is",
+        "Traditional software is a vending machine: press B4, get the same chips every time",
+        "If the model always picked the single highest-probability token, every answer would collapse into the same bland, repetitive text"
+      ],
+      "entities": [],
+      "questionAnswered": "Why LLMs give different answers to the same question?",
+      "lastUpdated": "2026-07-09",
+      "published": "2026-07-09",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 2130
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-interactive-tables-guide",
+      "title": "Snowflake Interactive tables: How and when to use them ( From Production)",
+      "summary": "The first time a product manager asked me why our “real-time” Snowflake dashboard took four seconds to load on a Monday morning, I didn’t have a good answer. The data…",
+      "keyFacts": [
+        "Interactive warehouses cost roughly 40% less per credit than standard warehouses — an XSMALL standard warehouse runs at 1 credit/hour, while an interactive XSMALL is about 0",
+        "I’ve now run them in production for a few months, and this is the honest guide I wish I’d had: what they are, when they’re worth it, when they’ll quietly cost you money, and the gotchas that only show up after you’ve committed",
+        "→ Use them when latency and concurrency are the product",
+        "It helped the concurrency but the per-query latency floor never really dropped below a second or two, and the bill made my manager wince"
+      ],
+      "entities": [
+        "snowflake",
+        "dbt"
+      ],
+      "questionAnswered": "What is Snowflake Interactive tables: How and when to use them ( From Production)?",
+      "lastUpdated": "2026-07-16",
+      "published": "2026-07-08",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2203
+    },
     {
       "url": "https://dataengineerhub.blog/articles/rag-retrieval-augumented-generation-production-guide",
       "title": "Why your RAG Pipeline Fails ( and how to fix it in Production )",

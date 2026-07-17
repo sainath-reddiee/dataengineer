@@ -1,4 +1,4 @@
-﻿// src/pages/DbtCloudCostPage.jsx
+// src/pages/DbtCloudCostPage.jsx
 // dbt Cloud seat + run based cost calculator. Targets "dbt cloud cost",
 // "dbt cloud pricing calculator", "dbt cloud vs dbt core cost".
 import React, { useMemo, useState, useEffect, useCallback, Suspense } from 'react';
@@ -7,6 +7,7 @@ import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Users, Share2, Check, Calculator, DollarSign, Zap, BookOpen } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import SponsorPlacement from '@/components/SponsorPlacement';
 
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
@@ -197,7 +198,7 @@ export default function DbtCloudCostPage() {
           { name: 'dbt Cloud Cost Calculator', url: '/tools/dbt-cloud-cost-calculator' },
         ]}
         faqSchema={faqSchema}
-      noindex={true}
+      
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
@@ -218,6 +219,8 @@ export default function DbtCloudCostPage() {
             comparison table below to benchmark against dbt Core + Airflow TCO.
           </p>
         </div>
+
+        <SponsorPlacement category="dbt" slug="dbt-cloud-cost-calculator" />
 
         {/* Phase 2: practitioner intro + when-to-use (pSEO depth) */}
         <section className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8">

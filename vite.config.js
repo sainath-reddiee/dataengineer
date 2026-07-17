@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import fs from 'fs';
 import vitePrerender from './plugins/vite-plugin-prerender.mjs';
 
 const PuppeteerRenderer = vitePrerender.PuppeteerRenderer;
@@ -19,6 +20,35 @@ export default defineConfig({
         ].filter(Boolean)
       }
     }),
+
+    // Dev API to save sponsors to local JSON file
+    {
+      name: 'local-sponsors-api',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url === '/api/save-sponsors' && req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => { body += chunk; });
+            req.on('end', () => {
+              try {
+                const data = JSON.parse(body);
+                const filePath = path.resolve(__dirname, 'src/data/activeSponsors.json');
+                fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ success: true }));
+              } catch (err) {
+                res.statusCode = 500;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ success: false, error: err.message }));
+              }
+            });
+          } else {
+            next();
+          }
+        });
+      }
+    },
 
     // Custom plugin to handle jsPDF optional dependencies
     {

@@ -230,7 +230,7 @@ export default function JsonToSqlPage() {
           { name: 'JSON to SQL DDL', url: '/tools/json-to-sql-ddl' },
         ]}
         faqSchema={faqSchema}
-      noindex={true}
+      
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>

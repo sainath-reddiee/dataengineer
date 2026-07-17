@@ -110,7 +110,7 @@ export default function CreditCostPage() {
           { name: 'Credit Cost Converter', url: '/tools/snowflake-credit-cost' },
         ]}
         faqSchema={faqSchema}
-      noindex={true}
+      
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>

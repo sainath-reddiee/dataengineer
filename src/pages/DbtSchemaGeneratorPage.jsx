@@ -257,7 +257,7 @@ export default function DbtSchemaGeneratorPage() {
           { name: 'dbt Schema Generator', url: '/tools/dbt-schema-generator' },
         ]}
         faqSchema={faqSchema}
-      noindex={true}
+      
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>

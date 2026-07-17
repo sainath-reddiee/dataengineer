@@ -1,102 +1,52 @@
 // src/pages/AdvertisePage.jsx
 // Dedicated "Advertise / Sponsorship" page for DataEngineer Hub.
-// Fully optimized for conversion rate (CRO) and AdSense compliance.
+// Premium SaaS-quality design optimized for conversion and transparency.
 import React, { useState, useMemo } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import * as LucideIcons from 'lucide-react';
 import { 
-  Mail, MessageSquare, Check, Sparkles, Send, ShieldCheck, 
+  Mail, Check, Sparkles, Send, ShieldCheck, 
   Users, BarChart3, TrendingUp, Calendar, ArrowRight, CheckCircle2,
-  DollarSign, Globe, Award, ChevronDown, HelpCircle, Eye, MousePointerClick,
-  Percent, AlertCircle
+  DollarSign, Globe, ChevronDown, HelpCircle, Eye, MousePointerClick,
+  Percent, BookOpen, Layers, Code, Zap, Target, Star, Shield,
+  ArrowUpRight, ChevronRight, Briefcase, Building2
 } from 'lucide-react';
 import { trackEvent } from '@/utils/analytics';
+import advertiseConfig from '@/data/advertiseConfig.json';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-const STATS = [
-  { label: 'Monthly Pageviews', value: '15,000+', desc: 'High-intent search traffic', icon: BarChart3 },
-  { label: 'Newsletter Subscribers', value: '2,500+', desc: 'Engaged active developers', icon: Users },
-  { label: 'Average Open Rate', value: '44.2%', desc: 'Industry leading open rates', icon: TrendingUp },
-];
-
-const OPPORTUNITIES = [
-  {
-    title: 'Developer Resource Reference',
-    packageKey: 'resource_reference',
-    popular: true,
-    description: 'Place your technical library, SDK, or utility as a recommended developer resource within our reference articles or cheatsheet guides.',
-    bullets: [
-      'Natively placed in relevant reference material',
-      'Plain-text resource recommendation link',
-      'Targeted discovery by active practitioners',
-      'Permanent integration in reference guides'
-    ],
-    cta: 'Submit Resource Details',
-    durations: [
-      { key: 'monthly', label: 'Monthly', price: 30 },
-      { key: 'permanent', label: 'Permanent', price: 75 }
-    ]
-  },
-  {
-    title: 'Ecosystem Showcase',
-    packageKey: 'directory',
-    popular: false,
-    description: 'List your developer platform, API, or data tool in our ecosystem directory hub for continuous product discovery.',
-    bullets: [
-      'Permanent showcase in our Tools directory',
-      'Include platform logo, technical summary, and link',
-      'Classified under relevant ecosystem category',
-      'Direct developer community visibility'
-    ],
-    cta: 'Submit Showcase Request',
-    durations: [
-      { key: 'weekly', label: 'Weekly', price: 15 },
-      { key: 'monthly', label: 'Monthly', price: 40 },
-      { key: 'permanent', label: 'Permanent', price: 99 }
-    ]
-  },
-  {
-    title: 'Technical Integration Guide',
-    packageKey: 'content',
-    popular: false,
-    description: 'A co-authored, code-first tutorial showing data engineers how to build pipelines or integrate your product or API.',
-    bullets: [
-      'Code-first integration guide (1,000+ words)',
-      'GitHub repository with ready-to-run examples',
-      'Focus on real-world engineering workflows',
-      'Shared with our developer community list'
-    ],
-    cta: 'Propose Integration Guide',
-    durations: [
-      { key: 'permanent', label: 'Permanent', price: 25 }
-    ]
-  }
-];
+const OPPORTUNITIES = advertiseConfig.opportunities;
 
 const FAQS = [
   {
     question: 'Who is the typical reader of DataEngineer Hub?',
-    answer: 'Our audience consists of active data engineers (58%), analytics engineers (22%), data architects (12%), and engineering managers (8%). They primarily work with modern data stack utilities like Snowflake, dbt, Databricks, Apache Spark, and AWS/Azure/GCP cloud services.'
+    answer: 'Our audience consists of active data engineers (58%), analytics engineers (22%), data architects (12%), and engineering managers (8%). They are practitioners who design, build, and maintain data pipelines using modern cloud data stacks like Snowflake, dbt, Databricks, Spark, and major cloud services.'
   },
   {
-    question: 'How do you handle outbound sponsor links?',
-    answer: 'To protect our developer audience, all partner recommendations use standard rel attributes and follow industry-standard disclosure and security practices.'
+    question: 'Where do my sponsorship placements appear?',
+    answer: 'Depending on your package, your resource references or showcase cards are injected dynamically across relevant blog articles, cheatsheets, glossary terms, and interactive calculator tools matching your technology stack or category. This ensures your message is delivered only to high-intent readers.'
   },
   {
-    question: 'Can we track the performance of our campaign?',
-    answer: 'Absolutely. We provide a custom dashboard link containing real-time metrics showing total impressions, click volume, and click-through rates (CTR) at the end of each directory placement or tool sponsorship campaign.'
+    question: 'How do you track impressions and clicks?',
+    answer: 'We route sponsor links through a lightweight, secure redirect utility. This logs click events in real-time to your private analytics dashboard while ensuring standard, clean link forwarding directly to your destination URL.'
   },
   {
-    question: 'What is the lead time for sponsored articles?',
-    answer: 'Typically 10-14 days. This allows our technical writers to research, build code examples, and perform quality checks on the post before publication.'
+    question: 'Can I update my campaign details or links mid-run?',
+    answer: 'Absolutely. You can request updates to your destination URL, platform description, logo, or target categories at any time. Updates are synced to the site database within 12-24 business hours.'
+  },
+  {
+    question: 'What happens when my campaign duration ends?',
+    answer: 'Our sponsorship server uses date-based rules to manage active slots. Once your campaign hits its expiration date, the placement is automatically removed from all tools, cheatsheets, and articles across the site. We will notify you 5 days prior to expiration with options to renew or lock in your slot.'
   }
 ];
 
-// Stylized inline logos of typical MDS systems (safely built with SVG)
-const SPONSOR_LOGOS = [
-  { name: 'Snowflake', svg: <svg viewBox="0 0 24 24" className="h-6 fill-current"><path d="M12 2L9.5 7.5h5L12 2zm0 20l2.5-5.5h-5L12 22zM2 12l5.5 2.5v-5L2 12zm20 0l-5.5-2.5v5L22 12zM5.5 5.5l5 1.5-1.5-5-3.5 3.5zm13 13l-5-1.5 1.5 5 3.5-3.5zm-13 0l3.5 3.5 1.5-5-5 1.5zm13-13l-3.5-3.5-1.5 5 5-1.5z"/></svg> },
-  { name: 'Databricks', svg: <svg viewBox="0 0 24 24" className="h-6 fill-current"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm8 13.8l-8 4-8-4V8.2l8-4 8 4v7.6z"/></svg> },
-  { name: 'dbt Labs', svg: <svg viewBox="0 0 24 24" className="h-6 fill-current"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 14.5h-2v-5h2v5zm0-7h-2V7h2v2.5z"/></svg> },
-  { name: 'Apache Spark', svg: <svg viewBox="0 0 24 24" className="h-6 fill-current"><path d="M12 2L4 6v12l8 4 8-4V6l-8-4zm6 15l-6 3-6-3V7.5l6-3 6 3V17z"/></svg> },
+const PROCESS_STEPS = [
+  { icon: Mail, title: 'Submit Inquiry', desc: 'Fill out the form with your product details and preferred placement.' },
+  { icon: Briefcase, title: 'Review & Align', desc: 'We review your request and confirm the best placement for your audience.' },
+  { icon: Zap, title: 'Go Live', desc: 'Your campaign goes live with a secure dashboard for real-time tracking.' },
+  { icon: BarChart3, title: 'Track & Optimize', desc: 'Monitor impressions, clicks, and CTR on your private analytics dashboard.' },
 ];
 
 const AdvertisePage = () => {
@@ -106,7 +56,7 @@ const AdvertisePage = () => {
     company: '',
     website: '',
     package: 'resource_reference',
-    budget: '$500 - $1,000',
+    budget: '$15 - $50',
     message: ''
   });
 
@@ -120,7 +70,7 @@ const AdvertisePage = () => {
   const [selectedDurations, setSelectedDurations] = useState({
     resource_reference: 'monthly',
     directory: 'monthly',
-    content: 'permanent'
+    content: 'one_time'
   });
 
   // Fetch Live Global Currency Exchange Rates
@@ -224,7 +174,7 @@ const AdvertisePage = () => {
         company: '',
         website: '',
         package: 'resource_reference',
-        budget: '$500 - $1,000',
+        budget: '$15 - $50',
         message: ''
       });
     } catch (err) {
@@ -238,84 +188,211 @@ const AdvertisePage = () => {
     setOpenFaq(openFaq === idx ? null : idx);
   };
 
-  return (
-    <div className="min-h-screen bg-slate-950 text-white relative py-12 px-4 sm:px-6 lg:px-8">
-      {/* Background glow effects */}
-      <div className="absolute top-10 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+  // Resolve icon from config
+  const resolveIcon = (iconName) => LucideIcons[iconName] || HelpCircle;
 
-      <div className="max-w-6xl mx-auto relative z-10">
-        
-        {/* Header Hero */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+  return (
+    <div className="min-h-screen bg-slate-950 text-white relative overflow-hidden">
+      <Helmet>
+        <title>Advertise with DataEngineer Hub — Reach Active Data Engineers</title>
+        <meta name="description" content="Partner with DataEngineer Hub to showcase your developer tools, cloud platforms, and data infrastructure to 15,000+ monthly active data engineers. Flexible weekly, monthly, and yearly sponsorship packages." />
+        <meta property="og:title" content="Advertise with DataEngineer Hub" />
+        <meta property="og:description" content="Reach active data engineers building with Snowflake, dbt, Databricks, and the modern data stack. Sponsorship packages from $15/week." />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://dataengineerhub.com/advertise" />
+      </Helmet>
+
+      {/* Ambient background effects */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-blue-600/8 via-purple-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-40 left-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-20 right-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+
+      {/* ═══════════════ HERO SECTION ═══════════════ */}
+      <div className="relative py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto text-center">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-semibold mb-6"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-semibold mb-8"
           >
-            <Sparkles className="h-4 w-4 text-yellow-400 animate-pulse" /> Partnership Opportunities
+            <Sparkles className="h-4 w-4 text-yellow-400 animate-pulse" /> Developer-First Sponsorship
           </motion.div>
+
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl sm:text-5xl font-black tracking-tight leading-none mb-6"
+            className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] mb-6"
           >
-            Reach Active{' '}
+            Reach the Engineers{' '}
             <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Data Engineers
+              Building the Modern Data Stack
             </span>
           </motion.h1>
+
           <motion.p 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-lg text-gray-400 leading-relaxed"
+            className="text-lg text-gray-400 leading-relaxed max-w-2xl mx-auto mb-10"
           >
-            Partner with DataEngineer Hub to showcase your platforms, developer tooling, and cloud infrastructure services directly to the builders and architects shaping the modern data stack.
+            DataEngineer Hub serves 15,000+ monthly practitioners actively evaluating tools, building pipelines, and shipping production data infrastructure. Get your product in front of the right engineers, at the right moment.
           </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="flex flex-wrap justify-center gap-4"
+          >
+            <a
+              href="#pricing"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition shadow-lg shadow-blue-500/20"
+            >
+              View Pricing <ArrowRight className="h-4 w-4" />
+            </a>
+            <a
+              href="#inquiry-form"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold rounded-xl transition"
+            >
+              Contact Us <Mail className="h-4 w-4" />
+            </a>
+          </motion.div>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8 space-y-24 pb-24">
+
+        {/* ═══════════════ AUDIENCE METRICS SECTION ═══════════════ */}
+        <div>
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">Why DataEngineer Hub?</h2>
+            <p className="text-sm text-gray-400 max-w-xl mx-auto">High-intent, organic traffic from data professionals actively searching for tools, comparisons, and best practices.</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            {advertiseConfig.stats.map((stat, idx) => {
+              const IconComponent = LucideIcons[stat.icon] || HelpCircle;
+              return (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 + idx * 0.08 }}
+                  className="relative rounded-2xl bg-slate-900/60 border border-white/10 p-6 md:p-8 overflow-hidden backdrop-blur-sm group hover:border-blue-500/30 transition-colors"
+                >
+                  <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500/0 via-blue-500/30 to-purple-500/0" />
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm font-semibold text-gray-400">{stat.label}</span>
+                    <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform">
+                      <IconComponent className="h-5 w-5" />
+                    </div>
+                  </div>
+                  <div className="text-3xl sm:text-4xl font-extrabold text-white mb-2">{stat.value}</div>
+                  <p className="text-xs text-gray-500">{stat.desc}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* Audience Breakdown + Tech Stack */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Audience Roles */}
+            <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
+              <h3 className="text-base font-bold text-white mb-5 flex items-center gap-2">
+                <Users className="h-4 w-4 text-blue-400" /> Audience Breakdown
+              </h3>
+              <div className="space-y-4">
+                {advertiseConfig.audienceBreakdown.map((seg) => (
+                  <div key={seg.role}>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className="text-sm text-gray-300">{seg.role}</span>
+                      <span className="text-sm font-bold text-white">{seg.percent}%</span>
+                    </div>
+                    <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${seg.percent}%` }}
+                        transition={{ delay: 0.3, duration: 0.8 }}
+                        className="h-full rounded-full"
+                        style={{ backgroundColor: seg.color }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Tech Stack */}
+            <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
+              <h3 className="text-base font-bold text-white mb-5 flex items-center gap-2">
+                <Target className="h-4 w-4 text-purple-400" /> Core Tech Stack Interest
+              </h3>
+              <div className="flex flex-wrap gap-2.5">
+                {advertiseConfig.techStack.map((tech) => (
+                  <span key={tech} className="px-3 py-1.5 bg-slate-800/80 border border-white/10 rounded-lg text-sm text-gray-300 font-medium hover:border-blue-500/30 transition-colors">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-6 pt-5 border-t border-white/5">
+                <div className="grid grid-cols-2 gap-4 text-center">
+                  <div>
+                    <div className="text-xl font-bold text-white">76+</div>
+                    <div className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Published Articles</div>
+                  </div>
+                  <div>
+                    <div className="text-xl font-bold text-white">30+</div>
+                    <div className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Cheatsheets & Guides</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Brand Trust Bar */}
-        <div className="mb-20 text-center">
-          <p className="text-xs uppercase tracking-widest text-gray-500 mb-6">Audience Stack Familiarity</p>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-30 grayscale hover:opacity-50 transition-opacity">
-            {SPONSOR_LOGOS.map((logo) => (
-              <div key={logo.name} className="flex items-center gap-2 text-white">
-                {logo.svg}
-                <span className="font-bold text-sm tracking-wider">{logo.name}</span>
-              </div>
+        {/* ═══════════════ HOW IT WORKS ═══════════════ */}
+        <div>
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">How It Works</h2>
+            <p className="text-sm text-gray-400">From inquiry to live campaign in under 48 hours.</p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {PROCESS_STEPS.map((step, idx) => (
+              <motion.div
+                key={step.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * idx }}
+                className="relative text-center"
+              >
+                {idx < PROCESS_STEPS.length - 1 && (
+                  <div className="hidden lg:block absolute top-8 left-[60%] w-[80%] h-[1px] bg-gradient-to-r from-blue-500/30 to-transparent" />
+                )}
+                <div className="inline-flex p-3 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 mb-4 relative">
+                  <step.icon className="h-6 w-6" />
+                  <span className="absolute -top-2 -right-2 w-5 h-5 bg-blue-600 rounded-full text-[10px] font-bold flex items-center justify-center text-white">{idx + 1}</span>
+                </div>
+                <h4 className="font-bold text-white text-sm mb-1">{step.title}</h4>
+                <p className="text-xs text-gray-400 leading-relaxed">{step.desc}</p>
+              </motion.div>
             ))}
           </div>
         </div>
 
-        {/* Stats Section */}
-        <div className="grid md:grid-cols-3 gap-6 mb-20">
-          {STATS.map((stat, idx) => {
-            const Icon = stat.icon;
-            return (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 + idx * 0.08 }}
-                className="relative rounded-2xl bg-slate-900/60 border border-white/10 p-6 md:p-8 overflow-hidden backdrop-blur-sm group"
-              >
-                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500/0 via-blue-500/30 to-purple-500/0" />
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-semibold text-gray-400">{stat.label}</span>
-                  <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                </div>
-                <div className="text-3xl sm:text-4xl font-extrabold text-white mb-2">{stat.value}</div>
-                <p className="text-xs text-gray-500">{stat.desc}</p>
-              </motion.div>
-            );
-          })}
+        {/* ═══════════════ TRANSPARENCY BANNER ═══════════════ */}
+        <div className="rounded-2xl bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-blue-500/5 border border-blue-500/10 p-6 flex items-start gap-4 max-w-4xl mx-auto">
+          <Shield className="h-6 w-6 text-blue-400 mt-0.5 flex-shrink-0" />
+          <div>
+            <h3 className="font-bold text-white text-sm mb-1">Community Trust & Transparency</h3>
+            <p className="text-sm text-gray-400 leading-relaxed">
+              We only accept partners whose products genuinely serve the data engineering community. Every campaign gets a private dashboard with real click data — no inflated metrics, just clear visibility into your ROI.
+            </p>
+          </div>
         </div>
 
-        {/* ROI Calculator Section (High Converting Feature) */}
-        <div className="mb-24 rounded-3xl border border-white/10 bg-slate-900/30 p-6 sm:p-10 backdrop-blur-sm relative">
+        {/* ═══════════════ ROI CALCULATOR ═══════════════ */}
+        <div className="rounded-3xl border border-white/10 bg-slate-900/30 p-6 sm:p-10 backdrop-blur-sm relative">
           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/25 to-transparent" />
           
           <div className="grid md:grid-cols-2 gap-10">
@@ -325,26 +402,26 @@ const AdvertisePage = () => {
                 <h2 className="text-2xl font-bold text-white">ROI & Reach Estimator</h2>
               </div>
               <p className="text-sm text-gray-400 leading-relaxed mb-8">
-                Move the slider to match your growth target. See the estimated visibility and lead potential you can unlock across our channels.
+                Drag the slider to estimate the visibility and developer engagement your budget can unlock across our content channels.
               </p>
               
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Campaign Budget</span>
-                  <span className="text-2xl font-black text-blue-400">${calcBudget}</span>
+                  <span className="text-2xl font-black text-blue-400">{formatPrice(calcBudget)}</span>
                 </div>
                 <input 
                   type="range" 
-                  min="25" 
-                  max="1000" 
+                  min="15" 
+                  max="500" 
                   step="5"
                   value={calcBudget}
                   onChange={(e) => setCalcBudget(Number(e.target.value))}
                   className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500 focus:outline-none"
                 />
                 <div className="flex justify-between text-[10px] text-gray-500">
-                  <span>Min: {formatPrice(25)}</span>
-                  <span>Max: {formatPrice(1000)}</span>
+                  <span>Min: {formatPrice(15)}</span>
+                  <span>Max: {formatPrice(500)}</span>
                 </div>
               </div>
             </div>
@@ -377,36 +454,26 @@ const AdvertisePage = () => {
           </div>
         </div>
 
-        {/* Transparency Disclosure Banner */}
-        <div className="rounded-xl bg-blue-500/5 border border-blue-500/10 p-5 mb-16 flex items-start gap-3.5 max-w-4xl mx-auto">
-          <ShieldCheck className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
-          <div className="text-sm text-gray-400 leading-relaxed">
-            <span className="font-semibold text-gray-300">Community Safety & Transparency:</span> We are committed to transparency. All partner recommendations are clearly disclosed, and outbound links are configured to follow standard security and reference practices, ensuring a safe browsing experience for our readers.
-          </div>
-        </div>
-
-        {/* Sponsorship Pricing Cards */}
-        <div className="mb-24">
+        {/* ═══════════════ PRICING SECTION ═══════════════ */}
+        <div id="pricing">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 border-b border-white/5 pb-8">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">Sponsorship Channels</h2>
-              <p className="text-sm text-gray-400">Choose a developer product placement option. Select your localized currency view.</p>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">Choose a Developer Product Placement</h2>
+              <p className="text-sm text-gray-400 mt-2">
+                Pricing is automatically localized to your region. All placements include a private analytics dashboard.
+              </p>
             </div>
-            
-            <div className="relative flex-shrink-0">
-              <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-400" />
+            <div className="flex items-center gap-2">
+              <Globe className="h-4 w-4 text-blue-400" />
               <select
                 value={selectedCurrency}
                 onChange={(e) => setSelectedCurrency(e.target.value)}
-                className="bg-slate-900 border border-white/10 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 appearance-none cursor-pointer font-bold"
+                className="bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer"
               >
                 {sortedCurrencyCodes.map(code => (
-                  <option key={code} value={code}>
-                    {code} ({exchangeRates[code] ? exchangeRates[code].toFixed(2) : '1.00'})
-                  </option>
+                  <option key={code} value={code}>{code}</option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
             </div>
           </div>
           
@@ -414,6 +481,7 @@ const AdvertisePage = () => {
             {OPPORTUNITIES.map((opp, idx) => {
               const activeDuration = opp.durations.find(d => d.key === selectedDurations[opp.packageKey]) || opp.durations[0];
               const formattedPrice = formatPrice(activeDuration.price);
+              const PkgIcon = resolveIcon(opp.icon);
 
               return (
                 <motion.div
@@ -424,23 +492,54 @@ const AdvertisePage = () => {
                   className={`relative rounded-3xl p-6 sm:p-8 flex flex-col justify-between overflow-hidden ${
                     opp.popular 
                       ? 'bg-slate-900 border-2 border-blue-500/50 shadow-[0_12px_40px_rgba(59,130,246,0.15)]' 
-                      : 'bg-slate-900/60 border border-white/10'
+                      : 'bg-slate-900/60 border border-white/10 hover:border-white/20 transition-colors'
                   }`}
                 >
+                  {/* Popular badge */}
                   {opp.popular && (
-                    <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white">
-                      Most Popular
+                    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
+                  )}
+                  {opp.popular && (
+                    <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white flex items-center gap-1">
+                      <Star className="h-3 w-3" /> Most Popular
                     </div>
                   )}
                   
                   <div>
-                    <h3 className="text-xl font-bold text-white mb-2">{opp.title}</h3>
+                    {/* Package icon + title */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`p-2 rounded-xl ${opp.popular ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-gray-400'}`}>
+                        <PkgIcon className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-white">{opp.title}</h3>
+                        <p className="text-[11px] text-gray-500">{opp.tagline}</p>
+                      </div>
+                    </div>
                     
                     {/* Price and duration */}
-                    <div className="flex items-baseline gap-1.5 mb-4 border-b border-white/10 pb-4">
-                      <span className="text-3xl font-black text-white">{formattedPrice}</span>
+                    <div className="flex items-baseline gap-1.5 mb-2 border-b border-white/10 pb-4 h-14">
+                      <AnimatePresence mode="wait">
+                        <motion.span
+                          key={formattedPrice}
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -5 }}
+                          transition={{ duration: 0.12 }}
+                          className="text-3xl font-black text-white"
+                        >
+                          {formattedPrice}
+                        </motion.span>
+                      </AnimatePresence>
                       <span className="text-sm text-gray-400">/ {activeDuration.label}</span>
                     </div>
+
+                    {/* Savings Badge */}
+                    {activeDuration.savings && (
+                      <div className="inline-flex items-center text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20 mb-4">
+                        {activeDuration.savings}
+                      </div>
+                    )}
 
                     {/* Duration Option Selectors */}
                     {opp.durations.length > 1 && (
@@ -452,7 +551,7 @@ const AdvertisePage = () => {
                             onClick={() => {
                               setSelectedDurations(prev => ({ ...prev, [opp.packageKey]: dur.key }));
                             }}
-                            className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all ${
+                            className={`flex-1 py-1.5 text-[11px] font-bold rounded-lg transition-all ${
                               selectedDurations[opp.packageKey] === dur.key
                                 ? 'bg-blue-600 text-white shadow-sm'
                                 : 'text-gray-400 hover:text-white hover:bg-white/5'
@@ -464,10 +563,23 @@ const AdvertisePage = () => {
                       </div>
                     )}
                     
-                    <p className="text-sm text-gray-400 mb-6 leading-relaxed">
-                      {opp.description}
-                    </p>
+                    {/* Description */}
+                    <div className="min-h-[72px] mb-6 flex items-center">
+                      <AnimatePresence mode="wait">
+                        <motion.p
+                          key={activeDuration.key}
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -5 }}
+                          transition={{ duration: 0.12 }}
+                          className="text-sm text-gray-400 leading-relaxed"
+                        >
+                          {activeDuration.desc}
+                        </motion.p>
+                      </AnimatePresence>
+                    </div>
                     
+                    {/* Feature bullets */}
                     <ul className="space-y-3 mb-8">
                       {opp.bullets.map(bullet => (
                         <li key={bullet} className="flex items-start gap-2.5 text-xs text-gray-300">
@@ -478,6 +590,7 @@ const AdvertisePage = () => {
                     </ul>
                   </div>
                   
+                  {/* CTA Button */}
                   <a
                     href="#inquiry-form"
                     onClick={() => {
@@ -489,7 +602,7 @@ const AdvertisePage = () => {
                     }}
                     className={`w-full py-3 rounded-xl font-semibold text-sm text-center transition flex items-center justify-center gap-1.5 ${
                       opp.popular
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg'
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20'
                         : 'bg-white/5 hover:bg-white/10 border border-white/10 text-white'
                     }`}
                   >
@@ -501,18 +614,18 @@ const AdvertisePage = () => {
           </div>
         </div>
 
-        {/* FAQs Accordion Section */}
-        <div className="mb-24 max-w-4xl mx-auto">
+        {/* ═══════════════ FAQs SECTION ═══════════════ */}
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white">Frequently Asked Questions</h2>
             <p className="text-sm text-gray-400 mt-2">Everything you need to know about sponsoring DataEngineer Hub.</p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {FAQS.map((faq, idx) => (
               <div 
                 key={idx}
-                className="border border-white/10 rounded-2xl bg-slate-900/40 overflow-hidden backdrop-blur-sm"
+                className="border border-white/10 rounded-2xl bg-slate-900/40 overflow-hidden backdrop-blur-sm hover:border-white/15 transition-colors"
               >
                 <button
                   onClick={() => toggleFaq(idx)}
@@ -545,7 +658,7 @@ const AdvertisePage = () => {
           </div>
         </div>
 
-        {/* Contact/Inquiry Section */}
+        {/* ═══════════════ CONTACT / INQUIRY SECTION ═══════════════ */}
         <div id="inquiry-form" className="max-w-4xl mx-auto rounded-3xl border border-white/10 bg-slate-900/40 p-6 sm:p-10 backdrop-blur-sm relative">
           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
           
@@ -554,7 +667,7 @@ const AdvertisePage = () => {
               <div>
                 <h2 className="text-2xl font-bold text-white mb-4">Start a Campaign</h2>
                 <p className="text-sm text-gray-400 leading-relaxed mb-6">
-                  Ready to reach our specialized data engineering audience? Submit an inquiry to lock in your spots or request our full Media Kit.
+                  Submit an inquiry and we'll get back to you within 24 hours with placement confirmation, a secure analytics token, and your private dashboard link.
                 </p>
               </div>
 
@@ -578,6 +691,16 @@ const AdvertisePage = () => {
                     <div>Normally within 24 business hours</div>
                   </div>
                 </div>
+
+                <div className="flex items-center gap-3 text-xs text-gray-400">
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/15 flex items-center justify-center text-blue-400">
+                    <Shield className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-gray-300">Private Dashboard</div>
+                    <div>Secure token + real-time analytics</div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -593,7 +716,7 @@ const AdvertisePage = () => {
                   </div>
                   <h3 className="text-xl font-bold text-white mb-2">Inquiry Submitted!</h3>
                   <p className="text-sm text-gray-400 max-w-sm mx-auto mb-6">
-                    Thank you. We've received your request and our team will get back to you with custom placement specs and details.
+                    Thank you. We've received your request and will respond with custom placement specs and your private dashboard credentials.
                   </p>
                   <button
                     onClick={() => setSubmitted(false)}
@@ -685,10 +808,10 @@ const AdvertisePage = () => {
                         onChange={handleChange}
                         className="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                       >
-                        <option value="<$500">Less than $500</option>
-                        <option value="$500 - $1,000">$500 - $1,000</option>
-                        <option value="$1,000 - $2,500">$1,000 - $2,500</option>
-                        <option value="$2,500+">$2,500+</option>
+                        <option value="$15 - $50">$15 – $50 (Single placement)</option>
+                        <option value="$50 - $100">$50 – $100 (Multi-month)</option>
+                        <option value="$100 - $250">$100 – $250 (Yearly tier)</option>
+                        <option value="$250+">$250+ (Multiple placements)</option>
                       </select>
                     </div>
                   </div>
@@ -711,7 +834,7 @@ const AdvertisePage = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-blue-500/20"
                   >
                     {loading ? (
                       <>Submitting...</>

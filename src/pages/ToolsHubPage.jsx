@@ -281,7 +281,7 @@ export default function ToolsHubPage() {
         />
         <link rel="canonical" href={canonicalUrl} />
         {/* PSEO/AI-assisted section — held out of the index until further editorial work. */}
-        <meta name="robots" content="noindex, follow" />
+        
 
         <meta property="og:type" content="website" />
         <meta property="og:title" content={pageTitle} />

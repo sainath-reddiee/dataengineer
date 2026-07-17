@@ -1,4 +1,4 @@
-﻿// src/pages/admin/SEODashboard.jsx
+// src/pages/admin/SEODashboard.jsx
 /**
  * SEO Dashboard - Main Admin Page
  * Overview of all SEO metrics with quick actions
@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 import {
     Search, Layers, GitCompare, Code2, Eye, Sparkles,
     TrendingUp, AlertCircle, CheckCircle, Clock, ArrowRight, Bot, Zap, Activity,
-    MousePointerClick, Target, Wrench, FileText,
+    MousePointerClick, Target, Wrench, FileText, Key,
 } from 'lucide-react';
 import { SEOScoreCard } from '@/components/admin/SEOScoreCard';
 import wordpressApi from '@/services/wordpressApi';
@@ -39,6 +39,7 @@ const quickActions = [
     { path: '/admin/serp', icon: Eye, label: 'SERP Preview', desc: 'Search preview', color: 'pink' },
     { path: '/admin/ai-suite', icon: Sparkles, label: 'AI Suite', desc: 'PSEO/AEO/GEO', color: 'cyan' },
     { path: '/admin/ctr-lab', icon: Zap, label: 'CTR Lab', desc: 'Title & meta scorer', color: 'yellow' },
+    { path: '/admin/sponsors', icon: Key, label: 'Sponsors', desc: 'Manage campaigns', color: 'green' },
 ];
 
 export function SEODashboard() {

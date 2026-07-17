@@ -178,7 +178,7 @@ export default function WarehouseSizingPage() {
           { name: 'Warehouse Sizing Estimator', url: '/tools/snowflake-warehouse-sizing' },
         ]}
         faqSchema={faqSchema}
-      noindex={true}
+      
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>

@@ -375,7 +375,7 @@ export default function FormatConverterPage() {
           { name: 'JSON / Parquet / Avro Converter', url: '/tools/json-parquet-avro-converter' },
         ]}
         faqSchema={faqSchema}
-      noindex={true}
+      
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>

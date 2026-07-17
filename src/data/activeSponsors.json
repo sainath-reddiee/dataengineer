@@ -1,0 +1,64 @@
+[
+  {
+    "company": "SnowflakePartner",
+    "logo": "/assets/sponsors/snowflake.svg",
+    "url": "https://snowflake.com",
+    "placement": "directory",
+    "startDate": "2026-07-17",
+    "endDate": "2026-08-17",
+    "active": true,
+    "token": "sp_snowflake123",
+    "notes": "Ecosystem Showcase - Monthly option (Auto-expires on August 17th)",
+    "targeting": {
+      "categories": ["snowflake"],
+      "slugs": ["snowflake-cost-calculator", "snowflake-warehouse-sizing"]
+    }
+  },
+  {
+    "company": "SponsorCorp",
+    "logo": "/assets/sponsors/sponsorcorp.svg",
+    "url": "https://sponsorcorp.com",
+    "placement": "directory",
+    "startDate": "2026-07-17",
+    "endDate": "2026-08-17",
+    "active": true,
+    "token": "sp_8f3a9e1d2c",
+    "notes": "Ecosystem Showcase - Monthly option (Auto-expires on August 17th)",
+    "targeting": {
+      "categories": ["snowflake", "warehousing"],
+      "slugs": ["snowflake-credit-cost", "snowflake-query-cost-estimator"]
+    }
+  },
+  {
+    "company": "DataUtility",
+    "logo": "/assets/sponsors/datautility.svg",
+    "url": "https://datautility.io",
+    "placement": "resource_reference",
+    "startDate": "2026-07-17",
+    "endDate": "2027-07-17",
+    "active": true,
+    "token": "sp_4b7e2c9a6f",
+    "notes": "Developer Resource Reference - Yearly option (Auto-expires next year)",
+    "targeting": {
+      "categories": ["dbt", "sql", "orchestration"],
+      "slugs": ["dbt-cloud-cost-calculator", "sql-formatter", "sql-playground"]
+    }
+  },
+  {
+    "company": "🚀 Acme Data Solutions (TEST)",
+    "logo": "https://cdn.brandfetch.io/id_q2w2G2u/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B",
+    "url": "https://example.com/acme-test",
+    "placement": "resource_reference",
+    "startDate": "2026-07-10",
+    "endDate": "2026-12-31",
+    "active": true,
+    "token": "sp_acmetest123",
+    "notes": "Test Sponsor added specifically for verification",
+    "targeting": {
+      "categories": ["python", "airflow"],
+      "slugs": ["csv-to-sql", "unix-timestamp-converter"]
+    },
+    "description": "Simplify your pipeline migrations with Acme Data Solutions. Built for speed, security, and scale.",
+    "ctaText": "Start Free Trial"
+  }
+]

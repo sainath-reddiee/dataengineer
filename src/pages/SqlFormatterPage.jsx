@@ -1,4 +1,4 @@
-﻿// src/pages/SqlFormatterPage.jsx
+// src/pages/SqlFormatterPage.jsx
 // Client-side SQL formatter. Targets "sql formatter", "sql beautifier",
 // "format sql online", "snowflake sql formatter".
 import React, { useMemo, useState, useCallback, Suspense } from 'react';
@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Code2, Copy, Check, Trash2, Calculator, BookOpen, Wand2 } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import SponsorPlacement from '@/components/SponsorPlacement';
 
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
@@ -183,7 +184,7 @@ export default function SqlFormatterPage() {
           { name: 'SQL Formatter', url: '/tools/sql-formatter' },
         ]}
         faqSchema={faqSchema}
-      noindex={true}
+      
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
@@ -204,6 +205,8 @@ export default function SqlFormatterPage() {
             queries. No signup, no file upload, no tracking of your SQL content.
           </p>
         </div>
+
+        <SponsorPlacement category="sql" slug="sql-formatter" />
 
         <div className="flex flex-wrap gap-3">
           <div>

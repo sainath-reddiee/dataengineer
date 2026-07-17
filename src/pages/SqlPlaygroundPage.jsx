@@ -369,7 +369,7 @@ export default function SqlPlaygroundPage() {
           { name: 'SQL Playground', url: '/tools/sql-playground' },
         ]}
         faqSchema={faqSchema}
-      noindex={true}
+      
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>

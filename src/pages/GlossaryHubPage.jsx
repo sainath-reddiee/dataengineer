@@ -95,7 +95,7 @@ export function GlossaryHubPage() {
                 <meta name="keywords" content={meta.keywords} />
                 <link rel="canonical" href={canonical} />
                 {/* Programmatic SEO section — held out of the index until further editorial work. */}
-                <meta name="robots" content="noindex, follow" />
+                
 
                 {/* Open Graph */}
                 <meta property="og:type" content="website" />

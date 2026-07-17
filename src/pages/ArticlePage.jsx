@@ -36,6 +36,7 @@ import { getRelatedTools } from '@/data/articleToolMap';
 import { getRecommendedCourses, getPlatformColor } from '@/data/courseRecommendations';
 import InlineToolWidget from '@/components/InlineToolWidget';
 import AuthorBioCard from '@/components/AuthorBioCard';
+import SponsorPlacement from '@/components/SponsorPlacement';
 import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap, Megaphone, MessageCircleQuestion, Send } from 'lucide-react';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
@@ -848,6 +849,8 @@ const ArticlePage = () => {
                   <TableOfContents headings={headings} />
                 </div>
               </div>
+
+          <SponsorPlacement category={safePost.category} tags={safePost.tags} slug={slug} />
 
           {/* Tags Section */}
           {safePost.tags && safePost.tags.length > 0 && (
