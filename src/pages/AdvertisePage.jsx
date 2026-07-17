@@ -20,47 +20,47 @@ const STATS = [
 
 const OPPORTUNITIES = [
   {
-    title: 'Newsletter Placement',
-    price: '$75',
-    frequency: 'per issue',
-    description: 'Get featured at the top of our weekly community email. Showcase your developer tooling or platforms with a clean text link and custom summary.',
+    title: 'Featured Directory Showcase',
+    price: '$120',
+    frequency: 'one-time placement',
+    description: 'Place your data tool permanently on our interactive Tools Hub directory page. Perfect for B2B tools or open-source projects seeking long-term developer visibility.',
     bullets: [
-      'Top-of-email recommendation slot',
-      'Up to 100 words of developer-focused copy',
-      'Exclusive: Only 1 sponsor per weekly email',
-      'Plain text link format (no heavy banners)'
+      'Permanent listing in Tools directory',
+      'Short summary, logo, and custom link',
+      'Safe rel="sponsored" link configuration',
+      'Continuous exposure to incoming search traffic'
     ],
-    cta: 'Book Newsletter Slot',
-    packageKey: 'newsletter',
-    popular: true
-  },
-  {
-    title: 'Contextual Tool Sponsor',
-    price: '$90',
-    frequency: 'per month',
-    description: 'A native, text-based recommendation link integrated directly inside our interactive cost calculators and tools.',
-    bullets: [
-      'Contextual placement on utility calculator pages',
-      'Reach users evaluating Snowflake or Databricks spend',
-      'Non-intrusive plain text format',
-      'High-intent B2B target audience'
-    ],
-    cta: 'Sponsor Calculator Page',
-    packageKey: 'banner',
+    cta: 'Submit Showcase Request',
+    packageKey: 'directory',
     popular: false
   },
   {
-    title: 'Technical Deep-Dive',
-    price: '$280',
-    frequency: 'one-time fee',
-    description: 'A hands-on, highly technical tutorial showing how to build pipelines or integrate your API, written by developers.',
+    title: 'Calculator Partner Placement',
+    price: '$90',
+    frequency: 'per month',
+    description: 'A native, text-based recommendation link integrated directly inside our interactive cost calculators and platform sizing tools.',
     bullets: [
-      'Step-by-step hands-on tutorial (1,000+ words)',
-      'GitHub repository with working example code',
-      'Permanent page placement with proper sponsored disclaimer',
-      'Shared with our newsletter subscribers'
+      'Contextual placement on utility calculators',
+      'Target users evaluating Snowflake or Databricks spend',
+      'Non-intrusive native text format',
+      'High-intent B2B target audience'
     ],
-    cta: 'Propose Technical Article',
+    cta: 'Book Calculator Placement',
+    packageKey: 'calculator',
+    popular: true
+  },
+  {
+    title: 'Sponsored Technical Tutorial',
+    price: '$100',
+    frequency: 'one-time fee',
+    description: 'A hands-on, highly technical tutorial showing how to build pipelines or integrate your product, published permanently on our blog.',
+    bullets: [
+      'Hands-on technical guide (1,000+ words)',
+      'GitHub repository with working example code',
+      'Permanent post with proper sponsored disclaimer',
+      'Shared across our developer community list'
+    ],
+    cta: 'Submit Article Brief',
     packageKey: 'content',
     popular: false
   }
@@ -77,7 +77,7 @@ const FAQS = [
   },
   {
     question: 'Can we track the performance of our campaign?',
-    answer: 'Absolutely. We provide a custom dashboard link containing real-time metrics showing total impressions, click volume, and click-through rates (CTR) at the end of each newsletter or tool banner campaign.'
+    answer: 'Absolutely. We provide a custom dashboard link containing real-time metrics showing total impressions, click volume, and click-through rates (CTR) at the end of each directory placement or tool sponsorship campaign.'
   },
   {
     question: 'What is the lead time for sponsored articles?',
@@ -99,7 +99,7 @@ const AdvertisePage = () => {
     email: '',
     company: '',
     website: '',
-    package: 'newsletter',
+    package: 'directory',
     budget: '$500 - $1,000',
     message: ''
   });
@@ -146,7 +146,7 @@ const AdvertisePage = () => {
         email: '',
         company: '',
         website: '',
-        package: 'newsletter',
+        package: 'directory',
         budget: '$500 - $1,000',
         message: ''
       });
@@ -539,9 +539,9 @@ const AdvertisePage = () => {
                         onChange={handleChange}
                         className="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                       >
-                        <option value="newsletter">Newsletter Sponsorship</option>
-                        <option value="banner">Contextual Tool Banner</option>
-                        <option value="content">Sponsored Content / Review</option>
+                        <option value="directory">Featured Directory Showcase</option>
+                        <option value="calculator">Calculator Partner Placement</option>
+                        <option value="content">Sponsored Technical Tutorial</option>
                         <option value="other">Custom Campaign</option>
                       </select>
                     </div>
