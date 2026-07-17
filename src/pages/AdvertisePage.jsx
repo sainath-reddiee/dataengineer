@@ -21,8 +21,8 @@ const STATS = [
 const OPPORTUNITIES = [
   {
     title: 'Developer Resource Reference',
-    price: '$35',
-    frequency: 'one-time placement',
+    packageKey: 'resource_reference',
+    popular: true,
     description: 'Place your technical library, SDK, or utility as a recommended developer resource within our reference articles or cheatsheet guides.',
     bullets: [
       'Natively placed in relevant reference material',
@@ -31,28 +31,15 @@ const OPPORTUNITIES = [
       'Permanent integration in reference guides'
     ],
     cta: 'Submit Resource Details',
-    packageKey: 'resource_reference',
-    popular: true
-  },
-  {
-    title: 'Technical Integration Guide',
-    price: '$25',
-    frequency: 'one-time fee',
-    description: 'A co-authored, code-first tutorial showing data engineers how to build pipelines or integrate your product or API.',
-    bullets: [
-      'Code-first integration guide (1,000+ words)',
-      'GitHub repository with ready-to-run examples',
-      'Focus on real-world engineering workflows',
-      'Shared with our developer community list'
-    ],
-    cta: 'Propose Integration Guide',
-    packageKey: 'content',
-    popular: false
+    durations: [
+      { key: 'monthly', label: 'Monthly', price: 30 },
+      { key: 'permanent', label: 'Permanent', price: 75 }
+    ]
   },
   {
     title: 'Ecosystem Showcase',
-    price: '$50',
-    frequency: 'one-time placement',
+    packageKey: 'directory',
+    popular: false,
     description: 'List your developer platform, API, or data tool in our ecosystem directory hub for continuous product discovery.',
     bullets: [
       'Permanent showcase in our Tools directory',
@@ -61,8 +48,60 @@ const OPPORTUNITIES = [
       'Direct developer community visibility'
     ],
     cta: 'Submit Showcase Request',
-    packageKey: 'directory',
-    popular: false
+    durations: [
+      { key: 'weekly', label: 'Weekly', price: 15 },
+      { key: 'monthly', label: 'Monthly', price: 40 },
+      { key: 'permanent', label: 'Permanent', price: 99 }
+    ]
+  },
+  {
+    title: 'Technical Integration Guide',
+    packageKey: 'content',
+    popular: false,
+    description: 'A co-authored, code-first tutorial showing data engineers how to build pipelines or integrate your product or API.',
+    bullets: [
+      'Code-first integration guide (1,000+ words)',
+      'GitHub repository with ready-to-run examples',
+      'Focus on real-world engineering workflows',
+      'Shared with our developer community list'
+    ],
+    cta: 'Propose Integration Guide',
+    durations: [
+      { key: 'permanent', label: 'Permanent', price: 25 }
+    ]
+  },
+  {
+    title: 'Calculator Partner Placement',
+    packageKey: 'calculator',
+    popular: false,
+    description: 'Feature your platform as a recommended cost suspension or optimization integration inside our cost calculator tools.',
+    bullets: [
+      'Placed on relevant sizing calculator dashboards',
+      'Target users calculating Snowflake or Databricks spend',
+      'Plain text recommendation matching user queries',
+      'High-intent B2B target audience'
+    ],
+    cta: 'Book Calculator Placement',
+    durations: [
+      { key: 'weekly', label: 'Weekly', price: 20 },
+      { key: 'monthly', label: 'Monthly', price: 60 }
+    ]
+  },
+  {
+    title: 'Developer Digest Discovery',
+    packageKey: 'digest',
+    popular: false,
+    description: 'A plain-text digest recommendation inside our weekly developer update sent directly to active engineers.',
+    bullets: [
+      'Recommended tool category segment',
+      'Up to 80 words of developer-focused copy',
+      'Single links with clean tracking attributes',
+      'Highly engaged engineering subscriber base'
+    ],
+    cta: 'Book Digest Placement',
+    durations: [
+      { key: 'per_issue', label: 'Per Issue', price: 35 }
+    ]
   }
 ];
 
@@ -108,6 +147,79 @@ const AdvertisePage = () => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
   
+  // Dynamic Exchange Rates & Currency Toggles
+  const [exchangeRates, setExchangeRates] = useState({ USD: 1 });
+  const [selectedCurrency, setSelectedCurrency] = useState('USD');
+  const [selectedDurations, setSelectedDurations] = useState({
+    resource_reference: 'monthly',
+    directory: 'monthly',
+    content: 'permanent',
+    calculator: 'monthly',
+    digest: 'per_issue'
+  });
+
+  // Fetch Live Global Currency Exchange Rates
+  React.useEffect(() => {
+    const fetchRates = async () => {
+      try {
+        const res = await fetch('https://open.er-api.com/v6/latest/USD');
+        const data = await res.json();
+        if (data && data.result === 'success' && data.rates) {
+          setExchangeRates(data.rates);
+          
+          // Auto-detect local currency by checking locale country
+          const locale = navigator.language || 'en-US';
+          const country = locale.split('-')[1] || locale.split('_')[1];
+          if (country) {
+            const countryToCurrency = {
+              IN: 'INR', US: 'USD', GB: 'GBP', DE: 'EUR', FR: 'EUR', IT: 'EUR', ES: 'EUR', NL: 'EUR',
+              CA: 'CAD', AU: 'AUD', JP: 'JPY', CN: 'CNY', BR: 'BRL', ZA: 'ZAR', SG: 'SGD', NZ: 'NZD',
+              CH: 'CHF', SE: 'SEK', NO: 'NOK', DK: 'DKK', PL: 'PLN', TR: 'TRY', RU: 'RUB', KR: 'KRW',
+              MX: 'MXN', AR: 'ARS', CO: 'COP', CL: 'CLP', PE: 'PEN', VE: 'VES', AE: 'AED', SA: 'SAR',
+              IL: 'ILS', EG: 'EGP', NG: 'NGN', KE: 'KES', GH: 'GHS', MY: 'MYR', ID: 'IDR', TH: 'THB',
+              PH: 'PHP', VN: 'VND', PK: 'PKR', BD: 'BDT', LK: 'LKR', NP: 'NPR', UA: 'UAH', RO: 'RON',
+              HU: 'HUF', CZ: 'CZK', HR: 'HRK', BG: 'BGN', KZ: 'KZT', QA: 'QAR', KW: 'KWD', OM: 'OMR'
+            };
+            const localCur = countryToCurrency[country.toUpperCase()];
+            if (localCur && data.rates[localCur]) {
+              setSelectedCurrency(localCur);
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Offline / rate fetch error, loading fallback rates:', err);
+        // Fallback for core currencies
+        setExchangeRates({
+          USD: 1, INR: 83.45, EUR: 0.92, GBP: 0.79, CAD: 1.36, AUD: 1.50, JPY: 155.0, BRL: 5.15, ZAR: 18.5
+        });
+      }
+    };
+    fetchRates();
+  }, []);
+
+  // Format dynamic converted prices based on active currency
+  const formatPrice = (usdValue) => {
+    try {
+      const rate = exchangeRates[selectedCurrency] || 1;
+      const converted = usdValue * rate;
+      return new Intl.NumberFormat(navigator.language || 'en-US', {
+        style: 'currency',
+        currency: selectedCurrency,
+        maximumFractionDigits: 0
+      }).format(converted);
+    } catch (e) {
+      return `$${usdValue}`;
+    }
+  };
+
+  // Sort currency codes to show USD, INR, EUR, GBP, CAD, AUD first, then alphabetically
+  const sortedCurrencyCodes = useMemo(() => {
+    const ratesKeys = Object.keys(exchangeRates);
+    const priority = ['USD', 'INR', 'EUR', 'GBP', 'CAD', 'AUD', 'SGD', 'JPY'];
+    const other = ratesKeys.filter(k => !priority.includes(k)).sort();
+    return [...priority.filter(p => ratesKeys.includes(p)), ...other];
+  }, [exchangeRates]);
+
   // ROI Slider State
   const [calcBudget, setCalcBudget] = useState(25);
   const [openFaq, setOpenFaq] = useState(null);
@@ -266,8 +378,8 @@ const AdvertisePage = () => {
                   className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500 focus:outline-none"
                 />
                 <div className="flex justify-between text-[10px] text-gray-500">
-                  <span>Min: $25</span>
-                  <span>Max: $1,000</span>
+                  <span>Min: {formatPrice(25)}</span>
+                  <span>Max: {formatPrice(1000)}</span>
                 </div>
               </div>
             </div>
@@ -310,63 +422,117 @@ const AdvertisePage = () => {
 
         {/* Sponsorship Pricing Cards */}
         <div className="mb-24">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-white mb-12">Sponsorship Channels</h2>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 border-b border-white/5 pb-8">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">Sponsorship Channels</h2>
+              <p className="text-sm text-gray-400">Choose a developer product placement option. Select your localized currency view.</p>
+            </div>
+            
+            <div className="relative flex-shrink-0">
+              <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-400" />
+              <select
+                value={selectedCurrency}
+                onChange={(e) => setSelectedCurrency(e.target.value)}
+                className="bg-slate-900 border border-white/10 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 appearance-none cursor-pointer font-bold"
+              >
+                {sortedCurrencyCodes.map(code => (
+                  <option key={code} value={code}>
+                    {code} ({exchangeRates[code] ? exchangeRates[code].toFixed(2) : '1.00'})
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+            </div>
+          </div>
           
           <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
-            {OPPORTUNITIES.map((opp, idx) => (
-              <motion.div
-                key={opp.title}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + idx * 0.1 }}
-                className={`relative rounded-3xl p-6 sm:p-8 flex flex-col justify-between overflow-hidden ${
-                  opp.popular 
-                    ? 'bg-slate-900 border-2 border-blue-500/50 shadow-[0_12px_40px_rgba(59,130,246,0.15)]' 
-                    : 'bg-slate-900/60 border border-white/10'
-                }`}
-              >
-                {opp.popular && (
-                  <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white">
-                    Most Popular
-                  </div>
-                )}
-                
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-2">{opp.title}</h3>
-                  <div className="flex items-baseline gap-1.5 mb-2 border-b border-white/10 pb-4">
-                    <span className="text-3xl font-black text-white">{opp.price}</span>
-                    <span className="text-sm text-gray-400">{opp.frequency}</span>
-                  </div>
-                  
-                  <p className="text-sm text-gray-400 mb-6 leading-relaxed">
-                    {opp.description}
-                  </p>
-                  
-                  <ul className="space-y-3 mb-8">
-                    {opp.bullets.map(bullet => (
-                      <li key={bullet} className="flex items-start gap-2.5 text-xs text-gray-300">
-                        <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                        <span>{bullet}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <a
-                  href="#inquiry-form"
-                  onClick={() => {
-                    setFormData(prev => ({ ...prev, package: opp.packageKey }));
-                  }}
-                  className={`w-full py-3 rounded-xl font-semibold text-sm text-center transition flex items-center justify-center gap-1.5 ${
-                    opp.popular
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg'
-                      : 'bg-white/5 hover:bg-white/10 border border-white/10 text-white'
+            {OPPORTUNITIES.map((opp, idx) => {
+              const activeDuration = opp.durations.find(d => d.key === selectedDurations[opp.packageKey]) || opp.durations[0];
+              const formattedPrice = formatPrice(activeDuration.price);
+
+              return (
+                <motion.div
+                  key={opp.title}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 + idx * 0.1 }}
+                  className={`relative rounded-3xl p-6 sm:p-8 flex flex-col justify-between overflow-hidden ${
+                    opp.popular 
+                      ? 'bg-slate-900 border-2 border-blue-500/50 shadow-[0_12px_40px_rgba(59,130,246,0.15)]' 
+                      : 'bg-slate-900/60 border border-white/10'
                   }`}
                 >
-                  {opp.cta} <ArrowRight className="h-4 w-4" />
-                </a>
-              </motion.div>
-            ))}
+                  {opp.popular && (
+                    <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white">
+                      Most Popular
+                    </div>
+                  )}
+                  
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-2">{opp.title}</h3>
+                    
+                    {/* Price and duration */}
+                    <div className="flex items-baseline gap-1.5 mb-4 border-b border-white/10 pb-4">
+                      <span className="text-3xl font-black text-white">{formattedPrice}</span>
+                      <span className="text-sm text-gray-400">/ {activeDuration.label}</span>
+                    </div>
+
+                    {/* Duration Option Selectors */}
+                    {opp.durations.length > 1 && (
+                      <div className="flex gap-1 p-1 bg-slate-950/60 rounded-xl mb-5 border border-white/5">
+                        {opp.durations.map(dur => (
+                          <button
+                            key={dur.key}
+                            type="button"
+                            onClick={() => {
+                              setSelectedDurations(prev => ({ ...prev, [opp.packageKey]: dur.key }));
+                            }}
+                            className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all ${
+                              selectedDurations[opp.packageKey] === dur.key
+                                ? 'bg-blue-600 text-white shadow-sm'
+                                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                            }`}
+                          >
+                            {dur.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    
+                    <p className="text-sm text-gray-400 mb-6 leading-relaxed">
+                      {opp.description}
+                    </p>
+                    
+                    <ul className="space-y-3 mb-8">
+                      {opp.bullets.map(bullet => (
+                        <li key={bullet} className="flex items-start gap-2.5 text-xs text-gray-300">
+                          <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                          <span>{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  <a
+                    href="#inquiry-form"
+                    onClick={() => {
+                      setFormData(prev => ({ 
+                        ...prev, 
+                        package: opp.packageKey,
+                        message: `Interested in the "${opp.title}" package with the "${activeDuration.label}" option.`
+                      }));
+                    }}
+                    className={`w-full py-3 rounded-xl font-semibold text-sm text-center transition flex items-center justify-center gap-1.5 ${
+                      opp.popular
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg'
+                        : 'bg-white/5 hover:bg-white/10 border border-white/10 text-white'
+                    }`}
+                  >
+                    {opp.cta} <ArrowRight className="h-4 w-4" />
+                  </a>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
 
@@ -540,8 +706,10 @@ const AdvertisePage = () => {
                         className="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                       >
                         <option value="resource_reference">Developer Resource Reference</option>
-                        <option value="content">Technical Integration Guide</option>
                         <option value="directory">Ecosystem Showcase</option>
+                        <option value="content">Technical Integration Guide</option>
+                        <option value="calculator">Calculator Partner Placement</option>
+                        <option value="digest">Developer Digest Discovery</option>
                         <option value="other">Custom Campaign</option>
                       </select>
                     </div>
