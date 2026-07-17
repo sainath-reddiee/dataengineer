@@ -20,45 +20,45 @@ const STATS = [
 
 const OPPORTUNITIES = [
   {
-    title: 'Contextual Link Insertion',
+    title: 'Developer Resource Reference',
     price: '$35',
     frequency: 'one-time placement',
-    description: 'Insert your link natively into an existing, high-ranking article on our blog. Excellent for boosting organic search authority and targeted developer traffic.',
+    description: 'Place your technical library, SDK, or utility as a recommended developer resource within our reference articles or cheatsheet guides.',
     bullets: [
-      'Placement within an active, relevant post',
-      'Contextual plain-text anchor link',
-      'Google-compliant rel="sponsored" tag',
-      'Permanent insertion (no recurring fees)'
+      'Natively placed in relevant reference material',
+      'Plain-text resource recommendation link',
+      'Targeted discovery by active practitioners',
+      'Permanent integration in reference guides'
     ],
-    cta: 'Submit Link Request',
-    packageKey: 'link_insertion',
+    cta: 'Submit Resource Details',
+    packageKey: 'resource_reference',
     popular: true
   },
   {
-    title: 'Sponsored Technical Tutorial',
+    title: 'Technical Integration Guide',
     price: '$25',
     frequency: 'one-time fee',
-    description: 'A hands-on, technical tutorial showing how to build pipelines or integrate your product, published permanently on our blog.',
+    description: 'A co-authored, code-first tutorial showing data engineers how to build pipelines or integrate your product or API.',
     bullets: [
-      'Technical integration guide (1,000+ words)',
-      'GitHub repository with working example code',
-      'Permanent post with clear sponsorship disclosure',
-      'Indexed by Google and shared with our community'
+      'Code-first integration guide (1,000+ words)',
+      'GitHub repository with ready-to-run examples',
+      'Focus on real-world engineering workflows',
+      'Shared with our developer community list'
     ],
-    cta: 'Submit Article Brief',
+    cta: 'Propose Integration Guide',
     packageKey: 'content',
     popular: false
   },
   {
-    title: 'Featured Directory Showcase',
+    title: 'Ecosystem Showcase',
     price: '$50',
     frequency: 'one-time placement',
-    description: 'Place your data tool permanently on our interactive Tools Hub directory. Great for B2B tools or open-source projects seeking long-term developer exposure.',
+    description: 'List your developer platform, API, or data tool in our ecosystem directory hub for continuous product discovery.',
     bullets: [
-      'Permanent listing in interactive Tools Hub',
-      'Tool logo, description, and custom link',
-      'Compliant rel="sponsored" link configuration',
-      'Consistent exposure to incoming search traffic'
+      'Permanent showcase in our Tools directory',
+      'Include platform logo, technical summary, and link',
+      'Classified under relevant ecosystem category',
+      'Direct developer community visibility'
     ],
     cta: 'Submit Showcase Request',
     packageKey: 'directory',
@@ -72,8 +72,8 @@ const FAQS = [
     answer: 'Our audience consists of active data engineers (58%), analytics engineers (22%), data architects (12%), and engineering managers (8%). They primarily work with modern data stack utilities like Snowflake, dbt, Databricks, Apache Spark, and AWS/Azure/GCP cloud services.'
   },
   {
-    question: 'How do you structure outbound sponsor links?',
-    answer: 'To protect your brand and ours, all sponsored links use the Google-compliant rel="sponsored" attribute. This completely satisfies search engine policies while maintaining clean routing paths for your campaigns.'
+    question: 'How do you handle outbound sponsor links?',
+    answer: 'To protect our developer audience, all partner recommendations use standard rel attributes and follow industry-standard disclosure and security practices.'
   },
   {
     question: 'Can we track the performance of our campaign?',
@@ -99,7 +99,7 @@ const AdvertisePage = () => {
     email: '',
     company: '',
     website: '',
-    package: 'link_insertion',
+    package: 'resource_reference',
     budget: '$500 - $1,000',
     message: ''
   });
@@ -146,7 +146,7 @@ const AdvertisePage = () => {
         email: '',
         company: '',
         website: '',
-        package: 'link_insertion',
+        package: 'resource_reference',
         budget: '$500 - $1,000',
         message: ''
       });
@@ -300,11 +300,11 @@ const AdvertisePage = () => {
           </div>
         </div>
 
-        {/* AdSense Compliance Banner */}
+        {/* Transparency Disclosure Banner */}
         <div className="rounded-xl bg-blue-500/5 border border-blue-500/10 p-5 mb-16 flex items-start gap-3.5 max-w-4xl mx-auto">
           <ShieldCheck className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
           <div className="text-sm text-gray-400 leading-relaxed">
-            <span className="font-semibold text-gray-300">Google AdSense Policy Compliance:</span> All sponsored links, paid reviews, and placement campaigns strictly adhere to Google Search guidelines. We require sponsored outbound links to use the proper <code>rel="sponsored"</code> or <code>rel="nofollow"</code> attributes to safeguard search authenticity and guarantee the security of our community.
+            <span className="font-semibold text-gray-300">Community Safety & Transparency:</span> We are committed to transparency. All partner recommendations are clearly disclosed, and outbound links are configured to follow standard security and reference practices, ensuring a safe browsing experience for our readers.
           </div>
         </div>
 
@@ -539,9 +539,9 @@ const AdvertisePage = () => {
                         onChange={handleChange}
                         className="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                       >
-                        <option value="link_insertion">Contextual Link Insertion</option>
-                        <option value="content">Sponsored Technical Tutorial</option>
-                        <option value="directory">Featured Directory Showcase</option>
+                        <option value="resource_reference">Developer Resource Reference</option>
+                        <option value="content">Technical Integration Guide</option>
+                        <option value="directory">Ecosystem Showcase</option>
                         <option value="other">Custom Campaign</option>
                       </select>
                     </div>
