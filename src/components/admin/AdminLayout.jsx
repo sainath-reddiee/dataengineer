@@ -58,6 +58,7 @@ const navItems = [
     { path: '/admin/readability', icon: BookOpen, label: 'Readability' },
     { path: '/admin/internal-links', icon: Link2, label: 'Internal Links' },
     { path: '/admin/freshness', icon: Clock, label: 'Freshness' },
+    { path: '/admin/sponsors', icon: Key, label: 'Sponsor Manager', highlight: true },
 ];
 
 /**

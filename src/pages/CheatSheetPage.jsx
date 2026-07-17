@@ -1,4 +1,4 @@
-﻿// src/pages/CheatSheetPage.jsx
+// src/pages/CheatSheetPage.jsx
 /**
  * Individual Cheat Sheet Detail Page
  * Renders sections (tables, code, tips) with SEO schema
@@ -35,6 +35,7 @@ import {
   CHEATSHEET_CATEGORIES,
 } from '@/data/cheatsheetData';
 import { SITE_CONFIG } from '@/lib/seoConfig';
+import SponsorPlacement from '@/components/SponsorPlacement';
 
 // Map cheatsheet category -> relevant interactive tools for the sidebar widget.
 // Each entry: { slug, title, tagline }. Keep lists small (3 max) to preserve focus.
@@ -376,7 +377,7 @@ export default function CheatSheetPage() {
         <meta name="description" content={sheet.shortDescription} />
         <link rel="canonical" href={canonicalUrl} />
         {/* PSEO/AI-assisted section — held out of the index until further editorial work. */}
-        <meta name="robots" content="noindex, follow" />
+        
 
         <meta property="og:type" content="article" />
         <meta property="og:title" content={sheet.title} />
@@ -430,6 +431,8 @@ export default function CheatSheetPage() {
             <p className="text-lg text-gray-300 max-w-3xl mb-6">
               {sheet.shortDescription}
             </p>
+
+            <SponsorPlacement category={sheet.category} tags={sheet.tags} slug={sheet.slug} className="mb-6" />
 
             <div className="flex flex-wrap items-center gap-3">
               {category && (

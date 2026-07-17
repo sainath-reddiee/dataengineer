@@ -143,7 +143,7 @@ export default function QueryCostEstimatorPage() {
           { name: 'Query Cost Estimator', url: '/tools/snowflake-query-cost-estimator' },
         ]}
         faqSchema={faqSchema}
-      noindex={true}
+      
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>

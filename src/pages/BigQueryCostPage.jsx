@@ -180,7 +180,7 @@ export default function BigQueryCostPage() {
           { name: 'BigQuery Cost Calculator', url: '/tools/bigquery-cost-calculator' },
         ]}
         faqSchema={faqSchema}
-      noindex={true}
+      
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>

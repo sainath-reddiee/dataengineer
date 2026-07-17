@@ -1,4 +1,4 @@
-﻿// src/pages/DatabricksCostPage.jsx
+// src/pages/DatabricksCostPage.jsx
 // Databricks DBU-based cost calculator. Targets queries like
 // "databricks cost calculator", "databricks dbu cost", "databricks vs snowflake cost".
 import React, { useMemo, useState, useEffect, useCallback, Suspense } from 'react';
@@ -7,6 +7,7 @@ import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Cloud, Share2, Check, Calculator, DollarSign, Server, Zap } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import SponsorPlacement from '@/components/SponsorPlacement';
 import ValidateWithSqlBlock from '@/components/calculator/ValidateWithSqlBlock';
 
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
@@ -222,7 +223,7 @@ export default function DatabricksCostPage() {
           { name: 'Databricks Cost Calculator', url: '/tools/databricks-cost-calculator' },
         ]}
         faqSchema={faqSchema}
-      noindex={true}
+      
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
@@ -243,6 +244,8 @@ export default function DatabricksCostPage() {
             uplift so you see the true all-in monthly number — not just the Databricks-only charge.
           </p>
         </div>
+
+        <SponsorPlacement category="databricks" slug="databricks-cost-calculator" />
 
         {/* Phase 2: practitioner intro + when-to-use (pSEO depth) */}
         <section className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8">

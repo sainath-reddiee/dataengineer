@@ -184,7 +184,7 @@ export default function UnixTimestampPage() {
           { name: 'Unix Timestamp Converter', url: '/tools/unix-timestamp-converter' },
         ]}
         faqSchema={faqSchema}
-      noindex={true}
+      
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>

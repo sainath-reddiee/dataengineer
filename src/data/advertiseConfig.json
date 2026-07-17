@@ -1,0 +1,106 @@
+{
+  "stats": [
+    { "label": "Monthly Pageviews", "value": "15,000+", "desc": "Organic search traffic from active data engineers", "icon": "BarChart3" },
+    { "label": "Newsletter Subscribers", "value": "2,500+", "desc": "Opted-in data engineering professionals", "icon": "Users" },
+    { "label": "Average Open Rate", "value": "44.2%", "desc": "3× industry average for tech newsletters", "icon": "TrendingUp" }
+  ],
+  "audienceBreakdown": [
+    { "role": "Data Engineers", "percent": 58, "color": "#3B82F6" },
+    { "role": "Analytics Engineers", "percent": 22, "color": "#8B5CF6" },
+    { "role": "Data Architects", "percent": 12, "color": "#EC4899" },
+    { "role": "Engineering Managers", "percent": 8, "color": "#10B981" }
+  ],
+  "techStack": ["Snowflake", "dbt", "Databricks", "Apache Spark", "Apache Airflow", "BigQuery", "Kafka", "Python"],
+  "opportunities": [
+    {
+      "title": "Developer Resource Reference",
+      "packageKey": "resource_reference",
+      "popular": true,
+      "tagline": "Contextual placement inside practitioner-grade reference material",
+      "bullets": [
+        "Natively embedded inside relevant cheatsheets, comparison tables, glossary pages, or technical guides",
+        "Plain-text recommendation link within high-intent editorially relevant context",
+        "Targeted discovery by practitioners actively learning and evaluating your tech stack",
+        "Vetted resource section — premium exclusivity with only one sponsor per guide"
+      ],
+      "cta": "Submit Resource Details",
+      "icon": "BookOpen",
+      "durations": [
+        {
+          "key": "monthly",
+          "label": "Monthly",
+          "price": 30,
+          "desc": "Place your resource link contextually across our active guides, glossary items, or high-intent articles. Best for testing audience resonance and lead conversion on a flexible month-to-month basis.",
+          "savings": "Flexible month-to-month"
+        },
+        {
+          "key": "yearly",
+          "label": "Yearly",
+          "price": 180,
+          "desc": "Establish a permanent, long-term contextual presence across our highest-performing comparison articles, cheatsheets, and tutorial guides. Billed annually to secure prime placement and build continuous developer mindshare.",
+          "savings": "Save 50% vs monthly"
+        }
+      ]
+    },
+    {
+      "title": "Ecosystem Showcase",
+      "packageKey": "directory",
+      "popular": false,
+      "tagline": "Premium directory listing in our interactive Tools Hub",
+      "bullets": [
+        "Featured card in the interactive Tools Hub directory",
+        "Includes your platform logo, one-line technical summary, and CTA link",
+        "Categorized under the relevant ecosystem section (e.g., Warehousing, ETL, Orchestration)",
+        "Direct click-through visibility from active tool evaluators"
+      ],
+      "cta": "Submit Showcase Request",
+      "icon": "Layers",
+      "durations": [
+        {
+          "key": "weekly",
+          "label": "Weekly",
+          "price": 15,
+          "desc": "7-day featured card inside the Tools Hub. Ideal for product launches, feature announcements, or beta signups.",
+          "savings": "Best for launches"
+        },
+        {
+          "key": "monthly",
+          "label": "Monthly",
+          "price": 45,
+          "desc": "30-day prominent showcase card. Build steady mindshare and generate consistent product evaluation traffic.",
+          "savings": "Save 25% vs weekly"
+        },
+        {
+          "key": "yearly",
+          "label": "Yearly",
+          "price": 240,
+          "desc": "Full-year directory presence at our lowest effective rate. Establish your tool as a go-to recommendation for every visitor.",
+          "savings": "Save 56% vs monthly"
+        }
+      ]
+    },
+    {
+      "title": "Technical Integration Guide",
+      "packageKey": "content",
+      "popular": false,
+      "tagline": "Co-authored, code-first tutorial published permanently",
+      "bullets": [
+        "Deep-dive integration guide (1,500+ words) with working code",
+        "Companion GitHub repository with ready-to-clone examples",
+        "Focused on real-world data engineering workflows your users care about",
+        "Promoted to our newsletter subscribers and social channels"
+      ],
+      "cta": "Propose Integration Guide",
+      "icon": "Code",
+      "durations": [
+        {
+          "key": "one_time",
+          "label": "One-Time Fee",
+          "price": 50,
+          "desc": "A co-authored, SEO-optimized tutorial showing data engineers how to integrate your product into real pipelines. Published permanently on the blog and indexed by search engines.",
+          "savings": "Permanent evergreen asset"
+        }
+      ]
+    }
+  ]
+}

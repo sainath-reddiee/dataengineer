@@ -171,7 +171,7 @@ export function GlossaryPage() {
         return (
             <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
                 <Helmet>
-                    <meta name="robots" content="noindex, follow" />
+                    
                 </Helmet>
                 <div className="bg-red-500/10 border border-red-500 rounded-lg p-6 max-w-md">
                     <h2 className="text-red-400 text-xl font-bold mb-2">Error Loading Page</h2>
@@ -249,7 +249,7 @@ export function GlossaryPage() {
                 <meta name="keywords" content={meta.keywords} />
                 <link rel="canonical" href={canonical} />
                 {/* Programmatic SEO section — held out of the index until further editorial work. */}
-                <meta name="robots" content="noindex, follow" />
+                
 
                 {/* Open Graph */}
                 <meta property="og:type" content="article" />

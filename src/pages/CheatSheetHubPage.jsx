@@ -118,7 +118,7 @@ export default function CheatSheetHubPage() {
         <meta name="keywords" content="data engineering cheat sheet, snowflake sql cheat sheet, dbt cheat sheet, airflow cheat sheet, sql window functions, data engineering reference" />
         <link rel="canonical" href={canonicalUrl} />
         {/* PSEO/AI-assisted section — held out of the index until further editorial work. */}
-        <meta name="robots" content="noindex, follow" />
+        
 
         <meta property="og:type" content="website" />
         <meta property="og:title" content={pageTitle} />

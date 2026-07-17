@@ -74,7 +74,7 @@ const PracticeQuizPage = () => {
         description={meta.description}
         url={`/practice/${slug}`}
         breadcrumbs={crumbs}
-        noindex={true}
+        
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(schema)}</script>

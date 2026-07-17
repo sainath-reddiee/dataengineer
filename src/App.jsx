@@ -30,6 +30,7 @@ const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 const TagsArchivePage = lazy(() => import('./pages/TagsArchivePage'));
 const Certification = lazy(() => import('./pages/Certification'));
 const AdvertisePage = lazy(() => import('./pages/AdvertisePage'));
+const SponsorDashboardPage = lazy(() => import('./pages/SponsorDashboardPage'));
 
 // PSEO Pages (Programmatic SEO)
 const GlossaryHubPage = lazy(() => import('./pages/GlossaryHubPage'));
@@ -74,6 +75,7 @@ const ScannerPage = lazy(() => import('./pages/admin/ScannerPage'));
 const BulkScanPage = lazy(() => import('./pages/admin/BulkScanPage'));
 const ComparePage = lazy(() => import('./pages/admin/ComparePage'));
 const SchemaPage = lazy(() => import('./pages/admin/SchemaPage'));
+const SponsorManagerPage = lazy(() => import('./pages/admin/SponsorManagerPage'));
 const SerpPreviewPage = lazy(() => import('./pages/admin/SerpPreviewPage'));
 const AISuitePage = lazy(() => import('./pages/admin/AISuitePage'));
 const ChecklistPage = lazy(() => import('./pages/admin/ChecklistPage'));
@@ -382,6 +384,7 @@ function App() {
           <Route path="news" element={<SafeRoute fallbackText="Loading News..."><NewsPage /></SafeRoute>} />
           <Route path="newsletter" element={<SafeRoute fallbackText="Loading Newsletter..."><NewsletterPage /></SafeRoute>} />
           <Route path="advertise" element={<SafeRoute fallbackText="Loading Advertise..."><AdvertisePage /></SafeRoute>} />
+          <Route path="sponsors/dashboard" element={<SafeRoute fallbackText="Loading Sponsor Dashboard..."><SponsorDashboardPage /></SafeRoute>} />
           {debugMode && (
             <Route path="debug" element={<SafeRoute fallbackText="Loading Debug..."><ApiDebugger /></SafeRoute>} />
           )}
@@ -395,6 +398,7 @@ function App() {
           </Suspense>
         }>
           <Route index element={<SafeRoute><SEODashboard /></SafeRoute>} />
+          <Route path="sponsors" element={<SafeRoute><SponsorManagerPage /></SafeRoute>} />
           <Route path="scanner" element={<SafeRoute><ScannerPage /></SafeRoute>} />
           <Route path="bulk" element={<SafeRoute><BulkScanPage /></SafeRoute>} />
           <Route path="compare" element={<SafeRoute><ComparePage /></SafeRoute>} />

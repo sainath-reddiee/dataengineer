@@ -1,4 +1,4 @@
-﻿// src/pages/CostCalculatorPage.jsx
+// src/pages/CostCalculatorPage.jsx
 // Snowflake Cost Calculator — public interactive tool.
 // Targets "snowflake cost calculator" / "snowflake pricing calculator" queries.
 import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
@@ -22,6 +22,7 @@ import {
 import MetaTags from '@/components/SEO/MetaTags';
 import ValidateWithSqlBlock from '@/components/calculator/ValidateWithSqlBlock';
 import ScenarioCompareToggle from '@/components/calculator/ScenarioCompareToggle';
+import SponsorPlacement from '@/components/SponsorPlacement';
 import {
   EDITIONS,
   REGIONS,
@@ -459,7 +460,7 @@ export default function CostCalculatorPage() {
         ]}
         howToSchema={howToSchema}
         faqSchema={faqSchema}
-      noindex={true}
+      
       />
       <Helmet>
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
@@ -481,6 +482,8 @@ export default function CostCalculatorPage() {
             your estimate to a teammate.
           </p>
         </div>
+
+        <SponsorPlacement category="snowflake" slug="snowflake-cost-calculator" />
 
         {/* Phase 2: practitioner intro + when-to-use (pSEO depth) */}
         <section className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8">
