@@ -20,48 +20,48 @@ const STATS = [
 
 const OPPORTUNITIES = [
   {
-    title: 'Featured Directory Showcase',
-    price: '$120',
+    title: 'Contextual Link Insertion',
+    price: '$35',
     frequency: 'one-time placement',
-    description: 'Place your data tool permanently on our interactive Tools Hub directory page. Perfect for B2B tools or open-source projects seeking long-term developer visibility.',
+    description: 'Insert your link natively into an existing, high-ranking article on our blog. Excellent for boosting organic search authority and targeted developer traffic.',
     bullets: [
-      'Permanent listing in Tools directory',
-      'Short summary, logo, and custom link',
-      'Safe rel="sponsored" link configuration',
-      'Continuous exposure to incoming search traffic'
+      'Placement within an active, relevant post',
+      'Contextual plain-text anchor link',
+      'Google-compliant rel="sponsored" tag',
+      'Permanent insertion (no recurring fees)'
     ],
-    cta: 'Submit Showcase Request',
-    packageKey: 'directory',
-    popular: false
-  },
-  {
-    title: 'Calculator Partner Placement',
-    price: '$90',
-    frequency: 'per month',
-    description: 'A native, text-based recommendation link integrated directly inside our interactive cost calculators and platform sizing tools.',
-    bullets: [
-      'Contextual placement on utility calculators',
-      'Target users evaluating Snowflake or Databricks spend',
-      'Non-intrusive native text format',
-      'High-intent B2B target audience'
-    ],
-    cta: 'Book Calculator Placement',
-    packageKey: 'calculator',
+    cta: 'Submit Link Request',
+    packageKey: 'link_insertion',
     popular: true
   },
   {
     title: 'Sponsored Technical Tutorial',
-    price: '$100',
+    price: '$25',
     frequency: 'one-time fee',
-    description: 'A hands-on, highly technical tutorial showing how to build pipelines or integrate your product, published permanently on our blog.',
+    description: 'A hands-on, technical tutorial showing how to build pipelines or integrate your product, published permanently on our blog.',
     bullets: [
-      'Hands-on technical guide (1,000+ words)',
+      'Technical integration guide (1,000+ words)',
       'GitHub repository with working example code',
-      'Permanent post with proper sponsored disclaimer',
-      'Shared across our developer community list'
+      'Permanent post with clear sponsorship disclosure',
+      'Indexed by Google and shared with our community'
     ],
     cta: 'Submit Article Brief',
     packageKey: 'content',
+    popular: false
+  },
+  {
+    title: 'Featured Directory Showcase',
+    price: '$50',
+    frequency: 'one-time placement',
+    description: 'Place your data tool permanently on our interactive Tools Hub directory. Great for B2B tools or open-source projects seeking long-term developer exposure.',
+    bullets: [
+      'Permanent listing in interactive Tools Hub',
+      'Tool logo, description, and custom link',
+      'Compliant rel="sponsored" link configuration',
+      'Consistent exposure to incoming search traffic'
+    ],
+    cta: 'Submit Showcase Request',
+    packageKey: 'directory',
     popular: false
   }
 ];
@@ -99,7 +99,7 @@ const AdvertisePage = () => {
     email: '',
     company: '',
     website: '',
-    package: 'directory',
+    package: 'link_insertion',
     budget: '$500 - $1,000',
     message: ''
   });
@@ -109,7 +109,7 @@ const AdvertisePage = () => {
   const [error, setError] = useState(null);
   
   // ROI Slider State
-  const [calcBudget, setCalcBudget] = useState(75);
+  const [calcBudget, setCalcBudget] = useState(25);
   const [openFaq, setOpenFaq] = useState(null);
 
   // Memoized ROI Estimates
@@ -146,7 +146,7 @@ const AdvertisePage = () => {
         email: '',
         company: '',
         website: '',
-        package: 'directory',
+        package: 'link_insertion',
         budget: '$500 - $1,000',
         message: ''
       });
@@ -258,15 +258,15 @@ const AdvertisePage = () => {
                 </div>
                 <input 
                   type="range" 
-                  min="75" 
+                  min="25" 
                   max="1000" 
-                  step="25"
+                  step="5"
                   value={calcBudget}
                   onChange={(e) => setCalcBudget(Number(e.target.value))}
                   className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500 focus:outline-none"
                 />
                 <div className="flex justify-between text-[10px] text-gray-500">
-                  <span>Min: $75</span>
+                  <span>Min: $25</span>
                   <span>Max: $1,000</span>
                 </div>
               </div>
@@ -539,9 +539,9 @@ const AdvertisePage = () => {
                         onChange={handleChange}
                         className="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                       >
-                        <option value="directory">Featured Directory Showcase</option>
-                        <option value="calculator">Calculator Partner Placement</option>
+                        <option value="link_insertion">Contextual Link Insertion</option>
                         <option value="content">Sponsored Technical Tutorial</option>
+                        <option value="directory">Featured Directory Showcase</option>
                         <option value="other">Custom Campaign</option>
                       </select>
                     </div>
