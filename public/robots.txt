@@ -1,14 +1,10 @@
 # robots.txt - DataEngineer Hub
-# Last updated: 2026-06-11
+# Last updated: 2026-07-17
 #
-# AdSense approval strategy: while approval is pending, we hold the
-# programmatic/AI-assisted sections AND thin aggregation pages out of
-# the crawl + index. Only the original editorial content (homepage,
-# real WordPress articles, trust pages) is exposed to crawlers. Once
-# AdSense approves, the Disallow rules below can be relaxed.
+# All programmatic sections, tools, cheat sheets, and glossary pages are open for crawling.
 
 # =============================================================================
-# Default rules — block PSEO / AI-assisted / thin sections from ALL crawlers
+# Default rules — allow indexing of all public sections
 # =============================================================================
 User-agent: *
 Allow: /
@@ -16,26 +12,6 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /debug
-
-# Programmatic / AI-assisted sections held back until further editorial work
-Disallow: /glossary
-Disallow: /glossary/
-Disallow: /compare
-Disallow: /compare/
-Disallow: /tools
-Disallow: /tools/
-Disallow: /cheatsheets
-Disallow: /cheatsheets/
-Disallow: /practice
-Disallow: /practice/
-Disallow: /interview-prep
-Disallow: /interview-prep/
-
-# Thin aggregation / utility pages (no substantive unique content)
-Disallow: /news
-Disallow: /newsletter
-Disallow: /contribute
-Disallow: /certification
 
 # Allow static assets
 Allow: /*.css$
@@ -58,65 +34,25 @@ Allow: /llms-full.txt
 Allow: /rss.xml
 
 # =============================================================================
-# GOOGLE ADSENSE CRAWLERS - same restrictions as default crawler so the
-# reviewer only sees high-quality original content during approval.
+# GOOGLE ADSENSE & ADS CRAWLERS
 # =============================================================================
 User-agent: Mediapartners-Google
 Allow: /
-Disallow: /glossary
-Disallow: /glossary/
-Disallow: /compare
-Disallow: /compare/
-Disallow: /tools
-Disallow: /tools/
-Disallow: /cheatsheets
-Disallow: /cheatsheets/
-Disallow: /practice
-Disallow: /practice/
-Disallow: /interview-prep
-Disallow: /interview-prep/
-Disallow: /news
-Disallow: /newsletter
-Disallow: /contribute
-Disallow: /certification
+Disallow: /api/
+Disallow: /admin/
+Disallow: /debug
 
 User-agent: AdsBot-Google
 Allow: /
-Disallow: /glossary
-Disallow: /glossary/
-Disallow: /compare
-Disallow: /compare/
-Disallow: /tools
-Disallow: /tools/
-Disallow: /cheatsheets
-Disallow: /cheatsheets/
-Disallow: /practice
-Disallow: /practice/
-Disallow: /interview-prep
-Disallow: /interview-prep/
-Disallow: /news
-Disallow: /newsletter
-Disallow: /contribute
-Disallow: /certification
+Disallow: /api/
+Disallow: /admin/
+Disallow: /debug
 
 User-agent: AdsBot-Google-Mobile
 Allow: /
-Disallow: /glossary
-Disallow: /glossary/
-Disallow: /compare
-Disallow: /compare/
-Disallow: /tools
-Disallow: /tools/
-Disallow: /cheatsheets
-Disallow: /cheatsheets/
-Disallow: /practice
-Disallow: /practice/
-Disallow: /interview-prep
-Disallow: /interview-prep/
-Disallow: /news
-Disallow: /newsletter
-Disallow: /contribute
-Disallow: /certification
+Disallow: /api/
+Disallow: /admin/
+Disallow: /debug
 
 # =============================================================================
 # SITEMAPS
