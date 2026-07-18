@@ -265,7 +265,7 @@ export default function SponsorManagerPage() {
             </p>
             <form onSubmit={saveGithubConfig} className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">GitHub Token</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">GitHub PAT Token</label>
                 <input 
                   type="password" 
                   value={githubConfig.token}
@@ -397,7 +397,6 @@ export default function SponsorManagerPage() {
                     placeholder="sp_xxxxxxxxxx"
                     className="flex-1 bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 font-mono"
                     required
-                    readOnly
                   />
                   <button
                     type="button"
