@@ -64,8 +64,15 @@ const AdvertisePage = () => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
   
-  // Dynamic Exchange Rates & Currency Toggles
-  const [exchangeRates, setExchangeRates] = useState({ USD: 1 });
+  // Dynamic Exchange Rates & Currency Toggles cached in localStorage
+  const [exchangeRates, setExchangeRates] = useState(() => {
+    try {
+      const cached = localStorage.getItem('advertise_exchange_rates');
+      return cached ? JSON.parse(cached) : { USD: 1 };
+    } catch {
+      return { USD: 1 };
+    }
+  });
   const [selectedCurrency, setSelectedCurrency] = useState('USD');
   const [selectedDurations, setSelectedDurations] = useState({
     resource_reference: 'monthly',
@@ -76,16 +83,30 @@ const AdvertisePage = () => {
   // Fetch Live Global Currency Exchange Rates
   React.useEffect(() => {
     const fetchRates = async () => {
-      let rates = { USD: 1, INR: 83.45, EUR: 0.92, GBP: 0.79, CAD: 1.36, AUD: 1.50, JPY: 155.0, BRL: 5.15, ZAR: 18.5 };
+      let rates = { USD: 1 };
+      try {
+        const cached = localStorage.getItem('advertise_exchange_rates');
+        if (cached) {
+          rates = JSON.parse(cached);
+        }
+      } catch (e) {
+        console.warn('Failed to load cached rates:', e);
+      }
+
       try {
         const res = await fetch('https://open.er-api.com/v6/latest/USD');
         const data = await res.json();
         if (data && data.result === 'success' && data.rates) {
           rates = data.rates;
           setExchangeRates(data.rates);
+          try {
+            localStorage.setItem('advertise_exchange_rates', JSON.stringify(data.rates));
+          } catch (e) {
+            console.warn('Failed to cache exchange rates:', e);
+          }
         }
       } catch (err) {
-        console.error('Offline / rate fetch error, loading fallback rates:', err);
+        console.error('Offline / rate fetch error, utilizing cached rates:', err);
         setExchangeRates(rates);
       }
 
