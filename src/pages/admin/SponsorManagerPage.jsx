@@ -8,7 +8,8 @@ import {
 import activeSponsorsData from '@/data/activeSponsors.json';
 
 export default function SponsorManagerPage() {
-  const [sponsors, setSponsors] = useState(activeSponsorsData);
+  const initialSponsors = Array.isArray(activeSponsorsData) ? activeSponsorsData : (activeSponsorsData?.default || []);
+  const [sponsors, setSponsors] = useState(initialSponsors);
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [jsonCopied, setJsonCopied] = useState(false);
 
@@ -195,7 +196,12 @@ export default function SponsorManagerPage() {
 
         // 2. Put updated content
         const contentStr = JSON.stringify(updatedSponsors, null, 2);
-        const encodedContent = btoa(unescape(encodeURIComponent(contentStr)));
+        let encodedContent = '';
+        try {
+          encodedContent = btoa(encodeURIComponent(contentStr).replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode(parseInt(p1, 16))));
+        } catch {
+          encodedContent = btoa(contentStr);
+        }
         
         const putRes = await fetchWithGithubAuth(url, cleanToken, {
           method: 'PUT',
@@ -585,8 +591,8 @@ export default function SponsorManagerPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {sponsors.map((s, idx) => (
-                      <tr key={s.token} className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
+                    {(Array.isArray(sponsors) ? sponsors : []).map((s, idx) => (
+                      <tr key={s?.token || s?.company || idx} className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
                         <td className="py-3.5 pr-2">
                           <div className="font-bold text-white">{s.company}</div>
                           <span className="inline-block text-[10px] text-gray-400 bg-white/5 px-2 py-0.5 rounded border border-white/5 mt-1 font-semibold uppercase">
