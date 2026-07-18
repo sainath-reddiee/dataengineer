@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Plus, Key, Copy, Check, Calendar, Globe, ArrowLeft, 
-  Trash2, RefreshCw, Code, CheckCircle, AlertTriangle, ShieldCheck
+  Trash2, RefreshCw, Code, CheckCircle, AlertTriangle, ShieldCheck, Settings
 } from 'lucide-react';
 import activeSponsorsData from '@/data/activeSponsors.json';
 
@@ -30,40 +30,110 @@ export default function SponsorManagerPage() {
   const [targetTags, setTargetTags] = useState('');
   const [targetSlugs, setTargetSlugs] = useState('');
 
+  // GitHub Sync State
+  const [githubConfig, setGithubConfig] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sponsors_github_config');
+      return saved ? JSON.parse(saved) : { token: '', owner: '', repo: '', branch: 'main' };
+    } catch {
+      return { token: '', owner: '', repo: '', branch: 'main' };
+    }
+  });
+  const [showSettings, setShowSettings] = useState(false);
+
   // Sync state
-  const [syncStatus, setSyncStatus] = useState(''); // 'syncing' | 'success' | 'error'
+  const [syncStatus, setSyncStatus] = useState(''); // 'syncing' | 'success' | 'error' | 'github_success'
+
+  const saveGithubConfig = (e) => {
+    e.preventDefault();
+    localStorage.setItem('sponsors_github_config', JSON.stringify(githubConfig));
+    setShowSettings(false);
+    alert('GitHub config saved locally to your browser!');
+  };
 
   const saveSponsorsToServer = async (updatedSponsors) => {
     setSyncStatus('syncing');
     
-    // In production static builds, file writing is not available.
-    // Instruct the user to manually copy the updated JSON instead.
-    if (!import.meta.env.DEV) {
-      setSyncStatus('error');
-      setTimeout(() => setSyncStatus(''), 7000);
-      return;
-    }
-
-    try {
-      const res = await fetch('/api/save-sponsors', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedSponsors),
-      });
-      const data = await res.json();
-      if (data && data.success) {
-        setSyncStatus('success');
-        setTimeout(() => setSyncStatus(''), 3000);
-      } else {
+    if (import.meta.env.DEV) {
+      // Local dev mode: use Vite API
+      try {
+        const res = await fetch('/api/save-sponsors', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedSponsors),
+        });
+        const data = await res.json();
+        if (data && data.success) {
+          setSyncStatus('success');
+          setTimeout(() => setSyncStatus(''), 3000);
+        } else {
+          setSyncStatus('error');
+          setTimeout(() => setSyncStatus(''), 5000);
+        }
+      } catch (err) {
+        console.error(err);
         setSyncStatus('error');
         setTimeout(() => setSyncStatus(''), 5000);
       }
-    } catch (err) {
-      console.error(err);
+    } else if (githubConfig.token && githubConfig.owner && githubConfig.repo) {
+      // Production mode: sync via GitHub API
+      try {
+        const { token, owner, repo, branch } = githubConfig;
+        const filePath = 'src/data/activeSponsors.json';
+        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+        
+        // 1. Get current SHA
+        const getRes = await fetch(`${url}?ref=${branch}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        
+        let sha = '';
+        if (getRes.ok) {
+          const getData = await getRes.json();
+          sha = getData.sha;
+        }
+
+        // 2. Put updated content
+        // Base64 encode handling unicode cleanly
+        const contentStr = JSON.stringify(updatedSponsors, null, 2);
+        const encodedContent = btoa(unescape(encodeURIComponent(contentStr)));
+        
+        const putRes = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: 'Automated Sponsor Sync update from Dashboard',
+            content: encodedContent,
+            sha: sha || undefined,
+            branch
+          })
+        });
+
+        if (putRes.ok) {
+          setSyncStatus('github_success');
+          setTimeout(() => setSyncStatus(''), 6000);
+        } else {
+          const errData = await putRes.json();
+          console.error('GitHub API Error:', errData);
+          setSyncStatus('error');
+          setTimeout(() => setSyncStatus(''), 6000);
+        }
+      } catch (err) {
+        console.error('Network error during GitHub sync:', err);
+        setSyncStatus('error');
+        setTimeout(() => setSyncStatus(''), 6000);
+      }
+    } else {
+      // Production mode: no GitHub config set
       setSyncStatus('error');
-      setTimeout(() => setSyncStatus(''), 5000);
+      setTimeout(() => setSyncStatus(''), 7000);
     }
   };
 
@@ -154,8 +224,16 @@ export default function SponsorManagerPage() {
           >
             <ArrowLeft className="h-4 w-4" /> Back to SEO Admin
           </Link>
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">
-            <ShieldCheck className="h-3.5 w-3.5" /> Authorization Verified
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-gray-300 text-xs font-semibold hover:bg-slate-700 transition"
+            >
+              <Settings className="h-3.5 w-3.5" /> Automate GitHub Sync
+            </button>
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">
+              <ShieldCheck className="h-3.5 w-3.5" /> Authorization Verified
+            </div>
           </div>
         </div>
 
@@ -168,6 +246,76 @@ export default function SponsorManagerPage() {
             Create new sponsor instances, generate secure access tokens, and export local configuration files.
           </p>
         </div>
+
+        {/* GitHub Automation Settings Panel */}
+        {showSettings && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }} 
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-slate-800/80 border border-slate-700 rounded-3xl p-6 backdrop-blur-md"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <Globe className="h-5 w-5 text-purple-400" /> Production Auto-Sync Configuration
+              </h2>
+              <button onClick={() => setShowSettings(false)} className="text-gray-400 hover:text-white">&times;</button>
+            </div>
+            <p className="text-sm text-gray-300 mb-6">
+              In production, the dashboard cannot save files to the static server directly. Enter your GitHub details to automatically commit sponsor changes and trigger a Vercel/Netlify redeploy. This data is saved securely in your local browser storage.
+            </p>
+            <form onSubmit={saveGithubConfig} className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">GitHub Token</label>
+                <input 
+                  type="password" 
+                  value={githubConfig.token}
+                  onChange={(e) => setGithubConfig({...githubConfig, token: e.target.value})}
+                  placeholder="ghp_..."
+                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Repo Owner (User/Org)</label>
+                <input 
+                  type="text" 
+                  value={githubConfig.owner}
+                  onChange={(e) => setGithubConfig({...githubConfig, owner: e.target.value})}
+                  placeholder="sainath-reddiee"
+                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Repo Name</label>
+                <input 
+                  type="text" 
+                  value={githubConfig.repo}
+                  onChange={(e) => setGithubConfig({...githubConfig, repo: e.target.value})}
+                  placeholder="dataengineer"
+                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Branch</label>
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    value={githubConfig.branch}
+                    onChange={(e) => setGithubConfig({...githubConfig, branch: e.target.value})}
+                    placeholder="main"
+                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white"
+                    required
+                  />
+                  <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white px-4 rounded-xl font-bold transition">
+                    Save
+                  </button>
+                </div>
+              </div>
+            </form>
+          </motion.div>
+        )}
 
         {/* Manager Layout Grid */}
         <div className="grid lg:grid-cols-3 gap-8">
@@ -420,16 +568,17 @@ export default function SponsorManagerPage() {
       {syncStatus && (
         <div className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl border shadow-2xl flex items-center gap-2.5 backdrop-blur-xl transition-all animate-bounce ${
           syncStatus === 'syncing' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
-          syncStatus === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
+          (syncStatus === 'success' || syncStatus === 'github_success') ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
           'bg-rose-500/10 border-rose-500/20 text-rose-400'
         }`}>
           {syncStatus === 'syncing' && <RefreshCw className="h-4 w-4 animate-spin" />}
-          {syncStatus === 'success' && <CheckCircle className="h-4 w-4" />}
+          {(syncStatus === 'success' || syncStatus === 'github_success') && <CheckCircle className="h-4 w-4" />}
           {syncStatus === 'error' && <AlertTriangle className="h-4 w-4" />}
           <span className="text-xs font-bold tracking-wide">
             {syncStatus === 'syncing' && 'Syncing database...'}
-            {syncStatus === 'success' && 'Database synced successfully!'}
-            {syncStatus === 'error' && 'Sync failed. Copy JSON manually.'}
+            {syncStatus === 'success' && 'Database synced locally!'}
+            {syncStatus === 'github_success' && 'GitHub synced! Rebuild triggered.'}
+            {syncStatus === 'error' && 'Sync failed. Setup GitHub config or copy JSON.'}
           </span>
         </div>
       )}
