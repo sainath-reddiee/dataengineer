@@ -214,12 +214,16 @@ export default function SponsorManagerPage() {
           const errData = await putRes.json().catch(() => ({}));
           console.error('GitHub API Update Error:', putRes.status, errData);
           let detail = errData.message || putRes.statusText;
-          if (putRes.status === 403) detail = '403 Forbidden (Token lacks write permissions)';
+          if (putRes.status === 404) {
+            detail = `404 Not Found: Your PAT has read access but lacks WRITE permission for repo '${owner}/${repo}' on branch '${branch}'. Check token scopes on GitHub.`;
+          } else if (putRes.status === 403) {
+            detail = '403 Forbidden: Token lacks write permissions. Enable "Contents: Read & Write" on GitHub.';
+          }
           
           setSyncStatus('error');
-          setSyncErrorMessage(`GitHub API Update Failed: ${detail}`);
+          setSyncErrorMessage(`GitHub Update Failed: ${detail}`);
           setShowSettings(true);
-          setTimeout(() => setSyncStatus(''), 10000);
+          setTimeout(() => setSyncStatus(''), 12000);
         }
       } catch (err) {
         console.error('Network error during GitHub sync:', err);
