@@ -41,13 +41,84 @@ export default function SponsorManagerPage() {
   });
   const [showSettings, setShowSettings] = useState(false);
 
-  // Sync state
-  const [syncStatus, setSyncStatus] = useState(''); // 'syncing' | 'success' | 'error' | 'github_success'
-  const [syncErrorMessage, setSyncErrorMessage] = useState('');
+  // Helper to get sanitized token and auth header
+  const getCleanToken = (rawToken) => (rawToken || '').trim().replace(/^(Bearer|token)\s+/i, '');
+
+  const fetchWithGithubAuth = async (url, token, options = {}) => {
+    const cleanToken = getCleanToken(token);
+    const headers = {
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
+
+    // Try Bearer token first
+    let res = await fetch(url, {
+      ...options,
+      headers: { ...headers, 'Authorization': `Bearer ${cleanToken}` }
+    });
+
+    // If 401, fallback to token format (for classic PATs)
+    if (res.status === 401) {
+      const resFallback = await fetch(url, {
+        ...options,
+        headers: { ...headers, 'Authorization': `token ${cleanToken}` }
+      });
+      if (resFallback.ok || resFallback.status !== 401) {
+        return resFallback;
+      }
+    }
+    return res;
+  };
+
+  const [testResult, setTestResult] = useState(null);
+  const [testing, setTesting] = useState(false);
+
+  const handleTestConnection = async () => {
+    setTesting(true);
+    setTestResult(null);
+    const cleanToken = getCleanToken(githubConfig.token);
+    const { owner, repo, branch } = githubConfig;
+
+    if (!cleanToken || !owner || !repo) {
+      setTestResult({ success: false, message: 'Please fill in Token, Repo Owner, and Repo Name.' });
+      setTesting(false);
+      return;
+    }
+
+    try {
+      const filePath = 'src/data/activeSponsors.json';
+      const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${branch || 'main'}`;
+      const res = await fetchWithGithubAuth(url, cleanToken);
+
+      if (res.ok) {
+        setTestResult({ success: true, message: `✅ Connection verified! Repo '${owner}/${repo}' and branch '${branch || 'main'}' accessible with write access.` });
+      } else {
+        const data = await res.json().catch(() => ({}));
+        let msg = `GitHub Error ${res.status}: ${data.message || res.statusText}`;
+        if (res.status === 401) msg = '❌ 401 Bad Credentials: The PAT token is invalid or expired.';
+        if (res.status === 403) msg = '❌ 403 Forbidden: Token lacks write permissions. Set "Contents: Read & write" or "repo" scope.';
+        if (res.status === 404) msg = `❌ 404 Not Found: Repo '${owner}/${repo}' or branch '${branch}' not found / inaccessible with this token.`;
+        setTestResult({ success: false, message: msg });
+      }
+    } catch (err) {
+      setTestResult({ success: false, message: `Network Error: ${err.message}` });
+    } finally {
+      setTesting(false);
+    }
+  };
 
   const saveGithubConfig = (e) => {
     e.preventDefault();
-    localStorage.setItem('sponsors_github_config', JSON.stringify(githubConfig));
+    const cleanedConfig = {
+      ...githubConfig,
+      token: getCleanToken(githubConfig.token),
+      owner: (githubConfig.owner || 'sainath-reddiee').trim(),
+      repo: (githubConfig.repo || 'dataengineer').trim(),
+      branch: (githubConfig.branch || 'main').trim()
+    };
+    setGithubConfig(cleanedConfig);
+    localStorage.setItem('sponsors_github_config', JSON.stringify(cleanedConfig));
     setShowSettings(false);
     setSyncStatus('');
     setSyncErrorMessage('');
@@ -81,29 +152,44 @@ export default function SponsorManagerPage() {
         setSyncErrorMessage('Failed to connect to local API route.');
         setTimeout(() => setSyncStatus(''), 7000);
       }
-    } else if (githubConfig.token && githubConfig.owner && githubConfig.repo) {
+    } else {
       // Production mode: sync via GitHub API
+      const cleanToken = getCleanToken(githubConfig.token);
+      const owner = (githubConfig.owner || 'sainath-reddiee').trim();
+      const repo = (githubConfig.repo || 'dataengineer').trim();
+      const branch = (githubConfig.branch || 'main').trim();
+
+      if (!cleanToken || !owner || !repo) {
+        setSyncStatus('error');
+        setSyncErrorMessage('GitHub PAT Token missing. Click "Setup PAT Token" to configure.');
+        setShowSettings(true);
+        setTimeout(() => setSyncStatus(''), 10000);
+        return;
+      }
+
       try {
-        const { token, owner, repo, branch } = githubConfig;
         const filePath = 'src/data/activeSponsors.json';
         const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
         
         // 1. Get current SHA
-        const getRes = await fetch(`${url}?ref=${branch || 'main'}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/vnd.github.v3+json'
-          }
-        });
+        const getRes = await fetchWithGithubAuth(`${url}?ref=${branch}`, cleanToken);
         
         let sha = '';
         if (getRes.ok) {
           const getData = await getRes.json();
           sha = getData.sha;
-        } else if (getRes.status === 401) {
+        } else {
+          const errData = await getRes.json().catch(() => ({}));
+          console.error('GitHub Get SHA Error:', getRes.status, errData);
+          let detail = errData.message || getRes.statusText;
+          if (getRes.status === 401) detail = '401 Bad Credentials (PAT Invalid)';
+          if (getRes.status === 403) detail = '403 Forbidden (Missing repo/contents scope)';
+          if (getRes.status === 404) detail = `404 Not Found (Repo '${owner}/${repo}' or path inaccessible)`;
+          
           setSyncStatus('error');
-          setSyncErrorMessage('GitHub PAT Token is invalid or expired. Click Setup PAT.');
+          setSyncErrorMessage(`GitHub API Error: ${detail}`);
           setShowSettings(true);
+          setTimeout(() => setSyncStatus(''), 10000);
           return;
         }
 
@@ -111,18 +197,13 @@ export default function SponsorManagerPage() {
         const contentStr = JSON.stringify(updatedSponsors, null, 2);
         const encodedContent = btoa(unescape(encodeURIComponent(contentStr)));
         
-        const putRes = await fetch(url, {
+        const putRes = await fetchWithGithubAuth(url, cleanToken, {
           method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-          },
           body: JSON.stringify({
             message: 'Automated Sponsor Sync update from Dashboard',
             content: encodedContent,
             sha: sha || undefined,
-            branch: branch || 'main'
+            branch: branch
           })
         });
 
@@ -130,25 +211,22 @@ export default function SponsorManagerPage() {
           setSyncStatus('github_success');
           setTimeout(() => setSyncStatus(''), 6000);
         } else {
-          const errData = await putRes.json();
-          console.error('GitHub API Error:', errData);
+          const errData = await putRes.json().catch(() => ({}));
+          console.error('GitHub API Update Error:', putRes.status, errData);
+          let detail = errData.message || putRes.statusText;
+          if (putRes.status === 403) detail = '403 Forbidden (Token lacks write permissions)';
+          
           setSyncStatus('error');
-          setSyncErrorMessage(errData?.message ? `GitHub API Error: ${errData.message}` : 'GitHub API update failed.');
+          setSyncErrorMessage(`GitHub API Update Failed: ${detail}`);
           setShowSettings(true);
-          setTimeout(() => setSyncStatus(''), 8000);
+          setTimeout(() => setSyncStatus(''), 10000);
         }
       } catch (err) {
         console.error('Network error during GitHub sync:', err);
         setSyncStatus('error');
-        setSyncErrorMessage('Network error during GitHub sync.');
-        setTimeout(() => setSyncStatus(''), 8000);
+        setSyncErrorMessage(`Network error during GitHub sync: ${err.message}`);
+        setTimeout(() => setSyncStatus(''), 10000);
       }
-    } else {
-      // Production mode: no GitHub PAT config set
-      setSyncStatus('error');
-      setSyncErrorMessage('GitHub PAT Token missing. Click "Setup PAT Token" to configure.');
-      setShowSettings(true);
-      setTimeout(() => setSyncStatus(''), 10000);
     }
   };
 
@@ -323,12 +401,20 @@ export default function SponsorManagerPage() {
                     className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white"
                     required
                   />
-                  <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white px-4 rounded-xl font-bold transition">
+                  <button type="button" onClick={handleTestConnection} disabled={testing} className="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-xl text-xs font-bold transition shrink-0">
+                    {testing ? 'Testing...' : 'Test Connection'}
+                  </button>
+                  <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white px-4 rounded-xl text-xs font-bold transition shrink-0">
                     Save
                   </button>
                 </div>
               </div>
             </form>
+            {testResult && (
+              <div className={`mt-4 p-3 rounded-xl text-xs font-semibold border ${testResult.success ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300' : 'bg-rose-500/10 border-rose-500/20 text-rose-300'}`}>
+                {testResult.message}
+              </div>
+            )}
           </motion.div>
         )}
 
