@@ -64,8 +64,15 @@ const AdvertisePage = () => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
   
-  // Dynamic Exchange Rates & Currency Toggles
-  const [exchangeRates, setExchangeRates] = useState({ USD: 1 });
+  // Dynamic Exchange Rates & Currency Toggles cached in localStorage
+  const [exchangeRates, setExchangeRates] = useState(() => {
+    try {
+      const cached = localStorage.getItem('advertise_exchange_rates');
+      return cached ? JSON.parse(cached) : { USD: 1 };
+    } catch {
+      return { USD: 1 };
+    }
+  });
   const [selectedCurrency, setSelectedCurrency] = useState('USD');
   const [selectedDurations, setSelectedDurations] = useState({
     resource_reference: 'monthly',
@@ -76,37 +83,86 @@ const AdvertisePage = () => {
   // Fetch Live Global Currency Exchange Rates
   React.useEffect(() => {
     const fetchRates = async () => {
+      let rates = { USD: 1 };
+      try {
+        const cached = localStorage.getItem('advertise_exchange_rates');
+        if (cached) {
+          rates = JSON.parse(cached);
+        }
+      } catch (e) {
+        console.warn('Failed to load cached rates:', e);
+      }
+
       try {
         const res = await fetch('https://open.er-api.com/v6/latest/USD');
         const data = await res.json();
         if (data && data.result === 'success' && data.rates) {
+          rates = data.rates;
           setExchangeRates(data.rates);
-          
-          // Auto-detect local currency by checking locale country
-          const locale = navigator.language || 'en-US';
-          const country = locale.split('-')[1] || locale.split('_')[1];
-          if (country) {
-            const countryToCurrency = {
-              IN: 'INR', US: 'USD', GB: 'GBP', DE: 'EUR', FR: 'EUR', IT: 'EUR', ES: 'EUR', NL: 'EUR',
-              CA: 'CAD', AU: 'AUD', JP: 'JPY', CN: 'CNY', BR: 'BRL', ZA: 'ZAR', SG: 'SGD', NZ: 'NZD',
-              CH: 'CHF', SE: 'SEK', NO: 'NOK', DK: 'DKK', PL: 'PLN', TR: 'TRY', RU: 'RUB', KR: 'KRW',
-              MX: 'MXN', AR: 'ARS', CO: 'COP', CL: 'CLP', PE: 'PEN', VE: 'VES', AE: 'AED', SA: 'SAR',
-              IL: 'ILS', EG: 'EGP', NG: 'NGN', KE: 'KES', GH: 'GHS', MY: 'MYR', ID: 'IDR', TH: 'THB',
-              PH: 'PHP', VN: 'VND', PK: 'PKR', BD: 'BDT', LK: 'LKR', NP: 'NPR', UA: 'UAH', RO: 'RON',
-              HU: 'HUF', CZ: 'CZK', HR: 'HRK', BG: 'BGN', KZ: 'KZT', QA: 'QAR', KW: 'KWD', OM: 'OMR'
-            };
-            const localCur = countryToCurrency[country.toUpperCase()];
-            if (localCur && data.rates[localCur]) {
-              setSelectedCurrency(localCur);
-            }
+          try {
+            localStorage.setItem('advertise_exchange_rates', JSON.stringify(data.rates));
+          } catch (e) {
+            console.warn('Failed to cache exchange rates:', e);
           }
         }
       } catch (err) {
-        console.error('Offline / rate fetch error, loading fallback rates:', err);
-        // Fallback for core currencies
-        setExchangeRates({
-          USD: 1, INR: 83.45, EUR: 0.92, GBP: 0.79, CAD: 1.36, AUD: 1.50, JPY: 155.0, BRL: 5.15, ZAR: 18.5
-        });
+        console.error('Offline / rate fetch error, utilizing cached rates:', err);
+        setExchangeRates(rates);
+      }
+
+      // Auto-detect local currency by checking timezone first (highest reliability)
+      let detectedCurrency = 'USD';
+      try {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (tz) {
+          const tzToCurrency = {
+            'Asia/Kolkata': 'INR', 'Asia/Calcutta': 'INR',
+            'Europe/London': 'GBP', 'Europe/Belfast': 'GBP',
+            'America/New_York': 'USD', 'America/Chicago': 'USD', 'America/Denver': 'USD', 'America/Los_Angeles': 'USD', 'America/Phoenix': 'USD',
+            'America/Toronto': 'CAD', 'America/Vancouver': 'CAD', 'America/Winnipeg': 'CAD',
+            'Australia/Sydney': 'AUD', 'Australia/Melbourne': 'AUD', 'Australia/Brisbane': 'AUD', 'Australia/Perth': 'AUD',
+            'Asia/Singapore': 'SGD', 'Asia/Tokyo': 'JPY', 'America/Sao_Paulo': 'BRL', 'Africa/Johannesburg': 'ZAR',
+            'Europe/Paris': 'EUR', 'Europe/Berlin': 'EUR', 'Europe/Rome': 'EUR', 'Europe/Madrid': 'EUR', 'Europe/Amsterdam': 'EUR', 'Europe/Dublin': 'EUR'
+          };
+          if (tzToCurrency[tz]) {
+            detectedCurrency = tzToCurrency[tz];
+          } else if (tz.startsWith('Europe/')) {
+            const nonEuroTz = ['Europe/London', 'Europe/Belfast', 'Europe/Zurich', 'Europe/Oslo', 'Europe/Stockholm', 'Europe/Copenhagen'];
+            if (!nonEuroTz.some(n => tz.includes(n))) {
+              detectedCurrency = 'EUR';
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Timezone currency detection failed:', e);
+      }
+
+      // Fallback: If timezone detection didn't match anything other than USD, check locale languages
+      if (detectedCurrency === 'USD') {
+        try {
+          const languages = navigator.languages || [navigator.language || 'en-US'];
+          for (const lang of languages) {
+            const parts = lang.split(/[-_]/);
+            if (parts.length > 1) {
+              const country = parts[1].toUpperCase();
+              const countryToCurrency = {
+                IN: 'INR', US: 'USD', GB: 'GBP', DE: 'EUR', FR: 'EUR', IT: 'EUR', ES: 'EUR', NL: 'EUR',
+                CA: 'CAD', AU: 'AUD', JP: 'JPY', CN: 'CNY', BR: 'BRL', ZA: 'ZAR', SG: 'SGD', NZ: 'NZD',
+                CH: 'CHF', SE: 'SEK', NO: 'NOK', DK: 'DKK', PL: 'PLN', TR: 'TRY'
+              };
+              if (countryToCurrency[country]) {
+                detectedCurrency = countryToCurrency[country];
+                break;
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Locale currency detection failed:', e);
+        }
+      }
+
+      if (detectedCurrency && rates[detectedCurrency]) {
+        setSelectedCurrency(detectedCurrency);
       }
     };
     fetchRates();

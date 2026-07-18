@@ -1,48 +1,60 @@
-import React from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { trackEvent } from '@/utils/analytics';
 import activeSponsors from '@/data/activeSponsors.json';
-import { ExternalLink, Sparkles, BookOpen, Layers, ArrowRight } from 'lucide-react';
+import { ExternalLink, BookOpen, Layers, ArrowRight } from 'lucide-react';
 
 export default function SponsorPlacement({ category, tags = [], slug, className = '' }) {
-  const now = new Date();
-  
+  const [logoError, setLogoError] = useState(false);
+
+  // Join tags to create a stable dependency string for memoization
+  const tagsKey = tags.join(',');
+
   // Find an active sponsor matching this category, tag, or slug
-  const sponsor = activeSponsors.find(s => {
-    if (!s.active) return false;
-    // Ensure local timezone matching instead of UTC shifting by appending time constraints
-    // Production Note: Verify server-side clock synchronization on host platforms 
-    // to ensure date-based delivery triggers precisely on target days.
-    const isStarted = now >= new Date(`${s.startDate}T00:00:00`);
-    const isNotExpired = now <= new Date(`${s.endDate}T23:59:59`);
-    if (!isStarted || !isNotExpired) return false;
+  const sponsor = useMemo(() => {
+    const now = new Date();
     
-    // Check targeting rules (if defined)
-    if (s.targeting) {
+    // Filter active and non-expired sponsors first
+    const activeCandidates = activeSponsors.filter(s => {
+      if (!s.active) return false;
+      const isStarted = now >= new Date(`${s.startDate}T00:00:00`);
+      const isNotExpired = now <= new Date(`${s.endDate}T23:59:59`);
+      return isStarted && isNotExpired;
+    });
+
+    // 1. Search for candidates with SPECIFIC targeting rules first
+    const targetedMatch = activeCandidates.find(s => {
+      if (!s.targeting) return false;
       const { categories = [], tags: sponsorTags = [], slugs = [] } = s.targeting;
       
-      // 1. Match by slug
+      // Match by slug
       if (slugs && slug && slugs.includes(slug)) return true;
       
-      // 2. Match by category (case-insensitive)
+      // Match by category (case-insensitive)
       if (categories && category) {
         const catMatch = categories.some(c => c.toLowerCase() === category.toLowerCase());
         if (catMatch) return true;
       }
       
-      // 3. Match by tags (case-insensitive intersection)
+      // Match by tags (case-insensitive intersection)
       if (sponsorTags && tags && tags.length > 0) {
-        const tagMatch = tags.some(t => 
+        return tags.some(t => 
           sponsorTags.some(st => st.toLowerCase() === t.toLowerCase())
         );
-        if (tagMatch) return true;
       }
       
       return false;
-    }
-    
-    // If no targeting configuration exists, treat as run-of-site fallback
-    return true;
-  });
+    });
+
+    if (targetedMatch) return targetedMatch;
+
+    // 2. If no specific match, find run-of-site fallbacks (sponsors without targeting)
+    return activeCandidates.find(s => !s.targeting);
+  }, [category, tagsKey, slug]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Reset logo error flag when sponsor changes
+  useEffect(() => {
+    setLogoError(false);
+  }, [sponsor?.token]);
 
   if (!sponsor) return null;
 
@@ -88,11 +100,23 @@ export default function SponsorPlacement({ category, tags = [], slug, className 
 
   // Package 2: Ecosystem Showcase (Highlight showcase card)
   if (sponsor.placement === 'directory') {
+    const hasValidLogo = sponsor.logo && !logoError;
+    
     return (
       <div className={`my-8 p-6 rounded-2xl border-2 border-blue-500/20 bg-slate-900/60 backdrop-blur-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 transition-all hover:border-blue-500/35 hover:shadow-[0_0_20px_rgba(59,130,246,0.1)] ${className}`}>
         <div className="flex items-start gap-4">
-          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 flex items-center justify-center text-blue-300 font-black text-lg shrink-0">
-            {sponsor.company.substring(0, 2).toUpperCase()}
+          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-slate-800 to-slate-950 border border-slate-700/50 flex items-center justify-center text-blue-300 font-black text-lg shrink-0 overflow-hidden">
+            {hasValidLogo ? (
+              <img 
+                src={sponsor.logo} 
+                alt={`${sponsor.company} Logo`}
+                onError={() => setLogoError(true)}
+                className="w-full h-full object-contain p-2"
+                loading="lazy"
+              />
+            ) : (
+              sponsor.company.substring(0, 2).toUpperCase()
+            )}
           </div>
           <div>
             <div className="flex items-center gap-2">
