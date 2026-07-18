@@ -34,25 +34,29 @@ export default function SponsorManagerPage() {
   const [githubConfig, setGithubConfig] = useState(() => {
     try {
       const saved = localStorage.getItem('sponsors_github_config');
-      return saved ? JSON.parse(saved) : { token: '', owner: '', repo: '', branch: 'main' };
+      return saved ? JSON.parse(saved) : { token: '', owner: 'sainath-reddiee', repo: 'dataengineer', branch: 'main' };
     } catch {
-      return { token: '', owner: '', repo: '', branch: 'main' };
+      return { token: '', owner: 'sainath-reddiee', repo: 'dataengineer', branch: 'main' };
     }
   });
   const [showSettings, setShowSettings] = useState(false);
 
   // Sync state
   const [syncStatus, setSyncStatus] = useState(''); // 'syncing' | 'success' | 'error' | 'github_success'
+  const [syncErrorMessage, setSyncErrorMessage] = useState('');
 
   const saveGithubConfig = (e) => {
     e.preventDefault();
     localStorage.setItem('sponsors_github_config', JSON.stringify(githubConfig));
     setShowSettings(false);
-    alert('GitHub config saved locally to your browser!');
+    setSyncStatus('');
+    setSyncErrorMessage('');
+    alert('GitHub PAT config saved locally to your browser!');
   };
 
   const saveSponsorsToServer = async (updatedSponsors) => {
     setSyncStatus('syncing');
+    setSyncErrorMessage('');
     
     if (import.meta.env.DEV) {
       // Local dev mode: use Vite API
@@ -68,12 +72,14 @@ export default function SponsorManagerPage() {
           setTimeout(() => setSyncStatus(''), 3000);
         } else {
           setSyncStatus('error');
-          setTimeout(() => setSyncStatus(''), 5000);
+          setSyncErrorMessage('Local API save failed. Check dev server.');
+          setTimeout(() => setSyncStatus(''), 7000);
         }
       } catch (err) {
         console.error(err);
         setSyncStatus('error');
-        setTimeout(() => setSyncStatus(''), 5000);
+        setSyncErrorMessage('Failed to connect to local API route.');
+        setTimeout(() => setSyncStatus(''), 7000);
       }
     } else if (githubConfig.token && githubConfig.owner && githubConfig.repo) {
       // Production mode: sync via GitHub API
@@ -83,7 +89,7 @@ export default function SponsorManagerPage() {
         const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
         
         // 1. Get current SHA
-        const getRes = await fetch(`${url}?ref=${branch}`, {
+        const getRes = await fetch(`${url}?ref=${branch || 'main'}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/vnd.github.v3+json'
@@ -94,10 +100,14 @@ export default function SponsorManagerPage() {
         if (getRes.ok) {
           const getData = await getRes.json();
           sha = getData.sha;
+        } else if (getRes.status === 401) {
+          setSyncStatus('error');
+          setSyncErrorMessage('GitHub PAT Token is invalid or expired. Click Setup PAT.');
+          setShowSettings(true);
+          return;
         }
 
         // 2. Put updated content
-        // Base64 encode handling unicode cleanly
         const contentStr = JSON.stringify(updatedSponsors, null, 2);
         const encodedContent = btoa(unescape(encodeURIComponent(contentStr)));
         
@@ -112,7 +122,7 @@ export default function SponsorManagerPage() {
             message: 'Automated Sponsor Sync update from Dashboard',
             content: encodedContent,
             sha: sha || undefined,
-            branch
+            branch: branch || 'main'
           })
         });
 
@@ -123,17 +133,22 @@ export default function SponsorManagerPage() {
           const errData = await putRes.json();
           console.error('GitHub API Error:', errData);
           setSyncStatus('error');
-          setTimeout(() => setSyncStatus(''), 6000);
+          setSyncErrorMessage(errData?.message ? `GitHub API Error: ${errData.message}` : 'GitHub API update failed.');
+          setShowSettings(true);
+          setTimeout(() => setSyncStatus(''), 8000);
         }
       } catch (err) {
         console.error('Network error during GitHub sync:', err);
         setSyncStatus('error');
-        setTimeout(() => setSyncStatus(''), 6000);
+        setSyncErrorMessage('Network error during GitHub sync.');
+        setTimeout(() => setSyncStatus(''), 8000);
       }
     } else {
-      // Production mode: no GitHub config set
+      // Production mode: no GitHub PAT config set
       setSyncStatus('error');
-      setTimeout(() => setSyncStatus(''), 7000);
+      setSyncErrorMessage('GitHub PAT Token missing. Click "Setup PAT Token" to configure.');
+      setShowSettings(true);
+      setTimeout(() => setSyncStatus(''), 10000);
     }
   };
 
@@ -565,20 +580,30 @@ export default function SponsorManagerPage() {
 
       {/* Sync Status Toast/Badge */}
       {syncStatus && (
-        <div className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl border shadow-2xl flex items-center gap-2.5 backdrop-blur-xl transition-all animate-bounce ${
-          syncStatus === 'syncing' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
-          (syncStatus === 'success' || syncStatus === 'github_success') ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
-          'bg-rose-500/10 border-rose-500/20 text-rose-400'
+        <div className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl border shadow-2xl flex items-center gap-3 backdrop-blur-xl transition-all ${
+          syncStatus === 'syncing' ? 'bg-blue-950/90 border-blue-500/30 text-blue-300' :
+          (syncStatus === 'success' || syncStatus === 'github_success') ? 'bg-emerald-950/90 border-emerald-500/30 text-emerald-300' :
+          'bg-rose-950/90 border-rose-500/30 text-rose-300'
         }`}>
-          {syncStatus === 'syncing' && <RefreshCw className="h-4 w-4 animate-spin" />}
-          {(syncStatus === 'success' || syncStatus === 'github_success') && <CheckCircle className="h-4 w-4" />}
-          {syncStatus === 'error' && <AlertTriangle className="h-4 w-4" />}
-          <span className="text-xs font-bold tracking-wide">
-            {syncStatus === 'syncing' && 'Syncing database...'}
-            {syncStatus === 'success' && 'Database synced locally!'}
-            {syncStatus === 'github_success' && 'GitHub synced! Rebuild triggered.'}
-            {syncStatus === 'error' && 'Sync failed. Setup GitHub config or copy JSON.'}
-          </span>
+          {syncStatus === 'syncing' && <RefreshCw className="h-4 w-4 animate-spin shrink-0" />}
+          {(syncStatus === 'success' || syncStatus === 'github_success') && <CheckCircle className="h-4 w-4 shrink-0 text-emerald-400" />}
+          {syncStatus === 'error' && <AlertTriangle className="h-4 w-4 shrink-0 text-rose-400" />}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <span className="text-xs font-bold tracking-wide">
+              {syncStatus === 'syncing' && 'Syncing database...'}
+              {syncStatus === 'success' && 'Database synced locally!'}
+              {syncStatus === 'github_success' && 'GitHub synced! Deployment triggered.'}
+              {syncStatus === 'error' && (syncErrorMessage || 'Sync failed. Setup GitHub config or copy JSON.')}
+            </span>
+            {syncStatus === 'error' && (
+              <button
+                onClick={() => setShowSettings(true)}
+                className="bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-500/40 text-[11px] font-bold px-2.5 py-1 rounded-lg transition"
+              >
+                Setup PAT Token
+              </button>
+            )}
+          </div>
         </div>
       )}
     </div>
