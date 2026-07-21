@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Fri, 17 Jul 2026 12:37:33 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 20 Jul 2026 18:40:54 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -18,6 +18,50 @@
     <managingEditor>contact@dataengineerhub.blog (Sainath Reddy)</managingEditor>
     <webMaster>contact@dataengineerhub.blog (Sainath Reddy)</webMaster>
     <ttl>60</ttl>
+    <item>
+      <title>Databricks Unity Catalog + Apache Iceberg in 2026</title>
+      <link>https://dataengineerhub.blog/articles/databricks-unity-catalog-iceberg-2026</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/databricks-unity-catalog-iceberg-2026</guid>
+      <description>The table format question is settled. Apache Iceberg won. Snowflake, Databricks, AWS, Google, and every serious data platform has committed to it. What hasn’t settled — what’s actively being fought…</description>
+      <pubDate>Mon, 20 Jul 2026 08:38:58 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Databricks</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/uc_iceberg_featured.png" type="image/png" />
+    </item>
+    <item>
+      <title>How Salesforce Data Cloud Zero Copy Actually Works With Snowflake</title>
+      <link>https://dataengineerhub.blog/articles/salesforce-data-cloud-zero-copy-snowflake</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/salesforce-data-cloud-zero-copy-snowflake</guid>
+      <description>Your data engineer says the customer data already lives in Snowflake — all of it, clean, modeled, production-ready. Your architect wants to copy it into Salesforce Data Cloud. You’re running…</description>
+      <pubDate>Sun, 19 Jul 2026 08:34:59 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Salesforce</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/sf_zerocopy_featured.png" type="image/png" />
+    </item>
+    <item>
+      <title>Building a Bulletproof ETL Audit Logger: Capturing Airflow Execution Context in Snowflake</title>
+      <link>https://dataengineerhub.blog/articles/airflow-etl-audit-logger-snowflake</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/airflow-etl-audit-logger-snowflake</guid>
+      <description>The 2 a.m. page said the pipeline “succeeded.” The dashboard was green. And the finance team was still staring at yesterday’s numbers, because one task in a forty-task DAG had…</description>
+      <pubDate>Fri, 17 Jul 2026 22:25:43 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Airflow</category>
+      <category>dbt</category>
+      <category>Python</category>
+      <category>Snowflake</category>
+      <category>SQL</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/etl_audit_featured.png" type="image/png" />
+    </item>
+    <item>
+      <title>The 2026 Migration Trap: Moving from Native Tables to Dynamic Apache Iceberg v3 in Snowflake</title>
+      <link>https://dataengineerhub.blog/articles/native-tables-to-dynamic-iceberg-v3-snowflake</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/native-tables-to-dynamic-iceberg-v3-snowflake</guid>
+      <description>The pitch is intoxicating and mostly true: keep your data in open Apache Iceberg format on your own object storage, let external engines read it, and let Snowflake’s Dynamic Tables…</description>
+      <pubDate>Fri, 17 Jul 2026 11:49:21 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Snowflake</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/iceberg_migration_featured.png" type="image/png" />
+    </item>
     <item>
       <title>Governing the AI Agent: Securing Snowflake CoCo and MCP Workflows in Production</title>
       <link>https://dataengineerhub.blog/articles/governing-ai-agents-snowflake-coco-mcp-security</link>

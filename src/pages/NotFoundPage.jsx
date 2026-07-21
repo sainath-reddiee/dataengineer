@@ -19,10 +19,9 @@ const CATEGORY_CHIPS = [
   { href: '/category/python',     label: 'Python' },
   { href: '/category/aws',        label: 'AWS' },
   { href: '/articles',            label: 'All Articles' },
-  // pSEO chips removed for AdSense review:
-  // { href: '/cheatsheets', label: 'All Cheat Sheets' },
-  // { href: '/compare',     label: 'All Comparisons' },
-  // { href: '/glossary',    label: 'Glossary' },
+  { href: '/cheatsheets', label: 'All Cheat Sheets' },
+  { href: '/compare',     label: 'All Comparisons' },
+  { href: '/glossary',    label: 'Glossary' },
 ];
 const NotFoundPage = () => {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Lock, User, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
@@ -84,7 +84,9 @@ export function useAdminAuth() {
             clearLockout();
         }
 
-        // No fallback hashes — if env vars missing, auth is impossible
+        // This site has no server backend (static FTP host) — auth is a pure
+        // client-side hash comparison. If the hashes aren't configured, login
+        // is impossible (fail closed, no default credentials).
         if (!ADMIN_USER_HASH || !ADMIN_PASS_HASH) {
             return { success: false };
         }

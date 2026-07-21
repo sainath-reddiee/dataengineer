@@ -1,11 +1,32 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  BarChart3, MousePointerClick, Eye, Globe, Calendar, ArrowLeft, 
-  ExternalLink, Copy, Check, ShieldCheck, HelpCircle, Loader2, Sparkles
+  BarChart3, MousePointerClick, Eye, Calendar, ArrowLeft, 
+  ExternalLink, ShieldCheck, Sparkles
 } from 'lucide-react';
-import activeSponsors from '@/data/activeSponsors.json';
+
+const ANALYTICS_MODE = 'preview';
+
+function buildPreviewSponsor(token) {
+  const cleanedToken = (token || '').trim();
+  if (!cleanedToken) return null;
+
+  return {
+    company: 'Your Sponsorship Campaign',
+    placement: 'resource_reference',
+    startDate: 'Private setup',
+    endDate: 'Shared by email',
+    token: cleanedToken,
+    url: '/contact',
+    notes: 'Campaign details are shared privately by DataEngineer Hub. This public page only shows a delivery preview and support options.',
+  };
+}
+
+function getCampaignStatus(sponsor) {
+  if (!sponsor) return { label: 'Unknown', className: 'bg-slate-500/10 border-slate-500/20 text-slate-300' };
+  return { label: 'Preview Dashboard', className: 'bg-blue-500/10 border-blue-500/20 text-blue-300' };
+}
 
 export default function SponsorDashboardPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -13,17 +34,12 @@ export default function SponsorDashboardPage() {
   
   const [token, setToken] = useState(tokenFromUrl);
   const [searchInput, setSearchInput] = useState(tokenFromUrl);
-  const [copied, setCopied] = useState(false);
 
-  // Lookup sponsor data by token
   const sponsorData = useMemo(() => {
-    if (!token) return null;
-    return activeSponsors.find(
-      s => s.token === token
-    ) || null;
+    return buildPreviewSponsor(token);
   }, [token]);
 
-  // Generate mock analytics timeline based on active campaign
+  // Generate deterministic preview analytics until a real tracking backend exists.
   const analyticsData = useMemo(() => {
     if (!sponsorData) return null;
     
@@ -62,6 +78,8 @@ export default function SponsorDashboardPage() {
     };
   }, [sponsorData]);
 
+  const campaignStatus = useMemo(() => getCampaignStatus(sponsorData), [sponsorData]);
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     setToken(searchInput);
@@ -70,13 +88,6 @@ export default function SponsorDashboardPage() {
     } else {
       setSearchParams({});
     }
-  };
-
-  const copyShareLink = () => {
-    const url = `${window.location.origin}${window.location.pathname}?token=${token}`;
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -108,7 +119,7 @@ export default function SponsorDashboardPage() {
                   <BarChart3 className="h-6 w-6" />
                 </div>
                 <h1 className="text-2xl font-bold text-white mb-2">Sponsorship Dashboard</h1>
-                <p className="text-sm text-gray-400">Enter your secure campaign access token to view real-time placement analytics.</p>
+                <p className="text-sm text-gray-400">Enter your campaign access token to open a delivery preview. Private campaign details are shared directly by DataEngineer Hub.</p>
               </div>
 
               <form onSubmit={handleSearchSubmit} className="space-y-4">
@@ -125,9 +136,9 @@ export default function SponsorDashboardPage() {
                   />
                 </div>
                 
-                {token && (
-                  <p className="text-xs text-red-400 flex items-center gap-1 font-semibold">
-                    Invalid access token. Please check your campaign configuration.
+                {token && !sponsorData && (
+                  <p className="text-xs text-amber-300 flex items-center gap-1 font-semibold">
+                    Enter the token shared with you to open the campaign preview.
                   </p>
                 )}
 
@@ -162,31 +173,22 @@ export default function SponsorDashboardPage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <h1 className="text-2xl font-black text-white">{sponsorData.company}</h1>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                        Active Campaign
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${campaignStatus.className}`}>
+                        {campaignStatus.label}
                       </span>
                     </div>
                     <p className="text-sm text-gray-400 mt-1 capitalize">
                       Placement: {sponsorData.placement.replace('_', ' ')}
                     </p>
+                    {ANALYTICS_MODE === 'preview' && (
+                      <p className="text-xs text-amber-300 mt-2">
+                        Preview mode: delivery metrics below are seeded estimates based on placement type, not live tracked events.
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                  <button
-                    onClick={copyShareLink}
-                    className="inline-flex items-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-xs font-semibold transition"
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="h-3.5 w-3.5 text-emerald-400" /> Copied Link!
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-3.5 w-3.5" /> Share Dashboard
-                      </>
-                    )}
-                  </button>
                   <button
                     onClick={() => {
                       setToken('');
@@ -195,7 +197,7 @@ export default function SponsorDashboardPage() {
                     }}
                     className="inline-flex items-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-xs font-semibold transition"
                   >
-                    Logout Partner
+                    Clear Token
                   </button>
                 </div>
               </div>
@@ -208,7 +210,7 @@ export default function SponsorDashboardPage() {
                     <Eye className="h-4 w-4 text-blue-400" />
                   </div>
                   <div className="text-2xl sm:text-3xl font-black text-white">{analyticsData.impressions.toLocaleString()}</div>
-                  <p className="text-[10px] text-gray-500 mt-1">Live exposure count</p>
+                  <p className="text-[10px] text-gray-500 mt-1">Estimated weekly exposure</p>
                 </div>
 
                 <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-5">
@@ -217,7 +219,7 @@ export default function SponsorDashboardPage() {
                     <MousePointerClick className="h-4 w-4 text-purple-400" />
                   </div>
                   <div className="text-2xl sm:text-3xl font-black text-white">{analyticsData.clicks}</div>
-                  <p className="text-[10px] text-gray-500 mt-1">Direct click-throughs</p>
+                  <p className="text-[10px] text-gray-500 mt-1">Estimated click volume</p>
                 </div>
 
                 <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-5">
@@ -246,7 +248,7 @@ export default function SponsorDashboardPage() {
                 
                 {/* Visual Chart */}
                 <div className="lg:col-span-2 bg-slate-900/60 border border-white/10 rounded-3xl p-6 md:p-8 backdrop-blur-md">
-                  <h3 className="text-lg font-bold text-white mb-6">Daily Clicks Performance</h3>
+                  <h3 className="text-lg font-bold text-white mb-6">Estimated Daily Click Pattern</h3>
                   
                   {/* CSS Animated Bar Chart */}
                   <div className="h-48 flex items-end justify-between gap-2.5 pt-4 border-b border-white/10 pb-2">
@@ -272,35 +274,35 @@ export default function SponsorDashboardPage() {
                     })}
                   </div>
                   <p className="text-[10px] text-gray-500 mt-4 leading-relaxed">
-                    *Graph displays actual clicks recorded on sponsor recommendation links using secure serverless redirect triggers.
+                    *Graph displays deterministic preview estimates generated from the current placement type so partners can review configuration before live reporting is implemented.
                   </p>
                 </div>
 
-                {/* Target link verification panel */}
+                {/* Support link panel */}
                 <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-6 backdrop-blur-md flex flex-col justify-between">
                   <div>
-                    <h3 className="text-lg font-bold text-white mb-4">Link Details</h3>
+                      <h3 className="text-lg font-bold text-white mb-4">Campaign Support</h3>
                     <p className="text-xs text-gray-400 mb-6 leading-relaxed">
-                      Verify the target URL and UTM tracking attributes configured for your sponsorship listing.
+                        Destination URLs and live reporting are shared privately to avoid exposing campaign tokens or configuration in the public bundle.
                     </p>
                     
                     <div className="space-y-4">
                       <div>
-                        <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5">Configured Link</span>
+                        <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1.5">Support Link</span>
                         <a 
                           href={sponsorData.url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-xs text-blue-400 hover:underline flex items-center gap-1 break-all bg-slate-950/40 p-3 rounded-xl border border-white/5 font-mono"
                         >
-                          {sponsorData.url} <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                          Contact DataEngineer Hub <ExternalLink className="h-3 w-3 flex-shrink-0" />
                         </a>
                       </div>
 
                       <div className="rounded-xl bg-blue-500/5 border border-blue-500/10 p-4 flex gap-2">
                         <ShieldCheck className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
                         <span className="text-[10px] text-gray-400 leading-relaxed">
-                          All redirects use clean tracking tags to ensure your inbound marketing pipeline correctly registers conversions from DataEngineer Hub.
+                          This dashboard intentionally does not expose sponsor configuration from the public JavaScript bundle.
                         </span>
                       </div>
                     </div>
@@ -313,7 +315,7 @@ export default function SponsorDashboardPage() {
                       rel="noopener noreferrer"
                       className="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-center transition flex items-center justify-center gap-1 text-white"
                     >
-                      Test Link Redirect <ExternalLink className="h-3.5 w-3.5" />
+                      Contact Support <ExternalLink className="h-3.5 w-3.5" />
                     </a>
                   </div>
                 </div>

@@ -205,7 +205,8 @@ jobs:
           VITE_GISCUS_REPO_ID: ${{ secrets.VITE_GISCUS_REPO_ID }}
           VITE_GISCUS_CATEGORY: ${{ secrets.VITE_GISCUS_CATEGORY }}
           VITE_GISCUS_CATEGORY_ID: ${{ secrets.VITE_GISCUS_CATEGORY_ID }}
-          VITE_BUTTONDOWN_API_KEY: ${{ secrets.VITE_BUTTONDOWN_API_KEY }}
+          VITE_BREVO_API_KEY: ${{ secrets.VITE_BREVO_API_KEY }}
+          VITE_BREVO_LIST_ID: ${{ secrets.VITE_BREVO_LIST_ID }}
           VITE_WEB3FORMS_KEY: ${{ secrets.VITE_WEB3FORMS_KEY }}
           VITE_GSC_CLIENT_ID: ${{ secrets.VITE_GSC_CLIENT_ID }}
 
@@ -535,6 +536,280 @@ jobs:
           npm run sitemap:notify || echo "⚠️ Search engine notification queued"
         continue-on-error: true
         timeout-minutes: 2
+
+      - name: 💾 Restore Newsletter Dedup State
+        # Restores a tiny cache file that records the last post ID we sent an email for.
+        # Prevents duplicate sends when WordPress triggers multiple rapid deploys
+        # (e.g. autosave -> publish -> minor update all within minutes of each other).
+        id: newsletter-dedup
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/newsletter_sent_ids.txt
+          key: newsletter-sent-${{ github.run_id }}
+          restore-keys: |
+            newsletter-sent-
+        continue-on-error: true
+
+      - name: 📧 Send Newsletter Email (New Posts)
+        # Only fires on real deploys triggered by a new post (repository_dispatch) or
+        # a manual workflow_dispatch - never on scheduled rebuilds or cache-only hits.
+        if: |
+          steps.changes.outputs.skip_deploy != 'true' &&
+          steps.changes.outputs.dry_run != 'true' &&
+          secrets.VITE_BREVO_API_KEY != '' &&
+          (github.event_name == 'repository_dispatch' || github.event_name == 'workflow_dispatch')
+        env:
+          BREVO_API_KEY: ${{ secrets.VITE_BREVO_API_KEY }}
+          BREVO_LIST_ID: ${{ secrets.VITE_BREVO_LIST_ID || '2' }}
+          BREVO_SENDER_EMAIL: ${{ secrets.BREVO_SENDER_EMAIL || 'sainath@dataengineerhub.blog' }}
+          BREVO_SENDER_NAME: DataEngineer Hub
+          WP_API_URL: https://app.dataengineerhub.blog/wp-json/wp/v2
+        run: |
+          echo "📧 Fetching latest post from WordPress..."
+
+          # _embed=wp:featuredmedia fetches the actual post image.
+          # _fields restricts to only what we need (fast + no private data).
+          # date_gmt is UTC, used for timezone-safe freshness calculation.
+          curl -s --max-time 15 \
+            "${WP_API_URL}/posts?per_page=1&orderby=date&order=desc&status=publish&_embed=wp:featuredmedia&_fields=id,title,slug,excerpt,date,date_gmt,_embedded" \
+            -H "Accept: application/json" > /tmp/wp_posts.json
+
+          if [ ! -s /tmp/wp_posts.json ] || [ "$(cat /tmp/wp_posts.json)" = "[]" ]; then
+            echo "⚠️ No posts returned from WordPress API - skipping newsletter."
+            exit 0
+          fi
+
+          # ── Single parse pass: extracts all fields including featured image ──
+          # Writing to files avoids all shell-quoting issues with JSON content.
+          node -e "
+            const fs = require('fs');
+            try {
+              const posts = JSON.parse(fs.readFileSync('/tmp/wp_posts.json','utf8'));
+              const p = Array.isArray(posts) ? posts[0] : posts;
+              if (!p || !p.id) { fs.writeFileSync('/tmp/post_data.json','SKIP'); process.exit(0); }
+
+              // Featured image: prefer large size, fall back through sizes, then source_url
+              const embedded = p._embedded || {};
+              const mediaArr = embedded['wp:featuredmedia'];
+              let featuredImage = '';
+              if (Array.isArray(mediaArr) && mediaArr.length > 0) {
+                const m = mediaArr[0];
+                featuredImage =
+                  (m.media_details && m.media_details.sizes &&
+                    (m.media_details.sizes.large || m.media_details.sizes.medium_large) &&
+                    ((m.media_details.sizes.large || m.media_details.sizes.medium_large).source_url)) ||
+                  m.source_url || '';
+              }
+
+              // HTML-escape helper for safe interpolation into email HTML
+              const esc = s => (s||'')
+                .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+              // Decode WP HTML entities in title (for display, not HTML injection)
+              const clean = s => (s||'')
+                .replace(/&amp;/g,'&')
+                .replace(/&#8211;|&#x2013;/g,'–')
+                .replace(/&#8212;|&#x2014;/g,'—')
+                .replace(/&#8217;|&#x2019;/g,"'")
+                .replace(/&#8216;|&#x2018;/g,"'")
+                .replace(/&#8220;|&#x201C;/g,'"')
+                .replace(/&#8221;|&#x201D;/g,'"')
+                .replace(/&#038;/g,'&');
+
+              const title   = clean(p.title && p.title.rendered ? p.title.rendered : p.title || '');
+              const excerpt = (p.excerpt && p.excerpt.rendered ? p.excerpt.rendered : '')
+                .replace(/<[^>]+>/g,'')
+                .replace(/\[&hellip;\]/g,'...')
+                .replace(/&amp;/g,'&').replace(/&nbsp;/g,' ')
+                .trim().slice(0,280);
+              const slug    = p.slug || '';
+              const date    = p.date
+                ? new Date(p.date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})
+                : '';
+              const url     = 'https://dataengineerhub.blog/articles/' + slug;
+              const postId  = String(p.id);
+              // date_gmt is UTC — used for timezone-safe freshness check.
+              // Append 'Z' so JavaScript / GNU date parses it as UTC unambiguously.
+              const dateGmt = (p.date_gmt || p.date || '').replace(/Z?$/,'Z');
+
+              fs.writeFileSync('/tmp/post_data.json', JSON.stringify({
+                title, excerpt, url, date, postId, dateGmt, featuredImage,
+                titleHtml: esc(title), excerptHtml: esc(excerpt)
+              }));
+            } catch(e) {
+              fs.writeFileSync('/tmp/post_data.json','SKIP');
+            }
+          "
+
+          if [ "$(cat /tmp/post_data.json)" = "SKIP" ] || [ ! -s /tmp/post_data.json ]; then
+            echo "⚠️ Could not parse latest post - skipping newsletter."
+            exit 0
+          fi
+
+          POST_ID=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('/tmp/post_data.json','utf8')).postId||'')")
+          DATE_GMT=$(node -e "process.stdout.write(JSON.parse(require('fs').readFileSync('/tmp/post_data.json','utf8')).dateGmt||'')")
+
+          # ── Deduplication layer 1: Freshness gate (timezone-safe) ─────────
+          # Uses date_gmt (UTC) + the 'Z' suffix so GNU date always parses as UTC.
+          # Skips posts older than 4 hours to avoid re-emailing on re-deploys.
+          if [ -n "$DATE_GMT" ]; then
+            PUBLISH_TS=$(date -d "$DATE_GMT" +%s 2>/dev/null || echo "0")
+            CURRENT_TS=$(date +%s)
+            AGE_HOURS=$(( (CURRENT_TS - PUBLISH_TS) / 3600 ))
+            echo "⏱️  Post published $AGE_HOURS hour(s) ago (ID: $POST_ID)"
+            if [ "$AGE_HOURS" -gt 4 ]; then
+              echo "⏭️  Post is $AGE_HOURS hours old - skipping (not a fresh publish)."
+              exit 0
+            fi
+          fi
+
+          # ── Deduplication layer 2: ID-based cache check ──────────────────
+          if [ -n "$POST_ID" ] && [ -f /tmp/newsletter_sent_ids.txt ]; then
+            if grep -qF "$POST_ID" /tmp/newsletter_sent_ids.txt 2>/dev/null; then
+              echo "⏭️  Post ID $POST_ID already in dedup cache - skipping duplicate send."
+              exit 0
+            fi
+          fi
+
+          # ── Build rich HTML email ─────────────────────────────────────────
+          # Reads from /tmp/post_data.json which already has HTML-escaped fields.
+          node -e "
+            const fs = require('fs');
+            const d  = JSON.parse(fs.readFileSync('/tmp/post_data.json','utf8'));
+
+            const subject  = 'New on DataEngineer Hub: ' + d.title;
+            // Use the actual post's featured image; fall back to the site OG image
+            const imgSrc   = d.featuredImage || 'https://dataengineerhub.blog/og-image.jpg';
+            // titleHtml and excerptHtml are already HTML-escaped in the parse step
+            const titleHtml  = d.titleHtml  || d.title;
+            const excerptHtml = d.excerptHtml || d.excerpt;
+
+            const html = [
+              '<!DOCTYPE html>',
+              '<html lang="en">',
+              '<head>',
+              '<meta charset="UTF-8">',
+              '<meta name="viewport" content="width=device-width,initial-scale=1.0">',
+              '<title>' + titleHtml + '</title>',
+              '</head>',
+              '<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif;">',
+              '<div style="max-width:600px;margin:0 auto;background-color:#ffffff;">',
+
+              '<!-- Header -->',
+              '<table width="100%" cellpadding="0" cellspacing="0" style="background:#1e293b;">',
+              '<tr><td style="padding:18px 32px;text-align:center;">',
+              '<a href="https://dataengineerhub.blog" style="color:#60a5fa;font-size:13px;font-weight:700;letter-spacing:0.1em;text-decoration:none;">',
+              'DATAENGINEER HUB</a>',
+              '</td></tr></table>',
+
+              '<!-- Featured Image -->',
+              '<img src="' + imgSrc + '" alt="' + titleHtml + '" width="600"',
+              ' style="width:100%;max-height:320px;height:auto;display:block;object-fit:cover;" />',
+
+              '<!-- Content -->',
+              '<div style="padding:32px 32px 24px;">',
+              '<p style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 10px;">',
+              'New Article &bull; ' + d.date + '</p>',
+              '<h1 style="font-size:22px;font-weight:700;color:#0f172a;line-height:1.3;margin:0 0 14px;">',
+              titleHtml + '</h1>',
+              '<p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 28px;">',
+              excerptHtml + '</p>',
+              '<a href="' + d.url + '"',
+              ' style="display:inline-block;background-color:#2563eb;color:#ffffff;font-size:15px;',
+              'font-weight:600;text-decoration:none;padding:14px 28px;border-radius:8px;">',
+              'Read Full Article &#8594;</a>',
+              '</div>',
+
+              '<!-- Footer -->',
+              '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;border-top:1px solid #e2e8f0;">',
+              '<tr><td style="padding:20px 32px;">',
+              '<p style="font-size:12px;color:#94a3b8;margin:0 0 6px;">',
+              'You received this because you subscribed to DataEngineer Hub updates.</p>',
+              '<p style="font-size:12px;color:#94a3b8;margin:0;">',
+              '<a href="https://dataengineerhub.blog" style="color:#64748b;text-decoration:none;">Visit site</a>',
+              ' &nbsp;&bull;&nbsp; ',
+              '<a href="https://dataengineerhub.blog/newsletter" style="color:#64748b;text-decoration:none;">Manage subscription</a>',
+              '</p></td></tr></table>',
+
+              '</div></body></html>'
+            ].join('\n');
+
+            fs.writeFileSync('/tmp/email_subject.txt', subject);
+            fs.writeFileSync('/tmp/email_body.html', html);
+          "
+
+          SUBJECT=$(cat /tmp/email_subject.txt)
+          echo "📨 Creating Brevo campaign: \"$SUBJECT\""
+
+          # ── Build Brevo campaign JSON payload (written to file for safe curl) ─
+          node -e "
+            const fs      = require('fs');
+            const subject = fs.readFileSync('/tmp/email_subject.txt','utf8').trim();
+            const html    = fs.readFileSync('/tmp/email_body.html','utf8');
+            const listId  = parseInt(process.env.BREVO_LIST_ID || '2', 10);
+            const payload = {
+              name        : 'Auto: ' + subject.slice(0,60),
+              subject     : subject,
+              sender      : { email: process.env.BREVO_SENDER_EMAIL, name: process.env.BREVO_SENDER_NAME },
+              type        : 'classic',
+              htmlContent : html,
+              recipients  : { listIds: [isNaN(listId) ? 2 : listId] }
+            };
+            fs.writeFileSync('/tmp/brevo_payload.json', JSON.stringify(payload));
+          "
+
+          # curl reads JSON from disk (-d @file) - no shell-quoting issues with HTML content
+          CAMPAIGN_RESP=$(curl -s -o /tmp/brevo_campaign.json -w "%{http_code}" \
+            -X POST "https://api.brevo.com/v3/emailCampaigns" \
+            -H "api-key: ${BREVO_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d @/tmp/brevo_payload.json)
+
+          if [ "$CAMPAIGN_RESP" != "201" ]; then
+            echo "⚠️ Brevo campaign creation returned HTTP $CAMPAIGN_RESP:"
+            cat /tmp/brevo_campaign.json 2>/dev/null || true
+            echo "ℹ️ Newsletter skipped. Deployment is complete."
+            exit 0
+          fi
+
+          CAMPAIGN_ID=$(node -e "
+            const d = JSON.parse(require('fs').readFileSync('/tmp/brevo_campaign.json','utf8'));
+            process.stdout.write(String(d.id||''));
+          ")
+
+          if [ -z "$CAMPAIGN_ID" ]; then
+            echo "⚠️ Could not read campaign ID - skipping send."
+            exit 0
+          fi
+
+          SEND_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST "https://api.brevo.com/v3/emailCampaigns/${CAMPAIGN_ID}/sendNow" \
+            -H "api-key: ${BREVO_API_KEY}")
+
+          if [ "$SEND_CODE" = "204" ] || [ "$SEND_CODE" = "200" ]; then
+            echo "✅ Newsletter sent (campaign ID: $CAMPAIGN_ID, HTTP $SEND_CODE)"
+            if [ -n "$POST_ID" ]; then
+              echo "$POST_ID" >> /tmp/newsletter_sent_ids.txt
+              echo "✏️  Marked post ID $POST_ID as sent in dedup cache."
+            fi
+          else
+            echo "⚠️ Brevo sendNow returned HTTP $SEND_CODE for campaign $CAMPAIGN_ID"
+            echo "ℹ️ Check the Brevo dashboard for campaign status."
+          fi
+        continue-on-error: true
+        timeout-minutes: 3
+
+      - name: 💾 Save Newsletter Dedup State
+        # Persists the dedup ID file so the next workflow run can check it.
+        # Uses a unique key per run + a shared prefix so restore-keys always
+        # finds the most recently saved state.
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/newsletter_sent_ids.txt
+          key: newsletter-sent-${{ github.run_id }}
+        continue-on-error: true
 
       - name: 📊 Deployment Summary
         run: |

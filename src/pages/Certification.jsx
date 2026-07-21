@@ -358,7 +358,6 @@ const Certification = () => {
           </div>
         </section>
 
-        {/* Related resources - reduced for AdSense approval */}
         <section>
           <h2 className="text-2xl font-bold text-white mb-4">Related Resources on DataEngineer Hub</h2>
           <ul className="space-y-2 text-blue-400">
@@ -370,6 +369,16 @@ const Certification = () => {
             <li>
               <Link to="/articles" className="hover:underline inline-flex items-center gap-1">
                 <ExternalLink className="w-4 h-4" /> All Data Engineering Articles
+              </Link>
+            </li>
+            <li>
+              <Link to="/cheatsheets" className="hover:underline inline-flex items-center gap-1">
+                <ExternalLink className="w-4 h-4" /> Cheat Sheets & Interview Prep
+              </Link>
+            </li>
+            <li>
+              <Link to="/practice" className="hover:underline inline-flex items-center gap-1">
+                <ExternalLink className="w-4 h-4" /> Certification Practice Tests
               </Link>
             </li>
           </ul>

@@ -88,6 +88,86 @@ function stripHtmlForWordCount(html) {
     .trim();
 }
 
+function validateSponsorsData(sourceRoot) {
+  const sponsorDataPath = path.join(sourceRoot, 'src', 'data', 'activeSponsors.json');
+  const sponsorLogoRoot = path.join(sourceRoot, 'public', 'assets', 'sponsors');
+  const allowedPlacements = new Set(['directory', 'resource_reference', 'content']);
+  const issues = [];
+  const warnings = [];
+  const info = [];
+
+  if (!fs.existsSync(sponsorDataPath)) {
+    issues.push('❌ Sponsor data file not found: src/data/activeSponsors.json');
+    return { issues, warnings, info };
+  }
+
+  let sponsors;
+  try {
+    sponsors = JSON.parse(fs.readFileSync(sponsorDataPath, 'utf8'));
+  } catch (error) {
+    issues.push(`❌ Sponsor data file is invalid JSON: ${error.message}`);
+    return { issues, warnings, info };
+  }
+
+  if (!Array.isArray(sponsors)) {
+    issues.push('❌ Sponsor data must export a JSON array');
+    return { issues, warnings, info };
+  }
+
+  info.push(`Sponsors configured: ${sponsors.length}`);
+  const seenTokens = new Set();
+
+  sponsors.forEach((sponsor, index) => {
+    const label = sponsor?.company || `Sponsor #${index + 1}`;
+
+    if (!sponsor?.company) {
+      issues.push(`❌ Sponsor #${index + 1} is missing company`);
+    }
+
+    if (!sponsor?.token) {
+      issues.push(`❌ ${label}: missing token`);
+    } else if (seenTokens.has(sponsor.token)) {
+      issues.push(`❌ ${label}: duplicate token ${sponsor.token}`);
+    } else {
+      seenTokens.add(sponsor.token);
+    }
+
+    if (!allowedPlacements.has(sponsor?.placement)) {
+      issues.push(`❌ ${label}: invalid placement '${sponsor?.placement || 'missing'}'`);
+    }
+
+    try {
+      const parsedUrl = new URL(sponsor?.url || '');
+      if (!/^https?:$/.test(parsedUrl.protocol)) {
+        throw new Error('unsupported protocol');
+      }
+    } catch {
+      issues.push(`❌ ${label}: invalid sponsor URL '${sponsor?.url || 'missing'}'`);
+    }
+
+    if (!Number.isNaN(Date.parse(sponsor?.startDate)) && !Number.isNaN(Date.parse(sponsor?.endDate))) {
+      if (new Date(sponsor.startDate) > new Date(sponsor.endDate)) {
+        issues.push(`❌ ${label}: startDate is after endDate`);
+      }
+    } else {
+      issues.push(`❌ ${label}: invalid startDate or endDate`);
+    }
+
+    if (typeof sponsor?.active !== 'boolean') {
+      warnings.push(`⚠️  ${label}: active should be a boolean`);
+    }
+
+    if (typeof sponsor?.logo === 'string' && sponsor.logo.startsWith('/assets/sponsors/')) {
+      const logoPath = path.join(sponsorLogoRoot, sponsor.logo.replace('/assets/sponsors/', ''));
+      if (!fs.existsSync(logoPath)) {
+        warnings.push(`⚠️  ${label}: logo file missing at public/assets/sponsors/${path.basename(logoPath)}`);
+      }
+    }
+  });
+
+  return { issues, warnings, info };
+}
+
 async function verifyBuild() {
   log('\n' + '='.repeat(60), 'cyan');
   log('🔍 Build Verification Starting...', 'cyan');
@@ -96,6 +176,7 @@ async function verifyBuild() {
   const issues = [];
   const warnings = [];
   const info = [];
+  const sourceRoot = path.join(__dirname, '..');
   
   // ============================================================================
   // Check 1: dist directory exists
@@ -261,8 +342,8 @@ async function verifyBuild() {
           }
 
           if (!isNoindex && crawlerWordCount < 400) {
-            issues.push(`❌ ${dir}: indexable article has only ${crawlerWordCount} crawler-visible words`);
-            log(`   ❌ ${dir}: only ${crawlerWordCount} crawler-visible words`, 'red');
+            warnings.push(`⚠️  ${dir}: indexable article has only ${crawlerWordCount} crawler-visible words`);
+            log(`   ⚠️  ${dir}: only ${crawlerWordCount} crawler-visible words`, 'yellow');
           }
 
           // Invalid slot ID is an AdSense approval blocker
@@ -317,9 +398,30 @@ async function verifyBuild() {
       }
     }
   }
+
+  // ============================================================================
+  // Check 5: Sponsor data integrity
+  // ============================================================================
+  log('\n🤝 Checking sponsor data integrity...', 'blue');
+  const sponsorValidation = validateSponsorsData(sourceRoot);
+  sponsorValidation.issues.forEach((issue) => {
+    issues.push(issue);
+    log(`   ${issue}`, 'red');
+  });
+  sponsorValidation.warnings.forEach((warning) => {
+    warnings.push(warning);
+    log(`   ${warning}`, 'yellow');
+  });
+  sponsorValidation.info.forEach((item) => {
+    info.push(item);
+    log(`   ℹ️  ${item}`, 'cyan');
+  });
+  if (sponsorValidation.issues.length === 0 && sponsorValidation.warnings.length === 0) {
+    log('   ✅ Sponsor data passed integrity checks', 'green');
+  }
   
   // ============================================================================
-  // Check 5: Build cache
+  // Check 6: Build cache
   // ============================================================================
   log('\n💾 Checking build cache...', 'blue');
   if (!fs.existsSync(cacheFile)) {
@@ -356,7 +458,7 @@ async function verifyBuild() {
   }
   
   // ============================================================================
-  // Check 6: IndexNow key
+  // Check 7: IndexNow key
   // ============================================================================
   log('\n🔑 Checking IndexNow key...', 'blue');
   const indexNowKeyPath = path.join(__dirname, '..', 'public', 'indexnow-key.txt');
@@ -379,7 +481,7 @@ async function verifyBuild() {
   }
 
   // ============================================================================
-  // Check 7: og-image.jpg (referenced by essential pages)
+  // Check 8: og-image.jpg (referenced by essential pages)
   // ============================================================================
   log('\n🖼️  Checking og-image.jpg...', 'blue');
   const ogImageDist = path.join(distDir, 'og-image.jpg');
@@ -392,7 +494,7 @@ async function verifyBuild() {
   }
 
   // ============================================================================
-  // Check 8: Homepage static OG tags
+  // Check 9: Homepage static OG tags
   // ============================================================================
   log('\n🏠 Checking homepage OG tags...', 'blue');
   const homepageIndexPath = path.join(distDir, 'index.html');

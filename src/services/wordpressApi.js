@@ -575,42 +575,42 @@ class WordPressAPI {
   }
 
   async subscribeNewsletter(email) {
-    const apiKey = import.meta.env.VITE_BUTTONDOWN_API_KEY;
+    const apiKey = import.meta.env.VITE_BREVO_API_KEY;
+    const listId = parseInt(import.meta.env.VITE_BREVO_LIST_ID || '2', 10);
+
     if (!apiKey) {
       throw new Error('Newsletter service is not configured');
     }
 
-    const response = await fetch('https://api.buttondown.com/v1/subscribers', {
+    const response = await fetch('https://api.brevo.com/v3/contacts', {
       method: 'POST',
       headers: {
-        Authorization: `Token ${apiKey}`,
+        'api-key': apiKey,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email_address: email.trim() }),
+      body: JSON.stringify({
+        email: email.trim(),
+        listIds: [listId],
+        updateEnabled: true,
+      }),
     });
 
-    if (response.ok || response.status === 201) {
+    // 201 = created, 204 = already exists (updated)
+    if (response.status === 201 || response.status === 204) {
       return { success: true };
     }
 
     const data = await response.json().catch(() => ({}));
 
-    // Already subscribed — treat as soft success
+    // Duplicate contact — treat as soft success
     if (
-      response.status === 409 ||
-      data.code === 'email_already_exists' ||
-      data.code === 'email_unsubscribed'
+      response.status === 400 &&
+      (data.code === 'duplicate_parameter' || String(data.message || '').toLowerCase().includes('already'))
     ) {
       return { success: true, message: 'Already subscribed' };
     }
 
-    // Blocked by Buttondown firewall (disposable emails, spam filters, etc.)
-    if (data.code === 'subscriber_blocked') {
-      throw new Error('This email address is not allowed. Please use a different email.');
-    }
-
     const message =
-      (typeof data.detail === 'string' ? data.detail : '') ||
       (typeof data.message === 'string' ? data.message : '') ||
       data.code ||
       response.statusText ||

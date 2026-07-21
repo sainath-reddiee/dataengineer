@@ -11,9 +11,108 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-07-17",
-  "totalArticles": 76,
+  "lastUpdated": "2026-07-20",
+  "totalArticles": 80,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/databricks-unity-catalog-iceberg-2026",
+      "title": "Databricks Unity Catalog + Apache Iceberg in 2026",
+      "summary": "The table format question is settled. Apache Iceberg won. Snowflake, Databricks, AWS, Google, and every serious data platform has committed to it. What hasn’t settled — what’s actively being fought…",
+      "keyFacts": [
+        "What hasn’t settled — what’s actively being fought over right now, with real architectural consequences for every data team making lakehouse decisions — is the catalog question",
+        "Managed tables are the default and recommended type",
+        "Both modes support credential vending: Unity Catalog issues temporary credentials scoped to the requesting principal’s privileges, so external engines never hold long-lived Databricks credentials and governance policies apply at the storage layer"
+      ],
+      "entities": [
+        "snowflake",
+        "databricks",
+        "aws",
+        "spark"
+      ],
+      "questionAnswered": "What is Databricks Unity Catalog + Apache Iceberg?",
+      "lastUpdated": "2026-07-18",
+      "published": "2026-07-20",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Databricks",
+      "wordCount": 1744
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/salesforce-data-cloud-zero-copy-snowflake",
+      "title": "How Salesforce Data Cloud Zero Copy Actually Works With Snowflake",
+      "summary": "Your data engineer says the customer data already lives in Snowflake — all of it, clean, modeled, production-ready. Your architect wants to copy it into Salesforce Data Cloud. You’re running…",
+      "keyFacts": [
+        "Of those, 15 trillion — nearly half — flowed through Zero Copy connectors, a 341% year-over-year surge",
+        "This is the exact problem Zero Copy was built to kill",
+        "This is the guide that breaks both apart",
+        "That ratio tells you something important: nearly half of all enterprise data entering Data Cloud never actually enters Data Cloud"
+      ],
+      "entities": [
+        "snowflake",
+        "databricks",
+        "bigquery",
+        "sql",
+        "spark",
+        "aws",
+        "azure"
+      ],
+      "questionAnswered": "How Salesforce Data Cloud Zero Copy Actually Works With Snowflake?",
+      "lastUpdated": "2026-07-18",
+      "published": "2026-07-19",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Salesforce",
+      "wordCount": 1779
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/airflow-etl-audit-logger-snowflake",
+      "title": "Building a Bulletproof ETL Audit Logger: Capturing Airflow Execution Context in Snowflake",
+      "summary": "The 2 a.m. page said the pipeline “succeeded.” The dashboard was green. And the finance team was still staring at yesterday’s numbers, because one task in a forty-task DAG had…",
+      "keyFacts": [
+        "5 -- 50% slower than usual ORDER BY logical_date DESC; That last query is the one that turns the audit log from a forensic tool into an early-warning system: it surfaces the task that’s creeping slower before it becomes the 2 a",
+        "This is the complete build: the Snowflake schema, the Airflow callback code that captures context at both ends of every task, and what the whole thing looks like when it runs",
+        "→ Once the data lands, debugging execution delays is a SELECT … ORDER BY duration_seconds DESC , and finding the slowest task in the slowest run is a window function, not a log grep",
+        "10 Immediately you can see what a green checkmark never showed you: transform_orders took 112 seconds — nearly three times extract — and every task processed the 02:00 logical window as intended"
+      ],
+      "entities": [
+        "snowflake",
+        "airflow",
+        "python",
+        "dbt"
+      ],
+      "questionAnswered": "What is Building a Bulletproof ETL Audit Logger: Capturing Airflow Execution Context in Snowflake?",
+      "lastUpdated": "2026-07-18",
+      "published": "2026-07-18",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Airflow",
+      "wordCount": 2230
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/native-tables-to-dynamic-iceberg-v3-snowflake",
+      "title": "The 2026 Migration Trap: Moving from Native Tables to Dynamic Apache Iceberg v3 in Snowflake",
+      "summary": "The pitch is intoxicating and mostly true: keep your data in open Apache Iceberg format on your own object storage, let external engines read it, and let Snowflake’s Dynamic Tables…",
+      "keyFacts": [
+        "→ Deletion vectors (v3 merge-on-read) are governed by heuristics: Snowflake only writes a deletion vector if fewer than ~5% of a file’s rows are deleted and the file is larger than ~1",
+        "Deletion vectors replace v2’s positional deletes for merge-on-read, and they’re governed by heuristics worth knowing: Snowflake writes a deletion vector only if fewer than ~5% of a data file’s rows are deleted and the file exceeds ~1",
+        "This is the guide to the traps — the ones that don’t show up in the quickstart — and how to design around them before they cost you a quarter",
+        "Iceberg v3 is a genuine step change, not a point release"
+      ],
+      "entities": [
+        "snowflake",
+        "spark",
+        "aws",
+        "dbt",
+        "airflow"
+      ],
+      "questionAnswered": "What is The 2026 Migration Trap: Moving from Native Tables to Dynamic Apache Iceberg v3 in Snowflake?",
+      "lastUpdated": "2026-07-16",
+      "published": "2026-07-17",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2300
+    },
     {
       "url": "https://dataengineerhub.blog/articles/governing-ai-agents-snowflake-coco-mcp-security",
       "title": "Governing the AI Agent: Securing Snowflake CoCo and MCP Workflows in Production",

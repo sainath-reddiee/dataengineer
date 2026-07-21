@@ -143,15 +143,6 @@ const AllArticlesPage = () => {
       url: SITE_CONFIG.url,
     },
   }}
-  noindex={
-    // Avoid serving thin or duplicate shells to crawlers when:
-    //   - a ?search= query returns zero results
-    //   - the user is deep-paginated past available content
-    //   - any non-first page (page>1) — paginated lists are nav-only
-    //     and offer no unique editorial content for AdSense.
-    (!loading && !error && posts.length === 0 && !!activeSearch) ||
-    (currentPage > 1)
-  }
 />
       <div className="pt-1 pb-6">
         <div className="container mx-auto px-6">

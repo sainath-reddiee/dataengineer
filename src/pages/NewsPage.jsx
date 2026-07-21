@@ -18,12 +18,6 @@ const NewsPage = () => {
 
   const breadcrumbs = generateBreadcrumbs('/news', 'News & Trends');
 
-  // Noindex the page UNLESS we have confirmed posts to render. This is the
-  // safer default — during loading, errors, or empty states the page only
-  // shows skeletons or a "No news yet" shell which AdSense flags as thin
-  // content. Only flip to indexable once posts.length > 0.
-  const hasContent = !loading && !error && posts.length > 0;
-
   return (
     <>
       <MetaTags
@@ -32,7 +26,6 @@ const NewsPage = () => {
         keywords="data engineering news, data engineering trends, snowflake news, cloud data news, data platform updates, tech trends"
         type="website"
         breadcrumbs={breadcrumbs}
-        noindex={!hasContent}
       />
 
       <div className="pt-1 pb-8">

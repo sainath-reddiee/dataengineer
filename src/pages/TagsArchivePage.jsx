@@ -22,7 +22,6 @@ const TagsArchivePage = () => {
         description="Explore all tags on DataEngineer Hub. Find articles by topic including data engineering, cloud platforms, databases, and more."
         keywords="tags, topics, data engineering, cloud, databases, tutorials"
         type="website"
-        noindex={true}
       />
 
       <div className="pt-4 pb-12">

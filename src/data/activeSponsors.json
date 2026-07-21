@@ -51,7 +51,7 @@
     "placement": "resource_reference",
     "startDate": "2026-07-10",
     "endDate": "2026-12-31",
-    "active": true,
+    "active": false,
     "token": "sp_acmetest123",
     "notes": "Test Sponsor added specifically for verification",
     "targeting": {

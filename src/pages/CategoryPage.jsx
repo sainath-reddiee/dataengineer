@@ -10,7 +10,6 @@ import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import { generateBreadcrumbs } from '@/lib/seoConfig';
 import { getFAQSchema } from '@/lib/seoConfig';
-import { usePosts } from '@/hooks/useWordPress';
 
 // Lazy load AdPlacement
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
@@ -281,19 +280,6 @@ const CategoryPage = () => {
     name: categoryName.charAt(0).toUpperCase() + categoryName.slice(1),
     description: `Discover articles and tutorials about ${categoryName}.`
   };
-  const isKnownCategory = !!categoryConfig[lowerCategoryName];
-
-  // Fetch post count for this category so we can noindex empty ones.
-  // This prevents AdSense reviewers seeing thin/empty category pages.
-  const { totalPosts, loading: postsLoading } = usePosts({
-    page: 1,
-    per_page: 1,
-    categorySlug: lowerCategoryName,
-  });
-  // noindex if: unknown category OR (loading finished and no posts found)
-  const categoryIsEmpty = !postsLoading && totalPosts === 0;
-  const shouldNoIndex = !isKnownCategory || categoryIsEmpty;
-
   const sparkContainerVariants = {
     rest: {},
     hover: { transition: { staggerChildren: 0.04 } }
@@ -328,7 +314,6 @@ const CategoryPage = () => {
         type="website"
         breadcrumbs={breadcrumbs}
         faqSchema={faqSchema}
-        noindex={shouldNoIndex}
       />
 
       <div className="pt-1 pb-8">

@@ -71,16 +71,9 @@ const STATIC_PAGES = [
   { url: '/cheatsheets/category/bestpractices', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
 ];
 
-// Article slugs to exclude from sitemap (noindexed due to thin content <400 words)
-const EXCLUDED_ARTICLE_SLUGS = [
-  'snowpro-specialty-gen-ai-practice-exams', // <400 words, marked noindex by SSG
-];
+const EXCLUDED_ARTICLE_SLUGS = [];
 
-// Cheatsheet slugs to exclude from sitemap (noindexed due to thin content <250 words)
-const EXCLUDED_CHEATSHEET_SLUGS = [
-  'airflow-best-practices',    // <250 words, marked noindex by SSG
-  'snowflake-best-practices',  // <250 words, marked noindex by SSG
-];
+const EXCLUDED_CHEATSHEET_SLUGS = [];
 
 /** Decode HTML entities that WordPress REST API returns pre-encoded
  *  (e.g. &amp; for &, &#8217; for right single quote).
@@ -510,10 +503,6 @@ async function generateSitemap() {
       console.log(`   ⏭️  Excluded ${excludedCount} thin article(s) from sitemap`);
     }
 
-    // Category pages excluded from sitemap — no pre-rendered HTML exists,
-    // so Googlebot receives the SPA shell (soft 404 / thin content).
-    // Re-add once category pages are pre-rendered with unique content.
-    // Category pages — TEMPORARILY excluded for AdSense review to prevent crawling of aggregates
     console.log('📝 Adding category pages...');
     const CATEGORY_SLUGS = [
       'snowflake', 'databricks', 'aws', 'azure', 'gcp', 'salesforce',
@@ -528,25 +517,29 @@ async function generateSitemap() {
       });
     }
 
-    // Tag pages excluded from sitemap — all have noindex={true} in TagPage.jsx
-    // Including noindexed pages in sitemap sends contradictory signals to Google
-    console.log('⏭️  Skipping tag pages (all noindexed in React)...');
+    console.log('📝 Adding tag pages...');
+    tags.forEach(tag => {
+      if (!tag.slug || tag.count === 0) return;
+      sitemapEntries.push({
+        url: `${SITE_URL}/tag/${tag.slug}`,
+        lastmod: today,
+        changefreq: 'weekly',
+        priority: 0.55,
+      });
+    });
 
-    // pSEO pages (glossary + comparisons) — TEMPORARILY excluded from sitemap
-    // to improve editorial-to-programmatic content ratio for AdSense approval.
-    // Re-enable after AdSense approval by uncommenting the block below.
     console.log('\n📝 Adding pSEO pages (glossary + comparisons)...');
     const pseoEntries = loadPSEOData();
     pseoEntries.forEach(entry => {
       if (!entry.lastmod) entry.lastmod = today;
       sitemapEntries.push(entry);
     });
-    console.log(`   (${pseoEntries.length} pSEO pages excluded from sitemap)`);
+    console.log(`   Added ${pseoEntries.length} pSEO pages to sitemap`);
 
     console.log('📝 Adding cheatsheet pages...');
     const cheatsheetEntries = loadCheatsheetData();
     cheatsheetEntries.forEach(entry => sitemapEntries.push(entry));
-    console.log(`   (${cheatsheetEntries.length} cheatsheet pages excluded from sitemap)`);
+    console.log(`   Added ${cheatsheetEntries.length} cheatsheet pages to sitemap`);
 
     // Validate sitemap entries
     console.log('\n🔍 Validating sitemap...');

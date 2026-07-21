@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 const FeaturedPosts = React.lazy(() => import('../components/FeaturedPosts'));
 const TrendingPosts = React.lazy(() => import('../components/TrendingPosts'));
 const RecentPosts = React.lazy(() => import('../components/RecentPosts'));
+const NewsPosts = React.lazy(() => import('../components/NewsPosts'));
 const TechCategories = React.lazy(() => import('../components/TechCategories'));
 const Newsletter = React.lazy(() => import('../components/Newsletter'));
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
@@ -197,8 +198,18 @@ const HomePage = () => {
             </Suspense>
           </section>
 
-          {/* News is temporarily withheld during AdSense approval to avoid
-              exposing a thin/indexable fallback route before static generation. */}
+          <section>
+            <SectionHeader
+              icon={Zap}
+              title="News & Trends"
+              subtitle="Latest updates from the data stack"
+              actionText="View news"
+              actionLink="/news"
+            />
+            <Suspense fallback={<SectionSkeleton height="h-32" />}>
+              <NewsPosts />
+            </Suspense>
+          </section>
 
           {/* 🛠 TECH CATEGORIES - Grid view */}
           <section>
@@ -214,8 +225,6 @@ const HomePage = () => {
             </Suspense>
           </section>
 
-          {/* 📋 CHEAT SHEETS - TEMPORARILY hidden for AdSense approval */}
-          {/*
           <section>
             <SectionHeader
               icon={BookOpen}
@@ -226,10 +235,7 @@ const HomePage = () => {
             />
             <CheatSheetCards />
           </section>
-          */}
 
-          {/* 🧰 TOOLS & INTERVIEW PREP - TEMPORARILY hidden for AdSense approval */}
-          {/*
           <section>
             <SectionHeader
               icon={Wrench}
@@ -277,7 +283,6 @@ const HomePage = () => {
               </Link>
             </div>
           </section>
-          */}
 
           {/* 📚 RECENT POSTS - Compact list */}
           <section>

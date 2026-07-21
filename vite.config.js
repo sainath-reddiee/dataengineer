@@ -61,8 +61,8 @@ export default defineConfig({
       }
     },
 
-    // Pre-render essential static pages so AdSense/Mediapartners-Google crawler
-    // sees real content without needing to execute JavaScript.
+    // Pre-render public hub/static pages so crawlers see real content without
+    // needing to execute JavaScript.
     vitePrerender({
       staticDir: path.join(__dirname, 'dist'),
       routes: [
@@ -74,15 +74,14 @@ export default defineConfig({
         '/disclaimer',
         '/contribute',
         '/newsletter',
-        // pSEO routes TEMPORARILY excluded for AdSense approval:
-        // '/news',
+        '/news',
         '/articles',
-        // '/glossary',
-        // '/compare',
-        // '/cheatsheets',
-        // '/tools',
-        // '/interview-prep',
-        // '/practice',
+        '/glossary',
+        '/compare',
+        '/cheatsheets',
+        '/tools',
+        '/interview-prep',
+        '/practice',
         '/certification',
       ],
       renderer: new PuppeteerRenderer({

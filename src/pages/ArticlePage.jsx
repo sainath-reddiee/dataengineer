@@ -692,17 +692,6 @@ const ArticlePage = () => {
     image: post.image || 'https://images.unsplash.com/photo-1595872018818-97555653a011?w=800&h=600&fit=crop'
   };
 
-  // Thin-article gate: noindex articles that look thin to AdSense.
-  // Combine the readTime heuristic with an explicit word-count check so we
-  // catch low-content posts even when readTime is inflated by long titles.
-  const articleWordCount = (() => {
-    const raw = (safePost.content || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-    return raw ? raw.split(' ').length : 0;
-  })();
-  const isThinArticle =
-    (parseInt(safePost.readTime) || 1) <= 2 ||
-    articleWordCount < 300;
-
   // Dynamic author display helpers
   const isOwner = ['sainath reddy', 'sainath'].includes((safePost.author || '').toLowerCase().trim());
   const authorDisplayName = isOwner ? 'Sainath Reddy' : (safePost.author || 'Unknown Author');
@@ -775,7 +764,6 @@ const ArticlePage = () => {
           breadcrumbs={breadcrumbs}
           howToSchema={howToSchema}
           videoSchema={videoSchema}
-          noindex={isThinArticle}
         />
 
       <div className="container mx-auto px-6 max-w-7xl">
@@ -867,11 +855,9 @@ const ArticlePage = () => {
             </motion.div>
           )}
 
-          {!isThinArticle && (
-            <Suspense fallback={<div className="h-32" />}>
-              <AdPlacement />
-            </Suspense>
-          )}
+          <Suspense fallback={<div className="h-32" />}>
+            <AdPlacement />
+          </Suspense>
 
           {/* Reactions Bar — engagement signal for Google Discover */}
           <div className="my-8 flex flex-wrap items-center gap-3">
@@ -897,8 +883,7 @@ const ArticlePage = () => {
             })}
           </div>
 
-          {/* Contextual Tool Widget — TEMPORARILY hidden for AdSense approval */}
-          {/* <InlineToolWidget post={safePost} /> */}
+          <InlineToolWidget post={safePost} />
 
           {/* Rich Author Bio Card */}
           <AuthorBioCard author={safePost.authorData} />
@@ -908,8 +893,7 @@ const ArticlePage = () => {
 
         <EmailDigestBanner />
 
-        {/* RelatedTools TEMPORARILY hidden for AdSense approval */}
-        {/* <RelatedTools post={safePost} /> */}
+        <RelatedTools post={safePost} />
 
         <RecommendedCourses post={safePost} />
 

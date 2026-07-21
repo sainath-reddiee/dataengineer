@@ -3,6 +3,10 @@ import { trackEvent } from '@/utils/analytics';
 import activeSponsors from '@/data/activeSponsors.json';
 import { ExternalLink, BookOpen, Layers, ArrowRight } from 'lucide-react';
 
+function getSponsorContext(category, slug) {
+  return category || slug || 'run-of-site';
+}
+
 export default function SponsorPlacement({ category, tags = [], slug, className = '' }) {
   const [logoError, setLogoError] = useState(false);
 
@@ -56,13 +60,27 @@ export default function SponsorPlacement({ category, tags = [], slug, className 
     setLogoError(false);
   }, [sponsor?.token]);
 
+  // Client-side impression tracking via GA4 (no backend required).
+  // No-ops until cookie consent is accepted (trackEvent checks window.gtag).
+  useEffect(() => {
+    if (!sponsor) return;
+    trackEvent({
+      action: 'sponsor_impression',
+      category: 'sponsorship',
+      label: `${sponsor.company} - ${getSponsorContext(category, slug)}`
+    });
+  }, [category, slug, sponsor, tagsKey]);
+
   if (!sponsor) return null;
+
+  const sponsorContext = getSponsorContext(category, slug);
+  const sponsorHref = sponsor.url;
 
   const handleSponsorClick = () => {
     trackEvent({
       action: 'sponsor_link_clicked',
       category: 'sponsorship',
-      label: `${sponsor.company} - ${category || slug || 'run-of-site'}`
+      label: `${sponsor.company} - ${sponsorContext}`
     });
   };
 
@@ -86,7 +104,7 @@ export default function SponsorPlacement({ category, tags = [], slug, className 
           </div>
         </div>
         <a
-          href={sponsor.url}
+          href={sponsorHref}
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleSponsorClick}
@@ -127,7 +145,7 @@ export default function SponsorPlacement({ category, tags = [], slug, className 
           </div>
         </div>
         <a
-          href={sponsor.url}
+          href={sponsorHref}
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleSponsorClick}
@@ -156,7 +174,7 @@ export default function SponsorPlacement({ category, tags = [], slug, className 
         </div>
       </div>
       <a
-        href={sponsor.url}
+        href={sponsorHref}
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleSponsorClick}

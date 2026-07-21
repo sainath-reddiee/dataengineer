@@ -181,17 +181,13 @@ function injectInternalLinksSSG(htmlContent, excludeSlug = '') {
       if (matched) {
         result = parts.join('');
         linkedKeywords.add(keyword.toLowerCase());
-        break; // Only one keyword per article to avoid over-optimization
+        break;
       }
     }
   }
 
   return result;
 }
-
-// ============================================================================
-// ðŸ›¡ï¸ XSS PREVENTION HELPERS
-// ============================================================================
 
 /** Escape a string for safe embedding inside HTML content and attributes. */
 function escapeHtml(str) {
@@ -308,26 +304,6 @@ function smartTitle(title) {
 }
 
 /**
- * Strip pSEO links pointing to missing/purged directories in review mode.
- * Replaces <a href="/tools/...">Text</a> with just Text.
- */
-function stripPseoLinks(htmlContent) {
-  if (!ADSENSE_REVIEW_MODE) return htmlContent;
-  if (!htmlContent || typeof htmlContent !== 'string') return htmlContent;
-  
-  const anchorRegex = /<a\s+[^>]*href=["']([^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
-  
-  return htmlContent.replace(anchorRegex, (match, href, text) => {
-    const cleanHref = href.trim().replace(/^https?:\/\/(?:app\.)?dataengineerhub\.blog/, '');
-    const isPseoLink = PSEO_DIST_DIRS.some(dir => cleanHref.startsWith('/' + dir));
-    if (isPseoLink) {
-      return text;
-    }
-    return match;
-  });
-}
-
-/**
  * Normalize legacy database permalinks pointing to /slug to correctly resolve to /articles/slug.
  */
 function normalizeArticleLinks(htmlContent, postSlugs) {
@@ -424,17 +400,11 @@ function normalizeHeadings(html) {
   }
   return html;
 }
+// ============================================================================
+// ESSENTIAL PAGES - Static content for SEO/crawlers
+// ============================================================================
+
 const CACHE_FILE = path.join(__dirname, '..', '.build-cache.json');
-// ⛔ ADSENSE REVIEW MODE — when true, all pSEO output (glossary, compare,
-// cheatsheets, tools, interview-prep, practice) is deleted from dist/ after
-// the build so no low-value templated HTML is ever deployed.
-// Flip to false after AdSense approval.
-const ADSENSE_REVIEW_MODE = false;
-const PSEO_DIST_DIRS = ['glossary', 'compare', 'cheatsheets', 'tools', 'interview-prep', 'practice', 'news'];
-// ============================================================================
-// ESSENTIAL PAGES - Static content for AdSense/SEO crawlers
-// These pages currently serve the same SPA fallback HTML, causing "low value content"
-// ============================================================================
 
 const ESSENTIAL_PAGES = [
   {
@@ -2449,7 +2419,6 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   // 🔗 Inject internal links so crawlers see cross-article links in static HTML
   processedContent = injectInternalLinksSSG(processedContent, slug);
   processedContent = normalizeArticleLinks(processedContent, globalPostSlugs);
-  processedContent = stripPseoLinks(processedContent);
 
   // ðŸ“‘ Extract headings for Table of Contents and inject anchor IDs
   const tocHeadings = [];
@@ -2504,9 +2473,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   // ðŸ“Š Thin content detection for articles
   const articlePlainText = stripHTML(processedContent || '');
   const articleWordCount = articlePlainText.split(/\s+/).filter(w => w.length > 0).length;
-  const articleRobotsDirective = articleWordCount < 400
-    ? 'noindex, follow'
-    : 'index, follow, max-snippet:-1, max-image-preview:large';
+  const articleRobotsDirective = 'index, follow, max-snippet:-1, max-image-preview:large';
 
   // ðŸ“– Reading time + formatted publish date for visible byline
   const readingTime = Math.max(1, Math.ceil(articleWordCount / 250));
@@ -2627,8 +2594,8 @@ ${categoryNames.length > 0 ? `    <meta property="article:section" content="${es
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
     <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">
 ${CONSENT_MODE_V2_HTML}
-    ${articleRobotsDirective.startsWith('noindex') ? '<!-- AdSense loader omitted on noindex article -->' : `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}"
-            crossorigin="anonymous"></script>`}
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}"
+      crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png">
     <link rel="manifest" href="/manifest.json">
@@ -3065,7 +3032,7 @@ ${CONSENT_MODE_V2_HTML}
 
           ${tocHtml}
 
-          ${slug === 'snowflake-cost-optimization-techniques-2026' && !ADSENSE_REVIEW_MODE ? `
+          ${slug === 'snowflake-cost-optimization-techniques-2026' ? `
           <!-- Contextual CTA: drive readers to the interactive cost calculator -->
           <aside class="calculator-promo" style="background:linear-gradient(90deg,#1e3a8a 0%,#6b21a8 100%);border-radius:12px;padding:1.1rem 1.4rem;margin:0 0 1.75rem 0;box-shadow:0 4px 14px rgba(107,33,168,0.25);">
             <a href="/tools/snowflake-cost-calculator" style="color:#ffffff;text-decoration:none;font-weight:600;font-size:1rem;display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
@@ -3074,7 +3041,7 @@ ${CONSENT_MODE_V2_HTML}
             </a>
           </aside>` : ''}
 
-          ${(categoryNames || []).some(c => String(c).toLowerCase() === 'snowflake') && !ADSENSE_REVIEW_MODE ? `
+          ${(categoryNames || []).some(c => String(c).toLowerCase() === 'snowflake') ? `
           <!-- Related Tools aside: every Snowflake article gets 4 tool links for internal linking + user discovery -->
           <aside class="related-tools" style="background:#0f172a;border:1px solid rgba(96,165,250,0.25);border-radius:12px;padding:1.1rem 1.4rem;margin:0 0 1.75rem 0;">
             <h3 style="color:#93c5fd;font-size:1rem;margin:0 0 0.6rem;font-weight:600;">Free Snowflake Tools</h3>
@@ -3642,8 +3609,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <title>' + safeName + ' - Data Engineering Articles</title>\n';
   html += '    <meta name="description" content="' + descriptionMeta + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  // Under AdSense approval review, we noindex all category pages to prevent thin aggregation issues
-  var catRobots = 'noindex, follow';
+  var catRobots = 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
   html += '    <meta name="robots" content="' + catRobots + '" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
@@ -3661,12 +3627,8 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
   html += CONSENT_MODE_V2_HTML + '\n';
-  if (catRobots.indexOf('noindex') === -1) {
-    html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
-    html += '            crossorigin="anonymous"></script>\n';
-  } else {
-    html += '    <!-- AdSense loader omitted on noindex category -->\n';
-  };
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -3932,7 +3894,7 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '    <title>Data Engineering Glossary | ' + totalTerms + ' Key Terms Explained</title>\n';
   html += '    <meta name="description" content="Comprehensive data engineering glossary with ' + totalTerms + ' key terms explained. Learn about ETL, data warehousing, streaming, orchestration, cloud platforms, and more." />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog/glossary" />\n';
-  html += '    <meta name="robots" content="noindex, follow" />\n';
+  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n';
   html += '\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
@@ -3952,7 +3914,8 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
   html += CONSENT_MODE_V2_HTML + '\n';
-  html += '    <!-- AdSense loader omitted on noindex glossary hub -->\n';;
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -4213,14 +4176,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   // Convert fullDefinition markdown to HTML
   var fullDefHTML = markdownToHTML(term.fullDefinition || '');
 
-  // Determine if content is thin (< 250 words) — noindex thin pages
-  // AdSense-approval hardening: force noindex on all glossary term pages (pSEO)
-  var defWordCount = (term.fullDefinition || '').split(/\s+/).length;
-  var robotsDirective = 'noindex, follow';
-  // Original gate (kept for easy revert):
-  // var robotsDirective = defWordCount < 250
-  //   ? 'noindex, follow'
-  //   : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+  var robotsDirective = 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
 
   // Category display name
   var categoryDisplay = (term.category || '').replace(/-/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
@@ -4251,7 +4207,8 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
   html += CONSENT_MODE_V2_HTML + '\n';
-  html += '    <!-- AdSense loader omitted on noindex glossary page -->\n';;
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -4529,7 +4486,7 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '    <title>Data Engineering Tool Comparisons | ' + totalComparisons + ' Head-to-Head Guides</title>\n';
   html += '    <meta name="description" content="Compare ' + totalComparisons + ' popular data engineering tools side by side. Detailed feature comparisons for data warehousing, streaming, orchestration, analytics, and more." />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog/compare" />\n';
-  html += '    <meta name="robots" content="noindex, follow" />\n';
+  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n';
   html += '\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
@@ -4549,7 +4506,8 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
   html += CONSENT_MODE_V2_HTML + '\n';
-  html += '    <!-- AdSense loader omitted on noindex compare hub -->\n';;
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -4861,8 +4819,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <title>' + escapeHtml(comparison.toolA) + ' vs ' + escapeHtml(comparison.toolB) + ' | Data Engineering Tools Comparison</title>\n';
   html += '    <meta name="description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  // AdSense-approval hardening: force noindex on comparison detail pages (pSEO)
-  html += '    <meta name="robots" content="noindex, follow" />\n\n';
+  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="article" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
@@ -4879,7 +4836,8 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
   html += CONSENT_MODE_V2_HTML + '\n';
-  html += '    <!-- AdSense loader omitted on noindex comparison page -->\n';;
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -5107,7 +5065,7 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '    <title>Data Engineering Cheat Sheets | ' + totalSheets + ' Quick References</title>\n';
   html += '    <meta name="description" content="' + totalSheets + ' data engineering cheat sheets covering Snowflake SQL, dbt, Airflow, window functions, interview prep, and best practices. Quick reference guides for data engineers." />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog/cheatsheets" />\n';
-  html += '    <meta name="robots" content="noindex, follow" />\n\n';
+  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog/cheatsheets" />\n';
@@ -5124,7 +5082,8 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
   html += CONSENT_MODE_V2_HTML + '\n';
-  html += '    <!-- AdSense loader omitted on noindex cheatsheet hub -->\n';;
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -5284,12 +5243,7 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
     }
   }
 
-  // AdSense-approval hardening: force noindex on all cheatsheet pages (pSEO)
-  var robotsDirective = 'noindex, follow';
-  // Original gate (kept for easy revert):
-  // var robotsDirective = totalWords < 250
-  //   ? 'noindex, follow'
-  //   : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+  var robotsDirective = 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
 
   var descMeta = escapeHtml(sheet.shortDescription || ('Comprehensive ' + sheet.title + ' for data engineers.'));
 
@@ -5404,7 +5358,8 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
   html += CONSENT_MODE_V2_HTML + '\n';
-  html += '    <!-- AdSense loader omitted on noindex cheatsheet page -->\n';;
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -5562,7 +5517,7 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '    <title>' + escapeHtml(tag.name) + ' - Tagged Articles</title>\n';
   html += '    <meta name="description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta name="robots" content="noindex, follow" />\n\n';
+  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
@@ -5579,7 +5534,8 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
   html += '    <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">\n';
   html += CONSENT_MODE_V2_HTML + '\n';
-  // AdSense loader intentionally omitted: tag pages are noindex.
+  html += '    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_PUBLISHER_ID + '"\n';
+  html += '            crossorigin="anonymous"></script>\n';
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
@@ -5674,7 +5630,7 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
 }
 
 // ============================================================================
-// ESSENTIAL PAGE HTML GENERATION - Unique content for AdSense approval
+// ESSENTIAL PAGE HTML GENERATION - Unique static content
 // ============================================================================
 
 function generateEssentialPageHTML(pageData, bundleFiles) {
@@ -5696,14 +5652,7 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
 
   const buildTimestamp = new Date().toISOString();
 
-  // PSEO / AI-assisted sections are held out of the index until further
-  // editorial work + AdSense approval. Match by path prefix so the static
-  // HTML matches the React `<MetaTags noindex={true}>` we set per-page.
-  const PSEO_PREFIXES = ['/tools', '/cheatsheets', '/glossary', '/compare', '/practice', '/interview-prep', '/newsletter', '/tag', '/category', '/contribute', '/certification', '/news'];
-  const isPSEO = PSEO_PREFIXES.some((p) => pagePath === p || pagePath.startsWith(p + '/'));
-  const pageRobots = isPSEO
-    ? 'noindex, follow'
-    : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+  const pageRobots = 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
 
   return `<!doctype html>
 <html lang="en">
@@ -5732,8 +5681,8 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
     <link rel="dns-prefetch" href="//googleads.g.doubleclick.net">
 ${CONSENT_MODE_V2_HTML}
-    ${isPSEO ? '<!-- AdSense loader omitted on noindex pSEO page -->' : `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}"
-            crossorigin="anonymous"></script>`}
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}"
+          crossorigin="anonymous"></script>
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png">
     <link rel="manifest" href="/manifest.json">
@@ -6348,7 +6297,7 @@ async function buildIncremental(options = {}) {
   }
 
   // ============================================================================
-  // PROCESS ESSENTIAL PAGES - Always runs (critical for AdSense approval)
+  // PROCESS ESSENTIAL PAGES - Always runs for static SEO coverage
   // ============================================================================
 
   console.log('\nðŸ“„ Processing essential pages (About, Contact, Privacy, Terms, Disclaimer)…');
@@ -7032,26 +6981,7 @@ Safety Features:
   process.exit(0);
 }
 
-// ⛔ ADSENSE REVIEW MODE: purge all pSEO output from dist/ after the build
-// so no templated low-value pages ever get deployed. Controlled by the
-// ADSENSE_REVIEW_MODE flag at the top of this file.
-function purgePseoDirs() {
-  if (!ADSENSE_REVIEW_MODE) return;
-  console.log('\n🧹 AdSense review mode: removing pSEO directories from dist/...');
-  const purgeDistDir = path.join(__dirname, '..', 'dist');
-  for (const dirName of PSEO_DIST_DIRS) {
-    const dirPath = path.join(purgeDistDir, dirName);
-    if (fs.existsSync(dirPath)) {
-      fs.rmSync(dirPath, { recursive: true, force: true });
-      console.log(`   🗑️  Removed dist/${dirName}/`);
-    }
-  }
-}
-
 buildIncremental(options)
-  .then(() => {
-    purgePseoDirs();
-  })
   .catch(error => {
     console.error('\n❌ Build failed:', error);
     console.error(error.stack);

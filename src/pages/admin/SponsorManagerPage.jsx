@@ -1,17 +1,38 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  Plus, Key, Copy, Check, Calendar, Globe, ArrowLeft, 
+  Plus, Key, Copy, Check, Globe, ArrowLeft, 
   Trash2, RefreshCw, Code, CheckCircle, AlertTriangle, ShieldCheck, Settings
 } from 'lucide-react';
 import activeSponsorsData from '@/data/activeSponsors.json';
+
+const ALLOWED_PLACEMENTS = new Set(['directory', 'resource_reference', 'content']);
 
 export default function SponsorManagerPage() {
   const initialSponsors = Array.isArray(activeSponsorsData) ? activeSponsorsData : (activeSponsorsData?.default || []);
   const [sponsors, setSponsors] = useState(initialSponsors);
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [jsonCopied, setJsonCopied] = useState(false);
+  const [serverSource, setServerSource] = useState('bundled JSON');
+  const [showSettings, setShowSettings] = useState(false);
+  const [syncStatus, setSyncStatus] = useState('');
+  const [syncErrorMessage, setSyncErrorMessage] = useState('');
+
+  // GitHub PAT config — kept in sessionStorage only (cleared when the tab/browser
+  // closes), never localStorage. This site has no server backend (static FTP
+  // host), so production writes commit directly to GitHub's Contents API from
+  // the browser using this token. Use a fine-grained PAT scoped to this repo only.
+  const [githubConfig, setGithubConfig] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('sponsors_github_config');
+      return saved ? JSON.parse(saved) : { token: '', owner: 'sainath-reddiee', repo: 'dataengineer', branch: 'main' };
+    } catch {
+      return { token: '', owner: 'sainath-reddiee', repo: 'dataengineer', branch: 'main' };
+    }
+  });
+  const [testResult, setTestResult] = useState(null);
+  const [testing, setTesting] = useState(false);
 
   // New Sponsor Form State
   const [company, setCompany] = useState('');
@@ -31,22 +52,11 @@ export default function SponsorManagerPage() {
   const [targetTags, setTargetTags] = useState('');
   const [targetSlugs, setTargetSlugs] = useState('');
 
-  // GitHub Sync State
-  const [githubConfig, setGithubConfig] = useState(() => {
-    try {
-      const saved = localStorage.getItem('sponsors_github_config');
-      return saved ? JSON.parse(saved) : { token: '', owner: 'sainath-reddiee', repo: 'dataengineer', branch: 'main' };
-    } catch {
-      return { token: '', owner: 'sainath-reddiee', repo: 'dataengineer', branch: 'main' };
-    }
-  });
-  const [showSettings, setShowSettings] = useState(false);
-
-  // Helper to get sanitized token and auth header
+  // Helper to strip stray "Bearer "/"token " prefixes if a user pastes them accidentally
   const getCleanToken = (rawToken) => (rawToken || '').trim().replace(/^(Bearer|token)\s+/i, '');
 
-  const fetchWithGithubAuth = async (url, token, options = {}) => {
-    const cleanToken = getCleanToken(token);
+  const fetchWithGithubAuth = async (url, ghToken, options = {}) => {
+    const cleanToken = getCleanToken(ghToken);
     const headers = {
       'Accept': 'application/vnd.github.v3+json',
       'Content-Type': 'application/json',
@@ -72,9 +82,6 @@ export default function SponsorManagerPage() {
     return res;
   };
 
-  const [testResult, setTestResult] = useState(null);
-  const [testing, setTesting] = useState(false);
-
   const handleTestConnection = async () => {
     setTesting(true);
     setTestResult(null);
@@ -89,11 +96,11 @@ export default function SponsorManagerPage() {
 
     try {
       const filePath = 'src/data/activeSponsors.json';
-      const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${branch || 'main'}`;
-      const res = await fetchWithGithubAuth(url, cleanToken);
+      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${branch || 'main'}`;
+      const res = await fetchWithGithubAuth(apiUrl, cleanToken);
 
       if (res.ok) {
-        setTestResult({ success: true, message: `✅ Connection verified! Repo '${owner}/${repo}' and branch '${branch || 'main'}' accessible with write access.` });
+        setTestResult({ success: true, message: `✅ Connection verified! Repo '${owner}/${repo}' and branch '${branch || 'main'}' accessible.` });
       } else {
         const data = await res.json().catch(() => ({}));
         let msg = `GitHub Error ${res.status}: ${data.message || res.statusText}`;
@@ -119,124 +126,123 @@ export default function SponsorManagerPage() {
       branch: (githubConfig.branch || 'main').trim()
     };
     setGithubConfig(cleanedConfig);
-    localStorage.setItem('sponsors_github_config', JSON.stringify(cleanedConfig));
+    sessionStorage.setItem('sponsors_github_config', JSON.stringify(cleanedConfig));
     setShowSettings(false);
     setSyncStatus('');
     setSyncErrorMessage('');
-    alert('GitHub PAT config saved locally to your browser!');
+    alert('GitHub PAT saved for this browser session only (cleared when you close the tab).');
+  };
+
+  const saveViaLocalDevApi = async (updatedSponsors) => {
+    const response = await fetch('/api/save-sponsors', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedSponsors),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || 'Local API save failed. Check dev server.');
+    }
   };
 
   const saveSponsorsToServer = async (updatedSponsors) => {
     setSyncStatus('syncing');
     setSyncErrorMessage('');
-    
+
     if (import.meta.env.DEV) {
-      // Local dev mode: use Vite API
+      // Local dev: use the Vite plugin that writes directly to the JSON file on disk.
       try {
-        const res = await fetch('/api/save-sponsors', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedSponsors),
-        });
-        const data = await res.json();
-        if (data && data.success) {
-          setSyncStatus('success');
-          setTimeout(() => setSyncStatus(''), 3000);
-        } else {
-          setSyncStatus('error');
-          setSyncErrorMessage('Local API save failed. Check dev server.');
-          setTimeout(() => setSyncStatus(''), 7000);
-        }
+        await saveViaLocalDevApi(updatedSponsors);
+        setSponsors(updatedSponsors);
+        setServerSource('local Vite JSON');
+        setSyncStatus('success');
+        setTimeout(() => setSyncStatus(''), 4000);
+        return true;
       } catch (err) {
-        console.error(err);
         setSyncStatus('error');
-        setSyncErrorMessage('Failed to connect to local API route.');
+        setSyncErrorMessage(err.message || 'Local API save failed. Check dev server.');
         setTimeout(() => setSyncStatus(''), 7000);
+        return false;
       }
-    } else {
-      // Production mode: sync via GitHub API
-      const cleanToken = getCleanToken(githubConfig.token);
-      const owner = (githubConfig.owner || 'sainath-reddiee').trim();
-      const repo = (githubConfig.repo || 'dataengineer').trim();
-      const branch = (githubConfig.branch || 'main').trim();
+    }
 
-      if (!cleanToken || !owner || !repo) {
-        setSyncStatus('error');
-        setSyncErrorMessage('GitHub PAT Token missing. Click "Setup PAT Token" to configure.');
-        setShowSettings(true);
-        setTimeout(() => setSyncStatus(''), 10000);
-        return;
+    // Production: this site is static (FTP-deployed, no server backend), so
+    // sponsor writes commit directly to GitHub's Contents API using the
+    // session-scoped PAT configured above.
+    const cleanToken = getCleanToken(githubConfig.token);
+    const owner = (githubConfig.owner || 'sainath-reddiee').trim();
+    const repo = (githubConfig.repo || 'dataengineer').trim();
+    const branch = (githubConfig.branch || 'main').trim();
+
+    if (!cleanToken || !owner || !repo) {
+      setSyncStatus('error');
+      setSyncErrorMessage('GitHub PAT Token missing. Click "Setup PAT Token" to configure.');
+      setShowSettings(true);
+      setTimeout(() => setSyncStatus(''), 10000);
+      return false;
+    }
+
+    try {
+      const filePath = 'src/data/activeSponsors.json';
+      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+
+      // 1. Get current SHA (required for GitHub PUT to update an existing file)
+      const getRes = await fetchWithGithubAuth(`${apiUrl}?ref=${branch}`, cleanToken);
+
+      let sha = '';
+      if (getRes.ok) {
+        const getData = await getRes.json();
+        sha = getData.sha;
+      } else {
+        const errData = await getRes.json().catch(() => ({}));
+        let detail = errData.message || getRes.statusText;
+        if (getRes.status === 401) detail = '401 Bad Credentials (PAT invalid or expired)';
+        if (getRes.status === 403) detail = '403 Forbidden (missing repo/contents scope)';
+        if (getRes.status === 404) detail = `404 Not Found (repo '${owner}/${repo}' or path inaccessible with this token)`;
+        throw new Error(`GitHub API Error: ${detail}`);
       }
 
+      // 2. Put updated content (UTF-8 safe base64 encoding)
+      const contentStr = JSON.stringify(updatedSponsors, null, 2);
+      let encodedContent;
       try {
-        const filePath = 'src/data/activeSponsors.json';
-        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
-        
-        // 1. Get current SHA
-        const getRes = await fetchWithGithubAuth(`${url}?ref=${branch}`, cleanToken);
-        
-        let sha = '';
-        if (getRes.ok) {
-          const getData = await getRes.json();
-          sha = getData.sha;
-        } else {
-          const errData = await getRes.json().catch(() => ({}));
-          console.error('GitHub Get SHA Error:', getRes.status, errData);
-          let detail = errData.message || getRes.statusText;
-          if (getRes.status === 401) detail = '401 Bad Credentials (PAT Invalid)';
-          if (getRes.status === 403) detail = '403 Forbidden (Missing repo/contents scope)';
-          if (getRes.status === 404) detail = `404 Not Found (Repo '${owner}/${repo}' or path inaccessible)`;
-          
-          setSyncStatus('error');
-          setSyncErrorMessage(`GitHub API Error: ${detail}`);
-          setShowSettings(true);
-          setTimeout(() => setSyncStatus(''), 10000);
-          return;
-        }
-
-        // 2. Put updated content
-        const contentStr = JSON.stringify(updatedSponsors, null, 2);
-        let encodedContent = '';
-        try {
-          encodedContent = btoa(encodeURIComponent(contentStr).replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode(parseInt(p1, 16))));
-        } catch {
-          encodedContent = btoa(contentStr);
-        }
-        
-        const putRes = await fetchWithGithubAuth(url, cleanToken, {
-          method: 'PUT',
-          body: JSON.stringify({
-            message: 'Automated Sponsor Sync update from Dashboard',
-            content: encodedContent,
-            sha: sha || undefined,
-            branch: branch
-          })
-        });
-
-        if (putRes.ok) {
-          setSyncStatus('github_success');
-          setTimeout(() => setSyncStatus(''), 6000);
-        } else {
-          const errData = await putRes.json().catch(() => ({}));
-          console.error('GitHub API Update Error:', putRes.status, errData);
-          let detail = errData.message || putRes.statusText;
-          if (putRes.status === 404) {
-            detail = `404 Not Found: Your PAT has read access but lacks WRITE permission for repo '${owner}/${repo}' on branch '${branch}'. Check token scopes on GitHub.`;
-          } else if (putRes.status === 403) {
-            detail = '403 Forbidden: Token lacks write permissions. Enable "Contents: Read & Write" on GitHub.';
-          }
-          
-          setSyncStatus('error');
-          setSyncErrorMessage(`GitHub Update Failed: ${detail}`);
-          setShowSettings(true);
-          setTimeout(() => setSyncStatus(''), 12000);
-        }
-      } catch (err) {
-        console.error('Network error during GitHub sync:', err);
-        setSyncStatus('error');
-        setSyncErrorMessage(`Network error during GitHub sync: ${err.message}`);
-        setTimeout(() => setSyncStatus(''), 10000);
+        encodedContent = btoa(encodeURIComponent(contentStr).replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode(parseInt(p1, 16))));
+      } catch {
+        encodedContent = btoa(contentStr);
       }
+
+      const putRes = await fetchWithGithubAuth(apiUrl, cleanToken, {
+        method: 'PUT',
+        body: JSON.stringify({
+          message: 'Sponsor sync update from Dashboard',
+          content: encodedContent,
+          sha: sha || undefined,
+          branch
+        })
+      });
+
+      if (!putRes.ok) {
+        const errData = await putRes.json().catch(() => ({}));
+        let detail = errData.message || putRes.statusText;
+        if (putRes.status === 404) {
+          detail = `404 Not Found: Your PAT has read access but lacks WRITE permission for repo '${owner}/${repo}' on branch '${branch}'. Check token scopes on GitHub.`;
+        } else if (putRes.status === 403) {
+          detail = '403 Forbidden: Token lacks write permissions. Enable "Contents: Read & write" on GitHub.';
+        }
+        throw new Error(`GitHub Update Failed: ${detail}`);
+      }
+
+      setSponsors(updatedSponsors);
+      setServerSource('GitHub API');
+      setSyncStatus('github_success');
+      setTimeout(() => setSyncStatus(''), 6000);
+      return true;
+    } catch (err) {
+      setSyncStatus('error');
+      setSyncErrorMessage(err.message || 'GitHub sync failed.');
+      setShowSettings(true);
+      setTimeout(() => setSyncStatus(''), 12000);
+      return false;
     }
   };
 
@@ -248,9 +254,38 @@ export default function SponsorManagerPage() {
     setToken(`sp_${randomHex}`);
   };
 
-  const handleAddSponsor = (e) => {
+  const handleAddSponsor = async (e) => {
     e.preventDefault();
     if (!company || !url || !token) return;
+
+    const trimmedCompany = company.trim();
+    const trimmedUrl = url.trim();
+    const trimmedToken = token.trim();
+
+    if (!trimmedCompany || !trimmedUrl || !trimmedToken) {
+      alert('Company, URL, and token are required.');
+      return;
+    }
+
+    if (!ALLOWED_PLACEMENTS.has(placement)) {
+      alert('Unsupported sponsor placement selected.');
+      return;
+    }
+
+    try {
+      const parsedUrl = new URL(trimmedUrl);
+      if (!/^https?:$/.test(parsedUrl.protocol)) {
+        throw new Error('Unsupported protocol');
+      }
+    } catch {
+      alert('Please enter a valid sponsor URL starting with http:// or https://.');
+      return;
+    }
+
+    if (sponsors.some((s) => s.token === trimmedToken)) {
+      alert('This sponsor token already exists. Generate a new token before saving.');
+      return;
+    }
     
     // Ensure start date is not after end date
     if (new Date(startDate) > new Date(endDate)) {
@@ -264,14 +299,14 @@ export default function SponsorManagerPage() {
     const slgs = parseCommaList(targetSlugs);
 
     const newSponsor = {
-      company,
-      logo: `/assets/sponsors/${company.toLowerCase().replace(/[^a-z0-9]/g, '')}.svg`,
-      url,
+      company: trimmedCompany,
+      logo: `/assets/sponsors/${trimmedCompany.toLowerCase().replace(/[^a-z0-9]/g, '')}.svg`,
+      url: trimmedUrl,
       placement,
       startDate,
       endDate,
       active: true,
-      token,
+      token: trimmedToken,
       notes: notes || `${placement.replace('_', ' ')} sponsorship`
     };
 
@@ -283,8 +318,8 @@ export default function SponsorManagerPage() {
     }
 
     const updated = [...sponsors, newSponsor];
-    setSponsors(updated);
-    saveSponsorsToServer(updated);
+    const saved = await saveSponsorsToServer(updated);
+    if (!saved) return;
 
     // Reset Form
     setCompany('');
@@ -296,10 +331,9 @@ export default function SponsorManagerPage() {
     setTargetSlugs('');
   };
 
-  const handleDeleteSponsor = (indexToDelete) => {
+  const handleDeleteSponsor = async (indexToDelete) => {
     const updated = sponsors.filter((_, idx) => idx !== indexToDelete);
-    setSponsors(updated);
-    saveSponsorsToServer(updated);
+    await saveSponsorsToServer(updated);
   };
 
   const copyClientDashboardLink = (sponsorToken, idx) => {
@@ -332,10 +366,10 @@ export default function SponsorManagerPage() {
               onClick={() => setShowSettings(!showSettings)}
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-gray-300 text-xs font-semibold hover:bg-slate-700 transition"
             >
-              <Settings className="h-3.5 w-3.5" /> Automate GitHub Sync
+              <Settings className="h-3.5 w-3.5" /> Setup PAT Token
             </button>
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">
-              <ShieldCheck className="h-3.5 w-3.5" /> Authorization Verified
+              <ShieldCheck className="h-3.5 w-3.5" /> Source: {serverSource}
             </div>
           </div>
         </div>
@@ -346,7 +380,7 @@ export default function SponsorManagerPage() {
             <Key className="h-8 w-8 text-blue-400" /> Sponsor Campaign Manager
           </h1>
           <p className="text-sm text-gray-400 mt-2">
-            Create new sponsor instances, generate secure access tokens, and export local configuration files.
+            Create sponsor instances, generate access tokens, and sync the JSON source of truth via GitHub.
           </p>
         </div>
 
@@ -359,12 +393,12 @@ export default function SponsorManagerPage() {
           >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <Globe className="h-5 w-5 text-purple-400" /> Production Auto-Sync Configuration
+                <Globe className="h-5 w-5 text-purple-400" /> Production GitHub Sync Configuration
               </h2>
               <button onClick={() => setShowSettings(false)} className="text-gray-400 hover:text-white">&times;</button>
             </div>
-            <p className="text-sm text-gray-300 mb-6">
-              In production, the dashboard cannot save files to the static server directly. Enter your GitHub details to automatically commit sponsor changes and trigger a Vercel/Netlify redeploy. This data is saved securely in your local browser storage.
+            <p className="text-sm text-gray-300 mb-4">
+              This site is static (deployed via FTP) and has no server backend. Sponsor writes commit directly to GitHub's Contents API from your browser. The token below is kept in <span className="font-mono text-purple-200">sessionStorage</span> only — it is cleared when you close this tab and is <span className="font-semibold text-white">never</span> saved to disk. Use a fine-grained PAT scoped only to this repository with &quot;Contents: Read and write&quot; permission.
             </p>
             <form onSubmit={saveGithubConfig} className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
@@ -373,8 +407,9 @@ export default function SponsorManagerPage() {
                   type="password" 
                   value={githubConfig.token}
                   onChange={(e) => setGithubConfig({...githubConfig, token: e.target.value})}
-                  placeholder="ghp_..."
+                  placeholder="github_pat_..."
                   className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white"
+                  autoComplete="off"
                   required
                 />
               </div>
@@ -579,7 +614,7 @@ export default function SponsorManagerPage() {
             {/* Table of active campaigns */}
             <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-6 backdrop-blur-md">
               <h2 className="text-lg font-bold text-white mb-6">Active Placement Instances</h2>
-              
+
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm border-collapse">
                   <thead>
@@ -642,7 +677,7 @@ export default function SponsorManagerPage() {
                     <Code className="h-5 w-5 text-purple-400" /> JSON Configuration Sync
                   </h3>
                   <p className="text-xs text-gray-400 mt-1">
-                    Copy this block and overwrite `src/data/activeSponsors.json` to persist your active sponsorships.
+                    Manual fallback: copy this block and overwrite `src/data/activeSponsors.json` if server sync is unavailable.
                   </p>
                 </div>
                 <button
@@ -678,25 +713,24 @@ export default function SponsorManagerPage() {
       {syncStatus && (
         <div className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl border shadow-2xl flex items-center gap-3 backdrop-blur-xl transition-all ${
           syncStatus === 'syncing' ? 'bg-blue-950/90 border-blue-500/30 text-blue-300' :
-          (syncStatus === 'success' || syncStatus === 'github_success') ? 'bg-emerald-950/90 border-emerald-500/30 text-emerald-300' :
+          syncStatus === 'success' ? 'bg-emerald-950/90 border-emerald-500/30 text-emerald-300' :
           'bg-rose-950/90 border-rose-500/30 text-rose-300'
         }`}>
           {syncStatus === 'syncing' && <RefreshCw className="h-4 w-4 animate-spin shrink-0" />}
-          {(syncStatus === 'success' || syncStatus === 'github_success') && <CheckCircle className="h-4 w-4 shrink-0 text-emerald-400" />}
+          {syncStatus === 'success' && <CheckCircle className="h-4 w-4 shrink-0 text-emerald-400" />}
           {syncStatus === 'error' && <AlertTriangle className="h-4 w-4 shrink-0 text-rose-400" />}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
             <span className="text-xs font-bold tracking-wide">
-              {syncStatus === 'syncing' && 'Syncing database...'}
-              {syncStatus === 'success' && 'Database synced locally!'}
-              {syncStatus === 'github_success' && 'GitHub synced! Deployment triggered.'}
-              {syncStatus === 'error' && (syncErrorMessage || 'Sync failed. Setup GitHub config or copy JSON.')}
+              {syncStatus === 'syncing' && 'Syncing sponsor JSON...'}
+              {syncStatus === 'success' && 'Sponsor JSON synced successfully.'}
+              {syncStatus === 'error' && (syncErrorMessage || 'Sync failed. Check server JSON sync settings or copy JSON manually.')}
             </span>
             {syncStatus === 'error' && (
               <button
                 onClick={() => setShowSettings(true)}
                 className="bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-500/40 text-[11px] font-bold px-2.5 py-1 rounded-lg transition"
               >
-                Setup PAT Token
+                View Settings
               </button>
             )}
           </div>
