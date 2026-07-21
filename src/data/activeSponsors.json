@@ -6,7 +6,7 @@
     "placement": "directory",
     "startDate": "2026-07-17",
     "endDate": "2026-08-17",
-    "active": true,
+    "active": false,
     "token": "sp_snowflake123",
     "notes": "Ecosystem Showcase - Monthly option (Auto-expires on August 17th)",
     "targeting": {
@@ -21,7 +21,7 @@
     "placement": "directory",
     "startDate": "2026-07-17",
     "endDate": "2026-08-17",
-    "active": true,
+    "active": false,
     "token": "sp_8f3a9e1d2c",
     "notes": "Ecosystem Showcase - Monthly option (Auto-expires on August 17th)",
     "targeting": {
@@ -36,7 +36,7 @@
     "placement": "resource_reference",
     "startDate": "2026-07-17",
     "endDate": "2027-07-17",
-    "active": true,
+    "active": false,
     "token": "sp_4b7e2c9a6f",
     "notes": "Developer Resource Reference - Yearly option (Auto-expires next year)",
     "targeting": {
