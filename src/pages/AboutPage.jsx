@@ -17,10 +17,10 @@ const YOE = Math.max(5, new Date().getFullYear() - 2021);
 
 // ── Static data ───────────────────────────────────────────────
 const STATS = [
-  { icon: Briefcase,   value: `${YOE}+`,  label: 'Years Experience',    color: 'from-blue-500 to-purple-600' },
-  { icon: Database,    value: '15+',      label: 'Tools Mastered',      color: 'from-green-500 to-teal-500' },
-  { icon: Cloud,       value: '3',        label: 'Cloud Platforms',     color: 'from-orange-500 to-red-500' },
-  { icon: PenLine,     value: '20+',      label: 'Articles Published',  color: 'from-pink-500 to-rose-500' },
+  { icon: Briefcase, value: `${YOE}+`, label: 'Years Experience', color: 'from-blue-500 to-purple-600' },
+  { icon: Database, value: '15+', label: 'Tools Mastered', color: 'from-green-500 to-teal-500' },
+  { icon: Cloud, value: '3', label: 'Cloud Platforms', color: 'from-orange-500 to-red-500' },
+  { icon: PenLine, value: '20+', label: 'Articles Published', color: 'from-pink-500 to-rose-500' },
 ];
 
 const TIMELINE = [
@@ -41,7 +41,7 @@ const TIMELINE = [
   {
     year: 'Jun 2025 – Oct 2025',
     role: 'Senior Data Engineer',
-    company: 'Relanto (Client: The Hartford)',
+    company: 'Relanto',
     location: 'Hyderabad, India',
     color: 'from-teal-500 to-cyan-500',
     highlights: [
@@ -65,30 +65,30 @@ const TIMELINE = [
 ];
 
 const TECH_GROUPS = [
-  { icon: Cloud,    title: 'Cloud Platforms', tone: 'blue',   items: ['AWS', 'Azure', 'GCP'] },
-  { icon: Layers,   title: 'Data Warehouses', tone: 'purple', items: ['Snowflake', 'Databricks', 'BigQuery', 'Oracle'] },
-  { icon: Settings, title: 'ETL / ELT',       tone: 'teal',   items: ['Apache Airflow', 'dbt', 'Informatica', 'Autosys'] },
-  { icon: Cpu,      title: 'Languages & APIs',tone: 'cyan',   items: ['Python', 'SQL', 'Snowpark API', 'Kafka'] },
-  { icon: Sparkles, title: 'AI & Analytics',  tone: 'rose',   items: ['Snowflake Cortex (LLMs)', 'AI-Assisted DQ', 'Semantic Mapping'] },
-  { icon: ShieldCheck, title: 'Practices',    tone: 'green',  items: ['Data Governance', 'CI/CD', 'DataOps'] },
+  { icon: Cloud, title: 'Cloud Platforms', tone: 'blue', items: ['AWS', 'Azure', 'GCP'] },
+  { icon: Layers, title: 'Data Warehouses', tone: 'purple', items: ['Snowflake', 'Databricks', 'BigQuery', 'Oracle'] },
+  { icon: Settings, title: 'ETL / ELT', tone: 'teal', items: ['Apache Airflow', 'dbt', 'Informatica', 'Autosys'] },
+  { icon: Cpu, title: 'Languages & APIs', tone: 'cyan', items: ['Python', 'SQL', 'Snowpark API', 'Kafka'] },
+  { icon: Sparkles, title: 'AI & Analytics', tone: 'rose', items: ['Snowflake Cortex (LLMs)', 'AI-Assisted DQ', 'Semantic Mapping'] },
+  { icon: ShieldCheck, title: 'Practices', tone: 'green', items: ['Data Governance', 'CI/CD', 'DataOps'] },
 ];
 
 const TONE_CLASSES = {
-  blue:   { accent: 'text-blue-400',   chip: 'bg-blue-500/20 text-blue-300   border border-blue-500/20' },
+  blue: { accent: 'text-blue-400', chip: 'bg-blue-500/20 text-blue-300   border border-blue-500/20' },
   purple: { accent: 'text-purple-400', chip: 'bg-purple-500/20 text-purple-300 border border-purple-500/20' },
-  teal:   { accent: 'text-teal-400',   chip: 'bg-teal-500/20 text-teal-300   border border-teal-500/20' },
-  cyan:   { accent: 'text-cyan-400',   chip: 'bg-cyan-500/20 text-cyan-300   border border-cyan-500/20' },
-  rose:   { accent: 'text-rose-400',   chip: 'bg-rose-500/20 text-rose-300   border border-rose-500/20' },
-  green:  { accent: 'text-green-400',  chip: 'bg-green-500/20 text-green-300 border border-green-500/20' },
+  teal: { accent: 'text-teal-400', chip: 'bg-teal-500/20 text-teal-300   border border-teal-500/20' },
+  cyan: { accent: 'text-cyan-400', chip: 'bg-cyan-500/20 text-cyan-300   border border-cyan-500/20' },
+  rose: { accent: 'text-rose-400', chip: 'bg-rose-500/20 text-rose-300   border border-rose-500/20' },
+  green: { accent: 'text-green-400', chip: 'bg-green-500/20 text-green-300 border border-green-500/20' },
 };
 
 const SKILLS = [
-  { icon: Sparkles,    title: 'AI in DataOps',       desc: 'Snowflake Cortex for JSON analytics & LLM-driven executive summaries' },
-  { icon: Workflow,    title: 'Pipeline Automation', desc: 'ETL/ELT orchestration with Airflow, dbt, and Snowpark Python' },
+  { icon: Sparkles, title: 'AI in DataOps', desc: 'Snowflake Cortex for JSON analytics & LLM-driven executive summaries' },
+  { icon: Workflow, title: 'Pipeline Automation', desc: 'ETL/ELT orchestration with Airflow, dbt, and Snowpark Python' },
   { icon: ShieldCheck, title: 'Data Quality & Gov.', desc: 'End-to-end DQ pipelines, CDE-to-Rule mapping, and automated lineage' },
-  { icon: Gauge,       title: 'Advanced SQL',        desc: 'Dynamic SQL, LATERAL FLATTEN, RESULT_SCAN & performance tuning' },
-  { icon: Layers,      title: 'Data Architecture',   desc: 'Scalable cloud-native models across Snowflake & Oracle ecosystems' },
-  { icon: BarChart3,   title: 'Dashboard Scorecards',desc: 'Parameterized procedures for aggregated KPI and remediation reporting' },
+  { icon: Gauge, title: 'Advanced SQL', desc: 'Dynamic SQL, LATERAL FLATTEN, RESULT_SCAN & performance tuning' },
+  { icon: Layers, title: 'Data Architecture', desc: 'Scalable cloud-native models across Snowflake & Oracle ecosystems' },
+  { icon: BarChart3, title: 'Dashboard Scorecards', desc: 'Parameterized procedures for aggregated KPI and remediation reporting' },
 ];
 
 const WHAT_I_WRITE = [
@@ -101,9 +101,9 @@ const WHAT_I_WRITE = [
 ];
 
 const SOCIAL_LINKS = [
-  { icon: Linkedin, label: 'LinkedIn', href: SITE_CONFIG.social.linkedin,        color: 'hover:border-blue-500/60 hover:text-blue-300' },
-  { icon: Github,   label: 'GitHub',   href: SITE_CONFIG.social.github,          color: 'hover:border-gray-500/60 hover:text-gray-200' },
-  { icon: Mail,     label: 'Email',    href: 'mailto:sainath@dataengineerhub.blog', color: 'hover:border-pink-500/60 hover:text-pink-300' },
+  { icon: Linkedin, label: 'LinkedIn', href: SITE_CONFIG.social.linkedin, color: 'hover:border-blue-500/60 hover:text-blue-300' },
+  { icon: Github, label: 'GitHub', href: SITE_CONFIG.social.github, color: 'hover:border-gray-500/60 hover:text-gray-200' },
+  { icon: Mail, label: 'Email', href: 'mailto:sainath@dataengineerhub.blog', color: 'hover:border-pink-500/60 hover:text-pink-300' },
 ];
 
 const FAQS = [
@@ -167,9 +167,9 @@ const AboutPage = () => {
                   <div className="relative">
                     <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 blur-md opacity-60 scale-110" />
                     <div className="relative w-28 h-28 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center border-4 border-slate-900 shadow-2xl">
-                      <img 
-                        src="https://secure.gravatar.com/avatar/344a01fa4bf69414fd1de0aee6e1fce9d00a2400bdf76d73f895120142dbd47a?s=256&d=mm&r=g" 
-                        alt="Sainath Reddy" 
+                      <img
+                        src="https://secure.gravatar.com/avatar/344a01fa4bf69414fd1de0aee6e1fce9d00a2400bdf76d73f895120142dbd47a?s=256&d=mm&r=g"
+                        alt="Sainath Reddy"
                         className="w-full h-full object-cover rounded-full"
                       />
                     </div>
