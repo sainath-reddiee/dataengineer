@@ -62,5 +62,24 @@
         "sql-playground"
       ]
     }
+  },
+  {
+    "company": "Meghana",
+    "logo": "/assets/sponsors/meghana.svg",
+    "url": "https://bing.com",
+    "placement": "directory",
+    "startDate": "2026-07-21",
+    "endDate": "2026-08-21",
+    "active": true,
+    "token": "sp_80e5f81377",
+    "notes": "directory sponsorship",
+    "targeting": {
+      "categories": [
+        "snowflake"
+      ],
+      "tags": [
+        "ai"
+      ]
+    }
   }
 ]
