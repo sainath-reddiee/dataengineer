@@ -1,5 +1,5 @@
-// src/services/wordpressApi.js - FIXED READ TIME CALCULATION + GUEST AUTHOR SUPPORT
-const WORDPRESS_API_URL = 'https://app.dataengineerhub.blog';
+// src/services/wordpressApi.js - FIXED READ TIME CALCULATION + GUEST AUTHOR SUPPORT + CORS PROXY SUPPORT
+const WORDPRESS_API_URL = import.meta.env.DEV ? '' : 'https://app.dataengineerhub.blog';
 const WP_API_BASE = `${WORDPRESS_API_URL}/wp-json/wp/v2`;
 
 class WordPressAPI {

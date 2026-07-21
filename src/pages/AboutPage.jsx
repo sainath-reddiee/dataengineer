@@ -12,15 +12,66 @@ import {
 import MetaTags from '@/components/SEO/MetaTags';
 import { getPersonSchema, getBreadcrumbSchema, getFAQSchema, SITE_CONFIG } from '@/lib/seoConfig';
 import { Button } from '@/components/ui/button';
+import { useStats } from '@/hooks/useStats';
 
 const YOE = Math.max(5, new Date().getFullYear() - 2021);
 
 // ── Static data ───────────────────────────────────────────────
-const STATS = [
+const STATIC_STATS = [
   { icon: Briefcase, value: `${YOE}+`, label: 'Years Experience', color: 'from-blue-500 to-purple-600' },
   { icon: Database, value: '15+', label: 'Tools Mastered', color: 'from-green-500 to-teal-500' },
   { icon: Cloud, value: '3', label: 'Cloud Platforms', color: 'from-orange-500 to-red-500' },
-  { icon: PenLine, value: '20+', label: 'Articles Published', color: 'from-pink-500 to-rose-500' },
+];
+
+const FEATURED_PROJECTS = [
+  {
+    title: 'AI Data Canonical Modeler',
+    category: 'Snowflake Cortex AI',
+    desc: 'Autonomous LLM agent native to Snowflake Cortex that generates canonical data models, Silver layer dbt models, and column mappings automatically from raw landing schemas — reducing modeling time from days to minutes.',
+    badge: '60-70% Efficiency Boost',
+    tech: ['Snowflake Cortex', 'Python', 'dbt', 'Streamlit'],
+    color: 'from-blue-600 to-indigo-600'
+  },
+  {
+    title: 'AI dbt Code Generator',
+    category: 'Pipeline Automation',
+    desc: 'Transforms complex Source-to-Target Mapping (STTM) files directly into production-ready, modular dbt project structures, eliminating weeks of manual SQL development.',
+    badge: 'Weeks Saved',
+    tech: ['dbt', 'Python', 'Snowflake', 'STTM'],
+    color: 'from-orange-600 to-amber-600'
+  },
+  {
+    title: 'Data Model Validator Agent',
+    category: 'Data Governance & Standards',
+    desc: 'AI co-reviewer Streamlit application that inspects uploaded ERDs, orchestrates multi-agent evaluation against OSCRE industry compliance standards, profiles source data, and generates structured compliance checklists.',
+    badge: 'OSCRE Standard',
+    tech: ['Streamlit', 'Python', 'Multi-Agent', 'OSCRE'],
+    color: 'from-purple-600 to-pink-600'
+  },
+  {
+    title: 'Automated Data Quality Accelerator',
+    category: 'Data Quality & Lineage',
+    desc: 'End-to-end automation engine linking Collibra Critical Data Elements (CDEs) with SODA CL rule definitions via semantic Cortex LLM mapping with >60% accuracy.',
+    badge: 'Collibra + SODA CL',
+    tech: ['Collibra', 'SODA CL', 'Snowflake', 'Python'],
+    color: 'from-teal-600 to-emerald-600'
+  },
+  {
+    title: 'Root-Cause & Remediation Engine',
+    category: 'Data Quality Analytics',
+    desc: 'Automated AI-generated JSON diagnostic engine leveraging Snowflake Cortex (AI_COMPLETE, AI_SIMILARITY) to diagnose data failures, location patterns, and generate actionable remediation plans.',
+    badge: '>60% Mapping Accuracy',
+    tech: ['Snowflake Cortex', 'AI_COMPLETE', 'JSON Analytics'],
+    color: 'from-rose-600 to-red-600'
+  },
+  {
+    title: 'Self-Service Custom AI Skills',
+    category: 'DataOps Productivity',
+    desc: 'Library of reusable, custom AI skills empowering team members to automate repetitive DataOps tasks: rapid STTM creation, dbt generation, and reverse-analysis of complex codebases.',
+    badge: 'Reusable AI Skills',
+    tech: ['Custom AI Skills', 'DataOps', 'Reverse Engineering'],
+    color: 'from-cyan-600 to-blue-600'
+  }
 ];
 
 const TIMELINE = [
@@ -31,11 +82,12 @@ const TIMELINE = [
     location: 'Hyderabad, India',
     color: 'from-blue-500 to-purple-600',
     highlights: [
-      'Architected groundbreaking Agentic AI accelerators natively on Snowflake Cortex, boosting team engineering efficiency by 60-70%.',
-      'Built the "AI Silver Modeler" and "AI dbt Code Generator", reducing data modeling and pipeline development from weeks to minutes.',
-      'Developed an AI-powered Data Model Validator in Streamlit that orchestrates multiple agents to ensure OSCRE industry standard compliance.',
-      'Engineered a DQ Accelerator that automates data quality rule generation through seamless integration with Collibra and SODA CL.',
-      'Delivered intelligent Data Quality analytics using Cortex LLMs for automated root-cause summaries and >60% accurate CDE-to-Rule semantic mapping.'
+      'GDP Project (Jan 2026 – Present): Independently developed and deployed groundbreaking AI accelerators natively on Snowflake using Cortex & agentic AI, driving 60-70% team efficiency gains.',
+      'AI Canonical Modeler & dbt Generator: Cut data modeling and dbt pipeline setup from weeks/days down to mere minutes.',
+      'Data Model Validator Agent: Built multi-agent Streamlit app that evaluates ERDs against OSCRE industry standards, profiles real source data, and produces actionable compliance reports.',
+      'DQ Accelerator & AI Mapping: Integrated Collibra CDEs with SODA CL rules via Cortex LLMs (AI_COMPLETE, AI_SIMILARITY), achieving >60% semantic mapping accuracy.',
+      'Data Quality Uplift (Nov – Dec 2025): Engineered automated AI JSON summaries diagnosing data failures (location patterns, dimensions) and providing step-by-step remediation plans across Staging, Refined, and Reporting layers.',
+      'Self-Service AI Skills: Built reusable AI skill library enabling rapid STTM generation, automated dbt code creation, and codebase reverse-analysis.'
     ],
   },
   {
@@ -136,6 +188,18 @@ const fadeUp = (delay = 0) => ({
 const AboutPage = () => {
   const reduced = useReducedMotion();
   const mv = (delay) => (reduced ? {} : fadeUp(delay));
+  const { totalArticles } = useStats();
+  const [selectedTechCategory, setSelectedTechCategory] = React.useState('All');
+
+  // Build stats array with dynamic article count
+  const STATS = [
+    ...STATIC_STATS,
+    { icon: PenLine, value: totalArticles > 0 ? `${totalArticles}+` : '…', label: 'Articles Published', color: 'from-pink-500 to-rose-500' },
+  ];
+
+  const filteredTechGroups = selectedTechCategory === 'All'
+    ? TECH_GROUPS
+    : TECH_GROUPS.filter(g => g.title === selectedTechCategory);
 
   return (
     <>
@@ -341,18 +405,83 @@ const AboutPage = () => {
             </div>
           </motion.section>
 
+          {/* ── FEATURED AI ACCELERATORS ───────────────────────── */}
+          <motion.section aria-labelledby="featured-projects-title" {...mv(0.18)}>
+            <div className="flex items-center gap-2 mb-6 justify-center">
+              <Sparkles className="h-5 w-5 text-blue-400" aria-hidden="true" />
+              <h2 id="featured-projects-title" className="text-2xl sm:text-3xl font-black text-white">
+                Featured AI & DataOps Accelerators
+              </h2>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              {FEATURED_PROJECTS.map((project) => (
+                <div
+                  key={project.title}
+                  className="relative overflow-hidden bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/80 border border-slate-700/50 hover:border-blue-500/40 rounded-2xl p-5 shadow-xl transition-all hover:-translate-y-1 flex flex-col justify-between group"
+                >
+                  <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl ${project.color} opacity-10 rounded-bl-full pointer-events-none`} />
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
+                        {project.category}
+                      </span>
+                      <span className="text-[10px] font-extrabold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                        {project.badge}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-300 transition-colors">
+                      {project.title}
+                    </h3>
+                    <p className="text-xs text-gray-300 leading-relaxed mb-4">
+                      {project.desc}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1.5 pt-3 border-t border-slate-700/40">
+                    {project.tech.map((t) => (
+                      <span key={t} className="text-[10px] font-medium text-slate-300 bg-slate-800 px-2 py-0.5 rounded border border-slate-700/60">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.section>
+
           {/* ── TECH STACK ────────────────────────────────── */}
           <motion.section aria-labelledby="about-stack-title" {...mv(0.2)}>
-            <div className="flex items-center gap-2 mb-6 justify-center">
+            <div className="flex items-center gap-2 mb-4 justify-center">
               <Code className="h-5 w-5 text-purple-400" aria-hidden="true" />
               <h2 id="about-stack-title" className="text-2xl sm:text-3xl font-black text-white">Tech Stack</h2>
             </div>
 
+            {/* Interactive Category Filter Pills */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
+              {['All', ...TECH_GROUPS.map(g => g.title)].map((cat) => {
+                const isActive = selectedTechCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedTechCategory(cat)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${isActive
+                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25 scale-105'
+                        : 'bg-slate-800/80 text-gray-400 hover:bg-slate-700 hover:text-white border border-slate-700/50'
+                      }`}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {TECH_GROUPS.map(({ icon: Icon, title, tone, items }) => {
+              {filteredTechGroups.map(({ icon: Icon, title, tone, items }) => {
                 const t = TONE_CLASSES[tone];
                 return (
-                  <article key={title} className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-700/40 rounded-2xl p-4">
+                  <article key={title} className="bg-gradient-to-br from-slate-800/60 to-slate-700/60 border border-slate-700/40 hover:border-purple-500/30 transition-colors rounded-2xl p-4">
                     <div className="flex items-center gap-2 mb-3">
                       <Icon className={`h-4 w-4 ${t.accent}`} aria-hidden="true" />
                       <h3 className={`font-bold text-sm ${t.accent}`}>{title}</h3>

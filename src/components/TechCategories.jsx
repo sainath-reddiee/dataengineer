@@ -89,7 +89,7 @@ const SparkleCard = ({ category }) => {
     color: ['#60a5fa', '#a78bfa', '#ffffff'][Math.floor(Math.random() * 3)],
   })), []);
 
-  const MotionLink = motion(Link);
+  const MotionLink = motion.create(Link);
 
   return (
     <MotionLink to={path} className="block h-full group" initial="rest" whileHover="hover">

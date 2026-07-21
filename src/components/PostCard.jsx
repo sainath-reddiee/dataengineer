@@ -15,7 +15,7 @@ const cardVariants = {
   hover: isMobile ? { scale: 1 } : { scale: 1.03 }, // Disable scale on mobile
 };
 
-const MotionLink = motion(Link);
+const MotionLink = motion.create(Link);
 
 const PostCard = ({ post }) => {
   if (!post) return null;

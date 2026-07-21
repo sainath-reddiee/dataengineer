@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import LazyImage from './LazyImage';
 
-const MotionLink = motion(Link);
+const MotionLink = motion.create(Link);
 
 // Helper component for the "Corner Burst" sparks
 const Spark = ({ x, y, rotate, color }) => {

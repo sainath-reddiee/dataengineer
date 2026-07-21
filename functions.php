@@ -27,6 +27,9 @@ function handle_cors_requests() {
     }
     elseif (
         strpos($origin, 'localhost') !== false ||
+        strpos($origin, '192.168.') !== false ||
+        strpos($origin, '10.') !== false ||
+        strpos($origin, '172.') !== false ||
         strpos($origin, 'bolt.new') !== false ||
         strpos($origin, 'staticblitz.com') !== false ||
         strpos($origin, 'stackblitz.com') !== false ||

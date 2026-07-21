@@ -294,7 +294,7 @@ const CategoryPage = () => {
     })),
     []);
 
-  const MotionLink = motion(Link);
+  const MotionLink = motion.create(Link);
 
   // Generate breadcrumbs
   const breadcrumbs = generateBreadcrumbs(`/category/${categoryName}`, `${currentCategory.name} Tutorials`);

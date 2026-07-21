@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import wordpressApi from '@/services/wordpressApi';
 
-const CACHE_KEY = 'deh_stats_cache';
+const CACHE_KEY = 'deh_stats_cache_v2';
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
 /** Read cached stats from localStorage (returns null if stale or missing). */
@@ -12,6 +12,7 @@ const readCache = () => {
     if (!raw) return null;
     const { ts, data } = JSON.parse(raw);
     if (Date.now() - ts > CACHE_TTL) return null;
+    if (!data.totalArticles || !data.totalCategories) return null;
     return data;
   } catch {
     return null;
@@ -45,7 +46,6 @@ const frequencyFromDates = (posts) => {
 
 export const useStats = () => {
   const [stats, setStats] = useState(() => {
-    // Hydrate from cache immediately so the UI never shows "0"
     const cached = readCache();
     if (cached) return { ...cached, loading: false, error: null };
     return {
@@ -59,7 +59,6 @@ export const useStats = () => {
   });
 
   useEffect(() => {
-    // If we served from cache, skip the network round-trip
     const cached = readCache();
     if (cached) return;
 
@@ -73,10 +72,10 @@ export const useStats = () => {
         const postsResult = postsSettled.status === 'fulfilled' ? postsSettled.value : null;
         const categoriesResult = categoriesSettled.status === 'fulfilled' ? categoriesSettled.value : null;
 
-        const totalArticles = postsResult?.totalPosts || 35;
-        const totalCategories = Array.isArray(categoriesResult)
+        const totalArticles = postsResult?.totalPosts || 82;
+        const totalCategories = Array.isArray(categoriesResult) && categoriesResult.length > 0
           ? categoriesResult.filter((cat) => cat.name !== 'Uncategorized' && cat.count > 0).length
-          : 8;
+          : 15;
         const updateFrequency = postsResult?.posts ? frequencyFromDates(postsResult.posts) : 'Weekly';
 
         const data = {
@@ -89,8 +88,15 @@ export const useStats = () => {
         writeCache(data);
         setStats({ ...data, loading: false, error: null });
       } catch (error) {
-        console.warn('Stats fallback applied:', error);
-        setStats((prev) => ({ ...prev, loading: false, error: null }));
+        console.warn('Stats API error, applying resilient fallbacks:', error);
+        setStats({
+          totalArticles: 82,
+          totalCategories: 15,
+          totalReaders: null,
+          updateFrequency: 'Weekly',
+          loading: false,
+          error: null,
+        });
       }
     };
 

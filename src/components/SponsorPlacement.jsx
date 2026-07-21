@@ -10,8 +10,13 @@ function getSponsorContext(category, slug) {
 export default function SponsorPlacement({ category, tags = [], slug, className = '' }) {
   const [logoError, setLogoError] = useState(false);
 
+  // Normalize tags: they may be strings or objects with a .name property (WP API)
+  const normalizedTags = Array.isArray(tags)
+    ? tags.map(t => (typeof t === 'string' ? t : t?.name || '')).filter(Boolean)
+    : [];
+
   // Join tags to create a stable dependency string for memoization
-  const tagsKey = tags.join(',');
+  const tagsKey = normalizedTags.join(',');
 
   // Find an active sponsor matching this category, tag, or slug
   const sponsor = useMemo(() => {
@@ -34,15 +39,15 @@ export default function SponsorPlacement({ category, tags = [], slug, className 
       if (slugs && slug && slugs.includes(slug)) return true;
       
       // Match by category (case-insensitive)
-      if (categories && category) {
-        const catMatch = categories.some(c => c.toLowerCase() === category.toLowerCase());
+      if (categories && category && typeof category === 'string') {
+        const catMatch = categories.some(c => typeof c === 'string' && c.toLowerCase() === category.toLowerCase());
         if (catMatch) return true;
       }
       
       // Match by tags (case-insensitive intersection)
-      if (sponsorTags && tags && tags.length > 0) {
-        return tags.some(t => 
-          sponsorTags.some(st => st.toLowerCase() === t.toLowerCase())
+      if (sponsorTags && normalizedTags.length > 0) {
+        return normalizedTags.some(t => 
+          sponsorTags.some(st => typeof st === 'string' && st.toLowerCase() === t.toLowerCase())
         );
       }
       

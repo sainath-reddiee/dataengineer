@@ -749,7 +749,7 @@ const AdvertisePage = () => {
               <div className="mt-6 pt-5 border-t border-white/5">
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div>
-                    <div className="text-xl font-bold text-white">{totalArticles > 0 ? `${totalArticles}+` : '80+'}</div>
+                    <div className="text-xl font-bold text-white">{totalArticles > 0 ? `${totalArticles}+` : '…'}</div>
                     <div className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Published Articles</div>
                   </div>
                   <div>

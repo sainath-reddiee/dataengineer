@@ -170,6 +170,25 @@ const Footer = () => {
               Empowering the next generation of data professionals
             </p>
           </div>
+
+          {/* CCPA / Ad Personalization Disclosure */}
+          <div className="mt-6 pt-4 border-t border-white/5 flex flex-col sm:flex-row flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-gray-500">
+            <span>Information from your device can be used to personalize your ad experience.</span>
+            <span className="hidden sm:inline text-gray-700">|</span>
+            <button
+              onClick={() => { revokeConsent(); window.location.reload(); }}
+              className="text-blue-400/70 hover:text-blue-400 hover:underline transition-colors"
+            >
+              Do not sell or share my personal information
+            </button>
+            <span className="hidden sm:inline text-gray-700">|</span>
+            <Link
+              to="/terms-of-service"
+              className="text-blue-400/70 hover:text-blue-400 hover:underline transition-colors"
+            >
+              Terms of Content Use
+            </Link>
+          </div>
         </motion.div>
       </div>
     </footer>

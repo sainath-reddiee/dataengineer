@@ -210,6 +210,13 @@ export default defineConfig({
     open: true,
     hmr: {
       overlay: true
+    },
+    proxy: {
+      '/wp-json': {
+        target: 'https://app.dataengineerhub.blog',
+        changeOrigin: true,
+        secure: false,
+      }
     }
   },
 

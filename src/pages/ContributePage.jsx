@@ -14,11 +14,11 @@ import { useToast } from '@/components/ui/use-toast';
 import { trackEvent } from '@/utils/analytics';
 import MetaTags from '@/components/SEO/MetaTags';
 
-import { usePosts } from '@/hooks/useWordPress';
+import { useStats } from '@/hooks/useStats';
 
 const ContributePage = () => {
   const { toast } = useToast();
-  const { totalPosts } = usePosts({ per_page: 1 });
+  const { totalArticles, totalCategories } = useStats();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -59,10 +59,10 @@ const ContributePage = () => {
   };
 
   const stats = [
-    { value: totalPosts ? `${totalPosts}` : '56', label: 'Published Articles', icon: FileText },
+    { value: totalArticles > 0 ? `${totalArticles}` : '…', label: 'Published Articles', icon: FileText },
     { value: '10K+', label: 'Monthly Readers', icon: Users },
     { value: '100+', label: 'Community Members', icon: Heart },
-    { value: '15+', label: 'Tech Topics', icon: Code },
+    { value: totalCategories > 0 ? `${totalCategories}+` : '15+', label: 'Tech Topics', icon: Code },
   ];
 
   const benefits = [
