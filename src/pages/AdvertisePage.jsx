@@ -517,20 +517,38 @@ const AdvertisePage = () => {
       );
 
       window.location.href = `mailto:${SPONSOR_CONTACT_EMAIL}?subject=${subject}&body=${body}`;
-      setSubmitted(true);
+      setError('Opening your email application to send the inquiry directly to sainath@dataengineerhub.blog...');
       setLoading(false);
       return;
     }
 
     try {
+      const formattedMessage = [
+        `Name: ${formData.name}`,
+        `Email: ${formData.email}`,
+        `Company: ${formData.company || 'Not provided'}`,
+        `Website: ${formData.website || 'Not provided'}`,
+        `Package: ${formData.package}`,
+        `Billing Term / Budget: ${formData.budget}`,
+        '',
+        '--- Message / Pitch ---',
+        formData.message || 'No additional details provided.'
+      ].join('\n');
+
       const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           access_key: WEB3FORMS_KEY,
+          name: formData.name,
+          email: formData.email,
           subject: `Sponsorship inquiry from ${formData.company || formData.name}`,
           from_name: 'DataEngineer Hub Advertise Form',
-          ...payload,
+          company: formData.company || 'Not provided',
+          website: formData.website || 'Not provided',
+          package: formData.package,
+          budget: formData.budget,
+          message: formattedMessage,
         }),
       });
 
