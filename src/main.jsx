@@ -1,4 +1,5 @@
 // src/main.jsx - FIXED VERSION (No immediate loading spinner)
+// Trigger deploy 2
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
