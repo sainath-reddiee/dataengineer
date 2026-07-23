@@ -43,10 +43,14 @@ async function wpFetch(path, opts = {}) {
 
 /** Fetch all users with author / contributor / editor role */
 async function fetchUsers() {
-  const users = await wpFetch(
-    '/users?per_page=100&roles=administrator,editor,author,contributor&_fields=id,name,slug,email,description,avatar_urls,url,meta,acf'
+  const res = await fetch(
+    `${WP_BASE}/wp-json/dehub/v1/contributors?roles=administrator,editor,author,contributor`,
+    { headers: authHeader() }
   );
-  return users;
+  if (!res.ok) {
+    throw new Error(`Failed to list users (${res.status})`);
+  }
+  return res.json();
 }
 
 /** Fetch posts by author id */

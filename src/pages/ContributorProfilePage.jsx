@@ -24,7 +24,7 @@ function decodeHtml(html = '') {
 
 async function fetchUserBySlug(slug) {
   const res = await fetch(
-    `${WP_API}/users?slug=${encodeURIComponent(slug)}&_fields=id,name,slug,description,avatar_urls,url,meta,acf`
+    `${WP_BASE}/wp-json/dehub/v1/contributors?slug=${encodeURIComponent(slug)}`
   );
   const users = await res.json();
   if (!users || users.length === 0) throw new Error(`Contributor "${slug}" not found`);
