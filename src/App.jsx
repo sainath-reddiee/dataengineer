@@ -25,6 +25,10 @@ const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
 const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
 const DisclaimerPage = lazy(() => import('./pages/DisclaimerPage'));
 const ContributePage = lazy(() => import('./pages/ContributePage'));
+const ContributorsPage = lazy(() => import('./pages/ContributorsPage'));
+const ContributorProfilePage = lazy(() => import('./pages/ContributorProfilePage'));
+// Admin: Contributor Manager
+const ContributorManagerPage = lazy(() => import('./pages/admin/ContributorManagerPage'));
 const NewsPage = lazy(() => import('./pages/NewsPage'));
 const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 const TagsArchivePage = lazy(() => import('./pages/TagsArchivePage'));
@@ -381,6 +385,8 @@ function App() {
           <Route path="terms-of-service" element={<SafeRoute fallbackText="Loading Terms..."><TermsOfServicePage /></SafeRoute>} />
           <Route path="disclaimer" element={<SafeRoute fallbackText="Loading Disclaimer..."><DisclaimerPage /></SafeRoute>} />
           <Route path="contribute" element={<SafeRoute fallbackText="Loading..."><ContributePage /></SafeRoute>} />
+          <Route path="contributors" element={<SafeRoute fallbackText="Loading Contributors..."><ContributorsPage /></SafeRoute>} />
+          <Route path="contributors/:slug" element={<SafeRoute fallbackText="Loading Profile..."><ContributorProfilePage /></SafeRoute>} />
           <Route path="news" element={<SafeRoute fallbackText="Loading News..."><NewsPage /></SafeRoute>} />
           <Route path="newsletter" element={<SafeRoute fallbackText="Loading Newsletter..."><NewsletterPage /></SafeRoute>} />
           <Route path="advertise" element={<SafeRoute fallbackText="Loading Advertise..."><AdvertisePage /></SafeRoute>} />
@@ -431,6 +437,7 @@ function App() {
                     <Route path="article-writer" element={<SafeRoute><ArticleWriterPage /></SafeRoute>} />
           <Route path="serp-intelligence" element={<SafeRoute><SerpIntelligencePage /></SafeRoute>} />
           <Route path="history" element={<SafeRoute><ActivityHistoryPage /></SafeRoute>} />
+          <Route path="contributors" element={<SafeRoute><ContributorManagerPage /></SafeRoute>} />
         </Route>
       </Routes>
       <Toaster />

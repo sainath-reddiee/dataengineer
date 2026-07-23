@@ -279,13 +279,19 @@ class WordPressAPI {
       const authorData = {
         name: authorName,
         bio: authorEmbed.description || '',
-        // Prefer 96×96 Gravatar, fall back to 48×48, then nothing
-        avatarUrl: authorEmbed.avatar_urls?.['96'] || authorEmbed.avatar_urls?.['48'] || '',
+        // Prefer custom avatar URL (from user meta), then Gravatar 96px, then 48px
+        avatarUrl: authorEmbed.meta?.author_avatar_url
+          || authorEmbed.acf?.author_avatar_url
+          || authorEmbed.avatar_urls?.['96']
+          || authorEmbed.avatar_urls?.['48']
+          || '',
         website: authorEmbed.url || '',
+        slug: authorEmbed.slug || '',
         // Custom user meta fields exposed via WP REST API (register_meta with show_in_rest: true)
         linkedin: authorEmbed.meta?.linkedin_url || authorEmbed.acf?.linkedin_url || '',
         twitter: authorEmbed.meta?.twitter_url || authorEmbed.acf?.twitter_url
           || authorEmbed.meta?.['wpseo_profile_twitter'] || '',
+        github: authorEmbed.meta?.github_url || authorEmbed.acf?.github_url || '',
         role: authorEmbed.meta?.job_title || authorEmbed.acf?.job_title || '',
       };
       const featured = wpPost.meta?.featured === '1' || wpPost.meta?.featured === 1;
@@ -660,6 +666,131 @@ class WordPressAPI {
     } catch (error) {
       console.error('❌ Could not fetch related posts:', error.message);
       return [];
+    }
+  }
+
+  // ─── Contributor / User management ─────────────────────────────────────────
+
+  /**
+   * Build the Basic-auth header from the env variable.
+   * VITE_WP_APP_PASSWORD should be base64-encoded "username:app_password".
+   */
+  _authHeaders() {
+    const raw = import.meta.env.VITE_WP_APP_PASSWORD || '';
+    if (!raw) return {};
+    return { Authorization: `Basic ${raw}` };
+  }
+
+  /**
+   * List all WordPress users with contributor / author / editor roles.
+   * Requires Application Password.
+   */
+  async getUsers(roles = 'author,contributor,editor,administrator') {
+    try {
+      const res = await fetch(
+        `${this.baseURL}/users?per_page=100&roles=${roles}&_fields=id,name,slug,email,description,avatar_urls,url,meta,acf`,
+        { headers: this._authHeaders() }
+      );
+      if (!res.ok) throw new Error(`Failed to list users (${res.status})`);
+      return await res.json();
+    } catch (error) {
+      console.error('❌ getUsers failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch a single WordPress user by their numeric ID.
+   */
+  async getUserById(id) {
+    try {
+      const res = await fetch(
+        `${this.baseURL}/users/${id}?_fields=id,name,slug,email,description,avatar_urls,url,meta,acf`,
+        { headers: this._authHeaders() }
+      );
+      if (!res.ok) throw new Error(`User ${id} not found (${res.status})`);
+      return await res.json();
+    } catch (error) {
+      console.error(`❌ getUserById(${id}) failed:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch published posts by a specific author (WP user ID).
+   */
+  async getPostsByAuthor(authorId, page = 1, perPage = 12) {
+    try {
+      const result = await this.getPosts({ page, per_page: perPage });
+      // WP REST supports ?author= filter — make a direct request
+      const res = await fetch(
+        `${this.baseURL}/posts?author=${authorId}&per_page=${perPage}&page=${page}&status=publish&_embed=wp:featuredmedia,wp:term,author`,
+        { headers: this._authHeaders() }
+      );
+      if (!res.ok) throw new Error(`Failed to fetch posts for author ${authorId} (${res.status})`);
+      const totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1');
+      const totalPosts = parseInt(res.headers.get('X-WP-Total') || '0');
+      const raw = await res.json();
+      return { posts: this.transformPosts(raw), totalPages, totalPosts };
+    } catch (error) {
+      console.error(`❌ getPostsByAuthor(${authorId}) failed:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update a user's profile fields (name, bio, url) and custom meta (linkedin, twitter, github, job_title, author_avatar_url).
+   * Requires Application Password.
+   */
+  async updateUserMeta(userId, fields = {}) {
+    try {
+      const body = {
+        ...(fields.name      && { name: fields.name }),
+        ...(fields.bio       !== undefined && { description: fields.bio }),
+        ...(fields.website   !== undefined && { url: fields.website }),
+        meta: {
+          ...(fields.linkedin   !== undefined && { linkedin_url: fields.linkedin }),
+          ...(fields.twitter    !== undefined && { twitter_url: fields.twitter }),
+          ...(fields.github     !== undefined && { github_url: fields.github }),
+          ...(fields.jobTitle   !== undefined && { job_title: fields.jobTitle }),
+          ...(fields.avatarUrl  !== undefined && { author_avatar_url: fields.avatarUrl }),
+        },
+      };
+      const res = await fetch(`${this.baseURL}/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...this._authHeaders() },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`Failed to update user ${userId}: ${txt}`);
+      }
+      return await res.json();
+    } catch (error) {
+      console.error(`❌ updateUserMeta(${userId}) failed:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Reassign a post's author to a different WordPress user.
+   * Requires Application Password with edit_posts capability.
+   */
+  async updatePostAuthor(postId, authorId) {
+    try {
+      const res = await fetch(`${this.baseURL}/posts/${postId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...this._authHeaders() },
+        body: JSON.stringify({ author: authorId }),
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`Failed to reassign post ${postId}: ${txt}`);
+      }
+      return await res.json();
+    } catch (error) {
+      console.error(`❌ updatePostAuthor(${postId}, ${authorId}) failed:`, error);
+      throw error;
     }
   }
 }

@@ -11,7 +11,7 @@ import {
     LayoutDashboard, Search, Layers, GitCompare,
     Code2, Eye, Sparkles, LogOut, ChevronLeft, CheckSquare, TrendingUp, Key,
     BookOpen, Link2, Clock, Zap, Target, DollarSign,
-    Network, Calendar, Users, Sparkle, MousePointerClick, TrendingDown, Award,
+    Network, Calendar, Users, Users2, Sparkle, MousePointerClick, TrendingDown, Award,
     FileSearch, MessageCircleQuestion, Wand2, Globe, Activity, Fish, Wrench,
     Menu, X
 } from 'lucide-react';
@@ -27,6 +27,7 @@ import tinyfishService from '@/services/tinyfishService';
 const navItems = [
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
     { path: '/admin/history', icon: Activity, label: 'Activity History' },
+    { path: '/admin/contributors', icon: Users2, label: 'Contributors', highlight: true },
     { path: '/admin/article-optimizer', icon: Wand2, label: 'Article Optimizer', highlight: true },
     { path: '/admin/article-fixer', icon: Wrench, label: 'Article Fixer', highlight: true },
     { path: '/admin/trend-intelligence', icon: TrendingUp, label: 'Trend Intelligence', highlight: true },

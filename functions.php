@@ -65,9 +65,11 @@ add_action('init', 'handle_cors_requests', 9);
 add_action( 'rest_api_init', 'dehub_register_author_meta_fields' );
 function dehub_register_author_meta_fields() {
     $fields = [
-        'linkedin_url' => 'LinkedIn profile URL for this author.',
-        'twitter_url'  => 'Twitter / X profile URL or @handle for this author.',
-        'job_title'    => 'Job title or role shown below the author name.',
+        'linkedin_url'       => 'LinkedIn profile URL for this author.',
+        'twitter_url'        => 'Twitter / X profile URL or @handle for this author.',
+        'job_title'          => 'Job title or role shown below the author name.',
+        'github_url'         => 'GitHub profile URL for this author.',
+        'author_avatar_url'  => 'Custom avatar photo URL (overrides Gravatar). Use a direct image URL, 256×256px recommended.',
     ];
 
     foreach ( $fields as $key => $description ) {
@@ -105,11 +107,28 @@ function dehub_author_social_fields( $user ) {
             </td>
         </tr>
         <tr>
+            <th><label for="github_url">GitHub URL</label></th>
+            <td>
+                <input type="url" name="github_url" id="github_url"
+                    value="<?php echo esc_attr( get_user_meta( $user->ID, 'github_url', true ) ); ?>"
+                    class="regular-text" placeholder="https://github.com/username" />
+            </td>
+        </tr>
+        <tr>
             <th><label for="job_title">Job Title / Role</label></th>
             <td>
                 <input type="text" name="job_title" id="job_title"
                     value="<?php echo esc_attr( get_user_meta( $user->ID, 'job_title', true ) ); ?>"
                     class="regular-text" placeholder="e.g. Senior Data Engineer at Acme Corp" />
+            </td>
+        </tr>
+        <tr>
+            <th><label for="author_avatar_url">Custom Avatar URL</label></th>
+            <td>
+                <input type="url" name="author_avatar_url" id="author_avatar_url"
+                    value="<?php echo esc_attr( get_user_meta( $user->ID, 'author_avatar_url', true ) ); ?>"
+                    class="regular-text" placeholder="https://yourdomain.com/photo.jpg" />
+                <p class="description">Direct URL to author's headshot. Overrides Gravatar. Use 256×256 px or larger.</p>
             </td>
         </tr>
     </table>
@@ -122,7 +141,7 @@ add_action( 'edit_user_profile_update', 'dehub_save_author_social_fields' );
 function dehub_save_author_social_fields( $user_id ) {
     if ( ! current_user_can( 'edit_user', $user_id ) ) return;
 
-    foreach ( [ 'linkedin_url', 'twitter_url', 'job_title' ] as $field ) {
+    foreach ( [ 'linkedin_url', 'twitter_url', 'job_title', 'github_url', 'author_avatar_url' ] as $field ) {
         if ( isset( $_POST[ $field ] ) ) {
             $value = sanitize_text_field( $_POST[ $field ] );
             update_user_meta( $user_id, $field, $value );

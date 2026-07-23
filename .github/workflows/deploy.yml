@@ -209,6 +209,7 @@ jobs:
           VITE_BREVO_LIST_ID: ${{ secrets.VITE_BREVO_LIST_ID }}
           VITE_WEB3FORMS_KEY: ${{ secrets.VITE_WEB3FORMS_KEY }}
           VITE_GSC_CLIENT_ID: ${{ secrets.VITE_GSC_CLIENT_ID }}
+          VITE_WP_APP_PASSWORD: ${{ secrets.VITE_WP_APP_PASSWORD }}
 
       - name: 🗑️ Delete Build Cache (Force Fresh Build)
         if: |

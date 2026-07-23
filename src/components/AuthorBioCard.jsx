@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Linkedin, Twitter, Globe, ArrowRight, BadgeCheck, User } from 'lucide-react';
+import { Linkedin, Twitter, Globe, Github, ArrowRight, BadgeCheck, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 
@@ -34,9 +34,12 @@ const AuthorBioCard = ({ author }) => {
   // For the owner always show the main domain, not the WP admin subdomain
   const websiteUrl = isOwner ? 'https://dataengineerhub.blog' : author.website;
 
-  const hasLinkedin = Boolean(author.linkedin);
-  const hasTwitter  = Boolean(author.twitter);
-  const hasWebsite  = !isOwner && Boolean(author.website);
+  const hasLinkedin  = Boolean(author.linkedin);
+  const hasTwitter   = Boolean(author.twitter);
+  const hasGithub    = !isOwner && Boolean(author.github);
+  const hasWebsite   = !isOwner && Boolean(author.website);
+  // Link to public contributor profile for guest authors
+  const contributorSlug = !isOwner && author.slug ? author.slug : null;
 
   return (
     <motion.div
@@ -147,6 +150,19 @@ const AuthorBioCard = ({ author }) => {
                 </a>
               )}
 
+              {hasGithub && (
+                <a
+                  href={author.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${displayName} on GitHub`}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-300 hover:text-white transition-colors px-3 py-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600/40 hover:border-slate-500/60"
+                >
+                  <Github className="h-3.5 w-3.5" />
+                  GitHub
+                </a>
+              )}
+
               {hasWebsite && (
                 <a
                   href={websiteUrl}
@@ -158,6 +174,15 @@ const AuthorBioCard = ({ author }) => {
                   <Globe className="h-3.5 w-3.5" />
                   Website
                 </a>
+              )}
+
+              {contributorSlug && (
+                <Link
+                  to={`/contributors/${contributorSlug}`}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-300 hover:text-blue-100 transition-colors px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 hover:border-blue-400/40"
+                >
+                  All articles <ArrowRight className="h-3 w-3" />
+                </Link>
               )}
             </div>
           </div>
