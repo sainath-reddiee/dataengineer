@@ -27,7 +27,7 @@ function decodeHtml(html = '') {
 async function loadContributors() {
   // Fetch users with post count
   const res = await fetch(
-    `${WP_API}/users?per_page=100&roles=author,contributor,editor&_fields=id,name,slug,description,avatar_urls,url,meta,acf`
+    `${WP_BASE}/wp-json/dehub/v1/contributors?roles=author,contributor,editor`
   );
   const users = await res.json();
 

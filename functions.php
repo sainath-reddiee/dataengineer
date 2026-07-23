@@ -52,15 +52,67 @@ remove_action('init', 'handle_cors_requests');
 add_action('init', 'handle_cors_requests', 9);
 
 // ============================================================================
-// GUEST AUTHOR — Expose custom user meta fields in the REST API
+// GUEST AUTHOR — Expose custom user meta fields and custom endpoint
 // ============================================================================
-// Paste this block AFTER the CORS section in your live functions.php
-// (after: add_action('init', 'handle_cors_requests', 9);)
-//
-// These fields let you add LinkedIn, Twitter, and job title for any WordPress
-// user (including guest authors). Fill them in WP Admin → Users → Edit User.
-// The frontend reads them via the embedded author object (_embed=author).
-// ============================================================================
+
+// Register a custom endpoint to bypass security plugins that block /wp/v2/users
+add_action( 'rest_api_init', function () {
+    register_rest_route( 'dehub/v1', '/contributors', [
+        'methods'  => 'GET',
+        'callback' => 'dehub_get_contributors_endpoint',
+        'permission_callback' => '__return_true'
+    ] );
+} );
+
+function dehub_get_contributors_endpoint( $request ) {
+    $roles = $request->get_param('roles');
+    $slug = $request->get_param('slug');
+    
+    $args = [];
+    if ( !empty($roles) ) {
+        $args['role__in'] = explode(',', $roles);
+    }
+    if ( !empty($slug) ) {
+        // Search by nicename (slug)
+        $args['search'] = $slug;
+        $args['search_columns'] = ['user_nicename'];
+    }
+
+    $users = get_users($args);
+    $data = [];
+    $can_edit = current_user_can('edit_users');
+    
+    foreach ( $users as $user ) {
+        $user_data = [
+            'id'          => $user->ID,
+            'name'        => $user->display_name,
+            'slug'        => $user->user_nicename,
+            'description' => get_user_meta( $user->ID, 'description', true ),
+            'url'         => $user->user_url,
+            'avatar_urls' => [
+                '24' => get_avatar_url($user->ID, ['size' => 24]),
+                '48' => get_avatar_url($user->ID, ['size' => 48]),
+                '96' => get_avatar_url($user->ID, ['size' => 96]),
+            ],
+            'meta'        => [
+                'linkedin_url'      => get_user_meta( $user->ID, 'linkedin_url', true ),
+                'twitter_url'       => get_user_meta( $user->ID, 'twitter_url', true ),
+                'job_title'         => get_user_meta( $user->ID, 'job_title', true ),
+                'github_url'        => get_user_meta( $user->ID, 'github_url', true ),
+                'author_avatar_url' => get_user_meta( $user->ID, 'author_avatar_url', true ),
+            ],
+        ];
+
+        // Only expose email to administrators
+        if ( $can_edit ) {
+            $user_data['email'] = $user->user_email;
+        }
+
+        $data[] = $user_data;
+    }
+    
+    return rest_ensure_response( $data );
+}
 
 add_action( 'rest_api_init', 'dehub_register_author_meta_fields' );
 function dehub_register_author_meta_fields() {
