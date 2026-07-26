@@ -31,11 +31,6 @@ async function fetchUserBySlug(slug) {
   return users[0];
 }
 
-async function fetchUserPostCount(userId) {
-  const res = await fetch(`${WP_API}/posts?author=${userId}&per_page=1&status=publish&_fields=id`);
-  return parseInt(res.headers.get('X-WP-Total') || '0');
-}
-
 const ContributorProfilePage = () => {
   const { slug } = useParams();
   const [user, setUser] = useState(null);
@@ -56,17 +51,34 @@ const ContributorProfilePage = () => {
       .then(async (u) => {
         setUser(u);
         setLoading(false);
-        // Now fetch their posts
         setPostsLoading(true);
-        const count = await fetchUserPostCount(u.id);
+
+        const isGuest = u.is_guest || (typeof u.id === 'string' && u.id.startsWith('guest_'));
+        let data = [];
+        let count = 0;
+        let totalPgs = 1;
+
+        if (isGuest) {
+          const res = await fetch(
+            `${WP_API}/posts?per_page=50&status=publish&_embed=wp:featuredmedia,wp:term,author`
+          );
+          const rawPosts = await res.json();
+          const filtered = Array.isArray(rawPosts)
+            ? rawPosts.filter(p => p.guest_author_details?.id === u.id || p.guest_author_details?.slug === u.slug || p.meta?.guest_author_id === u.id)
+            : [];
+          count = filtered.length;
+          totalPgs = 1;
+          data = filtered;
+        } else {
+          const res = await fetch(
+            `${WP_API}/posts?author=${u.id}&per_page=12&page=1&status=publish&_embed=wp:featuredmedia,wp:term,author`
+          );
+          totalPgs = parseInt(res.headers.get('X-WP-TotalPages') || '1');
+          count = parseInt(res.headers.get('X-WP-Total') || '0');
+          data = await res.json();
+        }
+
         setTotalPosts(count);
-        const result = await wordpressApi.getPosts({ page: 1, per_page: 12 });
-        // Filter to author (WP REST allows ?author= param)
-        const res = await fetch(
-          `${WP_API}/posts?author=${u.id}&per_page=12&page=1&status=publish&_embed=wp:featuredmedia,wp:term,author`
-        );
-        const totalPgs = parseInt(res.headers.get('X-WP-TotalPages') || '1');
-        const data = await res.json();
         setTotalPages(totalPgs);
         const transformed = wordpressApi.transformPosts(data);
         setPosts(transformed);

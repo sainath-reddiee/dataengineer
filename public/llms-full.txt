@@ -1,6 +1,6 @@
 # DataEngineer Hub - Full Content Index for LLMs
-> Last generated: 2026-07-20
-> Total articles: 80
+> Last generated: 2026-07-26
+> Total articles: 87
 > Source: https://dataengineerhub.blog
 > Compact version: https://dataengineerhub.blog/llms.txt
 > Structured data: https://dataengineerhub.blog/llm-sitemap.json
@@ -10,11 +10,76 @@ Each article includes its URL, summary, key headings, and primary topics.
 
 ---
 
+## AI (9 articles)
+
+### Introduction to Loop Engineering: Designing AI Agent Loops (2026)
+- URL: https://dataengineerhub.blog/articles/introduction-to-loop-engineering
+- Published: 2026-07-25 | Updated: 2026-07-23
+- Word count: ~2170
+- Summary: A team I know left a coding agent running on a Friday afternoon. The task was open-ended — “keep fixing failing tests until the suite is green” — and the agent dutifully looped. It just never stopped. Over the weekend it retried the same broken approach against the same failing test hundreds of time
+- Key sections: TL;DR | What loop engineering actually is | A single turn of the loop | The loops stack: loopcraft | 1. The agent loop | 2. The verification loop | 3. The application loop | 4. The hill-climbing loop
+
+### Running Ollama Inside a Data Pipeline: What Actually Breaks
+- URL: https://dataengineerhub.blog/articles/ollama-local-llm-data-pipeline
+- Published: 2026-07-25 | Updated: 2026-07-23
+- Word count: ~1602
+- Summary: Three weeks ago I watched a teammate open the OpenAI billing dashboard and go quiet. We’d built a PII-tagging job that ran a small classification prompt against every new row landing in a raw events table, about 500,000 rows a day, to flag anything that looked like an email, a phone number, or a gov
+- Key sections: Why This Belongs in the Pipeline, Not Just the Terminal | Installing Ollama on a Pipeline Host, Not a Laptop | Picking a Model That Fits the Task, Not the Demo | Wiring It Into an Airflow DAG | The Cost Math | The Gotchas Nobody Warns You About | The One Principle
+
+### Build a Simple MCP Server in Python with FastMCP (2026)
+- URL: https://dataengineerhub.blog/articles/build-mcp-server-python-fastmcp
+- Published: 2026-07-24 | Updated: 2026-07-23
+- Word count: ~2146
+- Summary: A colleague pinged me last spring, quietly furious. He’d spent three days building an MCP server to give an internal agent access to the team’s Snowflake warehouse. The protocol part worked on day one. What ate the other two and a half days was everything the tutorials skip: the agent kept picking t
+- Key sections: TL;DR | What an MCP server actually is | The ten-line server | From toy to useful: a data tool | stdio or Streamable HTTP: pick deliberately | stdio — local, subprocess | Streamable HTTP — remote, multi-client | The cost math nobody does upfront
+
+### Model Context Protocol Explained in 3 Levels of Difficulty
+- URL: https://dataengineerhub.blog/articles/model-context-protocol-explained-3-levels
+- Published: 2026-07-23 | Updated: 2026-07-23
+- Word count: ~1777
+- Summary: Every data platform team building agentic pipelines hits the same wall eventually. You want Claude or CoCo to query Snowflake, trigger a dbt run, check an Airflow DAG, and post the result to Slack — one agent, four systems. The naive path is to write four custom connectors. Then someone adds Cursor 
+- Key sections: TL;DR | Level 1 — The problem: why M×N breaks down | Level 2 — The architecture: Host, Client, Servers | Level 3 — Production: transport, security, deployment | The gotchas nobody warns you about | The one principle
+
+### AI Agent Tool Design: What Works and What Doesn’t
+- URL: https://dataengineerhub.blog/articles/ai-agent-tool-design-patterns
+- Published: 2026-07-22 | Updated: 2026-07-23
+- Word count: ~2465
+- Summary: The incident report blamed the model. “The agent called the delete endpoint twice and wiped a partition it shouldn’t have touched.” Everyone nodded, someone filed a ticket to “upgrade to a smarter model,” and the actual cause sat there in plain sight: the delete tool had no idempotency key, no confi
+- Key sections: TL;DR | Why tool design — not model capability — is the root cause | What works, pattern by pattern | 1. One tool, one responsibility | 2. Schemas that make invalid states impossible | 3. Descriptions that define scope, not just purpose | 4. Structured, actionable error returns | 5. Idempotent state-changing operations
+
+### Tools vs Subagents: Building Effective AI Agents Without Over-Engineering
+- URL: https://dataengineerhub.blog/articles/tools-vs-subagents-ai-agents
+- Published: 2026-07-21 | Updated: 2026-07-23
+- Word count: ~2217
+- Summary: A data engineer I know spent three weeks building a “multi-agent data quality system.” It had an orchestrator agent, a profiling subagent, an anomaly-detection subagent, and a remediation subagent, all passing messages around. It was elegant. It was also slower, more expensive, and harder to debug t
+- Key sections: TL;DR | What a tool actually is | What a subagent actually is | Tools vs subagents: the differences that matter | When a tool is the right choice | When a subagent earns its complexity | The three-question decision framework | The over-engineering trap
+
+### How to Give AI Coding Agents Access to Your Pipeline Metadata Without Opening Security Holes
+- URL: https://dataengineerhub.blog/articles/ai-coding-agents-pipeline-metadata-security
+- Published: 2026-07-21 | Updated: 2026-07-23
+- Word count: ~2238
+- Summary: The question came up in a Slack channel for a platform team I was advising: “We want to give our AI coding agent access to the pipeline metadata so it can auto-generate dbt models, but our security team keeps saying no.” The security team was right. Not because AI agents shouldn’t touch metadata — t
+- Key sections: TL;DR | The actual threat model | Step 1: the schema-safe metadata view | Step 2: the purpose-built agent role | Step 3: the MCP tool with a hard row cap | Step 4: wire the agent and test the boundary | The gotchas nobody warns you about | The one principle
+
+### Why LLMs give different answers to the same question
+- URL: https://dataengineerhub.blog/articles/why-llms-give-different-answers
+- Published: 2026-07-09 | Updated: 2026-07-09
+- Word count: ~2130
+- Summary: The bug report said: “The model is broken. It gives a different answer every time I ask the same question.” I’ve gotten some version of this from three different engineers now, and each time the fix is the same — not a code change, but a change in how they think about what a language model actually 
+- Key sections: TL;DR | The core idea: the model predicts, it doesn’t retrieve | Temperature: the dial that reshapes the dice | top_p and top_k: fencing off the nonsense | The part that surprises even experienced engineers | Why this is a feature, not a bug | The gotchas nobody warns you about | How to get the most reproducible output you can
+
+### Why AI Agents Forget: The Architecture behind Memory failures
+- URL: https://dataengineerhub.blog/articles/why-ai-agents-forget-memory-architecture
+- Published: 2026-06-30 | Updated: 2026-06-30
+- Word count: ~2267
+- Summary: Your AI agent isn’t getting dumber over time. It’s getting amnesiac . It forgets a constraint you set ten turns ago, even though it followed it perfectly at turn three. It contradicts itself across sessions. It treats a fact you corrected last week as if it never heard the correction. Teams blame th
+- Key sections: TL;DR | The assumption everyone makes (and shouldn’t) | Why the RAM analogy actually explains the failures you’re seeing | Four memory types, one bucket (the real architectural sin) | The retrieval pipeline, and where the cost actually goes | The gotchas nobody warns you about | What the better architectures actually do | The real question: build, or borrow?
+
 ## Databricks (2 articles)
 
 ### Databricks Unity Catalog + Apache Iceberg in 2026
 - URL: https://dataengineerhub.blog/articles/databricks-unity-catalog-iceberg-2026
-- Published: 2026-07-20 | Updated: 2026-07-18
+- Published: 2026-07-20 | Updated: 2026-07-23
 - Word count: ~1744
 - Summary: The table format question is settled. Apache Iceberg won. Snowflake, Databricks, AWS, Google, and every serious data platform has committed to it. What hasn’t settled — what’s actively being fought over right now, with real architectural consequences for every data team making lakehouse decisions — 
 - Key sections: TL;DR | Why the catalog became the battleground | Managed tables: what Unity Catalog controls | Cross-engine access: the two APIs | Lakehouse Federation: governing tables you don’t own | Cross-engine ABAC: governance that travels with the catalog | Predictive Optimization and Liquid Clustering | The gotchas nobody warns you about
@@ -448,22 +513,6 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Word count: ~1111
 - Summary: If you’ve ever inherited a dbt project, you know there are two kinds: the clean, logical, and easy-to-navigate project, and the other kind—a tangled mess of models that makes you question every life choice that led you to that moment. The difference between the two isn’t talent; it’s structure. For 
 - Key sections: Why dbt and Snowflake Are a Perfect Match | The Layered Approach: From Raw Data to Actionable Insights | Layer 1: Declaring Your Sources (The Contract with Raw Data) | Layer 2: Staging Models (Clean and Standardize) | Layer 3: Intermediate Models (Build, Join, and Aggregate) | Layer 4: Data Marts (Ready for Analysis) | Conclusion: Structure is Freedom
-
-## AI (2 articles)
-
-### Why LLMs give different answers to the same question
-- URL: https://dataengineerhub.blog/articles/why-llms-give-different-answers
-- Published: 2026-07-09 | Updated: 2026-07-09
-- Word count: ~2130
-- Summary: The bug report said: “The model is broken. It gives a different answer every time I ask the same question.” I’ve gotten some version of this from three different engineers now, and each time the fix is the same — not a code change, but a change in how they think about what a language model actually 
-- Key sections: TL;DR | The core idea: the model predicts, it doesn’t retrieve | Temperature: the dial that reshapes the dice | top_p and top_k: fencing off the nonsense | The part that surprises even experienced engineers | Why this is a feature, not a bug | The gotchas nobody warns you about | How to get the most reproducible output you can
-
-### Why AI Agents Forget: The Architecture behind Memory failures
-- URL: https://dataengineerhub.blog/articles/why-ai-agents-forget-memory-architecture
-- Published: 2026-06-30 | Updated: 2026-06-30
-- Word count: ~2267
-- Summary: Your AI agent isn’t getting dumber over time. It’s getting amnesiac . It forgets a constraint you set ten turns ago, even though it followed it perfectly at turn three. It contradicts itself across sessions. It treats a fact you corrected last week as if it never heard the correction. Teams blame th
-- Key sections: TL;DR | The assumption everyone makes (and shouldn’t) | Why the RAM analogy actually explains the failures you’re seeing | Four memory types, one bucket (the real architectural sin) | The retrieval pipeline, and where the cost actually goes | The gotchas nobody warns you about | What the better architectures actually do | The real question: build, or borrow?
 
 ## SQL (2 articles)
 

@@ -11,9 +11,167 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-07-20",
-  "totalArticles": 80,
+  "lastUpdated": "2026-07-26",
+  "totalArticles": 87,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/introduction-to-loop-engineering",
+      "title": "Introduction to Loop Engineering: Designing AI Agent Loops (2026)",
+      "summary": "A team I know left a coding agent running on a Friday afternoon. The task was open-ended — “keep fixing failing tests until the suite is green” — and the…",
+      "keyFacts": [
+        "→ Agent loops make roughly 10x–100x more model calls than a single prompt, so cost control (model routing, prompt caching, iteration caps) is a first-class part of the design, not an afterthought",
+        "That missing off-switch is the entire subject of a discipline that got its name in June 2026 and has been reorganizing how people talk about agents ever since: loop engineering",
+        "TL;DR → Loop engineering is the practice of designing the system that prompts an AI agent for you — its trigger, its steps, its verifier, and its stop rules — instead of prompting the agent by hand each time",
+        "→ The single most important design decision is the stop rule : a loop with no termination logic is a resource sink that burns money without converging"
+      ],
+      "entities": [
+        "databricks",
+        "snowflake",
+        "dbt"
+      ],
+      "questionAnswered": "What does the Introduction to Loop Engineering: Designing AI Agent Loops (2026) cover?",
+      "lastUpdated": "2026-07-23",
+      "published": "2026-07-25",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 2170
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/ollama-local-llm-data-pipeline",
+      "title": "Running Ollama Inside a Data Pipeline: What Actually Breaks",
+      "summary": "Three weeks ago I watched a teammate open the OpenAI billing dashboard and go quiet. We’d built a PII-tagging job that ran a small classification prompt against every new row…",
+      "keyFacts": [
+        "→ Ollama is a single background daemon, not a per-task process, so the first request in an Airflow DAG can be slow while the model loads into memory, and this needs its own timeout handling",
+        "→ Running the model locally also means the compliance conversation changes: no row of customer data leaves the host you already control access to",
+        "That’s the same reasoning that made Snowflake’s own Cortex tooling worth covering here: the interesting engineering question is never “can the model do the task,” it’s “what does it cost to wire this into infrastructure we already run"
+      ],
+      "entities": [
+        "airflow",
+        "snowflake",
+        "python"
+      ],
+      "questionAnswered": "What is Running Ollama Inside a Data Pipeline: What Actually Breaks?",
+      "lastUpdated": "2026-07-23",
+      "published": "2026-07-25",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 1602
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/build-mcp-server-python-fastmcp",
+      "title": "Build a Simple MCP Server in Python with FastMCP (2026)",
+      "summary": "A colleague pinged me last spring, quietly furious. He’d spent three days building an MCP server to give an internal agent access to the team’s Snowflake warehouse. The protocol part…",
+      "keyFacts": [
+        "A tight server with 5 tools costs roughly 1,000 tokens of overhead per call",
+        "That gap — between a server that runs and a server that actually helps a model do its job — is the entire subject of this article",
+        "But the ten-minute version is a trap if you think you’re finished when it starts",
+        "Every MCP interaction is this loop: discover, call, execute, return, use — the model never touches your Python directly"
+      ],
+      "entities": [
+        "snowflake",
+        "python",
+        "databricks",
+        "sql",
+        "dbt"
+      ],
+      "questionAnswered": "How do you build a Simple MCP Server in Python with FastMCP (2026)?",
+      "lastUpdated": "2026-07-23",
+      "published": "2026-07-24",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 2146
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/model-context-protocol-explained-3-levels",
+      "title": "Model Context Protocol Explained in 3 Levels of Difficulty",
+      "summary": "Every data platform team building agentic pipelines hits the same wall eventually. You want Claude or CoCo to query Snowflake, trigger a dbt run, check an Airflow DAG, and post…",
+      "keyFacts": [
+        "This is the M×N problem, and it’s the entire reason the Model Context Protocol exists",
+        "MCP is an open standard — introduced by Anthropic in November 2024 and since handed to neutral, open governance — that turns M×N custom integrations into M+N standardized ones",
+        "Five steps, always the same shape, regardless of which tool is on the other end"
+      ],
+      "entities": [
+        "snowflake",
+        "dbt",
+        "airflow"
+      ],
+      "questionAnswered": "What is Model Context Protocolin 3 Levels of Difficulty?",
+      "lastUpdated": "2026-07-23",
+      "published": "2026-07-23",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 1777
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/ai-agent-tool-design-patterns",
+      "title": "AI Agent Tool Design: What Works and What Doesn’t",
+      "summary": "The incident report blamed the model. “The agent called the delete endpoint twice and wiped a partition it shouldn’t have touched.” Everyone nodded, someone filed a ticket to “upgrade to…",
+      "keyFacts": [
+        "This is the pattern almost nobody names correctly",
+        "This is the field guide to designing the tool surface itself — five patterns that work, five that break under real workloads, each paired with its opposite so you can see why it fails, not just what to replace it with",
+        "“The agent called the delete endpoint twice and wiped a partition it shouldn’t have touched"
+      ],
+      "entities": [],
+      "questionAnswered": "What is AI Agent Tool Design: What Works and What Doesn’t?",
+      "lastUpdated": "2026-07-23",
+      "published": "2026-07-22",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 2465
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/tools-vs-subagents-ai-agents",
+      "title": "Tools vs Subagents: Building Effective AI Agents Without Over-Engineering",
+      "summary": "A data engineer I know spent three weeks building a “multi-agent data quality system.” It had an orchestrator agent, a profiling subagent, an anomaly-detection subagent, and a remediation subagent, all…",
+      "keyFacts": [
+        "That story is the whole debate in miniature",
+        "This is the guide to making that call correctly, every time, without over-engineering",
+        "That’s why tools are the primary way agents touch the outside world — and why they should be your default"
+      ],
+      "entities": [
+        "python",
+        "sql",
+        "snowflake",
+        "airflow",
+        "dbt"
+      ],
+      "questionAnswered": "What are the differences between Tools and Subagents: Building Effective AI Agents Without Over-Engineering?",
+      "lastUpdated": "2026-07-23",
+      "published": "2026-07-21",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 2217
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/ai-coding-agents-pipeline-metadata-security",
+      "title": "How to Give AI Coding Agents Access to Your Pipeline Metadata Without Opening Security Holes",
+      "summary": "The question came up in a Slack channel for a platform team I was advising: “We want to give our AI coding agent access to the pipeline metadata so it…",
+      "keyFacts": [
+        "→ Only 44% of organizations have implemented any policies to govern AI agents, even though 92% agree governance is critical",
+        "98% of companies plan to deploy more AI agents in the next year; if each one runs under an unreviewed service account, the identity debt compounds fast",
+        "This is the pattern that closes the gap",
+        "Over-scoped roles are the root risk, not the agent’s behavior",
+        "Not because AI agents shouldn’t touch metadata — they absolutely should — but because “access to metadata” had been scoped as a raw Snowflake role with broad SELECT on the production schema"
+      ],
+      "entities": [
+        "dbt",
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "How to Give AI Coding Agents Access to Your Pipeline Metadata Without Opening Security Holes?",
+      "lastUpdated": "2026-07-23",
+      "published": "2026-07-21",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 2238
+    },
     {
       "url": "https://dataengineerhub.blog/articles/databricks-unity-catalog-iceberg-2026",
       "title": "Databricks Unity Catalog + Apache Iceberg in 2026",
@@ -30,7 +188,7 @@
         "spark"
       ],
       "questionAnswered": "What is Databricks Unity Catalog + Apache Iceberg?",
-      "lastUpdated": "2026-07-18",
+      "lastUpdated": "2026-07-23",
       "published": "2026-07-20",
       "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",

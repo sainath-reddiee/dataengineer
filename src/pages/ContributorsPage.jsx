@@ -25,24 +25,34 @@ function decodeHtml(html = '') {
 }
 
 async function loadContributors() {
-  // Fetch users with post count
+  // Fetch unified contributors list (WP Users + Guest Authors)
   const res = await fetch(
-    `${WP_BASE}/wp-json/dehub/v1/contributors?roles=author,contributor,editor`
+    `${WP_BASE}/wp-json/dehub/v1/contributors`
   );
   const users = await res.json();
+  if (!Array.isArray(users)) return [];
 
-  // For each, get post count
+  // For each contributor, calculate post count
   const withCounts = await Promise.all(
     users.map(async (u) => {
       try {
-        const pr = await fetch(`${WP_API}/posts?author=${u.id}&per_page=1&status=publish&_fields=id`);
-        const count = parseInt(pr.headers.get('X-WP-Total') || '0');
+        let count = 0;
+        const isGuest = u.is_guest || (typeof u.id === 'string' && u.id.startsWith('guest_'));
+        if (isGuest) {
+          const pr = await fetch(`${WP_API}/posts?per_page=100&status=publish&_fields=id,guest_author_details`);
+          const posts = await pr.json();
+          if (Array.isArray(posts)) {
+            count = posts.filter(p => p.guest_author_details?.id === u.id || p.guest_author_details?.slug === u.slug).length;
+          }
+        } else {
+          const pr = await fetch(`${WP_API}/posts?author=${u.id}&per_page=1&status=publish&_fields=id`);
+          count = parseInt(pr.headers.get('X-WP-Total') || '0');
+        }
         return { ...u, postCount: count };
       } catch { return { ...u, postCount: 0 }; }
     })
   );
 
-  // Sort by post count desc, filter out admins who have 0 posts (optional)
   return withCounts.sort((a, b) => b.postCount - a.postCount);
 }
 

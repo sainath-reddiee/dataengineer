@@ -52,42 +52,188 @@ remove_action('init', 'handle_cors_requests');
 add_action('init', 'handle_cors_requests', 9);
 
 // ============================================================================
-// GUEST AUTHOR — Expose custom user meta fields and custom endpoint
+// GUEST AUTHOR MANAGEMENT SYSTEM (No WP User Accounts Required)
 // ============================================================================
 
-// Register a custom endpoint to bypass security plugins that block /wp/v2/users
-add_action( 'rest_api_init', function () {
-    register_rest_route( 'dehub/v1', '/contributors', [
+/**
+ * Get all guest authors stored in 'dehub_guest_authors' option
+ */
+function dehub_get_guest_authors() {
+    $authors = get_option('dehub_guest_authors', []);
+    if (!is_array($authors)) {
+        return [];
+    }
+    return array_values($authors);
+}
+
+/**
+ * Get a single guest author by ID or slug
+ */
+function dehub_get_guest_author_by($field, $value) {
+    $authors = dehub_get_guest_authors();
+    foreach ($authors as $author) {
+        if (isset($author[$field]) && $author[$field] === $value) {
+            return $author;
+        }
+    }
+    return null;
+}
+
+/**
+ * Save or update a guest author profile in 'dehub_guest_authors' option
+ */
+function dehub_save_guest_author($data) {
+    $authors = get_option('dehub_guest_authors', []);
+    if (!is_array($authors)) {
+        $authors = [];
+    }
+
+    $id = !empty($data['id']) ? sanitize_text_field($data['id']) : 'guest_' . uniqid();
+    $name = !empty($data['name']) ? sanitize_text_field($data['name']) : 'Guest Contributor';
+    $slug = !empty($data['slug']) ? sanitize_title($data['slug']) : sanitize_title($name);
+
+    $profile = [
+        'id'          => $id,
+        'name'        => $name,
+        'slug'        => $slug,
+        'description' => !empty($data['description']) ? wp_kses_post($data['description']) : (!empty($data['bio']) ? wp_kses_post($data['bio']) : ''),
+        'url'         => !empty($data['url']) ? esc_url_raw($data['url']) : (!empty($data['website']) ? esc_url_raw($data['website']) : ''),
+        'email'       => !empty($data['email']) ? sanitize_email($data['email']) : '',
+        'avatar_urls' => [
+            '24' => !empty($data['avatar_url']) ? esc_url_raw($data['avatar_url']) : '',
+            '48' => !empty($data['avatar_url']) ? esc_url_raw($data['avatar_url']) : '',
+            '96' => !empty($data['avatar_url']) ? esc_url_raw($data['avatar_url']) : '',
+        ],
+        'meta'        => [
+            'linkedin_url'      => !empty($data['linkedin_url']) ? esc_url_raw($data['linkedin_url']) : (!empty($data['linkedin']) ? esc_url_raw($data['linkedin']) : ''),
+            'twitter_url'       => !empty($data['twitter_url']) ? esc_url_raw($data['twitter_url']) : (!empty($data['twitter']) ? esc_url_raw($data['twitter']) : ''),
+            'job_title'         => !empty($data['job_title']) ? sanitize_text_field($data['job_title']) : (!empty($data['jobTitle']) ? sanitize_text_field($data['jobTitle']) : 'Guest Contributor'),
+            'github_url'        => !empty($data['github_url']) ? esc_url_raw($data['github_url']) : (!empty($data['github']) ? esc_url_raw($data['github']) : ''),
+            'author_avatar_url' => !empty($data['avatar_url']) ? esc_url_raw($data['avatar_url']) : (!empty($data['avatarUrl']) ? esc_url_raw($data['avatarUrl']) : ''),
+        ],
+        'is_guest'    => true,
+        'updated_at'  => time(),
+    ];
+
+    $authors[$id] = $profile;
+    update_option('dehub_guest_authors', $authors);
+    return $profile;
+}
+
+/**
+ * Delete a guest author from 'dehub_guest_authors' option
+ */
+function dehub_delete_guest_author($id) {
+    $authors = get_option('dehub_guest_authors', []);
+    if (is_array($authors) && isset($authors[$id])) {
+        unset($authors[$id]);
+        update_option('dehub_guest_authors', $authors);
+        return true;
+    }
+    return false;
+}
+
+// Register REST API endpoints for guest authors
+add_action('rest_api_init', function () {
+    // 1. Guest Authors CRUD Endpoint
+    register_rest_route('dehub/v1', '/guest-authors', [
+        [
+            'methods'  => 'GET',
+            'callback' => function ($request) {
+                $slug = $request->get_param('slug');
+                if (!empty($slug)) {
+                    $found = dehub_get_guest_author_by('slug', $slug);
+                    return rest_ensure_response($found ? [$found] : []);
+                }
+                return rest_ensure_response(dehub_get_guest_authors());
+            },
+            'permission_callback' => '__return_true'
+        ],
+        [
+            'methods'  => 'POST',
+            'callback' => function ($request) {
+                $params = $request->get_json_params();
+                if (empty($params)) {
+                    $params = $request->get_body_params();
+                }
+                $saved = dehub_save_guest_author($params);
+                return rest_ensure_response($saved);
+            },
+            'permission_callback' => '__return_true'
+        ]
+    ]);
+
+    register_rest_route('dehub/v1', '/guest-authors/(?P<id>[a-zA-Z0-9_-]+)', [
+        [
+            'methods'  => 'DELETE',
+            'callback' => function ($request) {
+                $id = $request['id'];
+                $deleted = dehub_delete_guest_author($id);
+                return rest_ensure_response(['success' => $deleted]);
+            },
+            'permission_callback' => '__return_true'
+        ]
+    ]);
+
+    // 2. Contributors List (Unified WP Users + Non-WP Guest Authors)
+    register_rest_route('dehub/v1', '/contributors', [
         'methods'  => 'GET',
         'callback' => 'dehub_get_contributors_endpoint',
         'permission_callback' => '__return_true'
-    ] );
-} );
+    ]);
 
-function dehub_get_contributors_endpoint( $request ) {
+    // 3. Register post meta for guest author assignment
+    register_post_meta('post', 'guest_author_id', [
+        'show_in_rest' => true,
+        'single'       => true,
+        'type'         => 'string',
+        'auth_callback' => '__return_true'
+    ]);
+});
+
+/**
+ * Endpoint callback for /dehub/v1/contributors
+ * Merges WordPress user accounts and guest authors (no WP user required)
+ */
+function dehub_get_contributors_endpoint($request) {
     $roles = $request->get_param('roles');
     $slug = $request->get_param('slug');
-    
+
+    $data = [];
+
+    // If searching by slug, check guest authors first
+    if (!empty($slug)) {
+        $guest = dehub_get_guest_author_by('slug', $slug);
+        if ($guest) {
+            return rest_ensure_response([$guest]);
+        }
+    }
+
+    // Fetch guest authors from option
+    $guest_authors = dehub_get_guest_authors();
+    foreach ($guest_authors as $g) {
+        $data[] = $g;
+    }
+
+    // Fetch WordPress users
     $args = [];
-    if ( !empty($roles) ) {
+    if (!empty($roles)) {
         $args['role__in'] = explode(',', $roles);
     }
-    if ( !empty($slug) ) {
-        // Search by nicename (slug)
+    if (!empty($slug)) {
         $args['search'] = $slug;
         $args['search_columns'] = ['user_nicename'];
     }
 
     $users = get_users($args);
-    $data = [];
     $can_edit = current_user_can('edit_users');
-    
-    foreach ( $users as $user ) {
+
+    foreach ($users as $user) {
         $user_data = [
             'id'          => $user->ID,
             'name'        => $user->display_name,
             'slug'        => $user->user_nicename,
-            'description' => get_user_meta( $user->ID, 'description', true ),
+            'description' => get_user_meta($user->ID, 'description', true),
             'url'         => $user->user_url,
             'avatar_urls' => [
                 '24' => get_avatar_url($user->ID, ['size' => 24]),
@@ -95,24 +241,42 @@ function dehub_get_contributors_endpoint( $request ) {
                 '96' => get_avatar_url($user->ID, ['size' => 96]),
             ],
             'meta'        => [
-                'linkedin_url'      => get_user_meta( $user->ID, 'linkedin_url', true ),
-                'twitter_url'       => get_user_meta( $user->ID, 'twitter_url', true ),
-                'job_title'         => get_user_meta( $user->ID, 'job_title', true ),
-                'github_url'        => get_user_meta( $user->ID, 'github_url', true ),
-                'author_avatar_url' => get_user_meta( $user->ID, 'author_avatar_url', true ),
+                'linkedin_url'      => get_user_meta($user->ID, 'linkedin_url', true),
+                'twitter_url'       => get_user_meta($user->ID, 'twitter_url', true),
+                'job_title'         => get_user_meta($user->ID, 'job_title', true),
+                'github_url'        => get_user_meta($user->ID, 'github_url', true),
+                'author_avatar_url' => get_user_meta($user->ID, 'author_avatar_url', true),
             ],
+            'is_wp_user'  => true,
         ];
 
-        // Only expose email to administrators
-        if ( $can_edit ) {
+        if ($can_edit) {
             $user_data['email'] = $user->user_email;
         }
 
         $data[] = $user_data;
     }
-    
-    return rest_ensure_response( $data );
+
+    return rest_ensure_response($data);
 }
+
+/**
+ * Filter REST API post responses to attach embedded guest author profile details
+ */
+add_filter('rest_prepare_post', function ($response, $post, $request) {
+    $guest_author_id = get_post_meta($post->ID, 'guest_author_id', true);
+    if (!empty($guest_author_id)) {
+        $guest_author = dehub_get_guest_author_by('id', $guest_author_id);
+        if (!$guest_author) {
+            $guest_author = dehub_get_guest_author_by('slug', $guest_author_id);
+        }
+        if ($guest_author) {
+            $response->data['guest_author_details'] = $guest_author;
+        }
+    }
+    return $response;
+}, 10, 3);
+
 
 add_action( 'rest_api_init', 'dehub_register_author_meta_fields' );
 function dehub_register_author_meta_fields() {

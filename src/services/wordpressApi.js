@@ -273,13 +273,31 @@ class WordPressAPI {
       // components (PostCard, PostListItem, RecentPosts, etc.) that render
       // {post.author} directly. Rich data lives in authorData, consumed only
       // by ArticlePage's AuthorBioCard.
+      // Support Non-WP Guest Authors (from guest_author_details post meta filter)
+      const guestDetails = wpPost.guest_author_details;
       const authorEmbed = wpPost._embedded?.author?.[0] || {};
-      const authorName = authorEmbed.name || 'DataEngineer Hub';
+      
+      const authorName = guestDetails?.name || authorEmbed.name || 'DataEngineer Hub';
       const author = authorName; // string — DO NOT change to object
-      const authorData = {
+      
+      const authorData = guestDetails ? {
+        name: guestDetails.name,
+        bio: guestDetails.description || guestDetails.bio || '',
+        avatarUrl: guestDetails.meta?.author_avatar_url
+          || guestDetails.avatar_urls?.['96']
+          || guestDetails.avatar_url
+          || '',
+        website: guestDetails.url || guestDetails.website || '',
+        slug: guestDetails.slug || '',
+        linkedin: guestDetails.meta?.linkedin_url || guestDetails.linkedin || '',
+        twitter: guestDetails.meta?.twitter_url || guestDetails.twitter || '',
+        github: guestDetails.meta?.github_url || guestDetails.github || '',
+        role: guestDetails.meta?.job_title || guestDetails.job_title || 'Guest Author',
+        isGuest: true,
+        id: guestDetails.id,
+      } : {
         name: authorName,
         bio: authorEmbed.description || '',
-        // Prefer custom avatar URL (from user meta), then Gravatar 96px, then 48px
         avatarUrl: authorEmbed.meta?.author_avatar_url
           || authorEmbed.acf?.author_avatar_url
           || authorEmbed.avatar_urls?.['96']
@@ -287,7 +305,6 @@ class WordPressAPI {
           || '',
         website: authorEmbed.url || '',
         slug: authorEmbed.slug || '',
-        // Custom user meta fields exposed via WP REST API (register_meta with show_in_rest: true)
         linkedin: authorEmbed.meta?.linkedin_url || authorEmbed.acf?.linkedin_url || '',
         twitter: authorEmbed.meta?.twitter_url || authorEmbed.acf?.twitter_url
           || authorEmbed.meta?.['wpseo_profile_twitter'] || '',

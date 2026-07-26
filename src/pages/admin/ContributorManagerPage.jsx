@@ -53,28 +53,83 @@ async function fetchUsers() {
   return res.json();
 }
 
-/** Fetch posts by author id */
+/** Fetch posts by author id or guest author id */
 async function fetchPostsByAuthor(authorId, page = 1) {
+  const isGuest = typeof authorId === 'string' && authorId.startsWith('guest_');
+  if (isGuest) {
+    const res = await fetch(
+      `${WP_API}/posts?per_page=50&status=publish&_fields=id,title,slug,date,categories,meta,guest_author_details&_embed=wp:term`,
+      { headers: authHeader() }
+    );
+    const data = await res.json();
+    if (Array.isArray(data)) {
+      const filtered = data.filter(p => p.guest_author_details?.id === authorId || p.meta?.guest_author_id === authorId);
+      return { posts: filtered, total: filtered.length };
+    }
+    return { posts: [], total: 0 };
+  }
+
   const res = await fetch(
     `${WP_API}/posts?author=${authorId}&per_page=20&page=${page}&status=publish&_fields=id,title,slug,date,categories&_embed=wp:term`,
     { headers: authHeader() }
   );
   const total = parseInt(res.headers.get('X-WP-Total') || '0');
   const data = await res.json();
-  return { posts: data, total };
+  return { posts: Array.isArray(data) ? data : [], total };
 }
 
 /** Fetch all published posts for the post-assignment search */
 async function searchPosts(query) {
   const url = query.trim()
-    ? `${WP_API}/posts?search=${encodeURIComponent(query.trim())}&per_page=20&status=publish&_fields=id,title,slug,author`
-    : `${WP_API}/posts?per_page=20&status=publish&_fields=id,title,slug,author`;
+    ? `${WP_API}/posts?search=${encodeURIComponent(query.trim())}&per_page=20&status=publish&_fields=id,title,slug,author,meta,guest_author_details`
+    : `${WP_API}/posts?per_page=20&status=publish&_fields=id,title,slug,author,meta,guest_author_details`;
   const data = await wpFetch(url.replace(WP_API, ''));
-  return data;
+  return Array.isArray(data) ? data : [];
 }
 
-/** Update user meta via REST (requires Application Password) */
+/** Save or update guest author (stored in WP options, no WP user created) */
+async function saveGuestAuthor(fields) {
+  const res = await fetch(`${WP_BASE}/wp-json/dehub/v1/guest-authors`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeader() },
+    body: JSON.stringify({
+      id: fields.id,
+      name: fields.name,
+      slug: fields.slug || fields.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+      job_title: fields.jobTitle,
+      description: fields.bio,
+      avatar_url: fields.avatarUrl,
+      website: fields.website,
+      linkedin_url: fields.linkedin,
+      twitter_url: fields.twitter,
+      github_url: fields.github,
+      email: fields.email,
+    }),
+  });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => res.statusText);
+    throw new Error(`Failed to save guest author: ${txt}`);
+  }
+  return res.json();
+}
+
+/** Delete guest author */
+async function deleteGuestAuthorApi(id) {
+  const res = await fetch(`${WP_BASE}/wp-json/dehub/v1/guest-authors/${id}`, {
+    method: 'DELETE',
+    headers: authHeader(),
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to delete guest author`);
+  }
+  return res.json();
+}
+
+/** Update user meta via REST (requires Application Password for WP users) */
 async function saveUserMeta(userId, fields) {
+  if (fields.is_guest || (typeof userId === 'string' && userId.startsWith('guest_'))) {
+    return saveGuestAuthor({ ...fields, id: userId });
+  }
   return wpFetch(`/users/${userId}`, {
     method: 'PUT',
     body: JSON.stringify({
@@ -92,12 +147,25 @@ async function saveUserMeta(userId, fields) {
   });
 }
 
-/** Reassign a post's author */
-async function reassignPostAuthor(postId, authorId) {
-  return wpFetch(`/posts/${postId}`, {
-    method: 'POST',
-    body: JSON.stringify({ author: authorId }),
-  });
+/** Reassign a post's author or guest author meta */
+async function reassignPostAuthor(postId, user) {
+  const isGuest = user.is_guest || (typeof user.id === 'string' && user.id.startsWith('guest_'));
+  if (isGuest) {
+    return wpFetch(`/posts/${postId}`, {
+      method: 'POST',
+      body: JSON.stringify({
+        meta: { guest_author_id: String(user.id) }
+      }),
+    });
+  } else {
+    return wpFetch(`/posts/${postId}`, {
+      method: 'POST',
+      body: JSON.stringify({
+        author: user.id,
+        meta: { guest_author_id: '' }
+      }),
+    });
+  }
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -190,10 +258,69 @@ export default function ContributorManagerPage() {
   const [assigning, setAssigning] = useState(null); // postId being reassigned
   const postSearchTimer = useRef(null);
 
+  // ── Modal state for adding guest contributor (no WP user)
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newGuestFields, setNewGuestFields] = useState({
+    name: '', jobTitle: '', bio: '', avatarUrl: '', linkedin: '', twitter: '', github: '', website: '', email: ''
+  });
+  const [addingGuest, setAddingGuest] = useState(false);
+
   // ── Active tab in right panel
   const [activeTab, setActiveTab] = useState('preview'); // 'preview' | 'edit' | 'posts' | 'assign'
 
   const hasAppPwd = Boolean(import.meta.env.VITE_WP_APP_PASSWORD);
+
+  // ── Add Guest Contributor (No WP user account created!)
+  const handleAddGuest = async (e) => {
+    e.preventDefault();
+    if (!newGuestFields.name.trim()) {
+      toast({ title: 'Name required', description: 'Please enter a name for the guest contributor.', variant: 'destructive' });
+      return;
+    }
+    setAddingGuest(true);
+    try {
+      const created = await saveGuestAuthor({
+        id: 'guest_' + Date.now(),
+        name: newGuestFields.name,
+        jobTitle: newGuestFields.jobTitle,
+        bio: newGuestFields.bio,
+        avatarUrl: newGuestFields.avatarUrl,
+        linkedin: newGuestFields.linkedin,
+        twitter: newGuestFields.twitter,
+        github: newGuestFields.github,
+        website: newGuestFields.website,
+        email: newGuestFields.email,
+      });
+      toast({ title: '✅ Guest Contributor Added', description: `${created.name} added as guest contributor (No WP User created).` });
+      setShowAddModal(false);
+      setNewGuestFields({ name: '', jobTitle: '', bio: '', avatarUrl: '', linkedin: '', twitter: '', github: '', website: '', email: '' });
+      await loadUsers();
+      selectUser(created);
+    } catch (err) {
+      toast({ title: 'Failed to add guest contributor', description: err.message, variant: 'destructive' });
+    } finally {
+      setAddingGuest(false);
+    }
+  };
+
+  // ── Delete Guest Contributor
+  const handleDeleteGuest = async () => {
+    if (!selectedUser) return;
+    const isGuest = selectedUser.is_guest || (typeof selectedUser.id === 'string' && selectedUser.id.startsWith('guest_'));
+    if (!isGuest) {
+      toast({ title: 'Cannot delete WP User', description: 'WP Users must be managed in WP Admin.', variant: 'destructive' });
+      return;
+    }
+    if (!window.confirm(`Are you sure you want to delete guest contributor "${selectedUser.name}"? This action cannot be undone.`)) return;
+    try {
+      await deleteGuestAuthorApi(selectedUser.id);
+      toast({ title: '✅ Contributor Deleted', description: `${selectedUser.name} has been removed.` });
+      setSelectedUser(null);
+      await loadUsers();
+    } catch (err) {
+      toast({ title: 'Delete failed', description: err.message, variant: 'destructive' });
+    }
+  };
 
   // ── Load users
   const loadUsers = useCallback(async () => {
@@ -217,6 +344,7 @@ export default function ContributorManagerPage() {
     setEditing(false);
     setActiveTab('preview');
     setEditFields({
+      is_guest: user.is_guest || (typeof user.id === 'string' && user.id.startsWith('guest_')),
       name: user.name || '',
       bio: user.description || '',
       website: user.url || '',
@@ -240,7 +368,8 @@ export default function ContributorManagerPage() {
   // ── Save bio fields
   const handleSave = async () => {
     if (!selectedUser || !editFields) return;
-    if (!hasAppPwd) {
+    const isGuest = selectedUser.is_guest || (typeof selectedUser.id === 'string' && selectedUser.id.startsWith('guest_'));
+    if (!hasAppPwd && !isGuest) {
       toast({ title: 'App Password required', description: 'Set VITE_WP_APP_PASSWORD in .env to enable saving.', variant: 'destructive' });
       return;
     }
@@ -282,8 +411,8 @@ export default function ContributorManagerPage() {
     }
     setAssigning(post.id);
     try {
-      await reassignPostAuthor(post.id, selectedUser.id);
-      toast({ title: '✅ Author updated', description: `"${decodeHtml(post.title?.rendered || post.title)}" is now by ${selectedUser.name}.` });
+      await reassignPostAuthor(post.id, selectedUser);
+      toast({ title: '✅ Author updated', description: `"${decodeHtml(post.title?.rendered || post.title)}" is now assigned to ${selectedUser.name}.` });
       // Remove from results to avoid confusion
       setPostResults(prev => prev.filter(p => p.id !== post.id));
       // Reload author's posts
@@ -331,13 +460,22 @@ export default function ContributorManagerPage() {
           <h1 className="text-2xl font-black text-white">Guest Contributors</h1>
           <p className="text-gray-400 text-sm mt-1">Manage contributor bios, preview author cards, and assign posts — all from one place.</p>
         </div>
-        <button
-          onClick={loadUsers}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-700/50 border border-slate-600/40 text-gray-300 hover:text-white hover:bg-slate-700 transition-all text-sm"
-        >
-          <RefreshCw className="h-4 w-4" />
-          Refresh
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg shadow-blue-500/20 transition-all text-sm"
+          >
+            <Plus className="h-4 w-4" />
+            Add Guest Contributor
+          </button>
+          <button
+            onClick={loadUsers}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-700/50 border border-slate-600/40 text-gray-300 hover:text-white hover:bg-slate-700 transition-all text-sm"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </button>
+        </div>
       </motion.div>
 
       {/* ── App password warning ── */}
@@ -452,11 +590,26 @@ export default function ContributorManagerPage() {
                   </div>
                 </div>
                 {/* Quick actions */}
-                <div className="flex gap-2 flex-shrink-0">
-                  <a href={`${WP_BASE}/wp-admin/user-edit.php?user_id=${selectedUser.id}`} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-slate-700/50 border border-slate-600/40 text-gray-300 hover:text-white hover:bg-slate-700 transition-all">
-                    <ExternalLink className="h-3.5 w-3.5" /> WP Admin
-                  </a>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {selectedUser.is_guest || (typeof selectedUser.id === 'string' && selectedUser.id.startsWith('guest_')) ? (
+                    <>
+                      <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+                        Guest Author (No WP Account)
+                      </span>
+                      <button
+                        onClick={handleDeleteGuest}
+                        className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all"
+                        title="Delete Guest Author"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" /> Delete
+                      </button>
+                    </>
+                  ) : (
+                    <a href={`${WP_BASE}/wp-admin/user-edit.php?user_id=${selectedUser.id}`} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-slate-700/50 border border-slate-600/40 text-gray-300 hover:text-white hover:bg-slate-700 transition-all">
+                      <ExternalLink className="h-3.5 w-3.5" /> WP Admin
+                    </a>
+                  )}
                 </div>
               </div>
 
@@ -681,7 +834,9 @@ export default function ContributorManagerPage() {
                               <p className="text-sm font-medium text-white truncate">
                                 {decodeHtml(post.title?.rendered || post.title || 'Untitled')}
                               </p>
-                              <p className="text-xs text-gray-500">ID: {post.id} · Current author ID: {post.author}</p>
+                              <p className="text-xs text-gray-500">
+                                ID: {post.id} · Current author: {post.guest_author_details?.name ? `${post.guest_author_details.name} (Guest)` : `WP User #${post.author}`}
+                              </p>
                             </div>
                             <button
                               onClick={() => handleAssign(post)}
@@ -709,6 +864,82 @@ export default function ContributorManagerPage() {
           )}
         </motion.div>
       </div>
+
+      {/* ── Add Guest Contributor Modal (No WP User Account Created) ── */}
+      <AnimatePresence>
+        {showAddModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-slate-900 border border-slate-700/60 rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-5"
+            >
+              <div className="flex items-center justify-between border-b border-slate-700/40 pb-4">
+                <div>
+                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <User className="h-5 w-5 text-blue-400" />
+                    Add Guest Contributor
+                  </h3>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    Creates a guest author profile without creating a WordPress user account.
+                  </p>
+                </div>
+                <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-white p-1 rounded-lg">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleAddGuest} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field label="Display Name *" id="new_name" icon={User}
+                    value={newGuestFields.name} placeholder="Jane Doe"
+                    onChange={e => setNewGuestFields(f => ({ ...f, name: e.target.value }))} />
+                  <Field label="Job Title / Role" id="new_jobTitle" icon={Briefcase}
+                    value={newGuestFields.jobTitle} placeholder="Senior Data Engineer"
+                    onChange={e => setNewGuestFields(f => ({ ...f, jobTitle: e.target.value }))} />
+                </div>
+
+                <Field label="Bio / Profile Description" id="new_bio" icon={FileText} rows={3}
+                  value={newGuestFields.bio} placeholder="Short bio displayed on author card..."
+                  onChange={e => setNewGuestFields(f => ({ ...f, bio: e.target.value }))} />
+
+                <Field label="Avatar Photo URL" id="new_avatarUrl" icon={Camera}
+                  value={newGuestFields.avatarUrl} placeholder="https://example.com/photo.jpg"
+                  hint="Direct headshot image URL."
+                  onChange={e => setNewGuestFields(f => ({ ...f, avatarUrl: e.target.value }))} />
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field label="LinkedIn URL" id="new_linkedin" icon={Linkedin}
+                    value={newGuestFields.linkedin} placeholder="https://linkedin.com/in/..."
+                    onChange={e => setNewGuestFields(f => ({ ...f, linkedin: e.target.value }))} />
+                  <Field label="Twitter / X URL" id="new_twitter" icon={Twitter}
+                    value={newGuestFields.twitter} placeholder="https://twitter.com/..."
+                    onChange={e => setNewGuestFields(f => ({ ...f, twitter: e.target.value }))} />
+                  <Field label="GitHub URL" id="new_github" icon={Github}
+                    value={newGuestFields.github} placeholder="https://github.com/..."
+                    onChange={e => setNewGuestFields(f => ({ ...f, github: e.target.value }))} />
+                  <Field label="Personal Website" id="new_website" icon={Globe}
+                    value={newGuestFields.website} placeholder="https://..."
+                    onChange={e => setNewGuestFields(f => ({ ...f, website: e.target.value }))} />
+                </div>
+
+                <div className="flex justify-end gap-3 pt-4 border-t border-slate-700/40">
+                  <button type="button" onClick={() => setShowAddModal(false)}
+                    className="px-4 py-2 text-sm font-semibold rounded-xl bg-slate-800 border border-slate-700 text-gray-300 hover:text-white transition-all">
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={addingGuest}
+                    className="flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white transition-all disabled:opacity-50">
+                    {addingGuest ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                    {addingGuest ? 'Adding...' : 'Add Contributor'}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

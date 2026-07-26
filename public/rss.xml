@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 20 Jul 2026 18:40:54 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 26 Jul 2026 05:37:16 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -18,6 +18,84 @@
     <managingEditor>contact@dataengineerhub.blog (Sainath Reddy)</managingEditor>
     <webMaster>contact@dataengineerhub.blog (Sainath Reddy)</webMaster>
     <ttl>60</ttl>
+    <item>
+      <title>Introduction to Loop Engineering: Designing AI Agent Loops (2026)</title>
+      <link>https://dataengineerhub.blog/articles/introduction-to-loop-engineering</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/introduction-to-loop-engineering</guid>
+      <description>A team I know left a coding agent running on a Friday afternoon. The task was open-ended — “keep fixing failing tests until the suite is green” — and the…</description>
+      <pubDate>Sat, 25 Jul 2026 09:19:57 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>AI</category>
+      <category>Developer Productivity</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/loop-engineering-featured.png" type="image/png" />
+    </item>
+    <item>
+      <title>Running Ollama Inside a Data Pipeline: What Actually Breaks</title>
+      <link>https://dataengineerhub.blog/articles/ollama-local-llm-data-pipeline</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/ollama-local-llm-data-pipeline</guid>
+      <description>Three weeks ago I watched a teammate open the OpenAI billing dashboard and go quiet. We’d built a PII-tagging job that ran a small classification prompt against every new row…</description>
+      <pubDate>Sat, 25 Jul 2026 01:23:50 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>AI</category>
+      <category>Developer Productivity</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/ollama-cloud-vs-local-featured.png" type="image/png" />
+    </item>
+    <item>
+      <title>Build a Simple MCP Server in Python with FastMCP (2026)</title>
+      <link>https://dataengineerhub.blog/articles/build-mcp-server-python-fastmcp</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/build-mcp-server-python-fastmcp</guid>
+      <description>A colleague pinged me last spring, quietly furious. He’d spent three days building an MCP server to give an internal agent access to the team’s Snowflake warehouse. The protocol part…</description>
+      <pubDate>Fri, 24 Jul 2026 01:18:14 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>AI</category>
+      <category>Developer Productivity</category>
+      <category>Python</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/mcp-server-python-featured.png" type="image/png" />
+    </item>
+    <item>
+      <title>Model Context Protocol Explained in 3 Levels of Difficulty</title>
+      <link>https://dataengineerhub.blog/articles/model-context-protocol-explained-3-levels</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/model-context-protocol-explained-3-levels</guid>
+      <description>Every data platform team building agentic pipelines hits the same wall eventually. You want Claude or CoCo to query Snowflake, trigger a dbt run, check an Airflow DAG, and post…</description>
+      <pubDate>Wed, 22 Jul 2026 22:22:47 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>AI</category>
+      <category>Developer Productivity</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/mcp_3levels_featured-scaled.png" type="image/png" />
+    </item>
+    <item>
+      <title>AI Agent Tool Design: What Works and What Doesn’t</title>
+      <link>https://dataengineerhub.blog/articles/ai-agent-tool-design-patterns</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/ai-agent-tool-design-patterns</guid>
+      <description>The incident report blamed the model. “The agent called the delete endpoint twice and wiped a partition it shouldn’t have touched.” Everyone nodded, someone filed a ticket to “upgrade to…</description>
+      <pubDate>Wed, 22 Jul 2026 09:03:21 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>AI</category>
+      <category>Developer Productivity</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/tool_design_featured-scaled.png" type="image/png" />
+    </item>
+    <item>
+      <title>Tools vs Subagents: Building Effective AI Agents Without Over-Engineering</title>
+      <link>https://dataengineerhub.blog/articles/tools-vs-subagents-ai-agents</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/tools-vs-subagents-ai-agents</guid>
+      <description>A data engineer I know spent three weeks building a “multi-agent data quality system.” It had an orchestrator agent, a profiling subagent, an anomaly-detection subagent, and a remediation subagent, all…</description>
+      <pubDate>Tue, 21 Jul 2026 03:38:00 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>AI</category>
+      <category>Developer Productivity</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/tools_subagents_featured-scaled.png" type="image/png" />
+    </item>
+    <item>
+      <title>How to Give AI Coding Agents Access to Your Pipeline Metadata Without Opening Security Holes</title>
+      <link>https://dataengineerhub.blog/articles/ai-coding-agents-pipeline-metadata-security</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/ai-coding-agents-pipeline-metadata-security</guid>
+      <description>The question came up in a Slack channel for a platform team I was advising: “We want to give our AI coding agent access to the pipeline metadata so it…</description>
+      <pubDate>Tue, 21 Jul 2026 03:30:00 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>AI</category>
+      <category>Developer Productivity</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/07/agent_pipeline_featured-scaled.png" type="image/png" />
+    </item>
     <item>
       <title>Databricks Unity Catalog + Apache Iceberg in 2026</title>
       <link>https://dataengineerhub.blog/articles/databricks-unity-catalog-iceberg-2026</link>
