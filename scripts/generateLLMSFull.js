@@ -161,11 +161,13 @@ function generateLLMSFull(posts) {
     });
 
     let output = `# DataEngineer Hub - Full Content Index for LLMs
+
 > Last generated: ${now}
 > Total articles: ${posts.length}
-> Source: https://dataengineerhub.blog
-> Compact version: https://dataengineerhub.blog/llms.txt
-> Structured data: https://dataengineerhub.blog/llm-sitemap.json
+
+- [Main Website](${SITE_URL}): Official platform
+- [Compact LLM Context](${SITE_URL}/llms.txt): Summary context file
+- [Structured LLM Sitemap](${SITE_URL}/llm-sitemap.json): JSON sitemap for AI agents
 
 This file provides a comprehensive content index designed for large language models.
 Each article includes its URL, summary, key headings, and primary topics.
@@ -187,8 +189,8 @@ Each article includes its URL, summary, key headings, and primary topics.
             const headings = extractHeadings(content);
             const intro = extractFirstParagraphs(content, 1);
 
-            output += `### ${title}\n`;
-            output += `- URL: ${url}\n`;
+            output += `### [${title}](${url})\n`;
+            output += `- URL: [${url}](${url})\n`;
             output += `- Published: ${published} | Updated: ${modified}\n`;
             output += `- Word count: ~${wordCount}\n`;
 

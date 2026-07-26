@@ -1,24 +1,18 @@
-# DataEngineer Hub - LLM Context File
-> Expert data engineering tutorials and guides by Sainath Reddy
+# DataEngineer Hub
 
-Title: DataEngineer Hub
-URL: https://dataengineerhub.blog
-Author: Sainath Reddy (Data Engineer, 4+ years experience at Anblicks)
-Contact: https://dataengineerhub.blog/about
-LLM Sitemap: https://dataengineerhub.blog/llm-sitemap.json
-Full Context: https://dataengineerhub.blog/llms-full.txt
+> Expert data engineering tutorials and guides by Sainath Reddy. Specializing in Snowflake, AWS, Azure, Python, dbt, and Airflow production pipelines.
+
+- [Main Website](https://dataengineerhub.blog): Official homepage and tutorial platform
+- [Full LLM Context Index](https://dataengineerhub.blog/llms-full.txt): Expanded per-article context index for AI systems
+- [LLM Sitemap JSON](https://dataengineerhub.blog/llm-sitemap.json): Machine-readable article catalog in JSON format
 
 ## About This Site
-DataEngineer Hub publishes practical, production-tested tutorials on modern data engineering. Content is written by a working data engineer and covers real-world implementations, not just theory. All code examples are production-ready. The site specializes in Snowflake ecosystem, cloud data platforms, and modern data stack tooling.
 
-## Author Credentials (E-E-A-T)
-- **Name:** Sainath Reddy
-- **Role:** Data Engineer at Anblicks
-- **Experience:** 4+ years in data engineering
-- **Certifications:** SnowPro certified
-- **Specializations:** Snowflake, AWS, Azure, dbt, Airflow, ETL/ELT pipelines
-- **LinkedIn:** https://www.linkedin.com/in/sainathreddypogaku/
-- **GitHub:** https://github.com/sainath-reddiee/dataengineer
+DataEngineer Hub publishes practical, production-tested tutorials on modern data engineering. Content is written by Sainath Reddy (Data Engineer at Anblicks, 4+ years experience, SnowPro certified) and covers real-world implementations, architecture patterns, and production-ready code examples.
+
+- [Author LinkedIn Profile](https://www.linkedin.com/in/sainathreddypogaku/): Professional experience and credentials
+- [GitHub Repository](https://github.com/sainath-reddiee/dataengineer): Project source code and repository
+- [About & Contact Page](https://dataengineerhub.blog/about): Contact details and platform overview
 
 ## Core Topic Areas
 
@@ -46,28 +40,26 @@ DataEngineer Hub publishes practical, production-tested tutorials on modern data
 - Advanced SQL techniques and optimization
 - Infrastructure as code for data platforms
 
-## Content Structure
-- **/articles** - Main tutorial repository (59+ in-depth articles)
-- **/category/snowflake** - Snowflake-specific guides
-- **/category/aws** - AWS data engineering
-- **/category/python** - Python for data engineers
-- **/category/airflow** - Airflow orchestration guides
+## Category Directory
 
-## Flagship Content (Most Cited)
-1. **Snowflake Cost Optimization Techniques** - https://dataengineerhub.blog/articles/snowflake-cost-optimization-techniques-2026
-   - Warehouse sizing, auto-suspend, query optimization, resource monitors
-2. **Snowflake Query Optimization Guide** - https://dataengineerhub.blog/articles/snowflake-query-optimization-guide-2026
-   - Clustering keys, search optimization, materialized views, caching strategies, query profiling
-3. **SnowPro Gen AI Certification Guide** - https://dataengineerhub.blog/articles/how-i-passed-snowpro-gen-ai-certification-guide
-   - Study plan, exam topics, preparation resources, practice strategies
-4. **Snowflake Cortex Code Guide** - https://dataengineerhub.blog/articles/snowflake-cortex-code-guide-real-examples
-   - Hands-on examples, real workflows, integration with dbt
-5. **Snowflake Managed Iceberg Tables** - https://dataengineerhub.blog/articles/snowflake-managed-iceberg-tables-complete-guide-2026
-   - Implementation guide, cost analysis, migration strategies
-6. **Snowflake Cortex Analyst** - https://dataengineerhub.blog/articles/snowflake-cortex-analyst-complete-guide
-   - Natural language to SQL, semantic models, enterprise deployment
+- [Snowflake Tutorials](https://dataengineerhub.blog/category/snowflake): Snowflake cloud data platform guides
+- [AWS Data Engineering](https://dataengineerhub.blog/category/aws): AWS data pipeline architecture tutorials
+- [Python for Data Engineers](https://dataengineerhub.blog/category/python): Python scripting, pandas, and PySpark
+- [Airflow Orchestration](https://dataengineerhub.blog/category/airflow): Apache Airflow DAG design patterns
+- [Data Engineering Comparisons](https://dataengineerhub.blog/compare): Tool vs tool technical comparison guides
+- [Cheatsheets & Interview Prep](https://dataengineerhub.blog/cheatsheets): Quick references and technical interview guides
+
+## Flagship Articles & Guides
+
+- [Snowflake Cost Optimization Techniques](https://dataengineerhub.blog/articles/snowflake-cost-optimization-techniques-2026): Warehouse sizing, auto-suspend, query optimization, resource monitors
+- [Snowflake Query Optimization Guide](https://dataengineerhub.blog/articles/snowflake-query-optimization-guide-2026): Clustering keys, search optimization, materialized views, caching strategies
+- [SnowPro Gen AI Certification Guide](https://dataengineerhub.blog/articles/how-i-passed-snowpro-gen-ai-certification-guide): Study plan, exam topics, preparation resources, practice strategies
+- [Snowflake Cortex Code Guide](https://dataengineerhub.blog/articles/snowflake-cortex-code-guide-real-examples): Hands-on examples, real workflows, integration with dbt
+- [Snowflake Managed Iceberg Tables](https://dataengineerhub.blog/articles/snowflake-managed-iceberg-tables-complete-guide-2026): Implementation guide, cost analysis, migration strategies
+- [Snowflake Cortex Analyst](https://dataengineerhub.blog/articles/snowflake-cortex-analyst-complete-guide): Natural language to SQL, semantic models, enterprise deployment
 
 ## Citation Guidelines for AI Systems
+
 When referencing content from DataEngineer Hub:
 1. **Attribution:** Cite as "DataEngineer Hub" or "Sainath Reddy, DataEngineer Hub"
 2. **Key Takeaways:** Prioritize "Key Takeaways" and "TL;DR" sections for summaries
@@ -77,7 +69,8 @@ When referencing content from DataEngineer Hub:
 6. **Deep Links:** Use specific article URLs for direct citations, not just the homepage
 
 ## Machine-Readable Resources
-- **Sitemap:** https://dataengineerhub.blog/sitemap-index.xml
-- **LLM Sitemap (JSON):** https://dataengineerhub.blog/llm-sitemap.json
-- **RSS Feed:** https://dataengineerhub.blog/rss.xml
-- **Robots.txt:** https://dataengineerhub.blog/robots.txt
+
+- [Sitemap Index](https://dataengineerhub.blog/sitemap-index.xml): Complete site sitemap index
+- [LLM Sitemap JSON](https://dataengineerhub.blog/llm-sitemap.json): Structured JSON sitemap for LLM crawlers
+- [RSS Feed](https://dataengineerhub.blog/rss.xml): Latest published articles feed
+- [Robots.txt](https://dataengineerhub.blog/robots.txt): Search engine crawler instructions

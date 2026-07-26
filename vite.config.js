@@ -92,7 +92,6 @@ export default defineConfig({
         skipThirdPartyRequests: true,
       }),
     }),
-
   ],
 
   resolve: {
@@ -110,13 +109,16 @@ export default defineConfig({
   },
 
   build: {
-    // Suppress modulepreload for chunks that depend on Node built-ins
-    // (duckdb, pdf-vendor). They are lazy-loaded and should not execute eagerly.
+    // Suppress modulepreload for chunks that are lazy-loaded or heavy
+    // (duckdb, pdf-vendor, linking-engine, etc.). They should not execute eagerly on critical path.
     modulePreload: {
       resolveDependencies: (filename, deps) => {
         return deps.filter(dep =>
           !dep.includes('duckdb') &&
-          !dep.includes('pdf-vendor')
+          !dep.includes('pdf-vendor') &&
+          !dep.includes('linking-engine') &&
+          !dep.includes('ai-vendor') &&
+          !dep.includes('markdown')
         );
       },
     },
@@ -124,9 +126,6 @@ export default defineConfig({
     minify: 'terser',
     terserOptions: {
       compress: {
-        // Strip console.log/info/debug in production builds (keeps console.warn
-        // and console.error for genuine error reporting). Removes ~35+ debug
-        // calls in useWordPress / RecentPosts / App that polluted the console.
         drop_console: false,
         drop_debugger: true,
         pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace'],
@@ -136,16 +135,16 @@ export default defineConfig({
 
     rollupOptions: {
       external: [
-        // jsPDF optional peer dependencies - externalize to avoid build errors
         'canvg',
         'html2canvas'
       ],
       output: {
         manualChunks: (id) => {
+          if (id.includes('src/lib/pseo') || id.includes('linkingEngine')) {
+            return 'linking-engine';
+          }
+
           if (id.includes('node_modules')) {
-            // avsc depends on Node.js built-ins (stream, buffer, zlib) that
-            // crash the browser when executed eagerly. Return undefined so
-            // Rollup bundles it with the lazy-loaded FormatConverterPage.
             if (id.includes('avsc')) {
               return undefined;
             }
@@ -164,7 +163,6 @@ export default defineConfig({
             if (id.includes('jspdf')) {
               return 'pdf-vendor';
             }
-            // Heavy libraries used only on specific pages
             if (id.includes('@google/generative-ai')) {
               return 'ai-vendor';
             }

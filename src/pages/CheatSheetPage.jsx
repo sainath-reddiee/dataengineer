@@ -27,6 +27,8 @@ import {
   ChevronDown,
   Calculator,
   Wrench,
+  Check,
+  X,
 } from 'lucide-react';
 
 import {
@@ -185,21 +187,28 @@ function QnASection({ section }) {
 function ChecklistSection({ section }) {
   return (
     <div className="space-y-3">
-      {section.items.map((item, i) => (
-        <div key={i} className="flex items-start gap-3 bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-          <span className={`flex items-center justify-center w-6 h-6 rounded shrink-0 mt-0.5 ${item.checked === false ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
-            {item.checked === false ? 'âœ—' : 'âœ“'}
-          </span>
-          <div>
-            <p className={`text-sm font-medium ${item.checked === false ? 'text-red-300' : 'text-white'}`}>
-              {item.label}
-            </p>
-            {item.detail && (
-              <p className="text-xs text-gray-400 mt-1 leading-relaxed">{item.detail}</p>
-            )}
+      {section.items.map((item, i) => {
+        const isObj = typeof item === 'object' && item !== null;
+        const label = isObj ? item.label : item;
+        const detail = isObj ? item.detail : null;
+        const isUnchecked = isObj && item.checked === false;
+
+        return (
+          <div key={i} className="flex items-start gap-3 bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+            <span className={`flex items-center justify-center w-6 h-6 rounded shrink-0 mt-0.5 ${isUnchecked ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+              {isUnchecked ? <X className="w-3.5 h-3.5" /> : <Check className="w-3.5 h-3.5" />}
+            </span>
+            <div>
+              <p className={`text-sm font-medium ${isUnchecked ? 'text-red-300' : 'text-white'}`}>
+                {label}
+              </p>
+              {detail && (
+                <p className="text-xs text-gray-400 mt-1 leading-relaxed">{detail}</p>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
