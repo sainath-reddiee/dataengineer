@@ -36,8 +36,9 @@ const SectionHeader = ({
   isDark = false
 }) => (
   <motion.div
-    initial={{ opacity: 0, x: -20 }}
-    whileInView={{ opacity: 1, x: 0 }}
+    initial={{ opacity: 0, y: 8 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.4 }}
     transition={{ duration: 0.3 }}
     className="mb-4 sm:mb-5 flex items-start justify-between gap-3"
   >
@@ -157,7 +158,7 @@ const HomePage = () => {
       {/* Organization + WebSite JSON-LD is emitted in the static index.html shell
           so Googlebot sees it without JS. Do not duplicate here. */}
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white overflow-x-clip">
         {/* ============================================================================
             HERO SECTION - Compact
             ============================================================================ */}

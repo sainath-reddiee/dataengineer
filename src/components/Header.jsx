@@ -231,17 +231,17 @@ const Header = ({ topOffset = 0 }) => {
   }
 };
 
-  // 🔥 FIX 1: Close dropdown on scroll with passive listener
   useEffect(() => {
     const controlHeader = () => {
       const currentScrollY = window.scrollY;
-      if (currentScrollY < 10) {
+      // Ignore sub-header jitter (blur orbs / motion leftover). Only hide
+      // after the user has actually scrolled past the nav.
+      if (currentScrollY < 80) {
         setIsVisible(true);
-      } else if (currentScrollY > lastScrollY.current) {
+      } else if (currentScrollY > lastScrollY.current + 8) {
         setIsVisible(false);
-        // 🔥 CRITICAL: Close any open dropdown when scrolling down
         setOpenDropdown(null);
-      } else {
+      } else if (currentScrollY < lastScrollY.current - 8) {
         setIsVisible(true);
       }
       lastScrollY.current = currentScrollY;
@@ -442,10 +442,10 @@ const Header = ({ topOffset = 0 }) => {
 
   return (
     <motion.header
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: isVisible ? 0 : -100, opacity: isVisible ? 1 : 0 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="fixed w-full z-[9999]"
+      initial={false}
+      animate={{ y: isVisible ? 0 : '-100%' }}
+      transition={{ duration: 0.25, ease: 'easeInOut' }}
+      className="fixed left-0 right-0 z-[9999]"
       style={{
         top: topOffset,
         background: 'rgba(15, 23, 42, 0.85)',
