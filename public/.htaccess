@@ -27,6 +27,18 @@
     RewriteCond %{HTTP_HOST} !^www\. [NC]
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
     # ========================================================================
+    # ADSENSE: thin tag archives (1-2 posts) are doorway pages. Send them to
+    # the article library so crawlers never score a one-card listing as a
+    # unique content URL. Substantial tags (3+ posts) still have their own HTML.
+    # ========================================================================
+    RewriteRule ^tag/(ai-coding|anthropic|ci-cd|claude-code|claude-md|copilot|delta-lake|developer-tools|duckdb|fusion|gcp|migration|ml|openflow|osi|perfect|prompt-engineering|rag|security|synapse|databricks|llm|optimization|i)/?$ /articles [R=301,L]
+
+    # Contributor profile URLs are SPA-only (no unique static HTML). Direct
+    # crawler hits 404'd; serving index.html would look like a duplicate
+    # homepage. Send them to the contributors directory instead.
+    RewriteRule ^contributors/[^/]+/?$ /contributors [R=301,L]
+
+    # ========================================================================
     # KEYWORD CANNIBALIZATION: 301 redirects for consolidated articles
     # ========================================================================
     
@@ -326,6 +338,10 @@
     
     # HSTS - Force HTTPS for 1 year, include subdomains
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    # Private app shells must never look like indexable homepage copies.
+    SetEnvIf Request_URI "^/(admin|debug|sponsors/dashboard)" DEH_PRIVATE_APP
+    Header set X-Robots-Tag "noindex, nofollow" env=DEH_PRIVATE_APP
 
 </IfModule>
 

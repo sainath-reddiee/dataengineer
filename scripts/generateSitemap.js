@@ -2,6 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT } from '../src/data/thinTags.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,7 +42,6 @@ const STATIC_PAGES = [
   { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/disclaimer', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/contribute', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
-  { url: '/newsletter', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
   { url: '/news', changefreq: 'weekly', priority: 0.6, lastmod: 'today' },
   { url: '/practice', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
   { url: '/practice/snowpro-core', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
@@ -527,7 +527,8 @@ async function generateSitemap() {
 
     console.log('📝 Adding tag pages...');
     tags.forEach(tag => {
-      if (!tag.slug || tag.count === 0) return;
+      const slug = String(tag.slug || '').toLowerCase();
+      if (!slug || THIN_TAG_SLUGS.has(slug) || (tag.count || 0) < MIN_INDEXABLE_TAG_COUNT) return;
       sitemapEntries.push({
         url: `${SITE_URL}/tag/${tag.slug}`,
         lastmod: today,

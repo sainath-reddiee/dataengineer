@@ -6,19 +6,21 @@ import { Tag, Search, ArrowRight, Loader } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useTags } from '@/hooks/useWordPress';
 import MetaTags from '@/components/SEO/MetaTags';
+import { isIndexableTag } from '@/data/thinTags';
 
 const TagsArchivePage = () => {
   const { tags, loading, error } = useTags();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredTags = tags.filter(tag =>
-    tag.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredTags = tags
+    .filter(isIndexableTag)
+    .filter(tag => tag.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
     <>
       <MetaTags
         title="Browse All Tags"
+        noindex={true}
         description="Explore all tags on DataEngineer Hub. Find articles by topic including data engineering, cloud platforms, databases, and more."
         keywords="tags, topics, data engineering, cloud, databases, tutorials"
         type="website"

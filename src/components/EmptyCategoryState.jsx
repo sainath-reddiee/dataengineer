@@ -1,6 +1,6 @@
 // src/components/EmptyCategoryState.jsx
 // Shown when a known category has no published posts yet.
-// Replaces the bare yellow warning box with a premium animated "coming soon" state.
+// Must not read as "under construction" / "coming soon" (AdSense low-value flag).
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -182,7 +182,7 @@ const EmptyCategoryState = ({ category, title }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          Check Back Soon!
+          Nothing in this listing yet
         </motion.h3>
 
         {/* ── sub-heading ── */}
@@ -192,9 +192,8 @@ const EmptyCategoryState = ({ category, title }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          We're crafting{' '}
-          <span className="font-semibold text-blue-300">interesting {label}</span> that will
-          help you level up your data engineering skills.
+          This {label} listing has no published tutorials. Use the article library
+          or another topic hub instead of waiting on an empty page.
         </motion.p>
 
         {/* ── animated ellipsis ── */}
@@ -273,8 +272,8 @@ const EmptyCategoryState = ({ category, title }) => {
           transition={{ delay: 0.6 }}
         >
           <div className="flex justify-between text-xs text-gray-500 mb-1">
-            <span>Content in progress</span>
-            <span>Coming soon…</span>
+            <span>Empty listing</span>
+            <span>Browse the library</span>
           </div>
           <div className="h-1.5 rounded-full bg-slate-700 overflow-hidden">
             <motion.div

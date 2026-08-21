@@ -181,9 +181,21 @@ const ContributorsPage = () => {
             <h1 className="text-4xl sm:text-5xl font-black mb-4 leading-tight">
               Meet Our <span className="gradient-text">Contributors</span>
             </h1>
-            <p className="text-lg text-gray-300 leading-relaxed max-w-2xl mx-auto">
-              DataEngineer Hub is powered by a community of real practitioners — data engineers, architects, and cloud professionals who write from hands-on experience.
+            <p className="text-lg text-gray-300 leading-relaxed max-w-2xl mx-auto mb-6">
+              DataEngineer Hub is not a content mill. Tutorials, cheat sheets, and tools are written by people who have run the stacks they describe. The primary author is{' '}
+              <Link to="/about" className="text-blue-400 hover:text-blue-300 underline">Sainath Reddy</Link>.
+              Guest authors appear here only after at least one piece has passed editorial review and gone live.
             </p>
+            <div className="text-left text-gray-400 text-base leading-relaxed max-w-2xl mx-auto space-y-3">
+              <p>
+                Review is the same bar as staff content: technical accuracy, working examples where code is shown, a real name and bio, and no unedited AI drafts. Bylines are not sold. If a guest post is wrong after publication, we patch it in public the same way we patch staff posts.
+              </p>
+              <p>
+                Want to be listed? Send a one-paragraph pitch plus two samples via{' '}
+                <Link to="/contribute" className="text-blue-400 hover:text-blue-300 underline">Write for Us</Link>.
+                We decline pitches that only rephrase vendor docs. A useful guest post usually comes from a production incident, a migration, a cost save, or a design other engineers can copy.
+              </p>
+            </div>
           </motion.div>
 
           {/* Search */}
