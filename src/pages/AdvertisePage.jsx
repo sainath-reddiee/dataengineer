@@ -28,6 +28,16 @@ const SPONSOR_CONTACT_EMAIL = 'sainath@dataengineerhub.blog';
 
 const FAQS = [
   {
+    category: 'Billing',
+    question: 'What currency are prices in? What does a US visitor see?',
+    answer: 'Every package is priced and invoiced in US dollars (USD). The large number on each card is always USD. If your browser is in India you may see an extra “≈ ₹…” line as a convenience estimate — that is not the billed amount. A visitor in the United States sees dollars only (unless they switch the local-estimate dropdown). We do not bill in INR.'
+  },
+  {
+    category: 'Trust & Fit',
+    question: 'I want to publish a guest article. Is that advertising?',
+    answer: 'No. Guest tutorials are an editorial program: you write a useful technical piece, we review it, and you get a byline. That is free and it is not a sponsorship. Pitch it on the Write for Us page. This Advertise page is only for paid product placements. We will decline guest-post pitches sent through the sponsor form.'
+  },
+  {
     category: 'Audience',
     question: 'Who is the typical reader of DataEngineer Hub?',
     answer: 'Our audience consists of active data engineers (58%), analytics engineers (22%), data architects (12%), and engineering managers (8%). They are practitioners who design, build, and maintain data pipelines using modern cloud data stacks like Snowflake, dbt, Databricks, Spark, and major cloud services.'
@@ -101,29 +111,6 @@ const PROCESS_STEPS = [
 // ─── New content/creator revenue channels ───────────────────────────────────
 const CONTENT_CHANNELS = [
   {
-    key: 'guest_post',
-    icon: PenLine,
-    free: true,
-    badge: 'Guest Post',
-    accentBg: 'bg-indigo-500/10',
-    accentText: 'text-indigo-400',
-    accentBorder: 'border-indigo-500/30',
-    accentBar: 'bg-indigo-500',
-    badgeStyle: 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/25',
-    title: 'Publish a Guest Article',
-    tagline: 'Your content, your story — on a domain engineers trust',
-    priceLabel: 'Free to submit',
-    bullets: [
-      'Author an original 1,200–2,500 word technical article under your brand',
-      'Published with your author bio, logo, and 2 contextual do-follow links',
-      'Promoted to our 2,500+ newsletter subscribers in the next edition',
-      'Indexed by Google and stays live indefinitely — evergreen traffic driver',
-      'Editorial review ensures content quality and audience fit before going live',
-    ],
-    cta: 'Pitch a Guest Article',
-    ideal: 'Ideal for: bloggers, open-source projects, and developers wanting authentic technical reach — no cost, just great content',
-  },
-  {
     key: 'newsletter_sponsorship',
     icon: Newspaper,
     free: false,
@@ -172,7 +159,7 @@ const CONTENT_CHANNELS = [
     ideal: 'Ideal for: SaaS tools, open-source projects, and cloud services wanting long-term discoverability',
   },
   {
-    key: 'backlink',
+    key: 'mention',
     icon: Link,
     free: false,
     badge: 'Backlink',
@@ -181,19 +168,19 @@ const CONTENT_CHANNELS = [
     accentBorder: 'border-rose-500/30',
     accentBar: 'bg-rose-500',
     badgeStyle: 'bg-rose-500/15 text-rose-300 border border-rose-500/25',
-    title: 'Contextual Backlink Placement',
-    tagline: 'Editorially placed do-follow link inside a live, ranking article',
+    title: 'In-article mention (referral, not SEO)',
+    tagline: 'A labeled mention inside a matching guide — built for clicks, not link juice',
     price: 25,
-    priceLabel: 'per link',
+    priceLabel: 'one placement',
     bullets: [
-      'Your URL naturally woven into an existing article relevant to your product category',
-      'Do-follow link with anchor text you approve before publishing',
-      'Placed only where context genuinely fits — no forced insertions',
-      'Permanent placement in an already-indexed, ranking piece of content',
-      'Link audit report sent monthly so you know it is live and crawlable',
+      'Your product named in a relevant, already-live article or cheat sheet',
+      'Marked as sponsored / recommended resource — we never hide the disclosure',
+      'Links are nofollow by default (this is not a backlink package)',
+      'You approve the sentence and destination URL before it goes live',
+      'Best for a product launch or a trial offer aimed at practitioners already reading that topic',
     ],
-    cta: 'Request a Backlink',
-    ideal: 'Ideal for: SEO-focused companies, blogs, and tools wanting domain authority and referral traffic',
+    cta: 'Book a Mention',
+    ideal: 'Ideal for: indie tools and SaaS trials that want referral traffic, not a paid-link SEO play',
   },
 ];
 
@@ -229,7 +216,7 @@ const AdvertisePage = () => {
     company: '',
     website: '',
     package: 'resource_reference',
-    budget: '$15 - $50',
+    budget: '$30 USD / month',
     message: ''
   });
 
@@ -357,19 +344,50 @@ const AdvertisePage = () => {
     fetchRates();
   }, []);
 
-  // Format dynamic converted prices based on active currency
-  const formatPrice = (usdValue, maximumFractionDigits = 0) => {
+  // All sponsorships are billed in USD. Local amounts are estimates only.
+  const formatUsd = (usdValue, maximumFractionDigits = 0) => {
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits,
+      }).format(usdValue);
+    } catch (e) {
+      return `$${usdValue}`;
+    }
+  };
+
+  const formatLocal = (usdValue, maximumFractionDigits = 0) => {
+    if (!selectedCurrency || selectedCurrency === 'USD') return null;
     try {
       const rate = exchangeRates[selectedCurrency] || 1;
       const converted = usdValue * rate;
       return new Intl.NumberFormat(navigator.language || 'en-US', {
         style: 'currency',
         currency: selectedCurrency,
-        maximumFractionDigits
+        maximumFractionDigits,
       }).format(converted);
     } catch (e) {
-      return `$${usdValue}`;
+      return null;
     }
+  };
+
+  const PriceBlock = ({ usd, suffix, large = false, digits = 0 }) => {
+    const local = formatLocal(usd, digits);
+    return (
+      <div>
+        <div className="flex items-baseline gap-1.5 flex-wrap">
+          <span className={large ? 'text-3xl font-black text-white' : 'text-xl font-black text-white'}>
+            {formatUsd(usd, digits)}
+          </span>
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-blue-300">USD</span>
+          {suffix && <span className="text-sm text-gray-400">{suffix}</span>}
+        </div>
+        {local && (
+          <div className="text-xs text-gray-500 mt-0.5">≈ {local} (estimate)</div>
+        )}
+      </div>
+    );
   };
 
   // Sort currency codes to show USD, INR, EUR, GBP, CAD, AUD first, then alphabetically
@@ -443,27 +461,26 @@ const AdvertisePage = () => {
   // selected package. First entry = default auto-selected when package changes.
   const PACKAGE_BUDGET_OPTIONS = {
     resource_reference: [
-      { value: '$30/mo', label: '$30 / month — flexible, cancel anytime' },
-      { value: '$180/yr', label: '$180 / year — save 50% vs monthly' },
+      { value: '$30 USD / month', label: '$30 USD / month — flexible, cancel at term end' },
+      { value: '$180 USD / year', label: '$180 USD / year — save 50% vs monthly' },
     ],
     directory: [
-      { value: '$15/wk', label: '$15 / week — best for launches' },
-      { value: '$45/mo', label: '$45 / month — save 25% vs weekly' },
-      { value: '$240/yr', label: '$240 / year — save 56% vs monthly' },
+      { value: '$15 USD / week', label: '$15 USD / week — best for launches' },
+      { value: '$45 USD / month', label: '$45 USD / month — save 25% vs weekly' },
+      { value: '$240 USD / year', label: '$240 USD / year — save 56% vs monthly' },
     ],
     content: [
-      { value: '$50', label: '$50 one-time — permanent, evergreen asset' },
+      { value: '$50 USD one-time', label: '$50 USD one-time — we co-write a sponsored integration guide' },
     ],
     newsletter_sponsorship: [
-      { value: '$40/issue', label: '$40 per issue sent' },
+      { value: '$40 USD / issue', label: '$40 USD per newsletter issue — lowest-cost paid test' },
     ],
     tool_listing: [
-      { value: '$99', label: '$99 one-time — listed permanently, no renewal' },
+      { value: '$99 USD one-time', label: '$99 USD one-time — listed in the Tools Hub' },
     ],
-    backlink: [
-      { value: '$25/link', label: '$25 per contextual do-follow link' },
+    mention: [
+      { value: '$25 USD / mention', label: '$25 USD — one labeled in-article mention (nofollow)' },
     ],
-    guest_post: [],   // Free — budget field hidden
     other: [
       { value: "Let's discuss", label: "Let's discuss — we'll figure it out together" },
     ],
@@ -530,6 +547,7 @@ const AdvertisePage = () => {
         `Website: ${formData.website || 'Not provided'}`,
         `Package: ${formData.package}`,
         `Billing Term / Budget: ${formData.budget}`,
+        `Invoice currency: USD (local amounts on the page are estimates only)`,
         '',
         '--- Message / Pitch ---',
         formData.message || 'No additional details provided.'
@@ -570,7 +588,7 @@ const AdvertisePage = () => {
         company: '',
         website: '',
         package: 'resource_reference',
-        budget: '$15 - $50',
+        budget: '$30 USD / month',
         message: ''
       });
     } catch (err) {
@@ -590,10 +608,10 @@ const AdvertisePage = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-white relative overflow-hidden">
       <Helmet>
-        <title>Advertise with DataEngineer Hub — Reach Active Data Engineers</title>
-        <meta name="description" content="Partner with DataEngineer Hub to showcase your developer tools, cloud platforms, and data infrastructure to 15,000+ monthly active data engineers. Flexible weekly, monthly, and yearly sponsorship packages." />
+        <title>Advertise with DataEngineer Hub — Sponsorships billed in USD</title>
+        <meta name="description" content="Sponsor DataEngineer Hub. Reach data engineers who read Snowflake, dbt, Databricks, and Airflow guides. Packages from $15 USD/week. Guest articles are a separate, free editorial program." />
         <meta property="og:title" content="Advertise with DataEngineer Hub" />
-        <meta property="og:description" content="Reach active data engineers building with Snowflake, dbt, Databricks, and the modern data stack. Sponsorship packages from $15/week." />
+        <meta property="og:description" content="Paid product placements for data-engineering tools. Prices billed in USD, from $15/week. Guest posts are not sponsorships — use Write for Us." />
         <meta property="og:type" content="website" />
         <link rel="canonical" href="https://dataengineerhub.blog/advertise" />
       </Helmet>
@@ -615,7 +633,7 @@ const AdvertisePage = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-semibold mb-8"
           >
-            <Sparkles className="h-4 w-4 text-yellow-400 animate-pulse" /> Developer-First Sponsorship
+            <Sparkles className="h-4 w-4 text-yellow-400 animate-pulse" /> Paid product placements · billed in USD
           </motion.div>
 
           <motion.h1 
@@ -635,7 +653,7 @@ const AdvertisePage = () => {
             transition={{ delay: 0.1 }}
             className="text-lg text-gray-400 leading-relaxed max-w-2xl mx-auto mb-10"
           >
-            DataEngineer Hub serves 15,000+ monthly practitioners actively evaluating tools, building pipelines, and shipping production data infrastructure. Get your product in front of the right engineers, at the right moment.
+            Put your tool in front of engineers who are already costing a warehouse, debugging dbt, or comparing Spark vs Snowflake — not a generic banner audience. Sponsorships start at <span className="text-white font-semibold">$15 USD / week</span>. Guest articles are free and editorial; they live on <a href="/contribute" className="text-blue-400 hover:underline">Write for Us</a>, not this form.
           </motion.p>
 
           <motion.div
@@ -648,19 +666,19 @@ const AdvertisePage = () => {
               href="#pricing"
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition shadow-lg shadow-blue-500/20"
             >
-              View Sponsor Packages <ArrowRight className="h-4 w-4" />
-            </a>
-            <a
-              href="#content-channels"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-semibold rounded-xl transition shadow-lg shadow-purple-500/20"
-            >
-              <PenLine className="h-4 w-4" /> Promote Content / Tool
+              View USD packages <ArrowRight className="h-4 w-4" />
             </a>
             <a
               href="#inquiry-form"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold rounded-xl transition"
             >
-              Contact Us <Mail className="h-4 w-4" />
+              Book a paid placement <Mail className="h-4 w-4" />
+            </a>
+            <a
+              href="/contribute"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white font-semibold rounded-xl transition"
+            >
+              <PenLine className="h-4 w-4" /> Write a guest article (free)
             </a>
             <a
               href="#sponsor-policies"
@@ -762,6 +780,25 @@ const AdvertisePage = () => {
           </div>
         </div>
 
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6">
+            <h3 className="text-base font-bold text-white mb-3">This page is for</h3>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li className="flex gap-2"><Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" /> A data tool, cloud platform, or training product you want practitioners to try</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" /> A launch or trial you can describe in one sentence</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" /> Paying in USD — from $15/week or $40 for one newsletter issue</li>
+            </ul>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-6">
+            <h3 className="text-base font-bold text-white mb-3">Send these somewhere else</h3>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li className="flex gap-2"><X className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" /> Guest articles and bylines — use <a href="/contribute" className="text-blue-400 hover:underline">Write for Us</a> (free)</li>
+              <li className="flex gap-2"><X className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" /> Paid dofollow backlinks / “guest post + DA” pitches — we do not sell those</li>
+              <li className="flex gap-2"><X className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" /> Generic SEO, gambling, or products that do not serve data engineers</li>
+            </ul>
+          </div>
+        </div>
+
         {/* ═══════════════ HOW IT WORKS ═══════════════ */}
         <div>
           <div className="text-center mb-12">
@@ -814,13 +851,14 @@ const AdvertisePage = () => {
                 <h2 className="text-2xl font-bold text-white">ROI & Reach Estimator</h2>
               </div>
               <p className="text-sm text-gray-400 leading-relaxed mb-8">
-                Drag the slider to estimate the visibility and developer engagement your budget can unlock across our content channels.
+                Drag the slider. Budget is in <span className="text-white font-semibold">USD</span> (what we invoice). Figures below are illustrations, not guaranteed impressions — this is a content site, not a PPC network.
               </p>
               
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Campaign Budget</span>
-                  <span className="text-2xl font-black text-blue-400">{formatPrice(calcBudget)}</span>
+                  <span className="text-2xl font-black text-blue-400">{formatUsd(calcBudget)}</span>
+                  <span className="text-[11px] font-semibold text-blue-300 ml-1">USD</span>
                 </div>
                 <input 
                   type="range" 
@@ -832,8 +870,8 @@ const AdvertisePage = () => {
                   className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500 focus:outline-none"
                 />
                 <div className="flex justify-between text-[10px] text-gray-500">
-                  <span>Min: {formatPrice(15)}</span>
-                  <span>Max: {formatPrice(500)}</span>
+                  <span>Min: {formatUsd(15)} USD</span>
+                  <span>Max: {formatUsd(500)} USD</span>
                 </div>
               </div>
             </div>
@@ -859,7 +897,7 @@ const AdvertisePage = () => {
                 <div className="inline-flex p-2 rounded-xl bg-pink-500/10 text-pink-400 mb-3">
                   <DollarSign className="h-5 w-5" />
                 </div>
-                <div className="text-lg sm:text-xl font-bold text-white">{formatPrice(Number(roiMetrics.estCpc), 2)}</div>
+                <div className="text-lg sm:text-xl font-bold text-white">{formatUsd(Number(roiMetrics.estCpc), 2)}</div>
                 <div className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Est. CPC</div>
               </div>
             </div>
@@ -870,22 +908,26 @@ const AdvertisePage = () => {
         <div id="pricing">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 border-b border-white/5 pb-8">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">Choose a Developer Product Placement</h2>
-              <p className="text-sm text-gray-400 mt-2">
-                Pricing is automatically localized to your region. All placements include a private dashboard for placement details and campaign review.
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">Paid placements (billed in USD)</h2>
+              <p className="text-sm text-gray-400 mt-2 max-w-xl">
+                Invoices and package prices are always US dollars. Use the selector only if you want a local estimate — a US visitor sees <span className="text-white">$30</span>, not rupees.
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col items-end gap-1">
+              <label htmlFor="currency" className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Local estimate</label>
+              <div className="flex items-center gap-2">
               <Globe className="h-4 w-4 text-blue-400" />
               <select
+                id="currency"
                 value={selectedCurrency}
                 onChange={(e) => setSelectedCurrency(e.target.value)}
                 className="bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer"
               >
                 {sortedCurrencyCodes.map(code => (
-                  <option key={code} value={code}>{code}</option>
+                  <option key={code} value={code}>{code === 'USD' ? 'USD (billed)' : `${code} estimate`}</option>
                 ))}
               </select>
+              </div>
             </div>
           </div>
 
@@ -932,7 +974,6 @@ const AdvertisePage = () => {
           <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
             {OPPORTUNITIES.map((opp, idx) => {
               const activeDuration = opp.durations.find(d => d.key === selectedDurations[opp.packageKey]) || opp.durations[0];
-              const formattedPrice = formatPrice(activeDuration.price);
               const PkgIcon = resolveIcon(opp.icon);
 
               return (
@@ -990,20 +1031,8 @@ const AdvertisePage = () => {
                     )}
                     
                     {/* Price and duration */}
-                    <div className="flex items-baseline gap-1.5 mb-2 border-b border-white/10 pb-4 h-14">
-                      <AnimatePresence mode="wait">
-                        <motion.span
-                          key={formattedPrice}
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -5 }}
-                          transition={{ duration: 0.12 }}
-                          className="text-3xl font-black text-white"
-                        >
-                          {formattedPrice}
-                        </motion.span>
-                      </AnimatePresence>
-                      <span className="text-sm text-gray-400">/ {activeDuration.label}</span>
+                    <div className="flex items-baseline gap-1.5 mb-2 border-b border-white/10 pb-4 min-h-14">
+                      <PriceBlock usd={activeDuration.price} suffix={`/ ${activeDuration.label}`} large />
                     </div>
 
                     {/* Savings Badge */}
@@ -1089,10 +1118,13 @@ const AdvertisePage = () => {
                   <a
                     href="#inquiry-form"
                     onClick={() => {
+                      const opts = PACKAGE_BUDGET_OPTIONS[opp.packageKey] ?? [];
+                      const match = opts.find((o) => o.value.toLowerCase().includes(activeDuration.key === 'yearly' ? 'year' : activeDuration.key === 'weekly' ? 'week' : activeDuration.key === 'one_time' ? 'one-time' : 'month')) || opts[0];
                       setFormData(prev => ({ 
                         ...prev, 
                         package: opp.packageKey,
-                        message: `Interested in the "${opp.title}" package with the "${activeDuration.label}" option.`
+                        budget: match?.value || prev.budget,
+                        message: `Interested in "${opp.title}" at ${match?.value || activeDuration.label} (USD).`
                       }));
                     }}
                     className={`w-full py-3 rounded-xl font-semibold text-sm text-center transition flex items-center justify-center gap-1.5 ${
@@ -1167,7 +1199,7 @@ const AdvertisePage = () => {
                           const cheapest = opp.durations.reduce((min, d) => (d.price < min.price ? d : min), opp.durations[0]);
                           return (
                             <td key={opp.title} className={`p-4 text-white font-bold text-sm ${opp.popular ? 'bg-blue-500/5 border-x border-blue-500/20' : ''}`}>
-                              {formatPrice(cheapest.price)} <span className="text-gray-500 font-normal text-xs">/ {cheapest.label}</span>
+                              {formatUsd(cheapest.price)} USD <span className="text-gray-500 font-normal text-xs">/ {cheapest.label}</span>
                             </td>
                           );
                         })}
@@ -1247,14 +1279,24 @@ const AdvertisePage = () => {
 
         {/* ═══════════════ CONTENT & CREATOR REVENUE CHANNELS ═══════════════ */}
         <div id="content-channels">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold mb-4">
-              <TrendUp className="h-3.5 w-3.5" /> Creator & Content Monetization
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold mb-4">
+              <Zap className="h-3.5 w-3.5" /> Lower-cost paid tests
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">Promote Your Blog, Tool, or Content</h2>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">Start smaller if a monthly package feels heavy</h2>
             <p className="text-sm text-gray-400 max-w-2xl mx-auto">
-              Beyond traditional sponsorships — publish your own content, get your tool listed, or land a newsletter slot. These channels work for individual creators, open-source projects, and startups, not just enterprise teams.
+              These are still paid product placements in USD — a one-issue newsletter, a Tools Hub card, or a single labeled mention. They are meant for launches and indie tools, not for guest-post SEO.
             </p>
+          </div>
+
+          <div className="mb-10 max-w-3xl mx-auto rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5 flex items-start gap-4">
+            <PenLine className="h-5 w-5 text-indigo-400 shrink-0 mt-0.5" />
+            <div className="text-sm text-gray-300 leading-relaxed">
+              <span className="text-white font-semibold">Looking to write a tutorial?</span> That is not a sponsorship.
+              Guest articles are free, editorially reviewed, and billed at $0. Pitch them on{' '}
+              <a href="/contribute" className="text-blue-400 hover:underline font-semibold">Write for Us</a>.
+              Do not use the form below for guest posts — we will send you there anyway.
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -1301,8 +1343,7 @@ const AdvertisePage = () => {
                           </>
                         ) : (
                           <>
-                            <div className="text-xl font-black text-white">{formatPrice(ch.price)}</div>
-                            <div className="text-[10px] text-gray-500">/ {ch.priceLabel}</div>
+                            <PriceBlock usd={ch.price} suffix={`/ ${ch.priceLabel}`} />
                           </>
                         )}
                       </div>
@@ -1323,16 +1364,16 @@ const AdvertisePage = () => {
 
                     <a
                       href="#inquiry-form"
-                      onClick={() => setFormData(prev => ({
-                        ...prev,
-                        package: ch.key,
-                        message: `I am interested in the "${ch.title}" option.`
-                      }))}
-                      className={`w-full py-2.5 rounded-xl font-semibold text-sm text-center transition flex items-center justify-center gap-1.5 ${
-                        ch.free
-                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-500/20'
-                          : `bg-slate-800 hover:bg-slate-700 border ${ch.accentBorder} ${ch.accentText} hover:text-white`
-                      }`}
+                      onClick={() => {
+                        const opts = PACKAGE_BUDGET_OPTIONS[ch.key] ?? [];
+                        setFormData(prev => ({
+                          ...prev,
+                          package: ch.key,
+                          budget: opts[0]?.value || prev.budget,
+                          message: `Interested in "${ch.title}" (${opts[0]?.value || ''} USD).`,
+                        }));
+                      }}
+                      className={`w-full py-2.5 rounded-xl font-semibold text-sm text-center transition flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-700 border ${ch.accentBorder} ${ch.accentText} hover:text-white`}
                     >
                       {ch.cta} <ArrowRight className="h-3.5 w-3.5" />
                     </a>
@@ -1346,7 +1387,9 @@ const AdvertisePage = () => {
           <div className="mt-8 max-w-3xl mx-auto rounded-2xl border border-white/10 bg-slate-900/30 p-5 flex items-start gap-4">
             <Bell className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />
             <p className="text-sm text-gray-400 leading-relaxed">
-              <span className="text-white font-semibold">You do not need a company to advertise here.</span> If you have a personal blog, open-source project, side-project tool, or tutorial series that data engineers would genuinely find useful, any of these options are open to you. Just describe what you are building and we will find the best fit.
+              <span className="text-white font-semibold">Indie tools are welcome.</span> You do not need an enterprise marketing budget.
+              The newsletter slot at $40 USD is the cheapest paid test. If you only have a tutorial to share, use{' '}
+              <a href="/contribute" className="text-blue-400 hover:underline">Write for Us</a> instead of buying a placement.
             </p>
           </div>
         </div>
@@ -1610,9 +1653,9 @@ const AdvertisePage = () => {
           <div className="grid md:grid-cols-5 gap-8">
             <div className="md:col-span-2 flex flex-col justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-white mb-4">Start a Campaign</h2>
-                <p className="text-sm text-gray-400 leading-relaxed mb-6">
-                  Submit an inquiry and we'll get back to you within 24 hours with placement confirmation, a dashboard access token, and your campaign setup details.
+                <h2 className="text-2xl font-bold text-white mb-4">Book a paid placement</h2>
+                <p className="text-sm text-gray-400 leading-relaxed mb-4">
+                  Tell us the product and the USD package. We reply within 24 business hours with fit, dates, and an invoice in US dollars. Guest-article pitches belong on <a href="/contribute" className="text-blue-400 hover:underline">Write for Us</a>.
                 </p>
               </div>
 
@@ -1659,11 +1702,9 @@ const AdvertisePage = () => {
                   <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-500/20 border border-green-500/30 text-green-400 mb-4">
                     <CheckCircle2 className="h-8 w-8" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2">
-                    {formData.package === 'guest_post' ? 'Article Pitch Received!' : 'Inquiry Submitted!'}
-                  </h3>
+                  <h3 className="text-xl font-bold text-white mb-2">Inquiry submitted</h3>
                   <p className="text-sm text-gray-400 max-w-sm mx-auto mb-6">
-                    Thank you. We’ve received your request and will respond{formData.package === 'guest_post' ? ' with editorial feedback and next steps within 48 hours.' : ' with custom placement specs and your private dashboard access details.'}
+                    Thanks. We will reply with whether the product is a fit, the USD invoice, and campaign dates. If you meant to pitch a tutorial, use Write for Us instead.
                   </p>
                   <button
                     onClick={() => setSubmitted(false)}
@@ -1722,6 +1763,7 @@ const AdvertisePage = () => {
                         type="url"
                         id="website"
                         name="website"
+                        required
                         value={formData.website}
                         onChange={handleChange}
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
@@ -1740,58 +1782,46 @@ const AdvertisePage = () => {
                         onChange={handleChange}
                         className="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                       >
-                        <option value="resource_reference">Developer Resource Reference — $30/mo or $180/yr</option>
-                        <option value="directory">Ecosystem Showcase (Tools Hub card) — $15/wk · $45/mo · $240/yr</option>
-                        <option value="content">Technical Integration Guide — $50 one-time</option>
-                        <option value="guest_post">Guest Article — ✓ Free to submit</option>
-                        <option value="newsletter_sponsorship">Newsletter Sponsorship — $40/issue</option>
-                        <option value="tool_listing">Permanent Tools Hub Listing — $99 one-time</option>
-                        <option value="backlink">Contextual Backlink Placement — $25/link</option>
-                        <option value="other">Custom / Not sure yet</option>
+                        <option value="newsletter_sponsorship">Try it: Newsletter — $40 USD / issue</option>
+                        <option value="resource_reference">Developer Resource Reference — $30 USD/mo or $180 USD/yr</option>
+                        <option value="directory">Tools Hub card — $15 USD/wk · $45 USD/mo · $240 USD/yr</option>
+                        <option value="mention">In-article mention (nofollow) — $25 USD</option>
+                        <option value="tool_listing">Tools Hub listing — $99 USD one-time</option>
+                        <option value="content">Sponsored integration guide (we co-write) — $50 USD</option>
+                        <option value="other">Custom / not sure yet</option>
                       </select>
                     </div>
-                    {formData.package === 'guest_post' ? (
-                      <div className="flex items-start gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 self-end">
-                        <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-semibold text-emerald-300">No budget needed — Guest Articles are free</p>
-                          <p className="text-xs text-emerald-400/70 mt-1">Pitch your idea below and we will review it within 48 hours.</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div>
-                        <label htmlFor="budget" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
-                          {(PACKAGE_BUDGET_OPTIONS[formData.package] ?? []).length > 1 ? 'Billing Term' : 'Package Price'}
-                        </label>
-                        <select
-                          id="budget"
-                          name="budget"
-                          value={formData.budget}
-                          onChange={handleChange}
-                          className="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
-                        >
-                          {(PACKAGE_BUDGET_OPTIONS[formData.package] ?? PACKAGE_BUDGET_OPTIONS.other).map((opt) => (
-                            <option key={opt.value} value={opt.value}>{opt.label}</option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
+                    <div>
+                      <label htmlFor="budget" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
+                        {(PACKAGE_BUDGET_OPTIONS[formData.package] ?? []).length > 1 ? 'USD billing term' : 'USD price'}
+                      </label>
+                      <select
+                        id="budget"
+                        name="budget"
+                        value={formData.budget}
+                        onChange={handleChange}
+                        className="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                      >
+                        {(PACKAGE_BUDGET_OPTIONS[formData.package] ?? PACKAGE_BUDGET_OPTIONS.other).map((opt) => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
 
                   <div>
                     <label htmlFor="message" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
-                      {formData.package === 'guest_post' ? 'Article Pitch / Topic Idea' : 'Brief Message'}
+                      Product and what you want to promote
                     </label>
                     <textarea
                       id="message"
                       name="message"
                       rows="4"
+                      required
                       value={formData.message}
                       onChange={handleChange}
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 resize-none"
-                      placeholder={formData.package === 'guest_post'
-                        ? 'Briefly describe your article idea, target topic (e.g. Snowflake cost optimisation), and a short bio so we can assess fit...'
-                        : 'Tell us a little bit about what you\u2019d like to promote and your target timeline...'}
+                      placeholder="Product name, who it is for (e.g. Snowflake cost / dbt Cloud), and a preferred start month..."
                     />
                   </div>
 
@@ -1800,18 +1830,12 @@ const AdvertisePage = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`w-full py-3 rounded-xl font-semibold text-sm transition flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg ${
-                      formData.package === 'guest_post'
-                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20'
-                        : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/20'
-                    }`}
+                    className="w-full py-3 rounded-xl font-semibold text-sm transition flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/20"
                   >
                     {loading ? (
                       <>Submitting...</>
-                    ) : formData.package === 'guest_post' ? (
-                      <>Submit Article Pitch <PenLine className="h-4 w-4" /></>
                     ) : (
-                      <>Submit Inquiry <Send className="h-4 w-4" /></>
+                      <>Submit paid inquiry <Send className="h-4 w-4" /></>
                     )}
                   </button>
                 </form>

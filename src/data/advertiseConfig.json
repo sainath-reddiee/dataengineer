@@ -30,14 +30,14 @@
           "key": "monthly",
           "label": "Monthly",
           "price": 30,
-          "desc": "Place your resource link contextually across our active guides, glossary items, or high-intent articles. Best for testing audience resonance and lead conversion on a flexible month-to-month basis.",
+          "desc": "Place your resource link contextually across our active guides, glossary items, or high-intent articles. $30 USD per month. Best for testing fit without a yearly lock-in.",
           "savings": "Flexible month-to-month"
         },
         {
           "key": "yearly",
           "label": "Yearly",
           "price": 180,
-          "desc": "Establish a permanent, long-term contextual presence across our highest-performing comparison articles, cheatsheets, and tutorial guides. Billed annually to secure prime placement and build continuous developer mindshare.",
+          "desc": "Establish a long-term contextual presence across high-performing guides. $180 USD billed once per year (50% less than paying monthly).",
           "savings": "Save 50% vs monthly"
         }
       ]

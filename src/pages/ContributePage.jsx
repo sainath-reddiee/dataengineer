@@ -192,6 +192,11 @@ const ContributePage = () => {
                 Read Published Articles
               </Link>
             </div>
+            <p className="text-sm text-gray-500 mt-6">
+              Want to promote a product instead of writing a tutorial? That is a paid USD sponsorship — see{' '}
+              <Link to="/advertise" className="text-blue-400 hover:underline">Advertise</Link>.
+              Guest posts here are editorial, not ads.
+            </p>
           </motion.div>
 
           {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• STATS BAR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
