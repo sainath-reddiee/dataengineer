@@ -6,14 +6,16 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-    TrendingUp, RefreshCw, Zap, AlertTriangle, ChevronDown, ChevronRight,
-    ExternalLink, Search, MousePointerClick,
+    RefreshCw, AlertTriangle, ChevronDown, ChevronRight,
+    Search, MousePointerClick,
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import wordpressApi from '@/services/wordpressApi';
-import { scoreCtr, scoreCtrBatch } from '@/utils/ctrScorer';
+import { scoreCtrBatch } from '@/utils/ctrScorer';
 import gscService from '@/services/gscService';
 import { CtrLabDetail } from './CtrLabDetail';
+import { getOptimizedTitle, getOptimizedDescription } from '@/data/seoOverrides';
+import { diagnoseCtr } from '@/utils/expectedCtr';
 
 const GRADE_COLORS = {
     A: 'text-emerald-400 border-emerald-500/40 bg-emerald-500/10',
@@ -22,15 +24,6 @@ const GRADE_COLORS = {
     D: 'text-orange-400 border-orange-500/40 bg-orange-500/10',
     F: 'text-red-400    border-red-500/40    bg-red-500/10',
 };
-
-// Expected CTR by position (industry averages)
-function getExpectedCTR(position) {
-    const table = [0, 0.28, 0.15, 0.11, 0.08, 0.06, 0.045, 0.035, 0.03, 0.025, 0.02];
-    const pos = Math.max(1, Math.min(10, Math.round(position || 999)));
-    if (pos <= 10) return table[pos];
-    if (pos <= 20) return 0.01;
-    return 0.005;
-}
 
 export function CtrLabPanel() {
     const [searchParams] = useSearchParams();
@@ -58,9 +51,19 @@ export function CtrLabPanel() {
                 else promises.push(Promise.resolve([]));
 
                 const [wpResult, gscPages] = await Promise.all(promises);
-                const posts = wpResult.posts || [];
+                const posts = (wpResult.posts || []).map((p) => {
+                    const liveTitle = getOptimizedTitle(p.slug, p.title);
+                    const liveDesc = getOptimizedDescription(p.slug, p.metaDescription || p.excerpt || '');
+                    return {
+                        ...p,
+                        wpTitle: p.title,
+                        title: liveTitle,
+                        excerpt: liveDesc,
+                        metaDescription: liveDesc,
+                    };
+                });
 
-                // Build scored rows from heuristic scorer
+                // Score the live SERP title/meta (seoOverrides), not the WordPress H1
                 const scored = scoreCtrBatch(posts);
 
                 // Merge GSC data
@@ -73,18 +76,26 @@ export function CtrLabPanel() {
                 const merged = scored.map(r => {
                     const gsc = gscMap[r.slug];
                     if (gsc) {
-                        const expected = getExpectedCTR(gsc.position);
+                        const diagnosis = diagnoseCtr({
+                            impressions: gsc.impressions,
+                            clicks: gsc.clicks,
+                            ctr: gsc.ctr,
+                            position: gsc.position,
+                            title: r.title,
+                        });
                         return {
                             ...r,
                             position: gsc.position,
                             impressions: gsc.impressions,
                             clicks: gsc.clicks,
                             ctr: gsc.ctr,
-                            expectedCtr: expected,
-                            clickGap: Math.max(0, Math.round(gsc.impressions * expected) - gsc.clicks),
+                            expectedCtr: diagnosis.expected,
+                            diagnosis,
+                            // Only count title-recoverable gaps — page-2 "missed clicks" are ranking, not snippet
+                            clickGap: diagnosis.kind === 'snippet' ? Math.round(diagnosis.opportunity) : 0,
                         };
                     }
-                    return { ...r, position: null, impressions: 0, clicks: 0, ctr: null, expectedCtr: null, clickGap: 0 };
+                    return { ...r, position: null, impressions: 0, clicks: 0, ctr: null, expectedCtr: null, clickGap: 0, diagnosis: null };
                 });
 
                 if (!cancelled) {
@@ -171,7 +182,7 @@ export function CtrLabPanel() {
                 <div className="p-4 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30">
                     <div className="text-xs uppercase tracking-wider text-amber-300">Missed Clicks</div>
                     <div className="text-3xl font-bold text-white mt-1">{summary.totalMissedClicks.toLocaleString()}</div>
-                    <div className="text-xs text-gray-400 mt-1">recoverable clicks/month</div>
+                    <div className="text-xs text-gray-400 mt-1">page-1 snippet gaps only</div>
                 </div>
                 <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30">
                     <div className="text-xs uppercase tracking-wider text-emerald-300">Impressions</div>
@@ -259,7 +270,15 @@ export function CtrLabPanel() {
                                             <td className="py-3 pr-2 text-gray-600 text-xs">{i + 1}</td>
                                             <td className="py-3 pr-3">
                                                 <div className="text-white line-clamp-1 max-w-xs">{r.title}</div>
-                                                <div className="text-[10px] text-gray-600 mt-0.5">{r.slug}</div>
+                                                <div className="text-[10px] text-gray-600 mt-0.5 flex items-center gap-1.5">
+                                                    {r.slug}
+                                                    {r.diagnosis?.kind === 'snippet' && (
+                                                        <span className="text-rose-400">snippet gap</span>
+                                                    )}
+                                                    {r.diagnosis?.kind === 'rank' && (
+                                                        <span className="text-amber-400">page 2+</span>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="py-3 pr-3 text-center">
                                                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-semibold ${GRADE_COLORS[r.grade]}`}>
@@ -316,8 +335,8 @@ export function CtrLabPanel() {
             {/* Footer */}
             <div className="text-xs text-gray-500 border-t border-slate-700 pt-3 leading-relaxed">
                 <strong className="text-gray-400">How it works:</strong>{' '}
-                Scores every article against CTR benchmarks (title length, numbers, year, power words, keyword alignment).
-                When GSC is connected, merges real position + impressions data to compute missed-click opportunities.
+                Scores the live SERP title from seoOverrides (not the WordPress H1).
+                Missed-click totals only include page-1 snippet gaps — page-2 impressions are a ranking problem, not a title rewrite.
                 Click "Diagnose" on any article for SERP preview, keyword map, competitor titles, AI variants, and before/after comparison.
             </div>
         </div>

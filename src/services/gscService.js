@@ -227,6 +227,50 @@ class GSCService {
             position: row.position,
         }));
     }
+
+    /**
+     * Query-level rows (page + query) so CTR Fixer can find high-impression
+     * queries whose CTR is far below expected for their average position.
+     */
+    async queryPageQueryRows({ startDate = null, endDate = null, rowLimit = 500 } = {}) {
+        const token = this.getAccessToken();
+        if (!token) throw new Error('Not connected to Google Search Console');
+
+        const end = endDate || new Date(Date.now() - 3 * 86400000).toISOString().split('T')[0];
+        const start = startDate || new Date(Date.now() - 31 * 86400000).toISOString().split('T')[0];
+
+        const response = await fetch(
+            `${API_BASE}/sites/${encodeURIComponent(PROPERTY_URL)}/searchAnalytics/query`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    startDate: start,
+                    endDate: end,
+                    dimensions: ['page', 'query'],
+                    rowLimit,
+                }),
+            }
+        );
+
+        if (!response.ok) {
+            const err = await response.text();
+            throw new Error(`GSC API error: ${response.status} — ${err}`);
+        }
+
+        const data = await response.json();
+        return (data.rows || []).map(row => ({
+            page: row.keys[0],
+            query: row.keys[1],
+            impressions: row.impressions,
+            clicks: row.clicks,
+            ctr: row.ctr,
+            position: row.position,
+        }));
+    }
 }
 
 export const gscService = new GSCService();

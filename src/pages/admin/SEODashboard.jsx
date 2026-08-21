@@ -15,6 +15,7 @@ import {
 import { SEOScoreCard } from '@/components/admin/SEOScoreCard';
 import wordpressApi from '@/services/wordpressApi';
 import gscService from '@/services/gscService';
+import { summarizeCtrMix } from '@/utils/expectedCtr';
 import { getLastNDays, getLocalReferralStats } from '@/utils/aiReferralTracker';
 import { scoreCtrBatch } from '@/utils/ctrScorer';
 import { getEngagementStats } from '@/utils/engagementTracker';
@@ -99,13 +100,24 @@ export function SEODashboard() {
 
         // GSC live metrics
         if (gscService.isConnected()) {
-            gscService.queryTopPages({ rowLimit: 100 }).then(pages => {
+            gscService.queryTopPages({ rowLimit: 200 }).then(pages => {
                 const totalImpressions = pages.reduce((s, p) => s + p.impressions, 0);
                 const totalClicks = pages.reduce((s, p) => s + p.clicks, 0);
                 const avgCTR = totalImpressions > 0 ? totalClicks / totalImpressions : 0;
                 const avgPosition = pages.length > 0 ? pages.reduce((s, p) => s + p.position, 0) / pages.length : 0;
                 const strikingDistance = pages.filter(p => p.position >= 5 && p.position <= 20).length;
-                setGscMetrics({ totalImpressions, totalClicks, avgCTR, avgPosition, strikingDistance, pageCount: pages.length });
+                const mix = summarizeCtrMix(pages);
+                setGscMetrics({
+                    totalImpressions,
+                    totalClicks,
+                    avgCTR,
+                    avgPosition,
+                    strikingDistance,
+                    pageCount: pages.length,
+                    page1Share: mix.page1Share,
+                    page1Ctr: mix.page1.impressions > 0 ? mix.page1.clicks / mix.page1.impressions : 0,
+                    page2Ctr: mix.page2plus.impressions > 0 ? mix.page2plus.clicks / mix.page2plus.impressions : 0,
+                });
             }).catch(() => {});
         }
     }, []);
@@ -124,7 +136,7 @@ export function SEODashboard() {
                     <div className="text-xs text-blue-300 font-semibold uppercase tracking-wider mb-3 flex items-center gap-2">
                         <Activity className="w-3.5 h-3.5" /> Google Search Console — Last 28 Days
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
                         <div>
                             <div className="text-2xl font-bold text-white">{gscMetrics.totalImpressions.toLocaleString()}</div>
                             <div className="text-[10px] text-gray-400">Impressions</div>
@@ -135,7 +147,15 @@ export function SEODashboard() {
                         </div>
                         <div>
                             <div className="text-2xl font-bold text-white">{(gscMetrics.avgCTR * 100).toFixed(1)}%</div>
-                            <div className="text-[10px] text-gray-400">Avg CTR</div>
+                            <div className="text-[10px] text-gray-400">Site CTR (all ranks)</div>
+                        </div>
+                        <div>
+                            <div className="text-2xl font-bold text-emerald-300">{(gscMetrics.page1Ctr * 100).toFixed(1)}%</div>
+                            <div className="text-[10px] text-gray-400">Page-1 CTR</div>
+                        </div>
+                        <div>
+                            <div className="text-2xl font-bold text-amber-300">{(gscMetrics.page1Share * 100).toFixed(0)}%</div>
+                            <div className="text-[10px] text-gray-400">Impressions on page 1</div>
                         </div>
                         <div>
                             <div className="text-2xl font-bold text-white">#{gscMetrics.avgPosition.toFixed(1)}</div>
@@ -146,6 +166,11 @@ export function SEODashboard() {
                             <div className="text-[10px] text-gray-400">Striking Distance (pos 5-20)</div>
                         </div>
                     </div>
+                    {gscMetrics.page1Share < 0.4 && (
+                        <p className="mt-3 text-xs text-amber-200/80">
+                            Most impressions are page 2+. Site-wide CTR under 1% is expected at that mix — use CTR Fixer&apos;s snippet filter, not a site-wide title rewrite.
+                        </p>
+                    )}
                 </div>
             )}
 
