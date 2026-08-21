@@ -547,6 +547,7 @@ const AdvertisePage = () => {
         `Website: ${formData.website || 'Not provided'}`,
         `Package: ${formData.package}`,
         `Billing Term / Budget: ${formData.budget}`,
+        `Invoice currency: USD (local amounts on the page are estimates only)`,
         '',
         '--- Message / Pitch ---',
         formData.message || 'No additional details provided.'
