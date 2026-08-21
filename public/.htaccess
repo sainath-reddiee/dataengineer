@@ -151,12 +151,26 @@
     # If the requested path IS a real directory, serve it
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
+
+    # Serve pre-rendered /path/index.html for any SSG page (covers news,
+    # practice, advertise, contributors, tools, etc. without listing each one).
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{DOCUMENT_ROOT}/$1/index.html -f
+    RewriteRule ^(.+)$ /$1/index.html [L]
     
     # ========================================================================
-    # Fallback: For everything else, serve React app (index.html)
+    # SPA fallback ONLY for private app shells. Unknown public URLs MUST 404.
+    # Serving index.html here previously made /news, /practice, /advertise,
+    # /contributors (and any other missing route) look like duplicate
+    # homepages to AdSense — a repeated "low value content" rejection.
     # ========================================================================
+    RewriteCond %{REQUEST_URI} ^/(admin|debug|sponsors/dashboard) [NC]
     RewriteRule ^ /index.html [L]
 
+</IfModule>
+
+<IfModule mod_dir.c>
+    DirectoryIndex index.html
 </IfModule>
 
 # ==============================================================================

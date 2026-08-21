@@ -87,6 +87,15 @@
                     "value": "noindex, nofollow"
                 }
             ]
+        },
+        {
+            "source": "/sponsors/dashboard",
+            "headers": [
+                {
+                    "key": "X-Robots-Tag",
+                    "value": "noindex, nofollow"
+                }
+            ]
         }
     ],
     "rewrites": [
@@ -108,7 +117,7 @@
         },
         {
             "source": "/tag",
-            "destination": "/index.html"
+            "destination": "/tag/index.html"
         },
         {
             "source": "/tag/:slug",
@@ -189,6 +198,26 @@
         {
             "source": "/practice",
             "destination": "/practice/index.html"
+        },
+        {
+            "source": "/practice/:slug",
+            "destination": "/practice/:slug/index.html"
+        },
+        {
+            "source": "/news",
+            "destination": "/news/index.html"
+        },
+        {
+            "source": "/advertise",
+            "destination": "/advertise/index.html"
+        },
+        {
+            "source": "/contributors",
+            "destination": "/contributors/index.html"
+        },
+        {
+            "source": "/contributors/:slug",
+            "destination": "/contributors/:slug/index.html"
         },
         {
             "source": "/admin",

@@ -5,6 +5,7 @@ import {
   BarChart3, MousePointerClick, Eye, Calendar, ArrowLeft, 
   ExternalLink, ShieldCheck, Sparkles
 } from 'lucide-react';
+import MetaTags from '@/components/SEO/MetaTags';
 
 const ANALYTICS_MODE = 'preview';
 
@@ -92,6 +93,11 @@ export default function SponsorDashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 py-16 px-4">
+      <MetaTags
+        title="Sponsor Dashboard"
+        description="Private sponsorship delivery preview for DataEngineer Hub partners."
+        noindex={true}
+      />
       <div className="max-w-5xl mx-auto">
         
         {/* Navigation Breadcrumb */}

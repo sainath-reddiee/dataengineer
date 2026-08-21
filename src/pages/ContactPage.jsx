@@ -157,7 +157,11 @@ const ContactPage = () => {
                   </div>
                   <div>
                     <div className="text-xl font-semibold">Email</div>
-                    <p className="text-gray-400">sainath@dataengineerhub.blog</p>
+                    <p className="text-gray-400">
+                      <a href="mailto:sainath@dataengineerhub.blog" className="text-blue-400 hover:text-blue-300 underline">
+                        sainath@dataengineerhub.blog
+                      </a>
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-4">

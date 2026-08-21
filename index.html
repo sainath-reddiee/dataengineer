@@ -250,26 +250,10 @@
          React's createRoot().render() naturally replaces #root children.
          DO NOT add display:none here — it causes AdSense 'Low Value Content' rejections. */
       
-      /* Loading spinner - hidden by default for SEO */
+      /* Loading spinner is never a full-viewport overlay. A covering spinner
+         is what AdSense reviewers snapshot when JS runs before React paints. */
       .loading-container {
         display: none;
-        min-height: 100vh;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
-        flex-direction: column;
-        padding: 20px;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 9999;
-      }
-      
-      /* Only show loading when React is actively loading */
-      body.react-loading .loading-container {
-        display: flex;
       }
       
       /* SEO fallback stays visible even during loading for crawlers. */
@@ -349,15 +333,9 @@
       if (typeof performance !== 'undefined' && performance.mark) {
         performance.mark('nav-start');
       }
-      
-      // Show loading state ONLY when JavaScript starts executing
-      // This ensures bots see content, but users see smooth loading
-      if (typeof document !== 'undefined') {
-        document.addEventListener('DOMContentLoaded', function() {
-          // Only add loading class if JavaScript is enabled
-          document.body.classList.add('react-loading');
-        });
-      }
+      // Do NOT add body.react-loading here. That class turns on a full-viewport
+      // spinner overlay; AdSense crawlers that execute JS then snapshot a blank
+      // "Loading..." screen and reject the site as low-value / under construction.
     </script>
   </head>
   <body>
@@ -371,6 +349,7 @@
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
             <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
+            <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy</a></li>
           </ul>
         </div>
       </nav>
@@ -432,16 +411,11 @@
 
       <!-- noscript lives OUTSIDE seo-fallback so it is never hidden by the react-loaded class -->
       <noscript>
-        <p style="margin-top: 2rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444;">
-          <strong>JavaScript Required:</strong> Please enable JavaScript to access the full website with interactive features and all articles.
+        <p style="margin-top: 2rem; padding: 1rem;">
+          You are viewing the static version of DataEngineer Hub. Use the links above to open articles, the
+          <a href="/about">About</a> page, or <a href="/contact">Contact</a>. Interactive tools need JavaScript in a modern browser.
         </p>
       </noscript>
-      
-      <!-- Loading spinner - hidden by default, shown only when React starts -->
-      <div class="loading-container">
-        <div class="loading-spinner"></div>
-        <p class="loading-text">Loading DataEngineer Hub...</p>
-      </div>
 
       <footer class="site-footer">
         <ul class="site-footer-links">

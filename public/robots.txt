@@ -1,5 +1,5 @@
 # robots.txt - DataEngineer Hub
-# Last updated: 2026-07-17
+# Last updated: 2026-08-21
 #
 # All programmatic sections, tools, cheat sheets, and glossary pages are open for crawling.
 
@@ -12,6 +12,9 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /debug
+Disallow: /sponsors/dashboard
+Disallow: /practice/*/q/
+Disallow: /practice/*/topics/
 
 # Allow static assets
 Allow: /*.css$
@@ -41,18 +44,27 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /debug
+Disallow: /sponsors/dashboard
+Disallow: /practice/*/q/
+Disallow: /practice/*/topics/
 
 User-agent: AdsBot-Google
 Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /debug
+Disallow: /sponsors/dashboard
+Disallow: /practice/*/q/
+Disallow: /practice/*/topics/
 
 User-agent: AdsBot-Google-Mobile
 Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /debug
+Disallow: /sponsors/dashboard
+Disallow: /practice/*/q/
+Disallow: /practice/*/topics/
 
 # =============================================================================
 # SITEMAPS
