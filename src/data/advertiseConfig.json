@@ -1,8 +1,8 @@
 {
   "stats": [
-    { "label": "Monthly Pageviews", "value": "15,000+", "desc": "Organic search traffic from active data engineers", "icon": "BarChart3" },
-    { "label": "Newsletter Subscribers", "value": "2,500+", "desc": "Opted-in data engineering professionals", "icon": "Users" },
-    { "label": "Average Open Rate", "value": "44.2%", "desc": "3× industry average for tech newsletters", "icon": "TrendingUp" }
+    { "label": "Published Guides", "value": "100+", "desc": "Original data engineering tutorials, comparisons, and reference pages", "icon": "FileText" },
+    { "label": "Audience", "value": "Practitioners", "desc": "Data engineers, analytics engineers, and architects working the modern data stack", "icon": "Users" },
+    { "label": "Sponsorships", "value": "Vetted", "desc": "Every placement is reviewed before it goes live — no automated ad networks", "icon": "Shield" }
   ],
   "audienceBreakdown": [
     { "role": "Data Engineers", "percent": 58, "color": "#3B82F6" },

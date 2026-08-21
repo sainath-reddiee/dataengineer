@@ -1,21 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { isCrawlerUserAgent } from '@/utils/isCrawler';
 
 const CONSENT_KEY = 'cookie_consent';
 const CONSENT_TIMESTAMP_KEY = 'cookie_consent_ts';
 const CONSENT_COOKIE_NAME = 'cookie_consent';
 const CONSENT_MAX_AGE_DAYS = 365; // 12 months
 
-// Common crawler/bot user-agent patterns
-const BOT_UA_PATTERN =
-  /bot|crawl|spider|slurp|facebookexternalhit|linkedinbot|twitterbot|whatsapp|telegrambot|baiduspider|yandex|duckduckbot|googlebot|bingbot|semrushbot|ahrefsbot|mj12bot|dotbot|rogerbot|archive\.org_bot|applebot|petalbot|gptbot|claudebot|bytespider|ia_archiver|mediapartners-google|adsbot-google/i;
-
-/**
- * Detect if the current user-agent is a known crawler/bot.
- */
 function isBot() {
-  if (typeof navigator === 'undefined') return false;
-  return BOT_UA_PATTERN.test(navigator.userAgent);
+  return isCrawlerUserAgent();
 }
 
 /**
@@ -132,7 +125,7 @@ const CookieConsent = () => {
         <p className="text-sm text-gray-300 flex-1">
           We use cookies and similar technologies to enhance your experience, analyze site traffic, and serve relevant ads.
           By clicking "Accept", you consent to the use of cookies. Read our{' '}
-          <Link to="/privacy-policy" className="text-blue-400 hover:underline">
+          <Link to="/privacy-policy#cookies" className="text-blue-400 hover:underline">
             Privacy Policy
           </Link>{' '}
           for more information.

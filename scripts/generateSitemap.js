@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT } from '../src/data/thinTags.js';
+import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT, MIN_INDEXABLE_CATEGORY_COUNT, MIN_INDEXABLE_WORD_COUNT } from '../src/data/thinTags.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -79,7 +79,21 @@ const STATIC_PAGES = [
   { url: '/cheatsheets/category/bestpractices', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
 ];
 
-const EXCLUDED_ARTICLE_SLUGS = [];
+const EXCLUDED_ARTICLE_SLUGS = [
+  // Canonicalized via public/.htaccess 301s — listing the old slug is a
+  // duplicate URL that AdSense treats as low-value / redirected content.
+  'snowflake-query-optimization-2025',
+  'building-snowflake-agents-in-10-minutes',
+  'build-a-snowflake-agent-in-10-minutes',
+  'snowflake-unique-aggregation-hidden-functions',
+  'snowflake-options-automate-query-optimization-guide',
+  'build-a-simple-rag-application-in-snowflake-using-streamlit-and-snowflake-cortex',
+  'build-rag-snowflake-documentation',
+  'snowflake-openflow-tutorial',
+  'snowflake-performance',
+  'snowflake-performance-tuning-techniques',
+  'loading-data-from-s3-to-snowflake',
+];
 
 const EXCLUDED_CHEATSHEET_SLUGS = [];
 
@@ -310,6 +324,46 @@ function validateSitemap(entries) {
   return errors;
 }
 
+function countPlainWords(...parts) {
+  const text = parts
+    .flat(Infinity)
+    .filter((p) => p != null && p !== '')
+    .map((p) => (typeof p === 'string' ? p : JSON.stringify(p)))
+    .join(' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/[#*_`\[\]()>]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!text) return 0;
+  return text.split(/\s+/).filter(Boolean).length;
+}
+
+function glossaryTermWordCount(item) {
+  const faqText = (item.faqs || []).map((f) => `${f.question || ''} ${f.answer || ''}`);
+  return countPlainWords(
+    item.shortDefinition,
+    item.fullDefinition,
+    item.practitionerIntro,
+    item.gotchas,
+    item.keyPoints,
+    faqText
+  );
+}
+
+function comparisonWordCount(item) {
+  const faqText = (item.faqs || []).map((f) => `${f.question || ''} ${f.answer || ''}`);
+  return countPlainWords(
+    item.intro,
+    item.shortVerdict,
+    item.finalVerdict,
+    item.practitionerIntro,
+    item.features,
+    item.pros,
+    item.cons,
+    faqText
+  );
+}
+
 // Load pSEO data from JSON files
 function loadPSEOData() {
   const pseoDir = path.join(__dirname, '..', 'src', 'data', 'pseo');
@@ -334,6 +388,10 @@ function loadPSEOData() {
         if (Array.isArray(data)) {
           data.forEach(item => {
             if (item.slug) {
+              if (glossaryTermWordCount(item) < MIN_INDEXABLE_WORD_COUNT) {
+                console.log(`   ⏭️  Skipping thin glossary term: ${item.slug}`);
+                return;
+              }
               entries.push({
                 url: `${SITE_URL}/glossary/${item.slug}`,
                 changefreq: fileModFreq,
@@ -362,6 +420,10 @@ function loadPSEOData() {
         if (Array.isArray(data)) {
           data.forEach(item => {
             if (item.slug) {
+              if (comparisonWordCount(item) < MIN_INDEXABLE_WORD_COUNT) {
+                console.log(`   ⏭️  Skipping thin comparison: ${item.slug}`);
+                return;
+              }
               entries.push({
                 url: `${SITE_URL}/compare/${item.slug}`,
                 changefreq: fileModFreq,
@@ -512,18 +574,24 @@ async function generateSitemap() {
     }
 
     console.log('📝 Adding category pages...');
-    const CATEGORY_SLUGS = [
+    const CATEGORY_SLUGS = new Set([
       'snowflake', 'databricks', 'aws', 'azure', 'gcp', 'salesforce',
       'dbt', 'airflow', 'python', 'sql', 'developer-productivity'
-    ];
-    for (const slug of CATEGORY_SLUGS) {
+    ]);
+    categories.forEach(cat => {
+      const slug = String(cat.slug || '').toLowerCase();
+      if (!CATEGORY_SLUGS.has(slug)) return;
+      if ((cat.count || 0) < MIN_INDEXABLE_CATEGORY_COUNT) {
+        console.log(`   ⏭️  Skipping thin category: ${slug} (${cat.count || 0} posts)`);
+        return;
+      }
       sitemapEntries.push({
-        url: `https://dataengineerhub.blog/category/${slug}`,
+        url: `${SITE_URL}/category/${slug}`,
         lastmod: today,
         changefreq: 'weekly',
         priority: 0.7,
       });
-    }
+    });
 
     console.log('📝 Adding tag pages...');
     tags.forEach(tag => {

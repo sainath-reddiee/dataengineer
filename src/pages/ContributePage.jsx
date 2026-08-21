@@ -60,8 +60,8 @@ const ContributePage = () => {
 
   const stats = [
     { value: totalArticles > 0 ? `${totalArticles}` : '…', label: 'Published Articles', icon: FileText },
-    { value: '10K+', label: 'Monthly Readers', icon: Users },
-    { value: '100+', label: 'Community Members', icon: Heart },
+    { value: 'Weekly', label: 'New Tutorials', icon: Users },
+    { value: 'Practitioner', label: 'Audience', icon: Heart },
     { value: totalCategories > 0 ? `${totalCategories}+` : '15+', label: 'Tech Topics', icon: Code },
   ];
 
@@ -75,7 +75,7 @@ const ContributePage = () => {
     {
       icon: Share2,
       title: 'Multi-Channel Promotion',
-      desc: 'Your article gets shared across LinkedIn, Twitter, newsletter, and our social channels reaching thousands of data professionals.',
+      desc: 'Your article gets shared across LinkedIn, Twitter, newsletter, and our social channels to practicing data engineers.',
       color: 'from-green-500 to-emerald-500',
     },
     {
@@ -153,7 +153,7 @@ const ContributePage = () => {
     <>
       <MetaTags
         title="Write for Us - Contribute a Guest Post"
-        description="Share your data engineering expertise with our community of 10K+ monthly readers. Submit a guest post on Snowflake, dbt, Airflow, cloud platforms, and more. Get published with an author bio, backlinks, and multi-channel promotion."
+        description="Share your data engineering expertise with practicing engineers. Submit a guest post on Snowflake, dbt, Airflow, cloud platforms, and more. Get published with an author bio, backlinks, and multi-channel promotion."
         keywords="write for us, guest post, contribute, data engineering blog, submit article, technical writing, guest author"
         type="website"
       />
@@ -175,7 +175,7 @@ const ContributePage = () => {
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl text-gray-300 leading-relaxed max-w-3xl mx-auto mb-8">
               Join our community of data engineering authors. Write practical tutorials,
-              share real-world insights, and help thousands of professionals level up.
+              share real-world insights, and help fellow practitioners level up.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a

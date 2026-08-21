@@ -39,9 +39,9 @@ const PrivacyPolicyPage = () => {
             We only share information with your consent, to comply with laws, to provide you with services, to protect your rights, or to fulfill business obligations. We may process or share your data that we hold based on the following legal basis: Consent, Legitimate Interests, Performance of a Contract, or Legal Obligations.
           </p>
           
-          <h2 className="text-xl font-bold text-white mt-8">4. DO WE USE COOKIES AND OTHER TRACKING TECHNOLOGIES?</h2>
+          <h2 id="cookies" className="text-xl font-bold text-white mt-8">4. DO WE USE COOKIES AND OTHER TRACKING TECHNOLOGIES?</h2>
           <p>
-            We may use cookies and similar tracking technologies (like web beacons and pixels) to access or store information. Specific information about how we use such technologies and how you can refuse certain cookies is set out in our Cookie Policy.
+            We may use cookies and similar tracking technologies (like web beacons and pixels) to access or store information. The table and opt-out links in this section are our cookie policy. There is no separate cookie-policy page; <a href="/privacy-policy#cookies" className="text-blue-400 hover:text-blue-300 underline">/cookie-policy</a> redirects here.
           </p>
           <p>
             When you first visit our website, a cookie consent banner is displayed at the bottom of the page. We implement Google Consent Mode v2: by default, users in the EU, UK, and EEA have advertising, analytics, and personalization storage set to "denied" until consent is granted. Advertising scripts (such as Google AdSense) may still load to comply with Google's verification and delivery requirements, but will not store or read personalized advertising cookies until you accept cookies through the banner. If you decline, only essential cookies required for the website to function are used, and any ads served will be non-personalized. You can revoke your consent at any time via the "Manage Cookies" link in the footer.

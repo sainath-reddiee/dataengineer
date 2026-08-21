@@ -109,7 +109,28 @@ const CONSENT_MODE_V2_HTML = `    <!-- Google Consent Mode v2: region-gated. Res
 
 // SEO overrides for CTR-optimized titles and descriptions
 import seoOverrides, { getSEOOverride } from '../src/data/seoOverrides.js';
-import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT } from '../src/data/thinTags.js';
+import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT, MIN_INDEXABLE_CATEGORY_COUNT, MIN_INDEXABLE_WORD_COUNT } from '../src/data/thinTags.js';
+
+function countPlainWords(...parts) {
+  const text = parts
+    .flat(Infinity)
+    .filter((p) => p != null && p !== '')
+    .map((p) => (typeof p === 'string' ? p : JSON.stringify(p)))
+    .join(' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/[#*_`\[\]()>]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!text) return 0;
+  return text.split(/\s+/).filter(Boolean).length;
+}
+
+function robotsForWordCount(wordCount) {
+  if (wordCount < MIN_INDEXABLE_WORD_COUNT) {
+    return 'noindex, follow';
+  }
+  return 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+}
 
 // Meta description optimizer for CTR-optimized descriptions
 import { optimizeMetaDescription } from '../src/lib/metaDescriptionOptimizer.js';
@@ -505,7 +526,10 @@ const ESSENTIAL_PAGES = [
       </ul>
 
       <h2>Google AdSense and DART Cookies</h2>
-      <p>We use Google AdSense to display advertisements on our website. Google, as a third-party vendor, uses the DART cookie to serve ads based on your visit to our site and other sites on the Internet. You may opt out of the use of the DART cookie by visiting the <strong>Google Ad and Content Network Privacy Policy</strong>.</p>
+      <p>We use Google AdSense to display advertisements on our website. Google, as a third-party vendor, uses the DART cookie to serve ads based on your visit to our site and other sites on the Internet. You may opt out of the use of the DART cookie by visiting the <a href="https://adssettings.google.com/" rel="noopener noreferrer">Google Ads Settings</a> page. For how Google uses data on partner sites, see <a href="https://policies.google.com/technologies/partner-sites" rel="noopener noreferrer">Google's partner-sites policy</a>.</p>
+
+      <h2 id="cookies">Cookies we use</h2>
+      <p>This section is our cookie policy. There is no separate cookie-policy page; <a href="/privacy-policy#cookies">/cookie-policy</a> redirects here. We use a first-party <code>cookie_consent</code> cookie (12 months) to remember your choice, Google Analytics cookies only after you grant analytics consent, and Google AdSense / DoubleClick cookies for ad delivery. Cloudflare may set <code>__cf_bm</code> for bot management. You can decline non-essential cookies via the banner or the Manage Cookies link in the footer. EU/UK/EEA visitors default to non-personalized ads until they accept.</p>
 
       <h2>How We Use Your Information</h2>
       <ul>
@@ -605,12 +629,12 @@ const ESSENTIAL_PAGES = [
     description: 'Share your data engineering expertise with our community. Submit a guest post on Snowflake, dbt, Airflow, cloud platforms, and more. Get published with an author bio and backlink.',
     content: `
       <h1>Write for Us</h1>
-      <p>Share your data engineering knowledge with thousands of professionals. We publish practical tutorials, architecture guides, and tool deep-dives on topics like Snowflake, dbt, Apache Airflow, Spark, AWS, Azure, GCP, and more.</p>
+      <p>Share your data engineering knowledge with fellow practitioners. We publish practical tutorials, architecture guides, and tool deep-dives on topics like Snowflake, dbt, Apache Airflow, Spark, AWS, Azure, GCP, and more.</p>
 
       <h2>Why Contribute?</h2>
       <ul>
         <li><strong>Author Bio &amp; Backlink:</strong> Get a dedicated author section with your bio, photo, and a do-follow link back to your site or profile.</li>
-        <li><strong>Social Promotion:</strong> Your article will be shared across our social channels reaching thousands of data engineering professionals.</li>
+        <li><strong>Social Promotion:</strong> Your article will be shared across our social channels to practicing data engineers.</li>
         <li><strong>Community Recognition:</strong> Join a growing community of contributors and establish yourself as a thought leader in data engineering.</li>
       </ul>
 
@@ -2663,7 +2687,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   // ðŸ“Š Thin content detection for articles
   const articlePlainText = stripHTML(processedContent || '');
   const articleWordCount = articlePlainText.split(/\s+/).filter(w => w.length > 0).length;
-  const articleRobotsDirective = 'index, follow, max-snippet:-1, max-image-preview:large';
+  const articleRobotsDirective = robotsForWordCount(articleWordCount);
 
   // ðŸ“– Reading time + formatted publish date for visible byline
   const readingTime = Math.max(1, Math.ceil(articleWordCount / 250));
@@ -3766,6 +3790,10 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
 
   // Automatic default descriptions based on category slug to enrich listing pages for crawlers
   const categoryIntroMap = {
+    sql: "SQL is the language of data warehouses. Whether you write Snowflake SQL, BigQuery Standard SQL, T-SQL, or Spark SQL, the same fundamentals — joins, window functions, CTEs, and set operations — decide whether a query finishes in seconds or burns credits for an hour. These articles cover query optimization, modeling patterns, and the dialect differences that actually bite in production.",
+    gcp: "Google Cloud's data stack centers on BigQuery, Cloud Storage, Dataflow, Pub/Sub, and Dataproc. These articles cover BigQuery cost control, SQL patterns, and how to land data from GCS or streaming pipelines without surprise on-demand slots.",
+    salesforce: "Salesforce is a source system most data teams eventually have to ingest. These articles cover extracting CRM objects, handling API limits, and modeling Salesforce data in a warehouse so reporting stays consistent.",
+    'developer-productivity': "Developer productivity for data engineers is keyboard shortcuts, AI coding assistants, terminal setup, and git workflow — not generic career advice. These articles cover the tools and habits that compound into faster reviews and fewer context switches.",
     airflow: "Apache Airflow is the leading open-source platform for workflow orchestration in data engineering. It allows you to programmatically author, schedule, and monitor complex data pipelines as Directed Acyclic Graphs (DAGs). Airflow is highly extensible and integrates with almost every modern data warehouse, processing engine, and cloud provider, making it an essential tool for orchestrating enterprise data workflows.",
     aws: "Amazon Web Services (AWS) is the foundation of many cloud-based data engineering platforms. Services like Amazon S3, AWS Glue, AWS EMR, and Amazon Redshift enable data teams to build scalable data lakes, process massive datasets, and run high-performance analytical queries. Master cloud-native architectures, serverless ETL pipelines, and cost-optimization strategies on AWS.",
     azure: "Microsoft Azure provides a comprehensive suite of cloud services for big data analytics and engineering. From Azure Data Lake Storage (ADLS) and Azure Data Factory (ADF) to Synapse Analytics and Azure Databricks, the platform allows you to ingest, transform, and analyze enterprise data at scale. Discover best practices for integrating and running workloads on Microsoft's cloud platform.",
@@ -3799,7 +3827,9 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <title>' + safeName + ' - Data Engineering Articles</title>\n';
   html += '    <meta name="description" content="' + descriptionMeta + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  var catRobots = 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+  var catRobots = categoryArticles.length < MIN_INDEXABLE_CATEGORY_COUNT
+    ? 'noindex, follow'
+    : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
   html += '    <meta name="robots" content="' + catRobots + '" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
@@ -4366,7 +4396,21 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   // Convert fullDefinition markdown to HTML
   var fullDefHTML = markdownToHTML(term.fullDefinition || '');
 
-  var robotsDirective = 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+  var faqText = '';
+  if (term.faqs) {
+    for (var gfi = 0; gfi < term.faqs.length; gfi++) {
+      faqText += (term.faqs[gfi].question || '') + ' ' + (term.faqs[gfi].answer || '') + ' ';
+    }
+  }
+  var glossaryWordCount = countPlainWords(
+    term.shortDefinition,
+    term.fullDefinition,
+    term.practitionerIntro,
+    term.gotchas,
+    term.keyPoints,
+    faqText
+  );
+  var robotsDirective = robotsForWordCount(glossaryWordCount);
 
   // Category display name
   var categoryDisplay = (term.category || '').replace(/-/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
@@ -5016,6 +5060,24 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
 
   var descriptionMeta = comparison.shortVerdict || (comparison.toolA + ' vs ' + comparison.toolB + ' comparison for data engineers. Feature-by-feature analysis with pros, cons, and verdict.');
 
+  var compareFaqText = '';
+  if (comparison.faqs) {
+    for (var cfi = 0; cfi < comparison.faqs.length; cfi++) {
+      compareFaqText += (comparison.faqs[cfi].question || '') + ' ' + (comparison.faqs[cfi].answer || '') + ' ';
+    }
+  }
+  var compareWordCount = countPlainWords(
+    comparison.intro,
+    comparison.shortVerdict,
+    comparison.finalVerdict,
+    comparison.practitionerIntro,
+    comparison.features,
+    comparison.pros,
+    comparison.cons,
+    compareFaqText
+  );
+  var compareRobots = robotsForWordCount(compareWordCount);
+
   // Build HTML
   var html = '<!doctype html>\n<html lang="en">\n  <head>\n';
   html += '    <meta charset="UTF-8" />\n';
@@ -5023,7 +5085,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <title>' + escapeHtml(comparison.toolA) + ' vs ' + escapeHtml(comparison.toolB) + ' | Data Engineering Tools Comparison</title>\n';
   html += '    <meta name="description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n\n';
+  html += '    <meta name="robots" content="' + compareRobots + '" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="article" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
@@ -5447,7 +5509,7 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
     }
   }
 
-  var robotsDirective = 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+  var robotsDirective = robotsForWordCount(totalWords);
 
   var descMeta = escapeHtml(sheet.shortDescription || ('Comprehensive ' + sheet.title + ' for data engineers.'));
 
@@ -6654,6 +6716,21 @@ function buildPracticeQuestionPreview(quizSlug) {
         };
       }
 
+      // Delete previously built category HTML that is now empty so a full
+      // dist publish cannot resurrect doorway listing pages.
+      const categoryOutputRoot = path.join(distDir, 'category');
+      if (fs.existsSync(categoryOutputRoot)) {
+        for (const entry of fs.readdirSync(categoryOutputRoot, { withFileTypes: true })) {
+          if (!entry.isDirectory()) continue;
+          const pagePath = `/category/${entry.name}`;
+          if (!currentPages.has(pagePath)) {
+            fs.rmSync(path.join(categoryOutputRoot, entry.name), { recursive: true, force: true });
+            console.log(`   🗑️  Removed stale category page: ${pagePath}`);
+            delete newCache.pages[pagePath];
+          }
+        }
+      }
+
       // ====================================================================
       // GENERATE /articles LISTING PAGE
       // ====================================================================
@@ -6834,7 +6911,7 @@ function buildPracticeQuestionPreview(quizSlug) {
         const pagePath = '/glossary/' + term.slug;
         currentPages.add(pagePath);
 
-        const contentHash = hashContent({ term: term.id, slug: term.slug, updated: term.lastUpdated, definition: term.shortDefinition, full: term.fullDefinition, intro: term.practitionerIntro, gotchas: term.gotchas });
+        const contentHash = hashContent({ term: term.id, slug: term.slug, updated: term.lastUpdated, definition: term.shortDefinition, full: term.fullDefinition, intro: term.practitionerIntro, gotchas: term.gotchas, templateVersion: 2 });
         const cachedPage = cache.pages[pagePath];
         const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
 
@@ -6937,7 +7014,18 @@ function buildPracticeQuestionPreview(quizSlug) {
         const pagePath = '/compare/' + comparison.slug;
         currentPages.add(pagePath);
 
-        const contentHash = hashContent({ id: comparison.id, slug: comparison.slug, updated: comparison.lastUpdated, verdict: comparison.shortVerdict });
+        const contentHash = hashContent({
+          id: comparison.id,
+          slug: comparison.slug,
+          updated: comparison.lastUpdated,
+          verdict: comparison.shortVerdict,
+          intro: comparison.intro,
+          finalVerdict: comparison.finalVerdict,
+          faqs: comparison.faqs,
+          features: comparison.features,
+          practitionerIntro: comparison.practitionerIntro,
+          templateVersion: 2,
+        });
         const cachedPage = cache.pages[pagePath];
         const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
 
@@ -7055,7 +7143,15 @@ function buildPracticeQuestionPreview(quizSlug) {
         const pagePath = '/cheatsheets/' + sheet.slug;
         currentPages.add(pagePath);
 
-        const contentHash = hashContent({ slug: sheet.slug, updated: sheet.lastUpdated, title: sheet.title, sections: (sheet.sections || []).length });
+        const contentHash = hashContent({
+          slug: sheet.slug,
+          updated: sheet.lastUpdated,
+          title: sheet.title,
+          intro: sheet.intro,
+          faqs: sheet.faqs,
+          sections: sheet.sections,
+          templateVersion: 2,
+        });
         const cachedPage = cache.pages[pagePath];
         const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
 

@@ -8,10 +8,12 @@ import RecentPosts from '@/components/RecentPosts';
 import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import { generateBreadcrumbs } from '@/lib/seoConfig';
-import { THIN_TAG_SLUGS } from '@/data/thinTags';
+import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT, isIndexableTag } from '@/data/thinTags';
+import { usePostsByTag } from '@/hooks/useWordPress';
 
 const TagPage = () => {
   const { tagSlug } = useParams();
+  const { totalPosts, loading } = usePostsByTag(tagSlug, { per_page: 1 });
 
   // Convert slug to readable name (e.g., "data-engineering" -> "Data Engineering")
   const tagName = tagSlug
@@ -23,6 +25,10 @@ const TagPage = () => {
     return <Navigate to="/articles" replace />;
   }
 
+  if (!loading && !isIndexableTag({ slug: tagSlug, count: totalPosts })) {
+    return <Navigate to="/articles" replace />;
+  }
+
   return (
     <>
       <MetaTags
@@ -30,6 +36,7 @@ const TagPage = () => {
         description={`Browse all articles tagged with ${tagName}. Expert data engineering tutorials and guides on ${tagName}.`}
         keywords={`${tagName}, data engineering, tutorials, ${tagSlug}`}
         type="website"
+        noindex={loading || totalPosts < MIN_INDEXABLE_TAG_COUNT}
       />
 
       <div className="pt-4 pb-12">
