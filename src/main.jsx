@@ -7,6 +7,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import App from '@/App';
 import '@/index.css';
 import { initThirdPartyScripts } from '@/utils/scriptLoader';
+import { isCrawlerUserAgent } from '@/utils/isCrawler';
 
 // Note: Font preloading is handled in index.html with proper preload tags
 // This avoids duplicate requests and improves FCP
@@ -34,8 +35,17 @@ if (import.meta.env.DEV) {
   });
 }
 
-// ✅ KEY FIX: Don't render immediately - wait for DOM
+// AdSense / Googlebot review the JS-enabled DOM. createRoot() replaces the
+// pre-rendered article HTML inside #root, then Suspense shows a loading
+// shell until WordPress returns — which previously looked like an
+// under-construction site. Leave the static HTML in place for crawlers.
 const initApp = () => {
+  if (isCrawlerUserAgent()) {
+    document.body.classList.remove('react-loading');
+    document.body.classList.add('react-loaded');
+    return;
+  }
+
   const root = ReactDOM.createRoot(document.getElementById('root'));
 
   root.render(

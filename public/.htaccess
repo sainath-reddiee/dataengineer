@@ -53,13 +53,16 @@
     RewriteRule ^articles/snowflake-performance/?$ /articles/snowflake-query-optimization-guide-2026 [R=301,L]
     RewriteRule ^articles/snowflake-performance-tuning-techniques/?$ /articles/snowflake-query-optimization-guide-2026 [R=301,L]
     RewriteRule ^articles/loading-data-from-s3-to-snowflake/?$ /articles/load-data-into-snowflake [R=301,L]
+
+    # Cookie policy lives in the Privacy Policy cookies section — do not 404.
+    RewriteRule ^cookie-policy/?$ /privacy-policy [R=301,L]
     
     # ========================================================================
     # CRITICAL FIX: Handle trailing slashes consistently (SEO!)
+    # DirectorySlash is Off below so Apache will not 301 /news -> /news/.
+    # Strip the slash from every URL except root so sitemap/canonicals match.
     # ========================================================================
     
-    # Remove trailing slash from non-directory URLs (except root)
-    RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^(.+)/$ /$1 [R=301,L]
     
@@ -159,16 +162,17 @@
     # If the requested path IS a real file, serve it
     RewriteCond %{REQUEST_FILENAME} -f
     RewriteRule ^ - [L]
-    
-    # If the requested path IS a real directory, serve it
-    RewriteCond %{REQUEST_FILENAME} -d
-    RewriteRule ^ - [L]
 
-    # Serve pre-rendered /path/index.html for any SSG page (covers news,
-    # practice, advertise, contributors, tools, etc. without listing each one).
+    # Serve /path/index.html internally BEFORE treating /path as a directory.
+    # SSG writes news/index.html, tools/index.html, etc. Apache would otherwise
+    # DirectorySlash-301 /news -> /news/, fighting sitemap and canonicals.
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{DOCUMENT_ROOT}/$1/index.html -f
-    RewriteRule ^(.+)$ /$1/index.html [L]
+    RewriteRule ^(.+?)/?$ /$1/index.html [L]
+    
+    # If the requested path IS a real directory with no index.html, stop here
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
     
     # ========================================================================
     # SPA fallback ONLY for private app shells. Unknown public URLs MUST 404.
@@ -183,6 +187,8 @@
 
 <IfModule mod_dir.c>
     DirectoryIndex index.html
+    # Off: do not 301 /news -> /news/. Canonicals and the sitemap omit the slash.
+    DirectorySlash Off
 </IfModule>
 
 # ==============================================================================

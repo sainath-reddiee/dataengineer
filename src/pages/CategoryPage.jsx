@@ -10,6 +10,8 @@ import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import { generateBreadcrumbs } from '@/lib/seoConfig';
 import { getFAQSchema } from '@/lib/seoConfig';
+import { MIN_INDEXABLE_CATEGORY_COUNT } from '@/data/thinTags';
+import { usePostsByCategory } from '@/hooks/useWordPress';
 
 // Lazy load AdPlacement
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
@@ -276,6 +278,7 @@ const getCategoryIcon = (category, className = 'h-10 w-10') => {
 const CategoryPage = () => {
   const { categoryName } = useParams();
   const lowerCategoryName = categoryName.toLowerCase();
+  const { totalPosts, loading: postsLoading } = usePostsByCategory(lowerCategoryName, { per_page: 1 });
   const currentCategory = categoryConfig[lowerCategoryName] || {
     name: categoryName.charAt(0).toUpperCase() + categoryName.slice(1),
     description: `Discover articles and tutorials about ${categoryName}.`
@@ -314,6 +317,8 @@ const CategoryPage = () => {
         type="website"
         breadcrumbs={breadcrumbs}
         faqSchema={faqSchema}
+        noindex={!postsLoading && totalPosts < MIN_INDEXABLE_CATEGORY_COUNT}
+      />
       />
 
       <div className="pt-1 pb-8">

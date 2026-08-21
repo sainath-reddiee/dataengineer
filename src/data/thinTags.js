@@ -4,6 +4,8 @@
  * Keep in sync with public/.htaccess 301s.
  */
 export const MIN_INDEXABLE_TAG_COUNT = 3;
+export const MIN_INDEXABLE_CATEGORY_COUNT = 3;
+export const MIN_INDEXABLE_WORD_COUNT = 400;
 
 export const THIN_TAG_SLUGS = new Set([
   'ai-coding',

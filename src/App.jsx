@@ -109,20 +109,11 @@ const ArticleWriterPage = lazy(() => import('./pages/admin/ArticleWriterPage'));
 const SerpIntelligencePage = lazy(() => import('./pages/admin/SerpIntelligencePage'));
 const ActivityHistoryPage = lazy(() => import('./pages/admin/ActivityHistoryPage'));
 
+// Keep this tiny. A full-viewport "Loading Article…" overlay was what
+// AdSense snapshots when a lazy chunk is still in flight.
 const LoadingFallback = ({ text = "Loading..." }) => (
-  <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-    <div className="flex flex-col items-center space-y-4">
-      <div className="relative">
-        <div className="w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-        <div className="absolute inset-0 w-12 h-12 border-4 border-purple-400 border-b-transparent rounded-full animate-spin animate-reverse"></div>
-      </div>
-      <p className="text-blue-300 font-medium text-lg">{text}</p>
-      <div className="flex space-x-2">
-        <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
-        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-        <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-      </div>
-    </div>
+  <div className="h-1 w-full bg-slate-800 overflow-hidden" role="status" aria-live="polite" aria-label={text}>
+    <div className="h-full w-1/3 bg-blue-500 animate-pulse" />
   </div>
 );
 
@@ -382,6 +373,7 @@ function App() {
           <Route path="certification" element={<SafeRoute fallbackText="Loading Certification..."><Certification /></SafeRoute>} />
           <Route path="contact" element={<SafeRoute fallbackText="Loading Contact..."><ContactPage /></SafeRoute>} />
           <Route path="privacy-policy" element={<SafeRoute fallbackText="Loading Privacy Policy..."><PrivacyPolicyPage /></SafeRoute>} />
+          <Route path="cookie-policy" element={<Navigate to="/privacy-policy#cookies" replace />} />
           <Route path="terms-of-service" element={<SafeRoute fallbackText="Loading Terms..."><TermsOfServicePage /></SafeRoute>} />
           <Route path="disclaimer" element={<SafeRoute fallbackText="Loading Disclaimer..."><DisclaimerPage /></SafeRoute>} />
           <Route path="contribute" element={<SafeRoute fallbackText="Loading..."><ContributePage /></SafeRoute>} />

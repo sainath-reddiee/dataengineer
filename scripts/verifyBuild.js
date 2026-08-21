@@ -342,8 +342,8 @@ async function verifyBuild() {
           }
 
           if (!isNoindex && crawlerWordCount < 400) {
-            warnings.push(`⚠️  ${dir}: indexable article has only ${crawlerWordCount} crawler-visible words`);
-            log(`   ⚠️  ${dir}: only ${crawlerWordCount} crawler-visible words`, 'yellow');
+            issues.push(`❌ ${dir}: indexable article has only ${crawlerWordCount} crawler-visible words`);
+            log(`   ❌ ${dir}: only ${crawlerWordCount} crawler-visible words`, 'red');
           }
 
           // Invalid slot ID is an AdSense approval blocker
@@ -363,11 +363,22 @@ async function verifyBuild() {
             log(`   ❌ ${dir}: dev /src/main.jsx path in production HTML`, 'red');
           }
 
-          if (failed.length > 0) {
-            warnings.push(`⚠️  Article ${dir} missing: ${failed.join(', ')}`);
-            log(`   ⚠️  ${dir}: missing ${failed.join(', ')}`, 'yellow');
-            for (const k of failed) missCounts[k] = (missCounts[k] || 0) + 1;
-          } else {
+          const adsenseFails = failed.filter((f) => /AdSense|ca-pub|article body|SEO content|loading/i.test(f));
+          const otherFails = failed.filter((f) => !adsenseFails.includes(f));
+
+          if (adsenseFails.length > 0) {
+            issues.push(`❌ Article ${dir} missing: ${adsenseFails.join(', ')}`);
+            log(`   ❌ ${dir}: missing ${adsenseFails.join(', ')}`, 'red');
+            for (const k of adsenseFails) missCounts[k] = (missCounts[k] || 0) + 1;
+          }
+
+          if (otherFails.length > 0) {
+            warnings.push(`⚠️  Article ${dir} missing: ${otherFails.join(', ')}`);
+            log(`   ⚠️  ${dir}: missing ${otherFails.join(', ')}`, 'yellow');
+            for (const k of otherFails) missCounts[k] = (missCounts[k] || 0) + 1;
+          }
+
+          if (failed.length === 0) {
             passCount++;
           }
         }
@@ -397,6 +408,79 @@ async function verifyBuild() {
         log(`   ✅ Noindex ratio is acceptable (${noindexPct}%)`, 'green');
       }
     }
+  }
+
+  // ============================================================================
+  // Check 4b: Glossary term pages must ship the AdSense loader
+  // ============================================================================
+  log('\n📖 Checking glossary term pages for AdSense loader...', 'blue');
+  const glossaryDir = path.join(distDir, 'glossary');
+  if (fs.existsSync(glossaryDir)) {
+    const glossaryTerms = fs.readdirSync(glossaryDir).filter((item) => {
+      const itemPath = path.join(glossaryDir, item);
+      return fs.statSync(itemPath).isDirectory() && fs.existsSync(path.join(itemPath, 'index.html'));
+    });
+    let glossaryMissingAds = 0;
+    let glossaryChecked = 0;
+    for (const dir of glossaryTerms) {
+      const content = fs.readFileSync(path.join(glossaryDir, dir, 'index.html'), 'utf8');
+      const robotsMatch = content.match(/<meta\s+name="robots"\s+content="([^"]+)"/i);
+      const isNoindex = robotsMatch && /noindex/i.test(robotsMatch[1]);
+      if (isNoindex) continue;
+      glossaryChecked++;
+      if (!/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-/i.test(content)) {
+        glossaryMissingAds++;
+        if (glossaryMissingAds <= 5) {
+          issues.push(`❌ glossary/${dir}: indexable term is missing the AdSense loader`);
+          log(`   ❌ ${dir}: missing AdSense loader`, 'red');
+        }
+      }
+    }
+    if (glossaryMissingAds === 0) {
+      log(`   ✅ ${glossaryChecked} indexable glossary terms include the AdSense loader`, 'green');
+    } else {
+      log(`   ❌ ${glossaryMissingAds}/${glossaryChecked} indexable glossary terms missing AdSense loader`, 'red');
+    }
+    info.push(`Glossary terms: ${glossaryTerms.length} HTML pages`);
+  } else {
+    warnings.push('⚠️  dist/glossary/ not found — glossary pages were not generated');
+    log('   ⚠️  dist/glossary/ not found', 'yellow');
+  }
+
+  // ============================================================================
+  // Check 4c: Sitemap must not list 301'd article aliases
+  // ============================================================================
+  log('\n🗺️  Checking sitemap for redirected article slugs...', 'blue');
+  const redirectedSlugs = [
+    'snowflake-query-optimization-2025',
+    'building-snowflake-agents-in-10-minutes',
+    'build-a-snowflake-agent-in-10-minutes',
+    'snowflake-unique-aggregation-hidden-functions',
+    'snowflake-options-automate-query-optimization-guide',
+    'build-a-simple-rag-application-in-snowflake-using-streamlit-and-snowflake-cortex',
+    'build-rag-snowflake-documentation',
+    'snowflake-openflow-tutorial',
+    'snowflake-performance',
+    'snowflake-performance-tuning-techniques',
+    'loading-data-from-s3-to-snowflake',
+  ];
+  const sitemapCandidates = [
+    path.join(distDir, 'sitemap.xml'),
+    path.join(__dirname, '..', 'public', 'sitemap.xml'),
+  ];
+  const sitemapPath = sitemapCandidates.find((p) => fs.existsSync(p));
+  if (sitemapPath) {
+    const sitemapXml = fs.readFileSync(sitemapPath, 'utf8');
+    const listedRedirects = redirectedSlugs.filter((slug) => sitemapXml.includes(`/articles/${slug}`));
+    if (listedRedirects.length > 0) {
+      issues.push(`❌ Sitemap lists redirected article URLs: ${listedRedirects.join(', ')}`);
+      log(`   ❌ Sitemap still lists: ${listedRedirects.join(', ')}`, 'red');
+    } else {
+      log('   ✅ Sitemap does not list known 301 article aliases', 'green');
+    }
+  } else {
+    warnings.push('⚠️  sitemap.xml not found in dist/ or public/');
+    log('   ⚠️  sitemap.xml not found', 'yellow');
   }
 
   // ============================================================================
