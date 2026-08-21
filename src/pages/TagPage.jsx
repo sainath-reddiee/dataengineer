@@ -1,6 +1,6 @@
 // src/pages/TagPage.jsx - COMPLETE NEW FILE
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import RecentPosts from '@/components/RecentPosts';
 import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import { generateBreadcrumbs } from '@/lib/seoConfig';
+import { THIN_TAG_SLUGS } from '@/data/thinTags';
 
 const TagPage = () => {
   const { tagSlug } = useParams();
@@ -17,6 +18,10 @@ const TagPage = () => {
     .split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
+
+  if (tagSlug && THIN_TAG_SLUGS.has(tagSlug.toLowerCase())) {
+    return <Navigate to="/articles" replace />;
+  }
 
   return (
     <>

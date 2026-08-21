@@ -85,6 +85,15 @@
           desc = 'Subscribe to the DataEngineer Hub newsletter for weekly data engineering insights.';
         }
 
+        var isPrivateApp = path.indexOf('/admin') === 0 || path === '/debug' || path.indexOf('/sponsors/dashboard') === 0;
+        if (isPrivateApp) {
+          document.documentElement.classList.add('deh-private-app');
+          var robots = document.createElement('meta');
+          robots.setAttribute('name', 'robots');
+          robots.setAttribute('content', 'noindex, nofollow');
+          document.head.appendChild(robots);
+        }
+
         var meta = document.querySelector('meta[name="description"]');
         if (meta) meta.setAttribute('content', desc);
         // Note: document.title is managed by React's MetaTags component per route.
@@ -197,6 +206,12 @@
       }
       
       /* ✅ CRITICAL: SEO content visible to bots by default */
+      html.deh-private-app .seo-fallback,
+      html.deh-private-app .seo-articles,
+      html.deh-private-app .seo-author-block {
+        display: none !important;
+      }
+
       .seo-fallback {
         max-width: 1200px;
         margin: 0 auto;

@@ -109,6 +109,7 @@ const CONSENT_MODE_V2_HTML = `    <!-- Google Consent Mode v2: region-gated. Res
 
 // SEO overrides for CTR-optimized titles and descriptions
 import seoOverrides, { getSEOOverride } from '../src/data/seoOverrides.js';
+import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT } from '../src/data/thinTags.js';
 
 // Meta description optimizer for CTR-optimized descriptions
 import { optimizeMetaDescription } from '../src/lib/metaDescriptionOptimizer.js';
@@ -458,28 +459,33 @@ const ESSENTIAL_PAGES = [
     description: 'Contact Sainath Reddy at DataEngineer Hub for data engineering queries, collaboration opportunities, or feedback.',
     content: `
       <h1>Contact Us</h1>
-      <p>We'd love to hear from you! Whether you have a question about data engineering, want to suggest a topic, or are interested in collaboration, feel free to reach out.</p>
+      <p>DataEngineer Hub is a solo-maintained practitioner site. Most messages come from four places: content feedback (errors, outdated pricing, or broken syntax in articles, cheat sheets, or tools), tool bugs (a calculator result that looks wrong, a playground crash, a formatter that strips a keyword), guest-writing pitches, and sponsorship inquiries. All four are welcome. Replies are personal, usually within 24–48 hours on weekdays, India Standard Time.</p>
 
       <h2>How to Reach Us</h2>
       <ul>
-        <li><strong>Email:</strong> sainath@dataengineerhub.blog</li>
+        <li><strong>Email:</strong> <a href="mailto:sainath@dataengineerhub.blog">sainath@dataengineerhub.blog</a></li>
         <li><strong>Phone:</strong> +91 9441414140</li>
-        <li><strong>Location:</strong> Hyderabad, India</li>
+        <li><strong>Location:</strong> Hyderabad, Telangana, India</li>
       </ul>
+      <p>Email is the fastest path for a technical correction. Put the article slug or tool URL in the first line, then the sentence or input that is wrong, then what you expected. Screenshots help for calculator bugs. Guest-post pitches and sponsorships can take up to five business days because they go through editorial review.</p>
 
-      <h2>What Can We Help With?</h2>
+      <h2>What to include so we can actually help</h2>
       <ul>
-        <li><strong>Technical Questions:</strong> Have a data engineering problem? Share it with us and we'll try to help or write about it.</li>
-        <li><strong>Content Suggestions:</strong> Want us to cover a specific topic? We welcome suggestions for new articles and tutorials.</li>
-        <li><strong>Collaboration:</strong> Interested in guest posting or partnership opportunities? Let's discuss.</li>
-        <li><strong>Feedback:</strong> Found an error in an article or have suggestions for improvement? We appreciate your feedback.</li>
+        <li><strong>Corrections:</strong> URL, incorrect sentence or number, and the source you used to verify the fix (vendor docs, a query profile, a bill).</li>
+        <li><strong>Tool bugs:</strong> the exact inputs, browser, and whether the result is blank, NaN, or just implausible versus a vendor list price.</li>
+        <li><strong>Topic requests:</strong> the platform, the job you were trying to do, and what existing <a href="/articles">articles</a> or <a href="/cheatsheets">cheat sheets</a> did not cover.</li>
+        <li><strong>Pitches:</strong> a one-paragraph outline plus two links to prior published work. Start from <a href="/contribute">Write for Us</a>.</li>
+        <li><strong>Sponsorships:</strong> product, audience, and preferred month. Start from <a href="/advertise">Advertise</a>.</li>
       </ul>
 
-      <h2>Response Time</h2>
-      <p>We typically respond to emails within 24-48 hours. For urgent inquiries, please mention "Urgent" in your subject line.</p>
-
-      <h2>Follow DataEngineer Hub</h2>
-      <p>Stay updated with the latest data engineering content by bookmarking our site and checking back regularly for new articles, tutorials, and guides.</p>
+      <h2>What we will not do</h2>
+      <ul>
+        <li>We do not provide paid homework, exam dumps, or private consulting through this form.</li>
+        <li>We do not sell email lists. A message here is used only to reply to you.</li>
+        <li>We do not accept unsolicited attachments or AI-spun article drafts. Original writing with working examples only.</li>
+        <li>We do not post anonymous corrections. If a guide is wrong, we patch it and note the change on the article when it is material.</li>
+      </ul>
+      <p>If you want a weekly digest rather than a reply, use the <a href="/newsletter">newsletter</a> page. For the person behind the bylines, see <a href="/about">About</a>.</p>
     `
   },
   {
@@ -638,6 +644,7 @@ const ESSENTIAL_PAGES = [
   },
   {
     path: '/newsletter',
+    noindex: true,
     title: 'Weekly Data Engineering Digest - Subscribe',
     description: 'Subscribe to the DataEngineer Hub weekly digest. Get tutorials, tool deep-dives, and data engineering insights on Snowflake, dbt, Airflow, and the modern data stack delivered to your inbox.',
     content: `
@@ -651,7 +658,10 @@ const ESSENTIAL_PAGES = [
         <li><strong>Weekly cadence:</strong> One email per week — no daily noise, no promotional fluff. Unsubscribe any time with a single click.</li>
         <li><strong>Privacy first:</strong> We never share your address. No tracking pixels, no third-party ad lists. Just content.</li>
       </ul>
-      <p>Subscribe using the interactive signup form on this page.</p>
+      <p>Subscribe using the interactive signup form on this page. The digest is a convenience copy of what already lives on the public site — it is not a replacement for the <a href="/articles">article library</a>, <a href="/cheatsheets">cheat sheets</a>, or <a href="/tools">tools</a>. If you would rather browse than subscribe, start with those hubs.</p>
+      <h2>How issues are written</h2>
+      <p>Each issue is assembled by Sainath Reddy from production notes, not from scraped headlines. Typical sections: one deep tutorial link, one cost or SQL tool reminder, and a short "what broke in the field this week" note. We skip vendor launch spam unless it changes how you design a pipeline.</p>
+      <p>You can unsubscribe with one click. We do not add subscribers from contact-form mail or from comments.</p>
     `
   },
   {
@@ -887,27 +897,40 @@ const ESSENTIAL_PAGES = [
     description: 'Meet the data engineers who write for DataEngineer Hub. Guest authors publish production-tested tutorials under their own byline after editorial review.',
     content: `
       <h1>Contributors</h1>
-      <p>DataEngineer Hub publishes tutorials and reference material from practicing data engineers, not anonymous content mills. The site owner, Sainath Reddy, writes the majority of articles. Guest authors appear here when they have at least one reviewed, published post.</p>
-      <p>Every guest piece goes through the same editorial bar as staff content: technical accuracy, working examples where code is shown, and a byline with a real bio. We do not accept spun or unedited AI drafts. If you want to write with us, read <a href="/contribute">Write for Us</a> and send a one-paragraph pitch plus two samples.</p>
+      <p>DataEngineer Hub is not a content mill. Tutorials, cheat sheets, glossary entries, and tools are written by people who have run the stacks they describe. The primary author is <a href="/about">Sainath Reddy</a>, a data engineer based in Hyderabad. Guest authors appear in this directory only after at least one piece has passed editorial review and gone live.</p>
+      <p>That review is the same bar as staff content: technical accuracy, working examples where code is shown, a real name and bio, and no unedited AI drafts. If a guest post is wrong after publication, we patch it in public the same way we patch staff posts. Bylines are not sold, and we will not add a co-author who did not write the article.</p>
 
-      <h2>What contributors own</h2>
+      <h2>How someone gets listed here</h2>
+      <ol>
+        <li>Send a one-paragraph pitch plus two samples via <a href="/contribute">Write for Us</a>.</li>
+        <li>If the topic fits (Snowflake, dbt, Airflow, Spark, cloud data platforms, SQL, pipeline operations), we agree on outline and length before a full draft.</li>
+        <li>Editors check facts, code, and structure. The author keeps the byline, bio, and optional LinkedIn / GitHub / site links.</li>
+        <li>The piece is published in the <a href="/articles">article library</a> and the author is added to this directory.</li>
+      </ol>
+      <p>We decline pitches that rephrase vendor docs, dump certification questions, or exist only to place a backlink. A useful guest post usually comes from a production incident, a migration, a cost save, or a design that other engineers can copy.</p>
+
+      <h2>What contributors own after publication</h2>
       <ul>
-        <li>Their name, bio, and optional links (LinkedIn, GitHub, personal site) on the article and on this directory.</li>
-        <li>Credit in RSS and on the public contributor profile when one exists.</li>
-        <li>The right to update factual errors after publication by contacting the editor.</li>
+        <li>Name, bio, photo, and optional profile links on the article and in this directory.</li>
+        <li>Credit in RSS. Direct profile URLs currently redirect here so crawlers are not served empty shells; the interactive cards on this page (JavaScript) still open the in-app profile.</li>
+        <li>The right to request a factual correction. Email <a href="mailto:sainath@dataengineerhub.blog">sainath@dataengineerhub.blog</a> with the slug and the wrong sentence.</li>
       </ul>
-      <p>Profiles listed on this page are loaded from the published author list. If JavaScript is enabled, you will see avatars, bios, and article counts. You can also start with the <a href="/about">About</a> page for the primary author and the <a href="/articles">article library</a> for published work.</p>
-      <p>Questions about a byline or a correction: <a href="mailto:sainath@dataengineerhub.blog">sainath@dataengineerhub.blog</a> or the <a href="/contact">contact form</a>.</p>
+
+      <h2>How to use this page as a reader</h2>
+      <p>Use the directory to see who writes here before you cite a guide. Staff work is concentrated on Snowflake cost and SQL, dbt project design, Airflow operations, and certification-style practice. Guest work is labeled on the article. If you only want production tutorials, start at <a href="/articles">All Articles</a> or a category hub such as <a href="/category/snowflake">Snowflake</a> or <a href="/category/dbt">dbt</a>.</p>
+      <p>Sponsorships are separate from bylines and are disclosed. See <a href="/advertise">Advertise</a> and the <a href="/disclaimer">disclaimer</a>. For a weekly email instead of browsing authors, use the <a href="/newsletter">newsletter</a>.</p>
     `
   },
   {
     path: '/tag',
+    noindex: true,
     title: 'Browse Article Tags - DataEngineer Hub',
     description: 'Browse DataEngineer Hub articles by tag: Snowflake, dbt, Airflow, Spark, SQL, cost optimization, certification, and more.',
     content: `
       <h1>Browse All Tags</h1>
       <p>Tags group individual tutorials by a narrower topic than a category. A Snowflake article might also be tagged Iceberg, Cortex, or cost-optimization so you can jump between related posts without scanning the full library.</p>
-      <p>This archive lists tags that currently have published articles. Empty tags are not generated — pages that would say "0 articles" are omitted on purpose so crawlers and readers do not land on hollow listings.</p>
+      <p>This archive only lists tags that have at least three published tutorials. One-article tags are not given their own URL — they would be hollow listings. Use a category hub or the full <a href="/articles">article library</a> instead.</p>
+      <p>High-volume tags worth browsing: <a href="/tag/snowflake">Snowflake</a>, <a href="/tag/data-engineering">data engineering</a>, <a href="/tag/ai">AI</a>, <a href="/tag/dbt">dbt</a>, <a href="/tag/sql">SQL</a>, <a href="/tag/cortex">Cortex</a>, <a href="/tag/airflow">Airflow</a>, and <a href="/tag/etl">ETL</a>.</p>
       <p>Prefer a broader view? Use <a href="/articles">All Articles</a> or a category hub such as <a href="/category/snowflake">Snowflake</a>, <a href="/category/dbt">dbt</a>, <a href="/category/python">Python</a>, or <a href="/category/sql">SQL</a>. Cheat sheets and glossary terms are tagged separately under <a href="/cheatsheets">Cheat Sheets</a> and <a href="/glossary">Glossary</a>.</p>
       <p>If JavaScript is enabled, the interactive tag list on this page is searchable. Each tag page shows the matching tutorials with titles and excerpts.</p>
     `
@@ -1813,6 +1836,10 @@ const ESSENTIAL_PAGES = [
     content: `
       <h1>SQL Cheat Sheets</h1>
       <p><strong>Every SQL cheat sheet in one place</strong> - core window functions, platform-specific syntax (Snowflake, Databricks), and SQL interview prep. Each sheet is runnable, snippet-heavy, and updated for 2026.</p>
+      <p>These are not generic "SQL 101" dumps. They are the patterns that show up in production reviews: QUALIFY after a window function on Snowflake, MERGE for slowly changing dimensions, VARIANT flattening, and the frame-clause mistakes that silently double-count a running total. If you already write Postgres, start with the Snowflake SQL sheet and note TIMESTAMP_NTZ, QUALIFY, and ZEROIFNULL. If you are prepping interviews, do the window-function sheet twice — most take-home failures are RANK vs DENSE_RANK and an unbounded frame.</p>
+      <p>Pair the sheets with the <a href="/tools/sql-formatter">SQL formatter</a> and the <a href="/tools/sql-playground">in-browser SQL playground</a> so you can paste an example, change the frame, and see the result without standing up a warehouse.</p>
+      <p>When a query is slow, the first three checks are the same on every warehouse: is the filter on a column the storage layer can prune, is the join exploding the grain, and is a window running over an unbounded frame. Snowflake adds QUALIFY, result cache, and warehouse size. Databricks adds Photon and Delta clustering. Postgres habits (lots of indexes, sequential CTEs) do not transfer one-for-one.</p>
+      <p>Interview SQL on this site is worked, not dumped. If you cannot explain why the wrong option is wrong, you are not ready for a live round. Use the window-function sheet, then the interview sheet, then the playground — in that order.</p>
 
       <h2>Core SQL</h2>
       <ul>
@@ -1844,31 +1871,26 @@ const ESSENTIAL_PAGES = [
     description: 'All orchestration cheat sheets - Airflow DAGs, dbt models and tests, scheduling patterns, dependency management, retries, SLAs.',
     content: `
       <h1>Data Orchestration Cheat Sheets</h1>
-      <p><strong>Schedule, chain, and monitor data pipelines</strong> with the right orchestrator. These cheat sheets cover Airflow (most common) and dbt (transformation-focused). Each explains when to pick it and includes production-grade patterns.</p>
+      <p>Orchestration is where pipelines fail in production: a missed SLA, a retry that double-loads a fact table, a backfill that locks a warehouse overnight. These cheat sheets are written for people who already know what a DAG is and need the patterns that keep jobs idempotent, observable, and cheap.</p>
+      <p>Airflow remains the default scheduler in most enterprises because of the operator ecosystem and the way teams already staff on-call around it. dbt is not a scheduler; it is the transformation layer that Airflow (or another orchestrator) should invoke. Treating dbt Cloud’s built-in jobs as the only scheduler works for small SQL estates and falls over when you also have Python, Spark, or cross-system waits.</p>
 
-      <h2>Orchestrators covered</h2>
+      <h2>What to read first</h2>
       <ul>
-        <li><a href="/cheatsheets/airflow-essentials">Airflow Essentials</a> - DAG authoring, operators, XCom, retries, SLAs, backfill</li>
-        <li><a href="/cheatsheets/dbt-commands">dbt Commands</a> - models, tests, macros, incremental, exposures, packages</li>
+        <li><a href="/cheatsheets/airflow-essentials">Airflow Essentials</a> — DAG structure, operators, XCom, pools, retries, SLAs, and backfill without overlapping runs.</li>
+        <li><a href="/cheatsheets/airflow-best-practices">Airflow Best Practices</a> — idempotent tasks, secrets, callback patterns, and why <code>depends_on_past</code> is usually the wrong catch-up strategy.</li>
+        <li><a href="/cheatsheets/dbt-commands">dbt Commands</a> — <code>build</code> vs <code>run</code> vs <code>test</code>, selectors, defer, and state-based CI.</li>
+        <li><a href="/cheatsheets/dbt-best-practices">dbt Best Practices</a> — layered models, tests as contracts, incremental grain, and documentation that reviewers can use.</li>
       </ul>
 
-      <h2>Best-practice sheets</h2>
+      <h2>Production decisions these sheets are meant to settle</h2>
       <ul>
-        <li><a href="/cheatsheets/airflow-best-practices">Airflow Best Practices</a> - idempotent tasks, retries, SLA design, secrets handling</li>
-        <li><a href="/cheatsheets/dbt-best-practices">dbt Best Practices</a> - model structure, testing strategy, CI, documentation</li>
+        <li><strong>Catch-up vs backfill:</strong> catch-up with a data interval that cannot overlap; backfill as a separate DAG run with a bounded date range and a warehouse size you chose on purpose.</li>
+        <li><strong>Retries:</strong> retry only tasks that are safe to re-run. A COPY that is not idempotent needs a staging pattern, not five retries.</li>
+        <li><strong>Sensors vs datasets:</strong> long poke sensors burn worker slots. Prefer file/dataset events or a short poke with a timeout that pages a human.</li>
+        <li><strong>dbt in Airflow:</strong> one task per project/job, not one task per model, unless you have a specific reason to expose model-level retries.</li>
       </ul>
-
-      <h2>Which orchestrator should I pick?</h2>
-      <ul>
-        <li><strong>Airflow:</strong> mature, huge community, operator ecosystem - default for enterprise teams</li>
-        <li><strong>dbt:</strong> transformation-only, SQL-first - pair with Airflow for end-to-end pipelines</li>
-      </ul>
-
-      <h2>Related tools</h2>
-      <p>Use the <a href="/tools/cron-expression-builder">cron builder</a> to define schedules and the <a href="/tools/dbt-cloud-cost-calculator">dbt Cloud cost calculator</a> to estimate subscription cost.</p>
-
-      <h2>Related categories</h2>
-      <p>Explore <a href="/cheatsheets/category/bestpractices">best-practices cheat sheets</a>, <a href="/cheatsheets/category/sql">SQL cheat sheets</a>, and the full <a href="/cheatsheets">cheat sheet library</a>.</p>
+      <p>If you are choosing a stack: Airflow + dbt covers most analytics engineering shops. Databricks jobs or Snowflake Tasks can replace Airflow for a single-platform estate, but you still need an external scheduler the moment you cross clouds or wait on a SaaS export. Pair these sheets with the <a href="/tools/cron-expression-builder">cron builder</a> and the <a href="/tools/dbt-cloud-cost-calculator">dbt Cloud cost calculator</a>.</p>
+      <p>Related: <a href="/cheatsheets/category/bestpractices">best-practices cheat sheets</a>, <a href="/cheatsheets/category/sql">SQL</a>, and the <a href="/cheatsheets">full library</a>.</p>
     `
   },
   {
@@ -1877,25 +1899,24 @@ const ESSENTIAL_PAGES = [
     description: 'Cloud platform cheat sheets for data engineers - AWS (S3, Glue, Redshift), Azure (ADF, Synapse), Snowflake, Databricks.',
     content: `
       <h1>Cloud Data Platform Cheat Sheets</h1>
-      <p><strong>Master the major cloud data platforms</strong> with focused cheat sheets on AWS, Azure, Snowflake, and Databricks. Each sheet covers storage, compute, orchestration, and cost controls for that platform.</p>
+      <p>Cloud data platforms bill on consumption. The difference between a $5k and a $50k month is rarely “we used the wrong vendor”; it is warehouse size, file layout, clustering that never pays for itself, or a Spark job that shuffles the same 8 TB every hour. These cheat sheets are platform maps: storage, compute, ingest, and the cost levers that actually move a bill.</p>
+      <p>Use them when you are landing a new workload, comparing a warehouse vs a lakehouse for a specific job, or preparing an interview that will ask you to size a cluster out loud. They are not marketing overviews. Each sheet assumes you already know what object storage is and need the names of the services and the failure modes.</p>
 
-      <h2>Cloud platforms</h2>
+      <h2>Hyperscaler data stacks</h2>
       <ul>
-        <li><a href="/cheatsheets/aws-for-data-engineers">AWS for Data Engineers</a> - S3, Glue, Athena, Redshift, EMR, Lambda</li>
-        <li><a href="/cheatsheets/azure-for-data-engineers">Azure for Data Engineers</a> - ADLS, Synapse, Data Factory, Fabric</li>
+        <li><a href="/cheatsheets/aws-for-data-engineers">AWS for Data Engineers</a> — S3 layout, Glue, Athena, Redshift, EMR, Lambda, IAM gotchas that block a pipeline at 2 AM.</li>
+        <li><a href="/cheatsheets/azure-for-data-engineers">Azure for Data Engineers</a> — ADLS, Synapse, Data Factory, Fabric, and when a pipeline should stay in ADF vs Spark.</li>
       </ul>
 
-      <h2>Warehouse and lakehouse</h2>
+      <h2>Warehouse and lakehouse SQL</h2>
       <ul>
-        <li><a href="/cheatsheets/snowflake-sql">Snowflake SQL</a> - warehouses, clustering, time travel, MERGE</li>
-        <li><a href="/cheatsheets/databricks">Databricks Cheat Sheet</a> - Photon, Delta, Unity Catalog, MERGE</li>
+        <li><a href="/cheatsheets/snowflake-sql">Snowflake SQL</a> — warehouses, QUALIFY, VARIANT, Time Travel, MERGE, clustering vs search optimization.</li>
+        <li><a href="/cheatsheets/databricks">Databricks Cheat Sheet</a> — Photon, Delta DML, Unity Catalog grants, OPTIMIZE/ZORDER, MERGE.</li>
       </ul>
 
-      <h2>Related tools</h2>
-      <p>Estimate costs with the <a href="/tools/snowflake-cost-calculator">Snowflake cost calculator</a> and <a href="/tools/databricks-cost-calculator">Databricks cost calculator</a>.</p>
-
-      <h2>Related categories</h2>
-      <p>Explore <a href="/cheatsheets/category/sql">SQL cheat sheets</a>, <a href="/cheatsheets/category/architecture">architecture cheat sheets</a>, and the full <a href="/cheatsheets">cheat sheet library</a>.</p>
+      <h2>How to compare without a vendor slide</h2>
+      <p>Price a representative query and a representative pipeline, not a list price. Snowflake credits, Databricks DBUs, and BigQuery bytes scanned are not interchangeable units. Run the same workload through the <a href="/tools/snowflake-cost-calculator">Snowflake cost calculator</a>, the <a href="/tools/databricks-cost-calculator">Databricks cost calculator</a>, the <a href="/tools/bigquery-cost-calculator">BigQuery calculator</a>, and the <a href="/tools/cloud-data-warehouse-cost-comparison">warehouse comparison tool</a>. Then read the <a href="/cheatsheets/category/architecture">architecture sheets</a> for table-format and modeling choices that dominate cost after year one.</p>
+      <p>If the interview is “AWS vs Azure vs Snowflake,” answer with the constraint: existing identity, data gravity, and whether you need open table formats. SQL fluency still transfers; IAM and networking do not. Related: <a href="/cheatsheets/category/sql">SQL cheat sheets</a> and the <a href="/cheatsheets">full library</a>.</p>
     `
   },
   {
@@ -1904,28 +1925,26 @@ const ESSENTIAL_PAGES = [
     description: 'Programming cheat sheets for data engineers - Python for DE, PySpark, data manipulation, distributed processing, performance patterns.',
     content: `
       <h1>Programming Cheat Sheets for Data Engineers</h1>
-      <p><strong>Python and PySpark references built for data work</strong> - not generic Python. Focus on data manipulation, distributed processing, and performance patterns that actually matter in data pipelines.</p>
+      <p>These references are not generic language tutorials. They cover the idioms that show up in data pipelines: typed records instead of untyped dicts, generators that do not load a full extract into RAM, Spark DataFrame operations that stay in the catalyst plan instead of falling back to Python UDFs, and the partition/shuffle mistakes that turn a 12-minute job into a two-hour one.</p>
+      <p>In a modern warehouse-first shop you will still write Python: Airflow DAGs, dbt Python models on rare jobs, REST extracts, and tests. The decision that actually matters is <em>where</em> the transformation runs — warehouse SQL, Spark, or the orchestrator — not whether you “know Python.”</p>
 
-      <h2>Python</h2>
+      <h2>Python for pipeline work</h2>
       <ul>
-        <li><a href="/cheatsheets/python-for-data-engineers">Python for Data Engineers</a> - pandas, list comprehensions, generators, context managers, typing</li>
+        <li><a href="/cheatsheets/python-for-data-engineers">Python for Data Engineers</a> — pathlib, typing, dataclasses, context managers, pytest, and pandas patterns that belong in extracts rather than in the warehouse.</li>
       </ul>
+      <p>Prefer pathlib over os.path, type hints over docstring-only contracts, and pytest over unittest. For tabular work that will land in Snowflake or BigQuery, do the heavy joins in SQL; use Python for I/O, control flow, and APIs.</p>
 
       <h2>Distributed processing</h2>
       <ul>
-        <li><a href="/cheatsheets/pyspark">PySpark & Spark SQL Cheat Sheet</a> - DataFrame API, lazy eval, partitioning, shuffles, broadcast joins</li>
+        <li><a href="/cheatsheets/pyspark">PySpark &amp; Spark SQL Cheat Sheet</a> — DataFrame API, lazy evaluation, broadcast joins, shuffle partitions, and why a Python UDF kills Photon/whole-stage codegen.</li>
       </ul>
+      <p>If a transformation is expressible in Spark SQL or the DataFrame API, write it there. UDFs are for the leftover 5%. Watch partition counts after a filter, and do not <code>collect()</code> a production volume to the driver.</p>
 
-      <h2>Streaming and ingestion</h2>
+      <h2>Streaming producers and consumers</h2>
       <ul>
-        <li><a href="/cheatsheets/snowflake-snowpipe-streaming-interview">Snowpipe Streaming & Kafka (Interview)</a> - producers, consumers, partitions, exactly-once</li>
+        <li><a href="/cheatsheets/snowflake-snowpipe-streaming-interview">Snowpipe Streaming &amp; Kafka (Interview)</a> — partitions, consumer groups, exactly-once claims vs at-least-once plus idempotent sinks.</li>
       </ul>
-
-      <h2>Related tools</h2>
-      <p>Use the <a href="/tools/json-to-sql-ddl">JSON to SQL converter</a> when going from semi-structured data to warehouse tables, and the <a href="/tools/sql-formatter">SQL formatter</a> to standardize output queries.</p>
-
-      <h2>Related categories</h2>
-      <p>Explore <a href="/cheatsheets/category/orchestration">orchestration cheat sheets</a>, <a href="/cheatsheets/category/sql">SQL cheat sheets</a>, and the full <a href="/cheatsheets">cheat sheet library</a>.</p>
+      <p>Use the <a href="/tools/json-to-sql-ddl">JSON to SQL converter</a> when a payload becomes a table, and the <a href="/tools/sql-formatter">SQL formatter</a> before you paste a Spark SQL string into a review. Related: <a href="/cheatsheets/category/sql">SQL cheat sheets</a>, <a href="/cheatsheets/category/orchestration">orchestration</a>, <a href="/cheatsheets">library</a>.</p>
     `
   },
   {
@@ -1934,26 +1953,24 @@ const ESSENTIAL_PAGES = [
     description: 'Data architecture cheat sheets - dimensional modeling, SCD types, star vs snowflake schema, fact vs dim, normalization patterns.',
     content: `
       <h1>Data Architecture Cheat Sheets</h1>
-      <p><strong>Design durable data systems</strong> - dimensional modeling, storage architecture, and system-design patterns. These sheets cover the decisions that hurt most when you get them wrong: star vs snowflake, SCD strategy, batch vs streaming, storage vs compute separation.</p>
+      <p>Architecture decisions compound. A star schema with a stable grain saves years of ad-hoc joins; a “wide table for everything” forces two rewrites. These cheat sheets cover modeling, change-data patterns, and platform features that are really architecture choices wearing product names: streams, dynamic tables, Iceberg, replication.</p>
+      <p>Read them before you pick Type 2 vs Type 1, before you put CDC on every source “just in case,” and before you copy a lakehouse blog post into a warehouse that does not need it. Cost problems after year one are usually grain, partitioning, and refresh semantics — not the logo on the invoice.</p>
 
-      <h2>Data modeling</h2>
+      <h2>Modeling fundamentals</h2>
       <ul>
-        <li><a href="/cheatsheets/data-modeling">Data Modeling Cheat Sheet</a> - star/snowflake schemas, SCD Type 1/2/3, normalization, fact vs dim, Data Vault</li>
+        <li><a href="/cheatsheets/data-modeling">Data Modeling Cheat Sheet</a> — star vs snowflake, facts vs dimensions, SCD types, junk and bridge tables, and when Data Vault is overhead instead of insurance.</li>
       </ul>
+      <p>Default to a star schema for analytics. Use Type 2 only on dimensions that the business queries historically (customer, account, product). Type 1 is correct for labels that nobody needs as-of. Do not invent a vault until you have many sources and a team that will maintain hubs and satellites.</p>
 
-      <h2>Interview-focused architecture sheets</h2>
+      <h2>Platform patterns that are architecture</h2>
       <ul>
-        <li><a href="/cheatsheets/snowflake-streams-tasks-interview">Snowflake Streams & Tasks (Interview)</a> - change data capture, incremental patterns</li>
-        <li><a href="/cheatsheets/snowflake-dynamic-tables-interview">Snowflake Dynamic Tables (Interview)</a> - declarative pipelines, refresh semantics</li>
-        <li><a href="/cheatsheets/snowflake-iceberg-tables-interview">Snowflake Iceberg Tables (Interview)</a> - open table format, catalog integrations</li>
-        <li><a href="/cheatsheets/snowflake-replication-failover-interview">Snowflake Replication & Failover (Interview)</a> - DR patterns, cross-region</li>
+        <li><a href="/cheatsheets/snowflake-streams-tasks-interview">Snowflake Streams &amp; Tasks</a> — incremental CDC, offset correctness, combining streams with MERGE.</li>
+        <li><a href="/cheatsheets/snowflake-dynamic-tables-interview">Snowflake Dynamic Tables</a> — declarative refresh vs task graphs, lag targets, and when a dynamic table hides a broken grain.</li>
+        <li><a href="/cheatsheets/snowflake-iceberg-tables-interview">Snowflake Iceberg Tables</a> — open format, catalog ownership, and the extra failure mode of “the files exist but the warehouse cannot see them.”</li>
+        <li><a href="/cheatsheets/snowflake-replication-failover-interview">Replication &amp; Failover</a> — RPO/RTO, client redirect, and what is not replicated.</li>
       </ul>
-
-      <h2>Related tools</h2>
-      <p>Use the <a href="/tools/snowflake-warehouse-sizing">warehouse sizing tool</a> for capacity planning and the <a href="/tools/snowflake-cost-calculator">cost calculator</a> for TCO modeling.</p>
-
-      <h2>Related categories</h2>
-      <p>Explore <a href="/cheatsheets/category/cloud">cloud platform cheat sheets</a>, <a href="/cheatsheets/category/interview">interview cheat sheets</a>, and the full <a href="/cheatsheets">cheat sheet library</a>.</p>
+      <p>Size compute with the <a href="/tools/snowflake-warehouse-sizing">warehouse sizing tool</a> after the model is stable, not before. A common failure mode is picking Iceberg or Dynamic Tables because a blog post used them, then spending a quarter on catalog permissions and refresh lag that a nightly MERGE would have avoided. Start from grain and freshness requirements; pick the feature second.</p>
+      <p>Related: <a href="/cheatsheets/category/cloud">cloud platforms</a>, <a href="/cheatsheets/category/interview">interview sheets</a>, <a href="/cheatsheets">library</a>.</p>
     `
   },
   {
@@ -1962,38 +1979,27 @@ const ESSENTIAL_PAGES = [
     description: 'Interview-focused cheat sheets for data engineers - top questions, Snowflake deep-dive topics, SQL interview, paired with 14-day study plan.',
     content: `
       <h1>Data Engineer Interview Cheat Sheets</h1>
-      <p><strong>Pass your next data engineer interview</strong> with focused prep materials. These sheets cover the questions, patterns, and deep-dive topics most commonly asked in 2026 - at FAANG, fintech, and high-scale SaaS companies.</p>
+      <p>Data engineering interviews in 2026 are more systems and SQL than LeetCode. You should expect warehouse sizing, clustering vs partitioning, incremental models, late data, and cost — then a SQL round that fails people on window frames and QUALIFY. These sheets are organized around those question types, not trivia.</p>
+      <p>Use them as closed-book drills: read the stem, write the answer, then open the sheet. Pair with the <a href="/interview-prep">14-day interview prep plan</a> and the <a href="/practice">certification practice tests</a> if the loop also includes a SnowPro or Databricks exam. Cheat sheets are not dumps of live exam items.</p>
 
-      <h2>General interview sheets</h2>
+      <h2>Core interview sheets</h2>
       <ul>
-        <li><a href="/cheatsheets/data-engineering-interview-questions">Data Engineering Interview Questions</a> - broad-coverage, worked answers</li>
-        <li><a href="/cheatsheets/sql-interview-questions">Top 25 SQL Interview Questions</a> - SQL patterns for DE roles</li>
-        <li><a href="/cheatsheets/snowflake-interview-questions">Top 30 Snowflake Interview Questions</a> - platform fundamentals</li>
+        <li><a href="/cheatsheets/data-engineering-interview-questions">Data Engineering Interview Questions</a> — pipelines, modeling, incidents, behavioral STAR.</li>
+        <li><a href="/cheatsheets/sql-interview-questions">Top 25 SQL Interview Questions</a> — top-N, gaps, running totals, RANK vs DENSE_RANK.</li>
+        <li><a href="/cheatsheets/snowflake-interview-questions">Top 30 Snowflake Interview Questions</a> — micro-partitions, caches, Time Travel vs Fail-safe, RBAC.</li>
       </ul>
 
-      <h2>Snowflake deep-dive interview sheets</h2>
+      <h2>Snowflake deep-dives interviewers actually use</h2>
       <ul>
-        <li><a href="/cheatsheets/snowflake-streams-tasks-interview">Streams & Tasks</a></li>
-        <li><a href="/cheatsheets/snowflake-dynamic-tables-interview">Dynamic Tables</a></li>
-        <li><a href="/cheatsheets/snowflake-snowpark-interview">Snowpark</a></li>
-        <li><a href="/cheatsheets/snowflake-data-sharing-interview">Data Sharing & Marketplace</a></li>
-        <li><a href="/cheatsheets/snowflake-iceberg-tables-interview">Iceberg Tables</a></li>
-        <li><a href="/cheatsheets/snowflake-cortex-ai-interview">Cortex AI & ML</a></li>
-        <li><a href="/cheatsheets/snowflake-snowpipe-streaming-interview">Snowpipe Streaming & Kafka</a></li>
-        <li><a href="/cheatsheets/snowflake-governance-interview">Governance & Masking</a></li>
-        <li><a href="/cheatsheets/snowflake-cost-optimization-interview">Cost Optimization</a></li>
-        <li><a href="/cheatsheets/snowflake-performance-deep-dive-interview">Query Tuning</a></li>
-        <li><a href="/cheatsheets/snowflake-replication-failover-interview">Replication & Failover</a></li>
-        <li><a href="/cheatsheets/snowflake-semi-structured-interview">Semi-Structured Data</a></li>
-        <li><a href="/cheatsheets/snowflake-stored-procedures-interview">Stored Procedures & UDFs</a></li>
-        <li><a href="/cheatsheets/snowflake-external-integrations-interview">External Functions & Integrations</a></li>
+        <li><a href="/cheatsheets/snowflake-streams-tasks-interview">Streams &amp; Tasks</a>, <a href="/cheatsheets/snowflake-dynamic-tables-interview">Dynamic Tables</a>, <a href="/cheatsheets/snowflake-snowpark-interview">Snowpark</a></li>
+        <li><a href="/cheatsheets/snowflake-data-sharing-interview">Data Sharing</a>, <a href="/cheatsheets/snowflake-iceberg-tables-interview">Iceberg</a>, <a href="/cheatsheets/snowflake-cortex-ai-interview">Cortex AI</a></li>
+        <li><a href="/cheatsheets/snowflake-snowpipe-streaming-interview">Snowpipe Streaming</a>, <a href="/cheatsheets/snowflake-governance-interview">Governance</a>, <a href="/cheatsheets/snowflake-cost-optimization-interview">Cost</a></li>
+        <li><a href="/cheatsheets/snowflake-performance-deep-dive-interview">Query Tuning</a>, <a href="/cheatsheets/snowflake-replication-failover-interview">Replication</a>, <a href="/cheatsheets/snowflake-semi-structured-interview">Semi-Structured</a></li>
+        <li><a href="/cheatsheets/snowflake-stored-procedures-interview">Stored Procedures</a>, <a href="/cheatsheets/snowflake-external-integrations-interview">External Integrations</a></li>
       </ul>
-
-      <h2>14-day study plan</h2>
-      <p>Work through the <a href="/interview-prep">full 14-day prep plan</a> - 2 hours/day covering SQL, Python, modeling, orchestration, Snowflake, Spark, streaming, cloud, system design, and behavioral.</p>
-
-      <h2>Related categories</h2>
-      <p>Explore <a href="/cheatsheets/category/sql">SQL cheat sheets</a>, <a href="/cheatsheets/category/architecture">architecture</a>, and the full <a href="/cheatsheets">cheat sheet library</a>.</p>
+      <h2>How to study without memorizing</h2>
+      <p>Pick one sheet per day. Close it, write the answer to two questions from memory, then reopen only to check. If you cannot explain why the wrong option is wrong, you do not understand the topic yet. For Snowflake, the traps that show up most: Fail-safe vs Time Travel, result cache invalidation, ACCOUNTADMIN vs SYSADMIN, and clustering on small tables.</p>
+      <p>Company flavor: FAANG loops stack SQL + system design; fintech stresses idempotency and exactly-once claims; SaaS shops drill dbt/Snowflake/Airflow ownership. Work the <a href="/interview-prep">14-day plan</a> if you have a date on the calendar. After the sheets, take one <a href="/practice">practice test</a> as a diagnostic — not as an answer key. Related: <a href="/cheatsheets/category/sql">SQL</a>, <a href="/cheatsheets/category/architecture">architecture</a>, <a href="/cheatsheets">library</a>.</p>
     `
   },
   {
@@ -2002,23 +2008,25 @@ const ESSENTIAL_PAGES = [
     description: 'Best-practice cheat sheets for data engineers - Snowflake ops, dbt projects, Airflow in production. Testing, quality, monitoring, cost optimization.',
     content: `
       <h1>Data Engineering Best Practices</h1>
-      <p><strong>Ship pipelines that don't page you at 3 AM.</strong> These cheat sheets cover the operational patterns, testing strategies, and quality gates that separate hobby pipelines from production-grade systems.</p>
+      <p>Best practices are contextual. A five-person analytics team and a regulated bank should not copy the same “always cluster, always Type 2, always Airflow” checklist. These sheets explain the default we use in production reviews, and the scale at which the default stops being free.</p>
+      <p>If a pipeline pages you at 3 AM, the cause is usually missing idempotency, a test that never ran in CI, a warehouse that never auto-suspends, or a model that rebuilds a full history because the incremental key was wrong. The sheets below are the rubrics we use in code review — not slogans.</p>
 
       <h2>Best-practice cheat sheets</h2>
       <ul>
-        <li><a href="/cheatsheets/snowflake-best-practices">Snowflake Best Practices</a> - warehouses, clustering, resource monitors, security, cost controls</li>
-        <li><a href="/cheatsheets/dbt-best-practices">dbt Best Practices</a> - model structure, testing strategy, CI, documentation, incremental models</li>
-        <li><a href="/cheatsheets/airflow-best-practices">Airflow Best Practices</a> - idempotent tasks, retries, SLA design, secrets handling, observability</li>
+        <li><a href="/cheatsheets/snowflake-best-practices">Snowflake Best Practices</a> — warehouse auto-suspend, resource monitors, clustering only on large filtered tables, ACCOUNTADMIN off the daily path, masking before you share.</li>
+        <li><a href="/cheatsheets/dbt-best-practices">dbt Best Practices</a> — staging / intermediate / marts, tests on grain and not-null keys, slim CI with defer, docs as contracts.</li>
+        <li><a href="/cheatsheets/airflow-best-practices">Airflow Best Practices</a> — idempotent tasks, bounded retries, SLA callbacks that page a human, secrets out of DAG code, one catch-up story.</li>
       </ul>
 
-      <h2>Related topics</h2>
-      <p>For orchestration patterns (retries, backfills, SLA alerting) see <a href="/cheatsheets/category/orchestration">orchestration cheat sheets</a>. For cost instrumentation on Snowflake, see <a href="/cheatsheets/snowflake-cost-optimization-interview">Snowflake cost optimization interview sheet</a>.</p>
-
-      <h2>Related tools</h2>
-      <p>Estimate costs with the <a href="/tools/snowflake-cost-calculator">Snowflake cost calculator</a>, visualize schedules with the <a href="/tools/cron-expression-builder">cron builder</a>.</p>
-
-      <h2>Related categories</h2>
-      <p>Explore <a href="/cheatsheets/category/orchestration">orchestration</a>, <a href="/cheatsheets/category/architecture">architecture</a>, and the full <a href="/cheatsheets">cheat sheet library</a>.</p>
+      <h2>A short review checklist</h2>
+      <ol>
+        <li>Can this task or model run twice with the same interval and leave the same tables?</li>
+        <li>Is there a test that fails if the grain duplicates?</li>
+        <li>Is compute bounded (warehouse size, DBU cap, BigQuery bytes) so a bad join cannot silently bill four figures?</li>
+        <li>Does on-call get a named owner and a runbook link, not only a failed-task email?</li>
+      </ol>
+      <p>For scheduling patterns see <a href="/cheatsheets/category/orchestration">orchestration</a>. For cost levers see <a href="/cheatsheets/snowflake-cost-optimization-interview">Snowflake cost optimization</a> and the <a href="/tools/snowflake-cost-calculator">Snowflake cost calculator</a>. Use the <a href="/tools/cron-expression-builder">cron builder</a> when you are writing the schedule string, not after the DAG has already missed an SLA. If a review comment is “this is not production-ready,” it usually maps to one of the four checklist items above — fix that, then merge.</p>
+      <p>Related: <a href="/cheatsheets/category/architecture">architecture</a>, <a href="/cheatsheets">library</a>.</p>
     `
   }
 ];
@@ -3860,7 +3868,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '          ' + articleListHTML + '\n';
   html += '        </ul>\n\n';
   if (categoryArticles.length === 0) {
-    html += '        <p style="color: #94a3b8; font-style: italic;">New articles coming soon. Check back for the latest tutorials.</p>\n';
+    html += '        <p>This listing has no published tutorials yet. Use the <a href="https://dataengineerhub.blog/articles">article library</a> or a related category hub instead of waiting on an empty archive.</p>\n';
   }
   html += '        <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">\n';
   html += '          <a href="https://dataengineerhub.blog/articles" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">Browse All Articles</a>\n';
@@ -4444,6 +4452,13 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '        <h1>What is ' + term.term + '?</h1>\n';
   html += '        <p style="font-size: 1.2rem; color: #cbd5e1; margin-bottom: 2rem; line-height: 1.8; border-left: 3px solid #60a5fa; padding-left: 1rem;">' + term.shortDefinition + '</p>\n\n';
 
+  if (term.practitionerIntro) {
+    html += '        <h2>From the field</h2>\n';
+    html += '        <div class="full-definition">\n';
+    html += '          ' + markdownToHTML(term.practitionerIntro) + '\n';
+    html += '        </div>\n\n';
+  }
+
   // Full definition (markdown converted to HTML)
   html += '        <div class="full-definition">\n';
   html += '          ' + fullDefHTML + '\n';
@@ -4451,6 +4466,13 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
 
   // Key points
   html += '        ' + keyPointsHTML + '\n\n';
+
+  if (term.gotchas) {
+    html += '        <h2>Gotchas</h2>\n';
+    html += '        <div class="full-definition">\n';
+    html += '          ' + markdownToHTML(term.gotchas) + '\n';
+    html += '        </div>\n\n';
+  }
 
   // FAQs
   html += '        ' + faqHTML + '\n\n';
@@ -5770,7 +5792,7 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
     html += '          ' + articleListHTML + '\n';
     html += '        </ul>\n\n';
   } else {
-    html += '        <p style="color: #94a3b8; font-style: italic;">New articles about ' + tag.name + ' are coming soon. Check back for the latest tutorials and guides.</p>\n\n';
+    html += '        <p>This tag does not currently have enough published tutorials to justify a standalone archive. Browse the <a href="https://dataengineerhub.blog/articles">article library</a> instead.</p>\n\n';
   }
   html += '        <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">\n';
   html += '          <a href="https://dataengineerhub.blog/articles" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">Browse All Articles</a>\n';
@@ -5831,7 +5853,9 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
 
   const buildTimestamp = new Date().toISOString();
 
-  const pageRobots = 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+  const pageRobots = pageData.noindex
+    ? 'noindex, follow'
+    : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
 
   return `<!doctype html>
 <html lang="en">
@@ -6475,21 +6499,49 @@ async function buildIncremental(options = {}) {
     stats.errors++;
   }
 
-  // ============================================================================
-  // PROCESS ESSENTIAL PAGES - Always runs for static SEO coverage
-  // ============================================================================
+function buildPracticeQuestionPreview(quizSlug) {
+  const qFile = path.join(__dirname, '..', 'src', 'data', 'practice', quizSlug, 'questions.json');
+  if (!fs.existsSync(qFile)) return '';
+  let questions;
+  try {
+    questions = JSON.parse(fs.readFileSync(qFile, 'utf8'));
+  } catch {
+    return '';
+  }
+  if (!Array.isArray(questions) || questions.length === 0) return '';
+  const sample = questions.slice(0, 8);
+  let html = '\n      <h2>Sample questions with explanations</h2>\n';
+  html += '      <p>The items below are from this bank so a reader (and an ads crawler) can study real stems without running JavaScript. The interactive quiz on this page has the full set, timed exam mode, and per-topic scoring.</p>\n';
+  sample.forEach((q, i) => {
+    html += `      <h3>${i + 1}. ${escapeHtml(q.stem || '')}</h3>\n      <ul>\n`;
+    (q.options || []).forEach((o) => {
+      const mark = (q.correctIds || []).includes(o.id) ? ' — correct' : '';
+      html += `        <li>${escapeHtml(o.text || '')}${escapeHtml(mark)}</li>\n`;
+    });
+    const why = String(q.explanation || '').replace(/\*\*/g, '');
+    html += `      </ul>\n      <p><strong>Why:</strong> ${escapeHtml(why)}</p>\n`;
+  });
+  html += `      <p>This preview is ${sample.length} of ${questions.length} questions. Use the quiz UI on this page to attempt the rest.</p>\n`;
+  return html;
+}
+
+// ============================================================================
+// PROCESS ESSENTIAL PAGES - Always runs for static SEO coverage
+// ============================================================================
 
   console.log('\nðŸ“„ Processing essential pages (About, Contact, Privacy, Terms, Disclaimer)…');
 
   for (const page of ESSENTIAL_PAGES) {
     const pagePath = page.path;
     currentPages.add(pagePath);
+    const practiceMatch = pagePath.match(/^\/practice\/([^/]+)$/);
 
     const pageData = {
       title: page.title,
       description: page.description,
       path: pagePath,
-      content: page.content
+      content: practiceMatch ? page.content + buildPracticeQuestionPreview(practiceMatch[1]) : page.content,
+      noindex: !!page.noindex,
     };
 
     const contentHash = hashContent(pageData);
@@ -6686,9 +6738,10 @@ async function buildIncremental(options = {}) {
         // Find articles belonging to this tag
         const tagArticles = allArticleSummaries.filter(a => a.tags.includes(tag.id));
 
-        // Skip empty tags — pages with "0 articles" trigger AdSense "low value content" rejection
-        if (tagArticles.length === 0) {
-          console.log(`   â­ Skipping empty tag: ${tag.name} (0 articles)`);
+        // Skip thin tags — 1–2 article listings are AdSense "low value content"
+        const tagSlug = String(tag.slug || '').toLowerCase();
+        if (tagArticles.length < MIN_INDEXABLE_TAG_COUNT || THIN_TAG_SLUGS.has(tagSlug)) {
+          console.log(`   ⏭️  Skipping thin tag: ${tag.name} (${tagArticles.length} articles)`);
           continue;
         }
 
@@ -6734,6 +6787,21 @@ async function buildIncremental(options = {}) {
           type: 'tag'
         };
       }
+
+      // Delete previously built tag HTML that is now thin or empty so a
+      // full dist publish cannot resurrect doorway pages.
+      const tagOutputRoot = path.join(distDir, 'tag');
+      if (fs.existsSync(tagOutputRoot)) {
+        for (const entry of fs.readdirSync(tagOutputRoot, { withFileTypes: true })) {
+          if (!entry.isDirectory()) continue;
+          const pagePath = `/tag/${entry.name}`;
+          if (!currentPages.has(pagePath)) {
+            fs.rmSync(path.join(tagOutputRoot, entry.name), { recursive: true, force: true });
+            console.log(`   🗑️  Removed stale tag page: ${pagePath}`);
+            delete newCache.pages[pagePath];
+          }
+        }
+      }
     } catch (error) {
       console.error('âŒ Error processing tags:', error.message);
       stats.errors++;
@@ -6763,7 +6831,7 @@ async function buildIncremental(options = {}) {
         const pagePath = '/glossary/' + term.slug;
         currentPages.add(pagePath);
 
-        const contentHash = hashContent({ term: term.id, slug: term.slug, updated: term.lastUpdated, definition: term.shortDefinition });
+        const contentHash = hashContent({ term: term.id, slug: term.slug, updated: term.lastUpdated, definition: term.shortDefinition, full: term.fullDefinition, intro: term.practitionerIntro, gotchas: term.gotchas });
         const cachedPage = cache.pages[pagePath];
         const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
 
