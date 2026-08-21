@@ -8,7 +8,7 @@ const CONSENT_MAX_AGE_DAYS = 365; // 12 months
 
 // Common crawler/bot user-agent patterns
 const BOT_UA_PATTERN =
-  /bot|crawl|spider|slurp|facebookexternalhit|linkedinbot|twitterbot|whatsapp|telegrambot|baiduspider|yandex|duckduckbot|googlebot|bingbot|semrushbot|ahrefsbot|mj12bot|dotbot|rogerbot|archive\.org_bot|applebot|petalbot|gptbot|claudebot|bytespider|ia_archiver/i;
+  /bot|crawl|spider|slurp|facebookexternalhit|linkedinbot|twitterbot|whatsapp|telegrambot|baiduspider|yandex|duckduckbot|googlebot|bingbot|semrushbot|ahrefsbot|mj12bot|dotbot|rogerbot|archive\.org_bot|applebot|petalbot|gptbot|claudebot|bytespider|ia_archiver|mediapartners-google|adsbot-google/i;
 
 /**
  * Detect if the current user-agent is a known crawler/bot.

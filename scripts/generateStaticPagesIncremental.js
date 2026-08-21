@@ -365,7 +365,7 @@ function normalizeArticleLinks(htmlContent, postSlugs) {
         
         // If the slug does not exist on disk, it's a broken link.
         // Strip the anchor tags and leave the inner text so we don't serve 404s.
-        const essentialPaths = ['/about', '/contact', '/privacy-policy', '/terms-of-service', '/disclaimer', '/contribute', '/newsletter', '/certification', '/rss.xml', '/articles', '/'];
+        const essentialPaths = ['/about', '/contact', '/privacy-policy', '/terms-of-service', '/disclaimer', '/contribute', '/newsletter', '/certification', '/rss.xml', '/articles', '/', '/news', '/practice', '/advertise', '/contributors', '/tag', '/tools', '/interview-prep', '/cheatsheets', '/glossary', '/compare'];
         const cleanPath = relativePath.trim().replace(/\/$/, '');
         const isEssential = essentialPaths.includes(cleanPath);
         
@@ -731,6 +731,185 @@ const ESSENTIAL_PAGES = [
 
       <h2>Disclaimer</h2>
       <p>Exam details (question counts, duration, pricing, domain weights) reflect Snowflake's published study guides as of 2026. Always verify current specifications on the official Snowflake Certifications page before registering. DataEngineer Hub is an independent community resource and is not affiliated with or endorsed by Snowflake Inc.</p>
+    `
+  },
+  {
+    path: '/news',
+    title: 'Data Engineering News & Trends 2026',
+    description: 'Data engineering news and platform updates that change how teams run Snowflake, Databricks, dbt, Airflow, and cloud pipelines — curated by a working data engineer, not a wire feed.',
+    content: `
+      <h1>Data Engineering News &amp; Trends</h1>
+      <p>This page is the news desk for DataEngineer Hub. It is not a scraped headline feed. Entries here are platform changes, pricing shifts, and product launches that actually change how data engineers design warehouses, pipelines, and AI-on-data workloads in 2026.</p>
+      <p>We track announcements across Snowflake, Databricks, dbt, Apache Airflow, AWS, Azure, GCP, and Salesforce Data Cloud, then write them up only when there is a practical implication: a new credit category, a retired API, a table-format change, or a certification blueprint update. If a vendor blog post does not change production work, it does not belong here.</p>
+
+      <h2>What we cover</h2>
+      <ul>
+        <li><strong>Warehouse &amp; lakehouse platforms:</strong> Snowflake Cortex, Dynamic Tables, Iceberg, Databricks Unity Catalog, serverless SQL, and storage-format changes.</li>
+        <li><strong>Transformation &amp; orchestration:</strong> dbt Fusion / dbt Cloud releases, Airflow provider updates, and scheduling patterns that affect cost or reliability.</li>
+        <li><strong>Cloud data services:</strong> Glue, Redshift, BigQuery, Fabric, and ingest/CDC tools when pricing or behavior changes.</li>
+        <li><strong>AI on data:</strong> RAG, vector search, agent tooling, and governance features that land inside the warehouse rather than a separate ML stack.</li>
+      </ul>
+
+      <h2>How this differs from the article library</h2>
+      <p>Long-form tutorials live under <a href="/articles">All Articles</a> and the category hubs (<a href="/category/snowflake">Snowflake</a>, <a href="/category/databricks">Databricks</a>, <a href="/category/dbt">dbt</a>, <a href="/category/airflow">Airflow</a>). News posts are shorter, dated, and focused on what changed and what you should do about it. When a news item needs a full walkthrough, we publish a tutorial and link it from the news write-up.</p>
+      <p>If you want a weekly digest instead of checking this page, subscribe on the <a href="/newsletter">newsletter</a> page. For tool-vs-tool context around a launch, start with the <a href="/compare">comparisons hub</a>.</p>
+
+      <h2>How we select stories</h2>
+      <p>Every item has to pass three checks: it is based on a primary vendor source or hands-on verification, it affects a working data engineer (not only a marketing audience), and it is written in our own words. We do not syndicate press releases. Pricing numbers and exam details are dated so you can tell when they were last verified.</p>
+      <p>Browse the latest tutorials while new news posts are published, or go straight to <a href="/articles">the full article library</a>.</p>
+    `
+  },
+  {
+    path: '/practice',
+    title: 'Free Data Engineering Practice Tests - SnowPro, Databricks, AWS',
+    description: 'Free certification practice tests for SnowPro Core, SnowPro Gen AI, Databricks Data Engineer Associate, and AWS Data Engineer Associate. Instant feedback, explanations, and topic scoring.',
+    content: `
+      <h1>Free Data Engineering Practice Tests</h1>
+      <p>Practice for data-engineering certifications with question banks written to match official exam style: scenario stems, multiple choice, and a rationale that explains both the correct answer and the tempting wrong ones. No account is required. Progress stays in your browser.</p>
+      <p>These tests are study diagnostics, not leaked dumps. Memorizing items will not get you through a live exam pool. Use each miss as a pointer back to vendor docs, a <a href="/cheatsheets">cheat sheet</a>, or a <a href="/interview-prep">interview-prep</a> topic.</p>
+
+      <h2>Available tracks</h2>
+      <ul>
+        <li><a href="/practice/snowpro-core"><strong>SnowPro Core (COF-C02)</strong></a> — architecture, warehouses, loading, security, performance, data sharing. Foundational Snowflake credential.</li>
+        <li><a href="/practice/snowpro-genai"><strong>SnowPro Specialty: Gen AI (GES-C01)</strong></a> — Cortex AI functions, Cortex Search, RAG, embeddings, and AI governance on Snowflake.</li>
+        <li><a href="/practice/databricks-de"><strong>Databricks Data Engineer Associate</strong></a> — Lakehouse, Delta Lake, Spark ELT, incremental pipelines, and Unity Catalog basics.</li>
+        <li><a href="/practice/aws-de-associate"><strong>AWS Data Engineer Associate (DEA-C01)</strong></a> — ingest and transform on Glue/Kinesis/EMR, stores (S3, Redshift, DynamoDB), operations, and Lake Formation / IAM / KMS.</li>
+      </ul>
+
+      <h2>How scoring works</h2>
+      <p>Each question counts equally. Multi-select items are correct only when every right option is selected and no extra option is selected. After an attempt you see overall percent and a per-topic breakdown so you can restudy a weak domain instead of re-taking the whole bank blindly.</p>
+      <p>Official exam lengths, passing scores, and domain weights change. Always confirm current details on the vendor certification page before you register. DataEngineer Hub is not affiliated with Snowflake, Databricks, or Amazon Web Services.</p>
+
+      <h2>Study path that actually works</h2>
+      <ol>
+        <li>Read the matching <a href="/cheatsheets">cheat sheet</a> or <a href="/certification">Snowflake certification guide</a> once through.</li>
+        <li>Take a timed practice set. Do not peek at explanations until you lock an answer.</li>
+        <li>For every miss, write one sentence in your own words and open the official doc linked in the rationale.</li>
+        <li>Re-test only the weak topics. Repeat until those domains are consistently above the exam passing score.</li>
+      </ol>
+      <p>Want a structured interview plan instead of a cert exam? Use the <a href="/interview-prep">interview prep hub</a>. For production tutorials, browse <a href="/articles">articles</a>.</p>
+    `
+  },
+  {
+    path: '/practice/snowpro-core',
+    title: 'SnowPro Core Practice Test (COF-C02) - Free Snowflake Questions',
+    description: 'Free SnowPro Core (COF-C02) practice questions covering Snowflake architecture, virtual warehouses, loading, RBAC, performance, and data sharing. Instant explanations.',
+    content: `
+      <h1>SnowPro Core (COF-C02) Practice Test</h1>
+      <p>The SnowPro Core certification is the foundation credential for Snowflake. This practice bank covers the same domains as the official study guide: platform architecture, account access and security, performance, data loading and unloading, transformations, and data protection / sharing.</p>
+      <p>Expect questions on micro-partitions, virtual warehouse sizing and auto-suspend, COPY INTO vs Snowpipe, RBAC (SYSADMIN vs ACCOUNTADMIN), result cache vs warehouse cache, Time Travel vs Fail-safe, and zero-copy cloning. Each item includes a rationale and a link to Snowflake documentation.</p>
+      <ul>
+        <li><strong>Official exam code:</strong> COF-C02</li>
+        <li><strong>Typical duration:</strong> 115 minutes</li>
+        <li><strong>Style:</strong> multiple choice / multi-select, scenario-based</li>
+        <li><strong>Prerequisite:</strong> none, but Snowflake recommends months of hands-on SQL on the platform</li>
+      </ul>
+      <p>Pair this quiz with the <a href="/certification">Snowflake certification prep guide</a>, the <a href="/cheatsheets/snowflake-sql">Snowflake SQL cheat sheet</a>, and the <a href="/category/snowflake">Snowflake article category</a>. Open the interactive quiz on this page (JavaScript required) to score by topic.</p>
+      <p>DataEngineer Hub is an independent study resource and is not affiliated with or endorsed by Snowflake Inc. Confirm current exam price, question count, and passing score on Snowflake's official certification page before you book.</p>
+    `
+  },
+  {
+    path: '/practice/snowpro-genai',
+    title: 'SnowPro Specialty Gen AI Practice Test (GES-C01)',
+    description: 'Free SnowPro Specialty: Generative AI (GES-C01) practice questions on Snowflake Cortex AI, Cortex Search, RAG, embeddings, and AI governance.',
+    content: `
+      <h1>SnowPro Specialty: Gen AI (GES-C01) Practice Test</h1>
+      <p>This bank is for engineers preparing for Snowflake's Generative AI specialty. Questions follow Cortex-era production work: LLM functions, Cortex Search, Cortex Analyst, embeddings, RAG patterns, Document AI, and the security controls you need before an agent can run SQL in a real account.</p>
+      <p>You will see items on credit consumption for Cortex functions, why larger models are not automatically better in production, retrieval quality vs generation quality, masking and RBAC around AI objects, and how Search / Analyst differ from a raw COMPLETE call.</p>
+      <ul>
+        <li><strong>Official exam code:</strong> GES-C01</li>
+        <li><strong>Focus:</strong> Cortex AI, RAG, vector search, evaluation, governance</li>
+        <li><strong>Recommended background:</strong> SnowPro Core plus hands-on Cortex functions</li>
+      </ul>
+      <p>Study companions: <a href="/certification">certification hub</a>, <a href="/category/snowflake">Snowflake tutorials</a>, and Cortex-related articles in the library. Launch the interactive quiz on this page for timed practice and per-topic scoring.</p>
+      <p>Not affiliated with Snowflake Inc. Always verify the live exam blueprint on Snowflake's certification site.</p>
+    `
+  },
+  {
+    path: '/practice/databricks-de',
+    title: 'Databricks Data Engineer Associate Practice Test',
+    description: 'Free Databricks Certified Data Engineer Associate practice questions on Lakehouse, Delta Lake, Spark ELT, incremental pipelines, and Unity Catalog.',
+    content: `
+      <h1>Databricks Data Engineer Associate Practice Test</h1>
+      <p>Practice for the Databricks Certified Data Engineer Associate exam with questions on the Lakehouse platform, Delta Lake (ACID, time travel, OPTIMIZE/ZORDER), Spark Structured Streaming, Auto Loader, DLT-style pipelines, and Unity Catalog governance.</p>
+      <p>Typical stems ask you to choose between batch vs streaming, when to use a MERGE, how to recover from a failed job, and which catalog object grants are required for a job to read a gold table. Explanations point at official Databricks docs, not forum folklore.</p>
+      <ul>
+        <li><strong>Exam:</strong> Databricks Certified Data Engineer Associate</li>
+        <li><strong>Typical duration:</strong> about 90 minutes</li>
+        <li><strong>Domains:</strong> Lakehouse platform, ELT with Spark, incremental processing, production pipelines, data governance</li>
+      </ul>
+      <p>Also see the <a href="/category/databricks">Databricks article category</a>, <a href="/compare">tool comparisons</a>, and <a href="/cheatsheets">cheat sheets</a>. Use the interactive quiz on this page to attempt questions and review rationales.</p>
+      <p>DataEngineer Hub is not affiliated with Databricks. Confirm current exam details on Databricks' certification pages before registering.</p>
+    `
+  },
+  {
+    path: '/practice/aws-de-associate',
+    title: 'AWS Data Engineer Associate Practice Test (DEA-C01)',
+    description: 'Free AWS Certified Data Engineer - Associate (DEA-C01) practice questions on Glue, Kinesis, S3, Redshift, Lake Formation, IAM, and pipeline operations.',
+    content: `
+      <h1>AWS Data Engineer Associate (DEA-C01) Practice Test</h1>
+      <p>This practice set follows the AWS Certified Data Engineer – Associate blueprint: ingest and transform (Kinesis, MSK, Glue, EMR), data stores (S3 layout, Redshift, DynamoDB), operations (CloudWatch, Step Functions, EventBridge), and security/governance (Lake Formation, KMS, IAM trust policies).</p>
+      <p>Questions are scenario-based: partition design that will not explode the Glue catalog, Lambda vs Glue vs EMR for a given job size, when Redshift Serverless is the wrong warehouse, and how to grant cross-account lake access without opening the bucket to the world.</p>
+      <ul>
+        <li><strong>Exam code:</strong> DEA-C01</li>
+        <li><strong>Typical duration:</strong> 130 minutes</li>
+        <li><strong>Useful background:</strong> SQL, Python, Parquet/ORC, and at least a year of AWS data services</li>
+      </ul>
+      <p>Read alongside the <a href="/category/aws">AWS tutorials</a>, <a href="/tools">cost and SQL tools</a>, and <a href="/interview-prep">interview prep</a>. Start the interactive quiz on this page for instant feedback.</p>
+      <p>Not affiliated with Amazon Web Services. Verify current exam guide, domains, and pricing on AWS Training and Certification.</p>
+    `
+  },
+  {
+    path: '/advertise',
+    title: 'Advertise on DataEngineer Hub - Sponsorship Options',
+    description: 'Sponsor DataEngineer Hub. Reach data engineers who read Snowflake, dbt, Databricks, and Airflow tutorials. Contextual placements, clear disclosures, and human review of every campaign.',
+    content: `
+      <h1>Advertise / Sponsor DataEngineer Hub</h1>
+      <p>DataEngineer Hub is a practitioner blog for people who design and run production data platforms. Sponsorships are sold as contextual placements inside relevant guides, cheat sheets, glossary terms, and tools — not as undifferentiated banner spam. Every campaign is reviewed by a human before it goes live.</p>
+      <p>Typical readers are data engineers, analytics engineers, and architects working on Snowflake, dbt, Databricks, Spark, Airflow, and the major clouds. They arrive from search with a specific job to do (cost a warehouse, debug a dbt test, prep a cert), which is why we only accept products that honestly fit that audience.</p>
+
+      <h2>What you can book</h2>
+      <ul>
+        <li><strong>Developer resource reference:</strong> a clearly labeled recommendation inside a matching cheat sheet, comparison, glossary entry, or tutorial. One sponsor per guide so competitors are not stacked.</li>
+        <li><strong>Ecosystem showcase:</strong> a directory-style listing for ongoing discovery across the site.</li>
+        <li><strong>Newsletter mention:</strong> a short sponsored blurb in a weekly edition, marked as sponsored.</li>
+      </ul>
+      <p>Packages run for a fixed term with a start and end date. There is no silent auto-renewal. Pricing and current availability are confirmed by email after we check fit — we will decline a product that is not useful to this audience rather than take the booking.</p>
+
+      <h2>Disclosure and editorial independence</h2>
+      <p>Sponsored placements are marked as such. We do not rewrite tutorials to match a sponsor's talking points, and we will not hide a disclosure. Ads served by Google AdSense are separate from sponsorships and are labeled as advertisements. Affiliate links, when present, are disclosed in the <a href="/disclaimer">disclaimer</a> and article footers.</p>
+      <p>To inquire, email <a href="mailto:sainath@dataengineerhub.blog">sainath@dataengineerhub.blog</a> or use the form on this page (JavaScript required). Include your product, the audience you want, and a preferred start month. For site policies see <a href="/privacy-policy">Privacy Policy</a> and <a href="/terms-of-service">Terms of Service</a>.</p>
+    `
+  },
+  {
+    path: '/contributors',
+    title: 'Contributors - DataEngineer Hub Guest Authors',
+    description: 'Meet the data engineers who write for DataEngineer Hub. Guest authors publish production-tested tutorials under their own byline after editorial review.',
+    content: `
+      <h1>Contributors</h1>
+      <p>DataEngineer Hub publishes tutorials and reference material from practicing data engineers, not anonymous content mills. The site owner, Sainath Reddy, writes the majority of articles. Guest authors appear here when they have at least one reviewed, published post.</p>
+      <p>Every guest piece goes through the same editorial bar as staff content: technical accuracy, working examples where code is shown, and a byline with a real bio. We do not accept spun or unedited AI drafts. If you want to write with us, read <a href="/contribute">Write for Us</a> and send a one-paragraph pitch plus two samples.</p>
+
+      <h2>What contributors own</h2>
+      <ul>
+        <li>Their name, bio, and optional links (LinkedIn, GitHub, personal site) on the article and on this directory.</li>
+        <li>Credit in RSS and on the public contributor profile when one exists.</li>
+        <li>The right to update factual errors after publication by contacting the editor.</li>
+      </ul>
+      <p>Profiles listed on this page are loaded from the published author list. If JavaScript is enabled, you will see avatars, bios, and article counts. You can also start with the <a href="/about">About</a> page for the primary author and the <a href="/articles">article library</a> for published work.</p>
+      <p>Questions about a byline or a correction: <a href="mailto:sainath@dataengineerhub.blog">sainath@dataengineerhub.blog</a> or the <a href="/contact">contact form</a>.</p>
+    `
+  },
+  {
+    path: '/tag',
+    title: 'Browse Article Tags - DataEngineer Hub',
+    description: 'Browse DataEngineer Hub articles by tag: Snowflake, dbt, Airflow, Spark, SQL, cost optimization, certification, and more.',
+    content: `
+      <h1>Browse All Tags</h1>
+      <p>Tags group individual tutorials by a narrower topic than a category. A Snowflake article might also be tagged Iceberg, Cortex, or cost-optimization so you can jump between related posts without scanning the full library.</p>
+      <p>This archive lists tags that currently have published articles. Empty tags are not generated — pages that would say "0 articles" are omitted on purpose so crawlers and readers do not land on hollow listings.</p>
+      <p>Prefer a broader view? Use <a href="/articles">All Articles</a> or a category hub such as <a href="/category/snowflake">Snowflake</a>, <a href="/category/dbt">dbt</a>, <a href="/category/python">Python</a>, or <a href="/category/sql">SQL</a>. Cheat sheets and glossary terms are tagged separately under <a href="/cheatsheets">Cheat Sheets</a> and <a href="/glossary">Glossary</a>.</p>
+      <p>If JavaScript is enabled, the interactive tag list on this page is searchable. Each tag page shows the matching tutorials with titles and excerpts.</p>
     `
   },
   {
@@ -6476,8 +6655,8 @@ async function buildIncremental(options = {}) {
             const articlesSection = generateHomepageEnhancement(allArticleSummaries, categories);
             // Inject before the closing </div> of seo-fallback
             homepageHTML = homepageHTML.replace(
-              /<noscript>\s*<p[^>]*>\s*<strong>JavaScript Required:<\/strong>/,
-              articlesSection + '\n        <noscript>\n          <p style="margin-top: 2rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444;">\n            <strong>JavaScript Required:</strong>'
+              /<noscript>\s*<p[^>]*>\s*You are viewing the static version of DataEngineer Hub\./,
+              articlesSection + '\n        <noscript>\n          <p style="margin-top: 2rem; padding: 1rem;">\n            You are viewing the static version of DataEngineer Hub.'
             );
             fs.writeFileSync(homepagePath, homepageHTML);
             const fileStats = fs.statSync(homepagePath);
