@@ -58,10 +58,18 @@ on:
   repository_dispatch:
     types: [post-published]
 
+# Hostinger HiddenStores writes each upload to `.in.<filename>.` then renames it.
+# Overlapping FTP deploys (or a cancelled upload) leave those files behind and the
+# next run fails with: "Temporary hidden file ... already exists".
+# Queue deploys instead of cancelling — cancelling mid-upload creates more leftovers.
+concurrency:
+  group: hostinger-ftp-deploy
+  cancel-in-progress: false
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     
     steps:
       - name: 📥 Checkout Code
@@ -414,8 +422,23 @@ jobs:
             echo "ℹ️ No FTP sync state found in root"
           fi
 
+      - name: 🧹 Remove leftover Hostinger FTP temp files
+        if: steps.changes.outputs.skip_deploy != 'true' && steps.changes.outputs.dry_run != 'true'
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_PORT: '21'
+          FTP_SERVER_DIR: /public_html
+          DIST_DIR: dist
+          CLEANUP_TIMEOUT_SEC: '90'
+        run: python3 scripts/cleanupFtpTempFiles.py
+        continue-on-error: true
+
       - name: 🚀 Deploy to Hostinger (FTPS)
+        id: ftp_deploy
         if: steps.changes.outputs.skip_deploy != 'true'
+        continue-on-error: true
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -440,6 +463,52 @@ jobs:
             **/Thumbs.db
             **/.build-cache.json
             **/*.map
+            **/.in.*
+
+      - name: 🧹 Clear leftover temps after failed FTP attempt
+        if: steps.changes.outputs.skip_deploy != 'true' && steps.changes.outputs.dry_run != 'true' && steps.ftp_deploy.outcome == 'failure'
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_PORT: '21'
+          FTP_SERVER_DIR: /public_html
+          DIST_DIR: dist
+          CLEANUP_TIMEOUT_SEC: '90'
+        run: |
+          echo "FTP deploy failed — clearing leftover Hostinger .in.* files, then retrying"
+          python3 scripts/cleanupFtpTempFiles.py
+          sleep 20
+        continue-on-error: true
+
+      - name: 🚀 Retry Deploy to Hostinger (FTPS)
+        id: ftp_deploy_retry
+        if: steps.changes.outputs.skip_deploy != 'true' && steps.ftp_deploy.outcome == 'failure'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          protocol: ftps
+          security: loose
+          local-dir: ./dist/
+          server-dir: /public_html/
+          dangerous-clean-slate: ${{ steps.changes.outputs.use_clean_slate == 'true' }}
+          state-name: .ftp-deploy-sync-state.json
+          dry-run: ${{ steps.changes.outputs.dry_run == 'true' }}
+          timeout: 300000
+          log-level: minimal
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.env
+            **/.DS_Store
+            **/Thumbs.db
+            **/.build-cache.json
+            **/*.map
+            **/.in.*
 
       - name: 💾 Copy FTP Sync State to Root for Caching
         if: steps.changes.outputs.skip_deploy != 'true' && steps.changes.outputs.dry_run != 'true' && always()
@@ -459,7 +528,10 @@ jobs:
           echo "Build completed successfully but was not deployed." >> $GITHUB_STEP_SUMMARY
 
       - name: ⏸️ Smart Wait
-        if: steps.changes.outputs.skip_deploy != 'true' && steps.changes.outputs.dry_run != 'true'
+        if: |
+          steps.changes.outputs.skip_deploy != 'true' &&
+          steps.changes.outputs.dry_run != 'true' &&
+          (steps.ftp_deploy.outcome == 'success' || steps.ftp_deploy_retry.outcome == 'success')
         run: |
           if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
             echo "⚡ WordPress update - quick wait (5s)"
@@ -473,7 +545,10 @@ jobs:
           fi
 
       - name: 🔍 Deployment Verification
-        if: steps.changes.outputs.skip_deploy != 'true' && steps.changes.outputs.dry_run != 'true'
+        if: |
+          steps.changes.outputs.skip_deploy != 'true' &&
+          steps.changes.outputs.dry_run != 'true' &&
+          (steps.ftp_deploy.outcome == 'success' || steps.ftp_deploy_retry.outcome == 'success')
         run: |
           echo "🔍 Verifying deployment..."
           
