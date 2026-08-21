@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import fs from 'fs';
 import vitePrerender from './plugins/vite-plugin-prerender.mjs';
+import { upsertSeoOverrideSource } from './src/utils/seoOverrideFile.js';
 
 const PuppeteerRenderer = vitePrerender.PuppeteerRenderer;
 
@@ -34,6 +35,28 @@ export default defineConfig({
                 const data = JSON.parse(body);
                 const filePath = path.resolve(__dirname, 'src/data/activeSponsors.json');
                 fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ success: true }));
+              } catch (err) {
+                res.statusCode = 500;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ success: false, error: err.message }));
+              }
+            });
+          } else if (req.url === '/api/save-seo-override' && req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => { body += chunk; });
+            req.on('end', () => {
+              try {
+                const { slug, title, description } = JSON.parse(body);
+                if (!slug || !title) {
+                  throw new Error('slug and title are required');
+                }
+                const filePath = path.resolve(__dirname, 'src/data/seoOverrides.js');
+                const current = fs.readFileSync(filePath, 'utf-8');
+                const next = upsertSeoOverrideSource(current, slug, title, description || '');
+                fs.writeFileSync(filePath, next, 'utf-8');
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
                 res.end(JSON.stringify({ success: true }));

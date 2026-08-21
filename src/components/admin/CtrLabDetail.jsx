@@ -53,9 +53,9 @@ function SerpPreview({ title, description, url }) {
 function getPositionTip(position) {
     if (!position) return { text: 'Connect GSC for position-specific recommendations.', cls: 'bg-slate-500/10 border-slate-500/30 text-gray-300' };
     if (position <= 3) return { text: "Top 3 — focus on Featured Snippet formatting and CTR hooks to maximize clicks.", cls: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' };
-    if (position <= 10) return { text: "Page 1 — your title competes with 9 others. Numbers, brackets, or emotional hooks help you stand out.", cls: 'bg-blue-500/10 border-blue-500/30 text-blue-300' };
-    if (position <= 20) return { text: "Page 2 — searchers rarely scroll here. Your title needs to be SIGNIFICANTLY more compelling than page 1.", cls: 'bg-amber-500/10 border-amber-500/30 text-amber-300' };
-    return { text: "Page 3+ — focus on keyword alignment first (match search intent), then optimize hooks.", cls: 'bg-red-500/10 border-red-500/30 text-red-300' };
+    if (position <= 10) return { text: "Page 1 — title/meta rewrites can move CTR here. Numbers, brackets, or the exact query near the front help you stand out.", cls: 'bg-blue-500/10 border-blue-500/30 text-blue-300' };
+    if (position <= 20) return { text: "Page 2 — typical CTR is ~1%. A new title almost never fixes this. Rank into the top 10 first (internal links, freshness, matching the query).", cls: 'bg-amber-500/10 border-amber-500/30 text-amber-300' };
+    return { text: "Page 3+ — impressions here inflate site-wide CTR downward. Do not rewrite titles until the URL is on page 1.", cls: 'bg-red-500/10 border-red-500/30 text-red-300' };
 }
 
 // ─── Quick Actions ──────────────────────────────────────────────
