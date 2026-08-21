@@ -861,24 +861,27 @@ const ESSENTIAL_PAGES = [
   },
   {
     path: '/advertise',
-    title: 'Advertise on DataEngineer Hub - Sponsorship Options',
-    description: 'Sponsor DataEngineer Hub. Reach data engineers who read Snowflake, dbt, Databricks, and Airflow tutorials. Contextual placements, clear disclosures, and human review of every campaign.',
+    title: 'Advertise on DataEngineer Hub - USD Sponsorships',
+    description: 'Paid product placements for data-engineering tools, billed in USD from $15/week. Guest articles are a separate free program on Write for Us.',
     content: `
       <h1>Advertise / Sponsor DataEngineer Hub</h1>
-      <p>DataEngineer Hub is a practitioner blog for people who design and run production data platforms. Sponsorships are sold as contextual placements inside relevant guides, cheat sheets, glossary terms, and tools — not as undifferentiated banner spam. Every campaign is reviewed by a human before it goes live.</p>
-      <p>Typical readers are data engineers, analytics engineers, and architects working on Snowflake, dbt, Databricks, Spark, Airflow, and the major clouds. They arrive from search with a specific job to do (cost a warehouse, debug a dbt test, prep a cert), which is why we only accept products that honestly fit that audience.</p>
+      <p>This page is for <strong>paid product placements</strong>, billed in <strong>US dollars (USD)</strong>. A visitor in the United States sees dollar prices. Local-currency figures, when shown, are estimates only — invoices are never issued in INR. Guest tutorials are a separate, free editorial program on <a href="/contribute">Write for Us</a>. Do not use this form to pitch a guest post.</p>
+      <p>DataEngineer Hub is a practitioner blog for people who design and run production data platforms. Readers arrive from search with a job to do (cost a warehouse, debug a dbt test, prep a cert). We only accept products that honestly fit that audience. Every campaign is reviewed by a human and marked as sponsored.</p>
 
-      <h2>What you can book</h2>
+      <h2>USD packages (what we invoice)</h2>
       <ul>
-        <li><strong>Developer resource reference:</strong> a clearly labeled recommendation inside a matching cheat sheet, comparison, glossary entry, or tutorial. One sponsor per guide so competitors are not stacked.</li>
-        <li><strong>Ecosystem showcase:</strong> a directory-style listing for ongoing discovery across the site.</li>
-        <li><strong>Newsletter mention:</strong> a short sponsored blurb in a weekly edition, marked as sponsored.</li>
+        <li><strong>Newsletter (starter):</strong> $40 USD per issue — a 150-word labeled blurb. Lowest-cost paid test.</li>
+        <li><strong>In-article mention:</strong> $25 USD — one labeled mention in a matching guide. Links are nofollow; this is referral traffic, not a backlink product.</li>
+        <li><strong>Developer resource reference:</strong> $30 USD / month or $180 USD / year — one sponsor per matching cheat sheet, glossary, or tutorial.</li>
+        <li><strong>Tools Hub card:</strong> $15 USD / week, $45 USD / month, or $240 USD / year.</li>
+        <li><strong>Tools Hub listing:</strong> $99 USD one-time.</li>
+        <li><strong>Sponsored integration guide:</strong> $50 USD one-time — we co-write a labeled tutorial. This is not a free guest post.</li>
       </ul>
-      <p>Packages run for a fixed term with a start and end date. There is no silent auto-renewal. Pricing and current availability are confirmed by email after we check fit — we will decline a product that is not useful to this audience rather than take the booking.</p>
+      <p>There is no silent auto-renewal. We will decline a product that is not useful to this audience rather than take the booking. If you want to write an unpaid technical article with a byline, go to <a href="/contribute">Write for Us</a>.</p>
 
       <h2>Disclosure and editorial independence</h2>
-      <p>Sponsored placements are marked as such. We do not rewrite tutorials to match a sponsor's talking points, and we will not hide a disclosure. Ads served by Google AdSense are separate from sponsorships and are labeled as advertisements. Affiliate links, when present, are disclosed in the <a href="/disclaimer">disclaimer</a> and article footers.</p>
-      <p>To inquire, email <a href="mailto:sainath@dataengineerhub.blog">sainath@dataengineerhub.blog</a> or use the form on this page (JavaScript required). Include your product, the audience you want, and a preferred start month. For site policies see <a href="/privacy-policy">Privacy Policy</a> and <a href="/terms-of-service">Terms of Service</a>.</p>
+      <p>Sponsored placements are marked as such. We do not rewrite independent tutorials to match a sponsor's talking points, and we will not hide a disclosure. Google AdSense ads are separate from sponsorships. Affiliate links, when present, are disclosed in the <a href="/disclaimer">disclaimer</a>.</p>
+      <p>To inquire, email <a href="mailto:sainath@dataengineerhub.blog">sainath@dataengineerhub.blog</a> or use the form on this page (JavaScript required). Include the product URL, the USD package, and a preferred start month. Policies: <a href="/privacy-policy">Privacy Policy</a> and <a href="/terms-of-service">Terms of Service</a>.</p>
     `
   },
   {
