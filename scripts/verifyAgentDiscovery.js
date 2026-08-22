@@ -1,4 +1,5 @@
 // Validates public agent-discovery files without needing a full Vite build.
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -67,6 +68,60 @@ if (robots.includes('Allow: /auth.md') && robots.includes('Allow: /.well-known/'
   ok('robots.txt allows auth.md and /.well-known/');
 } else {
   fail('robots.txt must Allow /auth.md and /.well-known/');
+}
+if (robots.includes('Content-Signal:') && robots.includes('Agentmap:')) {
+  ok('robots.txt has Content-Signal and Agentmap');
+} else {
+  fail('robots.txt must include Content-Signal and Agentmap');
+}
+
+if (!fs.existsSync(path.join(root, 'public', 'index.md'))) {
+  fail('public/index.md is required for Accept: text/markdown on the homepage');
+} else {
+  ok('homepage Markdown representation exists at index.md');
+}
+if (!/RewriteCond %\{HTTP_ACCEPT\} text\/markdown/.test(htaccess) || !/RewriteRule \^\$ \/index\.md/.test(htaccess)) {
+  fail('.htaccess must negotiate Accept: text/markdown to /index.md on /');
+} else {
+  ok('.htaccess serves index.md when Accept includes text/markdown');
+}
+
+const skillsIndexPath = path.join(publicDir, 'well-known', 'agent-skills', 'index.json');
+if (!fs.existsSync(skillsIndexPath)) {
+  fail('agent-skills/index.json is missing — run npm run agent-skills');
+} else {
+  const skillsIndex = JSON.parse(fs.readFileSync(skillsIndexPath, 'utf8'));
+  if (skillsIndex.$schema === 'https://schemas.agentskills.io/discovery/0.2.0/schema.json'
+    && Array.isArray(skillsIndex.skills) && skillsIndex.skills.length > 0) {
+    ok(`agent-skills index lists ${skillsIndex.skills.length} skill(s)`);
+  } else {
+    fail('agent-skills index must use schema 0.2.0 and a non-empty skills array');
+  }
+  for (const skill of skillsIndex.skills || []) {
+    const rel = skill.url.replace(/^\/\.well-known\//, '');
+    const artifact = path.join(publicDir, 'well-known', rel.replace(/^well-known\//, ''));
+    const skillFile = path.join(publicDir, 'well-known', 'agent-skills', skill.name, 'SKILL.md');
+    const filePath = fs.existsSync(skillFile) ? skillFile : artifact;
+    if (!fs.existsSync(filePath)) {
+      fail(`skill artifact missing for ${skill.name}`);
+      continue;
+    }
+    const digest = `sha256:${crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex')}`;
+    if (digest !== skill.digest) {
+      fail(`digest mismatch for ${skill.name} — rerun npm run agent-skills`);
+    } else {
+      ok(`${skill.name} digest matches SKILL.md`);
+    }
+  }
+}
+
+const ard = JSON.parse(fs.readFileSync(path.join(publicDir, 'well-known', 'ai-catalog.json'), 'utf8'));
+if (ard.specVersion && ard.host?.identifier && Array.isArray(ard.entries) && ard.entries.length > 0) {
+  const bad = ard.entries.filter((entry) => !entry.identifier || !entry.displayName || !entry.type || Boolean(entry.url) === Boolean(entry.data));
+  if (bad.length) fail('ARD entries must have identifier, displayName, type, and exactly one of url/data');
+  else ok(`ARD catalog has ${ard.entries.length} public entries`);
+} else {
+  fail('ai-catalog.json must include specVersion, host, and entries');
 }
 
 const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');

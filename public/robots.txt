@@ -83,6 +83,7 @@ Disallow: /practice/*/topics/
 # =============================================================================
 Sitemap: https://dataengineerhub.blog/sitemap-index.xml
 Sitemap: https://dataengineerhub.blog/llm-sitemap.json
+Agentmap: https://dataengineerhub.blog/.well-known/ai-catalog.json
 
 # =============================================================================
 # AI CRAWLERS - Allow for AI Citations & Training (full access — these are not

@@ -1,0 +1,53 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "DataEngineer Hub",
+    "identifier": "did:web:dataengineerhub.blog"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:dataengineerhub.blog:catalog:articles",
+      "displayName": "Article catalog",
+      "type": "application/json",
+      "url": "https://dataengineerhub.blog/llm-sitemap.json",
+      "representativeQueries": [
+        "list DataEngineer Hub Snowflake tutorials",
+        "find the latest dbt article on this site",
+        "what key facts does the Time Travel article include"
+      ]
+    },
+    {
+      "identifier": "urn:air:dataengineerhub.blog:catalog:api",
+      "displayName": "RFC 9727 API catalog",
+      "type": "application/linkset+json",
+      "url": "https://dataengineerhub.blog/.well-known/api-catalog",
+      "representativeQueries": [
+        "where is the machine readable catalog for this blog",
+        "what public APIs does DataEngineer Hub publish",
+        "how do I discover RSS and llms.txt from the homepage"
+      ]
+    },
+    {
+      "identifier": "urn:air:dataengineerhub.blog:skill:use-article-catalog",
+      "displayName": "Use article catalog skill",
+      "type": "text/markdown",
+      "url": "https://dataengineerhub.blog/.well-known/agent-skills/use-article-catalog/SKILL.md",
+      "representativeQueries": [
+        "how should an agent fetch tutorials from this site",
+        "where is the structured article index",
+        "does this blog require agent registration"
+      ]
+    },
+    {
+      "identifier": "urn:air:dataengineerhub.blog:docs:auth",
+      "displayName": "auth.md public access rules",
+      "type": "text/markdown",
+      "url": "https://dataengineerhub.blog/auth.md",
+      "representativeQueries": [
+        "how do agents authenticate to DataEngineer Hub",
+        "is there an OAuth register_uri",
+        "can I read articles without an API key"
+      ]
+    }
+  ]
+}

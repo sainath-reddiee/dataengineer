@@ -153,11 +153,16 @@
     # ========================================================================
     
     # Don't rewrite robots.txt, sitemap.xml, favicon.ico, or agent-discovery files
-    RewriteRule ^(robots\.txt|sitemap\.xml|sitemap-index\.xml|favicon\.ico|auth\.md|openapi\.json|llms\.txt|llms-full\.txt|llm-sitemap\.json|rss\.xml)$ - [L]
+    RewriteRule ^(robots\.txt|sitemap\.xml|sitemap-index\.xml|favicon\.ico|auth\.md|openapi\.json|llms\.txt|llms-full\.txt|llm-sitemap\.json|rss\.xml|index\.md)$ - [L]
 
     # RFC 8615 / RFC 9727: serve /.well-known/* from /well-known/* so FTP
     # deploy does not have to upload a leading-dot directory on Hostinger.
     RewriteRule ^\.well-known/(.+)$ /well-known/$1 [L]
+
+    # Homepage Markdown negotiation. Browsers and AdsBot send text/html and
+    # keep the React/SSG HTML. Agents that send Accept: text/markdown get index.md.
+    RewriteCond %{HTTP_ACCEPT} text/markdown [NC]
+    RewriteRule ^$ /index.md [L]
     
     # ========================================================================
     # IMPORTANT: Allow real files and directories to be served directly
@@ -361,6 +366,8 @@
     SetEnvIf Request_URI "^/\.well-known/api-catalog" DEH_AGENT_LINKS
     SetEnvIf Request_URI "^/well-known/api-catalog" DEH_AGENT_LINKS
     Header always set Link "</.well-known/api-catalog>; rel=\"api-catalog\", </openapi.json>; rel=\"service-desc\"; type=\"application/json\", </llms.txt>; rel=\"service-doc\"; type=\"text/plain\", </llm-sitemap.json>; rel=\"describedby\"; type=\"application/json\"" env=DEH_AGENT_LINKS
+    Header always set Content-Signal "search=yes, ai-input=yes, ai-train=yes"
+    Header append Vary Accept env=DEH_AGENT_LINKS
 
 </IfModule>
 
@@ -444,10 +451,28 @@ AddDefaultCharset UTF-8
     <Files "api-catalog">
         Header set Content-Type "application/linkset+json; profile=\"https://www.rfc-editor.org/info/rfc9727\""
         Header set Cache-Control "public, max-age=86400"
+        Header always set Access-Control-Allow-Origin "*"
     </Files>
     <Files "auth.md">
         Header set Content-Type "text/markdown; charset=utf-8"
         Header set Cache-Control "public, max-age=86400"
+        Header always set Access-Control-Allow-Origin "*"
+    </Files>
+    <Files "SKILL.md">
+        Header set Content-Type "text/markdown; charset=utf-8"
+        Header set Cache-Control "public, max-age=86400"
+        Header always set Access-Control-Allow-Origin "*"
+    </Files>
+    <Files "index.md">
+        Header set Content-Type "text/markdown; charset=utf-8"
+        Header set Cache-Control "public, max-age=3600, must-revalidate"
+        Header set x-markdown-tokens "412"
+    </Files>
+    <Files "index.json">
+        Header always set Access-Control-Allow-Origin "*"
+    </Files>
+    <Files "ai-catalog.json">
+        Header always set Access-Control-Allow-Origin "*"
     </Files>
 </IfModule>
 

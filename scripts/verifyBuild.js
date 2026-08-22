@@ -687,6 +687,26 @@ async function verifyBuild() {
       warnings.push('⚠️  .htaccess is missing the /.well-known/ rewrite');
       log('   ⚠️  .htaccess missing well-known rewrite', 'yellow');
     }
+    if (/RewriteCond %\{HTTP_ACCEPT\} text\/markdown/.test(htaccess)) {
+      log('   ✅ .htaccess negotiates homepage Markdown', 'green');
+    } else {
+      warnings.push('⚠️  .htaccess is missing Accept: text/markdown negotiation');
+      log('   ⚠️  .htaccess missing markdown negotiation', 'yellow');
+    }
+  }
+
+  const extraDiscovery = [
+    'index.md',
+    path.join('well-known', 'agent-skills', 'index.json'),
+    path.join('well-known', 'ai-catalog.json'),
+  ];
+  for (const rel of extraDiscovery) {
+    if (fs.existsSync(path.join(distDir, rel))) {
+      log(`   ✅ ${rel}`, 'green');
+    } else {
+      issues.push(`❌ ${rel} not found in dist/`);
+      log(`   ❌ ${rel} not found`, 'red');
+    }
   }
   
   // ============================================================================
