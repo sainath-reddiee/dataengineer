@@ -11,9 +11,409 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-07-26",
-  "totalArticles": 87,
+  "lastUpdated": "2026-08-22",
+  "totalArticles": 104,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-cortex-ai-hidden-token-costs",
+      "title": "Identifying Hidden Token Costs in Snowflake Cortex AI",
+      "summary": "The demo works. It always does. You call AI_CLASSIFY on a sample of 10,000 rows, the credits barely move, and someone in the room says “this is so much cheaper than sending…",
+      "keyFacts": [
+        "For PDFs specifically, page-level sampling — sending only the pages likely to contain the target information — can reduce cost by 60–80% compared to sending the full document",
+        "This pattern, applied consistently, can reduce ongoing AI Credit consumption by 50–90% for stable datasets",
+        "A production run of one million rows with a frontier model is a completely different animal",
+        "This means an Enterprise customer and a Standard customer pay exactly the same rate for AI inference — but the two credit types appear as separate line items and require separate monitoring logic",
+        "The other two — AI token consumption and always-on serving compute — accumulate quietly in tables most engineers haven’t queried yet"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "dbt"
+      ],
+      "questionAnswered": "What is Identifying Hidden Token Costs in Snowflake Cortex AI?",
+      "lastUpdated": "2026-08-09",
+      "published": "2026-08-10",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2568
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-time-travel-fail-safe",
+      "title": "Snowflake Time Travel vs. Fail-safe: What Gets Recovered and When",
+      "summary": "3:14 a.m., and a migration script hands off to DROP TABLE orders_staging; against what everyone on the team swore was a permanent table. It wasn’t. Somewhere in the last quarter it got…",
+      "keyFacts": [
+        "Over the full window that’s roughly 900 GB — close to a 9x storage multiplier over the table’s own size , from one retention setting on one heavily-churned table",
+        "The on-call engineer isn’t worried — Snowflake has Time Travel, Snowflake has Fail-safe, this is a solved problem",
+        "→ Fail-safe is a separate, fixed 7-day recovery period that starts after Time Travel expires, and it is not self-service — only Snowflake Support can pull data back from it, and only for permanent tables",
+        "And critically, Fail-safe only exists for permanent tables"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "aws"
+      ],
+      "questionAnswered": "What are the differences between Snowflake Time Travel and . Fail-safe: What Gets Recovered and When?",
+      "lastUpdated": "2026-08-05",
+      "published": "2026-08-08",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 1694
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/sql-patterns-that-show-up-in-interviews",
+      "title": "SQL Patterns That Actually Show Up in Interviews (All 10, With Code)",
+      "summary": "Nobody fails a SQL interview because they don’t know the syntax. They fail because they stare at a question about “users with a 5-day login streak” and don’t recognize it…",
+      "keyFacts": [
+        "They’ve seen the patterns enough times that a novel-sounding question instantly collapses into “oh, that’s gaps-and-islands” — and then the SQL is the easy part",
+        "This is a tour of all ten — the keyword that gives each one away, the core trick, real SQL, and the follow-up the interviewer asks when you get the first version right",
+        "If the question is “top 3 salaries” and ties should all count, you want DENSE_RANK() , not ROW_NUMBER()"
+      ],
+      "entities": [
+        "sql"
+      ],
+      "questionAnswered": "What is SQL Patterns That Actually Show Up in Interviews (All 10, With Code)?",
+      "lastUpdated": "2026-08-03",
+      "published": "2026-08-07",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "SQL",
+      "wordCount": 2350
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/optimizing-dbt-models-modern-warehouses",
+      "title": "Optimizing dbt Models for Modern Warehouses: An Author & Reviewer’s Guide",
+      "summary": "Two dbt models can be byte-for-byte identical in output, pass every test, and read cleanly in review — and one of them costs $50 a month while the other costs…",
+      "keyFacts": [
+        "What it can’t tell you is how much data moved through the model to produce that correct answer, and that number is the entire ballgame",
+        "The trap is that a code review reads a model like prose — do the joins make sense, are the columns right — when the thing that actually determines the bill is invisible in the text and only shows up in the query profile",
+        "A broken one has a stage where volume grows — or stays huge longer than it needs to — and that stage is almost always where your money goes"
+      ],
+      "entities": [
+        "dbt",
+        "sql",
+        "snowflake",
+        "bigquery",
+        "redshift",
+        "databricks"
+      ],
+      "questionAnswered": "The one mental model: how much data survives each stage?",
+      "lastUpdated": "2026-08-03",
+      "published": "2026-08-06",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "dbt",
+      "wordCount": 2109
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/what-actually-works-building-ai-agents",
+      "title": "Building AI Agents: What Actually Works in Production",
+      "summary": "Ask ten teams if they’ve built an AI agent and nine will say yes. Look at what they actually shipped and most of it is a workflow with one LLM…",
+      "keyFacts": [
+        "Look at what they actually shipped and most of it is a workflow with one LLM call in the middle — a fixed pipeline where a model fills in one step, not an autonomous system deciding its own path",
+        "This is that model, told from a data engineer’s chair — where “tools” means governed access to your warehouse, “knowledge” means your RAG and your data quality, and every one of these five parts fails in ways you’ve seen before under different names",
+        "This loop is the source of an agent’s power and its danger, which is why it always needs a hard cap on steps"
+      ],
+      "entities": [],
+      "questionAnswered": "What is Building AI Agents: What Actually Works in Production?",
+      "lastUpdated": "2026-08-03",
+      "published": "2026-08-05",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 1791
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/20-ai-concepts-for-data-engineers",
+      "title": "20 AI Concepts Every Data Engineer Actually Needs",
+      "summary": "There are a hundred “AI concepts explained for beginners” listicles, and most of them are written for people who will never build anything. This one isn’t. If you’re a data…",
+      "keyFacts": [
+        "So this is the 20-concept tour, but curated and framed for practitioners",
+        "→ Evals and guardrails are the AI equivalent of tests and constraints; a model without them is an untested pipeline",
+        "There are a hundred “AI concepts explained for beginners” listicles, and most of them are written for people who will never build anything"
+      ],
+      "entities": [
+        "snowflake"
+      ],
+      "questionAnswered": "What is 20 AI Concepts Every Data Engineer Actually Needs?",
+      "lastUpdated": "2026-08-03",
+      "published": "2026-08-04",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 1881
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/why-larger-llms-give-wrong-answers-in-production",
+      "title": "Why Larger LLMs Give Incorrect Answers in Production",
+      "summary": "A team I worked with upgraded their support-ticket triage pipeline to a bigger, newer model expecting fewer mistakes. Benchmarks said it was smarter across the board. Two weeks in, the…",
+      "keyFacts": [
+        "’s foundational 2022 work through more recent studies on the “alignment tax” — has found that base, pretrained models are reasonably well-calibrated: when a pretrained model says it’s 80% confident, it’s right roughly 80% of the time",
+        "None of that means larger models are worse",
+        "It means “larger” doesn’t buy you the thing production actually needs, which is knowing when to say “I don’t know",
+        "” A model that always guesses will, on average, score higher than one that abstains when unsure — even if the abstaining model is more trustworthy"
+      ],
+      "entities": [
+        "sql"
+      ],
+      "questionAnswered": "Why Larger LLMs Give Incorrect Answers in Production?",
+      "lastUpdated": "2026-07-29",
+      "published": "2026-08-03",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 1999
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/medallion-architecture-reconsidered",
+      "title": "The Medallion Architecture, Reconsidered: What It Solved and Where It Cracks",
+      "summary": "Almost every data team says it’s “doing medallion architecture.” Look under the hood and most of them aren’t — they have a Bronze layer that’s a dumping ground, a Silver…",
+      "keyFacts": [
+        "” This is a practitioner’s tour of both halves: what the pattern actually solved, the specific places it cracks, and the shift-left / data-product thinking that’s emerging as the alternative — without pretending the alternative is free",
+        "What medallion actually solved Before piling on, give the pattern its due, because the reasons it won are the reasons it’s still everywhere",
+        "And it mapped cleanly onto the tooling, which is exactly why I’ve recommended a version of it for organizing transformation work in structuring dbt projects into staging, intermediate, and mart layers"
+      ],
+      "entities": [
+        "dbt",
+        "snowflake"
+      ],
+      "questionAnswered": "What is The Medallion Architecture, Reconsidered: What It Solved and Where It Cracks?",
+      "lastUpdated": "2026-07-30",
+      "published": "2026-08-02",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 1942
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/7-steps-autonomous-agent",
+      "title": "7 Steps to Building and Deploying Your First Autonomous Agent",
+      "summary": "The Slack message came in at 9:14 on a Tuesday: “why is yesterday’s Snowflake bill $4,200 over budget and who approved it.” Nobody had approved anything. A dashboard refresh job…",
+      "keyFacts": [
+        "The Slack message came in at 9:14 on a Tuesday: “why is yesterday’s Snowflake bill $4,200 over budget and who approved it",
+        "For a cost-anomaly agent, that’s: The job: on a schedule, pull the last 24 hours of Snowflake warehouse spend, compare it against the trailing 14-day baseline, and flag any warehouse running more than 2x its typical cost",
+        "This is a practical walkthrough of a small, real agent — one that watches Snowflake spend and flags anomalies — built the way that actually survives contact with production",
+        "Skipping this is the single biggest cause of stalled agent projects",
+        "The pattern I’ve seen up close matches that: teams skip scoping, skip guardrails, and skip deployment, then wonder why the “agent” never left someone’s laptop"
+      ],
+      "entities": [
+        "snowflake",
+        "python",
+        "dbt",
+        "airflow"
+      ],
+      "questionAnswered": "What is 7 Steps to Building and Deploying Your First Autonomous Agent?",
+      "lastUpdated": "2026-07-29",
+      "published": "2026-08-02",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 2392
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/future-of-data-engineering-ai-driven-world",
+      "title": "The Future of Data Engineering in an AI-Driven World",
+      "summary": "Two facts from 2026 sit uncomfortably next to each other. Databricks has said that most new databases created on its platform are now spun up by AI agents rather than…",
+      "keyFacts": [
+        "If you strip out the LinkedIn futurism in both directions — “data engineering is dead” and “agents will build everything by Christmas” — what’s left is a real, structural shift in what the job is",
+        "I’ve argued the seed of this before in the piece on how automation, not AI, is the thing actually reshaping the work ; this article is the longer look at where that leads, grounded in what’s shipping today rather than what a keynote promised",
+        "Agents are a new class of consumer: they need machine-readable context and are unforgiving of ambiguity — and they never file a Jira ticket when something’s off"
+      ],
+      "entities": [
+        "databricks",
+        "sql",
+        "snowflake"
+      ],
+      "questionAnswered": "What is The Future of Data Engineering in an AI-Driven World?",
+      "lastUpdated": "2026-08-02",
+      "published": "2026-08-01",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 1729
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/how-snowflake-stores-data-internally",
+      "title": "How Snowflake Stores Data Internally: Micro-Partitions, FDN & Pruning",
+      "summary": "A team I worked with ran a nightly job that did something completely reasonable: it updated a single status flag on rows in a 2 TB orders table. One column. A few…",
+      "keyFacts": [
+        "With a 7-day Time Travel window, you’re retaining roughly seven days of old versions of that churned 20%: on the order of 200 GB of Time Travel bytes on top of the 200 GB active, plus a further ~7 days of Fail-safe Snowflake keeps regardless",
+        "This is the storage layer, specifically — not the “cloud services” box everyone waves at in architecture diagrams",
+        "The three layers, and why storage is the interesting one Snowflake separates into three layers: cloud services (the brain — metadata, security, the optimizer), compute (virtual warehouses that run queries), and storage (the data itself)",
+        "And the real design isn’t trivia — it’s the thing that explains why your queries prune well or scan everything, why a tiny update can be expensive, and why your storage bill has line items you never created directly"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "dbt"
+      ],
+      "questionAnswered": "How Snowflake Stores Data Internally: Micro-Partitions, FDN & Pruning?",
+      "lastUpdated": "2026-07-27",
+      "published": "2026-07-31",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 1961
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/why-senior-engineers-write-sql-differently",
+      "title": "Why Senior Data Engineers Write SQL Differently (With Examples)",
+      "summary": "I once inherited a revenue report that had been green for fourteen months. Every morning it ran, populated a dashboard, and nobody questioned it. Then a new CFO asked why…",
+      "keyFacts": [
+        "The readability stuff is real and I’ll get to it, but if that’s all you fix, you’ll write beautifully formatted queries that overstate revenue by 3x",
+        "This isn’t abstract, by the way: I’ve argued that SQL is the highest-leverage skill on a data team right now , and this is exactly why — the language is easy, the judgment is not",
+        "→ Track the grain of every CTE — joining before you aggregate is the single most common cause of silently inflated totals",
+        "Change-safety: CTEs as checkpoints, not decoration This is the axis the “clean SQL” advice usually covers, and it’s genuinely important — just not sufficient on its own"
+      ],
+      "entities": [
+        "sql",
+        "dbt",
+        "snowflake"
+      ],
+      "questionAnswered": "Why Senior Data Engineers Write SQL Differently (With Examples)?",
+      "lastUpdated": "2026-07-27",
+      "published": "2026-07-30",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "SQL",
+      "wordCount": 2159
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/agentic-ai-security-data-pipelines",
+      "title": "Your Data Pipeline Agent Is a Confused Deputy Waiting to Happen",
+      "summary": "A support-triage agent I built last quarter had read access to our CRM, could issue refunds under $50 without approval, and could send email on a customer’s behalf to confirm…",
+      "keyFacts": [
+        "→ Sandboxing agent-generated code and gating irreversible actions behind human approval close different gaps — neither one alone is a complete defense",
+        "Why This Is a Pipeline Problem, Not a Chatbot Problem Most security writing on prompt injection still frames it as a chat-interface issue: a user tricks a customer-facing bot into saying something it shouldn’t",
+        "→ Least privilege has to be enforced at the credential layer, not just the prompt layer: a read-only database role stops a bad decision that a well-worded system prompt never will"
+      ],
+      "entities": [
+        "snowflake",
+        "docker",
+        "python"
+      ],
+      "questionAnswered": "What is Your Data Pipeline Agent Is a Confused Deputy Waiting to Happen?",
+      "lastUpdated": "2026-07-27",
+      "published": "2026-07-29",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 1603
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/agent-real-memory-ollama",
+      "title": "What Happens When You Give Your Local Agent a Real Memory",
+      "summary": "Two weeks ago, an agent I run locally for pipeline maintenance rewrote a retry handler using a flat, fixed-delay retry. It looked reasonable. It was also the exact pattern that…",
+      "keyFacts": [
+        "TL;DR → Most “agent memory” in demos is just re-sending the whole conversation transcript on every turn, which is a longer prompt, not memory",
+        "→ Real memory means distilling a short note after a session ends and retrieving only the relevant notes before the next one starts, using embeddings and cosine similarity, not a full transcript replay",
+        "It was also the exact pattern that caused a duplicate-row incident in May, one I’d personally debugged for four hours and was very sure I’d never see again"
+      ],
+      "entities": [
+        "python"
+      ],
+      "questionAnswered": "What Happens When You Give Your Local Agent a Real Memory?",
+      "lastUpdated": "2026-07-26",
+      "published": "2026-07-28",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 1510
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/how-ai-is-reshaping-data-engineering",
+      "title": "How AI Is Reshaping Data Engineering: A Practical Guide (2026)",
+      "summary": "A team I advised shipped their first AI-generated pipeline on a Thursday. An agent had scaffolded a dbt model from a plain-English request — “roll daily revenue up to weekly…",
+      "keyFacts": [
+        "Three weeks later finance flagged that Q3 regional revenue was overstated by about 11%",
+        "→ On the public BIRD-SQL benchmark the best text-to-SQL system reaches about 82% execution accuracy versus 93% for humans — and only when handed human-written domain hints",
+        "That is the actual shape of AI in data engineering in 2026",
+        "A genuinely useful assistant that raises the floor on boilerplate and lowers it, hard, on anything requiring judgment about what the data means",
+        "→ The durable skill is not prompting — it’s reviewing: reading generated SQL critically and knowing what the data is supposed to say"
+      ],
+      "entities": [
+        "dbt",
+        "sql",
+        "snowflake",
+        "airflow",
+        "python",
+        "databricks"
+      ],
+      "questionAnswered": "How AI Is Reshaping Data Engineering: A Practical Guide (2026)?",
+      "lastUpdated": "2026-08-07",
+      "published": "2026-07-28",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 2171
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/sql-portfolio-projects-that-get-hired",
+      "title": "5 Real-World SQL Portfolio Projects That Actually Get You Hired",
+      "summary": "A hiring manager I know keeps a folder of rejected portfolio links. Not to be cruel — to remember the pattern. Out of roughly forty SQL “projects” she reviewed for…",
+      "keyFacts": [
+        "They spend 80% of their time writing more queries and 20% on everything else, then wonder why the portfolio reads like homework",
+        "That is the thing nobody tells you when you start building a data portfolio: the query is table stakes",
+        "This article is the follow-on: five projects genuinely worth building, the public repositories and datasets to build them from, and — the part that matters — what to add to each so it doesn’t land in the rejected folder",
+        "I’ve written before about how tests can pass while you’re still shipping bad data , and the same trap applies to portfolios: a query that runs without error can still be answering the wrong question on data you never inspected"
+      ],
+      "entities": [
+        "sql",
+        "spark",
+        "python"
+      ],
+      "questionAnswered": "What is 5 Real-World SQL Portfolio Projects That Actually Get You Hired?",
+      "lastUpdated": "2026-07-25",
+      "published": "2026-07-27",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "SQL",
+      "wordCount": 2534
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/food-data-quality-pipeline-guest-post",
+      "title": "What 4.2 Million Food Records Taught Me About Reliable Data Quality Pipelines",
+      "summary": "Processing millions of food records taught me that data quality is rarely one clever cleaning function. It is a chain of small contracts: what a number means, which identifier owns…",
+      "keyFacts": [
+        "Lesson 2: Validate Relationships, Not Only Individual Columns A schema can confirm that calories are numeric, but it cannot tell you whether 6,000 kcal per 100 grams is credible",
+        "It is a chain of small contracts: what a number means, which identifier owns a record, what a missing value means, and what an incremental update is allowed to change",
+        "The Pipeline Is a Series of Trust Boundaries My first mistake was thinking about the import as one operation: Read a source file, clean each row, and insert it",
+        "A record with impossible calories should not appear in a “popular foods” response"
+      ],
+      "entities": [
+        "sql"
+      ],
+      "questionAnswered": "What 4.2 Million Food Records Taught Me About Reliable Data Quality Pipelines?",
+      "lastUpdated": "2026-07-26",
+      "published": "2026-07-26",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Data Engineer",
+      "wordCount": 2139
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/best-mcp-servers-agentic-development",
+      "title": "Top MCP Servers for High-Performance Agentic Development 2026",
+      "summary": "I watched an engineer lose the better part of a day to a “top MCP servers” listicle. He wired his agent to a standalone Postgres server and a Puppeteer server…",
+      "keyFacts": [
+        "Every one of them is live and maintained as of writing, which, as that lost afternoon shows, is the specification that matters most",
+        "→ Context7 is the highest-leverage addition to any code-generating agent because it kills hallucinated and deprecated APIs at write-time instead of catching them after",
+        "These are five servers chosen for one thing only: what they change about an agent’s actual capability — plus a sixth section for the data-engineering stack the general-purpose lists always skip"
+      ],
+      "entities": [
+        "dbt",
+        "databricks",
+        "snowflake"
+      ],
+      "questionAnswered": "What is Top MCP Servers for High-Performance Agentic Development?",
+      "lastUpdated": "2026-07-25",
+      "published": "2026-07-26",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "AI",
+      "wordCount": 1913
+    },
     {
       "url": "https://dataengineerhub.blog/articles/introduction-to-loop-engineering",
       "title": "Introduction to Loop Engineering: Designing AI Agent Loops (2026)",
@@ -336,7 +736,7 @@
         "dbt"
       ],
       "questionAnswered": "What is Dynamic Airflow DAGs via Snowflake Metadata: Eliminating Hardcoded Pipeline Tasks?",
-      "lastUpdated": "2026-07-15",
+      "lastUpdated": "2026-08-07",
       "published": "2026-07-15",
       "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
@@ -1811,27 +2211,6 @@
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 2251
-    },
-    {
-      "url": "https://dataengineerhub.blog/articles/snowflake-query-optimization-2025",
-      "title": "Snowflake Query Optimization in 2025",
-      "summary": "Snowflake is renowned for its incredible performance, but as data scales into terabytes and petabytes, no platform is immune to a slow-running query. For a data engineer, mastering Snowflake query…",
-      "keyFacts": [
-        "For a data engineer, mastering Snowflake query optimization is the difference between building an efficient, cost-effective data platform and one that burns through credits and frustrates users",
-        "Partition Pruning: How many partitions is the TableScan reading versus the total partitions in the table",
-        "This guide will walk you through the essential strategies and best practices for Snowflake query optimization, moving from the foundational tools to advanced, real-world techniques"
-      ],
-      "entities": [
-        "snowflake",
-        "sql"
-      ],
-      "questionAnswered": "What are effective Snowflake query optimization techniques?",
-      "lastUpdated": "2025-10-08",
-      "published": "2025-10-04",
-      "author": "Sainath Reddy",
-      "expertise": "Data Engineering Expert",
-      "category": "Snowflake",
-      "wordCount": 888
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-merge-optimization-techniques",

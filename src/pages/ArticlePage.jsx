@@ -665,7 +665,7 @@ const ArticlePage = () => {
 
   const headings = useMemo(() => extractHeadings(processedHtml), [processedHtml]);
 
-  if (loading) {
+  if (loading && !post) {
     return (
       <div className="pt-4 pb-12">
         <ReadingProgressBar />

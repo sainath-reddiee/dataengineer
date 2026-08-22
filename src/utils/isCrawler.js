@@ -4,7 +4,7 @@
  * user-agents AdSense uses when reviewing a site for approval.
  */
 export const CRAWLER_UA_PATTERN =
-  /bot|crawl|spider|slurp|facebookexternalhit|linkedinbot|twitterbot|whatsapp|telegrambot|baiduspider|yandex|duckduckbot|googlebot|bingbot|semrushbot|ahrefsbot|mj12bot|dotbot|rogerbot|archive\.org_bot|applebot|petalbot|gptbot|claudebot|bytespider|ia_archiver|mediapartners-google|adsbot-google/i;
+  /bot|crawl|spider|slurp|facebookexternalhit|linkedinbot|twitterbot|whatsapp|telegrambot|baiduspider|yandex|duckduckbot|googlebot|bingbot|semrushbot|ahrefsbot|mj12bot|dotbot|rogerbot|archive\.org_bot|applebot|petalbot|gptbot|chatgpt-user|oai-searchbot|claudebot|claude-web|anthropic-ai|google-extended|bytespider|ccbot|perplexity|cohere-ai|ia_archiver|mediapartners-google|adsbot-google/i;
 
 export function isCrawlerUserAgent(userAgent) {
   const agent =

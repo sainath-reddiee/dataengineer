@@ -769,6 +769,7 @@ const ESSENTIAL_PAGES = [
   },
   {
     path: '/news',
+    noindex: true,
     title: 'Data Engineering News & Trends 2026',
     description: 'Data engineering news and platform updates that change how teams run Snowflake, Databricks, dbt, Airflow, and cloud pipelines — curated by a working data engineer, not a wire feed.',
     content: `
@@ -1088,7 +1089,7 @@ const ESSENTIAL_PAGES = [
       <p>Not necessarily. A 2XL that finishes in 10 seconds can cost the same as a Small that runs for 160 seconds. When queries spill to remote disk on smaller sizes, bumping up a size is often cheaper <em>and</em> faster. Use the Query Profile to check for spillage before deciding.</p>
 
       <h2>Related Tools</h2>
-      <p>See the <a href="/tools/snowflake-cost-calculator">full cost calculator</a> for full-workload estimation, the <a href="/tools/snowflake-warehouse-sizing">warehouse sizing estimator</a> to pick the right size, and the <a href="/tools/snowflake-credit-cost">credit converter</a> for credit-to-USD lookups. Also see our guide on <a href="/articles/snowflake-query-optimization-2025">Snowflake query optimization</a>.</p>
+      <p>See the <a href="/tools/snowflake-cost-calculator">full cost calculator</a> for full-workload estimation, the <a href="/tools/snowflake-warehouse-sizing">warehouse sizing estimator</a> to pick the right size, and the <a href="/tools/snowflake-credit-cost">credit converter</a> for credit-to-USD lookups. Also see our guide on <a href="/articles/snowflake-query-optimization-guide-2026">Snowflake query optimization</a>.</p>
     `
   },
   {
@@ -2783,6 +2784,8 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     <title>${smartTitle(title)}</title>
     <meta name="description" content="${description}" />
     <link rel="canonical" href="https://dataengineerhub.blog${pagePath}" />
+    <link rel="alternate" type="text/plain" title="LLM context" href="https://dataengineerhub.blog/llms.txt" />
+    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS" href="https://dataengineerhub.blog/rss.xml" />
     <meta name="robots" content="${articleRobotsDirective}" />
 ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />` : ''}
 

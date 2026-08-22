@@ -199,18 +199,9 @@ const HomePage = () => {
             </Suspense>
           </section>
 
-          <section>
-            <SectionHeader
-              icon={Zap}
-              title="News & Trends"
-              subtitle="Latest updates from the data stack"
-              actionText="View news"
-              actionLink="/news"
-            />
-            <Suspense fallback={<SectionSkeleton height="h-32" />}>
-              <NewsPosts />
-            </Suspense>
-          </section>
+          <Suspense fallback={null}>
+            <NewsPosts />
+          </Suspense>
 
           {/* 🛠 TECH CATEGORIES - Grid view */}
           <section>

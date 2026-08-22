@@ -24,14 +24,11 @@ const Footer = () => {
       { name: 'Comparisons', href: '/compare' },
       { name: 'Tools', href: '/tools' },
       { name: 'Glossary', href: '/glossary' },
-      { name: 'News & Trends', href: '/news' },
     ],
     tools: [
       { name: 'Airflow', href: '/category/airflow' },
       { name: 'dbt', href: '/category/dbt' },
       { name: 'Python', href: '/category/python' },
-      { name: 'GCP', href: '/category/gcp' },
-      // ✅ NEW
       { name: 'Databricks', href: '/category/databricks' },
       { name: 'Salesforce', href: '/category/salesforce' },
       { name: 'Developer Productivity', href: '/category/developer-productivity' }
@@ -66,7 +63,7 @@ const Footer = () => {
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-2 gap-8 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}

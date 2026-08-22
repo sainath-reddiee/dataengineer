@@ -191,6 +191,8 @@ jobs:
           npm run sitemap:generate
           npm run sitemap:validate
           npm run llm-sitemap || echo "⚠️ LLM sitemap generation skipped"
+          npm run llms-full || echo "⚠️ llms-full generation skipped"
+          npm run rss-feed || echo "⚠️ RSS generation skipped"
 
       - name: 🏗️ Build Application (Vite)
         if: steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true' || steps.changes.outputs.skip_cache == 'true'
@@ -247,11 +249,11 @@ jobs:
             node scripts/generateStaticPagesIncremental.js --posts-only --force
           fi
           
-          # Count article pages
-          ARTICLE_COUNT=$(find dist/articles -name 'index.html' 2>/dev/null | wc -l || echo "0")
+          # Count per-article directories, not the listing page at dist/articles/index.html
+          ARTICLE_COUNT=$(find dist/articles -mindepth 2 -name 'index.html' 2>/dev/null | wc -l | tr -d ' ' || echo "0")
           echo "📊 Found $ARTICLE_COUNT article pages in dist/"
           
-          if [ "$ARTICLE_COUNT" -eq 0 ]; then
+          if [ "$ARTICLE_COUNT" -lt 50 ]; then
             echo "❌ CRITICAL: No articles found in dist/articles!"
             echo "This would cause the FTP sync to delete all articles from the server."
             echo ""
@@ -259,9 +261,9 @@ jobs:
             node scripts/generateStaticPagesIncremental.js --posts-only --force
             
             # Re-check after force rebuild
-            ARTICLE_COUNT=$(find dist/articles -name 'index.html' 2>/dev/null | wc -l || echo "0")
+            ARTICLE_COUNT=$(find dist/articles -mindepth 2 -name 'index.html' 2>/dev/null | wc -l | tr -d ' ' || echo "0")
             
-            if [ "$ARTICLE_COUNT" -eq 0 ]; then
+            if [ "$ARTICLE_COUNT" -lt 50 ]; then
               echo "❌ FATAL: Still no articles after forced rebuild!"
               echo "Deployment aborted to prevent data loss."
               exit 1

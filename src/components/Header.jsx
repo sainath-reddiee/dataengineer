@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Wrench, Info, Search, BookOpen, GitCompareArrows, FileText, GraduationCap, Newspaper, Target, Megaphone } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Wrench, Info, Search, BookOpen, GitCompareArrows, FileText, GraduationCap, Target, Megaphone } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
 
 // Helper component for the "Corner Burst" sparks animation
@@ -181,7 +181,6 @@ const Header = ({ topOffset = 0 }) => {
         items: [
           { name: 'AWS', path: '/category/aws', color: 'from-orange-500 to-red-500', desc: 'Amazon Web Services' },
           { name: 'Azure', path: '/category/azure', color: 'from-blue-500 to-indigo-600', desc: 'Microsoft Azure' },
-          { name: 'GCP', path: '/category/gcp', color: 'from-green-500 to-blue-500', desc: 'Google Cloud' },
           { name: 'Snowflake', path: '/category/snowflake', color: 'from-cyan-400 to-blue-500', desc: 'Cloud Data Warehouse' },
           { name: 'Databricks', path: '/category/databricks', color: 'from-red-500 to-orange-500', desc: 'Lakehouse Platform' },
           { name: 'Salesforce', path: '/category/salesforce', color: 'from-blue-600 to-cyan-500', desc: 'CRM & Data Cloud' }
@@ -215,8 +214,7 @@ const Header = ({ topOffset = 0 }) => {
     icon: FileText,
     items: [
       { name: 'Glossary', path: '/glossary', color: 'from-purple-500 to-pink-500', desc: 'Data Engineering Terms', lucide: BookOpen },
-      { name: 'Comparisons', path: '/compare', color: 'from-amber-500 to-orange-500', desc: 'Tool & Tech Face-offs', lucide: GitCompareArrows },
-      { name: 'News', path: '/news', color: 'from-blue-500 to-cyan-500', desc: 'Latest Industry Updates', lucide: Newspaper }
+      { name: 'Comparisons', path: '/compare', color: 'from-amber-500 to-orange-500', desc: 'Tool & Tech Face-offs', lucide: GitCompareArrows }
     ]
   },
   study: {

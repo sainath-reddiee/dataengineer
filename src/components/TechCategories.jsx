@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Zap, RefreshCw } from 'lucide-react';
 import { useCategories } from '@/hooks/useWordPress';
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
+import { MIN_INDEXABLE_CATEGORY_COUNT } from '@/data/thinTags';
 
 // Icon provider with drop-shadow for visibility
 const getCategoryIcon = (category, className = 'h-8 w-8') => {
@@ -151,7 +151,6 @@ const SparkleCard = ({ category }) => {
 
 const TechCategories = () => {
   const { categories: apiCategories, loading, refresh: refreshCategories } = useCategories();
-  const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
 
   const categoryConfig = [
   { name: 'AWS', description: 'Cloud data services, S3, Redshift, Glue, and more', color: 'from-orange-500 to-red-500', path: '/category/aws' },
@@ -168,16 +167,21 @@ const TechCategories = () => {
   { name: 'Developer Productivity', description: 'AI coding tools, IDE setups, and workflow automation tips', color: 'from-emerald-500 to-teal-500', path: '/category/developer-productivity' }
 ];
 
-  const categories = categoryConfig.map(config => {
-    const apiCategory = apiCategories.find(cat => cat.name === config.name);
-    return { ...config, posts: apiCategory ? apiCategory.count : 0 };
-  });
+  const categories = categoryConfig
+    .map(config => {
+      const apiCategory = apiCategories.find(cat => cat.name === config.name);
+      return { ...config, posts: apiCategory ? apiCategory.count : 0 };
+    })
+    .filter((category) => {
+      if (!apiCategories.length) return category.path !== '/category/gcp';
+      return category.posts >= MIN_INDEXABLE_CATEGORY_COUNT;
+    });
 
   return (
-    <section ref={ref} className="py-12 sm:py-16 relative">
+    <section className="py-12 sm:py-16 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/5 to-transparent"></div>
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        {hasIntersected && (
+        {(
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center mb-8 sm:mb-12">
             <div className="flex items-center justify-center gap-4 mb-4 sm:mb-6 flex-wrap">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Explore <span className="gradient-text">Topics</span></h2>
@@ -188,7 +192,7 @@ const TechCategories = () => {
         )}
         {loading && (<div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div></div>)}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
-          {hasIntersected && categories.map((category, index) => (
+          {categories.map((category, index) => (
             <motion.div key={category.name} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: index * 0.1 }}>
               <SparkleCard category={category} />
             </motion.div>
