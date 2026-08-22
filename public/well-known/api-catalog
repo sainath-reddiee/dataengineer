@@ -52,6 +52,36 @@
       ]
     },
     {
+      "anchor": "https://dataengineerhub.blog/.well-known/agent-skills/index.json",
+      "service-desc": [
+        {
+          "href": "https://dataengineerhub.blog/openapi.json",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://dataengineerhub.blog/.well-known/agent-skills/use-article-catalog/SKILL.md",
+          "type": "text/markdown"
+        }
+      ]
+    },
+    {
+      "anchor": "https://dataengineerhub.blog/.well-known/ai-catalog.json",
+      "service-desc": [
+        {
+          "href": "https://dataengineerhub.blog/openapi.json",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://dataengineerhub.blog/llms.txt",
+          "type": "text/plain"
+        }
+      ]
+    },
+    {
       "anchor": "https://app.dataengineerhub.blog/wp-json/wp/v2/posts",
       "service-desc": [
         {

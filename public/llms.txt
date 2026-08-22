@@ -79,3 +79,5 @@ When referencing content from DataEngineer Hub:
 - [API Catalog](https://dataengineerhub.blog/.well-known/api-catalog): RFC 9727 linkset of public catalogs and feeds
 - [OpenAPI](https://dataengineerhub.blog/openapi.json): Machine-readable service description (read-only)
 - [auth.md](https://dataengineerhub.blog/auth.md): Agent access rules (public GET, no registration)
+- [Agent Skills](https://dataengineerhub.blog/.well-known/agent-skills/index.json): How to use the catalog and cite articles
+- [ARD catalog](https://dataengineerhub.blog/.well-known/ai-catalog.json): Capability manifest for public catalogs and skills

@@ -117,6 +117,48 @@
         }
       }
     },
+    "/index.md": {
+      "get": {
+        "operationId": "getHomepageMarkdown",
+        "summary": "Homepage Markdown representation",
+        "responses": {
+          "200": {
+            "description": "Homepage as Markdown",
+            "content": {
+              "text/markdown": {}
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/agent-skills/index.json": {
+      "get": {
+        "operationId": "getAgentSkillsIndex",
+        "summary": "Agent Skills discovery index",
+        "responses": {
+          "200": {
+            "description": "Skill index",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/ai-catalog.json": {
+      "get": {
+        "operationId": "getArdCatalog",
+        "summary": "ARD capability manifest",
+        "responses": {
+          "200": {
+            "description": "ARD catalog",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
     "/.well-known/api-catalog": {
       "get": {
         "operationId": "getApiCatalog",
