@@ -35,8 +35,8 @@ if (import.meta.env.DEV) {
   });
 }
 
-// Policy:
-// - Manual users and LLM in-app browsers → always React (full UI).
+// Policy (site-wide: home, /articles, every /articles/:slug, tools, etc.):
+// - Humans and LLM in-app browsers → always React (full UI).
 // - AdsBot / Googlebot / other documented crawlers → keep SSG HTML so
 //   AdSense still sees the full article-body without a loading shell.
 const initApp = () => {

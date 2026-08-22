@@ -1,8 +1,8 @@
 /**
  * Who may keep the static SSG HTML (no React).
  *
- * Default is ALWAYS React. Manual users, Gemini/ChatGPT/Claude in-app
- * Chrome, and AdSense human reviewers must never stay on the static listing.
+ * Default is ALWAYS React on every route. Manual users, Gemini/ChatGPT
+ * in-app Chrome, and AdSense human reviewers never stay on static HTML.
  *
  * Only documented crawlers skip React — those bots read the pre-rendered
  * article-body, which is what AdSense/Googlebot need for approval.
