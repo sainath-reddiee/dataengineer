@@ -46,11 +46,16 @@ if (spec.openapi && spec.paths['/llm-sitemap.json'] && spec.paths['/.well-known/
 }
 
 const htaccess = fs.readFileSync(path.join(publicDir, '.htaccess'), 'utf8');
-if (htaccess.includes('rel=\\"api-catalog\\"') && htaccess.includes('rel=\\"service-desc\\"')
-  && htaccess.includes('rel=\\"service-doc\\"') && htaccess.includes('rel=\\"describedby\\"')) {
-  ok('.htaccess Link header has api-catalog, service-desc, service-doc, describedby');
+const linkHeaderLine = htaccess.split('\n').find((line) => line.includes('Header always set Link'));
+if (linkHeaderLine
+  && linkHeaderLine.includes('rel=api-catalog')
+  && linkHeaderLine.includes('rel=service-desc')
+  && linkHeaderLine.includes('rel=service-doc')
+  && linkHeaderLine.includes('rel=describedby')
+  && !linkHeaderLine.includes('\\"')) {
+  ok('.htaccess Link header has unquoted registered relation types');
 } else {
-  fail('.htaccess Link header is missing a required registered relation');
+  fail('.htaccess Link header must use unquoted rel=api-catalog (LiteSpeed treats \\" as a literal backslash)');
 }
 if (/RewriteRule \^\\\.well-known\//.test(htaccess)) {
   ok('.htaccess rewrites /.well-known/ to /well-known/');
