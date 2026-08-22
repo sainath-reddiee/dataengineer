@@ -35,18 +35,11 @@ if (import.meta.env.DEV) {
   });
 }
 
-// AdSense reviewers use a normal Chrome UA. createRoot() replaces the
-// pre-rendered article HTML inside #root, then Suspense shows a loading
-// shell until WordPress returns — which looks like an under-construction
-// site. Leave static article HTML in place for crawlers AND for any
-// document that already shipped a full .article-body from SSG.
-const hasPreRenderedArticle = () => {
-  const root = document.getElementById('root');
-  return Boolean(root && root.querySelector('.article-body'));
-};
-
+// Crawlers (AdsBot, Googlebot, GPTBot, Gemini fetchers) keep the SSG HTML.
+// Real browsers — including Gemini / ChatGPT in-app Chrome — must mount React
+// so readers see the full article UI, not the static listing fallback.
 const initApp = () => {
-  if (isCrawlerUserAgent() || hasPreRenderedArticle()) {
+  if (isCrawlerUserAgent()) {
     document.body.classList.remove('react-loading');
     document.body.classList.add('react-loaded');
     return;

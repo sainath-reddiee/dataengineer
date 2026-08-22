@@ -2997,18 +2997,18 @@ ${CONSENT_MODE_V2_HTML}
       
       /* Table of Contents styles */
       .article-toc {
-        background: #f8f9fa;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 12px;
         padding: 16px 20px;
         margin: 20px 0 28px;
-        max-width: 600px;
+        max-width: 640px;
       }
       .article-toc summary {
         font-weight: 700;
         font-size: 1rem;
         cursor: pointer;
-        color: #1a202c;
+        color: #e2e8f0;
       }
       .article-toc ul {
         list-style: none;
@@ -3022,7 +3022,7 @@ ${CONSENT_MODE_V2_HTML}
         padding-left: 20px;
       }
       .article-toc a {
-        color: #2563eb;
+        color: #93c5fd;
         text-decoration: none;
         font-size: 0.95rem;
         line-height: 1.5;
@@ -3607,10 +3607,11 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
       .join(' ');
 
     articleListHTML += `
-              <li style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08);">
-                <a href="https://dataengineerhub.blog/articles/${article.slug}" style="color: #f1f5f9; text-decoration: none; font-size: 1.15rem; font-weight: 600; line-height: 1.4;">${escapeHtml(article.title)}</a>
-                ${catNames ? `<div style="margin-top: 0.4rem;">${catNames}</div>` : ''}
-                ${article.excerpt ? `<p style="color: #94a3b8; font-size: 0.95rem; margin-top: 0.5rem; line-height: 1.6;">${escapeHtml(article.excerpt)}</p>` : ''}
+              <li class="article-card">
+                ${catNames ? `<div class="article-card-tags">${catNames}</div>` : ''}
+                <a class="article-card-title" href="https://dataengineerhub.blog/articles/${article.slug}">${escapeHtml(article.title)}</a>
+                ${article.excerpt ? `<p class="article-card-excerpt">${escapeHtml(article.excerpt)}</p>` : ''}
+                <a class="article-card-cta" href="https://dataengineerhub.blog/articles/${article.slug}">Read article →</a>
               </li>`;
   }
 
@@ -3690,6 +3691,46 @@ ${CONSENT_MODE_V2_HTML}
       .breadcrumb-link:hover { color: #93c5fd; text-decoration: underline; }
       .breadcrumb-separator { margin: 0 8px; color: #64748b; }
       .breadcrumb-current { color: #cbd5e1; font-weight: 500; }
+      .article-card {
+        list-style: none;
+        margin-bottom: 1rem;
+        padding: 1.1rem 1.15rem;
+        background: rgba(15, 23, 42, 0.55);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 14px;
+      }
+      .article-card-tags { margin-bottom: 0.45rem; }
+      .article-card-title {
+        display: block;
+        color: #f8fafc;
+        text-decoration: none;
+        font-size: 1.12rem;
+        font-weight: 700;
+        line-height: 1.35;
+      }
+      .article-card-excerpt {
+        color: #94a3b8;
+        font-size: 0.92rem;
+        margin: 0.45rem 0 0.7rem;
+        line-height: 1.55;
+      }
+      .article-card-cta {
+        color: #93c5fd;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .featured-article {
+        display: block;
+        margin: 1.25rem 0 1.75rem;
+        padding: 1.15rem 1.2rem;
+        border-radius: 16px;
+        background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.2));
+        border: 1px solid rgba(147,197,253,0.35);
+        text-decoration: none;
+      }
+      .featured-article strong { color: #f8fafc; font-size: 1.15rem; display: block; margin-bottom: 0.35rem; }
+      .featured-article span { color: #cbd5e1; font-size: 0.92rem; line-height: 1.5; display: block; }
       @media (max-width: 768px) {
         .seo-content { padding: 20px 15px; margin-top: 20px; }
         .seo-content h1 { font-size: 1.8rem; }
@@ -3720,6 +3761,11 @@ ${CONSENT_MODE_V2_HTML}
           our tutorials provide practical, hands-on guidance with real-world examples and production-ready code snippets.
         </p>
 
+        <a class="featured-article" href="https://dataengineerhub.blog/articles/snowflake-time-travel-architecture">
+          <strong>Featured: Snowflake Time Travel — The Real Architecture</strong>
+          <span>Immutable micro-partitions, retention, Fail-safe, and the storage cost people miss. Open the full guide instead of this listing.</span>
+        </a>
+
         <h2>Browse All Articles</h2>
         <ul style="list-style: none; padding: 0;">
           ${articleListHTML}
@@ -3734,7 +3780,7 @@ ${CONSENT_MODE_V2_HTML}
           </p>
         </div>
 
-        <a href="https://dataengineerhub.blog" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 Back to Home</a>
+        <p style="margin-top: 2rem;"><a href="https://dataengineerhub.blog" style="color:#93c5fd;">← Back to Home</a></p>
       </div>
       ${getSiteFooterHTML()}
     </div>

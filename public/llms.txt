@@ -51,6 +51,8 @@ DataEngineer Hub publishes practical, production-tested tutorials on modern data
 
 ## Flagship Articles & Guides
 
+- [Snowflake Time Travel Architecture](https://dataengineerhub.blog/articles/snowflake-time-travel-architecture): Immutable micro-partitions, retention, Fail-safe, and why Time Travel is not a backup
+- [Snowflake Time Travel vs Fail-safe](https://dataengineerhub.blog/articles/snowflake-time-travel-fail-safe): What gets recovered, when, and what Support has to do
 - [Snowflake Cost Optimization Techniques](https://dataengineerhub.blog/articles/snowflake-cost-optimization-techniques-2026): Warehouse sizing, auto-suspend, query optimization, resource monitors
 - [Snowflake Query Optimization Guide](https://dataengineerhub.blog/articles/snowflake-query-optimization-guide-2026): Clustering keys, search optimization, materialized views, caching strategies
 - [SnowPro Gen AI Certification Guide](https://dataengineerhub.blog/articles/how-i-passed-snowpro-gen-ai-certification-guide): Study plan, exam topics, preparation resources, practice strategies
