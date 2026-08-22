@@ -3761,11 +3761,6 @@ ${CONSENT_MODE_V2_HTML}
           our tutorials provide practical, hands-on guidance with real-world examples and production-ready code snippets.
         </p>
 
-        <a class="featured-article" href="https://dataengineerhub.blog/articles/snowflake-time-travel-architecture">
-          <strong>Featured: Snowflake Time Travel — The Real Architecture</strong>
-          <span>Immutable micro-partitions, retention, Fail-safe, and the storage cost people miss. Open the full guide instead of this listing.</span>
-        </a>
-
         <h2>Browse All Articles</h2>
         <ul style="list-style: none; padding: 0;">
           ${articleListHTML}
