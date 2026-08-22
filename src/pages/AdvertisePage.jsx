@@ -1219,8 +1219,8 @@ const AdvertisePage = () => {
                             <dt className="text-gray-500 shrink-0">GitHub repo</dt>
                             <dd>{facts.githubRepo ? <Check className="h-4 w-4 text-emerald-400 ml-auto" /> : <span className="text-gray-600">—</span>}</dd>
                           </div>
-                          <p className="text-gray-400 leading-relaxed pt-1">{opp.bullets[0]}</p>
                         </dl>
+                        <p className="text-gray-400 text-xs leading-relaxed">{opp.bullets[0]}</p>
                         <a
                           href="#inquiry-form"
                           onClick={() => {
