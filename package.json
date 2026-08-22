@@ -28,6 +28,7 @@
     "faq-schema": "node scripts/generateFAQSchema.js",
     "optimize-citations": "node scripts/optimizeForAICitation.js",
     "prebuild": "npm run indexnow:generate && npm run sitemap:generate && npm run llm-sitemap && npm run llms-full && npm run rss-feed && npm run sitemap:validate",
+    "test:agent-discovery": "node scripts/verifyAgentDiscovery.js",
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'",
     "test:build": "npm run build",
     "pseo:sitemaps": "node scripts/generateSitemap.js",

@@ -152,8 +152,12 @@
     # IMPORTANT: Exclude common files from rewrite rules
     # ========================================================================
     
-    # Don't rewrite robots.txt, sitemap.xml, favicon.ico
-    RewriteRule ^(robots\.txt|sitemap\.xml|sitemap-index\.xml|favicon\.ico)$ - [L]
+    # Don't rewrite robots.txt, sitemap.xml, favicon.ico, or agent-discovery files
+    RewriteRule ^(robots\.txt|sitemap\.xml|sitemap-index\.xml|favicon\.ico|auth\.md|openapi\.json|llms\.txt|llms-full\.txt|llm-sitemap\.json|rss\.xml)$ - [L]
+
+    # RFC 8615 / RFC 9727: serve /.well-known/* from /well-known/* so FTP
+    # deploy does not have to upload a leading-dot directory on Hostinger.
+    RewriteRule ^\.well-known/(.+)$ /well-known/$1 [L]
     
     # ========================================================================
     # IMPORTANT: Allow real files and directories to be served directly
@@ -349,6 +353,15 @@
     SetEnvIf Request_URI "^/(admin|debug|sponsors/dashboard)" DEH_PRIVATE_APP
     Header set X-Robots-Tag "noindex, nofollow" env=DEH_PRIVATE_APP
 
+    # RFC 8288 + RFC 9727 §3: homepage Link headers for agent discovery.
+    # Also emit them on the catalog itself so HEAD /.well-known/api-catalog
+    # includes the api-catalog relation.
+    SetEnvIf Request_URI "^/$" DEH_AGENT_LINKS
+    SetEnvIf Request_URI "^/index\.html$" DEH_AGENT_LINKS
+    SetEnvIf Request_URI "^/\.well-known/api-catalog" DEH_AGENT_LINKS
+    SetEnvIf Request_URI "^/well-known/api-catalog" DEH_AGENT_LINKS
+    Header always set Link "</.well-known/api-catalog>; rel=\"api-catalog\", </openapi.json>; rel=\"service-desc\"; type=\"application/json\", </llms.txt>; rel=\"service-doc\"; type=\"text/plain\", </llm-sitemap.json>; rel=\"describedby\"; type=\"application/json\"" env=DEH_AGENT_LINKS
+
 </IfModule>
 
 # ==============================================================================
@@ -421,8 +434,21 @@ AddDefaultCharset UTF-8
     
     # Additional MIME types for better compatibility
     AddType application/json .json
+    AddType text/markdown .md
     AddType image/svg+xml .svg
     AddType image/webp .webp
+</IfModule>
+
+# Agent-discovery documents (RFC 9727 catalog has no file extension)
+<IfModule mod_headers.c>
+    <Files "api-catalog">
+        Header set Content-Type "application/linkset+json; profile=\"https://www.rfc-editor.org/info/rfc9727\""
+        Header set Cache-Control "public, max-age=86400"
+    </Files>
+    <Files "auth.md">
+        Header set Content-Type "text/markdown; charset=utf-8"
+        Header set Cache-Control "public, max-age=86400"
+    </Files>
 </IfModule>
 
 # ==============================================================================
@@ -437,6 +463,11 @@ AddDefaultCharset UTF-8
 # Ensure robots.txt is served correctly
 <FilesMatch "^robots\.txt$">
     Header set Content-Type "text/plain; charset=utf-8"
+</FilesMatch>
+
+# auth.md is Markdown for Auth.md agent discovery
+<FilesMatch "^auth\.md$">
+    Header set Content-Type "text/markdown; charset=utf-8"
 </FilesMatch>
 
 # ==============================================================================

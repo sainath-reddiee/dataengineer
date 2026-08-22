@@ -12,6 +12,9 @@
 # Default rules — allow indexing of all public sections
 # =============================================================================
 User-agent: *
+# Content Signals (ignored by Google if unknown; used by AI crawlers):
+# search = classic search index; ai-input = live RAG/citations; ai-train = training.
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
 
 Disallow: /api/
@@ -39,7 +42,11 @@ Allow: /sitemap.xml
 Allow: /robots.txt
 Allow: /llms.txt
 Allow: /llms-full.txt
+Allow: /llm-sitemap.json
 Allow: /rss.xml
+Allow: /auth.md
+Allow: /openapi.json
+Allow: /.well-known/
 
 # =============================================================================
 # GOOGLE ADSENSE & ADS CRAWLERS

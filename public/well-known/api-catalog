@@ -1,0 +1,70 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://dataengineerhub.blog/llm-sitemap.json",
+      "service-desc": [
+        {
+          "href": "https://dataengineerhub.blog/openapi.json",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://dataengineerhub.blog/llms.txt",
+          "type": "text/plain"
+        }
+      ],
+      "describedby": [
+        {
+          "href": "https://dataengineerhub.blog/llm-sitemap.json",
+          "type": "application/json"
+        }
+      ]
+    },
+    {
+      "anchor": "https://dataengineerhub.blog/rss.xml",
+      "service-desc": [
+        {
+          "href": "https://dataengineerhub.blog/openapi.json",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://dataengineerhub.blog/llms.txt",
+          "type": "text/plain"
+        }
+      ]
+    },
+    {
+      "anchor": "https://dataengineerhub.blog/llms-full.txt",
+      "service-desc": [
+        {
+          "href": "https://dataengineerhub.blog/openapi.json",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://dataengineerhub.blog/llms.txt",
+          "type": "text/plain"
+        }
+      ]
+    },
+    {
+      "anchor": "https://app.dataengineerhub.blog/wp-json/wp/v2/posts",
+      "service-desc": [
+        {
+          "href": "https://dataengineerhub.blog/openapi.json",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://dataengineerhub.blog/about",
+          "type": "text/html"
+        }
+      ]
+    }
+  ]
+}

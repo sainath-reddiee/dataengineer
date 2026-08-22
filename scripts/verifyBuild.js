@@ -607,6 +607,86 @@ async function verifyBuild() {
       warnings.push('⚠️  Homepage is missing an llms.txt discovery link');
       log('   ⚠️  Homepage missing llms.txt link', 'yellow');
     }
+    if (!/rel="api-catalog"/i.test(homepageContent)) {
+      warnings.push('⚠️  Homepage is missing an api-catalog HTML link');
+      log('   ⚠️  Homepage missing api-catalog link', 'yellow');
+    }
+  }
+
+  // ============================================================================
+  // Check 10: Agent discovery (RFC 8288 / RFC 9727 / auth.md)
+  // ============================================================================
+  log('\n🤖 Checking agent discovery documents...', 'blue');
+  const authMdPath = path.join(distDir, 'auth.md');
+  if (fs.existsSync(authMdPath)) {
+    const authMd = fs.readFileSync(authMdPath, 'utf8');
+    if (/^#\s+.*auth\.md/im.test(authMd)) {
+      log('   ✅ auth.md has an H1 containing auth.md', 'green');
+    } else {
+      issues.push('❌ auth.md is missing an H1 that contains "auth.md"');
+      log('   ❌ auth.md missing required H1', 'red');
+    }
+  } else {
+    issues.push('❌ auth.md not found in dist/');
+    log('   ❌ auth.md not found', 'red');
+  }
+
+  const catalogPath = path.join(distDir, 'well-known', 'api-catalog');
+  if (fs.existsSync(catalogPath)) {
+    try {
+      const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+      if (Array.isArray(catalog.linkset) && catalog.linkset.length > 0) {
+        log('   ✅ well-known/api-catalog is a valid RFC 9727 linkset', 'green');
+      } else {
+        issues.push('❌ well-known/api-catalog is missing a linkset array');
+        log('   ❌ api-catalog missing linkset', 'red');
+      }
+    } catch (err) {
+      issues.push(`❌ well-known/api-catalog is not valid JSON: ${err.message}`);
+      log('   ❌ api-catalog is not valid JSON', 'red');
+    }
+  } else {
+    issues.push('❌ well-known/api-catalog not found in dist/');
+    log('   ❌ well-known/api-catalog not found', 'red');
+  }
+
+  const openapiPath = path.join(distDir, 'openapi.json');
+  if (fs.existsSync(openapiPath)) {
+    try {
+      const spec = JSON.parse(fs.readFileSync(openapiPath, 'utf8'));
+      if (spec.openapi && spec.paths) {
+        log('   ✅ openapi.json is a valid OpenAPI document', 'green');
+      } else {
+        issues.push('❌ openapi.json is missing openapi/paths');
+        log('   ❌ openapi.json incomplete', 'red');
+      }
+    } catch (err) {
+      issues.push(`❌ openapi.json is not valid JSON: ${err.message}`);
+      log('   ❌ openapi.json is not valid JSON', 'red');
+    }
+  } else {
+    issues.push('❌ openapi.json not found in dist/');
+    log('   ❌ openapi.json not found', 'red');
+  }
+
+  const htaccessPath = path.join(distDir, '.htaccess');
+  if (fs.existsSync(htaccessPath)) {
+    const htaccess = fs.readFileSync(htaccessPath, 'utf8');
+    const hasLinkHeader = /Header always set Link.*rel=\\"api-catalog\\"/.test(htaccess)
+      || /rel=\\"api-catalog\\"/.test(htaccess);
+    const hasWellKnownRewrite = /RewriteRule \^\\\.well-known\//.test(htaccess);
+    if (hasLinkHeader) {
+      log('   ✅ .htaccess sets homepage Link headers', 'green');
+    } else {
+      issues.push('❌ .htaccess is missing homepage Link headers (rel=api-catalog)');
+      log('   ❌ .htaccess missing Link headers', 'red');
+    }
+    if (hasWellKnownRewrite) {
+      log('   ✅ .htaccess rewrites /.well-known/ to /well-known/', 'green');
+    } else {
+      warnings.push('⚠️  .htaccess is missing the /.well-known/ rewrite');
+      log('   ⚠️  .htaccess missing well-known rewrite', 'yellow');
+    }
   }
   
   // ============================================================================
