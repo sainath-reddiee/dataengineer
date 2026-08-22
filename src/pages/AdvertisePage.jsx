@@ -377,7 +377,7 @@ const AdvertisePage = () => {
     return (
       <div>
         <div className="flex items-baseline gap-1.5 flex-wrap">
-          <span className={large ? 'text-3xl font-black text-white' : 'text-xl font-black text-white'}>
+          <span className={large ? 'text-2xl sm:text-3xl font-black text-white' : 'text-lg sm:text-xl font-black text-white'}>
             {formatUsd(usd, digits)}
           </span>
           <span className="text-[11px] font-semibold uppercase tracking-wider text-blue-300">USD</span>
@@ -606,7 +606,7 @@ const AdvertisePage = () => {
   const resolveIcon = (iconName) => LucideIcons[iconName] || HelpCircle;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white relative overflow-hidden">
+    <div className="advertise-page min-h-screen bg-slate-950 text-white relative overflow-x-clip">
       <Helmet>
         <title>Advertise with DataEngineer Hub — Sponsorships billed in USD</title>
         <meta name="description" content="Sponsor DataEngineer Hub. Reach data engineers who read Snowflake, dbt, Databricks, and Airflow guides. Packages from $15 USD/week. Guest articles are a separate, free editorial program." />
@@ -626,20 +626,20 @@ const AdvertisePage = () => {
       <div className="absolute bottom-20 right-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* ═══════════════ HERO SECTION ═══════════════ */}
-      <div className="relative py-20 px-4 sm:px-6 lg:px-8">
+      <div className="relative py-10 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto text-center">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-semibold mb-8"
+            className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs sm:text-sm font-semibold mb-6 sm:mb-8 max-w-full"
           >
-            <Sparkles className="h-4 w-4 text-yellow-400 animate-pulse" /> Paid product placements · billed in USD
+            <Sparkles className="h-4 w-4 text-yellow-400 animate-pulse shrink-0" /> <span className="text-left">Paid product placements · billed in USD</span>
           </motion.div>
 
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] mb-6"
+            className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15] mb-4 sm:mb-6 break-words"
           >
             Reach the Engineers{' '}
             <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -651,7 +651,7 @@ const AdvertisePage = () => {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-lg text-gray-400 leading-relaxed max-w-2xl mx-auto mb-10"
+            className="text-base sm:text-lg text-gray-400 leading-relaxed max-w-2xl mx-auto mb-8 sm:mb-10"
           >
             Put your tool in front of engineers who are already costing a warehouse, debugging dbt, or comparing Spark vs Snowflake — not a generic banner audience. Sponsorships start at <span className="text-white font-semibold">$15 USD / week</span>. Guest articles are free and editorial; they live on <a href="/contribute" className="text-blue-400 hover:underline">Write for Us</a>, not this form.
           </motion.p>
@@ -660,41 +660,41 @@ const AdvertisePage = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-wrap justify-center gap-3"
+            className="flex flex-col sm:flex-row flex-wrap justify-center gap-2.5 sm:gap-3"
           >
             <a
               href="#pricing"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition shadow-lg shadow-blue-500/20"
+              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition shadow-lg shadow-blue-500/20 text-sm"
             >
-              View USD packages <ArrowRight className="h-4 w-4" />
+              View USD packages <ArrowRight className="h-4 w-4 shrink-0" />
             </a>
             <a
               href="#inquiry-form"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold rounded-xl transition"
+              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold rounded-xl transition text-sm"
             >
-              Book a paid placement <Mail className="h-4 w-4" />
+              Book a paid placement <Mail className="h-4 w-4 shrink-0" />
             </a>
             <a
               href="/contribute"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white font-semibold rounded-xl transition"
+              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white font-semibold rounded-xl transition text-sm"
             >
-              <PenLine className="h-4 w-4" /> Write a guest article (free)
+              <PenLine className="h-4 w-4 shrink-0" /> Write a guest article (free)
             </a>
             <a
               href="#sponsor-policies"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-white font-semibold rounded-xl transition"
+              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-white font-semibold rounded-xl transition text-sm"
             >
-              <FileText className="h-4 w-4" /> Policies &amp; Refunds
+              <FileText className="h-4 w-4 shrink-0" /> Policies &amp; Refunds
             </a>
           </motion.div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8 space-y-24 pb-24">
+      <div className="max-w-6xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16 lg:space-y-24 pb-16 sm:pb-24 min-w-0">
 
         {/* ═══════════════ AUDIENCE METRICS SECTION ═══════════════ */}
         <div>
-          <div className="text-center mb-12">
+          <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">Why DataEngineer Hub?</h2>
             <p className="text-sm text-gray-400 max-w-xl mx-auto">High-intent, organic traffic from data professionals actively searching for tools, comparisons, and best practices.</p>
           </div>
@@ -708,7 +708,7 @@ const AdvertisePage = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.15 + idx * 0.08 }}
-                  className="relative rounded-2xl bg-slate-900/60 border border-white/10 p-6 md:p-8 overflow-hidden backdrop-blur-sm group hover:border-blue-500/30 transition-colors"
+                  className="relative rounded-2xl bg-slate-900/60 border border-white/10 p-5 sm:p-6 md:p-8 overflow-hidden backdrop-blur-sm group hover:border-blue-500/30 transition-colors min-w-0"
                 >
                   <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500/0 via-blue-500/30 to-purple-500/0" />
                   <div className="flex items-center justify-between mb-4">
@@ -727,9 +727,9 @@ const AdvertisePage = () => {
           {/* Audience Breakdown + Tech Stack */}
           <div className="grid md:grid-cols-2 gap-6">
             {/* Audience Roles */}
-            <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
+            <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-5 sm:p-6 backdrop-blur-sm min-w-0">
               <h3 className="text-base font-bold text-white mb-5 flex items-center gap-2">
-                <Users className="h-4 w-4 text-blue-400" /> Audience Breakdown
+                <Users className="h-4 w-4 text-blue-400 shrink-0" /> Audience Breakdown
               </h3>
               <div className="space-y-4">
                 {advertiseConfig.audienceBreakdown.map((seg) => (
@@ -753,9 +753,9 @@ const AdvertisePage = () => {
             </div>
 
             {/* Tech Stack */}
-            <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
+            <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-5 sm:p-6 backdrop-blur-sm min-w-0">
               <h3 className="text-base font-bold text-white mb-5 flex items-center gap-2">
-                <Target className="h-4 w-4 text-purple-400" /> Core Tech Stack Interest
+                <Target className="h-4 w-4 text-purple-400 shrink-0" /> Core Tech Stack Interest
               </h3>
               <div className="flex flex-wrap gap-2.5">
                 {advertiseConfig.techStack.map((tech) => (
@@ -781,7 +781,7 @@ const AdvertisePage = () => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6">
+          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5 sm:p-6 min-w-0">
             <h3 className="text-base font-bold text-white mb-3">This page is for</h3>
             <ul className="space-y-2 text-sm text-gray-300">
               <li className="flex gap-2"><Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" /> A data tool, cloud platform, or training product you want practitioners to try</li>
@@ -789,7 +789,7 @@ const AdvertisePage = () => {
               <li className="flex gap-2"><Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" /> Paying in USD — from $15/week or $40 for one newsletter issue</li>
             </ul>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-6">
+          <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-5 sm:p-6 min-w-0">
             <h3 className="text-base font-bold text-white mb-3">Send these somewhere else</h3>
             <ul className="space-y-2 text-sm text-gray-300">
               <li className="flex gap-2"><X className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" /> Guest articles and bylines — use <a href="/contribute" className="text-blue-400 hover:underline">Write for Us</a> (free)</li>
@@ -801,7 +801,7 @@ const AdvertisePage = () => {
 
         {/* ═══════════════ HOW IT WORKS ═══════════════ */}
         <div>
-          <div className="text-center mb-12">
+          <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">How It Works</h2>
             <p className="text-sm text-gray-400">From inquiry to live campaign in under 48 hours.</p>
           </div>
@@ -830,7 +830,7 @@ const AdvertisePage = () => {
         </div>
 
         {/* ═══════════════ TRANSPARENCY BANNER ═══════════════ */}
-        <div className="rounded-2xl bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-blue-500/5 border border-blue-500/10 p-6 flex items-start gap-4 max-w-4xl mx-auto">
+        <div className="rounded-2xl bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-blue-500/5 border border-blue-500/10 p-5 sm:p-6 flex items-start gap-3 sm:gap-4 max-w-4xl mx-auto min-w-0">
           <Shield className="h-6 w-6 text-blue-400 mt-0.5 flex-shrink-0" />
           <div>
             <h3 className="font-bold text-white text-sm mb-1">Community Trust & Transparency</h3>
@@ -841,24 +841,23 @@ const AdvertisePage = () => {
         </div>
 
         {/* ═══════════════ ROI CALCULATOR ═══════════════ */}
-        <div className="rounded-3xl border border-white/10 bg-slate-900/30 p-6 sm:p-10 backdrop-blur-sm relative">
+        <div className="rounded-2xl sm:rounded-3xl border border-white/10 bg-slate-900/30 p-5 sm:p-10 backdrop-blur-sm relative min-w-0">
           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/25 to-transparent" />
           
-          <div className="grid md:grid-cols-2 gap-10">
-            <div>
+          <div className="grid md:grid-cols-2 gap-8 md:gap-10">
+            <div className="min-w-0">
               <div className="flex items-center gap-2 mb-3">
-                <Percent className="h-5 w-5 text-blue-400" />
-                <h2 className="text-2xl font-bold text-white">ROI & Reach Estimator</h2>
+                <Percent className="h-5 w-5 text-blue-400 shrink-0" />
+                <h2 className="text-xl sm:text-2xl font-bold text-white">ROI & Reach Estimator</h2>
               </div>
-              <p className="text-sm text-gray-400 leading-relaxed mb-8">
+              <p className="text-sm text-gray-400 leading-relaxed mb-6 sm:mb-8">
                 Drag the slider. Budget is in <span className="text-white font-semibold">USD</span> (what we invoice). Figures below are illustrations, not guaranteed impressions — this is a content site, not a PPC network.
               </p>
               
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
+                <div className="flex flex-wrap justify-between items-baseline gap-x-3 gap-y-1">
                   <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Campaign Budget</span>
-                  <span className="text-2xl font-black text-blue-400">{formatUsd(calcBudget)}</span>
-                  <span className="text-[11px] font-semibold text-blue-300 ml-1">USD</span>
+                  <span className="text-2xl font-black text-blue-400">{formatUsd(calcBudget)} <span className="text-[11px] font-semibold text-blue-300">USD</span></span>
                 </div>
                 <input 
                   type="range" 
@@ -876,28 +875,28 @@ const AdvertisePage = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 bg-slate-950/40 border border-white/5 rounded-2xl p-6 items-center">
-              <div className="text-center">
-                <div className="inline-flex p-2 rounded-xl bg-blue-500/10 text-blue-400 mb-3">
-                  <Eye className="h-5 w-5" />
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 bg-slate-950/40 border border-white/5 rounded-2xl p-3 sm:p-6 items-center min-w-0">
+              <div className="text-center min-w-0">
+                <div className="inline-flex p-1.5 sm:p-2 rounded-xl bg-blue-500/10 text-blue-400 mb-2 sm:mb-3">
+                  <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
-                <div className="text-lg sm:text-xl font-bold text-white">{roiMetrics.impressions.toLocaleString()}</div>
+                <div className="text-sm sm:text-xl font-bold text-white break-words">{roiMetrics.impressions.toLocaleString()}</div>
                 <div className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Impressions</div>
               </div>
 
-              <div className="text-center border-x border-white/5 px-2">
-                <div className="inline-flex p-2 rounded-xl bg-purple-500/10 text-purple-400 mb-3">
-                  <MousePointerClick className="h-5 w-5" />
+              <div className="text-center border-x border-white/5 px-1 sm:px-2 min-w-0">
+                <div className="inline-flex p-1.5 sm:p-2 rounded-xl bg-purple-500/10 text-purple-400 mb-2 sm:mb-3">
+                  <MousePointerClick className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
-                <div className="text-lg sm:text-xl font-bold text-white">{roiMetrics.clicks.toLocaleString()}</div>
+                <div className="text-sm sm:text-xl font-bold text-white break-words">{roiMetrics.clicks.toLocaleString()}</div>
                 <div className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Est. Clicks</div>
               </div>
 
-              <div className="text-center">
-                <div className="inline-flex p-2 rounded-xl bg-pink-500/10 text-pink-400 mb-3">
-                  <DollarSign className="h-5 w-5" />
+              <div className="text-center min-w-0">
+                <div className="inline-flex p-1.5 sm:p-2 rounded-xl bg-pink-500/10 text-pink-400 mb-2 sm:mb-3">
+                  <DollarSign className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
-                <div className="text-lg sm:text-xl font-bold text-white">{formatUsd(Number(roiMetrics.estCpc), 2)}</div>
+                <div className="text-sm sm:text-xl font-bold text-white break-words">{formatUsd(Number(roiMetrics.estCpc), 2)}</div>
                 <div className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Est. CPC</div>
               </div>
             </div>
@@ -906,22 +905,22 @@ const AdvertisePage = () => {
 
         {/* ═══════════════ PRICING SECTION ═══════════════ */}
         <div id="pricing">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 border-b border-white/5 pb-8">
-            <div>
+          <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 sm:gap-6 mb-8 sm:mb-12 border-b border-white/5 pb-6 sm:pb-8">
+            <div className="min-w-0">
               <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">Paid placements (billed in USD)</h2>
               <p className="text-sm text-gray-400 mt-2 max-w-xl">
                 Invoices and package prices are always US dollars. Use the selector only if you want a local estimate — a US visitor sees <span className="text-white">$30</span>, not rupees.
               </p>
             </div>
-            <div className="flex flex-col items-end gap-1">
+            <div className="flex flex-col items-stretch sm:items-end gap-1 w-full sm:w-auto shrink-0">
               <label htmlFor="currency" className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Local estimate</label>
-              <div className="flex items-center gap-2">
-              <Globe className="h-4 w-4 text-blue-400" />
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Globe className="h-4 w-4 text-blue-400 shrink-0" />
               <select
                 id="currency"
                 value={selectedCurrency}
                 onChange={(e) => setSelectedCurrency(e.target.value)}
-                className="bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer"
+                className="flex-1 sm:flex-none min-w-0 bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer"
               >
                 {sortedCurrencyCodes.map(code => (
                   <option key={code} value={code}>{code === 'USD' ? 'USD (billed)' : `${code} estimate`}</option>
@@ -932,9 +931,9 @@ const AdvertisePage = () => {
           </div>
 
           {maxSavingsPercent > 0 && (
-            <div className="flex flex-col items-center gap-2.5 mb-10">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Quick switch — applies to every package below</span>
-              <div className="relative inline-flex items-center p-1.5 bg-slate-900/80 border border-white/10 rounded-full shadow-inner backdrop-blur-sm">
+            <div className="flex flex-col items-center gap-2.5 mb-8 sm:mb-10">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 text-center px-2">Quick switch — applies to every package below</span>
+              <div className="relative inline-flex flex-col sm:flex-row w-full max-w-sm sm:max-w-none sm:w-auto items-stretch sm:items-center p-1.5 bg-slate-900/80 border border-white/10 rounded-2xl sm:rounded-full shadow-inner backdrop-blur-sm">
                 {['monthly', 'yearly'].map((mode) => {
                   const isActive = globalDuration === mode;
                   const ModeIcon = DURATION_ICONS[mode];
@@ -944,19 +943,19 @@ const AdvertisePage = () => {
                       type="button"
                       whileTap={{ scale: 0.95 }}
                       onClick={() => applyGlobalDuration(mode)}
-                      className={`relative z-10 px-5 sm:px-7 py-2.5 rounded-full text-sm font-bold transition-colors ${
+                      className={`compact-control relative z-10 px-4 sm:px-7 py-2.5 rounded-xl sm:rounded-full text-sm font-bold transition-colors ${
                         isActive ? 'text-white' : 'text-gray-400 hover:text-white'
                       }`}
                     >
                       {isActive && (
                         <motion.span
                           layoutId="global-duration-pill"
-                          className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-[0_0_20px_rgba(99,102,241,0.5)] -z-10"
+                          className="absolute inset-0 rounded-xl sm:rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-[0_0_20px_rgba(99,102,241,0.5)] -z-10"
                           transition={{ type: 'spring', stiffness: 500, damping: 32 }}
                         />
                       )}
-                      <span className="relative flex items-center gap-1.5">
-                        <ModeIcon className="h-3.5 w-3.5" />
+                      <span className="relative flex items-center justify-center gap-1.5 flex-wrap">
+                        <ModeIcon className="h-3.5 w-3.5 shrink-0" />
                         {mode === 'monthly' ? 'Bill Monthly' : 'Bill Yearly'}
                         {mode === 'yearly' && (
                           <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full ${isActive ? 'bg-white/25 text-white' : 'bg-emerald-500/15 text-emerald-400'}`}>
@@ -971,17 +970,17 @@ const AdvertisePage = () => {
             </div>
           )}
           
-          <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
+          <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-5 sm:gap-8">
             {OPPORTUNITIES.map((opp, idx) => {
               const activeDuration = opp.durations.find(d => d.key === selectedDurations[opp.packageKey]) || opp.durations[0];
               const PkgIcon = resolveIcon(opp.icon);
 
               return (
-                <div key={opp.title} className="relative">
+                <div key={opp.title} className="relative min-w-0">
                   {opp.popular && (
                     <motion.div
                       aria-hidden="true"
-                      className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 blur-md -z-10"
+                      className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 blur-md -z-10 hidden sm:block"
                       animate={{ opacity: [0.25, 0.55, 0.25] }}
                       transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                     />
@@ -991,7 +990,7 @@ const AdvertisePage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 + idx * 0.1 }}
                     whileHover={{ y: -6 }}
-                    className={`relative rounded-3xl p-6 sm:p-8 flex flex-col justify-between overflow-hidden h-full transition-shadow ${
+                    className={`relative rounded-2xl sm:rounded-3xl p-5 sm:p-8 flex flex-col justify-between overflow-hidden h-full transition-shadow min-w-0 ${
                       opp.popular 
                         ? 'bg-slate-900 border-2 border-blue-500/50 shadow-[0_12px_40px_rgba(59,130,246,0.15)]' 
                         : 'bg-slate-900/60 border border-white/10 hover:border-white/20 hover:shadow-[0_12px_32px_rgba(0,0,0,0.35)]'
@@ -1001,21 +1000,21 @@ const AdvertisePage = () => {
                   {opp.popular && (
                     <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
                   )}
-                  {opp.popular && (
-                    <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white flex items-center gap-1">
-                      <Star className="h-3 w-3" /> Most Popular
-                    </div>
-                  )}
                   
-                  <div>
+                  <div className="min-w-0">
+                    {opp.popular && (
+                      <div className="inline-flex bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white items-center gap-1 mb-3">
+                        <Star className="h-3 w-3" /> Most Popular
+                      </div>
+                    )}
                     {/* Package icon + title */}
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className={`p-2 rounded-xl ${opp.popular ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-gray-400'}`}>
+                    <div className="flex items-start gap-3 mb-3 min-w-0">
+                      <div className={`p-2 rounded-xl shrink-0 ${opp.popular ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-gray-400'}`}>
                         <PkgIcon className="h-5 w-5" />
                       </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-white">{opp.title}</h3>
-                        <p className="text-[11px] text-gray-500">{opp.tagline}</p>
+                      <div className="min-w-0">
+                        <h3 className="text-base sm:text-lg font-bold text-white break-words">{opp.title}</h3>
+                        <p className="text-[11px] text-gray-500 break-words">{opp.tagline}</p>
                       </div>
                     </div>
 
@@ -1031,7 +1030,7 @@ const AdvertisePage = () => {
                     )}
                     
                     {/* Price and duration */}
-                    <div className="flex items-baseline gap-1.5 mb-2 border-b border-white/10 pb-4 min-h-14">
+                    <div className="flex items-baseline gap-1.5 mb-2 border-b border-white/10 pb-4">
                       <PriceBlock usd={activeDuration.price} suffix={`/ ${activeDuration.label}`} large />
                     </div>
 
@@ -1042,9 +1041,11 @@ const AdvertisePage = () => {
                       </div>
                     )}
 
-                    {/* Duration Option Selectors — modern sliding-pill segmented control */}
+                    {/* Duration Option Selectors — wrap on narrow screens so 3 terms stay visible */}
                     {opp.durations.length > 1 && (
-                      <div className="relative flex gap-1 p-1.5 bg-slate-950/60 rounded-full mb-5 border border-white/5">
+                      <div className={`relative flex gap-1 p-1 bg-slate-950/60 mb-5 border border-white/5 ${
+                        opp.durations.length > 2 ? 'flex-col sm:flex-row rounded-2xl' : 'rounded-full'
+                      }`}>
                         {opp.durations.map((dur) => {
                           const isActive = selectedDurations[opp.packageKey] === dur.key;
                           const durSavingsMatch = /Save (\d+)%/.exec(dur.savings || '');
@@ -1057,14 +1058,18 @@ const AdvertisePage = () => {
                               onClick={() => {
                                 setSelectedDurations(prev => ({ ...prev, [opp.packageKey]: dur.key }));
                               }}
-                              className={`relative flex-1 py-2 text-[11px] font-bold rounded-full transition-colors z-10 ${
+                              className={`compact-control relative flex-1 py-2 px-2 text-[11px] font-bold transition-colors z-10 min-w-0 ${
+                                opp.durations.length > 2 ? 'rounded-xl' : 'rounded-full'
+                              } ${
                                 isActive ? 'text-white' : 'text-gray-400 hover:text-white'
                               }`}
                             >
                               {isActive && (
                                 <motion.span
                                   layoutId={`duration-pill-${opp.packageKey}`}
-                                  className={`absolute inset-0 rounded-full -z-10 ${
+                                  className={`absolute inset-0 -z-10 ${
+                                    opp.durations.length > 2 ? 'rounded-xl' : 'rounded-full'
+                                  } ${
                                     opp.popular
                                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 shadow-[0_0_14px_rgba(99,102,241,0.5)]'
                                       : 'bg-blue-600 shadow-sm'
@@ -1072,8 +1077,8 @@ const AdvertisePage = () => {
                                   transition={{ type: 'spring', stiffness: 500, damping: 32 }}
                                 />
                               )}
-                              <span className="relative inline-flex items-center justify-center gap-1">
-                                <DurIcon className="h-3 w-3" />
+                              <span className="relative inline-flex items-center justify-center gap-1 flex-wrap">
+                                <DurIcon className="h-3 w-3 shrink-0" />
                                 {dur.label}
                                 {durSavingsMatch && (
                                   <span className={`text-[9px] px-1 py-0.5 rounded-full ${isActive ? 'bg-white/20' : 'bg-emerald-500/15 text-emerald-400'}`}>
@@ -1088,7 +1093,7 @@ const AdvertisePage = () => {
                     )}
                     
                     {/* Description */}
-                    <div className="min-h-[72px] mb-6 flex items-center">
+                    <div className="mb-5 sm:mb-6 sm:min-h-[72px] flex items-start sm:items-center">
                       <AnimatePresence mode="wait">
                         <motion.p
                           key={activeDuration.key}
@@ -1096,7 +1101,7 @@ const AdvertisePage = () => {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -5 }}
                           transition={{ duration: 0.12 }}
-                          className="text-sm text-gray-400 leading-relaxed"
+                          className="text-sm text-gray-400 leading-relaxed break-words"
                         >
                           {activeDuration.desc}
                         </motion.p>
@@ -1146,7 +1151,7 @@ const AdvertisePage = () => {
             <button
               type="button"
               onClick={() => setShowComparison((prev) => !prev)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-semibold text-gray-300 hover:text-white transition"
+              className="compact-control inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-semibold text-gray-300 hover:text-white transition"
             >
               <ListChecks className="h-4 w-4 text-blue-400" />
               {showComparison ? 'Hide package comparison' : 'Compare all packages'}
@@ -1163,7 +1168,79 @@ const AdvertisePage = () => {
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 className="overflow-hidden"
               >
-                <div className="mt-8 overflow-x-auto rounded-2xl border border-white/10">
+                {/* Mobile: stacked cards so every field is readable without a sideways table */}
+                <div className="mt-8 space-y-4 md:hidden">
+                  {OPPORTUNITIES.map((opp) => {
+                    const cheapest = opp.durations.reduce((min, d) => (d.price < min.price ? d : min), opp.durations[0]);
+                    const facts = PACKAGE_FACTS[opp.packageKey] || {};
+                    return (
+                      <div
+                        key={`compare-card-${opp.title}`}
+                        className={`rounded-2xl border p-4 space-y-3 ${
+                          opp.popular ? 'border-blue-500/40 bg-blue-500/5' : 'border-white/10 bg-slate-900/50'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            {opp.popular && (
+                              <div className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-blue-300 bg-blue-500/15 px-2 py-0.5 rounded-full mb-1.5">
+                                <Star className="h-2.5 w-2.5" /> Recommended
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2 text-white font-bold text-sm">
+                              {React.createElement(resolveIcon(opp.icon), { className: 'h-4 w-4 text-blue-400 shrink-0' })}
+                              <span className="break-words">{opp.title}</span>
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1 leading-relaxed">{opp.tagline}</p>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <div className="text-sm font-bold text-white">{formatUsd(cheapest.price)} USD</div>
+                            <div className="text-[10px] text-gray-500">/ {cheapest.label}</div>
+                          </div>
+                        </div>
+                        <dl className="grid grid-cols-1 gap-2 text-xs">
+                          <div className="flex justify-between gap-3 border-t border-white/5 pt-2">
+                            <dt className="text-gray-500 shrink-0">Terms</dt>
+                            <dd className="text-gray-300 text-right">{opp.durations.map((d) => d.label).join(' / ')}</dd>
+                          </div>
+                          <div className="flex justify-between gap-3">
+                            <dt className="text-gray-500 shrink-0">Placement</dt>
+                            <dd className="text-gray-300 text-right break-words">{facts.placementType}</dd>
+                          </div>
+                          <div className="flex justify-between gap-3">
+                            <dt className="text-gray-500 shrink-0">Exclusivity</dt>
+                            <dd className="text-gray-300 text-right break-words">{facts.exclusivity}</dd>
+                          </div>
+                          <div className="flex justify-between gap-3">
+                            <dt className="text-gray-500 shrink-0">Newsletter promo</dt>
+                            <dd>{facts.newsletterPromo ? <Check className="h-4 w-4 text-emerald-400 ml-auto" /> : <span className="text-gray-600">—</span>}</dd>
+                          </div>
+                          <div className="flex justify-between gap-3">
+                            <dt className="text-gray-500 shrink-0">GitHub repo</dt>
+                            <dd>{facts.githubRepo ? <Check className="h-4 w-4 text-emerald-400 ml-auto" /> : <span className="text-gray-600">—</span>}</dd>
+                          </div>
+                        </dl>
+                        <p className="text-gray-400 text-xs leading-relaxed">{opp.bullets[0]}</p>
+                        <a
+                          href="#inquiry-form"
+                          onClick={() => {
+                            const activeDuration = opp.durations.find(d => d.key === selectedDurations[opp.packageKey]) || opp.durations[0];
+                            setFormData(prev => ({
+                              ...prev,
+                              package: opp.packageKey,
+                              message: `Interested in the "${opp.title}" package with the "${activeDuration.label}" option.`
+                            }));
+                          }}
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-blue-400 hover:text-blue-300 transition"
+                        >
+                          {opp.cta} <ArrowRight className="h-3 w-3" />
+                        </a>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-8 hidden md:block overflow-x-auto rounded-2xl border border-white/10">
                   <table className="w-full text-sm border-collapse min-w-[620px]">
                     <thead>
                       <tr className="bg-slate-900/80">
@@ -1289,7 +1366,7 @@ const AdvertisePage = () => {
             </p>
           </div>
 
-          <div className="mb-10 max-w-3xl mx-auto rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5 flex items-start gap-4">
+          <div className="mb-8 sm:mb-10 max-w-3xl mx-auto rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-4 sm:p-5 flex items-start gap-3 sm:gap-4 min-w-0">
             <PenLine className="h-5 w-5 text-indigo-400 shrink-0 mt-0.5" />
             <div className="text-sm text-gray-300 leading-relaxed">
               <span className="text-white font-semibold">Looking to write a tutorial?</span> That is not a sponsorship.
@@ -1309,19 +1386,19 @@ const AdvertisePage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + idx * 0.08 }}
                   whileHover={{ y: -4 }}
-                  className="relative rounded-2xl border border-white/10 bg-slate-900/60 overflow-hidden backdrop-blur-sm transition-shadow hover:shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-white/20"
+                  className="relative rounded-2xl border border-white/10 bg-slate-900/60 overflow-hidden backdrop-blur-sm transition-shadow hover:shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-white/20 min-w-0"
                 >
                   {/* Thin left accent bar */}
                   <div className={`absolute top-0 left-0 w-[3px] h-full ${ch.accentBar}`} />
 
-                  <div className="pl-5 pr-6 pt-6 pb-6">
-                    <div className="flex items-start justify-between gap-3 mb-4">
-                      <div className="flex items-start gap-3">
+                  <div className="pl-4 pr-4 sm:pl-5 sm:pr-6 pt-5 pb-5 sm:pt-6 sm:pb-6 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+                      <div className="flex items-start gap-3 min-w-0">
                         <div className={`p-2.5 rounded-xl shrink-0 ${ch.accentBg}`}>
                           <ChIcon className={`h-5 w-5 ${ch.accentText}`} />
                         </div>
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
                             <span className={`inline-flex text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${ch.badgeStyle}`}>
                               {ch.badge}
                             </span>
@@ -1331,11 +1408,11 @@ const AdvertisePage = () => {
                               </span>
                             )}
                           </div>
-                          <h3 className="text-base font-bold text-white leading-snug">{ch.title}</h3>
-                          <p className="text-xs text-gray-400 mt-0.5">{ch.tagline}</p>
+                          <h3 className="text-base font-bold text-white leading-snug break-words">{ch.title}</h3>
+                          <p className="text-xs text-gray-400 mt-0.5 break-words">{ch.tagline}</p>
                         </div>
                       </div>
-                      <div className="text-right shrink-0">
+                      <div className="text-left sm:text-right shrink-0 pl-11 sm:pl-0">
                         {ch.free ? (
                           <>
                             <div className="text-xl font-black text-emerald-400">Free</div>
@@ -1384,7 +1461,7 @@ const AdvertisePage = () => {
           </div>
 
           {/* Creator mindset nudge */}
-          <div className="mt-8 max-w-3xl mx-auto rounded-2xl border border-white/10 bg-slate-900/30 p-5 flex items-start gap-4">
+          <div className="mt-8 max-w-3xl mx-auto rounded-2xl border border-white/10 bg-slate-900/30 p-4 sm:p-5 flex items-start gap-3 sm:gap-4 min-w-0">
             <Bell className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />
             <p className="text-sm text-gray-400 leading-relaxed">
               <span className="text-white font-semibold">Indie tools are welcome.</span> You do not need an enterprise marketing budget.
@@ -1433,7 +1510,7 @@ const AdvertisePage = () => {
                   key={cat}
                   type="button"
                   onClick={() => setFaqCategory(cat)}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition ${
+                  className={`compact-control inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition ${
                     isActive
                       ? 'bg-blue-600 border-blue-500 text-white'
                       : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/20'
@@ -1460,13 +1537,13 @@ const AdvertisePage = () => {
               >
                 <button
                   onClick={() => toggleFaq(faq.question)}
-                  className="w-full flex items-center justify-between p-5 text-left text-white hover:text-blue-400 transition-colors focus:outline-none"
+                  className="compact-control w-full flex items-start sm:items-center justify-between gap-3 p-4 sm:p-5 text-left text-white hover:text-blue-400 transition-colors focus:outline-none min-w-0"
                 >
-                  <span className="font-semibold text-sm sm:text-base flex items-center gap-3">
-                    <HelpCircle className="h-4 w-4 text-blue-400 shrink-0" />
-                    {faq.question}
+                  <span className="font-semibold text-sm sm:text-base flex items-start gap-3 min-w-0">
+                    <HelpCircle className="h-4 w-4 text-blue-400 shrink-0 mt-0.5" />
+                    <span className="break-words">{faq.question}</span>
                   </span>
-                  <ChevronDown className={`h-4 w-4 transition-transform shrink-0 ${openFaq === faq.question ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`h-4 w-4 transition-transform shrink-0 mt-0.5 ${openFaq === faq.question ? 'rotate-180' : ''}`} />
                 </button>
 
                 <AnimatePresence initial={false}>
@@ -1478,7 +1555,7 @@ const AdvertisePage = () => {
                       transition={{ duration: 0.25, ease: 'easeInOut' }}
                       className="overflow-hidden"
                     >
-                      <div className="p-5 pt-0 border-t border-white/5 text-sm text-gray-400 leading-relaxed">
+                      <div className="p-4 sm:p-5 pt-0 border-t border-white/5 text-sm text-gray-400 leading-relaxed break-words">
                         {faq.answer}
                       </div>
                     </motion.div>
@@ -1647,13 +1724,13 @@ const AdvertisePage = () => {
         </div>
 
         {/* ═══════════════ CONTACT / INQUIRY SECTION ═══════════════ */}
-        <div id="inquiry-form" className="max-w-4xl mx-auto rounded-3xl border border-white/10 bg-slate-900/40 p-6 sm:p-10 backdrop-blur-sm relative">
+        <div id="inquiry-form" className="max-w-4xl mx-auto rounded-2xl sm:rounded-3xl border border-white/10 bg-slate-900/40 p-5 sm:p-10 backdrop-blur-sm relative min-w-0">
           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
           
-          <div className="grid md:grid-cols-5 gap-8">
-            <div className="md:col-span-2 flex flex-col justify-between">
+          <div className="grid md:grid-cols-5 gap-6 md:gap-8">
+            <div className="md:col-span-2 flex flex-col justify-between min-w-0">
               <div>
-                <h2 className="text-2xl font-bold text-white mb-4">Book a paid placement</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">Book a paid placement</h2>
                 <p className="text-sm text-gray-400 leading-relaxed mb-4">
                   Tell us the product and the USD package. We reply within 24 business hours with fit, dates, and an invoice in US dollars. Guest-article pitches belong on <a href="/contribute" className="text-blue-400 hover:underline">Write for Us</a>.
                 </p>
@@ -1692,7 +1769,7 @@ const AdvertisePage = () => {
               </div>
             </div>
 
-            <div className="md:col-span-3">
+            <div className="md:col-span-3 min-w-0">
               {submitted ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -1780,7 +1857,7 @@ const AdvertisePage = () => {
                         name="package"
                         value={formData.package}
                         onChange={handleChange}
-                        className="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                        className="w-full max-w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                       >
                         <option value="newsletter_sponsorship">Try it: Newsletter — $40 USD / issue</option>
                         <option value="resource_reference">Developer Resource Reference — $30 USD/mo or $180 USD/yr</option>
@@ -1800,7 +1877,7 @@ const AdvertisePage = () => {
                         name="budget"
                         value={formData.budget}
                         onChange={handleChange}
-                        className="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                        className="w-full max-w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                       >
                         {(PACKAGE_BUDGET_OPTIONS[formData.package] ?? PACKAGE_BUDGET_OPTIONS.other).map((opt) => (
                           <option key={opt.value} value={opt.value}>{opt.label}</option>
