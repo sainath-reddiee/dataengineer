@@ -26,6 +26,7 @@ const NewsPage = () => {
         keywords="data engineering news, data engineering trends, snowflake news, cloud data news, data platform updates, tech trends"
         type="website"
         breadcrumbs={breadcrumbs}
+        noindex={totalPosts < 3}
       />
 
       <div className="pt-1 pb-8">
@@ -143,9 +144,9 @@ const NewsPage = () => {
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-800/50 border border-slate-700 mb-6">
                 <Newspaper className="h-10 w-10 text-gray-500" />
               </div>
-              <h2 className="text-xl font-bold text-white mb-2">No news yet</h2>
+              <h2 className="text-xl font-bold text-white mb-2">Read the tutorial library instead</h2>
               <p className="text-gray-400 mb-6 max-w-md mx-auto">
-                We're working on bringing you the latest data engineering news and trends. Check back soon!
+                Dated news briefs are not published yet. The long-form guides — Snowflake, dbt, Databricks, and Airflow — are on All Articles.
               </p>
               <Button asChild variant="outline" className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20">
                 <Link to="/articles">Browse all articles</Link>

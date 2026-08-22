@@ -1,5 +1,10 @@
 # robots.txt - DataEngineer Hub
-# Last updated: 2026-08-21
+# Last updated: 2026-08-22
+#
+# If Cloudflare AI Crawl Control is enabled, it PREPENDS Disallow rules for
+# GPTBot, ClaudeBot, Google-Extended, and others. Those override the Allow
+# rules below for those user-agents. Turn AI Crawl Control off (or set those
+# bots to Allow) so ChatGPT / Claude / Gemini can cite these articles.
 #
 # All programmatic sections, tools, cheat sheets, and glossary pages are open for crawling.
 
@@ -95,6 +100,12 @@ User-agent: Claude-Web
 Allow: /
 
 User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: OAI-SearchBot
 Allow: /
 
 User-agent: cohere-ai

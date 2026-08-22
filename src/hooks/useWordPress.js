@@ -306,7 +306,7 @@ export const usePost = (slug, enabled = true) => {
     const requestId = ++currentRequestRef.current;
 
     try {
-      setLoading(true);
+      setError(null);
       const postData = await wordpressApi.getPostBySlug(slug);
 
       if (requestId === currentRequestRef.current) {

@@ -319,7 +319,6 @@ const CategoryPage = () => {
         faqSchema={faqSchema}
         noindex={!postsLoading && totalPosts < MIN_INDEXABLE_CATEGORY_COUNT}
       />
-      />
 
       <div className="pt-1 pb-8">
         <div className="container mx-auto px-6">

@@ -4,6 +4,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { isExcludedArticleSlug } from '../src/data/excludedSlugs.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -116,7 +117,7 @@ async function fetchAllPosts() {
             await new Promise(resolve => setTimeout(resolve, 100));
         }
 
-        return allPosts;
+        return allPosts.filter((post) => !isExcludedArticleSlug(post.slug));
     } catch (error) {
         console.error('Error fetching posts:', error.message);
         return [];

@@ -1,16 +1,14 @@
 // src/components/NewsPosts.jsx - Homepage news section
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Newspaper, AlertCircle, RefreshCw } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { AlertCircle, RefreshCw, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePosts } from '@/hooks/useWordPress';
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { reduceMotion } from '@/utils/performance';
 import PostCard from './PostCard';
-import PostCardSkeleton from './PostCardSkeleton';
 
 const NewsPosts = () => {
-  const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
   const shouldReduceMotion = reduceMotion();
 
   const { posts: newsPosts, loading, error, refresh } = usePosts({
@@ -18,18 +16,8 @@ const NewsPosts = () => {
     per_page: 3,
   });
 
-  const baseAnimationConfig = shouldReduceMotion
-    ? { initial: {}, animate: {}, transition: { duration: 0 } }
-    : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6 } };
-
   if (loading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <PostCardSkeleton key={index} />
-        ))}
-      </div>
-    );
+    return null;
   }
 
   if (error) {
@@ -50,9 +38,26 @@ const NewsPosts = () => {
   }
 
   return (
-    <div ref={ref}>
+    <section>
+      <div className="mb-4 sm:mb-5 flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3 flex-1">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20">
+            <Zap className="w-5 h-5 text-blue-400" />
+          </div>
+          <div>
+            <h2 className="text-lg sm:text-xl font-bold text-white leading-tight">News & Trends</h2>
+            <p className="text-xs sm:text-sm text-gray-400 mt-0.5">Latest updates from the data stack</p>
+          </div>
+        </div>
+        <Link
+          to="/news"
+          className="whitespace-nowrap text-xs sm:text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors py-1 px-2 hover:bg-blue-500/10 rounded"
+        >
+          View news →
+        </Link>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {hasIntersected && newsPosts.map((post, index) => (
+        {newsPosts.map((post, index) => (
           <motion.div
             key={post.id}
             {...(shouldReduceMotion ? {} : {
@@ -68,7 +73,7 @@ const NewsPosts = () => {
           </motion.div>
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 

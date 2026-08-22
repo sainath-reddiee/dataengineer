@@ -3,6 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { isExcludedArticleSlug } from '../src/data/excludedSlugs.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -112,8 +113,9 @@ async function fetchAllPosts() {
             await new Promise(resolve => setTimeout(resolve, 100));
         }
 
-        console.log(`✅ Total posts fetched: ${allPosts.length}`);
-        return allPosts;
+        const indexed = allPosts.filter((post) => !isExcludedArticleSlug(post.slug));
+        console.log(`✅ Total posts fetched: ${allPosts.length} (${indexed.length} after excluding redirects)`);
+        return indexed;
     } catch (error) {
         console.error('❌ Error fetching posts:', error.message);
         return [];
@@ -333,7 +335,7 @@ async function generateLLMSitemap() {
             const title = post.title?.rendered || 'Untitled';
 
             // Extract author info
-            let authorName = 'Satya Sainath';
+            let authorName = 'Sainath Reddy';
             let authorExpertise = 'Data Engineering Expert';
             if (post._embedded && post._embedded.author && post._embedded.author[0]) {
                 authorName = post._embedded.author[0].name || authorName;

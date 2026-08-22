@@ -4,13 +4,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { TrendingUp, AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePosts } from '@/hooks/useWordPress';
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { reduceMotion } from '@/utils/performance';
 import PostCard from './PostCard';
 import PostCardSkeleton from './PostCardSkeleton';
 
 const TrendingPosts = () => {
-  const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
   const shouldReduceMotion = reduceMotion();
   
   const { posts: trendingPosts, loading, error, refresh } = usePosts({
@@ -56,10 +54,10 @@ const TrendingPosts = () => {
   }
 
   return (
-    <section ref={ref} className="py-16 relative">
+    <section className="py-16 relative">
       <div className="container mx-auto px-6">
         <AnimatePresence>
-          {hasIntersected && (
+          {(
             <motion.div
               {...baseAnimationConfig}
               className="text-center mb-12"
@@ -81,7 +79,7 @@ const TrendingPosts = () => {
         </AnimatePresence>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {hasIntersected && trendingPosts.map((post, index) => (
+          {trendingPosts.map((post, index) => (
             <motion.div
               key={post.id}
               {...(shouldReduceMotion ? {} : {

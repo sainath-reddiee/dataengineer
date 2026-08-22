@@ -3,17 +3,15 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, AlertCircle, RefreshCw } from 'lucide-react';
+import { ArrowRight, Star, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePosts } from '@/hooks/useWordPress';
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { reduceMotion } from '@/utils/performance';
 import { useToast } from '@/components/ui/use-toast';
 import PostCard from './PostCard';
 import PostCardSkeleton from './PostCardSkeleton';
 
 const FeaturedPosts = () => {
-  const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
   const shouldReduceMotion = reduceMotion();
   const { toast } = useToast();
   const location = useLocation();
@@ -55,10 +53,10 @@ const FeaturedPosts = () => {
     : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6 } };
 
   return (
-    <section ref={ref} className="pt-8 pb-12 relative">
+    <section className="pt-8 pb-12 relative">
       <div className="container mx-auto px-6">
         <AnimatePresence>
-          {hasIntersected && (
+          {(
             <motion.div {...animationConfig} className="text-center mb-12">
               <div className="flex items-center justify-center gap-4 mb-6 flex-wrap">
                 <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 backdrop-blur-sm border border-yellow-500/30 rounded-full px-6 py-3">
@@ -85,7 +83,7 @@ const FeaturedPosts = () => {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12" 
           style={{ minHeight: '400px' }} // Prevents layout shift
         >
-          {hasIntersected && featuredPosts.map((post, index) => (
+          {featuredPosts.map((post, index) => (
             <motion.div
               key={post.id}
               initial={{ opacity: 0, y: 20 }}
@@ -97,7 +95,7 @@ const FeaturedPosts = () => {
           ))}
         </div>
 
-        {hasIntersected && location.pathname !== '/articles' && (
+        {location.pathname !== '/articles' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

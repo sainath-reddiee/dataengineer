@@ -808,8 +808,8 @@ ORDER BY 1 DESC, total_credits DESC;`}
               desc="The full playbook: auto-suspend, resource monitors, query tagging, and more."
             />
             <TipLink
-              to="/articles/snowflake-query-optimization-2025"
-              title="Snowflake query optimization in 2025"
+              to="/articles/snowflake-query-optimization-guide-2026"
+              title="Snowflake query optimization guide"
               desc="Partition pruning, clustering, and materialized views done right."
             />
             <TipLink

@@ -597,6 +597,16 @@ async function verifyBuild() {
       issues.push(`❌ Homepage missing static OG tags: ${missingOg.join(', ')} — crawlers cannot see social previews`);
       log(`   ❌ Homepage missing: ${missingOg.join(', ')}`, 'red');
     }
+    if (!/class="seo-articles"/i.test(homepageContent) && !/seo-articles/i.test(homepageContent)) {
+      warnings.push('⚠️  Homepage is missing the seo-articles listing block — AdsBot may see positioning copy only');
+      log('   ⚠️  Homepage missing seo-articles listing', 'yellow');
+    } else {
+      log('   ✅ Homepage includes seo-articles listing', 'green');
+    }
+    if (!/llms\.txt/i.test(homepageContent)) {
+      warnings.push('⚠️  Homepage is missing an llms.txt discovery link');
+      log('   ⚠️  Homepage missing llms.txt link', 'yellow');
+    }
   }
   
   // ============================================================================

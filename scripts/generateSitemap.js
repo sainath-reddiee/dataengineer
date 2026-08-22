@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT, MIN_INDEXABLE_CATEGORY_COUNT, MIN_INDEXABLE_WORD_COUNT } from '../src/data/thinTags.js';
+import { EXCLUDED_ARTICLE_SLUGS } from '../src/data/excludedSlugs.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,8 +32,8 @@ function changefreqFromAge(lastmodDate) {
 // 1. Have a real public route in App.jsx
 // 2. Are NOT noindexed by their React component
 // 3. Have pre-rendered HTML or are meaningful indexable pages
-// Excluded: /newsletter (noindexed), /tags (noindexed), /explore (no route),
-//           /checklist (admin-only)
+// Excluded: /newsletter (noindexed), /news (noindexed until WP has dated posts),
+//           /tags (noindexed), /explore (no route), /checklist (admin-only)
 const STATIC_PAGES = [
   { url: '/', changefreq: 'daily', priority: 1.0, lastmod: 'today' },
   { url: '/articles', changefreq: 'daily', priority: 0.9, lastmod: 'today' },
@@ -42,7 +43,7 @@ const STATIC_PAGES = [
   { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/disclaimer', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/contribute', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
-  { url: '/news', changefreq: 'weekly', priority: 0.6, lastmod: 'today' },
+  // /news is noindexed until the WP news category has dated posts
   { url: '/practice', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
   { url: '/practice/snowpro-core', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
   { url: '/practice/snowpro-genai', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
@@ -77,22 +78,6 @@ const STATIC_PAGES = [
   { url: '/cheatsheets/category/architecture', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
   { url: '/cheatsheets/category/interview', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
   { url: '/cheatsheets/category/bestpractices', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-];
-
-const EXCLUDED_ARTICLE_SLUGS = [
-  // Canonicalized via public/.htaccess 301s — listing the old slug is a
-  // duplicate URL that AdSense treats as low-value / redirected content.
-  'snowflake-query-optimization-2025',
-  'building-snowflake-agents-in-10-minutes',
-  'build-a-snowflake-agent-in-10-minutes',
-  'snowflake-unique-aggregation-hidden-functions',
-  'snowflake-options-automate-query-optimization-guide',
-  'build-a-simple-rag-application-in-snowflake-using-streamlit-and-snowflake-cortex',
-  'build-rag-snowflake-documentation',
-  'snowflake-openflow-tutorial',
-  'snowflake-performance',
-  'snowflake-performance-tuning-techniques',
-  'loading-data-from-s3-to-snowflake',
 ];
 
 const EXCLUDED_CHEATSHEET_SLUGS = [];
