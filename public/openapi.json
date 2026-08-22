@@ -1,0 +1,144 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DataEngineer Hub public content APIs",
+    "summary": "Read-only catalogs and feeds for AI agents and crawlers",
+    "description": "Machine-readable indexes of the public DataEngineer Hub publication. All operations are unauthenticated GET. This is a content site, not a write API. Do not POST registration or token endpoints — none are offered.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Sainath Reddy",
+      "url": "https://dataengineerhub.blog/contact"
+    },
+    "license": {
+      "name": "Site terms",
+      "url": "https://dataengineerhub.blog/terms-of-service"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://dataengineerhub.blog",
+      "description": "Public publication origin"
+    }
+  ],
+  "paths": {
+    "/llm-sitemap.json": {
+      "get": {
+        "operationId": "getArticleCatalog",
+        "summary": "Structured article catalog",
+        "description": "JSON catalog of published tutorials with titles, summaries, key facts, entities, and dates.",
+        "responses": {
+          "200": {
+            "description": "Article catalog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "site": { "type": "string" },
+                    "totalArticles": { "type": "integer" },
+                    "pages": { "type": "array", "items": { "type": "object" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/llms.txt": {
+      "get": {
+        "operationId": "getLlmContext",
+        "summary": "Compact LLM context",
+        "description": "Human- and model-readable site overview, topic map, and citation guidelines.",
+        "responses": {
+          "200": {
+            "description": "LLM context document",
+            "content": {
+              "text/plain": {}
+            }
+          }
+        }
+      }
+    },
+    "/llms-full.txt": {
+      "get": {
+        "operationId": "getLlmFullContext",
+        "summary": "Expanded per-article LLM index",
+        "responses": {
+          "200": {
+            "description": "Expanded LLM index",
+            "content": {
+              "text/plain": {}
+            }
+          }
+        }
+      }
+    },
+    "/rss.xml": {
+      "get": {
+        "operationId": "getRssFeed",
+        "summary": "Latest articles RSS feed",
+        "responses": {
+          "200": {
+            "description": "RSS 2.0 feed",
+            "content": {
+              "application/rss+xml": {}
+            }
+          }
+        }
+      }
+    },
+    "/sitemap.xml": {
+      "get": {
+        "operationId": "getSitemap",
+        "summary": "XML sitemap",
+        "responses": {
+          "200": {
+            "description": "URL set",
+            "content": {
+              "application/xml": {}
+            }
+          }
+        }
+      }
+    },
+    "/auth.md": {
+      "get": {
+        "operationId": "getAuthMd",
+        "summary": "Agent access and registration discovery",
+        "description": "Declares that this publication is public and does not offer agent registration.",
+        "responses": {
+          "200": {
+            "description": "auth.md document",
+            "content": {
+              "text/markdown": {}
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/api-catalog": {
+      "get": {
+        "operationId": "getApiCatalog",
+        "summary": "RFC 9727 API catalog",
+        "responses": {
+          "200": {
+            "description": "Linkset catalog",
+            "content": {
+              "application/linkset+json": {}
+            }
+          }
+        }
+      },
+      "head": {
+        "operationId": "headApiCatalog",
+        "summary": "RFC 9727 API catalog headers",
+        "responses": {
+          "200": {
+            "description": "Link headers for the catalog"
+          }
+        }
+      }
+    }
+  }
+}

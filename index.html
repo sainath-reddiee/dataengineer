@@ -106,6 +106,10 @@
 
     <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />
     <link rel="alternate" type="text/plain" title="LLM context" href="https://dataengineerhub.blog/llms.txt" />
+    <link rel="api-catalog" href="https://dataengineerhub.blog/.well-known/api-catalog" />
+    <link rel="service-desc" type="application/json" href="https://dataengineerhub.blog/openapi.json" />
+    <link rel="service-doc" type="text/plain" href="https://dataengineerhub.blog/llms.txt" />
+    <link rel="describedby" type="application/json" href="https://dataengineerhub.blog/llm-sitemap.json" />
     <!-- Canonical URL: static for homepage; MetaTags.jsx overrides dynamically for SPA routes -->
     <link rel="canonical" href="https://dataengineerhub.blog/" />
 
@@ -132,6 +136,7 @@
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "DataEngineer Hub",
+      "alternateName": ["Data Engineer Hub", "dataengineerhub"],
       "url": "https://dataengineerhub.blog",
       "logo": {
         "@type": "ImageObject",
@@ -157,6 +162,7 @@
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "DataEngineer Hub",
+      "alternateName": ["Data Engineer Hub", "dataengineerhub"],
       "url": "https://dataengineerhub.blog",
       "description": "In-depth tutorials on Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and modern data engineering.",
       "publisher": {
