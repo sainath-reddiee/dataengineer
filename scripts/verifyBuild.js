@@ -672,8 +672,9 @@ async function verifyBuild() {
   const htaccessPath = path.join(distDir, '.htaccess');
   if (fs.existsSync(htaccessPath)) {
     const htaccess = fs.readFileSync(htaccessPath, 'utf8');
-    const hasLinkHeader = /Header always set Link.*rel=\\"api-catalog\\"/.test(htaccess)
-      || /rel=\\"api-catalog\\"/.test(htaccess);
+    const hasLinkHeader = /Header always set Link/.test(htaccess)
+      && /rel=api-catalog/.test(htaccess)
+      && !/rel=\\"api-catalog\\"/.test(htaccess);
     const hasWellKnownRewrite = /RewriteRule \^\\\.well-known\//.test(htaccess);
     if (hasLinkHeader) {
       log('   ✅ .htaccess sets homepage Link headers', 'green');

@@ -365,7 +365,9 @@
     SetEnvIf Request_URI "^/index\.html$" DEH_AGENT_LINKS
     SetEnvIf Request_URI "^/\.well-known/api-catalog" DEH_AGENT_LINKS
     SetEnvIf Request_URI "^/well-known/api-catalog" DEH_AGENT_LINKS
-    Header always set Link "</.well-known/api-catalog>; rel=\"api-catalog\", </openapi.json>; rel=\"service-desc\"; type=\"application/json\", </llms.txt>; rel=\"service-doc\"; type=\"text/plain\", </llm-sitemap.json>; rel=\"describedby\"; type=\"application/json\"" env=DEH_AGENT_LINKS
+    # Unquoted rel/type tokens: LiteSpeed emits literal backslashes if we write rel=\"...\".
+    # RFC 8288 allows unquoted registered relation types.
+    Header always set Link "</.well-known/api-catalog>; rel=api-catalog, </openapi.json>; rel=service-desc; type=application/json, </llms.txt>; rel=service-doc; type=text/plain, </llm-sitemap.json>; rel=describedby; type=application/json" env=DEH_AGENT_LINKS
     Header always set Content-Signal "search=yes, ai-input=yes, ai-train=yes"
     Header append Vary Accept env=DEH_AGENT_LINKS
 
