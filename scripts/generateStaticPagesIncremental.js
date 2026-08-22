@@ -3720,17 +3720,6 @@ ${CONSENT_MODE_V2_HTML}
         font-weight: 600;
         text-decoration: none;
       }
-      .featured-article {
-        display: block;
-        margin: 1.25rem 0 1.75rem;
-        padding: 1.15rem 1.2rem;
-        border-radius: 16px;
-        background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.2));
-        border: 1px solid rgba(147,197,253,0.35);
-        text-decoration: none;
-      }
-      .featured-article strong { color: #f8fafc; font-size: 1.15rem; display: block; margin-bottom: 0.35rem; }
-      .featured-article span { color: #cbd5e1; font-size: 0.92rem; line-height: 1.5; display: block; }
       @media (max-width: 768px) {
         .seo-content { padding: 20px 15px; margin-top: 20px; }
         .seo-content h1 { font-size: 1.8rem; }
