@@ -35,9 +35,10 @@ if (import.meta.env.DEV) {
   });
 }
 
-// Crawlers (AdsBot, Googlebot, GPTBot, Gemini fetchers) keep the SSG HTML.
-// Real browsers — including Gemini / ChatGPT in-app Chrome — must mount React
-// so readers see the full article UI, not the static listing fallback.
+// Policy:
+// - Manual users and LLM in-app browsers → always React (full UI).
+// - AdsBot / Googlebot / other documented crawlers → keep SSG HTML so
+//   AdSense still sees the full article-body without a loading shell.
 const initApp = () => {
   if (isCrawlerUserAgent()) {
     document.body.classList.remove('react-loading');
