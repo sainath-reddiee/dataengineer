@@ -778,11 +778,25 @@ img {
     transform: translateY(-2px);
   }
   
-  /* Touch targets */
+  /* Touch targets — height only. Do not override padding; compact controls
+     (duration pills, filter chips) overflow and clip on narrow screens. */
   button,
   a[role="button"] {
     min-height: 48px;
-    padding: 0.75rem 1.5rem;
+  }
+
+  button.compact-control,
+  .compact-control {
+    min-height: 40px;
+    min-width: 0;
+  }
+
+  .advertise-page {
+    overflow-x: clip;
+  }
+
+  .advertise-page select {
+    max-width: 100%;
   }
   
   /* Disable will-change */
