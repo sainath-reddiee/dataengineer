@@ -44,6 +44,7 @@ export default function SponsorDashboardPage() {
   const sponsorData = useMemo(() => findSponsorByToken(token, activeSponsors), [token]);
   const campaignStatus = useMemo(() => getCampaignStatus(sponsorData), [sponsorData]);
   const analyticsData = useMemo(() => {
+    void statsTick;
     if (!sponsorData) return null;
     const stats = getSponsorStats(sponsorData.token);
     return {

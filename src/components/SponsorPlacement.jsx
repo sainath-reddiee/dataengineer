@@ -99,8 +99,6 @@ export default function SponsorPlacement({
     });
   };
 
-  const rel = 'noopener noreferrer nofollow sponsored';
-
   if (sponsor.placement === 'resource_reference') {
     return (
       <div
@@ -123,7 +121,7 @@ export default function SponsorPlacement({
         <a
           href={sponsorHref}
           target="_blank"
-          rel={rel}
+          rel="noopener noreferrer nofollow sponsored"
           onClick={handleSponsorClick}
           onAuxClick={handleSponsorClick}
           className="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-1 px-4.5 py-2 bg-blue-600/15 hover:bg-blue-600 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg text-xs font-semibold transition"
@@ -167,7 +165,7 @@ export default function SponsorPlacement({
         <a
           href={sponsorHref}
           target="_blank"
-          rel={rel}
+          rel="noopener noreferrer nofollow sponsored"
           onClick={handleSponsorClick}
           onAuxClick={handleSponsorClick}
           className="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-blue-500/15"
@@ -199,7 +197,7 @@ export default function SponsorPlacement({
       <a
         href={sponsorHref}
         target="_blank"
-        rel={rel}
+        rel="noopener noreferrer nofollow sponsored"
         onClick={handleSponsorClick}
         onAuxClick={handleSponsorClick}
         className="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-1 px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs transition"

@@ -264,6 +264,7 @@ export default function SponsorManagerPage() {
   };
 
   const campaignRows = useMemo(() => {
+    void statsTick;
     const list = Array.isArray(sponsors) ? sponsors : [];
     return list.map((s, idx) => {
       const status = getCampaignStatus(s);
