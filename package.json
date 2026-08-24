@@ -29,6 +29,7 @@
     "optimize-citations": "node scripts/optimizeForAICitation.js",
     "prebuild": "npm run indexnow:generate && npm run sitemap:generate && npm run llm-sitemap && npm run llms-full && npm run rss-feed && npm run sitemap:validate && npm run agent-skills",
     "agent-skills": "node scripts/generateAgentSkillsIndex.js",
+    "test:sponsor-campaign": "node scripts/verifySponsorCampaign.js",
     "test:agent-discovery": "npm run agent-skills && node scripts/verifyAgentDiscovery.js",
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'",
     "test:build": "npm run build",

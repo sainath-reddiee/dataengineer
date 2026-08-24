@@ -20,6 +20,7 @@ import { useStats } from '@/hooks/useStats';
 import { cheatsheets } from '@/data/cheatsheetData';
 import advertiseConfig from '@/data/advertiseConfig.json';
 import activeSponsorsData from '@/data/activeSponsors.json';
+import { isCampaignLive } from '@/lib/sponsorCampaign';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const OPPORTUNITIES = advertiseConfig.opportunities;
@@ -50,7 +51,7 @@ const FAQS = [
   {
     category: 'Placements',
     question: 'How do you track impressions and clicks?',
-    answer: 'Current sponsor links open the configured destination URL directly. Partners receive a private dashboard with placement details and preview delivery estimates while live event tracking is being rolled out.'
+    answer: 'Every placement uses first-party tracking: an impression counts only when the card is at least 50% visible for one second (once per session and page context). Clicks are counted on the outbound link, which includes UTM tags (utm_source=dataengineerhub). Crawlers such as AdsBot are excluded. You get a private dashboard with your campaign token. Site-wide events are also sent to Google Analytics after cookie consent — we do not invent estimated totals.'
   },
   {
     category: 'Placements',
@@ -104,8 +105,8 @@ const DURATION_ICONS = { weekly: Zap, monthly: Calendar, yearly: Crown, one_time
 const PROCESS_STEPS = [
   { icon: Mail, title: 'Submit Inquiry', desc: 'Fill out the form with your product details and preferred placement.' },
   { icon: Briefcase, title: 'Review & Align', desc: 'We review your request and confirm the best placement for your audience.' },
-  { icon: Zap, title: 'Go Live', desc: 'Your campaign goes live with a private dashboard for placement review and delivery estimates.' },
-  { icon: BarChart3, title: 'Track & Optimize', desc: 'Review placement coverage and campaign details while live reporting is being expanded.' },
+  { icon: Zap, title: 'Go Live', desc: 'Your campaign goes live with a private token dashboard for placement, dates, and live viewable impressions.' },
+  { icon: BarChart3, title: 'Track & Optimize', desc: 'Open your private dashboard anytime for viewable impressions, clicks, CTR, and the UTM-tagged destination readers land on.' },
 ];
 
 // ─── New content/creator revenue channels ───────────────────────────────────
@@ -191,18 +192,21 @@ const PACKAGE_FACTS = {
     exclusivity: 'One sponsor per guide / article',
     newsletterPromo: false,
     githubRepo: false,
+    tracking: 'Viewable impressions + private dashboard',
   },
   directory: {
     placementType: 'Tools Hub directory card',
     exclusivity: 'Multiple tools listed per category',
     newsletterPromo: false,
     githubRepo: false,
+    tracking: 'Viewable impressions + private dashboard',
   },
   content: {
     placementType: 'Permanent co-authored blog post',
     exclusivity: 'Your brand as article author',
     newsletterPromo: true,
     githubRepo: true,
+    tracking: 'CTA tracking when the guide includes an on-page partner link',
   },
 };
 
@@ -434,15 +438,10 @@ const AdvertisePage = () => {
   // Real (non-fabricated) live-campaign counts per package, driven directly by
   // the same activeSponsors.json data that powers on-site sponsor placements.
   const liveCampaignCounts = useMemo(() => {
-    const now = new Date();
     const counts = {};
-    activeSponsorsData.forEach((s) => {
-      if (!s.active) return;
-      const startsAt = new Date(`${s.startDate}T00:00:00`);
-      const endsAt = new Date(`${s.endDate}T23:59:59`);
-      if (now >= startsAt && now <= endsAt) {
-        counts[s.placement] = (counts[s.placement] || 0) + 1;
-      }
+    (Array.isArray(activeSponsorsData) ? activeSponsorsData : []).forEach((s) => {
+      if (!isCampaignLive(s)) return;
+      counts[s.placement] = (counts[s.placement] || 0) + 1;
     });
     return counts;
   }, []);
@@ -470,7 +469,7 @@ const AdvertisePage = () => {
       { value: '$240 USD / year', label: '$240 USD / year — save 56% vs monthly' },
     ],
     content: [
-      { value: '$50 USD one-time', label: '$50 USD one-time — we co-write a sponsored integration guide' },
+      { value: '$99 USD one-time', label: '$99 USD one-time — we co-write a sponsored integration guide' },
     ],
     newsletter_sponsorship: [
       { value: '$40 USD / issue', label: '$40 USD per newsletter issue — lowest-cost paid test' },
@@ -835,9 +834,58 @@ const AdvertisePage = () => {
           <div>
             <h3 className="font-bold text-white text-sm mb-1">Community Trust & Transparency</h3>
             <p className="text-sm text-gray-400 leading-relaxed">
-              We only accept partners whose products genuinely serve the data engineering community. Every campaign gets a private dashboard with placement details and delivery estimates, and we only present live performance data once the tracking pipeline is enabled.
+              We only accept partners whose products genuinely serve the data engineering community. Every campaign gets a private dashboard with real viewable impressions and clicks — not seeded estimates. AdsBot and other crawlers are never counted.
             </p>
           </div>
+        </div>
+
+        {/* ═══════════════ PERFORMANCE TRACKING ═══════════════ */}
+        <div id="performance-tracking" className="rounded-2xl sm:rounded-3xl border border-white/10 bg-slate-900/40 p-5 sm:p-10 backdrop-blur-sm relative min-w-0">
+          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/25 to-transparent" />
+          <div className="text-center mb-8 max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold mb-4">
+              <BarChart3 className="h-3.5 w-3.5" /> First-party performance
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">How we track your ads — uniquely, and honestly</h2>
+            <p className="text-sm text-gray-400 leading-relaxed">
+              This is not a PPC network and we do not seed dashboards with fake totals. Every Resource Reference and Ecosystem Showcase campaign gets viewable-impression tracking, UTM-tagged clicks, and a private token dashboard.
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              {
+                icon: Eye,
+                title: 'Viewable impressions',
+                desc: 'A placement counts only when at least 50% of the card stays on screen for one full second. Mounting the page is not an impression.',
+              },
+              {
+                icon: MousePointerClick,
+                title: 'Unique per session',
+                desc: 'The same reader on the same page context is counted once per browser session. Clicks on the outbound link are counted separately.',
+              },
+              {
+                icon: Shield,
+                title: 'Crawlers excluded',
+                desc: 'AdsBot, Googlebot, and other documented crawlers never increment your totals. Sponsor links use rel="nofollow sponsored".',
+              },
+              {
+                icon: Target,
+                title: 'UTM + GA4 mirror',
+                desc: 'Destinations get utm_source=dataengineerhub. After cookie consent, the same events also land in Google Analytics as site-wide delivery.',
+              },
+            ].map((item) => (
+              <div key={item.title} className="rounded-2xl border border-white/10 bg-slate-950/40 p-5">
+                <div className="inline-flex p-2 rounded-xl bg-blue-500/10 text-blue-400 mb-3">
+                  <item.icon className="h-4 w-4" />
+                </div>
+                <h3 className="text-sm font-bold text-white mb-1.5">{item.title}</h3>
+                <p className="text-xs text-gray-400 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-gray-500 mt-6 text-center max-w-3xl mx-auto leading-relaxed">
+            The private dashboard at <a href="/sponsors/dashboard" className="text-blue-400 hover:underline font-mono">/sponsors/dashboard</a> shows first-party counts from the browser viewing it. Use GA4 for site-wide totals across devices. We email your campaign token within 48 hours of go-live.
+          </p>
         </div>
 
         {/* ═══════════════ ROI CALCULATOR ═══════════════ */}
@@ -1212,6 +1260,10 @@ const AdvertisePage = () => {
                             <dd className="text-gray-300 text-right break-words">{facts.exclusivity}</dd>
                           </div>
                           <div className="flex justify-between gap-3">
+                            <dt className="text-gray-500 shrink-0">Tracking</dt>
+                            <dd className="text-gray-300 text-right break-words">{facts.tracking}</dd>
+                          </div>
+                          <div className="flex justify-between gap-3">
                             <dt className="text-gray-500 shrink-0">Newsletter promo</dt>
                             <dd>{facts.newsletterPromo ? <Check className="h-4 w-4 text-emerald-400 ml-auto" /> : <span className="text-gray-600">—</span>}</dd>
                           </div>
@@ -1300,6 +1352,12 @@ const AdvertisePage = () => {
                         ))}
                       </tr>
                       <tr>
+                        <td className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400">Performance tracking</td>
+                        {OPPORTUNITIES.map((opp) => (
+                          <td key={opp.title} className={`p-4 text-gray-300 text-xs leading-relaxed ${opp.popular ? 'bg-blue-500/5 border-x border-blue-500/20' : ''}`}>{PACKAGE_FACTS[opp.packageKey]?.tracking}</td>
+                        ))}
+                      </tr>
+                      <tr className="bg-slate-950/30">
                         <td className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400">Newsletter & Social Promo</td>
                         {OPPORTUNITIES.map((opp) => (
                           <td key={opp.title} className={`p-4 ${opp.popular ? 'bg-blue-500/5 border-x border-blue-500/20' : ''}`}>
@@ -1666,12 +1724,12 @@ const AdvertisePage = () => {
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
-                { label: 'Guaranteed traffic numbers', note: 'Impressions and clicks are estimates, not guarantees. This is a developer content site, not a PPC ad network.' },
+                { label: 'Guaranteed traffic numbers', note: 'Impressions and clicks are measured, not guaranteed. This is a developer content site, not a PPC ad network.' },
                 { label: 'Guaranteed search rankings', note: "We cannot and do not promise that a placement will affect your product's Google search rankings." },
                 { label: 'Exclusive site-wide ownership', note: 'Your placement is targeted to relevant content. Other sponsors may appear in unrelated sections.' },
-                { label: 'Dofollow backlinks by default', note: 'Sponsor links use rel="noopener noreferrer". If you need link attribution, discuss with us before booking.' },
+                { label: 'Dofollow backlinks by default', note: 'Sponsor links use rel="nofollow sponsored". This is referral traffic, not a paid-link SEO package.' },
                 { label: 'Unlimited mid-campaign edits', note: 'Up to 3 content edits per campaign term are included. Additional changes may be discussed case by case.' },
-                { label: 'Real-time analytics dashboard', note: 'Full live click/impression tracking is in development. Current dashboard shows placement details and estimated delivery.' },
+                { label: 'Cross-device totals in the token dashboard', note: 'The private dashboard shows first-party counts from the browser viewing it. Site-wide totals also land in Google Analytics after consent.' },
               ].map(({ label, note }) => (
                 <div key={label} className="flex items-start gap-2.5">
                   <X className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
@@ -1695,7 +1753,7 @@ const AdvertisePage = () => {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
                 'Manual review of your campaign before it goes live — no auto-approval',
-                'Private dashboard access token emailed within 48 hours',
+                'Private dashboard token emailed within 48 hours, with viewable impressions and clicks',
                 'Campaign placement in content contextually relevant to your product category',
                 '"Sponsored" disclosure on every placement, compliant with FTC guidelines',
                 'At least 1 free mid-campaign content update (URL, description, or logo)',
@@ -1763,7 +1821,7 @@ const AdvertisePage = () => {
                   </div>
                   <div>
                     <div className="font-semibold text-gray-300">Private Dashboard</div>
-                    <div>Secure token + placement overview</div>
+                    <div>Viewable impressions, clicks, and UTM tags</div>
                   </div>
                 </div>
               </div>
@@ -1864,7 +1922,7 @@ const AdvertisePage = () => {
                         <option value="directory">Tools Hub card — $15 USD/wk · $45 USD/mo · $240 USD/yr</option>
                         <option value="mention">In-article mention (nofollow) — $25 USD</option>
                         <option value="tool_listing">Tools Hub listing — $99 USD one-time</option>
-                        <option value="content">Sponsored integration guide (we co-write) — $50 USD</option>
+                        <option value="content">Sponsored integration guide (we co-write) — $99 USD</option>
                         <option value="other">Custom / not sure yet</option>
                       </select>
                     </div>
