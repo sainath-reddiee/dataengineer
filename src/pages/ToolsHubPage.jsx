@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 
 import { SITE_CONFIG } from '@/lib/seoConfig';
+import SponsorPlacement from '@/components/SponsorPlacement';
 
 const TOOLS = [
   {
@@ -331,6 +332,16 @@ export default function ToolsHubPage() {
               </p>
             </motion.div>
           </div>
+        </div>
+
+        <div className="max-w-6xl mx-auto px-4">
+          <SponsorPlacement
+            placementFilter="directory"
+            relaxTargeting
+            category="tools"
+            slug="tools"
+            className="mt-0 mb-8"
+          />
         </div>
 
         {/* Tool cards grid */}

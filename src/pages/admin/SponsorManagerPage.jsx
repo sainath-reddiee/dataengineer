@@ -1,13 +1,23 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Plus, Key, Copy, Check, Globe, ArrowLeft, 
-  Trash2, RefreshCw, Code, CheckCircle, AlertTriangle, ShieldCheck, Settings
+  Trash2, RefreshCw, Code, CheckCircle, AlertTriangle, ShieldCheck, Settings, Pause, Play
 } from 'lucide-react';
 import activeSponsorsData from '@/data/activeSponsors.json';
+import { ALLOWED_PLACEMENTS, getCampaignStatus, placementLabel, partnerDashboardPath } from '@/lib/sponsorCampaign';
+import { formatCtr, getSponsorStats } from '@/utils/sponsorTracking';
 
-const ALLOWED_PLACEMENTS = new Set(['directory', 'resource_reference', 'content']);
+function generateTokenValue() {
+  const bytes = new Uint8Array(8);
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    crypto.getRandomValues(bytes);
+  } else {
+    bytes.forEach((_, i) => { bytes[i] = Math.floor(Math.random() * 256); });
+  }
+  return `sp_${Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('').slice(0, 12)}`;
+}
 
 export default function SponsorManagerPage() {
   const initialSponsors = Array.isArray(activeSponsorsData) ? activeSponsorsData : (activeSponsorsData?.default || []);
@@ -18,6 +28,9 @@ export default function SponsorManagerPage() {
   const [showSettings, setShowSettings] = useState(false);
   const [syncStatus, setSyncStatus] = useState('');
   const [syncErrorMessage, setSyncErrorMessage] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [statsTick, setStatsTick] = useState(0);
+  const [lastSaved, setLastSaved] = useState(null);
 
   // GitHub PAT config — kept in sessionStorage only (cleared when the tab/browser
   // closes), never localStorage. This site has no server backend (static FTP
@@ -44,7 +57,7 @@ export default function SponsorManagerPage() {
     nextMonth.setMonth(nextMonth.getMonth() + 1);
     return nextMonth.toISOString().split('T')[0];
   });
-  const [token, setToken] = useState('');
+  const [token, setToken] = useState(() => generateTokenValue());
   const [notes, setNotes] = useState('');
   
   // Targeting states
@@ -246,24 +259,35 @@ export default function SponsorManagerPage() {
     }
   };
 
-  // Generate a cryptographically secure-looking random token
   const generateToken = () => {
-    const randomHex = Array.from({ length: 10 }, () => 
-      Math.floor(Math.random() * 16).toString(16)
-    ).join('');
-    setToken(`sp_${randomHex}`);
+    setToken(generateTokenValue());
   };
+
+  const campaignRows = useMemo(() => {
+    void statsTick;
+    const list = Array.isArray(sponsors) ? sponsors : [];
+    return list.map((s, idx) => {
+      const status = getCampaignStatus(s);
+      const stats = s.token ? getSponsorStats(s.token) : { impressions: 0, clicks: 0 };
+      return { sponsor: s, idx, status, stats };
+    });
+  }, [sponsors, statsTick]);
+
+  const visibleRows = campaignRows.filter(({ status }) => {
+    if (statusFilter === 'all') return true;
+    return status.key === statusFilter;
+  });
 
   const handleAddSponsor = async (e) => {
     e.preventDefault();
-    if (!company || !url || !token) return;
+    if (!company || !url) return;
 
     const trimmedCompany = company.trim();
     const trimmedUrl = url.trim();
-    const trimmedToken = token.trim();
+    const trimmedToken = (token.trim() || generateTokenValue());
 
-    if (!trimmedCompany || !trimmedUrl || !trimmedToken) {
-      alert('Company, URL, and token are required.');
+    if (!trimmedCompany || !trimmedUrl) {
+      alert('Company and destination URL are required.');
       return;
     }
 
@@ -321,10 +345,22 @@ export default function SponsorManagerPage() {
     const saved = await saveSponsorsToServer(updated);
     if (!saved) return;
 
-    // Reset Form
+    const dashboardPath = partnerDashboardPath(trimmedToken);
+    setLastSaved({
+      company: trimmedCompany,
+      token: trimmedToken,
+      dashboardPath,
+    });
+    const dashboardUrl = `${window.location.origin}${dashboardPath}`;
+    try {
+      await navigator.clipboard.writeText(dashboardUrl);
+    } catch {
+      // Clipboard may be blocked; the banner still shows the link.
+    }
+
     setCompany('');
     setUrl('');
-    setToken('');
+    setToken(generateTokenValue());
     setNotes('');
     setTargetCategories('');
     setTargetTags('');
@@ -332,12 +368,23 @@ export default function SponsorManagerPage() {
   };
 
   const handleDeleteSponsor = async (indexToDelete) => {
+    const target = sponsors[indexToDelete];
+    if (!window.confirm(`Remove ${target?.company || 'this campaign'}? This stops the on-site placement after the next deploy.`)) {
+      return;
+    }
     const updated = sponsors.filter((_, idx) => idx !== indexToDelete);
     await saveSponsorsToServer(updated);
   };
 
+  const handleToggleActive = async (indexToToggle) => {
+    const updated = sponsors.map((item, idx) => (
+      idx === indexToToggle ? { ...item, active: !item.active } : item
+    ));
+    await saveSponsorsToServer(updated);
+  };
+
   const copyClientDashboardLink = (sponsorToken, idx) => {
-    const link = `${window.location.origin}/sponsors/dashboard?token=${sponsorToken}`;
+    const link = `${window.location.origin}${partnerDashboardPath(sponsorToken)}`;
     navigator.clipboard.writeText(link);
     setCopiedIndex(idx);
     setTimeout(() => setCopiedIndex(null), 2000);
@@ -380,9 +427,28 @@ export default function SponsorManagerPage() {
             <Key className="h-8 w-8 text-blue-400" /> Sponsor Campaign Manager
           </h1>
           <p className="text-sm text-gray-400 mt-2">
-            Create sponsor instances, generate access tokens, and sync the JSON source of truth via GitHub.
+            Create campaigns, pause them, copy the partner dashboard link, and sync JSON. First-party viewable impressions and clicks show per token on this browser; GA4 gets the same events after consent.
           </p>
         </div>
+
+        {lastSaved && (
+          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <div className="text-sm font-bold text-emerald-200">{lastSaved.company} saved</div>
+              <p className="text-xs text-emerald-100/80 mt-1 font-mono break-all">
+                Token {lastSaved.token} · partner link copied when the clipboard is available
+              </p>
+            </div>
+            <a
+              href={lastSaved.dashboardPath}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-semibold transition shrink-0"
+            >
+              Open partner dashboard
+            </a>
+          </div>
+        )}
 
         {/* GitHub Automation Settings Panel */}
         {showSettings && (
@@ -540,9 +606,8 @@ export default function SponsorManagerPage() {
                     type="text" 
                     value={token}
                     onChange={(e) => setToken(e.target.value)}
-                    placeholder="sp_xxxxxxxxxx"
+                    placeholder="sp_xxxxxxxxxx (auto-generated if empty)"
                     className="flex-1 bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 font-mono"
-                    required
                   />
                   <button
                     type="button"
@@ -613,35 +678,86 @@ export default function SponsorManagerPage() {
             
             {/* Table of active campaigns */}
             <div className="bg-slate-900/60 border border-white/10 rounded-3xl p-6 backdrop-blur-md">
-              <h2 className="text-lg font-bold text-white mb-6">Active Placement Instances</h2>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+                <h2 className="text-lg font-bold text-white">Placement instances</h2>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setStatsTick((n) => n + 1)}
+                    className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border bg-white/5 border-white/10 text-gray-400 hover:text-white"
+                  >
+                    Refresh stats
+                  </button>
+                  {['all', 'live', 'scheduled', 'paused', 'expired'].map((key) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setStatusFilter(key)}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${
+                        statusFilter === key
+                          ? 'bg-blue-600 border-blue-500 text-white'
+                          : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      {key}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
+              {visibleRows.length === 0 ? (
+                <p className="text-sm text-gray-400 py-8 text-center">No campaigns in this filter. Add one on the left, or switch to All.</p>
+              ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm border-collapse">
                   <thead>
                     <tr className="border-b border-white/10 text-gray-400 text-xs font-bold uppercase tracking-wider">
-                      <th className="pb-3">Sponsor / placement</th>
-                      <th className="pb-3">Dates</th>
-                      <th className="pb-3">Secure Token</th>
+                      <th className="pb-3">Sponsor</th>
+                      <th className="pb-3">Status / dates</th>
+                      <th className="pb-3">This-browser stats</th>
+                      <th className="pb-3">Token</th>
                       <th className="pb-3 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {(Array.isArray(sponsors) ? sponsors : []).map((s, idx) => (
+                    {visibleRows.map(({ sponsor: s, idx, status, stats }) => {
+                      const statusClass = {
+                        live: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/20',
+                        scheduled: 'bg-blue-500/15 text-blue-300 border-blue-500/20',
+                        paused: 'bg-amber-500/15 text-amber-300 border-amber-500/20',
+                        expired: 'bg-slate-500/15 text-slate-300 border-slate-500/20',
+                      }[status.key] || 'bg-white/5 text-gray-400 border-white/10';
+                      return (
                       <tr key={s?.token || s?.company || idx} className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
                         <td className="py-3.5 pr-2">
                           <div className="font-bold text-white">{s.company}</div>
-                          <span className="inline-block text-[10px] text-gray-400 bg-white/5 px-2 py-0.5 rounded border border-white/5 mt-1 font-semibold uppercase">
-                            {s.placement}
+                          <span className="inline-block text-[10px] text-gray-400 bg-white/5 px-2 py-0.5 rounded border border-white/5 mt-1 font-semibold">
+                            {placementLabel(s.placement)}
                           </span>
                         </td>
                         <td className="py-3.5 text-xs text-gray-300 pr-2">
+                          <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold border mb-1 ${statusClass}`}>
+                            {status.label}
+                          </span>
                           <div>Start: {s.startDate}</div>
                           <div className="text-gray-500">End: {s.endDate}</div>
+                        </td>
+                        <td className="py-3.5 text-xs text-gray-300 pr-2 font-mono">
+                          <div>{stats.impressions} imp</div>
+                          <div>{stats.clicks} clk · {formatCtr(stats.impressions, stats.clicks)}</div>
                         </td>
                         <td className="py-3.5 font-mono text-xs text-blue-400 pr-2">
                           {s.token}
                         </td>
-                        <td className="py-3.5 text-right space-x-2">
+                        <td className="py-3.5 text-right space-x-2 whitespace-nowrap">
+                          <button
+                            onClick={() => handleToggleActive(idx)}
+                            className="inline-flex items-center gap-1 bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition"
+                            title={s.active ? 'Pause campaign' : 'Resume campaign'}
+                          >
+                            {s.active ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                            {s.active ? 'Pause' : 'Resume'}
+                          </button>
                           <button
                             onClick={() => copyClientDashboardLink(s.token, idx)}
                             className="inline-flex items-center gap-1 bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition"
@@ -652,8 +768,18 @@ export default function SponsorManagerPage() {
                             ) : (
                               <Copy className="h-3 w-3" />
                             )}
-                            Share Link
+                            Share
                           </button>
+                          <a
+                            href={partnerDashboardPath(s.token)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition"
+                            title="Open partner dashboard"
+                          >
+                            <Globe className="h-3 w-3" />
+                            View
+                          </a>
                           <button
                             onClick={() => handleDeleteSponsor(idx)}
                             className="bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 p-1.5 rounded-lg text-red-400 transition"
@@ -663,10 +789,12 @@ export default function SponsorManagerPage() {
                           </button>
                         </td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
+              )}
             </div>
 
             {/* Config file overwrite block */}
@@ -713,16 +841,17 @@ export default function SponsorManagerPage() {
       {syncStatus && (
         <div className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl border shadow-2xl flex items-center gap-3 backdrop-blur-xl transition-all ${
           syncStatus === 'syncing' ? 'bg-blue-950/90 border-blue-500/30 text-blue-300' :
-          syncStatus === 'success' ? 'bg-emerald-950/90 border-emerald-500/30 text-emerald-300' :
+          syncStatus === 'success' || syncStatus === 'github_success' ? 'bg-emerald-950/90 border-emerald-500/30 text-emerald-300' :
           'bg-rose-950/90 border-rose-500/30 text-rose-300'
         }`}>
           {syncStatus === 'syncing' && <RefreshCw className="h-4 w-4 animate-spin shrink-0" />}
-          {syncStatus === 'success' && <CheckCircle className="h-4 w-4 shrink-0 text-emerald-400" />}
+          {(syncStatus === 'success' || syncStatus === 'github_success') && <CheckCircle className="h-4 w-4 shrink-0 text-emerald-400" />}
           {syncStatus === 'error' && <AlertTriangle className="h-4 w-4 shrink-0 text-rose-400" />}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
             <span className="text-xs font-bold tracking-wide">
               {syncStatus === 'syncing' && 'Syncing sponsor JSON...'}
               {syncStatus === 'success' && 'Sponsor JSON synced successfully.'}
+              {syncStatus === 'github_success' && 'Committed to GitHub. Deploy will pick this up on the next build.'}
               {syncStatus === 'error' && (syncErrorMessage || 'Sync failed. Check server JSON sync settings or copy JSON manually.')}
             </span>
             {syncStatus === 'error' && (

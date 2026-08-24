@@ -21,7 +21,8 @@
         "Natively embedded inside relevant cheatsheets, comparison tables, glossary pages, or technical guides",
         "Plain-text recommendation link within high-intent editorially relevant context",
         "Targeted discovery by practitioners actively learning and evaluating your tech stack",
-        "Vetted resource section — premium exclusivity with only one sponsor per guide"
+        "Vetted resource section — premium exclusivity with only one sponsor per guide",
+        "Viewable-impression tracking (50% on screen for 1s) plus UTM-tagged clicks in a private dashboard"
       ],
       "cta": "Submit Resource Details",
       "icon": "BookOpen",
@@ -51,7 +52,8 @@
         "Featured card in the interactive Tools Hub directory",
         "Includes your platform logo, one-line technical summary, and CTA link",
         "Categorized under the relevant ecosystem section (e.g., Warehousing, ETL, Orchestration)",
-        "Direct click-through visibility from active tool evaluators"
+        "Direct click-through visibility from active tool evaluators",
+        "Private dashboard: viewable impressions, clicks, CTR, and UTM-tagged destination"
       ],
       "cta": "Submit Showcase Request",
       "icon": "Layers",
@@ -88,7 +90,8 @@
         "Deep-dive integration guide (1,500+ words) with working code",
         "Companion GitHub repository with ready-to-clone examples",
         "Focused on real-world data engineering workflows your users care about",
-        "Promoted to our newsletter subscribers and social channels"
+        "Promoted to our newsletter subscribers and social channels",
+        "If the guide includes an on-page partner CTA, it uses the same viewable-impression and click tracking"
       ],
       "cta": "Propose Integration Guide",
       "icon": "Code",
@@ -96,7 +99,7 @@
         {
           "key": "one_time",
           "label": "One-Time Fee",
-          "price": 50,
+          "price": 99,
           "desc": "A co-authored, SEO-optimized tutorial showing data engineers how to integrate your product into real pipelines. Published permanently on the blog and indexed by search engines.",
           "savings": "Permanent evergreen asset"
         }
