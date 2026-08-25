@@ -1,7 +1,7 @@
 # DataEngineer Hub - Full Content Index for LLMs
 
-> Last generated: 2026-08-22
-> Total articles: 104
+> Last generated: 2026-08-25
+> Total articles: 106
 
 - [Main Website](https://dataengineerhub.blog): Official platform
 - [Compact LLM Context](https://dataengineerhub.blog/llms.txt): Summary context file
@@ -12,7 +12,29 @@ Each article includes its URL, summary, key headings, and primary topics.
 
 ---
 
-## Snowflake (45 articles)
+## Data Engineer (3 articles)
+
+### [Data Engineering ROI: How to Justify Your Data Platform Investment to the Board](https://dataengineerhub.blog/articles/justify-data-platform-investment)
+- URL: [https://dataengineerhub.blog/articles/justify-data-platform-investment](https://dataengineerhub.blog/articles/justify-data-platform-investment)
+- Published: 2026-08-25 | Updated: 2026-08-25
+- Word count: ~976
+- Summary: Every data engineering leader has sat through the same meeting: the platform work is done, the pipelines are stable, but defending its value to the board is difficult because it rarely appears on a single P&L line. Data platform budgets are often treated as discretionary IT spend, meaning they get c
+
+### [What 4.2 Million Food Records Taught Me About Reliable Data Quality Pipelines](https://dataengineerhub.blog/articles/food-data-quality-pipeline-guest-post)
+- URL: [https://dataengineerhub.blog/articles/food-data-quality-pipeline-guest-post](https://dataengineerhub.blog/articles/food-data-quality-pipeline-guest-post)
+- Published: 2026-07-26 | Updated: 2026-07-26
+- Word count: ~2139
+- Summary: Processing millions of food records taught me that data quality is rarely one clever cleaning function. It is a chain of small contracts: what a number means, which identifier owns a record, what a missing value means, and what an incremental update is allowed to change.
+- Key sections: The Pipeline Is a Series of Trust Boundaries | Lesson 1: Define the Unit Contract Before Writing Transformations | Lesson 2: Validate Relationships, Not Only Individual Columns | Lesson 3: Identity Is Not the Same as a Barcode | Lesson 4: Partial Updates Are More Dangerous Than Full Imports | Lesson 5: Preserve Provenance All the Way to the API | Lesson 6: Test the Failure Policy, Not Just the Happy Path | A Practical Checklist
+
+### [Someone renamed a column.Your Pipeline Died.Here’s the fix](https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide)
+- URL: [https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide](https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide)
+- Published: 2026-07-01 | Updated: 2026-07-01
+- Word count: ~2373
+- Summary: Someone on the backend team renamed order_total to order_amount . Clean name. Makes total sense for their domain model. They shipped it on a Thursday afternoon. By Friday morning, your revenue dashboard was showing zero. Not wrong numbers. Zero. Because your Snowflake pipeline was still selecting or
+- Key sections: TL;DR | Why schemas break and who owns the blame | What a data contract actually contains | The Open Data Contract Standard and the YAML spec | The only safe migration path for breaking changes | Making it executable: CI enforcement that actually works | The gotchas that sink most implementations | The real cost math
+
+## Snowflake (46 articles)
 
 ### [Identifying Hidden Token Costs in Snowflake Cortex AI](https://dataengineerhub.blog/articles/snowflake-cortex-ai-hidden-token-costs)
 - URL: [https://dataengineerhub.blog/articles/snowflake-cortex-ai-hidden-token-costs](https://dataengineerhub.blog/articles/snowflake-cortex-ai-hidden-token-costs)
@@ -296,6 +318,13 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Summary: Enterprise AI is experiencing a fundamental shift in October 2025. Organizations are no longer satisfied with isolated AI tools that operate in silos. Instead, they’re demanding intelligent systems that understand context, access governed data securely, and orchestrate complex workflows across multi
 - Key sections: Introduction: The Dawn of Context-Aware AI in Enterprise Data | What is the Model Context Protocol (MCP)? | The Problem MCP Solves | Key Benefits of MCP | Snowflake MCP Server: Architecture and Core Components | How the Architecture Works | The Managed Service Advantage | Cortex AI for Financial Services: The First Industry-Specific Implementation
 
+### [Snowflake Query Optimization in 2025](https://dataengineerhub.blog/articles/snowflake-query-optimization-2025)
+- URL: [https://dataengineerhub.blog/articles/snowflake-query-optimization-2025](https://dataengineerhub.blog/articles/snowflake-query-optimization-2025)
+- Published: 2025-10-04 | Updated: 2025-10-08
+- Word count: ~888
+- Summary: Snowflake is renowned for its incredible performance, but as data scales into terabytes and petabytes, no platform is immune to a slow-running query. For a data engineer, mastering Snowflake query optimization is the difference between building an efficient, cost-effective data platform and one that
+- Key sections: The Golden Rule: Always Start with the Query Profile | 1. Right-Size Your Warehouse (But It’s Not a Silver Bullet) | 2. Master Clustering for Effective Pruning | 3. Avoid Spilling at All Costs | 4. Write Smarter SQL | 5. Use Materialized Views for Repetitive Queries | Conclusion
+
 ### [5 Advanced Techniques for Optimizing Snowflake MERGE Queries](https://dataengineerhub.blog/articles/snowflake-merge-optimization-techniques)
 - URL: [https://dataengineerhub.blog/articles/snowflake-merge-optimization-techniques](https://dataengineerhub.blog/articles/snowflake-merge-optimization-techniques)
 - Published: 2025-10-01 | Updated: 2025-10-08
@@ -546,22 +575,6 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Word count: ~2267
 - Summary: Your AI agent isn’t getting dumber over time. It’s getting amnesiac . It forgets a constraint you set ten turns ago, even though it followed it perfectly at turn three. It contradicts itself across sessions. It treats a fact you corrected last week as if it never heard the correction. Teams blame th
 - Key sections: TL;DR | The assumption everyone makes (and shouldn’t) | Why the RAM analogy actually explains the failures you’re seeing | Four memory types, one bucket (the real architectural sin) | The retrieval pipeline, and where the cost actually goes | The gotchas nobody warns you about | What the better architectures actually do | The real question: build, or borrow?
-
-## Data Engineer (2 articles)
-
-### [What 4.2 Million Food Records Taught Me About Reliable Data Quality Pipelines](https://dataengineerhub.blog/articles/food-data-quality-pipeline-guest-post)
-- URL: [https://dataengineerhub.blog/articles/food-data-quality-pipeline-guest-post](https://dataengineerhub.blog/articles/food-data-quality-pipeline-guest-post)
-- Published: 2026-07-26 | Updated: 2026-07-26
-- Word count: ~2139
-- Summary: Processing millions of food records taught me that data quality is rarely one clever cleaning function. It is a chain of small contracts: what a number means, which identifier owns a record, what a missing value means, and what an incremental update is allowed to change.
-- Key sections: The Pipeline Is a Series of Trust Boundaries | Lesson 1: Define the Unit Contract Before Writing Transformations | Lesson 2: Validate Relationships, Not Only Individual Columns | Lesson 3: Identity Is Not the Same as a Barcode | Lesson 4: Partial Updates Are More Dangerous Than Full Imports | Lesson 5: Preserve Provenance All the Way to the API | Lesson 6: Test the Failure Policy, Not Just the Happy Path | A Practical Checklist
-
-### [Someone renamed a column.Your Pipeline Died.Here’s the fix](https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide)
-- URL: [https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide](https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide)
-- Published: 2026-07-01 | Updated: 2026-07-01
-- Word count: ~2373
-- Summary: Someone on the backend team renamed order_total to order_amount . Clean name. Makes total sense for their domain model. They shipped it on a Thursday afternoon. By Friday morning, your revenue dashboard was showing zero. Not wrong numbers. Zero. Because your Snowflake pipeline was still selecting or
-- Key sections: TL;DR | Why schemas break and who owns the blame | What a data contract actually contains | The Open Data Contract Standard and the YAML spec | The only safe migration path for breaking changes | Making it executable: CI enforcement that actually works | The gotchas that sink most implementations | The real cost math
 
 ## Databricks (2 articles)
 

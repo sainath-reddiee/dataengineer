@@ -15,7 +15,7 @@ const OWNER_SLUGS = new Set([
 ]);
 
 export const OWNER_DISPLAY_NAME = 'Sainath Reddy';
-export const OWNER_BADGE_LABEL = 'Founder & Owner';
+export const OWNER_BADGE_LABEL = 'Founder & Data Engineer';
 export const OWNER_ROLE = 'Data Engineer at Anblicks';
 export const OWNER_PROFILE_PATH = '/about';
 

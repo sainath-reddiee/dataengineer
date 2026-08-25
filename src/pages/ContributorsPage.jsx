@@ -86,7 +86,7 @@ function ContributorCard({ user, index, featured = false }) {
   const github = user.meta?.github_url || '';
   const website = user.url || '';
   const jobTitle = contributorRole(user);
-  const bio = decodeHtml(user.description || '');
+  const bio = decodeHtml(user.description || (owner ? 'Data Engineer building scalable data pipelines, cloud warehouses, and modern analytics solutions.' : ''));
   const profileTo = owner ? OWNER_PROFILE_PATH : `/contributors/${user.slug}`;
   const profileLabel = owner ? 'About the founder' : 'View Profile';
 
@@ -126,9 +126,15 @@ function ContributorCard({ user, index, featured = false }) {
 
         {/* Name + role */}
         <div className="flex-1 min-w-0">
+<<<<<<< HEAD
           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
             {owner ? <OwnerBadge size={featured ? 'md' : 'sm'} /> : <BadgeCheck className="h-4 w-4 text-blue-400 flex-shrink-0" />}
             <h3 className={`font-bold text-white truncate ${featured && owner ? 'text-xl md:text-2xl' : 'text-base'}`}>{displayName}</h3>
+=======
+          <div className="flex items-center gap-2 mb-0.5">
+            <BadgeCheck className={`h-4 w-4 flex-shrink-0 ${isOwner ? 'text-amber-400' : 'text-blue-400'}`} />
+            <h3 className="text-base font-bold text-white truncate">{user.name}</h3>
+>>>>>>> 7230be9 (refactor: update contributors page UI, title to Founder & Data Engineer, and static routes)
           </div>
           <p className={`text-xs font-semibold ${owner ? 'text-amber-300' : 'text-blue-400'}`}>{jobTitle}</p>
           {owner && (
@@ -151,6 +157,7 @@ function ContributorCard({ user, index, featured = false }) {
       <div className={`relative flex items-center gap-2 flex-wrap mt-auto pt-2 ${owner ? 'border-t border-amber-400/20' : 'border-t border-slate-700/30'} ${featured && owner ? 'md:w-full' : ''}`}>
         {linkedin && (
           <a href={linkedin} target="_blank" rel="noopener noreferrer"
+            aria-label={`${user.name} on LinkedIn`}
             className="p-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 hover:text-blue-300 transition-all">
             <Linkedin className="h-3.5 w-3.5" />
           </a>
@@ -158,18 +165,21 @@ function ContributorCard({ user, index, featured = false }) {
         {twitter && (
           <a href={twitter.startsWith('http') ? twitter : `https://twitter.com/${twitter.replace('@', '')}`}
             target="_blank" rel="noopener noreferrer"
+            aria-label={`${user.name} on Twitter`}
             className="p-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/20 text-sky-400 hover:text-sky-300 transition-all">
             <Twitter className="h-3.5 w-3.5" />
           </a>
         )}
         {github && (
           <a href={github} target="_blank" rel="noopener noreferrer"
+            aria-label={`${user.name} on GitHub`}
             className="p-1.5 rounded-lg bg-slate-600/30 hover:bg-slate-600/50 border border-slate-500/30 text-gray-300 hover:text-white transition-all">
             <Github className="h-3.5 w-3.5" />
           </a>
         )}
         {website && (
           <a href={website} target="_blank" rel="noopener noreferrer"
+            aria-label={`${user.name}'s website`}
             className="p-1.5 rounded-lg bg-slate-600/30 hover:bg-slate-600/50 border border-slate-500/30 text-gray-300 hover:text-white transition-all">
             <Globe className="h-3.5 w-3.5" />
           </a>

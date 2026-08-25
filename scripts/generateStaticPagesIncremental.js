@@ -667,6 +667,21 @@ const ESSENTIAL_PAGES = [
     `
   },
   {
+    path: '/contributors',
+    title: 'Meet Our Contributors — DataEngineer Hub',
+    description: 'Discover the expert data engineers, cloud architects, and industry practitioners who contribute to DataEngineer Hub. Practical tutorials and hands-on insights.',
+    content: `
+      <h1>Meet Our Contributors</h1>
+      <p>DataEngineer Hub features technical guides and architecture tutorials written by experienced data engineers, cloud architects, and data platform leaders.</p>
+
+      <h2>Our Author Community</h2>
+      <p>Explore articles, code walkthroughs, and real-world system designs authored by our core editorial team and community guest authors. Topics include Snowflake, Databricks, dbt, Apache Airflow, Spark, Python, and SQL.</p>
+
+      <h2>Interested in Contributing?</h2>
+      <p>We welcome submissions from data practitioners who want to share practical knowledge. Visit our <a href="/contribute">Write for Us</a> page for guidelines on submitting article proposals.</p>
+    `
+  },
+  {
     path: '/newsletter',
     noindex: true,
     title: 'Weekly Data Engineering Digest - Subscribe',

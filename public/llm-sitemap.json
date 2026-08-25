@@ -11,9 +11,27 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-08-22",
-  "totalArticles": 104,
+  "lastUpdated": "2026-08-25",
+  "totalArticles": 106,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/justify-data-platform-investment",
+      "title": "Data Engineering ROI: How to Justify Your Data Platform Investment to the Board",
+      "summary": "Every data engineering leader has sat through the same meeting: the platform work is done, the pipelines are stable, but defending its value to the board is difficult because it…",
+      "keyFacts": [
+        "That mismatch is the root of the problem",
+        "Data quality incident rate : Fewer downstream errors caused by bad data, wrong numbers in a report, a broken dashboard, a flawed model input is a leading indicator of platform health that’s easy to track and easy to explain",
+        "Data platform budgets get treated as discretionary IT spend, get cut first in a downturn, and then get blamed when the next Al initiative underperforms because the data underneath it was never solid"
+      ],
+      "entities": [],
+      "questionAnswered": "What is Data Engineering ROI: How to Justify Your Data Platform Investment to the Board?",
+      "lastUpdated": "2026-08-25",
+      "published": "2026-08-25",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Data Engineer",
+      "wordCount": 976
+    },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-cortex-ai-hidden-token-costs",
       "title": "Identifying Hidden Token Costs in Snowflake Cortex AI",
@@ -2211,6 +2229,27 @@
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 2251
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-query-optimization-2025",
+      "title": "Snowflake Query Optimization in 2025",
+      "summary": "Snowflake is renowned for its incredible performance, but as data scales into terabytes and petabytes, no platform is immune to a slow-running query. For a data engineer, mastering Snowflake query…",
+      "keyFacts": [
+        "For a data engineer, mastering Snowflake query optimization is the difference between building an efficient, cost-effective data platform and one that burns through credits and frustrates users",
+        "Partition Pruning: How many partitions is the TableScan reading versus the total partitions in the table",
+        "This guide will walk you through the essential strategies and best practices for Snowflake query optimization, moving from the foundational tools to advanced, real-world techniques"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "What are effective Snowflake query optimization techniques?",
+      "lastUpdated": "2025-10-08",
+      "published": "2025-10-04",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 888
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-merge-optimization-techniques",
