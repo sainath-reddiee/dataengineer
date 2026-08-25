@@ -9,47 +9,81 @@
 // CORS HANDLING
 // ============================================================================
 
-function handle_cors_requests() {
-    $allowed_origins = [
+function dehub_cors_allowed_origin() {
+    $origin = isset($_SERVER['HTTP_ORIGIN']) ? trim((string) $_SERVER['HTTP_ORIGIN']) : '';
+    if ($origin === '') {
+        return '';
+    }
+
+    $allowed = [
         'https://dataengineerhub.blog',
+        'https://www.dataengineerhub.blog',
         'https://app.dataengineerhub.blog',
         'http://localhost:3000',
         'http://localhost:5173',
+        'http://127.0.0.1:3000',
+        'http://127.0.0.1:5173',
     ];
-
-    $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
-
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        header("Access-Control-Allow-Origin: *");
-    } 
-    elseif (in_array($origin, $allowed_origins)) {
-        header("Access-Control-Allow-Origin: " . $origin);
-    }
-    elseif (
-        strpos($origin, 'localhost') !== false ||
-        strpos($origin, '192.168.') !== false ||
-        strpos($origin, '10.') !== false ||
-        strpos($origin, '172.') !== false ||
-        strpos($origin, 'bolt.new') !== false ||
-        strpos($origin, 'staticblitz.com') !== false ||
-        strpos($origin, 'stackblitz.com') !== false ||
-        strpos($origin, 'local-credent') !== false
-    ) {
-        header("Access-Control-Allow-Origin: " . $origin);
+    if (in_array($origin, $allowed, true)) {
+        return $origin;
     }
 
-    header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce, Cache-Control, Pragma");
-    header("Access-Control-Allow-Credentials: true");
-    
-    if ('OPTIONS' == $_SERVER['REQUEST_METHOD']) {
-        status_header(200);
-        exit();
+    if (preg_match('#^https?://(localhost|127\.0\.0\.1)(:\d+)?$#', $origin)) {
+        return $origin;
+    }
+
+    return '';
+}
+
+function dehub_send_cors_headers($exit_on_options = true) {
+    if (headers_sent()) {
+        if ($exit_on_options && (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS')) {
+            status_header(204);
+            exit;
+        }
+        return;
+    }
+
+    $origin = dehub_cors_allowed_origin();
+    // Never pair Access-Control-Allow-Origin: * with Allow-Credentials: true.
+    // Browsers reject that combination, which is what broke admin contributor calls.
+    if ($origin) {
+        header('Access-Control-Allow-Origin: ' . $origin);
+        header('Access-Control-Allow-Credentials: true');
+        header('Vary: Origin');
+    }
+
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    header('Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce, X-Requested-With, Cache-Control, Pragma');
+    header('Access-Control-Max-Age: 86400');
+    header('Access-Control-Expose-Headers: X-WP-Total, X-WP-TotalPages');
+
+    if ($exit_on_options && (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS')) {
+        status_header(204);
+        exit;
     }
 }
 
+function handle_cors_requests() {
+    dehub_send_cors_headers(true);
+}
+
 remove_action('init', 'handle_cors_requests');
-add_action('init', 'handle_cors_requests', 9);
+add_action('init', 'handle_cors_requests', 1);
+add_filter('rest_pre_serve_request', function ($served) {
+    dehub_send_cors_headers(false);
+    return $served;
+}, 0);
+add_filter('rest_allowed_cors_headers', function ($headers) {
+    return array_values(array_unique(array_merge((array) $headers, [
+        'Authorization',
+        'Content-Type',
+        'X-WP-Nonce',
+        'X-Requested-With',
+        'Cache-Control',
+        'Pragma',
+    ])));
+});
 
 // ============================================================================
 // GUEST AUTHOR MANAGEMENT SYSTEM (No WP User Accounts Required)
@@ -133,6 +167,12 @@ function dehub_delete_guest_author($id) {
     return false;
 }
 
+function dehub_rest_delete_guest_author($request) {
+    $id = sanitize_text_field((string) $request['id']);
+    $deleted = dehub_delete_guest_author($id);
+    return rest_ensure_response(['success' => $deleted]);
+}
+
 // Register REST API endpoints for guest authors
 add_action('rest_api_init', function () {
     // 1. Guest Authors CRUD Endpoint
@@ -156,6 +196,10 @@ add_action('rest_api_init', function () {
                 if (empty($params)) {
                     $params = $request->get_body_params();
                 }
+                if (($params['action'] ?? '') === 'delete' && !empty($params['id'])) {
+                    $deleted = dehub_delete_guest_author(sanitize_text_field((string) $params['id']));
+                    return rest_ensure_response(['success' => $deleted]);
+                }
                 $saved = dehub_save_guest_author($params);
                 return rest_ensure_response($saved);
             },
@@ -166,11 +210,15 @@ add_action('rest_api_init', function () {
     register_rest_route('dehub/v1', '/guest-authors/(?P<id>[a-zA-Z0-9_-]+)', [
         [
             'methods'  => 'DELETE',
-            'callback' => function ($request) {
-                $id = $request['id'];
-                $deleted = dehub_delete_guest_author($id);
-                return rest_ensure_response(['success' => $deleted]);
-            },
+            'callback' => 'dehub_rest_delete_guest_author',
+            'permission_callback' => '__return_true'
+        ],
+        [
+            // POST delete avoids a CORS preflight. DELETE + Authorization is
+            // a non-simple request; LiteSpeed often answers OPTIONS without
+            // Access-Control-Allow-Origin, which is what the admin panel hits.
+            'methods'  => 'POST',
+            'callback' => 'dehub_rest_delete_guest_author',
             'permission_callback' => '__return_true'
         ]
     ]);

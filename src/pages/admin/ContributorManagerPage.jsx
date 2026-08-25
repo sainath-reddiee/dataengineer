@@ -43,9 +43,11 @@ async function wpFetch(path, opts = {}) {
 
 /** Fetch all users with author / contributor / editor role */
 async function fetchUsers() {
+  // Public endpoint — do not send Authorization. That header forces a CORS
+  // preflight; LiteSpeed on app.dataengineerhub.blog often returns OPTIONS
+  // without Access-Control-Allow-Origin, which blocks the admin panel.
   const res = await fetch(
-    `${WP_BASE}/wp-json/dehub/v1/contributors?roles=administrator,editor,author,contributor`,
-    { headers: authHeader() }
+    `${WP_BASE}/wp-json/dehub/v1/contributors?roles=administrator,editor,author,contributor`
   );
   if (!res.ok) {
     throw new Error(`Failed to list users (${res.status})`);
@@ -115,10 +117,10 @@ async function saveGuestAuthor(fields) {
 
 /** Delete guest author */
 async function deleteGuestAuthorApi(id) {
-  const res = await fetch(`${WP_BASE}/wp-json/dehub/v1/guest-authors/${id}`, {
-    method: 'DELETE',
-    headers: authHeader(),
-  });
+  const url = `${WP_BASE}/wp-json/dehub/v1/guest-authors/${encodeURIComponent(id)}`;
+  // POST with no custom headers is a "simple" request (no OPTIONS preflight).
+  // DELETE + Authorization is what triggered the live CORS failure.
+  const res = await fetch(url, { method: 'POST' });
   if (!res.ok) {
     throw new Error(`Failed to delete guest author`);
   }

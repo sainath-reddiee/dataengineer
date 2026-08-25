@@ -705,8 +705,7 @@ class WordPressAPI {
   async getUsers(roles = 'author,contributor,editor,administrator') {
     try {
       const res = await fetch(
-        `${this.baseURL.replace('/wp/v2', '/dehub/v1')}/contributors?roles=${roles}`,
-        { headers: this._authHeaders() }
+        `${this.baseURL.replace('/wp/v2', '/dehub/v1')}/contributors?roles=${roles}`
       );
       if (!res.ok) throw new Error(`Failed to list users (${res.status})`);
       return await res.json();
@@ -722,8 +721,7 @@ class WordPressAPI {
   async getUserById(id) {
     try {
       const res = await fetch(
-        `${this.baseURL.replace('/wp/v2', '/dehub/v1')}/contributors?slug=${id}`,
-        { headers: this._authHeaders() }
+        `${this.baseURL.replace('/wp/v2', '/dehub/v1')}/contributors?slug=${id}`
       );
       if (!res.ok) throw new Error(`User ${id} not found (${res.status})`);
       return await res.json();
