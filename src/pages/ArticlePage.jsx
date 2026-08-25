@@ -37,6 +37,7 @@ import { getRecommendedCourses, getPlatformColor } from '@/data/courseRecommenda
 import InlineToolWidget from '@/components/InlineToolWidget';
 import AuthorBioCard from '@/components/AuthorBioCard';
 import SponsorPlacement from '@/components/SponsorPlacement';
+import { isBlogOwner, OWNER_DISPLAY_NAME, OWNER_ROLE, OWNER_PROFILE_PATH } from '@/lib/contributorIdentity';
 import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap, Megaphone, MessageCircleQuestion, Send } from 'lucide-react';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
@@ -500,12 +501,12 @@ const RelatedPosts = ({ currentPostId, category }) => {
 // 🎨 OPTION 1: MINIMALIST AUTHOR CHIP + FLOATING ACTION (RECOMMENDED)
 // ============================================================================
 const MetadataOption1 = ({ safePost, formatDate }) => {
-  const isOwner = ['sainath reddy', 'sainath'].includes((safePost.author || '').toLowerCase().trim());
-  const authorDisplayName = isOwner ? 'Sainath Reddy' : (safePost.author || 'Unknown Author');
+  const isOwner = isBlogOwner({ name: safePost.author, id: safePost.authorData?.id, slug: safePost.authorData?.slug });
+  const authorDisplayName = isOwner ? OWNER_DISPLAY_NAME : (safePost.author || 'Unknown Author');
   const authorInitials = authorDisplayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
   const authorAvatarUrl = safePost.authorData?.avatarUrl || '';
-  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : (safePost.authorData?.role || 'Guest Author');
-  const authorLink = isOwner ? '/about' : null;
+  const authorSubtitle = isOwner ? OWNER_ROLE : (safePost.authorData?.role || 'Guest Author');
+  const authorLink = isOwner ? OWNER_PROFILE_PATH : null;
   const AuthorWrapper = ({ children, className }) =>
     authorLink ? <Link to={authorLink} className={className}>{children}</Link>
                : <span className={className}>{children}</span>;
@@ -693,16 +694,16 @@ const ArticlePage = () => {
   };
 
   // Dynamic author display helpers
-  const isOwner = ['sainath reddy', 'sainath'].includes((safePost.author || '').toLowerCase().trim());
-  const authorDisplayName = isOwner ? 'Sainath Reddy' : (safePost.author || 'Unknown Author');
+  const isOwner = isBlogOwner({ name: safePost.author, id: safePost.authorData?.id, slug: safePost.authorData?.slug });
+  const authorDisplayName = isOwner ? OWNER_DISPLAY_NAME : (safePost.author || 'Unknown Author');
   const authorInitials = authorDisplayName
     .split(' ')
     .map(w => w[0])
     .join('')
     .toUpperCase()
     .slice(0, 2);
-  const authorSubtitle = isOwner ? 'Data Engineer at Anblicks' : (safePost.authorData?.role || 'Guest Author');
-  const authorLink = isOwner ? '/about' : null;
+  const authorSubtitle = isOwner ? OWNER_ROLE : (safePost.authorData?.role || 'Guest Author');
+  const authorLink = isOwner ? OWNER_PROFILE_PATH : null;
 
   const AuthorWrapper = ({ children, className }) =>
     authorLink ? (

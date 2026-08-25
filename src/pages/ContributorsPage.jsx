@@ -7,9 +7,16 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   Users, Linkedin, Twitter, Globe, Github, FileText,
-  ArrowRight, Search, Sparkles, BadgeCheck
+  ArrowRight, Search, Sparkles, BadgeCheck, Crown
 } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import {
+  isBlogOwner,
+  contributorRole,
+  OWNER_BADGE_LABEL,
+  OWNER_DISPLAY_NAME,
+  OWNER_PROFILE_PATH,
+} from '@/lib/contributorIdentity';
 
 const WP_BASE = import.meta.env.DEV ? '' : 'https://app.dataengineerhub.blog';
 const WP_API = `${WP_BASE}/wp-json/wp/v2`;
@@ -53,48 +60,82 @@ async function loadContributors() {
     })
   );
 
-  return withCounts.sort((a, b) => b.postCount - a.postCount);
+  return withCounts.sort((a, b) => {
+    const ownerDelta = Number(isBlogOwner(b)) - Number(isBlogOwner(a));
+    if (ownerDelta) return ownerDelta;
+    return b.postCount - a.postCount;
+  });
 }
 
-function ContributorCard({ user, index }) {
+function OwnerBadge({ size = 'sm' }) {
+  const compact = size === 'sm';
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-400 text-amber-950 font-black uppercase tracking-wider shadow-lg shadow-amber-500/25 ${compact ? 'px-2.5 py-0.5 text-[10px]' : 'px-3.5 py-1 text-xs'}`}>
+      <Crown className={compact ? 'h-3 w-3' : 'h-3.5 w-3.5'} />
+      {OWNER_BADGE_LABEL}
+    </span>
+  );
+}
+
+function ContributorCard({ user, index, featured = false }) {
+  const owner = isBlogOwner(user);
+  const displayName = owner ? OWNER_DISPLAY_NAME : user.name;
   const avatar = user.meta?.author_avatar_url || user.avatar_urls?.['96'] || '';
   const linkedin = user.meta?.linkedin_url || '';
   const twitter = user.meta?.twitter_url || '';
   const github = user.meta?.github_url || '';
   const website = user.url || '';
-  const jobTitle = user.meta?.job_title || 'Guest Contributor';
+  const jobTitle = contributorRole(user);
   const bio = decodeHtml(user.description || '');
+  const profileTo = owner ? OWNER_PROFILE_PATH : `/contributors/${user.slug}`;
+  const profileLabel = owner ? 'About the founder' : 'View Profile';
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className="group relative bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-slate-700/40 hover:border-blue-500/40 rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:shadow-xl hover:shadow-blue-900/20"
+      className={owner
+        ? `group relative overflow-hidden rounded-2xl p-6 md:p-8 flex flex-col gap-4 border-2 border-amber-400/50 bg-gradient-to-br from-amber-950/50 via-slate-900 to-slate-950 shadow-xl shadow-amber-900/20 hover:border-amber-300/70 hover:shadow-amber-800/30 transition-all duration-300 ${featured ? 'md:flex-row md:flex-wrap md:items-start md:gap-x-8' : ''}`
+        : 'group relative bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-slate-700/40 hover:border-blue-500/40 rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:shadow-xl hover:shadow-blue-900/20'}
     >
+      {owner && (
+        <>
+          <div className="pointer-events-none absolute -top-16 -right-10 w-48 h-48 bg-amber-400/15 rounded-full blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-12 -left-8 w-36 h-36 bg-orange-500/10 rounded-full blur-3xl" />
+        </>
+      )}
+
       {/* Top row */}
-      <div className="flex items-start gap-4">
+      <div className={`relative flex items-start gap-4 ${featured && owner ? 'md:flex-1' : ''}`}>
         {/* Avatar */}
         <div className="flex-shrink-0">
           {avatar ? (
-            <img src={avatar} alt={user.name}
-              className="w-16 h-16 rounded-2xl object-cover border-2 border-blue-500/20 shadow-lg" />
+            <img src={avatar} alt={displayName}
+              className={owner
+                ? 'w-16 h-16 md:w-20 md:h-20 rounded-2xl object-cover border-2 border-amber-300/60 shadow-lg shadow-amber-500/20'
+                : 'w-16 h-16 rounded-2xl object-cover border-2 border-blue-500/20 shadow-lg'} />
           ) : (
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-cyan-500 flex items-center justify-center shadow-lg">
-              <span className="text-xl font-black text-white">{initials(user.name)}</span>
+            <div className={owner
+              ? 'w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-amber-400 via-orange-500 to-yellow-500 flex items-center justify-center shadow-lg shadow-amber-500/30'
+              : 'w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-cyan-500 flex items-center justify-center shadow-lg'}>
+              <span className="text-xl font-black text-white">{initials(displayName)}</span>
             </div>
           )}
         </div>
 
         {/* Name + role */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-0.5">
-            <BadgeCheck className="h-4 w-4 text-blue-400 flex-shrink-0" />
-            <h3 className="text-base font-bold text-white truncate">{user.name}</h3>
+          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+            {owner ? <OwnerBadge size={featured ? 'md' : 'sm'} /> : <BadgeCheck className="h-4 w-4 text-blue-400 flex-shrink-0" />}
+            <h3 className={`font-bold text-white truncate ${featured && owner ? 'text-xl md:text-2xl' : 'text-base'}`}>{displayName}</h3>
           </div>
-          <p className="text-xs font-semibold text-blue-400">{jobTitle}</p>
+          <p className={`text-xs font-semibold ${owner ? 'text-amber-300' : 'text-blue-400'}`}>{jobTitle}</p>
+          {owner && (
+            <p className="mt-1 text-xs text-amber-100/70">Runs DataEngineer Hub — not a guest author.</p>
+          )}
           {user.postCount > 0 && (
-            <span className="inline-flex items-center gap-1 mt-1 text-xs text-gray-400">
+            <span className={`inline-flex items-center gap-1 mt-1 text-xs ${owner ? 'text-amber-100/60' : 'text-gray-400'}`}>
               <FileText className="h-3 w-3" /> {user.postCount} article{user.postCount !== 1 ? 's' : ''}
             </span>
           )}
@@ -103,11 +144,11 @@ function ContributorCard({ user, index }) {
 
       {/* Bio */}
       {bio && (
-        <p className="text-sm text-gray-400 leading-relaxed line-clamp-3">{bio}</p>
+        <p className={`relative text-sm leading-relaxed line-clamp-3 ${owner ? 'text-amber-50/70' : 'text-gray-400'} ${featured && owner ? 'md:flex-1 md:pt-1' : ''}`}>{bio}</p>
       )}
 
       {/* Social + CTA */}
-      <div className="flex items-center gap-2 flex-wrap mt-auto pt-2 border-t border-slate-700/30">
+      <div className={`relative flex items-center gap-2 flex-wrap mt-auto pt-2 ${owner ? 'border-t border-amber-400/20' : 'border-t border-slate-700/30'} ${featured && owner ? 'md:w-full' : ''}`}>
         {linkedin && (
           <a href={linkedin} target="_blank" rel="noopener noreferrer"
             className="p-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 hover:text-blue-300 transition-all">
@@ -134,9 +175,11 @@ function ContributorCard({ user, index }) {
           </a>
         )}
 
-        <Link to={`/contributors/${user.slug}`}
-          className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-blue-300 hover:text-blue-100 transition-colors px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 hover:border-blue-400/40">
-          View Profile <ArrowRight className="h-3 w-3" />
+        <Link to={profileTo}
+          className={owner
+            ? 'ml-auto flex items-center gap-1.5 text-xs font-semibold text-amber-950 hover:text-black transition-colors px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-400 to-orange-400 border border-amber-200/40'
+            : 'ml-auto flex items-center gap-1.5 text-xs font-semibold text-blue-300 hover:text-blue-100 transition-colors px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 hover:border-blue-400/40'}>
+          {profileLabel} <ArrowRight className="h-3 w-3" />
         </Link>
       </div>
     </motion.div>
@@ -156,10 +199,22 @@ const ContributorsPage = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const filtered = contributors.filter(u =>
-    u.name.toLowerCase().includes(search.toLowerCase()) ||
-    (u.meta?.job_title || '').toLowerCase().includes(search.toLowerCase())
-  );
+  const query = search.toLowerCase().trim();
+  const filtered = contributors.filter((u) => {
+    if (!query) return true;
+    const owner = isBlogOwner(u);
+    const hay = [
+      u.name,
+      u.meta?.job_title,
+      owner ? OWNER_DISPLAY_NAME : '',
+      owner ? OWNER_BADGE_LABEL : '',
+      owner ? contributorRole(u) : '',
+      owner ? 'founder owner' : 'guest',
+    ].join(' ').toLowerCase();
+    return hay.includes(query);
+  });
+  const owner = filtered.find((u) => isBlogOwner(u));
+  const guests = filtered.filter((u) => !isBlogOwner(u));
 
   return (
     <>
@@ -182,8 +237,9 @@ const ContributorsPage = () => {
               Meet Our <span className="gradient-text">Contributors</span>
             </h1>
             <p className="text-lg text-gray-300 leading-relaxed max-w-2xl mx-auto mb-6">
-              DataEngineer Hub is not a content mill. Tutorials, cheat sheets, and tools are written by people who have run the stacks they describe. The primary author is{' '}
-              <Link to="/about" className="text-blue-400 hover:text-blue-300 underline">Sainath Reddy</Link>.
+              DataEngineer Hub is not a content mill. Tutorials, cheat sheets, and tools are written by people who have run the stacks they describe. The founder and owner is{' '}
+              <Link to="/about" className="text-amber-300 hover:text-amber-200 underline">Sainath Reddy</Link>
+              {' '}— listed below with a gold Founder & Owner badge, not as a guest.
               Guest authors appear here only after at least one piece has passed editorial review and gone live.
             </p>
             <div className="text-left text-gray-400 text-base leading-relaxed max-w-2xl mx-auto space-y-3">
@@ -242,14 +298,26 @@ const ContributorsPage = () => {
               <p className="text-gray-400">No contributors found.</p>
             </div>
           ) : (
-            <>
-              <p className="text-center text-sm text-gray-500 mb-6">{filtered.length} contributor{filtered.length !== 1 ? 's' : ''}</p>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                {filtered.map((user, i) => (
-                  <ContributorCard key={user.id} user={user} index={i} />
-                ))}
-              </div>
-            </>
+            <div className="max-w-6xl mx-auto">
+              {owner && (
+                <div className="mb-10">
+                  <ContributorCard user={owner} index={0} featured />
+                </div>
+              )}
+              {guests.length > 0 && (
+                <>
+                  <div className="flex items-center justify-between gap-4 mb-6">
+                    <h2 className="text-sm font-bold uppercase tracking-wider text-gray-400">Guest contributors</h2>
+                    <p className="text-sm text-gray-500">{guests.length} guest{guests.length !== 1 ? 's' : ''}</p>
+                  </div>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {guests.map((user, i) => (
+                      <ContributorCard key={user.id} user={user} index={i + 1} />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           )}
 
           {/* CTA banner */}

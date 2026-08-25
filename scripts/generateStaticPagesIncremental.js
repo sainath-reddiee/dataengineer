@@ -921,11 +921,11 @@ const ESSENTIAL_PAGES = [
   },
   {
     path: '/contributors',
-    title: 'Contributors - DataEngineer Hub Guest Authors',
-    description: 'Meet the data engineers who write for DataEngineer Hub. Guest authors publish production-tested tutorials under their own byline after editorial review.',
+    title: 'Contributors - DataEngineer Hub Founder and Guest Authors',
+    description: 'Meet Sainath Reddy, founder and owner of DataEngineer Hub, plus guest authors who publish production-tested tutorials under their own byline after editorial review.',
     content: `
       <h1>Contributors</h1>
-      <p>DataEngineer Hub is not a content mill. Tutorials, cheat sheets, glossary entries, and tools are written by people who have run the stacks they describe. The primary author is <a href="/about">Sainath Reddy</a>, a data engineer based in Hyderabad. Guest authors appear in this directory only after at least one piece has passed editorial review and gone live.</p>
+      <p>DataEngineer Hub is not a content mill. Tutorials, cheat sheets, glossary entries, and tools are written by people who have run the stacks they describe. The founder and owner is <a href="/about">Sainath Reddy</a>, a data engineer based in Hyderabad — listed on this page with a Founder &amp; Owner badge, not as a guest. Guest authors appear in this directory only after at least one piece has passed editorial review and gone live.</p>
       <p>That review is the same bar as staff content: technical accuracy, working examples where code is shown, a real name and bio, and no unedited AI drafts. If a guest post is wrong after publication, we patch it in public the same way we patch staff posts. Bylines are not sold, and we will not add a co-author who did not write the article.</p>
 
       <h2>How someone gets listed here</h2>

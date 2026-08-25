@@ -5,17 +5,22 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Linkedin, Twitter, Globe, Github, ArrowRight, BadgeCheck, User } from 'lucide-react';
+import { Linkedin, Twitter, Globe, Github, ArrowRight, BadgeCheck, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-
-const OWNER_NAMES = ['sainath reddy', 'sainath'];
+import {
+  isBlogOwner,
+  OWNER_BADGE_LABEL,
+  OWNER_DISPLAY_NAME,
+  OWNER_ROLE,
+  OWNER_PROFILE_PATH,
+} from '@/lib/contributorIdentity';
 
 const AuthorBioCard = ({ author }) => {
   if (!author || !author.name) return null;
 
-  const isOwner = OWNER_NAMES.includes(author.name.toLowerCase().trim());
-  const displayName = isOwner ? 'Sainath Reddy' : author.name;
+  const isOwner = isBlogOwner(author);
+  const displayName = isOwner ? OWNER_DISPLAY_NAME : author.name;
   const initials = displayName
     .split(' ')
     .map((w) => w[0])
@@ -24,7 +29,7 @@ const AuthorBioCard = ({ author }) => {
     .slice(0, 2);
 
   // For the owner, use a fixed role + a default bio if WP profile bio is empty
-  const role = isOwner ? 'Data Engineer at Anblicks' : (author.role || 'Guest Author');
+  const role = isOwner ? OWNER_ROLE : (author.role || 'Guest Author');
   const YOE = Math.max(5, new Date().getFullYear() - 2021);
   const bio = isOwner
     ? author.bio ||
@@ -49,18 +54,27 @@ const AuthorBioCard = ({ author }) => {
       className="border-t-2 border-gray-700/50 pt-8 mt-12"
     >
       {/* Card */}
-      <div className="relative overflow-hidden rounded-3xl border border-slate-700/40 bg-gradient-to-br from-slate-900/90 via-slate-800/60 to-slate-900/90 p-6 md:p-8 backdrop-blur-sm shadow-2xl shadow-blue-900/10">
+      <div className={isOwner
+        ? 'relative overflow-hidden rounded-3xl border-2 border-amber-400/45 bg-gradient-to-br from-amber-950/40 via-slate-900/90 to-slate-950 p-6 md:p-8 backdrop-blur-sm shadow-2xl shadow-amber-900/20'
+        : 'relative overflow-hidden rounded-3xl border border-slate-700/40 bg-gradient-to-br from-slate-900/90 via-slate-800/60 to-slate-900/90 p-6 md:p-8 backdrop-blur-sm shadow-2xl shadow-blue-900/10'}>
         {/* Decorative blobs */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-cyan-600/5 rounded-3xl" />
-        <div className="pointer-events-none absolute -top-20 -right-20 w-72 h-72 bg-blue-500/8 rounded-full blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-10 -left-10 w-56 h-56 bg-purple-500/6 rounded-full blur-3xl" />
+        <div className={`pointer-events-none absolute inset-0 rounded-3xl ${isOwner ? 'bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-yellow-500/10' : 'bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-cyan-600/5'}`} />
+        <div className={`pointer-events-none absolute -top-20 -right-20 w-72 h-72 rounded-full blur-3xl ${isOwner ? 'bg-amber-400/15' : 'bg-blue-500/8'}`} />
+        <div className={`pointer-events-none absolute -bottom-10 -left-10 w-56 h-56 rounded-full blur-3xl ${isOwner ? 'bg-orange-500/10' : 'bg-purple-500/6'}`} />
 
         {/* Badge row */}
         <div className="relative mb-5">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/15 border border-blue-400/25 text-xs font-semibold text-blue-300 uppercase tracking-wider">
-            <BadgeCheck className="h-3.5 w-3.5" />
-            {isOwner ? 'Author' : 'Guest Author'}
-          </span>
+          {isOwner ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-400 text-amber-950 text-xs font-black uppercase tracking-wider shadow-lg shadow-amber-500/25">
+              <Crown className="h-3.5 w-3.5" />
+              {OWNER_BADGE_LABEL}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/15 border border-blue-400/25 text-xs font-semibold text-blue-300 uppercase tracking-wider">
+              <BadgeCheck className="h-3.5 w-3.5" />
+              Guest Author
+            </span>
+          )}
         </div>
 
         {/* Main row */}
@@ -90,7 +104,7 @@ const AuthorBioCard = ({ author }) => {
             {/* Name */}
             <div>
               {isOwner ? (
-                <Link to="/about" className="group inline-flex items-center gap-2">
+                <Link to={OWNER_PROFILE_PATH} className="group inline-flex items-center gap-2">
                   <h3 className="text-xl md:text-2xl font-black text-white group-hover:text-blue-300 transition-colors duration-200">
                     {displayName}
                   </h3>
@@ -113,7 +127,7 @@ const AuthorBioCard = ({ author }) => {
             <div className="flex flex-wrap items-center gap-2.5 pt-1">
               {isOwner && (
                 <Link
-                  to="/about"
+                  to={OWNER_PROFILE_PATH}
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-300 hover:text-blue-100 transition-colors px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 hover:border-blue-400/40"
                 >
                   View Profile <ArrowRight className="h-3 w-3" />

@@ -12,6 +12,7 @@ import AuthorBioCard from '@/components/AuthorBioCard';
 import MetaTags from '@/components/SEO/MetaTags';
 import PostCard from '@/components/PostCard';
 import wordpressApi from '@/services/wordpressApi';
+import { isBlogOwner, contributorRole, OWNER_DISPLAY_NAME } from '@/lib/contributorIdentity';
 
 const WP_BASE = import.meta.env.DEV ? '' : 'https://app.dataengineerhub.blog';
 const WP_API = `${WP_BASE}/wp-json/wp/v2`;
@@ -137,7 +138,9 @@ const ContributorProfilePage = () => {
   }
 
   // Build authorData shape for AuthorBioCard
+  const owner = isBlogOwner(user);
   const authorData = {
+    id: user.id,
     name: user.name || '',
     bio: decodeHtml(user.description || ''),
     avatarUrl: user.meta?.author_avatar_url || user.avatar_urls?.['96'] || '',
@@ -145,11 +148,13 @@ const ContributorProfilePage = () => {
     linkedin: user.meta?.linkedin_url || '',
     twitter: user.meta?.twitter_url || '',
     github: user.meta?.github_url || '',
-    role: user.meta?.job_title || 'Guest Contributor',
+    role: contributorRole(user),
     slug: user.slug,
   };
 
-  const metaTitle = `${user.name} — Contributor at DataEngineer Hub`;
+  const metaTitle = owner
+    ? `${OWNER_DISPLAY_NAME} — Founder & Owner of DataEngineer Hub`
+    : `${user.name} — Contributor at DataEngineer Hub`;
   const metaDesc = authorData.bio
     ? `${authorData.bio.slice(0, 155)}…`
     : `Read articles by ${user.name} on DataEngineer Hub — practical data engineering tutorials and insights.`;
