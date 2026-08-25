@@ -73,7 +73,7 @@ jobs:
     
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 2
 
@@ -156,7 +156,7 @@ jobs:
       - name: 💾 Restore Build Cache
         id: cache-restore
         if: steps.changes.outputs.skip_cache != 'true'
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~/.npm
@@ -170,7 +170,7 @@ jobs:
 
       - name: 💾 Restore FTP Sync State
         id: ftp-cache-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: .ftp-deploy-sync-state.json
           key: ftp-state-
@@ -178,7 +178,7 @@ jobs:
             ftp-state-
 
       - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '22'
           cache: 'npm'
@@ -431,7 +431,7 @@ jobs:
         id: ftp_deploy
         if: steps.changes.outputs.skip_deploy != 'true'
         continue-on-error: true
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
@@ -476,7 +476,7 @@ jobs:
       - name: 🚀 Retry Deploy to Hostinger (FTPS)
         id: ftp_deploy_retry
         if: steps.changes.outputs.skip_deploy != 'true' && steps.ftp_deploy.outcome == 'failure'
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
@@ -581,8 +581,8 @@ jobs:
             fi
           done
           
-          # Verify a sample article
-          SAMPLE_ARTICLE=$(find dist/articles -name 'index.html' | head -1 | sed 's|dist||' | sed 's|/index.html||')
+          # Verify a sample article (-print -quit avoids SIGPIPE from head closing the pipe)
+          SAMPLE_ARTICLE=$(find dist/articles -mindepth 2 -name 'index.html' -print -quit | sed 's|dist||; s|/index.html||')
           if [ ! -z "$SAMPLE_ARTICLE" ]; then
             if curl -sf -o /dev/null "https://dataengineerhub.blog${SAMPLE_ARTICLE}"; then
               echo "✅ Sample article is accessible: ${SAMPLE_ARTICLE}"
@@ -610,7 +610,7 @@ jobs:
         # Prevents duplicate sends when WordPress triggers multiple rapid deploys
         # (e.g. autosave -> publish -> minor update all within minutes of each other).
         id: newsletter-dedup
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: /tmp/newsletter_sent_ids.txt
           key: newsletter-sent-${{ github.run_id }}
@@ -873,12 +873,25 @@ jobs:
         continue-on-error: true
         timeout-minutes: 3
 
+      - name: 📌 Check Newsletter Dedup File
+        # The save step warns and fails if this path is missing (typical on
+        # scheduled rebuilds where no newsletter is sent).
+        id: newsletter-file
+        if: always()
+        run: |
+          if [ -f /tmp/newsletter_sent_ids.txt ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "No newsletter dedup file — skipping cache save"
+          fi
+
       - name: 💾 Save Newsletter Dedup State
         # Persists the dedup ID file so the next workflow run can check it.
         # Uses a unique key per run + a shared prefix so restore-keys always
         # finds the most recently saved state.
-        if: always()
-        uses: actions/cache/save@v4
+        if: always() && steps.newsletter-file.outputs.exists == 'true'
+        uses: actions/cache/save@v5
         with:
           path: /tmp/newsletter_sent_ids.txt
           key: newsletter-sent-${{ github.run_id }}
@@ -956,7 +969,7 @@ jobs:
         if: |
           steps.changes.outputs.skip_cache != 'true' &&
           (steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true')
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~/.npm
@@ -968,7 +981,7 @@ jobs:
 
       - name: 💾 Save FTP Sync State
         if: steps.changes.outputs.skip_deploy != 'true' && steps.changes.outputs.dry_run != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .ftp-deploy-sync-state.json
           key: ftp-state-${{ github.run_id }}
@@ -978,7 +991,7 @@ jobs:
           steps.changes.outputs.skip_deploy == 'true' ||
           steps.cache-restore.outputs.cache-hit != 'true' || 
           github.event_name == 'repository_dispatch'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: build-${{ github.run_number }}
           path: |
@@ -994,10 +1007,10 @@ jobs:
     
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       
       - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '22'
           cache: 'npm'
@@ -1012,7 +1025,7 @@ jobs:
         run: npm run sitemap:validate
       
       - name: 💬 PR Comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         if: always()
         with:
           script: |
