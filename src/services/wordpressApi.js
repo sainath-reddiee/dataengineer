@@ -310,6 +310,7 @@ class WordPressAPI {
           || authorEmbed.meta?.['wpseo_profile_twitter'] || '',
         github: authorEmbed.meta?.github_url || authorEmbed.acf?.github_url || '',
         role: authorEmbed.meta?.job_title || authorEmbed.acf?.job_title || '',
+        id: authorEmbed.id,
       };
       const featured = wpPost.meta?.featured === '1' || wpPost.meta?.featured === 1;
       const trending = wpPost.meta?.trending === '1' || wpPost.meta?.trending === 1;
