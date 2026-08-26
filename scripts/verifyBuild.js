@@ -694,6 +694,15 @@ async function verifyBuild() {
       warnings.push('⚠️  .htaccess is missing Accept: text/markdown negotiation');
       log('   ⚠️  .htaccess missing markdown negotiation', 'yellow');
     }
+    const hasArticleSpaFallback = /RewriteCond %\{DOCUMENT_ROOT\}\/articles\/%1\/index\.html !-f/.test(htaccess)
+      && /RewriteRule \^articles\/\(\[\^\/\]\+\)\/\?\$ \/index\.html/.test(htaccess)
+      && /env=DEH_ARTICLE_SPA/.test(htaccess);
+    if (hasArticleSpaFallback) {
+      log('   ✅ .htaccess SPA-fallbacks missing article HTML to index.html', 'green');
+    } else {
+      issues.push('❌ .htaccess is missing the /articles/:slug SPA fallback (reload 404s for new posts)');
+      log('   ❌ .htaccess missing article SPA fallback', 'red');
+    }
   }
 
   const extraDiscovery = [

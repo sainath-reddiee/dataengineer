@@ -126,15 +126,9 @@ function ContributorCard({ user, index, featured = false }) {
 
         {/* Name + role */}
         <div className="flex-1 min-w-0">
-<<<<<<< HEAD
           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
             {owner ? <OwnerBadge size={featured ? 'md' : 'sm'} /> : <BadgeCheck className="h-4 w-4 text-blue-400 flex-shrink-0" />}
             <h3 className={`font-bold text-white truncate ${featured && owner ? 'text-xl md:text-2xl' : 'text-base'}`}>{displayName}</h3>
-=======
-          <div className="flex items-center gap-2 mb-0.5">
-            <BadgeCheck className={`h-4 w-4 flex-shrink-0 ${isOwner ? 'text-amber-400' : 'text-blue-400'}`} />
-            <h3 className="text-base font-bold text-white truncate">{user.name}</h3>
->>>>>>> 7230be9 (refactor: update contributors page UI, title to Founder & Data Engineer, and static routes)
           </div>
           <p className={`text-xs font-semibold ${owner ? 'text-amber-300' : 'text-blue-400'}`}>{jobTitle}</p>
           {owner && (

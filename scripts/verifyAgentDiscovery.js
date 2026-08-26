@@ -67,6 +67,13 @@ if (!/Header always set Link/.test(htaccess) || !/DEH_AGENT_LINKS/.test(htaccess
 } else {
   ok('Link headers are scoped to the homepage and api-catalog');
 }
+if (/RewriteCond %\{DOCUMENT_ROOT\}\/articles\/%1\/index\.html !-f/.test(htaccess)
+  && /RewriteRule \^articles\/\(\[\^\/\]\+\)\/\?\$ \/index\.html/.test(htaccess)
+  && /env=DEH_ARTICLE_SPA/.test(htaccess)) {
+  ok('.htaccess SPA-fallbacks missing article HTML so reloads do not 404');
+} else {
+  fail('.htaccess must fallback /articles/:slug to /index.html when static HTML is missing');
+}
 
 const robots = fs.readFileSync(path.join(publicDir, 'robots.txt'), 'utf8');
 if (robots.includes('Allow: /auth.md') && robots.includes('Allow: /.well-known/')) {
