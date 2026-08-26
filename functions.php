@@ -1553,15 +1553,24 @@ function trigger_github_action_on_publish($ID, $post) {
             'User-Agent'    => 'WordPress-GitHub-Action-Trigger'
         ],
         'timeout' => 15,
-        'blocking' => false 
+        // Wait for GitHub to accept the dispatch. Non-blocking requests are
+        // often killed when the PHP request ends, so new posts never SSG.
+        'blocking' => true
     ];
 
     $response = wp_remote_post($url, $args);
-    
+
     if (is_wp_error($response)) {
         error_log('GitHub Action trigger failed to dispatch: ' . $response->get_error_message());
+        delete_transient($transient_key);
     } else {
-        error_log('Successfully dispatched GitHub Action trigger for post: ' . $post->post_title);
+        $code = wp_remote_retrieve_response_code($response);
+        if ($code >= 200 && $code < 300) {
+            error_log('Successfully dispatched GitHub Action trigger for post: ' . $post->post_title);
+        } else {
+            error_log('GitHub Action trigger returned HTTP ' . $code . ' for post: ' . $post->post_title);
+            delete_transient($transient_key);
+        }
     }
 }
 

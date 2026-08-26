@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import {
   isBlogOwner,
   contributorRole,
@@ -25,7 +28,14 @@ ok(!isBlogOwner({ name: 'Bansilal Keloth', meta: { job_title: 'Lead data enginee
 ok(contributorRole({ id: 1, meta: { job_title: '' } }) === OWNER_ROLE, 'owner empty job_title does not become Guest Contributor');
 ok(contributorRole({ name: 'Rashi Lachuriya', meta: { job_title: 'Marketing' } }) === 'Marketing', 'guest job titles are preserved');
 ok(contributorRole({ name: 'Jelte Lud', meta: { job_title: '' } }) === 'Guest Contributor', 'untitled guests still fall back');
-ok(OWNER_BADGE_LABEL === 'Founder & Owner', 'badge label is Founder & Owner');
+ok(OWNER_BADGE_LABEL === 'Founder & Data Engineer', 'badge label is Founder & Data Engineer');
+
+const contributorsPage = fs.readFileSync(
+  path.join(path.dirname(fileURLToPath(import.meta.url)), '../src/pages/ContributorsPage.jsx'),
+  'utf8'
+);
+ok(!/^(<<<<<<<|>>>>>>>)/m.test(contributorsPage), 'ContributorsPage.jsx has no merge conflict markers');
+ok(contributorsPage.includes('OwnerBadge'), 'ContributorsPage.jsx keeps the Founder & Owner badge');
 
 if (failed) {
   console.error(`\n${failed} contributor identity check(s) failed`);
