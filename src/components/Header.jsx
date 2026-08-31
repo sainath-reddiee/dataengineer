@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Wrench, Info, Search, BookOpen, FileText, GraduationCap, Target, Megaphone, Bookmark } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Wrench, Info, Search, BookOpen, FileText, GraduationCap, Target, Megaphone, Bookmark, PenLine } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
 import { useReadingList } from '@/hooks/useReadingList';
 
@@ -549,6 +549,14 @@ const Header = ({ topOffset = 0 }) => {
               </Link>
             </motion.div>
 
+            <motion.div whileHover={{ y: -2 }}>
+              <Link
+                to="/contribute"
+                className="whitespace-nowrap font-semibold text-xs 2xl:text-base transition-all duration-200 flex items-center gap-2 px-1.5 2xl:px-0 text-gray-300 hover:text-blue-400"
+              >
+                Write
+              </Link>
+            </motion.div>
             {/* Advertise */}
             <motion.div whileHover={{ y: -2 }}>
               <Link 
@@ -702,6 +710,10 @@ const Header = ({ topOffset = 0 }) => {
                 <Link to="/about" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
                   <Info className="w-5 h-5" />
                   About
+                </Link>
+                <Link to="/contribute" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
+                  <PenLine className="w-5 h-5" />
+                  Write for us
                 </Link>
                 <Link to="/advertise" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
                   <Megaphone className="w-5 h-5" />

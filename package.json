@@ -35,6 +35,7 @@
     "test:adsense-gate": "node scripts/verifyAdsenseQualityGate.js && node scripts/verifySsgArticle.js && node scripts/verifyReviewerUx.js",
     "test:engagement": "node scripts/verifyEngagementFeatures.js",
     "test:newsletter": "node scripts/verifyNewsletter.js",
+    "test:advertise": "node scripts/verifyAdvertisePackages.js",
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'",
     "test:build": "npm run build",
     "pseo:sitemaps": "node scripts/generateSitemap.js",

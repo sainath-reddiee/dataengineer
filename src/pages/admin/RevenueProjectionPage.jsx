@@ -6,6 +6,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { DollarSign, Loader2, TrendingUp, ExternalLink } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 import { scoreArticlesBatch } from '@/utils/rankIntelligence';
+import advertiseConfig from '@/data/advertiseConfig.json';
 
 export function RevenueProjectionPage() {
     const [loading, setLoading] = useState(true);
@@ -168,6 +169,23 @@ export function RevenueProjectionPage() {
                         </div>
                     ))}
                 </div>
+            </div>
+
+            <div className="p-4 bg-slate-800/40 border border-slate-700 rounded-xl">
+                <h2 className="text-lg font-bold text-white mb-2">Sponsorship SKUs (invoiced, not AdSense)</h2>
+                <p className="text-xs text-gray-400 mb-3">
+                    Unique content comes from the $249 guide, not from more cheap mention slots.
+                </p>
+                <ul className="text-sm text-gray-300 space-y-1">
+                    {advertiseConfig.opportunities.map((opp) => (
+                        <li key={opp.packageKey}>
+                            <span className="text-white font-medium">{opp.title}</span>
+                            {' — '}
+                            {opp.durations.map((d) => `$${d.price} ${d.label}`).join(' / ')}
+                        </li>
+                    ))}
+                    <li><span className="text-white font-medium">Newsletter</span> — $79 / issue</li>
+                </ul>
             </div>
 
             <div className="p-4 bg-amber-900/10 border border-amber-800/30 rounded-xl">
