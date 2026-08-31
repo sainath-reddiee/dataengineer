@@ -14,6 +14,9 @@ import PostListItem from '@/components/PostListItem';
 import PostListItemSkeleton from '@/components/PostListItemSkeleton';
 import EmptyCategoryState from '@/components/EmptyCategoryState';
 
+import FallbackArticleList from '@/components/FallbackArticleList';
+import { useSlowLoadFallback } from '@/hooks/useSlowLoadFallback';
+
 const RecentPosts = ({
   category = null,
   tag = null,
@@ -21,7 +24,8 @@ const RecentPosts = ({
   initialLimit = 6,
   title = "Recent Posts",
   showLoadMore = true,
-  showViewToggle = true
+  showViewToggle = true,
+  showRefresh = false
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState('desc');
@@ -50,6 +54,8 @@ const RecentPosts = ({
   useEffect(() => {
     setCurrentPage(1);
   }, [sortOrder, category, tag]);
+
+  const showBundledFallback = useSlowLoadFallback(loading && posts.length === 0 && !category && !tag);
 
   const handleRefresh = () => {
     console.log('🔄 Manual refresh triggered in RecentPosts');
@@ -86,11 +92,11 @@ const RecentPosts = ({
     ? 'flex flex-col space-y-4 max-w-4xl mx-auto'
     : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
 
-  if (loading && posts.length === 0) {
+  if (loading && posts.length === 0 && !showBundledFallback) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between flex-wrap gap-4">
-          <h2 className="text-2xl font-bold gradient-text">{title}</h2>
+          {title && <h2 className="text-2xl font-bold gradient-text">{title}</h2>}
           {showViewToggle && (
             <div className="flex items-center space-x-2">
               <Button 
@@ -123,32 +129,43 @@ const RecentPosts = ({
     );
   }
 
+  if ((error || (posts.length === 0 && !loading) || showBundledFallback) && !category && !tag) {
+    return (
+      <div className="space-y-6">
+        {title && <h2 className="text-2xl font-bold gradient-text">{title}</h2>}
+        <FallbackArticleList limit={initialLimit} offset={6} />
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div className="space-y-6">
-        <h2 className="text-2xl font-bold gradient-text">{title}</h2>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-red-500/10 border border-red-500/20 rounded-lg p-6 text-center"
-        >
-          <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-red-300 mb-2">
-            {(category || tag) && showCategoryError 
-              ? `${category ? `Category "${category}"` : `Tag "${tag}"`} Issue` 
-              : 'Failed to Load Posts'}
-          </h3>
-          <p className="text-red-200/80 mb-4">{error}</p>
-          <Button
-            onClick={handleRefresh}
-            variant="outline"
-            className="border-red-400/50 text-red-300 hover:bg-red-500/20"
-            aria-label="Try again"
+        {title && <h2 className="text-2xl font-bold gradient-text">{title}</h2>}
+        {showCategoryError ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-red-500/10 border border-red-500/20 rounded-lg p-6 text-center"
           >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Try Again
-          </Button>
-        </motion.div>
+            <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-red-300 mb-2">
+              {category ? `Category "${category}"` : `Tag "${tag}"`} Issue
+            </h3>
+            <p className="text-red-200/80 mb-4">{error}</p>
+            <Button
+              onClick={handleRefresh}
+              variant="outline"
+              className="border-red-400/50 text-red-300 hover:bg-red-500/20"
+              aria-label="Try again"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Try Again
+            </Button>
+          </motion.div>
+        ) : (
+          <FallbackArticleList limit={initialLimit} offset={6} />
+        )}
       </div>
     );
   }
@@ -157,7 +174,7 @@ const RecentPosts = ({
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold gradient-text">{title}</h2>
+          {title && <h2 className="text-2xl font-bold gradient-text">{title}</h2>}
         </div>
         <EmptyCategoryState category={category || tag} title={title} />
       </div>
@@ -168,7 +185,7 @@ const RecentPosts = ({
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div className="flex items-center gap-4">
-          <h2 className="text-2xl font-bold gradient-text">{title}</h2>
+          {title && <h2 className="text-2xl font-bold gradient-text">{title}</h2>}
           {totalPosts > 0 && (
             <span className="text-sm text-gray-400 bg-gray-800/50 px-3 py-1 rounded-full">
               {posts.length} of {totalPosts} posts
@@ -232,17 +249,19 @@ const RecentPosts = ({
             {sortOrder === 'desc' ? 'Newest First' : 'Oldest First'}
           </Button>
 
-          <Button
-            onClick={handleRefresh}
-            variant="outline"
-            size="sm"
-            className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
-            disabled={loading}
-            aria-label="Refresh posts"
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
+          {showRefresh && (
+            <Button
+              onClick={handleRefresh}
+              variant="outline"
+              size="sm"
+              className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
+              disabled={loading}
+              aria-label="Refresh posts"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          )}
         </div>
       </div>
 

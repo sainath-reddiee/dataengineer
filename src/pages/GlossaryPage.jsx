@@ -42,6 +42,7 @@ import { SITE_CONFIG } from '@/lib/seoConfig';
 
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import { getParkedSsgContent } from '@/utils/ssgArticle';
 
 // Configure marked with custom renderer
 const renderer = new marked.Renderer();
@@ -166,6 +167,20 @@ export function GlossaryPage() {
 
         return () => { cancelled = true; };
     }, [termSlug, navigate]);
+
+    const parkedSsgHtml = getParkedSsgContent(`/glossary/${termSlug}`);
+    if (((loading || !term || !derivedData) || error) && parkedSsgHtml) {
+        return (
+            <div className="pt-4 pb-12">
+                <div className="container mx-auto px-6 max-w-4xl">
+                    <div
+                        className="seo-content"
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parkedSsgHtml) }}
+                    />
+                </div>
+            </div>
+        );
+    }
 
     if (error) {
         return (

@@ -38,7 +38,7 @@ import InlineToolWidget from '@/components/InlineToolWidget';
 import AuthorBioCard from '@/components/AuthorBioCard';
 import SponsorPlacement from '@/components/SponsorPlacement';
 import { isBlogOwner, OWNER_DISPLAY_NAME, OWNER_ROLE, OWNER_PROFILE_PATH } from '@/lib/contributorIdentity';
-import { getParkedSsgArticle } from '@/utils/ssgArticle';
+import { useSsgArticleFallback } from '@/hooks/useSsgArticleFallback';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap, Megaphone, MessageCircleQuestion, Send } from 'lucide-react';
 
@@ -669,7 +669,7 @@ const ArticlePage = () => {
   }, [post?.content, slug]);
 
   const headings = useMemo(() => extractHeadings(processedHtml), [processedHtml]);
-  const parkedSsgHtml = useMemo(() => getParkedSsgArticle(slug), [slug]);
+  const parkedSsgHtml = useSsgArticleFallback(slug);
 
   if ((loading && !post) || ((error || !post) && parkedSsgHtml)) {
     if (parkedSsgHtml) {

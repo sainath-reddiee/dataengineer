@@ -32,7 +32,7 @@
     "test:sponsor-campaign": "node scripts/verifySponsorCampaign.js",
     "test:contributor-identity": "node scripts/verifyContributorIdentity.js",
     "test:agent-discovery": "npm run agent-skills && node scripts/verifyAgentDiscovery.js",
-    "test:adsense-gate": "node scripts/verifyAdsenseQualityGate.js && node scripts/verifySsgArticle.js",
+    "test:adsense-gate": "node scripts/verifyAdsenseQualityGate.js && node scripts/verifySsgArticle.js && node scripts/verifyReviewerUx.js",
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'",
     "test:build": "npm run build",
     "pseo:sitemaps": "node scripts/generateSitemap.js",

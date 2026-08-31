@@ -7,6 +7,7 @@ import LazyImage from './LazyImage';
 import TagsList from './TagsList';
 import FreshnessBadge from './FreshnessBadge';
 import { useViewCount } from '@/hooks/usePopularity';
+import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 
 const isMobile = window.innerWidth <= 768;
 
@@ -50,6 +51,7 @@ const PostCard = ({ post }) => {
   return (
     <MotionLink
       to={`/articles/${post.slug}`}
+      reloadDocument={ADSENSE_REVIEW_MODE}
       className="relative block blog-card rounded-xl overflow-hidden group h-full"
       variants={cardVariants}
       initial="rest"
