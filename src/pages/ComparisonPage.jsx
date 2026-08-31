@@ -31,6 +31,7 @@ import { SITE_CONFIG } from '@/lib/seoConfig';
 
 // Linking Engine
 import { getRelatedComparisons, getGlossaryTermsForTool } from '@/lib/pseo/linkingEngine';
+import { getParkedSsgContent } from '@/utils/ssgArticle';
 
 const renderMarkdown = (content) => {
     if (!content) return null;
@@ -83,6 +84,20 @@ const ComparisonPage = () => {
 
         if (slug) loadData();
     }, [slug, navigate]);
+
+    const parkedSsgHtml = getParkedSsgContent(`/compare/${slug}`);
+    if (((loading || !comparison || !derivedData) || error) && parkedSsgHtml) {
+        return (
+            <div className="pt-4 pb-12">
+                <div className="container mx-auto px-6 max-w-4xl">
+                    <div
+                        className="seo-content"
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parkedSsgHtml) }}
+                    />
+                </div>
+            </div>
+        );
+    }
 
     if (error) {
         return (

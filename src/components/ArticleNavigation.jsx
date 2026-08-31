@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Calendar, Clock } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
+import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 
 const ArticleNavigation = ({ currentPostId, category }) => {
   const [prevPost, setPrevPost] = useState(null);
@@ -103,6 +104,7 @@ const ArticleNavigation = ({ currentPostId, category }) => {
           >
             <Link
               to={`/articles/${prevPost.slug}`}
+              reloadDocument={ADSENSE_REVIEW_MODE}
               className="group block h-full p-6 rounded-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10"
             >
               <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
@@ -139,6 +141,7 @@ const ArticleNavigation = ({ currentPostId, category }) => {
           >
             <Link
               to={`/articles/${nextPost.slug}`}
+              reloadDocument={ADSENSE_REVIEW_MODE}
               className="group block h-full p-6 rounded-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 hover:border-purple-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/10"
             >
               <div className="flex items-center justify-end gap-2 text-sm text-gray-400 mb-3">

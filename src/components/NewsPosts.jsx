@@ -2,8 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { AlertCircle, RefreshCw, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Zap } from 'lucide-react';
 import { usePosts } from '@/hooks/useWordPress';
 import { reduceMotion } from '@/utils/performance';
 import PostCard from './PostCard';
@@ -11,7 +10,7 @@ import PostCard from './PostCard';
 const NewsPosts = () => {
   const shouldReduceMotion = reduceMotion();
 
-  const { posts: newsPosts, loading, error, refresh } = usePosts({
+  const { posts: newsPosts, loading, error } = usePosts({
     categorySlug: 'news',
     per_page: 3,
   });
@@ -21,16 +20,7 @@ const NewsPosts = () => {
   }
 
   if (error) {
-    return (
-      <div className="text-center text-red-400 py-8">
-        <AlertCircle className="h-8 w-8 mb-4 mx-auto" />
-        <p>Error loading news.</p>
-        <Button onClick={refresh} variant="outline" className="mt-4">
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Retry
-        </Button>
-      </div>
-    );
+    return null;
   }
 
   if (newsPosts.length === 0) {

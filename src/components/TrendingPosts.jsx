@@ -1,26 +1,27 @@
 // src/components/TrendingPosts.jsx - COMPLETE VERSION
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TrendingUp, AlertCircle, RefreshCw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { usePosts } from '@/hooks/useWordPress';
+import { TrendingUp } from 'lucide-react';
 import { reduceMotion } from '@/utils/performance';
 import PostCard from './PostCard';
 import PostCardSkeleton from './PostCardSkeleton';
+import { useHomepagePosts } from '@/hooks/useHomepagePosts';
+import { useSlowLoadFallback } from '@/hooks/useSlowLoadFallback';
 
 const TrendingPosts = () => {
   const shouldReduceMotion = reduceMotion();
-  
-  const { posts: trendingPosts, loading, error, refresh } = usePosts({
+
+  const { posts: trendingPosts, loading } = useHomepagePosts({
     per_page: 3,
     trending: true,
   });
+  const showBundledFallback = useSlowLoadFallback(loading && trendingPosts.length === 0);
 
   const baseAnimationConfig = shouldReduceMotion
     ? { initial: {}, animate: {}, transition: { duration: 0 } }
     : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6 } };
 
-  if (loading) {
+  if (loading && trendingPosts.length === 0 && !showBundledFallback) {
     return (
       <section className="py-16 relative">
         <div className="container mx-auto px-6">
@@ -29,21 +30,6 @@ const TrendingPosts = () => {
               <PostCardSkeleton key={index} />
             ))}
           </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section className="py-16 relative">
-        <div className="container mx-auto px-6 text-center text-red-400">
-          <AlertCircle className="h-8 w-8 mb-4 mx-auto" />
-          <p>Error loading trending posts.</p>
-          <Button onClick={refresh} variant="outline" className="mt-4">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Retry
-          </Button>
         </div>
       </section>
     );

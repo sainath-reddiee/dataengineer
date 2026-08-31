@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import LazyImage from './LazyImage';
+import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 
 const MotionLink = motion.create(Link);
 
@@ -65,6 +66,7 @@ const PostListItem = ({ post }) => {
   return (
     <MotionLink
       to={`/articles/${post.slug}`}
+      reloadDocument={ADSENSE_REVIEW_MODE}
       className="relative block w-full p-4 rounded-xl group overflow-hidden"
       variants={cardVariants}
       initial="rest"
