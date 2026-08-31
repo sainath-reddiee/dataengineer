@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT, MIN_INDEXABLE_CATEGORY_COUNT, MIN_INDEXABLE_WORD_COUNT } from '../src/data/thinTags.js';
 import { EXCLUDED_ARTICLE_SLUGS } from '../src/data/excludedSlugs.js';
+import { ADSENSE_REVIEW_MODE } from '../src/data/adsenseQualityGate.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -42,6 +43,7 @@ const STATIC_PAGES = [
   { url: '/privacy-policy', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
   { url: '/disclaimer', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
+  { url: '/editorial-standards', changefreq: 'yearly', priority: 0.5, lastmod: '2026-08-31' },
   { url: '/contribute', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
   // /news is noindexed until the WP news category has dated posts
   { url: '/practice', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
@@ -71,13 +73,17 @@ const STATIC_PAGES = [
   { url: '/tools/sql-playground',   changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
   { url: '/tools/json-parquet-avro-converter', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
   { url: '/interview-prep', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
-  { url: '/cheatsheets/category/sql', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-  { url: '/cheatsheets/category/orchestration', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-  { url: '/cheatsheets/category/cloud', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-  { url: '/cheatsheets/category/programming', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-  { url: '/cheatsheets/category/architecture', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
-  { url: '/cheatsheets/category/interview', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
-  { url: '/cheatsheets/category/bestpractices', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  // Cheat-sheet category archives are listing pages. Omit them from the
+  // AdSense-facing sitemap while the quality gate is on.
+  ...(!ADSENSE_REVIEW_MODE ? [
+    { url: '/cheatsheets/category/sql', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+    { url: '/cheatsheets/category/orchestration', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+    { url: '/cheatsheets/category/cloud', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+    { url: '/cheatsheets/category/programming', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+    { url: '/cheatsheets/category/architecture', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+    { url: '/cheatsheets/category/interview', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
+    { url: '/cheatsheets/category/bestpractices', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
+  ] : []),
 ];
 
 const EXCLUDED_CHEATSHEET_SLUGS = [];
@@ -578,25 +584,33 @@ async function generateSitemap() {
       });
     });
 
-    console.log('📝 Adding tag pages...');
-    tags.forEach(tag => {
-      const slug = String(tag.slug || '').toLowerCase();
-      if (!slug || THIN_TAG_SLUGS.has(slug) || (tag.count || 0) < MIN_INDEXABLE_TAG_COUNT) return;
-      sitemapEntries.push({
-        url: `${SITE_URL}/tag/${tag.slug}`,
-        lastmod: today,
-        changefreq: 'weekly',
-        priority: 0.55,
+    let tagCount = 0;
+    let pseoEntries = [];
+    if (ADSENSE_REVIEW_MODE) {
+      console.log('📝 Skipping tag pages (AdSense quality gate)...');
+      console.log('\n📝 Skipping pSEO pages (AdSense quality gate — glossary + comparisons stay live, noindex)...');
+    } else {
+      console.log('📝 Adding tag pages...');
+      tags.forEach(tag => {
+        const slug = String(tag.slug || '').toLowerCase();
+        if (!slug || THIN_TAG_SLUGS.has(slug) || (tag.count || 0) < MIN_INDEXABLE_TAG_COUNT) return;
+        tagCount += 1;
+        sitemapEntries.push({
+          url: `${SITE_URL}/tag/${tag.slug}`,
+          lastmod: today,
+          changefreq: 'weekly',
+          priority: 0.55,
+        });
       });
-    });
 
-    console.log('\n📝 Adding pSEO pages (glossary + comparisons)...');
-    const pseoEntries = loadPSEOData();
-    pseoEntries.forEach(entry => {
-      if (!entry.lastmod) entry.lastmod = today;
-      sitemapEntries.push(entry);
-    });
-    console.log(`   Added ${pseoEntries.length} pSEO pages to sitemap`);
+      console.log('\n📝 Adding pSEO pages (glossary + comparisons)...');
+      pseoEntries = loadPSEOData();
+      pseoEntries.forEach(entry => {
+        if (!entry.lastmod) entry.lastmod = today;
+        sitemapEntries.push(entry);
+      });
+      console.log(`   Added ${pseoEntries.length} pSEO pages to sitemap`);
+    }
 
     console.log('📝 Adding cheatsheet pages...');
     const cheatsheetEntries = loadCheatsheetData();
@@ -646,7 +660,7 @@ async function generateSitemap() {
     console.log(`   - Static pages: ${STATIC_PAGES.length}`);
     console.log(`   - Blog posts: ${posts.length}`);
     console.log(`   - Categories: ${categories.length}`);
-    console.log(`   - Tags: ${tags.length}`);
+    console.log(`   - Tags: ${tagCount}`);
     console.log(`   - pSEO pages: ${pseoEntries.length}`);
     console.log(`   - Cheatsheets: ${cheatsheetEntries.length}`);
 

@@ -8,7 +8,7 @@ import RecentPosts from '@/components/RecentPosts';
 import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import { generateBreadcrumbs } from '@/lib/seoConfig';
-import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT, isIndexableTag } from '@/data/thinTags';
+import { THIN_TAG_SLUGS, isIndexableTag } from '@/data/thinTags';
 import { usePostsByTag } from '@/hooks/useWordPress';
 
 const TagPage = () => {
@@ -36,7 +36,7 @@ const TagPage = () => {
         description={`Browse all articles tagged with ${tagName}. Expert data engineering tutorials and guides on ${tagName}.`}
         keywords={`${tagName}, data engineering, tutorials, ${tagSlug}`}
         type="website"
-        noindex={loading || totalPosts < MIN_INDEXABLE_TAG_COUNT}
+        noindex={true}
       />
 
       <div className="pt-4 pb-12">

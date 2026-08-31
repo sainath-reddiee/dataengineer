@@ -1581,6 +1581,29 @@ function add_noindex_header() {
     }
 }
 
+// Yoast still emits index,follow + a canonical to app.dataengineerhub.blog.
+// The HTTP header above is not enough — reviewers and Googlebot also read
+// the HTML robots/canonical tags. Force both to the public site.
+add_filter('wpseo_robots', function ($robots) {
+    if (isset($_SERVER['HTTP_HOST']) && strpos($_SERVER['HTTP_HOST'], 'app.dataengineerhub.blog') !== false) {
+        return 'noindex, nofollow';
+    }
+    return $robots;
+});
+
+add_filter('wpseo_canonical', function ($canonical) {
+    if (!isset($_SERVER['HTTP_HOST']) || strpos($_SERVER['HTTP_HOST'], 'app.dataengineerhub.blog') === false) {
+        return $canonical;
+    }
+    if (is_singular('post')) {
+        $slug = get_post_field('post_name', get_post());
+        if ($slug) {
+            return 'https://dataengineerhub.blog/articles/' . $slug;
+        }
+    }
+    return 'https://dataengineerhub.blog/';
+});
+
 // ============================================================================
 // RELATED POSTS & TAGS
 // ============================================================================

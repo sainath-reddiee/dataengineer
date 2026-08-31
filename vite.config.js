@@ -95,6 +95,7 @@ export default defineConfig({
         '/privacy-policy',
         '/terms-of-service',
         '/disclaimer',
+        '/editorial-standards',
         '/contribute',
         '/newsletter',
         '/news',

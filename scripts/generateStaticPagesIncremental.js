@@ -110,6 +110,7 @@ const CONSENT_MODE_V2_HTML = `    <!-- Google Consent Mode v2: region-gated. Res
 // SEO overrides for CTR-optimized titles and descriptions
 import seoOverrides, { getSEOOverride } from '../src/data/seoOverrides.js';
 import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT, MIN_INDEXABLE_CATEGORY_COUNT, MIN_INDEXABLE_WORD_COUNT } from '../src/data/thinTags.js';
+import { isAdSenseNoindexPath, ADSENSE_REVIEW_ROBOTS, ADSENSE_INDEX_ROBOTS } from '../src/data/adsenseQualityGate.js';
 
 function countPlainWords(...parts) {
   const text = parts
@@ -125,11 +126,14 @@ function countPlainWords(...parts) {
   return text.split(/\s+/).filter(Boolean).length;
 }
 
-function robotsForWordCount(wordCount) {
-  if (wordCount < MIN_INDEXABLE_WORD_COUNT) {
-    return 'noindex, follow';
+function robotsForWordCount(wordCount, pathname) {
+  if (pathname && isAdSenseNoindexPath(pathname)) {
+    return ADSENSE_REVIEW_ROBOTS;
   }
-  return 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+  if (wordCount < MIN_INDEXABLE_WORD_COUNT) {
+    return ADSENSE_REVIEW_ROBOTS;
+  }
+  return ADSENSE_INDEX_ROBOTS;
 }
 
 // Meta description optimizer for CTR-optimized descriptions
@@ -387,7 +391,7 @@ function normalizeArticleLinks(htmlContent, postSlugs) {
         
         // If the slug does not exist on disk, it's a broken link.
         // Strip the anchor tags and leave the inner text so we don't serve 404s.
-        const essentialPaths = ['/about', '/contact', '/privacy-policy', '/terms-of-service', '/disclaimer', '/contribute', '/newsletter', '/certification', '/rss.xml', '/articles', '/', '/news', '/practice', '/advertise', '/contributors', '/tag', '/tools', '/interview-prep', '/cheatsheets', '/glossary', '/compare'];
+        const essentialPaths = ['/about', '/contact', '/privacy-policy', '/terms-of-service', '/disclaimer', '/editorial-standards', '/contribute', '/newsletter', '/certification', '/rss.xml', '/articles', '/', '/news', '/practice', '/advertise', '/contributors', '/tag', '/tools', '/interview-prep', '/cheatsheets', '/glossary', '/compare'];
         const cleanPath = relativePath.trim().replace(/\/$/, '');
         const isEssential = essentialPaths.includes(cleanPath);
         
@@ -621,6 +625,47 @@ const ESSENTIAL_PAGES = [
 
       <h2>Contact</h2>
       <p>If you have any questions about this Disclaimer, please contact us at <strong>sainath@dataengineerhub.blog</strong>.</p>
+    `
+  },
+  {
+    path: '/editorial-standards',
+    title: 'Editorial Standards — How We Write',
+    description: 'How DataEngineer Hub writes, reviews, and updates tutorials. Practitioner-first editorial standards, what we will not publish, and how to request a correction.',
+    content: `
+      <h1>Editorial Standards</h1>
+      <p><strong>Last updated:</strong> August 31, 2026</p>
+      <p>DataEngineer Hub is a practitioner site, not a content mill. Every indexed article is written or signed off by <a href="/about">Sainath Reddy</a>, a data engineer based in Hyderabad who has spent the last several years on Snowflake, dbt, Airflow, and warehouse cost problems in production. This page is the rulebook for what goes live.</p>
+
+      <h2>What we publish</h2>
+      <p>Tutorials, architecture notes, cost breakdowns, and interview-style walkthroughs that come from work we have actually done: warehouse sizing mistakes, Cortex token bills, dbt model reviews, Time Travel recoveries, and SQL patterns that show up in interviews because they show up on the job. If a page cannot name a concrete failure mode, a number, or a decision we would make again, it does not ship as an article.</p>
+      <p>Interactive tools (cost calculators, SQL playground, format converters) and cheat sheets exist to support those articles. They are not substitutes for the article library.</p>
+
+      <h2>What we will not publish</h2>
+      <ul>
+        <li>Rewrites of vendor documentation with a new title</li>
+        <li>Unreviewed AI drafts, spun articles, or scraped aggregations</li>
+        <li>Pages whose only purpose is to rank for a keyword</li>
+        <li>Thin listing pages with one or two cards and no original copy</li>
+        <li>Duplicate URLs that 301 to a canonical article</li>
+      </ul>
+      <p>Glossary terms and tool-vs-tool pages stay on the site as a working reference for readers. They are not the front door of the site and they are not treated as equivalent to original tutorials.</p>
+
+      <h2>How an article is made</h2>
+      <ol>
+        <li><strong>Source.</strong> A production note, a cost incident, a review comment, or a question that kept coming up at work.</li>
+        <li><strong>Draft.</strong> Written in the author's voice. AI tools may help outline or check syntax. They do not publish unsupervised. See the <a href="/disclaimer">disclaimer</a>.</li>
+        <li><strong>Review.</strong> Sainath checks technical claims, code samples, and whether the piece adds anything a first-page Google result does not already say.</li>
+        <li><strong>Update.</strong> Pricing, exam blueprints, and warehouse features change. Articles carry a last-updated date. When a number is wrong, we fix the page rather than leave a stale screenshot up.</li>
+      </ol>
+
+      <h2>Guest writing</h2>
+      <p>Guest authors appear on <a href="/contributors">/contributors</a> only after at least one piece has passed the same review and gone live. Pitches go through <a href="/contribute">Write for Us</a>. We reject generic overviews.</p>
+
+      <h2>Corrections</h2>
+      <p>If a query, credit rate, or exam detail is wrong, email <strong>sainath@dataengineerhub.blog</strong> or use the <a href="/contact">contact form</a>. We reply personally, usually within 24–48 hours on weekdays, India Standard Time, and we update the page when you are right.</p>
+
+      <h2>Advertising</h2>
+      <p>Ads, if shown, are separate from editorial. Sponsors cannot rewrite a tutorial to match a talking point. Affiliate links are disclosed in the disclaimer. Privacy details live on the <a href="/privacy-policy">privacy policy</a>.</p>
     `
   },
   {
@@ -2529,6 +2574,7 @@ function getSiteNavHTML() {
           <ul class="site-nav-links">
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
+            <li><a href="https://dataengineerhub.blog/editorial-standards">Editorial Standards</a></li>
             <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
           </ul>
         </div>
@@ -2542,6 +2588,7 @@ function getSiteFooterHTML() {
           <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy Policy</a></li>
           <li><a href="https://dataengineerhub.blog/terms-of-service">Terms</a></li>
           <li><a href="https://dataengineerhub.blog/disclaimer">Disclaimer</a></li>
+          <li><a href="https://dataengineerhub.blog/editorial-standards">Editorial Standards</a></li>
           <li><a href="https://dataengineerhub.blog/about">About</a></li>
           <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
           <li><a href="https://dataengineerhub.blog/rss.xml">RSS</a></li>
@@ -3324,6 +3371,7 @@ ${CONSENT_MODE_V2_HTML}
           <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy Policy</a></li>
           <li><a href="https://dataengineerhub.blog/terms-of-service">Terms</a></li>
           <li><a href="https://dataengineerhub.blog/disclaimer">Disclaimer</a></li>
+          <li><a href="https://dataengineerhub.blog/editorial-standards">Editorial Standards</a></li>
           <li><a href="https://dataengineerhub.blog/about">About</a></li>
           <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
           <li><a href="https://dataengineerhub.blog/rss.xml">RSS</a></li>
@@ -3556,6 +3604,12 @@ function generateHomepageEnhancement(allArticleSummaries, categories) {
   // Build rich HTML content
   let articlesHTML = `
         <div class="seo-articles" style="margin-top: 3rem;">
+          <p style="color: #cbd5e1; text-align: center; margin-bottom: 2rem; font-size: 1.05rem; max-width: 46rem; margin-left: auto; margin-right: auto; line-height: 1.6;">
+            Written by <a href="https://dataengineerhub.blog/about" style="color: #60a5fa;">Sainath Reddy</a>, a data engineer in Hyderabad.
+            These are production notes — warehouse cost incidents, dbt review comments, Cortex token bills — not rewritten vendor docs.
+            Read the <a href="https://dataengineerhub.blog/editorial-standards" style="color: #60a5fa;">editorial standards</a>
+            or skip to the <a href="https://dataengineerhub.blog/articles" style="color: #60a5fa;">article library</a>.
+          </p>
           <h2 style="font-size: 2rem; color: #93c5fd; margin-bottom: 1.5rem; text-align: center;">Latest Data Engineering Articles</h2>
           <p style="color: #cbd5e1; text-align: center; margin-bottom: 2rem; font-size: 1.1rem;">
             Explore our comprehensive collection of ${allArticleSummaries.length} in-depth tutorials and guides covering 
@@ -4162,7 +4216,7 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '    <title>Data Engineering Glossary | ' + totalTerms + ' Key Terms Explained</title>\n';
   html += '    <meta name="description" content="Comprehensive data engineering glossary with ' + totalTerms + ' key terms explained. Learn about ETL, data warehousing, streaming, orchestration, cloud platforms, and more." />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog/glossary" />\n';
-  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n';
+  html += '    <meta name="robots" content="' + robotsForWordCount(9999, '/glossary') + '" />\n';
   html += '\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
@@ -4458,7 +4512,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
     term.keyPoints,
     faqText
   );
-  var robotsDirective = robotsForWordCount(glossaryWordCount);
+  var robotsDirective = robotsForWordCount(glossaryWordCount, pagePath);
 
   // Category display name
   var categoryDisplay = (term.category || '').replace(/-/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
@@ -4782,7 +4836,7 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '    <title>Data Engineering Tool Comparisons | ' + totalComparisons + ' Head-to-Head Guides</title>\n';
   html += '    <meta name="description" content="Compare ' + totalComparisons + ' popular data engineering tools side by side. Detailed feature comparisons for data warehousing, streaming, orchestration, analytics, and more." />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog/compare" />\n';
-  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n';
+  html += '    <meta name="robots" content="' + robotsForWordCount(9999, '/compare') + '" />\n';
   html += '\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
@@ -5124,7 +5178,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
     comparison.cons,
     compareFaqText
   );
-  var compareRobots = robotsForWordCount(compareWordCount);
+  var compareRobots = robotsForWordCount(compareWordCount, pagePath);
 
   // Build HTML
   var html = '<!doctype html>\n<html lang="en">\n  <head>\n';
@@ -5831,7 +5885,7 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '    <title>' + escapeHtml(tag.name) + ' - Tagged Articles</title>\n';
   html += '    <meta name="description" content="' + escapeHtml(descriptionMeta) + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  html += '    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />\n\n';
+  html += '    <meta name="robots" content="' + robotsForWordCount(tagArticles.length * 200, pagePath) + '" />\n\n';
   html += '    <!-- Open Graph -->\n';
   html += '    <meta property="og:type" content="website" />\n';
   html += '    <meta property="og:url" content="https://dataengineerhub.blog' + pagePath + '" />\n';
@@ -6236,6 +6290,7 @@ ${CONSENT_MODE_V2_HTML}
           <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy Policy</a></li>
           <li><a href="https://dataengineerhub.blog/terms-of-service">Terms</a></li>
           <li><a href="https://dataengineerhub.blog/disclaimer">Disclaimer</a></li>
+          <li><a href="https://dataengineerhub.blog/editorial-standards">Editorial Standards</a></li>
           <li><a href="https://dataengineerhub.blog/about">About</a></li>
           <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
           <li><a href="https://dataengineerhub.blog/rss.xml">RSS</a></li>
@@ -6654,7 +6709,7 @@ function buildPracticeQuestionPreview(quizSlug) {
       description: page.description,
       path: pagePath,
       content: practiceMatch ? page.content + buildPracticeQuestionPreview(practiceMatch[1]) : page.content,
-      noindex: !!page.noindex,
+      noindex: !!page.noindex || isAdSenseNoindexPath(pagePath),
     };
 
     const contentHash = hashContent(pageData);

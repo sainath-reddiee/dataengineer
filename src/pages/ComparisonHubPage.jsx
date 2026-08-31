@@ -73,8 +73,7 @@ export function ComparisonHubPage() {
                 <meta name="description" content={meta.description} />
                 <meta name="keywords" content={meta.keywords} />
                 <link rel="canonical" href={canonical} />
-                {/* Programmatic SEO section — held out of the index until further editorial work. */}
-                
+                <meta name="robots" content="noindex, follow" />
 
                 <meta property="og:type" content="website" />
                 <meta property="og:title" content={meta.title} />

@@ -21,9 +21,9 @@ const Footer = () => {
       { name: 'SQL Tips', href: '/category/sql' },
       { name: 'Cheat Sheets', href: '/cheatsheets' },
       { name: 'Interview Prep', href: '/interview-prep' },
-      { name: 'Comparisons', href: '/compare' },
       { name: 'Tools', href: '/tools' },
       { name: 'Glossary', href: '/glossary' },
+      { name: 'Comparisons', href: '/compare' },
     ],
     tools: [
       { name: 'Airflow', href: '/category/airflow' },
@@ -35,6 +35,7 @@ const Footer = () => {
     ],
     company: [
       { name: 'About', href: '/about' },
+      { name: 'Editorial Standards', href: '/editorial-standards' },
       { name: 'Contact', href: '/contact' },
       { name: 'All Articles', href: '/articles' },
       { name: 'Privacy Policy', href: '/privacy-policy' },

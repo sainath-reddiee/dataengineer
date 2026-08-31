@@ -1,12 +1,14 @@
 # robots.txt - DataEngineer Hub
-# Last updated: 2026-08-22
+# Last updated: 2026-08-31
 #
 # If Cloudflare AI Crawl Control is enabled, it PREPENDS Disallow rules for
 # GPTBot, ClaudeBot, Google-Extended, and others. Those override the Allow
 # rules below for those user-agents. Turn AI Crawl Control off (or set those
 # bots to Allow) so ChatGPT / Claude / Gemini can cite these articles.
 #
-# All programmatic sections, tools, cheat sheets, and glossary pages are open for crawling.
+# Default Googlebot may still crawl glossary/compare so it can see noindex
+# and drop those URLs. AdsBot is steered away from those template sections
+# so AdSense review samples articles, tools, and cheat sheets instead.
 
 # =============================================================================
 # Default rules — allow indexing of all public sections
@@ -59,6 +61,14 @@ Disallow: /debug
 Disallow: /sponsors/dashboard
 Disallow: /practice/*/q/
 Disallow: /practice/*/topics/
+Disallow: /glossary
+Disallow: /glossary/
+Disallow: /compare
+Disallow: /compare/
+Disallow: /tag
+Disallow: /tag/
+Disallow: /tags
+Disallow: /cheatsheets/category/
 
 User-agent: AdsBot-Google
 Allow: /
@@ -68,6 +78,14 @@ Disallow: /debug
 Disallow: /sponsors/dashboard
 Disallow: /practice/*/q/
 Disallow: /practice/*/topics/
+Disallow: /glossary
+Disallow: /glossary/
+Disallow: /compare
+Disallow: /compare/
+Disallow: /tag
+Disallow: /tag/
+Disallow: /tags
+Disallow: /cheatsheets/category/
 
 User-agent: AdsBot-Google-Mobile
 Allow: /
@@ -77,6 +95,14 @@ Disallow: /debug
 Disallow: /sponsors/dashboard
 Disallow: /practice/*/q/
 Disallow: /practice/*/topics/
+Disallow: /glossary
+Disallow: /glossary/
+Disallow: /compare
+Disallow: /compare/
+Disallow: /tag
+Disallow: /tag/
+Disallow: /tags
+Disallow: /cheatsheets/category/
 
 # =============================================================================
 # SITEMAPS
