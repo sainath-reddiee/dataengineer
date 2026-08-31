@@ -24,6 +24,13 @@ import { SITE_CONFIG } from '@/lib/seoConfig';
  */
 
 import articlesData from '../../data/pseo/articles.json';
+import {
+    injectArticleLinks,
+    buildLinkCandidates,
+    hasLinkToArticle,
+    MAX_INTERNAL_LINKS,
+} from './injectArticleLinks.js';
+
 const SYNCED_ARTICLES = articlesData || [];
 
 /**
@@ -35,49 +42,29 @@ export const MANUAL_ARTICLES = [
     // { slug: 'special-article', title: 'My Special Article', keywords: ['special'] },
 ];
 
+export { buildLinkCandidates, hasLinkToArticle, MAX_INTERNAL_LINKS };
+
 // =============================================================================
 // INTERNAL LINK INJECTION ENGINE
 // =============================================================================
 
-/**
- * Escape special regex characters in a string
- */
 function escapeRegex(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-/** Escape a string for use in an HTML attribute value. */
 function escapeHtmlAttr(str) {
     if (!str) return '';
     return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-/**
- * Check if a keyword appears inside an existing HTML tag or anchor
- * @param {string} html - The HTML content
- * @param {string} keyword - The keyword to check
- * @returns {boolean} - True if already linked or inside a tag
- */
 function isAlreadyLinked(html, keyword) {
-    // Check if keyword is inside an <a> tag
     const anchorRegex = new RegExp(`<a[^>]*>[^<]*${escapeRegex(keyword)}[^<]*</a>`, 'i');
     if (anchorRegex.test(html)) return true;
-
-    // Check if keyword is part of an HTML attribute
     const attrRegex = new RegExp(`<[^>]*${escapeRegex(keyword)}[^>]*>`, 'i');
     if (attrRegex.test(html)) return true;
-
     return false;
 }
 
-/**
- * Extract <pre> and <code> blocks into placeholders so keyword linking does
- * not corrupt code examples (SQL, Python, YAML, etc.). Returns the stripped
- * HTML plus a restore function that puts the blocks back.
- *
- * Using a unique placeholder token that is extremely unlikely to collide with
- * real content keeps the transformation safe for any keyword.
- */
 function maskCodeBlocks(html) {
     const blocks = [];
     const token = (i) => `\u0001PSEO_CODE_BLOCK_${i}\u0001`;
@@ -101,66 +88,13 @@ function maskCodeBlocks(html) {
 
 /**
  * Inject internal links from pSEO content to Manual Articles.
- * Used during R2 build to create SEO link equity flow from programmatic pages
- * to high-value WordPress articles.
- * 
- * Rules:
- * - Only replaces the FIRST occurrence of each keyword
- * - Does NOT link if keyword is already inside an <a> tag
- * - Does NOT break existing HTML tags
- * - Each article's keywords are processed in order (first match wins)
- * 
- * @param {string} htmlContent - The HTML content to process
- * @param {string} excludeSlug - Optional slug to exclude (current page)
- * @returns {string} - HTML with internal links injected
+ * See injectArticleLinks.js for ranking / dedupe / heading / code rules.
  */
-export function injectInternalLinks(htmlContent, excludeSlug = '') {
-    if (!htmlContent || typeof htmlContent !== 'string') {
-        return htmlContent;
-    }
-
-    // Mask <pre>/<code> blocks so we never inject links inside code samples.
-    const { stripped, restore } = maskCodeBlocks(htmlContent);
-    let result = stripped;
-    const linkedKeywords = new Set(); // Track what we've already linked
-
-    for (const article of MANUAL_ARTICLES) {
-        // Skip if this is the current page
-        if (article.slug === excludeSlug) continue;
-
-        for (const keyword of article.keywords) {
-            // Skip if we've already linked this keyword
-            if (linkedKeywords.has(keyword.toLowerCase())) continue;
-
-            // Skip if keyword is already linked in the content
-            if (isAlreadyLinked(result, keyword)) continue;
-
-            // Match keyword outside HTML tags (Safari-compatible - no lookbehind)
-            // Strategy: split on HTML tags, only match in text nodes
-            const keywordPattern = new RegExp(`\\b(${escapeRegex(keyword)})\\b`, 'i');
-            const parts = result.split(/(<[^>]*>)/);
-            let matched = false;
-            for (let i = 0; i < parts.length; i++) {
-                // Even indices are text nodes, odd indices are HTML tags
-                if (i % 2 === 0 && keywordPattern.test(parts[i])) {
-                    const anchor = `<a href="/articles/${article.slug}" class="internal-link" title="${escapeHtmlAttr(article.title)}">${parts[i].match(keywordPattern)[1]}</a>`;
-                    parts[i] = parts[i].replace(keywordPattern, anchor);
-                    matched = true;
-                    break;
-                }
-            }
-
-            if (matched) {
-                result = parts.join('');
-                linkedKeywords.add(keyword.toLowerCase());
-
-                // Only link one keyword per article to avoid over-optimization
-                break;
-            }
-        }
-    }
-
-    return restore(result);
+export function injectInternalLinks(htmlContent, excludeSlug = '', options = {}) {
+    return injectArticleLinks(htmlContent, excludeSlug, {
+        articles: options.articles || MANUAL_ARTICLES,
+        maxLinks: options.maxLinks,
+    });
 }
 
 /**

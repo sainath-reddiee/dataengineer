@@ -5,6 +5,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import { analyzeKeyTakeaways } from '../src/utils/articleTakeaways.js';
 
 // Monkey-patch fs.writeFileSync to automatically clean up UTF-8 mojibake in generated HTML files
 const originalWriteFileSync = fs.writeFileSync;
@@ -169,50 +170,112 @@ function isAlreadyLinkedSSG(html, keyword) {
   return false;
 }
 
+function hasLinkToArticleSSG(html, slug) {
+  if (!html || !slug) return false;
+  return new RegExp(`href=["'][^"']*/articles/${escapeRegexSSG(slug)}/?["']`, 'i').test(html);
+}
+
+function maskCodeBlocksSSG(html) {
+  const blocks = [];
+  const token = (i) => `\u0001PSEO_CODE_BLOCK_${i}\u0001`;
+  const stripped = html
+    .replace(/<pre[\s\S]*?<\/pre>/gi, (match) => {
+      const i = blocks.length;
+      blocks.push(match);
+      return token(i);
+    })
+    .replace(/<code[\s\S]*?<\/code>/gi, (match) => {
+      const i = blocks.length;
+      blocks.push(match);
+      return token(i);
+    });
+  const restore = (processed) =>
+    processed.replace(/\u0001PSEO_CODE_BLOCK_(\d+)\u0001/g, (_, i) => blocks[Number(i)] || '');
+  return { stripped, restore };
+}
+
+function buildLinkCandidatesSSG(articles, excludeSlug = '') {
+  const candidates = [];
+  for (const article of articles || []) {
+    if (!article?.slug || article.slug === excludeSlug) continue;
+    const keywords = Array.isArray(article.keywords) ? article.keywords : [];
+    const seenForArticle = new Set();
+    for (const keyword of keywords) {
+      const raw = String(keyword || '').trim();
+      if (raw.length < 3) continue;
+      const key = raw.toLowerCase();
+      if (seenForArticle.has(key)) continue;
+      seenForArticle.add(key);
+      candidates.push({ slug: article.slug, title: article.title || article.slug, keyword: raw });
+    }
+  }
+  candidates.sort((a, b) => b.keyword.length - a.keyword.length || a.keyword.localeCompare(b.keyword));
+  return candidates;
+}
+
+function replaceFirstKeywordOutsideHeadingsSSG(html, keyword, makeAnchor) {
+  const keywordPattern = new RegExp(`\\b(${escapeRegexSSG(keyword)})\\b`, 'i');
+  const parts = html.split(/(<[^>]*>)/);
+  let inHeading = false;
+  let inSkipBlock = false;
+  for (let i = 0; i < parts.length; i += 1) {
+    const part = parts[i];
+    if (i % 2 === 1) {
+      if (/^<(h[1-6])\b/i.test(part)) inHeading = true;
+      else if (/^<\/h[1-6]>/i.test(part)) inHeading = false;
+      if (/^<(script|style|textarea)\b/i.test(part)) inSkipBlock = true;
+      else if (/^<\/(script|style|textarea)>/i.test(part)) inSkipBlock = false;
+      continue;
+    }
+    if (inHeading || inSkipBlock) continue;
+    if (!keywordPattern.test(part)) continue;
+    const match = part.match(keywordPattern);
+    if (!match) continue;
+    parts[i] = part.replace(keywordPattern, makeAnchor(match[1]));
+    return parts.join('');
+  }
+  return null;
+}
+
 /**
  * Inject internal links into static HTML so crawlers see them.
  * Mirrors the runtime linkingEngine.js logic but runs at build time.
- * @param {string} htmlContent - The HTML content to process
- * @param {string} excludeSlug - Current article slug to exclude from self-linking
- * @returns {string} - HTML with internal links injected
  */
-function injectInternalLinksSSG(htmlContent, excludeSlug = '') {
+function injectInternalLinksSSG(htmlContent, excludeSlug = '', maxLinks = 8) {
   if (!htmlContent || typeof htmlContent !== 'string' || LINKED_ARTICLES.length === 0) {
     return htmlContent;
   }
 
-  let result = htmlContent;
+  const { stripped, restore } = maskCodeBlocksSSG(htmlContent);
+  let result = stripped;
   const linkedKeywords = new Set();
+  const linkedSlugs = new Set();
+  let linkCount = 0;
 
-  for (const article of LINKED_ARTICLES) {
-    if (article.slug === excludeSlug) continue;
-    if (!article.keywords || !article.keywords.length) continue;
-
-    for (const keyword of article.keywords) {
-      if (linkedKeywords.has(keyword.toLowerCase())) continue;
-      if (isAlreadyLinkedSSG(result, keyword)) continue;
-
-      const keywordPattern = new RegExp(`\\b(${escapeRegexSSG(keyword)})\\b`, 'i');
-      const parts = result.split(/(<[^>]*>)/);
-      let matched = false;
-      for (let i = 0; i < parts.length; i++) {
-        if (i % 2 === 0 && keywordPattern.test(parts[i])) {
-          const anchor = `<a href="/articles/${article.slug}" class="internal-link" title="${escapeHtmlAttrSSG(article.title)}">${parts[i].match(keywordPattern)[1]}</a>`;
-          parts[i] = parts[i].replace(keywordPattern, anchor);
-          matched = true;
-          break;
-        }
-      }
-
-      if (matched) {
-        result = parts.join('');
-        linkedKeywords.add(keyword.toLowerCase());
-        break;
-      }
+  for (const candidate of buildLinkCandidatesSSG(LINKED_ARTICLES, excludeSlug)) {
+    if (linkCount >= maxLinks) break;
+    const key = candidate.keyword.toLowerCase();
+    if (linkedKeywords.has(key) || linkedSlugs.has(candidate.slug)) continue;
+    if (hasLinkToArticleSSG(result, candidate.slug)) {
+      linkedSlugs.add(candidate.slug);
+      continue;
     }
+    if (isAlreadyLinkedSSG(result, candidate.keyword)) continue;
+
+    const next = replaceFirstKeywordOutsideHeadingsSSG(
+      result,
+      candidate.keyword,
+      (matchedText) =>
+        `<a href="/articles/${candidate.slug}" class="internal-link" title="${escapeHtmlAttrSSG(candidate.title)}">${matchedText}</a>`
+    );
+    if (!next) continue;
+    result = next;
+    linkedKeywords.add(key);
+    linkedSlugs.add(candidate.slug);
+    linkCount += 1;
   }
 
-  return result;
+  return restore(result);
 }
 
 /** Escape a string for safe embedding inside HTML content and attributes. */
@@ -2691,6 +2754,21 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   let processedContent = normalizeHeadings(absoluteContent);
   processedContent = decodeTypographicEntities(processedContent);
 
+  // Elevate TL;DR / Key Takeaways into a single .key-takeaways box (speakable)
+  // and strip that section from the body so crawlers do not see it twice.
+  const takeawaysAnalysis = analyzeKeyTakeaways(processedContent);
+  const elevateTakeaways =
+    takeawaysAnalysis.source === 'comment' || takeawaysAnalysis.source === 'heading';
+  processedContent = elevateTakeaways ? takeawaysAnalysis.html : processedContent;
+  const keyTakeawaysHtml = elevateTakeaways && takeawaysAnalysis.items.length > 0
+    ? `<div class="key-takeaways" style="margin:1.5rem 0;padding:1.25rem 1.4rem;border-radius:12px;border:1px solid rgba(96,165,250,0.35);background:rgba(30,58,138,0.25);">
+        <h2 style="margin:0 0 0.75rem;font-size:1.15rem;color:#93c5fd;">Key Takeaways</h2>
+        <ul style="margin:0;padding-left:1.2rem;color:#e2e8f0;">
+          ${takeawaysAnalysis.items.map((item) => `<li style="margin:0.35rem 0;">${escapeHtml(item)}</li>`).join('\n          ')}
+        </ul>
+      </div>`
+    : '';
+
   // 🔗 Inject internal links so crawlers see cross-article links in static HTML
   processedContent = injectInternalLinksSSG(processedContent, slug);
   processedContent = normalizeArticleLinks(processedContent, globalPostSlugs);
@@ -3329,6 +3407,8 @@ ${CONSENT_MODE_V2_HTML}
               <li><a href="/tools/snowflake-credit-cost" style="color:#60a5fa;text-decoration:none;font-weight:500;">Credit &rarr; USD Converter</a> <span style="color:#94a3b8;font-size:0.9rem;">&mdash; instant credit price lookup</span></li>
             </ul>
           </aside>` : ''}
+
+          ${keyTakeawaysHtml}
 
           <!-- 🔥 THIS IS THE KEY: FULL HTML CONTENT WITH IMAGES -->
           <div class="article-body">
