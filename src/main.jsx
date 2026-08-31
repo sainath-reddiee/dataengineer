@@ -8,6 +8,7 @@ import App from '@/App';
 import '@/index.css';
 import { initThirdPartyScripts } from '@/utils/scriptLoader';
 import { isCrawlerUserAgent } from '@/utils/isCrawler';
+import { parkSsgArticleFromRoot } from '@/utils/ssgArticle';
 
 // Note: Font preloading is handled in index.html with proper preload tags
 // This avoids duplicate requests and improves FCP
@@ -46,7 +47,9 @@ const initApp = () => {
     return;
   }
 
-  const root = ReactDOM.createRoot(document.getElementById('root'));
+  const rootEl = document.getElementById('root');
+  parkSsgArticleFromRoot(rootEl);
+  const root = ReactDOM.createRoot(rootEl);
 
   root.render(
     <React.StrictMode>

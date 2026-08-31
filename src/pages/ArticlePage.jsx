@@ -38,6 +38,8 @@ import InlineToolWidget from '@/components/InlineToolWidget';
 import AuthorBioCard from '@/components/AuthorBioCard';
 import SponsorPlacement from '@/components/SponsorPlacement';
 import { isBlogOwner, OWNER_DISPLAY_NAME, OWNER_ROLE, OWNER_PROFILE_PATH } from '@/lib/contributorIdentity';
+import { getParkedSsgArticle } from '@/utils/ssgArticle';
+import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap, Megaphone, MessageCircleQuestion, Send } from 'lucide-react';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
@@ -282,7 +284,9 @@ const ErrorDisplay = ({ error, onRetry, slug }) => {
 
 const RelatedTools = ({ post }) => {
   const tools = React.useMemo(() => getRelatedTools(post, 4), [post]);
-  const { cheatsheets, comparisons, glossary } = tools;
+  const cheatsheets = tools.cheatsheets;
+  const comparisons = ADSENSE_REVIEW_MODE ? [] : tools.comparisons;
+  const glossary = ADSENSE_REVIEW_MODE ? [] : tools.glossary;
   const total = cheatsheets.length + comparisons.length + glossary.length;
   if (total === 0) return null;
 
@@ -665,14 +669,30 @@ const ArticlePage = () => {
   }, [post?.content, slug]);
 
   const headings = useMemo(() => extractHeadings(processedHtml), [processedHtml]);
+  const parkedSsgHtml = useMemo(() => getParkedSsgArticle(slug), [slug]);
 
-  if (loading && !post) {
-    return (
-      <div className="pt-4 pb-12">
-        <ReadingProgressBar />
-        <ArticleSkeleton />
-      </div>
-    );
+  if ((loading && !post) || ((error || !post) && parkedSsgHtml)) {
+    if (parkedSsgHtml) {
+      return (
+        <div className="pt-4 pb-12">
+          <ReadingProgressBar />
+          <div className="container mx-auto px-6 max-w-4xl">
+            <div
+              className="seo-content article-content"
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parkedSsgHtml) }}
+            />
+          </div>
+        </div>
+      );
+    }
+    if (loading && !post) {
+      return (
+        <div className="pt-4 pb-12">
+          <ReadingProgressBar />
+          <ArticleSkeleton />
+        </div>
+      );
+    }
   }
 
   if (error) return <ErrorDisplay error={error} onRetry={refetch} slug={slug} />;
