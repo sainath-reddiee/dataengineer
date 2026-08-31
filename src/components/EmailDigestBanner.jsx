@@ -101,9 +101,14 @@ const EmailDigestBanner = () => {
         </div>
       )}
       {error && (
-        <div className="flex items-center justify-center gap-2 text-red-400 text-sm mt-2">
-          <AlertCircle className="h-4 w-4" />
-          {typeof error === 'string' ? error : 'Subscription failed. Please try again.'}
+        <div className="mt-2 text-center">
+          <div className="inline-flex items-center gap-2 text-red-400 text-sm">
+            <AlertCircle className="h-4 w-4" />
+            {typeof error === 'string' ? error : 'Subscription failed. Please try again.'}
+          </div>
+          <p className="text-xs text-gray-400 mt-1">
+            Follow via <a href="/rss.xml" className="text-orange-400 hover:underline">RSS</a> until signup is back.
+          </p>
         </div>
       )}
     </section>

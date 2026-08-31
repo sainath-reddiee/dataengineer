@@ -13,7 +13,7 @@ import {
     BookOpen, Link2, Clock, Zap, Target, DollarSign,
     Network, Calendar, Users, Users2, Sparkle, MousePointerClick, TrendingDown, Award,
     FileSearch, MessageCircleQuestion, Wand2, Globe, Activity, Fish, Wrench,
-    Menu, X
+    Menu, X, Mail
 } from 'lucide-react';
 import { AdminAuth, useAdminAuth } from './AdminAuth';
 import aiService from '@/services/aiService';
@@ -36,6 +36,7 @@ const navItems = [
     { path: '/admin/rank-dashboard', icon: Target, label: 'Rank Intelligence', highlight: true },
     { path: '/admin/revenue', icon: DollarSign, label: 'Revenue Projection', highlight: true },
     { path: '/admin/content-calendar', icon: Calendar, label: 'Content Calendar', highlight: true },
+    { path: '/admin/weekly-digest', icon: Mail, label: 'Weekly Digest', highlight: true },
     { path: '/admin/topic-clusters', icon: Network, label: 'Topic Clusters' },
     { path: '/admin/competitor-gap', icon: Users, label: 'Competitor Gap (AI)' },
     { path: '/admin/smart-linking', icon: Sparkle, label: 'Smart Linking (AI)' },
