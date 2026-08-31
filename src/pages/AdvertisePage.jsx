@@ -12,7 +12,7 @@ import {
   Percent, Zap, Target, Star, Shield,
   Briefcase, Search, X, ListChecks, Flame, Crown,
   AlertCircle, BookOpen, FileText, RefreshCw, Scale, Clock, UserCheck,
-  Newspaper, Wrench, Bell, PenLine, TrendingUp as TrendUp, Link
+  Newspaper, Bell, PenLine, TrendingUp as TrendUp
 } from 'lucide-react';
 import { trackEvent } from '@/utils/analytics';
 import { getFAQSchema } from '@/lib/seoConfig';
@@ -41,12 +41,12 @@ const FAQS = [
   {
     category: 'Audience',
     question: 'Who is the typical reader of DataEngineer Hub?',
-    answer: 'Our audience consists of active data engineers (58%), analytics engineers (22%), data architects (12%), and engineering managers (8%). They are practitioners who design, build, and maintain data pipelines using modern cloud data stacks like Snowflake, dbt, Databricks, Spark, and major cloud services.'
+    answer: 'Practitioners who cost Snowflake warehouses, debug dbt tests, and sit SnowPro or DE interviews. The role bars on this page are a qualitative read from comments and inbound mail — not an audited survey. If your buyer is a CMO looking for brand awareness, this is the wrong site.'
   },
   {
     category: 'Placements',
     question: 'Where do my sponsorship placements appear?',
-    answer: 'Depending on your package, your resource references or showcase cards are injected dynamically across relevant blog articles, cheatsheets, glossary terms, and interactive calculator tools matching your technology stack or category. This ensures your message is delivered only to high-intent readers.'
+    answer: 'On matching articles, cheat sheets, interview-prep pages, and interactive calculators. We do not sell glossary or comparison-archive placements. Those sections are held out of search while we keep the site focused on original tutorials.'
   },
   {
     category: 'Placements',
@@ -56,7 +56,7 @@ const FAQS = [
   {
     category: 'Placements',
     question: 'Can I run multiple sponsorship packages at the same time?',
-    answer: 'Yes. Many partners combine an Ecosystem Showcase directory listing with a Developer Resource Reference placement to cover both discovery and in-content, contextual mentions. Reach out and we\u2019ll put together bundled placement details for you.'
+    answer: 'Yes. A common pair is a Tools Hub listing plus a sponsored card on matching guides. We will not stack two competing products on the same article.'
   },
   {
     category: 'Billing',
@@ -81,7 +81,12 @@ const FAQS = [
   {
     category: 'Trust & Fit',
     question: 'How do you keep my placement exclusive from competitors?',
-    answer: 'Each guide, cheatsheet, or comparison article shows at most one sponsor at a time, matched by category and targeting rules. We never stack competing sponsors on the same piece of content.'
+    answer: 'Each matching guide or cheat sheet shows at most one sponsor at a time. We never stack competing sponsors on the same page, and we will not sell a dofollow “SEO mention.”'
+  },
+  {
+    category: 'Trust & Fit',
+    question: 'Can I pay for a guest post or a dofollow backlink?',
+    answer: 'No. Guest tutorials are free, editorial, and reviewed against the same bar as staff posts. Paid placements are labeled Sponsored and nofollow. If you want a unique page about your product, buy the co-authored integration guide — we still keep the byline and the edit.'
   },
   {
     category: 'Trust & Fit',
@@ -123,7 +128,7 @@ const CONTENT_CHANNELS = [
     badgeStyle: 'bg-amber-500/15 text-amber-300 border border-amber-500/25',
     title: 'Newsletter Sponsorship',
     tagline: 'A sponsored blurb in our weekly digest for practicing data engineers',
-    price: 40,
+    price: 79,
     priceLabel: 'per issue',
     bullets: [
       '150-word sponsored blurb placed at the top of our next newsletter edition',
@@ -134,54 +139,6 @@ const CONTENT_CHANNELS = [
     ],
     cta: 'Reserve a Newsletter Slot',
     ideal: 'Ideal for: product launches, free trial offers, event registrations, and new feature announcements',
-  },
-  {
-    key: 'tool_listing',
-    icon: Wrench,
-    free: false,
-    badge: 'Tools Hub',
-    accentBg: 'bg-teal-500/10',
-    accentText: 'text-teal-400',
-    accentBorder: 'border-teal-500/30',
-    accentBar: 'bg-teal-500',
-    badgeStyle: 'bg-teal-500/15 text-teal-300 border border-teal-500/25',
-    title: 'Permanent Tools Hub Listing',
-    tagline: 'Featured in our interactive directory — searched daily by tool evaluators',
-    price: 99,
-    priceLabel: 'one-time',
-    bullets: [
-      'Your tool card lives permanently in the Tools Hub with logo, description, and CTA link',
-      'Categorized under the correct ecosystem section (Warehousing, ETL, Orchestration, etc.)',
-      'Visible to every visitor browsing tools — high purchase-intent traffic',
-      'One free listing update per quarter (rename, new URL, updated description)',
-      'No expiry — pay once, stay listed as long as the site runs',
-    ],
-    cta: 'List My Tool',
-    ideal: 'Ideal for: SaaS tools, open-source projects, and cloud services wanting long-term discoverability',
-  },
-  {
-    key: 'mention',
-    icon: Link,
-    free: false,
-    badge: 'Backlink',
-    accentBg: 'bg-rose-500/10',
-    accentText: 'text-rose-400',
-    accentBorder: 'border-rose-500/30',
-    accentBar: 'bg-rose-500',
-    badgeStyle: 'bg-rose-500/15 text-rose-300 border border-rose-500/25',
-    title: 'In-article mention (referral, not SEO)',
-    tagline: 'A labeled mention inside a matching guide — built for clicks, not link juice',
-    price: 25,
-    priceLabel: 'one placement',
-    bullets: [
-      'Your product named in a relevant, already-live article or cheat sheet',
-      'Marked as sponsored / recommended resource — we never hide the disclosure',
-      'Links are nofollow by default (this is not a backlink package)',
-      'You approve the sentence and destination URL before it goes live',
-      'Best for a product launch or a trial offer aimed at practitioners already reading that topic',
-    ],
-    cta: 'Book a Mention',
-    ideal: 'Ideal for: indie tools and SaaS trials that want referral traffic, not a paid-link SEO play',
   },
 ];
 
@@ -196,7 +153,7 @@ const PACKAGE_FACTS = {
   },
   directory: {
     placementType: 'Tools Hub directory card',
-    exclusivity: 'Multiple tools listed per category',
+    exclusivity: 'One card per tool, shared category rows',
     newsletterPromo: false,
     githubRepo: false,
     tracking: 'Viewable impressions + private dashboard',
@@ -220,7 +177,7 @@ const AdvertisePage = () => {
     company: '',
     website: '',
     package: 'resource_reference',
-    budget: '$30 USD / month',
+    budget: '$79 USD / month',
     message: ''
   });
 
@@ -240,7 +197,7 @@ const AdvertisePage = () => {
   const [selectedCurrency, setSelectedCurrency] = useState('USD');
   const [selectedDurations, setSelectedDurations] = useState({
     resource_reference: 'monthly',
-    directory: 'monthly',
+    directory: 'one_time',
     content: 'one_time'
   });
 
@@ -460,25 +417,17 @@ const AdvertisePage = () => {
   // selected package. First entry = default auto-selected when package changes.
   const PACKAGE_BUDGET_OPTIONS = {
     resource_reference: [
-      { value: '$30 USD / month', label: '$30 USD / month — flexible, cancel at term end' },
-      { value: '$180 USD / year', label: '$180 USD / year — save 50% vs monthly' },
+      { value: '$79 USD / month', label: '$79 USD / month — labeled card on matching guides' },
+      { value: '$699 USD / year', label: '$699 USD / year — same card for 12 months' },
     ],
     directory: [
-      { value: '$15 USD / week', label: '$15 USD / week — best for launches' },
-      { value: '$45 USD / month', label: '$45 USD / month — save 25% vs weekly' },
-      { value: '$240 USD / year', label: '$240 USD / year — save 56% vs monthly' },
+      { value: '$149 USD one-time', label: '$149 USD one-time — permanent Tools Hub listing' },
     ],
     content: [
-      { value: '$99 USD one-time', label: '$99 USD one-time — we co-write a sponsored integration guide' },
+      { value: '$249 USD one-time', label: '$249 USD one-time — co-authored integration guide' },
     ],
     newsletter_sponsorship: [
-      { value: '$40 USD / issue', label: '$40 USD per newsletter issue — lowest-cost paid test' },
-    ],
-    tool_listing: [
-      { value: '$99 USD one-time', label: '$99 USD one-time — listed in the Tools Hub' },
-    ],
-    mention: [
-      { value: '$25 USD / mention', label: '$25 USD — one labeled in-article mention (nofollow)' },
+      { value: '$79 USD / issue', label: '$79 USD per newsletter issue' },
     ],
     other: [
       { value: "Let's discuss", label: "Let's discuss — we'll figure it out together" },
@@ -587,7 +536,7 @@ const AdvertisePage = () => {
         company: '',
         website: '',
         package: 'resource_reference',
-        budget: '$30 USD / month',
+        budget: '$79 USD / month',
         message: ''
       });
     } catch (err) {
@@ -608,9 +557,9 @@ const AdvertisePage = () => {
     <div className="advertise-page min-h-screen bg-slate-950 text-white relative overflow-x-clip">
       <Helmet>
         <title>Advertise with DataEngineer Hub — Sponsorships billed in USD</title>
-        <meta name="description" content="Sponsor DataEngineer Hub. Reach data engineers who read Snowflake, dbt, Databricks, and Airflow guides. Packages from $15 USD/week. Guest articles are a separate, free editorial program." />
+        <meta name="description" content="Sponsor DataEngineer Hub. Labeled placements on practitioner tutorials, billed in USD from $79/month. Guest articles are a separate, free editorial program." />
         <meta property="og:title" content="Advertise with DataEngineer Hub" />
-        <meta property="og:description" content="Paid product placements for data-engineering tools. Prices billed in USD, from $15/week. Guest posts are not sponsorships — use Write for Us." />
+        <meta property="og:description" content="Paid product placements for data-engineering tools. Prices billed in USD. Guest posts are not sponsorships — use Write for Us." />
         <meta property="og:type" content="website" />
         <link rel="canonical" href="https://dataengineerhub.blog/advertise" />
       </Helmet>
@@ -652,7 +601,7 @@ const AdvertisePage = () => {
             transition={{ delay: 0.1 }}
             className="text-base sm:text-lg text-gray-400 leading-relaxed max-w-2xl mx-auto mb-8 sm:mb-10"
           >
-            Put your tool in front of engineers who are already costing a warehouse, debugging dbt, or comparing Spark vs Snowflake — not a generic banner audience. Sponsorships start at <span className="text-white font-semibold">$15 USD / week</span>. Guest articles are free and editorial; they live on <a href="/contribute" className="text-blue-400 hover:underline">Write for Us</a>, not this form.
+            Put your tool in front of engineers who are already costing a warehouse, debugging dbt, or comparing Spark vs Snowflake — not a generic banner audience. Sponsorships start at <span className="text-white font-semibold">$79 USD / month</span> for a labeled card, or $249 for a co-authored guide. Guest articles are free and editorial; they live on <a href="/contribute" className="text-blue-400 hover:underline">Write for Us</a>, not this form.
           </motion.p>
 
           <motion.div
@@ -727,15 +676,16 @@ const AdvertisePage = () => {
           <div className="grid md:grid-cols-2 gap-6">
             {/* Audience Roles */}
             <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-5 sm:p-6 backdrop-blur-sm min-w-0">
-              <h3 className="text-base font-bold text-white mb-5 flex items-center gap-2">
-                <Users className="h-4 w-4 text-blue-400 shrink-0" /> Audience Breakdown
+              <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
+                <Users className="h-4 w-4 text-blue-400 shrink-0" /> Who we write for
               </h3>
+              <p className="text-xs text-gray-500 mb-5">{advertiseConfig.audienceDisclaimer}</p>
               <div className="space-y-4">
                 {advertiseConfig.audienceBreakdown.map((seg) => (
                   <div key={seg.role}>
                     <div className="flex justify-between items-center mb-1.5">
                       <span className="text-sm text-gray-300">{seg.role}</span>
-                      <span className="text-sm font-bold text-white">{seg.percent}%</span>
+                      <span className="text-xs font-semibold text-gray-400">{seg.note || `${seg.percent}%`}</span>
                     </div>
                     <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
                       <motion.div 
@@ -785,7 +735,7 @@ const AdvertisePage = () => {
             <ul className="space-y-2 text-sm text-gray-300">
               <li className="flex gap-2"><Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" /> A data tool, cloud platform, or training product you want practitioners to try</li>
               <li className="flex gap-2"><Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" /> A launch or trial you can describe in one sentence</li>
-              <li className="flex gap-2"><Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" /> Paying in USD — from $15/week or $40 for one newsletter issue</li>
+              <li className="flex gap-2"><Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" /> Paying in USD — labeled cards from $79/month, or a $249 co-authored guide</li>
             </ul>
           </div>
           <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-5 sm:p-6 min-w-0">
@@ -848,7 +798,7 @@ const AdvertisePage = () => {
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">How we track your ads — uniquely, and honestly</h2>
             <p className="text-sm text-gray-400 leading-relaxed">
-              This is not a PPC network and we do not seed dashboards with fake totals. Every Resource Reference and Ecosystem Showcase campaign gets viewable-impression tracking, UTM-tagged clicks, and a private token dashboard.
+              This is not a PPC network and we do not seed dashboards with fake totals. Every sponsored card and Tools Hub listing gets viewable-impression tracking, UTM-tagged clicks, and a private token dashboard.
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -957,7 +907,7 @@ const AdvertisePage = () => {
             <div className="min-w-0">
               <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">Paid placements (billed in USD)</h2>
               <p className="text-sm text-gray-400 mt-2 max-w-xl">
-                Invoices and package prices are always US dollars. Use the selector only if you want a local estimate — a US visitor sees <span className="text-white">$30</span>, not rupees.
+                Invoices and package prices are always US dollars. Use the selector only if you want a local estimate — a US visitor sees <span className="text-white">$79</span>, not rupees.
               </p>
             </div>
             <div className="flex flex-col items-stretch sm:items-end gap-1 w-full sm:w-auto shrink-0">
@@ -1420,7 +1370,7 @@ const AdvertisePage = () => {
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">Start smaller if a monthly package feels heavy</h2>
             <p className="text-sm text-gray-400 max-w-2xl mx-auto">
-              These are still paid product placements in USD — a one-issue newsletter, a Tools Hub card, or a single labeled mention. They are meant for launches and indie tools, not for guest-post SEO.
+              These are still paid product placements in USD — a newsletter issue or a Tools Hub card. They are meant for launches, not for buying a guest-post byline.
             </p>
           </div>
 
@@ -1523,8 +1473,8 @@ const AdvertisePage = () => {
             <Bell className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />
             <p className="text-sm text-gray-400 leading-relaxed">
               <span className="text-white font-semibold">Indie tools are welcome.</span> You do not need an enterprise marketing budget.
-              The newsletter slot at $40 USD is the cheapest paid test. If you only have a tutorial to share, use{' '}
-              <a href="/contribute" className="text-blue-400 hover:underline">Write for Us</a> instead of buying a placement.
+              The cheapest paid test is a labeled newsletter blurb at $79 USD. If you have a production story to tell, use{' '}
+              <a href="/contribute" className="text-blue-400 hover:underline">Write for Us</a> — guest posts are free and editorial, not ads.
             </p>
           </div>
         </div>
@@ -1917,12 +1867,10 @@ const AdvertisePage = () => {
                         onChange={handleChange}
                         className="w-full max-w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
                       >
-                        <option value="newsletter_sponsorship">Try it: Newsletter — $40 USD / issue</option>
-                        <option value="resource_reference">Developer Resource Reference — $30 USD/mo or $180 USD/yr</option>
-                        <option value="directory">Tools Hub card — $15 USD/wk · $45 USD/mo · $240 USD/yr</option>
-                        <option value="mention">In-article mention (nofollow) — $25 USD</option>
-                        <option value="tool_listing">Tools Hub listing — $99 USD one-time</option>
-                        <option value="content">Sponsored integration guide (we co-write) — $99 USD</option>
+                        <option value="newsletter_sponsorship">Newsletter — $79 USD / issue</option>
+                        <option value="resource_reference">Sponsored card — $79 USD/mo or $699 USD/yr</option>
+                        <option value="directory">Tools Hub listing — $149 USD one-time</option>
+                        <option value="content">Co-authored integration guide — $249 USD</option>
                         <option value="other">Custom / not sure yet</option>
                       </select>
                     </div>

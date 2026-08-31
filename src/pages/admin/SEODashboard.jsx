@@ -33,14 +33,14 @@ const COLOR_CLASSES = {
 };
 
 const quickActions = [
-    { path: '/admin/scanner', icon: Search, label: 'Scan URL', desc: 'Analyze any page', color: 'blue' },
-    { path: '/admin/bulk', icon: Layers, label: 'Bulk Scan', desc: 'Scan all articles', color: 'purple' },
-    { path: '/admin/compare', icon: GitCompare, label: 'Compare', desc: 'Side-by-side', color: 'green' },
-    { path: '/admin/schema', icon: Code2, label: 'Schema', desc: 'Generate markup', color: 'orange' },
-    { path: '/admin/serp', icon: Eye, label: 'SERP Preview', desc: 'Search preview', color: 'pink' },
-    { path: '/admin/ai-suite', icon: Sparkles, label: 'AI Suite', desc: 'PSEO/AEO/GEO', color: 'cyan' },
-    { path: '/admin/ctr-lab', icon: Zap, label: 'CTR Lab', desc: 'Title & meta scorer', color: 'yellow' },
+    { path: '/admin/proposals', icon: FileText, label: 'Guest proposals', desc: 'Review pitches', color: 'blue' },
+    { path: '/admin/contributors', icon: FileText, label: 'Contributors', desc: 'Guest authors', color: 'purple' },
     { path: '/admin/sponsors', icon: Key, label: 'Sponsors', desc: 'Manage campaigns', color: 'green' },
+    { path: '/admin/content-calendar', icon: FileText, label: 'Calendar', desc: 'Editorial tasks', color: 'orange' },
+    { path: '/admin/article-writer', icon: Sparkles, label: 'Article writer', desc: 'Incident drafts', color: 'cyan' },
+    { path: '/admin/revenue', icon: Zap, label: 'Revenue', desc: 'Ads + sponsorship SKUs', color: 'yellow' },
+    { path: '/admin/scanner', icon: Search, label: 'Scan URL', desc: 'Analyze any page', color: 'pink' },
+    { path: '/admin/ctr-lab', icon: Zap, label: 'CTR Lab', desc: 'Title & meta scorer', color: 'blue' },
 ];
 
 export function SEODashboard() {

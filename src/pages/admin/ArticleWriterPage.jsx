@@ -14,6 +14,24 @@ import { QualityGate } from '@/components/admin/QualityGate';
 import { useMountedRef } from '@/hooks/useMountedRef';
 import activityHistory from '@/services/activityHistory';
 
+const INCIDENT_PROMPT = `You are a data engineer writing a production post-mortem for dataengineerhub.blog.
+
+HARD RULES:
+- Write about ONE incident: a warehouse bill, a failed dbt run, a sensor that burned compute, or a Query Profile that lied.
+- First person. Name versions, error strings, warehouse sizes, and dollar or runtime numbers.
+- Include a "When not to do this" section. Include 3 FAQ headings that end with ?.
+- Do NOT write glossary definitions, vendor-doc rewrites, or pSEO listicles.
+- Do NOT invent statistics. If you do not have a number, say you do not have it.
+- Forbidden phrases: comprehensive guide, in today's, let's dive in, leverage, utilize.
+
+STRUCTURE:
+1. What broke
+2. What the UI / logs claimed
+3. What you changed
+4. What you would do next time
+5. FAQ with real questions
+`;
+
 const STEPS = ['Topic & Research', 'Outline', 'Write Sections', 'Preview & Export'];
 
 // â”€â”€â”€ SYSTEM PROMPT: Human-style writing + SEO mastery + anti-hallucination â”€
@@ -111,6 +129,7 @@ export function ArticleWriterPage() {
 
     // Step 1: Topic
     const [topic, setTopic] = useState('');
+    const [writingMode, setWritingMode] = useState('incident');
     const [researchResults, setResearchResults] = useState([]);
     const [researching, setResearching] = useState(false);
 
@@ -162,7 +181,8 @@ export function ArticleWriterPage() {
                 ? `\n\nTOP COMPETITORS FOR THIS TOPIC:\n${researchResults.slice(0, 5).map((r, i) => `${i + 1}. "${r.title}" — ${r.snippet || ''}`).join('\n')}\n\nWrite something BETTER and MORE SPECIFIC than these.`
                 : '';
 
-            const prompt = `${STYLE_PROMPT}
+            const style = writingMode === 'incident' ? INCIDENT_PROMPT : STYLE_PROMPT;
+            const prompt = `${style}
 
 TASK: Generate a complete article OUTLINE for the topic: "${topic}"
 ${competitorContext}
@@ -459,7 +479,31 @@ Output ONLY this section's content in markdown. No preamble.`;
                     <FileText className="w-8 h-8 text-pink-400" />
                     AI Article Writer
                 </h1>
-                <p className="text-gray-400">Write full articles in your exact format â€" topic â†' outline â†' write section-by-section â†' export to WordPress.</p>
+                <p className="text-gray-400">Default mode is a production incident. Switch to SEO/pSEO only if you are repairing an existing ranking page.</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                    <button
+                        type="button"
+                        onClick={() => setWritingMode('incident')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${
+                            writingMode === 'incident'
+                                ? 'bg-emerald-600/30 text-white border-emerald-400/40'
+                                : 'border-slate-600 text-gray-400'
+                        }`}
+                    >
+                        Production incident
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setWritingMode('seo')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${
+                            writingMode === 'seo'
+                                ? 'bg-pink-600/30 text-white border-pink-400/40'
+                                : 'border-slate-600 text-gray-400'
+                        }`}
+                    >
+                        SEO / pSEO (legacy)
+                    </button>
+                </div>
             </div>
 
             {/* Resume banner */}
