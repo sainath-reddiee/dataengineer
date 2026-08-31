@@ -13,7 +13,7 @@ import {
     BookOpen, Link2, Clock, Zap, Target, DollarSign,
     Network, Calendar, Users, Users2, Sparkle, MousePointerClick, TrendingDown, Award,
     FileSearch, MessageCircleQuestion, Wand2, Globe, Activity, Fish, Wrench,
-    Menu, X
+    Menu, X, Mail
 } from 'lucide-react';
 import { AdminAuth, useAdminAuth } from './AdminAuth';
 import aiService from '@/services/aiService';
@@ -30,6 +30,7 @@ const navGroups = [
         items: [
             { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
             { path: '/admin/proposals', icon: FileSearch, label: 'Guest proposals' },
+            { path: '/admin/weekly-digest', icon: Mail, label: 'Weekly Digest' },
             { path: '/admin/contributors', icon: Users2, label: 'Contributors' },
             { path: '/admin/content-calendar', icon: Calendar, label: 'Content Calendar' },
             { path: '/admin/article-writer', icon: FileSearch, label: 'AI Article Writer' },

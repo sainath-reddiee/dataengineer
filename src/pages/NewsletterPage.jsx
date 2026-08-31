@@ -51,7 +51,7 @@ const NewsletterPage = () => {
               {
                 icon: Shield,
                 title: 'Privacy first',
-                text: 'We never share your address. No tracking pixels, no third-party ad lists. Just content.',
+                text: 'Your address is stored so we can send the digest. We do not sell the list or rent it to advertisers.',
               },
             ].map((item) => {
               const Icon = item.icon;
@@ -81,6 +81,16 @@ const NewsletterPage = () => {
               <Rss className="w-3.5 h-3.5" aria-hidden="true" />
               Grab the feed
             </a>
+            {' '}· The same three links also go on{' '}
+            <a
+              href="https://www.linkedin.com/in/sainathreddypogaku/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sky-400 hover:underline"
+            >
+              LinkedIn
+            </a>
+            {' '}each week.
           </p>
         </motion.div>
 

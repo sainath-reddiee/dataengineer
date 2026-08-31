@@ -54,9 +54,11 @@ class WordPressAPI {
   }
 
   async makeRequest(endpoint, options = {}) {
+    const method = String(options.method || 'GET').toUpperCase();
     const cacheKey = `${endpoint}_${JSON.stringify(options)}`;
+    const useCache = method === 'GET';
 
-    const cached = this.cache.get(cacheKey);
+    const cached = useCache ? this.cache.get(cacheKey) : null;
     if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
       console.log('📦 Cache hit:', endpoint);
       return cached;
@@ -123,13 +125,15 @@ class WordPressAPI {
           timestamp: Date.now()
         };
 
-        this.cache.set(cacheKey, result);
-        // Simple LRU eviction: drop oldest entries when over the cap.
-        // Map preserves insertion order, so the first key is the oldest.
-        while (this.cache.size > this.cacheMaxEntries) {
-          const oldestKey = this.cache.keys().next().value;
-          if (oldestKey === undefined) break;
-          this.cache.delete(oldestKey);
+        if (useCache) {
+          this.cache.set(cacheKey, result);
+          // Simple LRU eviction: drop oldest entries when over the cap.
+          // Map preserves insertion order, so the first key is the oldest.
+          while (this.cache.size > this.cacheMaxEntries) {
+            const oldestKey = this.cache.keys().next().value;
+            if (oldestKey === undefined) break;
+            this.cache.delete(oldestKey);
+          }
         }
         return result;
 
@@ -599,48 +603,37 @@ class WordPressAPI {
   }
 
   async subscribeNewsletter(email) {
-    const apiKey = import.meta.env.VITE_BREVO_API_KEY;
-    const listId = parseInt(import.meta.env.VITE_BREVO_LIST_ID || '2', 10);
-
-    if (!apiKey) {
-      throw new Error('Newsletter service is not configured');
+    const trimmed = String(email || '').trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      throw new Error('Enter a valid email address');
     }
 
-    const response = await fetch('https://api.brevo.com/v3/contacts', {
-      method: 'POST',
-      headers: {
-        'api-key': apiKey,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: email.trim(),
-        listIds: [listId],
-        updateEnabled: true,
-      }),
-    });
+    // Store of record is WordPress (wp_newsletter_subscribers).
+    // Do not call Brevo/Buttondown from the browser — VITE_ keys ship to every visitor.
+    try {
+      const result = await this.makeRequest('/newsletter/subscribe', {
+        method: 'POST',
+        body: JSON.stringify({ email: trimmed }),
+      });
 
-    // 201 = created, 204 = already exists (updated)
-    if (response.status === 201 || response.status === 204) {
-      return { success: true };
+      if (result?.data?.success === false) {
+        throw new Error(result.data.message || 'Subscription failed');
+      }
+
+      return { success: true, already: Boolean(result?.data?.already) };
+    } catch (error) {
+      const message = String(error?.message || '');
+      if (message === 'Content not found' || message.includes('404')) {
+        throw new Error('Signup is temporarily unavailable. Use the RSS feed until it is back.');
+      }
+      throw error;
     }
+  }
 
-    const data = await response.json().catch(() => ({}));
-
-    // Duplicate contact — treat as soft success
-    if (
-      response.status === 400 &&
-      (data.code === 'duplicate_parameter' || String(data.message || '').toLowerCase().includes('already'))
-    ) {
-      return { success: true, message: 'Already subscribed' };
-    }
-
-    const message =
-      (typeof data.message === 'string' ? data.message : '') ||
-      data.code ||
-      response.statusText ||
-      'Subscription failed';
-
-    throw new Error(String(message));
+  async getNewsletterSubscribers(token) {
+    const qs = token ? `?token=${encodeURIComponent(token)}` : '';
+    const result = await this.makeRequest(`/newsletter/subscribers${qs}`);
+    return result?.data || null;
   }
 
   // Contact form now handled directly by Web3Forms in ContactPage.jsx

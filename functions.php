@@ -1319,49 +1319,137 @@ function register_newsletter_endpoint() {
     ));
 }
 
-function handle_newsletter_subscription($request) {
-    $email = sanitize_email($request->get_param('email'));
-    
-    if (!is_email($email)) {
-        return new WP_Error('invalid_email', 'Invalid email address', array('status' => 400));
-    }
-    
+function dehub_newsletter_table() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'newsletter_subscribers';
-    
     $charset_collate = $wpdb->get_charset_collate();
     $sql = "CREATE TABLE IF NOT EXISTS $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
-        email varchar(100) NOT NULL,
+        email varchar(190) NOT NULL,
         subscribed_date datetime DEFAULT CURRENT_TIMESTAMP,
         status varchar(20) DEFAULT 'active',
         PRIMARY KEY (id),
         UNIQUE KEY email (email)
     ) $charset_collate;";
-    
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql);
-    
-    $result = $wpdb->insert(
-        $table_name,
-        array(
-            'email' => $email,
-            'subscribed_date' => current_time('mysql'),
-            'status' => 'active'
-        )
-    );
-    
-    if ($result === false) {
-        return new WP_Error('subscription_failed', 'Failed to subscribe', array('status' => 500));
+    return $table_name;
+}
+
+function dehub_forward_newsletter_subscriber($email) {
+    $errors = array();
+
+    if (defined('DEHUB_BUTTONDOWN_API_KEY') && DEHUB_BUTTONDOWN_API_KEY) {
+        $response = wp_remote_post('https://api.buttondown.com/v1/subscribers', array(
+            'headers' => array(
+                'Authorization' => 'Token ' . DEHUB_BUTTONDOWN_API_KEY,
+                'Content-Type' => 'application/json',
+            ),
+            'body' => wp_json_encode(array(
+                'email_address' => $email,
+                'type' => 'regular',
+            )),
+            'timeout' => 12,
+        ));
+        if (is_wp_error($response)) {
+            $errors[] = $response->get_error_message();
+        } else {
+            $code = wp_remote_retrieve_response_code($response);
+            if ($code >= 400 && $code !== 409) {
+                $errors[] = 'Buttondown ' . $code;
+            }
+        }
     }
-    
-    $subject = 'Welcome to DataEngineer Hub Newsletter!';
-    $message = 'Thank you for subscribing to our newsletter. You will receive weekly insights and updates about data engineering.';
-    wp_mail($email, $subject, $message);
-    
+
+    if (defined('DEHUB_BREVO_API_KEY') && DEHUB_BREVO_API_KEY) {
+        $list_id = defined('DEHUB_BREVO_LIST_ID') ? intval(DEHUB_BREVO_LIST_ID) : 2;
+        $response = wp_remote_post('https://api.brevo.com/v3/contacts', array(
+            'headers' => array(
+                'api-key' => DEHUB_BREVO_API_KEY,
+                'Content-Type' => 'application/json',
+            ),
+            'body' => wp_json_encode(array(
+                'email' => $email,
+                'listIds' => array($list_id),
+                'updateEnabled' => true,
+            )),
+            'timeout' => 12,
+        ));
+        if (is_wp_error($response)) {
+            $errors[] = $response->get_error_message();
+        }
+    }
+
+    if (!empty($errors)) {
+        error_log('DEHUB newsletter forward: ' . implode('; ', $errors));
+    }
+}
+
+function handle_newsletter_subscription($request) {
+    $email = sanitize_email($request->get_param('email'));
+
+    if (!is_email($email)) {
+        return new WP_Error('invalid_email', 'Invalid email address', array('status' => 400));
+    }
+
+    global $wpdb;
+    $table_name = dehub_newsletter_table();
+    $existing = $wpdb->get_var($wpdb->prepare("SELECT id FROM $table_name WHERE email = %s", $email));
+
+    if (!$existing) {
+        $inserted = $wpdb->insert(
+            $table_name,
+            array(
+                'email' => $email,
+                'subscribed_date' => current_time('mysql'),
+                'status' => 'active'
+            )
+        );
+        if ($inserted === false) {
+            $again = $wpdb->get_var($wpdb->prepare("SELECT id FROM $table_name WHERE email = %s", $email));
+            if (!$again) {
+                return new WP_Error('subscription_failed', 'Failed to subscribe', array('status' => 500));
+            }
+            $existing = $again;
+        } else {
+            dehub_forward_newsletter_subscriber($email);
+        }
+    }
+
     return array(
         'success' => true,
-        'message' => 'Successfully subscribed to newsletter'
+        'already' => (bool) $existing,
+        'message' => $existing ? 'Already subscribed' : 'Successfully subscribed to newsletter'
+    );
+}
+
+add_action('rest_api_init', 'register_newsletter_export_endpoint');
+function register_newsletter_export_endpoint() {
+    register_rest_route('wp/v2', '/newsletter/subscribers', array(
+        'methods' => 'GET',
+        'callback' => 'handle_newsletter_export',
+        'permission_callback' => 'dehub_newsletter_export_allowed',
+    ));
+}
+
+function dehub_newsletter_export_allowed() {
+    if (current_user_can('manage_options')) {
+        return true;
+    }
+    $token = isset($_GET['token']) ? sanitize_text_field(wp_unslash($_GET['token'])) : '';
+    return defined('DEHUB_NEWSLETTER_EXPORT_TOKEN')
+        && DEHUB_NEWSLETTER_EXPORT_TOKEN
+        && hash_equals((string) DEHUB_NEWSLETTER_EXPORT_TOKEN, $token);
+}
+
+function handle_newsletter_export() {
+    global $wpdb;
+    $table_name = dehub_newsletter_table();
+    $rows = $wpdb->get_results("SELECT email, subscribed_date, status FROM $table_name ORDER BY subscribed_date DESC LIMIT 5000", ARRAY_A);
+    return array(
+        'success' => true,
+        'count' => is_array($rows) ? count($rows) : 0,
+        'subscribers' => $rows ? $rows : array(),
     );
 }
 

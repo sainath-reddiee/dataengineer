@@ -107,9 +107,25 @@ const Newsletter = () => {
                         </button>
                       </form>
                       {error && (
-                        <div className="inline-flex items-center gap-2 text-red-400 text-sm mt-3">
-                          <AlertCircle className="h-4 w-4" />
-                          {typeof error === 'string' ? error : 'Subscription failed. Please try again.'}
+                        <div className="mt-3 space-y-1">
+                          <div className="inline-flex items-center gap-2 text-red-400 text-sm">
+                            <AlertCircle className="h-4 w-4" />
+                            {typeof error === 'string' ? error : 'Subscription failed. Please try again.'}
+                          </div>
+                          <p className="text-xs text-gray-400">
+                            You can still follow new posts via{' '}
+                            <a href="/rss.xml" className="text-orange-400 hover:underline">RSS</a>
+                            {' '}or{' '}
+                            <a
+                              href="https://www.linkedin.com/in/sainathreddypogaku/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sky-400 hover:underline"
+                            >
+                              LinkedIn
+                            </a>
+                            .
+                          </p>
                         </div>
                       )}
                     </>

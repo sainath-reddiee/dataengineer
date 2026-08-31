@@ -111,6 +111,7 @@ const TrendIntelligencePage = lazy(() => import('./pages/admin/TrendIntelligence
 const ArticleWriterPage = lazy(() => import('./pages/admin/ArticleWriterPage'));
 const SerpIntelligencePage = lazy(() => import('./pages/admin/SerpIntelligencePage'));
 const ActivityHistoryPage = lazy(() => import('./pages/admin/ActivityHistoryPage'));
+const WeeklyDigestPage = lazy(() => import('./pages/admin/WeeklyDigestPage'));
 
 // Keep this tiny. A full-viewport "Loading Article…" overlay was what
 // AdSense snapshots when a lazy chunk is still in flight.
@@ -434,6 +435,7 @@ function App() {
                     <Route path="article-writer" element={<SafeRoute><ArticleWriterPage /></SafeRoute>} />
           <Route path="serp-intelligence" element={<SafeRoute><SerpIntelligencePage /></SafeRoute>} />
           <Route path="history" element={<SafeRoute><ActivityHistoryPage /></SafeRoute>} />
+          <Route path="weekly-digest" element={<SafeRoute><WeeklyDigestPage /></SafeRoute>} />
           <Route path="contributors" element={<SafeRoute><ContributorManagerPage /></SafeRoute>} />
           <Route path="proposals" element={<SafeRoute><GuestProposalsPage /></SafeRoute>} />
         </Route>
