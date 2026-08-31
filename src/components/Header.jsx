@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Wrench, Info, Search, BookOpen, FileText, GraduationCap, Target, Megaphone } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Wrench, Info, Search, BookOpen, FileText, GraduationCap, Target, Megaphone, Bookmark } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
+import { useReadingList } from '@/hooks/useReadingList';
 
 // Helper component for the "Corner Burst" sparks animation
 const Spark = ({ x, y, rotate, color }) => {
@@ -104,6 +105,7 @@ const Header = ({ topOffset = 0 }) => {
   const location = useLocation();
   const currentPath = location.pathname;
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { count: readingListCount } = useReadingList();
   const dropdownTimeout = React.useRef(null);
 
   // Clean up timeout on unmount
@@ -563,6 +565,22 @@ const Header = ({ topOffset = 0 }) => {
               </Link>
             </motion.div>
 
+            <motion.div whileHover={{ y: -2 }}>
+              <Link
+                to="/reading-list"
+                className="relative whitespace-nowrap flex items-center gap-1.5 text-gray-300 hover:text-amber-300 transition-all duration-200 font-medium text-xs 2xl:text-base px-1.5 2xl:px-0"
+                title="Reading list"
+                aria-label={readingListCount > 0 ? `Reading list, ${readingListCount} saved` : 'Reading list'}
+              >
+                <Bookmark className="w-4 h-4" />
+                {readingListCount > 0 && (
+                  <span className="absolute -top-2 -right-1 min-w-[1.1rem] rounded-full bg-amber-500 px-1 text-[10px] font-bold text-slate-950 text-center">
+                    {readingListCount}
+                  </span>
+                )}
+              </Link>
+            </motion.div>
+
             {/* Search Button */}
             <motion.div whileHover={{ y: -2 }}>
               <button
@@ -688,6 +706,14 @@ const Header = ({ topOffset = 0 }) => {
                 <Link to="/advertise" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
                   <Megaphone className="w-5 h-5" />
                   Advertise
+                </Link>
+                <Link
+                  to="/reading-list"
+                  className="text-white hover:text-amber-300 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Bookmark className="w-5 h-5" />
+                  Reading list{readingListCount > 0 ? ` (${readingListCount})` : ''}
                 </Link>
                 <button
                   onClick={() => { setMobileMenuOpen(false); setIsSearchOpen(true); }}

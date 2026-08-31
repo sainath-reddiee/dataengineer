@@ -38,6 +38,7 @@ const Footer = () => {
       { name: 'Editorial Standards', href: '/editorial-standards' },
       { name: 'Contact', href: '/contact' },
       { name: 'All Articles', href: '/articles' },
+      { name: 'Reading List', href: '/reading-list' },
       { name: 'Privacy Policy', href: '/privacy-policy' },
       { name: 'Cookie Policy', href: '/privacy-policy#cookies' },
       { name: 'Terms of Service', href: '/terms-of-service' },

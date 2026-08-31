@@ -3,7 +3,7 @@
  * no featured/trending posts. Titles come from the same article
  * inventory used for internal linking — no live API required.
  */
-import articlesData from './pseo/articles.json';
+import articlesData from './pseo/articles.json' with { type: 'json' };
 
 export function getFallbackArticles(limit = 6, offset = 0) {
   const start = Math.max(0, offset);

@@ -40,6 +40,12 @@ import SponsorPlacement from '@/components/SponsorPlacement';
 import { isBlogOwner, OWNER_DISPLAY_NAME, OWNER_ROLE, OWNER_PROFILE_PATH } from '@/lib/contributorIdentity';
 import { useSsgArticleFallback } from '@/hooks/useSsgArticleFallback';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
+import { extractArticleFaqs } from '@/utils/articleFaq';
+import ArticleFaq from '@/components/ArticleFaq';
+import CiteThisArticle from '@/components/CiteThisArticle';
+import SaveArticleButton from '@/components/SaveArticleButton';
+import ArticleSeries from '@/components/ArticleSeries';
+import UpNextBar from '@/components/UpNextBar';
 import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap, Megaphone, MessageCircleQuestion, Send } from 'lucide-react';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
@@ -763,6 +769,7 @@ const ArticlePage = () => {
 
     // Extract key takeaways from H2 headings for AEO visibility
     const keyTakeaways = extractKeyTakeaways(safePost.content);
+    const articleFaqs = extractArticleFaqs(safePost.content);
 
     // FAQPage JSON-LD is owned by the SSG layer (scripts/generateFAQSchema.js)
     // to avoid duplicate schemas in the rendered DOM. Do not re-inject here.
@@ -817,9 +824,13 @@ const ArticlePage = () => {
 
           {/* Metadata Section */}
           <MetadataOption1 safePost={safePost} formatDate={formatDate} />
+          <div className="flex flex-wrap items-center gap-3">
+            <SaveArticleButton slug={slug} title={safePost.title} />
+          </div>
 
           {/* Key Takeaways — AEO/AI visibility, Speakable schema target */}
           <KeyTakeaways items={keyTakeaways} />
+          <ArticleFaq items={articleFaqs} />
 
           {/* ── Listen to this Article — Native Audio Reader ── */}
           <AudioReader content={safePost.content} title={safePost.title} />
@@ -910,6 +921,14 @@ const ArticlePage = () => {
           <AuthorBioCard author={safePost.authorData} />
         </motion.article>
 
+        <CiteThisArticle
+          title={safePost.title}
+          slug={slug}
+          author={authorDisplayName}
+          date={safePost.date}
+        />
+        <ArticleSeries slug={slug} category={safePost.category} />
+
         <InArticleCTA />
 
         <EmailDigestBanner />
@@ -925,6 +944,7 @@ const ArticlePage = () => {
 
         <GiscusComments />
       </div>
+      <UpNextBar slug={slug} category={safePost.category} />
     </div>
   );
 };
