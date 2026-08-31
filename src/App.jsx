@@ -31,6 +31,7 @@ const ContributorsPage = lazy(() => import('./pages/ContributorsPage'));
 const ContributorProfilePage = lazy(() => import('./pages/ContributorProfilePage'));
 // Admin: Contributor Manager
 const ContributorManagerPage = lazy(() => import('./pages/admin/ContributorManagerPage'));
+const GuestProposalsPage = lazy(() => import('./pages/admin/GuestProposalsPage'));
 const NewsPage = lazy(() => import('./pages/NewsPage'));
 const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 const TagsArchivePage = lazy(() => import('./pages/TagsArchivePage'));
@@ -434,6 +435,7 @@ function App() {
           <Route path="serp-intelligence" element={<SafeRoute><SerpIntelligencePage /></SafeRoute>} />
           <Route path="history" element={<SafeRoute><ActivityHistoryPage /></SafeRoute>} />
           <Route path="contributors" element={<SafeRoute><ContributorManagerPage /></SafeRoute>} />
+          <Route path="proposals" element={<SafeRoute><GuestProposalsPage /></SafeRoute>} />
         </Route>
       </Routes>
       <Toaster />

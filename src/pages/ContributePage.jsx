@@ -15,6 +15,10 @@ import { trackEvent } from '@/utils/analytics';
 import MetaTags from '@/components/SEO/MetaTags';
 
 import { useStats } from '@/hooks/useStats';
+import { EDITORIAL_BRIEFS } from '@/data/editorialBriefs';
+import { addGuestProposal } from '@/utils/guestProposals';
+
+const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY;
 
 const ContributePage = () => {
   const { toast } = useToast();
@@ -23,39 +27,81 @@ const ContributePage = () => {
     name: '',
     email: '',
     topic: '',
+    incident: '',
     outline: '',
+    repo: '',
     portfolio: '',
+    briefId: '',
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.topic || !formData.outline) {
+    if (!formData.name || !formData.email || !formData.topic || !formData.incident || !formData.outline) {
       toast({
         title: 'Incomplete Form',
-        description: 'Please fill out all required fields.',
+        description: 'Name, email, topic, the production incident, and an outline are required.',
         variant: 'destructive',
       });
       return;
     }
 
-    const subject = encodeURIComponent(`Guest Post Proposal: ${formData.topic}`);
-    const body = encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\n\nProposed Topic:\n${formData.topic}\n\nOutline:\n${formData.outline}${formData.portfolio ? `\n\nPortfolio / Blog:\n${formData.portfolio}` : ''}`
-    );
-    window.location.href = `mailto:sainath@dataengineerhub.blog?subject=${subject}&body=${body}`;
-
+    addGuestProposal(formData);
     trackEvent({
       action: 'submit_guest_post',
       category: 'engagement',
       label: formData.topic,
     });
 
-    setFormData({ name: '', email: '', topic: '', outline: '', portfolio: '' });
+    const message = [
+      `Name: ${formData.name}`,
+      `Email: ${formData.email}`,
+      `Brief: ${formData.briefId || 'original idea'}`,
+      `Topic: ${formData.topic}`,
+      `Production incident:\n${formData.incident}`,
+      `Outline:\n${formData.outline}`,
+      formData.repo ? `Repo: ${formData.repo}` : '',
+      formData.portfolio ? `Portfolio: ${formData.portfolio}` : '',
+    ].filter(Boolean).join('\n\n');
+
+    setSubmitting(true);
+    try {
+      if (WEB3FORMS_KEY) {
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            access_key: WEB3FORMS_KEY,
+            name: formData.name,
+            email: formData.email,
+            subject: `Guest post proposal: ${formData.topic}`,
+            message,
+            from_name: 'DataEngineer Hub Contribute',
+          }),
+        });
+        const data = await response.json();
+        if (!data.success) throw new Error(data.message || 'Submit failed');
+      } else {
+        window.location.href = `mailto:sainath@dataengineerhub.blog?subject=${encodeURIComponent(`Guest Post Proposal: ${formData.topic}`)}&body=${encodeURIComponent(message)}`;
+      }
+      setSubmitted(true);
+      setFormData({ name: '', email: '', topic: '', incident: '', outline: '', repo: '', portfolio: '', briefId: '' });
+      toast({ title: 'Proposal sent', description: 'We review pitches in 3–5 business days.' });
+    } catch (err) {
+      toast({
+        title: 'Could not send',
+        description: err.message || 'Try emailing sainath@dataengineerhub.blog',
+        variant: 'destructive',
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const stats = [
@@ -136,10 +182,10 @@ const ContributePage = () => {
   ];
 
   const guidelines = [
-    { icon: FileText, title: 'Length', text: '1,000+ words of original, unpublished content' },
-    { icon: Code, title: 'Code & Visuals', text: 'Include code samples, diagrams, screenshots, or architecture visuals' },
-    { icon: BookOpen, title: 'Focus', text: 'Practical tutorials, how-tos, architecture deep-dives, or best practices' },
-    { icon: Zap, title: 'Quality', text: 'Well-structured with clear headings, concise paragraphs, and actionable takeaways' },
+    { icon: FileText, title: 'Length', text: '1,600+ words of original, unpublished content. No vendor rewrites.' },
+    { icon: Code, title: 'Code & Visuals', text: 'Working samples, Query Profile / logs, or architecture you actually ran' },
+    { icon: BookOpen, title: 'Focus', text: 'A production incident, a number, or a decision you would make again' },
+    { icon: Zap, title: 'Quality', text: 'Clear headings, a FAQ with real questions, and an honest “when not to do this”' },
   ];
 
   const topics = [
@@ -319,12 +365,34 @@ const ContributePage = () => {
                 ))}
               </div>
 
-              <h3 className="text-lg font-semibold text-white mb-3">Topics We Love</h3>
+              <h3 className="text-lg font-semibold text-white mb-3">Open briefs — pitch these first</h3>
+              <div className="space-y-3 mb-8">
+                {EDITORIAL_BRIEFS.map((brief) => (
+                  <button
+                    key={brief.id}
+                    type="button"
+                    onClick={() => setFormData((prev) => ({
+                      ...prev,
+                      briefId: brief.id,
+                      topic: brief.title,
+                    }))}
+                    className={`w-full text-left rounded-xl border p-3 transition ${
+                      formData.briefId === brief.id
+                        ? 'border-blue-400/60 bg-blue-500/10'
+                        : 'border-slate-700/40 bg-slate-800/40 hover:border-blue-500/30'
+                    }`}
+                  >
+                    <div className="text-sm font-semibold text-white">{brief.title}</div>
+                    <div className="text-xs text-blue-300 mt-1">{brief.stack} · {brief.length}</div>
+                    <p className="text-xs text-gray-400 mt-1">{brief.ask}</p>
+                  </button>
+                ))}
+              </div>
               <div className="flex flex-wrap gap-2 mb-8">
                 {topics.map((t) => (
                   <span
                     key={t}
-                    className="px-3 py-1.5 bg-slate-800/60 border border-slate-700/40 rounded-full text-xs font-medium text-gray-300 hover:border-blue-500/40 hover:text-blue-300 transition-colors cursor-default"
+                    className="px-3 py-1.5 bg-slate-800/60 border border-slate-700/40 rounded-full text-xs font-medium text-gray-300"
                   >
                     {t}
                   </span>
@@ -376,32 +444,51 @@ const ContributePage = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="topic">Proposed Topic / Title *</Label>
-                  <Input id="topic" placeholder="e.g. Building Real-Time Pipelines with Kafka and Snowflake" value={formData.topic} onChange={handleChange} />
+                  <Input id="topic" placeholder="Pick an open brief or write your own incident title" value={formData.topic} onChange={handleChange} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="outline">Brief Outline *</Label>
+                  <Label htmlFor="incident">What broke in production? *</Label>
+                  <Textarea
+                    id="incident"
+                    placeholder="Warehouse size, error message, dollar figure, or the decision you would not make again..."
+                    rows={4}
+                    value={formData.incident}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="outline">Outline *</Label>
                   <Textarea
                     id="outline"
-                    placeholder="Key points, target audience, code samples or diagrams you plan to include..."
+                    placeholder="H2s, the FAQ questions, and the code or Query Profile you will show..."
                     rows={5}
                     value={formData.outline}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="portfolio">Portfolio / Blog URL (optional)</Label>
+                  <Label htmlFor="repo">GitHub / gist with the code (optional)</Label>
+                  <Input id="repo" type="url" placeholder="https://github.com/you/repro" value={formData.repo} onChange={handleChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="portfolio">Portfolio / writing sample (optional)</Label>
                   <Input id="portfolio" type="url" placeholder="https://yourblog.com" value={formData.portfolio} onChange={handleChange} />
                 </div>
+                {submitted && (
+                  <p className="text-sm text-green-300">Proposal received. We will reply in 3–5 business days.</p>
+                )}
                 <Button
                   type="submit"
                   size="lg"
+                  disabled={submitting}
                   className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold group"
                 >
-                  Submit Proposal
+                  {submitting ? 'Sending…' : 'Submit Proposal'}
                   <Send className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <p className="text-xs text-gray-500 text-center">
-                  Your email client will open with the proposal pre-filled. No data is stored on our servers.
+                  Editorial only. Product pitches belong on{' '}
+                  <Link to="/advertise" className="text-blue-400 hover:underline">Advertise</Link>.
                 </p>
               </form>
             </motion.div>

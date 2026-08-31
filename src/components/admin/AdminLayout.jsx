@@ -24,42 +24,58 @@ import modelRegistry from '@/services/modelRegistry';
 import gscService from '@/services/gscService';
 import tinyfishService from '@/services/tinyfishService';
 
-const navItems = [
-    { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
-    { path: '/admin/history', icon: Activity, label: 'Activity History' },
-    { path: '/admin/contributors', icon: Users2, label: 'Contributors', highlight: true },
-    { path: '/admin/article-optimizer', icon: Wand2, label: 'Article Optimizer', highlight: true },
-    { path: '/admin/article-fixer', icon: Wrench, label: 'Article Fixer', highlight: true },
-    { path: '/admin/trend-intelligence', icon: TrendingUp, label: 'Trend Intelligence', highlight: true },
-    { path: '/admin/article-writer', icon: FileSearch, label: 'AI Article Writer', highlight: true },
-    { path: '/admin/serp-intelligence', icon: Globe, label: 'SERP Intelligence', highlight: true },
-    { path: '/admin/rank-dashboard', icon: Target, label: 'Rank Intelligence', highlight: true },
-    { path: '/admin/revenue', icon: DollarSign, label: 'Revenue Projection', highlight: true },
-    { path: '/admin/content-calendar', icon: Calendar, label: 'Content Calendar', highlight: true },
-    { path: '/admin/topic-clusters', icon: Network, label: 'Topic Clusters' },
-    { path: '/admin/competitor-gap', icon: Users, label: 'Competitor Gap (AI)' },
-    { path: '/admin/smart-linking', icon: Sparkle, label: 'Smart Linking (AI)' },
-    { path: '/admin/ctr-fixer', icon: MousePointerClick, label: 'CTR Fixer', highlight: true },
-    { path: '/admin/striking-distance', icon: Target, label: 'Striking Distance' },
-    { path: '/admin/cannibalization', icon: FileSearch, label: 'Cannibalization', highlight: true },
-    { path: '/admin/paa-optimizer', icon: MessageCircleQuestion, label: 'PAA Optimizer', highlight: true },
-    { path: '/admin/content-decay', icon: TrendingDown, label: 'Content Decay' },
-    { path: '/admin/snippet-optimizer', icon: Award, label: 'Snippet Optimizer' },
-    { path: '/admin/scanner', icon: Search, label: 'SEO Scanner' },
-    { path: '/admin/bulk', icon: Layers, label: 'Bulk Scan' },
-    { path: '/admin/compare', icon: GitCompare, label: 'Compare URLs' },
-    { path: '/admin/schema', icon: Code2, label: 'Schema Generator' },
-    { path: '/admin/serp', icon: Eye, label: 'SERP Preview' },
-    { path: '/admin/ai-suite', icon: Sparkles, label: 'AI Suite' },
-    { path: '/admin/checklist', icon: CheckSquare, label: 'Checklist' },
-    { path: '/admin/content-optimizer', icon: TrendingUp, label: 'Content Optimizer' },
-    { path: '/admin/ctr-lab', icon: Zap, label: 'CTR Lab' },
-    { path: '/admin/keyword-injector', icon: TrendingUp, label: 'Keyword Injector', highlight: true },
-    { path: '/admin/keyword-target', icon: Target, label: 'Keyword Target', highlight: true },
-    { path: '/admin/readability', icon: BookOpen, label: 'Readability' },
-    { path: '/admin/internal-links', icon: Link2, label: 'Internal Links' },
-    { path: '/admin/freshness', icon: Clock, label: 'Freshness' },
-    { path: '/admin/sponsors', icon: Key, label: 'Sponsor Manager', highlight: true },
+const navGroups = [
+    {
+        label: 'Publishing',
+        items: [
+            { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
+            { path: '/admin/proposals', icon: FileSearch, label: 'Guest proposals' },
+            { path: '/admin/contributors', icon: Users2, label: 'Contributors' },
+            { path: '/admin/content-calendar', icon: Calendar, label: 'Content Calendar' },
+            { path: '/admin/article-writer', icon: FileSearch, label: 'AI Article Writer' },
+            { path: '/admin/article-fixer', icon: Wrench, label: 'Article Fixer' },
+        ],
+    },
+    {
+        label: 'Sponsors',
+        items: [
+            { path: '/admin/sponsors', icon: Key, label: 'Sponsor Manager' },
+            { path: '/admin/revenue', icon: DollarSign, label: 'Revenue' },
+        ],
+    },
+    {
+        label: 'SEO',
+        items: [
+            { path: '/admin/history', icon: Activity, label: 'Activity History' },
+            { path: '/admin/article-optimizer', icon: Wand2, label: 'Article Optimizer' },
+            { path: '/admin/trend-intelligence', icon: TrendingUp, label: 'Trend Intelligence' },
+            { path: '/admin/serp-intelligence', icon: Globe, label: 'SERP Intelligence' },
+            { path: '/admin/rank-dashboard', icon: Target, label: 'Rank Intelligence' },
+            { path: '/admin/topic-clusters', icon: Network, label: 'Topic Clusters' },
+            { path: '/admin/competitor-gap', icon: Users, label: 'Competitor Gap (AI)' },
+            { path: '/admin/smart-linking', icon: Sparkle, label: 'Smart Linking (AI)' },
+            { path: '/admin/ctr-fixer', icon: MousePointerClick, label: 'CTR Fixer' },
+            { path: '/admin/striking-distance', icon: Target, label: 'Striking Distance' },
+            { path: '/admin/cannibalization', icon: FileSearch, label: 'Cannibalization' },
+            { path: '/admin/paa-optimizer', icon: MessageCircleQuestion, label: 'PAA Optimizer' },
+            { path: '/admin/content-decay', icon: TrendingDown, label: 'Content Decay' },
+            { path: '/admin/snippet-optimizer', icon: Award, label: 'Snippet Optimizer' },
+            { path: '/admin/scanner', icon: Search, label: 'SEO Scanner' },
+            { path: '/admin/bulk', icon: Layers, label: 'Bulk Scan' },
+            { path: '/admin/compare', icon: GitCompare, label: 'Compare URLs' },
+            { path: '/admin/schema', icon: Code2, label: 'Schema Generator' },
+            { path: '/admin/serp', icon: Eye, label: 'SERP Preview' },
+            { path: '/admin/ai-suite', icon: Sparkles, label: 'AI Suite' },
+            { path: '/admin/checklist', icon: CheckSquare, label: 'Checklist' },
+            { path: '/admin/content-optimizer', icon: TrendingUp, label: 'Content Optimizer' },
+            { path: '/admin/ctr-lab', icon: Zap, label: 'CTR Lab' },
+            { path: '/admin/keyword-injector', icon: TrendingUp, label: 'Keyword Injector' },
+            { path: '/admin/keyword-target', icon: Target, label: 'Keyword Target' },
+            { path: '/admin/readability', icon: BookOpen, label: 'Readability' },
+            { path: '/admin/internal-links', icon: Link2, label: 'Internal Links' },
+            { path: '/admin/freshness', icon: Clock, label: 'Freshness' },
+        ],
+    },
 ];
 
 /**
@@ -244,34 +260,43 @@ function NavContent({ onNavigate }) {
                     <ChevronLeft className="w-4 h-4" />
                     <span className="text-sm">Back to Blog</span>
                 </Link>
-                <h1 className="text-xl font-bold gradient-text">SEO Toolkit</h1>
-                <p className="text-xs text-gray-500">Admin Dashboard</p>
+                <h1 className="text-xl font-bold gradient-text">Publishing desk</h1>
+                <p className="text-xs text-gray-500">Guests, sponsors, then SEO</p>
             </div>
 
             {/* Single scroll area for nav + provider config so the API-key inputs are
                 always reachable even when many keys + Models section are expanded. */}
             <div className="flex-1 overflow-y-auto">
-                <nav className="p-4 space-y-1">
-                {navItems.map((item) => {
-                    const isActive = item.exact
-                        ? location.pathname === item.path
-                        : location.pathname.startsWith(item.path);
+                <nav className="p-4 space-y-5">
+                {navGroups.map((group) => (
+                    <div key={group.label}>
+                        <p className="px-4 mb-2 text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                            {group.label}
+                        </p>
+                        <div className="space-y-1">
+                            {group.items.map((item) => {
+                                const isActive = item.exact
+                                    ? location.pathname === item.path
+                                    : location.pathname.startsWith(item.path);
 
-                    return (
-                        <Link
-                            key={item.path}
-                            to={item.path}
-                            onClick={onNavigate}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${isActive
-                                ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-white border border-blue-500/30'
-                                : 'text-gray-400 hover:text-white hover:bg-slate-700/50'
-                                }`}
-                        >
-                            <item.icon className="w-5 h-5 flex-shrink-0" />
-                            <span className="font-medium text-sm">{item.label}</span>
-                        </Link>
-                    );
-                })}
+                                return (
+                                    <Link
+                                        key={item.path}
+                                        to={item.path}
+                                        onClick={onNavigate}
+                                        className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 ${isActive
+                                            ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-white border border-blue-500/30'
+                                            : 'text-gray-400 hover:text-white hover:bg-slate-700/50'
+                                            }`}
+                                    >
+                                        <item.icon className="w-4 h-4 flex-shrink-0" />
+                                        <span className="font-medium text-sm">{item.label}</span>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
+                ))}
             </nav>
 
             <div className="p-4 border-t border-slate-700 space-y-3">
