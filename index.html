@@ -92,12 +92,27 @@
         }
 
         var isPrivateApp = path.indexOf('/admin') === 0 || path === '/debug' || path.indexOf('/sponsors/dashboard') === 0;
+        var isHeldOut = path === '/glossary' || path.indexOf('/glossary/') === 0 ||
+          path === '/compare' || path.indexOf('/compare/') === 0 ||
+          path === '/tag' || path.indexOf('/tag/') === 0 || path === '/tags' ||
+          path.indexOf('/cheatsheets/category/') === 0;
         if (isPrivateApp) {
           document.documentElement.classList.add('deh-private-app');
-          var robots = document.createElement('meta');
-          robots.setAttribute('name', 'robots');
-          robots.setAttribute('content', 'noindex, nofollow');
-          document.head.appendChild(robots);
+        }
+        function applyRobots() {
+          var el = document.querySelector('meta[name="robots"]');
+          if (!el) {
+            el = document.createElement('meta');
+            el.setAttribute('name', 'robots');
+            document.head.appendChild(el);
+          }
+          if (isPrivateApp) el.setAttribute('content', 'noindex, nofollow');
+          else if (isHeldOut) el.setAttribute('content', 'noindex, follow');
+        }
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', applyRobots);
+        } else {
+          applyRobots();
         }
 
         var meta = document.querySelector('meta[name="description"]');
