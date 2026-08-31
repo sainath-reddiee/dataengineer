@@ -41,6 +41,7 @@ import { isBlogOwner, OWNER_DISPLAY_NAME, OWNER_ROLE, OWNER_PROFILE_PATH } from 
 import { useSsgArticleFallback } from '@/hooks/useSsgArticleFallback';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 import { extractArticleFaqs } from '@/utils/articleFaq';
+import { analyzeKeyTakeaways } from '@/utils/articleTakeaways';
 import ArticleFaq from '@/components/ArticleFaq';
 import CiteThisArticle from '@/components/CiteThisArticle';
 import SaveArticleButton from '@/components/SaveArticleButton';
@@ -121,121 +122,6 @@ const processWordPressContent = (content) => {
     .replace(/<img(?![^>]*\swidth=)([^>]*)>/gi, '<img width="800" height="450"$1>');
 
   return cleanContent;
-};
-
-const decodeHtmlEntities = (str) => {
-  if (!str) return '';
-  let decoded = String(str);
-  let prev;
-  // Loop to resolve any level of nested/double encoding (e.g. &amp;#8217; -> &#8217; -> ’)
-  do {
-    prev = decoded;
-    decoded = decoded
-      .replace(/&amp;/g, '&')
-      .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
-      .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
-      .replace(/&nbsp;/g, ' ')
-      .replace(/\u00A0/g, ' ')
-      .replace(/&quot;/g, '"')
-      .replace(/&apos;/g, "'")
-      .replace(/&middot;/g, '·')
-      .replace(/&bull;/g, '•')
-      .replace(/&ndash;/g, '–')
-      .replace(/&mdash;/g, '—')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>');
-  } while (decoded !== prev);
-  return decoded;
-};
-
-// Extract key takeaways for AEO / featured-snippet eligibility.
-//
-// Strategy (in order):
-//   1. If the article has an explicit `<!-- key-takeaways -->...<!-- /key-takeaways -->`
-//      block, extract its <li> items verbatim.
-//   2. Otherwise look for a heading whose text starts with "Key Takeaways" /
-//      "TL;DR" / "Summary" and pull the <li> items in the immediately following
-//      <ul>/<ol>.
-//   3. Fall back to extracting the first complete sentence under each H2
-//      (NOT the heading text itself — heading text is a section label, not a
-//      standalone factual answer that voice search / featured snippets can use).
-const extractKeyTakeaways = (html) => {
-  if (!html) return [];
-
-  const cleanLi = (s) => {
-    const withSpaces = s
-      .replace(/<br\s*\/?>/gi, ' ')
-      .replace(/<\/p>/gi, ' ')
-      .replace(/<\/li>/gi, ' ');
-    const text = withSpaces.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
-    return decodeHtmlEntities(text);
-  };
-
-  // Strategy 1: explicit comment-marked block
-  const block = html.match(/<!--\s*key-takeaways\s*-->([\s\S]*?)<!--\s*\/?key-takeaways\s*-->/i);
-  if (block) {
-    const items = [];
-    const liRe = /<li[^>]*>([\s\S]*?)<\/li>/gi;
-    let m;
-    while ((m = liRe.exec(block[1])) !== null) {
-      const t = cleanLi(m[1]);
-      if (t.length >= 8 && t.length <= 240) items.push(t);
-    }
-    if (items.length > 0) return items.slice(0, 8);
-  }
-
-  // Strategy 2: heading-flagged TL;DR / Key Takeaways / Summary list (or paragraph with line breaks)
-  const flagRe = /<h[1-3][^>]*>\s*(?:Key\s*Takeaways|TL;?DR|Summary|At\s*a\s*Glance)\s*<\/h[1-3]>([\s\S]*?)(?=<h[1-3]|$)/i;
-  const flagged = html.match(flagRe);
-  if (flagged) {
-    const sectionHtml = flagged[1];
-    // 2a. Check for list tags
-    const list = sectionHtml.match(/<(ul|ol)[\s\S]*?<\/\1>/i);
-    if (list) {
-      const items = [];
-      const liRe = /<li[^>]*>([\s\S]*?)<\/li>/gi;
-      let m;
-      while ((m = liRe.exec(list[0])) !== null) {
-        const t = cleanLi(m[1]);
-        if (t.length >= 8 && t.length <= 240) items.push(t);
-      }
-      if (items.length > 0) return items.slice(0, 8);
-    }
-    
-    // 2b. Fallback to paragraph splitting if separated by <br> or bullets
-    const firstP = sectionHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
-    if (firstP) {
-      const rawLines = firstP[1].split(/<br\s*\/?>|\n/gi);
-      const items = [];
-      for (const line of rawLines) {
-        const t = cleanLi(line).replace(/^[→•\-\*\s]+/, '').trim();
-        if (t.length >= 8 && t.length <= 240) {
-          items.push(t);
-        }
-      }
-      if (items.length > 0) return items.slice(0, 8);
-    }
-  }
-
-  // Strategy 3: first complete sentence under each H2.
-  const takeaways = [];
-  const h2Re = /<h2[^>]*>[\s\S]*?<\/h2>([\s\S]*?)(?=<h2[^>]*>|$)/gi;
-  let m;
-  while ((m = h2Re.exec(html)) !== null) {
-    const sectionHtml = m[1] || '';
-    const firstP = sectionHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
-    if (!firstP) continue;
-    const text = cleanLi(firstP[1]);
-    if (!text) continue;
-    // Take the first sentence (or the whole paragraph if short).
-    const sentenceMatch = text.match(/^[^.!?]{20,240}[.!?]/);
-    const sentence = (sentenceMatch ? sentenceMatch[0] : text).trim();
-    if (sentence.length >= 30 && sentence.length <= 240) {
-      takeaways.push(sentence);
-    }
-    if (takeaways.length >= 6) break;
-  }
-  return takeaways;
 };
 
 const ErrorDisplay = ({ error, onRetry, slug }) => {
@@ -668,10 +554,20 @@ const ArticlePage = () => {
 
   // IMPORTANT: useMemo hooks must be called before any early returns
   // to satisfy React's Rules of Hooks (consistent call order every render)
-  const processedHtml = useMemo(() => {
-    if (!post?.content) return '';
-    const sanitized = processWordPressContent(post.content);
-    return injectInternalLinks(sanitized, slug);
+  // Strip an explicit TL;DR / Key Takeaways block from the body when we elevate
+  // those bullets into the KeyTakeaways component — otherwise readers see both.
+  const { processedHtml, keyTakeaways } = useMemo(() => {
+    if (!post?.content) return { processedHtml: '', keyTakeaways: [] };
+    const analysis = analyzeKeyTakeaways(post.content);
+    const elevate = analysis.source === 'comment' || analysis.source === 'heading';
+    // Only elevate explicit TL;DR / Key Takeaways sections. Synthetic H2
+    // sentences stay in the body — showing them again as a box felt duplicated.
+    const bodySource = elevate ? analysis.html : post.content;
+    const sanitized = processWordPressContent(bodySource);
+    return {
+      processedHtml: injectInternalLinks(sanitized, slug),
+      keyTakeaways: elevate ? analysis.items : [],
+    };
   }, [post?.content, slug]);
 
   const headings = useMemo(() => extractHeadings(processedHtml), [processedHtml]);
@@ -767,8 +663,6 @@ const ArticlePage = () => {
       extractVideosFromContent(safePost.content, safePost.title, safePost.excerpt, safePost.image, safePost.date)
     );
 
-    // Extract key takeaways from H2 headings for AEO visibility
-    const keyTakeaways = extractKeyTakeaways(safePost.content);
     const articleFaqs = extractArticleFaqs(safePost.content);
 
     // FAQPage JSON-LD is owned by the SSG layer (scripts/generateFAQSchema.js)

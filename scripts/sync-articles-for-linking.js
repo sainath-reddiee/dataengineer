@@ -125,10 +125,18 @@ function extractKeywords(post, categoryMap, tagMap) {
     const titleKeywords = extractPhrases(title);
     keywords.push(...titleKeywords);
 
-    // Deduplicate and filter
-    return [...new Set(keywords)]
-        .filter(k => k.length >= 3 && k.length <= 50)
-        .slice(0, 8); // Max 8 keywords per article
+    // Case-insensitive dedupe (keep first casing) so "Snowflake" and "snowflake"
+    // do not compete as two keywords for the same article.
+    const deduped = [];
+    const seen = new Set();
+    for (const keyword of keywords) {
+        const key = String(keyword).toLowerCase();
+        if (seen.has(key)) continue;
+        if (keyword.length < 3 || keyword.length > 50) continue;
+        seen.add(key);
+        deduped.push(keyword);
+    }
+    return deduped.slice(0, 8);
 }
 
 /**

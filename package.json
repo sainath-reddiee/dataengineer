@@ -36,6 +36,7 @@
     "test:engagement": "node scripts/verifyEngagementFeatures.js",
     "test:newsletter": "node scripts/verifyNewsletter.js",
     "test:advertise": "node scripts/verifyAdvertisePackages.js",
+    "test:takeaways-linking": "node scripts/verifyTakeawaysAndLinking.js",
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'",
     "test:build": "npm run build",
     "pseo:sitemaps": "node scripts/generateSitemap.js",
