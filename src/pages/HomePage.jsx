@@ -171,6 +171,25 @@ const HomePage = () => {
             ============================================================================ */}
         <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
 
+          <section className="rounded-xl border border-slate-700/70 bg-slate-800/40 px-5 py-4 sm:px-6 sm:py-5">
+            <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
+              Written by{' '}
+              <Link to="/about" className="text-blue-400 hover:text-blue-300 font-semibold">
+                Sainath Reddy
+              </Link>
+              , a data engineer in Hyderabad. These are production notes — warehouse cost
+              incidents, dbt review comments, Cortex token bills — not rewritten vendor docs.
+              Read the{' '}
+              <Link to="/editorial-standards" className="text-blue-400 hover:text-blue-300 font-semibold">
+                editorial standards
+              </Link>
+              {' '}or skip to the{' '}
+              <Link to="/articles" className="text-blue-400 hover:text-blue-300 font-semibold">
+                article library
+              </Link>.
+            </p>
+          </section>
+
           {/* 🌟 FEATURED POSTS - Optimized section */}
           <section>
             <SectionHeader

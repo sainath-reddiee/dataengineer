@@ -24,6 +24,7 @@ const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
 const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
 const DisclaimerPage = lazy(() => import('./pages/DisclaimerPage'));
+const EditorialStandardsPage = lazy(() => import('./pages/EditorialStandardsPage'));
 const ContributePage = lazy(() => import('./pages/ContributePage'));
 const ContributorsPage = lazy(() => import('./pages/ContributorsPage'));
 const ContributorProfilePage = lazy(() => import('./pages/ContributorProfilePage'));
@@ -376,6 +377,7 @@ function App() {
           <Route path="cookie-policy" element={<Navigate to="/privacy-policy#cookies" replace />} />
           <Route path="terms-of-service" element={<SafeRoute fallbackText="Loading Terms..."><TermsOfServicePage /></SafeRoute>} />
           <Route path="disclaimer" element={<SafeRoute fallbackText="Loading Disclaimer..."><DisclaimerPage /></SafeRoute>} />
+          <Route path="editorial-standards" element={<SafeRoute fallbackText="Loading Editorial Standards..."><EditorialStandardsPage /></SafeRoute>} />
           <Route path="contribute" element={<SafeRoute fallbackText="Loading..."><ContributePage /></SafeRoute>} />
           <Route path="contributors" element={<SafeRoute fallbackText="Loading Contributors..."><ContributorsPage /></SafeRoute>} />
           <Route path="contributors/:slug" element={<SafeRoute fallbackText="Loading Profile..."><ContributorProfilePage /></SafeRoute>} />

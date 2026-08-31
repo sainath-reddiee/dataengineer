@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Wrench, Info, Search, BookOpen, GitCompareArrows, FileText, GraduationCap, Target, Megaphone } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Wrench, Info, Search, BookOpen, FileText, GraduationCap, Target, Megaphone } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
 
 // Helper component for the "Corner Burst" sparks animation
@@ -150,12 +150,6 @@ const Header = ({ topOffset = 0 }) => {
       return path.startsWith('/category/');
     }
 
-    if (categoryKey === 'resources') {
-      return path.startsWith('/glossary') ||
-             path.startsWith('/compare') ||
-             path.startsWith('/news');
-    }
-
     if (categoryKey === 'study') {
       return path.startsWith('/interview-prep') ||
              path.startsWith('/practice') ||
@@ -206,15 +200,6 @@ const Header = ({ topOffset = 0 }) => {
           { name: 'Developer Productivity', path: '/category/developer-productivity', color: 'from-emerald-500 to-teal-500', desc: 'AI Tools & Workflows' }
         ]
       }
-    ]
-  },
-  resources: {
-    title: 'Resources',
-    shortTitle: 'Resources',
-    icon: FileText,
-    items: [
-      { name: 'Glossary', path: '/glossary', color: 'from-purple-500 to-pink-500', desc: 'Data Engineering Terms', lucide: BookOpen },
-      { name: 'Comparisons', path: '/compare', color: 'from-amber-500 to-orange-500', desc: 'Tool & Tech Face-offs', lucide: GitCompareArrows }
     ]
   },
   study: {
@@ -293,9 +278,6 @@ const Header = ({ topOffset = 0 }) => {
       if (categoryKey === 'articles') {
         return 'Explore all articles';
       }
-      if (categoryKey === 'resources') {
-        return 'Browse all resources';
-      }
       if (categoryKey === 'study') {
         return 'Start studying now';
       }
@@ -305,7 +287,6 @@ const Header = ({ topOffset = 0 }) => {
     // Build filtered URL with categories
     const getCtaUrl = () => {
       if (categoryKey === 'articles') return '/articles';
-      if (categoryKey === 'resources') return '/articles';
       if (categoryKey === 'study') return '/practice';
       return '/articles';
     };

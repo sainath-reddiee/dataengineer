@@ -253,6 +253,7 @@ export default function CheatSheetCategoryPage() {
         keywords={`${category.name} cheat sheet, data engineering ${category.name}, ${category.name} reference, ${category.name} interview`}
         url={`/cheatsheets/category/${categoryId}`}
         type="website"
+        noindex={true}
       />
       <Helmet>
         
