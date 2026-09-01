@@ -1411,8 +1411,8 @@ function dehub_forward_newsletter_subscriber($email) {
                 $forwarded[] = 'brevo';
             }
         }
-    } else {
-        $errors[] = 'Brevo skipped: DEHUB_BREVO_API_KEY is not defined in wp-config.php';
+    } elseif ($buttondown_key === '') {
+        $errors[] = 'No ESP configured: define DEHUB_BREVO_API_KEY (and DEHUB_BREVO_LIST_ID) in wp-config.php';
     }
 
     set_transient('dehub_newsletter_last_forward', array(
