@@ -130,11 +130,10 @@ class RouteErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
-    // Detect chunk/module loading failures (happens after deploys with stale cache)
-    const isChunkError = error?.message?.includes('Failed to fetch dynamically imported module') ||
-                         error?.message?.includes('Loading chunk') ||
-                         error?.message?.includes('Loading CSS chunk') ||
-                         error?.name === 'ChunkLoadError';
+    // Detect chunk/module loading failures (stale cache, CDN 429, flaky network)
+    const message = String(error?.message || error || '');
+    const isChunkError = error?.name === 'ChunkLoadError' ||
+      /Failed to fetch dynamically imported module|Loading chunk|Loading CSS chunk|Importing a module script failed|error loading dynamically imported module|Failed to fetch/i.test(message);
     return { hasError: true, error, isChunkError };
   }
 
@@ -144,9 +143,9 @@ class RouteErrorBoundary extends React.Component {
       window.Sentry.captureException(error, { extra: errorInfo });
     }
 
-    // Auto-reload once for chunk errors (stale deployment cache)
-    const isChunkError = error?.message?.includes('Failed to fetch dynamically imported module') ||
-                         error?.message?.includes('Loading chunk');
+    const message = String(error?.message || error || '');
+    const isChunkError = error?.name === 'ChunkLoadError' ||
+      /Failed to fetch dynamically imported module|Loading chunk|Importing a module script failed|error loading dynamically imported module/i.test(message);
     if (isChunkError && !sessionStorage.getItem('chunk_reload_attempted')) {
       sessionStorage.setItem('chunk_reload_attempted', '1');
       window.location.reload();

@@ -2,14 +2,16 @@
 import React, { useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import * as LucideIcons from 'lucide-react';
 import {
   ArrowRight,
+  BookOpen,
   Check,
   CheckCircle2,
   ChevronDown,
   Clock,
+  Code,
   HelpCircle,
+  Layers,
   Mail,
   PenLine,
   Scale,
@@ -20,8 +22,11 @@ import {
 import { trackEvent } from '@/utils/analytics';
 import { getFAQSchema } from '@/lib/seoConfig';
 import { useStats } from '@/hooks/useStats';
-import { cheatsheets } from '@/data/cheatsheetData';
 import advertiseConfig from '@/data/advertiseConfig.json';
+
+// Keep this page off the 340KB cheatsheetData chunk — a hard count is enough
+// for the media kit and avoids CDN 429s that crash the lazy Advertise route.
+const PACKAGE_ICONS = { BookOpen, Layers, Code };
 
 const OPPORTUNITIES = advertiseConfig.opportunities;
 const TECH_STACK = advertiseConfig.techStack || [];
@@ -146,7 +151,7 @@ function formatUsd(usdValue) {
 }
 
 function resolveIcon(iconName) {
-  return LucideIcons[iconName] || HelpCircle;
+  return PACKAGE_ICONS[iconName] || HelpCircle;
 }
 
 function startingPrice(opp) {
@@ -156,8 +161,8 @@ function startingPrice(opp) {
 
 const AdvertisePage = () => {
   const { totalArticles } = useStats();
-  const articleCount = totalArticles || 100;
-  const cheatsheetCount = Array.isArray(cheatsheets) ? cheatsheets.length : 0;
+  const articleCount = totalArticles || advertiseConfig.inventory?.guides || 100;
+  const cheatsheetCount = advertiseConfig.inventory?.cheatsheets || 30;
 
   const [formData, setFormData] = useState({
     name: '',
@@ -316,7 +321,9 @@ const AdvertisePage = () => {
           content="Paid placements for data tools billed in USD. Sponsored cards, Tools Hub listings, co-authored guides, and newsletter blurbs. Guest articles are free on Write for Us."
         />
         <link rel="canonical" href="https://dataengineerhub.blog/advertise" />
-        <script type="application/ld+json">{JSON.stringify(getFAQSchema(FAQS))}</script>
+        <script type="application/ld+json">
+          {JSON.stringify(getFAQSchema(FAQS))}
+        </script>
       </Helmet>
 
       {/* Hero */}
