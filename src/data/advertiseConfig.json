@@ -4,14 +4,7 @@
     { "label": "Audience", "value": "Practitioners", "desc": "Engineers who cost warehouses, debug dbt tests, and sit SnowPro interviews", "icon": "Users" },
     { "label": "Sponsorships", "value": "Vetted", "desc": "Human review, sponsored label, nofollow by default — no paid-link packages", "icon": "Shield" }
   ],
-  "audienceBreakdown": [
-    { "role": "Data Engineers", "percent": 58, "color": "#3B82F6", "note": "Primary readers" },
-    { "role": "Analytics Engineers", "percent": 22, "color": "#8B5CF6", "note": "Frequent" },
-    { "role": "Data Architects", "percent": 12, "color": "#EC4899", "note": "Regular" },
-    { "role": "Engineering Managers", "percent": 8, "color": "#10B981", "note": "Occasional" }
-  ],
-  "audienceDisclaimer": "Role mix is a qualitative read from comments, newsletter replies, and inbound mail — not a commissioned survey. Do not treat the bars as audited demographics.",
-  "techStack": ["Snowflake", "dbt", "Databricks", "Apache Spark", "Apache Airflow", "BigQuery", "Kafka", "Python"],
+  "techStack": ["Snowflake", "dbt", "Databricks", "Apache Spark", "Apache Airflow", "BigQuery", "Kafka", "Python", "SQL", "Gen AI"],
   "opportunities": [
     {
       "title": "Sponsored card in matching guides",
