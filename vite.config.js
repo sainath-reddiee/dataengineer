@@ -97,6 +97,7 @@ export default defineConfig({
         '/disclaimer',
         '/editorial-standards',
         '/contribute',
+        '/advertise',
         '/newsletter',
         '/news',
         '/articles',
