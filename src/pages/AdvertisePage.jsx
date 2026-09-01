@@ -1,175 +1,163 @@
-// src/pages/AdvertisePage.jsx
-// Dedicated "Advertise / Sponsorship" page for DataEngineer Hub.
-// Premium SaaS-quality design optimized for conversion and transparency.
-import React, { useState, useMemo } from 'react';
+// Advertise / sponsorship page — priced in USD, labeled placements only.
+import React, { useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import * as LucideIcons from 'lucide-react';
-import { 
-  Mail, Check, Sparkles, Send, 
-  Users, BarChart3, Calendar, ArrowRight, CheckCircle2,
-  DollarSign, Globe, ChevronDown, HelpCircle, Eye, MousePointerClick,
-  Percent, Zap, Target, Star, Shield,
-  Briefcase, Search, X, ListChecks, Flame, Crown,
-  AlertCircle, BookOpen, FileText, RefreshCw, Scale, Clock, UserCheck,
-  Newspaper, Bell, PenLine, TrendingUp as TrendUp
+import {
+  ArrowRight,
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  Clock,
+  HelpCircle,
+  Mail,
+  PenLine,
+  Scale,
+  Send,
+  Shield,
+  X,
 } from 'lucide-react';
 import { trackEvent } from '@/utils/analytics';
 import { getFAQSchema } from '@/lib/seoConfig';
 import { useStats } from '@/hooks/useStats';
 import { cheatsheets } from '@/data/cheatsheetData';
 import advertiseConfig from '@/data/advertiseConfig.json';
-import activeSponsorsData from '@/data/activeSponsors.json';
-import { isCampaignLive } from '@/lib/sponsorCampaign';
 
-// ─── Constants ───────────────────────────────────────────────────────────────
 const OPPORTUNITIES = advertiseConfig.opportunities;
+const TECH_STACK = advertiseConfig.techStack || [];
 const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY;
 const SPONSOR_CONTACT_EMAIL = 'sainath@dataengineerhub.blog';
+
+const NEWSLETTER = {
+  key: 'newsletter_sponsorship',
+  title: 'Newsletter sponsorship',
+  tagline: 'A labeled blurb in the weekly digest once the list is live',
+  price: 79,
+  priceLabel: '/ issue',
+  bullets: [
+    '~150 words + one CTA at the top of an issue',
+    'Plain-text friendly — readable in engineering inboxes',
+    'Screenshot after send as proof',
+    'If the list is not live yet, we hold the slot or refund',
+  ],
+  cta: 'Reserve a newsletter slot',
+};
+
+const PROCESS_STEPS = [
+  {
+    title: 'Tell us the product',
+    desc: 'Package, URL, and what a practitioner should try. Form or email.',
+  },
+  {
+    title: 'Editorial review',
+    desc: 'DE-relevant tools and courses only. A no is a short email, not silence.',
+  },
+  {
+    title: 'Pay and schedule',
+    desc: 'Invoice in USD. Dates within 48 hours of payment.',
+  },
+  {
+    title: 'You own the clicks',
+    desc: 'UTM-tagged links in your analytics. Live URL by email.',
+  },
+];
+
+const SPONSOR_GETS = [
+  'Manual review before anything goes live',
+  'Labeled placement next to a matching stack',
+  'UTM links you can see in your own analytics',
+  'One free copy or URL fix after publish',
+  'Email to Sainath — not a ticket queue',
+  'Full refund if you cancel before go-live',
+];
 
 const FAQS = [
   {
     category: 'Billing',
-    question: 'What currency are prices in? What does a US visitor see?',
-    answer: 'Every package is priced and invoiced in US dollars (USD). The large number on each card is always USD. If your browser is in India you may see an extra “≈ ₹…” line as a convenience estimate — that is not the billed amount. A visitor in the United States sees dollars only (unless they switch the local-estimate dropdown). We do not bill in INR.'
+    question: 'What currency are prices in?',
+    answer:
+      'US dollars. Invoices are always USD. Any local-currency line is an estimate only.',
   },
   {
-    category: 'Trust & Fit',
-    question: 'I want to publish a guest article. Is that advertising?',
-    answer: 'No. Guest tutorials are an editorial program: you write a useful technical piece, we review it, and you get a byline. That is free and it is not a sponsorship. Pitch it on the Write for Us page. This Advertise page is only for paid product placements. We will decline guest-post pitches sent through the sponsor form.'
+    category: 'Billing',
+    question: 'How do I pay?',
+    answer:
+      'We confirm fit by email, then send an invoice (card or bank transfer). There is no self-serve checkout yet.',
+  },
+  {
+    category: 'Billing',
+    question: 'Is there a lock-in?',
+    answer:
+      'No monthly contract. One-time packages stay up; newsletter is one send. Cancel before go-live for a full refund.',
+  },
+  {
+    category: 'Fit',
+    question: 'I want to write a guest article. Is that advertising?',
+    answer:
+      'No. Guest tutorials are free and editorial. Pitch on Write for Us. Do not use this form for guest posts.',
+  },
+  {
+    category: 'Fit',
+    question: 'Do you sell dofollow backlinks or “guest post + DA” packages?',
+    answer:
+      'No. Sponsor links are rel="sponsored nofollow". If that is the only thing you want, this is the wrong site.',
   },
   {
     category: 'Audience',
-    question: 'Who is the typical reader of DataEngineer Hub?',
-    answer: 'Practitioners who cost Snowflake warehouses, debug dbt tests, and sit SnowPro or DE interviews. The role bars on this page are a qualitative read from comments and inbound mail — not an audited survey. If your buyer is a CMO looking for brand awareness, this is the wrong site.'
+    question: 'Who reads DataEngineer Hub?',
+    answer:
+      'Working data and analytics engineers evaluating warehouses, orchestration, dbt, and the AI-on-data stack — plus people hiring or certifying in that world. We will not invent an audience pie chart.',
   },
   {
-    category: 'Placements',
-    question: 'Where do my sponsorship placements appear?',
-    answer: 'On matching articles, cheat sheets, interview-prep pages, and interactive calculators. We do not sell glossary or comparison-archive placements. Those sections are held out of search while we keep the site focused on original tutorials.'
+    category: 'Delivery',
+    question: 'Where does a placement appear?',
+    answer:
+      'Sponsored card: matching guides, cheat sheets, and tools — not glossary or compare archives. Tools Hub: a directory card. Co-authored guide: a permanent labeled article. Newsletter: one labeled blurb per issue.',
   },
   {
-    category: 'Placements',
-    question: 'How do you track impressions and clicks?',
-    answer: 'Every placement uses first-party tracking: an impression counts only when the card is at least 50% visible for one second (once per session and page context). Clicks are counted on the outbound link, which includes UTM tags (utm_source=dataengineerhub). Crawlers such as AdsBot are excluded. You get a private dashboard with your campaign token. Site-wide events are also sent to Google Analytics after cookie consent — we do not invent estimated totals.'
+    category: 'Delivery',
+    question: 'How do you report results?',
+    answer:
+      'Live URL + UTM parameters you own. Newsletter: a send screenshot. Private impression dashboard when the campaign token is issued. We do not seed fake totals.',
   },
-  {
-    category: 'Placements',
-    question: 'Can I run multiple sponsorship packages at the same time?',
-    answer: 'Yes. A common pair is a Tools Hub listing plus a sponsored card on matching guides. We will not stack two competing products on the same article.'
-  },
-  {
-    category: 'Billing',
-    question: 'Can I update my campaign details or links mid-run?',
-    answer: 'Absolutely. You can request updates to your destination URL, platform description, logo, or target categories at any time. Changes are applied to the active sponsor configuration and usually published within 12-24 business hours.'
-  },
-  {
-    category: 'Billing',
-    question: 'What happens when my campaign duration ends?',
-    answer: 'Campaign availability is controlled by start and end dates in the sponsor configuration. Once your campaign reaches its expiration date, the placement becomes inactive across matched tools, cheatsheets, and articles. We will notify you before expiry with renewal options.'
-  },
-  {
-    category: 'Billing',
-    question: 'What payment methods do you accept?',
-    answer: 'We currently confirm every placement manually: after your inquiry, we\u2019ll follow up by email with an invoice and payment details (card or bank transfer). There is no self-serve checkout yet, so every campaign gets a human review first.'
-  },
-  {
-    category: 'Billing',
-    question: 'Is there a minimum commitment or lock-in period?',
-    answer: 'No. Every package \u2014 including yearly tiers \u2014 runs for a fixed term with a clear end date and no auto-renewal. Renewing is always your choice once the current term ends.'
-  },
-  {
-    category: 'Trust & Fit',
-    question: 'How do you keep my placement exclusive from competitors?',
-    answer: 'Each matching guide or cheat sheet shows at most one sponsor at a time. We never stack competing sponsors on the same page, and we will not sell a dofollow “SEO mention.”'
-  },
-  {
-    category: 'Trust & Fit',
-    question: 'Can I pay for a guest post or a dofollow backlink?',
-    answer: 'No. Guest tutorials are free, editorial, and reviewed against the same bar as staff posts. Paid placements are labeled Sponsored and nofollow. If you want a unique page about your product, buy the co-authored integration guide — we still keep the byline and the edit.'
-  },
-  {
-    category: 'Trust & Fit',
-    question: 'What if my product doesn\u2019t fit the data engineering audience?',
-    answer: 'We manually review every inquiry before confirming a placement. If your product isn\u2019t a strong fit for a data engineering audience, we\u2019ll tell you honestly rather than take the booking.'
+];
+
+const PACKAGE_BUDGET_OPTIONS = {
+  resource_reference: [
+    { value: '$79 USD / month', label: '$79 USD / month — sponsored card' },
+    { value: '$699 USD / year', label: '$699 USD / year — sponsored card' },
+  ],
+  directory: [{ value: '$149 USD one-time', label: '$149 USD one-time — Tools Hub listing' }],
+  content: [{ value: '$249 USD one-time', label: '$249 USD one-time — co-authored guide' }],
+  newsletter_sponsorship: [{ value: '$79 USD / issue', label: '$79 USD per newsletter issue' }],
+  other: [{ value: "Let's discuss", label: "Let's discuss" }],
+};
+
+function formatUsd(usdValue) {
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(usdValue);
+  } catch {
+    return `$${usdValue}`;
   }
-];
+}
 
-const FAQ_CATEGORY_ICONS = {
-  All: Sparkles,
-  Audience: Users,
-  Placements: Target,
-  Billing: DollarSign,
-  'Trust & Fit': Shield,
-};
+function resolveIcon(iconName) {
+  return LucideIcons[iconName] || HelpCircle;
+}
 
-// Icon per billing term — gives the duration toggles instant visual meaning
-const DURATION_ICONS = { weekly: Zap, monthly: Calendar, yearly: Crown, one_time: Sparkles };
-
-
-const PROCESS_STEPS = [
-  { icon: Mail, title: 'Submit Inquiry', desc: 'Fill out the form with your product details and preferred placement.' },
-  { icon: Briefcase, title: 'Review & Align', desc: 'We review your request and confirm the best placement for your audience.' },
-  { icon: Zap, title: 'Go Live', desc: 'Your campaign goes live with a private token dashboard for placement, dates, and live viewable impressions.' },
-  { icon: BarChart3, title: 'Track & Optimize', desc: 'Open your private dashboard anytime for viewable impressions, clicks, CTR, and the UTM-tagged destination readers land on.' },
-];
-
-// ─── New content/creator revenue channels ───────────────────────────────────
-const CONTENT_CHANNELS = [
-  {
-    key: 'newsletter_sponsorship',
-    icon: Newspaper,
-    free: false,
-    badge: 'Newsletter',
-    accentBg: 'bg-amber-500/10',
-    accentText: 'text-amber-400',
-    accentBorder: 'border-amber-500/30',
-    accentBar: 'bg-amber-500',
-    badgeStyle: 'bg-amber-500/15 text-amber-300 border border-amber-500/25',
-    title: 'Newsletter Sponsorship',
-    tagline: 'A sponsored blurb in our weekly digest for practicing data engineers',
-    price: 79,
-    priceLabel: 'per issue',
-    bullets: [
-      '150-word sponsored blurb placed at the top of our next newsletter edition',
-      'Includes your logo, headline copy, and a single CTA link',
-      'Sent to opted-in data engineers who subscribed from the public site',
-      'Plain-text format respected by engineering audiences — no ad-blocker risk',
-      'Screenshot of your placement sent after delivery as proof of send',
-    ],
-    cta: 'Reserve a Newsletter Slot',
-    ideal: 'Ideal for: product launches, free trial offers, event registrations, and new feature announcements',
-  },
-];
-
-// Per-package facts used in the comparison table — grounded in the real bullets
-const PACKAGE_FACTS = {
-  resource_reference: {
-    placementType: 'In-content editorial callout',
-    exclusivity: 'One sponsor per guide / article',
-    newsletterPromo: false,
-    githubRepo: false,
-    tracking: 'Viewable impressions + private dashboard',
-  },
-  directory: {
-    placementType: 'Tools Hub directory card',
-    exclusivity: 'One card per tool, shared category rows',
-    newsletterPromo: false,
-    githubRepo: false,
-    tracking: 'Viewable impressions + private dashboard',
-  },
-  content: {
-    placementType: 'Permanent co-authored blog post',
-    exclusivity: 'Your brand as article author',
-    newsletterPromo: true,
-    githubRepo: true,
-    tracking: 'CTA tracking when the guide includes an on-page partner link',
-  },
-};
+function startingPrice(opp) {
+  const prices = (opp.durations || []).map((d) => d.price);
+  return prices.length ? Math.min(...prices) : null;
+}
 
 const AdvertisePage = () => {
-  // Real, live article count (cached 10 min via useStats) instead of a hardcoded figure
   const { totalArticles } = useStats();
+  const articleCount = totalArticles || 100;
+  const cheatsheetCount = Array.isArray(cheatsheets) ? cheatsheets.length : 0;
 
   const [formData, setFormData] = useState({
     name: '',
@@ -178,274 +166,47 @@ const AdvertisePage = () => {
     website: '',
     package: 'resource_reference',
     budget: '$79 USD / month',
-    message: ''
+    message: '',
   });
-
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
-  
-  // Dynamic Exchange Rates & Currency Toggles cached in localStorage
-  const [exchangeRates, setExchangeRates] = useState(() => {
-    try {
-      const cached = localStorage.getItem('advertise_exchange_rates');
-      return cached ? JSON.parse(cached) : { USD: 1 };
-    } catch {
-      return { USD: 1 };
-    }
-  });
-  const [selectedCurrency, setSelectedCurrency] = useState('USD');
   const [selectedDurations, setSelectedDurations] = useState({
     resource_reference: 'monthly',
     directory: 'one_time',
-    content: 'one_time'
+    content: 'one_time',
   });
-
-  // Global "quick switch" — applies Monthly/Yearly to every package that offers
-  // that term in one click, instead of forcing visitors to click each card individually.
-  const [globalDuration, setGlobalDuration] = useState('monthly');
-  const applyGlobalDuration = (mode) => {
-    setGlobalDuration(mode);
-    setSelectedDurations((prev) => {
-      const next = { ...prev };
-      OPPORTUNITIES.forEach((opp) => {
-        if (opp.durations.some((d) => d.key === mode)) {
-          next[opp.packageKey] = mode;
-        }
-      });
-      return next;
-    });
-  };
-
-  // Fetch Live Global Currency Exchange Rates
-  React.useEffect(() => {
-    const fetchRates = async () => {
-      let rates = { USD: 1 };
-      try {
-        const cached = localStorage.getItem('advertise_exchange_rates');
-        if (cached) {
-          rates = JSON.parse(cached);
-        }
-      } catch (e) {
-        console.warn('Failed to load cached rates:', e);
-      }
-
-      try {
-        const res = await fetch('https://open.er-api.com/v6/latest/USD');
-        const data = await res.json();
-        if (data && data.result === 'success' && data.rates) {
-          rates = data.rates;
-          setExchangeRates(data.rates);
-          try {
-            localStorage.setItem('advertise_exchange_rates', JSON.stringify(data.rates));
-          } catch (e) {
-            console.warn('Failed to cache exchange rates:', e);
-          }
-        }
-      } catch (err) {
-        console.error('Offline / rate fetch error, utilizing cached rates:', err);
-        setExchangeRates(rates);
-      }
-
-      // Auto-detect local currency by checking timezone first (highest reliability)
-      let detectedCurrency = 'USD';
-      try {
-        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        if (tz) {
-          const tzToCurrency = {
-            'Asia/Kolkata': 'INR', 'Asia/Calcutta': 'INR',
-            'Europe/London': 'GBP', 'Europe/Belfast': 'GBP',
-            'America/New_York': 'USD', 'America/Chicago': 'USD', 'America/Denver': 'USD', 'America/Los_Angeles': 'USD', 'America/Phoenix': 'USD',
-            'America/Toronto': 'CAD', 'America/Vancouver': 'CAD', 'America/Winnipeg': 'CAD',
-            'Australia/Sydney': 'AUD', 'Australia/Melbourne': 'AUD', 'Australia/Brisbane': 'AUD', 'Australia/Perth': 'AUD',
-            'Asia/Singapore': 'SGD', 'Asia/Tokyo': 'JPY', 'America/Sao_Paulo': 'BRL', 'Africa/Johannesburg': 'ZAR',
-            'Europe/Paris': 'EUR', 'Europe/Berlin': 'EUR', 'Europe/Rome': 'EUR', 'Europe/Madrid': 'EUR', 'Europe/Amsterdam': 'EUR', 'Europe/Dublin': 'EUR'
-          };
-          if (tzToCurrency[tz]) {
-            detectedCurrency = tzToCurrency[tz];
-          } else if (tz.startsWith('Europe/')) {
-            const nonEuroTz = ['Europe/London', 'Europe/Belfast', 'Europe/Zurich', 'Europe/Oslo', 'Europe/Stockholm', 'Europe/Copenhagen'];
-            if (!nonEuroTz.some(n => tz.includes(n))) {
-              detectedCurrency = 'EUR';
-            }
-          }
-        }
-      } catch (e) {
-        console.warn('Timezone currency detection failed:', e);
-      }
-
-      // Fallback: If timezone detection didn't match anything other than USD, check locale languages
-      if (detectedCurrency === 'USD') {
-        try {
-          const languages = navigator.languages || [navigator.language || 'en-US'];
-          for (const lang of languages) {
-            const parts = lang.split(/[-_]/);
-            if (parts.length > 1) {
-              const country = parts[1].toUpperCase();
-              const countryToCurrency = {
-                IN: 'INR', US: 'USD', GB: 'GBP', DE: 'EUR', FR: 'EUR', IT: 'EUR', ES: 'EUR', NL: 'EUR',
-                CA: 'CAD', AU: 'AUD', JP: 'JPY', CN: 'CNY', BR: 'BRL', ZA: 'ZAR', SG: 'SGD', NZ: 'NZD',
-                CH: 'CHF', SE: 'SEK', NO: 'NOK', DK: 'DKK', PL: 'PLN', TR: 'TRY'
-              };
-              if (countryToCurrency[country]) {
-                detectedCurrency = countryToCurrency[country];
-                break;
-              }
-            }
-          }
-        } catch (e) {
-          console.warn('Locale currency detection failed:', e);
-        }
-      }
-
-      if (detectedCurrency && rates[detectedCurrency]) {
-        setSelectedCurrency(detectedCurrency);
-      }
-    };
-    fetchRates();
-  }, []);
-
-  // All sponsorships are billed in USD. Local amounts are estimates only.
-  const formatUsd = (usdValue, maximumFractionDigits = 0) => {
-    try {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits,
-      }).format(usdValue);
-    } catch (e) {
-      return `$${usdValue}`;
-    }
-  };
-
-  const formatLocal = (usdValue, maximumFractionDigits = 0) => {
-    if (!selectedCurrency || selectedCurrency === 'USD') return null;
-    try {
-      const rate = exchangeRates[selectedCurrency] || 1;
-      const converted = usdValue * rate;
-      return new Intl.NumberFormat(navigator.language || 'en-US', {
-        style: 'currency',
-        currency: selectedCurrency,
-        maximumFractionDigits,
-      }).format(converted);
-    } catch (e) {
-      return null;
-    }
-  };
-
-  const PriceBlock = ({ usd, suffix, large = false, digits = 0 }) => {
-    const local = formatLocal(usd, digits);
-    return (
-      <div>
-        <div className="flex items-baseline gap-1.5 flex-wrap">
-          <span className={large ? 'text-2xl sm:text-3xl font-black text-white' : 'text-lg sm:text-xl font-black text-white'}>
-            {formatUsd(usd, digits)}
-          </span>
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-blue-300">USD</span>
-          {suffix && <span className="text-sm text-gray-400">{suffix}</span>}
-        </div>
-        {local && (
-          <div className="text-xs text-gray-500 mt-0.5">≈ {local} (estimate)</div>
-        )}
-      </div>
-    );
-  };
-
-  // Sort currency codes to show USD, INR, EUR, GBP, CAD, AUD first, then alphabetically
-  const sortedCurrencyCodes = useMemo(() => {
-    const ratesKeys = Object.keys(exchangeRates);
-    const priority = ['USD', 'INR', 'EUR', 'GBP', 'CAD', 'AUD', 'SGD', 'JPY'];
-    const other = ratesKeys.filter(k => !priority.includes(k)).sort();
-    return [...priority.filter(p => ratesKeys.includes(p)), ...other];
-  }, [exchangeRates]);
-
-  // ROI Slider State
-  const [calcBudget, setCalcBudget] = useState(25);
   const [openFaq, setOpenFaq] = useState(null);
-  const [faqSearch, setFaqSearch] = useState('');
   const [faqCategory, setFaqCategory] = useState('All');
-  const [showComparison, setShowComparison] = useState(false);
 
-  const faqCategories = useMemo(() => ['All', ...Array.from(new Set(FAQS.map((f) => f.category)))], []);
+  const faqCategories = useMemo(
+    () => ['All', ...Array.from(new Set(FAQS.map((f) => f.category)))],
+    []
+  );
+  const filteredFaqs = useMemo(
+    () => FAQS.filter((f) => faqCategory === 'All' || f.category === faqCategory),
+    [faqCategory]
+  );
 
-  const filteredFaqs = useMemo(() => {
-    const q = faqSearch.trim().toLowerCase();
-    return FAQS.filter((faq) => {
-      const matchesCategory = faqCategory === 'All' || faq.category === faqCategory;
-      const matchesSearch = !q || faq.question.toLowerCase().includes(q) || faq.answer.toLowerCase().includes(q);
-      return matchesCategory && matchesSearch;
-    });
-  }, [faqSearch, faqCategory]);
-
-  // Real max savings percentage parsed from the package durations data (not fabricated)
-  const maxSavingsPercent = useMemo(() => {
-    let max = 0;
-    OPPORTUNITIES.forEach((opp) => {
-      opp.durations.forEach((d) => {
-        const match = /Save (\d+)%/.exec(d.savings || '');
-        if (match) {
-          const val = parseInt(match[1], 10);
-          if (val > max) max = val;
-        }
-      });
-    });
-    return max;
-  }, []);
-
-  // Real (non-fabricated) live-campaign counts per package, driven directly by
-  // the same activeSponsors.json data that powers on-site sponsor placements.
-  const liveCampaignCounts = useMemo(() => {
-    const counts = {};
-    (Array.isArray(activeSponsorsData) ? activeSponsorsData : []).forEach((s) => {
-      if (!isCampaignLive(s)) return;
-      counts[s.placement] = (counts[s.placement] || 0) + 1;
-    });
-    return counts;
-  }, []);
-
-  // Memoized ROI Estimates
-  const roiMetrics = useMemo(() => {
-    const impressions = calcBudget * 22;
-    const estCtr = 0.022; // 2.2% CTR average
-    const clicks = Math.round(impressions * estCtr) || 1;
-    const estCpc = (calcBudget / clicks).toFixed(2);
-    return { impressions, clicks, estCpc };
-  }, [calcBudget]);
-
-  // Per-package billing options — each entry lists every valid price tier for that package.
-  // The budget dropdown is filtered to only these options, so it is ALWAYS in sync with the
-  // selected package. First entry = default auto-selected when package changes.
-  const PACKAGE_BUDGET_OPTIONS = {
-    resource_reference: [
-      { value: '$79 USD / month', label: '$79 USD / month — labeled card on matching guides' },
-      { value: '$699 USD / year', label: '$699 USD / year — same card for 12 months' },
-    ],
-    directory: [
-      { value: '$149 USD one-time', label: '$149 USD one-time — permanent Tools Hub listing' },
-    ],
-    content: [
-      { value: '$249 USD one-time', label: '$249 USD one-time — co-authored integration guide' },
-    ],
-    newsletter_sponsorship: [
-      { value: '$79 USD / issue', label: '$79 USD per newsletter issue' },
-    ],
-    other: [
-      { value: "Let's discuss", label: "Let's discuss — we'll figure it out together" },
-    ],
-  };
+  const mediaKit = [
+    { surface: 'Guides & tutorials', count: `${articleCount}+`, why: 'People mid-warehouse or orchestration decision' },
+    { surface: 'Cheat sheets', count: String(cheatsheetCount || '60+'), why: 'Bookmarked, interview-week traffic' },
+    { surface: 'Tools & calculators', count: 'Live', why: 'Cost and SQL utilities practitioners already open' },
+    { surface: 'Stacks covered', count: String(TECH_STACK.length), why: TECH_STACK.slice(0, 4).join(', ') + '…' },
+    { surface: 'Machine-readable catalogs', count: 'RSS + llms.txt', why: 'Agents can cite the same tutorials' },
+  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === 'package') {
       const opts = PACKAGE_BUDGET_OPTIONS[value] ?? [];
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         package: value,
-        // Auto-select the first (cheapest) option for the new package
         budget: opts.length > 0 ? opts[0].value : prev.budget,
       }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -477,12 +238,11 @@ const AdvertisePage = () => {
           `Budget: ${payload.budget}`,
           '',
           'Message:',
-          payload.message || 'No additional details provided.'
+          payload.message || 'No additional details provided.',
         ].join('\n')
       );
-
       window.location.href = `mailto:${SPONSOR_CONTACT_EMAIL}?subject=${subject}&body=${body}`;
-      setError('Opening your email application to send the inquiry directly to sainath@dataengineerhub.blog...');
+      setError('Opening your email client to send the inquiry…');
       setLoading(false);
       return;
     }
@@ -494,11 +254,10 @@ const AdvertisePage = () => {
         `Company: ${formData.company || 'Not provided'}`,
         `Website: ${formData.website || 'Not provided'}`,
         `Package: ${formData.package}`,
-        `Billing Term / Budget: ${formData.budget}`,
-        `Invoice currency: USD (local amounts on the page are estimates only)`,
+        `Budget: ${formData.budget}`,
         '',
-        '--- Message / Pitch ---',
-        formData.message || 'No additional details provided.'
+        '--- Message ---',
+        formData.message || 'No additional details provided.',
       ].join('\n');
 
       const response = await fetch('https://api.web3forms.com/submit', {
@@ -510,25 +269,17 @@ const AdvertisePage = () => {
           email: formData.email,
           subject: `Sponsorship inquiry from ${formData.company || formData.name}`,
           from_name: 'DataEngineer Hub Advertise Form',
-          company: formData.company || 'Not provided',
-          website: formData.website || 'Not provided',
-          package: formData.package,
-          budget: formData.budget,
           message: formattedMessage,
         }),
       });
-
       const data = await response.json();
-      if (!data.success) {
-        throw new Error(data.message || 'Submission failed');
-      }
-      
+      if (!data.success) throw new Error(data.message || 'Submission failed');
+
       trackEvent({
         action: 'sponsorship_inquiry_submitted',
         category: 'monetization',
-        label: formData.package
+        label: formData.package,
       });
-
       setSubmitted(true);
       setFormData({
         name: '',
@@ -537,1397 +288,643 @@ const AdvertisePage = () => {
         website: '',
         package: 'resource_reference',
         budget: '$79 USD / month',
-        message: ''
+        message: '',
       });
-    } catch (err) {
-      setError('We could not submit your inquiry. Please try again or email us directly.');
+    } catch {
+      setError('We could not submit your inquiry. Email sainath@dataengineerhub.blog instead.');
     } finally {
       setLoading(false);
     }
   };
 
-  const toggleFaq = (question) => {
-    setOpenFaq(openFaq === question ? null : question);
+  const selectPackage = (packageKey, budgetValue) => {
+    const opts = PACKAGE_BUDGET_OPTIONS[packageKey] ?? [];
+    setFormData((prev) => ({
+      ...prev,
+      package: packageKey,
+      budget: budgetValue || (opts[0] && opts[0].value) || prev.budget,
+    }));
+    document.getElementById('inquiry-form')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Resolve icon from config
-  const resolveIcon = (iconName) => LucideIcons[iconName] || HelpCircle;
-
   return (
-    <div className="advertise-page min-h-screen bg-slate-950 text-white relative overflow-x-clip">
+    <div className="advertise-page min-h-screen bg-slate-950 text-slate-100">
       <Helmet>
-        <title>Advertise with DataEngineer Hub — Sponsorships billed in USD</title>
-        <meta name="description" content="Sponsor DataEngineer Hub. Labeled placements on practitioner tutorials, billed in USD from $79/month. Guest articles are a separate, free editorial program." />
-        <meta property="og:title" content="Advertise with DataEngineer Hub" />
-        <meta property="og:description" content="Paid product placements for data-engineering tools. Prices billed in USD. Guest posts are not sponsorships — use Write for Us." />
-        <meta property="og:type" content="website" />
+        <title>Advertise — DataEngineer Hub (USD placements)</title>
+        <meta
+          name="description"
+          content="Paid placements for data tools billed in USD. Sponsored cards, Tools Hub listings, co-authored guides, and newsletter blurbs. Guest articles are free on Write for Us."
+        />
         <link rel="canonical" href="https://dataengineerhub.blog/advertise" />
+        <script type="application/ld+json">{JSON.stringify(getFAQSchema(FAQS))}</script>
       </Helmet>
 
-      <script type="application/ld+json">
-        {JSON.stringify(getFAQSchema(FAQS.map(({ question, answer }) => ({ question, answer }))))}
-      </script>
-
-      {/* Ambient background effects */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-blue-600/8 via-purple-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-40 left-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-20 right-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
-
-      {/* ═══════════════ HERO SECTION ═══════════════ */}
-      <div className="relative py-10 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto text-center">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs sm:text-sm font-semibold mb-6 sm:mb-8 max-w-full"
-          >
-            <Sparkles className="h-4 w-4 text-yellow-400 animate-pulse shrink-0" /> <span className="text-left">Paid product placements · billed in USD</span>
-          </motion.div>
-
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15] mb-4 sm:mb-6 break-words"
-          >
-            Reach the Engineers{' '}
-            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Building the Modern Data Stack
-            </span>
-          </motion.h1>
-
-          <motion.p 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-base sm:text-lg text-gray-400 leading-relaxed max-w-2xl mx-auto mb-8 sm:mb-10"
-          >
-            Put your tool in front of engineers who are already costing a warehouse, debugging dbt, or comparing Spark vs Snowflake — not a generic banner audience. Sponsorships start at <span className="text-white font-semibold">$79 USD / month</span> for a labeled card, or $249 for a co-authored guide. Guest articles are free and editorial; they live on <a href="/contribute" className="text-blue-400 hover:underline">Write for Us</a>, not this form.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col sm:flex-row flex-wrap justify-center gap-2.5 sm:gap-3"
-          >
+      {/* Hero */}
+      <section className="relative border-b border-white/5">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(59,130,246,0.12),_transparent_55%)]" />
+        <div className="relative max-w-5xl mx-auto px-5 sm:px-8 pt-16 pb-14">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-300/90 mb-4">
+            Paid placements · billed in USD
+          </p>
+          <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight text-white max-w-3xl leading-[1.15]">
+            Reach engineers who are already costing a warehouse
+          </h1>
+          <p className="mt-5 text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">
+            Put a tool, course, or platform in front of people reading about Snowflake, dbt,
+            Airflow, and the modern data stack — not a generic banner audience. Guest tutorials
+            are free and editorial on{' '}
+            <Link to="/contribute" className="text-blue-300 hover:text-blue-200 underline underline-offset-2">
+              Write for us
+            </Link>
+            . This page is for paid placements only.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
             <a
               href="#pricing"
-              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition shadow-lg shadow-blue-500/20 text-sm"
+              className="inline-flex items-center gap-2 rounded-full bg-blue-500 hover:bg-blue-400 text-white px-5 py-2.5 text-sm font-semibold transition-colors"
             >
-              View USD packages <ArrowRight className="h-4 w-4 shrink-0" />
+              View packages <ArrowRight className="h-4 w-4" />
             </a>
             <a
               href="#inquiry-form"
-              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold rounded-xl transition text-sm"
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 hover:border-white/30 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white transition-colors"
             >
-              Book a paid placement <Mail className="h-4 w-4 shrink-0" />
+              Book a placement
             </a>
-            <a
-              href="/contribute"
-              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white font-semibold rounded-xl transition text-sm"
+            <Link
+              to="/contribute"
+              className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium text-slate-300 hover:text-white"
             >
-              <PenLine className="h-4 w-4 shrink-0" /> Write a guest article (free)
-            </a>
-            <a
-              href="#sponsor-policies"
-              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-white font-semibold rounded-xl transition text-sm"
-            >
-              <FileText className="h-4 w-4 shrink-0" /> Policies &amp; Refunds
-            </a>
-          </motion.div>
-        </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16 lg:space-y-24 pb-16 sm:pb-24 min-w-0">
-
-        {/* ═══════════════ AUDIENCE METRICS SECTION ═══════════════ */}
-        <div>
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">Why DataEngineer Hub?</h2>
-            <p className="text-sm text-gray-400 max-w-xl mx-auto">High-intent, organic traffic from data professionals actively searching for tools, comparisons, and best practices.</p>
+              <PenLine className="h-4 w-4" /> Write a guest article (free)
+            </Link>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {advertiseConfig.stats.map((stat, idx) => {
-              const IconComponent = LucideIcons[stat.icon] || HelpCircle;
-              return (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 + idx * 0.08 }}
-                  className="relative rounded-2xl bg-slate-900/60 border border-white/10 p-5 sm:p-6 md:p-8 overflow-hidden backdrop-blur-sm group hover:border-blue-500/30 transition-colors min-w-0"
-                >
-                  <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500/0 via-blue-500/30 to-purple-500/0" />
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm font-semibold text-gray-400">{stat.label}</span>
-                    <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform">
-                      <IconComponent className="h-5 w-5" />
-                    </div>
-                  </div>
-                  <div className="text-3xl sm:text-4xl font-extrabold text-white mb-2">{stat.value}</div>
-                  <p className="text-xs text-gray-500">{stat.desc}</p>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          {/* Audience Breakdown + Tech Stack */}
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Audience Roles */}
-            <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-5 sm:p-6 backdrop-blur-sm min-w-0">
-              <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
-                <Users className="h-4 w-4 text-blue-400 shrink-0" /> Who we write for
-              </h3>
-              <p className="text-xs text-gray-500 mb-5">{advertiseConfig.audienceDisclaimer}</p>
-              <div className="space-y-4">
-                {advertiseConfig.audienceBreakdown.map((seg) => (
-                  <div key={seg.role}>
-                    <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-sm text-gray-300">{seg.role}</span>
-                      <span className="text-xs font-semibold text-gray-400">{seg.note || `${seg.percent}%`}</span>
-                    </div>
-                    <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${seg.percent}%` }}
-                        transition={{ delay: 0.3, duration: 0.8 }}
-                        className="h-full rounded-full"
-                        style={{ backgroundColor: seg.color }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Tech Stack */}
-            <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-5 sm:p-6 backdrop-blur-sm min-w-0">
-              <h3 className="text-base font-bold text-white mb-5 flex items-center gap-2">
-                <Target className="h-4 w-4 text-purple-400 shrink-0" /> Core Tech Stack Interest
-              </h3>
-              <div className="flex flex-wrap gap-2.5">
-                {advertiseConfig.techStack.map((tech) => (
-                  <span key={tech} className="px-3 py-1.5 bg-slate-800/80 border border-white/10 rounded-lg text-sm text-gray-300 font-medium hover:border-blue-500/30 transition-colors">
-                    {tech}
-                  </span>
-                ))}
-              </div>
-              <div className="mt-6 pt-5 border-t border-white/5">
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div>
-                    <div className="text-xl font-bold text-white">{totalArticles > 0 ? `${totalArticles}+` : '…'}</div>
-                    <div className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Published Articles</div>
-                  </div>
-                  <div>
-                    <div className="text-xl font-bold text-white">{cheatsheets.length}+</div>
-                    <div className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Cheatsheets & Guides</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5 sm:p-6 min-w-0">
-            <h3 className="text-base font-bold text-white mb-3">This page is for</h3>
-            <ul className="space-y-2 text-sm text-gray-300">
-              <li className="flex gap-2"><Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" /> A data tool, cloud platform, or training product you want practitioners to try</li>
-              <li className="flex gap-2"><Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" /> A launch or trial you can describe in one sentence</li>
-              <li className="flex gap-2"><Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" /> Paying in USD — labeled cards from $79/month, or a $249 co-authored guide</li>
-            </ul>
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-5 sm:p-6 min-w-0">
-            <h3 className="text-base font-bold text-white mb-3">Send these somewhere else</h3>
-            <ul className="space-y-2 text-sm text-gray-300">
-              <li className="flex gap-2"><X className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" /> Guest articles and bylines — use <a href="/contribute" className="text-blue-400 hover:underline">Write for Us</a> (free)</li>
-              <li className="flex gap-2"><X className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" /> Paid dofollow backlinks / “guest post + DA” pitches — we do not sell those</li>
-              <li className="flex gap-2"><X className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" /> Generic SEO, gambling, or products that do not serve data engineers</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* ═══════════════ HOW IT WORKS ═══════════════ */}
-        <div>
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">How It Works</h2>
-            <p className="text-sm text-gray-400">From inquiry to live campaign in under 48 hours.</p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {PROCESS_STEPS.map((step, idx) => (
-              <motion.div
-                key={step.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * idx }}
-                className="relative text-center"
-              >
-                {idx < PROCESS_STEPS.length - 1 && (
-                  <div className="hidden lg:block absolute top-8 left-[60%] w-[80%] h-[1px] bg-gradient-to-r from-blue-500/30 to-transparent" />
-                )}
-                <div className="inline-flex p-3 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 mb-4 relative">
-                  <step.icon className="h-6 w-6" />
-                  <span className="absolute -top-2 -right-2 w-5 h-5 bg-blue-600 rounded-full text-[10px] font-bold flex items-center justify-center text-white">{idx + 1}</span>
-                </div>
-                <h4 className="font-bold text-white text-sm mb-1">{step.title}</h4>
-                <p className="text-xs text-gray-400 leading-relaxed">{step.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* ═══════════════ TRANSPARENCY BANNER ═══════════════ */}
-        <div className="rounded-2xl bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-blue-500/5 border border-blue-500/10 p-5 sm:p-6 flex items-start gap-3 sm:gap-4 max-w-4xl mx-auto min-w-0">
-          <Shield className="h-6 w-6 text-blue-400 mt-0.5 flex-shrink-0" />
-          <div>
-            <h3 className="font-bold text-white text-sm mb-1">Community Trust & Transparency</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              We only accept partners whose products genuinely serve the data engineering community. Every campaign gets a private dashboard with real viewable impressions and clicks — not seeded estimates. AdsBot and other crawlers are never counted.
-            </p>
-          </div>
-        </div>
-
-        {/* ═══════════════ PERFORMANCE TRACKING ═══════════════ */}
-        <div id="performance-tracking" className="rounded-2xl sm:rounded-3xl border border-white/10 bg-slate-900/40 p-5 sm:p-10 backdrop-blur-sm relative min-w-0">
-          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/25 to-transparent" />
-          <div className="text-center mb-8 max-w-2xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold mb-4">
-              <BarChart3 className="h-3.5 w-3.5" /> First-party performance
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">How we track your ads — uniquely, and honestly</h2>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              This is not a PPC network and we do not seed dashboards with fake totals. Every sponsored card and Tools Hub listing gets viewable-impression tracking, UTM-tagged clicks, and a private token dashboard.
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <dl className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              {
-                icon: Eye,
-                title: 'Viewable impressions',
-                desc: 'A placement counts only when at least 50% of the card stays on screen for one full second. Mounting the page is not an impression.',
-              },
-              {
-                icon: MousePointerClick,
-                title: 'Unique per session',
-                desc: 'The same reader on the same page context is counted once per browser session. Clicks on the outbound link are counted separately.',
-              },
-              {
-                icon: Shield,
-                title: 'Crawlers excluded',
-                desc: 'AdsBot, Googlebot, and other documented crawlers never increment your totals. Sponsor links use rel="nofollow sponsored".',
-              },
-              {
-                icon: Target,
-                title: 'UTM + GA4 mirror',
-                desc: 'Destinations get utm_source=dataengineerhub. After cookie consent, the same events also land in Google Analytics as site-wide delivery.',
-              },
+              { label: 'Published guides', value: `${articleCount}+`, hint: 'Original tutorials and deep-dives' },
+              { label: 'Cheat sheets', value: String(cheatsheetCount || '60+'), hint: 'Quick-reference traffic' },
+              { label: 'Audience', value: 'Practitioners', hint: 'Engineers choosing tools this week' },
             ].map((item) => (
-              <div key={item.title} className="rounded-2xl border border-white/10 bg-slate-950/40 p-5">
-                <div className="inline-flex p-2 rounded-xl bg-blue-500/10 text-blue-400 mb-3">
-                  <item.icon className="h-4 w-4" />
-                </div>
-                <h3 className="text-sm font-bold text-white mb-1.5">{item.title}</h3>
-                <p className="text-xs text-gray-400 leading-relaxed">{item.desc}</p>
+              <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                <dt className="text-xs uppercase tracking-wider text-slate-400">{item.label}</dt>
+                <dd className="mt-1 text-2xl font-semibold text-white">{item.value}</dd>
+                <p className="mt-1 text-sm text-slate-400">{item.hint}</p>
               </div>
             ))}
-          </div>
-          <p className="text-xs text-gray-500 mt-6 text-center max-w-3xl mx-auto leading-relaxed">
-            The private dashboard at <a href="/sponsors/dashboard" className="text-blue-400 hover:underline font-mono">/sponsors/dashboard</a> shows first-party counts from the browser viewing it. Use GA4 for site-wide totals across devices. We email your campaign token within 48 hours of go-live.
+          </dl>
+        </div>
+      </section>
+
+      {/* Why */}
+      <section className="max-w-5xl mx-auto px-5 sm:px-8 py-14">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-white">Why this audience books tools</h2>
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          {[
+            {
+              title: 'They are costing a warehouse this week',
+              body: 'Readers land on Query Profile, Slim CI, and cost guides — not “what is data.” A placement sits next to a decision.',
+            },
+            {
+              title: 'The catalog is machine-readable',
+              body: 'Agents are pointed at these tutorials via llms.txt and RSS. Sponsored posts sit in the same catalog, labeled.',
+            },
+            {
+              title: 'The bar stays up',
+              body: 'We decline dofollow packages and generic SEO. You are buying a labeled placement next to practitioner content.',
+            },
+          ].map((card) => (
+            <article key={card.title} className="rounded-2xl border border-white/10 bg-slate-900/40 p-6">
+              <h3 className="text-lg font-semibold text-white">{card.title}</h3>
+              <p className="mt-3 text-sm text-slate-300 leading-relaxed">{card.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* Media kit */}
+      <section className="border-y border-white/5 bg-slate-900/30">
+        <div className="max-w-5xl mx-auto px-5 sm:px-8 py-14">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-white">Media kit — what you sit next to</h2>
+          <p className="mt-2 text-sm text-slate-400">
+            Live inventory. We will not invent monthly uniques we cannot show you.
           </p>
-        </div>
-
-        {/* ═══════════════ ROI CALCULATOR ═══════════════ */}
-        <div className="rounded-2xl sm:rounded-3xl border border-white/10 bg-slate-900/30 p-5 sm:p-10 backdrop-blur-sm relative min-w-0">
-          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/25 to-transparent" />
-          
-          <div className="grid md:grid-cols-2 gap-8 md:gap-10">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 mb-3">
-                <Percent className="h-5 w-5 text-blue-400 shrink-0" />
-                <h2 className="text-xl sm:text-2xl font-bold text-white">ROI & Reach Estimator</h2>
-              </div>
-              <p className="text-sm text-gray-400 leading-relaxed mb-6 sm:mb-8">
-                Drag the slider. Budget is in <span className="text-white font-semibold">USD</span> (what we invoice). Figures below are illustrations, not guaranteed impressions — this is a content site, not a PPC network.
-              </p>
-              
-              <div className="space-y-4">
-                <div className="flex flex-wrap justify-between items-baseline gap-x-3 gap-y-1">
-                  <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Campaign Budget</span>
-                  <span className="text-2xl font-black text-blue-400">{formatUsd(calcBudget)} <span className="text-[11px] font-semibold text-blue-300">USD</span></span>
-                </div>
-                <input 
-                  type="range" 
-                  min="15" 
-                  max="500" 
-                  step="5"
-                  value={calcBudget}
-                  onChange={(e) => setCalcBudget(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500 focus:outline-none"
-                />
-                <div className="flex justify-between text-[10px] text-gray-500">
-                  <span>Min: {formatUsd(15)} USD</span>
-                  <span>Max: {formatUsd(500)} USD</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2 sm:gap-4 bg-slate-950/40 border border-white/5 rounded-2xl p-3 sm:p-6 items-center min-w-0">
-              <div className="text-center min-w-0">
-                <div className="inline-flex p-1.5 sm:p-2 rounded-xl bg-blue-500/10 text-blue-400 mb-2 sm:mb-3">
-                  <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
-                </div>
-                <div className="text-sm sm:text-xl font-bold text-white break-words">{roiMetrics.impressions.toLocaleString()}</div>
-                <div className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Impressions</div>
-              </div>
-
-              <div className="text-center border-x border-white/5 px-1 sm:px-2 min-w-0">
-                <div className="inline-flex p-1.5 sm:p-2 rounded-xl bg-purple-500/10 text-purple-400 mb-2 sm:mb-3">
-                  <MousePointerClick className="h-4 w-4 sm:h-5 sm:w-5" />
-                </div>
-                <div className="text-sm sm:text-xl font-bold text-white break-words">{roiMetrics.clicks.toLocaleString()}</div>
-                <div className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Est. Clicks</div>
-              </div>
-
-              <div className="text-center min-w-0">
-                <div className="inline-flex p-1.5 sm:p-2 rounded-xl bg-pink-500/10 text-pink-400 mb-2 sm:mb-3">
-                  <DollarSign className="h-4 w-4 sm:h-5 sm:w-5" />
-                </div>
-                <div className="text-sm sm:text-xl font-bold text-white break-words">{formatUsd(Number(roiMetrics.estCpc), 2)}</div>
-                <div className="text-[10px] text-gray-500 uppercase tracking-wider mt-1">Est. CPC</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ═══════════════ PRICING SECTION ═══════════════ */}
-        <div id="pricing">
-          <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 sm:gap-6 mb-8 sm:mb-12 border-b border-white/5 pb-6 sm:pb-8">
-            <div className="min-w-0">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">Paid placements (billed in USD)</h2>
-              <p className="text-sm text-gray-400 mt-2 max-w-xl">
-                Invoices and package prices are always US dollars. Use the selector only if you want a local estimate — a US visitor sees <span className="text-white">$79</span>, not rupees.
-              </p>
-            </div>
-            <div className="flex flex-col items-stretch sm:items-end gap-1 w-full sm:w-auto shrink-0">
-              <label htmlFor="currency" className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Local estimate</label>
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Globe className="h-4 w-4 text-blue-400 shrink-0" />
-              <select
-                id="currency"
-                value={selectedCurrency}
-                onChange={(e) => setSelectedCurrency(e.target.value)}
-                className="flex-1 sm:flex-none min-w-0 bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer"
-              >
-                {sortedCurrencyCodes.map(code => (
-                  <option key={code} value={code}>{code === 'USD' ? 'USD (billed)' : `${code} estimate`}</option>
+          <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10">
+            <table className="min-w-full text-sm">
+              <thead className="bg-white/[0.04] text-left text-slate-400">
+                <tr>
+                  <th className="px-4 py-3 font-medium">Surface</th>
+                  <th className="px-4 py-3 font-medium">Count</th>
+                  <th className="px-4 py-3 font-medium">Why it matters</th>
+                </tr>
+              </thead>
+              <tbody>
+                {mediaKit.map((row) => (
+                  <tr key={row.surface} className="border-t border-white/5">
+                    <td className="px-4 py-3 text-white font-medium">{row.surface}</td>
+                    <td className="px-4 py-3 text-blue-300">{row.count}</td>
+                    <td className="px-4 py-3 text-slate-300">{row.why}</td>
+                  </tr>
                 ))}
-              </select>
-              </div>
-            </div>
+              </tbody>
+            </table>
           </div>
-
-          {maxSavingsPercent > 0 && (
-            <div className="flex flex-col items-center gap-2.5 mb-8 sm:mb-10">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 text-center px-2">Quick switch — applies to every package below</span>
-              <div className="relative inline-flex flex-col sm:flex-row w-full max-w-sm sm:max-w-none sm:w-auto items-stretch sm:items-center p-1.5 bg-slate-900/80 border border-white/10 rounded-2xl sm:rounded-full shadow-inner backdrop-blur-sm">
-                {['monthly', 'yearly'].map((mode) => {
-                  const isActive = globalDuration === mode;
-                  const ModeIcon = DURATION_ICONS[mode];
-                  return (
-                    <motion.button
-                      key={mode}
-                      type="button"
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => applyGlobalDuration(mode)}
-                      className={`compact-control relative z-10 px-4 sm:px-7 py-2.5 rounded-xl sm:rounded-full text-sm font-bold transition-colors ${
-                        isActive ? 'text-white' : 'text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      {isActive && (
-                        <motion.span
-                          layoutId="global-duration-pill"
-                          className="absolute inset-0 rounded-xl sm:rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-[0_0_20px_rgba(99,102,241,0.5)] -z-10"
-                          transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-                        />
-                      )}
-                      <span className="relative flex items-center justify-center gap-1.5 flex-wrap">
-                        <ModeIcon className="h-3.5 w-3.5 shrink-0" />
-                        {mode === 'monthly' ? 'Bill Monthly' : 'Bill Yearly'}
-                        {mode === 'yearly' && (
-                          <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full ${isActive ? 'bg-white/25 text-white' : 'bg-emerald-500/15 text-emerald-400'}`}>
-                            <Flame className="h-2.5 w-2.5" /> Save {maxSavingsPercent}%
-                          </span>
-                        )}
-                      </span>
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-          
-          <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-5 sm:gap-8">
-            {OPPORTUNITIES.map((opp, idx) => {
-              const activeDuration = opp.durations.find(d => d.key === selectedDurations[opp.packageKey]) || opp.durations[0];
-              const PkgIcon = resolveIcon(opp.icon);
-
-              return (
-                <div key={opp.title} className="relative min-w-0">
-                  {opp.popular && (
-                    <motion.div
-                      aria-hidden="true"
-                      className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 blur-md -z-10 hidden sm:block"
-                      animate={{ opacity: [0.25, 0.55, 0.25] }}
-                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                    />
-                  )}
-                  <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 + idx * 0.1 }}
-                    whileHover={{ y: -6 }}
-                    className={`relative rounded-2xl sm:rounded-3xl p-5 sm:p-8 flex flex-col justify-between overflow-hidden h-full transition-shadow min-w-0 ${
-                      opp.popular 
-                        ? 'bg-slate-900 border-2 border-blue-500/50 shadow-[0_12px_40px_rgba(59,130,246,0.15)]' 
-                        : 'bg-slate-900/60 border border-white/10 hover:border-white/20 hover:shadow-[0_12px_32px_rgba(0,0,0,0.35)]'
-                    }`}
-                  >
-                  {/* Popular badge */}
-                  {opp.popular && (
-                    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
-                  )}
-                  
-                  <div className="min-w-0">
-                    {opp.popular && (
-                      <div className="inline-flex bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white items-center gap-1 mb-3">
-                        <Star className="h-3 w-3" /> Most Popular
-                      </div>
-                    )}
-                    {/* Package icon + title */}
-                    <div className="flex items-start gap-3 mb-3 min-w-0">
-                      <div className={`p-2 rounded-xl shrink-0 ${opp.popular ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-gray-400'}`}>
-                        <PkgIcon className="h-5 w-5" />
-                      </div>
-                      <div className="min-w-0">
-                        <h3 className="text-base sm:text-lg font-bold text-white break-words">{opp.title}</h3>
-                        <p className="text-[11px] text-gray-500 break-words">{opp.tagline}</p>
-                      </div>
-                    </div>
-
-                    {/* Live availability signal — driven by real activeSponsors.json data, not fabricated */}
-                    {liveCampaignCounts[opp.packageKey] > 0 && (
-                      <div className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full mb-4">
-                        <span className="relative flex h-1.5 w-1.5">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
-                        </span>
-                        {liveCampaignCounts[opp.packageKey]} live campaign{liveCampaignCounts[opp.packageKey] > 1 ? 's' : ''} right now
-                      </div>
-                    )}
-                    
-                    {/* Price and duration */}
-                    <div className="flex items-baseline gap-1.5 mb-2 border-b border-white/10 pb-4">
-                      <PriceBlock usd={activeDuration.price} suffix={`/ ${activeDuration.label}`} large />
-                    </div>
-
-                    {/* Savings Badge */}
-                    {activeDuration.savings && (
-                      <div className="inline-flex items-center text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20 mb-4">
-                        {activeDuration.savings}
-                      </div>
-                    )}
-
-                    {/* Duration Option Selectors — wrap on narrow screens so 3 terms stay visible */}
-                    {opp.durations.length > 1 && (
-                      <div className={`relative flex gap-1 p-1 bg-slate-950/60 mb-5 border border-white/5 ${
-                        opp.durations.length > 2 ? 'flex-col sm:flex-row rounded-2xl' : 'rounded-full'
-                      }`}>
-                        {opp.durations.map((dur) => {
-                          const isActive = selectedDurations[opp.packageKey] === dur.key;
-                          const durSavingsMatch = /Save (\d+)%/.exec(dur.savings || '');
-                          const DurIcon = DURATION_ICONS[dur.key] || Calendar;
-                          return (
-                            <motion.button
-                              key={dur.key}
-                              type="button"
-                              whileTap={{ scale: 0.95 }}
-                              onClick={() => {
-                                setSelectedDurations(prev => ({ ...prev, [opp.packageKey]: dur.key }));
-                              }}
-                              className={`compact-control relative flex-1 py-2 px-2 text-[11px] font-bold transition-colors z-10 min-w-0 ${
-                                opp.durations.length > 2 ? 'rounded-xl' : 'rounded-full'
-                              } ${
-                                isActive ? 'text-white' : 'text-gray-400 hover:text-white'
-                              }`}
-                            >
-                              {isActive && (
-                                <motion.span
-                                  layoutId={`duration-pill-${opp.packageKey}`}
-                                  className={`absolute inset-0 -z-10 ${
-                                    opp.durations.length > 2 ? 'rounded-xl' : 'rounded-full'
-                                  } ${
-                                    opp.popular
-                                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 shadow-[0_0_14px_rgba(99,102,241,0.5)]'
-                                      : 'bg-blue-600 shadow-sm'
-                                  }`}
-                                  transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-                                />
-                              )}
-                              <span className="relative inline-flex items-center justify-center gap-1 flex-wrap">
-                                <DurIcon className="h-3 w-3 shrink-0" />
-                                {dur.label}
-                                {durSavingsMatch && (
-                                  <span className={`text-[9px] px-1 py-0.5 rounded-full ${isActive ? 'bg-white/20' : 'bg-emerald-500/15 text-emerald-400'}`}>
-                                    -{durSavingsMatch[1]}%
-                                  </span>
-                                )}
-                              </span>
-                            </motion.button>
-                          );
-                        })}
-                      </div>
-                    )}
-                    
-                    {/* Description */}
-                    <div className="mb-5 sm:mb-6 sm:min-h-[72px] flex items-start sm:items-center">
-                      <AnimatePresence mode="wait">
-                        <motion.p
-                          key={activeDuration.key}
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -5 }}
-                          transition={{ duration: 0.12 }}
-                          className="text-sm text-gray-400 leading-relaxed break-words"
-                        >
-                          {activeDuration.desc}
-                        </motion.p>
-                      </AnimatePresence>
-                    </div>
-                    
-                    {/* Feature bullets */}
-                    <ul className="space-y-3 mb-8">
-                      {opp.bullets.map(bullet => (
-                        <li key={bullet} className="flex items-start gap-2.5 text-xs text-gray-300">
-                          <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                          <span>{bullet}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  {/* CTA Button */}
-                  <a
-                    href="#inquiry-form"
-                    onClick={() => {
-                      const opts = PACKAGE_BUDGET_OPTIONS[opp.packageKey] ?? [];
-                      const match = opts.find((o) => o.value.toLowerCase().includes(activeDuration.key === 'yearly' ? 'year' : activeDuration.key === 'weekly' ? 'week' : activeDuration.key === 'one_time' ? 'one-time' : 'month')) || opts[0];
-                      setFormData(prev => ({ 
-                        ...prev, 
-                        package: opp.packageKey,
-                        budget: match?.value || prev.budget,
-                        message: `Interested in "${opp.title}" at ${match?.value || activeDuration.label} (USD).`
-                      }));
-                    }}
-                    className={`w-full py-3 rounded-xl font-semibold text-sm text-center transition flex items-center justify-center gap-1.5 ${
-                      opp.popular
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20'
-                        : 'bg-white/5 hover:bg-white/10 border border-white/10 text-white'
-                    }`}
-                  >
-                    {opp.cta} <ArrowRight className="h-4 w-4" />
-                  </a>
-                  </motion.div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Compare all packages toggle + table */}
-          <div className="mt-10 text-center">
-            <button
-              type="button"
-              onClick={() => setShowComparison((prev) => !prev)}
-              className="compact-control inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-semibold text-gray-300 hover:text-white transition"
-            >
-              <ListChecks className="h-4 w-4 text-blue-400" />
-              {showComparison ? 'Hide package comparison' : 'Compare all packages'}
-              <ChevronDown className={`h-4 w-4 transition-transform ${showComparison ? 'rotate-180' : ''}`} />
-            </button>
-          </div>
-
-          <AnimatePresence initial={false}>
-            {showComparison && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className="overflow-hidden"
+          <div className="mt-5 flex flex-wrap gap-2">
+            {TECH_STACK.map((stack) => (
+              <span
+                key={stack}
+                className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-slate-300"
               >
-                {/* Mobile: stacked cards so every field is readable without a sideways table */}
-                <div className="mt-8 space-y-4 md:hidden">
-                  {OPPORTUNITIES.map((opp) => {
-                    const cheapest = opp.durations.reduce((min, d) => (d.price < min.price ? d : min), opp.durations[0]);
-                    const facts = PACKAGE_FACTS[opp.packageKey] || {};
-                    return (
-                      <div
-                        key={`compare-card-${opp.title}`}
-                        className={`rounded-2xl border p-4 space-y-3 ${
-                          opp.popular ? 'border-blue-500/40 bg-blue-500/5' : 'border-white/10 bg-slate-900/50'
+                {stack}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* For / not for */}
+      <section className="max-w-5xl mx-auto px-5 sm:px-8 py-14 grid gap-6 md:grid-cols-2">
+        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.06] p-6">
+          <h2 className="text-xl font-semibold text-white">This page is for</h2>
+          <ul className="mt-4 space-y-2 text-sm text-slate-200">
+            {[
+              'A data tool, warehouse, or training product practitioners can try',
+              'A launch or trial you can describe in one sentence',
+              'Paying in USD for a labeled placement',
+            ].map((item) => (
+              <li key={item} className="flex gap-2">
+                <Check className="h-4 w-4 mt-0.5 text-emerald-400 shrink-0" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="rounded-2xl border border-rose-500/20 bg-rose-500/[0.05] p-6">
+          <h2 className="text-xl font-semibold text-white">Send these somewhere else</h2>
+          <ul className="mt-4 space-y-2 text-sm text-slate-200">
+            <li className="flex gap-2">
+              <X className="h-4 w-4 mt-0.5 text-rose-400 shrink-0" />
+              <span>
+                Guest articles —{' '}
+                <Link to="/contribute" className="text-blue-300 hover:underline">
+                  Write for us
+                </Link>{' '}
+                (free)
+              </span>
+            </li>
+            <li className="flex gap-2">
+              <X className="h-4 w-4 mt-0.5 text-rose-400 shrink-0" />
+              <span>Paid dofollow backlinks / “guest post + DA”</span>
+            </li>
+            <li className="flex gap-2">
+              <X className="h-4 w-4 mt-0.5 text-rose-400 shrink-0" />
+              <span>Generic SEO, gambling, or products that do not serve data engineers</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="border-y border-white/5 bg-slate-900/20">
+        <div className="max-w-5xl mx-auto px-5 sm:px-8 py-14">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-white">How it works</h2>
+          <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {PROCESS_STEPS.map((step, index) => (
+              <li key={step.title} className="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
+                <p className="text-xs font-semibold uppercase tracking-wider text-blue-300">
+                  Step {index + 1}
+                </p>
+                <h3 className="mt-2 font-semibold text-white">{step.title}</h3>
+                <p className="mt-2 text-sm text-slate-400 leading-relaxed">{step.desc}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section id="pricing" className="max-w-5xl mx-auto px-5 sm:px-8 py-14 scroll-mt-24">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-white">Paid packages</h2>
+        <p className="mt-2 text-sm text-slate-400">
+          Starting prices in USD. Indie tools are welcome — the newsletter slot is the smallest paid test.
+        </p>
+
+        <div className="mt-8 grid gap-5 lg:grid-cols-3">
+          {OPPORTUNITIES.map((opp) => {
+            const Icon = resolveIcon(opp.icon);
+            const durationKey = selectedDurations[opp.packageKey] || opp.durations[0]?.key;
+            const duration = opp.durations.find((d) => d.key === durationKey) || opp.durations[0];
+            const from = startingPrice(opp);
+            return (
+              <article
+                key={opp.packageKey}
+                className={`relative flex flex-col rounded-2xl border p-6 ${
+                  opp.popular
+                    ? 'border-blue-400/40 bg-gradient-to-b from-blue-500/10 to-slate-950'
+                    : 'border-white/10 bg-slate-900/40'
+                }`}
+              >
+                {opp.popular && (
+                  <span className="absolute -top-3 left-5 rounded-full bg-blue-500 px-3 py-0.5 text-[11px] font-semibold text-white">
+                    Most booked
+                  </span>
+                )}
+                <div className="flex items-start gap-3">
+                  <div className="rounded-xl bg-white/5 p-2 border border-white/10">
+                    <Icon className="h-5 w-5 text-blue-300" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">{opp.title}</h3>
+                    <p className="mt-1 text-sm text-slate-400">{opp.tagline}</p>
+                  </div>
+                </div>
+
+                {opp.durations.length > 1 && (
+                  <div className="mt-4 inline-flex rounded-full border border-white/10 bg-black/20 p-1">
+                    {opp.durations.map((d) => (
+                      <button
+                        key={d.key}
+                        type="button"
+                        onClick={() =>
+                          setSelectedDurations((prev) => ({ ...prev, [opp.packageKey]: d.key }))
+                        }
+                        className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                          duration.key === d.key
+                            ? 'bg-white text-slate-900'
+                            : 'text-slate-300 hover:text-white'
                         }`}
                       >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            {opp.popular && (
-                              <div className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-blue-300 bg-blue-500/15 px-2 py-0.5 rounded-full mb-1.5">
-                                <Star className="h-2.5 w-2.5" /> Recommended
-                              </div>
-                            )}
-                            <div className="flex items-center gap-2 text-white font-bold text-sm">
-                              {React.createElement(resolveIcon(opp.icon), { className: 'h-4 w-4 text-blue-400 shrink-0' })}
-                              <span className="break-words">{opp.title}</span>
-                            </div>
-                            <p className="text-xs text-gray-400 mt-1 leading-relaxed">{opp.tagline}</p>
-                          </div>
-                          <div className="text-right shrink-0">
-                            <div className="text-sm font-bold text-white">{formatUsd(cheapest.price)} USD</div>
-                            <div className="text-[10px] text-gray-500">/ {cheapest.label}</div>
-                          </div>
-                        </div>
-                        <dl className="grid grid-cols-1 gap-2 text-xs">
-                          <div className="flex justify-between gap-3 border-t border-white/5 pt-2">
-                            <dt className="text-gray-500 shrink-0">Terms</dt>
-                            <dd className="text-gray-300 text-right">{opp.durations.map((d) => d.label).join(' / ')}</dd>
-                          </div>
-                          <div className="flex justify-between gap-3">
-                            <dt className="text-gray-500 shrink-0">Placement</dt>
-                            <dd className="text-gray-300 text-right break-words">{facts.placementType}</dd>
-                          </div>
-                          <div className="flex justify-between gap-3">
-                            <dt className="text-gray-500 shrink-0">Exclusivity</dt>
-                            <dd className="text-gray-300 text-right break-words">{facts.exclusivity}</dd>
-                          </div>
-                          <div className="flex justify-between gap-3">
-                            <dt className="text-gray-500 shrink-0">Tracking</dt>
-                            <dd className="text-gray-300 text-right break-words">{facts.tracking}</dd>
-                          </div>
-                          <div className="flex justify-between gap-3">
-                            <dt className="text-gray-500 shrink-0">Newsletter promo</dt>
-                            <dd>{facts.newsletterPromo ? <Check className="h-4 w-4 text-emerald-400 ml-auto" /> : <span className="text-gray-600">—</span>}</dd>
-                          </div>
-                          <div className="flex justify-between gap-3">
-                            <dt className="text-gray-500 shrink-0">GitHub repo</dt>
-                            <dd>{facts.githubRepo ? <Check className="h-4 w-4 text-emerald-400 ml-auto" /> : <span className="text-gray-600">—</span>}</dd>
-                          </div>
-                        </dl>
-                        <p className="text-gray-400 text-xs leading-relaxed">{opp.bullets[0]}</p>
-                        <a
-                          href="#inquiry-form"
-                          onClick={() => {
-                            const activeDuration = opp.durations.find(d => d.key === selectedDurations[opp.packageKey]) || opp.durations[0];
-                            setFormData(prev => ({
-                              ...prev,
-                              package: opp.packageKey,
-                              message: `Interested in the "${opp.title}" package with the "${activeDuration.label}" option.`
-                            }));
-                          }}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-blue-400 hover:text-blue-300 transition"
-                        >
-                          {opp.cta} <ArrowRight className="h-3 w-3" />
-                        </a>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="mt-8 hidden md:block overflow-x-auto rounded-2xl border border-white/10">
-                  <table className="w-full text-sm border-collapse min-w-[620px]">
-                    <thead>
-                      <tr className="bg-slate-900/80">
-                        <th className="text-left text-xs font-bold uppercase tracking-wider text-gray-400 p-4 w-40">Package</th>
-                        {OPPORTUNITIES.map((opp) => (
-                          <th
-                            key={opp.title}
-                            className={`text-left p-4 align-bottom ${opp.popular ? 'bg-blue-500/10 border-x border-blue-500/30' : ''}`}
-                          >
-                            {opp.popular && (
-                              <div className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-blue-300 bg-blue-500/15 px-2 py-0.5 rounded-full mb-1.5">
-                                <Star className="h-2.5 w-2.5" /> Recommended
-                              </div>
-                            )}
-                            <div className="flex items-center gap-2 text-white font-bold text-sm">
-                              {React.createElement(resolveIcon(opp.icon), { className: 'h-4 w-4 text-blue-400 shrink-0' })}
-                              {opp.title}
-                            </div>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                      <tr className="bg-slate-950/30">
-                        <td className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400">Best For</td>
-                        {OPPORTUNITIES.map((opp) => (
-                          <td key={opp.title} className={`p-4 text-gray-300 text-xs leading-relaxed ${opp.popular ? 'bg-blue-500/5 border-x border-blue-500/20' : ''}`}>{opp.tagline}</td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400">Starting At</td>
-                        {OPPORTUNITIES.map((opp) => {
-                          const cheapest = opp.durations.reduce((min, d) => (d.price < min.price ? d : min), opp.durations[0]);
-                          return (
-                            <td key={opp.title} className={`p-4 text-white font-bold text-sm ${opp.popular ? 'bg-blue-500/5 border-x border-blue-500/20' : ''}`}>
-                              {formatUsd(cheapest.price)} USD <span className="text-gray-500 font-normal text-xs">/ {cheapest.label}</span>
-                            </td>
-                          );
-                        })}
-                      </tr>
-                      <tr className="bg-slate-950/30">
-                        <td className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400">Available Terms</td>
-                        {OPPORTUNITIES.map((opp) => (
-                          <td key={opp.title} className={`p-4 text-gray-300 text-xs ${opp.popular ? 'bg-blue-500/5 border-x border-blue-500/20' : ''}`}>{opp.durations.map((d) => d.label).join(' / ')}</td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400">Placement Type</td>
-                        {OPPORTUNITIES.map((opp) => (
-                          <td key={opp.title} className={`p-4 text-gray-300 text-xs ${opp.popular ? 'bg-blue-500/5 border-x border-blue-500/20' : ''}`}>{PACKAGE_FACTS[opp.packageKey]?.placementType}</td>
-                        ))}
-                      </tr>
-                      <tr className="bg-slate-950/30">
-                        <td className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400">Exclusivity</td>
-                        {OPPORTUNITIES.map((opp) => (
-                          <td key={opp.title} className={`p-4 text-gray-300 text-xs ${opp.popular ? 'bg-blue-500/5 border-x border-blue-500/20' : ''}`}>{PACKAGE_FACTS[opp.packageKey]?.exclusivity}</td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400">Performance tracking</td>
-                        {OPPORTUNITIES.map((opp) => (
-                          <td key={opp.title} className={`p-4 text-gray-300 text-xs leading-relaxed ${opp.popular ? 'bg-blue-500/5 border-x border-blue-500/20' : ''}`}>{PACKAGE_FACTS[opp.packageKey]?.tracking}</td>
-                        ))}
-                      </tr>
-                      <tr className="bg-slate-950/30">
-                        <td className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400">Newsletter & Social Promo</td>
-                        {OPPORTUNITIES.map((opp) => (
-                          <td key={opp.title} className={`p-4 ${opp.popular ? 'bg-blue-500/5 border-x border-blue-500/20' : ''}`}>
-                            {PACKAGE_FACTS[opp.packageKey]?.newsletterPromo
-                              ? <Check className="h-4 w-4 text-emerald-400" />
-                              : <span className="text-gray-600 text-xs">—</span>}
-                          </td>
-                        ))}
-                      </tr>
-                      <tr className="bg-slate-950/30">
-                        <td className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400">Companion GitHub Repo</td>
-                        {OPPORTUNITIES.map((opp) => (
-                          <td key={opp.title} className={`p-4 ${opp.popular ? 'bg-blue-500/5 border-x border-blue-500/20' : ''}`}>
-                            {PACKAGE_FACTS[opp.packageKey]?.githubRepo
-                              ? <Check className="h-4 w-4 text-emerald-400" />
-                              : <span className="text-gray-600 text-xs">—</span>}
-                          </td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400">Key Benefit</td>
-                        {OPPORTUNITIES.map((opp) => (
-                          <td key={opp.title} className={`p-4 text-gray-300 text-xs leading-relaxed ${opp.popular ? 'bg-blue-500/5 border-x border-blue-500/20' : ''}`}>{opp.bullets[0]}</td>
-                        ))}
-                      </tr>
-                      <tr className="bg-slate-950/30">
-                        <td className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400" />
-                        {OPPORTUNITIES.map((opp) => (
-                          <td key={opp.title} className={`p-4 ${opp.popular ? 'bg-blue-500/5 border-x border-b border-blue-500/20 rounded-b-lg' : ''}`}>
-                            <a
-                              href="#inquiry-form"
-                              onClick={() => {
-                                const activeDuration = opp.durations.find(d => d.key === selectedDurations[opp.packageKey]) || opp.durations[0];
-                                setFormData(prev => ({
-                                  ...prev,
-                                  package: opp.packageKey,
-                                  message: `Interested in the "${opp.title}" package with the "${activeDuration.label}" option.`
-                                }));
-                              }}
-                              className="inline-flex items-center gap-1 text-xs font-semibold text-blue-400 hover:text-blue-300 transition"
-                            >
-                              {opp.cta} <ArrowRight className="h-3 w-3" />
-                            </a>
-                          </td>
-                        ))}
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* ═══════════════ CONTENT & CREATOR REVENUE CHANNELS ═══════════════ */}
-        <div id="content-channels">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold mb-4">
-              <Zap className="h-3.5 w-3.5" /> Lower-cost paid tests
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">Start smaller if a monthly package feels heavy</h2>
-            <p className="text-sm text-gray-400 max-w-2xl mx-auto">
-              These are still paid product placements in USD — a newsletter issue or a Tools Hub card. They are meant for launches, not for buying a guest-post byline.
-            </p>
-          </div>
-
-          <div className="mb-8 sm:mb-10 max-w-3xl mx-auto rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-4 sm:p-5 flex items-start gap-3 sm:gap-4 min-w-0">
-            <PenLine className="h-5 w-5 text-indigo-400 shrink-0 mt-0.5" />
-            <div className="text-sm text-gray-300 leading-relaxed">
-              <span className="text-white font-semibold">Looking to write a tutorial?</span> That is not a sponsorship.
-              Guest articles are free, editorially reviewed, and billed at $0. Pitch them on{' '}
-              <a href="/contribute" className="text-blue-400 hover:underline font-semibold">Write for Us</a>.
-              Do not use the form below for guest posts — we will send you there anyway.
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            {CONTENT_CHANNELS.map((ch, idx) => {
-              const ChIcon = ch.icon;
-              return (
-                <motion.div
-                  key={ch.key}
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + idx * 0.08 }}
-                  whileHover={{ y: -4 }}
-                  className="relative rounded-2xl border border-white/10 bg-slate-900/60 overflow-hidden backdrop-blur-sm transition-shadow hover:shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:border-white/20 min-w-0"
-                >
-                  {/* Thin left accent bar */}
-                  <div className={`absolute top-0 left-0 w-[3px] h-full ${ch.accentBar}`} />
-
-                  <div className="pl-4 pr-4 sm:pl-5 sm:pr-6 pt-5 pb-5 sm:pt-6 sm:pb-6 min-w-0">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
-                      <div className="flex items-start gap-3 min-w-0">
-                        <div className={`p-2.5 rounded-xl shrink-0 ${ch.accentBg}`}>
-                          <ChIcon className={`h-5 w-5 ${ch.accentText}`} />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="flex flex-wrap items-center gap-2 mb-1">
-                            <span className={`inline-flex text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${ch.badgeStyle}`}>
-                              {ch.badge}
-                            </span>
-                            {ch.free && (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">
-                                <Check className="h-2.5 w-2.5" /> Free
-                              </span>
-                            )}
-                          </div>
-                          <h3 className="text-base font-bold text-white leading-snug break-words">{ch.title}</h3>
-                          <p className="text-xs text-gray-400 mt-0.5 break-words">{ch.tagline}</p>
-                        </div>
-                      </div>
-                      <div className="text-left sm:text-right shrink-0 pl-11 sm:pl-0">
-                        {ch.free ? (
-                          <>
-                            <div className="text-xl font-black text-emerald-400">Free</div>
-                            <div className="text-[10px] text-gray-500">{ch.priceLabel}</div>
-                          </>
-                        ) : (
-                          <>
-                            <PriceBlock usd={ch.price} suffix={`/ ${ch.priceLabel}`} />
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    <ul className="space-y-2 mb-5">
-                      {ch.bullets.map((b) => (
-                        <li key={b} className="flex items-start gap-2 text-xs text-gray-300">
-                          <Check className={`h-3.5 w-3.5 shrink-0 mt-0.5 ${ch.accentText}`} />
-                          {b}
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div className="border-t border-white/5 pt-4 mb-4">
-                      <p className="text-[11px] text-gray-500 italic">{ch.ideal}</p>
-                    </div>
-
-                    <a
-                      href="#inquiry-form"
-                      onClick={() => {
-                        const opts = PACKAGE_BUDGET_OPTIONS[ch.key] ?? [];
-                        setFormData(prev => ({
-                          ...prev,
-                          package: ch.key,
-                          budget: opts[0]?.value || prev.budget,
-                          message: `Interested in "${ch.title}" (${opts[0]?.value || ''} USD).`,
-                        }));
-                      }}
-                      className={`w-full py-2.5 rounded-xl font-semibold text-sm text-center transition flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-700 border ${ch.accentBorder} ${ch.accentText} hover:text-white`}
-                    >
-                      {ch.cta} <ArrowRight className="h-3.5 w-3.5" />
-                    </a>
+                        {d.label}
+                      </button>
+                    ))}
                   </div>
-                </motion.div>
-              );
-            })}
-          </div>
+                )}
 
-          {/* Creator mindset nudge */}
-          <div className="mt-8 max-w-3xl mx-auto rounded-2xl border border-white/10 bg-slate-900/30 p-4 sm:p-5 flex items-start gap-3 sm:gap-4 min-w-0">
-            <Bell className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />
-            <p className="text-sm text-gray-400 leading-relaxed">
-              <span className="text-white font-semibold">Indie tools are welcome.</span> You do not need an enterprise marketing budget.
-              The cheapest paid test is a labeled newsletter blurb at $79 USD. If you have a production story to tell, use{' '}
-              <a href="/contribute" className="text-blue-400 hover:underline">Write for Us</a> — guest posts are free and editorial, not ads.
-            </p>
-          </div>
-        </div>
+                <div className="mt-5">
+                  <p className="text-xs uppercase tracking-wider text-slate-400">
+                    {opp.durations.length > 1 ? 'Selected' : 'From'}
+                  </p>
+                  <p className="mt-1 text-3xl font-semibold text-white">
+                    {formatUsd(duration.price)}
+                    <span className="ml-2 text-sm font-medium text-slate-400">
+                      {duration.key === 'monthly'
+                        ? '/ mo'
+                        : duration.key === 'yearly'
+                          ? '/ yr'
+                          : 'one-time'}
+                    </span>
+                  </p>
+                  {opp.durations.length > 1 && from != null && from !== duration.price && (
+                    <p className="text-xs text-slate-500 mt-1">starts from {formatUsd(from)}</p>
+                  )}
+                  <p className="mt-2 text-sm text-slate-400">{duration.desc}</p>
+                </div>
 
-        {/* ═══════════════ FAQs SECTION ═══════════════ */}
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white">Frequently Asked Questions</h2>
-            <p className="text-sm text-gray-400 mt-2">Everything you need to know about sponsoring DataEngineer Hub.</p>
-          </div>
+                <ul className="mt-5 space-y-2 text-sm text-slate-300 flex-1">
+                  {opp.bullets.slice(0, 4).map((bullet) => (
+                    <li key={bullet} className="flex gap-2">
+                      <Check className="h-4 w-4 mt-0.5 text-blue-300 shrink-0" />
+                      <span>{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
 
-          {/* Search box */}
-          <div className="relative max-w-md mx-auto mb-6">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-            <input
-              type="text"
-              value={faqSearch}
-              onChange={(e) => setFaqSearch(e.target.value)}
-              placeholder="Search questions (e.g. payment, tracking, exclusivity)..."
-              className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-9 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
-            />
-            {faqSearch && (
-              <button
-                type="button"
-                onClick={() => setFaqSearch('')}
-                aria-label="Clear search"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-
-          {/* Category filter pills */}
-          <div className="flex flex-wrap justify-center gap-2 mb-10">
-            {faqCategories.map((cat) => {
-              const CatIcon = FAQ_CATEGORY_ICONS[cat] || HelpCircle;
-              const isActive = faqCategory === cat;
-              return (
                 <button
-                  key={cat}
                   type="button"
-                  onClick={() => setFaqCategory(cat)}
-                  className={`compact-control inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition ${
-                    isActive
-                      ? 'bg-blue-600 border-blue-500 text-white'
-                      : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/20'
+                  onClick={() =>
+                    selectPackage(
+                      opp.packageKey,
+                      PACKAGE_BUDGET_OPTIONS[opp.packageKey]?.find((o) =>
+                        o.value.toLowerCase().includes(duration.key === 'yearly' ? 'year' : duration.key === 'monthly' ? 'month' : 'one-time')
+                      )?.value
+                    )
+                  }
+                  className={`mt-6 inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-colors ${
+                    opp.popular
+                      ? 'bg-blue-500 hover:bg-blue-400 text-white'
+                      : 'border border-white/15 hover:border-white/30 bg-white/5 text-white'
                   }`}
                 >
-                  <CatIcon className="h-3.5 w-3.5" />
-                  {cat}
+                  {opp.cta}
                 </button>
-              );
-            })}
-          </div>
+              </article>
+            );
+          })}
+        </div>
 
-          <div className="space-y-3">
-            {filteredFaqs.length === 0 && (
-              <div className="text-center py-10 text-sm text-gray-500">
-                No questions match "{faqSearch}". Try a different keyword, or{' '}
-                <a href="#inquiry-form" className="text-blue-400 hover:underline">ask us directly</a>.
-              </div>
-            )}
-            {filteredFaqs.map((faq) => (
-              <div 
-                key={faq.question}
-                className="border border-white/10 rounded-2xl bg-slate-900/40 overflow-hidden backdrop-blur-sm hover:border-white/15 transition-colors"
+        {/* Newsletter */}
+        <article className="mt-5 rounded-2xl border border-amber-500/25 bg-amber-500/[0.06] p-6 sm:p-7">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-wider text-amber-300">
+                Lower-cost channel
+              </p>
+              <h3 className="mt-1 text-xl font-semibold text-white">{NEWSLETTER.title}</h3>
+              <p className="mt-1 text-sm text-slate-300">{NEWSLETTER.tagline}</p>
+              <ul className="mt-4 grid sm:grid-cols-2 gap-2 text-sm text-slate-300">
+                {NEWSLETTER.bullets.map((b) => (
+                  <li key={b} className="flex gap-2">
+                    <Check className="h-4 w-4 mt-0.5 text-amber-300 shrink-0" />
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="sm:text-right shrink-0">
+              <p className="text-3xl font-semibold text-white">
+                {formatUsd(NEWSLETTER.price)}
+                <span className="text-sm font-medium text-slate-400">{NEWSLETTER.priceLabel}</span>
+              </p>
+              <button
+                type="button"
+                onClick={() => selectPackage('newsletter_sponsorship')}
+                className="mt-4 inline-flex items-center gap-2 rounded-full bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-2.5 text-sm font-semibold"
               >
-                <button
-                  onClick={() => toggleFaq(faq.question)}
-                  className="compact-control w-full flex items-start sm:items-center justify-between gap-3 p-4 sm:p-5 text-left text-white hover:text-blue-400 transition-colors focus:outline-none min-w-0"
-                >
-                  <span className="font-semibold text-sm sm:text-base flex items-start gap-3 min-w-0">
-                    <HelpCircle className="h-4 w-4 text-blue-400 shrink-0 mt-0.5" />
-                    <span className="break-words">{faq.question}</span>
-                  </span>
-                  <ChevronDown className={`h-4 w-4 transition-transform shrink-0 mt-0.5 ${openFaq === faq.question ? 'rotate-180' : ''}`} />
-                </button>
+                {NEWSLETTER.cta}
+              </button>
+            </div>
+          </div>
+        </article>
 
-                <AnimatePresence initial={false}>
-                  {openFaq === faq.question && (
-                    <motion.div
-                      initial={{ height: 0 }}
-                      animate={{ height: 'auto' }}
-                      exit={{ height: 0 }}
-                      transition={{ duration: 0.25, ease: 'easeInOut' }}
-                      className="overflow-hidden"
+        {/* Compare */}
+        <div className="mt-10 overflow-x-auto rounded-2xl border border-white/10">
+          <table className="min-w-full text-sm">
+            <thead className="bg-white/[0.04] text-left text-slate-400">
+              <tr>
+                <th className="px-4 py-3 font-medium"> </th>
+                <th className="px-4 py-3 font-medium">Card</th>
+                <th className="px-4 py-3 font-medium">Tools Hub</th>
+                <th className="px-4 py-3 font-medium">Guide</th>
+                <th className="px-4 py-3 font-medium">Newsletter</th>
+              </tr>
+            </thead>
+            <tbody className="text-slate-300">
+              {[
+                ['Starting price', 'from $79/mo', '$149', '$249', '$79/issue'],
+                ['How long it lasts', 'Term you book', 'Permanent card', 'Permanent article', 'One email issue'],
+                ['You approve copy first', 'Yes', 'Yes', 'Yes', 'Yes'],
+                ['Disclosure', 'Sponsored', 'Sponsored', 'Sponsored', 'Labeled blurb'],
+                ['Link default', 'nofollow', 'nofollow', 'nofollow', 'nofollow'],
+              ].map((row) => (
+                <tr key={row[0]} className="border-t border-white/5">
+                  {row.map((cell, i) => (
+                    <td
+                      key={`${row[0]}-${i}`}
+                      className={`px-4 py-3 ${i === 0 ? 'text-white font-medium' : ''}`}
                     >
-                      <div className="p-4 sm:p-5 pt-0 border-t border-white/5 text-sm text-gray-400 leading-relaxed break-words">
-                        {faq.answer}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-3 text-xs text-slate-500">
+          Book on the form and we send an invoice. After payment we contact you within 48 hours.
+        </p>
+      </section>
+
+      {/* What sponsors get */}
+      <section className="border-y border-white/5 bg-slate-900/30">
+        <div className="max-w-5xl mx-auto px-5 sm:px-8 py-14">
+          <h2 className="text-2xl font-semibold text-white">What every sponsor gets</h2>
+          <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+            {SPONSOR_GETS.map((item) => (
+              <li
+                key={item}
+                className="flex gap-2 rounded-xl border border-white/10 bg-slate-950/50 px-4 py-3 text-sm text-slate-200"
+              >
+                <CheckCircle2 className="h-4 w-4 mt-0.5 text-blue-300 shrink-0" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="max-w-5xl mx-auto px-5 sm:px-8 py-14">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-white">FAQ</h2>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {faqCategories.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setFaqCategory(cat)}
+              className={`rounded-full px-3 py-1.5 text-xs font-semibold border transition-colors ${
+                faqCategory === cat
+                  ? 'bg-white text-slate-900 border-white'
+                  : 'border-white/10 text-slate-300 hover:border-white/25'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+        <div className="mt-6 space-y-2">
+          {filteredFaqs.map((faq) => {
+            const open = openFaq === faq.question;
+            return (
+              <div key={faq.question} className="rounded-xl border border-white/10 bg-slate-900/40">
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(open ? null : faq.question)}
+                  className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left"
+                >
+                  <span className="text-sm font-medium text-white">{faq.question}</span>
+                  <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+                </button>
+                {open && <p className="px-4 pb-4 text-sm text-slate-300 leading-relaxed">{faq.answer}</p>}
               </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Policies */}
+      <section id="sponsor-policies" className="border-y border-white/5 bg-slate-900/20">
+        <div className="max-w-5xl mx-auto px-5 sm:px-8 py-14">
+          <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
+            <Scale className="h-5 w-5 text-blue-300" /> Policies in plain language
+          </h2>
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            {[
+              {
+                title: 'Refunds',
+                body: 'Cancel before go-live for a full refund. After go-live, unused newsletter issues can be pro-rated. Published articles stay up except for legal or factual errors.',
+              },
+              {
+                title: 'Editorial bar',
+                body: 'Sponsorships do not rewrite organic tutorials. Accepted: data tools, warehouses, courses, infrastructure. Rejected: gambling, adult, generic SEO, get-rich-quick.',
+              },
+              {
+                title: 'Timing',
+                body: 'After payment and assets, we aim to schedule within 48 hours. Mentions and articles are calendar bookings, not impression buys.',
+              },
+              {
+                title: 'Disclosure',
+                body: 'Every paid placement is labeled. Links default to rel="sponsored nofollow". We will not hide an FTC disclosure.',
+              },
+            ].map((card) => (
+              <article key={card.title} className="rounded-2xl border border-white/10 bg-slate-950/50 p-5">
+                <h3 className="font-semibold text-white">{card.title}</h3>
+                <p className="mt-2 text-sm text-slate-300 leading-relaxed">{card.body}</p>
+              </article>
             ))}
           </div>
-
-          {/* Still have questions CTA */}
-          <div className="mt-10 text-center rounded-2xl border border-white/10 bg-slate-900/30 p-6">
-            <p className="text-sm text-gray-300 font-semibold mb-1">Still have questions?</p>
-            <p className="text-xs text-gray-500 mb-4">We're happy to talk through placement fit before you commit.</p>
-            <a
-              href="#inquiry-form"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition"
-            >
-              Ask us directly <ArrowRight className="h-4 w-4" />
-            </a>
-          </div>
+          <p className="mt-5 text-xs text-slate-500 flex items-start gap-2">
+            <Shield className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+            Bookings are informal until we confirm dates by email. Run by Sainath Reddy. See also the{' '}
+            <Link to="/disclaimer" className="text-blue-300 hover:underline">
+              disclaimer
+            </Link>{' '}
+            and{' '}
+            <Link to="/privacy-policy" className="text-blue-300 hover:underline">
+              privacy policy
+            </Link>
+            .
+          </p>
         </div>
+      </section>
 
-        {/* ═══════════════ SPONSOR POLICIES ═══════════════ */}
-        <div id="sponsor-policies" className="space-y-6">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white">Sponsorship Policies</h2>
-            <p className="text-sm text-gray-400 mt-2 max-w-xl mx-auto">
-              We believe in being fully transparent about how this works — no fine print buried at the bottom. Everything you need to know before committing is right here.
+      {/* Form */}
+      <section id="inquiry-form" className="max-w-5xl mx-auto px-5 sm:px-8 py-14 scroll-mt-24">
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-semibold text-white">Book a paid placement</h2>
+            <p className="mt-2 text-sm text-slate-400">
+              We reply within 48 hours with fit, dates, and how to pay. Guest-article pitches belong on{' '}
+              <Link to="/contribute" className="text-blue-300 hover:underline">
+                Write for us
+              </Link>
+              .
             </p>
+            <dl className="mt-6 space-y-3 text-sm">
+              <div className="flex items-center gap-2 text-slate-300">
+                <Clock className="h-4 w-4 text-blue-300" />
+                <dt className="text-slate-500 w-28">Reply window</dt>
+                <dd>Within 48 hours</dd>
+              </div>
+              <div className="flex items-center gap-2 text-slate-300">
+                <Mail className="h-4 w-4 text-blue-300" />
+                <dt className="text-slate-500 w-28">Reporting</dt>
+                <dd>Live URL + your UTMs</dd>
+              </div>
+            </dl>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-
-            {/* Refund & Cancellation Policy */}
-            <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-6 backdrop-blur-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/15 text-emerald-400">
-                  <RefreshCw className="h-4 w-4" />
-                </div>
-                <h3 className="text-base font-bold text-white">Refund &amp; Cancellation Policy</h3>
-              </div>
-              <div className="space-y-3 text-sm text-gray-400 leading-relaxed">
-                <p><span className="text-white font-semibold">Cancellation before go-live:</span> You may cancel at any time before your campaign is published and receive a full refund, no questions asked.</p>
-                <p><span className="text-white font-semibold">Partial refunds after go-live:</span> If your campaign has been live for less than 7 days and you are unsatisfied, contact us and we will issue a pro-rated refund for the unused portion of your term.</p>
-                <p><span className="text-white font-semibold">No refunds after 7 days:</span> Once a campaign has been active for more than 7 days, it is considered fulfilled. Placements are manual-review and editorial in nature, so delivery cannot be undone.</p>
-                <p><span className="text-white font-semibold">Yearly packages:</span> Yearly terms are non-refundable after the first month unless there is a failure on our end to deliver the agreed placement.</p>
-                <p className="text-xs text-gray-500 pt-2 border-t border-white/5">To request a refund, email <a href="mailto:sainath@dataengineerhub.blog" className="text-blue-400 hover:underline">sainath@dataengineerhub.blog</a> with your campaign token and reason.</p>
-              </div>
-            </div>
-
-            {/* Editorial Standards & Content Policy */}
-            <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-6 backdrop-blur-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/15 text-blue-400">
-                  <BookOpen className="h-4 w-4" />
-                </div>
-                <h3 className="text-base font-bold text-white">Editorial Standards &amp; Content Policy</h3>
-              </div>
-              <div className="space-y-3 text-sm text-gray-400 leading-relaxed">
-                <p><span className="text-white font-semibold">Editorial independence:</span> Sponsorships never influence our editorial content. Articles, comparisons, and tutorials are written independently. Sponsored placements are always visually distinct and marked &quot;Sponsored&quot; or &quot;Recommended Resource.&quot;</p>
-                <p><span className="text-white font-semibold">Accepted categories:</span> Developer tools, cloud data platforms, SaaS products, training/certification programs, and infrastructure services relevant to the data engineering stack.</p>
-                <p><span className="text-white font-semibold">Rejected categories:</span> We do not accept ads for financial products, gambling, adult content, get-rich-quick schemes, generic SEO services, or products that compete with the trust and educational mission of this site.</p>
-                <p><span className="text-white font-semibold">Right to decline:</span> We reserve the right to decline any campaign inquiry that does not meet our community standards, even after initial review.</p>
-              </div>
-            </div>
-
-            {/* Campaign Delivery & Timing */}
-            <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-6 backdrop-blur-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/15 text-purple-400">
-                  <Clock className="h-4 w-4" />
-                </div>
-                <h3 className="text-base font-bold text-white">Campaign Delivery &amp; Timing</h3>
-              </div>
-              <div className="space-y-3 text-sm text-gray-400 leading-relaxed">
-                <p><span className="text-white font-semibold">Go-live timeline:</span> Campaigns are typically activated within 24–48 business hours after payment confirmation and campaign details are received.</p>
-                <p><span className="text-white font-semibold">Start and end dates:</span> Your campaign runs from the agreed start date to the end date shown in your private dashboard. Duration is calendar-based (not impression-based), so the clock does not pause on weekends.</p>
-                <p><span className="text-white font-semibold">Delays:</span> If activation is delayed by more than 48 hours due to our side, the campaign end date will be extended accordingly at no cost.</p>
-                <p><span className="text-white font-semibold">Mid-campaign updates:</span> Logo, URL, or description changes can be requested at any time. Changes are applied within 12–24 business hours.</p>
-              </div>
-            </div>
-
-            {/* Advertiser Responsibilities & Legal */}
-            <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-6 backdrop-blur-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/15 text-amber-400">
-                  <Scale className="h-4 w-4" />
-                </div>
-                <h3 className="text-base font-bold text-white">Advertiser Responsibilities &amp; Legal</h3>
-              </div>
-              <div className="space-y-3 text-sm text-gray-400 leading-relaxed">
-                <p><span className="text-white font-semibold">Accuracy of claims:</span> You are responsible for ensuring all content, logos, and links provided are accurate, up to date, and compliant with applicable laws in your jurisdiction.</p>
-                <p><span className="text-white font-semibold">Indemnification:</span> By submitting a campaign, you agree that DataEngineer Hub is not liable for any consequences arising from your product, service, or linked content.</p>
-                <p><span className="text-white font-semibold">FTC disclosure:</span> All sponsored placements are marked as such in compliance with FTC guidelines. We will not remove or obscure any sponsorship disclosure at an advertiser&apos;s request.</p>
-                <p><span className="text-white font-semibold">Privacy:</span> We do not share your email, company details, or payment information with third parties. See our <a href="/privacy-policy" className="text-blue-400 hover:underline">Privacy Policy</a> for full details.</p>
-              </div>
-            </div>
-
-          </div>
-
-          {/* What you're not paying for */}
-          <div className="max-w-5xl mx-auto mt-6 rounded-2xl border border-white/10 bg-slate-900/40 p-6 backdrop-blur-sm">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="p-2 rounded-xl bg-red-500/10 border border-red-500/15 text-red-400">
-                <AlertCircle className="h-4 w-4" />
-              </div>
-              <h3 className="text-base font-bold text-white">What This Sponsorship Does <em>Not</em> Include</h3>
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { label: 'Guaranteed traffic numbers', note: 'Impressions and clicks are measured, not guaranteed. This is a developer content site, not a PPC ad network.' },
-                { label: 'Guaranteed search rankings', note: "We cannot and do not promise that a placement will affect your product's Google search rankings." },
-                { label: 'Exclusive site-wide ownership', note: 'Your placement is targeted to relevant content. Other sponsors may appear in unrelated sections.' },
-                { label: 'Dofollow backlinks by default', note: 'Sponsor links use rel="nofollow sponsored". This is referral traffic, not a paid-link SEO package.' },
-                { label: 'Unlimited mid-campaign edits', note: 'Up to 3 content edits per campaign term are included. Additional changes may be discussed case by case.' },
-                { label: 'Cross-device totals in the token dashboard', note: 'The private dashboard shows first-party counts from the browser viewing it. Site-wide totals also land in Google Analytics after consent.' },
-              ].map(({ label, note }) => (
-                <div key={label} className="flex items-start gap-2.5">
-                  <X className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
-                  <div>
-                    <div className="text-sm font-semibold text-white">{label}</div>
-                    <div className="text-xs text-gray-500 mt-0.5 leading-relaxed">{note}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* What IS included every time */}
-          <div className="max-w-5xl mx-auto rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6 backdrop-blur-sm">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/15 text-emerald-400">
-                <UserCheck className="h-4 w-4" />
-              </div>
-              <h3 className="text-base font-bold text-white">What Every Sponsor Gets — Guaranteed</h3>
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                'Manual review of your campaign before it goes live — no auto-approval',
-                'Private dashboard token emailed within 48 hours, with viewable impressions and clicks',
-                'Campaign placement in content contextually relevant to your product category',
-                '"Sponsored" disclosure on every placement, compliant with FTC guidelines',
-                'At least 1 free mid-campaign content update (URL, description, or logo)',
-                'Renewal reminder 7 days before your campaign expires',
-                'Direct email access to the site author — not a support ticket system',
-                'Pro-rated refund eligibility within the first 7 days if not satisfied',
-                'Your campaign data kept private and never sold to third parties',
-              ].map((item) => (
-                <div key={item} className="flex items-start gap-2.5">
-                  <Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-300 leading-relaxed">{item}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Legal disclaimer */}
-          <div className="max-w-5xl mx-auto rounded-2xl border border-white/5 bg-slate-900/20 p-5 text-xs text-gray-500 leading-relaxed">
-            <div className="flex items-start gap-2.5">
-              <FileText className="h-4 w-4 text-gray-600 shrink-0 mt-0.5" />
-              <p>
-                <span className="text-gray-400 font-semibold">Legal Disclaimer:</span> All sponsorship agreements are informal business arrangements and do not constitute a formal advertising contract unless explicitly agreed in writing via email. DataEngineer Hub (operated by Sainath Reddy) is a sole-proprietor independent publisher. Placements are editorial in nature and are subject to removal if they are found to violate community standards at any point. By submitting an inquiry and making payment, you acknowledge that you have read and agree to these policies. These policies may be updated at any time; the version published on this page at the time of your booking applies to your current campaign.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* ═══════════════ CONTACT / INQUIRY SECTION ═══════════════ */}
-        <div id="inquiry-form" className="max-w-4xl mx-auto rounded-2xl sm:rounded-3xl border border-white/10 bg-slate-900/40 p-5 sm:p-10 backdrop-blur-sm relative min-w-0">
-          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
-          
-          <div className="grid md:grid-cols-5 gap-6 md:gap-8">
-            <div className="md:col-span-2 flex flex-col justify-between min-w-0">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">Book a paid placement</h2>
-                <p className="text-sm text-gray-400 leading-relaxed mb-4">
-                  Tell us the product and the USD package. We reply within 24 business hours with fit, dates, and an invoice in US dollars. Guest-article pitches belong on <a href="/contribute" className="text-blue-400 hover:underline">Write for Us</a>.
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 text-xs text-gray-400">
-                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/15 flex items-center justify-center text-blue-400">
-                    <Mail className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-300">Direct Contact</div>
-                    <a href="mailto:sainath@dataengineerhub.blog" className="hover:underline">sainath@dataengineerhub.blog</a>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3 text-xs text-gray-400">
-                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/15 flex items-center justify-center text-blue-400">
-                    <Calendar className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-300">Response Window</div>
-                    <div>Normally within 24 business hours</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 text-xs text-gray-400">
-                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/15 flex items-center justify-center text-blue-400">
-                    <Shield className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-300">Private Dashboard</div>
-                    <div>Viewable impressions, clicks, and UTM tags</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="md:col-span-3 min-w-0">
-              {submitted ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="py-10 text-center flex flex-col items-center justify-center"
+          <div className="rounded-2xl border border-white/10 bg-slate-900/50 p-5 sm:p-6">
+            {submitted ? (
+              <div className="text-center py-10">
+                <CheckCircle2 className="h-10 w-10 text-emerald-400 mx-auto" />
+                <p className="mt-3 text-lg font-semibold text-white">Inquiry sent</p>
+                <p className="mt-1 text-sm text-slate-400">We will reply within 48 hours.</p>
+                <button
+                  type="button"
+                  onClick={() => setSubmitted(false)}
+                  className="mt-5 text-sm text-blue-300 hover:underline"
                 >
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-500/20 border border-green-500/30 text-green-400 mb-4">
-                    <CheckCircle2 className="h-8 w-8" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2">Inquiry submitted</h3>
-                  <p className="text-sm text-gray-400 max-w-sm mx-auto mb-6">
-                    Thanks. We will reply with whether the product is a fit, the USD invoice, and campaign dates. If you meant to pitch a tutorial, use Write for Us instead.
-                  </p>
-                  <button
-                    onClick={() => setSubmitted(false)}
-                    className="px-5 py-2 text-xs font-semibold rounded-lg bg-white/10 hover:bg-white/15 text-white transition-colors"
+                  Send another
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-3">
+                <label className="block text-xs text-slate-400">
+                  Your name
+                  <input
+                    required
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="mt-1 w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-blue-400"
+                  />
+                </label>
+                <label className="block text-xs text-slate-400">
+                  Work email
+                  <input
+                    required
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="mt-1 w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-blue-400"
+                  />
+                </label>
+                <label className="block text-xs text-slate-400">
+                  Company
+                  <input
+                    name="company"
+                    value={formData.company}
+                    onChange={handleChange}
+                    className="mt-1 w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-blue-400"
+                  />
+                </label>
+                <label className="block text-xs text-slate-400">
+                  Product URL
+                  <input
+                    name="website"
+                    value={formData.website}
+                    onChange={handleChange}
+                    placeholder="https://"
+                    className="mt-1 w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-blue-400"
+                  />
+                </label>
+                <label className="block text-xs text-slate-400">
+                  Package
+                  <select
+                    name="package"
+                    value={formData.package}
+                    onChange={handleChange}
+                    className="mt-1 w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-blue-400"
                   >
-                    Send another message
-                  </button>
-                </motion.div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="name" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Your Name</label>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        required
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
-                        placeholder="John Doe"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Business Email</label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        required
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
-                        placeholder="john@company.com"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="company" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Company Name</label>
-                      <input
-                        type="text"
-                        id="company"
-                        name="company"
-                        value={formData.company}
-                        onChange={handleChange}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
-                        placeholder="Acme Corp"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="website" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Website URL</label>
-                      <input
-                        type="url"
-                        id="website"
-                        name="website"
-                        required
-                        value={formData.website}
-                        onChange={handleChange}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
-                        placeholder="https://acme.com"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="package" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">What are you interested in?</label>
-                      <select
-                        id="package"
-                        name="package"
-                        value={formData.package}
-                        onChange={handleChange}
-                        className="w-full max-w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
-                      >
-                        <option value="newsletter_sponsorship">Newsletter — $79 USD / issue</option>
-                        <option value="resource_reference">Sponsored card — $79 USD/mo or $699 USD/yr</option>
-                        <option value="directory">Tools Hub listing — $149 USD one-time</option>
-                        <option value="content">Co-authored integration guide — $249 USD</option>
-                        <option value="other">Custom / not sure yet</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label htmlFor="budget" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
-                        {(PACKAGE_BUDGET_OPTIONS[formData.package] ?? []).length > 1 ? 'USD billing term' : 'USD price'}
-                      </label>
-                      <select
-                        id="budget"
-                        name="budget"
-                        value={formData.budget}
-                        onChange={handleChange}
-                        className="w-full max-w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
-                      >
-                        {(PACKAGE_BUDGET_OPTIONS[formData.package] ?? PACKAGE_BUDGET_OPTIONS.other).map((opt) => (
-                          <option key={opt.value} value={opt.value}>{opt.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="message" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
-                      Product and what you want to promote
-                    </label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      rows="4"
-                      required
-                      value={formData.message}
-                      onChange={handleChange}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 resize-none"
-                      placeholder="Product name, who it is for (e.g. Snowflake cost / dbt Cloud), and a preferred start month..."
-                    />
-                  </div>
-
-                  {error && <div className="text-red-400 text-xs">{error}</div>}
-
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-3 rounded-xl font-semibold text-sm transition flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/20"
+                    <option value="resource_reference">Sponsored card — from $79/mo</option>
+                    <option value="directory">Tools Hub listing — $149</option>
+                    <option value="content">Co-authored guide — $249</option>
+                    <option value="newsletter_sponsorship">Newsletter — $79/issue</option>
+                    <option value="other">Not sure yet</option>
+                  </select>
+                </label>
+                <label className="block text-xs text-slate-400">
+                  Budget / term
+                  <select
+                    name="budget"
+                    value={formData.budget}
+                    onChange={handleChange}
+                    className="mt-1 w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-blue-400"
                   >
-                    {loading ? (
-                      <>Submitting...</>
-                    ) : (
-                      <>Submit paid inquiry <Send className="h-4 w-4" /></>
+                    {(PACKAGE_BUDGET_OPTIONS[formData.package] || PACKAGE_BUDGET_OPTIONS.other).map(
+                      (opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      )
                     )}
-                  </button>
-                </form>
-              )}
-            </div>
+                  </select>
+                </label>
+                <label className="block text-xs text-slate-400">
+                  What should practitioners try?
+                  <textarea
+                    name="message"
+                    rows={4}
+                    value={formData.message}
+                    onChange={handleChange}
+                    className="mt-1 w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-blue-400 resize-y"
+                  />
+                </label>
+                {error && <p className="text-sm text-amber-300">{error}</p>}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-blue-500 hover:bg-blue-400 disabled:opacity-60 text-white px-4 py-3 text-sm font-semibold"
+                >
+                  {loading ? 'Sending…' : 'Submit paid inquiry'}
+                  <Send className="h-4 w-4" />
+                </button>
+              </form>
+            )}
           </div>
         </div>
-
-      </div>
+      </section>
     </div>
   );
 };

@@ -1019,25 +1019,20 @@ const ESSENTIAL_PAGES = [
   },
   {
     path: '/advertise',
-    title: 'Advertise on DataEngineer Hub - USD Sponsorships',
-    description: 'Paid product placements for data-engineering tools, billed in USD. Guest articles are a separate free editorial program on Write for Us.',
+    title: 'Advertise — DataEngineer Hub (USD placements)',
+    description: 'Paid placements for data tools billed in USD. Sponsored cards, Tools Hub listings, co-authored guides, and newsletter blurbs. Guest articles are free on Write for Us.',
     content: `
-      <h1>Advertise / Sponsor DataEngineer Hub</h1>
-      <p>This page is for <strong>paid product placements</strong>, billed in <strong>US dollars (USD)</strong>. A visitor in the United States sees dollar prices. Local-currency figures, when shown, are estimates only — invoices are never issued in INR. Guest tutorials are a separate, free editorial program on <a href="/contribute">Write for Us</a>. Do not use this form to pitch a guest post.</p>
-      <p>DataEngineer Hub is a practitioner blog for people who design and run production data platforms. Readers arrive from search with a job to do (cost a warehouse, debug a dbt test, prep a cert). We only accept products that honestly fit that audience. Every campaign is reviewed by a human and marked as sponsored. Outbound sponsor links are nofollow.</p>
+      <h1>Reach engineers who are already costing a warehouse</h1>
+      <p>Paid placements only, billed in <strong>USD</strong>. Guest tutorials are free and editorial on <a href="/contribute">Write for Us</a>. Sponsor links are labeled and nofollow — we do not sell dofollow packages.</p>
 
-      <h2>USD packages (what we invoice)</h2>
+      <h2>USD packages</h2>
       <ul>
-        <li><strong>Sponsored card in matching guides:</strong> $79 USD / month or $699 USD / year — labeled card on articles, cheat sheets, and tools. Not glossary or compare archives.</li>
-        <li><strong>Tools Hub listing:</strong> $149 USD one-time — permanent directory card.</li>
-        <li><strong>Co-authored integration guide:</strong> $249 USD one-time — we write a labeled tutorial with working code. This is the unique-content SKU, not a bought byline.</li>
-        <li><strong>Newsletter:</strong> $79 USD per issue — 150-word labeled blurb.</li>
+        <li><strong>Sponsored card in matching guides:</strong> from $79/month or $699/year — labeled card on articles, cheat sheets, and tools. Not glossary or compare archives.</li>
+        <li><strong>Tools Hub listing:</strong> $149 one-time — permanent directory card.</li>
+        <li><strong>Co-authored integration guide:</strong> $249 one-time — labeled tutorial with working code.</li>
+        <li><strong>Newsletter:</strong> $79 per issue — ~150-word labeled blurb.</li>
       </ul>
-      <p>There is no silent auto-renewal. We will decline a product that is not useful to this audience rather than take the booking. If you want to write an unpaid technical article with a byline, go to <a href="/contribute">Write for Us</a>.</p>
-
-      <h2>Disclosure and editorial independence</h2>
-      <p>Sponsored placements are marked as such. We do not rewrite independent tutorials to match a sponsor's talking points, and we will not hide a disclosure. Google AdSense ads are separate from sponsorships. Affiliate links, when present, are disclosed in the <a href="/disclaimer">disclaimer</a>.</p>
-      <p>To inquire, email <a href="mailto:sainath@dataengineerhub.blog">sainath@dataengineerhub.blog</a> or use the form on this page (JavaScript required). Include the product URL, the USD package, and a preferred start month. Policies: <a href="/privacy-policy">Privacy Policy</a> and <a href="/terms-of-service">Terms of Service</a>.</p>
+      <p>Cancel before go-live for a full refund. Inquire via the form on this page or <a href="mailto:sainath@dataengineerhub.blog">sainath@dataengineerhub.blog</a>. See the <a href="/disclaimer">disclaimer</a> and <a href="/privacy-policy">privacy policy</a>.</p>
     `
   },
   {
