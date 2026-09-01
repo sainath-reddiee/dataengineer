@@ -113,6 +113,7 @@ const Header = ({ topOffset = 0 }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { count: readingListCount } = useReadingList();
   const dropdownTimeout = React.useRef(null);
+  const mobileDrawerScrollRef = React.useRef(null);
 
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
@@ -320,6 +321,12 @@ const Header = ({ topOffset = 0 }) => {
     setIsVisible(true);
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    // Keep MAIN/group labels visible at open (avoid leftover scroll position)
+    requestAnimationFrame(() => {
+      if (mobileDrawerScrollRef.current) {
+        mobileDrawerScrollRef.current.scrollTop = 0;
+      }
+    });
     const onKey = (e) => {
       if (e.key === 'Escape') closeMobileMenu();
     };
@@ -729,10 +736,10 @@ const Header = ({ topOffset = 0 }) => {
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-                className="fixed top-0 right-0 z-[10001] flex h-[100dvh] w-[min(100vw-2.5rem,22rem)] flex-col border-l border-slate-700/60 bg-slate-950/95 shadow-2xl backdrop-blur-xl lg:hidden"
+                className="fixed top-0 right-0 z-[10001] flex h-[100dvh] w-[min(85vw,20rem)] flex-col border-l border-slate-700/60 bg-slate-950/97 shadow-2xl backdrop-blur-xl lg:hidden"
                 style={{ paddingTop: topOffset }}
               >
-                <div className="flex items-center justify-between gap-3 border-b border-slate-800/80 px-4 py-3">
+                <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-800/80 px-4 py-3">
                   <Link to="/" onClick={closeMobileMenu} className="flex min-w-0 items-center gap-2">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/20 to-violet-500/20 border border-blue-400/20">
                       <Database className="h-4 w-4 text-blue-400" />
@@ -749,7 +756,10 @@ const Header = ({ topOffset = 0 }) => {
                   </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto overscroll-contain px-3 py-4">
+                <div
+                  ref={mobileDrawerScrollRef}
+                  className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 pb-4 pt-3"
+                >
                   <div className="space-y-6">
                     {mobileNavGroups.map((group) => (
                       <div key={group.id}>
@@ -834,7 +844,7 @@ const Header = ({ topOffset = 0 }) => {
                   </div>
                 </div>
 
-                <div className="border-t border-slate-800/80 p-3">
+                <div className="shrink-0 border-t border-slate-800/80 p-3">
                   <Link
                     to="/articles"
                     onClick={closeMobileMenu}
