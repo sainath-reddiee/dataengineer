@@ -60,7 +60,7 @@ const Hero = () => {
   };
 
   return (
-    <section ref={ref} className="relative flex items-center justify-center overflow-hidden py-12 sm:py-16 md:py-20 px-4 sm:px-6">
+    <section ref={ref} className="relative flex items-center justify-center overflow-hidden py-16 sm:py-20 md:py-24 lg:py-28 px-4 sm:px-6">
       {/* Animated Background - Simplified on mobile */}
       {!isMobile && (
         <div className="absolute inset-0 overflow-hidden">
@@ -79,15 +79,15 @@ const Hero = () => {
         >
           <motion.div
             variants={itemVariants}
-            className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm border border-blue-400/30 rounded-full px-4 sm:px-6 py-2 sm:py-3 mb-6 sm:mb-8"
+            className="inline-flex items-center space-x-2 bg-slate-900/50 backdrop-blur-sm border border-slate-600/40 rounded-full px-4 sm:px-5 py-2 sm:py-2.5 mb-7 sm:mb-9 shadow-[0_0_0_1px_rgba(59,130,246,0.08)]"
           >
-            <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
-            <span className="text-xs sm:text-sm font-medium text-blue-200">Welcome to DataEngineer Hub</span>
+            <Sparkles className="h-4 w-4 sm:h-4.5 sm:w-4.5 text-blue-400" />
+            <span className="text-xs sm:text-sm font-medium text-slate-200">Welcome to DataEngineer Hub</span>
           </motion.div>
 
           <motion.h1
             variants={itemVariants}
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black mb-4 sm:mb-6 leading-tight px-4"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight mb-5 sm:mb-7 leading-[1.1] px-4"
           >
             Master{' '}
             <span className="gradient-text">Data Engineering</span>
