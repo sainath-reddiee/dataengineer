@@ -1336,13 +1336,29 @@ function dehub_newsletter_table() {
     return $table_name;
 }
 
+/**
+ * Trim and read a wp-config constant safely.
+ */
+function dehub_newsletter_const($name) {
+    if (!defined($name)) {
+        return '';
+    }
+    $value = constant($name);
+    if (!is_string($value) && !is_numeric($value)) {
+        return '';
+    }
+    return trim((string) $value);
+}
+
 function dehub_forward_newsletter_subscriber($email) {
     $errors = array();
+    $forwarded = array();
 
-    if (defined('DEHUB_BUTTONDOWN_API_KEY') && DEHUB_BUTTONDOWN_API_KEY) {
+    $buttondown_key = dehub_newsletter_const('DEHUB_BUTTONDOWN_API_KEY');
+    if ($buttondown_key !== '') {
         $response = wp_remote_post('https://api.buttondown.com/v1/subscribers', array(
             'headers' => array(
-                'Authorization' => 'Token ' . DEHUB_BUTTONDOWN_API_KEY,
+                'Authorization' => 'Token ' . $buttondown_key,
                 'Content-Type' => 'application/json',
             ),
             'body' => wp_json_encode(array(
@@ -1352,20 +1368,28 @@ function dehub_forward_newsletter_subscriber($email) {
             'timeout' => 12,
         ));
         if (is_wp_error($response)) {
-            $errors[] = $response->get_error_message();
+            $errors[] = 'Buttondown: ' . $response->get_error_message();
         } else {
             $code = wp_remote_retrieve_response_code($response);
             if ($code >= 400 && $code !== 409) {
-                $errors[] = 'Buttondown ' . $code;
+                $body = wp_remote_retrieve_body($response);
+                $errors[] = 'Buttondown HTTP ' . $code . ' ' . substr(wp_strip_all_tags($body), 0, 180);
+            } else {
+                $forwarded[] = 'buttondown';
             }
         }
     }
 
-    if (defined('DEHUB_BREVO_API_KEY') && DEHUB_BREVO_API_KEY) {
-        $list_id = defined('DEHUB_BREVO_LIST_ID') ? intval(DEHUB_BREVO_LIST_ID) : 2;
+    $brevo_key = dehub_newsletter_const('DEHUB_BREVO_API_KEY');
+    if ($brevo_key !== '') {
+        $list_id = intval(dehub_newsletter_const('DEHUB_BREVO_LIST_ID'));
+        if ($list_id <= 0) {
+            $list_id = 2;
+        }
         $response = wp_remote_post('https://api.brevo.com/v3/contacts', array(
             'headers' => array(
-                'api-key' => DEHUB_BREVO_API_KEY,
+                'api-key' => $brevo_key,
+                'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
             ),
             'body' => wp_json_encode(array(
@@ -1373,16 +1397,39 @@ function dehub_forward_newsletter_subscriber($email) {
                 'listIds' => array($list_id),
                 'updateEnabled' => true,
             )),
-            'timeout' => 12,
+            'timeout' => 15,
         ));
         if (is_wp_error($response)) {
-            $errors[] = $response->get_error_message();
+            $errors[] = 'Brevo: ' . $response->get_error_message();
+        } else {
+            $code = wp_remote_retrieve_response_code($response);
+            // 201 created, 204 updated are success. 400 duplicate with updateEnabled should be rare.
+            if ($code < 200 || $code >= 300) {
+                $body = wp_remote_retrieve_body($response);
+                $errors[] = 'Brevo HTTP ' . $code . ' (list ' . $list_id . ') ' . substr(wp_strip_all_tags($body), 0, 220);
+            } else {
+                $forwarded[] = 'brevo';
+            }
         }
+    } else {
+        $errors[] = 'Brevo skipped: DEHUB_BREVO_API_KEY is not defined in wp-config.php';
     }
+
+    set_transient('dehub_newsletter_last_forward', array(
+        'email' => $email,
+        'at' => gmdate('c'),
+        'forwarded' => $forwarded,
+        'errors' => $errors,
+    ), WEEK_IN_SECONDS);
 
     if (!empty($errors)) {
         error_log('DEHUB newsletter forward: ' . implode('; ', $errors));
     }
+
+    return array(
+        'forwarded' => $forwarded,
+        'errors' => $errors,
+    );
 }
 
 function handle_newsletter_subscription($request) {
@@ -1416,11 +1463,18 @@ function handle_newsletter_subscription($request) {
         }
     }
 
-    return array(
+    $last = get_transient('dehub_newsletter_last_forward');
+    $payload = array(
         'success' => true,
         'already' => (bool) $existing,
-        'message' => $existing ? 'Already subscribed' : 'Successfully subscribed to newsletter'
+        'message' => $existing ? 'Already subscribed' : 'Successfully subscribed to newsletter',
     );
+    // Surface forward result for brand-new signups so setup issues are visible.
+    if (!$existing && is_array($last) && isset($last['email']) && strtolower($last['email']) === strtolower($email)) {
+        $payload['forwarded'] = isset($last['forwarded']) ? $last['forwarded'] : array();
+        $payload['forward_errors'] = isset($last['errors']) ? $last['errors'] : array();
+    }
+    return $payload;
 }
 
 add_action('rest_api_init', 'register_newsletter_export_endpoint');
@@ -1430,6 +1484,107 @@ function register_newsletter_export_endpoint() {
         'callback' => 'handle_newsletter_export',
         'permission_callback' => 'dehub_newsletter_export_allowed',
     ));
+}
+
+add_action('rest_api_init', 'register_newsletter_brevo_status_endpoint');
+function register_newsletter_brevo_status_endpoint() {
+    register_rest_route('wp/v2', '/newsletter/brevo-status', array(
+        'methods' => 'GET',
+        'callback' => 'handle_newsletter_brevo_status',
+        'permission_callback' => 'dehub_newsletter_debug_allowed',
+    ));
+}
+
+function dehub_newsletter_debug_allowed() {
+    if (defined('DEHUB_NEWSLETTER_DEBUG') && DEHUB_NEWSLETTER_DEBUG) {
+        return true;
+    }
+    return dehub_newsletter_export_allowed();
+}
+
+/**
+ * Diagnose Brevo setup without exposing the API key.
+ * Enable temporarily with: define('DEHUB_NEWSLETTER_DEBUG', true);
+ */
+function handle_newsletter_brevo_status() {
+    $key = dehub_newsletter_const('DEHUB_BREVO_API_KEY');
+    $list_id = intval(dehub_newsletter_const('DEHUB_BREVO_LIST_ID'));
+    if ($list_id <= 0) {
+        $list_id = 2;
+    }
+
+    $status = array(
+        'success' => true,
+        'functions_build' => 'newsletter-brevo-debug-1',
+        'brevo_key_defined' => ($key !== ''),
+        'brevo_key_prefix' => $key !== '' ? substr($key, 0, 10) . '…' : '',
+        'brevo_key_length' => strlen($key),
+        'brevo_list_id' => $list_id,
+        'brevo_account_ok' => false,
+        'brevo_http_code' => null,
+        'brevo_error' => null,
+        'lists' => array(),
+        'last_forward' => get_transient('dehub_newsletter_last_forward'),
+    );
+
+    if ($key === '') {
+        $status['brevo_error'] = 'DEHUB_BREVO_API_KEY is missing in wp-config.php (must be above “That’s all, stop editing!”).';
+        return $status;
+    }
+
+    $account = wp_remote_get('https://api.brevo.com/v3/account', array(
+        'headers' => array(
+            'api-key' => $key,
+            'Accept' => 'application/json',
+        ),
+        'timeout' => 15,
+    ));
+    if (is_wp_error($account)) {
+        $status['brevo_error'] = $account->get_error_message();
+        return $status;
+    }
+
+    $status['brevo_http_code'] = wp_remote_retrieve_response_code($account);
+    $account_body = json_decode(wp_remote_retrieve_body($account), true);
+    if ($status['brevo_http_code'] >= 200 && $status['brevo_http_code'] < 300) {
+        $status['brevo_account_ok'] = true;
+        $status['brevo_email'] = isset($account_body['email']) ? $account_body['email'] : null;
+        $status['brevo_company'] = isset($account_body['companyName']) ? $account_body['companyName'] : null;
+    } else {
+        $status['brevo_error'] = is_array($account_body) && isset($account_body['message'])
+            ? $account_body['message']
+            : ('HTTP ' . $status['brevo_http_code']);
+        return $status;
+    }
+
+    $lists = wp_remote_get('https://api.brevo.com/v3/contacts/lists?limit=20&offset=0', array(
+        'headers' => array(
+            'api-key' => $key,
+            'Accept' => 'application/json',
+        ),
+        'timeout' => 15,
+    ));
+    if (!is_wp_error($lists) && wp_remote_retrieve_response_code($lists) < 300) {
+        $lists_body = json_decode(wp_remote_retrieve_body($lists), true);
+        if (!empty($lists_body['lists']) && is_array($lists_body['lists'])) {
+            foreach ($lists_body['lists'] as $list) {
+                $status['lists'][] = array(
+                    'id' => isset($list['id']) ? $list['id'] : null,
+                    'name' => isset($list['name']) ? $list['name'] : '',
+                    'uniqueSubscribers' => isset($list['uniqueSubscribers']) ? $list['uniqueSubscribers'] : null,
+                );
+            }
+        }
+        $list_ids = array_map(function ($row) {
+            return intval($row['id']);
+        }, $status['lists']);
+        $status['configured_list_exists'] = in_array($list_id, $list_ids, true);
+        if (!$status['configured_list_exists']) {
+            $status['brevo_error'] = 'DEHUB_BREVO_LIST_ID ' . $list_id . ' was not found in your Brevo account. Use one of the list ids below.';
+        }
+    }
+
+    return $status;
 }
 
 function dehub_newsletter_export_allowed() {
