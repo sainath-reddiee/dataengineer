@@ -40,25 +40,25 @@ const SectionHeader = ({
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, amount: 0.4 }}
     transition={{ duration: 0.3 }}
-    className="mb-4 sm:mb-5 flex items-start justify-between gap-3"
+    className="mb-6 sm:mb-8 flex items-start justify-between gap-3"
   >
     <div className="flex items-center gap-3 flex-1">
-      <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-gradient-to-br from-blue-500/20 to-purple-500/20'}`}>
+      <div className={`p-2.5 rounded-xl ${isDark ? 'bg-slate-800/80 border border-slate-700/60' : 'bg-gradient-to-br from-blue-500/15 to-purple-500/15 border border-blue-400/15'}`}>
         <Icon className={`w-5 h-5 ${isDark ? 'text-gray-400' : 'text-blue-400'}`} />
       </div>
       <div>
-        <h2 className="text-lg sm:text-xl font-bold text-white leading-tight">
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white leading-tight">
           {title}
         </h2>
         {subtitle && (
-          <p className="text-xs sm:text-sm text-gray-400 mt-0.5">{subtitle}</p>
+          <p className="text-sm text-gray-400 mt-1">{subtitle}</p>
         )}
       </div>
     </div>
     {actionText && actionLink && (
       <Link
         to={actionLink}
-        className="whitespace-nowrap text-xs sm:text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors py-1 px-2 hover:bg-blue-500/10 rounded"
+        className="whitespace-nowrap text-xs sm:text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors py-1.5 px-2.5 hover:bg-blue-500/10 rounded-lg"
       >
         {actionText} →
       </Link>
@@ -158,21 +158,21 @@ const HomePage = () => {
       {/* Organization + WebSite JSON-LD is emitted in the static index.html shell
           so Googlebot sees it without JS. Do not duplicate here. */}
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white overflow-x-clip">
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white overflow-x-clip">
         {/* ============================================================================
-            HERO SECTION - Compact
+            HERO SECTION
             ============================================================================ */}
-        <div className="pb-6 sm:pb-8">
+        <div className="pb-8 sm:pb-12">
           <Hero />
         </div>
 
         {/* ============================================================================
-            CONTAINER WITH OPTIMIZED SPACING
+            CONTAINER WITH SAAS-STYLE VERTICAL RHYTHM
             ============================================================================ */}
-        <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
+        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-12 sm:space-y-16 lg:space-y-20">
 
-          <section className="rounded-xl border border-slate-700/70 bg-slate-800/40 px-5 py-4 sm:px-6 sm:py-5">
-            <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
+          <section className="rounded-2xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm px-5 py-5 sm:px-7 sm:py-6 shadow-[0_0_0_1px_rgba(148,163,184,0.04)]">
+            <p className="text-sm sm:text-base text-gray-300 leading-relaxed max-w-3xl">
               Written by{' '}
               <Link to="/about" className="text-blue-400 hover:text-blue-300 font-semibold">
                 Sainath Reddy
@@ -253,10 +253,10 @@ const HomePage = () => {
               title="Free Tools & Interview Prep"
               subtitle="Calculators, generators & curated interview resources"
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
               <Link
                 to="/tools"
-                className="group bg-gradient-to-br from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 border border-slate-700 hover:border-blue-500/50 rounded-xl p-5 transition-all duration-200"
+                className="group bg-gradient-to-br from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 border border-slate-700/70 hover:border-blue-500/50 rounded-2xl p-5 sm:p-6 transition-all duration-200"
               >
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 rounded-lg bg-blue-500/20">
@@ -275,7 +275,7 @@ const HomePage = () => {
               </Link>
               <Link
                 to="/interview-prep"
-                className="group bg-gradient-to-br from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 border border-slate-700 hover:border-purple-500/50 rounded-xl p-5 transition-all duration-200"
+                className="group bg-gradient-to-br from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 border border-slate-700/70 hover:border-purple-500/50 rounded-2xl p-5 sm:p-6 transition-all duration-200"
               >
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 rounded-lg bg-purple-500/20">
