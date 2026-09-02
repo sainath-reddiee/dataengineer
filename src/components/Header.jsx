@@ -1,12 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Menu, X, Database, ChevronDown, Home, Wrench, Info, Search, BookOpen, FileText,
-  GraduationCap, Target, Megaphone, Bookmark, PenLine, GitCompare, Library, Mail,
-  Layers, Newspaper, Sparkles
-} from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Wrench, Info, Search, BookOpen, FileText, GraduationCap, Target, Megaphone, Bookmark, PenLine } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
 import { useReadingList } from '@/hooks/useReadingList';
 
@@ -105,7 +100,6 @@ const getCategoryIcon = (category, className = 'h-8 w-8') => {
 const Header = ({ topOffset = 0 }) => {
   const [isMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [mobileAccordion, setMobileAccordion] = useState(null);
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = React.useRef(0);
   const location = useLocation();
@@ -113,12 +107,6 @@ const Header = ({ topOffset = 0 }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { count: readingListCount } = useReadingList();
   const dropdownTimeout = React.useRef(null);
-  const mobileDrawerScrollRef = React.useRef(null);
-
-  const closeMobileMenu = () => {
-    setMobileMenuOpen(false);
-    setMobileAccordion(null);
-  };
 
   // Clean up timeout on unmount
   useEffect(() => {
@@ -228,49 +216,6 @@ const Header = ({ topOffset = 0 }) => {
   }
 };
 
-  // SaaS-style mobile drawer groups (real routes only)
-  const mobileNavGroups = [
-    {
-      id: 'main',
-      label: 'Main',
-      links: [
-        { to: '/', label: 'Home', icon: Home },
-        { to: '/articles', label: 'Articles', icon: BookOpen },
-        { to: '/tools', label: 'Tools', icon: Wrench },
-        { to: '/tools/sql-playground', label: 'SQL Playground', icon: Sparkles },
-        { to: '/advertise', label: 'Advertise', icon: Megaphone },
-        { to: '/about', label: 'About', icon: Info },
-      ],
-    },
-    {
-      id: 'guides',
-      label: 'Guides',
-      links: [
-        { to: '/cheatsheets', label: 'Cheat sheets', icon: FileText },
-        { to: '/compare', label: 'Compare tools', icon: GitCompare },
-        { to: '/glossary', label: 'Glossary', icon: Library },
-        { to: '/interview-prep', label: 'Interview prep', icon: GraduationCap },
-        { to: '/practice', label: 'Practice tests', icon: Target },
-      ],
-    },
-    {
-      id: 'site',
-      label: 'Site',
-      links: [
-        { to: '/newsletter', label: 'Newsletter', icon: Newspaper },
-        { to: '/reading-list', label: 'Saved posts', icon: Bookmark, badge: readingListCount },
-        { to: '/contribute', label: 'Write for us', icon: PenLine },
-        { to: '/contact', label: 'Contact', icon: Mail },
-        { to: '/editorial-standards', label: 'Editorial standards', icon: Layers },
-      ],
-    },
-  ];
-
-  const isLinkActive = (to) => {
-    if (to === '/') return currentPath === '/';
-    return currentPath === to || currentPath.startsWith(`${to}/`);
-  };
-
   useEffect(() => {
     const controlHeader = () => {
       const currentScrollY = window.scrollY;
@@ -311,31 +256,8 @@ const Header = ({ topOffset = 0 }) => {
   useEffect(() => {
     setOpenDropdown(null);
     setMobileMenuOpen(false);
-    setMobileAccordion(null);
     if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
   }, [currentPath]);
-
-  // Lock body scroll + Escape while the mobile drawer is open
-  useEffect(() => {
-    if (!isMenuOpen) return undefined;
-    setIsVisible(true);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    // Keep MAIN/group labels visible at open (avoid leftover scroll position)
-    requestAnimationFrame(() => {
-      if (mobileDrawerScrollRef.current) {
-        mobileDrawerScrollRef.current.scrollTop = 0;
-      }
-    });
-    const onKey = (e) => {
-      if (e.key === 'Escape') closeMobileMenu();
-    };
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.body.style.overflow = prev;
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [isMenuOpen]);
 
   const MegaMenu = ({ category, categoryKey }) => {
     // Generate sparks for animation
@@ -507,43 +429,45 @@ const Header = ({ topOffset = 0 }) => {
       className="fixed left-0 right-0 z-[9999]"
       style={{
         top: topOffset,
-        background: 'rgba(15, 23, 42, 0.78)',
-        backdropFilter: 'blur(18px)',
-        WebkitBackdropFilter: 'blur(18px)',
-        borderBottom: '1px solid rgba(148, 163, 184, 0.12)',
-        boxShadow: '0 1px 0 rgba(15, 23, 42, 0.4)',
+        background: 'rgba(15, 23, 42, 0.85)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(51, 65, 85, 0.3)',
+        boxShadow: '0 4px 30px rgba(0, 0, 0, 0.3)',
         pointerEvents: 'auto'
       }}
     >
-      <nav className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 py-3 sm:py-3.5">
+      <nav className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between gap-3">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-1.5 lg:space-x-2 2xl:space-x-3 z-10 min-w-0 shrink">
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <div className="relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-violet-500/20 border border-blue-400/20">
-                <Database className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400 shrink-0" />
+              <div className="relative">
+                <Database className="h-7 w-7 sm:h-8 sm:w-8 text-blue-400 shrink-0" />
+                <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse" />
               </div>
             </motion.div>
-            <span className="text-lg sm:text-xl font-bold tracking-tight bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 bg-clip-text text-transparent truncate">
+            <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent truncate">
               DataEngineer Hub
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-2 2xl:gap-5 flex-nowrap shrink-0">
+            <div className="hidden lg:flex items-center gap-1 2xl:gap-4 flex-nowrap shrink-0">
             {/* Home */}
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/" 
-                className={`whitespace-nowrap font-medium text-xs 2xl:text-base transition-colors duration-200 flex items-center gap-2 px-1.5 2xl:px-0 ${
+                className={`whitespace-nowrap font-semibold text-xs 2xl:text-base transition-all duration-200 flex items-center gap-2 px-1.5 2xl:px-0 ${
                   isHomeActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
                 }`}
+                style={isHomeActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
               >
                 <Home className="w-4 h-4 hidden 2xl:inline-block" />
                 Home
@@ -564,11 +488,12 @@ const Header = ({ topOffset = 0 }) => {
                       }
                     }}
                     onMouseLeave={closeDropdownWithDelay}
-                    className={`whitespace-nowrap flex items-center gap-1 2xl:gap-1.5 font-medium text-xs 2xl:text-base px-1.5 2xl:px-0 transition-colors duration-200 ${
+                    className={`whitespace-nowrap flex items-center gap-1 2xl:gap-1.5 font-medium text-xs 2xl:text-base px-1.5 2xl:px-0 transition-all duration-200 ${
                       isActive 
                         ? 'text-blue-400' 
                         : 'text-gray-300 hover:text-blue-400'
                     }`}
+                    style={isActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
                   >
                     <category.icon className="w-4 h-4 hidden 2xl:inline-block" />
                     <span className="2xl:hidden">{category.shortTitle}</span>
@@ -597,11 +522,12 @@ const Header = ({ topOffset = 0 }) => {
                 to="/tools" 
                 onMouseEnter={() => { import('@/pages/ToolsHubPage'); }}
                 onFocus={() => { import('@/pages/ToolsHubPage'); }}
-                className={`whitespace-nowrap font-medium text-xs 2xl:text-base transition-colors duration-200 flex items-center gap-2 px-1.5 2xl:px-0 ${
+                className={`whitespace-nowrap font-semibold text-xs 2xl:text-base transition-all duration-200 flex items-center gap-2 px-1.5 2xl:px-0 ${
                   isToolsActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
                 }`}
+                style={isToolsActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
               >
                 <Wrench className="w-4 h-4 hidden 2xl:inline-block" />
                 Tools
@@ -611,11 +537,12 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/about" 
-                className={`whitespace-nowrap font-medium text-xs 2xl:text-base transition-colors duration-200 flex items-center gap-2 px-1.5 2xl:px-0 ${
+                className={`whitespace-nowrap font-semibold text-xs 2xl:text-base transition-all duration-200 flex items-center gap-2 px-1.5 2xl:px-0 ${
                   isAboutActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
                 }`}
+                style={isAboutActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
               >
                 <Info className="w-4 h-4 hidden 2xl:inline-block" />
                 About
@@ -625,7 +552,7 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link
                 to="/contribute"
-                className="whitespace-nowrap font-medium text-xs 2xl:text-base transition-colors duration-200 flex items-center gap-2 px-1.5 2xl:px-0 text-gray-300 hover:text-blue-400"
+                className="whitespace-nowrap font-semibold text-xs 2xl:text-base transition-all duration-200 flex items-center gap-2 px-1.5 2xl:px-0 text-gray-300 hover:text-blue-400"
               >
                 Write
               </Link>
@@ -634,11 +561,12 @@ const Header = ({ topOffset = 0 }) => {
             <motion.div whileHover={{ y: -2 }}>
               <Link 
                 to="/advertise" 
-                className={`whitespace-nowrap font-medium text-xs 2xl:text-base transition-colors duration-200 flex items-center gap-2 px-1.5 2xl:px-0 ${
+                className={`whitespace-nowrap font-semibold text-xs 2xl:text-base transition-all duration-200 flex items-center gap-2 px-1.5 2xl:px-0 ${
                   isAdvertiseActive 
                     ? 'text-blue-400' 
                     : 'text-gray-300 hover:text-blue-400'
                 }`}
+                style={isAdvertiseActive ? { textShadow: '0 0 5px #60a5fa' } : undefined}
               >
                 <Megaphone className="w-4 h-4 hidden 2xl:inline-block" />
                 Advertise
@@ -686,20 +614,12 @@ const Header = ({ topOffset = 0 }) => {
             </motion.div>
           </div>
 
-          {/* Mobile actions */}
-          <div className="lg:hidden flex items-center gap-1">
-            <button
-              type="button"
-              onClick={() => setIsSearchOpen(true)}
-              className="p-2 text-gray-300 hover:text-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl hover:bg-slate-800/60"
-              aria-label="Search"
-            >
-              <Search className="h-5 w-5" />
-            </button>
+          {/* Mobile Menu Button - FIXED WITH ACCESSIBILITY */}
+          <div className="lg:hidden">
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setMobileMenuOpen(!isMenuOpen)}
-              className="p-2 text-gray-300 hover:text-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl hover:bg-slate-800/60"
+              className="p-2 text-gray-300 hover:text-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
@@ -708,158 +628,123 @@ const Header = ({ topOffset = 0 }) => {
             </motion.button>
           </div>
         </div>
-      </nav>
 
-      {/* SaaS-style mobile drawer (portal so it sits above page chrome) */}
-      {typeof document !== 'undefined' && createPortal(
+        {/* Mobile Navigation - FIXED WITH ID */}
         <AnimatePresence>
           {isMenuOpen && (
-            <>
-              <motion.button
-                key="mobile-nav-backdrop"
-                type="button"
-                aria-label="Close menu"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.18 }}
-                className="fixed inset-0 z-[10000] bg-slate-950/55 backdrop-blur-[2px] lg:hidden"
-                onClick={closeMobileMenu}
-              />
-              <motion.aside
-                key="mobile-nav-drawer"
-                id="mobile-menu"
-                role="dialog"
-                aria-modal="true"
-                aria-label="Site navigation"
-                initial={{ x: '100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '100%' }}
-                transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-                className="fixed top-0 right-0 z-[10001] flex h-[100dvh] w-[min(85vw,20rem)] flex-col border-l border-slate-700/60 bg-slate-950/97 shadow-2xl backdrop-blur-xl lg:hidden"
-                style={{ paddingTop: topOffset }}
-              >
-                <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-800/80 px-4 py-3">
-                  <Link to="/" onClick={closeMobileMenu} className="flex min-w-0 items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/20 to-violet-500/20 border border-blue-400/20">
-                      <Database className="h-4 w-4 text-blue-400" />
-                    </div>
-                    <span className="truncate text-sm font-semibold tracking-tight text-white">DataEngineer Hub</span>
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={closeMobileMenu}
-                    className="flex min-h-[40px] min-w-[40px] items-center justify-center rounded-xl text-gray-300 hover:bg-slate-800 hover:text-white"
-                    aria-label="Close menu"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
+            <motion.div
+              id="mobile-menu"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden mt-4 pb-4 border-t border-slate-700/50 pt-4 bg-slate-900/95 backdrop-blur-xl rounded-xl px-4 shadow-2xl overflow-y-auto overscroll-contain"
+              style={{ maxHeight: `calc(100vh - ${topOffset}px - 5rem)` }}
+            >
+              <div className="flex flex-col space-y-3">
+                <Link to="/" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
+                  <Home className="w-5 h-5" />
+                  Home
+                </Link>
 
-                <div
-                  ref={mobileDrawerScrollRef}
-                  className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 pb-4 pt-3"
-                >
-                  <div className="space-y-6">
-                    {mobileNavGroups.map((group) => (
-                      <div key={group.id}>
-                        <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-                          {group.label}
-                        </p>
-                        <div className="grid grid-cols-1 gap-0.5">
-                          {group.links.map((link) => {
-                            const Icon = link.icon;
-                            const active = isLinkActive(link.to);
-                            return (
-                              <Link
-                                key={link.to}
-                                to={link.to}
-                                onClick={closeMobileMenu}
-                                className={`flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-                                  active
-                                    ? 'bg-blue-500/15 text-blue-300'
-                                    : 'text-slate-200 hover:bg-slate-800/80 hover:text-white'
-                                }`}
-                              >
-                                <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-blue-300' : 'text-slate-400'}`} />
-                                <span className="flex-1">{link.label}</span>
-                                {typeof link.badge === 'number' && link.badge > 0 && (
-                                  <span className="rounded-full bg-amber-500/90 px-1.5 text-[10px] font-bold text-slate-950">
-                                    {link.badge}
-                                  </span>
-                                )}
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* Keep stack categories reachable without cluttering the top level */}
-                    <div>
-                      <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-                        Stacks
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setMobileAccordion(mobileAccordion === 'articles' ? null : 'articles')}
-                        className="flex w-full min-h-[44px] items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-800/80"
-                        aria-expanded={mobileAccordion === 'articles'}
-                      >
-                        <span className="flex items-center gap-3">
-                          <Layers className="h-4 w-4 text-slate-400" />
-                          Browse by technology
-                        </span>
-                        <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${mobileAccordion === 'articles' ? 'rotate-180' : ''}`} />
-                      </button>
-                      <AnimatePresence>
-                        {mobileAccordion === 'articles' && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="mt-1 space-y-2 overflow-hidden rounded-xl bg-slate-900/70 p-2"
-                          >
-                            {categories.articles.sections.map((section) => (
-                              <div key={section.title}>
-                                <div className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                {/* Mobile Dropdowns */}
+                {Object.entries(categories).map(([key, category]) => (
+                  <div key={key}>
+                    <button
+                      onClick={() => setOpenDropdown(openDropdown === key ? null : key)}
+                      className="w-full flex items-center justify-between text-white hover:text-blue-400 transition-colors font-medium py-3 pl-3 rounded-lg hover:bg-slate-800/50 min-h-[48px]"
+                    >
+                      <span className="flex items-center gap-2">
+                        <category.icon className="w-5 h-5" />
+                        {category.title}
+                      </span>
+                      <ChevronDown className={`w-5 h-5 transition-transform ${openDropdown === key ? 'rotate-180' : ''}`} />
+                    </button>
+                    <AnimatePresence>
+                      {openDropdown === key && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="ml-4 mt-2 space-y-1 bg-slate-800/50 rounded-lg p-2"
+                        >
+                          {Array.isArray(category.sections) ? (
+                            category.sections.map((section) => (
+                              <div key={section.title} className="mb-2">
+                                <div className="text-[10px] font-bold uppercase tracking-wider text-blue-300/70 px-3 pt-2 pb-1">
                                   {section.title}
                                 </div>
-                                {section.items.map((item) => (
+                                {section.items.map(item => (
                                   <Link
                                     key={item.name}
                                     to={item.path}
-                                    onClick={closeMobileMenu}
-                                    className="flex min-h-[40px] items-center rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white"
+                                    className="block text-gray-300 hover:text-white py-3 pl-3 rounded hover:bg-slate-700/50 transition-colors min-h-[48px] flex items-center"
+                                    onClick={() => setMobileMenuOpen(false)}
                                   >
                                     {item.name}
                                   </Link>
                                 ))}
                               </div>
-                            ))}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
+                            ))
+                          ) : (
+                            category.items.map(item => (
+                              <Link
+                                key={item.name}
+                                to={item.path}
+                                className="block text-gray-300 hover:text-white py-3 pl-3 rounded hover:bg-slate-700/50 transition-colors min-h-[48px] flex items-center"
+                                onClick={() => setMobileMenuOpen(false)}
+                              >
+                                {item.name}
+                              </Link>
+                            ))
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                </div>
+                ))}
 
-                <div className="shrink-0 border-t border-slate-800/80 p-3">
-                  <Link
-                    to="/articles"
-                    onClick={closeMobileMenu}
-                    className="flex min-h-[48px] w-full items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-violet-600 text-sm font-semibold text-white shadow-lg shadow-blue-500/20"
-                  >
-                    Explore articles
-                  </Link>
-                </div>
-              </motion.aside>
-            </>
+                <Link to="/tools" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
+                  <Wrench className="w-5 h-5" />
+                  Tools
+                </Link>
+                <Link to="/about" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
+                  <Info className="w-5 h-5" />
+                  About
+                </Link>
+                <Link to="/contribute" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
+                  <PenLine className="w-5 h-5" />
+                  Write for us
+                </Link>
+                <Link to="/advertise" className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]" onClick={() => setMobileMenuOpen(false)}>
+                  <Megaphone className="w-5 h-5" />
+                  Advertise
+                </Link>
+                <Link
+                  to="/reading-list"
+                  className="text-white hover:text-amber-300 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px]"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Bookmark className="w-5 h-5" />
+                  Reading list{readingListCount > 0 ? ` (${readingListCount})` : ''}
+                </Link>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); setIsSearchOpen(true); }}
+                  className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px] w-full text-left"
+                >
+                  <Search className="w-5 h-5" />
+                  Search
+                </button>
+                <Link
+                  to="/articles"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white w-full mt-4 py-3 text-base font-bold shadow-lg rounded-full text-center min-h-[48px] flex items-center justify-center"
+                 onClick={() => setMobileMenuOpen(false)}>
+                  Explore Articles
+                </Link>
+              </div>
+            </motion.div>
           )}
-        </AnimatePresence>,
-        document.body
-      )}
-
+        </AnimatePresence>
+      </nav>
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </motion.header>
   );
