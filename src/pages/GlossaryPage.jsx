@@ -256,7 +256,7 @@ export function GlossaryPage() {
     };
 
     const ogImage = SITE_CONFIG.ogImage.url;
-    const noindex = isAdSenseNoindexPath(`/glossary/${slug}`);
+    const noindex = isAdSenseNoindexPath(`/glossary/${termSlug}`);
 
     return (
         <>

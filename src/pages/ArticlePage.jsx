@@ -247,7 +247,7 @@ const RecommendedCourses = ({ post }) => {
               key={course.id}
               href={course.url}
               target="_blank"
-              rel="noopener sponsored"
+              rel="noopener noreferrer sponsored"
               onClick={() => handleClick(course)}
               className={`group block rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 ${course.isSponsored ? 'hover:border-amber-500/40 hover:bg-slate-800/60 ring-1 ring-amber-500/10' : 'hover:border-blue-400/50 hover:bg-slate-800/60'}`}
             >

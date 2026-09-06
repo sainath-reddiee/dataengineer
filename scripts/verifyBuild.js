@@ -789,14 +789,15 @@ async function verifyBuild() {
       warnings.push('⚠️  .htaccess is missing Accept: text/markdown negotiation');
       log('   ⚠️  .htaccess missing markdown negotiation', 'yellow');
     }
-    const hasArticleSpaFallback = /RewriteCond %\{DOCUMENT_ROOT\}\/articles\/%1\/index\.html !-f/.test(htaccess)
-      && /RewriteRule \^articles\/\(\[\^\/\]\+\)\/\?\$ \/index\.html/.test(htaccess)
-      && /env=DEH_ARTICLE_SPA/.test(htaccess);
-    if (hasArticleSpaFallback) {
-      log('   ✅ .htaccess SPA-fallbacks missing article HTML to index.html', 'green');
+    const hasSafeArticle404 = /RewriteCond %\{DOCUMENT_ROOT\}\/articles\/%1\/index\.html !-f/.test(htaccess)
+      && /RewriteRule \^articles\/\(\[\^\/\]\+\)\/\?\$ - \[R=404,L\]/.test(htaccess);
+    const hasDuplicateArticleFallback =
+      /RewriteRule \^articles\/\(\[\^\/\]\+\)\/\?\$ \/index\.html/.test(htaccess);
+    if (hasSafeArticle404 && !hasDuplicateArticleFallback) {
+      log('   ✅ .htaccess returns 404 for missing article HTML', 'green');
     } else {
-      issues.push('❌ .htaccess is missing the /articles/:slug SPA fallback (reload 404s for new posts)');
-      log('   ❌ .htaccess missing article SPA fallback', 'red');
+      issues.push('❌ .htaccess may serve duplicate homepage HTML for a missing article');
+      log('   ❌ .htaccess missing safe article 404 rule', 'red');
     }
   }
 

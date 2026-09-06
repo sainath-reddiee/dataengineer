@@ -11,9 +11,55 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-08-25",
-  "totalArticles": 106,
+  "lastUpdated": "2026-09-06",
+  "totalArticles": 107,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/from-etl-pipelines-to-reusable-data-products",
+      "title": "From ETL Pipelines to Data Products: Designing Reusable Data Infrastructure for Enterprise AI",
+      "summary": "Enterprise data platforms often begin with a simple objective: move data from operational systems into a place where it can be analyzed. Over time, however, the number of data sources,…",
+      "keyFacts": [
+        "It is a reusable data asset with defined meaning, ownership, quality expectations, metadata, lineage, and consumers",
+        "From a technical perspective, a string is a perfectly valid datatype",
+        "From Pipelines to Data Products The distinction is subtle but important"
+      ],
+      "entities": [],
+      "questionAnswered": "What is From ETL Pipelines to Data Products: Designing Reusable Data Infrastructure for Enterprise AI?",
+      "lastUpdated": "2026-08-26",
+      "published": "2026-08-26",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Data Engineer",
+      "wordCount": 1904
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/etl-vs-elt-vs-reverse-etl-framework",
+      "title": "ETL vs. ELT vs. Reverse ETL: A Practitioner’s Framework for Choosing the Right Pattern for a Given Workload",
+      "summary": "As a data engineer, you’ve likely been in a design review where someone says at the very end, “We should just do ELT for everything!”. You are a data engineer,…",
+      "keyFacts": [
+        "The pattern is not the personality, it is a means to an engineering end",
+        "ETL (Extract, Transform, Load): ETL is the process of moving data into a staging area, where it is transformed in some way outside of the target system before it is loaded into the clean data in the target system",
+        "As a data engineer, you’ve likely been in a design review where someone says at the very end, “We should just do ELT for everything"
+      ],
+      "entities": [
+        "snowflake",
+        "bigquery",
+        "redshift",
+        "azure",
+        "dbt",
+        "sql",
+        "python",
+        "databricks",
+        "kafka"
+      ],
+      "questionAnswered": "What are the differences between ETL and . ELT vs. Reverse ETL: A Practitioner’s Framework for Choosing the Right Pattern for a Given Workload?",
+      "lastUpdated": "2026-08-26",
+      "published": "2026-08-26",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Data Engineer",
+      "wordCount": 1776
+    },
     {
       "url": "https://dataengineerhub.blog/articles/justify-data-platform-investment",
       "title": "Data Engineering ROI: How to Justify Your Data Platform Investment to the Board",
@@ -2229,27 +2275,6 @@
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 2251
-    },
-    {
-      "url": "https://dataengineerhub.blog/articles/snowflake-query-optimization-2025",
-      "title": "Snowflake Query Optimization in 2025",
-      "summary": "Snowflake is renowned for its incredible performance, but as data scales into terabytes and petabytes, no platform is immune to a slow-running query. For a data engineer, mastering Snowflake query…",
-      "keyFacts": [
-        "For a data engineer, mastering Snowflake query optimization is the difference between building an efficient, cost-effective data platform and one that burns through credits and frustrates users",
-        "Partition Pruning: How many partitions is the TableScan reading versus the total partitions in the table",
-        "This guide will walk you through the essential strategies and best practices for Snowflake query optimization, moving from the foundational tools to advanced, real-world techniques"
-      ],
-      "entities": [
-        "snowflake",
-        "sql"
-      ],
-      "questionAnswered": "What are effective Snowflake query optimization techniques?",
-      "lastUpdated": "2025-10-08",
-      "published": "2025-10-04",
-      "author": "Sainath Reddy",
-      "expertise": "Data Engineering Expert",
-      "category": "Snowflake",
-      "wordCount": 888
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-merge-optimization-techniques",
