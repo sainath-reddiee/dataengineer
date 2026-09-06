@@ -568,58 +568,77 @@ jobs:
           fi
 
       - name: 🔍 Deployment Verification
+        id: live_verify
         if: |
           steps.changes.outputs.skip_deploy != 'true' &&
           steps.changes.outputs.dry_run != 'true' &&
           (steps.ftp_deploy.outcome == 'success' || steps.ftp_deploy_retry.outcome == 'success')
         run: |
           echo "🔍 Verifying deployment..."
-          
-          if curl -sf -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/ | grep -q "200"; then
-            echo "✅ Main site is accessible"
+          FAIL=0
+
+          homepage_code=$(curl -sS -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/ || echo "000")
+          if [ "$homepage_code" = "200" ]; then
+            echo "✅ Main site is accessible (HTTP $homepage_code)"
           else
-            echo "⚠️ Main site check failed"
-          fi
-          
-          if curl -sf -o /dev/null https://dataengineerhub.blog/sitemap.xml; then
-            echo "✅ Sitemap is accessible"
-          else
-            echo "⚠️ Sitemap not found"
+            echo "❌ Main site check failed (HTTP $homepage_code)"
+            FAIL=1
           fi
 
-          # Fail the deployment when /articles falls through to index.html.
-          ARTICLES_HTML=$(curl -sf -A "AdsBot-Google (+http://www.google.com/adsbot.html)" https://dataengineerhub.blog/articles)
-          if ! echo "$ARTICLES_HTML" | grep -q 'rel="canonical" href="https://dataengineerhub.blog/articles"'; then
-            echo "❌ /articles is not serving its canonical static listing"
-            exit 1
+          sitemap_code=$(curl -sS -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/sitemap.xml || echo "000")
+          if [ "$sitemap_code" = "200" ]; then
+            echo "✅ Sitemap is accessible (HTTP $sitemap_code)"
+          else
+            echo "❌ Sitemap not found (HTTP $sitemap_code)"
+            FAIL=1
           fi
-          LIVE_ARTICLE_LINKS=$(echo "$ARTICLES_HTML" | grep -o 'href="https://dataengineerhub.blog/articles/[^"]*"' | sort -u | wc -l | tr -d ' ')
-          if [ "$LIVE_ARTICLE_LINKS" -lt 50 ]; then
-            echo "❌ /articles exposes only $LIVE_ARTICLE_LINKS article links to AdsBot"
-            exit 1
+
+          # Fail the deployment when /articles is missing or falls through to
+          # the homepage/404 shell. Print the status first so a 404 is obvious
+          # in the log instead of a silent grep miss + exit 1.
+          ARTICLES_CODE=$(curl -sS -o /tmp/live-articles.html -w "%{http_code}" -A "AdsBot-Google (+http://www.google.com/adsbot.html)" https://dataengineerhub.blog/articles || echo "000")
+          ARTICLES_HTML=$(cat /tmp/live-articles.html 2>/dev/null || true)
+          if [ "$ARTICLES_CODE" != "200" ]; then
+            echo "❌ /articles returned HTTP $ARTICLES_CODE (expected 200 static listing)"
+            FAIL=1
+          elif ! echo "$ARTICLES_HTML" | grep -q 'rel="canonical" href="https://dataengineerhub.blog/articles"'; then
+            echo "❌ /articles is not serving its canonical static listing (HTTP $ARTICLES_CODE)"
+            FAIL=1
+          else
+            LIVE_ARTICLE_LINKS=$(echo "$ARTICLES_HTML" | grep -o 'href="https://dataengineerhub.blog/articles/[^"]*"' | sort -u | wc -l | tr -d ' ')
+            if [ "$LIVE_ARTICLE_LINKS" -lt 50 ]; then
+              echo "❌ /articles exposes only $LIVE_ARTICLE_LINKS article links to AdsBot"
+              FAIL=1
+            elif curl -sI -A "AdsBot-Google (+http://www.google.com/adsbot.html)" https://dataengineerhub.blog/articles | grep -qi '^x-robots-tag:.*noindex'; then
+              echo "❌ /articles unexpectedly returns X-Robots-Tag: noindex"
+              FAIL=1
+            else
+              echo "✅ Live /articles crawler HTML is correct (HTTP $ARTICLES_CODE, $LIVE_ARTICLE_LINKS article links)"
+            fi
           fi
-          if curl -sI -A "AdsBot-Google (+http://www.google.com/adsbot.html)" https://dataengineerhub.blog/articles | grep -qi '^x-robots-tag:.*noindex'; then
-            echo "❌ /articles unexpectedly returns X-Robots-Tag: noindex"
-            exit 1
-          fi
-          echo "✅ Live /articles crawler HTML is correct ($LIVE_ARTICLE_LINKS article links)"
 
           # Review-mode pSEO files must be overwritten, never left as stale
           # indexable orphans from an older FTP deployment.
           for PAGE in glossary/snowflake compare/airflow-vs-prefect; do
-            if ! curl -sf -A "Googlebot" "https://dataengineerhub.blog/${PAGE}" | grep -qi 'meta name="robots" content="noindex, follow"'; then
+            PAGE_CODE=$(curl -sS -o /tmp/live-pseo.html -w "%{http_code}" -A "Googlebot" "https://dataengineerhub.blog/${PAGE}" || echo "000")
+            if [ "$PAGE_CODE" != "200" ]; then
+              echo "❌ /${PAGE} returned HTTP $PAGE_CODE"
+              FAIL=1
+            elif ! grep -qi 'meta name="robots" content="noindex, follow"' /tmp/live-pseo.html; then
               echo "❌ /${PAGE} is missing the AdSense review noindex directive"
-              exit 1
+              FAIL=1
+            else
+              echo "✅ /${PAGE} is live and noindexed"
             fi
           done
-          echo "✅ Live glossary/comparison detail pages are noindexed"
-          
-          if curl -sf -o /dev/null https://dataengineerhub.blog/robots.txt; then
-            echo "✅ Robots.txt is accessible"
+
+          robots_code=$(curl -sS -o /dev/null -w "%{http_code}" https://dataengineerhub.blog/robots.txt || echo "000")
+          if [ "$robots_code" = "200" ]; then
+            echo "✅ Robots.txt is accessible (HTTP $robots_code)"
           else
-            echo "⚠️ Robots.txt not found"
+            echo "⚠️ Robots.txt not found (HTTP $robots_code)"
           fi
-          
+
           if [ -f "public/indexnow-key.txt" ]; then
             KEY=$(cat public/indexnow-key.txt | tr -d '[:space:]')
             if curl -sf -o /dev/null "https://dataengineerhub.blog/${KEY}.txt"; then
@@ -628,34 +647,45 @@ jobs:
               echo "⚠️ IndexNow key verification failed"
             fi
           fi
-          
+
           # Verify essential pages (About, Contact, Privacy, Terms, Disclaimer)
           for PAGE in about contact privacy-policy terms-of-service disclaimer; do
-            STATUS=$(curl -sf -o /dev/null -w "%{http_code}" "https://dataengineerhub.blog/${PAGE}" || echo "000")
-            if [ "$STATUS" == "200" ]; then
-              echo "✅ Essential page /${PAGE} is accessible"
+            STATUS=$(curl -sS -o /dev/null -w "%{http_code}" "https://dataengineerhub.blog/${PAGE}" || echo "000")
+            if [ "$STATUS" = "200" ] || [ "$STATUS" = "301" ]; then
+              echo "✅ Essential page /${PAGE} is accessible (HTTP $STATUS)"
             else
               echo "⚠️ Essential page /${PAGE} returned status: $STATUS"
             fi
           done
-          
+
           # Verify a sample article (-print -quit avoids SIGPIPE from head closing the pipe)
           SAMPLE_ARTICLE=$(find dist/articles -mindepth 2 -name 'index.html' -print -quit | sed 's|dist||; s|/index.html||')
-          if [ ! -z "$SAMPLE_ARTICLE" ]; then
-            if curl -sf -o /dev/null "https://dataengineerhub.blog${SAMPLE_ARTICLE}"; then
+          if [ -n "$SAMPLE_ARTICLE" ]; then
+            SAMPLE_CODE=$(curl -sS -o /dev/null -w "%{http_code}" "https://dataengineerhub.blog${SAMPLE_ARTICLE}" || echo "000")
+            if [ "$SAMPLE_CODE" = "200" ]; then
               echo "✅ Sample article is accessible: ${SAMPLE_ARTICLE}"
             else
-              echo "⚠️ Sample article check failed: ${SAMPLE_ARTICLE}"
+              echo "⚠️ Sample article check failed: ${SAMPLE_ARTICLE} (HTTP $SAMPLE_CODE)"
             fi
           fi
+
+          if [ "$FAIL" -ne 0 ]; then
+            echo ""
+            echo "❌ Live deployment verification failed. Remaining checks above ran so the log shows every broken URL, not just the first one."
+            exit 1
+          fi
+          echo "✅ Live deployment verification passed"
       - name: 📢 Notify Search Engines
         if: |
-          steps.changes.outputs.skip_deploy != 'true' && 
+          always() &&
+          steps.changes.outputs.skip_deploy != 'true' &&
           steps.changes.outputs.dry_run != 'true' &&
           steps.changes.outputs.notify_search_engines == 'true' &&
-          (steps.cache-restore.outputs.cache-hit != 'true' || 
-           github.event_name == 'repository_dispatch' || 
-           github.event_name == 'schedule')
+          (steps.ftp_deploy.outcome == 'success' || steps.ftp_deploy_retry.outcome == 'success') &&
+          (steps.cache-restore.outputs.cache-hit != 'true' ||
+           github.event_name == 'repository_dispatch' ||
+           github.event_name == 'schedule' ||
+           github.event_name == 'workflow_dispatch')
         run: |
           npm run sitemap:notify || echo "⚠️ Search engine notification queued"
         continue-on-error: true
@@ -954,6 +984,7 @@ jobs:
         continue-on-error: true
 
       - name: 📊 Deployment Summary
+        if: always()
         run: |
           echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
