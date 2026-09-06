@@ -215,6 +215,19 @@
     DirectorySlash Off
 </IfModule>
 
+# AdSense review safety net. The static generator already emits
+# <meta name="robots" content="noindex, follow"> on these held-out page types,
+# but Hostinger can keep old HTML in its full-page cache for 24 hours after an
+# FTP replacement. Send the directive at HTTP level as well, and prevent new
+# cached copies from delaying a review-mode change.
+<IfModule mod_setenvif.c>
+    SetEnvIfExpr "%{REQUEST_URI} =~ m#^/(glossary|compare|tag|tags|cheatsheets/category)(?:/|$)#" ADSENSE_REVIEW_PATH
+</IfModule>
+<IfModule mod_headers.c>
+    Header always set X-Robots-Tag "noindex, follow" env=ADSENSE_REVIEW_PATH
+    Header always set Cache-Control "no-store, max-age=0, must-revalidate" env=ADSENSE_REVIEW_PATH
+</IfModule>
+
 # ==============================================================================
 # B) BROWSER CACHING - EXTENDED (PERFORMANCE BOOST)
 # ==============================================================================
