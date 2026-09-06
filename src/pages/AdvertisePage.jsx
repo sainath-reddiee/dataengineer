@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   ChevronDown,
   Clock,
+  Coffee,
   Code,
   HelpCircle,
   Layers,
@@ -23,6 +24,7 @@ import { trackEvent } from '@/utils/analytics';
 import { getFAQSchema } from '@/lib/seoConfig';
 import { useStats } from '@/hooks/useStats';
 import advertiseConfig from '@/data/advertiseConfig.json';
+import SupportPanel from '@/components/Support/SupportPanel';
 
 // Keep this page off the 340KB cheatsheetData chunk — a hard count is enough
 // for the media kit and avoids CDN 429s that crash the lazy Advertise route.
@@ -487,6 +489,28 @@ const AdvertisePage = () => {
               <span>Generic SEO, gambling, or products that do not serve data engineers</span>
             </li>
           </ul>
+        </div>
+      </section>
+
+      {/* Buy me a coffee — direct, no-paperwork support (separate from paid placements above) */}
+      <section className="border-y border-white/5 bg-gradient-to-b from-amber-500/[0.04] to-transparent">
+        <div className="max-w-5xl mx-auto px-5 sm:px-8 py-14">
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-amber-500/10 p-2 border border-amber-500/20">
+              <Coffee className="h-5 w-5 text-amber-300" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-semibold text-white">
+              Prefer to just say thanks?
+            </h2>
+          </div>
+          <p className="mt-3 text-sm text-slate-400 max-w-2xl">
+            Not everyone wants a paid placement — some readers just want to buy me a coffee for a guide
+            that saved them time. This is a direct, personal thank-you, not a sponsorship. UPI for
+            India, PayPal for everywhere else.
+          </p>
+          <div className="mt-8 max-w-3xl">
+            <SupportPanel layout="grid" source="advertise_page" />
+          </div>
         </div>
       </section>
 

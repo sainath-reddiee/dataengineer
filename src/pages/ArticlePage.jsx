@@ -48,6 +48,7 @@ import CiteThisArticle from '@/components/CiteThisArticle';
 import SaveArticleButton from '@/components/SaveArticleButton';
 import ArticleSeries from '@/components/ArticleSeries';
 import UpNextBar from '@/components/UpNextBar';
+import SupportPopup from '@/components/Support/SupportPopup';
 import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap, Megaphone, MessageCircleQuestion, Send } from 'lucide-react';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
@@ -847,6 +848,7 @@ const ArticlePage = () => {
         <GiscusComments />
       </div>
       <UpNextBar slug={slug} category={safePost.category} />
+      <SupportPopup />
     </div>
   );
 };

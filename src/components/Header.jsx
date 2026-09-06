@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Database, ChevronDown, Home, Wrench, Info, Search, BookOpen, FileText, GraduationCap, Target, Megaphone, Bookmark, PenLine } from 'lucide-react';
+import { Menu, X, Database, ChevronDown, Home, Wrench, Info, Search, BookOpen, FileText, GraduationCap, Target, Megaphone, Bookmark, PenLine, Coffee } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
+import SupportModal from '@/components/Support/SupportModal';
 import { useReadingList } from '@/hooks/useReadingList';
 
 // Helper component for the "Corner Burst" sparks animation
@@ -105,6 +106,7 @@ const Header = ({ topOffset = 0 }) => {
   const location = useLocation();
   const currentPath = location.pathname;
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
   const { count: readingListCount } = useReadingList();
   const dropdownTimeout = React.useRef(null);
 
@@ -589,6 +591,18 @@ const Header = ({ topOffset = 0 }) => {
               </Link>
             </motion.div>
 
+            {/* Buy me a coffee */}
+            <motion.div whileHover={{ y: -2 }}>
+              <button
+                onClick={() => setIsSupportOpen(true)}
+                className="whitespace-nowrap flex items-center gap-1.5 2xl:gap-2 text-amber-300 hover:text-amber-200 transition-all duration-200 font-semibold text-xs 2xl:text-base px-1.5 2xl:px-0"
+                title="Support DataEngineer Hub"
+              >
+                <Coffee className="w-4 h-4 2xl:w-5 2xl:h-5" />
+                Coffee
+              </button>
+            </motion.div>
+
             {/* Search Button */}
             <motion.div whileHover={{ y: -2 }}>
               <button
@@ -728,6 +742,13 @@ const Header = ({ topOffset = 0 }) => {
                   Reading list{readingListCount > 0 ? ` (${readingListCount})` : ''}
                 </Link>
                 <button
+                  onClick={() => { setMobileMenuOpen(false); setIsSupportOpen(true); }}
+                  className="text-amber-300 hover:text-amber-200 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px] w-full text-left"
+                >
+                  <Coffee className="w-5 h-5" />
+                  Buy me a coffee
+                </button>
+                <button
                   onClick={() => { setMobileMenuOpen(false); setIsSearchOpen(true); }}
                   className="text-white hover:text-blue-400 transition-colors font-semibold py-3 pl-3 rounded-lg hover:bg-slate-800/50 flex items-center gap-2 min-h-[48px] w-full text-left"
                 >
@@ -746,6 +767,7 @@ const Header = ({ topOffset = 0 }) => {
         </AnimatePresence>
       </nav>
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
     </motion.header>
   );
 };

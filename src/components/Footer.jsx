@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { revokeConsent } from './CookieConsent';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
+import SupportButton from '@/components/Support/SupportButton';
 import {
   Database,
   Github,
@@ -105,6 +106,10 @@ const Footer = () => {
                   </motion.a>
                 );
               })}
+            </div>
+
+            <div className="mt-6">
+              <SupportButton variant="footerCta" label="Buy me a coffee" source="footer" />
             </div>
           </motion.div>
 
