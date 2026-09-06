@@ -12,7 +12,7 @@
     "ETL/ELT"
   ],
   "lastUpdated": "2026-09-06",
-  "totalArticles": 107,
+  "totalArticles": 106,
   "pages": [
     {
       "url": "https://dataengineerhub.blog/articles/from-etl-pipelines-to-reusable-data-products",
@@ -1790,25 +1790,6 @@
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
       "wordCount": 5892
-    },
-    {
-      "url": "https://dataengineerhub.blog/articles/snowpro-specialty-gen-ai-practice-exams",
-      "title": "Snowflake’s New GenAI Cert is Here—And I’ve Built Something to Help You Pass",
-      "summary": "Prepare for the Snowflake GES-C01 exam with realistic practice questions. Master Snowflake Cortex, LLMs, and RAG pipelines to get certified in 2025.",
-      "keyFacts": [
-        "” • “Which Cortex function is the right choice for this specific security constraint",
-        "Join me on the journey Whether you’re a Data Engineer trying to stay ahead of the curve or an Architect designing the next generation of AI apps, this certification is a massive signal to the market that you know your stuff"
-      ],
-      "entities": [
-        "snowflake"
-      ],
-      "questionAnswered": "How do you prepare for the SnowPro Specialty Gen AI certification?",
-      "lastUpdated": "2025-12-26",
-      "published": "2025-12-26",
-      "author": "Sainath Reddy",
-      "expertise": "Data Engineering Expert",
-      "category": "Snowflake",
-      "wordCount": 374
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-openflow-ai-data-ingestion-guide",

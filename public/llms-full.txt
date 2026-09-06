@@ -1,7 +1,7 @@
 # DataEngineer Hub - Full Content Index for LLMs
 
 > Last generated: 2026-09-06
-> Total articles: 107
+> Total articles: 106
 
 - [Main Website](https://dataengineerhub.blog): Official platform
 - [Compact LLM Context](https://dataengineerhub.blog/llms.txt): Summary context file
@@ -47,7 +47,7 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Summary: Someone on the backend team renamed order_total to order_amount . Clean name. Makes total sense for their domain model. They shipped it on a Thursday afternoon. By Friday morning, your revenue dashboard was showing zero. Not wrong numbers. Zero. Because your Snowflake pipeline was still selecting or
 - Key sections: TL;DR | Why schemas break and who owns the blame | What a data contract actually contains | The Open Data Contract Standard and the YAML spec | The only safe migration path for breaking changes | Making it executable: CI enforcement that actually works | The gotchas that sink most implementations | The real cost math
 
-## Snowflake (45 articles)
+## Snowflake (44 articles)
 
 ### [Identifying Hidden Token Costs in Snowflake Cortex AI](https://dataengineerhub.blog/articles/snowflake-cortex-ai-hidden-token-costs)
 - URL: [https://dataengineerhub.blog/articles/snowflake-cortex-ai-hidden-token-costs](https://dataengineerhub.blog/articles/snowflake-cortex-ai-hidden-token-costs)
@@ -235,12 +235,6 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Word count: ~5892
 - Summary: You know that feeling when someone asks “What did we decide about the API redesign?” and you’re frantically scrolling through three weeks of meeting notes trying to find that one conversation?
 - Key sections: The Problem We All Face (And Nobody Talks About) | What We’re Building (In Plain English) | Why Snowflake for This? | The Architecture (Keep It Simple) | Step 1: Setting Up the Foundation | Step 2: Designing the Meeting Notes Table | Step 3: Chunking Strategy for Meetings | Step 4: Generate Vector Embeddings
-
-### [Snowflake’s New GenAI Cert is Here—And I’ve Built Something to Help You Pass](https://dataengineerhub.blog/articles/snowpro-specialty-gen-ai-practice-exams)
-- URL: [https://dataengineerhub.blog/articles/snowpro-specialty-gen-ai-practice-exams](https://dataengineerhub.blog/articles/snowpro-specialty-gen-ai-practice-exams)
-- Published: 2025-12-26 | Updated: 2025-12-26
-- Word count: ~374
-- Summary: If you’ve been following the Snowflake ecosystem lately, you know things are moving at a breakneck pace. It feels like every other week there’s a new Cortex function or a major update to how we handle Vector types.
 
 ### [Snowflake OpenFlow: Revolutionizing Data Ingestion with AI-Powered Workflows](https://dataengineerhub.blog/articles/snowflake-openflow-ai-data-ingestion-guide)
 - URL: [https://dataengineerhub.blog/articles/snowflake-openflow-ai-data-ingestion-guide](https://dataengineerhub.blog/articles/snowflake-openflow-ai-data-ingestion-guide)
