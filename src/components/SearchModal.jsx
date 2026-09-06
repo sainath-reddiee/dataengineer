@@ -1,5 +1,6 @@
 // src/components/SearchModal.jsx
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Clock, ArrowRight, FileText, Command, BookOpen, GitCompare, Library } from 'lucide-react';
@@ -192,8 +193,13 @@ const SearchModal = ({ isOpen, onClose }) => {
   };
 
   if (!isOpen) return null;
+  if (typeof document === 'undefined') return null;
 
-  return (
+  // Portal to <body>: Header is a motion component with a persistent
+  // `transform: translateY(0)` at rest, which makes it the containing block
+  // for position:fixed descendants. Without the portal, this backdrop was
+  // clipped to the header's own (short) box instead of the full viewport.
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -316,7 +322,8 @@ const SearchModal = ({ isOpen, onClose }) => {
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 
