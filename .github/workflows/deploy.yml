@@ -69,7 +69,20 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # A full/forced re-upload (force-rebuild, full-with-categories, posts-only,
+    # and especially nuclear-redeploy's delete-everything-then-reupload) has to
+    # push every folder in dist/ (100+ articles, 50+ glossary terms, 30+
+    # compare pages, tags, cheat sheets, JS/CSS assets...) over plain FTP,
+    # one MKD/STOR round trip at a time. That routinely runs well past 25
+    # minutes and a mid-transfer job timeout leaves Hostinger in whatever
+    # half-deleted/half-uploaded state the clean-slate wipe was in when it was
+    # killed (this happened on 2026-09-06: nuclear-redeploy was cancelled at
+    # 25m mid-glossary-upload and the live site 403'd with sitemap.xml/tags
+    # missing until a follow-up full redeploy completed). Automated triggers
+    # (push/schedule/repository_dispatch) stay at the tighter 25m budget since
+    # those are small incremental diffs and should fail fast if something
+    # hangs; manual full-rebuild dispatches get much more headroom to finish.
+    timeout-minutes: ${{ (github.event.inputs.build_type == 'nuclear-redeploy' || github.event.inputs.build_type == 'force-rebuild' || github.event.inputs.build_type == 'full-with-categories' || github.event.inputs.build_type == 'posts-only') && 120 || 25 }}
     
     steps:
       - name: 📥 Checkout Code
