@@ -5,14 +5,14 @@
 export const SUPPORT_CONFIG = {
   payeeName: 'Pogaku Satya Sainath Reddy',
   contactEmail: 'sainath@dataengineerhub.blog',
+  supportNote:
+    'Servers, hosting, and keeping this library free for everyone — about ₹10,000 a month out of one pocket. If a guide here saved you a course fee or a consultant\'s hour, a ₹50 coffee is a real dent ☕',
   upi: {
     id: 'pogaku.r@ptaxis',
   },
   paypal: {
-    email: 'psainath123@gmail.com',
-    // Cropped from the provided PayPal QR capture with a generous quiet zone,
-    // so it remains reliably scannable at phone size.
-    qrImage: '/assets/support/paypal-qr-cropped.jpg',
+    meUrl: 'https://www.paypal.me/PSATYASAINATHREDDY',
+    handle: 'PSATYASAINATHREDDY',
   },
   noteMailto() {
     const subject = encodeURIComponent('A personal note with my support ☕');

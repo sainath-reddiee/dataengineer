@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, Coffee, Copy, ExternalLink, Mail, MapPin } from 'lucide-react';
+import { Check, Coffee, Copy, ExternalLink, Globe, Mail, MapPin } from 'lucide-react';
 import { SUPPORT_CONFIG } from '@/data/supportConfig';
 import { copyToClipboard } from '@/utils/seo/exportUtils';
 import { trackEvent } from '@/utils/analytics';
@@ -23,16 +23,27 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
     trackEvent({ action: 'support_click', category: 'monetization', label: `${source}:${label}` });
   };
 
+  const SupportNote = () => (
+    <div className="rounded-2xl border border-amber-500/25 bg-gradient-to-br from-slate-950/90 via-slate-900/80 to-amber-950/30 p-4 sm:p-5">
+      <p className="text-sm leading-relaxed text-slate-200">{SUPPORT_CONFIG.supportNote}</p>
+    </div>
+  );
+
   const UpiCard = () => (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <MapPin className="h-4 w-4 text-amber-300" />
-        <h3 className="text-sm font-bold text-white">UPI (India)</h3>
+      <div className="flex items-center gap-2.5">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/15 border border-amber-500/25">
+          <MapPin className="h-4 w-4 text-amber-300" />
+        </div>
+        <div>
+          <h3 className="text-sm font-bold text-white">UPI (India)</h3>
+          <p className="text-[11px] text-gray-500">Google Pay, PhonePe, Paytm, BHIM</p>
+        </div>
       </div>
-      <p className="text-sm text-gray-300">
-        Copy this ID, then paste it into Google Pay, PhonePe, Paytm, BHIM, or the UPI app you prefer.
+      <p className="text-sm text-gray-400">
+        Copy the ID below and paste it into your UPI app — you pick which app handles the payment.
       </p>
-      <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-700/60 bg-slate-950/60 px-4 py-3">
+      <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-700/60 bg-slate-950/70 px-4 py-3.5">
         <div className="min-w-0">
           <p className="text-[11px] uppercase tracking-wider text-gray-500">UPI ID</p>
           <p className="text-sm font-semibold text-white truncate">{SUPPORT_CONFIG.upi.id}</p>
@@ -40,7 +51,7 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
         <button
           type="button"
           onClick={() => handleCopy('upi', SUPPORT_CONFIG.upi.id)}
-          className="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-slate-600 px-3 py-1.5 text-xs text-gray-200 hover:border-amber-400/60 hover:text-white"
+          className="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-slate-600 px-3 py-1.5 text-xs text-gray-200 hover:border-amber-400/60 hover:text-white transition-colors"
         >
           {copiedField === 'upi' ? (
             <Check className="h-3.5 w-3.5 text-emerald-400" />
@@ -53,60 +64,51 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
       <button
         type="button"
         onClick={() => handleCopy('upi_cta', SUPPORT_CONFIG.upi.id)}
-        className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white px-4 py-3 text-sm font-semibold transition-colors"
+        className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white px-4 py-3 text-sm font-semibold transition-colors shadow-lg shadow-amber-900/20"
       >
         {copiedField === 'upi_cta' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
         {copiedField === 'upi_cta' ? 'UPI ID copied' : 'Copy UPI ID'}
       </button>
-      <p className="text-xs text-gray-500">
-        This avoids opening a different app automatically — you choose the app that handles your payment.
-      </p>
     </div>
   );
 
   const PayPalCard = () => (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Coffee className="h-4 w-4 text-blue-300" />
-        <h3 className="text-sm font-bold text-white">PayPal (International)</h3>
-      </div>
-      <p className="text-sm text-gray-300">
-        For international transactions — scan this QR in PayPal, or send directly to the email below.
-      </p>
-      <div className="flex justify-center">
-        <img
-          src={SUPPORT_CONFIG.paypal.qrImage}
-          alt="Scan to pay via PayPal"
-          width={320}
-          height={320}
-          className="rounded-2xl border border-slate-700/60 bg-white p-3 w-64 h-64 sm:w-72 sm:h-72 object-contain shadow-lg"
-        />
-      </div>
-      <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-700/60 bg-slate-950/60 px-4 py-3">
-        <div className="min-w-0">
-          <p className="text-[11px] uppercase tracking-wider text-gray-500">PayPal email</p>
-          <p className="text-sm font-semibold text-white truncate">{SUPPORT_CONFIG.paypal.email}</p>
+      <div className="flex items-center gap-2.5">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/15 border border-blue-500/25">
+          <Globe className="h-4 w-4 text-blue-300" />
         </div>
-        <button
-          type="button"
-          onClick={() => handleCopy('paypal', SUPPORT_CONFIG.paypal.email)}
-          className="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-slate-600 px-3 py-1.5 text-xs text-gray-200 hover:border-amber-400/60 hover:text-white"
-        >
-          {copiedField === 'paypal' ? (
-            <Check className="h-3.5 w-3.5 text-emerald-400" />
-          ) : (
-            <Copy className="h-3.5 w-3.5" />
-          )}
-          {copiedField === 'paypal' ? 'Copied' : 'Copy'}
-        </button>
+        <div>
+          <h3 className="text-sm font-bold text-white">PayPal (International)</h3>
+          <p className="text-[11px] text-gray-500">Cards, bank, PayPal balance</p>
+        </div>
       </div>
+      <p className="text-sm text-gray-400">
+        Opens PayPal.me in your browser — no email to copy, no QR to scan.
+      </p>
+      <div className="rounded-xl border border-slate-700/60 bg-slate-950/70 px-4 py-3.5">
+        <p className="text-[11px] uppercase tracking-wider text-gray-500">PayPal.me</p>
+        <p className="mt-0.5 text-sm font-semibold text-white truncate">
+          paypal.me/{SUPPORT_CONFIG.paypal.handle}
+        </p>
+      </div>
+      <a
+        href={SUPPORT_CONFIG.paypal.meUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => handleOpen('paypal_me')}
+        className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white px-4 py-3 text-sm font-semibold transition-colors shadow-lg shadow-blue-900/20"
+      >
+        <ExternalLink className="h-4 w-4" />
+        Pay on PayPal
+      </a>
       <button
         type="button"
-        onClick={() => handleCopy('paypal_cta', SUPPORT_CONFIG.paypal.email)}
-        className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white px-4 py-3 text-sm font-semibold transition-colors"
+        onClick={() => handleCopy('paypal_link', SUPPORT_CONFIG.paypal.meUrl)}
+        className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-600 bg-slate-900/50 px-4 py-2.5 text-xs font-medium text-gray-300 hover:border-slate-500 hover:text-white transition-colors"
       >
-        {copiedField === 'paypal_cta' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-        {copiedField === 'paypal_cta' ? 'PayPal email copied' : 'Copy PayPal email'}
+        {copiedField === 'paypal_link' ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+        {copiedField === 'paypal_link' ? 'Link copied' : 'Copy PayPal link'}
       </button>
     </div>
   );
@@ -118,8 +120,8 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
         Want to send a personal note?
       </p>
       <p className="mt-1 text-xs text-gray-400 leading-relaxed">
-        Add your email in the UPI/PayPal payment note, or email me directly — I read every message and
-        reply personally.
+        Add a message in your UPI or PayPal payment note, or email me directly — I read every message
+        and reply personally.
       </p>
       <a
         href={SUPPORT_CONFIG.noteMailto()}
@@ -135,11 +137,12 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
   if (layout === 'grid') {
     return (
       <div className="space-y-6">
+        <SupportNote />
         <div className="grid gap-5 sm:grid-cols-2">
-          <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-5">
+          <div className="rounded-2xl border border-white/10 bg-slate-900/50 p-5 shadow-inner">
             <UpiCard />
           </div>
-          <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-5">
+          <div className="rounded-2xl border border-white/10 bg-slate-900/50 p-5 shadow-inner">
             <PayPalCard />
           </div>
         </div>
@@ -149,19 +152,20 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
   }
 
   return (
-    <div>
-      <div className="flex flex-wrap gap-2 mb-4">
+    <div className="space-y-5">
+      <SupportNote />
+      <div className="flex flex-wrap gap-2">
         {[
           { key: 'upi', label: 'UPI (India)', icon: MapPin },
-          { key: 'paypal', label: 'PayPal (International)', icon: Coffee },
+          { key: 'paypal', label: 'PayPal', icon: Coffee },
         ].map(({ key, label, icon: Icon }) => (
           <button
             key={key}
             type="button"
             onClick={() => setTab(key)}
-            className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold border transition-colors ${
+            className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold border transition-colors ${
               tab === key
-                ? 'bg-white text-slate-900 border-white'
+                ? 'bg-white text-slate-900 border-white shadow-sm'
                 : 'border-slate-600 text-gray-300 hover:border-slate-400 hover:text-white'
             }`}
           >
@@ -170,10 +174,10 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
           </button>
         ))}
       </div>
-      {tab === 'upi' ? <UpiCard /> : <PayPalCard />}
-      <div className="mt-5">
-        <NoteCallout />
+      <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-4 sm:p-5">
+        {tab === 'upi' ? <UpiCard /> : <PayPalCard />}
       </div>
+      <NoteCallout />
     </div>
   );
 };
