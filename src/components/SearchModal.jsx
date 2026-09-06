@@ -5,10 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Clock, ArrowRight, FileText, Command, BookOpen, GitCompare, Library } from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 import searchIndex from '@/data/searchIndex.json';
+import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 
 // Flatten local index (glossary + comparisons) into a unified searchable list.
 // WP articles come in separately from the REST API at query time.
 const buildLocalIndex = () => {
+  if (ADSENSE_REVIEW_MODE) return [];
   const out = [];
   for (const g of searchIndex.glossary || []) {
     out.push({

@@ -3,6 +3,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Wrench, ArrowRight } from 'lucide-react';
+import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 
 const TOOL_MAP = {
   'Spark': { label: 'Spark vs Flink Comparison Tool', to: '/compare', desc: 'Compare big data frameworks side-by-side' },
@@ -41,6 +42,13 @@ export default function InlineToolWidget({ post }) {
     }
   }
   if (!tool) tool = DEFAULT_TOOL;
+  if (ADSENSE_REVIEW_MODE && tool.to === '/compare') {
+    tool = {
+      label: 'Free Data Engineering Tools',
+      to: '/tools',
+      desc: 'Use cost calculators, SQL helpers, converters, and generators',
+    };
+  }
 
   return (
     <div className="my-8 p-5 rounded-2xl border border-blue-500/30 bg-gradient-to-r from-blue-900/20 to-purple-900/20 backdrop-blur-sm">

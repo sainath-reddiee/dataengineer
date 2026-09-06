@@ -39,7 +39,8 @@ import AuthorBioCard from '@/components/AuthorBioCard';
 import SponsorPlacement from '@/components/SponsorPlacement';
 import { isBlogOwner, OWNER_DISPLAY_NAME, OWNER_ROLE, OWNER_PROFILE_PATH } from '@/lib/contributorIdentity';
 import { useSsgArticleFallback } from '@/hooks/useSsgArticleFallback';
-import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
+import { ADSENSE_REVIEW_MODE, countIndexableWords } from '@/data/adsenseQualityGate';
+import { MIN_INDEXABLE_WORD_COUNT } from '@/data/thinTags';
 import { extractArticleFaqs } from '@/utils/articleFaq';
 import { analyzeKeyTakeaways } from '@/utils/articleTakeaways';
 import ArticleFaq from '@/components/ArticleFaq';
@@ -664,6 +665,8 @@ const ArticlePage = () => {
     );
 
     const articleFaqs = extractArticleFaqs(safePost.content);
+    const articleIsThin =
+      countIndexableWords(safePost.content) < MIN_INDEXABLE_WORD_COUNT;
 
     // FAQPage JSON-LD is owned by the SSG layer (scripts/generateFAQSchema.js)
     // to avoid duplicate schemas in the rendered DOM. Do not re-inject here.
@@ -683,6 +686,7 @@ const ArticlePage = () => {
           category={safePost.category}
           tags={safePost.tags}
           author={authorDisplayName}
+          noindex={articleIsThin}
           breadcrumbs={breadcrumbs}
           howToSchema={howToSchema}
           videoSchema={videoSchema}
@@ -764,7 +768,9 @@ const ArticlePage = () => {
                 </div>
               </div>
 
-          <SponsorPlacement category={safePost.category} tags={safePost.tags} slug={slug} />
+          {!ADSENSE_REVIEW_MODE && (
+            <SponsorPlacement category={safePost.category} tags={safePost.tags} slug={slug} />
+          )}
 
           {/* Tags Section */}
           {safePost.tags && safePost.tags.length > 0 && (
@@ -781,9 +787,11 @@ const ArticlePage = () => {
             </motion.div>
           )}
 
-          <Suspense fallback={<div className="h-32" />}>
-            <AdPlacement />
-          </Suspense>
+          {!ADSENSE_REVIEW_MODE && (
+            <Suspense fallback={<div className="h-32" />}>
+              <AdPlacement />
+            </Suspense>
+          )}
 
           {/* Reactions Bar — engagement signal for Google Discover */}
           <div className="my-8 flex flex-wrap items-center gap-3">
@@ -825,11 +833,11 @@ const ArticlePage = () => {
 
         <InArticleCTA />
 
-        <EmailDigestBanner />
+        {!ADSENSE_REVIEW_MODE && <EmailDigestBanner />}
 
         <RelatedTools post={safePost} />
 
-        <RecommendedCourses post={safePost} />
+        {!ADSENSE_REVIEW_MODE && <RecommendedCourses post={safePost} />}
 
         <AskQuestion post={safePost} slug={slug} />
 

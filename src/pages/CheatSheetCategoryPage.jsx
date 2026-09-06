@@ -13,6 +13,7 @@ import {
   getCheatSheetsByCategory,
 } from '@/data/cheatsheetData';
 import { SITE_CONFIG } from '@/lib/seoConfig';
+import { isAdSenseNoindexPath } from '@/data/adsenseQualityGate';
 
 // Category descriptions — substantive, category-specific copy (no thin boilerplate).
 const CATEGORY_INTRO = {
@@ -253,7 +254,7 @@ export default function CheatSheetCategoryPage() {
         keywords={`${category.name} cheat sheet, data engineering ${category.name}, ${category.name} reference, ${category.name} interview`}
         url={`/cheatsheets/category/${categoryId}`}
         type="website"
-        noindex={true}
+        noindex={isAdSenseNoindexPath(`/cheatsheets/category/${categoryId}`)}
       />
       <Helmet>
         

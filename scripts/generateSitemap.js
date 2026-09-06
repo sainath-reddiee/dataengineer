@@ -4,7 +4,12 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT, MIN_INDEXABLE_CATEGORY_COUNT, MIN_INDEXABLE_WORD_COUNT } from '../src/data/thinTags.js';
 import { EXCLUDED_ARTICLE_SLUGS } from '../src/data/excludedSlugs.js';
-import { ADSENSE_REVIEW_MODE } from '../src/data/adsenseQualityGate.js';
+import {
+  ADSENSE_REVIEW_MODE,
+  countIndexableWords,
+  getCheatsheetIndexableWordCount,
+} from '../src/data/adsenseQualityGate.js';
+import { cheatsheets } from '../src/data/cheatsheetData.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -86,8 +91,6 @@ const STATIC_PAGES = [
   ] : []),
 ];
 
-const EXCLUDED_CHEATSHEET_SLUGS = [];
-
 /** Decode HTML entities that WordPress REST API returns pre-encoded
  *  (e.g. &amp; for &, &#8217; for right single quote).
  *  Decoding first prevents escapeXml() from double-encoding them. */
@@ -139,7 +142,7 @@ async function fetchAllPosts() {
     let hasMore = true;
 
     while (hasMore && page <= 20) {
-      const url = `${WORDPRESS_API_URL}/posts?page=${page}&per_page=100&_embed&_fields=slug,title,modified,date,_links,_embedded`;
+      const url = `${WORDPRESS_API_URL}/posts?page=${page}&per_page=100&_embed&_fields=slug,title,content,modified,date,_links,_embedded`;
       let posts = null;
       let lastErr = null;
 
@@ -433,44 +436,25 @@ function loadPSEOData() {
   return entries;
 }
 
-// Load cheatsheet slugs from cheatsheetData.js
+// Keep sitemap inclusion aligned with the static page's robots directive.
 function loadCheatsheetData() {
   const entries = [];
-  const cheatsheetPath = path.join(__dirname, '..', 'src', 'data', 'cheatsheetData.js');
+  const today = formatDate(new Date());
 
-  if (!fs.existsSync(cheatsheetPath)) {
-    console.warn('  Warning: cheatsheetData.js not found, skipping cheatsheets');
-    return entries;
-  }
-
-  try {
-    const raw = fs.readFileSync(cheatsheetPath, 'utf-8');
-    const today = formatDate(new Date());
-
-    // Extract slug and lastUpdated from each cheatsheet entry
-    const slugRegex = /slug:\s*['"]([^'"]+)['"]/g;
-    const dateRegex = /lastUpdated:\s*['"]([^'"]+)['"]/g;
-
-    const slugs = [];
-    const dates = [];
-    let match;
-    while ((match = slugRegex.exec(raw)) !== null) slugs.push(match[1]);
-    while ((match = dateRegex.exec(raw)) !== null) dates.push(match[1]);
-
-    slugs.forEach((slug, i) => {
-      if (EXCLUDED_CHEATSHEET_SLUGS.includes(slug)) {
-        console.log(`   ⏭️  Skipping thin cheatsheet: ${slug}`);
-        return;
+  for (const sheet of cheatsheets || []) {
+    const wordCount = getCheatsheetIndexableWordCount(sheet);
+    if (!sheet?.slug || wordCount < MIN_INDEXABLE_WORD_COUNT) {
+      if (sheet?.slug) {
+        console.log(`   ⏭️  Skipping thin cheatsheet: ${sheet.slug} (${wordCount} words)`);
       }
-      entries.push({
-        url: `${SITE_URL}/cheatsheets/${slug}`,
-        changefreq: 'monthly',
-        priority: 0.7,
-        lastmod: dates[i] || today,
-      });
+      continue;
+    }
+    entries.push({
+      url: `${SITE_URL}/cheatsheets/${sheet.slug}`,
+      changefreq: 'monthly',
+      priority: 0.7,
+      lastmod: sheet.lastUpdated || today,
     });
-  } catch (e) {
-    console.warn(`  Warning: Could not parse cheatsheetData.js: ${e.message}`);
   }
 
   return entries;
@@ -530,10 +514,15 @@ async function generateSitemap() {
     console.log('📝 Adding blog posts...');
     let excludedCount = 0;
     posts.forEach(post => {
-      // Skip articles that are noindexed due to thin content
-      if (EXCLUDED_ARTICLE_SLUGS.includes(post.slug)) {
+      // Use the same 400-word rule as article SSG so a noindexed article can
+      // never be advertised as indexable by the sitemap.
+      const articleWordCount = countIndexableWords(post.content?.rendered || '');
+      if (
+        EXCLUDED_ARTICLE_SLUGS.includes(post.slug) ||
+        articleWordCount < MIN_INDEXABLE_WORD_COUNT
+      ) {
         excludedCount++;
-        console.log(`   ⏭️  Skipping thin article: ${post.slug}`);
+        console.log(`   ⏭️  Skipping noindex article: ${post.slug} (${articleWordCount} words)`);
         return;
       }
 

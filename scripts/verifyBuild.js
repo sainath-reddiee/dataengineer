@@ -3,6 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { ADSENSE_REVIEW_MODE } from '../src/data/adsenseQualityGate.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.join(__dirname, '..', 'dist');
@@ -255,6 +256,42 @@ async function verifyBuild() {
     log('   ❌ CRITICAL: articles/ directory not found', 'red');
     log('   ⚠️  This will cause FTP sync to delete all articles from the server!', 'red');
   } else {
+    const articlesListingPath = path.join(articlesDir, 'index.html');
+    if (!fs.existsSync(articlesListingPath)) {
+      issues.push('❌ CRITICAL: /articles listing index.html is missing; Apache will serve the homepage shell');
+      log('   ❌ CRITICAL: articles/index.html is missing', 'red');
+    } else {
+      const listingHtml = fs.readFileSync(articlesListingPath, 'utf8');
+      const listingCanonicalOk =
+        /<link\s+rel="canonical"\s+href="https:\/\/dataengineerhub\.blog\/articles"\s*\/?>/i.test(listingHtml);
+      const listingRobots = listingHtml.match(/<meta\s+name="robots"\s+content="([^"]+)"/i);
+      const listingIsNoindex = listingRobots && /noindex/i.test(listingRobots[1]);
+      const articleLinks = new Set(
+        [...listingHtml.matchAll(/href="https:\/\/dataengineerhub\.blog\/articles\/([^"#?]+)"/gi)]
+          .map((match) => match[1])
+      );
+      const listingText = stripHtmlForWordCount(listingHtml);
+
+      if (!listingCanonicalOk) {
+        issues.push('❌ /articles listing has a missing or incorrect canonical');
+      }
+      if (listingIsNoindex) {
+        issues.push('❌ /articles listing is unexpectedly noindexed');
+      }
+      if (articleLinks.size < 50) {
+        issues.push(`❌ /articles listing exposes only ${articleLinks.size} unique article links`);
+      }
+      if (listingText.split(/\s+/).filter(Boolean).length < 500) {
+        issues.push('❌ /articles listing has fewer than 500 crawler-visible words');
+      }
+
+      if (listingCanonicalOk && !listingIsNoindex && articleLinks.size >= 50) {
+        log(`   ✅ /articles listing: canonical correct, ${articleLinks.size} unique article links`, 'green');
+      } else {
+        log('   ❌ /articles listing failed crawler-delivery checks', 'red');
+      }
+    }
+
     const articleDirs = fs.readdirSync(articlesDir).filter(item => {
       const itemPath = path.join(articlesDir, item);
       return fs.statSync(itemPath).isDirectory();
@@ -411,7 +448,7 @@ async function verifyBuild() {
   }
 
   // ============================================================================
-  // Check 4b: Glossary term pages must ship the AdSense loader
+  // Check 4b: Review-mode pSEO must never ship stale indexable files
   // ============================================================================
   log('\n📖 Checking glossary term pages for AdSense loader...', 'blue');
   const glossaryDir = path.join(distDir, 'glossary');
@@ -422,10 +459,15 @@ async function verifyBuild() {
     });
     let glossaryMissingAds = 0;
     let glossaryChecked = 0;
+    let glossaryIndexableDuringReview = 0;
     for (const dir of glossaryTerms) {
       const content = fs.readFileSync(path.join(glossaryDir, dir, 'index.html'), 'utf8');
       const robotsMatch = content.match(/<meta\s+name="robots"\s+content="([^"]+)"/i);
       const isNoindex = robotsMatch && /noindex/i.test(robotsMatch[1]);
+      if (ADSENSE_REVIEW_MODE && !isNoindex) {
+        glossaryIndexableDuringReview++;
+        issues.push(`❌ glossary/${dir}: stale indexable file while ADSENSE_REVIEW_MODE is enabled`);
+      }
       if (isNoindex) continue;
       glossaryChecked++;
       if (!/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-/i.test(content)) {
@@ -436,6 +478,9 @@ async function verifyBuild() {
         }
       }
     }
+    if (ADSENSE_REVIEW_MODE && glossaryIndexableDuringReview === 0) {
+      log(`   ✅ All ${glossaryTerms.length} glossary terms are noindexed for review`, 'green');
+    }
     if (glossaryMissingAds === 0) {
       log(`   ✅ ${glossaryChecked} indexable glossary terms include the AdSense loader`, 'green');
     } else {
@@ -445,6 +490,30 @@ async function verifyBuild() {
   } else {
     warnings.push('⚠️  dist/glossary/ not found — glossary pages were not generated');
     log('   ⚠️  dist/glossary/ not found', 'yellow');
+  }
+
+  if (ADSENSE_REVIEW_MODE) {
+    for (const section of ['compare']) {
+      const sectionDir = path.join(distDir, section);
+      if (!fs.existsSync(sectionDir)) {
+        issues.push(`❌ ${section}/ output is missing`);
+        continue;
+      }
+      const detailPages = fs.readdirSync(sectionDir, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => path.join(sectionDir, entry.name, 'index.html'))
+        .filter((file) => fs.existsSync(file));
+      const staleIndexable = detailPages.filter((file) => {
+        const html = fs.readFileSync(file, 'utf8');
+        const robots = html.match(/<meta\s+name="robots"\s+content="([^"]+)"/i);
+        return !robots || !/noindex/i.test(robots[1]);
+      });
+      if (staleIndexable.length > 0) {
+        issues.push(`❌ ${staleIndexable.length} ${section} detail pages are indexable during AdSense review`);
+      } else {
+        log(`   ✅ All ${detailPages.length} ${section} detail pages are noindexed for review`, 'green');
+      }
+    }
   }
 
   // ============================================================================
@@ -477,6 +546,26 @@ async function verifyBuild() {
       log(`   ❌ Sitemap still lists: ${listedRedirects.join(', ')}`, 'red');
     } else {
       log('   ✅ Sitemap does not list known 301 article aliases', 'green');
+    }
+
+    const sitemapUrls = [...sitemapXml.matchAll(/<loc>(https:\/\/dataengineerhub\.blog\/[^<]*)<\/loc>/gi)]
+      .map((match) => match[1]);
+    const noindexInSitemap = [];
+    for (const url of sitemapUrls) {
+      const pathname = new URL(url).pathname;
+      const outputPath = pathname === '/'
+        ? path.join(distDir, 'index.html')
+        : path.join(distDir, pathname, 'index.html');
+      if (!fs.existsSync(outputPath)) continue;
+      const html = fs.readFileSync(outputPath, 'utf8');
+      const robots = html.match(/<meta\s+name="robots"\s+content="([^"]+)"/i);
+      if (robots && /noindex/i.test(robots[1])) noindexInSitemap.push(pathname);
+    }
+    if (noindexInSitemap.length > 0) {
+      issues.push(`❌ Sitemap lists noindexed pages: ${noindexInSitemap.join(', ')}`);
+      log(`   ❌ ${noindexInSitemap.length} sitemap URLs are noindexed`, 'red');
+    } else {
+      log('   ✅ Sitemap contains no generated noindex pages', 'green');
     }
   } else {
     warnings.push('⚠️  sitemap.xml not found in dist/ or public/');
@@ -597,11 +686,17 @@ async function verifyBuild() {
       issues.push(`❌ Homepage missing static OG tags: ${missingOg.join(', ')} — crawlers cannot see social previews`);
       log(`   ❌ Homepage missing: ${missingOg.join(', ')}`, 'red');
     }
-    if (!/class="seo-articles"/i.test(homepageContent) && !/seo-articles/i.test(homepageContent)) {
-      warnings.push('⚠️  Homepage is missing the seo-articles listing block — AdsBot may see positioning copy only');
-      log('   ⚠️  Homepage missing seo-articles listing', 'yellow');
+    const homepageArticleBlock =
+      /<div\s+class=["'][^"']*\bseo-articles\b[^"']*["']/i.test(homepageContent);
+    const homepageArticleLinks = new Set(
+      [...homepageContent.matchAll(/href="https:\/\/dataengineerhub\.blog\/articles\/([^"#?]+)"/gi)]
+        .map((match) => match[1])
+    );
+    if (!homepageArticleBlock || homepageArticleLinks.size < 10) {
+      issues.push('❌ Homepage is missing its crawler-visible article listing');
+      log('   ❌ Homepage missing crawler-visible article listing', 'red');
     } else {
-      log('   ✅ Homepage includes seo-articles listing', 'green');
+      log(`   ✅ Homepage includes article listing (${homepageArticleLinks.size} links)`, 'green');
     }
     if (!/llms\.txt/i.test(homepageContent)) {
       warnings.push('⚠️  Homepage is missing an llms.txt discovery link');

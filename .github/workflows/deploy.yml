@@ -144,8 +144,11 @@ jobs:
               echo "📚 Full rebuild including categories/tags"
               ;;
             "posts-only")
-              echo "build_flags=--posts-only" >> $GITHUB_OUTPUT
-              echo "📄 Posts only (no force)"
+              # A posts-only deploy can leave /articles, homepage discovery,
+              # glossary, comparisons, and cheat sheets stale. Keep the input
+              # for backwards compatibility, but perform a safe full rebuild.
+              echo "build_flags=--force" >> $GITHUB_OUTPUT
+              echo "🛡️ Posts-only requested; running a full forced rebuild to protect crawler HTML"
               ;;
             *)
               echo "build_flags=" >> $GITHUB_OUTPUT
@@ -160,7 +163,6 @@ jobs:
         with:
           path: |
             ~/.npm
-            dist
             public/sitemap.xml
             public/indexnow-key.txt
             .build-cache.json
@@ -195,7 +197,6 @@ jobs:
           npm run rss-feed || echo "⚠️ RSS generation skipped"
 
       - name: 🏗️ Build Application (Vite)
-        if: steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true' || steps.changes.outputs.skip_cache == 'true'
         run: npm run build:vite
         env:
           NODE_ENV: production
@@ -246,7 +247,7 @@ jobs:
           if [ ! -d "dist/articles" ]; then
             echo "❌ ERROR: dist/articles directory not found!"
             echo "🔨 Forcing complete rebuild of all pages..."
-            node scripts/generateStaticPagesIncremental.js --posts-only --force
+            node scripts/generateStaticPagesIncremental.js --force
           fi
           
           # Count per-article directories, not the listing page at dist/articles/index.html
@@ -258,7 +259,7 @@ jobs:
             echo "This would cause the FTP sync to delete all articles from the server."
             echo ""
             echo "Attempting one final forced rebuild..."
-            node scripts/generateStaticPagesIncremental.js --posts-only --force
+            node scripts/generateStaticPagesIncremental.js --force
             
             # Re-check after force rebuild
             ARTICLE_COUNT=$(find dist/articles -mindepth 2 -name 'index.html' 2>/dev/null | wc -l | tr -d ' ' || echo "0")
@@ -269,6 +270,23 @@ jobs:
               exit 1
             fi
           fi
+
+          # The listing is the main crawler entry point. A missing file falls
+          # through to the homepage shell and creates a duplicate canonical.
+          if [ ! -f "dist/articles/index.html" ]; then
+            echo "❌ FATAL: dist/articles/index.html is missing"
+            exit 1
+          fi
+          if ! grep -q 'rel="canonical" href="https://dataengineerhub.blog/articles"' dist/articles/index.html; then
+            echo "❌ FATAL: /articles has the wrong canonical"
+            exit 1
+          fi
+          ARTICLE_LINK_COUNT=$(grep -o 'href="https://dataengineerhub.blog/articles/[^"]*"' dist/articles/index.html | sort -u | wc -l | tr -d ' ')
+          if [ "$ARTICLE_LINK_COUNT" -lt 50 ]; then
+            echo "❌ FATAL: /articles contains only $ARTICLE_LINK_COUNT article links"
+            exit 1
+          fi
+          echo "✅ /articles listing has the correct canonical and $ARTICLE_LINK_COUNT article links"
           
           echo "✅ Deployment ready with $ARTICLE_COUNT article pages"
           
@@ -555,6 +573,33 @@ jobs:
           else
             echo "⚠️ Sitemap not found"
           fi
+
+          # Fail the deployment when /articles falls through to index.html.
+          ARTICLES_HTML=$(curl -sf -A "AdsBot-Google (+http://www.google.com/adsbot.html)" https://dataengineerhub.blog/articles)
+          if ! echo "$ARTICLES_HTML" | grep -q 'rel="canonical" href="https://dataengineerhub.blog/articles"'; then
+            echo "❌ /articles is not serving its canonical static listing"
+            exit 1
+          fi
+          LIVE_ARTICLE_LINKS=$(echo "$ARTICLES_HTML" | grep -o 'href="https://dataengineerhub.blog/articles/[^"]*"' | sort -u | wc -l | tr -d ' ')
+          if [ "$LIVE_ARTICLE_LINKS" -lt 50 ]; then
+            echo "❌ /articles exposes only $LIVE_ARTICLE_LINKS article links to AdsBot"
+            exit 1
+          fi
+          if curl -sI -A "AdsBot-Google (+http://www.google.com/adsbot.html)" https://dataengineerhub.blog/articles | grep -qi '^x-robots-tag:.*noindex'; then
+            echo "❌ /articles unexpectedly returns X-Robots-Tag: noindex"
+            exit 1
+          fi
+          echo "✅ Live /articles crawler HTML is correct ($LIVE_ARTICLE_LINKS article links)"
+
+          # Review-mode pSEO files must be overwritten, never left as stale
+          # indexable orphans from an older FTP deployment.
+          for PAGE in glossary/snowflake compare/airflow-vs-prefect; do
+            if ! curl -sf -A "Googlebot" "https://dataengineerhub.blog/${PAGE}" | grep -qi 'meta name="robots" content="noindex, follow"'; then
+              echo "❌ /${PAGE} is missing the AdSense review noindex directive"
+              exit 1
+            fi
+          done
+          echo "✅ Live glossary/comparison detail pages are noindexed"
           
           if curl -sf -o /dev/null https://dataengineerhub.blog/robots.txt; then
             echo "✅ Robots.txt is accessible"
@@ -590,8 +635,6 @@ jobs:
               echo "⚠️ Sample article check failed: ${SAMPLE_ARTICLE}"
             fi
           fi
-        continue-on-error: true
-
       - name: 📢 Notify Search Engines
         if: |
           steps.changes.outputs.skip_deploy != 'true' && 

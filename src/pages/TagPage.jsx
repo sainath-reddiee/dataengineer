@@ -10,6 +10,7 @@ import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import { generateBreadcrumbs } from '@/lib/seoConfig';
 import { THIN_TAG_SLUGS, isIndexableTag } from '@/data/thinTags';
 import { usePostsByTag } from '@/hooks/useWordPress';
+import { isAdSenseNoindexPath } from '@/data/adsenseQualityGate';
 
 const TagPage = () => {
   const { tagSlug } = useParams();
@@ -36,7 +37,7 @@ const TagPage = () => {
         description={`Browse all articles tagged with ${tagName}. Expert data engineering tutorials and guides on ${tagName}.`}
         keywords={`${tagName}, data engineering, tutorials, ${tagSlug}`}
         type="website"
-        noindex={true}
+        noindex={isAdSenseNoindexPath(`/tag/${tagSlug}`)}
       />
 
       <div className="pt-4 pb-12">

@@ -85,14 +85,12 @@
     RewriteCond %{DOCUMENT_ROOT}/articles/%1/index.html -f
     RewriteRule ^articles/([^/]+)/?$ /articles/$1/index.html [L]
 
-    # Newly published WordPress posts exist in the API before SSG writes
-    # /articles/slug/index.html. Without this fallback, client-side navigation
-    # from /articles works (React fetches WP) but reload / shared URLs 404.
-    # Keep this scoped to /articles/:slug so other missing public routes still
-    # 404 (serving homepage HTML there looks like duplicate content to AdSense).
+    # A missing article must be a real 404. Serving /index.html here exposes
+    # homepage title/canonical/body on an article URL, which is a crawler-visible
+    # duplicate. The WordPress publish hook builds SSG before the URL is public.
     RewriteCond %{REQUEST_URI} ^/articles/([^/]+)/?$
     RewriteCond %{DOCUMENT_ROOT}/articles/%1/index.html !-f
-    RewriteRule ^articles/([^/]+)/?$ /index.html [E=DEH_ARTICLE_SPA:1,L]
+    RewriteRule ^articles/([^/]+)/?$ - [R=404,L]
     
     # ========================================================================
     # ESSENTIAL PAGES: Serve pre-rendered static HTML for SEO
@@ -366,11 +364,6 @@
     # Private app shells must never look like indexable homepage copies.
     SetEnvIf Request_URI "^/(admin|debug|sponsors/dashboard)" DEH_PRIVATE_APP
     Header set X-Robots-Tag "noindex, nofollow" env=DEH_PRIVATE_APP
-
-    # SPA fallback for articles that are not yet statically generated: noindex
-    # the homepage shell so crawlers do not treat it as a duplicate. Once SSG
-    # writes /articles/slug/index.html, that file is served instead (indexed).
-    Header set X-Robots-Tag "noindex, follow" env=DEH_ARTICLE_SPA
 
     # RFC 8288 + RFC 9727 §3: homepage Link headers for agent discovery.
     # Also emit them on the catalog itself so HEAD /.well-known/api-catalog

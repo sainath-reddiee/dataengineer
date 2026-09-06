@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { revokeConsent } from './CookieConsent';
+import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 import {
   Database,
   Github,
@@ -22,8 +23,10 @@ const Footer = () => {
       { name: 'Cheat Sheets', href: '/cheatsheets' },
       { name: 'Interview Prep', href: '/interview-prep' },
       { name: 'Tools', href: '/tools' },
-      { name: 'Glossary', href: '/glossary' },
-      { name: 'Comparisons', href: '/compare' },
+      ...(!ADSENSE_REVIEW_MODE ? [
+        { name: 'Glossary', href: '/glossary' },
+        { name: 'Comparisons', href: '/compare' },
+      ] : []),
     ],
     tools: [
       { name: 'Airflow', href: '/category/airflow' },
