@@ -7,20 +7,12 @@ export const SUPPORT_CONFIG = {
   contactEmail: 'sainath@dataengineerhub.blog',
   upi: {
     id: 'pogaku.r@ptaxis',
-    // Standard UPI deep link — opens directly in Google Pay / PhonePe / Paytm / BHIM on mobile.
-    deepLink(note) {
-      const params = new URLSearchParams({
-        pa: SUPPORT_CONFIG.upi.id,
-        pn: SUPPORT_CONFIG.payeeName,
-        cu: 'INR',
-        ...(note ? { tn: note } : {}),
-      });
-      return `upi://pay?${params.toString()}`;
-    },
   },
   paypal: {
     email: 'psainath123@gmail.com',
-    qrImage: '/assets/support/paypal-qr.jpg',
+    // Cropped from the provided PayPal QR capture with a generous quiet zone,
+    // so it remains reliably scannable at phone size.
+    qrImage: '/assets/support/paypal-qr-cropped.jpg',
   },
   noteMailto() {
     const subject = encodeURIComponent('A personal note with my support ☕');

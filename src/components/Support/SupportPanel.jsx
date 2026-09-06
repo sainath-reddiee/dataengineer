@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, Coffee, Copy, ExternalLink, Mail, MapPin, Smartphone } from 'lucide-react';
+import { Check, Coffee, Copy, ExternalLink, Mail, MapPin } from 'lucide-react';
 import { SUPPORT_CONFIG } from '@/data/supportConfig';
 import { copyToClipboard } from '@/utils/seo/exportUtils';
 import { trackEvent } from '@/utils/analytics';
@@ -30,7 +30,7 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
         <h3 className="text-sm font-bold text-white">UPI (India)</h3>
       </div>
       <p className="text-sm text-gray-300">
-        Scan with any UPI app (Google Pay, PhonePe, Paytm, BHIM) or pay to this ID.
+        Copy this ID, then paste it into Google Pay, PhonePe, Paytm, BHIM, or the UPI app you prefer.
       </p>
       <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-700/60 bg-slate-950/60 px-4 py-3">
         <div className="min-w-0">
@@ -50,15 +50,17 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
           {copiedField === 'upi' ? 'Copied' : 'Copy'}
         </button>
       </div>
-      <a
-        href={SUPPORT_CONFIG.upi.deepLink('Coffee for DataEngineer Hub')}
-        onClick={() => handleOpen('upi_app_link')}
+      <button
+        type="button"
+        onClick={() => handleCopy('upi_cta', SUPPORT_CONFIG.upi.id)}
         className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white px-4 py-3 text-sm font-semibold transition-colors"
       >
-        <Smartphone className="h-4 w-4" />
-        Open in UPI app (mobile)
-      </a>
-      <p className="text-xs text-gray-500">On desktop, open your UPI app and pay to the ID above.</p>
+        {copiedField === 'upi_cta' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+        {copiedField === 'upi_cta' ? 'UPI ID copied' : 'Copy UPI ID'}
+      </button>
+      <p className="text-xs text-gray-500">
+        This avoids opening a different app automatically — you choose the app that handles your payment.
+      </p>
     </div>
   );
 
@@ -69,16 +71,15 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
         <h3 className="text-sm font-bold text-white">PayPal (International)</h3>
       </div>
       <p className="text-sm text-gray-300">
-        For international transactions — scan the QR with the PayPal app, or send to the email below.
+        For international transactions — scan this QR in PayPal, or send directly to the email below.
       </p>
       <div className="flex justify-center">
         <img
           src={SUPPORT_CONFIG.paypal.qrImage}
           alt="Scan to pay via PayPal"
-          width={200}
-          height={200}
-          loading="lazy"
-          className="rounded-xl border border-slate-700/60 bg-white p-2 w-48 h-48 object-contain"
+          width={320}
+          height={320}
+          className="rounded-2xl border border-slate-700/60 bg-white p-3 w-64 h-64 sm:w-72 sm:h-72 object-contain shadow-lg"
         />
       </div>
       <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-700/60 bg-slate-950/60 px-4 py-3">
@@ -99,16 +100,14 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
           {copiedField === 'paypal' ? 'Copied' : 'Copy'}
         </button>
       </div>
-      <a
-        href={`https://www.paypal.com/paypalme/${encodeURIComponent(SUPPORT_CONFIG.paypal.email)}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => handleOpen('paypal_send_link')}
+      <button
+        type="button"
+        onClick={() => handleCopy('paypal_cta', SUPPORT_CONFIG.paypal.email)}
         className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white px-4 py-3 text-sm font-semibold transition-colors"
       >
-        <ExternalLink className="h-4 w-4" />
-        Send via PayPal
-      </a>
+        {copiedField === 'paypal_cta' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+        {copiedField === 'paypal_cta' ? 'PayPal email copied' : 'Copy PayPal email'}
+      </button>
     </div>
   );
 
