@@ -151,7 +151,7 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
 
   return (
     <div>
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4">
         {[
           { key: 'upi', label: 'UPI (India)', icon: MapPin },
           { key: 'paypal', label: 'PayPal (International)', icon: Coffee },
@@ -160,7 +160,7 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
             key={key}
             type="button"
             onClick={() => setTab(key)}
-            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold border transition-colors ${
+            className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold border transition-colors ${
               tab === key
                 ? 'bg-white text-slate-900 border-white'
                 : 'border-slate-600 text-gray-300 hover:border-slate-400 hover:text-white'
