@@ -30,11 +30,11 @@ const SupportModal = ({ isOpen, onClose }) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="fixed top-[8%] left-1/2 -translate-x-1/2 w-full max-w-lg z-[10001] px-4"
+            className="fixed bottom-0 left-0 z-[10001] flex w-[100dvw] max-h-[100dvh] items-end justify-center sm:inset-0 sm:w-auto sm:items-center sm:p-4"
           >
-            <div className="bg-slate-900 border border-slate-700/70 rounded-2xl shadow-2xl overflow-hidden max-h-[84vh] flex flex-col">
+            <div className="w-full max-w-lg max-h-[92dvh] sm:max-h-[84vh] bg-slate-900 border border-slate-700/70 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col">
               {/* Header */}
-              <div className="relative p-5 sm:p-6 pb-4 border-b border-slate-700/50 bg-gradient-to-r from-amber-500/10 via-blue-500/10 to-purple-500/10 shrink-0">
+              <div className="relative px-5 pt-5 pb-4 sm:p-6 sm:pb-4 border-b border-slate-700/50 bg-gradient-to-r from-amber-500/15 via-blue-500/10 to-purple-500/10 shrink-0">
                 <button
                   onClick={onClose}
                   aria-label="Close support dialog"
