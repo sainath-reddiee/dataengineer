@@ -34,3 +34,43 @@ export function isAdSenseNoindexPath(pathname) {
 export const ADSENSE_REVIEW_ROBOTS = 'noindex, follow';
 export const ADSENSE_INDEX_ROBOTS =
   'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
+
+export function countIndexableWords(...values) {
+  const text = values
+    .flat(Infinity)
+    .filter((value) => value != null)
+    .map((value) => (typeof value === 'string' ? value : JSON.stringify(value)))
+    .join(' ')
+    .replace(/<script\b[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style\b[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[a-z0-9#]+;/gi, ' ')
+    .replace(/[#*_`[\]()>]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return text ? text.split(/\s+/).filter(Boolean).length : 0;
+}
+
+export function getCheatsheetIndexableWordCount(sheet) {
+  if (!sheet) return 0;
+  const parts = [sheet.intro, sheet.shortDescription];
+
+  for (const section of sheet.sections || []) {
+    if (section.type === 'table') {
+      parts.push(section.columns, section.items);
+    } else if (section.type === 'code') {
+      parts.push(section.code);
+    } else if (Array.isArray(section.items)) {
+      for (const item of section.items) {
+        if (typeof item === 'string') parts.push(item);
+        else parts.push(item?.question, item?.answer, item?.text);
+      }
+    }
+  }
+
+  for (const faq of sheet.faqs || []) {
+    parts.push(faq.question, faq.answer);
+  }
+
+  return countIndexableWords(parts);
+}

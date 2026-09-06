@@ -87,7 +87,7 @@ const initOptions = (...args) => {
 
 const emitRendered = (options) => {
   const PrerendererInstance = new Prerenderer(options);
-  PrerendererInstance.initialize().then(() => {
+  return PrerendererInstance.initialize().then(() => {
     console.log(chalk.cyan(`[vite-plugin-prerender] Rendering routes [${chalk.green(`${options.routes.join(", ")}`)}] with puppeteer...`));
     return PrerendererInstance.renderRoutes(options.routes || []);
   }).then((renderedRoutes) => {
@@ -154,13 +154,14 @@ const emitRendered = (options) => {
       });
     }));
     return promises;
-  }).then((r) => {
+  }).then(() => {
     PrerendererInstance.destroy();
     console.log(chalk.green(`[vite-plugin-prerender] All done`));
   }).catch((err) => {
     PrerendererInstance.destroy();
     const msg = "[vite-plugin-prerender] Unable to prerender all routes!";
-    console.error(msg);
+    console.error(msg, err);
+    throw err;
   });
 };
 

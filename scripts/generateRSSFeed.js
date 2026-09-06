@@ -4,6 +4,8 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { isExcludedArticleSlug } from '../src/data/excludedSlugs.js';
+import { countIndexableWords } from '../src/data/adsenseQualityGate.js';
+import { MIN_INDEXABLE_WORD_COUNT } from '../src/data/thinTags.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -68,7 +70,7 @@ async function fetchAllPosts() {
         let hasMore = true;
 
         while (hasMore && page <= 20) {
-            const url = `${WORDPRESS_API_URL}/posts?page=${page}&per_page=100&_embed&_fields=slug,title,excerpt,modified,date,_links,_embedded`;
+            const url = `${WORDPRESS_API_URL}/posts?page=${page}&per_page=100&_embed&_fields=slug,title,excerpt,content,modified,date,_links,_embedded`;
             let posts = null;
             let lastErr = null;
 
@@ -119,8 +121,11 @@ async function fetchAllPosts() {
             await new Promise(resolve => setTimeout(resolve, 100));
         }
 
-        const indexed = allPosts.filter((post) => !isExcludedArticleSlug(post.slug));
-        console.log(`Fetched ${allPosts.length} posts (${indexed.length} after excluding redirects)`);
+        const indexed = allPosts.filter((post) => (
+            !isExcludedArticleSlug(post.slug) &&
+            countIndexableWords(post.content?.rendered || '') >= MIN_INDEXABLE_WORD_COUNT
+        ));
+        console.log(`Fetched ${allPosts.length} posts (${indexed.length} after excluding redirects and noindex articles)`);
         return indexed;
     } catch (error) {
         console.error('Error fetching posts:', error.message);

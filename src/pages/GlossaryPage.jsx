@@ -26,6 +26,7 @@ import {
     Link2,
     Wrench,
 } from 'lucide-react';
+import { isAdSenseNoindexPath } from '@/data/adsenseQualityGate';
 
 // Data
 import { getGlossaryTerm, getCategoryById, getAllGlossaryTerms } from '@/lib/pseo/glossaryLoader';
@@ -255,6 +256,7 @@ export function GlossaryPage() {
     };
 
     const ogImage = SITE_CONFIG.ogImage.url;
+    const noindex = isAdSenseNoindexPath(`/glossary/${termSlug}`);
 
     return (
         <>
@@ -263,7 +265,7 @@ export function GlossaryPage() {
                 <meta name="description" content={meta.description} />
                 <meta name="keywords" content={meta.keywords} />
                 <link rel="canonical" href={canonical} />
-                <meta name="robots" content="noindex, follow" />
+                <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-snippet:-1, max-image-preview:large'} />
 
                 {/* Open Graph */}
                 <meta property="og:type" content="article" />
@@ -279,9 +281,9 @@ export function GlossaryPage() {
 
                 {/* Twitter */}
                 {/* Structured data */}
-                {breadcrumbSchema && <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>}
-                {faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}
-                <script type="application/ld+json">{JSON.stringify(definedTermSchema)}</script>
+                {!noindex && breadcrumbSchema && <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>}
+                {!noindex && faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}
+                {!noindex && <script type="application/ld+json">{JSON.stringify(definedTermSchema)}</script>}
             </Helmet>
 
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">

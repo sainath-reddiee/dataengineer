@@ -32,6 +32,7 @@ import { SITE_CONFIG } from '@/lib/seoConfig';
 // Linking Engine
 import { getRelatedComparisons, getGlossaryTermsForTool } from '@/lib/pseo/linkingEngine';
 import { getParkedSsgContent } from '@/utils/ssgArticle';
+import { isAdSenseNoindexPath } from '@/data/adsenseQualityGate';
 
 const renderMarkdown = (content) => {
     if (!content) return null;
@@ -158,6 +159,7 @@ const ComparisonPage = () => {
     } : null;
 
     const ogImage = SITE_CONFIG.ogImage.url;
+    const noindex = isAdSenseNoindexPath(`/compare/${slug}`);
 
     return (
         <>
@@ -166,7 +168,7 @@ const ComparisonPage = () => {
                 <meta name="description" content={meta.description} />
                 <meta name="keywords" content={meta.keywords} />
                 <link rel="canonical" href={canonical} />
-                <meta name="robots" content="noindex, follow" />
+                <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-snippet:-1, max-image-preview:large'} />
                 <meta property="og:title" content={meta.title} />
                 <meta property="og:description" content={meta.description} />
                 <meta property="og:type" content="article" />
@@ -177,8 +179,8 @@ const ComparisonPage = () => {
                 <meta property="og:image:alt" content={`${comparison.toolA} vs ${comparison.toolB}`} />
                 <meta property="og:site_name" content={SITE_CONFIG.name} />
                 <meta property="og:locale" content="en_US" />
-                <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
-                {faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}
+                {!noindex && <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>}
+                {!noindex && faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}
             </Helmet>
 
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">

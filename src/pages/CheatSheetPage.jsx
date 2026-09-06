@@ -37,6 +37,8 @@ import {
   CHEATSHEET_CATEGORIES,
 } from '@/data/cheatsheetData';
 import { SITE_CONFIG } from '@/lib/seoConfig';
+import { getCheatsheetIndexableWordCount } from '@/data/adsenseQualityGate';
+import { MIN_INDEXABLE_WORD_COUNT } from '@/data/thinTags';
 import SponsorPlacement from '@/components/SponsorPlacement';
 
 // Map cheatsheet category -> relevant interactive tools for the sidebar widget.
@@ -283,15 +285,11 @@ export default function CheatSheetPage() {
     [slug, sheet]
   );
 
-  // Calculate word count for thin content detection (must be before early return — hooks rules)
-  const wordCount = useMemo(() => {
-    if (!sheet) return 0;
-    const text = (sheet.sections || [])
-      .flatMap((s) => (s.items || []).flat())
-      .join(' ');
-    return text.split(/\s+/).filter(Boolean).length;
-  }, [sheet]);
-  const isThin = wordCount <= 400;
+  const wordCount = useMemo(
+    () => getCheatsheetIndexableWordCount(sheet),
+    [sheet]
+  );
+  const isThin = wordCount < MIN_INDEXABLE_WORD_COUNT;
 
   if (!sheet) {
     return <Navigate to="/cheatsheets" replace />;
@@ -385,8 +383,7 @@ export default function CheatSheetPage() {
         <title>{`${sheet.title} — Free Reference Guide`}</title>
         <meta name="description" content={sheet.shortDescription} />
         <link rel="canonical" href={canonicalUrl} />
-        {/* PSEO/AI-assisted section — held out of the index until further editorial work. */}
-        
+        <meta name="robots" content={isThin ? 'noindex, follow' : 'index, follow, max-snippet:-1, max-image-preview:large'} />
 
         <meta property="og:type" content="article" />
         <meta property="og:title" content={sheet.title} />
@@ -399,9 +396,9 @@ export default function CheatSheetPage() {
         <meta property="og:site_name" content={SITE_CONFIG.name} />
         <meta property="og:locale" content="en_US" />
 
-        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
-        <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
-        {faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}
+        {!isThin && <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>}
+        {!isThin && <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>}
+        {!isThin && faqSchema && <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>}
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">

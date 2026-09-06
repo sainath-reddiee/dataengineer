@@ -11,6 +11,7 @@ import searchIndex from '@/data/searchIndex.json';
 // SEO Factories
 import { generateComparisonHubMeta, generateComparisonCanonical } from '@/lib/pseo/metadataFactory';
 import { SITE_CONFIG } from '@/lib/seoConfig';
+import { isAdSenseNoindexPath } from '@/data/adsenseQualityGate';
 
 export function ComparisonHubPage() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -56,6 +57,7 @@ export function ComparisonHubPage() {
 
     const meta = generateComparisonHubMeta();
     const canonical = generateComparisonCanonical();
+    const noindex = isAdSenseNoindexPath('/compare');
 
     const breadcrumbSchema = {
         '@context': 'https://schema.org',
@@ -73,7 +75,7 @@ export function ComparisonHubPage() {
                 <meta name="description" content={meta.description} />
                 <meta name="keywords" content={meta.keywords} />
                 <link rel="canonical" href={canonical} />
-                <meta name="robots" content="noindex, follow" />
+                <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-snippet:-1, max-image-preview:large'} />
 
                 <meta property="og:type" content="website" />
                 <meta property="og:title" content={meta.title} />
@@ -86,7 +88,7 @@ export function ComparisonHubPage() {
                 <meta property="og:site_name" content={SITE_CONFIG.name} />
                 <meta property="og:locale" content="en_US" />
 
-                <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+                {!noindex && <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>}
             </Helmet>
 
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">

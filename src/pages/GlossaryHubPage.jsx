@@ -21,6 +21,7 @@ import {
 // Data - Use searchIndex for efficient search
 import searchIndex from '@/data/searchIndex.json';
 import categories from '@/data/pseo/categories.json';
+import { isAdSenseNoindexPath } from '@/data/adsenseQualityGate';
 
 // Make GLOSSARY_CATEGORIES available from the JSON
 const GLOSSARY_CATEGORIES = categories;
@@ -77,6 +78,7 @@ export function GlossaryHubPage() {
     // Generate SEO data
     const meta = generateGlossaryHubMeta();
     const canonical = generateGlossaryCanonical();
+    const noindex = isAdSenseNoindexPath('/glossary');
 
     const breadcrumbSchema = {
         '@context': 'https://schema.org',
@@ -94,7 +96,7 @@ export function GlossaryHubPage() {
                 <meta name="description" content={meta.description} />
                 <meta name="keywords" content={meta.keywords} />
                 <link rel="canonical" href={canonical} />
-                <meta name="robots" content="noindex, follow" />
+                <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-snippet:-1, max-image-preview:large'} />
 
                 {/* Open Graph */}
                 <meta property="og:type" content="website" />
@@ -109,7 +111,7 @@ export function GlossaryHubPage() {
                 <meta property="og:locale" content="en_US" />
 
                 {/* Twitter */}
-                <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+                {!noindex && <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>}
             </Helmet>
 
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">

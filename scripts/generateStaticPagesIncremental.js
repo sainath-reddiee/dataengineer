@@ -111,7 +111,12 @@ const CONSENT_MODE_V2_HTML = `    <!-- Google Consent Mode v2: region-gated. Res
 // SEO overrides for CTR-optimized titles and descriptions
 import seoOverrides, { getSEOOverride } from '../src/data/seoOverrides.js';
 import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT, MIN_INDEXABLE_CATEGORY_COUNT, MIN_INDEXABLE_WORD_COUNT } from '../src/data/thinTags.js';
-import { isAdSenseNoindexPath, ADSENSE_REVIEW_ROBOTS, ADSENSE_INDEX_ROBOTS } from '../src/data/adsenseQualityGate.js';
+import {
+  isAdSenseNoindexPath,
+  ADSENSE_REVIEW_ROBOTS,
+  ADSENSE_INDEX_ROBOTS,
+  getCheatsheetIndexableWordCount,
+} from '../src/data/adsenseQualityGate.js';
 
 function countPlainWords(...parts) {
   const text = parts
@@ -5657,33 +5662,8 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   var buildTimestamp = new Date().toISOString();
   var pagePath = '/cheatsheets/' + sheet.slug;
 
-  // Count total content words for thin-content check
-  var totalWords = 0;
   var sections = sheet.sections || [];
-  for (var si = 0; si < sections.length; si++) {
-    var sec = sections[si];
-    if (sec.type === 'table' && sec.items) {
-      for (var ri = 0; ri < sec.items.length; ri++) {
-        totalWords += sec.items[ri].join(' ').split(/\s+/).length;
-      }
-    } else if (sec.type === 'code' && sec.code) {
-      totalWords += sec.code.split(/\s+/).length;
-    } else if (sec.type === 'tips' && sec.items) {
-      for (var ti = 0; ti < sec.items.length; ti++) {
-        totalWords += sec.items[ti].split(/\s+/).length;
-      }
-    } else if (sec.type === 'qna' && sec.items) {
-      for (var qi = 0; qi < sec.items.length; qi++) {
-        totalWords += (sec.items[qi].question + ' ' + sec.items[qi].answer).split(/\s+/).length;
-      }
-    }
-  }
-  if (sheet.faqs) {
-    for (var fi = 0; fi < sheet.faqs.length; fi++) {
-      totalWords += (sheet.faqs[fi].question + ' ' + sheet.faqs[fi].answer).split(/\s+/).length;
-    }
-  }
-
+  var totalWords = getCheatsheetIndexableWordCount(sheet);
   var robotsDirective = robotsForWordCount(totalWords);
 
   var descMeta = escapeHtml(sheet.shortDescription || ('Comprehensive ' + sheet.title + ' for data engineers.'));
@@ -6517,8 +6497,17 @@ ${CONSENT_MODE_V2_HTML}
 // INCREMENTAL BUILD LOGIC
 // ============================================================================
 
+function outputPageExists(distDir, pagePath) {
+  return fs.existsSync(path.join(distDir, pagePath, 'index.html'));
+}
+
 async function buildIncremental(options = {}) {
   let { force = false, postsOnly = false } = options;
+  if (postsOnly) {
+    console.warn('⚠️  --posts-only is deprecated because it can leave crawler discovery pages stale.');
+    console.warn('   Running a full build instead.');
+    postsOnly = false;
+  }
 
   console.log('ðŸš€ Starting FULL CONTENT static generation with images…');
   console.log('   🔥 Articles will include COMPLETE content for SEO/AdSense');
@@ -6656,7 +6645,11 @@ async function buildIncremental(options = {}) {
 
       const contentHash = hashContent(pageData);
       const cachedPage = cache.pages[pagePath];
-      const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
+      const needsRebuild =
+        force ||
+        !outputPageExists(distDir, pagePath) ||
+        !cachedPage ||
+        cachedPage.hash !== contentHash;
 
       if (needsRebuild) {
         try {
@@ -6787,7 +6780,11 @@ function buildPracticeQuestionPreview(quizSlug) {
 
     const contentHash = hashContent(pageData);
     const cachedPage = cache.pages[pagePath];
-    const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
+    const needsRebuild =
+      force ||
+      !outputPageExists(distDir, pagePath) ||
+      !cachedPage ||
+      cachedPage.hash !== contentHash;
 
     if (needsRebuild) {
       try {
@@ -6854,7 +6851,11 @@ function buildPracticeQuestionPreview(quizSlug) {
 
         const contentHash = hashContent({ cat, articleCount: categoryArticles.length, articles: categoryArticles.map(a => a.slug) });
         const cachedPage = cache.pages[pagePath];
-        const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
+        const needsRebuild =
+          force ||
+          !outputPageExists(distDir, pagePath) ||
+          !cachedPage ||
+          cachedPage.hash !== contentHash;
 
         if (needsRebuild) {
           try {
@@ -6917,7 +6918,11 @@ function buildPracticeQuestionPreview(quizSlug) {
 
         const articlesContentHash = hashContent({ type: 'articles-listing', count: allArticleSummaries.length, slugs: allArticleSummaries.map(a => a.slug) });
         const cachedArticlesPage = cache.pages[articlesPagePath];
-        const needsArticlesRebuild = force || !cachedArticlesPage || cachedArticlesPage.hash !== articlesContentHash;
+        const needsArticlesRebuild =
+          force ||
+          !outputPageExists(distDir, articlesPagePath) ||
+          !cachedArticlesPage ||
+          cachedArticlesPage.hash !== articlesContentHash;
 
         if (needsArticlesRebuild) {
           const articlesHTML = generateArticlesListingHTML(allArticleSummaries, categories, bundleFiles);
@@ -6958,14 +6963,19 @@ function buildPracticeQuestionPreview(quizSlug) {
         if (fs.existsSync(homepagePath)) {
           let homepageHTML = fs.readFileSync(homepagePath, 'utf-8');
 
-          // Only inject if not already enhanced
-          if (!homepageHTML.includes('seo-articles')) {
+          // Check for the actual content block, not a CSS selector/comment that
+          // happens to mention "seo-articles".
+          const hasArticleListing = /<div\s+class=["'][^"']*\bseo-articles\b[^"']*["']/i.test(homepageHTML);
+          if (!hasArticleListing) {
             const articlesSection = generateHomepageEnhancement(allArticleSummaries, categories);
-            // Inject before the closing </div> of seo-fallback
-            homepageHTML = homepageHTML.replace(
+            const enhancedHomepageHTML = homepageHTML.replace(
               /<noscript>\s*<p[^>]*>\s*You are viewing the static version of DataEngineer Hub\./,
               articlesSection + '\n        <noscript>\n          <p style="margin-top: 2rem; padding: 1rem;">\n            You are viewing the static version of DataEngineer Hub.'
             );
+            if (enhancedHomepageHTML === homepageHTML) {
+              throw new Error('Homepage article-list insertion marker was not found');
+            }
+            homepageHTML = enhancedHomepageHTML;
             fs.writeFileSync(homepagePath, homepageHTML);
             const fileStats = fs.statSync(homepagePath);
             const fileSizeKB = (fileStats.size / 1024).toFixed(2);
@@ -7006,7 +7016,11 @@ function buildPracticeQuestionPreview(quizSlug) {
 
         const contentHash = hashContent({ tag, articleCount: tagArticles.length, articles: tagArticles.map(a => a.slug) });
         const cachedPage = cache.pages[pagePath];
-        const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
+        const needsRebuild =
+          force ||
+          !outputPageExists(distDir, pagePath) ||
+          !cachedPage ||
+          cachedPage.hash !== contentHash;
 
         if (needsRebuild) {
           try {
@@ -7089,7 +7103,11 @@ function buildPracticeQuestionPreview(quizSlug) {
 
         const contentHash = hashContent({ term: term.id, slug: term.slug, updated: term.lastUpdated, definition: term.shortDefinition, full: term.fullDefinition, intro: term.practitionerIntro, gotchas: term.gotchas, templateVersion: 2 });
         const cachedPage = cache.pages[pagePath];
-        const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
+        const needsRebuild =
+          force ||
+          !outputPageExists(distDir, pagePath) ||
+          !cachedPage ||
+          cachedPage.hash !== contentHash;
 
         if (needsRebuild) {
           try {
@@ -7134,7 +7152,11 @@ function buildPracticeQuestionPreview(quizSlug) {
       currentPages.add(glossaryHubPath);
       const glossaryHubHash = hashContent({ type: 'glossary-hub', count: allGlossaryTerms.length, terms: allGlossaryTerms.map(t => t.slug).join(',') });
       const cachedGlossaryHub = cache.pages[glossaryHubPath];
-      const needsGlossaryHub = force || !cachedGlossaryHub || cachedGlossaryHub.hash !== glossaryHubHash;
+      const needsGlossaryHub =
+        force ||
+        !outputPageExists(distDir, glossaryHubPath) ||
+        !cachedGlossaryHub ||
+        cachedGlossaryHub.hash !== glossaryHubHash;
 
       if (needsGlossaryHub) {
         try {
@@ -7203,7 +7225,11 @@ function buildPracticeQuestionPreview(quizSlug) {
           templateVersion: 2,
         });
         const cachedPage = cache.pages[pagePath];
-        const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
+        const needsRebuild =
+          force ||
+          !outputPageExists(distDir, pagePath) ||
+          !cachedPage ||
+          cachedPage.hash !== contentHash;
 
         if (needsRebuild) {
           try {
@@ -7248,7 +7274,11 @@ function buildPracticeQuestionPreview(quizSlug) {
       currentPages.add(compareHubPath);
       const compareHubHash = hashContent({ type: 'compare-hub', count: allComparisons.length, slugs: allComparisons.map(c => c.slug).join(',') });
       const cachedCompareHub = cache.pages[compareHubPath];
-      const needsCompareHub = force || !cachedCompareHub || cachedCompareHub.hash !== compareHubHash;
+      const needsCompareHub =
+        force ||
+        !outputPageExists(distDir, compareHubPath) ||
+        !cachedCompareHub ||
+        cachedCompareHub.hash !== compareHubHash;
 
       if (needsCompareHub) {
         try {
@@ -7329,7 +7359,11 @@ function buildPracticeQuestionPreview(quizSlug) {
           templateVersion: 2,
         });
         const cachedPage = cache.pages[pagePath];
-        const needsRebuild = force || !cachedPage || cachedPage.hash !== contentHash;
+        const needsRebuild =
+          force ||
+          !outputPageExists(distDir, pagePath) ||
+          !cachedPage ||
+          cachedPage.hash !== contentHash;
 
         if (needsRebuild) {
           try {
@@ -7370,7 +7404,11 @@ function buildPracticeQuestionPreview(quizSlug) {
       currentPages.add(csHubPath);
       const csHubHash = hashContent({ type: 'cheatsheet-hub', count: allCheatsheets.length, slugs: allCheatsheets.map(c => c.slug).join(',') });
       const cachedCsHub = cache.pages[csHubPath];
-      const needsCsHub = force || !cachedCsHub || cachedCsHub.hash !== csHubHash;
+      const needsCsHub =
+        force ||
+        !outputPageExists(distDir, csHubPath) ||
+        !cachedCsHub ||
+        cachedCsHub.hash !== csHubHash;
 
       if (needsCsHub) {
         try {
@@ -7454,13 +7492,13 @@ Usage:
 
 Options:
   --force        Force rebuild all pages (ignore cache)
-  --posts-only   Only generate post pages (skip categories/tags)
+  --posts-only   Deprecated; accepted as a safe full build
   --help         Show this help message
 
 Examples:
   npm run build:incremental                  # Normal incremental build
   npm run build:incremental -- --force       # Force full rebuild
-  npm run build:incremental -- --posts-only  # Only rebuild posts
+  npm run build:incremental -- --posts-only  # Compatibility alias for full build
 
 🔥 KEY FEATURES:
   ✅ FULL article content (not 500 char limit!)
