@@ -790,7 +790,9 @@ async function verifyBuild() {
       log('   ⚠️  .htaccess missing markdown negotiation', 'yellow');
     }
     const hasSafeArticle404 = /RewriteCond %\{DOCUMENT_ROOT\}\/articles\/%1\/index\.html !-f/.test(htaccess)
-      && /RewriteRule \^articles\/\(\[\^\/\]\+\)\/\?\$ - \[R=404,L\]/.test(htaccess);
+      && /RewriteRule \^articles\/\(\[\^\/\]\+\)\/\?\$ - \[R=404,L\]/.test(htaccess)
+      && /RewriteCond %1 !\^index\\\.html\$/.test(htaccess)
+      && /RewriteRule \^articles\/\?\$ \/articles\/index\.html \[END\]/.test(htaccess);
     const hasDuplicateArticleFallback =
       /RewriteRule \^articles\/\(\[\^\/\]\+\)\/\?\$ \/index\.html/.test(htaccess);
     if (hasSafeArticle404 && !hasDuplicateArticleFallback) {

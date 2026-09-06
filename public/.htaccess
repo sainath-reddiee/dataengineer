@@ -71,24 +71,32 @@
     # ========================================================================
     
     # If someone visits /articles or /articles/ (the listing page)
-    # serve pre-rendered HTML if it exists, otherwise React app
+    # serve pre-rendered HTML if it exists. END (not L) is required: LiteSpeed
+    # restarts the rewrite engine after an internal [L] rewrite, and the
+    # per-slug 404 below would then treat "index.html" as a missing article.
+    # That is what 404'd the live listing after the 2026-09-06 force-rebuild
+    # even though FTP had uploaded articles/index.html.
     RewriteCond %{DOCUMENT_ROOT}/articles/index.html -f
-    RewriteRule ^articles/?$ /articles/index.html [L]
+    RewriteRule ^articles/?$ /articles/index.html [END]
     
     # ========================================================================
     # CRITICAL FIX: Serve static HTML for articles if it exists
     # ========================================================================
     
     # For requests to /articles/slug (without trailing slash)
-    # Check if /articles/slug/index.html exists
+    # Check if /articles/slug/index.html exists. Skip the listing file itself:
+    # after an internal rewrite, REQUEST_URI becomes /articles/index.html and
+    # ([^/]+) would otherwise capture "index.html" as a slug.
     RewriteCond %{REQUEST_URI} ^/articles/([^/]+)/?$
+    RewriteCond %1 !^index\.html$
     RewriteCond %{DOCUMENT_ROOT}/articles/%1/index.html -f
-    RewriteRule ^articles/([^/]+)/?$ /articles/$1/index.html [L]
+    RewriteRule ^articles/([^/]+)/?$ /articles/$1/index.html [END]
 
     # A missing article must be a real 404. Serving /index.html here exposes
     # homepage title/canonical/body on an article URL, which is a crawler-visible
     # duplicate. The WordPress publish hook builds SSG before the URL is public.
     RewriteCond %{REQUEST_URI} ^/articles/([^/]+)/?$
+    RewriteCond %1 !^index\.html$
     RewriteCond %{DOCUMENT_ROOT}/articles/%1/index.html !-f
     RewriteRule ^articles/([^/]+)/?$ - [R=404,L]
     
@@ -100,19 +108,19 @@
     # For requests to /about, /contact, /privacy-policy, /terms-of-service, /disclaimer
     # Check if /{page}/index.html exists and serve it directly
     RewriteCond %{DOCUMENT_ROOT}/about/index.html -f
-    RewriteRule ^about/?$ /about/index.html [L]
+    RewriteRule ^about/?$ /about/index.html [END]
     
     RewriteCond %{DOCUMENT_ROOT}/contact/index.html -f
-    RewriteRule ^contact/?$ /contact/index.html [L]
+    RewriteRule ^contact/?$ /contact/index.html [END]
     
     RewriteCond %{DOCUMENT_ROOT}/privacy-policy/index.html -f
-    RewriteRule ^privacy-policy/?$ /privacy-policy/index.html [L]
+    RewriteRule ^privacy-policy/?$ /privacy-policy/index.html [END]
     
     RewriteCond %{DOCUMENT_ROOT}/terms-of-service/index.html -f
-    RewriteRule ^terms-of-service/?$ /terms-of-service/index.html [L]
+    RewriteRule ^terms-of-service/?$ /terms-of-service/index.html [END]
     
     RewriteCond %{DOCUMENT_ROOT}/disclaimer/index.html -f
-    RewriteRule ^disclaimer/?$ /disclaimer/index.html [L]
+    RewriteRule ^disclaimer/?$ /disclaimer/index.html [END]
     
     # ========================================================================
     # CATEGORY PAGES: Serve pre-rendered static HTML for category pages
@@ -130,7 +138,7 @@
     
     # For requests to /glossary (hub listing page) - serve pre-rendered HTML
     RewriteCond %{DOCUMENT_ROOT}/glossary/index.html -f
-    RewriteRule ^glossary/?$ /glossary/index.html [L]
+    RewriteRule ^glossary/?$ /glossary/index.html [END]
     
     # For requests to /glossary/slug - serve pre-rendered HTML if it exists
     RewriteCond %{REQUEST_URI} ^/glossary/([^/]+)/?$
@@ -139,7 +147,7 @@
     
     # For requests to /compare (hub listing page) - serve pre-rendered HTML
     RewriteCond %{DOCUMENT_ROOT}/compare/index.html -f
-    RewriteRule ^compare/?$ /compare/index.html [L]
+    RewriteRule ^compare/?$ /compare/index.html [END]
     
     # For requests to /compare/slug - serve pre-rendered HTML if it exists
     RewriteCond %{REQUEST_URI} ^/compare/([^/]+)/?$
@@ -148,7 +156,7 @@
     
     # For requests to /cheatsheets (hub listing page) - serve pre-rendered HTML
     RewriteCond %{DOCUMENT_ROOT}/cheatsheets/index.html -f
-    RewriteRule ^cheatsheets/?$ /cheatsheets/index.html [L]
+    RewriteRule ^cheatsheets/?$ /cheatsheets/index.html [END]
     
     # For requests to /cheatsheets/slug - serve pre-rendered HTML if it exists
     RewriteCond %{REQUEST_URI} ^/cheatsheets/([^/]+)/?$
