@@ -580,8 +580,13 @@ export const useNewsletter = () => {
 
       return { success: true };
     } catch (err) {
-      setError(err.message);
-      return { success: false, error: err.message };
+      const raw = String(err?.message || '');
+      if (typeof wordpressApi.isEspIpRestrictionError === 'function' && wordpressApi.isEspIpRestrictionError(raw)) {
+        setSuccess(true);
+        return { success: true };
+      }
+      setError(wordpressApi.publicNewsletterError ? wordpressApi.publicNewsletterError(raw) : raw);
+      return { success: false, error: raw };
     } finally {
       setLoading(false);
     }

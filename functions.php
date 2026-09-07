@@ -1350,7 +1350,82 @@ function dehub_newsletter_const($name) {
     return trim((string) $value);
 }
 
-function dehub_forward_newsletter_subscriber($email) {
+/**
+ * Brevo "authorized IPs" is an API-key security setting, not a subscriber check.
+ * Visitor IPs must never fail a public signup. Detect those messages so we can
+ * log them for the site owner and still return success to the reader.
+ */
+function dehub_is_esp_ip_restriction($text) {
+    $text = strtolower((string) $text);
+    return (
+        strpos($text, 'authorised_ips') !== false
+        || strpos($text, 'authorized_ips') !== false
+        || strpos($text, 'unrecognised ip') !== false
+        || strpos($text, 'unrecognized ip') !== false
+        || strpos($text, 'ip not authorized') !== false
+        || strpos($text, 'unauthorized: not verified') !== false
+    );
+}
+
+function dehub_newsletter_has_esp_key() {
+    return dehub_newsletter_const('DEHUB_BREVO_API_KEY') !== ''
+        || dehub_newsletter_const('DEHUB_BUTTONDOWN_API_KEY') !== '';
+}
+
+function dehub_newsletter_queue_forward($email) {
+    $email = strtolower(sanitize_email($email));
+    if (!is_email($email) || !dehub_newsletter_has_esp_key()) {
+        return;
+    }
+    $queue = get_option('dehub_newsletter_forward_queue', array());
+    if (!is_array($queue)) {
+        $queue = array();
+    }
+    if (!in_array($email, $queue, true)) {
+        $queue[] = $email;
+        if (count($queue) > 1000) {
+            $queue = array_slice($queue, -1000);
+        }
+        update_option('dehub_newsletter_forward_queue', $queue, false);
+    }
+}
+
+function dehub_newsletter_dequeue_forward($email) {
+    $email = strtolower(sanitize_email($email));
+    $queue = get_option('dehub_newsletter_forward_queue', array());
+    if (!is_array($queue) || empty($queue)) {
+        return;
+    }
+    $next = array_values(array_filter($queue, function ($row) use ($email) {
+        return strtolower((string) $row) !== $email;
+    }));
+    update_option('dehub_newsletter_forward_queue', $next, false);
+}
+
+function dehub_newsletter_process_forward_queue() {
+    $queue = get_option('dehub_newsletter_forward_queue', array());
+    if (!is_array($queue) || empty($queue)) {
+        return;
+    }
+    $batch = array_slice($queue, 0, 15);
+    $rest = array_slice($queue, 15);
+    foreach ($batch as $email) {
+        $result = dehub_forward_newsletter_subscriber($email, false);
+        if (empty($result['forwarded'])) {
+            $rest[] = $email;
+        }
+    }
+    update_option('dehub_newsletter_forward_queue', array_values($rest), false);
+}
+
+add_action('dehub_newsletter_retry_forwards', 'dehub_newsletter_process_forward_queue');
+add_action('init', function () {
+    if (!wp_next_scheduled('dehub_newsletter_retry_forwards')) {
+        wp_schedule_event(time() + 15 * MINUTE_IN_SECONDS, 'hourly', 'dehub_newsletter_retry_forwards');
+    }
+});
+
+function dehub_forward_newsletter_subscriber($email, $queue_on_failure = true) {
     $errors = array();
     $forwarded = array();
 
@@ -1415,20 +1490,39 @@ function dehub_forward_newsletter_subscriber($email) {
         $errors[] = 'No ESP configured: define DEHUB_BREVO_API_KEY (and DEHUB_BREVO_LIST_ID) in wp-config.php';
     }
 
+    $ip_blocked = false;
+    foreach ($errors as $error) {
+        if (dehub_is_esp_ip_restriction($error)) {
+            $ip_blocked = true;
+            break;
+        }
+    }
+
     set_transient('dehub_newsletter_last_forward', array(
         'email' => $email,
         'at' => gmdate('c'),
         'forwarded' => $forwarded,
         'errors' => $errors,
+        'ip_restriction' => $ip_blocked,
     ), WEEK_IN_SECONDS);
 
     if (!empty($errors)) {
         error_log('DEHUB newsletter forward: ' . implode('; ', $errors));
+        if ($ip_blocked) {
+            error_log('DEHUB newsletter: Brevo blocked the WordPress server IP, not the subscriber. Do not add visitor IPs. Deactivate API IP blocking at https://app.brevo.com/security/authorised_ips (Hostinger outbound IPs rotate). The email is still stored in wp_newsletter_subscribers.');
+        }
+    }
+
+    if (!empty($forwarded)) {
+        dehub_newsletter_dequeue_forward($email);
+    } elseif ($queue_on_failure && dehub_newsletter_has_esp_key()) {
+        dehub_newsletter_queue_forward($email);
     }
 
     return array(
         'forwarded' => $forwarded,
         'errors' => $errors,
+        'ip_restriction' => $ip_blocked,
     );
 }
 
@@ -1458,23 +1552,17 @@ function handle_newsletter_subscription($request) {
                 return new WP_Error('subscription_failed', 'Failed to subscribe', array('status' => 500));
             }
             $existing = $again;
-        } else {
-            dehub_forward_newsletter_subscriber($email);
         }
     }
 
-    $last = get_transient('dehub_newsletter_last_forward');
-    $payload = array(
+    // Always attempt ESP sync (idempotent). Failures never fail the reader.
+    dehub_forward_newsletter_subscriber($email);
+
+    return array(
         'success' => true,
         'already' => (bool) $existing,
         'message' => $existing ? 'Already subscribed' : 'Successfully subscribed to newsletter',
     );
-    // Surface forward result for brand-new signups so setup issues are visible.
-    if (!$existing && is_array($last) && isset($last['email']) && strtolower($last['email']) === strtolower($email)) {
-        $payload['forwarded'] = isset($last['forwarded']) ? $last['forwarded'] : array();
-        $payload['forward_errors'] = isset($last['errors']) ? $last['errors'] : array();
-    }
-    return $payload;
 }
 
 add_action('rest_api_init', 'register_newsletter_export_endpoint');
@@ -1515,7 +1603,7 @@ function handle_newsletter_brevo_status() {
 
     $status = array(
         'success' => true,
-        'functions_build' => 'newsletter-brevo-debug-1',
+        'functions_build' => 'newsletter-ip-fix-1',
         'brevo_key_defined' => ($key !== ''),
         'brevo_key_prefix' => $key !== '' ? substr($key, 0, 10) . '…' : '',
         'brevo_key_length' => strlen($key),
@@ -1523,6 +1611,11 @@ function handle_newsletter_brevo_status() {
         'brevo_account_ok' => false,
         'brevo_http_code' => null,
         'brevo_error' => null,
+        'ip_restriction' => false,
+        'ip_restriction_hint' => 'If Brevo reports an unrecognised IP, deactivate API IP blocking at https://app.brevo.com/security/authorised_ips. Do not add subscriber IPs. Shared hosts rotate outbound IPs. Public signup still succeeds in WordPress.',
+        'forward_queue_count' => is_array(get_option('dehub_newsletter_forward_queue', array()))
+            ? count(get_option('dehub_newsletter_forward_queue', array()))
+            : 0,
         'lists' => array(),
         'last_forward' => get_transient('dehub_newsletter_last_forward'),
     );
@@ -1554,6 +1647,7 @@ function handle_newsletter_brevo_status() {
         $status['brevo_error'] = is_array($account_body) && isset($account_body['message'])
             ? $account_body['message']
             : ('HTTP ' . $status['brevo_http_code']);
+        $status['ip_restriction'] = dehub_is_esp_ip_restriction($status['brevo_error']);
         return $status;
     }
 
