@@ -78,3 +78,73 @@ assert(fetchCalls === 1, 'repeat fetches for the same slug should use the cache'
 
 console.log('✅ SSG article parking keeps content for the matching path only');
 console.log('✅ Static article HTML can be fetched for in-app navigation');
+
+const {
+  extractArticleBodyHtml,
+  buildBootstrappedPost,
+  parkArticleBootstrapFromRoot,
+  getArticleBootstrap,
+} = await import('../src/utils/articleBootstrap.js');
+
+const parkedSeo = `
+  <article>
+    <h1>Title</h1>
+    <div class="article-body"><p>First para</p><div class="note">inner</div><p>Last</p></div>
+    <div class="auto-ads-placement"></div>
+  </article>
+`;
+const body = extractArticleBodyHtml(parkedSeo);
+assert(body.includes('First para'), 'extractArticleBodyHtml should keep the article body');
+assert(body.includes('inner'), 'extractArticleBodyHtml should keep nested divs');
+assert(!body.includes('auto-ads-placement'), 'extractArticleBodyHtml should stop at article-body');
+
+window.__DEH_POST_BOOTSTRAP__ = {
+  slug: 'foo',
+  title: 'Foo title',
+  excerpt: 'Foo excerpt',
+  category: 'Snowflake',
+  tags: [{ name: 'dbt', slug: 'dbt' }],
+  readTime: '4 min read',
+  date: '2026-01-01',
+  image: 'https://example.com/hero.jpg',
+  author: 'Sainath Reddy',
+  keyTakeaways: ['One'],
+};
+const boot = buildBootstrappedPost('foo', parkedSeo);
+assert(boot?.htmlReady === true, 'bootstrap + parked body should mark htmlReady');
+assert(boot.content.includes('First para'), 'bootstrapped post should reuse parked body HTML');
+assert(boot.title === 'Foo title', 'bootstrapped title should come from JSON');
+assert(buildBootstrappedPost('other', parkedSeo) === null, 'bootstrap must not leak to another slug');
+
+window.__DEH_POST_BOOTSTRAP__ = undefined;
+const fakeDoc = {
+  getElementById(id) {
+    if (id !== 'deh-post-bootstrap') return null;
+    return { textContent: JSON.stringify({ slug: 'parked-slug', title: 'Parked' }) };
+  },
+};
+globalThis.document = fakeDoc;
+parkArticleBootstrapFromRoot(null);
+assert(getArticleBootstrap('parked-slug')?.title === 'Parked', 'parkArticleBootstrapFromRoot should store JSON');
+
+const generator = await import('node:fs').then((fs) =>
+  fs.readFileSync(new URL('../scripts/generateStaticPagesIncremental.js', import.meta.url), 'utf8')
+);
+assert(generator.includes('deh-post-bootstrap'), 'SSG articles must embed post bootstrap JSON');
+assert(generator.includes('article-hero'), 'SSG articles should paint the hero before React mounts');
+assert(generator.includes('inter-latin.woff2'), 'SSG articles should preload Inter like the React app');
+
+const app = await import('node:fs').then((fs) =>
+  fs.readFileSync(new URL('../src/App.jsx', import.meta.url), 'utf8')
+);
+assert(app.includes("import ArticlePage from './pages/ArticlePage'"), 'ArticlePage must be eager, not a lazy chunk gap');
+assert(app.includes('isFirstLoad'), 'first React mount must not scroll away from static reading position');
+
+const articlePage = await import('node:fs').then((fs) =>
+  fs.readFileSync(new URL('../src/pages/ArticlePage.jsx', import.meta.url), 'utf8')
+);
+assert(articlePage.includes('htmlReady'), 'ArticlePage should reuse SSG HTML on first paint');
+assert(articlePage.includes('initial={false}'), 'ArticlePage must skip fade-in on first paint');
+
+console.log('✅ Article bootstrap reuses parked body without a WordPress wait');
+console.log('✅ Cold article loads skip lazy-chunk and fade-in flashes');

@@ -1,5 +1,5 @@
 // src/App.jsx - FIXED VERSION
-import React, { Suspense, lazy, useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Routes, Route, useLocation, Link, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import Layout from '@/components/Layout';
@@ -11,6 +11,7 @@ import { recordEngagementRoute, bootstrapEngagementListeners } from '@/utils/eng
 import { useApiDebugger } from '@/hooks/useApiDebugger';
 import CookieConsent from '@/components/CookieConsent';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import ArticlePage from './pages/ArticlePage';
 
 // Lazy load pages for code splitting
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -18,7 +19,6 @@ const CategoryPage = lazy(() => import('./pages/CategoryPage'));
 const TagPage = lazy(() => import('./pages/TagPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const AllArticlesPage = lazy(() => import('./pages/AllArticlesPage'));
-const ArticlePage = lazy(() => import('./pages/ArticlePage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
@@ -226,6 +226,7 @@ const SafeRoute = ({ children, fallbackText = "Loading..." }) => {
 // Combined Route Change Tracker for Analytics + Accessibility
 const RouteChangeTracker = ({ onRouteChange }) => {
   const location = useLocation();
+  const isFirstLoad = useRef(true);
 
   useEffect(() => {
     if (typeof performance !== "undefined" && performance.mark) {
@@ -242,7 +243,13 @@ const RouteChangeTracker = ({ onRouteChange }) => {
     // Record engagement funnel signals (first route = landing, later = second-click).
     try { recordEngagementRoute(); } catch { /* ignore */ }
 
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    // A cold article load already painted static HTML. Scrolling to top here
+    // yanks readers who started scrolling before React mounted.
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false;
+    } else {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
 
     // Move focus to main content for keyboard/screen-reader users
     const main = document.getElementById('main-content');
@@ -287,7 +294,6 @@ function App() {
 
     const prefetchTimer = setTimeout(() => {
       import('./pages/AllArticlesPage');
-      import('./pages/ArticlePage');
 
       // ✅ Prefetch popular category pages
       import('./pages/CategoryPage'); // This covers all categories including new ones

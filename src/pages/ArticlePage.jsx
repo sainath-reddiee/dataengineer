@@ -411,7 +411,7 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       className="space-y-4"
     >
@@ -560,6 +560,14 @@ const ArticlePage = () => {
   // those bullets into the KeyTakeaways component — otherwise readers see both.
   const { processedHtml, keyTakeaways } = useMemo(() => {
     if (!post?.content) return { processedHtml: '', keyTakeaways: [] };
+    // SSG already sanitized/linked this body. Re-running the pipeline on first
+    // paint would swap the HTML the reader is already looking at.
+    if (post.htmlReady) {
+      return {
+        processedHtml: post.content,
+        keyTakeaways: Array.isArray(post.keyTakeaways) ? post.keyTakeaways : [],
+      };
+    }
     const analysis = analyzeKeyTakeaways(post.content);
     const elevate = analysis.source === 'comment' || analysis.source === 'heading';
     // Only elevate explicit TL;DR / Key Takeaways sections. Synthetic H2
@@ -570,7 +578,7 @@ const ArticlePage = () => {
       processedHtml: injectInternalLinks(sanitized, slug),
       keyTakeaways: elevate ? analysis.items : [],
     };
-  }, [post?.content, slug]);
+  }, [post?.content, post?.htmlReady, post?.keyTakeaways, slug]);
 
   const headings = useMemo(() => extractHeadings(processedHtml), [processedHtml]);
   const parkedSsgHtml = useSsgArticleFallback(slug);
@@ -696,9 +704,8 @@ const ArticlePage = () => {
       <div className="container mx-auto px-6 max-w-7xl">
         {/* Breadcrumbs + Back Button */}
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
           className="flex items-center justify-between gap-4 mb-6 flex-wrap"
         >
           <Breadcrumbs breadcrumbs={breadcrumbs} />
@@ -707,7 +714,7 @@ const ArticlePage = () => {
           </Button>
         </motion.div>
 
-        <motion.article initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }} className="space-y-8">
+        <motion.article initial={false} animate={{ opacity: 1 }} className="space-y-8">
           {/* Hero Image */}
           <div className="relative rounded-3xl overflow-hidden shadow-2xl max-h-[280px] sm:max-h-[340px] md:max-h-[400px] aspect-video">
             <LazyImage
@@ -776,7 +783,7 @@ const ArticlePage = () => {
           {/* Tags Section */}
           {safePost.tags && safePost.tags.length > 0 && (
             <motion.div
-              initial={{ opacity: 0 }}
+              initial={false}
               animate={{ opacity: 1 }}
               className="my-8 p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl border border-slate-700/50 backdrop-blur-sm"
             >
