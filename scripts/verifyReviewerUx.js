@@ -43,6 +43,7 @@ assert(postCard.includes('reloadDocument'), 'article cards should full-load duri
 
 const articlePage = readFileSync(join(root, 'src/pages/ArticlePage.jsx'), 'utf8');
 assert(articlePage.includes('useSsgArticleFallback'), 'ArticlePage should fetch SSG HTML for in-app clicks');
+assert(articlePage.includes('htmlReady'), 'cold article loads should reuse SSG HTML instead of refetching');
 
 console.log('✅ Reviewer UX fallbacks keep article titles on the homepage');
 console.log('✅ Public Refresh / news-error chrome is not shown to reviewers');

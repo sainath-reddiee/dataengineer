@@ -9,6 +9,7 @@ import '@/index.css';
 import { initThirdPartyScripts } from '@/utils/scriptLoader';
 import { isCrawlerUserAgent } from '@/utils/isCrawler';
 import { parkSsgArticleFromRoot } from '@/utils/ssgArticle';
+import { parkArticleBootstrapFromRoot } from '@/utils/articleBootstrap';
 
 // Note: Font preloading is handled in index.html with proper preload tags
 // This avoids duplicate requests and improves FCP
@@ -49,6 +50,7 @@ const initApp = () => {
 
   const rootEl = document.getElementById('root');
   parkSsgArticleFromRoot(rootEl);
+  parkArticleBootstrapFromRoot(rootEl);
   const root = ReactDOM.createRoot(rootEl);
 
   root.render(

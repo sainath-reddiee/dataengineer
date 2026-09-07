@@ -1,6 +1,8 @@
 // src/hooks/useWordPress.js - COMPLETE FINAL VERSION WITH TAG SUPPORT
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import wordpressApi from '@/services/wordpressApi';
+import { buildBootstrappedPost } from '@/utils/articleBootstrap';
+import { getParkedSsgArticle } from '@/utils/ssgArticle';
 
 // Hook for fetching posts with proper sorting and pagination
 export const usePosts = ({
@@ -251,14 +253,28 @@ export const usePosts = ({
 
 // Hook for fetching a single post
 export const usePost = (slug, enabled = true) => {
-  const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const bootstrapped = useMemo(() => {
+    if (!slug || typeof window === 'undefined') return null;
+    return buildBootstrappedPost(slug, getParkedSsgArticle(slug));
+  }, [slug]);
+
+  const [post, setPost] = useState(bootstrapped);
+  const [loading, setLoading] = useState(!bootstrapped);
   const [error, setError] = useState(null);
   const currentRequestRef = useRef(0);
 
   useEffect(() => {
     if (!enabled || !slug) {
       setLoading(false);
+      return;
+    }
+
+    // Cold article loads already have SSG HTML + metadata. Skip the WordPress
+    // round-trip so the first React paint is the real article, not a swap.
+    if (bootstrapped?.htmlReady) {
+      setPost(bootstrapped);
+      setLoading(false);
+      setError(null);
       return;
     }
 
@@ -297,7 +313,7 @@ export const usePost = (slug, enabled = true) => {
       isCancelled = true;
       console.log(`🧹 [Request #${requestId}] usePost cleanup`);
     };
-  }, [slug, enabled]);
+  }, [slug, enabled, bootstrapped]);
 
   const refresh = useCallback(async () => {
     if (!slug) return;

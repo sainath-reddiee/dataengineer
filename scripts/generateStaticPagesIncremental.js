@@ -363,6 +363,15 @@ function escapeJsonLd(str) {
     .replace(/\n/g, '\\n')
     .replace(/\r/g, '\\r');
 }
+
+function escapeJsonForScript(value) {
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+}
 /**
  * Sanitize WordPress HTML content for safe embedding in static pages.
  * Strips dangerous elements (script, iframe, object, embed, form),
@@ -2332,7 +2341,7 @@ function findCriticalChunks(distDir) {
 
   const jsFiles = fs.readdirSync(jsDir);
   // Critical chunks that the browser will need immediately after the entry module
-  const criticalPrefixes = ['react-vendor-', 'vendor-', 'helmet-'];
+  const criticalPrefixes = ['react-vendor-', 'vendor-', 'helmet-', 'framer-motion-', 'markdown-', 'icons-'];
   const chunks = [];
 
   for (const prefix of criticalPrefixes) {
@@ -2716,7 +2725,7 @@ function sortCategoriesByPriority(categories) {
 // ============================================================================
 
 function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
-  const { title: rawTitle, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, featuredImage, categoryNames = [], tagNames = [] } = pageData;
+  const { id: postId, title: rawTitle, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, featuredImage, categoryNames = [], tagNames = [] } = pageData;
   const { jsFile, cssFile, modulePreloadHtml = '' } = bundleFiles;
 
   // 🛡️ Sanitize user-supplied strings from WordPress
@@ -2832,6 +2841,34 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const readingTime = Math.max(1, Math.ceil(articleWordCount / 250));
   const publishDateObj = new Date(effectivePublished);
   const formattedDate = publishDateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  const heroHtml = featuredImage
+    ? `<div class="article-hero"><img src="${escapeHtml(featuredImage)}" alt="${title}" width="1600" height="900" fetchpriority="high" decoding="async" /></div>`
+    : '';
+  const bootstrapJson = escapeJsonForScript({
+    id: postId || slug,
+    slug,
+    title: decodeHtmlEntities(rawTitle),
+    excerpt: decodeHtmlEntities(rawDescription),
+    category: (categoryNames && categoryNames[0]) || 'Uncategorized',
+    tags: (tagNames || []).map((name) => ({
+      name,
+      slug: String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+    })),
+    readTime: `${readingTime} min read`,
+    date: effectivePublished,
+    modified: effectiveModified,
+    image: featuredImage || ogImageUrl,
+    author: 'Sainath Reddy',
+    authorData: {
+      name: 'Sainath Reddy',
+      bio: '',
+      avatarUrl: '',
+      website: 'https://dataengineerhub.blog/about',
+      slug: '',
+      role: 'Founder & Owner',
+    },
+    keyTakeaways: elevateTakeaways ? takeawaysAnalysis.items : [],
+  });
 
   // ðŸŽ¬ Extract YouTube/Vimeo embeds for VideoObject schema
   let videoSchemaBlock = '';
@@ -2926,6 +2963,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS" href="https://dataengineerhub.blog/rss.xml" />
     <meta name="robots" content="${articleRobotsDirective}" />
 ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />` : ''}
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="${relativePrefix}fonts/inter-latin.woff2">
 
     <!-- Open Graph -->
     <meta property="og:type" content="article" />
@@ -2959,11 +2997,19 @@ ${CONSENT_MODE_V2_HTML}
     ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
 
     <style>
-      /* 🎨 STYLED FOR CRAWLER VISIBILITY */
+      /* 🎨 STYLED FOR CRAWLER VISIBILITY — match React chrome so the
+         createRoot handoff does not look like a second site. */
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: swap;
+        src: url('${relativePrefix}fonts/inter-latin.woff2') format('woff2');
+      }
       * { margin: 0; padding: 0; box-sizing: border-box; }
       
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
         color: #f8fafc;
         line-height: 1.6;
@@ -2972,14 +3018,10 @@ ${CONSENT_MODE_V2_HTML}
       
       /* 🔥 CRITICAL: SEO content is FULLY VISIBLE by default */
       .seo-content {
-        max-width: 900px;
+        max-width: 80rem;
         margin: 0 auto;
-        padding: 40px 20px;
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        border-radius: 16px;
-        margin-top: 40px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        padding: 1rem 1.5rem 3rem;
+        background: transparent;
       }
       
       .seo-content h1 {
@@ -3240,10 +3282,25 @@ ${CONSENT_MODE_V2_HTML}
         white-space: nowrap;
       }
       
+      .article-hero {
+        position: relative;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        max-height: 400px;
+        aspect-ratio: 16 / 9;
+        margin: 0 0 1.5rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+      }
+      .article-hero img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
       @media (max-width: 768px) {
         .seo-content {
-          padding: 20px 15px;
-          margin-top: 20px;
+          padding: 1rem 1rem 2.5rem;
         }
         
         .seo-content h1 {
@@ -3263,17 +3320,21 @@ ${CONSENT_MODE_V2_HTML}
         }
       }
 
-      /* Site Nav */
+      /* Site Nav — 64px sticky bar to match React Header */
       .site-nav {
         background: rgba(15, 23, 42, 0.95);
         border-bottom: 1px solid rgba(255,255,255,0.1);
-        padding: 12px 20px;
+        min-height: 64px;
+        padding: 0 24px;
         position: sticky;
         top: 0;
         z-index: 100;
+        display: flex;
+        align-items: center;
       }
       .site-nav-inner {
         max-width: 1200px;
+        width: 100%;
         margin: 0 auto;
         display: flex;
         align-items: center;
@@ -3344,8 +3405,9 @@ ${CONSENT_MODE_V2_HTML}
           <a href="https://dataengineerhub.blog" class="site-nav-brand">DataEngineer Hub</a>
           <ul class="site-nav-links">
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
+            <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
-            <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
+            <li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>
           </ul>
         </div>
       </nav>
@@ -3375,6 +3437,7 @@ ${CONSENT_MODE_V2_HTML}
       <!-- 🔥 FULL ARTICLE CONTENT - Visible to Googlebot/AdSense crawlers -->
       <div class="seo-content">
         <article>
+          ${heroHtml}
           <h1 class="article-title">${title}</h1>
           <div style="display:flex;align-items:center;gap:0.6rem;margin:0.75rem 0 1rem;flex-wrap:wrap;color:#94a3b8;font-size:0.9rem;">
             <a href="/about" style="color:#60a5fa;text-decoration:none;font-weight:500;">Sainath Reddy</a>
@@ -3457,6 +3520,7 @@ ${CONSENT_MODE_V2_HTML}
         <p>&copy; ${new Date().getFullYear()} DataEngineer Hub. All rights reserved.</p>
       </footer>
     </div>
+    <script type="application/json" id="deh-post-bootstrap">${bootstrapJson}</script>
 
     <!-- 🔥 STRUCTURED DATA - Article Schema -->
     <script type="application/ld+json">
@@ -6579,7 +6643,7 @@ async function buildIncremental(options = {}) {
 
   try {
     // 🔥 CRITICAL: Fetch with _embed to get full content + categories + tags for mapping
-    const posts = await fetchFromWP('/posts', 'slug,title,excerpt,content,date,modified,categories,tags,jetpack_featured_media_url');
+    const posts = await fetchFromWP('/posts', 'id,slug,title,excerpt,content,date,modified,categories,tags,jetpack_featured_media_url');
     console.log(`   Found ${posts.length} posts from API`);
 
     // Populate post slugs for link normalization
@@ -6631,6 +6695,7 @@ async function buildIncremental(options = {}) {
       const fullContent = post.content.rendered; // Complete HTML content
 
       const pageData = {
+        id: post.id,
         title: seoOverride?.title || rawTitle,
         description: seoOverride?.description || optimizedDescription,
         path: pagePath,
