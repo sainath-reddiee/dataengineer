@@ -150,7 +150,19 @@ export function WeeklyDigestPage() {
         <p className="font-semibold text-white">Where emails live, and how you send</p>
         <ol className="list-decimal list-inside space-y-1 text-gray-300">
           <li>Signup on the site writes to WordPress. Upload the updated <code>functions.php</code>.</li>
-          <li>Optional: add <code>DEHUB_BUTTONDOWN_API_KEY</code> or <code>DEHUB_BREVO_API_KEY</code> in <code>wp-config.php</code> so new signups also land in a send tool. Never put those keys in Vite.</li>
+          <li>Optional: add <code>DEHUB_BUTTONDOWN_API_KEY</code> or <code>DEHUB_BREVO_API_KEY</code> in <code>wp-config.php</code> so new signups also land in a send tool. Never put those keys in Vite — that makes Brevo check each reader&apos;s IP and reject them.</li>
+          <li>
+            If Brevo shows &quot;unrecognised IP address&quot;, deactivate API IP blocking at{' '}
+            <a
+              href="https://app.brevo.com/security/authorised_ips"
+              target="_blank"
+              rel="noreferrer"
+              className="text-amber-200 underline"
+            >
+              app.brevo.com/security/authorised_ips
+            </a>
+            . Do not add subscriber IPs. Hostinger outbound IPs rotate, so an allowlist will break again.
+          </li>
           <li>Once a week: copy the email draft into Buttondown (or Beehiiv) and send. Then paste the LinkedIn draft.</li>
         </ol>
       </section>

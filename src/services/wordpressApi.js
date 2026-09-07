@@ -609,25 +609,53 @@ class WordPressAPI {
     }
 
     // Store of record is WordPress (wp_newsletter_subscribers).
-    // Do not call Brevo/Buttondown from the browser — VITE_ keys ship to every visitor.
+    // Do not call Brevo/Buttondown from the browser — visitor IPs then hit
+    // Brevo's API allowlist and every reader gets blocked.
     try {
       const result = await this.makeRequest('/newsletter/subscribe', {
         method: 'POST',
         body: JSON.stringify({ email: trimmed }),
       });
 
-      if (result?.data?.success === false) {
-        throw new Error(result.data.message || 'Subscription failed');
+      const payload = result?.data || {};
+      const leaked = [payload.message, ...(Array.isArray(payload.forward_errors) ? payload.forward_errors : [])]
+        .filter(Boolean)
+        .join(' ');
+
+      // WordPress already accepted the address. ESP IP-allowlist noise must
+      // never fail (or be shown to) the subscriber.
+      if (payload.success !== false || this.isEspIpRestrictionError(leaked)) {
+        return { success: true, already: Boolean(payload.already) };
       }
 
-      return { success: true, already: Boolean(result?.data?.already) };
+      throw new Error(this.publicNewsletterError(payload.message));
     } catch (error) {
       const message = String(error?.message || '');
+      if (this.isEspIpRestrictionError(message)) {
+        return { success: true };
+      }
       if (message === 'Content not found' || message.includes('404')) {
         throw new Error('Signup is temporarily unavailable. Use the RSS feed until it is back.');
       }
-      throw error;
+      throw new Error(this.publicNewsletterError(message));
     }
+  }
+
+  isEspIpRestrictionError(message) {
+    return /authorised_ips|authorized_ips|unrecognised ip|unrecognized ip|ip not authorized|unauthorized:\s*not verified/i.test(
+      String(message || '')
+    );
+  }
+
+  publicNewsletterError(message) {
+    const text = String(message || '').trim();
+    if (!text || this.isEspIpRestrictionError(text) || /brevo|buttondown|api-key|wp-config/i.test(text)) {
+      return 'Could not reach signup just now. Please try again in a moment.';
+    }
+    if (text.startsWith('Request failed') || text.includes('Server error')) {
+      return 'Could not reach signup just now. Please try again in a moment.';
+    }
+    return text;
   }
 
   async getNewsletterSubscribers(token) {
