@@ -62,23 +62,27 @@ assert(api.includes('publicNewsletterError'), 'frontend must sanitize ESP setup 
 
 const php = read('functions.php');
 assert(php.includes('dehub_newsletter_table'), 'WordPress must create the subscriber table');
-assert(php.includes('dehub_forward_newsletter_subscriber'), 'WordPress may forward to an ESP');
-assert(php.includes('DEHUB_BUTTONDOWN_API_KEY'), 'ESP keys belong in wp-config constants');
 assert(php.includes('Already subscribed') || php.includes('already'), 'duplicates must not 500');
-assert(php.includes('dehub_is_esp_ip_restriction'), 'WordPress must detect Brevo IP allowlist errors');
-assert(php.includes('dehub_newsletter_queue_forward'), 'failed ESP forwards must retry, not fail the reader');
+const subscribeFn = php.split('function handle_newsletter_subscription')[1]?.split('function ')[0] || '';
+assert(
+  !subscribeFn.includes('dehub_forward_newsletter_subscriber('),
+  'public subscribe must not forward to Brevo or any ESP'
+);
 assert(!php.includes("payload['forward_errors']"), 'public subscribe must not leak ESP errors to visitors');
 
 const app = read('src/App.jsx');
 assert(app.includes('weekly-digest'), 'admin route /admin/weekly-digest must exist');
 
 const nav = read('src/components/admin/AdminLayout.jsx');
-assert(nav.includes('/admin/weekly-digest'), 'admin nav must link Weekly Digest');
+assert(nav.includes('/admin/weekly-digest'), 'admin nav must link the newsletter list');
+const digest = read('src/pages/admin/WeeklyDigestPage.jsx');
+assert(digest.includes('Download CSV'), 'admin newsletter page must export the list');
+assert(!digest.includes('app.brevo.com'), 'admin newsletter page must not send people back to Brevo');
 
 const envExample = read('.env.example');
 assert(!/VITE_BREVO_API_KEY=your-brevo-api-key/.test(envExample), '.env.example must not recommend a public Brevo key');
-assert(envExample.includes('DEHUB_BUTTONDOWN_API_KEY') || envExample.includes('wp-config'), '.env.example should point ESP keys at wp-config');
-assert(envExample.includes('authorised_ips'), '.env.example should warn about Brevo API IP blocking');
+assert(!envExample.includes('DEHUB_BREVO_API_KEY'), '.env.example must not recommend Brevo');
+assert(envExample.includes('DEHUB_NEWSLETTER_EXPORT_TOKEN'), '.env.example should document the subscriber list token');
 
 console.log('✅ Weekly digest drafts stay on recent articles');
 console.log('✅ Signup goes to WordPress, not a public ESP key');
