@@ -1555,8 +1555,8 @@ function handle_newsletter_subscription($request) {
         }
     }
 
-    // Always attempt ESP sync (idempotent). Failures never fail the reader.
-    dehub_forward_newsletter_subscriber($email);
+    // WordPress is the list. Do not forward to Brevo/Buttondown — those
+    // APIs add IP-allowlist failures and hide emails from the site owner.
 
     return array(
         'success' => true,

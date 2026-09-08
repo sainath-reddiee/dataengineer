@@ -30,7 +30,7 @@ const navGroups = [
         items: [
             { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
             { path: '/admin/proposals', icon: FileSearch, label: 'Guest proposals' },
-            { path: '/admin/weekly-digest', icon: Mail, label: 'Weekly Digest' },
+            { path: '/admin/weekly-digest', icon: Mail, label: 'Newsletter' },
             { path: '/admin/contributors', icon: Users2, label: 'Contributors' },
             { path: '/admin/content-calendar', icon: Calendar, label: 'Content Calendar' },
             { path: '/admin/article-writer', icon: FileSearch, label: 'AI Article Writer' },
