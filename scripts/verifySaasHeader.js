@@ -64,7 +64,7 @@ assert(!header.includes("animate={{ y: isVisible"), 'Header must stay visible wh
 
 assert(hero.includes('DataEngineer Hub · production tutorials'), 'Hero should use a SaaS-style eyebrow');
 assert(!hero.includes('card-3d'), 'Hero stats must stay inline, not boxed cards');
-assert(hero.includes('lg:justify-start'), 'Hero stats should sit with the copy, not in a centered card grid');
+assert(hero.includes('md:justify-start'), 'Hero stats should sit with the copy, not in a centered card grid');
 assert(hero.includes('/tools/sql-playground'), 'Hero should keep a playground CTA');
 assert(hero.includes('rounded-lg'), 'Hero CTAs should use SaaS rounded-lg buttons');
 assert(hero.includes('HubMotion'), 'Hero should show the motion map that explains the hub');

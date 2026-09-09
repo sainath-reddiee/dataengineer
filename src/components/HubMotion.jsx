@@ -28,8 +28,8 @@ const STAGES = [
 const TiltCard = ({ children, className = '', disabled = false }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [7, -7]), { stiffness: 220, damping: 22 });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-7, 7]), { stiffness: 220, damping: 22 });
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [12, -12]), { stiffness: 220, damping: 22 });
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-12, 12]), { stiffness: 220, damping: 22 });
 
   const onMove = (event) => {
     if (disabled) return;
@@ -69,22 +69,33 @@ const HubMotion = ({ reduceMotion = false }) => {
         disabled={reduceMotion}
         className="mb-3 rounded-xl border border-white/10 bg-slate-950/50 p-3 backdrop-blur-sm"
       >
-        <div className="grid grid-cols-4 gap-2">
+        <div className="flex items-stretch gap-1.5">
           {STAGES.map((stage, index) => (
-            <motion.div
-              key={stage.label}
-              className="rounded-lg bg-white/5 px-2 py-2 text-center"
-              animate={reduceMotion ? undefined : { y: [0, -4, 0] }}
-              transition={reduceMotion ? undefined : {
-                duration: 3.2,
-                repeat: Infinity,
-                delay: index * 0.25,
-                ease: 'easeInOut',
-              }}
-            >
-              <p className="text-[11px] font-semibold text-white">{stage.label}</p>
-              <p className="mt-0.5 hidden text-[10px] text-slate-400 sm:block">{stage.hint}</p>
-            </motion.div>
+            <div key={stage.label} className="flex min-w-0 flex-1 items-center gap-1.5">
+              <motion.div
+                className="min-w-0 flex-1 rounded-lg bg-white/5 px-2 py-2 text-center"
+                animate={reduceMotion ? undefined : { y: [0, -6, 0] }}
+                transition={reduceMotion ? undefined : {
+                  duration: 2.6,
+                  repeat: Infinity,
+                  delay: index * 0.22,
+                  ease: 'easeInOut',
+                }}
+              >
+                <p className="text-[11px] font-semibold text-white">{stage.label}</p>
+                <p className="mt-0.5 hidden text-[10px] leading-tight text-slate-400 sm:block">{stage.hint}</p>
+              </motion.div>
+              {index < STAGES.length - 1 && (
+                <motion.span
+                  aria-hidden="true"
+                  className="hidden text-blue-300 sm:inline"
+                  animate={reduceMotion ? undefined : { x: [0, 3, 0], opacity: [0.4, 1, 0.4] }}
+                  transition={reduceMotion ? undefined : { duration: 1.4, repeat: Infinity, delay: index * 0.15 }}
+                >
+                  →
+                </motion.span>
+              )}
+            </div>
           ))}
         </div>
       </TiltCard>
@@ -98,7 +109,7 @@ const HubMotion = ({ reduceMotion = false }) => {
               initial={reduceMotion ? false : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: 0.05 * index }}
-              whileHover={reduceMotion ? undefined : { y: -3 }}
+              whileHover={reduceMotion ? undefined : { y: -4, scale: 1.02 }}
             >
               <Link
                 to={action.to}

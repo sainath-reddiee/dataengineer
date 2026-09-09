@@ -50,12 +50,12 @@ const Hero = () => {
       )}
 
       <div className="container relative z-10 mx-auto max-w-6xl">
-        <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-10">
+        <div className="grid items-center gap-6 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:gap-8">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="text-center lg:text-left"
+            className="text-center md:text-left"
           >
             <motion.p
               variants={itemVariants}
@@ -75,7 +75,7 @@ const Hero = () => {
 
             <motion.p
               variants={itemVariants}
-              className="mx-auto mb-6 max-w-xl text-base leading-relaxed text-gray-300 sm:text-lg lg:mx-0"
+              className="mx-auto mb-6 max-w-xl text-base leading-relaxed text-gray-300 sm:text-lg md:mx-0"
             >
               Production notes on Snowflake, dbt, Airflow, and the warehouse bill — written by a
               working data engineer, not recycled vendor docs.
@@ -83,7 +83,7 @@ const Hero = () => {
 
             <motion.div
               variants={itemVariants}
-              className="mb-5 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start"
+              className="mb-5 flex flex-col items-center justify-center gap-3 sm:flex-row md:justify-start"
             >
               <Button
                 asChild
@@ -110,7 +110,7 @@ const Hero = () => {
 
             <motion.div
               variants={itemVariants}
-              className="flex flex-wrap items-center justify-center gap-4 text-sm sm:gap-6 lg:justify-start"
+              className="flex flex-wrap items-center justify-center gap-3 text-sm sm:gap-5 md:justify-start"
             >
               {loading ? (
                 <div className="flex items-center gap-2 text-gray-400">
