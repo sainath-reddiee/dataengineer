@@ -149,7 +149,7 @@ const SparkleCard = ({ category }) => {
 };
 
 
-const TechCategories = () => {
+const TechCategories = ({ compact = false }) => {
   const { categories: apiCategories, loading, refresh: refreshCategories } = useCategories();
 
   const categoryConfig = [
@@ -177,6 +177,23 @@ const TechCategories = () => {
       return category.posts >= MIN_INDEXABLE_CATEGORY_COUNT;
     });
 
+  const grid = (
+    <>
+      {loading && (<div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div></div>)}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        {categories.map((category, index) => (
+          <motion.div key={category.name} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: index * 0.1 }}>
+            <SparkleCard category={category} />
+          </motion.div>
+        ))}
+      </div>
+    </>
+  );
+
+  if (compact) {
+    return grid;
+  }
+
   return (
     <section className="py-12 sm:py-16 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/5 to-transparent"></div>
@@ -190,14 +207,7 @@ const TechCategories = () => {
             <p className="text-base sm:text-lg text-gray-300 max-w-2xl mx-auto px-4">Deep dive into the tools and platforms that power modern data engineering</p>
           </motion.div>
         )}
-        {loading && (<div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div></div>)}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
-          {categories.map((category, index) => (
-            <motion.div key={category.name} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: index * 0.1 }}>
-              <SparkleCard category={category} />
-            </motion.div>
-          ))}
-        </div>
+        {grid}
       </div>
     </section>
   );

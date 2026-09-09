@@ -63,11 +63,21 @@ assert(header.includes('SupportModal'), 'Coffee / support modal must remain wire
 assert(!header.includes("animate={{ y: isVisible"), 'Header must stay visible while scrolling');
 
 assert(hero.includes('DataEngineer Hub · production tutorials'), 'Hero should use a SaaS-style eyebrow');
-assert(hero.includes('card-3d'), 'Hero stats should lift like cards');
-assert(hero.includes('/tools/sql-playground'), 'Hero should keep a third CTA into tools');
+assert(!hero.includes('card-3d'), 'Hero stats must stay inline, not boxed cards');
+assert(hero.includes('lg:justify-start'), 'Hero stats should sit with the copy, not in a centered card grid');
+assert(hero.includes('/tools/sql-playground'), 'Hero should keep a playground CTA');
 assert(hero.includes('rounded-lg'), 'Hero CTAs should use SaaS rounded-lg buttons');
+assert(hero.includes('HubMotion'), 'Hero should show the motion map that explains the hub');
+
+const hub = readFileSync(join(root, 'src/components/HubMotion.jsx'), 'utf8');
+assert(hub.includes('What you can do here'), 'Hub motion should explain the site at a glance');
+assert(hub.includes('Ingest'), 'Hub motion should show the data-stack stages');
+assert(hub.includes('/interview-prep'), 'Hub motion should still reach interview prep');
 
 assert(home.includes('max-w-6xl'), 'Homepage should tighten to a SaaS content width');
+assert(home.includes('<FeaturedPosts compact'), 'Homepage featured section should drop the extra marketing header');
+assert(home.includes('<TrendingPosts compact'), 'Homepage trending section should drop the extra marketing header');
+assert(home.includes('<TechCategories compact'), 'Homepage tech grid should drop the extra marketing header');
 assert(home.includes('card-3d'), 'Homepage cards should use the lift hover');
 assert(css.includes('.card-3d'), 'Global card-3d hover must exist');
 assert(css.includes('prefers-reduced-motion'), 'card-3d must respect reduced motion');

@@ -40,7 +40,7 @@ const SectionHeader = ({
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, amount: 0.4 }}
     transition={{ duration: 0.3 }}
-    className="mb-6 sm:mb-7 flex items-start justify-between gap-3"
+    className="mb-4 sm:mb-5 flex items-start justify-between gap-3"
   >
     <div className="flex items-center gap-3 flex-1">
       <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-gradient-to-br from-blue-500/20 to-purple-500/20'}`}>
@@ -162,14 +162,14 @@ const HomePage = () => {
         {/* ============================================================================
             HERO SECTION - Compact
             ============================================================================ */}
-        <div className="pb-8 sm:pb-12">
+        <div className="pb-4 sm:pb-6">
           <Hero />
         </div>
 
         {/* ============================================================================
             CONTAINER WITH OPTIMIZED SPACING
             ============================================================================ */}
-        <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-10 space-y-10 sm:space-y-14">
+        <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-4 sm:py-6 space-y-8 sm:space-y-10">
 
           <section className="rounded-xl border border-slate-700/70 bg-slate-800/40 px-5 py-4 sm:px-6 sm:py-5">
             <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
@@ -200,7 +200,7 @@ const HomePage = () => {
               actionLink="/articles"
             />
             <Suspense fallback={<SectionSkeleton height="h-40" />}>
-              <FeaturedPosts />
+              <FeaturedPosts compact />
             </Suspense>
           </section>
 
@@ -214,7 +214,7 @@ const HomePage = () => {
               actionLink="/articles"
             />
             <Suspense fallback={<SectionSkeleton height="h-40" />}>
-              <TrendingPosts />
+              <TrendingPosts compact />
             </Suspense>
           </section>
 
@@ -232,7 +232,7 @@ const HomePage = () => {
               actionLink="/articles"
             />
             <Suspense fallback={<SectionSkeleton height="h-32" />}>
-              <TechCategories />
+              <TechCategories compact />
             </Suspense>
           </section>
 

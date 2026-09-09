@@ -12,7 +12,7 @@ import FallbackArticleList from './FallbackArticleList';
 import { useHomepagePosts } from '@/hooks/useHomepagePosts';
 import { useSlowLoadFallback } from '@/hooks/useSlowLoadFallback';
 
-const FeaturedPosts = () => {
+const FeaturedPosts = ({ compact = false }) => {
   const shouldReduceMotion = reduceMotion();
   const location = useLocation();
 
@@ -63,7 +63,31 @@ const FeaturedPosts = () => {
     </motion.div>
   );
 
+  const cards = featuredPosts.length === 0 ? (
+    <FallbackArticleList limit={6} />
+  ) : (
+    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${compact ? '' : 'mb-12'}`}>
+      {featuredPosts.map((post, index) => (
+        <motion.div
+          key={post.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
+        >
+          <PostCard post={post} />
+        </motion.div>
+      ))}
+    </div>
+  );
+
   if (loading && featuredPosts.length === 0 && !showBundledFallback) {
+    if (compact) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, index) => <PostCardSkeleton key={index} />)}
+        </div>
+      );
+    }
     return (
       <section className="pt-8 pb-12 relative">
         <div className="container mx-auto px-6">
@@ -73,6 +97,10 @@ const FeaturedPosts = () => {
         </div>
       </section>
     );
+  }
+
+  if (compact) {
+    return cards;
   }
 
   if (featuredPosts.length === 0) {
@@ -91,23 +119,7 @@ const FeaturedPosts = () => {
     <section className="pt-8 pb-12 relative">
       <div className="container mx-auto px-6">
         {heading}
-
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
-          style={{ minHeight: '400px' }}
-        >
-          {featuredPosts.map((post, index) => (
-            <motion.div
-              key={post.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <PostCard post={post} />
-            </motion.div>
-          ))}
-        </div>
-
+        {cards}
         {viewAll}
       </div>
     </section>
