@@ -8,7 +8,7 @@ import PostCardSkeleton from './PostCardSkeleton';
 import { useHomepagePosts } from '@/hooks/useHomepagePosts';
 import { useSlowLoadFallback } from '@/hooks/useSlowLoadFallback';
 
-const TrendingPosts = () => {
+const TrendingPosts = ({ compact = false }) => {
   const shouldReduceMotion = reduceMotion();
 
   const { posts: trendingPosts, loading } = useHomepagePosts({
@@ -21,7 +21,36 @@ const TrendingPosts = () => {
     ? { initial: {}, animate: {}, transition: { duration: 0 } }
     : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6 } };
 
+  const grid = (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {trendingPosts.map((post, index) => (
+        <motion.div
+          key={post.id}
+          {...(shouldReduceMotion ? {} : {
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0 },
+            transition: {
+              duration: 0.5,
+              delay: index * 0.1
+            }
+          })}
+        >
+          <PostCard post={post} />
+        </motion.div>
+      ))}
+    </div>
+  );
+
   if (loading && trendingPosts.length === 0 && !showBundledFallback) {
+    if (compact) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <PostCardSkeleton key={index} />
+          ))}
+        </div>
+      );
+    }
     return (
       <section className="py-16 relative">
         <div className="container mx-auto px-6">
@@ -37,6 +66,10 @@ const TrendingPosts = () => {
 
   if (trendingPosts.length === 0) {
     return null;
+  }
+
+  if (compact) {
+    return grid;
   }
 
   return (
@@ -64,23 +97,7 @@ const TrendingPosts = () => {
           )}
         </AnimatePresence>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {trendingPosts.map((post, index) => (
-            <motion.div
-              key={post.id}
-              {...(shouldReduceMotion ? {} : {
-                initial: { opacity: 0, y: 20 },
-                animate: { opacity: 1, y: 0 },
-                transition: {
-                  duration: 0.5,
-                  delay: index * 0.1
-                }
-              })}
-            >
-              <PostCard post={post} />
-            </motion.div>
-          ))}
-        </div>
+        {grid}
       </div>
     </section>
   );

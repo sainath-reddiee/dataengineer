@@ -326,11 +326,11 @@
       }
 
       /* Site Nav (static, visible to crawlers; hidden when React mounts) */
-      .site-nav { background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 12px 20px; position: sticky; top: 0; z-index: 100; }
-      .site-nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+      .site-nav { background: rgba(2, 6, 23, 0.8); border-bottom: 1px solid rgba(255,255,255,0.1); min-height: 64px; padding: 0 24px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; backdrop-filter: blur(20px); }
+      .site-nav-inner { max-width: 80rem; width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
       .site-nav-brand { color: #60a5fa; font-weight: 700; font-size: 1.1rem; text-decoration: none; }
-      .site-nav-links { display: flex; flex-wrap: wrap; gap: 4px 16px; list-style: none; padding: 0; margin: 0; }
-      .site-nav-links a { color: #cbd5e1; text-decoration: none; font-size: 0.875rem; transition: color 0.2s; }
+      .site-nav-links { display: flex; flex-wrap: wrap; gap: 4px 8px; list-style: none; padding: 0; margin: 0; }
+      .site-nav-links a { color: #cbd5e1; text-decoration: none; font-size: 0.875rem; transition: color 0.2s; border-radius: 0.5rem; padding: 0.5rem 0.75rem; }
       .site-nav-links a:hover { color: #60a5fa; }
       /* Site Footer */
       .site-footer { max-width: 900px; margin: 3rem auto 0; padding: 2rem 20px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; font-size: 0.85rem; color: #94a3b8; }
@@ -391,10 +391,11 @@
         <div class="site-nav-inner">
           <a href="https://dataengineerhub.blog" class="site-nav-brand">DataEngineer Hub</a>
           <ul class="site-nav-links">
+            <li><a href="https://dataengineerhub.blog/">Home</a></li>
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
+            <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
+            <li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
-            <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
-            <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy</a></li>
           </ul>
         </div>
       </nav>

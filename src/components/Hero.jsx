@@ -1,200 +1,165 @@
 // src/components/Hero.jsx - OPTIMIZED FOR LCP
-import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles, Zap, TrendingUp, Users, ChevronDown, Loader } from 'lucide-react';
+import { ArrowRight, Sparkles, Zap, TrendingUp, Users, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { reduceMotion } from '@/utils/performance';
 import { useStats } from '@/hooks/useStats';
+import HubMotion from '@/components/HubMotion';
 
 const Hero = () => {
-  const [ref, isIntersecting, hasIntersected] = useIntersectionObserver();
+  const [ref] = useIntersectionObserver();
   const shouldReduceMotion = reduceMotion();
   const { totalArticles, totalCategories, totalReaders, updateFrequency, loading } = useStats();
 
   // ✅ CRITICAL: Reduce animations on mobile for better LCP
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+  const quietMotion = shouldReduceMotion || isMobile;
 
-  const containerVariants = (shouldReduceMotion || isMobile) ? {} : {
+  const containerVariants = quietMotion ? {} : {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.1 // ✅ Reduced from 0.3
+        staggerChildren: 0.08,
+        delayChildren: 0.05
       }
     }
   };
 
-  const itemVariants = (shouldReduceMotion || isMobile) ? {} : {
-    hidden: { opacity: 0, y: 20 },
+  const itemVariants = quietMotion ? {} : {
+    hidden: { opacity: 0, y: 16 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.3, // ✅ Reduced from 0.5
-        ease: "easeOut"
+        duration: 0.3,
+        ease: 'easeOut'
       }
     }
   };
 
-  const chevronContainerVariants = {
-    animate: {
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
-  
-  const chevronVariants = {
-    animate: {
-      y: [0, 10, 0],
-      opacity: [1, 0, 1],
-      transition: {
-        duration: 2,
-        repeat: Infinity,
-        ease: "easeInOut",
-      },
-    },
-  };
-
   return (
-    <section ref={ref} className="relative flex items-center justify-center overflow-hidden py-12 sm:py-16 md:py-20 px-4 sm:px-6">
-      {/* Animated Background - Simplified on mobile */}
+    <section ref={ref} className="relative overflow-hidden px-4 py-10 sm:px-6 sm:py-12 md:py-14">
       {!isMobile && (
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl floating-animation"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl floating-animation" style={{ animationDelay: '2s' }}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-pink-500/10 to-violet-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-16 left-10 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl floating-animation"></div>
+          <div className="absolute bottom-10 right-10 h-72 w-72 rounded-full bg-purple-500/20 blur-3xl floating-animation" style={{ animationDelay: '2s' }}></div>
         </div>
       )}
 
-      <div className="container mx-auto relative z-10 max-w-7xl">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible" // ✅ Always animate, no hasIntersected check for Hero
-          className="text-center"
-        >
+      <div className="container relative z-10 mx-auto max-w-6xl">
+        <div className="grid items-center gap-6 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:gap-8">
           <motion.div
-            variants={itemVariants}
-            className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm border border-blue-400/30 rounded-full px-4 sm:px-6 py-2 sm:py-3 mb-6 sm:mb-8"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="text-center md:text-left"
           >
-            <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
-            <span className="text-xs sm:text-sm font-medium text-blue-200">Welcome to DataEngineer Hub</span>
-          </motion.div>
-
-          <motion.h1
-            variants={itemVariants}
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black mb-4 sm:mb-6 leading-tight px-4"
-          >
-            Master{' '}
-            <span className="gradient-text">Data Engineering</span>
-            {' '}with Expert Tutorials
-          </motion.h1>
-
-          <motion.p
-            variants={itemVariants}
-            className="text-base sm:text-lg md:text-xl text-gray-300 mb-8 sm:mb-12 leading-relaxed max-w-3xl mx-auto px-4"
-          >
-            Learn Snowflake, AWS, Azure, SQL, Python, Airflow, dbt, and more with practical, 
-            hands-on guides designed for data professionals.
-          </motion.p>
-
-          <motion.div
-            variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 px-4"
-          >
-            <Button 
-              asChild 
-              size="lg" 
-              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-full font-bold group shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 min-h-[48px]"
+            <motion.p
+              variants={itemVariants}
+              className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-blue-300/80"
             >
-              <Link to="/articles">
-                Explore Articles
-                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
-            
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="w-full sm:w-auto border-2 border-blue-400/50 text-blue-300 hover:bg-blue-500/20 px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-full font-bold backdrop-blur-sm min-h-[48px]"
+              DataEngineer Hub · production tutorials
+            </motion.p>
+
+            <motion.h1
+              variants={itemVariants}
+              className="mb-4 text-3xl font-black leading-[1.1] tracking-tight sm:text-4xl md:text-5xl"
             >
-              <Link to="/about">
-                Learn More About Us
-              </Link>
-            </Button>
+              Master{' '}
+              <span className="gradient-text">Data Engineering</span>
+              {' '}with Expert Tutorials
+            </motion.h1>
+
+            <motion.p
+              variants={itemVariants}
+              className="mx-auto mb-6 max-w-xl text-base leading-relaxed text-gray-300 sm:text-lg md:mx-0"
+            >
+              Production notes on Snowflake, dbt, Airflow, and the warehouse bill — written by a
+              working data engineer, not recycled vendor docs.
+            </motion.p>
+
+            <motion.div
+              variants={itemVariants}
+              className="mb-5 flex flex-col items-center justify-center gap-3 sm:flex-row md:justify-start"
+            >
+              <Button
+                asChild
+                size="lg"
+                className="group w-full min-h-[48px] rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-blue-950/40 transition-all duration-300 hover:from-blue-500 hover:to-indigo-500 sm:w-auto"
+              >
+                <Link to="/articles">
+                  Explore Articles
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 sm:h-5 sm:w-5" />
+                </Link>
+              </Button>
+
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="w-full min-h-[48px] rounded-lg border border-white/15 px-6 py-4 text-base font-semibold text-slate-100 backdrop-blur-sm hover:bg-white/5 sm:w-auto"
+              >
+                <Link to="/tools/sql-playground">
+                  SQL Playground
+                </Link>
+              </Button>
+            </motion.div>
+
+            <motion.div
+              variants={itemVariants}
+              className="flex w-full flex-wrap items-center justify-center gap-3 text-sm sm:gap-5 md:justify-start"
+            >
+              {loading ? (
+                <div className="flex items-center gap-2 text-gray-400">
+                  <Loader className="h-4 w-4 animate-spin" />
+                  <span>Loading stats...</span>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2 text-gray-300">
+                    <Zap className="h-4 w-4 text-blue-400" />
+                    <span className="font-semibold">{totalArticles}+</span>
+                    <span className="text-gray-400">Articles</span>
+                  </div>
+                  <div className="hidden h-4 w-px bg-gray-700 sm:block"></div>
+                  <div className="flex items-center gap-2 text-gray-300">
+                    <TrendingUp className="h-4 w-4 text-purple-400" />
+                    <span className="font-semibold">{totalCategories}+</span>
+                    <span className="text-gray-400">Technologies</span>
+                  </div>
+                  {totalReaders && (
+                    <>
+                      <div className="hidden h-4 w-px bg-gray-700 sm:block"></div>
+                      <div className="flex items-center gap-2 text-gray-300">
+                        <Users className="h-4 w-4 text-green-400" />
+                        <span className="font-semibold">{totalReaders}</span>
+                        <span className="text-gray-400">Readers</span>
+                      </div>
+                    </>
+                  )}
+                  <div className="hidden h-4 w-px bg-gray-700 sm:block"></div>
+                  <div className="flex items-center gap-2 text-gray-300">
+                    <Sparkles className="h-4 w-4 text-orange-400" />
+                    <span className="font-semibold">{updateFrequency}</span>
+                    <span className="text-gray-400">Updates</span>
+                  </div>
+                </>
+              )}
+            </motion.div>
           </motion.div>
 
-          {/* Dynamic stats */}
           <motion.div
-            variants={itemVariants}
-            className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 max-w-2xl mx-auto px-4 text-sm"
+            initial={quietMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: quietMotion ? 0 : 0.15 }}
           >
-            {loading ? (
-              <div className="flex items-center gap-2 text-gray-400">
-                <Loader className="h-4 w-4 animate-spin" />
-                <span>Loading stats...</span>
-              </div>
-            ) : (
-              <>
-                <div className="flex items-center gap-2 text-gray-300">
-                  <Zap className="h-4 w-4 text-blue-400" />
-                  <span className="font-semibold">{totalArticles}+</span>
-                  <span className="text-gray-400">Articles</span>
-                </div>
-                <div className="h-4 w-px bg-gray-700 hidden sm:block"></div>
-                <div className="flex items-center gap-2 text-gray-300">
-                  <TrendingUp className="h-4 w-4 text-purple-400" />
-                  <span className="font-semibold">{totalCategories}+</span>
-                  <span className="text-gray-400">Technologies</span>
-                </div>
-                {totalReaders && (
-                  <>
-                    <div className="h-4 w-px bg-gray-700 hidden sm:block"></div>
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Users className="h-4 w-4 text-green-400" />
-                      <span className="font-semibold">{totalReaders}</span>
-                      <span className="text-gray-400">Readers</span>
-                    </div>
-                  </>
-                )}
-                <div className="h-4 w-px bg-gray-700 hidden sm:block"></div>
-                <div className="flex items-center gap-2 text-gray-300">
-                  <Sparkles className="h-4 w-4 text-orange-400" />
-                  <span className="font-semibold">{updateFrequency}</span>
-                  <span className="text-gray-400">Updates</span>
-                </div>
-              </>
-            )}
+            <HubMotion reduceMotion={quietMotion} />
           </motion.div>
-        </motion.div>
+        </div>
       </div>
-
-      {/* Scroll Indicator - Desktop only */}
-      {!isMobile && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, transition: { delay: 1 } }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center"
-        >
-          <motion.div
-            variants={chevronContainerVariants}
-            initial="initial"
-            animate="animate"
-            className="flex flex-col items-center"
-          >
-            {[0, 1, 2].map((i) => (
-              <motion.div key={i} variants={chevronVariants} custom={i}>
-                <ChevronDown className="h-6 w-6 text-blue-400/50" />
-              </motion.div>
-            ))}
-          </motion.div>
-        </motion.div>
-      )}
     </section>
   );
 };
