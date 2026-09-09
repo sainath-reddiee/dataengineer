@@ -2566,15 +2566,20 @@ function getSiteNavCSS() {
   return `
       /* Site Nav */
       .site-nav {
-        background: rgba(15, 23, 42, 0.95);
+        background: rgba(2, 6, 23, 0.8);
         border-bottom: 1px solid rgba(255,255,255,0.1);
-        padding: 12px 20px;
+        min-height: 64px;
+        padding: 0 24px;
         position: sticky;
         top: 0;
         z-index: 100;
+        display: flex;
+        align-items: center;
+        backdrop-filter: blur(20px);
       }
       .site-nav-inner {
-        max-width: 1200px;
+        max-width: 80rem;
+        width: 100%;
         margin: 0 auto;
         display: flex;
         align-items: center;
@@ -2642,10 +2647,11 @@ function getSiteNavHTML() {
         <div class="site-nav-inner">
           <a href="https://dataengineerhub.blog" class="site-nav-brand">DataEngineer Hub</a>
           <ul class="site-nav-links">
+            <li><a href="https://dataengineerhub.blog/">Home</a></li>
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
+            <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
+            <li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
-            <li><a href="https://dataengineerhub.blog/editorial-standards">Editorial Standards</a></li>
-            <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
           </ul>
         </div>
       </nav>`;
@@ -3404,10 +3410,11 @@ ${CONSENT_MODE_V2_HTML}
         <div class="site-nav-inner">
           <a href="https://dataengineerhub.blog" class="site-nav-brand">DataEngineer Hub</a>
           <ul class="site-nav-links">
+            <li><a href="https://dataengineerhub.blog/">Home</a></li>
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
             <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
-            <li><a href="https://dataengineerhub.blog/about">About</a></li>
             <li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>
+            <li><a href="https://dataengineerhub.blog/about">About</a></li>
           </ul>
         </div>
       </nav>
@@ -6291,15 +6298,20 @@ ${CONSENT_MODE_V2_HTML}
 
       /* Site Nav */
       .site-nav {
-        background: rgba(15, 23, 42, 0.95);
+        background: rgba(2, 6, 23, 0.8);
         border-bottom: 1px solid rgba(255,255,255,0.1);
-        padding: 12px 20px;
+        min-height: 64px;
+        padding: 0 24px;
         position: sticky;
         top: 0;
         z-index: 100;
+        display: flex;
+        align-items: center;
+        backdrop-filter: blur(20px);
       }
       .site-nav-inner {
-        max-width: 1200px;
+        max-width: 80rem;
+        width: 100%;
         margin: 0 auto;
         display: flex;
         align-items: center;
@@ -6367,9 +6379,11 @@ ${CONSENT_MODE_V2_HTML}
         <div class="site-nav-inner">
           <a href="https://dataengineerhub.blog" class="site-nav-brand">DataEngineer Hub</a>
           <ul class="site-nav-links">
+            <li><a href="https://dataengineerhub.blog/">Home</a></li>
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
+            <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
+            <li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
-            <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
           </ul>
         </div>
       </nav>
