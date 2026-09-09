@@ -52,7 +52,10 @@ assert(header.includes('Learn'), 'Header should collapse study links into a Lear
 assert(header.includes('title="Main"') || header.includes('>Main<') || header.includes('"Main"'), 'Mobile nav should group Main links');
 assert(header.includes('Learn'), 'Mobile nav should keep a Learn group');
 assert(header.includes('Site'), 'Mobile nav should keep a Site group');
-assert(header.includes('bg-blue-500/10 text-blue-300'), 'Active links should use a pill, not squeezed text');
+assert(
+  header.includes('bg-blue-500/20 text-blue-200') || header.includes('bg-blue-500/10 text-blue-300'),
+  'Active links should use a pill, not squeezed text'
+);
 assert(header.includes('backdrop-blur-xl'), 'Header should stay frosted and sticky');
 assert(header.includes('h-16'), 'Header should stay 64px to match Layout padding');
 assert(header.includes('SearchModal'), 'Search modal must remain wired');

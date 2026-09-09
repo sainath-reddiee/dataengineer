@@ -55,7 +55,7 @@ const LEARN_PATHS = [
 const pillClass = (active) =>
   `inline-flex items-center gap-1.5 min-h-10 px-3 rounded-lg text-sm font-medium transition-colors ${
     active
-      ? 'bg-blue-500/10 text-blue-300'
+      ? 'bg-blue-500/20 text-blue-200 ring-1 ring-blue-400/25'
       : 'text-slate-300 hover:bg-white/5 hover:text-white'
   }`;
 
@@ -166,7 +166,7 @@ const Header = ({ topOffset = 0 }) => {
           </span>
         </Link>
 
-        <div className="hidden items-center gap-1 lg:flex">
+        <div className="hidden flex-1 items-center justify-center gap-1 lg:flex">
           {MAIN_LINKS.map((item) => (
             <Link
               key={item.path}
@@ -221,7 +221,7 @@ const Header = ({ topOffset = 0 }) => {
                         role="menuitem"
                         className={`flex min-h-10 items-center gap-2.5 rounded-lg px-3 text-sm transition-colors ${
                           isPathActive(currentPath, item.path)
-                            ? 'bg-blue-500/10 text-blue-300'
+                            ? 'bg-blue-500/20 text-blue-200'
                             : 'text-slate-300 hover:bg-white/5 hover:text-white'
                         }`}
                       >
@@ -396,7 +396,7 @@ const DatabaseMark = () => (
 
 const MobileGroup = ({ title, children }) => (
   <div>
-    <p className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+    <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
       {title}
     </p>
     <div className="grid grid-cols-2 gap-1">{children}</div>
@@ -410,7 +410,7 @@ const MobileLink = ({ item, active, onClick }) => {
       to={item.path}
       onClick={onClick}
       className={`flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium ${
-        active ? 'bg-blue-500/10 text-blue-300' : 'text-slate-200 hover:bg-white/5 hover:text-white'
+        active ? 'bg-blue-500/20 text-blue-200' : 'text-slate-200 hover:bg-white/5 hover:text-white'
       }`}
     >
       <Icon className="h-4 w-4 shrink-0" />
