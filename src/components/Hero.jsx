@@ -110,7 +110,7 @@ const Hero = () => {
 
             <motion.div
               variants={itemVariants}
-              className="flex flex-wrap items-center justify-center gap-3 text-sm sm:gap-5 md:justify-start"
+              className="flex w-full flex-wrap items-center justify-center gap-3 text-sm sm:gap-5 md:justify-start"
             >
               {loading ? (
                 <div className="flex items-center gap-2 text-gray-400">
