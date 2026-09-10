@@ -572,6 +572,14 @@ img {
   contain: layout style paint;
 }
 
+.hub-3d-scene {
+  perspective: 1200px;
+}
+
+.hub-3d-card {
+  transform-style: preserve-3d;
+}
+
 .card-3d {
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
@@ -583,7 +591,8 @@ img {
 
 @media (prefers-reduced-motion: reduce) {
   .card-3d,
-  .card-3d:hover {
+  .card-3d:hover,
+  .hub-3d-card {
     transition: none;
     transform: none;
   }

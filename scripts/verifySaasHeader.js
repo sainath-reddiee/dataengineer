@@ -73,6 +73,9 @@ const hub = readFileSync(join(root, 'src/components/HubMotion.jsx'), 'utf8');
 assert(hub.includes('What you can do here'), 'Hub motion should explain the site at a glance');
 assert(hub.includes('Ingest'), 'Hub motion should show the data-stack stages');
 assert(hub.includes('/interview-prep'), 'Hub motion should still reach interview prep');
+assert(hub.includes('hub-3d-scene'), 'Homepage explainer should use a 3D scene');
+assert(hub.includes('TiltCard'), 'Homepage explainer should tilt on pointer move');
+assert(css.includes('.hub-3d-scene'), '3D scene CSS must exist');
 
 assert(home.includes('max-w-6xl'), 'Homepage should tighten to a SaaS content width');
 assert(home.includes('<FeaturedPosts compact'), 'Homepage featured section should drop the extra marketing header');
