@@ -37,6 +37,7 @@
     "test:saas-header": "node scripts/verifySaasHeader.js",
     "test:newsletter": "node scripts/verifyNewsletter.js",
     "test:advertise": "node scripts/verifyAdvertisePackages.js",
+    "test:duckdb": "node scripts/verifyDuckdbAssets.js",
     "test:takeaways-linking": "node scripts/verifyTakeawaysAndLinking.js",
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'",
     "test:build": "npm run build",

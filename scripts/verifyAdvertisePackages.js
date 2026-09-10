@@ -1,5 +1,13 @@
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import advertiseConfig from '../src/data/advertiseConfig.json' with { type: 'json' };
 import { EDITORIAL_BRIEFS } from '../src/data/editorialBriefs.js';
+
+const advertisePage = readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), '../src/pages/AdvertisePage.jsx'),
+  'utf8'
+);
 
 function assert(condition, message) {
   if (!condition) {
@@ -27,5 +35,15 @@ assert(
   'each brief needs a title and a concrete ask'
 );
 
+assert(
+  advertisePage.includes('from-slate-900 via-blue-900 to-indigo-900'),
+  'Advertise page should use the same blue-indigo shell as the rest of the site'
+);
+assert(
+  !advertisePage.includes('advertise-page min-h-screen bg-slate-950'),
+  'Advertise page must not paint a flat black background over the site gradient'
+);
+
 console.log('✅ Advertise packages no longer look like a cheap link shop');
 console.log('✅ Guest briefs ask for production incidents');
+console.log('✅ Advertise page uses the shared site background');

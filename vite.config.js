@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import vitePrerender from './plugins/vite-plugin-prerender.mjs';
 import { upsertSeoOverrideSource } from './src/utils/seoOverrideFile.js';
+import { copyDuckdbAssets } from './scripts/copyDuckdbAssets.js';
 
 const PuppeteerRenderer = vitePrerender.PuppeteerRenderer;
 
@@ -71,6 +72,16 @@ export default defineConfig({
           }
         });
       }
+    },
+
+    {
+      name: 'copy-duckdb-assets',
+      buildStart() {
+        copyDuckdbAssets();
+      },
+      configureServer() {
+        copyDuckdbAssets();
+      },
     },
 
     // Custom plugin to handle jsPDF optional dependencies

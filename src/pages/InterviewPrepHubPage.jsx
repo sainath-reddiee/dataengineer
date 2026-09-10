@@ -461,7 +461,7 @@ export default function InterviewPrepHubPage() {
         <script type="application/ld+json">{JSON.stringify(itemListSchema)}</script>
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-950">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
         <div className="max-w-5xl mx-auto px-4 py-8">
           <Breadcrumbs
             breadcrumbs={generateBreadcrumbs('/interview-prep', 'Interview Prep')}
