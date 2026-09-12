@@ -370,6 +370,7 @@ function App() {
           <Route path="tools/unix-timestamp-converter" element={<SafeRoute fallbackText="Loading Unix Timestamp Converter..."><UnixTimestampPage /></SafeRoute>} />
           <Route path="tools/bigquery-cost-calculator" element={<SafeRoute fallbackText="Loading BigQuery Cost Calculator..."><BigQueryCostPage /></SafeRoute>} />
           <Route path="tools/sql-playground" element={<SafeRoute fallbackText="Loading SQL Playground..."><SqlPlaygroundPage /></SafeRoute>} />
+          <Route path="playground" element={<Navigate to="/tools/sql-playground" replace />} />
           <Route path="tools/json-parquet-avro-converter" element={<SafeRoute fallbackText="Loading Format Converter..."><FormatConverterPage /></SafeRoute>} />
           <Route path="tools/cloud-data-warehouse-cost-comparison" element={<SafeRoute fallbackText="Loading Warehouse Comparison..."><WarehouseComparisonCalculatorPage /></SafeRoute>} />
           <Route path="cheatsheets/category/:categoryId" element={<SafeRoute fallbackText="Loading Category..."><CheatSheetCategoryPage /></SafeRoute>} />

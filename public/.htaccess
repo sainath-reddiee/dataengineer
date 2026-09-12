@@ -56,6 +56,9 @@
 
     # Cookie policy lives in the Privacy Policy cookies section — do not 404.
     RewriteRule ^cookie-policy/?$ /privacy-policy [R=301,L]
+
+    # Short playground URL (matches the common /playground habit).
+    RewriteRule ^playground/?$ /tools/sql-playground [R=301,L]
     
     # ========================================================================
     # CRITICAL FIX: Handle trailing slashes consistently (SEO!)
@@ -281,6 +284,9 @@
     # Manifest and sitemap
     ExpiresByType application/manifest+json "access plus 1 week"
     
+    # WebAssembly — SQL playground / format converter engine
+    ExpiresByType application/wasm "access plus 1 year"
+
     # Default - cache for 1 day
     ExpiresDefault "access plus 1 day"
 
@@ -289,7 +295,7 @@
 # Cache-Control Headers (more modern than Expires)
 <IfModule mod_headers.c>
     # Static assets with hash/version - immutable for 1 year
-    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico|css|js|woff|woff2|ttf|otf|eot)$">
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico|css|js|woff|woff2|ttf|otf|eot|wasm)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
     
@@ -474,6 +480,7 @@ AddDefaultCharset UTF-8
     AddType text/markdown .md
     AddType image/svg+xml .svg
     AddType image/webp .webp
+    AddType application/wasm .wasm
 </IfModule>
 
 # Agent-discovery documents (RFC 9727 catalog has no file extension)

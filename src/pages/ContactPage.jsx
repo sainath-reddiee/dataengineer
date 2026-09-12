@@ -1,7 +1,8 @@
 // src/pages/ContactPage.jsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Mail, Phone, MapPin, CheckCircle, Loader2 } from 'lucide-react';
+import { Send, Mail, Phone, MapPin, CheckCircle, Loader2, Coffee } from 'lucide-react';
+import SupportButton from '@/components/Support/SupportButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -137,6 +138,15 @@ const ContactPage = () => {
                 <a href="/newsletter" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">newsletter</a>{' '}
                 instead.
               </p>
+              <p>
+                If a guide or tool here saved you time and you just want to say thanks,
+                you can{' '}
+                <span className="text-amber-200">buy me a coffee</span>
+                {' '}— UPI in India, PayPal everywhere else. No sponsorship, no strings.
+              </p>
+              <div className="pt-1">
+                <SupportButton variant="cta" source="contact_page" label="Buy me a coffee" />
+              </div>
             </div>
           </motion.div>
 
