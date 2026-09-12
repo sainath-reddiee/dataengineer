@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 // cheatsheetData is large (~all cheat sheet content). We dynamic-import it so
 // it doesn't block the initial HomePage bundle / LCP.
 
+const FeaturedToolsRail = React.lazy(() => import('../components/FeaturedToolsRail'));
 const FeaturedPosts = React.lazy(() => import('../components/FeaturedPosts'));
 const TrendingPosts = React.lazy(() => import('../components/TrendingPosts'));
 const RecentPosts = React.lazy(() => import('../components/RecentPosts'));
@@ -171,6 +172,10 @@ const HomePage = () => {
             ============================================================================ */}
         <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-4 sm:py-6 space-y-8 sm:space-y-10">
 
+          <Suspense fallback={<SectionSkeleton height="h-40" />}>
+            <FeaturedToolsRail />
+          </Suspense>
+
           <section className="rounded-xl border border-slate-700/70 bg-slate-800/40 px-5 py-4 sm:px-6 sm:py-5">
             <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
               Written by{' '}
@@ -250,8 +255,8 @@ const HomePage = () => {
           <section>
             <SectionHeader
               icon={Wrench}
-              title="Free Tools & Interview Prep"
-              subtitle="Calculators, generators & curated interview resources"
+              title="Interview prep"
+              subtitle="Practice questions and certification paths"
             />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Link
@@ -263,14 +268,14 @@ const HomePage = () => {
                     <Wrench className="w-5 h-5 text-blue-400" />
                   </div>
                   <h3 className="text-base font-semibold text-white group-hover:text-blue-400 transition-colors">
-                    Free Data Engineering Tools
+                    Browse the full tools hub
                   </h3>
                 </div>
                 <p className="text-sm text-gray-400">
-                  Snowflake cost calculator, cron expression builder, JSON-to-SQL DDL generator, warehouse sizing & more — all free, no signup.
+                  Filter by Cost, SQL, Convert, or pipeline stage. Every calculator stays in the browser.
                 </p>
                 <span className="inline-block mt-3 text-xs font-semibold text-blue-400 group-hover:text-blue-300">
-                  Browse all tools →
+                  Open tools hub →
                 </span>
               </Link>
               <Link

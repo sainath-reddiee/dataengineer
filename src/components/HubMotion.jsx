@@ -8,6 +8,7 @@ import {
   Terminal,
   Wrench,
 } from 'lucide-react';
+import { TOOL_STAGES } from '@/data/toolsCatalog';
 
 const ACTIONS = [
   { to: '/articles', title: 'Tutorials', blurb: 'Production notes, not vendor docs', icon: BookOpen },
@@ -16,13 +17,6 @@ const ACTIONS = [
   { to: '/practice', title: 'Practice tests', blurb: 'SnowPro, Databricks, more', icon: Target },
   { to: '/cheatsheets', title: 'Cheat sheets', blurb: 'Quick refs you can ship', icon: FileText },
   { to: '/tools', title: 'Free tools', blurb: 'Cost, cron, DDL, sizing', icon: Wrench },
-];
-
-const STAGES = [
-  { label: 'Ingest', hint: 'Python · Kafka' },
-  { label: 'Transform', hint: 'dbt · Airflow' },
-  { label: 'Warehouse', hint: 'Snowflake · Databricks' },
-  { label: 'Serve', hint: 'SQL · BI' },
 ];
 
 const TiltCard = ({ children, className = '', disabled = false, intensity = 12 }) => {
@@ -90,10 +84,10 @@ const HubMotion = ({ reduceMotion = false }) => {
           className="relative mb-3 overflow-hidden rounded-2xl border border-white/15 bg-slate-900/70 p-3 shadow-2xl shadow-blue-950/40 backdrop-blur-md"
         >
           <div className="flex items-stretch gap-1.5">
-            {STAGES.map((stage, index) => (
-              <div key={stage.label} className="flex min-w-0 flex-1 items-center gap-1.5">
+            {TOOL_STAGES.map((stage, index) => (
+              <div key={stage.id} className="flex min-w-0 flex-1 items-center gap-1.5">
                 <motion.div
-                  className="min-w-0 flex-1 rounded-lg bg-white/5 px-2 py-2 text-center ring-1 ring-white/5"
+                  className="min-w-0 flex-1 rounded-lg bg-white/5 px-1.5 py-2 text-center ring-1 ring-white/5 sm:px-2"
                   animate={reduceMotion ? undefined : { y: [0, -6, 0] }}
                   transition={reduceMotion ? undefined : {
                     duration: 2.6,
@@ -102,10 +96,12 @@ const HubMotion = ({ reduceMotion = false }) => {
                     ease: 'easeInOut',
                   }}
                 >
-                  <p className="text-[11px] font-semibold text-white">{stage.label}</p>
-                  <p className="mt-0.5 hidden text-[10px] leading-tight text-slate-400 sm:block">{stage.hint}</p>
+                  <Link to={`/tools?stack=${stage.id}`} className="block">
+                    <p className="text-[11px] font-semibold text-white">{stage.label}</p>
+                    <p className="mt-0.5 text-[9px] leading-tight text-slate-400 sm:text-[10px]">{stage.hint}</p>
+                  </Link>
                 </motion.div>
-                {index < STAGES.length - 1 && (
+                {index < TOOL_STAGES.length - 1 && (
                   <motion.span
                     aria-hidden="true"
                     className="hidden text-blue-300 sm:inline"

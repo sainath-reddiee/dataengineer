@@ -2,7 +2,7 @@
 // In-browser SQL playground powered by DuckDB-WASM.
 // Zero backend — the entire database engine runs client-side via WebAssembly.
 import React, { useState, useCallback, useRef, useEffect, Suspense } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
   Play,
@@ -227,8 +227,16 @@ async function getDb() {
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
+function sqlFromSearch(searchParams) {
+  const raw = searchParams.get('sql');
+  if (raw && raw.length > 0 && raw.length < 20000) return raw;
+  return EXAMPLE_QUERIES[0].sql;
+}
+
 export default function SqlPlaygroundPage() {
-  const [sql, setSql] = useState(EXAMPLE_QUERIES[0].sql);
+  const [searchParams] = useSearchParams();
+  const [sql, setSql] = useState(() => sqlFromSearch(searchParams));
+  const [pane, setPane] = useState('editor');
   const [results, setResults] = useState(null);
   const [columns, setColumns] = useState([]);
   const [error, setError] = useState(null);
@@ -243,6 +251,11 @@ export default function SqlPlaygroundPage() {
   const [retryToken, setRetryToken] = useState(0);
   const textareaRef = useRef(null);
   const dbRef = useRef(null);
+
+  useEffect(() => {
+    const raw = searchParams.get('sql');
+    if (raw && raw.length > 0 && raw.length < 20000) setSql(raw);
+  }, [searchParams]);
 
   useEffect(() => onDuckDbProgress((update) => {
     setDbStatus(update.message);
@@ -301,6 +314,7 @@ export default function SqlPlaygroundPage() {
       }
       setResults(rows);
       setHistory(prev => [{ sql: sql.trim(), rowCount: rows.length, time: elapsed, ts: Date.now() }, ...prev].slice(0, 20));
+      setPane('results');
       await conn.close();
     } catch (err) {
       setExecTime(performance.now() - t0);
@@ -468,7 +482,7 @@ export default function SqlPlaygroundPage() {
             <button
               key={name}
               onClick={() => setSql(`SELECT * FROM ${name} LIMIT 10;`)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-emerald-500/50 rounded-lg text-gray-300 hover:text-white transition-all"
+              className="compact-control inline-flex items-center gap-1.5 px-3 py-1.5 text-xs bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-emerald-500/50 rounded-lg text-gray-300 hover:text-white transition-all"
             >
               <Table2 className="w-3 h-3 text-emerald-400" />
               {name}
@@ -484,9 +498,26 @@ export default function SqlPlaygroundPage() {
             <button
               key={i}
               onClick={() => setSql(eq.sql)}
-              className="px-3 py-1.5 text-xs bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-emerald-500/50 rounded-lg text-gray-300 hover:text-white transition-all"
+              className="compact-control px-3 py-1.5 text-xs bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-emerald-500/50 rounded-lg text-gray-300 hover:text-white transition-all"
             >
               {eq.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex lg:hidden gap-2">
+          {['editor', 'results'].map((id) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setPane(id)}
+              className={`compact-control flex-1 rounded-full text-sm font-semibold ${
+                pane === id
+                  ? 'bg-blue-500/20 text-blue-100 ring-1 ring-blue-400/40'
+                  : 'bg-slate-800/70 text-slate-300'
+              }`}
+            >
+              {id === 'editor' ? 'Editor' : 'Results'}
             </button>
           ))}
         </div>
@@ -494,7 +525,7 @@ export default function SqlPlaygroundPage() {
         {/* Editor + Results */}
         <div className="grid lg:grid-cols-2 gap-6">
           {/* SQL Editor */}
-          <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-4 flex flex-col">
+          <div className={`${pane === 'editor' ? 'flex' : 'hidden'} lg:flex bg-slate-800/50 rounded-2xl border border-slate-700 p-4 flex-col`}>
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-sm font-semibold text-white uppercase tracking-wider">SQL Editor</h2>
               <div className="flex gap-2">
@@ -528,7 +559,7 @@ export default function SqlPlaygroundPage() {
           </div>
 
           {/* Results */}
-          <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-4 flex flex-col">
+          <div className={`${pane === 'results' ? 'flex' : 'hidden'} lg:flex bg-slate-800/50 rounded-2xl border border-slate-700 p-4 flex-col`}>
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
                 <Table2 className="w-4 h-4 text-emerald-400" />

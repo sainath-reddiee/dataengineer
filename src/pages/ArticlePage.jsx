@@ -49,7 +49,7 @@ import SaveArticleButton from '@/components/SaveArticleButton';
 import ArticleSeries from '@/components/ArticleSeries';
 import UpNextBar from '@/components/UpNextBar';
 import SupportPopup from '@/components/Support/SupportPopup';
-import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap, Megaphone, MessageCircleQuestion, Send } from 'lucide-react';
+import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap, Megaphone, MessageCircleQuestion, Send, Wrench } from 'lucide-react';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
@@ -181,7 +181,8 @@ const RelatedTools = ({ post }) => {
   const cheatsheets = tools.cheatsheets;
   const comparisons = ADSENSE_REVIEW_MODE ? [] : tools.comparisons;
   const glossary = ADSENSE_REVIEW_MODE ? [] : tools.glossary;
-  const total = cheatsheets.length + comparisons.length + glossary.length;
+  const calculators = tools.calculators || [];
+  const total = cheatsheets.length + comparisons.length + glossary.length + calculators.length;
   if (total === 0) return null;
 
   const Column = ({ icon: Icon, title, items, base, accent }) => {
@@ -213,7 +214,8 @@ const RelatedTools = ({ post }) => {
       <h2 id="related-tools-heading" className="text-3xl font-bold mb-8 text-white text-center">
         Related <span className="gradient-text">Tools &amp; References</span>
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <Column icon={Wrench}     title="Interactive tools" items={calculators} base="/tools"       accent="text-amber-300" />
         <Column icon={BookOpen}   title="Cheat Sheets" items={cheatsheets} base="/cheatsheets" accent="text-blue-300" />
         <Column icon={GitCompare} title="Comparisons"  items={comparisons} base="/compare"      accent="text-purple-300" />
         <Column icon={Library}    title="Glossary"     items={glossary}    base="/glossary"     accent="text-green-300" />
@@ -812,7 +814,7 @@ const ArticlePage = () => {
                   key={emoji}
                   aria-label={`React with ${label}${count > 0 ? `, ${count} reaction${count !== 1 ? 's' : ''}` : ''}`}
                   onClick={() => react(emoji)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-all border ${
+                  className={`compact-control inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-all border ${
                     isActive
                       ? 'bg-blue-500/20 border-blue-500/50 text-white scale-105'
                       : 'bg-gray-800/60 border-gray-700/50 text-gray-400 hover:border-gray-600 hover:text-gray-300'

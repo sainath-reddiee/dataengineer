@@ -9,6 +9,7 @@ import { Cloud, Share2, Check, Calculator, DollarSign, Server, Zap } from 'lucid
 import MetaTags from '@/components/SEO/MetaTags';
 import SponsorPlacement from '@/components/SponsorPlacement';
 import ValidateWithSqlBlock from '@/components/calculator/ValidateWithSqlBlock';
+import StickyToolTotal from '@/components/StickyToolTotal';
 
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
@@ -229,7 +230,7 @@ export default function DatabricksCostPage() {
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
       </Helmet>
 
-      <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-5xl mx-auto px-4 py-8 pb-24 space-y-8 lg:pb-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-orange-300 bg-orange-900/30 border border-orange-700/50 rounded-full">
             Updated {LAST_UPDATED} · Databricks list pricing
@@ -583,6 +584,7 @@ ORDER BY 1 DESC, dbus_consumed DESC;`}
           </div>
         </div>
       </div>
+      <StickyToolTotal label="Monthly estimate" value={formatUSD(result.total)} />
     </>
   );
 }

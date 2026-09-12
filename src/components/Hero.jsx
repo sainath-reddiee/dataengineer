@@ -106,6 +106,12 @@ const Hero = () => {
                   SQL Playground
                 </Link>
               </Button>
+              <Link
+                to="/tools"
+                className="text-sm font-semibold text-blue-300 hover:text-blue-200 sm:ml-1"
+              >
+                Browse all tools →
+              </Link>
             </motion.div>
 
             <motion.div

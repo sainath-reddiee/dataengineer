@@ -5,6 +5,7 @@
  *   - cheatsheets  (/cheatsheets/<slug>)
  *   - comparisons  (/compare/<slug>)
  *   - glossary     (/glossary/<slug>)
+ *   - calculators  (/tools/<slug>)
  *
  * Used by <RelatedTools/> on ArticlePage.jsx to improve internal
  * linking, crawl depth, and PSEO discovery from editorial content.
@@ -60,6 +61,20 @@ const COMPARES = {
   dbtCoreVsCloud:{slug: 'dbt-core-vs-dbt-cloud',    title: 'dbt Core vs dbt Cloud' },
 };
 
+const CALCS = {
+  sfCost:     { slug: 'snowflake-cost-calculator', title: 'Snowflake Cost Calculator' },
+  sfQuery:    { slug: 'snowflake-query-cost-estimator', title: 'Query Cost Estimator' },
+  sfSize:     { slug: 'snowflake-warehouse-sizing', title: 'Warehouse Sizing Estimator' },
+  compareWh:  { slug: 'cloud-data-warehouse-cost-comparison', title: 'Warehouse Cost Comparison' },
+  playground: { slug: 'sql-playground', title: 'SQL Playground' },
+  formatter:  { slug: 'sql-formatter', title: 'SQL Formatter' },
+  cron:       { slug: 'cron-expression-builder', title: 'Cron Expression Builder' },
+  dbtYml:     { slug: 'dbt-schema-generator', title: 'dbt Schema.yml Generator' },
+  dbtCost:    { slug: 'dbt-cloud-cost-calculator', title: 'dbt Cloud Cost Calculator' },
+  dbx:        { slug: 'databricks-cost-calculator', title: 'Databricks Cost Calculator' },
+  bq:         { slug: 'bigquery-cost-calculator', title: 'BigQuery Cost Calculator' },
+};
+
 const GLOSS = {
   snowflake:    { slug: 'snowflake',             title: 'Snowflake' },
   warehouse:    { slug: 'data-warehouse',        title: 'Data Warehouse' },
@@ -84,76 +99,91 @@ const TOOL_MAP = {
     cheatsheets: [CHEATS.snowflakeSql, CHEATS.snowflakeBest, CHEATS.snowflakeInterview, CHEATS.streamsTasks, CHEATS.dynamicTables, CHEATS.snowpark, CHEATS.iceberg],
     comparisons: [COMPARES.sfVsBq, COMPARES.sfVsDbx, COMPARES.sfVsRs, COMPARES.sfVsSynapse],
     glossary:    [GLOSS.snowflake, GLOSS.warehouse, GLOSS.icebergTerm, GLOSS.scd],
+    calculators: [CALCS.sfCost, CALCS.sfQuery, CALCS.sfSize, CALCS.compareWh],
   },
   dbt: {
     cheatsheets: [CHEATS.dbtCommands, CHEATS.dbtBest],
     comparisons: [COMPARES.dbtVsDataform, COMPARES.dbtVsSqlmesh, COMPARES.dbtCoreVsCloud],
     glossary:    [GLOSS.dbtTerm, GLOSS.etl, GLOSS.medallion],
+    calculators: [CALCS.dbtYml, CALCS.dbtCost, CALCS.cron],
   },
   airflow: {
     cheatsheets: [CHEATS.airflow, CHEATS.airflowBest],
     comparisons: [COMPARES.afVsDagster, COMPARES.afVsPrefect, COMPARES.mwaaVsComposer, COMPARES.afVsLuigi],
     glossary:    [GLOSS.etl, GLOSS.medallion],
+    calculators: [CALCS.cron],
   },
   python: {
     cheatsheets: [CHEATS.python, CHEATS.pyspark],
     comparisons: [COMPARES.sfVsDbx],
     glossary:    [GLOSS.etl],
+    calculators: [CALCS.playground],
   },
   pyspark: {
     cheatsheets: [CHEATS.pyspark, CHEATS.python, CHEATS.databricks],
     comparisons: [COMPARES.sfVsDbx, COMPARES.deltaVsIce],
     glossary:    [GLOSS.lakehouse, GLOSS.tableFormat],
+    calculators: [CALCS.dbx, CALCS.playground],
   },
   aws: {
     cheatsheets: [CHEATS.aws, CHEATS.airflow],
     comparisons: [COMPARES.bqVsRs, COMPARES.sfVsRs, COMPARES.mwaaVsComposer],
     glossary:    [GLOSS.warehouse, GLOSS.lake],
+    calculators: [CALCS.compareWh],
   },
   azure: {
     cheatsheets: [CHEATS.azure],
     comparisons: [COMPARES.sfVsSynapse],
     glossary:    [GLOSS.warehouse, GLOSS.lake],
+    calculators: [CALCS.compareWh],
   },
   databricks: {
     cheatsheets: [CHEATS.databricks, CHEATS.pyspark],
     comparisons: [COMPARES.sfVsDbx, COMPARES.deltaVsIce],
     glossary:    [GLOSS.lakehouse, GLOSS.tableFormat, GLOSS.medallion],
+    calculators: [CALCS.dbx, CALCS.compareWh],
   },
   sql: {
     cheatsheets: [CHEATS.snowflakeSql, CHEATS.sqlWindow, CHEATS.sqlInterview],
     comparisons: [COMPARES.sfVsBq, COMPARES.bqVsRs],
     glossary:    [GLOSS.warehouse, GLOSS.scd],
+    calculators: [CALCS.playground, CALCS.formatter, CALCS.sfQuery],
   },
   'data-engineering': {
     cheatsheets: [CHEATS.deInterview, CHEATS.dataModeling, CHEATS.python],
     comparisons: [COMPARES.afVsDagster, COMPARES.dbtVsSqlmesh],
     glossary:    [GLOSS.warehouse, GLOSS.lake, GLOSS.lakehouse, GLOSS.medallion],
+    calculators: [CALCS.playground, CALCS.compareWh],
   },
   'data-modeling': {
     cheatsheets: [CHEATS.dataModeling, CHEATS.snowflakeSql],
     comparisons: [COMPARES.sfVsBq],
     glossary:    [GLOSS.scd, GLOSS.warehouse, GLOSS.medallion],
+    calculators: [CALCS.playground],
   },
   iceberg: {
     cheatsheets: [CHEATS.iceberg, CHEATS.snowflakeBest],
     comparisons: [COMPARES.deltaVsIce, COMPARES.iceVsHudi],
     glossary:    [GLOSS.icebergTerm, GLOSS.tableFormat, GLOSS.lakehouse],
+    calculators: [CALCS.sfCost],
   },
   'data-warehousing': {
     cheatsheets: [CHEATS.snowflakeSql, CHEATS.snowflakeBest, CHEATS.dataModeling],
     comparisons: [COMPARES.sfVsBq, COMPARES.sfVsRs, COMPARES.sfVsDbx],
     glossary:    [GLOSS.warehouse, GLOSS.columnar, GLOSS.scd],
+    calculators: [CALCS.compareWh, CALCS.sfCost, CALCS.bq],
   },
   etl: {
     cheatsheets: [CHEATS.dbtCommands, CHEATS.airflow, CHEATS.python],
     comparisons: [COMPARES.dbtVsDataform, COMPARES.afVsPrefect],
     glossary:    [GLOSS.etl, GLOSS.medallion],
+    calculators: [CALCS.cron, CALCS.dbtYml],
   },
   orchestration: {
     cheatsheets: [CHEATS.airflow, CHEATS.airflowBest],
     comparisons: [COMPARES.afVsDagster, COMPARES.afVsPrefect, COMPARES.dagVsPrefect],
     glossary:    [GLOSS.etl],
+    calculators: [CALCS.cron],
   },
 };
 
@@ -193,7 +223,7 @@ export function normalizeKey(raw) {
  * @returns {{cheatsheets:Array,comparisons:Array,glossary:Array}}
  */
 export function getRelatedTools(post = {}, limitPerType = 4) {
-  const empty = { cheatsheets: [], comparisons: [], glossary: [] };
+  const empty = { cheatsheets: [], comparisons: [], glossary: [], calculators: [] };
   if (!post) return empty;
 
   const keys = new Set();
@@ -204,14 +234,14 @@ export function getRelatedTools(post = {}, limitPerType = 4) {
     if (k) keys.add(k);
   });
 
-  const bucket = { cheatsheets: [], comparisons: [], glossary: [] };
-  const seen = { cheatsheets: new Set(), comparisons: new Set(), glossary: new Set() };
+  const bucket = { cheatsheets: [], comparisons: [], glossary: [], calculators: [] };
+  const seen = { cheatsheets: new Set(), comparisons: new Set(), glossary: new Set(), calculators: new Set() };
 
   // Iterate keys in order: primary first, then tag-derived.
   for (const key of keys) {
     const hit = TOOL_MAP[key];
     if (!hit) continue;
-    for (const type of ['cheatsheets', 'comparisons', 'glossary']) {
+    for (const type of ['cheatsheets', 'comparisons', 'glossary', 'calculators']) {
       for (const item of hit[type] || []) {
         if (seen[type].has(item.slug)) continue;
         seen[type].add(item.slug);

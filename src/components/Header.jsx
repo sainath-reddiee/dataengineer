@@ -23,6 +23,7 @@ import {
 import SearchModal from '@/components/SearchModal';
 import SupportModal from '@/components/Support/SupportModal';
 import { useReadingList } from '@/hooks/useReadingList';
+import { FEATURED_TOOLS, toolHref } from '@/data/toolsCatalog';
 
 const MAIN_LINKS = [
   { name: 'Home', path: '/', icon: Home },
@@ -285,6 +286,15 @@ const Header = ({ topOffset = 0 }) => {
         </div>
 
         <div className="flex shrink-0 items-center gap-0.5 lg:hidden">
+          <Link
+            to="/tools"
+            className="inline-flex h-10 items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 text-sm font-semibold text-slate-200 transition-colors hover:border-white/25 hover:bg-white/10 hover:text-white"
+            aria-label="Free tools"
+            title="Free tools"
+          >
+            <Wrench className="h-4 w-4" />
+            <span>Tools</span>
+          </Link>
           <button
             type="button"
             onClick={() => setIsSupportOpen(true)}
@@ -318,6 +328,31 @@ const Header = ({ topOffset = 0 }) => {
             style={{ maxHeight: `calc(100vh - ${topOffset}px - 4rem)` }}
           >
             <div className="mx-auto max-w-7xl space-y-5 overflow-y-auto overscroll-contain px-4 py-4">
+              <div>
+                <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Free tools
+                </p>
+                <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+                  {FEATURED_TOOLS.map((tool) => {
+                    const className =
+                      'shrink-0 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200';
+                    return tool.external ? (
+                      <a key={tool.slug} href={tool.url} className={className} onClick={() => setMobileMenuOpen(false)}>
+                        {tool.title}
+                      </a>
+                    ) : (
+                      <Link
+                        key={tool.slug}
+                        to={toolHref(tool)}
+                        className={className}
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {tool.title}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
               <MobileGroup title="Main">
                 {MAIN_LINKS.map((item) => (
                   <MobileLink

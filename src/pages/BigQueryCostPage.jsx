@@ -7,6 +7,7 @@ import { Helmet } from 'react-helmet-async';
 import { Calculator, Cloud, BookOpen, Wand2, Share2, Check } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
 import ValidateWithSqlBlock from '@/components/calculator/ValidateWithSqlBlock';
+import StickyToolTotal from '@/components/StickyToolTotal';
 
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
@@ -186,7 +187,7 @@ export default function BigQueryCostPage() {
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
       </Helmet>
 
-      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-6xl mx-auto px-4 py-8 pb-24 space-y-8 lg:pb-8">
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-blue-300 bg-blue-900/30 border border-blue-700/50 rounded-full">
             Last updated: {LAST_UPDATED} &middot; List pricing &middot; Client-side
@@ -473,6 +474,7 @@ ORDER BY 1 DESC;`}
           </div>
         </div>
       </div>
+      <StickyToolTotal label="Monthly estimate" value={fmt(calc.total)} />
     </>
   );
 }

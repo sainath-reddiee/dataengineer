@@ -20,6 +20,7 @@ import {
 import wordpressApi from '@/services/wordpressApi';
 import searchIndex from '@/data/searchIndex.json';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
+import { toolsForSearchIndex, searchTools, toolHref } from '@/data/toolsCatalog';
 
 const RECENT_KEY = 'deh-search-recent';
 const MAX_RECENT = 6;
@@ -27,16 +28,19 @@ const MAX_RECENT = 6;
 const JUMP_LINKS = [
   { type: 'tool', id: 'jump-playground', title: 'SQL Playground', href: '/tools/sql-playground', excerpt: 'Run SQL in the browser' },
   { type: 'tool', id: 'jump-tools', title: 'Tools hub', href: '/tools', excerpt: 'Calculators, formatter, converter' },
+  { type: 'tool', id: 'jump-cost', title: 'Snowflake Cost Calculator', href: '/tools/snowflake-cost-calculator', excerpt: 'Model the warehouse bill' },
+  { type: 'tool', id: 'jump-cron', title: 'Cron builder', href: '/tools/cron-expression-builder', excerpt: 'Airflow and Snowflake TASK' },
   { type: 'cheatsheet', id: 'jump-cheatsheets', title: 'Cheat sheets', href: '/cheatsheets', excerpt: 'SQL, dbt, Airflow, Spark' },
   { type: 'article', id: 'jump-interview', title: 'Interview prep', href: '/interview-prep', excerpt: 'Practice questions by stack' },
-  { type: 'glossary', id: 'jump-glossary', title: 'Glossary', href: '/glossary', excerpt: 'Short definitions for DE terms' },
 ];
 
 const TOPIC_CHIPS = ['Snowflake', 'dbt', 'Airflow', 'Spark', 'SQL', 'Kafka'];
 
+const TOOL_INDEX = toolsForSearchIndex();
+
 const buildLocalIndex = () => {
-  if (ADSENSE_REVIEW_MODE) return [...JUMP_LINKS];
-  const out = [...JUMP_LINKS];
+  const out = [...JUMP_LINKS, ...TOOL_INDEX];
+  if (ADSENSE_REVIEW_MODE) return out;
   for (const g of searchIndex.glossary || []) {
     out.push({
       type: 'glossary',
@@ -205,6 +209,15 @@ const SearchModal = ({ isOpen, onClose }) => {
 
     setLoading(true);
 
+    const toolMatches = searchTools(q).slice(0, 6).map((tool) => ({
+      type: 'tool',
+      id: `tool-${tool.slug}`,
+      title: tool.title,
+      href: toolHref(tool),
+      category: tool.category,
+      excerpt: tool.tagline,
+    }));
+
     const localMatches = LOCAL_INDEX
       .map((item) => ({ item, score: scoreLocal(item, q) }))
       .filter((x) => x.score > 0)
@@ -231,7 +244,7 @@ const SearchModal = ({ isOpen, onClose }) => {
 
     const seen = new Set();
     const merged = [];
-    for (const r of [...wpMatches, ...localMatches]) {
+    for (const r of [...toolMatches, ...wpMatches, ...localMatches]) {
       if (seen.has(r.href)) continue;
       seen.add(r.href);
       merged.push(r);
