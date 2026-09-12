@@ -438,9 +438,11 @@ export default function SqlPlaygroundPage() {
                 style={{ width: `${dbPercent == null ? 15 : Math.max(8, dbPercent)}%` }}
               />
             </div>
-            <p className="text-xs text-gray-500 text-pretty">
-              First visit downloads a ~32 MB engine and caches it in this browser. Later visits should open in a few seconds.
-            </p>
+            {dbPercent !== 100 && (
+              <p className="text-xs text-gray-500 text-pretty">
+                First visit downloads a ~32 MB engine and caches it in this browser. Later visits should open in a few seconds.
+              </p>
+            )}
           </div>
         )}
         {dbError && (

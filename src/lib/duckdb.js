@@ -144,7 +144,7 @@ export async function getDb() {
       INIT_TIMEOUT_MS,
       'The SQL engine timed out while loading. Check your connection and try again.'
     );
-    emitProgress({ phase: 'ready', percent: 100, message: 'SQL engine ready' });
+    emitProgress({ phase: 'ready', percent: 100, message: 'Engine downloaded. Preparing the playground…' });
     return db;
   })().catch((err) => {
     dbPromise = null;
