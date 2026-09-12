@@ -23,6 +23,7 @@ import MetaTags from '@/components/SEO/MetaTags';
 import ValidateWithSqlBlock from '@/components/calculator/ValidateWithSqlBlock';
 import ScenarioCompareToggle from '@/components/calculator/ScenarioCompareToggle';
 import SponsorPlacement from '@/components/SponsorPlacement';
+import StickyToolTotal from '@/components/StickyToolTotal';
 import {
   EDITIONS,
   REGIONS,
@@ -466,7 +467,7 @@ export default function CostCalculatorPage() {
         <script type="application/ld+json">{JSON.stringify(softwareAppSchema)}</script>
       </Helmet>
 
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 pb-24 space-y-8 lg:pb-8">
         {/* Hero */}
         <div>
           <div className="inline-block px-3 py-1 mb-3 text-xs font-medium text-blue-300 bg-blue-900/30 border border-blue-700/50 rounded-full">
@@ -930,6 +931,7 @@ ORDER BY 1 DESC, total_credits DESC;`}
           </div>
         </div>
       </div>
+      <StickyToolTotal label="Monthly estimate" value={formatUSD(result.totalMonthly)} />
     </>
   );
 }

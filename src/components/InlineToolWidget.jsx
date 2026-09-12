@@ -1,39 +1,32 @@
 // src/components/InlineToolWidget.jsx - Contextual tool card shown on article pages
-// Maps article categories to relevant interactive tools on the site
+// Maps article categories to the matching calculator or playground.
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Wrench, ArrowRight } from 'lucide-react';
-import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 
 const TOOL_MAP = {
-  'Spark': { label: 'Spark vs Flink Comparison Tool', to: '/compare', desc: 'Compare big data frameworks side-by-side' },
-  'Apache Spark': { label: 'Spark vs Flink Comparison Tool', to: '/compare', desc: 'Compare big data frameworks side-by-side' },
-  'Databricks': { label: 'Cloud Platform Comparison', to: '/compare', desc: 'Compare Databricks, Snowflake, BigQuery & more' },
-  'Snowflake': { label: 'Cloud Platform Comparison', to: '/compare', desc: 'Compare Snowflake vs Databricks vs others' },
-  'Data Engineering': { label: 'DE Tool Comparison', to: '/compare', desc: 'Compare data engineering platforms head-to-head' },
-  'Python': { label: 'Python for DE Guide', to: '/articles', desc: 'Explore Python tutorials for data engineering' },
-  'SQL': { label: 'SQL Resource Hub', to: '/articles', desc: 'Browse SQL guides and best practices' },
-  'Cloud': { label: 'Cloud Platform Comparison', to: '/compare', desc: 'Compare AWS, Azure, and GCP services' },
-  'AWS': { label: 'Cloud Platform Comparison', to: '/compare', desc: 'Compare AWS services with other cloud providers' },
-  'Azure': { label: 'Cloud Platform Comparison', to: '/compare', desc: 'Compare Azure vs AWS vs GCP' },
-  'GCP': { label: 'Cloud Platform Comparison', to: '/compare', desc: 'Compare GCP with other cloud platforms' },
-  'Airflow': { label: 'Orchestration Tool Comparison', to: '/compare', desc: 'Compare Airflow, Dagster, Prefect & more' },
-  'Kafka': { label: 'Streaming Tools Comparison', to: '/compare', desc: 'Compare Kafka, Flink, Pulsar side-by-side' },
-  'BigQuery': { label: 'Cloud Warehouse Comparison', to: '/compare', desc: 'Compare BigQuery vs Snowflake vs Redshift' },
-  'dbt': { label: 'Transformation Tool Comparison', to: '/compare', desc: 'Compare dbt, Dataform, and other transform tools' },
+  Spark: { label: 'SQL Playground', to: '/tools/sql-playground', desc: 'Practice window functions and joins in the browser' },
+  'Apache Spark': { label: 'SQL Playground', to: '/tools/sql-playground', desc: 'Practice window functions and joins in the browser' },
+  Databricks: { label: 'Databricks Cost Calculator', to: '/tools/databricks-cost-calculator', desc: 'Model DBU spend before you resize a cluster' },
+  Snowflake: { label: 'Snowflake Cost Calculator', to: '/tools/snowflake-cost-calculator', desc: 'Turn warehouse hours into a monthly bill' },
+  'Data Engineering': { label: 'Free Data Engineering Tools', to: '/tools', desc: 'Cost, cron, SQL, and format converters' },
+  Python: { label: 'CSV → SQL Converter', to: '/tools/csv-to-sql', desc: 'Turn a sample file into CREATE TABLE + INSERT' },
+  SQL: { label: 'SQL Playground', to: '/tools/sql-playground', desc: 'Run QUALIFY, windows, and CTEs on sample tables' },
+  Cloud: { label: 'Cloud Warehouse Cost Comparison', to: '/tools/cloud-data-warehouse-cost-comparison', desc: 'Same workload on Snowflake, BigQuery, and Databricks' },
+  AWS: { label: 'Cloud Warehouse Cost Comparison', to: '/tools/cloud-data-warehouse-cost-comparison', desc: 'Compare warehouse bills before a migration' },
+  Azure: { label: 'Cloud Warehouse Cost Comparison', to: '/tools/cloud-data-warehouse-cost-comparison', desc: 'Compare warehouse bills before a migration' },
+  GCP: { label: 'BigQuery Cost Calculator', to: '/tools/bigquery-cost-calculator', desc: 'On-demand vs Editions on the same TB scanned' },
+  Airflow: { label: 'Cron Expression Builder', to: '/tools/cron-expression-builder', desc: 'Preview the next five Airflow or TASK runs' },
+  Kafka: { label: 'JSON / Parquet / Avro Converter', to: '/tools/json-parquet-avro-converter', desc: 'Inspect Avro and Parquet in the browser' },
+  BigQuery: { label: 'BigQuery Cost Calculator', to: '/tools/bigquery-cost-calculator', desc: 'On-demand vs Editions on the same TB scanned' },
+  dbt: { label: 'dbt Schema.yml Generator', to: '/tools/dbt-schema-generator', desc: 'Scaffold schema.yml and a staging model from DDL' },
 };
 
-// Fallback for articles that don't match any category
-const DEFAULT_TOOL = { label: 'Explore Comparison Tools', to: '/compare', desc: 'Compare data engineering tools and platforms' };
+const DEFAULT_TOOL = { label: 'Free Data Engineering Tools', to: '/tools', desc: 'Cost calculators, SQL helpers, converters, and generators' };
 
-/**
- * Shows a contextual "Try this tool" card based on the article's category/tags.
- * @param {{ post: { category?: string, tags?: string[] } }} props
- */
 export default function InlineToolWidget({ post }) {
   if (!post) return null;
 
-  // Try to find a matching tool from category first, then tags
   let tool = TOOL_MAP[post.category];
   if (!tool && post.tags) {
     for (const tag of post.tags) {
@@ -42,13 +35,6 @@ export default function InlineToolWidget({ post }) {
     }
   }
   if (!tool) tool = DEFAULT_TOOL;
-  if (ADSENSE_REVIEW_MODE && tool.to === '/compare') {
-    tool = {
-      label: 'Free Data Engineering Tools',
-      to: '/tools',
-      desc: 'Use cost calculators, SQL helpers, converters, and generators',
-    };
-  }
 
   return (
     <div className="my-8 p-5 rounded-2xl border border-blue-500/30 bg-gradient-to-r from-blue-900/20 to-purple-900/20 backdrop-blur-sm">
@@ -57,14 +43,14 @@ export default function InlineToolWidget({ post }) {
           <Wrench className="h-5 w-5 text-blue-400" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-1">Related Tool</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-1">Try this tool</p>
           <p className="text-white font-bold text-base mb-1">{tool.label}</p>
           <p className="text-gray-400 text-sm mb-3">{tool.desc}</p>
           <Link
             to={tool.to}
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors group"
           >
-            Try it now
+            Open it now
             <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>

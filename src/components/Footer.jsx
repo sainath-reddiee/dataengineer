@@ -30,12 +30,13 @@ const Footer = () => {
       ] : []),
     ],
     tools: [
-      { name: 'Airflow', href: '/category/airflow' },
-      { name: 'dbt', href: '/category/dbt' },
-      { name: 'Python', href: '/category/python' },
-      { name: 'Databricks', href: '/category/databricks' },
-      { name: 'Salesforce', href: '/category/salesforce' },
-      { name: 'Developer Productivity', href: '/category/developer-productivity' }
+      { name: 'All free tools', href: '/tools' },
+      { name: 'SQL Playground', href: '/tools/sql-playground' },
+      { name: 'Snowflake Cost Calculator', href: '/tools/snowflake-cost-calculator' },
+      { name: 'Warehouse comparison', href: '/tools/cloud-data-warehouse-cost-comparison' },
+      { name: 'Cron builder', href: '/tools/cron-expression-builder' },
+      { name: 'SQL Formatter', href: '/tools/sql-formatter' },
+      { name: 'dbt schema.yml', href: '/tools/dbt-schema-generator' },
     ],
     company: [
       { name: 'About', href: '/about' },
@@ -115,7 +116,7 @@ const Footer = () => {
 
           {[
             { title: 'Content', links: footerLinks.content, delay: 0.1 },
-            { title: 'Technologies', links: footerLinks.tools, delay: 0.2 },
+            { title: 'Free tools', links: footerLinks.tools, delay: 0.2 },
             { title: 'Company', links: footerLinks.company, delay: 0.3 }
           ].map((section) => (
             <motion.div

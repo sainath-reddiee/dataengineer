@@ -818,6 +818,12 @@ img {
     min-width: 0;
   }
 
+  .copy-code-btn,
+  .run-sql-btn {
+    min-height: 32px !important;
+    min-width: auto !important;
+  }
+
   .advertise-page {
     overflow-x: clip;
   }

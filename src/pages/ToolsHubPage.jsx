@@ -6,193 +6,22 @@
  * Hub-and-spoke model for SEO (like Cheat Sheets and Glossary hubs)
  */
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useMemo } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import {
-  Calculator,
-  DollarSign,
-  Zap,
-  Gauge,
   ChevronRight,
   Sparkles,
   Wrench,
-  Code2,
-  Clock,
-  FileJson,
-  FileSpreadsheet,
-  FileCode2,
-  Cloud,
-  Users,
   BookOpen,
-  Award,
   ExternalLink,
-  Database,
-  ArrowLeftRight,
-  Scale,
 } from 'lucide-react';
 
 import { SITE_CONFIG } from '@/lib/seoConfig';
 import SponsorPlacement from '@/components/SponsorPlacement';
-
-const TOOLS = [
-  {
-    slug: 'snowflake-cost-calculator',
-    title: 'Snowflake Cost Calculator',
-    icon: Calculator,
-    tagline: 'Full monthly spend estimator',
-    description:
-      'Model compute, storage, Snowpipe, Cortex AI, and serverless feature costs. Pick warehouse size, edition, region, and hours. Get a complete monthly projection.',
-    primaryFor: 'Budget planning, capacity forecasting, vendor negotiations',
-  },
-  {
-    slug: 'snowflake-credit-cost',
-    title: 'Credit → USD Converter',
-    icon: DollarSign,
-    tagline: 'Instant credit price lookup',
-    description:
-      'Convert any number of Snowflake credits to US dollars instantly across all editions (Standard, Enterprise, Business Critical, VPS) and cloud regions.',
-    primaryFor: 'Quick price checks, reviewing Account Usage bills, regional comparisons',
-  },
-  {
-    slug: 'snowflake-query-cost-estimator',
-    title: 'Query Cost Estimator',
-    icon: Zap,
-    tagline: 'Price per query, daily, monthly',
-    description:
-      'Enter bytes scanned and warehouse size to estimate cost per query, including the 60-second resume minimum. Scales to daily and monthly totals.',
-    primaryFor: 'Query optimization ROI, dashboard cost analysis, chargeback',
-  },
-  {
-    slug: 'snowflake-warehouse-sizing',
-    title: 'Warehouse Sizing Estimator',
-    icon: Gauge,
-    tagline: 'Pick XS → 6XL by workload',
-    description:
-      'Recommends a starting warehouse size (XS to 6XL) from workload type, data volume, and concurrency. Shows one-size-up and one-size-down cost comparison.',
-    primaryFor: 'Right-sizing, new workload setup, ETL vs BI tradeoffs',
-  },
-  {
-    slug: 'databricks-cost-calculator',
-    title: 'Databricks Cost Calculator',
-    icon: Cloud,
-    tagline: 'DBU-based lakehouse pricing',
-    description:
-      'Model Databricks costs by cluster type (All-Purpose, Jobs, SQL Compute, Serverless SQL), DBU rate, instance type, and hours. Compare directly against Snowflake warehouse equivalents.',
-    primaryFor: 'Lakehouse vs warehouse decisions, multi-cloud cost benchmarking, platform migrations',
-  },
-  {
-    slug: 'dbt-cloud-cost-calculator',
-    title: 'dbt Cloud Cost Calculator',
-    icon: Users,
-    tagline: 'Seat + run-based pricing',
-    description:
-      'Estimate dbt Cloud cost across Developer, Team, and Enterprise tiers. Factor in developer seats, successful models built, IDE usage, and run frequency. Compare with dbt Core TCO.',
-    primaryFor: 'dbt Cloud vs dbt Core ROI, team budgeting, upgrade planning',
-  },
-  {
-    slug: 'sql-formatter',
-    title: 'SQL Formatter',
-    icon: Code2,
-    tagline: 'Beautify + standardize SQL',
-    description:
-      'Paste any SQL — Snowflake, PostgreSQL, BigQuery, Redshift, or ANSI — and get consistent formatting with configurable indentation, keyword case, and line length. 100% client-side.',
-    primaryFor: 'Code review cleanup, PR hygiene, pre-commit style enforcement',
-  },
-  {
-    slug: 'cron-expression-builder',
-    title: 'Cron Expression Builder',
-    icon: Clock,
-    tagline: 'Visual cron + next-run preview',
-    description:
-      'Build and validate 5-field and 6-field cron expressions for Airflow, dbt, Snowflake TASK, and standard Unix cron. Shows next 5 run times and human-readable description.',
-    primaryFor: 'Airflow DAGs, Snowflake TASKs, dbt Cloud jobs, data pipeline schedules',
-  },
-  {
-    slug: 'json-to-sql-ddl',
-    title: 'JSON → SQL DDL Generator',
-    icon: FileJson,
-    tagline: 'Schema inference from sample',
-    description:
-      'Paste a JSON sample (or array of samples) and get a CREATE TABLE DDL with inferred types. Supports Snowflake VARIANT, PostgreSQL JSONB, and standard SQL types. Handles nested objects and arrays.',
-    primaryFor: 'Ingestion pipeline bootstrapping, schema design, API → warehouse mapping',
-  },
-  {
-    slug: 'csv-to-sql',
-    title: 'CSV → SQL Converter',
-    icon: FileSpreadsheet,
-    tagline: 'INSERT + CREATE TABLE from CSV',
-    description:
-      'Paste CSV, get both CREATE TABLE DDL and INSERT statements with inferred types. RFC 4180 parser handles quoted fields, embedded commas, and escaped quotes. Snowflake, Postgres, BigQuery, ANSI dialects.',
-    primaryFor: 'Test data seeding, fixture generation, quick CSV-to-warehouse loads',
-  },
-  {
-    slug: 'dbt-schema-generator',
-    title: 'dbt Schema.yml Generator',
-    icon: FileCode2,
-    tagline: 'CREATE TABLE → dbt scaffold',
-    description:
-      'Paste a CREATE TABLE statement, get a complete dbt scaffold: schema.yml with inferred unique/not_null tests, staging SQL model, and sources.yml with freshness checks. Zero warehouse connection required.',
-    primaryFor: 'dbt onboarding, staging layer bootstrapping, schema.yml generation without codegen',
-  },
-  {
-    slug: 'unix-timestamp-converter',
-    title: 'Unix Timestamp Converter',
-    icon: Clock,
-    tagline: 'Epoch â†” date (sec/ms/Î¼s/ns)',
-    description:
-      'Convert Unix epoch time to human-readable UTC, ISO 8601, and local datetime. Auto-detects seconds, milliseconds, microseconds, and nanoseconds. Includes SQL cheat sheet for Snowflake, Postgres, BigQuery, MySQL, Redshift, Databricks.',
-    primaryFor: 'Debugging time-series data, SQL timestamp conversions, API integration',
-  },
-  {
-    slug: 'bigquery-cost-calculator',
-    title: 'BigQuery Cost Calculator',
-    icon: Cloud,
-    tagline: 'On-demand + Editions pricing',
-    description:
-      'Model Google BigQuery spend across on-demand ($6.25/TB scanned) and capacity Editions (Standard/Enterprise/Enterprise Plus slot-hours). Includes storage tiers, streaming ingest, and on-demand vs Editions break-even analysis.',
-    primaryFor: 'BigQuery cost planning, on-demand vs Editions decisions, multi-cloud comparison',
-  },
-  {
-    slug: 'sql-playground',
-    title: 'SQL Playground',
-    icon: Database,
-    tagline: 'Run SQL in your browser',
-    description:
-      'In-browser SQL engine powered by DuckDB-WASM. Practice window functions, CTEs, QUALIFY, aggregations, and joins on preloaded sample datasets. No server, no signup, 100% client-side.',
-    primaryFor: 'SQL practice, interview prep, learning window functions, quick prototyping',
-  },
-  {
-    slug: 'json-parquet-avro-converter',
-    title: 'JSON / Parquet / Avro Converter',
-    icon: ArrowLeftRight,
-    tagline: 'Convert between data formats',
-    description:
-      'Convert JSON, Apache Parquet, and Apache Avro files directly in your browser. Powered by DuckDB-WASM for Parquet and avsc for Avro. No upload, no server — 100% client-side.',
-    primaryFor: 'Data lake format conversion, Kafka/Avro inspection, Parquet previewing, format migration',
-  },
-  {
-    slug: 'cloud-data-warehouse-cost-comparison',
-    title: 'Cloud Warehouse Cost Comparison',
-    icon: Scale,
-    tagline: 'Snowflake vs BigQuery vs Databricks',
-    description:
-      'Enter one workload profile — TB scanned, compute hours, storage — and get an apples-to-apples monthly cost estimate across Snowflake, BigQuery, and Databricks. Uses published list pricing (April 2026). Great for pre-RFP sizing and migration budget framing.',
-    primaryFor: 'Platform selection, migration cost modeling, vendor negotiations, multi-cloud strategy',
-  },
-  {
-    slug: 'snowflake-certification-practice',
-    title: 'Snowflake Certification Practice',
-    icon: Award,
-    tagline: 'Interactive SnowPro exam prep',
-    description:
-      'Practice for SnowPro Core, SnowPro Advanced: Data Engineer, and SnowPro Specialty (Gen AI, Architect) exams. Interactive question bank with real-world scenarios, instant feedback, and topic-wise readiness tracking to help you pass on the first attempt.',
-    primaryFor: 'SnowPro Core prep, Advanced Data Engineer certification, Specialty exam revision',
-    external: true,
-    url: 'https://dataengineerhub.blog/certification',
-  },
-];
+import { TOOLS, TOOL_CATEGORIES, TOOL_STAGES, filterTools } from '@/data/toolsCatalog';
+import { TOOL_ICONS } from '@/data/toolIcons';
 
 const FAQS = [
   {
@@ -218,6 +47,30 @@ const FAQS = [
 ];
 
 export default function ToolsHubPage() {
+  const [params, setParams] = useSearchParams();
+  const category = TOOL_CATEGORIES.some((item) => item.id === params.get('cat'))
+    ? params.get('cat')
+    : 'all';
+  const stage = TOOL_STAGES.some((item) => item.id === params.get('stack'))
+    ? params.get('stack')
+    : '';
+  const visibleTools = useMemo(() => filterTools({ category, stage }), [category, stage]);
+  const activeStage = TOOL_STAGES.find((item) => item.id === stage);
+
+  const setCategory = (id) => {
+    const next = new URLSearchParams(params);
+    if (!id || id === 'all') next.delete('cat');
+    else next.set('cat', id);
+    setParams(next, { replace: true });
+  };
+
+  const setStage = (id) => {
+    const next = new URLSearchParams(params);
+    if (!id || next.get('stack') === id) next.delete('stack');
+    else next.set('stack', id);
+    setParams(next, { replace: true });
+  };
+
   const pageTitle = 'Free Data Engineering Calculators & Tools 2026';
   const pageDescription =
     'Free cost calculators for Snowflake, Databricks, BigQuery, and dbt Cloud — plus a SQL playground, cron builder, and format converter. No login, instant results, shareable URLs.';
@@ -310,7 +163,7 @@ export default function ToolsHubPage() {
         </div>
 
         {/* Hero */}
-        <div className="bg-gradient-to-b from-slate-900/0 to-slate-900/50 py-16">
+        <div className="bg-gradient-to-b from-slate-900/0 to-slate-900/50 py-8 sm:py-16">
           <div className="max-w-6xl mx-auto px-4 text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -322,11 +175,11 @@ export default function ToolsHubPage() {
                 <span>{TOOLS.length} Free Tools</span>
               </div>
 
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
                 Free Data Engineering Calculators &amp; Tools
               </h1>
 
-              <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              <p className="text-base sm:text-xl text-gray-300 max-w-2xl mx-auto">
                 Estimate costs for Snowflake, Databricks, BigQuery, and dbt Cloud — format data,
                 build cron expressions, and run SQL — all in your browser, no login required.
               </p>
@@ -346,9 +199,49 @@ export default function ToolsHubPage() {
 
         {/* Tool cards grid */}
         <div className="max-w-6xl mx-auto px-4 pb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {TOOLS.map((tool, idx) => {
-              const Icon = tool.icon;
+          <div className="sticky top-[4.25rem] z-20 -mx-4 mb-5 border-b border-white/5 bg-slate-950/80 px-4 py-3 backdrop-blur-xl">
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {TOOL_CATEGORIES.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setCategory(item.id)}
+                  className={`compact-control shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                    category === item.id
+                      ? 'border-blue-400/50 bg-blue-500/20 text-blue-100'
+                      : 'border-white/10 bg-white/5 text-slate-300'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            <div className="mt-2 flex gap-2 overflow-x-auto">
+              {TOOL_STAGES.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setStage(item.id)}
+                  className={`compact-control shrink-0 rounded-full px-3 py-1 text-[11px] ${
+                    stage === item.id
+                      ? 'bg-indigo-500/25 text-indigo-100 ring-1 ring-indigo-400/40'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            {activeStage && (
+              <p className="mt-2 text-xs text-slate-400">
+                Showing {activeStage.label} tools — {activeStage.hint}
+              </p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            {visibleTools.map((tool, idx) => {
+              const Icon = TOOL_ICONS[tool.icon] || Wrench;
               const cardInner = (
                 <div className="flex items-start gap-4">
                   <div className="shrink-0 w-12 h-12 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
@@ -365,8 +258,8 @@ export default function ToolsHubPage() {
                       )}
                     </h2>
                     <p className="text-sm text-blue-300/80 mt-1">{tool.tagline}</p>
-                    <p className="text-gray-300 text-sm mt-3">{tool.description}</p>
-                    <p className="text-xs text-gray-400 mt-3">
+                    <p className="hidden text-gray-300 text-sm mt-3 sm:block">{tool.description}</p>
+                    <p className="text-xs text-gray-400 mt-2 sm:mt-3">
                       <span className="font-semibold text-gray-300">Best for:</span>{' '}
                       {tool.primaryFor}
                     </p>
@@ -379,7 +272,7 @@ export default function ToolsHubPage() {
               );
 
               const cardClass =
-                'group block bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 rounded-2xl p-6 h-full transition-all duration-200';
+                'group block bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 rounded-2xl p-4 sm:p-6 h-full transition-all duration-200';
 
               return (
                 <motion.div
@@ -406,6 +299,14 @@ export default function ToolsHubPage() {
               );
             })}
           </div>
+          {visibleTools.length === 0 && (
+            <p className="mt-6 text-center text-sm text-slate-400">
+              No tools in this filter.{' '}
+              <button type="button" onClick={() => { setCategory('all'); setStage(''); }} className="text-blue-400 hover:underline">
+                Show all
+              </button>
+            </p>
+          )}
         </div>
 
         {/* How to choose */}

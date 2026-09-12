@@ -264,22 +264,22 @@ export default function CronBuilderPage() {
 
         <div className="bg-slate-800/50 rounded-2xl border border-slate-700 p-6 space-y-4">
           <label className="block text-sm font-medium text-gray-300">Cron expression</label>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
               value={expr}
               onChange={(e) => setExpr(e.target.value)}
-              className="flex-1 bg-slate-900 border border-slate-700 rounded-lg text-white px-4 py-3 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              className="flex-1 min-w-0 bg-slate-900 border border-slate-700 rounded-lg text-white px-4 py-3 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
               spellCheck={false}
             />
             <button
               onClick={handleCopy}
-              className="px-4 py-3 bg-slate-700/50 hover:bg-slate-700 border border-slate-600 rounded-lg text-white text-sm flex items-center gap-2"
+              className="px-4 py-3 bg-slate-700/50 hover:bg-slate-700 border border-slate-600 rounded-lg text-white text-sm flex items-center justify-center gap-2"
             >
               {copied ? (<><Check className="w-4 h-4 text-green-400" /> Copied</>) : (<><Copy className="w-4 h-4" /> Copy</>)}
             </button>
           </div>
-          <div className="grid grid-cols-5 gap-2 text-center text-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs">
             <div className="bg-slate-900/50 border border-slate-700 rounded p-2">
               <div className="text-gray-500 mb-1">Minute</div>
               <div className="text-white font-mono">0-59</div>

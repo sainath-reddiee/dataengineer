@@ -73,7 +73,8 @@ assert(hero.includes('HubMotion'), 'Hero should show the motion map that explain
 
 const hub = readFileSync(join(root, 'src/components/HubMotion.jsx'), 'utf8');
 assert(hub.includes('What you can do here'), 'Hub motion should explain the site at a glance');
-assert(hub.includes('Ingest'), 'Hub motion should show the data-stack stages');
+assert(hub.includes('TOOL_STAGES'), 'Hub motion should show the data-stack stages');
+assert(readFileSync(join(root, 'src/data/toolsCatalog.js'), 'utf8').includes("id: 'ingest'"), 'Pipeline stages must stay in the tools catalog');
 assert(hub.includes('/interview-prep'), 'Hub motion should still reach interview prep');
 assert(hub.includes('hub-3d-scene'), 'Homepage explainer should use a 3D scene');
 assert(hub.includes('TiltCard'), 'Homepage explainer should tilt on pointer move');
@@ -81,6 +82,7 @@ assert(css.includes('.hub-3d-scene'), '3D scene CSS must exist');
 
 assert(home.includes('max-w-6xl'), 'Homepage should tighten to a SaaS content width');
 assert(home.includes('<FeaturedPosts compact'), 'Homepage featured section should drop the extra marketing header');
+assert(home.includes('FeaturedToolsRail'), 'Homepage should surface tools before the article feed on mobile');
 assert(home.includes('<TrendingPosts compact'), 'Homepage trending section should drop the extra marketing header');
 assert(home.includes('<TechCategories compact'), 'Homepage tech grid should drop the extra marketing header');
 assert(home.includes('card-3d'), 'Homepage cards should use the lift hover');

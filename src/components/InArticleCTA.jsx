@@ -1,9 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, ArrowRight, Layers, PenLine, Wrench, GraduationCap } from 'lucide-react';
+import { BookOpen, ArrowRight, Layers, Wrench, GraduationCap } from 'lucide-react';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 
 const defaultLinks = [
+  {
+    to: '/tools',
+    icon: Wrench,
+    title: 'Free Tools',
+    desc: 'Cost calculators and SQL helpers',
+  },
   { to: '/glossary', icon: BookOpen, title: 'Data Engineering Glossary', desc: 'Look up key terms and concepts' },
   { to: '/compare', icon: Layers, title: 'Tool Comparisons', desc: 'Side-by-side technology breakdowns' },
   {
@@ -11,12 +17,6 @@ const defaultLinks = [
     icon: ArrowRight,
     title: 'All Tutorials',
     desc: 'Browse the full article archive',
-  },
-  {
-    to: '/contribute',
-    icon: PenLine,
-    title: 'Write for Us',
-    desc: 'Submit a guest post',
   },
 ];
 
