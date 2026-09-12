@@ -29,7 +29,12 @@ assert(search.includes('text-pretty'), 'Search helper copy should wrap instead o
 assert(search.includes('aria-label="Close search"'), 'Search must expose a close control on mobile');
 assert(search.includes("body.style.overflow = 'hidden'"), 'Search must lock background scroll');
 
-assert(header.includes('aria-label="Search articles"'), 'Mobile header should expose a search icon like the desktop chrome');
+assert(header.includes('aria-label="Search articles"'), 'Mobile header should expose search outside the hamburger');
+assert(header.includes('Search articles…'), 'Mobile header should show a search bar, not only an icon');
+assert(header.includes('flex-1 items-center gap-2 rounded-full'), 'Mobile search should be a flex pill in the header chrome');
+assert(search.includes('Popular topics'), 'Search sheet should offer topic chips before someone types');
+assert(search.includes('Jump to'), 'Search sheet should shortcut to playground and study pages');
+assert(search.includes('deh-search-recent'), 'Search should remember recent opens');
 
 assert(duckdb.includes("from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url'"), 'DuckDB wasm must ride the Vite asset graph');
 assert(duckdb.includes("from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url'"), 'DuckDB worker must ride the Vite asset graph');

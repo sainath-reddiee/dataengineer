@@ -3,16 +3,40 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, Clock, ArrowRight, FileText, Command, BookOpen, GitCompare, Library } from 'lucide-react';
+import {
+  Search,
+  X,
+  Clock,
+  ArrowRight,
+  FileText,
+  BookOpen,
+  GitCompare,
+  Library,
+  Terminal,
+  GraduationCap,
+  Wrench,
+  Sparkles,
+} from 'lucide-react';
 import wordpressApi from '@/services/wordpressApi';
 import searchIndex from '@/data/searchIndex.json';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 
-// Flatten local index (glossary + comparisons) into a unified searchable list.
-// WP articles come in separately from the REST API at query time.
+const RECENT_KEY = 'deh-search-recent';
+const MAX_RECENT = 6;
+
+const JUMP_LINKS = [
+  { type: 'tool', id: 'jump-playground', title: 'SQL Playground', href: '/tools/sql-playground', excerpt: 'Run SQL in the browser' },
+  { type: 'tool', id: 'jump-tools', title: 'Tools hub', href: '/tools', excerpt: 'Calculators, formatter, converter' },
+  { type: 'cheatsheet', id: 'jump-cheatsheets', title: 'Cheat sheets', href: '/cheatsheets', excerpt: 'SQL, dbt, Airflow, Spark' },
+  { type: 'article', id: 'jump-interview', title: 'Interview prep', href: '/interview-prep', excerpt: 'Practice questions by stack' },
+  { type: 'glossary', id: 'jump-glossary', title: 'Glossary', href: '/glossary', excerpt: 'Short definitions for DE terms' },
+];
+
+const TOPIC_CHIPS = ['Snowflake', 'dbt', 'Airflow', 'Spark', 'SQL', 'Kafka'];
+
 const buildLocalIndex = () => {
-  if (ADSENSE_REVIEW_MODE) return [];
-  const out = [];
+  if (ADSENSE_REVIEW_MODE) return [...JUMP_LINKS];
+  const out = [...JUMP_LINKS];
   for (const g of searchIndex.glossary || []) {
     out.push({
       type: 'glossary',
@@ -57,7 +81,54 @@ const TypeIcon = ({ type, className }) => {
   if (type === 'glossary') return <Library className={className} />;
   if (type === 'comparison') return <GitCompare className={className} />;
   if (type === 'cheatsheet') return <BookOpen className={className} />;
+  if (type === 'tool') return <Terminal className={className} />;
+  if (type === 'recent') return <Clock className={className} />;
   return <FileText className={className} />;
+};
+
+const typeLabel = (type) => {
+  if (type === 'article') return 'Article';
+  if (type === 'glossary') return 'Glossary';
+  if (type === 'comparison') return 'Comparison';
+  if (type === 'cheatsheet') return 'Cheat sheet';
+  if (type === 'tool') return 'Tool';
+  if (type === 'recent') return 'Recent';
+  return type;
+};
+
+const loadRecent = () => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(RECENT_KEY) || '[]');
+    return Array.isArray(parsed) ? parsed.slice(0, MAX_RECENT) : [];
+  } catch {
+    return [];
+  }
+};
+
+const persistRecent = (entry) => {
+  const next = [entry, ...loadRecent().filter((item) => item.id !== entry.id && item.href !== entry.href)].slice(0, MAX_RECENT);
+  try {
+    window.localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+  } catch {
+    /* private mode */
+  }
+  return next;
+};
+
+const Highlight = ({ text, query }) => {
+  if (!text) return null;
+  const needle = query.trim();
+  if (needle.length < 2) return text;
+  const idx = text.toLowerCase().indexOf(needle.toLowerCase());
+  if (idx < 0) return text;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <mark className="rounded-sm bg-blue-500/30 px-0.5 text-white">{text.slice(idx, idx + needle.length)}</mark>
+      {text.slice(idx + needle.length)}
+    </>
+  );
 };
 
 const SearchModal = ({ isOpen, onClose }) => {
@@ -65,13 +136,14 @@ const SearchModal = ({ isOpen, onClose }) => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [recent, setRecent] = useState([]);
   const inputRef = useRef(null);
   const debounceRef = useRef(null);
   const navigate = useNavigate();
 
-  // Focus input when modal opens
   useEffect(() => {
     if (isOpen) {
+      setRecent(loadRecent());
       setTimeout(() => inputRef.current?.focus(), 100);
       setQuery('');
       setResults([]);
@@ -79,7 +151,6 @@ const SearchModal = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  // Lock background scroll while the sheet is open (especially on iOS).
   useEffect(() => {
     if (!isOpen) return undefined;
     const { body, documentElement } = document;
@@ -93,7 +164,6 @@ const SearchModal = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
-  // Close on Escape
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') onClose();
@@ -104,21 +174,27 @@ const SearchModal = ({ isOpen, onClose }) => {
     }
   }, [isOpen, onClose]);
 
-  // Global Ctrl+K / Cmd+K shortcut
   useEffect(() => {
     const handleGlobalKey = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        if (isOpen) {
-          onClose();
-        }
+        if (isOpen) onClose();
       }
     };
     document.addEventListener('keydown', handleGlobalKey);
     return () => document.removeEventListener('keydown', handleGlobalKey);
   }, [isOpen, onClose]);
 
-  // Debounced search (merges local index + WP posts)
+  const idleItems = useMemo(
+    () => [
+      ...recent.map((item) => ({ ...item, id: item.id || `recent-${item.href}` })),
+      ...JUMP_LINKS.filter((link) => !recent.some((item) => item.href === link.href)),
+    ],
+    [recent]
+  );
+
+  const visibleItems = query.trim().length >= 2 ? results : idleItems;
+
   const performSearch = useCallback(async (searchQuery) => {
     const q = searchQuery.trim();
     if (!q || q.length < 2) {
@@ -129,19 +205,17 @@ const SearchModal = ({ isOpen, onClose }) => {
 
     setLoading(true);
 
-    // 1) Local index (synchronous) — glossary + comparisons
     const localMatches = LOCAL_INDEX
-      .map(item => ({ item, score: scoreLocal(item, q) }))
-      .filter(x => x.score > 0)
+      .map((item) => ({ item, score: scoreLocal(item, q) }))
+      .filter((x) => x.score > 0)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 6)
-      .map(x => x.item);
+      .slice(0, 8)
+      .map((x) => x.item);
 
-    // 2) WP articles (async)
     let wpMatches = [];
     try {
       const { posts } = await wordpressApi.getPosts({ search: q, per_page: 8, page: 1 });
-      wpMatches = (posts || []).map(p => ({
+      wpMatches = (posts || []).map((p) => ({
         type: 'article',
         id: `article-${p.id}`,
         title: p.title,
@@ -149,14 +223,12 @@ const SearchModal = ({ isOpen, onClose }) => {
         href: `/articles/${p.slug}`,
         category: p.category,
         readTime: p.readTime,
-        raw: p,
+        excerpt: p.excerpt,
       }));
     } catch {
       wpMatches = [];
     }
 
-    // Merge: articles first (primary intent), then local.
-    // De-dupe by href just in case.
     const seen = new Set();
     const merged = [];
     for (const r of [...wpMatches, ...localMatches]) {
@@ -170,40 +242,56 @@ const SearchModal = ({ isOpen, onClose }) => {
     setLoading(false);
   }, []);
 
-  const handleInputChange = (e) => {
-    const value = e.target.value;
+  const runQuery = useCallback((value) => {
     setQuery(value);
-
     if (debounceRef.current) clearTimeout(debounceRef.current);
-
     if (value.trim().length < 2) {
       setResults([]);
       setLoading(false);
       return;
     }
-
     setLoading(true);
     debounceRef.current = setTimeout(() => {
       performSearch(value);
-    }, 300);
-  };
+    }, 220);
+  }, [performSearch]);
 
-  // Keyboard navigation
-  const handleKeyDown = (e) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setSelectedIndex((prev) => Math.min(prev + 1, results.length - 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setSelectedIndex((prev) => Math.max(prev - 1, 0));
-    } else if (e.key === 'Enter' && results[selectedIndex]) {
-      navigateToResult(results[selectedIndex]);
-    }
+  const handleInputChange = (e) => {
+    runQuery(e.target.value);
   };
 
   const navigateToResult = (result) => {
+    if (!result?.href) return;
+    setRecent(persistRecent({
+      id: result.id,
+      type: result.type,
+      title: result.title,
+      href: result.href,
+      excerpt: result.excerpt,
+    }));
     onClose();
-    navigate(result.href || `/articles/${result.slug}`);
+    navigate(result.href);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex((prev) => Math.min(prev + 1, Math.max(visibleItems.length - 1, 0)));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((prev) => Math.max(prev - 1, 0));
+    } else if (e.key === 'Enter' && visibleItems[selectedIndex]) {
+      navigateToResult(visibleItems[selectedIndex]);
+    }
+  };
+
+  const clearRecent = () => {
+    try {
+      window.localStorage.removeItem(RECENT_KEY);
+    } catch {
+      /* ignore */
+    }
+    setRecent([]);
   };
 
   const resultHint = useMemo(() => {
@@ -214,9 +302,10 @@ const SearchModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
   if (typeof document === 'undefined') return null;
 
-  // Portal to <body>: Header / framer-motion transforms make position:fixed
-  // descendants attach to the header box. Flex-centering avoids Framer
-  // overwriting a Tailwind translate used for horizontal alignment.
+  const showIdle = !loading && query.trim().length < 2;
+  const showEmpty = !loading && query.trim().length >= 2 && results.length === 0;
+  const showResults = !loading && results.length > 0;
+
   return createPortal(
     <AnimatePresence>
       {isOpen && (
@@ -253,11 +342,21 @@ const SearchModal = ({ isOpen, onClose }) => {
                   value={query}
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
-                  placeholder="Search articles…"
+                  placeholder="Search articles, tools, or a topic…"
                   autoComplete="off"
                   autoCorrect="off"
+                  enterKeyHint="search"
                   className="min-w-0 flex-1 bg-transparent text-white text-base sm:text-lg placeholder-gray-500 outline-none"
                 />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={() => runQuery('')}
+                    className="text-xs text-slate-400 hover:text-white"
+                  >
+                    Clear
+                  </button>
+                )}
                 <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-400 bg-slate-800 border border-slate-700 rounded-md">
                   ESC
                 </kbd>
@@ -279,70 +378,138 @@ const SearchModal = ({ isOpen, onClose }) => {
                   </div>
                 )}
 
-                {!loading && query.trim().length >= 2 && results.length === 0 && (
-                  <div className="px-4 py-8 text-center">
-                    <p className="text-gray-400 text-pretty">No results for “{query}”</p>
+                {showEmpty && (
+                  <div className="px-4 py-6 text-center">
+                    <p className="text-gray-300 text-pretty">No results for “{query}”</p>
+                    <p className="text-gray-500 text-xs mt-2 text-pretty">
+                      Try a tool, a stack name, or one of the shortcuts below.
+                    </p>
+                    <div className="mt-4 flex flex-wrap justify-center gap-2">
+                      {TOPIC_CHIPS.map((chip) => (
+                        <button
+                          key={chip}
+                          type="button"
+                          onClick={() => runQuery(chip)}
+                          className="rounded-full border border-slate-700 bg-slate-800/70 px-3 py-1.5 text-xs text-slate-200 hover:border-blue-400/40 hover:text-white"
+                        >
+                          {chip}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
 
-                {!loading && results.length > 0 && (
+                {showResults && (
                   <div className="py-2">
                     {results.map((r, index) => (
-                      <button
+                      <ResultRow
                         key={r.id}
+                        item={r}
+                        query={query}
+                        active={index === selectedIndex}
                         onClick={() => navigateToResult(r)}
-                        onMouseEnter={() => setSelectedIndex(index)}
-                        className={`w-full flex items-start gap-3 px-4 py-3 text-left transition-colors ${
-                          index === selectedIndex
-                            ? 'bg-blue-600/20 border-l-2 border-blue-400'
-                            : 'border-l-2 border-transparent hover:bg-slate-800/50'
-                        }`}
-                      >
-                        <TypeIcon type={r.type} className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-white font-medium break-words">{r.title}</p>
-                          <div className="flex items-center gap-2 mt-1 flex-wrap">
-                            <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 bg-slate-700/60 text-gray-300 rounded-full">
-                              {r.type === 'article' ? 'Article' : r.type === 'glossary' ? 'Glossary' : r.type === 'comparison' ? 'Comparison' : r.type}
-                            </span>
-                            {r.category && (
-                              <span className="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded-full">
-                                {r.category}
-                              </span>
-                            )}
-                            {r.readTime && (
-                              <span className="text-xs text-gray-400 flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {r.readTime}
-                              </span>
-                            )}
-                          </div>
-                          {r.excerpt && (
-                            <p className="text-xs text-gray-400 mt-1 line-clamp-2 break-words">{r.excerpt}</p>
-                          )}
-                        </div>
-                        <ArrowRight className={`h-4 w-4 shrink-0 mt-1 transition-opacity ${
-                          index === selectedIndex ? 'text-blue-400 opacity-100' : 'opacity-0'
-                        }`} />
-                      </button>
+                        onHover={() => setSelectedIndex(index)}
+                      />
                     ))}
                   </div>
                 )}
 
-                {!loading && query.trim().length < 2 && (
-                  <div className="px-5 py-8 text-center">
-                    <Command className="h-8 w-8 text-gray-500 mx-auto mb-3" />
-                    <p className="text-gray-300 text-sm text-pretty">
-                      Type at least 2 characters to search
-                    </p>
-                    <p className="text-gray-500 text-xs mt-2 text-pretty leading-relaxed">
-                      Use arrow keys to navigate, then press Enter to open a result.
-                    </p>
+                {showIdle && (
+                  <div className="px-4 py-4 space-y-5">
+                    <div>
+                      <p className="text-gray-300 text-sm text-pretty">
+                        Type at least 2 characters to search
+                      </p>
+                      <p className="text-gray-500 text-xs mt-1 text-pretty leading-relaxed">
+                        Articles, glossary, comparisons, and tools. Or tap a shortcut.
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                        Popular topics
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {TOPIC_CHIPS.map((chip) => (
+                          <button
+                            key={chip}
+                            type="button"
+                            onClick={() => runQuery(chip)}
+                            className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800/70 px-3 py-1.5 text-xs text-slate-200 hover:border-blue-400/40 hover:text-white"
+                          >
+                            <Sparkles className="h-3 w-3 text-blue-300" />
+                            {chip}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {recent.length > 0 && (
+                      <div>
+                        <div className="mb-2 flex items-center justify-between">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                            Recent
+                          </p>
+                          <button
+                            type="button"
+                            onClick={clearRecent}
+                            className="text-[11px] text-slate-500 hover:text-white"
+                          >
+                            Clear
+                          </button>
+                        </div>
+                        <div className="-mx-1">
+                          {recent.map((item, index) => (
+                            <ResultRow
+                              key={item.id || item.href}
+                              item={{ ...item, type: item.type || 'recent' }}
+                              query=""
+                              active={index === selectedIndex}
+                              onClick={() => navigateToResult(item)}
+                              onHover={() => setSelectedIndex(index)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div>
+                      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+                        Jump to
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {JUMP_LINKS.map((link) => {
+                          const Icon = link.href.includes('playground')
+                            ? Terminal
+                            : link.href.includes('interview')
+                              ? GraduationCap
+                              : link.href.includes('tools')
+                                ? Wrench
+                                : link.href.includes('glossary')
+                                  ? Library
+                                  : BookOpen;
+                          return (
+                            <button
+                              key={link.id}
+                              type="button"
+                              onClick={() => navigateToResult(link)}
+                              className="flex items-start gap-3 rounded-xl border border-slate-800 bg-slate-800/40 px-3 py-3 text-left hover:border-blue-400/30 hover:bg-slate-800/80"
+                            >
+                              <Icon className="mt-0.5 h-4 w-4 shrink-0 text-blue-300" />
+                              <span>
+                                <span className="block text-sm font-medium text-white">{link.title}</span>
+                                <span className="block text-xs text-slate-400">{link.excerpt}</span>
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
 
-              {results.length > 0 && (
+              {showResults && (
                 <div className="px-4 py-2 border-t border-slate-700/50 flex items-center justify-between gap-3 text-xs text-gray-400">
                   <span>{resultHint}</span>
                   <div className="hidden sm:flex items-center gap-2">
@@ -361,5 +528,49 @@ const SearchModal = ({ isOpen, onClose }) => {
     document.body
   );
 };
+
+const ResultRow = ({ item, query, active, onClick, onHover }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    onMouseEnter={onHover}
+    className={`w-full flex items-start gap-3 px-3 py-3 text-left transition-colors ${
+      active
+        ? 'bg-blue-600/20 border-l-2 border-blue-400'
+        : 'border-l-2 border-transparent hover:bg-slate-800/50'
+    }`}
+  >
+    <TypeIcon type={item.type} className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />
+    <div className="flex-1 min-w-0">
+      <p className="text-white font-medium break-words">
+        <Highlight text={item.title} query={query} />
+      </p>
+      <div className="flex items-center gap-2 mt-1 flex-wrap">
+        <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 bg-slate-700/60 text-gray-300 rounded-full">
+          {typeLabel(item.type)}
+        </span>
+        {item.category && (
+          <span className="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded-full">
+            {item.category}
+          </span>
+        )}
+        {item.readTime && (
+          <span className="text-xs text-gray-400 flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            {item.readTime}
+          </span>
+        )}
+      </div>
+      {item.excerpt && (
+        <p className="text-xs text-gray-400 mt-1 line-clamp-2 break-words">
+          <Highlight text={item.excerpt} query={query} />
+        </p>
+      )}
+    </div>
+    <ArrowRight className={`h-4 w-4 shrink-0 mt-1 transition-opacity ${
+      active ? 'text-blue-400 opacity-100' : 'opacity-0'
+    }`} />
+  </button>
+);
 
 export default SearchModal;

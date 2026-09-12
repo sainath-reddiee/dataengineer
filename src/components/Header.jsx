@@ -155,16 +155,27 @@ const Header = ({ topOffset = 0 }) => {
       className="fixed left-0 right-0 z-[9999] border-b border-white/10 bg-slate-950/80 backdrop-blur-xl"
       style={{ top: topOffset }}
     >
-      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link to="/" className="group z-10 flex min-w-0 items-center gap-2">
+      <nav className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-3 sm:px-6 lg:gap-4">
+        <Link to="/" className="group z-10 flex min-w-0 shrink items-center gap-2">
           <span className="relative shrink-0">
             <DatabaseMark />
             <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-gradient-to-r from-pink-500 to-violet-500" />
           </span>
-          <span className="truncate text-lg font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <span className="hidden min-[420px]:inline truncate text-[15px] font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent sm:text-lg max-w-[9rem] min-[480px]:max-w-none">
             DataEngineer Hub
           </span>
         </Link>
+
+        <button
+          type="button"
+          onClick={() => setIsSearchOpen(true)}
+          className="lg:hidden flex min-h-10 min-w-0 flex-1 items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 text-sm text-slate-400 transition-colors hover:border-white/25 hover:bg-white/10 hover:text-slate-200"
+          aria-label="Search articles"
+          title="Search"
+        >
+          <Search className="h-4 w-4 shrink-0 text-slate-300" />
+          <span className="truncate">Search</span>
+        </button>
 
         <div className="hidden flex-1 items-center justify-center gap-1 lg:flex">
           {MAIN_LINKS.map((item) => (
@@ -245,11 +256,11 @@ const Header = ({ topOffset = 0 }) => {
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-white/10 px-3 text-sm text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+            className="inline-flex min-h-10 w-56 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 text-sm text-slate-400 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-white"
             title="Search (Ctrl+K)"
           >
-            <Search className="h-4 w-4" />
-            <span>Search</span>
+            <Search className="h-4 w-4 text-slate-300" />
+            <span className="flex-1 text-left">Search articles…</span>
             <kbd className="hidden rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-slate-400 xl:inline">
               Ctrl K
             </kbd>
@@ -273,15 +284,15 @@ const Header = ({ topOffset = 0 }) => {
           </Link>
         </div>
 
-        <div className="flex items-center gap-1 lg:hidden">
+        <div className="flex shrink-0 items-center gap-0.5 lg:hidden">
           <button
             type="button"
-            onClick={() => setIsSearchOpen(true)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
-            aria-label="Search articles"
-            title="Search"
+            onClick={() => setIsSupportOpen(true)}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-amber-300 transition-colors hover:bg-white/5 hover:text-amber-200"
+            aria-label="Buy me a coffee"
+            title="Buy me a coffee"
           >
-            <Search className="h-5 w-5" />
+            <Coffee className="h-4 w-4" />
           </button>
           <button
             type="button"
@@ -354,17 +365,6 @@ const Header = ({ topOffset = 0 }) => {
                 >
                   <Coffee className="h-4 w-4" />
                   Buy me a coffee
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setIsSearchOpen(true);
-                  }}
-                  className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-slate-200 hover:bg-white/5"
-                >
-                  <Search className="h-4 w-4" />
-                  Search
                 </button>
               </MobileGroup>
 
