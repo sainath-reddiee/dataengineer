@@ -76,9 +76,10 @@ export default defineConfig({
 
     {
       name: 'copy-duckdb-assets',
-      buildStart() {
-        copyDuckdbAssets();
-      },
+      // Dev can hit /duckdb/* directly. Production uses the Vite ?url
+      // copies in src/lib/duckdb.js so we do not ship a second 70 MB
+      // pair through Hostinger FTPS (that timeout is what left the
+      // playground spinner running forever).
       configureServer() {
         copyDuckdbAssets();
       },

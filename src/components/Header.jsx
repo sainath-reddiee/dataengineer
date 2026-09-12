@@ -273,7 +273,16 @@ const Header = ({ topOffset = 0 }) => {
           </Link>
         </div>
 
-        <div className="lg:hidden">
+        <div className="flex items-center gap-1 lg:hidden">
+          <button
+            type="button"
+            onClick={() => setIsSearchOpen(true)}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+            aria-label="Search articles"
+            title="Search"
+          >
+            <Search className="h-5 w-5" />
+          </button>
           <button
             type="button"
             onClick={() => setMobileMenuOpen((open) => !open)}

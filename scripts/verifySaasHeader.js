@@ -59,6 +59,7 @@ assert(
 assert(header.includes('backdrop-blur-xl'), 'Header should stay frosted and sticky');
 assert(header.includes('h-16'), 'Header should stay 64px to match Layout padding');
 assert(header.includes('SearchModal'), 'Search modal must remain wired');
+assert(header.includes('aria-label="Search articles"'), 'Mobile header should keep a search icon outside the hamburger');
 assert(header.includes('SupportModal'), 'Coffee / support modal must remain wired');
 assert(!header.includes("animate={{ y: isVisible"), 'Header must stay visible while scrolling');
 

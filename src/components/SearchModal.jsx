@@ -79,6 +79,20 @@ const SearchModal = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
+  // Lock background scroll while the sheet is open (especially on iOS).
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const { body, documentElement } = document;
+    const previousBody = body.style.overflow;
+    const previousHtml = documentElement.style.overflow;
+    body.style.overflow = 'hidden';
+    documentElement.style.overflow = 'hidden';
+    return () => {
+      body.style.overflow = previousBody;
+      documentElement.style.overflow = previousHtml;
+    };
+  }, [isOpen]);
+
   // Close on Escape
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -161,7 +175,7 @@ const SearchModal = ({ isOpen, onClose }) => {
     setQuery(value);
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    
+
     if (value.trim().length < 2) {
       setResults([]);
       setLoading(false);
@@ -192,64 +206,82 @@ const SearchModal = ({ isOpen, onClose }) => {
     navigate(result.href || `/articles/${result.slug}`);
   };
 
+  const resultHint = useMemo(() => {
+    if (results.length === 1) return '1 result';
+    return `${results.length} results`;
+  }, [results.length]);
+
   if (!isOpen) return null;
   if (typeof document === 'undefined') return null;
 
-  // Portal to <body>: Header is a motion component with a persistent
-  // `transform: translateY(0)` at rest, which makes it the containing block
-  // for position:fixed descendants. Without the portal, this backdrop was
-  // clipped to the header's own (short) box instead of the full viewport.
+  // Portal to <body>: Header / framer-motion transforms make position:fixed
+  // descendants attach to the header box. Flex-centering avoids Framer
+  // overwriting a Tailwind translate used for horizontal alignment.
   return createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000]"
+            className="fixed inset-0 bg-black/65 backdrop-blur-sm z-[10000]"
           />
 
-          {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            transition={{ duration: 0.15 }}
-            className="fixed top-[15%] left-1/2 -translate-x-1/2 w-full max-w-2xl z-[10001] px-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="search-modal-heading"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={{ duration: 0.16 }}
+            className="fixed inset-0 z-[10001] flex items-start justify-center px-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-4 sm:pt-[12vh]"
+            onClick={onClose}
           >
-            <div className="bg-slate-900 border border-slate-700/70 rounded-2xl shadow-2xl overflow-hidden">
-              {/* Search Input */}
-              <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-700/50">
+            <div
+              onClick={(event) => event.stopPropagation()}
+              className="flex w-full max-w-2xl max-h-[min(88dvh,40rem)] flex-col overflow-hidden rounded-2xl border border-slate-700/70 bg-slate-900 shadow-2xl"
+            >
+              <h2 id="search-modal-heading" className="sr-only">Search articles</h2>
+              <div className="flex items-center gap-3 px-3 py-3 sm:px-4 border-b border-slate-700/50">
                 <Search className="h-5 w-5 text-gray-400 shrink-0" />
                 <input
                   ref={inputRef}
-                  type="text"
+                  type="search"
                   value={query}
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
-                  placeholder="Search articles..."
-                  className="flex-1 bg-transparent text-white text-lg placeholder-gray-500 outline-none"
+                  placeholder="Search articles…"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  className="min-w-0 flex-1 bg-transparent text-white text-base sm:text-lg placeholder-gray-500 outline-none"
                 />
                 <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-400 bg-slate-800 border border-slate-700 rounded-md">
                   ESC
                 </kbd>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close search"
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-gray-400 hover:bg-white/10 hover:text-white"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
 
-              {/* Results */}
-              <div className="max-h-[400px] overflow-y-auto">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                 {loading && (
                   <div className="px-4 py-8 text-center">
                     <div className="inline-block h-6 w-6 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
-                    <p className="text-gray-400 text-sm mt-2">Searching...</p>
+                    <p className="text-gray-400 text-sm mt-2">Searching…</p>
                   </div>
                 )}
 
                 {!loading && query.trim().length >= 2 && results.length === 0 && (
                   <div className="px-4 py-8 text-center">
-                    <p className="text-gray-400">No results for "{query}"</p>
+                    <p className="text-gray-400 text-pretty">No results for “{query}”</p>
                   </div>
                 )}
 
@@ -268,7 +300,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                       >
                         <TypeIcon type={r.type} className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-white font-medium truncate">{r.title}</p>
+                          <p className="text-white font-medium break-words">{r.title}</p>
                           <div className="flex items-center gap-2 mt-1 flex-wrap">
                             <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 bg-slate-700/60 text-gray-300 rounded-full">
                               {r.type === 'article' ? 'Article' : r.type === 'glossary' ? 'Glossary' : r.type === 'comparison' ? 'Comparison' : r.type}
@@ -286,7 +318,7 @@ const SearchModal = ({ isOpen, onClose }) => {
                             )}
                           </div>
                           {r.excerpt && (
-                            <p className="text-xs text-gray-400 mt-1 line-clamp-1">{r.excerpt}</p>
+                            <p className="text-xs text-gray-400 mt-1 line-clamp-2 break-words">{r.excerpt}</p>
                           )}
                         </div>
                         <ArrowRight className={`h-4 w-4 shrink-0 mt-1 transition-opacity ${
@@ -298,19 +330,22 @@ const SearchModal = ({ isOpen, onClose }) => {
                 )}
 
                 {!loading && query.trim().length < 2 && (
-                  <div className="px-4 py-8 text-center">
-                    <Command className="h-8 w-8 text-gray-500 mx-auto mb-2" />
-                    <p className="text-gray-400 text-sm">Type at least 2 characters to search</p>
-                    <p className="text-gray-500 text-xs mt-1">Use arrow keys to navigate, Enter to select</p>
+                  <div className="px-5 py-8 text-center">
+                    <Command className="h-8 w-8 text-gray-500 mx-auto mb-3" />
+                    <p className="text-gray-300 text-sm text-pretty">
+                      Type at least 2 characters to search
+                    </p>
+                    <p className="text-gray-500 text-xs mt-2 text-pretty leading-relaxed">
+                      Use arrow keys to navigate, then press Enter to open a result.
+                    </p>
                   </div>
                 )}
               </div>
 
-              {/* Footer */}
               {results.length > 0 && (
-                <div className="px-4 py-2 border-t border-slate-700/50 flex items-center justify-between text-xs text-gray-400">
-                  <span>{results.length} result{results.length !== 1 ? 's' : ''}</span>
-                  <div className="flex items-center gap-2">
+                <div className="px-4 py-2 border-t border-slate-700/50 flex items-center justify-between gap-3 text-xs text-gray-400">
+                  <span>{resultHint}</span>
+                  <div className="hidden sm:flex items-center gap-2">
                     <kbd className="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px]">&uarr;&darr;</kbd>
                     <span>navigate</span>
                     <kbd className="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px]">&crarr;</kbd>

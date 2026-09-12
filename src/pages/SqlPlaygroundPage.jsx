@@ -18,7 +18,7 @@ import {
   Download,
 } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
-import { getDb as getSharedDb } from '@/lib/duckdb';
+import { getDb as getSharedDb, onDuckDbProgress, resetDb } from '@/lib/duckdb';
 
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
@@ -183,6 +183,11 @@ const FAQ = [
 // ---------------------------------------------------------------------------
 let playgroundDbPromise = null;
 
+function resetPlaygroundDb() {
+  playgroundDbPromise = null;
+  resetDb();
+}
+
 async function getDb() {
   if (playgroundDbPromise) return playgroundDbPromise;
   playgroundDbPromise = (async () => {
@@ -212,7 +217,10 @@ async function getDb() {
     }
     await conn.close();
     return db;
-  })();
+  })().catch((err) => {
+    playgroundDbPromise = null;
+    throw err;
+  });
   return playgroundDbPromise;
 }
 
@@ -230,12 +238,22 @@ export default function SqlPlaygroundPage() {
   const [execTime, setExecTime] = useState(null);
   const [copied, setCopied] = useState(false);
   const [history, setHistory] = useState([]);
+  const [dbStatus, setDbStatus] = useState('Starting the SQL engine…');
+  const [dbPercent, setDbPercent] = useState(null);
+  const [retryToken, setRetryToken] = useState(0);
   const textareaRef = useRef(null);
   const dbRef = useRef(null);
 
-  // Initialize DuckDB on mount
+  useEffect(() => onDuckDbProgress((update) => {
+    setDbStatus(update.message);
+    setDbPercent(update.percent);
+  }), []);
+
+  // Initialize DuckDB on mount (and again after an explicit retry)
   useEffect(() => {
     let cancelled = false;
+    setDbReady(false);
+    setDbError(null);
     getDb()
       .then((db) => {
         if (!cancelled) {
@@ -247,6 +265,13 @@ export default function SqlPlaygroundPage() {
         if (!cancelled) setDbError(err.message || 'Failed to initialize DuckDB');
       });
     return () => { cancelled = true; };
+  }, [retryToken]);
+
+  const retryEngine = useCallback(() => {
+    resetPlaygroundDb();
+    setDbStatus('Starting the SQL engine…');
+    setDbPercent(null);
+    setRetryToken((n) => n + 1);
   }, []);
 
   const runQuery = useCallback(async () => {
@@ -402,15 +427,35 @@ export default function SqlPlaygroundPage() {
 
         {/* DB status */}
         {!dbReady && !dbError && (
-          <div className="flex items-center gap-3 bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-sm">
-            <Loader2 className="w-4 h-4 text-emerald-400 animate-spin" />
-            <span className="text-gray-300">Loading DuckDB engine (~2 MB)...</span>
+          <div className="bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-sm space-y-2">
+            <div className="flex items-center gap-3">
+              <Loader2 className="w-4 h-4 text-emerald-400 animate-spin shrink-0" />
+              <span className="text-gray-300 text-pretty">{dbStatus}</span>
+            </div>
+            <div className="h-1.5 rounded-full bg-slate-700 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-emerald-500 transition-[width] duration-300"
+                style={{ width: `${dbPercent == null ? 15 : Math.max(8, dbPercent)}%` }}
+              />
+            </div>
+            <p className="text-xs text-gray-500 text-pretty">
+              First visit downloads a ~32 MB engine and caches it in this browser. Later visits should open in a few seconds.
+            </p>
           </div>
         )}
         {dbError && (
-          <div className="flex items-center gap-3 bg-red-900/20 border border-red-700/50 rounded-xl px-4 py-3 text-sm">
-            <AlertTriangle className="w-4 h-4 text-red-400" />
-            <span className="text-red-300">Failed to load DuckDB: {dbError}. Try refreshing the page.</span>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 bg-red-900/20 border border-red-700/50 rounded-xl px-4 py-3 text-sm">
+            <div className="flex items-start gap-3 min-w-0">
+              <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+              <span className="text-red-300 text-pretty">{dbError}</span>
+            </div>
+            <button
+              type="button"
+              onClick={retryEngine}
+              className="shrink-0 inline-flex items-center justify-center rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 px-3 py-1.5 text-red-100 font-medium"
+            >
+              Try again
+            </button>
           </div>
         )}
 

@@ -786,6 +786,9 @@ const ESSENTIAL_PAGES = [
 
       <h2>Submit Your Proposal</h2>
       <p>Ready to contribute? Email us at <strong>sainath@dataengineerhub.blog</strong> with your proposed topic, a brief outline, and a link to any previous writing samples.</p>
+
+      <h2>Prefer to support another way?</h2>
+      <p>Guest posts are editorial, not paid placements. If you just want to keep the playground and articles free, you can buy the hub a coffee via UPI (India) or PayPal from the Write for Us page. That is a personal thank-you, not a sponsorship.</p>
     `
   },
   {
@@ -1752,7 +1755,7 @@ const ESSENTIAL_PAGES = [
       <p><strong>Free, in-browser SQL engine powered by DuckDB-WASM.</strong> Write and execute SQL queries instantly on preloaded sample datasets — employees, orders, and web events. No server, no signup, no data leaves your device. Practice window functions, CTEs, QUALIFY, aggregations, joins, and more.</p>
 
       <h2>How It Works</h2>
-      <p>This playground loads <a href="https://duckdb.org/docs/api/wasm/overview">DuckDB-WASM</a>, a full analytical SQL engine compiled to WebAssembly, directly in your browser. The ~2 MB engine downloads once and runs entirely client-side. Three sample tables are preloaded with realistic data so you can start writing queries immediately.</p>
+      <p>This playground loads <a href="https://duckdb.org/docs/api/wasm/overview">DuckDB-WASM</a>, a full analytical SQL engine compiled to WebAssembly, directly in your browser. The engine is about 32 MB on the first visit, then cached by your browser. Three sample tables are preloaded with realistic data so you can start writing queries immediately.</p>
 
       <h2>Preloaded Sample Tables</h2>
       <ul>
@@ -1854,7 +1857,7 @@ const ESSENTIAL_PAGES = [
 
       <h2>Technology</h2>
       <ul>
-        <li><strong>DuckDB-WASM</strong> — A full analytical SQL engine compiled to WebAssembly (~2 MB). Handles native Parquet reading (read_parquet) and writing (COPY TO FORMAT PARQUET). Shared instance with the <a href="/tools/sql-playground">SQL Playground</a> so the engine only downloads once.</li>
+        <li><strong>DuckDB-WASM</strong> — A full analytical SQL engine compiled to WebAssembly (~32 MB on first visit, then cached). Handles native Parquet reading (read_parquet) and writing (COPY TO FORMAT PARQUET). Shared instance with the <a href="/tools/sql-playground">SQL Playground</a> so the engine only downloads once.</li>
         <li><strong>avsc</strong> — A pure JavaScript implementation of the Apache Avro specification (~264 KB). Handles Avro schema inference, binary serialization (toBuffer), deserialization (fromBuffer), and Avro Object Container File (OCF) decoding.</li>
         <li><strong>No server</strong> — All processing runs in your browser via WebAssembly and JavaScript. Files are read with the FileReader API and never uploaded anywhere.</li>
       </ul>

@@ -4,8 +4,9 @@ import { Link } from 'react-router-dom';
 import {
   PenLine, Send, CheckCircle, BookOpen, Share2, Users, FileText, Code, Globe,
   Star, Award, TrendingUp, ArrowRight, Sparkles, Heart, MessageSquare, Zap,
-  Target, Lightbulb, Rocket
+  Target, Lightbulb, Rocket, Coffee
 } from 'lucide-react';
+import SupportButton from '@/components/Support/SupportButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -243,6 +244,28 @@ const ContributePage = () => {
               <Link to="/advertise" className="text-blue-400 hover:underline">Advertise</Link>.
               Guest posts here are editorial, not ads.
             </p>
+            <div className="mt-8 mx-auto max-w-xl rounded-2xl border border-amber-500/25 bg-amber-500/[0.07] px-5 py-5 text-left">
+              <div className="flex items-start gap-3">
+                <div className="shrink-0 rounded-xl bg-amber-500/15 p-2 border border-amber-500/25">
+                  <Coffee className="h-5 w-5 text-amber-300" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-white">Not writing this month? A coffee still helps.</p>
+                  <p className="mt-1.5 text-sm text-slate-300 leading-relaxed text-pretty">
+                    Guest posts are one way to give back. If you just want to keep the playground,
+                    cheat sheets, and articles free for the next engineer, a small UPI or PayPal
+                    coffee is a real dent in hosting.
+                  </p>
+                  <div className="mt-4">
+                    <SupportButton
+                      variant="cta"
+                      source="contribute_page"
+                      label="Buy me a coffee"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
 
           {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• STATS BAR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
