@@ -618,17 +618,23 @@ jobs:
           fi
 
           # The generator/build verifier prove these pages are noindexed in
-          # dist. Hostinger's full-page cache can legally keep a prior HTML
-          # copy for up to 24 hours after FTP replacement, so report a stale
-          # live pSEO result prominently without marking an otherwise
-          # successful deploy as failed. .htaccess also sends X-Robots-Tag
-          # and no-store for this path set to prevent the next stale window.
-          for PAGE in glossary/snowflake compare/airflow-vs-prefect; do
+          # dist. Glossary/compare term HTML is often served from R2
+          # (x-r2-key) with a 24h cache, so a Hostinger-only force-rebuild
+          # will not overwrite those objects. Report stale live pSEO without
+          # failing the deploy. Use nuclear-redeploy (or purge R2 + CF) when
+          # x-r2-key pages still say index,follow. .htaccess X-Robots-Tag
+          # only applies when Apache serves the file, not when R2 does.
+          for PAGE in glossary/snowflake compare/airflow-vs-prefect category/snowflake cheatsheets/snowflake-interview-questions; do
             PAGE_CODE=$(curl -sS -o /tmp/live-pseo.html -w "%{http_code}" -A "Googlebot" "https://dataengineerhub.blog/${PAGE}" || echo "000")
+            PAGE_HEADERS=$(curl -sSI -A "Googlebot" "https://dataengineerhub.blog/${PAGE}" || true)
             if [ "$PAGE_CODE" != "200" ]; then
               echo "::warning::/${PAGE} returned HTTP $PAGE_CODE; static dist was already verified, but production cache/origin needs checking"
             elif ! grep -qi 'meta name="robots" content="noindex, follow"' /tmp/live-pseo.html; then
-              echo "::warning::/${PAGE} is still serving cached indexable HTML. The uploaded dist page is noindex; verify Hostinger cache purge/expiry and X-Robots-Tag."
+              if echo "$PAGE_HEADERS" | grep -qi '^x-r2-key:'; then
+                echo "::warning::/${PAGE} is still the old R2 object (indexable). Force-rebuild FTP does not replace R2; run nuclear-redeploy and purge Cloudflare."
+              else
+                echo "::warning::/${PAGE} is still serving cached indexable HTML. The uploaded dist page is noindex; verify Hostinger cache purge/expiry and X-Robots-Tag."
+              fi
             else
               echo "✅ /${PAGE} is live and noindexed"
             fi

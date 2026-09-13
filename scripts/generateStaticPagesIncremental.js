@@ -143,6 +143,63 @@ function robotsForWordCount(wordCount, pathname) {
   return ADSENSE_INDEX_ROBOTS;
 }
 
+/** Belt-and-suspenders: rewrite leftover dist HTML so held-out URLs cannot ship with index. */
+function stampHeldOutRobots(distDir) {
+  const roots = [
+    'glossary',
+    'compare',
+    'category',
+    'tag',
+    'tags',
+    'practice',
+    'interview-prep',
+    'advertise',
+    'contribute',
+    'contributors',
+    'news',
+    'newsletter',
+    'reading-list',
+    'cheatsheets',
+    'tools',
+  ];
+  let stamped = 0;
+
+  function pagePathFromDir(urlPath) {
+    return urlPath.replace(/\/+$/, '') || '/';
+  }
+
+  function walk(dir, urlPath) {
+    if (!fs.existsSync(dir)) return;
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const next = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(next, `${urlPath}/${entry.name}`);
+        continue;
+      }
+      if (entry.name !== 'index.html') continue;
+      const pagePath = pagePathFromDir(urlPath);
+      if (!isAdSenseNoindexPath(pagePath)) continue;
+      let html = fs.readFileSync(next, 'utf8');
+      if (/<meta\s+name="robots"\s+content="[^"]*noindex/i.test(html)) continue;
+      if (/<meta\s+name="robots"/i.test(html)) {
+        html = html.replace(
+          /<meta\s+name="robots"\s+content="[^"]*"\s*\/?>/i,
+          `<meta name="robots" content="${ADSENSE_REVIEW_ROBOTS}" />`
+        );
+      } else {
+        html = html.replace(/<head[^>]*>/i, (open) => `${open}\n    <meta name="robots" content="${ADSENSE_REVIEW_ROBOTS}" />`);
+      }
+      fs.writeFileSync(next, html);
+      stamped += 1;
+    }
+  }
+
+  for (const root of roots) {
+    walk(path.join(distDir, root), `/${root}`);
+  }
+  console.log(`AdSense stamp: ${stamped} held-out HTML files forced noindex`);
+}
+
 // Meta description optimizer for CTR-optimized descriptions
 import { optimizeMetaDescription } from '../src/lib/metaDescriptionOptimizer.js';
 
@@ -4087,7 +4144,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <title>' + safeName + ' - Data Engineering Articles</title>\n';
   html += '    <meta name="description" content="' + descriptionMeta + '" />\n';
   html += '    <link rel="canonical" href="https://dataengineerhub.blog' + pagePath + '" />\n';
-  var catRobots = categoryArticles.length < MIN_INDEXABLE_CATEGORY_COUNT
+  var catRobots = (isAdSenseNoindexPath(pagePath) || categoryArticles.length < MIN_INDEXABLE_CATEGORY_COUNT)
     ? 'noindex, follow'
     : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1';
   html += '    <meta name="robots" content="' + catRobots + '" />\n\n';
@@ -5744,7 +5801,7 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
 
   var sections = sheet.sections || [];
   var totalWords = getCheatsheetIndexableWordCount(sheet);
-  var robotsDirective = robotsForWordCount(totalWords);
+  var robotsDirective = robotsForWordCount(totalWords, pagePath);
 
   var descMeta = escapeHtml(sheet.shortDescription || ('Comprehensive ' + sheet.title + ' for data engineers.'));
 
@@ -7532,6 +7589,8 @@ function buildPracticeQuestionPreview(quizSlug) {
   // ============================================================================
   // CLEANUP & SUMMARY
   // ============================================================================
+
+  stampHeldOutRobots(distDir);
 
   newCache.stats = stats;
   saveCache(newCache);
