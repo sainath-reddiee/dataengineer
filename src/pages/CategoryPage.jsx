@@ -315,6 +315,7 @@ const CategoryPage = () => {
         description={currentCategory.description}
         keywords={`${lowerCategoryName}, data engineering, ${currentCategory.name} tutorials`}
         type="website"
+        url={`/category/${categoryName}`}
         breadcrumbs={breadcrumbs}
         faqSchema={faqSchema}
         noindex={!postsLoading && totalPosts < MIN_INDEXABLE_CATEGORY_COUNT}

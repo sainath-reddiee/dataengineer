@@ -37,7 +37,7 @@ import {
   CHEATSHEET_CATEGORIES,
 } from '@/data/cheatsheetData';
 import { SITE_CONFIG } from '@/lib/seoConfig';
-import { getCheatsheetIndexableWordCount } from '@/data/adsenseQualityGate';
+import { getCheatsheetIndexableWordCount, isAdSenseNoindexPath } from '@/data/adsenseQualityGate';
 import { MIN_INDEXABLE_WORD_COUNT } from '@/data/thinTags';
 import SponsorPlacement from '@/components/SponsorPlacement';
 
@@ -289,7 +289,8 @@ export default function CheatSheetPage() {
     () => getCheatsheetIndexableWordCount(sheet),
     [sheet]
   );
-  const isThin = wordCount < MIN_INDEXABLE_WORD_COUNT;
+  const isThin = wordCount < MIN_INDEXABLE_WORD_COUNT
+    || isAdSenseNoindexPath(`/cheatsheets/${sheet.slug}`);
 
   if (!sheet) {
     return <Navigate to="/cheatsheets" replace />;

@@ -1,33 +1,91 @@
 /**
  * AdSense review quality gate.
  *
- * Adding more original articles did not clear the 7-month "low value content"
- * rejection because reviewers sample the whole URL set. 108 practitioner
- * tutorials were diluted by 50+ templated glossary pages, 35 comparison pages,
- * and tag / cheat-sheet-category archives. Google's thin-content guidelines
- * treat scaled, near-identical pages as low-value even when each page is
- * 400+ words.
+ * Adding more original articles did not clear repeated "low value content"
+ * rejections because reviewers sample the whole URL set. Practitioner
+ * tutorials were diluted by templated glossary / compare pages, tag and
+ * category archives, a 30-sheet Q&A cluster, 16 calculators, and quiz
+ * landings. Google's thin-content guidelines treat scaled, near-identical
+ * pages as low-value even when each page is 400+ words.
  *
  * While ADSENSE_REVIEW_MODE is true:
- * - glossary, compare, tag, and cheat-sheet category URLs are noindexed
+ * - glossary, compare, tags, categories, interview-prep, practice quizzes,
+ *   most cheat sheets, and utility tools are noindexed
  * - they are omitted from sitemap.xml
- * - AdsBot / Mediapartners-Google are disallowed from those paths
+ * - AdsBot / Mediapartners-Google are steered off those prefixes
+ * - header / in-article CTAs stop walking reviewers into that inventory
+ *
+ * Flagship pages stay indexable: articles, about/trust pages, the tools and
+ * cheat-sheet hubs, a short allowlist of calculators and reference sheets,
+ * and the certification hub.
  *
  * Pages stay live for human visitors. Flip the flag after AdSense approval
  * to reopen those sections for organic search.
  */
 export const ADSENSE_REVIEW_MODE = true;
+/** Bump when held-out paths change so incremental SSG rewrites stale robots meta. */
+export const ADSENSE_GATE_VERSION = 2;
+
+export const ADSENSE_REVIEW_CHEATSHEETS = [
+  'snowflake-sql',
+  'sql-window-functions',
+  'dbt-commands',
+  'airflow-essentials',
+  'snowflake-best-practices',
+  'databricks',
+  'python-for-data-engineers',
+  'data-modeling',
+];
+
+export const ADSENSE_REVIEW_TOOLS = [
+  'snowflake-cost-calculator',
+  'cloud-data-warehouse-cost-comparison',
+  'sql-playground',
+  'databricks-cost-calculator',
+  'bigquery-cost-calculator',
+];
+
+const REVIEW_CHEATSHEET_SET = new Set(ADSENSE_REVIEW_CHEATSHEETS);
+const REVIEW_TOOL_SET = new Set(ADSENSE_REVIEW_TOOLS);
+
+function normalizePath(pathname) {
+  return String(pathname || '')
+    .toLowerCase()
+    .replace(/\/+$/, '') || '/';
+}
+
+export function isReviewAllowlistedTool(slug) {
+  return REVIEW_TOOL_SET.has(String(slug || ''));
+}
 
 export function isAdSenseNoindexPath(pathname) {
   if (!ADSENSE_REVIEW_MODE) return false;
-  const path = String(pathname || '')
-    .toLowerCase()
-    .replace(/\/+$/, '') || '/';
+  const path = normalizePath(pathname);
 
   if (path === '/glossary' || path.startsWith('/glossary/')) return true;
   if (path === '/compare' || path.startsWith('/compare/')) return true;
   if (path === '/tags' || path === '/tag' || path.startsWith('/tag/')) return true;
   if (path.startsWith('/cheatsheets/category/')) return true;
+  if (path === '/category' || path.startsWith('/category/')) return true;
+  if (path === '/interview-prep' || path.startsWith('/interview-prep/')) return true;
+  if (path === '/practice' || path.startsWith('/practice/')) return true;
+  if (path === '/advertise' || path.startsWith('/advertise/')) return true;
+  if (path === '/contribute' || path.startsWith('/contribute/')) return true;
+  if (path === '/contributors' || path.startsWith('/contributors/')) return true;
+  if (path === '/news' || path.startsWith('/news/')) return true;
+  if (path === '/newsletter' || path.startsWith('/newsletter/')) return true;
+  if (path === '/reading-list') return true;
+
+  if (path.startsWith('/cheatsheets/')) {
+    const slug = path.slice('/cheatsheets/'.length);
+    return !REVIEW_CHEATSHEET_SET.has(slug);
+  }
+
+  if (path.startsWith('/tools/')) {
+    const slug = path.slice('/tools/'.length);
+    return !REVIEW_TOOL_SET.has(slug);
+  }
+
   return false;
 }
 

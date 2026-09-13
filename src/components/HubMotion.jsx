@@ -9,12 +9,13 @@ import {
   Wrench,
 } from 'lucide-react';
 import { TOOL_STAGES } from '@/data/toolsCatalog';
+import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 
 const ACTIONS = [
   { to: '/articles', title: 'Tutorials', blurb: 'Production notes, not vendor docs', icon: BookOpen },
   { to: '/tools/sql-playground', title: 'SQL Playground', blurb: 'Run SQL in the browser', icon: Terminal },
-  { to: '/interview-prep', title: 'Interview prep', blurb: 'Questions from real stacks', icon: GraduationCap },
-  { to: '/practice', title: 'Practice tests', blurb: 'SnowPro, Databricks, more', icon: Target },
+  { to: '/interview-prep', reviewTo: '/certification', title: 'Interview prep', blurb: 'Questions from real stacks', icon: GraduationCap },
+  { to: '/practice', reviewTo: '/certification', title: 'Practice tests', blurb: 'SnowPro, Databricks, more', icon: Target },
   { to: '/cheatsheets', title: 'Cheat sheets', blurb: 'Quick refs you can ship', icon: FileText },
   { to: '/tools', title: 'Free tools', blurb: 'Cost, cron, DDL, sizing', icon: Wrench },
 ];
@@ -120,6 +121,7 @@ const HubMotion = ({ reduceMotion = false }) => {
       <div className="grid grid-cols-2 gap-2">
         {ACTIONS.map((action, index) => {
           const Icon = action.icon;
+          const href = ADSENSE_REVIEW_MODE && action.reviewTo ? action.reviewTo : action.to;
           return (
             <TiltCard
               key={action.to}
@@ -133,7 +135,7 @@ const HubMotion = ({ reduceMotion = false }) => {
                 transition={{ duration: 0.25, delay: 0.05 * index }}
               >
                 <Link
-                  to={action.to}
+                  to={href}
                   className="block rounded-xl border border-white/10 bg-slate-900/60 px-3 py-2.5 shadow-lg shadow-slate-950/30 transition-colors hover:border-blue-400/40 hover:bg-slate-900/80"
                 >
                   <span className="mb-1 flex items-center gap-2 text-sm font-semibold text-white">

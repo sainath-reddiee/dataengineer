@@ -115,6 +115,7 @@ import {
   isAdSenseNoindexPath,
   ADSENSE_REVIEW_ROBOTS,
   ADSENSE_INDEX_ROBOTS,
+  ADSENSE_GATE_VERSION,
   getCheatsheetIndexableWordCount,
 } from '../src/data/adsenseQualityGate.js';
 
@@ -2200,17 +2201,22 @@ function loadCache() {
   try {
     if (fs.existsSync(CACHE_FILE)) {
       const cache = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
+      if (cache.adsenseGateVersion !== ADSENSE_GATE_VERSION) {
+        console.log(`AdSense gate v${ADSENSE_GATE_VERSION} changed — rebuilding static HTML so robots meta is not stale`);
+        return { pages: {}, lastBuild: null, stats: {}, adsenseGateVersion: ADSENSE_GATE_VERSION };
+      }
       console.log(`ðŸ“¦ Loaded cache with ${Object.keys(cache.pages || {}).length} pages`);
       return cache;
     }
   } catch (e) {
     console.warn('âš ï¸  Could not load cache:', e.message);
   }
-  return { pages: {}, lastBuild: null, stats: {} };
+  return { pages: {}, lastBuild: null, stats: {}, adsenseGateVersion: ADSENSE_GATE_VERSION };
 }
 
 function saveCache(cache) {
   try {
+    cache.adsenseGateVersion = ADSENSE_GATE_VERSION;
     cache.lastBuild = new Date().toISOString();
     fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2));
     console.log('ðŸ’¾ Cache saved successfully');
