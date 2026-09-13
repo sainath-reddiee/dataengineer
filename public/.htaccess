@@ -224,7 +224,9 @@
 # FTP replacement. Send the directive at HTTP level as well, and prevent new
 # cached copies from delaying a review-mode change.
 <IfModule mod_setenvif.c>
-    SetEnvIfExpr "%{REQUEST_URI} =~ m#^/(glossary|compare|tag|tags|cheatsheets/category)(?:/|$)#" ADSENSE_REVIEW_PATH
+    SetEnvIfExpr "%{REQUEST_URI} =~ m#^/(glossary|compare|tag|tags|cheatsheets/category|category|interview-prep|practice|advertise|contribute|contributors|news|newsletter|reading-list)(?:/|$)#" ADSENSE_REVIEW_PATH
+    SetEnvIfExpr "%{REQUEST_URI} =~ m#^/cheatsheets/(?!snowflake-sql|sql-window-functions|dbt-commands|airflow-essentials|snowflake-best-practices|databricks|python-for-data-engineers|data-modeling)[^/]+#" ADSENSE_REVIEW_PATH
+    SetEnvIfExpr "%{REQUEST_URI} =~ m#^/tools/(?!snowflake-cost-calculator|cloud-data-warehouse-cost-comparison|sql-playground|databricks-cost-calculator|bigquery-cost-calculator)[^/]+#" ADSENSE_REVIEW_PATH
 </IfModule>
 <IfModule mod_headers.c>
     Header always set X-Robots-Tag "noindex, follow" env=ADSENSE_REVIEW_PATH

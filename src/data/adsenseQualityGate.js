@@ -24,7 +24,7 @@
  */
 export const ADSENSE_REVIEW_MODE = true;
 /** Bump when held-out paths change so incremental SSG rewrites stale robots meta. */
-export const ADSENSE_GATE_VERSION = 2;
+export const ADSENSE_GATE_VERSION = 3;
 
 export const ADSENSE_REVIEW_CHEATSHEETS = [
   'snowflake-sql',

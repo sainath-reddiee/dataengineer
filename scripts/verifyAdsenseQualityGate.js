@@ -109,6 +109,23 @@ if (!ssg.includes('ADSENSE_GATE_VERSION') || !Number.isInteger(ADSENSE_GATE_VERS
   console.error('❌ Incremental SSG must invalidate cache when the AdSense gate version changes');
   failed += 1;
 }
+if (!ssg.includes('robotsForWordCount(totalWords, pagePath)')) {
+  console.error('❌ Cheat-sheet SSG must pass the URL into the robots gate');
+  failed += 1;
+}
+if (!ssg.includes('isAdSenseNoindexPath(pagePath)') || !ssg.includes('categoryArticles.length')) {
+  console.error('❌ Category SSG must noindex archives during review');
+  failed += 1;
+}
+if (!ssg.includes('function stampHeldOutRobots')) {
+  console.error('❌ Incremental SSG must stamp leftover held-out HTML as noindex');
+  failed += 1;
+}
+const htaccess = readFileSync(join(root, 'public/.htaccess'), 'utf8');
+if (!htaccess.includes('interview-prep') || !htaccess.includes('snowflake-sql')) {
+  console.error('❌ .htaccess X-Robots-Tag must cover the expanded review hold-outs');
+  failed += 1;
+}
 
 if (failed > 0) {
   console.error(`\n❌ AdSense quality gate failed (${failed} check(s))`);
