@@ -14,6 +14,7 @@
 //
 // Without both vars set in production, falls back to Auto Ads via index.html script.
 import React, { useEffect, useRef } from 'react';
+import { isAdSenseNoindexPath } from '@/data/adsenseQualityGate';
 
 const CLIENT_ID   = 'ca-pub-8624144810216728';
 const SLOT_ID     = import.meta.env.VITE_ADSENSE_SLOT_ID;
@@ -22,10 +23,11 @@ const IS_DEV      = import.meta.env.DEV;
 
 const AdPlacement = ({ className = '', format = 'auto', style = {} }) => {
   const pushed = useRef(false);
+  const heldOut = typeof window !== 'undefined' && isAdSenseNoindexPath(window.location.pathname);
 
   useEffect(() => {
     // Push to adsbygoogle once per mount — only when fully configured
-    if (!ADS_ENABLED || !SLOT_ID || IS_DEV || pushed.current) return;
+    if (heldOut || !ADS_ENABLED || !SLOT_ID || IS_DEV || pushed.current) return;
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
       pushed.current = true;
@@ -33,6 +35,8 @@ const AdPlacement = ({ className = '', format = 'auto', style = {} }) => {
       // adsbygoogle not yet loaded — Auto Ads covers it
     }
   }, []);
+
+  if (heldOut) return null;
 
   // ── Development placeholder ──────────────────────────────────
   if (IS_DEV) {

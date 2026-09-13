@@ -14,6 +14,7 @@ import {
   getBreadcrumbSchema,
 } from '@/lib/seoConfig';
 import { optimizeMetaDescription } from '@/lib/metaDescriptionOptimizer';
+import { isAdSenseNoindexPath } from '@/data/adsenseQualityGate';
 
 const MetaTags = ({
   title,
@@ -65,6 +66,16 @@ const MetaTags = ({
     ? ensureAbsoluteUrl(url)
     : `${SITE_CONFIG.url}${runtimePath}`;
 
+  let pathForGate = runtimePath;
+  if (url) {
+    try {
+      pathForGate = new URL(currentUrl, SITE_CONFIG.url).pathname;
+    } catch {
+      pathForGate = url;
+    }
+  }
+  const hideFromIndex = noindex || isAdSenseNoindexPath(pathForGate);
+
   // Get image URL
   const fullImage = getImageUrl(image);
 
@@ -112,7 +123,7 @@ const MetaTags = ({
       <link rel="canonical" href={currentUrl} />
 
       {/* Robots directives */}
-      {noindex ? (
+      {hideFromIndex ? (
         <meta name="robots" content="noindex, follow" />
       ) : (
         <>

@@ -34,10 +34,10 @@ const reviewLinks = [
     desc: 'SQL, dbt, Snowflake, and interview notes',
   },
   {
-    to: '/interview-prep',
+    to: '/certification',
     icon: GraduationCap,
-    title: 'Interview Prep',
-    desc: 'Practice questions with worked answers',
+    title: 'Certification prep',
+    desc: 'SnowPro study plan and practice notes',
   },
   {
     to: '/tools',

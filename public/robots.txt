@@ -69,6 +69,14 @@ Disallow: /tag
 Disallow: /tag/
 Disallow: /tags
 Disallow: /cheatsheets/category/
+Disallow: /category
+Disallow: /category/
+Disallow: /interview-prep
+Disallow: /practice
+Disallow: /practice/
+Disallow: /advertise
+Disallow: /contribute
+Disallow: /contributors
 
 User-agent: AdsBot-Google
 Allow: /
@@ -86,6 +94,14 @@ Disallow: /tag
 Disallow: /tag/
 Disallow: /tags
 Disallow: /cheatsheets/category/
+Disallow: /category
+Disallow: /category/
+Disallow: /interview-prep
+Disallow: /practice
+Disallow: /practice/
+Disallow: /advertise
+Disallow: /contribute
+Disallow: /contributors
 
 User-agent: AdsBot-Google-Mobile
 Allow: /
@@ -103,6 +119,14 @@ Disallow: /tag
 Disallow: /tag/
 Disallow: /tags
 Disallow: /cheatsheets/category/
+Disallow: /category
+Disallow: /category/
+Disallow: /interview-prep
+Disallow: /practice
+Disallow: /practice/
+Disallow: /advertise
+Disallow: /contribute
+Disallow: /contributors
 
 # =============================================================================
 # SITEMAPS

@@ -23,7 +23,10 @@ import {
 import SearchModal from '@/components/SearchModal';
 import SupportModal from '@/components/Support/SupportModal';
 import { useReadingList } from '@/hooks/useReadingList';
+import { ADSENSE_REVIEW_MODE, isReviewAllowlistedTool } from '@/data/adsenseQualityGate';
 import { FEATURED_TOOLS, toolHref } from '@/data/toolsCatalog';
+
+const REVIEW_HIDDEN_LEARN = new Set(['/glossary', '/compare', '/interview-prep', '/practice']);
 
 const MAIN_LINKS = [
   { name: 'Home', path: '/', icon: Home },
@@ -84,7 +87,13 @@ const Header = ({ topOffset = 0 }) => {
 
   const learnRef = useRef(null);
   const learnTimeout = useRef(null);
-  const isLearnActive = LEARN_PATHS.some((path) => isPathActive(currentPath, path));
+  const visibleLearnLinks = LEARN_LINKS.filter(
+    (item) => !ADSENSE_REVIEW_MODE || !REVIEW_HIDDEN_LEARN.has(item.path)
+  );
+  const visibleFeaturedTools = ADSENSE_REVIEW_MODE
+    ? FEATURED_TOOLS.filter((tool) => isReviewAllowlistedTool(tool.slug))
+    : FEATURED_TOOLS;
+  const isLearnActive = visibleLearnLinks.some((item) => isPathActive(currentPath, item.path));
 
   useEffect(() => {
     return () => {
@@ -224,7 +233,7 @@ const Header = ({ topOffset = 0 }) => {
                   transition={{ duration: 0.15 }}
                   className="absolute left-0 top-full z-50 mt-2 w-64 rounded-xl border border-white/10 bg-slate-950/95 p-2 shadow-2xl backdrop-blur-xl"
                 >
-                  {LEARN_LINKS.map((item) => {
+                  {visibleLearnLinks.map((item) => {
                     const Icon = item.icon;
                     return (
                       <Link
@@ -333,7 +342,7 @@ const Header = ({ topOffset = 0 }) => {
                   Free tools
                 </p>
                 <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-                  {FEATURED_TOOLS.map((tool) => {
+                  {visibleFeaturedTools.map((tool) => {
                     const className =
                       'shrink-0 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200';
                     return tool.external ? (
@@ -365,7 +374,7 @@ const Header = ({ topOffset = 0 }) => {
               </MobileGroup>
 
               <MobileGroup title="Learn">
-                {LEARN_LINKS.filter((item) => item.path !== '/contribute' && item.path !== '/reading-list').map((item) => (
+                {visibleLearnLinks.filter((item) => item.path !== '/contribute' && item.path !== '/reading-list').map((item) => (
                   <MobileLink
                     key={item.path}
                     item={item}

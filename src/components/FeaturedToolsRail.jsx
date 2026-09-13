@@ -2,8 +2,14 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Wrench } from 'lucide-react';
 import { FEATURED_TOOLS, toolHref } from '@/data/toolsCatalog';
 import { TOOL_ICONS } from '@/data/toolIcons';
+import { ADSENSE_REVIEW_MODE, isReviewAllowlistedTool } from '@/data/adsenseQualityGate';
 
-const FeaturedToolsRail = () => (
+const FeaturedToolsRail = () => {
+  const tools = ADSENSE_REVIEW_MODE
+    ? FEATURED_TOOLS.filter((tool) => isReviewAllowlistedTool(tool.slug))
+    : FEATURED_TOOLS;
+
+  return (
   <section aria-labelledby="featured-tools-heading">
     <div className="mb-4 flex items-end justify-between gap-3">
       <div>
@@ -23,7 +29,7 @@ const FeaturedToolsRail = () => (
     </div>
 
     <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
-      {FEATURED_TOOLS.map((tool) => {
+      {tools.map((tool) => {
         const Icon = TOOL_ICONS[tool.icon] || Wrench;
         const inner = (
           <>
@@ -53,6 +59,7 @@ const FeaturedToolsRail = () => (
       })}
     </div>
   </section>
-);
+  );
+};
 
 export default FeaturedToolsRail;

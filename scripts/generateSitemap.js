@@ -8,6 +8,7 @@ import {
   ADSENSE_REVIEW_MODE,
   countIndexableWords,
   getCheatsheetIndexableWordCount,
+  isAdSenseNoindexPath,
 } from '../src/data/adsenseQualityGate.js';
 import { cheatsheets } from '../src/data/cheatsheetData.js';
 
@@ -443,9 +444,9 @@ function loadCheatsheetData() {
 
   for (const sheet of cheatsheets || []) {
     const wordCount = getCheatsheetIndexableWordCount(sheet);
-    if (!sheet?.slug || wordCount < MIN_INDEXABLE_WORD_COUNT) {
+    if (!sheet?.slug || wordCount < MIN_INDEXABLE_WORD_COUNT || isAdSenseNoindexPath(`/cheatsheets/${sheet.slug}`)) {
       if (sheet?.slug) {
-        console.log(`   ⏭️  Skipping thin cheatsheet: ${sheet.slug} (${wordCount} words)`);
+        console.log(`   ⏭️  Skipping cheatsheet: ${sheet.slug} (${wordCount} words)`);
       }
       continue;
     }
@@ -491,6 +492,10 @@ async function generateSitemap() {
     // Add static pages with proper lastmod
     console.log('\n📝 Adding static pages...');
     STATIC_PAGES.forEach(page => {
+      if (isAdSenseNoindexPath(page.url)) {
+        console.log(`   ⏭️  Skipping review-held-out page: ${page.url}`);
+        return;
+      }
       const lastmodStr = page.lastmod === 'today' ? today : page.lastmod;
       // Only override the hardcoded changefreq when it would obviously
       // contradict the lastmod age (e.g. 'daily' on a page that hasn't been
@@ -558,8 +563,12 @@ async function generateSitemap() {
       'snowflake', 'databricks', 'aws', 'azure', 'gcp', 'salesforce',
       'dbt', 'airflow', 'python', 'sql', 'developer-productivity'
     ]);
+    if (ADSENSE_REVIEW_MODE) {
+      console.log('📝 Skipping category archives (AdSense quality gate)...');
+    }
     categories.forEach(cat => {
       const slug = String(cat.slug || '').toLowerCase();
+      if (isAdSenseNoindexPath(`/category/${slug}`)) return;
       if (!CATEGORY_SLUGS.has(slug)) return;
       if ((cat.count || 0) < MIN_INDEXABLE_CATEGORY_COUNT) {
         console.log(`   ⏭️  Skipping thin category: ${slug} (${cat.count || 0} posts)`);

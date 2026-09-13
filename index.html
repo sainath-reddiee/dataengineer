@@ -92,10 +92,19 @@
         }
 
         var isPrivateApp = path.indexOf('/admin') === 0 || path === '/debug' || path.indexOf('/sponsors/dashboard') === 0;
+        var cheatOk = { 'snowflake-sql':1,'sql-window-functions':1,'dbt-commands':1,'airflow-essentials':1,'snowflake-best-practices':1,'databricks':1,'python-for-data-engineers':1,'data-modeling':1 };
+        var toolOk = { 'snowflake-cost-calculator':1,'cloud-data-warehouse-cost-comparison':1,'sql-playground':1,'databricks-cost-calculator':1,'bigquery-cost-calculator':1 };
         var isHeldOut = path === '/glossary' || path.indexOf('/glossary/') === 0 ||
           path === '/compare' || path.indexOf('/compare/') === 0 ||
           path === '/tag' || path.indexOf('/tag/') === 0 || path === '/tags' ||
-          path.indexOf('/cheatsheets/category/') === 0;
+          path.indexOf('/cheatsheets/category/') === 0 ||
+          path === '/category' || path.indexOf('/category/') === 0 ||
+          path === '/interview-prep' || path.indexOf('/interview-prep/') === 0 ||
+          path === '/practice' || path.indexOf('/practice/') === 0 ||
+          path === '/advertise' || path === '/contribute' ||
+          path === '/contributors' || path.indexOf('/contributors/') === 0 ||
+          (path.indexOf('/cheatsheets/') === 0 && !cheatOk[path.replace('/cheatsheets/','')]) ||
+          (path.indexOf('/tools/') === 0 && !toolOk[path.replace('/tools/','')]);
         if (isPrivateApp) {
           document.documentElement.classList.add('deh-private-app');
         }

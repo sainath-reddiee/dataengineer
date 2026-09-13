@@ -17,14 +17,15 @@ const Footer = () => {
   const footerLinks = {
     content: [
       { name: 'Latest Articles', href: '/articles' },
-      { name: 'AWS Tutorials', href: '/category/aws' },
-      { name: 'Snowflake Guides', href: '/category/snowflake' },
-      { name: 'Azure Resources', href: '/category/azure' },
-      { name: 'SQL Tips', href: '/category/sql' },
       { name: 'Cheat Sheets', href: '/cheatsheets' },
-      { name: 'Interview Prep', href: '/interview-prep' },
       { name: 'Tools', href: '/tools' },
+      { name: 'Certification prep', href: '/certification' },
       ...(!ADSENSE_REVIEW_MODE ? [
+        { name: 'AWS Tutorials', href: '/category/aws' },
+        { name: 'Snowflake Guides', href: '/category/snowflake' },
+        { name: 'Azure Resources', href: '/category/azure' },
+        { name: 'SQL Tips', href: '/category/sql' },
+        { name: 'Interview Prep', href: '/interview-prep' },
         { name: 'Glossary', href: '/glossary' },
         { name: 'Comparisons', href: '/compare' },
       ] : []),
