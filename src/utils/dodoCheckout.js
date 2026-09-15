@@ -49,14 +49,15 @@ async function createCheckoutSession(skuKey) {
   });
 
   const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const err = new Error(payload.error || `Checkout API ${response.status}`);
+  if (!response.ok || !payload.checkout_url) {
+    const err = new Error(
+      payload.error ||
+        payload.code ||
+        'Checkout session is not available yet (need live product IDs and Hostinger PHP secrets).'
+    );
     err.status = response.status;
     err.payload = payload;
     throw err;
-  }
-  if (!payload.checkout_url) {
-    throw new Error('Checkout API returned no checkout_url');
   }
   return payload.checkout_url;
 }
@@ -106,7 +107,8 @@ export async function startDodoCheckout(skuKey, { source = 'checkout' } = {}) {
         return { method: 'redirect_link', checkoutUrl: sku.paymentLink };
       }
     }
-    throw apiError;
+    const hint = dodoReadyMessage(skuKey);
+    throw new Error(hint || apiError.message || 'Dodo checkout is not configured yet.');
   }
 }
 
