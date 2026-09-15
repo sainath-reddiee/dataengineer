@@ -16,12 +16,12 @@ export default function RoadmapsPage() {
           Roadmaps
         </p>
         <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">
-          Four maps. Same Hub, different next job.
+          Six maps. Same Hub, different next job.
         </h1>
         <p className="mt-4 max-w-2xl text-base text-slate-300">
-          These are not nine cloned role flowcharts. They are the stacks this site actually
-          writes about: Snowflake cost, dbt + Airflow, Databricks, and the interview/cert loop.
-          Every step is a live page on dataengineerhub.blog.
+          These are not cloned role flowcharts. They are the stacks this site actually
+          writes about: Snowflake cost, dbt + Airflow, Databricks, interview/cert loop,
+          Python/Spark, and AWS. Every step is a live page on dataengineerhub.blog.
         </p>
         <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
           {ROADMAPS.map((map) => (

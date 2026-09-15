@@ -3,11 +3,12 @@ import { Check, Coffee, Copy, ExternalLink, Globe, Mail, MapPin } from 'lucide-r
 import { SUPPORT_CONFIG } from '@/data/supportConfig';
 import { copyToClipboard } from '@/utils/seo/exportUtils';
 import { trackEvent } from '@/utils/analytics';
+import DodoCheckoutButton from '@/components/DodoCheckoutButton';
 
 // Shared UPI / PayPal payment cards used by both the SupportModal (compact,
 // tabbed) and the Advertise page (always-visible, side-by-side grid).
 const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
-  const [tab, setTab] = useState('upi');
+  const [tab, setTab] = useState('dodo');
   const [copiedField, setCopiedField] = useState('');
 
   const handleCopy = async (field, value) => {
@@ -27,6 +28,41 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
     <div className="rounded-2xl border border-amber-500/25 bg-gradient-to-br from-slate-950/90 via-slate-900/80 to-amber-950/30 p-4 sm:p-5">
       <p className="text-sm leading-relaxed text-slate-200">{SUPPORT_CONFIG.supportNote}</p>
     </div>
+  );
+
+  const DodoCard = () => (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2.5">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/15 border border-blue-500/25">
+          <Globe className="h-4 w-4 text-blue-300" />
+        </div>
+        <div>
+          <h3 className="text-sm font-bold text-white">Dodo Payments (live)</h3>
+          <p className="text-[11px] text-gray-500">Cards, UPI, and local methods Dodo enables</p>
+        </div>
+      </div>
+      <p className="text-sm text-gray-400">
+        Opens Dodo checkout for a $5 coffee. Overlay when Hostinger PHP has the live API key;
+        otherwise the dashboard payment link. Keep UPI/PayPal below as backups.
+      </p>
+      <DodoCheckoutButton
+        sku="coffee"
+        source={source}
+        className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-4 py-3 text-sm font-semibold"
+      >
+        Pay $5 with Dodo
+      </DodoCheckoutButton>
+      <LinkishPricing />
+    </div>
+  );
+
+  const LinkishPricing = () => (
+    <a
+      href="/pricing"
+      className="block text-center text-xs font-semibold text-blue-300 hover:text-blue-200"
+    >
+      Hub Pro and coaching are on /pricing
+    </a>
   );
 
   const UpiCard = () => (
@@ -138,7 +174,10 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
     return (
       <div className="space-y-6">
         <SupportNote />
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid gap-5 sm:grid-cols-3">
+          <div className="rounded-2xl border border-white/10 bg-slate-900/50 p-5 shadow-inner sm:col-span-3">
+            <DodoCard />
+          </div>
           <div className="rounded-2xl border border-white/10 bg-slate-900/50 p-5 shadow-inner">
             <UpiCard />
           </div>
@@ -156,6 +195,7 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
       <SupportNote />
       <div className="flex flex-wrap gap-2">
         {[
+          { key: 'dodo', label: 'Dodo', icon: Globe },
           { key: 'upi', label: 'UPI (India)', icon: MapPin },
           { key: 'paypal', label: 'PayPal', icon: Coffee },
         ].map(({ key, label, icon: Icon }) => (
@@ -175,7 +215,7 @@ const SupportPanel = ({ layout = 'tabs', source = 'support_panel' }) => {
         ))}
       </div>
       <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-4 sm:p-5">
-        {tab === 'upi' ? <UpiCard /> : <PayPalCard />}
+        {tab === 'dodo' ? <DodoCard /> : tab === 'upi' ? <UpiCard /> : <PayPalCard />}
       </div>
       <NoteCallout />
     </div>

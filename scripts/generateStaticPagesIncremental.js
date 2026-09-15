@@ -526,7 +526,7 @@ function normalizeArticleLinks(htmlContent, postSlugs) {
         
         // If the slug does not exist on disk, it's a broken link.
         // Strip the anchor tags and leave the inner text so we don't serve 404s.
-        const essentialPaths = ['/about', '/contact', '/privacy-policy', '/terms-of-service', '/disclaimer', '/editorial-standards', '/contribute', '/newsletter', '/certification', '/rss.xml', '/articles', '/', '/news', '/practice', '/advertise', '/contributors', '/tag', '/tools', '/interview-prep', '/cheatsheets', '/glossary', '/compare', '/start-here', '/coding', '/roadmaps', '/progress'];
+        const essentialPaths = ['/about', '/contact', '/privacy-policy', '/terms-of-service', '/disclaimer', '/editorial-standards', '/contribute', '/newsletter', '/certification', '/rss.xml', '/articles', '/', '/news', '/practice', '/advertise', '/contributors', '/tag', '/tools', '/interview-prep', '/cheatsheets', '/glossary', '/compare', '/start-here', '/coding', '/roadmaps', '/progress', '/courses', '/certs', '/interview-questions', '/pricing', '/settings', '/saved'];
         const cleanPath = relativePath.trim().replace(/\/$/, '');
         const isEssential = essentialPaths.includes(cleanPath);
         
@@ -2054,13 +2054,17 @@ const ESSENTIAL_PAGES = [
     description: 'Pick a warehouse, transform, interview, or certification track. SQL coding, practice tests, and cheat sheets stay in the browser. No signup.',
     content: `
       <h1>Start here — four tracks, nothing behind a login</h1>
-      <p>This is the DataEngineer Hub plan: production tutorials, in-browser SQL pads, a 14-day interview loop, and timed cert quizzes. Progress is stored on this device.</p>
+      <p>This is the DataEngineer Hub plan: production tutorials, in-browser SQL pads, a 14-day interview loop, timed cert quizzes, original courses, and a multi-vendor cert map. Progress is stored on this device. Hub Pro (Dodo Payments) unlocks hard SQL pads and the rest of the interview bank.</p>
       <ul>
         <li><a href="/tools?stack=warehouse">Warehouse &amp; cost tools</a></li>
         <li><a href="/coding">SQL coding pads</a></li>
         <li><a href="/interview-prep">Interview prep hub</a></li>
+        <li><a href="/interview-questions">Original interview bank</a></li>
         <li><a href="/practice">Certification practice tests</a></li>
+        <li><a href="/courses">Hub courses</a></li>
+        <li><a href="/certs">Certifications map</a></li>
         <li><a href="/roadmaps">Role roadmaps</a></li>
+        <li><a href="/pricing">Pricing (Dodo Payments)</a></li>
         <li><a href="/progress">Progress on this device</a></li>
       </ul>
     `
@@ -2071,17 +2075,17 @@ const ESSENTIAL_PAGES = [
     description: 'Original SQL pads on employees, orders, and web_events. Run them in the DuckDB playground. Progress stays on this device.',
     content: `
       <h1>SQL coding practice</h1>
-      <p>Eight original pads that run in the <a href="/tools/sql-playground">SQL playground</a>. Open a prompt, run DuckDB in this tab, and mark it solved. Progress is localStorage only.</p>
-      <p>Start at <a href="/coding">the coding hub</a>. Cert quizzes live separately at <a href="/practice">/practice</a>.</p>
+      <p>Original pads that run in the <a href="/tools/sql-playground">SQL playground</a>. Easy pads are free. Hard pads are Hub Pro via Dodo Payments. Open a prompt, run DuckDB in this tab, and mark it solved. Progress is localStorage only.</p>
+      <p>Start at <a href="/coding">the coding hub</a>. Spoken answers live at <a href="/interview-questions">the interview bank</a>. Cert quizzes live separately at <a href="/practice">/practice</a>.</p>
     `
   },
   {
     path: '/roadmaps',
     title: 'Data engineering roadmaps — Snowflake, dbt, Databricks',
-    description: 'Four practical roadmaps for warehouse, analytics engineering, lakehouse, and interview loops.',
+    description: 'Six practical roadmaps for warehouse, analytics engineering, lakehouse, interview loops, Spark, and AWS.',
     content: `
       <h1>Data engineering roadmaps</h1>
-      <p>Snowflake data engineer, analytics engineer (dbt + Airflow), Databricks lakehouse, and the interview/cert loop. Each step is a live tool, cheat sheet, or quiz on this site.</p>
+      <p>Snowflake data engineer, analytics engineer (dbt + Airflow), Databricks lakehouse, the interview/cert loop, Python + Spark, and AWS data engineer. Each step is a live tool, cheat sheet, or quiz on this site.</p>
       <p>See the maps at <a href="/roadmaps">/roadmaps</a>.</p>
     `
   },
@@ -2093,6 +2097,74 @@ const ESSENTIAL_PAGES = [
     content: `
       <h1>Progress on this device</h1>
       <p>Solved SQL pads, quiz attempts, and the reading list stay in this browser. Nothing is uploaded. Open <a href="/progress">/progress</a> after you run a pad or a practice test.</p>
+    `
+  },
+  {
+    path: '/courses',
+    title: 'Data engineering courses — Hub paths, not a video dump',
+    description: 'Six original Hub courses: Snowflake cost literacy, dbt grain, Airflow SLAs, Databricks DBU math, interview SQL, and a cert loop without dumps.',
+    content: `
+      <h1>Hub courses</h1>
+      <p>There is no Hub video player. Each course is a sequence of calculators, SQL pads, cheat sheets, and interview prompts already on this site. You finish with an artifact: a cost number, a schema.yml, a cron plus on-call contract, or a spoken SQL answer.</p>
+      <ul>
+        <li><a href="/courses">Snowflake cost literacy</a> — credits, bytes scanned, warehouse comparison</li>
+        <li>dbt tests that catch a bad grain — schema.yml generator + modeling sheet</li>
+        <li>Airflow schedules that page someone — cron builder + essentials sheet</li>
+        <li>Databricks DBU math — cost calculator + Delta habits</li>
+        <li>Interview SQL you can defend — coding pads + interview bank</li>
+        <li>Cert loop without dumps — practice tests as diagnostics</li>
+      </ul>
+      <p>Open the full outlines at <a href="/courses">/courses</a>. Role maps: <a href="/roadmaps">/roadmaps</a>. Exams: <a href="/certs">/certs</a>.</p>
+    `
+  },
+  {
+    path: '/certs',
+    title: 'Data engineering certifications — Hub map',
+    description: 'SnowPro Core and Advanced, Databricks DE Associate, AWS DEA, dbt, and Airflow as diagnostics. Timed quizzes and sheets on DataEngineer Hub.',
+    content: `
+      <h1>Certifications</h1>
+      <p>Snowflake-deep study lives at <a href="/certification">/certification</a>. This hub is the menu: SnowPro Core, SnowPro Advanced Data Engineer, Databricks Data Engineer Associate, AWS Data Engineer Associate, dbt analytics engineering as a job skill, and Airflow as an on-call contract rather than a mascot exam.</p>
+      <p>Timed quizzes: <a href="/practice">/practice</a>. Interview SQL is not a cert: <a href="/interview-questions">interview bank</a>.</p>
+    `
+  },
+  {
+    path: '/interview-questions',
+    title: 'Data engineering interview questions — original Hub answers',
+    description: 'Original DE interview prompts with production answers: SQL windows, Snowflake cost, dbt grain, Airflow SLAs, and on-call stories. First 12 are free.',
+    content: `
+      <h1>Interview bank</h1>
+      <p>Original DataEngineer Hub prompts — warehouse cost, grain, and on-call — not a scraped dump. The first twelve model answers are free. Hub Pro unlocks the rest after Dodo Payments checkout. Pair with the <a href="/interview-prep">14-day plan</a> and <a href="/coding">SQL pads</a>.</p>
+      <p>Tracks: SQL you can defend, warehouse cost and Snowflake, dbt/Airflow/Spark, system design, on-call stories. Open the full bank at <a href="/interview-questions">/interview-questions</a>.</p>
+    `
+  },
+  {
+    path: '/pricing',
+    title: 'Pricing — Hub Pro via Dodo Payments',
+    description: 'Free tools and starter SQL. Hub Pro is $12/month or $99/year through Dodo Payments live checkout. Coaching is $149 once.',
+    content: `
+      <h1>Pricing</h1>
+      <p>Free: calculators, starter SQL pads, the first twelve interview answers, timed quizzes, articles. Hub Pro ($12/month or $99/year) unlocks every pad and the full interview bank via <a href="https://docs.dodopayments.com/introduction">Dodo Payments</a> live checkout. Coaching is $149 once. Advertise packages checkout from <a href="/advertise">/advertise</a>.</p>
+      <p>See <a href="/pricing">/pricing</a> and <a href="/settings">settings</a> after a successful return.</p>
+    `
+  },
+  {
+    path: '/settings',
+    noindex: true,
+    title: 'Settings — membership on this device',
+    description: 'Hub Pro and coaching flags after Dodo Payments return. Stored in this browser only.',
+    content: `
+      <h1>Settings</h1>
+      <p>No Hub login. Dodo hosts the receipt. Membership is a localStorage flag on this device after <a href="/settings">/settings?dodo=success</a>.</p>
+    `
+  },
+  {
+    path: '/saved',
+    noindex: true,
+    title: 'Saved — pads, questions, reading list',
+    description: 'SQL pads and interview prompts you starred, plus the article reading list. Stored in this browser.',
+    content: `
+      <h1>Saved</h1>
+      <p>Starred SQL pads, interview prompts, and the article reading list. Open <a href="/saved">/saved</a>.</p>
     `
   },
   {

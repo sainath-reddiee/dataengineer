@@ -23,9 +23,14 @@ const Footer = () => {
       { name: 'Interview Prep', href: '/interview-prep' },
       { name: 'Practice tests', href: '/practice' },
       { name: 'SQL coding', href: '/coding' },
+      { name: 'Interview bank', href: '/interview-questions' },
+      { name: 'Courses', href: '/courses' },
+      { name: 'Certs', href: '/certs' },
       { name: 'Start here', href: '/start-here' },
       { name: 'Roadmaps', href: '/roadmaps' },
       { name: 'Progress', href: '/progress' },
+      { name: 'Saved', href: '/saved' },
+      { name: 'Pricing', href: '/pricing' },
       ...(!ADSENSE_REVIEW_MODE ? [
         { name: 'AWS Tutorials', href: '/category/aws' },
         { name: 'Snowflake Guides', href: '/category/snowflake' },
@@ -56,6 +61,8 @@ const Footer = () => {
       { name: 'Disclaimer', href: '/disclaimer' },
       { name: 'Write for Us', href: '/contribute' },
       { name: 'Advertise', href: '/advertise' },
+      { name: 'Pricing', href: '/pricing' },
+      { name: 'Settings', href: '/settings' },
       { name: 'Sitemap', href: '/sitemap-index.xml', external: true },
       { name: 'RSS Feed', href: '/rss.xml', external: true },
       { name: 'Manage Cookies', action: () => { revokeConsent(); window.location.reload(); } }

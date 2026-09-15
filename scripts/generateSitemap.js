@@ -82,6 +82,10 @@ const STATIC_PAGES = [
   { url: '/start-here', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
   { url: '/coding', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
   { url: '/roadmaps', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
+  { url: '/courses', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
+  { url: '/certs', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
+  { url: '/interview-questions', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
+  { url: '/pricing', changefreq: 'monthly', priority: 0.7, lastmod: 'today' },
   // Cheat-sheet category archives are listing pages. Omit them from the
   // AdSense-facing sitemap while the quality gate is on.
   ...(!ADSENSE_REVIEW_MODE ? [

@@ -56,7 +56,7 @@ const SupportModal = ({ isOpen, onClose }) => {
                       Buy me a coffee ☕
                     </h2>
                     <p className="text-xs text-gray-400 mt-0.5">
-                      UPI for India · PayPal for everywhere else
+                      Dodo Payments · UPI · PayPal
                     </p>
                   </div>
                 </div>

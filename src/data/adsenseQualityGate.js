@@ -24,7 +24,7 @@
  */
 export const ADSENSE_REVIEW_MODE = true;
 /** Bump when held-out paths change so incremental SSG rewrites stale robots meta. */
-export const ADSENSE_GATE_VERSION = 3;
+export const ADSENSE_GATE_VERSION = 4;
 
 export const ADSENSE_REVIEW_CHEATSHEETS = [
   'snowflake-sql',
@@ -75,6 +75,8 @@ export function isAdSenseNoindexPath(pathname) {
   if (path === '/news' || path.startsWith('/news/')) return true;
   if (path === '/newsletter' || path.startsWith('/newsletter/')) return true;
   if (path === '/progress' || path.startsWith('/progress/')) return true;
+  if (path === '/settings' || path.startsWith('/settings/')) return true;
+  if (path === '/saved' || path.startsWith('/saved/')) return true;
 
   if (path.startsWith('/cheatsheets/')) {
     const slug = path.slice('/cheatsheets/'.length);

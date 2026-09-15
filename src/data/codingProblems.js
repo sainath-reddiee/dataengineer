@@ -120,7 +120,162 @@ WHERE event_type = 'purchase' AND device = 'mobile'
 ORDER BY ts;`,
     requiredColumns: ['user_id', 'page', 'ts'],
   },
+  {
+    slug: 'dept-payroll',
+    title: 'Payroll by department',
+    difficulty: 'easy',
+    topic: 'Aggregation',
+    table: 'employees',
+    prompt: 'Sum salary per department as payroll. Order by payroll descending.',
+    starterSql: `SELECT department, SUM(salary) AS payroll
+FROM employees
+GROUP BY department
+ORDER BY payroll DESC;`,
+    requiredColumns: ['department', 'payroll'],
+  },
+  {
+    slug: 'hires-by-year',
+    title: 'Hires by year',
+    difficulty: 'easy',
+    topic: 'Aggregation',
+    table: 'employees',
+    prompt: 'Count hires per calendar year of hire_date. Return hire_year and n.',
+    starterSql: `SELECT CAST(strftime(hire_date, '%Y') AS INTEGER) AS hire_year, COUNT(*) AS n
+FROM employees
+GROUP BY 1
+ORDER BY hire_year;`,
+    requiredColumns: ['hire_year', 'n'],
+  },
+  {
+    slug: 'north-revenue',
+    title: 'North region revenue',
+    difficulty: 'easy',
+    topic: 'Filters',
+    table: 'orders',
+    prompt: 'Total quantity * unit_price for region North. One row, alias revenue.',
+    starterSql: `SELECT SUM(quantity * unit_price) AS revenue
+FROM orders
+WHERE region = 'North';`,
+    requiredColumns: ['revenue'],
+  },
+  {
+    slug: 'first-order-per-customer',
+    title: 'First order date per customer',
+    difficulty: 'medium',
+    topic: 'Aggregation',
+    table: 'orders',
+    prompt: 'For each customer_id, the earliest order_date as first_order.',
+    starterSql: `SELECT customer_id, MIN(order_date) AS first_order
+FROM orders
+GROUP BY customer_id
+ORDER BY customer_id;`,
+    requiredColumns: ['customer_id', 'first_order'],
+  },
+  {
+    slug: 'running-revenue',
+    title: 'Running revenue by order date',
+    difficulty: 'medium',
+    topic: 'Windows',
+    table: 'orders',
+    prompt: 'Per order, revenue = quantity * unit_price and running_revenue ordered by order_date, order_id using ROWS.',
+    starterSql: `SELECT
+  order_id,
+  order_date,
+  quantity * unit_price AS revenue,
+  SUM(quantity * unit_price) OVER (
+    ORDER BY order_date, order_id
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  ) AS running_revenue
+FROM orders
+ORDER BY order_date, order_id;`,
+    requiredColumns: ['order_id', 'order_date', 'revenue', 'running_revenue'],
+  },
+  {
+    slug: 'never-purchased-users',
+    title: 'Users who never purchased',
+    difficulty: 'medium',
+    topic: 'Joins',
+    table: 'web_events',
+    pro: true,
+    prompt:
+      'Distinct user_id values that have a page_view but no purchase event. Alias user_id. Hub Pro pad — same sample table, interview-shaped anti-join.',
+    starterSql: `SELECT DISTINCT v.user_id
+FROM web_events v
+WHERE v.event_type = 'page_view'
+  AND NOT EXISTS (
+    SELECT 1
+    FROM web_events p
+    WHERE p.user_id = v.user_id
+      AND p.event_type = 'purchase'
+  )
+ORDER BY v.user_id;`,
+    requiredColumns: ['user_id'],
+  },
+  {
+    slug: 'dept-salary-rank',
+    title: 'Salary rank inside the department',
+    difficulty: 'medium',
+    topic: 'Windows',
+    table: 'employees',
+    pro: true,
+    prompt:
+      'For every employee, dept_rank = DENSE_RANK of salary descending inside the department. Hub Pro: explain why DENSE_RANK vs ROW_NUMBER if two people share a salary.',
+    starterSql: `SELECT
+  name,
+  department,
+  salary,
+  DENSE_RANK() OVER (PARTITION BY department ORDER BY salary DESC) AS dept_rank
+FROM employees
+ORDER BY department, dept_rank, name;`,
+    requiredColumns: ['name', 'department', 'salary', 'dept_rank'],
+  },
+  {
+    slug: 'customer-ltv',
+    title: 'Customer lifetime revenue',
+    difficulty: 'hard',
+    topic: 'Aggregation',
+    table: 'orders',
+    pro: true,
+    prompt:
+      'Per customer_id: order_count, ltv = SUM(quantity * unit_price), ordered by ltv descending. Hub Pro pad used in the interview loop.',
+    starterSql: `SELECT
+  customer_id,
+  COUNT(*) AS order_count,
+  SUM(quantity * unit_price) AS ltv
+FROM orders
+GROUP BY customer_id
+ORDER BY ltv DESC, customer_id;`,
+    requiredColumns: ['customer_id', 'order_count', 'ltv'],
+  },
+  {
+    slug: 'session-flags',
+    title: '30-minute session flags',
+    difficulty: 'hard',
+    topic: 'Windows',
+    table: 'web_events',
+    pro: true,
+    prompt:
+      'Per user, ordered by ts: prev_ts = LAG(ts), new_session = 1 when prev_ts is null or ts is more than 30 minutes after prev_ts, else 0. Hub Pro sessionization sketch.',
+    starterSql: `SELECT
+  user_id,
+  ts,
+  LAG(ts) OVER (PARTITION BY user_id ORDER BY ts) AS prev_ts,
+  CASE
+    WHEN LAG(ts) OVER (PARTITION BY user_id ORDER BY ts) IS NULL THEN 1
+    WHEN date_diff('minute', LAG(ts) OVER (PARTITION BY user_id ORDER BY ts), ts) > 30 THEN 1
+    ELSE 0
+  END AS new_session
+FROM web_events
+ORDER BY user_id, ts;`,
+    requiredColumns: ['user_id', 'ts', 'prev_ts', 'new_session'],
+  },
 ];
+
+export const CODING_TRACKS = ['Aggregation', 'Windows', 'Joins', 'Filters'];
+
+export function isCodingProblemFree(problem) {
+  return !problem?.pro;
+}
 
 export function codingProblemBySlug(slug) {
   return CODING_PROBLEMS.find((item) => item.slug === slug) || null;

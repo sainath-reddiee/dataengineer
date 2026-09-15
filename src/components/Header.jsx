@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
+  Award,
   Bookmark,
   BookOpen,
   ChevronDown,
   Coffee,
   Compass,
   Code2,
+  CreditCard,
   FileText,
   GitCompare,
   GraduationCap,
@@ -19,6 +21,7 @@ import {
   Menu,
   PenLine,
   Search,
+  Settings,
   Target,
   Activity,
   Wrench,
@@ -44,10 +47,16 @@ const LEARN_LINKS = [
   { name: 'Start here', path: '/start-here', icon: Compass },
   { name: 'SQL coding', path: '/coding', icon: Code2 },
   { name: 'Interview Prep', path: '/interview-prep', icon: GraduationCap },
+  { name: 'Interview bank', path: '/interview-questions', icon: GraduationCap },
   { name: 'Practice Tests', path: '/practice', icon: Target },
+  { name: 'Courses', path: '/courses', icon: BookOpen },
+  { name: 'Certs', path: '/certs', icon: Award },
   { name: 'Cheat Sheets', path: '/cheatsheets', icon: FileText },
   { name: 'Roadmaps', path: '/roadmaps', icon: Map },
   { name: 'Progress', path: '/progress', icon: Activity },
+  { name: 'Saved', path: '/saved', icon: Bookmark },
+  { name: 'Pricing', path: '/pricing', icon: CreditCard },
+  { name: 'Settings', path: '/settings', icon: Settings },
   { name: 'Glossary', path: '/glossary', icon: Library },
   { name: 'Compare', path: '/compare', icon: GitCompare },
   { name: 'Write for us', path: '/contribute', icon: PenLine },
@@ -160,6 +169,8 @@ const Header = ({ topOffset = 0 }) => {
     import('@/pages/InterviewPrepHubPage');
     import('@/pages/CodingHubPage');
     import('@/pages/StartHerePage');
+    import('@/pages/CoursesPage');
+    import('@/pages/PricingPage');
   };
 
   return (
@@ -233,7 +244,7 @@ const Header = ({ topOffset = 0 }) => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 6 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute left-0 top-full z-50 mt-2 w-64 rounded-xl border border-white/10 bg-slate-950/95 p-2 shadow-2xl backdrop-blur-xl"
+                  className="absolute left-0 top-full z-50 mt-2 w-72 max-h-[min(28rem,70vh)] overflow-y-auto rounded-xl border border-white/10 bg-slate-950/95 p-2 shadow-2xl backdrop-blur-xl"
                 >
                   {visibleLearnLinks.map((item) => {
                     const Icon = item.icon;
@@ -288,6 +299,12 @@ const Header = ({ topOffset = 0 }) => {
             <Coffee className="h-4 w-4" />
           </button>
 
+          <Link
+            to="/pricing"
+            className="inline-flex min-h-10 items-center rounded-lg px-3 text-sm font-semibold text-slate-200 hover:bg-white/5"
+          >
+            Pro
+          </Link>
           <Link
             to="/articles"
             className="inline-flex min-h-10 items-center rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-4 text-sm font-semibold text-white shadow-lg shadow-blue-950/40 transition-colors hover:from-blue-500 hover:to-indigo-500"

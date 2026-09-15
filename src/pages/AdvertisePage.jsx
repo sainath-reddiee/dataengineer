@@ -1,7 +1,7 @@
 // Advertise / sponsorship page — priced in USD, labeled placements only.
 import React, { useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
   BookOpen,
@@ -25,6 +25,8 @@ import { getFAQSchema } from '@/lib/seoConfig';
 import { useStats } from '@/hooks/useStats';
 import advertiseConfig from '@/data/advertiseConfig.json';
 import SupportPanel from '@/components/Support/SupportPanel';
+import DodoCheckoutButton from '@/components/DodoCheckoutButton';
+import { ADVERTISE_SKU_BY_PACKAGE } from '@/data/dodoCatalog';
 
 // Keep this page off the 340KB cheatsheetData chunk — a hard count is enough
 // for the media kit and avoids CDN 429s that crash the lazy Advertise route.
@@ -50,6 +52,11 @@ const NEWSLETTER = {
   cta: 'Reserve a newsletter slot',
 };
 
+function advertiseDodoSku(packageKey, durationKey) {
+  if (packageKey === 'newsletter_sponsorship') return ADVERTISE_SKU_BY_PACKAGE.newsletter_sponsorship;
+  return ADVERTISE_SKU_BY_PACKAGE[`${packageKey}:${durationKey}`];
+}
+
 const PROCESS_STEPS = [
   {
     title: 'Tell us the product',
@@ -61,7 +68,7 @@ const PROCESS_STEPS = [
   },
   {
     title: 'Pay and schedule',
-    desc: 'Invoice in USD. Dates within 48 hours of payment.',
+    desc: 'Dodo Payments live checkout on this page, or invoice in USD if you prefer email. Dates within 48 hours of payment.',
   },
   {
     title: 'You own the clicks',
@@ -89,7 +96,7 @@ const FAQS = [
     category: 'Billing',
     question: 'How do I pay?',
     answer:
-      'We confirm fit by email, then send an invoice (card or bank transfer). There is no self-serve checkout yet.',
+      'Dodo Payments live checkout on this page (cards, UPI, and the methods Dodo enables on your account), or we confirm fit by email and send an invoice. There is still a human review before anything goes live.',
   },
   {
     category: 'Billing',
@@ -162,6 +169,8 @@ function startingPrice(opp) {
 }
 
 const AdvertisePage = () => {
+  const [searchParams] = useSearchParams();
+  const dodoPaid = searchParams.get('dodo') === 'success';
   const { totalArticles } = useStats();
   const articleCount = totalArticles || advertiseConfig.inventory?.guides || 100;
   const cheatsheetCount = advertiseConfig.inventory?.cheatsheets || 30;
@@ -536,8 +545,13 @@ const AdvertisePage = () => {
       <section id="pricing" className="max-w-5xl mx-auto px-5 sm:px-8 py-14 scroll-mt-24">
         <h2 className="text-2xl sm:text-3xl font-semibold text-white">Paid packages</h2>
         <p className="mt-2 text-sm text-slate-400">
-          Starting prices in USD. Indie tools are welcome — the newsletter slot is the smallest paid test.
+          Starting prices in USD. Pay with Dodo Payments on this page, or email the form if you need an invoice. Indie tools are welcome — the newsletter slot is the smallest paid test.
         </p>
+        {dodoPaid && (
+          <p className="mt-4 rounded-xl border border-blue-400/30 bg-blue-500/10 px-4 py-3 text-sm text-blue-100">
+            Dodo marked this checkout as success. Email sainath@dataengineerhub.blog with the receipt so we can schedule the placement — review still happens before anything goes live.
+          </p>
+        )}
 
         <div className="mt-8 grid gap-5 lg:grid-cols-3">
           {OPPORTUNITIES.map((opp) => {
@@ -637,6 +651,17 @@ const AdvertisePage = () => {
                 >
                   {opp.cta}
                 </button>
+                {advertiseDodoSku(opp.packageKey, duration.key) && (
+                  <div className="mt-2">
+                    <DodoCheckoutButton
+                      sku={advertiseDodoSku(opp.packageKey, duration.key)}
+                      source="advertise"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-blue-400/30 px-4 py-2.5 text-sm font-semibold text-blue-100 hover:bg-blue-500/10"
+                    >
+                      Pay with Dodo — {formatUsd(duration.price)}
+                    </DodoCheckoutButton>
+                  </div>
+                )}
               </article>
             );
           })}
@@ -672,6 +697,15 @@ const AdvertisePage = () => {
               >
                 {NEWSLETTER.cta}
               </button>
+              <div className="mt-2">
+                <DodoCheckoutButton
+                  sku="ad_newsletter"
+                  source="advertise"
+                  className="inline-flex items-center gap-2 rounded-full border border-amber-400/40 px-4 py-2.5 text-sm font-semibold text-amber-100"
+                >
+                  Pay with Dodo — {formatUsd(NEWSLETTER.price)}
+                </DodoCheckoutButton>
+              </div>
             </div>
           </div>
         </article>

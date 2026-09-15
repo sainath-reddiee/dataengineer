@@ -15,8 +15,8 @@ const ACTIONS = [
   { to: '/tools/sql-playground', title: 'SQL Playground', blurb: 'Run SQL in the browser', icon: Terminal },
   { to: '/interview-prep', title: 'Interview prep', blurb: '14-day plan by stack', icon: GraduationCap },
   { to: '/practice', title: 'Practice tests', blurb: 'SnowPro, Databricks, AWS', icon: Target },
-  { to: '/cheatsheets', title: 'Cheat sheets', blurb: 'Quick refs you can ship', icon: FileText },
-  { to: '/tools', title: 'Free tools', blurb: 'Cost, cron, DDL, sizing', icon: Wrench },
+  { to: '/coding', title: 'SQL coding', blurb: 'Original DuckDB pads', icon: FileText },
+  { to: '/courses', title: 'Courses', blurb: 'Cost, dbt, Airflow paths', icon: Wrench },
 ];
 
 const TiltCard = ({ children, className = '', disabled = false, intensity = 12 }) => {

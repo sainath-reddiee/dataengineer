@@ -228,6 +228,42 @@ jobs:
           VITE_WEB3FORMS_KEY: ${{ secrets.VITE_WEB3FORMS_KEY }}
           VITE_GSC_CLIENT_ID: ${{ secrets.VITE_GSC_CLIENT_ID }}
           VITE_WP_APP_PASSWORD: ${{ secrets.VITE_WP_APP_PASSWORD }}
+          VITE_DODO_MODE: ${{ secrets.VITE_DODO_MODE }}
+          VITE_DODO_PRODUCT_COFFEE: ${{ secrets.VITE_DODO_PRODUCT_COFFEE }}
+          VITE_DODO_PRODUCT_PRO_MONTHLY: ${{ secrets.VITE_DODO_PRODUCT_PRO_MONTHLY }}
+          VITE_DODO_PRODUCT_PRO_ANNUAL: ${{ secrets.VITE_DODO_PRODUCT_PRO_ANNUAL }}
+          VITE_DODO_PRODUCT_COACHING: ${{ secrets.VITE_DODO_PRODUCT_COACHING }}
+          VITE_DODO_PRODUCT_AD_CARD_MONTHLY: ${{ secrets.VITE_DODO_PRODUCT_AD_CARD_MONTHLY }}
+          VITE_DODO_PRODUCT_AD_CARD_YEARLY: ${{ secrets.VITE_DODO_PRODUCT_AD_CARD_YEARLY }}
+          VITE_DODO_PRODUCT_AD_TOOLS: ${{ secrets.VITE_DODO_PRODUCT_AD_TOOLS }}
+          VITE_DODO_PRODUCT_AD_GUIDE: ${{ secrets.VITE_DODO_PRODUCT_AD_GUIDE }}
+          VITE_DODO_PRODUCT_AD_NEWSLETTER: ${{ secrets.VITE_DODO_PRODUCT_AD_NEWSLETTER }}
+          VITE_DODO_LINK_COFFEE: ${{ secrets.VITE_DODO_LINK_COFFEE }}
+          VITE_DODO_LINK_PRO_MONTHLY: ${{ secrets.VITE_DODO_LINK_PRO_MONTHLY }}
+          VITE_DODO_LINK_PRO_ANNUAL: ${{ secrets.VITE_DODO_LINK_PRO_ANNUAL }}
+          VITE_DODO_LINK_COACHING: ${{ secrets.VITE_DODO_LINK_COACHING }}
+          VITE_DODO_LINK_AD_CARD_MONTHLY: ${{ secrets.VITE_DODO_LINK_AD_CARD_MONTHLY }}
+          VITE_DODO_LINK_AD_CARD_YEARLY: ${{ secrets.VITE_DODO_LINK_AD_CARD_YEARLY }}
+          VITE_DODO_LINK_AD_TOOLS: ${{ secrets.VITE_DODO_LINK_AD_TOOLS }}
+          VITE_DODO_LINK_AD_GUIDE: ${{ secrets.VITE_DODO_LINK_AD_GUIDE }}
+          VITE_DODO_LINK_AD_NEWSLETTER: ${{ secrets.VITE_DODO_LINK_AD_NEWSLETTER }}
+
+      - name: 🔐 Write Dodo Hostinger secrets
+        env:
+          DODO_PAYMENTS_API_KEY: ${{ secrets.DODO_PAYMENTS_API_KEY }}
+          DODO_WEBHOOK_SECRET: ${{ secrets.DODO_WEBHOOK_SECRET }}
+          DODO_MODE: ${{ secrets.DODO_MODE }}
+          VITE_DODO_MODE: ${{ secrets.VITE_DODO_MODE }}
+          VITE_DODO_PRODUCT_COFFEE: ${{ secrets.VITE_DODO_PRODUCT_COFFEE }}
+          VITE_DODO_PRODUCT_PRO_MONTHLY: ${{ secrets.VITE_DODO_PRODUCT_PRO_MONTHLY }}
+          VITE_DODO_PRODUCT_PRO_ANNUAL: ${{ secrets.VITE_DODO_PRODUCT_PRO_ANNUAL }}
+          VITE_DODO_PRODUCT_COACHING: ${{ secrets.VITE_DODO_PRODUCT_COACHING }}
+          VITE_DODO_PRODUCT_AD_CARD_MONTHLY: ${{ secrets.VITE_DODO_PRODUCT_AD_CARD_MONTHLY }}
+          VITE_DODO_PRODUCT_AD_CARD_YEARLY: ${{ secrets.VITE_DODO_PRODUCT_AD_CARD_YEARLY }}
+          VITE_DODO_PRODUCT_AD_TOOLS: ${{ secrets.VITE_DODO_PRODUCT_AD_TOOLS }}
+          VITE_DODO_PRODUCT_AD_GUIDE: ${{ secrets.VITE_DODO_PRODUCT_AD_GUIDE }}
+          VITE_DODO_PRODUCT_AD_NEWSLETTER: ${{ secrets.VITE_DODO_PRODUCT_AD_NEWSLETTER }}
+        run: node scripts/writeDodoSecrets.js
 
       - name: 🗑️ Delete Build Cache (Force Fresh Build)
         if: |
@@ -487,6 +523,7 @@ jobs:
             **/.build-cache.json
             **/*.map
             **/.in.*
+            **/api/dodo-events.jsonl
 
       - name: 🧹 Clear leftover temps after failed FTP attempt
         if: steps.changes.outputs.skip_deploy != 'true' && steps.changes.outputs.dry_run != 'true' && steps.ftp_deploy.outcome == 'failure'
@@ -532,6 +569,7 @@ jobs:
             **/.build-cache.json
             **/*.map
             **/.in.*
+            **/api/dodo-events.jsonl
 
       - name: 💾 Copy FTP Sync State to Root for Caching
         if: steps.changes.outputs.skip_deploy != 'true' && steps.changes.outputs.dry_run != 'true' && always()

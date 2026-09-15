@@ -34,6 +34,10 @@ const JUMP_LINKS = [
   { type: 'article', id: 'jump-interview', title: 'Interview prep', href: '/interview-prep', excerpt: '14-day plan by stack' },
   { type: 'article', id: 'jump-practice', title: 'Practice tests', href: '/practice', excerpt: 'SnowPro, Databricks, AWS quizzes' },
   { type: 'article', id: 'jump-coding', title: 'SQL coding', href: '/coding', excerpt: 'Original DuckDB pads, tracked on this device' },
+  { type: 'article', id: 'jump-questions', title: 'Interview bank', href: '/interview-questions', excerpt: 'Original DE prompts with model answers' },
+  { type: 'article', id: 'jump-courses', title: 'Courses', href: '/courses', excerpt: 'Cost, dbt, Airflow, interview SQL paths' },
+  { type: 'article', id: 'jump-certs', title: 'Certs', href: '/certs', excerpt: 'SnowPro, Databricks, AWS map' },
+  { type: 'article', id: 'jump-pricing', title: 'Pricing', href: '/pricing', excerpt: 'Hub Pro via Dodo Payments' },
   { type: 'article', id: 'jump-progress', title: 'Progress', href: '/progress', excerpt: 'Pads, quizzes, reading list in this browser' },
 ];
 

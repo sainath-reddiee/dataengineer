@@ -21,8 +21,9 @@ export default function StartHerePage() {
         </h1>
         <p className="mt-4 max-w-2xl text-base text-slate-300">
           This is the Hub plan: production tutorials, in-browser SQL pads, a 14-day interview
-          loop, and timed cert quizzes. Progress is stored on this device. There is no Pro
-          unlock for medium problems — the pads and quizzes you see are the full set we ship.
+          loop, original courses, and timed cert quizzes. Progress is stored on this device.
+          Hub Pro (Dodo Payments) unlocks hard SQL pads and the rest of the interview bank —
+          starter pads and every tool stay free.
         </p>
         <div className="mt-8">
           <StartHerePaths />
@@ -34,10 +35,11 @@ export default function StartHerePage() {
             <Link to="/articles" className="text-blue-400 hover:underline">articles</Link>.
           </li>
           <li>
-            <strong className="text-white">2. Write SQL you can defend.</strong> Eight original
+            <strong className="text-white">2. Write SQL you can defend.</strong> Original
             pads on the sample tables live at{' '}
             <Link to="/coding" className="text-blue-400 hover:underline">/coding</Link>. They run
-            in the DuckDB playground.
+            in the DuckDB playground. Spoken answers:{' '}
+            <Link to="/interview-questions" className="text-blue-400 hover:underline">interview bank</Link>.
           </li>
           <li>
             <strong className="text-white">3. Sit the interview or the cert.</strong>{' '}

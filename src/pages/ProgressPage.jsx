@@ -31,8 +31,11 @@ export default function ProgressPage() {
         </h1>
         <p className="mt-4 max-w-2xl text-base text-slate-300">
           No account. Solved pads, quiz attempts, streaks, and the reading list live in
-          localStorage on this device — the same model as an on-device membership, without a
-          Stripe login.
+          localStorage on this device. Hub Pro after Dodo checkout is the same model — a flag
+          in this browser. Manage it on{' '}
+          <Link to="/settings" className="text-blue-400 hover:underline">Settings</Link>
+          {' '}or star pads on{' '}
+          <Link to="/saved" className="text-blue-400 hover:underline">Saved</Link>.
         </p>
 
         <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">

@@ -78,4 +78,26 @@ export const ROADMAPS = [
       { label: 'Track progress', href: '/progress' },
     ],
   },
+  {
+    slug: 'python-spark-de',
+    title: 'Python + Spark data engineer',
+    blurb: 'PySpark that survives review, Delta habits, and SQL you can still write without a UDF.',
+    steps: [
+      { label: 'Python for DE sheet', href: '/cheatsheets/python-for-data-engineers' },
+      { label: 'SQL coding pads', href: '/coding' },
+      { label: 'Databricks cost', href: '/tools/databricks-cost-calculator' },
+      { label: 'Interview bank (Spark)', href: '/interview-questions' },
+    ],
+  },
+  {
+    slug: 'aws-data-engineer',
+    title: 'AWS data engineer',
+    blurb: 'Glue vs a warehouse load, Redshift WLM, and the DEA quiz as a diagnostic — not a dump.',
+    steps: [
+      { label: 'AWS for DE sheet', href: '/cheatsheets/aws-for-data-engineers' },
+      { label: 'Warehouse comparison', href: '/tools/cloud-data-warehouse-cost-comparison' },
+      { label: 'AWS DEA practice', href: '/practice/aws-de-associate' },
+      { label: 'Certs hub', href: '/certs' },
+    ],
+  },
 ];

@@ -485,7 +485,9 @@ export default function InterviewPrepHubPage() {
               A curated interview-prep library for data engineers. {sheetCount} cheat sheets across
               SQL, Snowflake, Databricks, AWS, Azure, dbt, Airflow, Python/PySpark, data modeling,
               and system design — plus a concrete 2-week study plan you can follow day-by-day.
-              Everything is free and indexed for rapid review.
+              Spoken model answers live on the{' '}
+              <Link to="/interview-questions" className="text-blue-300 hover:underline">original interview bank</Link>
+              {' '}(first 12 free; Hub Pro via Dodo for the rest). Everything else on this hub is free.
             </p>
           </motion.div>
 

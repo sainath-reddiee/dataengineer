@@ -35,3 +35,7 @@ public/duckdb/
 # Don't ignore example
 !.env.example
 
+# Dodo Payments server secrets (Hostinger PHP). Never commit live keys.
+public/api/dodo-secrets.php
+public/api/dodo-events.jsonl
+

@@ -46,6 +46,12 @@ const requiredRoutes = [
   '/coding',
   '/roadmaps',
   '/progress',
+  '/courses',
+  '/certs',
+  '/interview-questions',
+  '/pricing',
+  '/settings',
+  '/saved',
 ];
 
 for (const route of requiredRoutes) {

@@ -21,6 +21,7 @@ import MetaTags from '@/components/SEO/MetaTags';
 import { getDb as getSharedDb, onDuckDbProgress, resetDb } from '@/lib/duckdb';
 import { codingProblemBySlug, columnsMatchProblem } from '@/data/codingProblems';
 import { useLearnProgress } from '@/hooks/useLearnProgress';
+import { useMembership } from '@/hooks/useMembership';
 
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
@@ -239,6 +240,8 @@ export default function SqlPlaygroundPage() {
   const [searchParams] = useSearchParams();
   const problem = codingProblemBySlug(searchParams.get('problem'));
   const { markSolved, recordRun, isSolved } = useLearnProgress();
+  const { isPro } = useMembership();
+  const problemLocked = Boolean(problem?.pro && !isPro);
   const [sql, setSql] = useState(() => problem?.starterSql || sqlFromSearch(searchParams));
   const [pane, setPane] = useState('editor');
   const [results, setResults] = useState(null);
@@ -260,8 +263,12 @@ export default function SqlPlaygroundPage() {
     const raw = searchParams.get('sql');
     if (raw && raw.length > 0 && raw.length < 20000) setSql(raw);
     const next = codingProblemBySlug(searchParams.get('problem'));
+    if (next?.pro && !isPro) {
+      if (!raw) setSql('-- Hub Pro pad. Unlock on /pricing, then reload this problem.');
+      return;
+    }
     if (next?.starterSql && !raw) setSql(next.starterSql);
-  }, [searchParams]);
+  }, [searchParams, isPro]);
 
   useEffect(() => onDuckDbProgress((update) => {
     setDbStatus(update.message);
@@ -448,14 +455,24 @@ export default function SqlPlaygroundPage() {
 
         {problem && (
           <div className="rounded-xl border border-blue-400/30 bg-slate-900/70 p-4">
-            <p className="text-xs uppercase tracking-wide text-blue-300/80">Coding pad</p>
+            <p className="text-xs uppercase tracking-wide text-blue-300/80">
+              Coding pad{problem.pro ? ' · Hub Pro' : ''}
+            </p>
             <h2 className="mt-1 text-lg font-semibold text-white">{problem.title}</h2>
             <p className="mt-2 text-sm text-slate-300">{problem.prompt}</p>
+            {problemLocked && (
+              <p className="mt-3 text-sm text-amber-200">
+                This pad is Hub Pro.{' '}
+                <Link to="/pricing" className="font-semibold underline">Unlock on Pricing</Link>
+                {' '}or return to <Link to="/coding" className="underline">/coding</Link>.
+              </p>
+            )}
             <div className="mt-3 flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => setSql(problem.starterSql)}
-                className="rounded-lg border border-white/15 px-3 py-1.5 text-xs font-semibold text-slate-200"
+                disabled={problemLocked}
+                className="rounded-lg border border-white/15 px-3 py-1.5 text-xs font-semibold text-slate-200 disabled:opacity-40"
               >
                 Load starter SQL
               </button>

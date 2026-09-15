@@ -75,6 +75,12 @@ const StartHerePage = lazy(() => import('./pages/StartHerePage'));
 const RoadmapsPage = lazy(() => import('./pages/RoadmapsPage'));
 const CodingHubPage = lazy(() => import('./pages/CodingHubPage'));
 const ProgressPage = lazy(() => import('./pages/ProgressPage'));
+const PricingPage = lazy(() => import('./pages/PricingPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const SavedPage = lazy(() => import('./pages/SavedPage'));
+const CoursesPage = lazy(() => import('./pages/CoursesPage'));
+const CertsHubPage = lazy(() => import('./pages/CertsHubPage'));
+const InterviewQuestionsPage = lazy(() => import('./pages/InterviewQuestionsPage'));
 
 // Not Found Page
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
@@ -387,6 +393,13 @@ function App() {
           <Route path="roadmaps" element={<SafeRoute fallbackText="Loading Roadmaps..."><RoadmapsPage /></SafeRoute>} />
           <Route path="coding" element={<SafeRoute fallbackText="Loading SQL coding..."><CodingHubPage /></SafeRoute>} />
           <Route path="progress" element={<SafeRoute fallbackText="Loading Progress..."><ProgressPage /></SafeRoute>} />
+          <Route path="pricing" element={<SafeRoute fallbackText="Loading Pricing..."><PricingPage /></SafeRoute>} />
+          <Route path="upgrade" element={<Navigate to="/pricing" replace />} />
+          <Route path="settings" element={<SafeRoute fallbackText="Loading Settings..."><SettingsPage /></SafeRoute>} />
+          <Route path="saved" element={<SafeRoute fallbackText="Loading Saved..."><SavedPage /></SafeRoute>} />
+          <Route path="courses" element={<SafeRoute fallbackText="Loading Courses..."><CoursesPage /></SafeRoute>} />
+          <Route path="certs" element={<SafeRoute fallbackText="Loading Certs..."><CertsHubPage /></SafeRoute>} />
+          <Route path="interview-questions" element={<SafeRoute fallbackText="Loading Interview bank..."><InterviewQuestionsPage /></SafeRoute>} />
           <Route path="about" element={<SafeRoute fallbackText="Loading About..."><AboutPage /></SafeRoute>} />
           <Route path="certification" element={<SafeRoute fallbackText="Loading Certification..."><Certification /></SafeRoute>} />
           <Route path="contact" element={<SafeRoute fallbackText="Loading Contact..."><ContactPage /></SafeRoute>} />
