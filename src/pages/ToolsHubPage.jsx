@@ -163,7 +163,7 @@ export default function ToolsHubPage() {
         </div>
 
         {/* Hero */}
-        <div className="bg-gradient-to-b from-slate-900/0 to-slate-900/50 py-8 sm:py-16">
+        <div className="bg-gradient-to-b from-slate-900/0 to-slate-900/50 py-8 sm:py-12">
           <div className="max-w-6xl mx-auto px-4 text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -193,13 +193,29 @@ export default function ToolsHubPage() {
             relaxTargeting
             category="tools"
             slug="tools"
-            className="mt-0 mb-8"
+            className="mt-0 mb-6"
           />
         </div>
 
         {/* Tool cards grid */}
         <div className="max-w-6xl mx-auto px-4 pb-8">
-          <div className="sticky top-[4.25rem] z-20 -mx-4 mb-5 border-b border-white/5 bg-slate-950/80 px-4 py-3 backdrop-blur-xl">
+          <div className="mb-6 rounded-2xl border border-white/10 bg-slate-900/70 p-4">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm text-slate-300">
+                {visibleTools.length} {visibleTools.length === 1 ? 'tool' : 'tools'}
+                {activeStage ? ` in ${activeStage.label}` : ''}
+                {category !== 'all' ? ` · ${TOOL_CATEGORIES.find((item) => item.id === category)?.label}` : ''}
+              </p>
+              {(stage || category !== 'all') && (
+                <button
+                  type="button"
+                  onClick={() => { setCategory('all'); setStage(''); }}
+                  className="text-xs font-semibold text-blue-400 hover:text-blue-300"
+                >
+                  Clear filters
+                </button>
+              )}
+            </div>
             <div className="flex gap-2 overflow-x-auto pb-1">
               {TOOL_CATEGORIES.map((item) => (
                 <button
@@ -216,27 +232,23 @@ export default function ToolsHubPage() {
                 </button>
               ))}
             </div>
-            <div className="mt-2 flex gap-2 overflow-x-auto">
+            <div className="mt-3 flex gap-2 overflow-x-auto">
               {TOOL_STAGES.map((item) => (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => setStage(item.id)}
-                  className={`compact-control shrink-0 rounded-full px-3 py-1 text-[11px] ${
+                  className={`compact-control shrink-0 rounded-full border px-3 py-1.5 text-left ${
                     stage === item.id
-                      ? 'bg-indigo-500/25 text-indigo-100 ring-1 ring-indigo-400/40'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'border-indigo-400/40 bg-indigo-500/20 text-indigo-100'
+                      : 'border-transparent text-slate-400 hover:text-white'
                   }`}
                 >
-                  {item.label}
+                  <span className="block text-xs font-semibold">{item.label}</span>
+                  <span className="block text-[10px] opacity-70">{item.hint}</span>
                 </button>
               ))}
             </div>
-            {activeStage && (
-              <p className="mt-2 text-xs text-slate-400">
-                Showing {activeStage.label} tools — {activeStage.hint}
-              </p>
-            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -258,6 +270,10 @@ export default function ToolsHubPage() {
                       )}
                     </h2>
                     <p className="text-sm text-blue-300/80 mt-1">{tool.tagline}</p>
+                    <p className="mt-2 text-[11px] uppercase tracking-wide text-slate-500">
+                      {TOOL_CATEGORIES.find((item) => item.id === tool.category)?.label || tool.category}
+                      {tool.primaryStage ? ` · ${tool.primaryStage}` : ''}
+                    </p>
                     <p className="hidden text-gray-300 text-sm mt-3 sm:block">{tool.description}</p>
                     <p className="text-xs text-gray-400 mt-2 sm:mt-3">
                       <span className="font-semibold text-gray-300">Best for:</span>{' '}
@@ -480,7 +496,7 @@ export default function ToolsHubPage() {
               engineering best practices — built for engineers shipping to production.
             </p>
             <Link
-              to="/blog"
+              to="/articles"
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors"
             >
               Browse All Articles

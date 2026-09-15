@@ -79,7 +79,15 @@ const cta = readFileSync(join(root, 'src/components/InArticleCTA.jsx'), 'utf8');
 const meta = readFileSync(join(root, 'src/components/SEO/MetaTags.jsx'), 'utf8');
 
 if (!header.includes('REVIEW_HIDDEN_LEARN')) {
-  console.error('❌ Header must hide glossary/compare/practice during review');
+  console.error('❌ Header must hide glossary/compare during review');
+  failed += 1;
+}
+if (header.includes("'/interview-prep'") === false) {
+  console.error('❌ Header Learn menu must still reach interview prep');
+  failed += 1;
+}
+if (!footer.includes("href: '/interview-prep'") || !footer.includes("href: '/practice'")) {
+  console.error('❌ Footer must keep interview prep and practice as separate links');
   failed += 1;
 }
 if (!footer.includes('ADSENSE_REVIEW_MODE')) {

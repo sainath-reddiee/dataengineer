@@ -85,6 +85,7 @@ assert(home.includes('<FeaturedPosts compact'), 'Homepage featured section shoul
 assert(home.includes('FeaturedToolsRail'), 'Homepage should surface tools before the article feed on mobile');
 assert(home.includes('<TrendingPosts compact'), 'Homepage trending section should drop the extra marketing header');
 assert(home.includes('<TechCategories compact'), 'Homepage tech grid should drop the extra marketing header');
+assert(home.includes('StartHerePaths'), 'Homepage should surface the free start-here plan');
 assert(home.includes('card-3d'), 'Homepage cards should use the lift hover');
 assert(css.includes('.card-3d'), 'Global card-3d hover must exist');
 assert(css.includes('prefers-reduced-motion'), 'card-3d must respect reduced motion');

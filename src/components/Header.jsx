@@ -26,7 +26,7 @@ import { useReadingList } from '@/hooks/useReadingList';
 import { ADSENSE_REVIEW_MODE, isReviewAllowlistedTool } from '@/data/adsenseQualityGate';
 import { FEATURED_TOOLS, toolHref } from '@/data/toolsCatalog';
 
-const REVIEW_HIDDEN_LEARN = new Set(['/glossary', '/compare', '/interview-prep', '/practice']);
+const REVIEW_HIDDEN_LEARN = new Set(['/glossary', '/compare']);
 
 const MAIN_LINKS = [
   { name: 'Home', path: '/', icon: Home },

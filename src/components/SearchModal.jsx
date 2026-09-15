@@ -31,7 +31,8 @@ const JUMP_LINKS = [
   { type: 'tool', id: 'jump-cost', title: 'Snowflake Cost Calculator', href: '/tools/snowflake-cost-calculator', excerpt: 'Model the warehouse bill' },
   { type: 'tool', id: 'jump-cron', title: 'Cron builder', href: '/tools/cron-expression-builder', excerpt: 'Airflow and Snowflake TASK' },
   { type: 'cheatsheet', id: 'jump-cheatsheets', title: 'Cheat sheets', href: '/cheatsheets', excerpt: 'SQL, dbt, Airflow, Spark' },
-  { type: 'article', id: 'jump-interview', title: 'Interview prep', href: '/interview-prep', excerpt: 'Practice questions by stack' },
+  { type: 'article', id: 'jump-interview', title: 'Interview prep', href: '/interview-prep', excerpt: '14-day plan by stack' },
+  { type: 'article', id: 'jump-practice', title: 'Practice tests', href: '/practice', excerpt: 'SnowPro, Databricks, AWS quizzes' },
 ];
 
 const TOPIC_CHIPS = ['Snowflake', 'dbt', 'Airflow', 'Spark', 'SQL', 'Kafka'];

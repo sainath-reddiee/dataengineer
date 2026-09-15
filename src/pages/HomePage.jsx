@@ -3,13 +3,14 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Hero from '../components/Hero';
 import MetaTags from '../components/SEO/MetaTags';
-import { Sparkles, TrendingUp, FileText, Zap, BookOpen, Wrench, GraduationCap } from 'lucide-react';
+import { Sparkles, TrendingUp, FileText, Zap, BookOpen, GraduationCap, Target } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 // cheatsheetData is large (~all cheat sheet content). We dynamic-import it so
 // it doesn't block the initial HomePage bundle / LCP.
 
 const FeaturedToolsRail = React.lazy(() => import('../components/FeaturedToolsRail'));
+const StartHerePaths = React.lazy(() => import('../components/StartHerePaths'));
 const FeaturedPosts = React.lazy(() => import('../components/FeaturedPosts'));
 const TrendingPosts = React.lazy(() => import('../components/TrendingPosts'));
 const RecentPosts = React.lazy(() => import('../components/RecentPosts'));
@@ -176,6 +177,10 @@ const HomePage = () => {
             <FeaturedToolsRail />
           </Suspense>
 
+          <Suspense fallback={<SectionSkeleton height="h-40" />}>
+            <StartHerePaths />
+          </Suspense>
+
           <section className="rounded-xl border border-slate-700/70 bg-slate-800/40 px-5 py-4 sm:px-6 sm:py-5">
             <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
               Written by{' '}
@@ -254,30 +259,11 @@ const HomePage = () => {
 
           <section>
             <SectionHeader
-              icon={Wrench}
-              title="Interview prep"
-              subtitle="Practice questions and certification paths"
+              icon={GraduationCap}
+              title="Interview prep & practice tests"
+              subtitle="Two different destinations — a 14-day interview plan, and timed cert quizzes"
             />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Link
-                to="/tools"
-                className="card-3d group bg-gradient-to-br from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 border border-slate-700 hover:border-blue-500/50 rounded-xl p-5"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-blue-500/20">
-                    <Wrench className="w-5 h-5 text-blue-400" />
-                  </div>
-                  <h3 className="text-base font-semibold text-white group-hover:text-blue-400 transition-colors">
-                    Browse the full tools hub
-                  </h3>
-                </div>
-                <p className="text-sm text-gray-400">
-                  Filter by Cost, SQL, Convert, or pipeline stage. Every calculator stays in the browser.
-                </p>
-                <span className="inline-block mt-3 text-xs font-semibold text-blue-400 group-hover:text-blue-300">
-                  Open tools hub →
-                </span>
-              </Link>
               <Link
                 to="/interview-prep"
                 className="card-3d group bg-gradient-to-br from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 border border-slate-700 hover:border-purple-500/50 rounded-xl p-5"
@@ -291,10 +277,29 @@ const HomePage = () => {
                   </h3>
                 </div>
                 <p className="text-sm text-gray-400">
-                  Curated Snowflake, SQL, Python, dbt & system-design interview questions with expert answers for data engineering roles.
+                  Curated Snowflake, SQL, Python, dbt, and system-design questions with a 14-day study plan.
                 </p>
                 <span className="inline-block mt-3 text-xs font-semibold text-purple-400 group-hover:text-purple-300">
-                  Start preparing →
+                  Open /interview-prep →
+                </span>
+              </Link>
+              <Link
+                to="/practice"
+                className="card-3d group bg-gradient-to-br from-blue-500/10 to-indigo-500/10 hover:from-blue-500/20 hover:to-indigo-500/20 border border-slate-700 hover:border-blue-500/50 rounded-xl p-5"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-blue-500/20">
+                    <Target className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <h3 className="text-base font-semibold text-white group-hover:text-blue-400 transition-colors">
+                    Practice tests
+                  </h3>
+                </div>
+                <p className="text-sm text-gray-400">
+                  SnowPro Core, Databricks Data Engineer, and AWS DEA quizzes with explanations. Progress stays on this device.
+                </p>
+                <span className="inline-block mt-3 text-xs font-semibold text-blue-400 group-hover:text-blue-300">
+                  Open /practice →
                 </span>
               </Link>
             </div>

@@ -9,13 +9,12 @@ import {
   Wrench,
 } from 'lucide-react';
 import { TOOL_STAGES } from '@/data/toolsCatalog';
-import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 
 const ACTIONS = [
   { to: '/articles', title: 'Tutorials', blurb: 'Production notes, not vendor docs', icon: BookOpen },
   { to: '/tools/sql-playground', title: 'SQL Playground', blurb: 'Run SQL in the browser', icon: Terminal },
-  { to: '/interview-prep', reviewTo: '/certification', title: 'Interview prep', blurb: 'Questions from real stacks', icon: GraduationCap },
-  { to: '/practice', reviewTo: '/certification', title: 'Practice tests', blurb: 'SnowPro, Databricks, more', icon: Target },
+  { to: '/interview-prep', title: 'Interview prep', blurb: '14-day plan by stack', icon: GraduationCap },
+  { to: '/practice', title: 'Practice tests', blurb: 'SnowPro, Databricks, AWS', icon: Target },
   { to: '/cheatsheets', title: 'Cheat sheets', blurb: 'Quick refs you can ship', icon: FileText },
   { to: '/tools', title: 'Free tools', blurb: 'Cost, cron, DDL, sizing', icon: Wrench },
 ];
@@ -87,30 +86,16 @@ const HubMotion = ({ reduceMotion = false }) => {
           <div className="flex items-stretch gap-1.5">
             {TOOL_STAGES.map((stage, index) => (
               <div key={stage.id} className="flex min-w-0 flex-1 items-center gap-1.5">
-                <motion.div
-                  className="min-w-0 flex-1 rounded-lg bg-white/5 px-1.5 py-2 text-center ring-1 ring-white/5 sm:px-2"
-                  animate={reduceMotion ? undefined : { y: [0, -6, 0] }}
-                  transition={reduceMotion ? undefined : {
-                    duration: 2.6,
-                    repeat: Infinity,
-                    delay: index * 0.22,
-                    ease: 'easeInOut',
-                  }}
-                >
+                <div className="min-w-0 flex-1 rounded-lg bg-white/5 px-1.5 py-2 text-center ring-1 ring-white/5 sm:px-2">
                   <Link to={`/tools?stack=${stage.id}`} className="block">
                     <p className="text-[11px] font-semibold text-white">{stage.label}</p>
                     <p className="mt-0.5 text-[9px] leading-tight text-slate-400 sm:text-[10px]">{stage.hint}</p>
                   </Link>
-                </motion.div>
+                </div>
                 {index < TOOL_STAGES.length - 1 && (
-                  <motion.span
-                    aria-hidden="true"
-                    className="hidden text-blue-300 sm:inline"
-                    animate={reduceMotion ? undefined : { x: [0, 3, 0], opacity: [0.4, 1, 0.4] }}
-                    transition={reduceMotion ? undefined : { duration: 1.4, repeat: Infinity, delay: index * 0.15 }}
-                  >
+                  <span aria-hidden="true" className="hidden text-blue-300 sm:inline">
                     →
-                  </motion.span>
+                  </span>
                 )}
               </div>
             ))}
@@ -121,12 +106,11 @@ const HubMotion = ({ reduceMotion = false }) => {
       <div className="grid grid-cols-2 gap-2">
         {ACTIONS.map((action, index) => {
           const Icon = action.icon;
-          const href = ADSENSE_REVIEW_MODE && action.reviewTo ? action.reviewTo : action.to;
           return (
             <TiltCard
               key={action.to}
               disabled={reduceMotion}
-              intensity={8}
+              intensity={6}
               className="overflow-hidden rounded-xl"
             >
               <motion.div
@@ -135,7 +119,7 @@ const HubMotion = ({ reduceMotion = false }) => {
                 transition={{ duration: 0.25, delay: 0.05 * index }}
               >
                 <Link
-                  to={href}
+                  to={action.to}
                   className="block rounded-xl border border-white/10 bg-slate-900/60 px-3 py-2.5 shadow-lg shadow-slate-950/30 transition-colors hover:border-blue-400/40 hover:bg-slate-900/80"
                 >
                   <span className="mb-1 flex items-center gap-2 text-sm font-semibold text-white">
