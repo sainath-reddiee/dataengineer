@@ -33,6 +33,8 @@ const JUMP_LINKS = [
   { type: 'cheatsheet', id: 'jump-cheatsheets', title: 'Cheat sheets', href: '/cheatsheets', excerpt: 'SQL, dbt, Airflow, Spark' },
   { type: 'article', id: 'jump-interview', title: 'Interview prep', href: '/interview-prep', excerpt: '14-day plan by stack' },
   { type: 'article', id: 'jump-practice', title: 'Practice tests', href: '/practice', excerpt: 'SnowPro, Databricks, AWS quizzes' },
+  { type: 'article', id: 'jump-coding', title: 'SQL coding', href: '/coding', excerpt: 'Original DuckDB pads, tracked on this device' },
+  { type: 'article', id: 'jump-progress', title: 'Progress', href: '/progress', excerpt: 'Pads, quizzes, reading list in this browser' },
 ];
 
 const TOPIC_CHIPS = ['Snowflake', 'dbt', 'Airflow', 'Spark', 'SQL', 'Kafka'];

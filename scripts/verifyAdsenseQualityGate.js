@@ -33,6 +33,7 @@ const mustNoindex = [
   '/tools/cron-expression-builder',
   '/tools/sql-formatter',
   '/tools/unix-timestamp-converter',
+  '/progress',
 ];
 
 const mustIndex = [
@@ -46,6 +47,9 @@ const mustIndex = [
   '/cheatsheets',
   '/tools',
   '/certification',
+  '/start-here',
+  '/coding',
+  '/roadmaps',
   ...ADSENSE_REVIEW_CHEATSHEETS.map((slug) => `/cheatsheets/${slug}`),
   ...ADSENSE_REVIEW_TOOLS.map((slug) => `/tools/${slug}`),
 ];

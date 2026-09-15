@@ -11,7 +11,9 @@ export function looksLikeSql(text, className = '') {
   return SQL_START.test(snippet);
 }
 
-export function playgroundSqlHref(sql, limit = 4000) {
+export function playgroundSqlHref(sql, limit = 4000, problem) {
   const clipped = String(sql || '').slice(0, limit);
-  return `/tools/sql-playground?sql=${encodeURIComponent(clipped)}`;
+  const href = `/tools/sql-playground?sql=${encodeURIComponent(clipped)}`;
+  if (!problem) return href;
+  return `${href}&problem=${encodeURIComponent(problem)}`;
 }

@@ -526,7 +526,7 @@ function normalizeArticleLinks(htmlContent, postSlugs) {
         
         // If the slug does not exist on disk, it's a broken link.
         // Strip the anchor tags and leave the inner text so we don't serve 404s.
-        const essentialPaths = ['/about', '/contact', '/privacy-policy', '/terms-of-service', '/disclaimer', '/editorial-standards', '/contribute', '/newsletter', '/certification', '/rss.xml', '/articles', '/', '/news', '/practice', '/advertise', '/contributors', '/tag', '/tools', '/interview-prep', '/cheatsheets', '/glossary', '/compare'];
+        const essentialPaths = ['/about', '/contact', '/privacy-policy', '/terms-of-service', '/disclaimer', '/editorial-standards', '/contribute', '/newsletter', '/certification', '/rss.xml', '/articles', '/', '/news', '/practice', '/advertise', '/contributors', '/tag', '/tools', '/interview-prep', '/cheatsheets', '/glossary', '/compare', '/start-here', '/coding', '/roadmaps', '/progress'];
         const cleanPath = relativePath.trim().replace(/\/$/, '');
         const isEssential = essentialPaths.includes(cleanPath);
         
@@ -2046,6 +2046,53 @@ const ESSENTIAL_PAGES = [
 
       <h2>Related reading</h2>
       <p>Browse the full <a href="/cheatsheets/category/interview">interview cheat sheets category</a>, the <a href="/cheatsheets">complete cheat sheet library</a>, and the <a href="/articles">articles archive</a> for targeted prep.</p>
+    `
+  },
+  {
+    path: '/start-here',
+    title: 'Start here — free data engineering plan',
+    description: 'Pick a warehouse, transform, interview, or certification track. SQL coding, practice tests, and cheat sheets stay in the browser. No signup.',
+    content: `
+      <h1>Start here — four tracks, nothing behind a login</h1>
+      <p>This is the DataEngineer Hub plan: production tutorials, in-browser SQL pads, a 14-day interview loop, and timed cert quizzes. Progress is stored on this device.</p>
+      <ul>
+        <li><a href="/tools?stack=warehouse">Warehouse &amp; cost tools</a></li>
+        <li><a href="/coding">SQL coding pads</a></li>
+        <li><a href="/interview-prep">Interview prep hub</a></li>
+        <li><a href="/practice">Certification practice tests</a></li>
+        <li><a href="/roadmaps">Role roadmaps</a></li>
+        <li><a href="/progress">Progress on this device</a></li>
+      </ul>
+    `
+  },
+  {
+    path: '/coding',
+    title: 'SQL coding practice — DuckDB in the browser',
+    description: 'Original SQL pads on employees, orders, and web_events. Run them in the DuckDB playground. Progress stays on this device.',
+    content: `
+      <h1>SQL coding practice</h1>
+      <p>Eight original pads that run in the <a href="/tools/sql-playground">SQL playground</a>. Open a prompt, run DuckDB in this tab, and mark it solved. Progress is localStorage only.</p>
+      <p>Start at <a href="/coding">the coding hub</a>. Cert quizzes live separately at <a href="/practice">/practice</a>.</p>
+    `
+  },
+  {
+    path: '/roadmaps',
+    title: 'Data engineering roadmaps — Snowflake, dbt, Databricks',
+    description: 'Four practical roadmaps for warehouse, analytics engineering, lakehouse, and interview loops.',
+    content: `
+      <h1>Data engineering roadmaps</h1>
+      <p>Snowflake data engineer, analytics engineer (dbt + Airflow), Databricks lakehouse, and the interview/cert loop. Each step is a live tool, cheat sheet, or quiz on this site.</p>
+      <p>See the maps at <a href="/roadmaps">/roadmaps</a>.</p>
+    `
+  },
+  {
+    path: '/progress',
+    noindex: true,
+    title: 'Your progress on this device',
+    description: 'SQL pads, certification attempts, and reading list stored in this browser only.',
+    content: `
+      <h1>Progress on this device</h1>
+      <p>Solved SQL pads, quiz attempts, and the reading list stay in this browser. Nothing is uploaded. Open <a href="/progress">/progress</a> after you run a pad or a practice test.</p>
     `
   },
   {

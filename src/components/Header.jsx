@@ -6,17 +6,21 @@ import {
   BookOpen,
   ChevronDown,
   Coffee,
+  Compass,
+  Code2,
   FileText,
   GitCompare,
   GraduationCap,
   Home,
   Info,
   Library,
+  Map,
   Megaphone,
   Menu,
   PenLine,
   Search,
   Target,
+  Activity,
   Wrench,
   X,
 } from 'lucide-react';
@@ -37,24 +41,20 @@ const MAIN_LINKS = [
 ];
 
 const LEARN_LINKS = [
+  { name: 'Start here', path: '/start-here', icon: Compass },
+  { name: 'SQL coding', path: '/coding', icon: Code2 },
   { name: 'Interview Prep', path: '/interview-prep', icon: GraduationCap },
   { name: 'Practice Tests', path: '/practice', icon: Target },
   { name: 'Cheat Sheets', path: '/cheatsheets', icon: FileText },
+  { name: 'Roadmaps', path: '/roadmaps', icon: Map },
+  { name: 'Progress', path: '/progress', icon: Activity },
   { name: 'Glossary', path: '/glossary', icon: Library },
   { name: 'Compare', path: '/compare', icon: GitCompare },
   { name: 'Write for us', path: '/contribute', icon: PenLine },
   { name: 'Reading list', path: '/reading-list', icon: Bookmark },
 ];
 
-const LEARN_PATHS = [
-  '/interview-prep',
-  '/practice',
-  '/cheatsheets',
-  '/glossary',
-  '/compare',
-  '/contribute',
-  '/reading-list',
-];
+const LEARN_PATHS = LEARN_LINKS.map((item) => item.path);
 
 const pillClass = (active) =>
   `inline-flex items-center gap-1.5 min-h-10 px-3 rounded-lg text-sm font-medium transition-colors ${
@@ -158,6 +158,8 @@ const Header = ({ topOffset = 0 }) => {
   const prefetchLearn = () => {
     import('@/pages/PracticeHubPage');
     import('@/pages/InterviewPrepHubPage');
+    import('@/pages/CodingHubPage');
+    import('@/pages/StartHerePage');
   };
 
   return (

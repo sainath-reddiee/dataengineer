@@ -42,6 +42,10 @@ const requiredRoutes = [
   '/compare',
   '/contribute',
   '/reading-list',
+  '/start-here',
+  '/coding',
+  '/roadmaps',
+  '/progress',
 ];
 
 for (const route of requiredRoutes) {

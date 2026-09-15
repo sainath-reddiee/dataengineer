@@ -5,41 +5,14 @@ import {
   Target,
   Workflow,
 } from 'lucide-react';
+import { START_HERE_PATHS } from '@/data/startHerePaths';
 
-const PATHS = [
-  {
-    id: 'warehouse',
-    title: 'Warehouse & cost',
-    blurb: 'Size Snowflake, compare Databricks and BigQuery, then read the production notes.',
-    href: '/tools?stack=warehouse',
-    cta: 'Open warehouse tools',
-    icon: Calculator,
-  },
-  {
-    id: 'transform',
-    title: 'Transform & schedule',
-    blurb: 'dbt schema.yml, Airflow cron, and the sheets you actually open in a review.',
-    href: '/tools?stack=transform',
-    cta: 'Open transform tools',
-    icon: Workflow,
-  },
-  {
-    id: 'interview',
-    title: 'Interview loop',
-    blurb: '14-day plan, SQL windows, system design — original questions, not a leaked dump.',
-    href: '/interview-prep',
-    cta: 'Start the plan',
-    icon: GraduationCap,
-  },
-  {
-    id: 'practice',
-    title: 'Certification drills',
-    blurb: 'SnowPro, Databricks DE, AWS DEA — timed quizzes in this browser, no signup.',
-    href: '/practice',
-    cta: 'Take a practice test',
-    icon: Target,
-  },
-];
+const ICONS = {
+  Calculator,
+  GraduationCap,
+  Target,
+  Workflow,
+};
 
 const StartHerePaths = () => (
   <section aria-labelledby="start-here-heading">
@@ -56,8 +29,8 @@ const StartHerePaths = () => (
       </p>
     </div>
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-      {PATHS.map((path) => {
-        const Icon = path.icon;
+      {START_HERE_PATHS.map((path) => {
+        const Icon = ICONS[path.icon] || Calculator;
         return (
           <Link
             key={path.id}

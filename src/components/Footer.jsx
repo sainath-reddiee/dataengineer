@@ -22,6 +22,10 @@ const Footer = () => {
       { name: 'Certification prep', href: '/certification' },
       { name: 'Interview Prep', href: '/interview-prep' },
       { name: 'Practice tests', href: '/practice' },
+      { name: 'SQL coding', href: '/coding' },
+      { name: 'Start here', href: '/start-here' },
+      { name: 'Roadmaps', href: '/roadmaps' },
+      { name: 'Progress', href: '/progress' },
       ...(!ADSENSE_REVIEW_MODE ? [
         { name: 'AWS Tutorials', href: '/category/aws' },
         { name: 'Snowflake Guides', href: '/category/snowflake' },

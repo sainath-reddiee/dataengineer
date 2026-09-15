@@ -74,7 +74,7 @@ export function isAdSenseNoindexPath(pathname) {
   if (path === '/contributors' || path.startsWith('/contributors/')) return true;
   if (path === '/news' || path.startsWith('/news/')) return true;
   if (path === '/newsletter' || path.startsWith('/newsletter/')) return true;
-  if (path === '/reading-list') return true;
+  if (path === '/progress' || path.startsWith('/progress/')) return true;
 
   if (path.startsWith('/cheatsheets/')) {
     const slug = path.slice('/cheatsheets/'.length);

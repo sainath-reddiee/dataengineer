@@ -79,6 +79,9 @@ const STATIC_PAGES = [
   { url: '/tools/sql-playground',   changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
   { url: '/tools/json-parquet-avro-converter', changefreq: 'monthly', priority: 0.8, lastmod: 'today' },
   { url: '/interview-prep', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
+  { url: '/start-here', changefreq: 'weekly', priority: 0.85, lastmod: 'today' },
+  { url: '/coding', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
+  { url: '/roadmaps', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
   // Cheat-sheet category archives are listing pages. Omit them from the
   // AdSense-facing sitemap while the quality gate is on.
   ...(!ADSENSE_REVIEW_MODE ? [

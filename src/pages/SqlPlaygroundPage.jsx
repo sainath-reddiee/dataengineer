@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
 import { getDb as getSharedDb, onDuckDbProgress, resetDb } from '@/lib/duckdb';
+import { codingProblemBySlug, columnsMatchProblem } from '@/data/codingProblems';
+import { useLearnProgress } from '@/hooks/useLearnProgress';
 
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
 
@@ -235,7 +237,9 @@ function sqlFromSearch(searchParams) {
 
 export default function SqlPlaygroundPage() {
   const [searchParams] = useSearchParams();
-  const [sql, setSql] = useState(() => sqlFromSearch(searchParams));
+  const problem = codingProblemBySlug(searchParams.get('problem'));
+  const { markSolved, recordRun, isSolved } = useLearnProgress();
+  const [sql, setSql] = useState(() => problem?.starterSql || sqlFromSearch(searchParams));
   const [pane, setPane] = useState('editor');
   const [results, setResults] = useState(null);
   const [columns, setColumns] = useState([]);
@@ -255,6 +259,8 @@ export default function SqlPlaygroundPage() {
   useEffect(() => {
     const raw = searchParams.get('sql');
     if (raw && raw.length > 0 && raw.length < 20000) setSql(raw);
+    const next = codingProblemBySlug(searchParams.get('problem'));
+    if (next?.starterSql && !raw) setSql(next.starterSql);
   }, [searchParams]);
 
   useEffect(() => onDuckDbProgress((update) => {
@@ -315,6 +321,7 @@ export default function SqlPlaygroundPage() {
       setResults(rows);
       setHistory(prev => [{ sql: sql.trim(), rowCount: rows.length, time: elapsed, ts: Date.now() }, ...prev].slice(0, 20));
       setPane('results');
+      recordRun();
       await conn.close();
     } catch (err) {
       setExecTime(performance.now() - t0);
@@ -322,7 +329,7 @@ export default function SqlPlaygroundPage() {
     } finally {
       setRunning(false);
     }
-  }, [sql]);
+  }, [sql, recordRun]);
 
   const handleKeyDown = useCallback((e) => {
     // Ctrl/Cmd + Enter to run
@@ -435,9 +442,38 @@ export default function SqlPlaygroundPage() {
             Write and run SQL instantly — powered by{' '}
             <span className="text-emerald-400 font-medium">DuckDB-WASM</span>.
             Three sample tables preloaded. Practice window functions, CTEs, QUALIFY,
-            aggregations, and joins. No server, no signup, no tracking.
+            aggregations, and joins. No server, no signup. Solved pads are stored on this device.
           </p>
         </div>
+
+        {problem && (
+          <div className="rounded-xl border border-blue-400/30 bg-slate-900/70 p-4">
+            <p className="text-xs uppercase tracking-wide text-blue-300/80">Coding pad</p>
+            <h2 className="mt-1 text-lg font-semibold text-white">{problem.title}</h2>
+            <p className="mt-2 text-sm text-slate-300">{problem.prompt}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setSql(problem.starterSql)}
+                className="rounded-lg border border-white/15 px-3 py-1.5 text-xs font-semibold text-slate-200"
+              >
+                Load starter SQL
+              </button>
+              {results && columnsMatchProblem(columns, problem) && !isSolved(problem.slug) && (
+                <button
+                  type="button"
+                  onClick={() => markSolved(problem.slug)}
+                  className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white"
+                >
+                  Mark solved
+                </button>
+              )}
+              {isSolved(problem.slug) && (
+                <span className="self-center text-xs font-semibold text-blue-200">Saved on this device</span>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* DB status */}
         {!dbReady && !dbError && (
