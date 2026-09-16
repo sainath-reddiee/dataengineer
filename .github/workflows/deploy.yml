@@ -94,7 +94,36 @@ jobs:
         id: changes
         run: |
           echo "trigger=${{ github.event_name }}" >> $GITHUB_OUTPUT
-          
+
+          # ── WordPress auto-deploy: log which article triggered this run ──
+          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            WP_SLUG="${{ github.event.client_payload.slug }}"
+            WP_TITLE="${{ github.event.client_payload.title }}"
+            WP_ACTION="${{ github.event.client_payload.action }}"
+            WP_POST_ID="${{ github.event.client_payload.post_id }}"
+            echo "wp_slug=$WP_SLUG"     >> $GITHUB_OUTPUT
+            echo "wp_title=$WP_TITLE"   >> $GITHUB_OUTPUT
+            echo "wp_action=$WP_ACTION" >> $GITHUB_OUTPUT
+            echo ""
+            echo "📝 WordPress triggered this deploy:"
+            echo "   Post ID : $WP_POST_ID"
+            echo "   Slug    : $WP_SLUG"
+            echo "   Title   : $WP_TITLE"
+            echo "   Action  : $WP_ACTION"
+            echo "   URL     : https://dataengineerhub.blog/articles/$WP_SLUG"
+            echo ""
+            # Surface in the Actions job summary
+            echo "### 📝 WordPress Auto-Deploy" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Action | \`$WP_ACTION\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| Slug | \`$WP_SLUG\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| Title | $WP_TITLE |" >> $GITHUB_STEP_SUMMARY
+            echo "| Live URL | https://dataengineerhub.blog/articles/$WP_SLUG |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
           # Detect code changes
           if git diff --name-only HEAD^ HEAD | grep -qE '^(src/|scripts/|public/|index.html|vite.config.js|tailwind.config.js|package)'; then
             echo "code_changed=true" >> $GITHUB_OUTPUT

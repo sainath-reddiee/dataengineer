@@ -3766,6 +3766,317 @@ function add_flashcards_to_api() {
 }
 
 // ============================================================================
+// GITHUB AUTO-DEPLOY WEBHOOK
+// Fires a repository_dispatch event to GitHub Actions whenever a post is
+// published or updated, so the static site rebuilds automatically without
+// needing a manual workflow run.
+//
+// SETUP (one-time):
+//  1. Create a GitHub Fine-Grained PAT with "Actions: Write" scope.
+//  2. In WordPress: Settings → GitHub Deploy → paste the PAT → Save.
+//  3. That's it — every publish/update will now trigger the pipeline.
+// ============================================================================
+
+/**
+ * Core dispatcher — sends a repository_dispatch event to GitHub Actions.
+ *
+ * @param int    $post_id  The WP post ID.
+ * @param string $slug     The post slug (becomes the article URL path).
+ * @param string $title    The post title (for the Actions summary).
+ * @param string $action   'published' or 'updated'.
+ * @return bool True on success, false on failure.
+ */
+function dehub_trigger_github_dispatch( int $post_id, string $slug, string $title, string $action ): bool {
+
+    // ── Retrieve config ────────────────────────────────────────────────────
+    $token = get_option( 'dehub_gh_pat', '' );
+    $repo  = get_option( 'dehub_gh_repo', 'sainath-reddiee/dataengineer' ); // owner/repo
+
+    if ( empty( $token ) || empty( $repo ) ) {
+        error_log( '[DEHub] GitHub dispatch skipped: PAT or repo not configured. Visit Settings → GitHub Deploy.' );
+        return false;
+    }
+
+    // ── Deduplication guard ────────────────────────────────────────────────
+    // WordPress fires save_post / transition_post_status multiple times
+    // per publish action (autosave, revision, actual save). A 90-second
+    // transient prevents duplicate pipeline runs for the same post.
+    $dedup_key = 'dehub_gh_dispatch_' . $post_id;
+    if ( get_transient( $dedup_key ) ) {
+        error_log( "[DEHub] Dispatch skipped (dedup active) for post {$post_id} ({$slug})." );
+        return true; // Already fired recently — treat as success.
+    }
+    set_transient( $dedup_key, 1, 90 ); // 90-second cooldown window.
+
+    // ── Build payload ──────────────────────────────────────────────────────
+    $payload = [
+        'event_type'     => 'post-published',
+        'client_payload' => [
+            'post_id'  => $post_id,
+            'slug'     => $slug,
+            'title'    => $title,
+            'action'   => $action,
+            'site_url' => 'https://dataengineerhub.blog/articles/' . $slug,
+            'fired_at' => gmdate( 'c' ),
+        ],
+    ];
+
+    // ── Send to GitHub API ─────────────────────────────────────────────────
+    $api_url  = "https://api.github.com/repos/{$repo}/dispatches";
+    $response = wp_remote_post( $api_url, [
+        'timeout'     => 15,
+        'redirection' => 0,
+        'headers'     => [
+            'Accept'               => 'application/vnd.github+json',
+            'Authorization'        => 'Bearer ' . $token,
+            'X-GitHub-Api-Version' => '2022-11-28',
+            'Content-Type'         => 'application/json',
+            'User-Agent'           => 'DataEngineerHub-WP/1.0',
+        ],
+        'body'        => wp_json_encode( $payload ),
+    ] );
+
+    // ── Handle response ────────────────────────────────────────────────────
+    if ( is_wp_error( $response ) ) {
+        $message = $response->get_error_message();
+        error_log( "[DEHub] GitHub dispatch HTTP error for post {$post_id}: {$message}" );
+        set_transient( 'dehub_gh_dispatch_last_error', $message, 300 );
+        return false;
+    }
+
+    $http_code = wp_remote_retrieve_response_code( $response );
+
+    // GitHub returns 204 No Content on success.
+    if ( 204 === (int) $http_code ) {
+        error_log( "[DEHub] ✅ GitHub dispatch sent for post {$post_id} ({$slug}) — action: {$action}." );
+        set_transient( 'dehub_gh_dispatch_last_success', [
+            'slug'  => $slug,
+            'time'  => gmdate( 'c' ),
+        ], 3600 );
+        delete_transient( 'dehub_gh_dispatch_last_error' );
+        return true;
+    }
+
+    // Non-204 → log the body for debugging.
+    $body = wp_remote_retrieve_body( $response );
+    error_log( "[DEHub] GitHub dispatch failed for post {$post_id}: HTTP {$http_code} — {$body}" );
+    set_transient( 'dehub_gh_dispatch_last_error', "HTTP {$http_code}: {$body}", 300 );
+    return false;
+}
+
+/**
+ * Hook: fires when a post's status transitions TO 'publish'.
+ * Covers both brand-new publishes and updates to existing published posts.
+ */
+add_action( 'transition_post_status', 'dehub_on_post_status_transition', 10, 3 );
+function dehub_on_post_status_transition( string $new_status, string $old_status, WP_Post $post ): void {
+
+    // Only trigger for the 'post' post type.
+    if ( 'post' !== $post->post_type ) {
+        return;
+    }
+
+    // Only trigger when the new status is 'publish'.
+    if ( 'publish' !== $new_status ) {
+        return;
+    }
+
+    // Skip auto-drafts, revisions, autosaves.
+    if ( wp_is_post_revision( $post->ID ) || wp_is_post_autosave( $post->ID ) ) {
+        return;
+    }
+
+    // Determine whether this is a first publish or an update.
+    $action = ( 'publish' === $old_status ) ? 'updated' : 'published';
+
+    $success = dehub_trigger_github_dispatch(
+        $post->ID,
+        $post->post_name,
+        wp_strip_all_tags( $post->post_title ),
+        $action
+    );
+
+    // Store result so the admin notice step can read it.
+    if ( $success ) {
+        set_transient( 'dehub_gh_dispatch_notice_' . get_current_user_id(), [
+            'type'  => 'success',
+            'slug'  => $post->post_name,
+            'action' => $action,
+        ], 60 );
+    } else {
+        set_transient( 'dehub_gh_dispatch_notice_' . get_current_user_id(), [
+            'type' => 'error',
+            'slug' => $post->post_name,
+        ], 60 );
+    }
+}
+
+/**
+ * Admin notice — shown once after publish/update to confirm the deploy fired.
+ */
+add_action( 'admin_notices', 'dehub_gh_dispatch_admin_notice' );
+function dehub_gh_dispatch_admin_notice(): void {
+    if ( ! current_user_can( 'publish_posts' ) ) {
+        return;
+    }
+
+    $notice_key = 'dehub_gh_dispatch_notice_' . get_current_user_id();
+    $notice     = get_transient( $notice_key );
+    if ( ! $notice ) {
+        return;
+    }
+    delete_transient( $notice_key ); // Show only once.
+
+    $slug = esc_html( $notice['slug'] );
+    $url  = esc_url( 'https://dataengineerhub.blog/articles/' . $notice['slug'] );
+
+    if ( 'success' === $notice['type'] ) {
+        $verb = ( 'updated' === $notice['action'] ) ? 'update' : 'publish';
+        echo '<div class="notice notice-success is-dismissible">'
+            . '<p>🚀 <strong>GitHub deploy triggered!</strong> '
+            . "Your article <a href=\"{$url}\" target=\"_blank\"><em>{$slug}</em></a> will be live in ~3 minutes. "
+            . '<a href="https://github.com/' . esc_attr( get_option( 'dehub_gh_repo', 'sainath-reddiee/dataengineer' ) ) . '/actions" target="_blank">Watch the build →</a>'
+            . '</p></div>';
+    } else {
+        echo '<div class="notice notice-warning is-dismissible">'
+            . '<p>⚠️ <strong>GitHub deploy could not be triggered</strong> for <em>' . $slug . '</em>. '
+            . 'Check Settings → <a href="' . esc_url( admin_url( 'options-general.php?page=dehub-github-deploy' ) ) . '">GitHub Deploy</a> or run the workflow manually on GitHub.</p>'
+            . '</div>';
+    }
+}
+
+// ── Settings page: Settings → GitHub Deploy ────────────────────────────────
+
+add_action( 'admin_menu', 'dehub_gh_deploy_settings_menu' );
+function dehub_gh_deploy_settings_menu(): void {
+    add_options_page(
+        'GitHub Auto-Deploy',
+        'GitHub Deploy',
+        'manage_options',
+        'dehub-github-deploy',
+        'dehub_gh_deploy_settings_page'
+    );
+}
+
+add_action( 'admin_init', 'dehub_gh_deploy_settings_init' );
+function dehub_gh_deploy_settings_init(): void {
+    register_setting( 'dehub_gh_deploy_group', 'dehub_gh_pat', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+        'default'           => '',
+    ] );
+    register_setting( 'dehub_gh_deploy_group', 'dehub_gh_repo', [
+        'type'              => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+        'default'           => 'sainath-reddiee/dataengineer',
+    ] );
+}
+
+function dehub_gh_deploy_settings_page(): void {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+
+    // Handle manual "Test dispatch" button.
+    $test_result = '';
+    if ( isset( $_POST['dehub_test_dispatch'] ) && check_admin_referer( 'dehub_test_dispatch' ) ) {
+        $ok = dehub_trigger_github_dispatch( 0, 'test-dispatch', 'Test Dispatch from WP Admin', 'published' );
+        $test_result = $ok
+            ? '<div class="notice notice-success inline"><p>✅ Test dispatch sent successfully! Check GitHub Actions.</p></div>'
+            : '<div class="notice notice-error inline"><p>❌ Test dispatch failed. Check your PAT and repo below.</p></div>';
+    }
+
+    $last_success = get_transient( 'dehub_gh_dispatch_last_success' );
+    $last_error   = get_transient( 'dehub_gh_dispatch_last_error' );
+    ?>
+    <div class="wrap">
+        <h1>🚀 GitHub Auto-Deploy Settings</h1>
+        <p>When you publish or update a post, WordPress will automatically trigger your GitHub Actions pipeline
+        (<code>deploy.yml</code>) via the <code>repository_dispatch</code> event. Articles go live in ~3 minutes.</p>
+
+        <?php echo $test_result; ?>
+
+        <?php if ( $last_success ) : ?>
+            <div class="notice notice-success inline">
+                <p>✅ Last successful dispatch: <strong><?php echo esc_html( $last_success['slug'] ); ?></strong>
+                at <?php echo esc_html( $last_success['time'] ); ?></p>
+            </div>
+        <?php endif; ?>
+
+        <?php if ( $last_error ) : ?>
+            <div class="notice notice-warning inline">
+                <p>⚠️ Last dispatch error: <code><?php echo esc_html( $last_error ); ?></code></p>
+            </div>
+        <?php endif; ?>
+
+        <form method="post" action="options.php">
+            <?php settings_fields( 'dehub_gh_deploy_group' ); ?>
+            <?php do_settings_sections( 'dehub_gh_deploy_group' ); ?>
+
+            <table class="form-table" role="presentation">
+                <tr>
+                    <th scope="row"><label for="dehub_gh_pat">GitHub PAT (Fine-Grained)</label></th>
+                    <td>
+                        <?php $pat = get_option( 'dehub_gh_pat', '' ); ?>
+                        <input
+                            type="password"
+                            id="dehub_gh_pat"
+                            name="dehub_gh_pat"
+                            value="<?php echo esc_attr( $pat ); ?>"
+                            class="regular-text"
+                            autocomplete="new-password"
+                            placeholder="github_pat_…"
+                        />
+                        <p class="description">
+                            Create a <a href="https://github.com/settings/tokens?type=beta" target="_blank">Fine-Grained PAT</a>
+                            with <strong>Actions → Write</strong> permission on your repo. No other scopes needed.
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="dehub_gh_repo">GitHub Repository</label></th>
+                    <td>
+                        <input
+                            type="text"
+                            id="dehub_gh_repo"
+                            name="dehub_gh_repo"
+                            value="<?php echo esc_attr( get_option( 'dehub_gh_repo', 'sainath-reddiee/dataengineer' ) ); ?>"
+                            class="regular-text"
+                            placeholder="owner/repo"
+                        />
+                        <p class="description">Format: <code>owner/repo</code>. Already pre-filled with your repo.</p>
+                    </td>
+                </tr>
+            </table>
+
+            <?php submit_button( 'Save Settings' ); ?>
+        </form>
+
+        <hr />
+        <h2>🧪 Test the Connection</h2>
+        <p>Sends a test <code>post-published</code> dispatch event to GitHub (slug: <code>test-dispatch</code>).
+        Your deploy pipeline will run but won't find a WP post with that slug — it's harmless.</p>
+        <form method="post">
+            <?php wp_nonce_field( 'dehub_test_dispatch' ); ?>
+            <input type="hidden" name="dehub_test_dispatch" value="1" />
+            <?php submit_button( '🚀 Send Test Dispatch', 'secondary' ); ?>
+        </form>
+
+        <hr />
+        <h2>ℹ️ How To Set Up</h2>
+        <ol>
+            <li>Go to <a href="https://github.com/settings/tokens?type=beta" target="_blank">GitHub → Settings → Fine-grained tokens</a></li>
+            <li>Click <strong>Generate new token</strong></li>
+            <li>Set <em>Repository access</em> → <strong>Only select repositories</strong> → pick your blog repo</li>
+            <li>Under <em>Permissions → Repository → Actions</em> → set to <strong>Read and Write</strong></li>
+            <li>Copy the token and paste it into the <strong>GitHub PAT</strong> field above</li>
+            <li>Click <strong>Save Settings</strong>, then <strong>Send Test Dispatch</strong> to confirm it works</li>
+        </ol>
+    </div>
+    <?php
+}
+
+// ============================================================================
 // END OF FILE - ALL CODE COMPLETE AND VERIFIED
 // ============================================================================
 ?>
