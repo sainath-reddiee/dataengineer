@@ -17,7 +17,7 @@ const GiscusComments = () => {
 
   const repo = import.meta.env.VITE_GISCUS_REPO;
   const repoId = import.meta.env.VITE_GISCUS_REPO_ID;
-  const category = import.meta.env.VITE_GISCUS_CATEGORY || 'General';
+  const category = (import.meta.env.VITE_GISCUS_CATEGORY || 'General').trim();
   const categoryId = import.meta.env.VITE_GISCUS_CATEGORY_ID;
 
   useEffect(() => {
