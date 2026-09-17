@@ -11,9 +11,77 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-09-06",
-  "totalArticles": 106,
+  "lastUpdated": "2026-09-17",
+  "totalArticles": 109,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/ai-data-pipelines-cost-control",
+      "title": "Building Data Pipelines That Feed AI Features Without Breaking the Bill",
+      "summary": "When the consumer at the end of a pipeline is a language model rather than a dashboard, the expensive step moves from the transform to the last hop, and every…",
+      "keyFacts": [
+        "When the consumer at the end of a pipeline is a language model rather than a dashboard, the expensive step moves from the transform to the last hop, and every row you push through it costs money",
+        "The transform is the heavy step, the output is an aggregate, and reprocessing a day of data is cheap because warehouse compute is cheap per row",
+        "The practical consequence: design the pipeline so the model sees as few rows as possible, each as small as possible, and never the same unchanged row twice"
+      ],
+      "entities": [
+        "sql",
+        "bigquery",
+        "aws",
+        "redshift",
+        "spark"
+      ],
+      "questionAnswered": "1. Can the Output Be Computed Before Anyone Asks for It?",
+      "lastUpdated": "2026-09-17",
+      "published": "2026-09-17",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Data Engineer",
+      "wordCount": 2165
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-cortex-token-usage-monitoring",
+      "title": "Snowflake Cortex AI Token Usage Monitoring: The Complete Guide",
+      "summary": "Somewhere on your team, an AI_CLASSIFY job is running on a table larger than anyone realised. Or a Cortex Agent is looping through a multi-step workflow that seemed cheap in…",
+      "keyFacts": [
+        "That means three ACCOUNT_USAGE views, three automation patterns, and a clear understanding of what each one covers and what it misses",
+        "The Three Views and What Each One Covers The first thing to get clear is the view taxonomy",
+        "The critical prerequisite, which the docs call out explicitly: revoke SNOWFLAKE"
+      ],
+      "entities": [
+        "sql",
+        "snowflake"
+      ],
+      "questionAnswered": "What does the Snowflake Cortex AI Token Usage Monitoring: The Complete Guide cover?",
+      "lastUpdated": "2026-09-16",
+      "published": "2026-09-16",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2560
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-mcp-server-guide",
+      "title": "Using MCP Servers with Snowflake: A Practitioner’s Guide",
+      "summary": "Your data team ships a Cortex-powered analytics agent. Works beautifully. Then the platform team wants to plug in Cursor. The ML team asks about GPT-4o. A product manager hears about…",
+      "keyFacts": [
+        "The Snowflake-managed MCP server is the solution to that maintenance sprawl",
+        "What the MCP Server Actually Is Model Context Protocol is an open standard for how AI clients discover and invoke tools on external systems",
+        "This guide covers the architecture, the full setup sequence, the tool types you can expose, and — more importantly — the gotchas that aren’t in the quickstart"
+      ],
+      "entities": [
+        "snowflake",
+        "sql",
+        "python",
+        "dbt"
+      ],
+      "questionAnswered": "What does the Using MCP Servers with Snowflake: A Practitioner’s Guide cover?",
+      "lastUpdated": "2026-09-15",
+      "published": "2026-09-15",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2307
+    },
     {
       "url": "https://dataengineerhub.blog/articles/from-etl-pipelines-to-reusable-data-products",
       "title": "From ETL Pipelines to Data Products: Designing Reusable Data Infrastructure for Enterprise AI",

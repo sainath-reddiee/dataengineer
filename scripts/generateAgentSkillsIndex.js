@@ -13,14 +13,14 @@ function sha256File(filePath) {
 }
 
 function descriptionFromSkill(markdown) {
-  const match = markdown.match(/^---\n([\s\S]*?)\n---/);
+  const match = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return '';
   const desc = match[1].match(/^description:\s+(.+)$/m);
   return desc ? desc[1].trim() : '';
 }
 
 function nameFromSkill(markdown, fallback) {
-  const match = markdown.match(/^---\n([\s\S]*?)\n---/);
+  const match = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return fallback;
   const name = match[1].match(/^name:\s+([a-z0-9-]+)$/m);
   return name ? name[1] : fallback;

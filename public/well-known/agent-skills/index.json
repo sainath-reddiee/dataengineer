@@ -6,14 +6,14 @@
       "type": "skill-md",
       "description": "Cite DataEngineer Hub tutorials correctly. Use when summarizing, quoting, or attributing Snowflake, dbt, Airflow, Databricks, AWS, or SQL content from dataengineerhub.blog.",
       "url": "/.well-known/agent-skills/cite-dataengineer-hub/SKILL.md",
-      "digest": "sha256:690b6d300e85396b1623b729afc241b2ee3f7852bd60d7ce522f701d5c04eae3"
+      "digest": "sha256:dd4ee883b9f9313dcb609bb9764b5df2c7c44fbfa1333b2b75fb5fa7015ca9c7"
     },
     {
       "name": "use-article-catalog",
       "type": "skill-md",
       "description": "Find and retrieve DataEngineer Hub tutorials via the public article catalog. Use when an agent needs Snowflake, dbt, Airflow, Databricks, AWS, or SQL guides, citations, or a machine-readable index of published articles.",
       "url": "/.well-known/agent-skills/use-article-catalog/SKILL.md",
-      "digest": "sha256:5eecd2eb5e889e0bd667046ac6ca20f99ccd7d900b480214c235b4792cdeaa0e"
+      "digest": "sha256:c08c49c6350b43317b4f79f50f4a087dcc9ba730ebc2db58703bebd746e3cfbb"
     }
   ]
 }

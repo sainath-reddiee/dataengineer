@@ -1,4 +1,4 @@
-// scripts/generateStaticPagesIncremental.js
+﻿// scripts/generateStaticPagesIncremental.js
 // FIXED VERSION - Generates FULL CONTENT for SEO/AdSense with IMAGES
 import fs from 'fs';
 import path from 'path';
@@ -2430,7 +2430,8 @@ async function fetchFromWP(endpoint, fields = '') {
   const TIMEOUT = 15000; // 15 seconds
 
   while (page <= 100) {
-    const url = `${WORDPRESS_API_URL}${endpoint}?per_page=100&page=${page}${fields ? `&_fields=${fields}` : ''}`;
+    const sep = endpoint.includes('?') ? '&' : '?';
+    const url = `${WORDPRESS_API_URL}${endpoint}${sep}per_page=100&page=${page}${fields ? `&_fields=${fields}` : ``}`;
 
     let attempt = 0;
     let success = false;
@@ -2797,7 +2798,7 @@ function sortCategoriesByPriority(categories) {
 // ============================================================================
 
 function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
-  const { id: postId, title: rawTitle, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, featuredImage, categoryNames = [], tagNames = [] } = pageData;
+  const { id: postId, title: rawTitle, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, featuredImage, categoryNames = [], tagNames = [], authorName = 'Sainath Reddy', authorData = null } = pageData;
   const { jsFile, cssFile, modulePreloadHtml = '' } = bundleFiles;
 
   // 🛡️ Sanitize user-supplied strings from WordPress
@@ -2916,6 +2917,17 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const heroHtml = featuredImage
     ? `<div class="article-hero"><img src="${escapeHtml(featuredImage)}" alt="${title}" width="1600" height="900" fetchpriority="high" decoding="async" /></div>`
     : '';
+  // Resolve author data: prefer passed-in authorData, fallback to Sainath defaults
+  const resolvedAuthorName = authorName || 'Sainath Reddy';
+  const resolvedAuthorData = authorData || {
+    name: resolvedAuthorName,
+    bio: '',
+    avatarUrl: '',
+    website: 'https://dataengineerhub.blog/about',
+    slug: '',
+    role: resolvedAuthorName === 'Sainath Reddy' ? 'Founder & Owner' : 'Guest Author',
+  };
+
   const bootstrapJson = escapeJsonForScript({
     id: postId || slug,
     slug,
@@ -2930,15 +2942,8 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     date: effectivePublished,
     modified: effectiveModified,
     image: featuredImage || ogImageUrl,
-    author: 'Sainath Reddy',
-    authorData: {
-      name: 'Sainath Reddy',
-      bio: '',
-      avatarUrl: '',
-      website: 'https://dataengineerhub.blog/about',
-      slug: '',
-      role: 'Founder & Owner',
-    },
+    author: resolvedAuthorName,
+    authorData: resolvedAuthorData,
     keyTakeaways: elevateTakeaways ? takeawaysAnalysis.items : [],
   });
 
@@ -6723,7 +6728,10 @@ async function buildIncremental(options = {}) {
 
   try {
     // 🔥 CRITICAL: Fetch with _embed to get full content + categories + tags for mapping
-    const posts = await fetchFromWP('/posts', 'id,slug,title,excerpt,content,date,modified,categories,tags,jetpack_featured_media_url');
+    // We do NOT use _fields restriction here because it strips custom REST filter fields
+    // like guest_author_details (injected by our rest_prepare_post PHP hook).
+    // Using _embed=author ensures WP embeds the WP user author in _embedded.author[0].
+    const posts = await fetchFromWP('/posts?_embed=author', '');
     console.log(`   Found ${posts.length} posts from API`);
 
     // Populate post slugs for link normalization
@@ -6774,6 +6782,53 @@ async function buildIncremental(options = {}) {
       // 🔥 KEY FIX: Use FULL content, not just 500 chars!
       const fullContent = post.content.rendered; // Complete HTML content
 
+      // Resolve the correct author — guest authors take priority over WP post_author
+      const guestDetails = post.guest_author_details;
+      const wpAuthorEmbed = post._embedded?.author?.[0] || {};
+      let resolvedAuthorName;
+      let resolvedAuthorData;
+      if (guestDetails && guestDetails.name) {
+        resolvedAuthorName = guestDetails.name;
+        resolvedAuthorData = {
+          name: guestDetails.name,
+          bio: guestDetails.description || guestDetails.bio || '',
+          avatarUrl: guestDetails.meta?.author_avatar_url || guestDetails.avatar_urls?.['96'] || guestDetails.avatar_url || '',
+          website: guestDetails.url || guestDetails.website || '',
+          slug: guestDetails.slug || '',
+          linkedin: guestDetails.meta?.linkedin_url || guestDetails.linkedin || '',
+          twitter: guestDetails.meta?.twitter_url || guestDetails.twitter || '',
+          github: guestDetails.meta?.github_url || guestDetails.github || '',
+          role: guestDetails.meta?.job_title || guestDetails.job_title || 'Guest Author',
+          isGuest: true,
+          id: guestDetails.id,
+        };
+      } else if (wpAuthorEmbed.name) {
+        resolvedAuthorName = wpAuthorEmbed.name;
+        resolvedAuthorData = {
+          name: wpAuthorEmbed.name,
+          bio: wpAuthorEmbed.description || '',
+          avatarUrl: wpAuthorEmbed.meta?.author_avatar_url || wpAuthorEmbed.avatar_urls?.['96'] || '',
+          website: wpAuthorEmbed.url || '',
+          slug: wpAuthorEmbed.slug || '',
+          linkedin: wpAuthorEmbed.meta?.linkedin_url || '',
+          twitter: wpAuthorEmbed.meta?.twitter_url || '',
+          github: wpAuthorEmbed.meta?.github_url || '',
+          role: wpAuthorEmbed.meta?.job_title || '',
+          id: wpAuthorEmbed.id,
+        };
+      } else {
+        // Fallback to blog owner
+        resolvedAuthorName = 'Sainath Reddy';
+        resolvedAuthorData = {
+          name: 'Sainath Reddy',
+          bio: '',
+          avatarUrl: '',
+          website: 'https://dataengineerhub.blog/about',
+          slug: '',
+          role: 'Founder & Owner',
+        };
+      }
+
       const pageData = {
         id: post.id,
         title: seoOverride?.title || rawTitle,
@@ -6785,7 +6840,9 @@ async function buildIncremental(options = {}) {
         modified: post.modified,
         featuredImage: post.jetpack_featured_media_url || null,
         categoryNames: sortCategoriesByPriority((post.categories || []).map(id => catIdToName[id]).filter(Boolean)),
-        tagNames: (post.tags || []).map(id => tagIdToName[id]).filter(Boolean)
+        tagNames: (post.tags || []).map(id => tagIdToName[id]).filter(Boolean),
+        authorName: resolvedAuthorName,
+        authorData: resolvedAuthorData,
       };
 
       const contentHash = hashContent(pageData);

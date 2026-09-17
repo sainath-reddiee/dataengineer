@@ -1,7 +1,7 @@
 # DataEngineer Hub - Full Content Index for LLMs
 
-> Last generated: 2026-09-06
-> Total articles: 106
+> Last generated: 2026-09-17
+> Total articles: 109
 
 - [Main Website](https://dataengineerhub.blog): Official platform
 - [Compact LLM Context](https://dataengineerhub.blog/llms.txt): Summary context file
@@ -12,7 +12,14 @@ Each article includes its URL, summary, key headings, and primary topics.
 
 ---
 
-## Data Engineer (5 articles)
+## Data Engineer (6 articles)
+
+### [Building Data Pipelines That Feed AI Features Without Breaking the Bill](https://dataengineerhub.blog/articles/ai-data-pipelines-cost-control)
+- URL: [https://dataengineerhub.blog/articles/ai-data-pipelines-cost-control](https://dataengineerhub.blog/articles/ai-data-pipelines-cost-control)
+- Published: 2026-09-17 | Updated: 2026-09-17
+- Word count: ~2165
+- Summary: When the consumer at the end of a pipeline is a language model rather than a dashboard, the expensive step moves from the transform to the last hop, and every row you push through it costs money. This article covers the pipeline shape we keep returning to, a four-question test for choosing batch, ev
+- Key sections: The Consumer Changed, the Pipeline Did Not | The Pipeline Shape We Keep Coming Back To | Layer 1: Ingestion, Kept Deliberately Boring | Layer 2: Transformation Produces a Model Input Contract | Layer 3: The Inference Worker Is a Pipeline Stage | Batch, Event-Driven or Request Path: A Four-Question Test | 1. Can the Output Be Computed Before Anyone Asks for It? | 2. Does a Person Wait on Screen for the Result?
 
 ### [From ETL Pipelines to Data Products: Designing Reusable Data Infrastructure for Enterprise AI](https://dataengineerhub.blog/articles/from-etl-pipelines-to-reusable-data-products)
 - URL: [https://dataengineerhub.blog/articles/from-etl-pipelines-to-reusable-data-products](https://dataengineerhub.blog/articles/from-etl-pipelines-to-reusable-data-products)
@@ -47,7 +54,21 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Summary: Someone on the backend team renamed order_total to order_amount . Clean name. Makes total sense for their domain model. They shipped it on a Thursday afternoon. By Friday morning, your revenue dashboard was showing zero. Not wrong numbers. Zero. Because your Snowflake pipeline was still selecting or
 - Key sections: TL;DR | Why schemas break and who owns the blame | What a data contract actually contains | The Open Data Contract Standard and the YAML spec | The only safe migration path for breaking changes | Making it executable: CI enforcement that actually works | The gotchas that sink most implementations | The real cost math
 
-## Snowflake (44 articles)
+## Snowflake (46 articles)
+
+### [Snowflake Cortex AI Token Usage Monitoring: The Complete Guide](https://dataengineerhub.blog/articles/snowflake-cortex-token-usage-monitoring)
+- URL: [https://dataengineerhub.blog/articles/snowflake-cortex-token-usage-monitoring](https://dataengineerhub.blog/articles/snowflake-cortex-token-usage-monitoring)
+- Published: 2026-09-16 | Updated: 2026-09-16
+- Word count: ~2560
+- Summary: Somewhere on your team, an AI_CLASSIFY job is running on a table larger than anyone realised. Or a Cortex Agent is looping through a multi-step workflow that seemed cheap in testing. Or a developer left a search service indexed and running in a dev environment that nobody is querying anymore. None o
+- Key sections: The Three Views and What Each One Covers | Basic Usage Monitoring Queries | Daily credit burn by function and model | Monthly spend by user | Cortex Agent attribution | Automation Pattern 1: Account-Level Monthly Spend Alert | Automation Pattern 2: Per-User Monthly Spending Limits | Automation Pattern 3: Runaway Query Detection and Cancellation
+
+### [Using MCP Servers with Snowflake: A Practitioner’s Guide](https://dataengineerhub.blog/articles/snowflake-mcp-server-guide)
+- URL: [https://dataengineerhub.blog/articles/snowflake-mcp-server-guide](https://dataengineerhub.blog/articles/snowflake-mcp-server-guide)
+- Published: 2026-09-15 | Updated: 2026-09-15
+- Word count: ~2307
+- Summary: Your data team ships a Cortex-powered analytics agent. Works beautifully. Then the platform team wants to plug in Cursor. The ML team asks about GPT-4o. A product manager hears about Claude Desktop and sends a Slack message. Suddenly you’re the person maintaining four different Snowflake connectors,
+- Key sections: What the MCP Server Actually Is | The Five Tool Types You Can Expose | CORTEX_AGENT_RUN — the recommended default | CORTEX_ANALYST_MESSAGE — natural language to SQL | CORTEX_SEARCH_SERVICE_QUERY — vector search over docs | SYSTEM_EXECUTE_SQL — raw SQL execution | GENERIC — UDFs and stored procedures | Setup: From Zero to Working Connection
 
 ### [Identifying Hidden Token Costs in Snowflake Cortex AI](https://dataengineerhub.blog/articles/snowflake-cortex-ai-hidden-token-costs)
 - URL: [https://dataengineerhub.blog/articles/snowflake-cortex-ai-hidden-token-costs](https://dataengineerhub.blog/articles/snowflake-cortex-ai-hidden-token-costs)
