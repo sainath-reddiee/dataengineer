@@ -1,7 +1,7 @@
 // src/pages/ContactPage.jsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Mail, Phone, MapPin, CheckCircle, Loader2, Coffee } from 'lucide-react';
+import { Send, Mail, Phone, MapPin, CheckCircle, Loader2, Coffee, Clock } from 'lucide-react';
 import SupportButton from '@/components/Support/SupportButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import MetaTags from '@/components/SEO/MetaTags';
 import { trackContactForm } from '@/utils/analytics';
+import { useFormSpamGuard } from '@/hooks/useFormSpamGuard';
 
 const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY;
 
@@ -18,6 +19,8 @@ const ContactPage = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [spamBlock, setSpamBlock] = useState(null); // null | { reason, message }
+  const { checkSpam, recordSuccess, cooldownSecs, honeypotProps } = useFormSpamGuard('contact');
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -34,6 +37,24 @@ const ContactPage = () => {
       });
       return;
     }
+
+    // ── Spam guard ────────────────────────────────────────────────────────
+    const payload = {
+      name: formData.name.trim().toLowerCase(),
+      email: formData.email.trim().toLowerCase(),
+    };
+    const check = checkSpam(payload);
+    if (check.blocked) {
+      if (check.reason === 'duplicate') {
+        setSpamBlock({ reason: 'duplicate', message: "We already received a message from you. We'll reply within 2 business days!" });
+      } else if (check.reason === 'rate_limit') {
+        setSpamBlock({ reason: 'rate_limit', message: null });
+      }
+      // honeypot / too_fast — silent drop
+      return;
+    }
+    setSpamBlock(null);
+    // ─────────────────────────────────────────────────────────────────────
 
     setLoading(true);
 
@@ -67,6 +88,7 @@ const ContactPage = () => {
 
       if (data.success) {
         trackContactForm();
+        recordSuccess(payload);
         setSubmitted(true);
         setFormData({ name: '', email: '', message: '' });
         toast({
@@ -86,6 +108,32 @@ const ContactPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Render spam block messages inline above the submit button
+  const renderSpamMessage = () => {
+    if (!spamBlock) return null;
+    if (spamBlock.reason === 'duplicate') {
+      return (
+        <div className="flex items-start gap-2 text-amber-400 text-sm p-3 rounded-lg bg-amber-400/10 border border-amber-400/20">
+          <CheckCircle className="h-4 w-4 mt-0.5 shrink-0" />
+          <span>{spamBlock.message}</span>
+        </div>
+      );
+    }
+    if (spamBlock.reason === 'rate_limit') {
+      return (
+        <div className="flex items-start gap-2 text-orange-400 text-sm p-3 rounded-lg bg-orange-400/10 border border-orange-400/20">
+          <Clock className="h-4 w-4 mt-0.5 shrink-0" />
+          <span>
+            {cooldownSecs > 0
+              ? `Too many attempts — please wait ${cooldownSecs}s before trying again.`
+              : 'Too many attempts. Please wait a moment before trying again.'}
+          </span>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -220,29 +268,41 @@ const ContactPage = () => {
                   </Button>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+                  {/* Honeypot — invisible to humans, filled by bots */}
+                  <input {...honeypotProps} />
+
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
-                    <Input id="name" placeholder="John Doe" value={formData.name} onChange={handleChange} disabled={loading} />
+                    <Input id="name" placeholder="John Doe" value={formData.name} onChange={handleChange} disabled={loading || cooldownSecs > 0} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email Address</Label>
-                    <Input id="email" type="email" required placeholder="john.doe@example.com" value={formData.email} onChange={handleChange} disabled={loading} />
+                    <Input id="email" type="email" required placeholder="john.doe@example.com" value={formData.email} onChange={handleChange} disabled={loading || cooldownSecs > 0} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="message">Your Message</Label>
-                    <Textarea id="message" placeholder="Tell us what's on your mind..." rows={5} value={formData.message} onChange={handleChange} disabled={loading} />
+                    <Textarea id="message" placeholder="Tell us what's on your mind..." rows={5} value={formData.message} onChange={handleChange} disabled={loading || cooldownSecs > 0} />
                   </div>
+
+                  {/* Spam block messages */}
+                  {renderSpamMessage()}
+
                   <Button
                     type="submit"
                     size="lg"
-                    disabled={loading}
-                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold group disabled:opacity-60"
+                    disabled={loading || cooldownSecs > 0}
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold group disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {loading ? (
                       <>
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                         Sending...
+                      </>
+                    ) : cooldownSecs > 0 ? (
+                      <>
+                        <Clock className="mr-2 h-5 w-5" />
+                        Wait {cooldownSecs}s
                       </>
                     ) : (
                       <>

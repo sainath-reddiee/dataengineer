@@ -2,6 +2,10 @@
 const WORDPRESS_API_URL = import.meta.env.DEV ? '' : 'https://app.dataengineerhub.blog';
 const WP_API_BASE = `${WORDPRESS_API_URL}/wp-json/wp/v2`;
 
+// How long a successful newsletter subscription is considered a "known session hit"
+// before allowing a network retry (protects against double-click / SPA navigation).
+const SESSION_DEDUP_MS = 5 * 60_000; // 5 minutes
+
 class WordPressAPI {
   constructor() {
     this.baseURL = WP_API_BASE;
@@ -10,6 +14,11 @@ class WordPressAPI {
     this.cacheMaxEntries = 200; // LRU cap to bound long-running admin sessions
     this.requestQueue = new Map();
     this.prefetchedData = new Map();
+    // In-session record of successfully submitted newsletter emails.
+    // Keyed by normalised email; value is the timestamp of the last success.
+    // This prevents duplicate network POSTs when the user navigates between
+    // pages within the same tab session.
+    this._sessionNewsletterSuccesses = new Map();
   }
 
   clearCache(pattern = null) {
@@ -608,6 +617,18 @@ class WordPressAPI {
       throw new Error('Enter a valid email address');
     }
 
+    // ── Session-level dedup ──────────────────────────────────────────────────
+    // Prevent duplicate network hits when the user submits the same email
+    // multiple times within the same tab session (e.g. SPA navigation between
+    // Newsletter component mounts).
+    const normEmail = trimmed.toLowerCase();
+    const lastSuccess = this._sessionNewsletterSuccesses.get(normEmail);
+    if (lastSuccess && Date.now() - lastSuccess < SESSION_DEDUP_MS) {
+      console.log('📦 Newsletter session dedup hit for:', normEmail);
+      return { success: true, already: true };
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     // Store of record is WordPress (wp_newsletter_subscribers).
     // Do not call Brevo/Buttondown from the browser — visitor IPs then hit
     // Brevo's API allowlist and every reader gets blocked.
@@ -625,6 +646,8 @@ class WordPressAPI {
       // WordPress already accepted the address. ESP IP-allowlist noise must
       // never fail (or be shown to) the subscriber.
       if (payload.success !== false || this.isEspIpRestrictionError(leaked)) {
+        // Record the session success so subsequent calls return immediately
+        this._sessionNewsletterSuccesses.set(normEmail, Date.now());
         return { success: true, already: Boolean(payload.already) };
       }
 
@@ -632,6 +655,7 @@ class WordPressAPI {
     } catch (error) {
       const message = String(error?.message || '');
       if (this.isEspIpRestrictionError(message)) {
+        this._sessionNewsletterSuccesses.set(normEmail, Date.now());
         return { success: true };
       }
       if (message === 'Content not found' || message.includes('404')) {

@@ -1,26 +1,74 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Send, CheckCircle, Rss, Sparkles, BookOpen, AlertCircle, Loader2 } from 'lucide-react';
+import { Mail, Send, CheckCircle, Rss, Sparkles, BookOpen, AlertCircle, Loader2, Clock } from 'lucide-react';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { useNewsletter } from '@/hooks/useWordPress';
+import { useFormSpamGuard } from '@/hooks/useFormSpamGuard';
 import { trackNewsletterSignup } from '@/utils/analytics';
 
 const Newsletter = () => {
   const [ref, , hasIntersected] = useIntersectionObserver();
   const [email, setEmail] = useState('');
   const { subscribe, loading, error, success, reset } = useNewsletter();
+  const { checkSpam, recordSuccess, cooldownSecs, honeypotProps } = useFormSpamGuard('newsletter');
+
+  // Local spam-block state (shown when checkSpam returns blocked)
+  const [spamBlock, setSpamBlock] = useState(null); // null | { reason, message }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email.trim() || loading) return;
 
+    // ── Spam guard ──────────────────────────────────────────────────────────
+    const check = checkSpam({ email: email.trim().toLowerCase() });
+    if (check.blocked) {
+      if (check.reason === 'duplicate') {
+        setSpamBlock({ reason: 'duplicate', message: "You're already subscribed with this email! Check your inbox." });
+      } else if (check.reason === 'rate_limit') {
+        setSpamBlock({ reason: 'rate_limit', message: null }); // cooldownSecs shown via UI
+      } else {
+        // honeypot / too_fast — silent drop
+        return;
+      }
+      return;
+    }
+    setSpamBlock(null);
+    // ────────────────────────────────────────────────────────────────────────
+
     const result = await subscribe(email);
     if (result.success) {
       trackNewsletterSignup('newsletter_section');
+      recordSuccess({ email: email.trim().toLowerCase() });
       setEmail('');
       setTimeout(() => reset(), 5000);
     }
   };
+
+  // Helper: render the correct block message
+  const renderSpamMessage = () => {
+    if (!spamBlock) return null;
+    if (spamBlock.reason === 'duplicate') {
+      return (
+        <div className="mt-3 inline-flex items-center gap-2 text-amber-400 text-sm">
+          <CheckCircle className="h-4 w-4 shrink-0" />
+          {spamBlock.message}
+        </div>
+      );
+    }
+    if (spamBlock.reason === 'rate_limit') {
+      return (
+        <div className="mt-3 inline-flex items-center gap-2 text-orange-400 text-sm">
+          <Clock className="h-4 w-4 shrink-0" />
+          {cooldownSecs > 0
+            ? `Too many attempts — please wait ${cooldownSecs}s before trying again.`
+            : 'Too many attempts. Please wait a moment before trying again.'}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const isBlocked = spamBlock !== null || cooldownSecs > 0;
 
   return (
     <section ref={ref} className="py-16 relative overflow-hidden">
@@ -78,25 +126,33 @@ const Newsletter = () => {
                     </div>
                   ) : (
                     <>
-                      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row justify-center gap-3 max-w-lg mx-auto">
+                      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row justify-center gap-3 max-w-lg mx-auto" noValidate>
+                        {/* Honeypot — hidden from humans, filled by bots */}
+                        <input {...honeypotProps} />
+
                         <input
                           type="email"
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="you@example.com"
-                          disabled={loading}
+                          disabled={loading || isBlocked}
                           className="flex-1 px-5 py-3.5 rounded-full bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm disabled:opacity-50"
                         />
                         <button
                           type="submit"
-                          disabled={loading}
-                          className="inline-flex items-center justify-center px-7 py-3.5 rounded-full font-bold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-xl transition-all duration-300 group disabled:opacity-50"
+                          disabled={loading || isBlocked}
+                          className="inline-flex items-center justify-center px-7 py-3.5 rounded-full font-bold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-xl transition-all duration-300 group disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {loading ? (
                             <>
                               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                               Subscribing...
+                            </>
+                          ) : cooldownSecs > 0 ? (
+                            <>
+                              <Clock className="mr-2 h-4 w-4" />
+                              Wait {cooldownSecs}s
                             </>
                           ) : (
                             <>
@@ -106,7 +162,12 @@ const Newsletter = () => {
                           )}
                         </button>
                       </form>
-                      {error && (
+
+                      {/* Spam block message */}
+                      {renderSpamMessage()}
+
+                      {/* API error message */}
+                      {error && !spamBlock && (
                         <div className="mt-3 space-y-1">
                           <div className="inline-flex items-center gap-2 text-red-400 text-sm">
                             <AlertCircle className="h-4 w-4" />
