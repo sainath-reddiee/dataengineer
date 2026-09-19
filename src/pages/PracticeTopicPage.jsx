@@ -36,7 +36,7 @@ const PracticeTopicPage = () => {
         noindex={true}
       />
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+      <div className="min-h-screen ">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
           <div className="mb-6">
             <Breadcrumbs breadcrumbs={crumbs} />

@@ -162,16 +162,16 @@ const Header = ({ topOffset = 0 }) => {
 
   return (
     <header
-      className="fixed left-0 right-0 z-[9999] border-b border-white/10 bg-slate-950/80 backdrop-blur-xl"
+      className="fixed left-0 right-0 z-[9999] border-b border-white/10 bg-slate-950/70 backdrop-blur-xl shadow-[0_12px_40px_-24px_rgba(2,6,23,0.9)]"
       style={{ top: topOffset }}
     >
       <nav className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-3 sm:px-6 lg:gap-4">
         <Link to="/" className="group z-10 flex min-w-0 shrink items-center gap-2">
-          <span className="relative shrink-0">
+          <span className="relative shrink-0 grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-teal-400/30 to-amber-400/25 ring-1 ring-amber-200/20 shadow-[0_10px_24px_-10px_rgba(45,212,191,0.8)]">
             <DatabaseMark />
             <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-gradient-to-r from-pink-500 to-violet-500" />
           </span>
-          <span className="hidden min-[420px]:inline truncate text-[15px] font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent sm:text-lg max-w-[9rem] min-[480px]:max-w-none">
+          <span className="hidden min-[420px]:inline truncate text-[15px] font-bold bg-gradient-to-r from-teal-300 via-amber-300 to-rose-400 bg-clip-text text-transparent sm:text-lg max-w-[9rem] min-[480px]:max-w-none">
             DataEngineer Hub
           </span>
         </Link>
@@ -179,7 +179,7 @@ const Header = ({ topOffset = 0 }) => {
         <button
           type="button"
           onClick={() => setIsSearchOpen(true)}
-          className="lg:hidden flex min-h-10 min-w-0 flex-1 items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 text-sm text-slate-400 transition-colors hover:border-white/25 hover:bg-white/10 hover:text-slate-200"
+          className="lg:hidden flex min-h-10 min-w-0 flex-1 items-center gap-2 rounded-full border border-teal-400/25 bg-white/5 px-3 text-sm text-slate-400 transition-colors hover:border-amber-300/35 hover:bg-white/10 hover:text-slate-200"
           aria-label="Search articles"
           title="Search"
         >
@@ -266,7 +266,7 @@ const Header = ({ topOffset = 0 }) => {
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="inline-flex min-h-10 w-56 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 text-sm text-slate-400 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-white"
+            className="inline-flex min-h-10 w-56 items-center gap-2 rounded-full border border-teal-400/20 bg-white/5 px-3 text-sm text-slate-400 transition-colors hover:border-amber-300/30 hover:bg-white/10 hover:text-white"
             title="Search (Ctrl+K)"
           >
             <Search className="h-4 w-4 text-slate-300" />
@@ -288,7 +288,7 @@ const Header = ({ topOffset = 0 }) => {
 
           <Link
             to="/articles"
-            className="inline-flex min-h-10 items-center rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-4 text-sm font-semibold text-white shadow-lg shadow-blue-950/40 transition-colors hover:from-blue-500 hover:to-indigo-500"
+            className="inline-flex min-h-10 items-center rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-4 text-sm font-semibold text-white shadow-lg shadow-blue-950/40 btn-3d transition-colors hover:from-blue-500 hover:to-indigo-500"
           >
             Explore
           </Link>
@@ -433,7 +433,7 @@ const Header = ({ topOffset = 0 }) => {
 const DatabaseMark = () => (
   <svg
     viewBox="0 0 24 24"
-    className="h-7 w-7 text-blue-400 transition-transform duration-200 group-hover:rotate-6 group-hover:scale-105"
+    className="h-5 w-5 text-blue-300 transition-transform duration-200 group-hover:rotate-6 group-hover:scale-105"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"

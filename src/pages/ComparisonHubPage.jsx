@@ -91,7 +91,7 @@ export function ComparisonHubPage() {
                 {!noindex && <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>}
             </Helmet>
 
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+            <div className="min-h-screen ">
                 {/* Breadcrumb */}
                 <div className="bg-slate-800/80 border-b border-slate-700/50">
                     <div className="max-w-6xl mx-auto px-4 py-3">

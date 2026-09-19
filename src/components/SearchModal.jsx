@@ -328,7 +328,7 @@ const SearchModal = ({ isOpen, onClose }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/65 backdrop-blur-sm z-[10000]"
+            className="fixed inset-0 bg-black/70 backdrop-blur-md z-[10000]"
           />
 
           <motion.div
@@ -344,7 +344,7 @@ const SearchModal = ({ isOpen, onClose }) => {
           >
             <div
               onClick={(event) => event.stopPropagation()}
-              className="flex w-full max-w-2xl max-h-[min(88dvh,40rem)] flex-col overflow-hidden rounded-2xl border border-slate-700/70 bg-slate-900 shadow-2xl"
+              className="flex w-full max-w-2xl max-h-[min(88dvh,40rem)] flex-col overflow-hidden rounded-2xl border border-white/15 bg-slate-950/90 shadow-2xl backdrop-blur-xl"
             >
               <h2 id="search-modal-heading" className="sr-only">Search articles</h2>
               <div className="flex items-center gap-3 px-3 py-3 sm:px-4 border-b border-slate-700/50">

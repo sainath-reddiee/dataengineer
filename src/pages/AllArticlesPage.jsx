@@ -121,7 +121,7 @@ const AllArticlesPage = () => {
 
   const containerClasses = viewMode === 'list'
     ? 'flex flex-col space-y-4 max-w-4xl mx-auto'
-    : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6';
+    : 'spatial-deck grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6';
 
   return (
     <>
@@ -151,9 +151,9 @@ const AllArticlesPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-8"
+            className="text-center mb-8 holo-archive-hero"
           >
-            <h1 className="text-3xl md:text-4xl font-black mb-2">
+            <h1 className="text-3xl md:text-5xl font-black mb-2 tracking-tight">
               All <span className="gradient-text">Articles</span>
             </h1>
             <p className="text-base text-gray-200 mb-3 max-w-3xl mx-auto">
@@ -173,7 +173,7 @@ const AllArticlesPage = () => {
             
             {/* Search Bar */}
             <div className="max-w-2xl mx-auto mb-6">
-              <form onSubmit={handleSearch} className="flex gap-2 mb-4">
+              <form onSubmit={handleSearch} className="flex gap-2 mb-4 command-bar">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
@@ -181,13 +181,13 @@ const AllArticlesPage = () => {
                     placeholder="Search articles..."
                     value={searchQuery}
                     onChange={handleSearchChange}
-                    className="pl-10 bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-blue-400"
+                    className="pl-10 bg-white/[0.06] border-white/15 text-white placeholder-gray-400 focus:border-blue-400"
                     aria-label="Search articles"
                   />
                 </div>
                 <Button 
                   type="submit" 
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6"
+                  className="bg-teal-500 hover:bg-amber-400 text-slate-950 px-6 btn-3d"
                   disabled={loading}
                   aria-label="Search"
                 >

@@ -525,7 +525,7 @@ export default function SqlPlaygroundPage() {
         {/* Editor + Results */}
         <div className="grid lg:grid-cols-2 gap-6">
           {/* SQL Editor */}
-          <div className={`${pane === 'editor' ? 'flex' : 'hidden'} lg:flex bg-slate-800/50 rounded-2xl border border-slate-700 p-4 flex-col`}>
+          <div className={`${pane === 'editor' ? 'flex' : 'hidden'} lg:flex surface-3d rounded-2xl p-4 flex-col`}>
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-sm font-semibold text-white uppercase tracking-wider">SQL Editor</h2>
               <div className="flex gap-2">
@@ -559,7 +559,7 @@ export default function SqlPlaygroundPage() {
           </div>
 
           {/* Results */}
-          <div className={`${pane === 'results' ? 'flex' : 'hidden'} lg:flex bg-slate-800/50 rounded-2xl border border-slate-700 p-4 flex-col`}>
+          <div className={`${pane === 'results' ? 'flex' : 'hidden'} lg:flex surface-3d rounded-2xl p-4 flex-col`}>
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
                 <Table2 className="w-4 h-4 text-emerald-400" />

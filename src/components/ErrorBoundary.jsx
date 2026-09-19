@@ -125,7 +125,7 @@ class ErrorBoundary extends React.Component {
       const errorMessage = this.getErrorMessage(errorType, this.state.error);
 
       return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center p-6">
+        <div className="min-h-screen  flex items-center justify-center p-6">
           <div className="text-center max-w-2xl">
             {/* Error Icon */}
             <div className="mb-8">

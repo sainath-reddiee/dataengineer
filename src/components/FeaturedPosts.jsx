@@ -66,7 +66,7 @@ const FeaturedPosts = ({ compact = false }) => {
   const cards = featuredPosts.length === 0 ? (
     <FallbackArticleList limit={6} />
   ) : (
-    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${compact ? '' : 'mb-12'}`}>
+    <div className={`spatial-deck grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${compact ? '' : 'mb-12'}`}>
       {featuredPosts.map((post, index) => (
         <motion.div
           key={post.id}

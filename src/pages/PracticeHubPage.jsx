@@ -250,7 +250,7 @@ const PracticeHubPage = () => {
         <script type="application/ld+json">{JSON.stringify(hubSchema)}</script>
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+      <div className="min-h-screen ">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
           <div className="mb-6">
             <Breadcrumbs breadcrumbs={crumbs} />
@@ -279,7 +279,7 @@ const PracticeHubPage = () => {
                 <Link
                   key={q.slug}
                   to={`/practice/${q.slug}`}
-                  className="group relative bg-slate-900/80 border border-slate-800 hover:border-slate-600 rounded-xl overflow-hidden transition-all hover:-translate-y-1"
+                  className="group relative card-3d surface-3d hover:border-slate-500/70 rounded-xl overflow-hidden"
                 >
                   <div className={`bg-gradient-to-br ${q.heroGradient} p-5`}>
                     <Icon name={q.icon} className="w-8 h-8 text-white mb-2" />

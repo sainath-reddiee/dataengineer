@@ -9,6 +9,9 @@ import MetaTags from '@/components/SEO/MetaTags';
 import ScrollToTop from '@/components/ScrollToTop';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import NewsletterPopup from '@/components/NewsletterPopup';
+import SceneBackground from '@/components/SceneBackground';
+import ParticleField from '@/components/ParticleField';
+import usePointerParallax from '@/hooks/usePointerParallax';
 
 const ANNOUNCEMENT_BAR_HEIGHT = 40;
 // Keep this key in sync with AnnouncementBar.jsx so Layout can reserve the
@@ -22,11 +25,14 @@ const readInitialBarVisible = () => {
 const Layout = () => {
   const [isBarVisible, setIsBarVisible] = useState(readInitialBarVisible);
   const topOffset = isBarVisible ? ANNOUNCEMENT_BAR_HEIGHT : 0;
+  usePointerParallax();
 
   return (
     <>
       <MetaTags />
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex flex-col overflow-x-clip">
+      <div className="relative min-h-screen flex flex-col overflow-x-clip text-slate-100">
+        <SceneBackground />
+        <ParticleField />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-md focus:text-sm focus:font-medium focus:outline-none focus:ring-2 focus:ring-white"
@@ -36,8 +42,8 @@ const Layout = () => {
         <AnnouncementBar onVisibilityChange={setIsBarVisible} />
         <Header topOffset={topOffset} />
         <div style={{ paddingTop: 64 + topOffset }}></div>
-        {/* The 'relative z-0' classes are the crucial fix here */}
-        <main id="main-content" tabIndex={-1} className="flex-grow relative z-0 outline-none">
+        {/* Header offset so content sits below the sticky nav */}
+        <main id="main-content" tabIndex={-1} className="flex-grow relative z-10 outline-none">
           <Outlet />
         </main>
         <Footer />

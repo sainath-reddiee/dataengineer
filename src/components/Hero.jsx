@@ -7,6 +7,7 @@ import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { reduceMotion } from '@/utils/performance';
 import { useStats } from '@/hooks/useStats';
 import HubMotion from '@/components/HubMotion';
+import HeroStage from '@/components/HeroStage';
 
 const Hero = () => {
   const [ref] = useIntersectionObserver();
@@ -44,8 +45,8 @@ const Hero = () => {
     <section ref={ref} className="relative overflow-hidden px-4 py-10 sm:px-6 sm:py-12 md:py-14">
       {!isMobile && (
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-16 left-10 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl floating-animation"></div>
-          <div className="absolute bottom-10 right-10 h-72 w-72 rounded-full bg-purple-500/20 blur-3xl floating-animation" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-16 left-10 h-64 w-64 rounded-full bg-teal-400/25 blur-3xl floating-animation"></div>
+          <div className="absolute bottom-10 right-10 h-72 w-72 rounded-full bg-amber-400/20 blur-3xl floating-animation" style={{ animationDelay: '2s' }}></div>
         </div>
       )}
 
@@ -59,14 +60,14 @@ const Hero = () => {
           >
             <motion.p
               variants={itemVariants}
-              className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-blue-300/80"
+              className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-teal-300/90"
             >
               DataEngineer Hub · production tutorials
             </motion.p>
 
             <motion.h1
               variants={itemVariants}
-              className="mb-4 text-3xl font-black leading-[1.1] tracking-tight sm:text-4xl md:text-5xl"
+              className="mb-4 text-3xl font-black leading-[1.08] tracking-tight sm:text-4xl md:text-5xl lg:text-[3.4rem]"
             >
               Master{' '}
               <span className="gradient-text">Data Engineering</span>
@@ -88,7 +89,7 @@ const Hero = () => {
               <Button
                 asChild
                 size="lg"
-                className="group w-full min-h-[48px] rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-blue-950/40 transition-all duration-300 hover:from-blue-500 hover:to-indigo-500 sm:w-auto"
+                className="group w-full min-h-[48px] rounded-lg bg-gradient-to-r from-teal-500 to-amber-500 px-6 py-4 text-base font-semibold text-slate-950 shadow-lg shadow-teal-950/40 btn-3d transition-all duration-300 hover:from-teal-400 hover:to-amber-400 sm:w-auto"
               >
                 <Link to="/articles">
                   Explore Articles
@@ -100,7 +101,7 @@ const Hero = () => {
                 asChild
                 size="lg"
                 variant="outline"
-                className="w-full min-h-[48px] rounded-lg border border-white/15 px-6 py-4 text-base font-semibold text-slate-100 backdrop-blur-sm hover:bg-white/5 sm:w-auto"
+                className="w-full min-h-[48px] rounded-lg border border-white/15 bg-white/[0.04] px-6 py-4 text-base font-semibold text-slate-100 backdrop-blur-sm hover:bg-white/10 sm:w-auto"
               >
                 <Link to="/tools/sql-playground">
                   SQL Playground
@@ -108,7 +109,7 @@ const Hero = () => {
               </Button>
               <Link
                 to="/tools"
-                className="text-sm font-semibold text-blue-300 hover:text-blue-200 sm:ml-1"
+                className="text-sm font-semibold text-teal-300 hover:text-amber-200 sm:ml-1"
               >
                 Browse all tools →
               </Link>
@@ -126,13 +127,13 @@ const Hero = () => {
               ) : (
                 <>
                   <div className="flex items-center gap-2 text-gray-300">
-                    <Zap className="h-4 w-4 text-blue-400" />
+                    <Zap className="h-4 w-4 text-teal-400" />
                     <span className="font-semibold">{totalArticles}+</span>
                     <span className="text-gray-400">Articles</span>
                   </div>
                   <div className="hidden h-4 w-px bg-gray-700 sm:block"></div>
                   <div className="flex items-center gap-2 text-gray-300">
-                    <TrendingUp className="h-4 w-4 text-purple-400" />
+                    <TrendingUp className="h-4 w-4 text-amber-400" />
                     <span className="font-semibold">{totalCategories}+</span>
                     <span className="text-gray-400">Technologies</span>
                   </div>
@@ -148,7 +149,7 @@ const Hero = () => {
                   )}
                   <div className="hidden h-4 w-px bg-gray-700 sm:block"></div>
                   <div className="flex items-center gap-2 text-gray-300">
-                    <Sparkles className="h-4 w-4 text-orange-400" />
+                    <Sparkles className="h-4 w-4 text-rose-400" />
                     <span className="font-semibold">{updateFrequency}</span>
                     <span className="text-gray-400">Updates</span>
                   </div>
@@ -162,7 +163,9 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: quietMotion ? 0 : 0.15 }}
           >
-            <HubMotion reduceMotion={quietMotion} />
+            <HeroStage reduceMotion={quietMotion}>
+              <HubMotion reduceMotion={quietMotion} />
+            </HeroStage>
           </motion.div>
         </div>
       </div>

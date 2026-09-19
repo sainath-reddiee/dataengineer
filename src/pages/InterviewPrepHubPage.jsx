@@ -461,7 +461,7 @@ export default function InterviewPrepHubPage() {
         <script type="application/ld+json">{JSON.stringify(itemListSchema)}</script>
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+      <div className="min-h-screen ">
         <div className="max-w-5xl mx-auto px-4 py-8">
           <Breadcrumbs
             breadcrumbs={generateBreadcrumbs('/interview-prep', 'Interview Prep')}
@@ -664,7 +664,7 @@ export default function InterviewPrepHubPage() {
                           <Link
                             key={`${t.id}-${i}`}
                             to={r.href}
-                            className="group bg-slate-900/50 hover:bg-slate-900 border border-slate-700/50 hover:border-amber-500/50 rounded-xl p-4 transition-all"
+                            className="group card-3d surface-3d hover:border-amber-500/50 rounded-xl p-4"
                           >
                             <div className="flex items-start justify-between gap-2 mb-1">
                               <h4 className="text-white text-sm font-semibold group-hover:text-amber-300 leading-snug">

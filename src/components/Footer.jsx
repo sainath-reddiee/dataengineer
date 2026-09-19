@@ -64,7 +64,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative py-16 border-t border-white/10 overflow-hidden">
+    <footer className="relative z-10 py-16 border-t border-white/10 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"></div>
         <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl"></div>
@@ -80,9 +80,9 @@ const Footer = () => {
             className="col-span-2 lg:col-span-1"
           >
             <Link to="/" className="flex items-center space-x-3 mb-6">
-              <div className="relative">
-                <Database className="h-8 w-8 text-blue-400" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse"></div>
+              <div className="relative grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-teal-500/25 to-amber-500/20 ring-1 ring-amber-200/20">
+                <Database className="h-6 w-6 text-teal-300" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-amber-400 to-rose-400 rounded-full animate-pulse"></div>
               </div>
               <span className="text-2xl font-bold gradient-text">DataEngineer Hub</span>
             </Link>
@@ -101,10 +101,10 @@ const Footer = () => {
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.95 }}
-                    className="w-10 h-10 bg-white/10 hover:bg-blue-500/20 rounded-full flex items-center justify-center transition-colors group"
+                    className="w-10 h-10 bg-white/10 hover:bg-teal-500/20 rounded-full flex items-center justify-center transition-colors group ring-1 ring-amber-200/15 shadow-[0_8px_20px_-12px_rgba(45,212,191,0.7)]"
                     aria-label={`Visit ${social.name}`}
                   >
-                    <IconComponent className="h-5 w-5 text-gray-400 group-hover:text-blue-400 transition-colors" />
+                    <IconComponent className="h-5 w-5 text-gray-400 group-hover:text-teal-300 transition-colors" />
                   </motion.a>
                 );
               })}
@@ -134,7 +134,7 @@ const Footer = () => {
                     {link.action ? (
                       <button
                         onClick={link.action}
-                        className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group"
+                        className="text-gray-400 hover:text-teal-300 transition-colors flex items-center group"
                       >
                         {link.name}
                         <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
@@ -142,7 +142,7 @@ const Footer = () => {
                     ) : link.external ? (
                       <a
                         href={link.href}
-                        className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group"
+                        className="text-gray-400 hover:text-teal-300 transition-colors flex items-center group"
                       >
                         {link.name}
                         <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
@@ -150,7 +150,7 @@ const Footer = () => {
                     ) : (
                       <Link
                         to={link.href}
-                        className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group"
+                        className="text-gray-400 hover:text-teal-300 transition-colors flex items-center group"
                       >
                         {link.name}
                         <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>

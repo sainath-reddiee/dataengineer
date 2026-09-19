@@ -20,7 +20,7 @@ const CertificationCard = ({ certification }) => {
 
   return (
     <motion.div 
-      className="group relative flex flex-col h-full bg-slate-800/50 rounded-xl border border-slate-700/50 overflow-hidden transition-all duration-300 hover:border-blue-500/50 hover:shadow-2xl hover:shadow-blue-500/10"
+      className="group relative flex flex-col h-full surface-3d rounded-2xl border border-white/10 overflow-hidden transition-all duration-300 hover:border-blue-500/50 hover:shadow-2xl hover:shadow-blue-500/10 card-3d"
       whileHover={{ y: -5 }}
       transition={{ type: 'spring', stiffness: 400, damping: 10 }}
     >

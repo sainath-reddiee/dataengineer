@@ -263,7 +263,7 @@ export default function CheatSheetCategoryPage() {
         <script type="application/ld+json">{JSON.stringify(collectionPageSchema)}</script>
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+      <div className="min-h-screen ">
         <div className="max-w-5xl mx-auto px-4 py-8">
           <nav className="text-sm text-gray-400 mb-6 flex items-center gap-2 flex-wrap">
             <Link to="/" className="hover:text-blue-400">Home</Link>

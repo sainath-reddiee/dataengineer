@@ -22,7 +22,7 @@ const TrendingPosts = ({ compact = false }) => {
     : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6 } };
 
   const grid = (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="spatial-deck grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {trendingPosts.map((post, index) => (
         <motion.div
           key={post.id}

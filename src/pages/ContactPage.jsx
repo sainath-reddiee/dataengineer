@@ -152,7 +152,7 @@ const ContactPage = () => {
             transition={{ duration: 0.8 }}
             className="text-center max-w-4xl mx-auto mb-8"
           >
-            <h1 className="text-5xl md:text-7xl font-black mb-8 leading-tight">
+            <h1 className="text-5xl md:text-7xl font-black mb-8 leading-tight tracking-tight">
               Get In <span className="gradient-text">Touch</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-6 leading-relaxed">
@@ -210,7 +210,7 @@ const ContactPage = () => {
               </p>
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
-                  <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl mt-1">
+                  <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl mt-1 shadow-[0_10px_24px_-12px_rgba(59,130,246,0.85)]">
                     <Mail className="h-6 w-6 text-white" />
                   </div>
                   <div>
@@ -246,7 +246,7 @@ const ContactPage = () => {
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="blog-card p-8 rounded-2xl"
+              className="blog-card p-8 rounded-3xl min-h-0"
             >
               <div className="text-3xl font-bold mb-6">Send us a Message</div>
 

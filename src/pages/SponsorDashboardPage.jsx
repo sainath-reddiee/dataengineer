@@ -76,7 +76,7 @@ export default function SponsorDashboardPage() {
   }[campaignStatus.key] || 'bg-slate-500/10 border-slate-500/20 text-slate-300';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-slate-100 py-16 px-4">
+    <div className="min-h-screen  text-slate-100 py-16 px-4">
       <MetaTags
         title="Sponsor Dashboard"
         description="Private campaign performance for DataEngineer Hub partners."

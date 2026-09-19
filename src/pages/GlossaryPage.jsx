@@ -185,7 +185,7 @@ export function GlossaryPage() {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
+            <div className="min-h-screen  flex items-center justify-center p-4">
                 <Helmet>
                     
                 </Helmet>
@@ -206,7 +206,7 @@ export function GlossaryPage() {
 
     if (loading || !term || !derivedData) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+            <div className="min-h-screen  flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
             </div>
         );
@@ -286,7 +286,7 @@ export function GlossaryPage() {
                 {!noindex && <script type="application/ld+json">{JSON.stringify(definedTermSchema)}</script>}
             </Helmet>
 
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+            <div className="min-h-screen ">
                 {/* Breadcrumb */}
                 <div className="bg-slate-800/80 border-b border-slate-700/50">
                     <div className="max-w-5xl mx-auto px-4 py-3">

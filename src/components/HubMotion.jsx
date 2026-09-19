@@ -57,7 +57,7 @@ const TiltCard = ({ children, className = '', disabled = false, intensity = 12 }
       {!disabled && (
         <motion.div
           aria-hidden="true"
-          className="pointer-events-none absolute h-36 w-36 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-200/25 blur-2xl"
+          className="pointer-events-none absolute h-36 w-36 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-200/30 blur-2xl"
           style={{ left: glareX, top: glareY }}
         />
       )}
@@ -68,7 +68,7 @@ const TiltCard = ({ children, className = '', disabled = false, intensity = 12 }
 const HubMotion = ({ reduceMotion = false }) => {
   return (
     <div className="hub-3d-scene w-full">
-      <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-300/80">
+      <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-teal-300/90">
         What you can do here
       </p>
       <p className="mb-3 text-sm text-slate-400">
@@ -77,12 +77,12 @@ const HubMotion = ({ reduceMotion = false }) => {
 
       <div className="relative">
         {!reduceMotion && (
-          <div className="pointer-events-none absolute -inset-8 rounded-full bg-blue-500/15 blur-3xl" />
+          <div className="pointer-events-none absolute -inset-8 rounded-full bg-teal-400/20 blur-3xl" />
         )}
 
         <TiltCard
           disabled={reduceMotion}
-          className="relative mb-3 overflow-hidden rounded-2xl border border-white/15 bg-slate-900/70 p-3 shadow-2xl shadow-blue-950/40 backdrop-blur-md"
+          className="relative mb-3 overflow-hidden rounded-2xl border border-teal-400/20 bg-slate-900/70 p-3 shadow-2xl shadow-teal-950/40 backdrop-blur-md surface-3d"
         >
           <div className="flex items-stretch gap-1.5">
             {TOOL_STAGES.map((stage, index) => (
@@ -105,7 +105,7 @@ const HubMotion = ({ reduceMotion = false }) => {
                 {index < TOOL_STAGES.length - 1 && (
                   <motion.span
                     aria-hidden="true"
-                    className="hidden text-blue-300 sm:inline"
+                    className="hidden text-teal-300 sm:inline"
                     animate={reduceMotion ? undefined : { x: [0, 3, 0], opacity: [0.4, 1, 0.4] }}
                     transition={reduceMotion ? undefined : { duration: 1.4, repeat: Infinity, delay: index * 0.15 }}
                   >
@@ -136,10 +136,10 @@ const HubMotion = ({ reduceMotion = false }) => {
               >
                 <Link
                   to={href}
-                  className="block rounded-xl border border-white/10 bg-slate-900/60 px-3 py-2.5 shadow-lg shadow-slate-950/30 transition-colors hover:border-blue-400/40 hover:bg-slate-900/80"
+                  className="block rounded-xl border border-white/10 bg-slate-900/60 px-3 py-2.5 shadow-lg shadow-slate-950/30 transition-colors hover:border-teal-400/40 hover:bg-slate-900/80 surface-3d"
                 >
                   <span className="mb-1 flex items-center gap-2 text-sm font-semibold text-white">
-                    <Icon className="h-3.5 w-3.5 text-blue-300" />
+                    <Icon className="h-3.5 w-3.5 text-teal-300" />
                     {action.title}
                   </span>
                   <span className="block text-xs text-slate-400">{action.blurb}</span>

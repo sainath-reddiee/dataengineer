@@ -5,6 +5,7 @@ import Hero from '../components/Hero';
 import MetaTags from '../components/SEO/MetaTags';
 import { Sparkles, TrendingUp, FileText, Zap, BookOpen, Wrench, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import TiltSurface from '../components/TiltSurface';
 
 // cheatsheetData is large (~all cheat sheet content). We dynamic-import it so
 // it doesn't block the initial HomePage bundle / LCP.
@@ -44,8 +45,8 @@ const SectionHeader = ({
     className="mb-4 sm:mb-5 flex items-start justify-between gap-3"
   >
     <div className="flex items-center gap-3 flex-1">
-      <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-gradient-to-br from-blue-500/20 to-purple-500/20'}`}>
-        <Icon className={`w-5 h-5 ${isDark ? 'text-gray-400' : 'text-blue-400'}`} />
+      <div className={`p-2 rounded-xl ${isDark ? 'bg-slate-800/80 ring-1 ring-amber-200/15' : 'bg-gradient-to-br from-teal-500/25 to-amber-500/20 ring-1 ring-teal-300/20'} shadow-[0_10px_24px_-14px_rgba(45,212,191,0.8)]`}>
+        <Icon className={`w-5 h-5 ${isDark ? 'text-amber-200' : 'text-teal-300'}`} />
       </div>
       <div>
         <h2 className="text-lg sm:text-xl font-bold text-white leading-tight">
@@ -59,7 +60,7 @@ const SectionHeader = ({
     {actionText && actionLink && (
       <Link
         to={actionLink}
-        className="whitespace-nowrap text-xs sm:text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors py-1 px-2 hover:bg-blue-500/10 rounded"
+        className="whitespace-nowrap text-xs sm:text-sm font-semibold text-teal-300 hover:text-amber-200 transition-colors py-1 px-2 hover:bg-teal-500/10 rounded"
       >
         {actionText} →
       </Link>
@@ -117,27 +118,28 @@ const CheatSheetCards = () => {
     .slice(0, 8);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="spatial-deck grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {featured.map((sheet) => {
         const cat = data.categories.find((c) => c.id === sheet.category);
         return (
-          <Link
-            key={sheet.slug}
-            to={`/cheatsheets/${sheet.slug}`}
-            className="card-3d group bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 rounded-xl p-4"
-          >
+          <TiltSurface key={sheet.slug} intensity={9} className="h-full">
+            <Link
+              to={`/cheatsheets/${sheet.slug}`}
+              className="card-3d group surface-3d bg-slate-800/40 hover:bg-slate-800/70 border border-white/10 hover:border-teal-400/50 rounded-2xl p-4 block h-full"
+            >
             <div className="flex items-center gap-2 mb-2">
               {cat && <span className="text-xs">{cat.icon}</span>}
               <span className="text-[10px] uppercase tracking-wider text-gray-500">{cat?.name}</span>
             </div>
-            <h3 className="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors line-clamp-2 mb-2">
+            <h3 className="text-sm font-semibold text-white group-hover:text-teal-300 transition-colors line-clamp-2 mb-2">
               {sheet.title}
             </h3>
             <p className="text-xs text-gray-400 line-clamp-2 mb-3">{sheet.shortDescription}</p>
             <span className={`text-xs px-2 py-0.5 rounded ${DIFFICULTY_COLORS[sheet.difficulty] || DIFFICULTY_COLORS.Intermediate}`}>
               {sheet.difficulty}
             </span>
-          </Link>
+            </Link>
+          </TiltSurface>
         );
       })}
     </div>
@@ -159,7 +161,7 @@ const HomePage = () => {
       {/* Organization + WebSite JSON-LD is emitted in the static index.html shell
           so Googlebot sees it without JS. Do not duplicate here. */}
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white overflow-x-clip">
+      <div className="min-h-screen text-white overflow-x-clip">
         {/* ============================================================================
             HERO SECTION - Compact
             ============================================================================ */}
@@ -176,27 +178,27 @@ const HomePage = () => {
             <FeaturedToolsRail />
           </Suspense>
 
-          <section className="rounded-xl border border-slate-700/70 bg-slate-800/40 px-5 py-4 sm:px-6 sm:py-5">
+          <section className="spatial-room surface-3d rounded-2xl border border-white/10 px-5 py-4 sm:px-6 sm:py-5">
             <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
               Written by{' '}
-              <Link to="/about" className="text-blue-400 hover:text-blue-300 font-semibold">
+              <Link to="/about" className="text-teal-300 hover:text-amber-200 font-semibold">
                 Sainath Reddy
               </Link>
               , a data engineer in Hyderabad. These are production notes — warehouse cost
               incidents, dbt review comments, Cortex token bills — not rewritten vendor docs.
               Read the{' '}
-              <Link to="/editorial-standards" className="text-blue-400 hover:text-blue-300 font-semibold">
+              <Link to="/editorial-standards" className="text-teal-300 hover:text-amber-200 font-semibold">
                 editorial standards
               </Link>
               {' '}or skip to the{' '}
-              <Link to="/articles" className="text-blue-400 hover:text-blue-300 font-semibold">
+              <Link to="/articles" className="text-teal-300 hover:text-amber-200 font-semibold">
                 article library
               </Link>.
             </p>
           </section>
 
           {/* 🌟 FEATURED POSTS - Optimized section */}
-          <section>
+          <section className="spatial-room">
             <SectionHeader
               icon={Sparkles}
               title="Featured"
@@ -210,7 +212,7 @@ const HomePage = () => {
           </section>
 
           {/* 🔥 TRENDING POSTS - Compact grid */}
-          <section>
+          <section className="spatial-room">
             <SectionHeader
               icon={TrendingUp}
               title="Trending Now"
@@ -228,7 +230,7 @@ const HomePage = () => {
           </Suspense>
 
           {/* 🛠 TECH CATEGORIES - Grid view */}
-          <section>
+          <section className="spatial-room">
             <SectionHeader
               icon={FileText}
               title="Technologies"
@@ -241,7 +243,7 @@ const HomePage = () => {
             </Suspense>
           </section>
 
-          <section>
+          <section className="spatial-room">
             <SectionHeader
               icon={BookOpen}
               title="Cheat Sheets & Interview Prep"
@@ -252,56 +254,60 @@ const HomePage = () => {
             <CheatSheetCards />
           </section>
 
-          <section>
+          <section className="spatial-room">
             <SectionHeader
               icon={Wrench}
               title="Interview prep"
               subtitle="Practice questions and certification paths"
             />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <TiltSurface intensity={8}>
               <Link
                 to="/tools"
-                className="card-3d group bg-gradient-to-br from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 border border-slate-700 hover:border-blue-500/50 rounded-xl p-5"
+                className="card-3d group surface-3d bg-gradient-to-br from-teal-500/15 to-amber-500/12 hover:from-teal-500/25 hover:to-amber-500/20 border border-white/10 hover:border-teal-400/50 rounded-2xl p-5 block h-full"
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-blue-500/20">
-                    <Wrench className="w-5 h-5 text-blue-400" />
+                  <div className="p-2 rounded-lg bg-teal-500/20">
+                    <Wrench className="w-5 h-5 text-teal-300" />
                   </div>
-                  <h3 className="text-base font-semibold text-white group-hover:text-blue-400 transition-colors">
+                  <h3 className="text-base font-semibold text-white group-hover:text-teal-300 transition-colors">
                     Browse the full tools hub
                   </h3>
                 </div>
                 <p className="text-sm text-gray-400">
                   Filter by Cost, SQL, Convert, or pipeline stage. Every calculator stays in the browser.
                 </p>
-                <span className="inline-block mt-3 text-xs font-semibold text-blue-400 group-hover:text-blue-300">
+                <span className="inline-block mt-3 text-xs font-semibold text-teal-300 group-hover:text-amber-200">
                   Open tools hub →
                 </span>
               </Link>
+              </TiltSurface>
+              <TiltSurface intensity={8}>
               <Link
                 to="/interview-prep"
-                className="card-3d group bg-gradient-to-br from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 border border-slate-700 hover:border-purple-500/50 rounded-xl p-5"
+                className="card-3d group surface-3d bg-gradient-to-br from-rose-500/12 to-amber-500/12 hover:from-rose-500/20 hover:to-amber-500/20 border border-white/10 hover:border-amber-400/50 rounded-2xl p-5 block h-full"
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-purple-500/20">
-                    <GraduationCap className="w-5 h-5 text-purple-400" />
+                  <div className="p-2 rounded-lg bg-amber-500/20">
+                    <GraduationCap className="w-5 h-5 text-amber-300" />
                   </div>
-                  <h3 className="text-base font-semibold text-white group-hover:text-purple-400 transition-colors">
+                  <h3 className="text-base font-semibold text-white group-hover:text-amber-300 transition-colors">
                     Interview Prep Hub
                   </h3>
                 </div>
                 <p className="text-sm text-gray-400">
                   Curated Snowflake, SQL, Python, dbt & system-design interview questions with expert answers for data engineering roles.
                 </p>
-                <span className="inline-block mt-3 text-xs font-semibold text-purple-400 group-hover:text-purple-300">
+                <span className="inline-block mt-3 text-xs font-semibold text-amber-300 group-hover:text-teal-200">
                   Start preparing →
                 </span>
               </Link>
+              </TiltSurface>
             </div>
           </section>
 
           {/* 📚 RECENT POSTS - Compact list */}
-          <section>
+          <section className="spatial-room">
             <SectionHeader
               icon={FileText}
               title="Latest Articles"

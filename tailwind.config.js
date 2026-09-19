@@ -66,6 +66,10 @@ module.exports = {
 					to: { height: 0 },
 				},
 			},
+			boxShadow: {
+				'3d': '0 18px 40px -20px rgba(11, 7, 20, 0.85), 0 0 0 1px rgba(45, 212, 191, 0.16), inset 0 1px 0 rgba(255,236,210,0.1)',
+				'3d-lg': '0 28px 60px -24px rgba(11, 7, 20, 0.9), 0 0 40px -12px rgba(232, 184, 109, 0.32)',
+			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',

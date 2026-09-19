@@ -487,7 +487,7 @@ export default function CostCalculatorPage() {
         <SponsorPlacement category="snowflake" slug="snowflake-cost-calculator" />
 
         {/* Phase 2: practitioner intro + when-to-use (pSEO depth) */}
-        <section className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 md:p-8">
+        <section className="surface-3d rounded-2xl p-6 md:p-8">
           <h2 className="sr-only">How Snowflake pricing works and when to use this calculator</h2>
           <div className="prose prose-invert prose-sm md:prose-base max-w-none text-gray-300 leading-relaxed">
             {INTRO.split('\n\n').map((para, i) => {
@@ -952,7 +952,7 @@ function TipLink({ to, title, desc }) {
   return (
     <Link
       to={to}
-      className="block p-4 bg-slate-900/50 hover:bg-slate-900 border border-slate-700 hover:border-blue-500 rounded-xl transition-colors"
+      className="block p-4 surface-3d hover:bg-slate-900/70 border border-white/10 hover:border-blue-500 rounded-xl card-3d"
     >
       <div className="text-blue-300 font-medium mb-1">{title} →</div>
       <div className="text-gray-400 text-sm">{desc}</div>

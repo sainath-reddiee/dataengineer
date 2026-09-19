@@ -4,18 +4,18 @@ import { cva } from 'class-variance-authority';
 import React from 'react';
 
 const buttonVariants = cva(
-	'inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+	'inline-flex items-center justify-center rounded-lg text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
 	{
 		variants: {
 			variant: {
-				default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+				default: 'bg-gradient-to-b from-teal-400 to-teal-600 text-slate-950 shadow-[0_10px_22px_-12px_rgba(13,148,136,0.9),inset_0_1px_0_rgba(255,255,255,0.22)] hover:from-amber-300 hover:to-teal-500 hover:-translate-y-0.5',
 				destructive:
           'bg-destructive text-destructive-foreground hover:bg-destructive/90',
 				outline:
-          'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+          'border border-white/15 bg-white/[0.04] backdrop-blur-sm hover:bg-white/10 hover:text-accent-foreground',
 				secondary:
           'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-				ghost: 'hover:bg-accent hover:text-accent-foreground',
+				ghost: 'hover:bg-white/10 hover:text-accent-foreground',
 				link: 'text-primary underline-offset-4 hover:underline',
 			},
 			size: {

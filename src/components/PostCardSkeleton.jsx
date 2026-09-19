@@ -2,7 +2,7 @@ import React from 'react';
 
 const PostCardSkeleton = () => {
   return (
-    <div className="blog-card rounded-2xl overflow-hidden animate-pulse">
+    <div className="holo-plate blog-card rounded-2xl overflow-hidden animate-pulse">
       <div className="relative">
         <div className="w-full h-48 bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700"></div>
         <div className="absolute top-4 left-4">

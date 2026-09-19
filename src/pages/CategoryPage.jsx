@@ -358,7 +358,7 @@ const CategoryPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-center mb-8"
+            className="text-center mb-8 holo-archive-hero"
           >
             <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-sm border border-blue-400/30 mb-6">
               {getCategoryIcon(categoryName, 'h-8 w-8 md:h-10 md:w-10')}
@@ -400,7 +400,7 @@ const CategoryPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.25 }}
-              className="mt-12 bg-slate-800/40 border border-slate-700 rounded-xl p-6 md:p-8"
+              className="mt-12 reading-chamber p-6 md:p-8"
             >
               <h2 className="text-2xl font-bold text-white mb-4">
                 About {currentCategory.name}
@@ -440,7 +440,7 @@ const CategoryPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-10 bg-slate-800/40 border border-slate-700 rounded-xl p-6 md:p-8"
+              className="mt-10 surface-3d rounded-2xl p-6 md:p-8"
             >
               <h2 className="text-2xl font-bold text-white mb-4">
                 Frequently Asked Questions

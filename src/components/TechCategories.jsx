@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Zap, RefreshCw } from 'lucide-react';
 import { useCategories } from '@/hooks/useWordPress';
 import { MIN_INDEXABLE_CATEGORY_COUNT } from '@/data/thinTags';
+import TiltSurface from '@/components/TiltSurface';
 
 // Icon provider with drop-shadow for visibility
 const getCategoryIcon = (category, className = 'h-8 w-8') => {
@@ -92,11 +93,12 @@ const SparkleCard = ({ category }) => {
   const MotionLink = motion.create(Link);
 
   return (
+    <TiltSurface intensity={8} className="h-full">
     <MotionLink to={path} className="block h-full group" initial="rest" whileHover="hover">
       <motion.div
         variants={{ rest: { scale: 1 }, hover: { scale: 1.03 } }}
         transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-        className="tech-card rounded-2xl p-4 sm:p-6 md:p-8 relative overflow-hidden h-full flex flex-col min-h-[200px] sm:min-h-[280px]"
+        className="tech-card rounded-2xl p-4 sm:p-6 md:p-8 relative overflow-hidden h-full flex flex-col min-h-[200px] sm:min-h-[280px] surface-3d"
       >
         {/* Spark emitters in each corner */}
         {[...Array(4)].map((_, i) => (
@@ -145,6 +147,7 @@ const SparkleCard = ({ category }) => {
         </div>
       </motion.div>
     </MotionLink>
+    </TiltSurface>
   );
 };
 
@@ -180,7 +183,7 @@ const TechCategories = ({ compact = false }) => {
   const grid = (
     <>
       {loading && (<div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div></div>)}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="spatial-deck grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {categories.map((category, index) => (
           <motion.div key={category.name} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: index * 0.1 }}>
             <SparkleCard category={category} />

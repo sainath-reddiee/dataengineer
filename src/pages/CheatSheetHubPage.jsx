@@ -136,7 +136,7 @@ export default function CheatSheetHubPage() {
         <script type="application/ld+json">{JSON.stringify(collectionSchema)}</script>
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+      <div className="min-h-screen ">
         {/* Breadcrumb */}
         <div className="bg-slate-800/80 border-b border-slate-700/50">
           <div className="max-w-6xl mx-auto px-4 py-3">
@@ -175,7 +175,7 @@ export default function CheatSheetHubPage() {
 
         {/* Search and Filters */}
         <div className="max-w-6xl mx-auto px-4 -mt-6">
-          <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700 rounded-2xl p-6">
+          <div className="bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 surface-3d">
             {/* Search */}
             <div className="relative mb-6">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -278,7 +278,7 @@ export default function CheatSheetHubPage() {
                         <Link
                           key={sheet.slug}
                           to={`/cheatsheets/${sheet.slug}`}
-                          className="group bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 rounded-xl p-6 transition-all duration-200"
+                          className="group card-3d surface-3d hover:border-blue-500/50 rounded-xl p-6"
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1">

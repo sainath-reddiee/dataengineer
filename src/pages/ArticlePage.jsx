@@ -188,7 +188,7 @@ const RelatedTools = ({ post }) => {
   const Column = ({ icon: Icon, title, items, base, accent }) => {
     if (!items || items.length === 0) return null;
     return (
-      <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 backdrop-blur-sm">
+      <div className="rounded-2xl border border-white/10 bg-slate-900/40 p-5 backdrop-blur-sm surface-3d">
         <h3 className={`flex items-center gap-2 text-lg font-bold ${accent} mb-3`}>
           <Icon className="h-5 w-5" />
           {title}
@@ -252,7 +252,7 @@ const RecommendedCourses = ({ post }) => {
               target="_blank"
               rel="noopener noreferrer sponsored"
               onClick={() => handleClick(course)}
-              className={`group block rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 ${course.isSponsored ? 'hover:border-amber-500/40 hover:bg-slate-800/60 ring-1 ring-amber-500/10' : 'hover:border-blue-400/50 hover:bg-slate-800/60'}`}
+              className={`group card-3d block rounded-2xl border border-white/10 bg-slate-900/40 p-5 backdrop-blur-sm ${course.isSponsored ? 'hover:border-amber-500/40 hover:bg-slate-800/60 ring-1 ring-amber-500/10' : 'hover:border-blue-400/50 hover:bg-slate-800/60'}`}
             >
               <div className="flex items-center justify-between mb-3">
                 {course.isSponsored ? (
@@ -718,7 +718,7 @@ const ArticlePage = () => {
 
         <motion.article initial={false} animate={{ opacity: 1 }} className="space-y-8">
           {/* Hero Image */}
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl max-h-[280px] sm:max-h-[340px] md:max-h-[400px] aspect-video">
+          <div className="relative holo-frame rounded-3xl overflow-hidden shadow-2xl max-h-[280px] sm:max-h-[340px] md:max-h-[400px] aspect-video">
             <LazyImage
               src={safePost.image}
               alt={safePost.title}
@@ -765,7 +765,7 @@ const ArticlePage = () => {
               {/* Desktop: 2-column grid with sidebar ToC */}
               <div className="flex gap-8">
                 <div className="flex-1 min-w-0">
-                  <div className="prose prose-invert prose-lg md:prose-xl max-w-none prose-headings:text-white prose-h2:text-3xl prose-h2:font-bold prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-pink-400 prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
+                  <div className="reading-chamber prose prose-invert prose-lg md:prose-xl max-w-none prose-headings:text-white prose-h2:text-3xl prose-h2:font-bold prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-pink-400 prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
                     <div
                       dangerouslySetInnerHTML={{ __html: processedHtml }}
                       className="article-content"
@@ -787,7 +787,7 @@ const ArticlePage = () => {
             <motion.div
               initial={false}
               animate={{ opacity: 1 }}
-              className="my-8 p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl border border-slate-700/50 backdrop-blur-sm"
+              className="my-8 p-6 surface-3d rounded-2xl"
             >
               <h3 className="text-xl font-bold mb-4 text-white flex items-center gap-2">
                 <Tag className="h-6 w-6 text-blue-400" />

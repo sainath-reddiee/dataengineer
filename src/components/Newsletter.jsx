@@ -86,12 +86,12 @@ const Newsletter = () => {
               transition={{ duration: 0.6 }}
               className="max-w-4xl mx-auto"
             >
-              <div className="glass-effect rounded-2xl p-8 md:p-12 text-center">
+              <div className="glass-effect holo-frame rounded-3xl p-8 md:p-12 text-center">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.1 }}
-                  className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-6 shadow-xl"
+                  className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-6 shadow-xl btn-3d"
                 >
                   <Mail className="h-8 w-8 text-white" />
                 </motion.div>
@@ -137,12 +137,12 @@ const Newsletter = () => {
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="you@example.com"
                           disabled={loading || isBlocked}
-                          className="flex-1 px-5 py-3.5 rounded-full bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm disabled:opacity-50"
+                          className="flex-1 px-5 py-3.5 rounded-full bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm disabled:opacity-50 backdrop-blur-sm"
                         />
                         <button
                           type="submit"
                           disabled={loading || isBlocked}
-                          className="inline-flex items-center justify-center px-7 py-3.5 rounded-full font-bold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-xl transition-all duration-300 group disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="inline-flex items-center justify-center px-7 py-3.5 rounded-full font-bold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-xl btn-3d transition-all duration-300 group disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {loading ? (
                             <>

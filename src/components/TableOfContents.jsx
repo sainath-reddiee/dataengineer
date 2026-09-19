@@ -69,7 +69,7 @@ const TableOfContents = ({ headings = [] }) => {
     <>
       {/* Desktop: Sticky sidebar */}
       <nav aria-label="Table of contents" className="hidden xl:block sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
-        <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 backdrop-blur-sm">
+        <div className="surface-3d rounded-xl p-4">
           <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
             <List className="w-4 h-4" />
             On This Page

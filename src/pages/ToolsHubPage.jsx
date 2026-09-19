@@ -148,9 +148,9 @@ export default function ToolsHubPage() {
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+      <div className="min-h-screen">
         {/* Breadcrumb */}
-        <div className="bg-slate-800/80 border-b border-slate-700/50">
+        <div className="border-b border-white/10 bg-slate-950/30 backdrop-blur-md">
           <div className="max-w-6xl mx-auto px-4 py-3">
             <nav className="flex items-center gap-2 text-sm" aria-label="Breadcrumb">
               <Link to="/" className="text-gray-300 hover:text-white transition-colors">
@@ -244,7 +244,7 @@ export default function ToolsHubPage() {
               const Icon = TOOL_ICONS[tool.icon] || Wrench;
               const cardInner = (
                 <div className="flex items-start gap-4">
-                  <div className="shrink-0 w-12 h-12 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
+                  <div className="shrink-0 w-12 h-12 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center shadow-[0_10px_24px_-12px_rgba(59,130,246,0.8)]">
                     <Icon className="w-6 h-6 text-blue-300" aria-hidden="true" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -271,8 +271,8 @@ export default function ToolsHubPage() {
                 </div>
               );
 
-              const cardClass =
-                'group block bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 rounded-2xl p-4 sm:p-6 h-full transition-all duration-200';
+                const cardClass =
+                'group card-3d block surface-3d hover:bg-slate-800/70 border border-white/10 hover:border-blue-500/50 rounded-2xl p-4 sm:p-6 h-full';
 
               return (
                 <motion.div
@@ -311,7 +311,7 @@ export default function ToolsHubPage() {
 
         {/* How to choose */}
         <div className="max-w-6xl mx-auto px-4 py-8">
-          <div className="bg-slate-800/40 border border-slate-700/50 rounded-2xl p-6 md:p-8">
+          <div className="surface-3d rounded-2xl p-6 md:p-8">
             <h2 className="text-2xl font-bold text-white mb-3">Which tool should I use?</h2>
             <ul className="text-gray-300 space-y-2 list-disc pl-5">
               <li>
@@ -428,7 +428,7 @@ export default function ToolsHubPage() {
               <Link
                 key={sheet.slug}
                 to={`/cheatsheets/${sheet.slug}`}
-                className="group bg-slate-800/40 border border-slate-700/50 hover:border-blue-500/60 rounded-xl p-5 transition-all"
+                className="group card-3d surface-3d hover:border-blue-500/60 rounded-xl p-5"
               >
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="text-white font-semibold group-hover:text-blue-300">
@@ -459,7 +459,7 @@ export default function ToolsHubPage() {
             {FAQS.map((f, i) => (
               <div
                 key={i}
-                className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5"
+                className="surface-3d rounded-xl p-5"
               >
                 <h3 className="text-white font-semibold mb-2">{f.q}</h3>
                 <p className="text-gray-300 text-sm leading-relaxed">{f.a}</p>
@@ -470,7 +470,7 @@ export default function ToolsHubPage() {
 
         {/* CTA */}
         <div className="max-w-6xl mx-auto px-4 pb-16">
-          <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-2xl p-8 text-center">
+          <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-2xl p-8 text-center surface-3d">
             <Sparkles className="w-10 h-10 text-blue-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-white mb-2">
               Want deeper data engineering guidance?

@@ -219,7 +219,7 @@ const AboutPage = () => {
 
           {/* ── HERO ─────────────────────────────────────── */}
           <motion.section aria-labelledby="about-hero-title" {...mv(0)}>
-            <div className="relative overflow-hidden rounded-3xl border border-slate-700/40 bg-gradient-to-br from-slate-900/90 via-slate-800/60 to-slate-900/90 p-8 md:p-12 text-center shadow-2xl shadow-blue-900/10">
+            <div className="relative overflow-hidden rounded-3xl border border-white/12 bg-gradient-to-br from-slate-900/80 via-slate-800/50 to-slate-900/80 p-8 md:p-12 text-center shadow-2xl shadow-blue-900/20 surface-3d">
               {/* Decorative blobs */}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-cyan-600/5 rounded-3xl" />
               <div className="pointer-events-none absolute -top-24 -right-24 w-80 h-80 bg-blue-500/8 rounded-full blur-3xl" />
@@ -282,7 +282,7 @@ const AboutPage = () => {
                       target={href.startsWith('mailto:') ? undefined : '_blank'}
                       rel={href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
                       aria-label={label}
-                      className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-slate-700/60 bg-slate-800/60 text-gray-300 text-sm font-medium transition-all ${color} focus:outline-none focus:ring-2 focus:ring-blue-400/60`}
+                      className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-white/12 bg-slate-800/60 text-gray-300 text-sm font-medium transition-all hover:-translate-y-0.5 ${color} focus:outline-none focus:ring-2 focus:ring-blue-400/60`}
                     >
                       <Icon className="h-4 w-4" aria-hidden="true" />
                       {label}
@@ -309,7 +309,7 @@ const AboutPage = () => {
               {STATS.map((stat) => (
                 <div
                   key={stat.label}
-                  className="relative overflow-hidden bg-gradient-to-br from-slate-800/60 to-slate-700/60 hover:from-slate-800 hover:to-slate-700 border border-slate-700/40 hover:border-slate-600/60 rounded-2xl p-4 sm:p-5 text-center transition-all group"
+                  className="relative overflow-hidden bg-gradient-to-br from-slate-800/60 to-slate-700/60 hover:from-slate-800 hover:to-slate-700 border border-white/10 hover:border-slate-600/60 rounded-2xl p-4 sm:p-5 text-center transition-all group card-3d"
                 >
                   <div className={`inline-flex p-2.5 bg-gradient-to-br ${stat.color} rounded-xl mb-3 shadow-lg group-hover:scale-110 transition-transform`}>
                     <stat.icon className="h-5 w-5 text-white" aria-hidden="true" />
@@ -418,7 +418,7 @@ const AboutPage = () => {
               {FEATURED_PROJECTS.map((project) => (
                 <div
                   key={project.title}
-                  className="relative overflow-hidden bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/80 border border-slate-700/50 hover:border-blue-500/40 rounded-2xl p-5 shadow-xl transition-all hover:-translate-y-1 flex flex-col justify-between group"
+                  className="relative overflow-hidden bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/80 border border-white/10 hover:border-blue-500/40 rounded-2xl p-5 shadow-xl transition-all hover:-translate-y-1 flex flex-col justify-between group card-3d"
                 >
                   <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl ${project.color} opacity-10 rounded-bl-full pointer-events-none`} />
                   <div>

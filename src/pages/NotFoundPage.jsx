@@ -52,7 +52,7 @@ const NotFoundPage = () => {
           <form
             onSubmit={handleSubmit}
             role="search"
-            className="flex items-center gap-2 mx-auto max-w-xl bg-slate-900/60 border border-slate-700/60 rounded-full px-4 py-2 backdrop-blur-sm focus-within:border-blue-400/70"
+          className="flex items-center gap-2 mx-auto max-w-xl bg-slate-900/50 border border-white/15 rounded-full px-4 py-2 backdrop-blur-sm focus-within:border-blue-400/70 surface-3d"
           >
             <Search className="h-5 w-5 text-gray-400 shrink-0" aria-hidden="true" />
             <input

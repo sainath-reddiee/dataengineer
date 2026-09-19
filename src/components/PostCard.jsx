@@ -8,6 +8,7 @@ import TagsList from './TagsList';
 import FreshnessBadge from './FreshnessBadge';
 import { useViewCount } from '@/hooks/usePopularity';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
+import TiltSurface from '@/components/TiltSurface';
 
 const isMobile = window.innerWidth <= 768;
 
@@ -49,10 +50,11 @@ const PostCard = ({ post }) => {
   };
 
   return (
+    <TiltSurface intensity={10} className="h-full">
     <MotionLink
       to={`/articles/${post.slug}`}
       reloadDocument={ADSENSE_REVIEW_MODE}
-      className="relative block blog-card rounded-xl overflow-hidden group h-full"
+      className="holo-plate relative block blog-card rounded-2xl overflow-hidden group h-full"
       variants={cardVariants}
       initial="rest"
       whileHover="hover"
@@ -121,7 +123,7 @@ const PostCard = ({ post }) => {
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
         <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
-          <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+          <span className="bg-gradient-to-r from-teal-500 to-amber-500 text-slate-950 px-3 py-1 rounded-full text-xs font-semibold">
             {post.category}
           </span>
           <FreshnessBadge date={post.date} modifiedDate={post.modified} />
@@ -135,7 +137,7 @@ const PostCard = ({ post }) => {
       </div>
 
       <div className="p-6">
-        <h3 className="text-lg font-bold mb-3 group-hover:text-blue-400 transition-colors line-clamp-2">
+          <h3 className="text-lg font-bold mb-3 group-hover:text-teal-300 transition-colors line-clamp-2">
           {post.title}
         </h3>
         <p className="text-gray-400 text-sm mb-4 line-clamp-3">
@@ -187,7 +189,9 @@ const PostCard = ({ post }) => {
           <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
         </div>
       </div>
+      <span className="holo-scan" aria-hidden="true" />
     </MotionLink>
+    </TiltSurface>
   );
 };
 

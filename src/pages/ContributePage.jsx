@@ -217,7 +217,7 @@ const ContributePage = () => {
               <Sparkles className="h-4 w-4 text-blue-400" />
               <span className="text-sm font-medium text-blue-300">Community Contributions</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-black mb-6 leading-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-black mb-6 leading-tight tracking-tight">
               Share Your <span className="gradient-text">Expertise</span>
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl text-gray-300 leading-relaxed max-w-3xl mx-auto mb-8">

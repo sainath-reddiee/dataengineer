@@ -3,6 +3,7 @@ import { ArrowRight, Wrench } from 'lucide-react';
 import { FEATURED_TOOLS, toolHref } from '@/data/toolsCatalog';
 import { TOOL_ICONS } from '@/data/toolIcons';
 import { ADSENSE_REVIEW_MODE, isReviewAllowlistedTool } from '@/data/adsenseQualityGate';
+import TiltSurface from '@/components/TiltSurface';
 
 const FeaturedToolsRail = () => {
   const tools = ADSENSE_REVIEW_MODE
@@ -22,7 +23,7 @@ const FeaturedToolsRail = () => {
       </div>
       <Link
         to="/tools"
-        className="inline-flex items-center gap-1 text-xs font-semibold text-blue-400 hover:text-blue-300 sm:text-sm"
+        className="inline-flex items-center gap-1 text-xs font-semibold text-teal-300 hover:text-amber-200 sm:text-sm"
       >
         All tools <ArrowRight className="h-3.5 w-3.5" />
       </Link>
@@ -33,28 +34,37 @@ const FeaturedToolsRail = () => {
         const Icon = TOOL_ICONS[tool.icon] || Wrench;
         const inner = (
           <>
-            <span className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/15 ring-1 ring-blue-400/20">
-              <Icon className="h-5 w-5 text-blue-300" />
+            <span className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-teal-500/15 ring-1 ring-teal-400/25 shadow-[0_10px_20px_-12px_rgba(45,212,191,0.85)]">
+              <Icon className="h-5 w-5 text-teal-300" />
             </span>
-            <span className="block text-sm font-semibold text-white group-hover:text-blue-300">
+            <span className="block text-sm font-semibold text-white group-hover:text-teal-300">
               {tool.title}
             </span>
             <span className="mt-1 block text-xs text-slate-400">{tool.tagline}</span>
-            <span className="mt-3 inline-flex text-[11px] font-semibold text-blue-300 sm:hidden">
+            <span className="mt-3 inline-flex text-[11px] font-semibold text-teal-300 sm:hidden">
               Open →
             </span>
           </>
         );
         const className =
-          'card-3d group w-[78%] shrink-0 snap-start rounded-2xl border border-white/10 bg-slate-900/60 p-4 sm:w-auto';
-        return tool.external ? (
-          <a key={tool.slug} href={tool.url} className={className}>
+          'card-3d group block h-full rounded-2xl border border-white/10 bg-slate-900/50 p-4 surface-3d';
+        const card = tool.external ? (
+          <a href={tool.url} className={className}>
             {inner}
           </a>
         ) : (
-          <Link key={tool.slug} to={toolHref(tool)} className={className}>
+          <Link to={toolHref(tool)} className={className}>
             {inner}
           </Link>
+        );
+        return (
+          <TiltSurface
+            key={tool.slug}
+            intensity={8}
+            className="w-[78%] shrink-0 snap-start sm:w-auto"
+          >
+            {card}
+          </TiltSurface>
         );
       })}
     </div>

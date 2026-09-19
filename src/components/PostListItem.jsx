@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import LazyImage from './LazyImage';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
+import TiltSurface from '@/components/TiltSurface';
 
 const MotionLink = motion.create(Link);
 
@@ -64,10 +65,11 @@ const PostListItem = ({ post }) => {
   };
 
   return (
+    <TiltSurface intensity={7} className="w-full">
     <MotionLink
       to={`/articles/${post.slug}`}
       reloadDocument={ADSENSE_REVIEW_MODE}
-      className="relative block w-full p-4 rounded-xl group overflow-hidden"
+      className="relative block w-full p-4 rounded-2xl group overflow-hidden surface-3d"
       variants={cardVariants}
       initial="rest"
       whileHover="hover"
@@ -123,10 +125,10 @@ const PostListItem = ({ post }) => {
         </div>
         
         <div className="flex-1">
-          <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold mb-3 inline-block">
+          <span className="bg-gradient-to-r from-teal-500 to-amber-500 text-slate-950 px-3 py-1 rounded-full text-xs font-semibold mb-3 inline-block">
             {post.category}
           </span>
-          <h3 className="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors">
+          <h3 className="text-xl font-bold mb-2 group-hover:text-teal-300 transition-colors">
             {post.title}
           </h3>
           <p className="text-gray-400 text-sm mb-4 line-clamp-2">
@@ -149,6 +151,7 @@ const PostListItem = ({ post }) => {
         </div>
       </div>
     </MotionLink>
+    </TiltSurface>
   );
 };
 
