@@ -71,9 +71,21 @@ const initApp = () => {
   }, 1000);
 };
 
-// Wait for DOM to be ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
+// Crawlers keep SSG immediately. Humans let the static hero paint first
+// (FCP/LCP) then hydrate on idle so the 300 KB app bundle is not on the
+// critical path for the first contentful text.
+const bootApp = () => {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp, { once: true });
+  } else {
+    initApp();
+  }
+};
+
+if (isCrawlerUserAgent()) {
+  bootApp();
+} else if (typeof window.requestIdleCallback === 'function') {
+  window.requestIdleCallback(bootApp, { timeout: 1200 });
 } else {
-  initApp();
+  bootApp();
 }

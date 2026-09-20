@@ -5,6 +5,7 @@ import fs from 'fs';
 import vitePrerender from './plugins/vite-plugin-prerender.mjs';
 import { upsertSeoOverrideSource } from './src/utils/seoOverrideFile.js';
 import { copyDuckdbAssets } from './scripts/copyDuckdbAssets.js';
+import { cleanHomepagePaintHtml, deferRenderBlockingStylesheets } from './scripts/deferRenderBlockingCss.js';
 
 const PuppeteerRenderer = vitePrerender.PuppeteerRenderer;
 
@@ -22,6 +23,18 @@ export default defineConfig({
         ].filter(Boolean)
       }
     }),
+
+    // Homepage first paint is inline CSS + the static hero. The Tailwind
+    // bundle (~24 KB) was render-blocking for 1.2s on slow 4G / PSI mobile.
+    {
+      name: 'defer-render-blocking-css',
+      transformIndexHtml: {
+        order: 'post',
+        handler(html) {
+          return cleanHomepagePaintHtml(html);
+        },
+      },
+    },
 
     // Dev API to save sponsors to local JSON file
     {
@@ -128,7 +141,29 @@ export default defineConfig({
         // Block third-party requests (ads, analytics) to speed up rendering
         skipThirdPartyRequests: true,
       }),
+      postProcess(renderedRoute) {
+        if (renderedRoute.route === '/') {
+          renderedRoute.html = cleanHomepagePaintHtml(renderedRoute.html);
+        } else {
+          renderedRoute.html = deferRenderBlockingStylesheets(renderedRoute.html);
+        }
+        return renderedRoute;
+      },
     }),
+
+    // Prerender snapshots the DOM after onload flips media="print" → "all".
+    // Put the homepage CSS back off the critical path before the file ships.
+    {
+      name: 'restore-deferred-css',
+      apply: 'build',
+      enforce: 'post',
+      closeBundle() {
+        const indexPath = path.resolve(__dirname, 'dist/index.html');
+        if (!fs.existsSync(indexPath)) return;
+        const next = cleanHomepagePaintHtml(fs.readFileSync(indexPath, 'utf8'));
+        fs.writeFileSync(indexPath, next);
+      },
+    },
   ],
 
   resolve: {
@@ -155,7 +190,9 @@ export default defineConfig({
           !dep.includes('pdf-vendor') &&
           !dep.includes('linking-engine') &&
           !dep.includes('ai-vendor') &&
-          !dep.includes('markdown')
+          !dep.includes('markdown') &&
+          !dep.includes('framer-motion') &&
+          !dep.includes('/ads-')
         );
       },
     },

@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { analyzeKeyTakeaways } from '../src/utils/articleTakeaways.js';
+import { cleanHomepagePaintHtml } from './deferRenderBlockingCss.js';
 
 // Monkey-patch fs.writeFileSync to automatically clean up UTF-8 mojibake in generated HTML files
 const originalWriteFileSync = fs.writeFileSync;
@@ -7226,13 +7227,15 @@ function buildPracticeQuestionPreview(quizSlug) {
               throw new Error('Homepage article-list insertion marker was not found');
             }
             homepageHTML = enhancedHomepageHTML;
-            fs.writeFileSync(homepagePath, homepageHTML);
-            const fileStats = fs.statSync(homepagePath);
-            const fileSizeKB = (fileStats.size / 1024).toFixed(2);
-            console.log(`   âœ“ Homepage enhanced with article listings (${fileSizeKB} KB)`);
+            console.log(`   âœ“ Homepage enhanced with article listings`);
           } else {
             console.log(`   âœ“ Homepage already enhanced`);
           }
+          homepageHTML = cleanHomepagePaintHtml(homepageHTML);
+          fs.writeFileSync(homepagePath, homepageHTML);
+          const fileStats = fs.statSync(homepagePath);
+          const fileSizeKB = (fileStats.size / 1024).toFixed(2);
+          console.log(`   âœ“ Homepage CSS deferred off first paint (${fileSizeKB} KB)`);
         } else {
           console.log(`   âš ï¸ dist/index.html not found, skipping homepage enhancement`);
         }

@@ -36,7 +36,7 @@ const Hero = () => {
               DataEngineer Hub · production tutorials
             </p>
 
-            <h1 className="mb-4 text-3xl font-black leading-[1.1] tracking-tight sm:text-4xl md:text-5xl">
+            <h1 className="mb-4 text-3xl font-black leading-[1.1] tracking-tight sm:text-4xl md:text-5xl [font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,sans-serif]">
               Master{' '}
               <span className="gradient-text">Data Engineering</span>
               {' '}with Expert Tutorials

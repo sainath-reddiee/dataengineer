@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
 import {
   Bookmark,
   BookOpen,
@@ -20,8 +19,8 @@ import {
   Wrench,
   X,
 } from 'lucide-react';
-import SearchModal from '@/components/SearchModal';
-import SupportModal from '@/components/Support/SupportModal';
+const SearchModal = lazy(() => import('@/components/SearchModal'));
+const SupportModal = lazy(() => import('@/components/Support/SupportModal'));
 import { useReadingList } from '@/hooks/useReadingList';
 import { ADSENSE_REVIEW_MODE, isReviewAllowlistedTool } from '@/data/adsenseQualityGate';
 import { FEATURED_TOOLS, toolHref } from '@/data/toolsCatalog';
@@ -233,15 +232,10 @@ const Header = ({ topOffset = 0 }) => {
               <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isLearnOpen ? 'rotate-180' : ''}`} />
             </button>
 
-            <AnimatePresence>
-              {isLearnOpen && (
-                <motion.div
+            {isLearnOpen && (
+                <div
                   id="learn-menu"
                   role="menu"
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 6 }}
-                  transition={{ duration: 0.15 }}
                   className="absolute left-0 top-full z-50 mt-2 w-64 rounded-xl border border-white/10 bg-slate-950/95 p-2 shadow-2xl backdrop-blur-xl"
                 >
                   {visibleLearnLinks.map((item) => {
@@ -267,9 +261,8 @@ const Header = ({ topOffset = 0 }) => {
                       </Link>
                     );
                   })}
-                </motion.div>
-              )}
-            </AnimatePresence>
+                </div>
+            )}
           </div>
         </div>
 
@@ -337,13 +330,9 @@ const Header = ({ topOffset = 0 }) => {
         </div>
       </nav>
 
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
+      {isMenuOpen && (
+          <div
             id="mobile-menu"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
             className="border-t border-white/10 bg-slate-950/95 backdrop-blur-xl lg:hidden"
             style={{ maxHeight: `calc(100vh - ${topOffset}px - 4rem)` }}
           >
@@ -435,12 +424,15 @@ const Header = ({ topOffset = 0 }) => {
                 Explore articles
               </Link>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+      )}
 
-      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-      <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+      {(isSearchOpen || isSupportOpen) && (
+        <Suspense fallback={null}>
+          {isSearchOpen && <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />}
+          {isSupportOpen && <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />}
+        </Suspense>
+      )}
     </header>
   );
 };
