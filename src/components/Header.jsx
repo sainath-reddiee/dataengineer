@@ -26,7 +26,15 @@ import { useReadingList } from '@/hooks/useReadingList';
 import { ADSENSE_REVIEW_MODE, isReviewAllowlistedTool } from '@/data/adsenseQualityGate';
 import { FEATURED_TOOLS, toolHref } from '@/data/toolsCatalog';
 
-const REVIEW_HIDDEN_LEARN = new Set(['/glossary', '/compare', '/interview-prep', '/practice']);
+const REVIEW_HIDDEN_MAIN = new Set(['/advertise']);
+const REVIEW_HIDDEN_LEARN = new Set([
+  '/glossary',
+  '/compare',
+  '/interview-prep',
+  '/practice',
+  '/contribute',
+  '/reading-list',
+]);
 
 const MAIN_LINKS = [
   { name: 'Home', path: '/', icon: Home },
@@ -87,6 +95,9 @@ const Header = ({ topOffset = 0 }) => {
 
   const learnRef = useRef(null);
   const learnTimeout = useRef(null);
+  const visibleMainLinks = MAIN_LINKS.filter(
+    (item) => !ADSENSE_REVIEW_MODE || !REVIEW_HIDDEN_MAIN.has(item.path)
+  );
   const visibleLearnLinks = LEARN_LINKS.filter(
     (item) => !ADSENSE_REVIEW_MODE || !REVIEW_HIDDEN_LEARN.has(item.path)
   );
@@ -188,7 +199,7 @@ const Header = ({ topOffset = 0 }) => {
         </button>
 
         <div className="hidden flex-1 items-center justify-center gap-1 lg:flex">
-          {MAIN_LINKS.map((item) => (
+          {visibleMainLinks.map((item) => (
             <Link
               key={item.path}
               to={item.path}
@@ -363,7 +374,7 @@ const Header = ({ topOffset = 0 }) => {
                 </div>
               </div>
               <MobileGroup title="Main">
-                {MAIN_LINKS.map((item) => (
+                {visibleMainLinks.map((item) => (}
                   <MobileLink
                     key={item.path}
                     item={item}
@@ -385,20 +396,24 @@ const Header = ({ topOffset = 0 }) => {
               </MobileGroup>
 
               <MobileGroup title="Site">
-                <MobileLink
-                  item={{ name: 'Write for us', path: '/contribute', icon: PenLine }}
-                  active={isPathActive(currentPath, '/contribute')}
-                  onClick={() => setMobileMenuOpen(false)}
-                />
-                <MobileLink
-                  item={{
-                    name: readingListCount > 0 ? `Reading list (${readingListCount})` : 'Reading list',
-                    path: '/reading-list',
-                    icon: Bookmark,
-                  }}
-                  active={isPathActive(currentPath, '/reading-list')}
-                  onClick={() => setMobileMenuOpen(false)}
-                />
+                {!ADSENSE_REVIEW_MODE && (
+                  <MobileLink
+                    item={{ name: 'Write for us', path: '/contribute', icon: PenLine }}
+                    active={isPathActive(currentPath, '/contribute')}
+                    onClick={() => setMobileMenuOpen(false)}
+                  />
+                )}
+                {!ADSENSE_REVIEW_MODE && (
+                  <MobileLink
+                    item={{
+                      name: readingListCount > 0 ? `Reading list (${readingListCount})` : 'Reading list',
+                      path: '/reading-list',
+                      icon: Bookmark,
+                    }}
+                    active={isPathActive(currentPath, '/reading-list')}
+                    onClick={() => setMobileMenuOpen(false)}
+                  />
+                )}
                 <button
                   type="button"
                   onClick={() => {

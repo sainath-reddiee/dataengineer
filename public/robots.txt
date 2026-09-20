@@ -77,6 +77,11 @@ Disallow: /practice/
 Disallow: /advertise
 Disallow: /contribute
 Disallow: /contributors
+Disallow: /news
+Disallow: /news/
+Disallow: /newsletter
+Disallow: /newsletter/
+Disallow: /reading-list
 
 User-agent: AdsBot-Google
 Allow: /
@@ -102,6 +107,11 @@ Disallow: /practice/
 Disallow: /advertise
 Disallow: /contribute
 Disallow: /contributors
+Disallow: /news
+Disallow: /news/
+Disallow: /newsletter
+Disallow: /newsletter/
+Disallow: /reading-list
 
 User-agent: AdsBot-Google-Mobile
 Allow: /
@@ -127,6 +137,11 @@ Disallow: /practice/
 Disallow: /advertise
 Disallow: /contribute
 Disallow: /contributors
+Disallow: /news
+Disallow: /news/
+Disallow: /newsletter
+Disallow: /newsletter/
+Disallow: /reading-list
 
 # =============================================================================
 # SITEMAPS

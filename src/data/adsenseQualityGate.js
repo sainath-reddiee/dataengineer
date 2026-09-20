@@ -10,10 +10,14 @@
  *
  * While ADSENSE_REVIEW_MODE is true:
  * - glossary, compare, tags, categories, interview-prep, practice quizzes,
- *   most cheat sheets, and utility tools are noindexed
+ *   news, newsletter, reading-list, most cheat sheets, and utility tools
+ *   are noindexed
  * - they are omitted from sitemap.xml
  * - AdsBot / Mediapartners-Google are steered off those prefixes
  * - header / in-article CTAs stop walking reviewers into that inventory
+ * - long <pre> dumps are collapsed in SSG HTML so AdsBot scores prose, not
+ *   raw SQL / YAML / PySpark / JSON; humans still get full snippets in React
+ * - indexable word counts ignore code so a script dump cannot pad a thin page
  *
  * Flagship pages stay indexable: articles, about/trust pages, the tools and
  * cheat-sheet hubs, a short allowlist of calculators and reference sheets,
@@ -24,7 +28,7 @@
  */
 export const ADSENSE_REVIEW_MODE = true;
 /** Bump when held-out paths change so incremental SSG rewrites stale robots meta. */
-export const ADSENSE_GATE_VERSION = 3;
+export const ADSENSE_GATE_VERSION = 4;
 
 export const ADSENSE_REVIEW_CHEATSHEETS = [
   'snowflake-sql',
@@ -56,6 +60,10 @@ function normalizePath(pathname) {
 
 export function isReviewAllowlistedTool(slug) {
   return REVIEW_TOOL_SET.has(String(slug || ''));
+}
+
+export function isReviewAllowlistedCheatsheet(slug) {
+  return REVIEW_CHEATSHEET_SET.has(String(slug || ''));
 }
 
 export function isAdSenseNoindexPath(pathname) {
@@ -101,6 +109,8 @@ export function countIndexableWords(...values) {
     .join(' ')
     .replace(/<script\b[\s\S]*?<\/script>/gi, ' ')
     .replace(/<style\b[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<pre\b[\s\S]*?<\/pre>/gi, ' ')
+    .replace(/<code\b[\s\S]*?<\/code>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&[a-z0-9#]+;/gi, ' ')
     .replace(/[#*_`[\]()>]/g, ' ')

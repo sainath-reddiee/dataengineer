@@ -113,11 +113,15 @@ import seoOverrides, { getSEOOverride } from '../src/data/seoOverrides.js';
 import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT, MIN_INDEXABLE_CATEGORY_COUNT, MIN_INDEXABLE_WORD_COUNT } from '../src/data/thinTags.js';
 import {
   isAdSenseNoindexPath,
+  isReviewAllowlistedTool,
   ADSENSE_REVIEW_ROBOTS,
   ADSENSE_INDEX_ROBOTS,
   ADSENSE_GATE_VERSION,
+  ADSENSE_REVIEW_MODE,
   getCheatsheetIndexableWordCount,
+  countIndexableWords,
 } from '../src/data/adsenseQualityGate.js';
+import { collapseLongCodeBlocks } from '../src/utils/adsenseCodeRatio.js';
 
 function countPlainWords(...parts) {
   const text = parts
@@ -2709,6 +2713,10 @@ function getSiteNavCSS() {
 }
 
 function getSiteNavHTML() {
+  const advertiseLink = ADSENSE_REVIEW_MODE
+    ? ''
+    : `
+            <li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>`;
   return `
       <nav class="site-nav" aria-label="Site navigation">
         <div class="site-nav-inner">
@@ -2716,8 +2724,7 @@ function getSiteNavHTML() {
           <ul class="site-nav-links">
             <li><a href="https://dataengineerhub.blog/">Home</a></li>
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
-            <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
-            <li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>
+            <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>${advertiseLink}
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
           </ul>
         </div>
@@ -2905,13 +2912,24 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   // ðŸ–¼ï¸ Determine OG image: use featured image or fallback to default
   const ogImageUrl = featuredImage || 'https://dataengineerhub.blog/og-image.jpg';
 
-  // ðŸ“Š Thin content detection for articles
-  const articlePlainText = stripHTML(processedContent || '');
-  const articleWordCount = articlePlainText.split(/\s+/).filter(w => w.length > 0).length;
-  const articleRobotsDirective = robotsForWordCount(articleWordCount);
+  // Crawler-facing body: collapse long SQL/YAML/PySpark/JSON dumps during
+  // AdSense review so AdsBot scores editorial prose, not a script collection.
+  // Humans still hydrate the full WordPress snippets in React.
+  let crawlerBody = sanitizeWordPressHTML(processedContent);
+  if (ADSENSE_REVIEW_MODE) {
+    crawlerBody = collapseLongCodeBlocks(crawlerBody, {
+      title: decodeHtmlEntities(rawTitle),
+    });
+  }
+
+  // Reading time uses the full tutorial (code included). Robots / schema use
+  // prose-only words so a 2,000-token SQL dump cannot pad a thin page.
+  const readingWordCount = countPlainWords(processedContent || '');
+  const articleWordCount = countIndexableWords(crawlerBody);
+  const articleRobotsDirective = robotsForWordCount(articleWordCount, pagePath);
 
   // ðŸ“– Reading time + formatted publish date for visible byline
-  const readingTime = Math.max(1, Math.ceil(articleWordCount / 250));
+  const readingTime = Math.max(1, Math.ceil(readingWordCount / 250));
   const publishDateObj = new Date(effectivePublished);
   const formattedDate = publishDateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   const heroHtml = featuredImage
@@ -3175,6 +3193,25 @@ ${CONSENT_MODE_V2_HTML}
         background: none;
         padding: 0;
         color: #e2e8f0;
+      }
+
+      .seo-content .article-body .adsense-code-preview {
+        margin: 1.5rem 0;
+        padding: 1rem 1.15rem;
+        border-radius: 10px;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        background: rgba(15, 23, 42, 0.55);
+      }
+      .seo-content .article-body .adsense-code-preview figcaption {
+        color: #cbd5e1;
+        font-style: normal;
+        text-align: left;
+        margin: 0 0 0.75rem;
+      }
+      .seo-content .article-body .adsense-code-preview p {
+        color: #94a3b8;
+        font-size: 0.95rem;
+        margin: 0.75rem 0 0;
       }
       
       .seo-content .article-body blockquote {
@@ -3484,7 +3521,7 @@ ${CONSENT_MODE_V2_HTML}
             <li><a href="https://dataengineerhub.blog/">Home</a></li>
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
             <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
-            <li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>
+            ${ADSENSE_REVIEW_MODE ? '' : '<li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>'}
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
           </ul>
         </div>
@@ -3537,23 +3574,30 @@ ${CONSENT_MODE_V2_HTML}
             </a>
           </aside>` : ''}
 
-          ${(categoryNames || []).some(c => String(c).toLowerCase() === 'snowflake') ? `
-          <!-- Related Tools aside: every Snowflake article gets 4 tool links for internal linking + user discovery -->
+          ${(() => {
+            const isSnowflakeArticle = (categoryNames || []).some((c) => String(c).toLowerCase() === 'snowflake');
+            if (!isSnowflakeArticle) return '';
+            const relatedToolItems = [
+              { slug: 'snowflake-cost-calculator', title: 'Snowflake Cost Calculator', blurb: 'full monthly spend estimator' },
+              { slug: 'snowflake-query-cost-estimator', title: 'Query Cost Estimator', blurb: 'cost per query from bytes scanned' },
+              { slug: 'snowflake-warehouse-sizing', title: 'Warehouse Sizing', blurb: 'pick XS–6XL for your workload' },
+              { slug: 'snowflake-credit-cost', title: 'Credit → USD Converter', blurb: 'instant credit price lookup' },
+            ].filter((tool) => !ADSENSE_REVIEW_MODE || isReviewAllowlistedTool(tool.slug));
+            if (relatedToolItems.length === 0) return '';
+            return `
           <aside class="related-tools" style="background:#0f172a;border:1px solid rgba(96,165,250,0.25);border-radius:12px;padding:1.1rem 1.4rem;margin:0 0 1.75rem 0;">
             <h3 style="color:#93c5fd;font-size:1rem;margin:0 0 0.6rem;font-weight:600;">Free Snowflake Tools</h3>
             <ul style="list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr;gap:0.45rem;">
-              <li><a href="/tools/snowflake-cost-calculator" style="color:#60a5fa;text-decoration:none;font-weight:500;">Snowflake Cost Calculator</a> <span style="color:#94a3b8;font-size:0.9rem;">&mdash; full monthly spend estimator</span></li>
-              <li><a href="/tools/snowflake-query-cost-estimator" style="color:#60a5fa;text-decoration:none;font-weight:500;">Query Cost Estimator</a> <span style="color:#94a3b8;font-size:0.9rem;">&mdash; cost per query from bytes scanned</span></li>
-              <li><a href="/tools/snowflake-warehouse-sizing" style="color:#60a5fa;text-decoration:none;font-weight:500;">Warehouse Sizing</a> <span style="color:#94a3b8;font-size:0.9rem;">&mdash; pick XS&ndash;6XL for your workload</span></li>
-              <li><a href="/tools/snowflake-credit-cost" style="color:#60a5fa;text-decoration:none;font-weight:500;">Credit &rarr; USD Converter</a> <span style="color:#94a3b8;font-size:0.9rem;">&mdash; instant credit price lookup</span></li>
+              ${relatedToolItems.map((tool) => `<li><a href="/tools/${tool.slug}" style="color:#60a5fa;text-decoration:none;font-weight:500;">${escapeHtml(tool.title)}</a> <span style="color:#94a3b8;font-size:0.9rem;">&mdash; ${escapeHtml(tool.blurb)}</span></li>`).join('\n              ')}
             </ul>
-          </aside>` : ''}
+          </aside>`;
+          })()}
 
           ${keyTakeawaysHtml}
 
           <!-- 🔥 THIS IS THE KEY: FULL HTML CONTENT WITH IMAGES -->
           <div class="article-body">
-            ${sanitizeWordPressHTML(processedContent)}
+            ${crawlerBody}
           </div>
 
           <!-- AdSense: we rely on Auto Ads (enabled in AdSense UI) instead of
@@ -3892,7 +3936,11 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
     const catNames = article.categories
       .map(cid => catMap[cid])
       .filter(Boolean)
-      .map(c => `<a href="https://dataengineerhub.blog/category/${c.slug}" style="color: #60a5fa; text-decoration: none; font-size: 0.8rem; background: rgba(96,165,250,0.1); padding: 2px 8px; border-radius: 4px;">${c.name}</a>`)
+      .map((c) => (
+        ADSENSE_REVIEW_MODE
+          ? `<span style="color: #60a5fa; font-size: 0.8rem; background: rgba(96,165,250,0.1); padding: 2px 8px; border-radius: 4px;">${escapeHtml(c.name)}</span>`
+          : `<a href="https://dataengineerhub.blog/category/${c.slug}" style="color: #60a5fa; text-decoration: none; font-size: 0.8rem; background: rgba(96,165,250,0.1); padding: 2px 8px; border-radius: 4px;">${escapeHtml(c.name)}</a>`
+      ))
       .join(' ');
 
     articleListHTML += `
@@ -6453,7 +6501,7 @@ ${CONSENT_MODE_V2_HTML}
             <li><a href="https://dataengineerhub.blog/">Home</a></li>
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
             <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
-            <li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>
+            ${ADSENSE_REVIEW_MODE ? '' : '<li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>'}
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
           </ul>
         </div>

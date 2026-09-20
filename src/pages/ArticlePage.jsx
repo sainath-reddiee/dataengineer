@@ -39,7 +39,12 @@ import AuthorBioCard from '@/components/AuthorBioCard';
 import SponsorPlacement from '@/components/SponsorPlacement';
 import { isBlogOwner, OWNER_DISPLAY_NAME, OWNER_ROLE, OWNER_PROFILE_PATH } from '@/lib/contributorIdentity';
 import { useSsgArticleFallback } from '@/hooks/useSsgArticleFallback';
-import { ADSENSE_REVIEW_MODE, countIndexableWords } from '@/data/adsenseQualityGate';
+import {
+  ADSENSE_REVIEW_MODE,
+  countIndexableWords,
+  isReviewAllowlistedCheatsheet,
+  isReviewAllowlistedTool,
+} from '@/data/adsenseQualityGate';
 import { MIN_INDEXABLE_WORD_COUNT } from '@/data/thinTags';
 import { extractArticleFaqs } from '@/utils/articleFaq';
 import { analyzeKeyTakeaways } from '@/utils/articleTakeaways';
@@ -178,10 +183,14 @@ const ErrorDisplay = ({ error, onRetry, slug }) => {
 
 const RelatedTools = ({ post }) => {
   const tools = React.useMemo(() => getRelatedTools(post, 4), [post]);
-  const cheatsheets = tools.cheatsheets;
+  const cheatsheets = (tools.cheatsheets || []).filter(
+    (sheet) => !ADSENSE_REVIEW_MODE || isReviewAllowlistedCheatsheet(sheet.slug)
+  );
   const comparisons = ADSENSE_REVIEW_MODE ? [] : tools.comparisons;
   const glossary = ADSENSE_REVIEW_MODE ? [] : tools.glossary;
-  const calculators = tools.calculators || [];
+  const calculators = (tools.calculators || []).filter(
+    (tool) => !ADSENSE_REVIEW_MODE || isReviewAllowlistedTool(tool.slug)
+  );
   const total = cheatsheets.length + comparisons.length + glossary.length + calculators.length;
   if (total === 0) return null;
 
@@ -419,12 +428,18 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
     >
       {/* Category */}
       <div>
-        <Link
-          to={`/category/${safePost.category.toLowerCase()}`}
-          className="inline-flex items-center px-3 py-1.5 bg-blue-500/20 border border-blue-400/40 rounded-full text-xs font-semibold text-blue-300 hover:bg-blue-500/30 transition-all"
-        >
-          {safePost.category}
-        </Link>
+        {ADSENSE_REVIEW_MODE ? (
+          <span className="inline-flex items-center px-3 py-1.5 bg-blue-500/20 border border-blue-400/40 rounded-full text-xs font-semibold text-blue-300">
+            {safePost.category}
+          </span>
+        ) : (
+          <Link
+            to={`/category/${safePost.category.toLowerCase()}`}
+            className="inline-flex items-center px-3 py-1.5 bg-blue-500/20 border border-blue-400/40 rounded-full text-xs font-semibold text-blue-300 hover:bg-blue-500/30 transition-all"
+          >
+            {safePost.category}
+          </Link>
+        )}
       </div>
 
       {/* Title */}
@@ -793,7 +808,7 @@ const ArticlePage = () => {
                 <Tag className="h-6 w-6 text-blue-400" />
                 Related Topics
               </h3>
-              <TagsList tags={safePost.tags} showIcon={false} size="default" />
+                <TagsList tags={safePost.tags} showIcon={false} size="default" linkless={ADSENSE_REVIEW_MODE} />
             </motion.div>
           )}
 

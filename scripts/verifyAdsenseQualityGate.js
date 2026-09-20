@@ -28,6 +28,9 @@ const mustNoindex = [
   '/contribute',
   '/contributors',
   '/contributors/sainath',
+  '/news',
+  '/newsletter',
+  '/reading-list',
   '/cheatsheets/snowflake-interview-questions',
   '/cheatsheets/snowflake-cortex-ai-interview',
   '/tools/cron-expression-builder',
@@ -78,16 +81,22 @@ const shell = readFileSync(join(root, 'index.html'), 'utf8');
 const cta = readFileSync(join(root, 'src/components/InArticleCTA.jsx'), 'utf8');
 const meta = readFileSync(join(root, 'src/components/SEO/MetaTags.jsx'), 'utf8');
 
-if (!header.includes('REVIEW_HIDDEN_LEARN')) {
-  console.error('❌ Header must hide glossary/compare/practice during review');
+if (!header.includes('REVIEW_HIDDEN_LEARN') || !header.includes('REVIEW_HIDDEN_MAIN')) {
+  console.error('❌ Header must hide glossary/compare/practice and Advertise during review');
   failed += 1;
 }
 if (!footer.includes('ADSENSE_REVIEW_MODE')) {
   console.error('❌ Footer must keep glossary behind the review flag');
   failed += 1;
 }
-if (!robots.includes('Disallow: /interview-prep') || !robots.includes('Disallow: /category/')) {
-  console.error('❌ AdsBot robots must steer off interview-prep and category archives');
+if (
+  !robots.includes('Disallow: /interview-prep')
+  || !robots.includes('Disallow: /category/')
+  || !robots.includes('Disallow: /news')
+  || !robots.includes('Disallow: /newsletter')
+  || !robots.includes('Disallow: /reading-list')
+) {
+  console.error('❌ AdsBot robots must steer off interview-prep, archives, news, newsletter, and reading-list');
   failed += 1;
 }
 if (!shell.includes('cheatOk') || !shell.includes('toolOk')) {
@@ -119,6 +128,14 @@ if (!ssg.includes('isAdSenseNoindexPath(pagePath)') || !ssg.includes('categoryAr
 }
 if (!ssg.includes('function stampHeldOutRobots')) {
   console.error('❌ Incremental SSG must stamp leftover held-out HTML as noindex');
+  failed += 1;
+}
+if (!ssg.includes('collapseLongCodeBlocks')) {
+  console.error('❌ Article SSG must collapse long code dumps during AdSense review');
+  failed += 1;
+}
+if (!footer.includes('Reading List') || !footer.includes('ADSENSE_REVIEW_MODE')) {
+  console.error('❌ Footer must keep reading-list / advertise behind the review flag');
   failed += 1;
 }
 const htaccess = readFileSync(join(root, 'public/.htaccess'), 'utf8');
