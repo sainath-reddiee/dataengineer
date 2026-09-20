@@ -5,6 +5,7 @@ import fs from 'fs';
 import vitePrerender from './plugins/vite-plugin-prerender.mjs';
 import { upsertSeoOverrideSource } from './src/utils/seoOverrideFile.js';
 import { copyDuckdbAssets } from './scripts/copyDuckdbAssets.js';
+import { deferRenderBlockingStylesheets } from './scripts/deferRenderBlockingCss.js';
 
 const PuppeteerRenderer = vitePrerender.PuppeteerRenderer;
 
@@ -22,6 +23,18 @@ export default defineConfig({
         ].filter(Boolean)
       }
     }),
+
+    // Homepage first paint is inline CSS + the static hero. The Tailwind
+    // bundle (~24 KB) was render-blocking for 1.2s on slow 4G / PSI mobile.
+    {
+      name: 'defer-render-blocking-css',
+      transformIndexHtml: {
+        order: 'post',
+        handler(html) {
+          return deferRenderBlockingStylesheets(html);
+        },
+      },
+    },
 
     // Dev API to save sponsors to local JSON file
     {
@@ -129,6 +142,20 @@ export default defineConfig({
         skipThirdPartyRequests: true,
       }),
     }),
+
+    // Prerender snapshots the DOM after onload flips media="print" → "all".
+    // Put the homepage CSS back off the critical path before the file ships.
+    {
+      name: 'restore-deferred-css',
+      apply: 'build',
+      enforce: 'post',
+      closeBundle() {
+        const indexPath = path.resolve(__dirname, 'dist/index.html');
+        if (!fs.existsSync(indexPath)) return;
+        const next = deferRenderBlockingStylesheets(fs.readFileSync(indexPath, 'utf8'));
+        fs.writeFileSync(indexPath, next);
+      },
+    },
   ],
 
   resolve: {
