@@ -23,7 +23,7 @@ import { SITE_CONFIG } from '@/lib/seoConfig';
  *   { slug, title, keywords, categories }
  */
 
-import articlesData from '../../data/pseo/articles.json';
+import articlesData from '../../data/pseo/articles.json' with { type: 'json' };
 import {
     injectArticleLinks,
     buildLinkCandidates,

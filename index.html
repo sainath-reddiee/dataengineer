@@ -349,6 +349,27 @@
       /* Static nav/footer stay visible for crawlers/AdSense. DO NOT hide via CSS. */
       @media (max-width: 768px) { .site-nav-links { gap: 4px 12px; } }
 
+      /* Match React hero so the SSG → React swap does not restart LCP */
+      .deh-home-hero { min-height: 22rem; padding: 2.5rem 0 1rem; }
+      @media (min-width: 640px) { .deh-home-hero { min-height: 20rem; } }
+      .deh-home-hero .eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(147,197,253,0.8); margin-bottom: 0.75rem; }
+      .deh-home-hero .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.25rem 0 0; }
+      .deh-home-hero .hero-actions a { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; text-decoration: none; }
+      .deh-home-hero .hero-actions .primary { background: linear-gradient(135deg, #2563eb, #4f46e5); color: #fff; }
+      .deh-home-hero .hero-actions .secondary { border: 1px solid rgba(255,255,255,0.15); color: #f1f5f9; }
+
+      /* Cookie banner lives OUTSIDE #root so first paint includes it (CLS fix). */
+      #deh-cookie-banner { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; padding: 1rem; }
+      html.deh-need-consent #deh-cookie-banner { display: block; }
+      #deh-cookie-banner .deh-cookie-card { max-width: 56rem; margin: 0 auto; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 1rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.45); display: flex; flex-direction: column; gap: 1rem; }
+      #deh-cookie-banner p { margin: 0; font-size: 0.875rem; color: #cbd5e1; line-height: 1.5; }
+      #deh-cookie-banner a { color: #60a5fa; }
+      #deh-cookie-banner .deh-cookie-actions { display: flex; gap: 0.75rem; }
+      #deh-cookie-banner button { min-height: 40px; padding: 0.5rem 1rem; border: 0; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; }
+      #deh-cookie-banner [data-consent="decline"] { background: rgba(255,255,255,0.1); color: #d1d5db; }
+      #deh-cookie-banner [data-consent="accept"] { background: #2563eb; color: #fff; }
+      html.deh-consent-ready #deh-cookie-banner { display: none !important; }
+
       /* E-E-A-T author/about block on homepage */
       .seo-author-block { max-width: 1200px; margin: 2rem auto 0; padding: 2rem 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; }
       .seo-author-block h2 { color: #60a5fa; font-size: 1.5rem; margin-bottom: 0.75rem; }
@@ -383,6 +404,16 @@
          Static fallback tags removed to prevent crawlers from seeing homepage OG data on article pages. -->
     
     <script>
+      // First-paint consent: show the static banner only when a human has
+      // not decided yet. Running in <head> avoids the 0.9 CLS from a
+      // post-hydration overlay.
+      (function () {
+        try {
+          if (localStorage.getItem('cookie_consent')) return;
+        } catch (e) { /* private mode */ }
+        if (/googlebot|adsbot-google|mediapartners-google/i.test(navigator.userAgent || '')) return;
+        document.documentElement.classList.add('deh-need-consent');
+      })();
       // Performance mark
       if (typeof performance !== 'undefined' && performance.mark) {
         performance.mark('nav-start');
@@ -408,15 +439,19 @@
           </ul>
         </div>
       </nav>
-      <div class="seo-fallback">
-        <h1>Master Modern Data Engineering — Cloud, Lakehouse, Pipelines &amp; AI</h1>
+      <div class="seo-fallback deh-home-hero">
+        <p class="eyebrow">DataEngineer Hub · production tutorials</p>
+        <h1>Master Data Engineering with Expert Tutorials</h1>
 
         <p>
-          Practical, production-tested data engineering tutorials across the full modern data stack —
-          cloud data warehouses, lakehouses, orchestration, transformation, programming, and the
-          new wave of AI-on-data tooling. Every guide is written by a working data engineer, drawn
-          from real production work, and kept up to date for 2026 cloud-vendor pricing and APIs.
+          Production notes on Snowflake, dbt, Airflow, and the warehouse bill — written by a
+          working data engineer, not recycled vendor docs.
         </p>
+
+        <div class="hero-actions">
+          <a class="primary" href="/articles">Explore Articles</a>
+          <a class="secondary" href="/tools/sql-playground">SQL Playground</a>
+        </div>
 
         <nav aria-label="Main topics">
           <ul style="list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:0.5rem 1rem;">
@@ -483,6 +518,64 @@
         <p>&copy; 2026 DataEngineer Hub. All rights reserved.</p>
       </footer>
     </div>
+
+    <div id="deh-cookie-banner" role="dialog" aria-label="Cookie consent">
+      <div class="deh-cookie-card">
+        <p>
+          We use cookies and similar technologies to enhance your experience, analyze site traffic, and serve relevant ads.
+          By clicking "Accept", you consent to the use of cookies. Read our
+          <a href="/privacy-policy#cookies">Privacy Policy</a>
+          for more information.
+        </p>
+        <div class="deh-cookie-actions">
+          <button type="button" data-consent="decline">Decline</button>
+          <button type="button" data-consent="accept">Accept</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var KEY = 'cookie_consent';
+        var TS = 'cookie_consent_ts';
+        function decided() {
+          try { return !!localStorage.getItem(KEY); } catch (e) { return false; }
+        }
+        function hide() {
+          document.documentElement.classList.add('deh-consent-ready');
+          document.documentElement.classList.remove('deh-need-consent');
+          var el = document.getElementById('deh-cookie-banner');
+          if (el) el.hidden = true;
+        }
+        if (decided() || /googlebot|adsbot-google|mediapartners-google/i.test(navigator.userAgent || '')) hide();
+        function save(value) {
+          try {
+            localStorage.setItem(KEY, value);
+            localStorage.setItem(TS, String(Date.now()));
+            document.cookie = 'cookie_consent=' + value + '; path=/; max-age=31536000; SameSite=Lax; Secure';
+          } catch (e) { /* private mode */ }
+          hide();
+          if (typeof window.gtag === 'function') {
+            var granted = value === 'accepted' ? 'granted' : 'denied';
+            window.gtag('consent', 'update', {
+              ad_storage: granted,
+              ad_user_data: granted,
+              ad_personalization: granted,
+              analytics_storage: granted,
+              functionality_storage: 'granted',
+              personalization_storage: granted,
+              security_storage: 'granted'
+            });
+          }
+          try { window.dispatchEvent(new CustomEvent('consentChanged', { detail: value })); } catch (e) {}
+        }
+        document.addEventListener('click', function (event) {
+          var btn = event.target && event.target.closest && event.target.closest('[data-consent]');
+          var root = document.getElementById('deh-cookie-banner');
+          if (!btn || !root || !root.contains(btn)) return;
+          save(btn.getAttribute('data-consent') === 'accept' ? 'accepted' : 'declined');
+        });
+      })();
+    </script>
     
     <!-- Load React app -->
     <script type="module" src="/src/main.jsx"></script>

@@ -1,7 +1,7 @@
 // src/pages/HomePage.jsx - ENHANCED WITH SEO STRUCTURED DATA
 import React, { Suspense, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import Hero from '../components/Hero';
+import FeaturedToolsRail from '../components/FeaturedToolsRail';
 import MetaTags from '../components/SEO/MetaTags';
 import { Sparkles, TrendingUp, FileText, Zap, BookOpen, Wrench, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -9,7 +9,6 @@ import { Link } from 'react-router-dom';
 // cheatsheetData is large (~all cheat sheet content). We dynamic-import it so
 // it doesn't block the initial HomePage bundle / LCP.
 
-const FeaturedToolsRail = React.lazy(() => import('../components/FeaturedToolsRail'));
 const FeaturedPosts = React.lazy(() => import('../components/FeaturedPosts'));
 const TrendingPosts = React.lazy(() => import('../components/TrendingPosts'));
 const RecentPosts = React.lazy(() => import('../components/RecentPosts'));
@@ -18,7 +17,7 @@ const TechCategories = React.lazy(() => import('../components/TechCategories'));
 const Newsletter = React.lazy(() => import('../components/Newsletter'));
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
-// 🔥 OPTIMIZED SKELETON - Minimal height
+// 🔥 OPTIMIZED SKELETON - reserve height so lazy sections do not shift LCP
 const SectionSkeleton = ({ height = "h-32" }) => (
   <div className={`${height} bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-pulse rounded-lg mb-4`}>
     <div className="flex items-center justify-center h-full">
@@ -27,7 +26,7 @@ const SectionSkeleton = ({ height = "h-32" }) => (
   </div>
 );
 
-// 🎨 SECTION HEADER - Compact and modern
+// 🎨 SECTION HEADER - Compact and modern (no framer-motion on the homepage)
 const SectionHeader = ({
   icon: Icon,
   title,
@@ -36,13 +35,7 @@ const SectionHeader = ({
   actionLink,
   isDark = false
 }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 8 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, amount: 0.4 }}
-    transition={{ duration: 0.3 }}
-    className="mb-4 sm:mb-5 flex items-start justify-between gap-3"
-  >
+  <div className="mb-4 sm:mb-5 flex items-start justify-between gap-3">
     <div className="flex items-center gap-3 flex-1">
       <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-gradient-to-br from-blue-500/20 to-purple-500/20'}`}>
         <Icon className={`w-5 h-5 ${isDark ? 'text-gray-400' : 'text-blue-400'}`} />
@@ -64,7 +57,7 @@ const SectionHeader = ({
         {actionText} →
       </Link>
     )}
-  </motion.div>
+  </div>
 );
 
 // 📋 CHEAT SHEET CARDS - Featured cheat sheets on homepage
@@ -172,9 +165,9 @@ const HomePage = () => {
             ============================================================================ */}
         <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-4 sm:py-6 space-y-8 sm:space-y-10">
 
-          <Suspense fallback={<SectionSkeleton height="h-40" />}>
+          <div className="min-h-[11rem] sm:min-h-[8rem]">
             <FeaturedToolsRail />
-          </Suspense>
+          </div>
 
           <section className="rounded-xl border border-slate-700/70 bg-slate-800/40 px-5 py-4 sm:px-6 sm:py-5">
             <p className="text-sm sm:text-base text-gray-300 leading-relaxed">

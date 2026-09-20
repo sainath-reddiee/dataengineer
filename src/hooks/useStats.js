@@ -49,11 +49,11 @@ export const useStats = () => {
     const cached = readCache();
     if (cached) return { ...cached, loading: false, error: null };
     return {
-      totalArticles: 0,
-      totalCategories: 0,
+      totalArticles: 82,
+      totalCategories: 15,
       totalReaders: null,
       updateFrequency: 'Weekly',
-      loading: true,
+      loading: false,
       error: null,
     };
   });

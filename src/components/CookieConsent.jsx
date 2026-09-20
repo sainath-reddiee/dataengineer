@@ -6,9 +6,26 @@ const CONSENT_KEY = 'cookie_consent';
 const CONSENT_TIMESTAMP_KEY = 'cookie_consent_ts';
 const CONSENT_COOKIE_NAME = 'cookie_consent';
 const CONSENT_MAX_AGE_DAYS = 365; // 12 months
+const STATIC_BANNER_ID = 'deh-cookie-banner';
 
 function isBot() {
   return isCrawlerUserAgent();
+}
+
+function hideStaticBanner() {
+  if (typeof document === 'undefined') return;
+  document.documentElement.classList.add('deh-consent-ready');
+  document.documentElement.classList.remove('deh-need-consent');
+  const el = document.getElementById(STATIC_BANNER_ID);
+  if (el) el.hidden = true;
+}
+
+function showStaticBanner() {
+  if (typeof document === 'undefined') return;
+  document.documentElement.classList.remove('deh-consent-ready');
+  document.documentElement.classList.add('deh-need-consent');
+  const el = document.getElementById(STATIC_BANNER_ID);
+  if (el) el.hidden = false;
 }
 
 /**
@@ -70,30 +87,26 @@ export const revokeConsent = () => {
     });
   }
 
+  showStaticBanner();
   window.dispatchEvent(new CustomEvent('consentChanged', { detail: 'revoked' }));
 };
 
 const CookieConsent = () => {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    // Never show the consent banner to bots — they can't interact with it,
-    // and it blocks crawlers from seeing the actual page content.
-    if (isBot()) return;
-
-    const consent = getConsentStatus();
-    if (!consent) {
-      setVisible(true);
-    }
-  }, []);
+  // First paint must already include the banner for first-time visitors.
+  // A post-mount setState is what Lighthouse scores as ~0.9 CLS.
+  const [visible, setVisible] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    if (isBot()) return false;
+    return !getConsentStatus();
+  });
 
   const saveConsent = useCallback((value) => {
     localStorage.setItem(CONSENT_KEY, value);
     localStorage.setItem(CONSENT_TIMESTAMP_KEY, String(Date.now()));
     setConsentCookie(value);
+    hideStaticBanner();
     setVisible(false);
 
-    // Update Google Consent Mode v2 based on user choice
     if (typeof window.gtag === 'function') {
       const granted = value === 'accepted' ? 'granted' : 'denied';
       window.gtag('consent', 'update', {
@@ -110,8 +123,28 @@ const CookieConsent = () => {
     window.dispatchEvent(new CustomEvent('consentChanged', { detail: value }));
   }, []);
 
-  const handleAccept = useCallback(() => saveConsent('accepted'), [saveConsent]);
-  const handleDecline = useCallback(() => saveConsent('declined'), [saveConsent]);
+  useEffect(() => {
+    if (isBot() || getConsentStatus()) {
+      hideStaticBanner();
+      setVisible(false);
+    }
+
+    const onChanged = (event) => {
+      if (event?.detail === 'revoked') {
+        setVisible(!isBot());
+        return;
+      }
+      hideStaticBanner();
+      setVisible(false);
+    };
+    window.addEventListener('consentChanged', onChanged);
+    return () => window.removeEventListener('consentChanged', onChanged);
+  }, []);
+
+  // Static banner in index.html owns first paint. Do not mount a second copy.
+  if (typeof document !== 'undefined' && document.getElementById(STATIC_BANNER_ID)) {
+    return null;
+  }
 
   if (!visible) return null;
 
@@ -132,13 +165,13 @@ const CookieConsent = () => {
         </p>
         <div className="flex gap-3 shrink-0">
           <button
-            onClick={handleDecline}
+            onClick={() => saveConsent('declined')}
             className="px-4 py-2 text-sm font-medium text-gray-300 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
           >
             Decline
           </button>
           <button
-            onClick={handleAccept}
+            onClick={() => saveConsent('accepted')}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
           >
             Accept

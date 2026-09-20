@@ -85,6 +85,10 @@ if (!header.includes('REVIEW_HIDDEN_LEARN') || !header.includes('REVIEW_HIDDEN_M
   console.error('❌ Header must hide glossary/compare/practice and Advertise during review');
   failed += 1;
 }
+if (header.includes('=> (}')) {
+  console.error('❌ Header.jsx has a broken JSX map callback (=> (})');
+  failed += 1;
+}
 if (!footer.includes('ADSENSE_REVIEW_MODE')) {
   console.error('❌ Footer must keep glossary behind the review flag');
   failed += 1;
