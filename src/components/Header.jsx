@@ -374,7 +374,7 @@ const Header = ({ topOffset = 0 }) => {
                 </div>
               </div>
               <MobileGroup title="Main">
-                {visibleMainLinks.map((item) => (}
+                {visibleMainLinks.map((item) => (
                   <MobileLink
                     key={item.path}
                     item={item}
