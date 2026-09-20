@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 import { Coffee } from 'lucide-react';
-import SupportModal from '@/components/Support/SupportModal';
 import { trackEvent } from '@/utils/analytics';
+
+const SupportModal = lazy(() => import('@/components/Support/SupportModal'));
 
 const VARIANTS = {
   // Desktop header nav pill — matches the other icon links.
@@ -49,7 +50,11 @@ const SupportButton = ({
           <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
         )}
       </button>
-      <SupportModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      {isOpen && (
+        <Suspense fallback={null}>
+          <SupportModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+        </Suspense>
+      )}
     </>
   );
 };

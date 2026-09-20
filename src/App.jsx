@@ -11,10 +11,10 @@ import { recordEngagementRoute, bootstrapEngagementListeners } from '@/utils/eng
 import { useApiDebugger } from '@/hooks/useApiDebugger';
 import CookieConsent from '@/components/CookieConsent';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
-import ArticlePage from './pages/ArticlePage';
-
-// Lazy load pages for code splitting
+// Lazy load pages for code splitting. ArticlePage used to be eager and
+// dragged ~DOMPurify + linking + PostCard onto every homepage visit.
 const HomePage = lazy(() => import('./pages/HomePage'));
+const ArticlePage = lazy(() => import('./pages/ArticlePage'));
 const CategoryPage = lazy(() => import('./pages/CategoryPage'));
 const TagPage = lazy(() => import('./pages/TagPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
@@ -287,20 +287,16 @@ function App() {
       performance.mark('app-initialized');
     }
 
-    // Prefetch commonly accessed pages after initial load
-    // Delay increased to 4s to avoid network contention on mobile
+    // Desktop-only prefetch. PSI mobile counts these chunks as unused JS
+    // (317 KB on the last homepage run) if they start during the audit.
     const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-    const prefetchDelay = isMobile ? 5000 : 3000;
-
-    const prefetchTimer = setTimeout(() => {
-      import('./pages/AllArticlesPage');
-
-      // ✅ Prefetch popular category pages
-      import('./pages/CategoryPage'); // This covers all categories including new ones
-
-      // ✅ Prefetch Tools hub (frequent nav target, cold chunk causes visible lag)
-      import('./pages/ToolsHubPage');
-    }, prefetchDelay);
+    const prefetchTimer = !isMobile
+      ? setTimeout(() => {
+          import('./pages/AllArticlesPage');
+          import('./pages/CategoryPage');
+          import('./pages/ToolsHubPage');
+        }, 3000)
+      : null;
 
     const logPerformance = () => {
       if (typeof performance !== 'undefined') {
