@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import {
   PenLine, Send, CheckCircle, BookOpen, Share2, Users, FileText, Code, Globe,
   Star, Award, TrendingUp, ArrowRight, Sparkles, Heart, MessageSquare, Zap,
-  Target, Lightbulb, Rocket, Coffee
+  Target, Lightbulb, Rocket, Coffee, Building2
 } from 'lucide-react';
 import SupportButton from '@/components/Support/SupportButton';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,7 @@ const ContributePage = () => {
   const { toast } = useToast();
   const { totalArticles, totalCategories } = useStats();
   const [formData, setFormData] = useState({
+    authorType: 'individual',
     name: '',
     email: '',
     topic: '',
@@ -44,6 +45,8 @@ const ContributePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.authorType === 'vendor') return;
+
     if (!formData.name || !formData.email || !formData.topic || !formData.incident || !formData.outline) {
       toast({
         title: 'Incomplete Form',
@@ -63,6 +66,7 @@ const ContributePage = () => {
     const message = [
       `Name: ${formData.name}`,
       `Email: ${formData.email}`,
+      `Submission Type: Individual Practitioner`,
       `Brief: ${formData.briefId || 'original idea'}`,
       `Topic: ${formData.topic}`,
       `Production incident:\n${formData.incident}`,
@@ -92,7 +96,7 @@ const ContributePage = () => {
         window.location.href = `mailto:sainath@dataengineerhub.blog?subject=${encodeURIComponent(`Guest Post Proposal: ${formData.topic}`)}&body=${encodeURIComponent(message)}`;
       }
       setSubmitted(true);
-      setFormData({ name: '', email: '', topic: '', incident: '', outline: '', repo: '', portfolio: '', briefId: '' });
+      setFormData({ authorType: 'individual', name: '', email: '', topic: '', incident: '', outline: '', repo: '', portfolio: '', briefId: '' });
       toast({ title: 'Proposal sent', description: 'We review pitches in 3–5 business days.' });
     } catch (err) {
       toast({
@@ -115,14 +119,14 @@ const ContributePage = () => {
   const benefits = [
     {
       icon: Globe,
-      title: 'Author Bio & Do-Follow Backlink',
-      desc: 'Get a dedicated author section with your photo, bio, social links, and a valuable do-follow backlink to your site.',
+      title: 'Personal Author Bio & Profile',
+      desc: 'Get a dedicated author bio with your photo, credentials, social links, and practitioner profile. (Commercial tool features belong on Paid Placements).',
       color: 'from-blue-500 to-cyan-500',
     },
     {
       icon: Share2,
       title: 'Multi-Channel Promotion',
-      desc: 'Your article gets shared across LinkedIn, Twitter, newsletter, and our social channels to practicing data engineers.',
+      desc: 'Your article gets shared across LinkedIn, Twitter, and our social channels to practicing data engineers.',
       color: 'from-green-500 to-emerald-500',
     },
     {
@@ -133,8 +137,8 @@ const ContributePage = () => {
     },
     {
       icon: TrendingUp,
-      title: 'SEO & Visibility Boost',
-      desc: 'Benefit from our domain authority and SEO optimization. Your content reaches audiences searching for data engineering topics.',
+      title: 'Visibility & Career Reach',
+      desc: 'Reach thousands of working data engineers searching for Snowflake, dbt, Airflow, and lakehouse solutions.',
       color: 'from-orange-500 to-red-500',
     },
     {
@@ -169,14 +173,14 @@ const ContributePage = () => {
     {
       step: '03',
       title: 'Write & Collaborate',
-      desc: 'Write the full article with our editorial guidelines. We collaborate on revisions for quality and SEO.',
+      desc: 'Write the full article with our editorial guidelines. We collaborate on revisions for quality and clarity.',
       icon: PenLine,
       color: 'from-green-500 to-emerald-500',
     },
     {
       step: '04',
       title: 'Publish & Promote',
-      desc: 'Your article goes live with your author bio, backlinks, and gets promoted across all our channels.',
+      desc: 'Your article goes live with your author bio, profile links, and gets promoted across our channels.',
       icon: Rocket,
       color: 'from-orange-500 to-red-500',
     },
@@ -186,7 +190,7 @@ const ContributePage = () => {
     { icon: FileText, title: 'Length', text: '1,600+ words of original, unpublished content. No vendor rewrites.' },
     { icon: Code, title: 'Code & Visuals', text: 'Working samples, Query Profile / logs, or architecture you actually ran' },
     { icon: BookOpen, title: 'Focus', text: 'A production incident, a number, or a decision you would make again' },
-    { icon: Zap, title: 'Quality', text: 'Clear headings, a FAQ with real questions, and an honest “when not to do this”' },
+    { icon: Zap, title: 'Quality', text: 'Clear headings, a FAQ with real questions, and an honest "when not to do this"' },
   ];
 
   const topics = [
@@ -200,13 +204,13 @@ const ContributePage = () => {
     <>
       <MetaTags
         title="Write for Us - Contribute a Guest Post"
-        description="Share your data engineering expertise with practicing engineers. Submit a guest post on Snowflake, dbt, Airflow, cloud platforms, and more. Get published with an author bio, backlinks, and multi-channel promotion."
+        description="Share your data engineering expertise with practicing engineers. Submit a guest post on Snowflake, dbt, Airflow, cloud platforms, and more. Get published with an author bio and multi-channel promotion."
         keywords="write for us, guest post, contribute, data engineering blog, submit article, technical writing, guest author"
         type="website"
       />
       <div className="pt-4 pb-16 overflow-hidden">
         <div className="container mx-auto px-6">
-          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• HERO â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+          {/* HERO */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -239,11 +243,27 @@ const ContributePage = () => {
                 Read Published Articles
               </Link>
             </div>
-            <p className="text-sm text-gray-500 mt-6">
-              Want to promote a product instead of writing a tutorial? That is a paid USD sponsorship — see{' '}
-              <Link to="/advertise" className="text-blue-400 hover:underline">Advertise</Link>.
-              Guest posts here are editorial, not ads.
-            </p>
+            <div className="mt-8 max-w-2xl mx-auto rounded-2xl border border-blue-500/30 bg-gradient-to-r from-blue-900/40 via-purple-900/30 to-indigo-900/40 p-5 text-left shadow-xl">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="shrink-0 p-2.5 rounded-xl bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                    <Building2 className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-white">Representing a company or product?</h4>
+                    <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                      Guest posts are strictly non-commercial practitioner tutorials. Commercial product features, launch blurbs, and vendor listings belong on <strong>Paid Placements</strong>.
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  to="/advertise"
+                  className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 text-xs font-semibold transition-colors shadow-md shadow-blue-500/20"
+                >
+                  Paid Placements <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
             <div className="mt-8 mx-auto max-w-xl rounded-2xl border border-amber-500/25 bg-amber-500/[0.07] px-5 py-5 text-left">
               <div className="flex items-start gap-3">
                 <div className="shrink-0 rounded-xl bg-amber-500/15 p-2 border border-amber-500/25">
@@ -268,7 +288,7 @@ const ContributePage = () => {
             </div>
           </motion.div>
 
-          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• STATS BAR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+          {/* STATS BAR */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -290,7 +310,7 @@ const ContributePage = () => {
             ))}
           </motion.div>
 
-          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• WHY CONTRIBUTE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+          {/* WHY CONTRIBUTE */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -324,7 +344,7 @@ const ContributePage = () => {
             </div>
           </motion.div>
 
-          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• HOW IT WORKS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+          {/* HOW IT WORKS */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -364,8 +384,69 @@ const ContributePage = () => {
             </div>
           </motion.div>
 
-          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• GUIDELINES + FORM (2-col) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-          <div id="submit-form" className="grid lg:grid-cols-2 gap-10 max-w-6xl mx-auto">
+          {/* OPEN BRIEFS — CENTERED FULL-WIDTH SECTION */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="mb-16 max-w-6xl mx-auto scroll-mt-24"
+            id="open-briefs-section"
+          >
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-4 py-1.5 rounded-full text-xs font-semibold text-blue-300 mb-3">
+                <Sparkles className="h-3.5 w-3.5" /> High-Demand Topics
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                Open Editorial <span className="gradient-text">Briefs</span>
+              </h2>
+              <p className="text-sm text-gray-400 max-w-xl mx-auto">
+                Pick an open brief below to auto-fill your proposal form, or write your own incident pitch.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {EDITORIAL_BRIEFS.map((brief) => {
+                const selected = formData.briefId === brief.id;
+                return (
+                  <button
+                    key={brief.id}
+                    type="button"
+                    onClick={() => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        briefId: brief.id,
+                        topic: brief.title,
+                      }));
+                      document.getElementById('submit-form')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className={`flex flex-col justify-between text-left rounded-2xl border p-5 transition-all duration-300 hover:scale-[1.01] cursor-pointer ${
+                      selected
+                        ? 'border-blue-400 bg-blue-500/15 shadow-lg shadow-blue-500/10 ring-1 ring-blue-400'
+                        : 'border-slate-700/60 bg-slate-900/50 hover:border-blue-400/40 hover:bg-slate-800/60'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-3">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-blue-300 bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 rounded-full">
+                          {brief.stack}
+                        </span>
+                        <span className="text-xs text-slate-400 font-medium">{brief.length}</span>
+                      </div>
+                      <h3 className="text-base font-bold text-white mb-2 leading-snug">{brief.title}</h3>
+                      <p className="text-xs text-gray-300 leading-relaxed mb-4">{brief.ask}</p>
+                    </div>
+                    <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs font-semibold text-blue-400">
+                      <span>{selected ? '✓ Selected' : 'Pitch this brief'}</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+
+          {/* GUIDELINES + FORM (2-col) */}
+          <div id="submit-form" className="grid lg:grid-cols-2 gap-10 max-w-6xl mx-auto scroll-mt-24">
             {/* Left — Guidelines & Topics */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -388,29 +469,7 @@ const ContributePage = () => {
                 ))}
               </div>
 
-              <h3 className="text-lg font-semibold text-white mb-3">Open briefs — pitch these first</h3>
-              <div className="space-y-3 mb-8">
-                {EDITORIAL_BRIEFS.map((brief) => (
-                  <button
-                    key={brief.id}
-                    type="button"
-                    onClick={() => setFormData((prev) => ({
-                      ...prev,
-                      briefId: brief.id,
-                      topic: brief.title,
-                    }))}
-                    className={`w-full text-left rounded-xl border p-3 transition ${
-                      formData.briefId === brief.id
-                        ? 'border-blue-400/60 bg-blue-500/10'
-                        : 'border-slate-700/40 bg-slate-800/40 hover:border-blue-500/30'
-                    }`}
-                  >
-                    <div className="text-sm font-semibold text-white">{brief.title}</div>
-                    <div className="text-xs text-blue-300 mt-1">{brief.stack} · {brief.length}</div>
-                    <p className="text-xs text-gray-400 mt-1">{brief.ask}</p>
-                  </button>
-                ))}
-              </div>
+              <h3 className="text-lg font-semibold text-white mb-3">Topics We Cover</h3>
               <div className="flex flex-wrap gap-2 mb-8">
                 {topics.map((t) => (
                   <span
@@ -431,9 +490,9 @@ const ContributePage = () => {
                 <ol className="text-sm text-gray-300 space-y-2 list-decimal list-inside">
                   <li>We review your proposal within <strong className="text-white">3-5 business days</strong></li>
                   <li>If approved, you write the full article with our guidelines</li>
-                  <li>Collaborative editing for quality, clarity, and SEO optimization</li>
-                  <li>Article published with your author bio, photo, and backlinks</li>
-                  <li>Multi-channel promotion across our social networks and newsletter</li>
+                  <li>Collaborative editing for quality, clarity, and depth</li>
+                  <li>Article published with your personal author bio & profile</li>
+                  <li>Multi-channel promotion across our social networks</li>
                 </ol>
               </div>
             </motion.div>
@@ -454,70 +513,117 @@ const ContributePage = () => {
                   <p className="text-xs text-gray-400">Takes about 5 minutes</p>
                 </div>
               </div>
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name *</Label>
-                    <Input id="name" placeholder="Jane Doe" value={formData.name} onChange={handleChange} />
+
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="authorType">Submission Type *</Label>
+                  <select
+                    id="authorType"
+                    value={formData.authorType || 'individual'}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, authorType: e.target.value }))}
+                    className="w-full rounded-xl border border-white/10 bg-slate-950 px-3.5 py-2.5 text-sm text-white outline-none focus:border-blue-400 transition-colors"
+                  >
+                    <option value="individual">Individual Practitioner (Personal Tutorial)</option>
+                    <option value="vendor">Company / Vendor / Product Pitch</option>
+                  </select>
+                </div>
+
+                {formData.authorType === 'vendor' ? (
+                  <div className="rounded-2xl border border-blue-400/30 bg-gradient-to-br from-blue-900/40 via-slate-900 to-slate-950 p-6 text-slate-100 shadow-xl">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2.5 rounded-xl bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                        <Building2 className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-white">Vendor & Product Sponsorships</h3>
+                        <p className="text-xs text-blue-300 font-medium">Billed in USD · Fit confirmed in 48h</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-5">
+                      Guest posts on Write for Us are strictly non-commercial practitioner tutorials. Product announcements, directory cards, and sponsored placements are processed directly on our <strong>Paid Placements</strong> portal.
+                    </p>
+                    <div className="space-y-2.5 bg-white/[0.03] border border-white/10 rounded-xl p-4 mb-6">
+                      <p className="text-xs font-semibold text-white uppercase tracking-wider">Placement Options:</p>
+                      <ul className="text-xs text-slate-300 space-y-2">
+                        <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-emerald-400 shrink-0" /> Sponsored card in matching guides</li>
+                        <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-emerald-400 shrink-0" /> Permanent listing in Tools Hub</li>
+                        <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-emerald-400 shrink-0" /> Co-authored Integration Guide</li>
+                      </ul>
+                    </div>
+                    <Link
+                      to="/advertise#inquiry-form"
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-blue-500 hover:bg-blue-400 text-white px-6 py-3.5 text-sm font-bold shadow-lg shadow-blue-500/25 transition-all duration-300"
+                    >
+                      Book a Paid Placement <ArrowRight className="h-4 w-4" />
+                    </Link>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email *</Label>
-                    <Input id="email" type="email" required placeholder="jane@example.com" value={formData.email} onChange={handleChange} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="topic">Proposed Topic / Title *</Label>
-                  <Input id="topic" placeholder="Pick an open brief or write your own incident title" value={formData.topic} onChange={handleChange} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="incident">What broke in production? *</Label>
-                  <Textarea
-                    id="incident"
-                    placeholder="Warehouse size, error message, dollar figure, or the decision you would not make again..."
-                    rows={4}
-                    value={formData.incident}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="outline">Outline *</Label>
-                  <Textarea
-                    id="outline"
-                    placeholder="H2s, the FAQ questions, and the code or Query Profile you will show..."
-                    rows={5}
-                    value={formData.outline}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="repo">GitHub / gist with the code (optional)</Label>
-                  <Input id="repo" type="url" placeholder="https://github.com/you/repro" value={formData.repo} onChange={handleChange} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="portfolio">Portfolio / writing sample (optional)</Label>
-                  <Input id="portfolio" type="url" placeholder="https://yourblog.com" value={formData.portfolio} onChange={handleChange} />
-                </div>
-                {submitted && (
-                  <p className="text-sm text-green-300">Proposal received. We will reply in 3–5 business days.</p>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Full Name *</Label>
+                        <Input id="name" placeholder="Jane Doe" value={formData.name} onChange={handleChange} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email *</Label>
+                        <Input id="email" type="email" required placeholder="jane@example.com" value={formData.email} onChange={handleChange} />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="topic">Proposed Topic / Title *</Label>
+                      <Input id="topic" placeholder="Pick an open brief or write your own incident title" value={formData.topic} onChange={handleChange} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="incident">What broke in production? *</Label>
+                      <Textarea
+                        id="incident"
+                        placeholder="Warehouse size, error message, dollar figure, or the decision you would not make again..."
+                        rows={4}
+                        value={formData.incident}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="outline">Outline *</Label>
+                      <Textarea
+                        id="outline"
+                        placeholder="H2s, the FAQ questions, and the code or Query Profile you will show..."
+                        rows={5}
+                        value={formData.outline}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="repo">GitHub / gist with the code (optional)</Label>
+                      <Input id="repo" type="url" placeholder="https://github.com/you/repro" value={formData.repo} onChange={handleChange} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="portfolio">Portfolio / writing sample (optional)</Label>
+                      <Input id="portfolio" type="url" placeholder="https://yourblog.com" value={formData.portfolio} onChange={handleChange} />
+                    </div>
+                    {submitted && (
+                      <p className="text-sm text-green-300">Proposal received. We will reply in 3–5 business days.</p>
+                    )}
+                    <Button
+                      type="submit"
+                      size="lg"
+                      disabled={submitting}
+                      className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold group cursor-pointer"
+                    >
+                      {submitting ? 'Sending…' : 'Submit Proposal'}
+                      <Send className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                    <p className="text-xs text-gray-500 text-center">
+                      Editorial only. Product pitches belong on{' '}
+                      <Link to="/advertise" className="text-blue-400 hover:underline">Advertise</Link>.
+                    </p>
+                  </form>
                 )}
-                <Button
-                  type="submit"
-                  size="lg"
-                  disabled={submitting}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold group"
-                >
-                  {submitting ? 'Sending…' : 'Submit Proposal'}
-                  <Send className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-                <p className="text-xs text-gray-500 text-center">
-                  Editorial only. Product pitches belong on{' '}
-                  <Link to="/advertise" className="text-blue-400 hover:underline">Advertise</Link>.
-                </p>
-              </form>
+              </div>
             </motion.div>
           </div>
 
-          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• CTA BANNER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+          {/* CTA BANNER */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

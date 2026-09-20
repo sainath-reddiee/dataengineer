@@ -1,10 +1,48 @@
 // src/main.jsx - FIXED VERSION (No immediate loading spinner)
 // Trigger deploy 2
+
+// Filter out noisy analytics and debug logs
+const originalConsoleLog = console.log;
+const originalConsoleWarn = console.warn;
+const originalConsoleError = console.error;
+
+const filterMessage = (msg) => {
+  if (typeof msg !== 'string') return false;
+  const noisyPrefixes = [
+    '🚀 Performance Metrics', '🔧 Development Environment',
+    '📊 Page view tracked', '📊 Event tracked', '📡 API Request',
+    '📂 Fetching', '⏳ Request already in progress', '🔄 Category/search/tag',
+    '📚 Read time calculated', '✅ Transformed post', '✅ Category',
+    '✅ [Request', '🧹 [Request', '⚠️ [Request', '🔍 Looking', '📂 [Request',
+    '🚀 Initializing third-party', 'Environment:', '🚫 Ads disabled',
+    '🔗 Preconnecting', '📊 Loading Google', '📥 Loading script',
+    '✅ Script loaded', '✅ Google Analytics', '✅ AdSense', '⏸️ GA',
+    '✅ Script already loaded', '🧹 Cache cleared', '📦 Cache hit',
+    '🔍 Fetching post', '✅ Post loaded', '🔄 [Request',
+    '[GSI_LOGGER]', 'FedCM', 'User declined or dismissed prompt'
+  ];
+  return noisyPrefixes.some(prefix => msg.includes(prefix));
+};
+
+console.log = (...args) => {
+  if (filterMessage(args[0])) return;
+  originalConsoleLog(...args);
+};
+console.warn = (...args) => {
+  if (filterMessage(args[0])) return;
+  originalConsoleWarn(...args);
+};
+console.error = (...args) => {
+  if (filterMessage(args[0])) return;
+  originalConsoleError(...args);
+};
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import App from '@/App';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import '@/index.css';
 import { initThirdPartyScripts } from '@/utils/scriptLoader';
 import { isCrawlerUserAgent } from '@/utils/isCrawler';
@@ -15,27 +53,7 @@ import { parkArticleBootstrapFromRoot } from '@/utils/articleBootstrap';
 // This avoids duplicate requests and improves FCP
 
 // Performance monitoring
-if (typeof window !== 'undefined' && 'performance' in window) {
-  window.addEventListener('load', () => {
-    const perfData = performance.getEntriesByType('navigation')[0];
-    if (perfData) {
-      console.log('🚀 Performance Metrics:', {
-        'Load Time': `${Math.round(perfData.loadEventEnd - perfData.fetchStart)}ms`,
-        'DOMContentLoaded': `${Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart)}ms`,
-        'First Paint': `${Math.round(performance.getEntriesByType('paint')[0]?.startTime || 0)}ms`
-      });
-    }
-  });
-}
-
 // Log environment configuration in dev mode only
-if (import.meta.env.DEV) {
-  console.log('🔧 Development Environment Configuration:', {
-    MODE: import.meta.env.MODE,
-    DEV: import.meta.env.DEV,
-    PROD: import.meta.env.PROD
-  });
-}
 
 // Policy (site-wide: home, /articles, every /articles/:slug, tools, etc.):
 // - Humans and LLM in-app browsers → always React (full UI).
@@ -52,13 +70,16 @@ const initApp = () => {
   parkSsgArticleFromRoot(rootEl);
   parkArticleBootstrapFromRoot(rootEl);
   const root = ReactDOM.createRoot(rootEl);
+  const googleClientId = import.meta.env.VITE_GSC_CLIENT_ID || import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
   root.render(
     <React.StrictMode>
       <HelmetProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <GoogleOAuthProvider clientId={googleClientId}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </GoogleOAuthProvider>
       </HelmetProvider>
     </React.StrictMode>
   );

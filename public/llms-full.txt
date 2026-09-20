@@ -1,7 +1,7 @@
 # DataEngineer Hub - Full Content Index for LLMs
 
-> Last generated: 2026-09-17
-> Total articles: 109
+> Last generated: 2026-09-20
+> Total articles: 111
 
 - [Main Website](https://dataengineerhub.blog): Official platform
 - [Compact LLM Context](https://dataengineerhub.blog/llms.txt): Summary context file
@@ -12,54 +12,84 @@ Each article includes its URL, summary, key headings, and primary topics.
 
 ---
 
-## Data Engineer (6 articles)
+## Airflow (9 articles)
 
-### [Building Data Pipelines That Feed AI Features Without Breaking the Bill](https://dataengineerhub.blog/articles/ai-data-pipelines-cost-control)
-- URL: [https://dataengineerhub.blog/articles/ai-data-pipelines-cost-control](https://dataengineerhub.blog/articles/ai-data-pipelines-cost-control)
-- Published: 2026-09-17 | Updated: 2026-09-17
-- Word count: ~2165
-- Summary: When the consumer at the end of a pipeline is a language model rather than a dashboard, the expensive step moves from the transform to the last hop, and every row you push through it costs money. This article covers the pipeline shape we keep returning to, a four-question test for choosing batch, ev
-- Key sections: The Consumer Changed, the Pipeline Did Not | The Pipeline Shape We Keep Coming Back To | Layer 1: Ingestion, Kept Deliberately Boring | Layer 2: Transformation Produces a Model Input Contract | Layer 3: The Inference Worker Is a Pipeline Stage | Batch, Event-Driven or Request Path: A Four-Question Test | 1. Can the Output Be Computed Before Anyone Asks for It? | 2. Does a Person Wait on Screen for the Result?
+### [Running LLM Tasks in Apache Airflow with the common.ai Provider](https://dataengineerhub.blog/articles/airflow-common-ai-provider-llm-tasks)
+- URL: [https://dataengineerhub.blog/articles/airflow-common-ai-provider-llm-tasks](https://dataengineerhub.blog/articles/airflow-common-ai-provider-llm-tasks)
+- Published: 2026-09-19 | Updated: 2026-09-19
+- Word count: ~2764
+- Summary: For the past two years, the standard pattern for running LLM calls in Airflow was a PythonOperator that imported the OpenAI client, called the API, and returned the result as XCom. It worked. But when the call failed at 3 AM, Airflow retried the entire task — including the database query that produc
+- Key sections: Why Burying LLM Calls in PythonOperator Was Always Wrong | The Operator Surface: Five Tools, Clear Boundaries | The @task.llm Pattern in Practice | LLMRetryPolicy: The Error Classification Layer | Human-in-the-Loop Approval | AgentOperator and SQLToolset | Connecting the Model: PydanticAI Connections | The Gotchas
 
-### [From ETL Pipelines to Data Products: Designing Reusable Data Infrastructure for Enterprise AI](https://dataengineerhub.blog/articles/from-etl-pipelines-to-reusable-data-products)
-- URL: [https://dataengineerhub.blog/articles/from-etl-pipelines-to-reusable-data-products](https://dataengineerhub.blog/articles/from-etl-pipelines-to-reusable-data-products)
-- Published: 2026-08-26 | Updated: 2026-08-26
-- Word count: ~1904
-- Summary: Enterprise data platforms often begin with a simple objective: move data from operational systems into a place where it can be analyzed. Over time, however, the number of data sources, consumers, and business requirements grows. A pipeline originally created for one dashboard becomes useful to anoth
+### [Building a Bulletproof ETL Audit Logger: Capturing Airflow Execution Context in Snowflake](https://dataengineerhub.blog/articles/airflow-etl-audit-logger-snowflake)
+- URL: [https://dataengineerhub.blog/articles/airflow-etl-audit-logger-snowflake](https://dataengineerhub.blog/articles/airflow-etl-audit-logger-snowflake)
+- Published: 2026-07-18 | Updated: 2026-07-18
+- Word count: ~2230
+- Summary: The 2 a.m. page said the pipeline “succeeded.” The dashboard was green. And the finance team was still staring at yesterday’s numbers, because one task in a forty-task DAG had quietly processed the wrong micro-batch window and nobody could prove when, or why, without SSH-ing into a worker and greppi
+- Key sections: TL;DR | Why DAG-level notifications aren’t observability | Step 1: the Snowflake audit table | Step 2: extracting the execution context | Step 3: the callbacks that fire at start and end | Step 4: wire it into every task with one line | What it looks like when it runs | Step 5: the queries that pay it back
 
-### [ETL vs. ELT vs. Reverse ETL: A Practitioner’s Framework for Choosing the Right Pattern for a Given Workload](https://dataengineerhub.blog/articles/etl-vs-elt-vs-reverse-etl-framework)
-- URL: [https://dataengineerhub.blog/articles/etl-vs-elt-vs-reverse-etl-framework](https://dataengineerhub.blog/articles/etl-vs-elt-vs-reverse-etl-framework)
-- Published: 2026-08-26 | Updated: 2026-08-26
-- Word count: ~1776
-- Summary: As a data engineer, you’ve likely been in a design review where someone says at the very end, “We should just do ELT for everything!”. You are a data engineer, and you’ve probably been in a design review where you heard someone say at the end, “We should just do ELT for everything!”. Or you’ve inher
-- Key sections: The Problem Deep Dive | The Solution: A Decision Framework | The Close
+### [Dynamic Airflow DAGs via Snowflake Metadata: Eliminating Hardcoded Pipeline Tasks](https://dataengineerhub.blog/articles/dynamic-airflow-dags-snowflake-metadata)
+- URL: [https://dataengineerhub.blog/articles/dynamic-airflow-dags-snowflake-metadata](https://dataengineerhub.blog/articles/dynamic-airflow-dags-snowflake-metadata)
+- Published: 2026-07-15 | Updated: 2026-08-07
+- Word count: ~2149
+- Summary: I once inherited an Airflow repo with 214 DAG files that were, functionally, the same DAG. Each one extracted a table from a source system, loaded it into Snowflake, and ran a transform. The only differences between them were the table name, the schedule, and which SQL file to run. Someone had copy-
+- Key sections: TL;DR | The distinction that trips everyone up | The metadata-driven pattern | Rendering the DAG from a row | The parsing gotchas that wreck schedulers | When to reach for dynamic task mapping instead | Cost and maintenance math | The gotchas nobody warns you about
 
-### [Data Engineering ROI: How to Justify Your Data Platform Investment to the Board](https://dataengineerhub.blog/articles/justify-data-platform-investment)
-- URL: [https://dataengineerhub.blog/articles/justify-data-platform-investment](https://dataengineerhub.blog/articles/justify-data-platform-investment)
-- Published: 2026-08-25 | Updated: 2026-08-25
-- Word count: ~976
-- Summary: Every data engineering leader has sat through the same meeting: the platform work is done, the pipelines are stable, but defending its value to the board is difficult because it rarely appears on a single P&L line. Data platform budgets are often treated as discretionary IT spend, meaning they get c
+### [Orchestrating dbt with Airflow on Snowflake: Job vs Model-Level in 2026](https://dataengineerhub.blog/articles/airflow-dbt-snowflake-orchestration-guide)
+- URL: [https://dataengineerhub.blog/articles/airflow-dbt-snowflake-orchestration-guide](https://dataengineerhub.blog/articles/airflow-dbt-snowflake-orchestration-guide)
+- Published: 2026-07-04 | Updated: 2026-07-04
+- Word count: ~1748
+- Summary: For years, the pattern was: Airflow sits in one corner of your infrastructure, dbt runs on a server somewhere else, they pass data between each other via manual credential handoffs and cron jobs, and when something breaks at 2 AM, you’re SSH-ing into the dbt box, checking Airflow logs, querying Snow
+- Key sections: TL;DR | The job-level vs model-level question, and why it’s been misleading | Why model-level is winning in 2026 — and what changed | Real benchmark: 400-model project, production traffic | How to orchestrate Snowflake native dbt Projects from Airflow | Setup: Snowflake side (one-time) | The three gotchas you’ll hit | When to use job-level, when to use model-level
 
-### [What 4.2 Million Food Records Taught Me About Reliable Data Quality Pipelines](https://dataengineerhub.blog/articles/food-data-quality-pipeline-guest-post)
-- URL: [https://dataengineerhub.blog/articles/food-data-quality-pipeline-guest-post](https://dataengineerhub.blog/articles/food-data-quality-pipeline-guest-post)
-- Published: 2026-07-26 | Updated: 2026-07-26
-- Word count: ~2139
-- Summary: Processing millions of food records taught me that data quality is rarely one clever cleaning function. It is a chain of small contracts: what a number means, which identifier owns a record, what a missing value means, and what an incremental update is allowed to change.
-- Key sections: The Pipeline Is a Series of Trust Boundaries | Lesson 1: Define the Unit Contract Before Writing Transformations | Lesson 2: Validate Relationships, Not Only Individual Columns | Lesson 3: Identity Is Not the Same as a Barcode | Lesson 4: Partial Updates Are More Dangerous Than Full Imports | Lesson 5: Preserve Provenance All the Way to the API | Lesson 6: Test the Failure Policy, Not Just the Happy Path | A Practical Checklist
+### [Airflow vs Prefect: 2026 Comparison Guide](https://dataengineerhub.blog/articles/airflow-vs-prefect)
+- URL: [https://dataengineerhub.blog/articles/airflow-vs-prefect](https://dataengineerhub.blog/articles/airflow-vs-prefect)
+- Published: 2026-05-05 | Updated: 2026-05-10
+- Word count: ~2607
+- Summary: I evaluated Prefect seriously. Ran it in a staging environment for six weeks. Built three real flows. Had the internal conversation about migrating. And then stayed with Airflow .
+- Key sections: TL;DR | What We Were Running When We Evaluated | The Core Difference Nobody Explains Clearly | What This Means for Local Development | What This Means for Dynamic Workflows | Airflow Version | Prefect Version | Where Airflow Still Wins
 
-### [Someone renamed a column.Your Pipeline Died.Here’s the fix](https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide)
-- URL: [https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide](https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide)
-- Published: 2026-07-01 | Updated: 2026-07-01
-- Word count: ~2373
-- Summary: Someone on the backend team renamed order_total to order_amount . Clean name. Makes total sense for their domain model. They shipped it on a Thursday afternoon. By Friday morning, your revenue dashboard was showing zero. Not wrong numbers. Zero. Because your Snowflake pipeline was still selecting or
-- Key sections: TL;DR | Why schemas break and who owns the blame | What a data contract actually contains | The Open Data Contract Standard and the YAML spec | The only safe migration path for breaking changes | Making it executable: CI enforcement that actually works | The gotchas that sink most implementations | The real cost math
+### [Delta Lake vs Apache Iceberg — Why I Chose Iceberg for Our Data Lakehouse](https://dataengineerhub.blog/articles/delta-lake-vs-iceberg)
+- URL: [https://dataengineerhub.blog/articles/delta-lake-vs-iceberg](https://dataengineerhub.blog/articles/delta-lake-vs-iceberg)
+- Published: 2026-05-04 | Updated: 2026-05-08
+- Word count: ~1512
+- Summary: TL;DR → Delta Lake is easier to start with, especially if you’re already on Databricks → Iceberg wins on engine flexibility — works natively with Spark, Flink, Trino, Snowflake, and more without custom connectors → Delta Lake’s vendor coupling with Databricks is a real cost if you’re multi-cloud or 
+- Key sections: Partition Management Was Getting Messy | Hidden Partitioning Changed How We Design Tables | THE MIGRATION: WHAT IT ACTUALLY COST US | Downstream dependency mapping. | Metadata catalog updates. | Frequently Asked Questions | What is the main difference between Delta Lake and Apache Iceberg? | Is Apache Iceberg better than Delta Lake?
 
-## Snowflake (46 articles)
+### [Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide](https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration)
+- URL: [https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration](https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration)
+- Published: 2026-04-07 | Updated: 2026-05-05
+- Word count: ~3374
+- Summary: How I Wired Snowflake’s Native dbt Projects to Airflow — And Finally Got True End-to-End Orchestration
+- Key sections: First — What Exactly Is a dbt Project on Snowflake ? | The Architecture We’re Building | Step 1: Snowflake Setup — Roles, Warehouse, and Permissions | Step 2: Deploy Your dbt Project as a Native Snowflake Object | Step 3: Set Up a Real dbt Project Structure | Step 4: Wire It All Together in Airflow | Step 5: Running Specific dbt Selectors from Airflow | Step 6: Handling New Versions of Your dbt Project
+
+### [2026 Guide: Cut dbt Build Time 48% with Snowflake Cortex Code](https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide)
+- URL: [https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide](https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide)
+- Published: 2026-03-08 | Updated: 2026-05-09
+- Word count: ~5030
+- Summary: It was a Tuesday morning when I finally snapped. My dbt project had grown to 147 models, and the daily run was taking 2 hours and 47 minutes. Our Airflow DAG was timing out. The business team was complaining about stale dashboards. And I was spending my entire morning investigating why dim_customer 
+- Key sections: The Moment Everything Changed | Part 1: What Is Snowflake Cortex Code? (The Simple Truth) | Part 2: Getting Started (5-Minute Setup) | Cortex Code is available in Snowflake (check your edition—Enterprise or higher typically has it). | Part 3: Core Capabilities (The Quick Tour) | Part 4: dbt + Cortex Code – The Real Game Changer | 4.1: Quick Overview – Beyond Basic Generation | 4.2: Performance Optimization – The Killer Feature
+
+### [Automated ETL with Airflow and Python: A Practical Guide](https://dataengineerhub.blog/articles/automated-etl-airflow-python)
+- URL: [https://dataengineerhub.blog/articles/automated-etl-airflow-python](https://dataengineerhub.blog/articles/automated-etl-airflow-python)
+- Published: 2025-09-28 | Updated: 2025-10-08
+- Word count: ~855
+- Summary: In the world of data, consistency is king. Manually running scripts to fetch and process data is not just tedious; it’s prone to errors, delays, and gaps in your analytics. To build a reliable data-driven culture, you need automation. This is where building an automated ETL with Airflow and Python b
+- Key sections: The Architecture: A Simple, Powerful Workflow | Step 1: The Python ETL Script | Step 2: Creating the Airflow DAG | Step 3: The Analytics Payoff | Conclusion: Build Once, Benefit Forever
+
+## Snowflake (47 articles)
+
+### [Snowflake Dynamic Data Masking & Row Access Policies: A Production Guide](https://dataengineerhub.blog/articles/snowflake-dynamic-data-masking-row-access-policies)
+- URL: [https://dataengineerhub.blog/articles/snowflake-dynamic-data-masking-row-access-policies](https://dataengineerhub.blog/articles/snowflake-dynamic-data-masking-row-access-policies)
+- Published: 2026-09-18 | Updated: 2026-09-18
+- Word count: ~2825
+- Summary: The governance review lands on a Wednesday. Your company needs to prove that analysts in one region cannot see customer PII from another, that customer emails are masked for anyone below the data steward tier, and that — this one is new — AI agents querying your warehouse cannot extract raw PII even
+- Key sections: DDM vs Row Access Policies: The Conceptual Split | Setting Up Dynamic Data Masking | Creating and applying a basic masking policy | Testing with POLICY_CONTEXT before applying | Tag-Based Masking: The Scalability Pattern | IS_AGENT_ACTIVATED: Governing AI Agent Access | Row Access Policies: Controlling Visible Rows | The Gotchas
 
 ### [Snowflake Cortex AI Token Usage Monitoring: The Complete Guide](https://dataengineerhub.blog/articles/snowflake-cortex-token-usage-monitoring)
 - URL: [https://dataengineerhub.blog/articles/snowflake-cortex-token-usage-monitoring](https://dataengineerhub.blog/articles/snowflake-cortex-token-usage-monitoring)
-- Published: 2026-09-16 | Updated: 2026-09-16
-- Word count: ~2560
+- Published: 2026-09-16 | Updated: 2026-09-18
+- Word count: ~2561
 - Summary: Somewhere on your team, an AI_CLASSIFY job is running on a table larger than anyone realised. Or a Cortex Agent is looping through a multi-step workflow that seemed cheap in testing. Or a developer left a search service indexed and running in a dev environment that nobody is querying anymore. None o
 - Key sections: The Three Views and What Each One Covers | Basic Usage Monitoring Queries | Daily credit burn by function and model | Monthly spend by user | Cortex Agent attribution | Automation Pattern 1: Account-Level Monthly Spend Alert | Automation Pattern 2: Per-User Monthly Spending Limits | Automation Pattern 3: Runaway Query Detection and Cancellation
 
@@ -374,6 +404,48 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Summary: Stop memorizing the difference between a VARCHAR and a TEXT field. If you’re an experienced data engineer, you know that real Snowflake interviews go much deeper. Hiring managers aren’t just looking for someone who knows the syntax; they’re looking for an architect who understands performance, cost 
 - Key sections: 1. Architecture & Design Questions | 2. Performance Tuning & Cost Optimization Questions | 3. Data Ingestion & Integration Questions | 4. Scenario-Based & Problem-Solving Questions | Conclusion
 
+## Data Engineer (6 articles)
+
+### [Building Data Pipelines That Feed AI Features Without Breaking the Bill](https://dataengineerhub.blog/articles/ai-data-pipelines-cost-control)
+- URL: [https://dataengineerhub.blog/articles/ai-data-pipelines-cost-control](https://dataengineerhub.blog/articles/ai-data-pipelines-cost-control)
+- Published: 2026-09-17 | Updated: 2026-09-18
+- Word count: ~2168
+- Summary: When the consumer at the end of a pipeline is a language model rather than a dashboard, the expensive step moves from the transform to the last hop, and every row you push through it costs money. This article covers the pipeline shape we keep returning to, a four-question test for choosing batch, ev
+- Key sections: The Consumer Changed, the Pipeline Did Not | The Pipeline Shape We Keep Coming Back To | Layer 1: Ingestion, Kept Deliberately Boring | Layer 2: Transformation Produces a Model Input Contract | Layer 3: The Inference Worker Is a Pipeline Stage | Batch, Event-Driven or Request Path: A Four-Question Test | 1. Can the Output Be Computed Before Anyone Asks for It? | 2. Does a Person Wait on Screen for the Result?
+
+### [From ETL Pipelines to Data Products: Designing Reusable Data Infrastructure for Enterprise AI](https://dataengineerhub.blog/articles/from-etl-pipelines-to-reusable-data-products)
+- URL: [https://dataengineerhub.blog/articles/from-etl-pipelines-to-reusable-data-products](https://dataengineerhub.blog/articles/from-etl-pipelines-to-reusable-data-products)
+- Published: 2026-08-26 | Updated: 2026-08-26
+- Word count: ~1904
+- Summary: Enterprise data platforms often begin with a simple objective: move data from operational systems into a place where it can be analyzed. Over time, however, the number of data sources, consumers, and business requirements grows. A pipeline originally created for one dashboard becomes useful to anoth
+
+### [ETL vs. ELT vs. Reverse ETL: A Practitioner’s Framework for Choosing the Right Pattern for a Given Workload](https://dataengineerhub.blog/articles/etl-vs-elt-vs-reverse-etl-framework)
+- URL: [https://dataengineerhub.blog/articles/etl-vs-elt-vs-reverse-etl-framework](https://dataengineerhub.blog/articles/etl-vs-elt-vs-reverse-etl-framework)
+- Published: 2026-08-26 | Updated: 2026-08-26
+- Word count: ~1776
+- Summary: As a data engineer, you’ve likely been in a design review where someone says at the very end, “We should just do ELT for everything!”. You are a data engineer, and you’ve probably been in a design review where you heard someone say at the end, “We should just do ELT for everything!”. Or you’ve inher
+- Key sections: The Problem Deep Dive | The Solution: A Decision Framework | The Close
+
+### [Data Engineering ROI: How to Justify Your Data Platform Investment to the Board](https://dataengineerhub.blog/articles/justify-data-platform-investment)
+- URL: [https://dataengineerhub.blog/articles/justify-data-platform-investment](https://dataengineerhub.blog/articles/justify-data-platform-investment)
+- Published: 2026-08-25 | Updated: 2026-08-25
+- Word count: ~976
+- Summary: Every data engineering leader has sat through the same meeting: the platform work is done, the pipelines are stable, but defending its value to the board is difficult because it rarely appears on a single P&L line. Data platform budgets are often treated as discretionary IT spend, meaning they get c
+
+### [What 4.2 Million Food Records Taught Me About Reliable Data Quality Pipelines](https://dataengineerhub.blog/articles/food-data-quality-pipeline-guest-post)
+- URL: [https://dataengineerhub.blog/articles/food-data-quality-pipeline-guest-post](https://dataengineerhub.blog/articles/food-data-quality-pipeline-guest-post)
+- Published: 2026-07-26 | Updated: 2026-07-26
+- Word count: ~2139
+- Summary: Processing millions of food records taught me that data quality is rarely one clever cleaning function. It is a chain of small contracts: what a number means, which identifier owns a record, what a missing value means, and what an incremental update is allowed to change.
+- Key sections: The Pipeline Is a Series of Trust Boundaries | Lesson 1: Define the Unit Contract Before Writing Transformations | Lesson 2: Validate Relationships, Not Only Individual Columns | Lesson 3: Identity Is Not the Same as a Barcode | Lesson 4: Partial Updates Are More Dangerous Than Full Imports | Lesson 5: Preserve Provenance All the Way to the API | Lesson 6: Test the Failure Policy, Not Just the Happy Path | A Practical Checklist
+
+### [Someone renamed a column.Your Pipeline Died.Here’s the fix](https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide)
+- URL: [https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide](https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide)
+- Published: 2026-07-01 | Updated: 2026-07-01
+- Word count: ~2373
+- Summary: Someone on the backend team renamed order_total to order_amount . Clean name. Makes total sense for their domain model. They shipped it on a Thursday afternoon. By Friday morning, your revenue dashboard was showing zero. Not wrong numbers. Zero. Because your Snowflake pipeline was still selecting or
+- Key sections: TL;DR | Why schemas break and who owns the blame | What a data contract actually contains | The Open Data Contract Standard and the YAML spec | The only safe migration path for breaking changes | Making it executable: CI enforcement that actually works | The gotchas that sink most implementations | The real cost math
+
 ## SQL (5 articles)
 
 ### [SQL Patterns That Actually Show Up in Interviews (All 10, With Code)](https://dataengineerhub.blog/articles/sql-patterns-that-show-up-in-interviews)
@@ -635,64 +707,6 @@ Each article includes its URL, summary, key headings, and primary topics.
 - Word count: ~1263
 - Summary: Salesforce Agentforce represents the most significant CRM innovation of 2025, marking the shift from generative AI to truly autonomous agents. Unveiled at Dreamforce 2024, Salesforce Agentforce enables businesses to deploy AI agents that work independently, handling customer inquiries, resolving sup
 - Key sections: Autonomous AI Agents That Transform Customer Engagement | What Is Salesforce Agentforce? | Core Capabilities | Key Features of Agentforce AI | xGen Sales Model | xLAM Service Model | Agent Builder | How Agentforce Works with Data Cloud
-
-## Airflow (8 articles)
-
-### [Building a Bulletproof ETL Audit Logger: Capturing Airflow Execution Context in Snowflake](https://dataengineerhub.blog/articles/airflow-etl-audit-logger-snowflake)
-- URL: [https://dataengineerhub.blog/articles/airflow-etl-audit-logger-snowflake](https://dataengineerhub.blog/articles/airflow-etl-audit-logger-snowflake)
-- Published: 2026-07-18 | Updated: 2026-07-18
-- Word count: ~2230
-- Summary: The 2 a.m. page said the pipeline “succeeded.” The dashboard was green. And the finance team was still staring at yesterday’s numbers, because one task in a forty-task DAG had quietly processed the wrong micro-batch window and nobody could prove when, or why, without SSH-ing into a worker and greppi
-- Key sections: TL;DR | Why DAG-level notifications aren’t observability | Step 1: the Snowflake audit table | Step 2: extracting the execution context | Step 3: the callbacks that fire at start and end | Step 4: wire it into every task with one line | What it looks like when it runs | Step 5: the queries that pay it back
-
-### [Dynamic Airflow DAGs via Snowflake Metadata: Eliminating Hardcoded Pipeline Tasks](https://dataengineerhub.blog/articles/dynamic-airflow-dags-snowflake-metadata)
-- URL: [https://dataengineerhub.blog/articles/dynamic-airflow-dags-snowflake-metadata](https://dataengineerhub.blog/articles/dynamic-airflow-dags-snowflake-metadata)
-- Published: 2026-07-15 | Updated: 2026-08-07
-- Word count: ~2149
-- Summary: I once inherited an Airflow repo with 214 DAG files that were, functionally, the same DAG. Each one extracted a table from a source system, loaded it into Snowflake, and ran a transform. The only differences between them were the table name, the schedule, and which SQL file to run. Someone had copy-
-- Key sections: TL;DR | The distinction that trips everyone up | The metadata-driven pattern | Rendering the DAG from a row | The parsing gotchas that wreck schedulers | When to reach for dynamic task mapping instead | Cost and maintenance math | The gotchas nobody warns you about
-
-### [Orchestrating dbt with Airflow on Snowflake: Job vs Model-Level in 2026](https://dataengineerhub.blog/articles/airflow-dbt-snowflake-orchestration-guide)
-- URL: [https://dataengineerhub.blog/articles/airflow-dbt-snowflake-orchestration-guide](https://dataengineerhub.blog/articles/airflow-dbt-snowflake-orchestration-guide)
-- Published: 2026-07-04 | Updated: 2026-07-04
-- Word count: ~1748
-- Summary: For years, the pattern was: Airflow sits in one corner of your infrastructure, dbt runs on a server somewhere else, they pass data between each other via manual credential handoffs and cron jobs, and when something breaks at 2 AM, you’re SSH-ing into the dbt box, checking Airflow logs, querying Snow
-- Key sections: TL;DR | The job-level vs model-level question, and why it’s been misleading | Why model-level is winning in 2026 — and what changed | Real benchmark: 400-model project, production traffic | How to orchestrate Snowflake native dbt Projects from Airflow | Setup: Snowflake side (one-time) | The three gotchas you’ll hit | When to use job-level, when to use model-level
-
-### [Airflow vs Prefect: 2026 Comparison Guide](https://dataengineerhub.blog/articles/airflow-vs-prefect)
-- URL: [https://dataengineerhub.blog/articles/airflow-vs-prefect](https://dataengineerhub.blog/articles/airflow-vs-prefect)
-- Published: 2026-05-05 | Updated: 2026-05-10
-- Word count: ~2607
-- Summary: I evaluated Prefect seriously. Ran it in a staging environment for six weeks. Built three real flows. Had the internal conversation about migrating. And then stayed with Airflow .
-- Key sections: TL;DR | What We Were Running When We Evaluated | The Core Difference Nobody Explains Clearly | What This Means for Local Development | What This Means for Dynamic Workflows | Airflow Version | Prefect Version | Where Airflow Still Wins
-
-### [Delta Lake vs Apache Iceberg — Why I Chose Iceberg for Our Data Lakehouse](https://dataengineerhub.blog/articles/delta-lake-vs-iceberg)
-- URL: [https://dataengineerhub.blog/articles/delta-lake-vs-iceberg](https://dataengineerhub.blog/articles/delta-lake-vs-iceberg)
-- Published: 2026-05-04 | Updated: 2026-05-08
-- Word count: ~1512
-- Summary: TL;DR → Delta Lake is easier to start with, especially if you’re already on Databricks → Iceberg wins on engine flexibility — works natively with Spark, Flink, Trino, Snowflake, and more without custom connectors → Delta Lake’s vendor coupling with Databricks is a real cost if you’re multi-cloud or 
-- Key sections: Partition Management Was Getting Messy | Hidden Partitioning Changed How We Design Tables | THE MIGRATION: WHAT IT ACTUALLY COST US | Downstream dependency mapping. | Metadata catalog updates. | Frequently Asked Questions | What is the main difference between Delta Lake and Apache Iceberg? | Is Apache Iceberg better than Delta Lake?
-
-### [Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide](https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration)
-- URL: [https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration](https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration)
-- Published: 2026-04-07 | Updated: 2026-05-05
-- Word count: ~3374
-- Summary: How I Wired Snowflake’s Native dbt Projects to Airflow — And Finally Got True End-to-End Orchestration
-- Key sections: First — What Exactly Is a dbt Project on Snowflake ? | The Architecture We’re Building | Step 1: Snowflake Setup — Roles, Warehouse, and Permissions | Step 2: Deploy Your dbt Project as a Native Snowflake Object | Step 3: Set Up a Real dbt Project Structure | Step 4: Wire It All Together in Airflow | Step 5: Running Specific dbt Selectors from Airflow | Step 6: Handling New Versions of Your dbt Project
-
-### [2026 Guide: Cut dbt Build Time 48% with Snowflake Cortex Code](https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide)
-- URL: [https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide](https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide)
-- Published: 2026-03-08 | Updated: 2026-05-09
-- Word count: ~5030
-- Summary: It was a Tuesday morning when I finally snapped. My dbt project had grown to 147 models, and the daily run was taking 2 hours and 47 minutes. Our Airflow DAG was timing out. The business team was complaining about stale dashboards. And I was spending my entire morning investigating why dim_customer 
-- Key sections: The Moment Everything Changed | Part 1: What Is Snowflake Cortex Code? (The Simple Truth) | Part 2: Getting Started (5-Minute Setup) | Cortex Code is available in Snowflake (check your edition—Enterprise or higher typically has it). | Part 3: Core Capabilities (The Quick Tour) | Part 4: dbt + Cortex Code – The Real Game Changer | 4.1: Quick Overview – Beyond Basic Generation | 4.2: Performance Optimization – The Killer Feature
-
-### [Automated ETL with Airflow and Python: A Practical Guide](https://dataengineerhub.blog/articles/automated-etl-airflow-python)
-- URL: [https://dataengineerhub.blog/articles/automated-etl-airflow-python](https://dataengineerhub.blog/articles/automated-etl-airflow-python)
-- Published: 2025-09-28 | Updated: 2025-10-08
-- Word count: ~855
-- Summary: In the world of data, consistency is king. Manually running scripts to fetch and process data is not just tedious; it’s prone to errors, delays, and gaps in your analytics. To build a reliable data-driven culture, you need automation. This is where building an automated ETL with Airflow and Python b
-- Key sections: The Architecture: A Simple, Powerful Workflow | Step 1: The Python ETL Script | Step 2: Creating the Airflow DAG | Step 3: The Analytics Payoff | Conclusion: Build Once, Benefit Forever
 
 ## Python (4 articles)
 

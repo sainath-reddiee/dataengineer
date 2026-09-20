@@ -38,6 +38,13 @@ const navGroups = [
         ],
     },
     {
+        label: 'Platform',
+        items: [
+            { path: '/admin/subscriptions', icon: Users, label: 'Subscriptions' },
+            { path: '/admin/questions', icon: MessageCircleQuestion, label: 'Interview Questions' },
+        ],
+    },
+    {
         label: 'Sponsors',
         items: [
             { path: '/admin/sponsors', icon: Key, label: 'Sponsor Manager' },

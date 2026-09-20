@@ -134,11 +134,11 @@ const PostCard = ({ post }) => {
         </div>
       </div>
 
-      <div className="p-6">
-        <h3 className="text-lg font-bold mb-3 group-hover:text-blue-400 transition-colors line-clamp-2">
+      <div className="p-8">
+        <h3 className="text-xl font-bold mb-4 group-hover:text-blue-400 transition-colors line-clamp-2 leading-tight">
           {post.title}
         </h3>
-        <p className="text-gray-400 text-sm mb-4 line-clamp-3">
+        <p className="text-gray-400 text-base mb-6 line-clamp-3 leading-relaxed">
           {post.excerpt}
         </p>
 

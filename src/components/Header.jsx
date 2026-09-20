@@ -2,68 +2,116 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  Bookmark,
-  BookOpen,
   ChevronDown,
+  ChevronRight,
   Coffee,
-  FileText,
-  GitCompare,
-  GraduationCap,
-  Home,
-  Info,
-  Library,
-  Megaphone,
   Menu,
-  PenLine,
   Search,
-  Target,
-  Wrench,
   X,
+  Zap,
+  User,
+  Sparkles,
+  BookOpen,
+  Award,
+  Terminal,
+  Lock,
+  ArrowRight,
+  Layers,
+  Compass,
+  Code2,
+  BrainCircuit,
+  Flame,
 } from 'lucide-react';
 import SearchModal from '@/components/SearchModal';
 import SupportModal from '@/components/Support/SupportModal';
-import { useReadingList } from '@/hooks/useReadingList';
-import { ADSENSE_REVIEW_MODE, isReviewAllowlistedTool } from '@/data/adsenseQualityGate';
-import { FEATURED_TOOLS, toolHref } from '@/data/toolsCatalog';
+import LoginModal from '@/components/LoginModal';
 
-const REVIEW_HIDDEN_LEARN = new Set(['/glossary', '/compare', '/interview-prep', '/practice']);
+// ─── Practice Dropdown Catalog (Hands-On Coding & Pads) ─────────────────────────
 
-const MAIN_LINKS = [
-  { name: 'Home', path: '/', icon: Home },
-  { name: 'Articles', path: '/articles', icon: BookOpen },
-  { name: 'Tools', path: '/tools', icon: Wrench },
-  { name: 'Advertise', path: '/advertise', icon: Megaphone },
-  { name: 'About', path: '/about', icon: Info },
+const PRACTICE_CATALOG = {
+  beginner: [
+    { name: 'Introduction to SQL & Queries Pad', path: '/coding', level: 'BEGINNER', desc: 'SELECT, WHERE, GROUP BY, aggregations & joins', aiTutor: true },
+    { name: 'Python Basics for Data Engineers', path: '/coding', level: 'BEGINNER', desc: 'Variables, loops, dataframes & script basics' },
+    { name: 'SQL Joins & Group By Exercises', path: '/coding', level: 'BEGINNER', desc: 'INNER, LEFT, RIGHT & FULL OUTER joins', isNew: true },
+    { name: 'Interactive SQL Sandbox', path: '/tools/sql-playground', level: 'BEGINNER', desc: 'Browser-based DuckDB SQL execution' },
+  ],
+  intermediate: [
+    { name: 'Warehouse SQL & Window Functions', path: '/coding', level: 'INTERMEDIATE', desc: 'ROW_NUMBER, LAG, LEAD & cumulative sums', aiTutor: true },
+    { name: 'Airflow Pipeline Debugging Pad', path: '/tools/sql-playground', level: 'INTERMEDIATE', desc: 'DAGs, operators, retries & sensors' },
+    { name: 'dbt Model & Test Drills', path: '/coding', level: 'INTERMEDIATE', desc: 'Models, tests, docs & incremental strategy', isNew: true },
+    { name: 'PySpark DataFrame Processing', path: '/coding', level: 'INTERMEDIATE', desc: 'DataFrames, transformations & schemas' },
+  ],
+  advanced: [
+    { name: 'Hard SQL & Sessionization Pads', path: '/coding', level: 'ADVANCED', pro: true, desc: 'Gaps & islands, pivots & session IDs', aiTutor: true },
+    { name: 'PySpark Performance & Salting', path: '/coding', level: 'ADVANCED', pro: true, desc: 'Data skew, salting & executor memory optimization' },
+    { name: 'Kafka & Real-Time Streaming Pad', path: '/coding', level: 'ADVANCED', pro: true, desc: 'Exactly-once semantics & watermarking' },
+    { name: 'Vector DBs & RAG Indexing Pad', path: '/coding', level: 'ADVANCED', pro: true, desc: 'Embeddings, Pinecone, Chunking & RAG pipelines', isNew: true },
+  ],
+  'sql-tracks': [
+    { name: 'SQL Window Functions Track', path: '/coding', level: 'INTERMEDIATE', desc: 'ROW_NUMBER, RANK, DENSE_RANK, NTILE & LAG/LEAD', aiTutor: true },
+    { name: 'SQL Aggregations & Pivot Track', path: '/coding', level: 'INTERMEDIATE', desc: 'CUBE, ROLLUP, GROUPING SETS & FILTER clauses' },
+  ],
+  'python-tracks': [
+    { name: 'Python Data Manipulation Track', path: '/coding', level: 'BEGINNER', desc: 'Pandas, NumPy arrays & data cleaning scripts' },
+    { name: 'Python Algorithms for DE Track', path: '/coding', level: 'INTERMEDIATE', desc: 'Hash maps, graph traversal & queue workers' },
+  ],
+};
+
+// ─── Learn Dropdown Catalog (Roadmaps, Concepts & Guides) ──────────────────────
+
+const LEARN_CATALOG = {
+  beginner: [
+    { name: 'Data Engineering Fundamentals', path: '/start-here', level: 'BEGINNER', desc: 'Pipelines, warehouses & cloud architecture', isNew: true },
+    { name: 'Role Roadmaps & Career Paths', path: '/roadmaps', level: 'BEGINNER', desc: 'Step-by-step career graphs for 9 data roles' },
+    { name: 'Introduction to Cloud Architecture', path: '/roadmaps', level: 'BEGINNER', desc: 'Snowflake, BigQuery & AWS S3/Redshift concepts' },
+    { name: 'Understanding Dimensional Modeling', path: '/tools', level: 'BEGINNER', desc: 'Star schemas, fact tables & dimension modeling' },
+  ],
+  intermediate: [
+    { name: 'dbt Data Modeling & Marts', path: '/articles/dbt-projects-snowflake-structure', level: 'INTERMEDIATE', desc: 'Models, tests, docs & incremental strategy', isNew: true },
+    { name: 'Airflow Pipeline Best Practices', path: '/articles/airflow-dbt-snowflake-orchestration-guide', level: 'INTERMEDIATE', desc: 'DAG design, idempotency & failure handling' },
+    { name: 'Snowflake Cost Optimization Guide', path: '/articles/snowflake-cost-optimization-techniques-2026', level: 'INTERMEDIATE', desc: 'Credit calculators, auto-suspend & query profiles' },
+    { name: 'Databricks Delta Lake Deep-Dive', path: '/articles/databricks-unity-catalog-iceberg-2026', level: 'INTERMEDIATE', desc: 'ACID transactions, time travel & OPTIMIZE Z-ORDER' },
+  ],
+  advanced: [
+    { name: '10TB/Day Log Ingestion System Design', path: '/articles/mastering-real-time-etl-with-google-cloud-dataflow', level: 'ADVANCED', pro: true, desc: 'High-throughput lakehouse architecture & partitioning' },
+    { name: 'Distributed Systems & Raft Consensus', path: '/articles/data-contracts-schema-brekage-guide', level: 'ADVANCED', pro: true, desc: 'Leader election, log replication & CAP theorem' },
+    { name: 'CDC with Debezium & Kafka', path: '/articles/automated-etl-airflow-python', level: 'ADVANCED', pro: true, desc: 'Database change data capture & stream processing' },
+    { name: 'LLM Fine-Tuning & Vector Infrastructure', path: '/articles/build-rag-snowflake-cortex-search-guide', level: 'ADVANCED', pro: true, desc: 'Embeddings, vector databases & RAG system architecture', isNew: true },
+  ],
+  'cloud-snowflake': [
+    { name: 'Snowflake Architecture & Billing', path: '/articles/snowflake-query-execution-architecture', level: 'BEGINNER', desc: 'Virtual warehouses, micro-partitions & zero-copy clone' },
+    { name: 'Cloud Data Warehouse Comparison', path: '/articles/delta-lake-vs-iceberg', level: 'INTERMEDIATE', desc: 'Snowflake vs BigQuery vs Databricks cost analysis' },
+  ],
+  'airflow-dbt': [
+    { name: 'dbt Schema & Model Generator', path: '/tools/dbt-schema-generator', level: 'INTERMEDIATE', desc: 'Generate YAML schemas & tests instantly' },
+    { name: 'Cron Expression & Schedule Builder', path: '/tools/cron-job-builder', level: 'BEGINNER', desc: 'Build & test Airflow cron schedules visually' },
+  ],
+};
+
+const PRACTICE_LINKS = [
+  { name: 'Coding hub',        path: '/coding',        desc: 'SQL & Python practice pads & tracks' },
+  { name: 'SQL sandbox',       path: '/tools/sql-playground', desc: 'Run SQL in the browser' },
+  { name: 'Interview prep',    path: '/interview',      desc: '340+ question bank & drill mode' },
+  { name: 'Practice tests',    path: '/certs',          desc: 'Snowflake, AWS, dbt exams' },
 ];
 
 const LEARN_LINKS = [
-  { name: 'Interview Prep', path: '/interview-prep', icon: GraduationCap },
-  { name: 'Practice Tests', path: '/practice', icon: Target },
-  { name: 'Cheat Sheets', path: '/cheatsheets', icon: FileText },
-  { name: 'Glossary', path: '/glossary', icon: Library },
-  { name: 'Compare', path: '/compare', icon: GitCompare },
-  { name: 'Write for us', path: '/contribute', icon: PenLine },
-  { name: 'Reading list', path: '/reading-list', icon: Bookmark },
+  { name: 'Start here',        path: '/start-here',     desc: 'Pick a role, then five steps' },
+  { name: 'Role roadmaps',     path: '/roadmaps',       desc: 'Career paths by data role' },
+  { name: 'All stacks',        path: '/articles',       desc: 'Filter by technology' },
+  { name: 'Resources',         path: '/tools',          desc: 'Calculators & tools' },
 ];
 
-const LEARN_PATHS = [
-  '/interview-prep',
-  '/practice',
-  '/cheatsheets',
-  '/glossary',
-  '/compare',
-  '/contribute',
-  '/reading-list',
+const MORE_LINKS = [
+  { name: 'About',             path: '/about',          desc: 'Who writes this' },
+  { name: 'Advertise',         path: '/advertise',      desc: 'Reach DE practitioners' },
+  { name: 'Write for us',      path: '/contribute',     desc: 'Submit a technical brief' },
+  { name: 'Contributors',      path: '/contributors',   desc: 'Guest author profiles' },
+  { name: 'Contact',           path: '/contact',        desc: 'Get in touch' },
 ];
-
-const pillClass = (active) =>
-  `inline-flex items-center gap-1.5 min-h-10 px-3 rounded-lg text-sm font-medium transition-colors ${
-    active
-      ? 'bg-blue-500/20 text-blue-200 ring-1 ring-blue-400/25'
-      : 'text-slate-300 hover:bg-white/5 hover:text-white'
-  }`;
 
 const isPathActive = (pathname, path) => {
+  if (!path || path.includes('#')) return false;
   if (path === '/') return pathname === '/';
   if (path === '/articles') {
     return (
@@ -75,365 +123,19 @@ const isPathActive = (pathname, path) => {
   return pathname === path || pathname.startsWith(`${path}/`);
 };
 
-const Header = ({ topOffset = 0 }) => {
-  const location = useLocation();
-  const currentPath = location.pathname;
-  const { count: readingListCount } = useReadingList();
-
-  const [isMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLearnOpen, setLearnOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isSupportOpen, setIsSupportOpen] = useState(false);
-
-  const learnRef = useRef(null);
-  const learnTimeout = useRef(null);
-  const visibleLearnLinks = LEARN_LINKS.filter(
-    (item) => !ADSENSE_REVIEW_MODE || !REVIEW_HIDDEN_LEARN.has(item.path)
-  );
-  const visibleFeaturedTools = ADSENSE_REVIEW_MODE
-    ? FEATURED_TOOLS.filter((tool) => isReviewAllowlistedTool(tool.slug))
-    : FEATURED_TOOLS;
-  const isLearnActive = visibleLearnLinks.some((item) => isPathActive(currentPath, item.path));
-
-  useEffect(() => {
-    return () => {
-      if (learnTimeout.current) clearTimeout(learnTimeout.current);
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
-        event.preventDefault();
-        setIsSearchOpen(true);
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (learnRef.current && !learnRef.current.contains(event.target)) {
-        setLearnOpen(false);
-      }
-    };
-    const handleEscape = (event) => {
-      if (event.key === 'Escape') {
-        setLearnOpen(false);
-        setMobileMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-    document.addEventListener('keydown', handleEscape);
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, []);
-
-  useEffect(() => {
-    setLearnOpen(false);
-    setMobileMenuOpen(false);
-    if (learnTimeout.current) clearTimeout(learnTimeout.current);
-  }, [currentPath]);
-
-  const openLearn = () => {
-    if (learnTimeout.current) clearTimeout(learnTimeout.current);
-    learnTimeout.current = setTimeout(() => {
-      learnTimeout.current = null;
-      setLearnOpen(true);
-    }, 80);
-  };
-
-  const closeLearn = () => {
-    if (learnTimeout.current) clearTimeout(learnTimeout.current);
-    learnTimeout.current = setTimeout(() => {
-      learnTimeout.current = null;
-      setLearnOpen(false);
-    }, 120);
-  };
-
-  const prefetchLearn = () => {
-    import('@/pages/PracticeHubPage');
-    import('@/pages/InterviewPrepHubPage');
-  };
-
-  return (
-    <header
-      className="fixed left-0 right-0 z-[9999] border-b border-white/10 bg-slate-950/80 backdrop-blur-xl"
-      style={{ top: topOffset }}
-    >
-      <nav className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-3 sm:px-6 lg:gap-4">
-        <Link to="/" className="group z-10 flex min-w-0 shrink items-center gap-2">
-          <span className="relative shrink-0">
-            <DatabaseMark />
-            <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-gradient-to-r from-pink-500 to-violet-500" />
-          </span>
-          <span className="hidden min-[420px]:inline truncate text-[15px] font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent sm:text-lg max-w-[9rem] min-[480px]:max-w-none">
-            DataEngineer Hub
-          </span>
-        </Link>
-
-        <button
-          type="button"
-          onClick={() => setIsSearchOpen(true)}
-          className="lg:hidden flex min-h-10 min-w-0 flex-1 items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 text-sm text-slate-400 transition-colors hover:border-white/25 hover:bg-white/10 hover:text-slate-200"
-          aria-label="Search articles"
-          title="Search"
-        >
-          <Search className="h-4 w-4 shrink-0 text-slate-300" />
-          <span className="truncate">Search</span>
-        </button>
-
-        <div className="hidden flex-1 items-center justify-center gap-1 lg:flex">
-          {MAIN_LINKS.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              onMouseEnter={() => {
-                if (item.path === '/tools') import('@/pages/ToolsHubPage');
-              }}
-              className={pillClass(isPathActive(currentPath, item.path))}
-            >
-              {item.name}
-            </Link>
-          ))}
-
-          <div
-            ref={learnRef}
-            className="relative"
-            onMouseEnter={() => {
-              prefetchLearn();
-              openLearn();
-            }}
-            onMouseLeave={closeLearn}
-          >
-            <button
-              type="button"
-              aria-expanded={isLearnOpen}
-              aria-haspopup="true"
-              aria-controls="learn-menu"
-              onClick={() => setLearnOpen((open) => !open)}
-              className={pillClass(isLearnActive || isLearnOpen)}
-            >
-              Learn
-              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isLearnOpen ? 'rotate-180' : ''}`} />
-            </button>
-
-            <AnimatePresence>
-              {isLearnOpen && (
-                <motion.div
-                  id="learn-menu"
-                  role="menu"
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 6 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute left-0 top-full z-50 mt-2 w-64 rounded-xl border border-white/10 bg-slate-950/95 p-2 shadow-2xl backdrop-blur-xl"
-                >
-                  {visibleLearnLinks.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.path}
-                        to={item.path}
-                        role="menuitem"
-                        className={`flex min-h-10 items-center gap-2.5 rounded-lg px-3 text-sm transition-colors ${
-                          isPathActive(currentPath, item.path)
-                            ? 'bg-blue-500/20 text-blue-200'
-                            : 'text-slate-300 hover:bg-white/5 hover:text-white'
-                        }`}
-                      >
-                        <Icon className="h-4 w-4 shrink-0" />
-                        <span className="flex-1">{item.name}</span>
-                        {item.path === '/reading-list' && readingListCount > 0 && (
-                          <span className="min-w-[1.15rem] rounded-full bg-amber-500 px-1 text-center text-[10px] font-bold text-slate-950">
-                            {readingListCount}
-                          </span>
-                        )}
-                      </Link>
-                    );
-                  })}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-
-        <div className="hidden items-center gap-2 lg:flex">
-          <button
-            type="button"
-            onClick={() => setIsSearchOpen(true)}
-            className="inline-flex min-h-10 w-56 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 text-sm text-slate-400 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-white"
-            title="Search (Ctrl+K)"
-          >
-            <Search className="h-4 w-4 text-slate-300" />
-            <span className="flex-1 text-left">Search articles…</span>
-            <kbd className="hidden rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-slate-400 xl:inline">
-              Ctrl K
-            </kbd>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsSupportOpen(true)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-amber-300 transition-colors hover:bg-white/5 hover:text-amber-200"
-            title="Support DataEngineer Hub"
-            aria-label="Buy me a coffee"
-          >
-            <Coffee className="h-4 w-4" />
-          </button>
-
-          <Link
-            to="/articles"
-            className="inline-flex min-h-10 items-center rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-4 text-sm font-semibold text-white shadow-lg shadow-blue-950/40 transition-colors hover:from-blue-500 hover:to-indigo-500"
-          >
-            Explore
-          </Link>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-0.5 lg:hidden">
-          <Link
-            to="/tools"
-            className="inline-flex h-10 items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 text-sm font-semibold text-slate-200 transition-colors hover:border-white/25 hover:bg-white/10 hover:text-white"
-            aria-label="Free tools"
-            title="Free tools"
-          >
-            <Wrench className="h-4 w-4" />
-            <span>Tools</span>
-          </Link>
-          <button
-            type="button"
-            onClick={() => setIsSupportOpen(true)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-amber-300 transition-colors hover:bg-white/5 hover:text-amber-200"
-            aria-label="Buy me a coffee"
-            title="Buy me a coffee"
-          >
-            <Coffee className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen((open) => !open)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
-            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-menu"
-          >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
-        </div>
-      </nav>
-
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            id="mobile-menu"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="border-t border-white/10 bg-slate-950/95 backdrop-blur-xl lg:hidden"
-            style={{ maxHeight: `calc(100vh - ${topOffset}px - 4rem)` }}
-          >
-            <div className="mx-auto max-w-7xl space-y-5 overflow-y-auto overscroll-contain px-4 py-4">
-              <div>
-                <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                  Free tools
-                </p>
-                <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-                  {visibleFeaturedTools.map((tool) => {
-                    const className =
-                      'shrink-0 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200';
-                    return tool.external ? (
-                      <a key={tool.slug} href={tool.url} className={className} onClick={() => setMobileMenuOpen(false)}>
-                        {tool.title}
-                      </a>
-                    ) : (
-                      <Link
-                        key={tool.slug}
-                        to={toolHref(tool)}
-                        className={className}
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {tool.title}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-              <MobileGroup title="Main">
-                {MAIN_LINKS.map((item) => (
-                  <MobileLink
-                    key={item.path}
-                    item={item}
-                    active={isPathActive(currentPath, item.path)}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                ))}
-              </MobileGroup>
-
-              <MobileGroup title="Learn">
-                {visibleLearnLinks.filter((item) => item.path !== '/contribute' && item.path !== '/reading-list').map((item) => (
-                  <MobileLink
-                    key={item.path}
-                    item={item}
-                    active={isPathActive(currentPath, item.path)}
-                    onClick={() => setMobileMenuOpen(false)}
-                  />
-                ))}
-              </MobileGroup>
-
-              <MobileGroup title="Site">
-                <MobileLink
-                  item={{ name: 'Write for us', path: '/contribute', icon: PenLine }}
-                  active={isPathActive(currentPath, '/contribute')}
-                  onClick={() => setMobileMenuOpen(false)}
-                />
-                <MobileLink
-                  item={{
-                    name: readingListCount > 0 ? `Reading list (${readingListCount})` : 'Reading list',
-                    path: '/reading-list',
-                    icon: Bookmark,
-                  }}
-                  active={isPathActive(currentPath, '/reading-list')}
-                  onClick={() => setMobileMenuOpen(false)}
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setIsSupportOpen(true);
-                  }}
-                  className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-amber-300 hover:bg-white/5"
-                >
-                  <Coffee className="h-4 w-4" />
-                  Buy me a coffee
-                </button>
-              </MobileGroup>
-
-              <Link
-                to="/articles"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex min-h-12 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-sm font-semibold text-white"
-              >
-                Explore articles
-              </Link>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-      <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
-    </header>
-  );
-};
+const navItemClass = (active) =>
+  `inline-flex items-center gap-1 h-10 px-3 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+    active
+      ? 'bg-emerald-500/15 text-emerald-400 font-semibold'
+      : 'text-slate-300 hover:bg-white/5 hover:text-white'
+  }`;
 
 const DatabaseMark = () => (
-  <svg
+  <motion.svg
+    whileHover={{ rotate: 10, scale: 1.1 }}
+    whileTap={{ scale: 0.9 }}
     viewBox="0 0 24 24"
-    className="h-7 w-7 text-blue-400 transition-transform duration-200 group-hover:rotate-6 group-hover:scale-105"
+    className="h-7 w-7 text-blue-400"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -444,32 +146,597 @@ const DatabaseMark = () => (
     <ellipse cx="12" cy="5" rx="9" ry="3" />
     <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
     <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
-  </svg>
+  </motion.svg>
 );
 
-const MobileGroup = ({ title, children }) => (
+const Header = ({ topOffset = 0 }) => {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const [isMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null); // 'practice' | 'learn' | 'more' | null
+  const [activeCourseLevel, setActiveCourseLevel] = useState('beginner'); // 'beginner' | 'intermediate' | 'advanced' | 'data-engineering' | 'cloud-infra'
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [user, setUser] = useState(null);
+
+  const dropdownRef = useRef(null);
+  const dropdownTimeout = useRef(null);
+
+  // Check user authentication session in localStorage
+  useEffect(() => {
+    const checkUser = () => {
+      try {
+        const stored = localStorage.getItem('de_hub_user');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed?.email) setUser(parsed);
+          else setUser(null);
+        } else {
+          setUser(null);
+        }
+      } catch {
+        setUser(null);
+      }
+    };
+    checkUser();
+    window.addEventListener('storage', checkUser);
+    return () => window.removeEventListener('storage', checkUser);
+  }, [isLoginOpen]);
+
+  // Keyboard shortcut for search
+  useEffect(() => {
+    const onKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsSearchOpen(true);
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
+
+  // Close dropdown on outside click / escape
+  useEffect(() => {
+    const onClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpenDropdown(null);
+      }
+    };
+    const onEsc = (e) => {
+      if (e.key === 'Escape') {
+        setOpenDropdown(null);
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener('click', onClickOutside);
+    document.addEventListener('keydown', onEsc);
+    return () => {
+      document.removeEventListener('click', onClickOutside);
+      document.removeEventListener('keydown', onEsc);
+    };
+  }, []);
+
+  // Close on route change
+  useEffect(() => {
+    setOpenDropdown(null);
+    setMobileMenuOpen(false);
+  }, [currentPath]);
+
+  const openMenu = (name) => {
+    if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
+    dropdownTimeout.current = setTimeout(() => setOpenDropdown(name), 60);
+  };
+
+  const closeMenu = () => {
+    if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
+    dropdownTimeout.current = setTimeout(() => setOpenDropdown(null), 100);
+  };
+
+  const keepOpen = () => {
+    if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
+  };
+
+  return (
+    <header
+      className="fixed left-0 right-0 z-[9999] border-b border-white/8 bg-slate-950/90 backdrop-blur-xl"
+      style={{ top: topOffset }}
+    >
+      <nav
+        ref={dropdownRef}
+        className="mx-auto flex h-14 max-w-7xl items-center gap-1 px-4 sm:px-6"
+      >
+        {/* ── Logo ── */}
+        <Link to="/" className="group flex shrink-0 items-center gap-2 mr-3">
+          <DatabaseMark />
+          <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            DataEngineer Hub
+          </span>
+        </Link>
+
+        {/* ── Desktop nav ── */}
+        <div className="hidden flex-1 items-center gap-0.5 lg:flex">
+
+          {/* Practice Mega-Dropdown */}
+          <div
+            className="relative"
+            onMouseEnter={() => openMenu('practice')}
+            onMouseLeave={closeMenu}
+          >
+            <button
+              type="button"
+              aria-expanded={openDropdown === 'practice'}
+              onClick={() => setOpenDropdown(openDropdown === 'practice' ? null : 'practice')}
+              className={navItemClass(openDropdown === 'practice')}
+            >
+              Practice
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${openDropdown === 'practice' ? 'rotate-180' : ''}`} />
+            </button>
+
+            <AnimatePresence>
+              {openDropdown === 'practice' && (
+                <SaaSMegaMenuDropdown
+                  catalogData={PRACTICE_CATALOG}
+                  activeLevel={activeCourseLevel}
+                  onLevelSelect={setActiveCourseLevel}
+                  links={PRACTICE_LINKS}
+                  currentPath={currentPath}
+                  onMouseEnter={keepOpen}
+                  onMouseLeave={closeMenu}
+                  title="PRACTICE PADS"
+                />
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Learn Mega-Dropdown */}
+          <div
+            className="relative"
+            onMouseEnter={() => openMenu('learn')}
+            onMouseLeave={closeMenu}
+          >
+            <button
+              type="button"
+              aria-expanded={openDropdown === 'learn'}
+              onClick={() => setOpenDropdown(openDropdown === 'learn' ? null : 'learn')}
+              className={navItemClass(openDropdown === 'learn')}
+            >
+              Learn
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${openDropdown === 'learn' ? 'rotate-180' : ''}`} />
+            </button>
+
+            <AnimatePresence>
+              {openDropdown === 'learn' && (
+                <SaaSMegaMenuDropdown
+                  catalogData={LEARN_CATALOG}
+                  activeLevel={activeCourseLevel}
+                  onLevelSelect={setActiveCourseLevel}
+                  links={LEARN_LINKS}
+                  currentPath={currentPath}
+                  onMouseEnter={keepOpen}
+                  onMouseLeave={closeMenu}
+                  title="LEARNING MODULES"
+                />
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* More dropdown */}
+          <div
+            className="relative"
+            onMouseEnter={() => openMenu('more')}
+            onMouseLeave={closeMenu}
+          >
+            <button
+              type="button"
+              aria-expanded={openDropdown === 'more'}
+              onClick={() => setOpenDropdown(openDropdown === 'more' ? null : 'more')}
+              className={navItemClass(openDropdown === 'more')}
+            >
+              More
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${openDropdown === 'more' ? 'rotate-180' : ''}`} />
+            </button>
+
+            <AnimatePresence>
+              {openDropdown === 'more' && (
+                <SimpleDropdownPanel links={MORE_LINKS} currentPath={currentPath} onMouseEnter={keepOpen} onMouseLeave={closeMenu} />
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Blog link */}
+          <Link to="/articles" className={navItemClass(isPathActive(currentPath, '/articles'))}>
+            Blog
+          </Link>
+
+          {/* Advertise link */}
+          <Link to="/advertise" className={navItemClass(isPathActive(currentPath, '/advertise'))}>
+            Advertise
+          </Link>
+        </div>
+
+        {/* ── Right side controls ── */}
+        <div className="hidden items-center gap-2 lg:flex ml-auto">
+          {/* Coffee Support */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            type="button"
+            onClick={() => setIsSupportOpen(true)}
+            className="group inline-flex h-9 items-center gap-1.5 rounded-md border border-amber-500/20 bg-amber-500/10 hover:bg-amber-500/20 px-3 text-xs font-semibold text-amber-300 transition-colors shrink-0"
+            title="Support DataEngineer Hub"
+          >
+            <motion.div whileHover={{ rotate: 15 }} className="flex items-center justify-center">
+              <Coffee className="h-3.5 w-3.5" />
+            </motion.div>
+            <span>Coffee</span>
+          </motion.button>
+
+          {/* Upgrade CTA */}
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Link
+              to="/upgrade"
+              className="group inline-flex h-9 items-center gap-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 px-4 text-sm font-semibold text-white transition-colors shrink-0 shadow-[0_0_15px_-3px_rgba(16,185,129,0.4)]"
+            >
+              <Zap className="h-3.5 w-3.5 fill-current transition-transform group-hover:scale-110 group-hover:text-amber-300" />
+              Upgrade
+            </Link>
+          </motion.div>
+
+          {/* Search */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="button"
+            onClick={() => setIsSearchOpen(true)}
+            className="group inline-flex h-9 w-44 items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 text-sm text-slate-400 transition-colors hover:border-white/20 hover:bg-white/8 hover:text-white"
+            title="Search (Ctrl+K)"
+          >
+            <Search className="h-3.5 w-3.5 text-slate-400 shrink-0 transition-transform group-hover:rotate-90 group-hover:text-emerald-400" />
+            <span className="flex-1 text-left">Search</span>
+            <kbd className="hidden rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-slate-500 xl:inline">
+              Ctrl K
+            </kbd>
+          </motion.button>
+
+          {/* Account Login / Profile Button */}
+          {user ? (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              type="button"
+              onClick={() => setIsLoginOpen(true)}
+              className="inline-flex h-9 items-center gap-2 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-3 text-xs font-bold text-emerald-300 hover:bg-emerald-500/20 transition-colors shrink-0"
+              title={`Signed in as ${user.email}`}
+            >
+              <div className="h-5 w-5 rounded-full bg-emerald-500/30 flex items-center justify-center text-[10px] font-bold text-emerald-300 shadow-inner">
+                {user.name?.[0]?.toUpperCase() || 'U'}
+              </div>
+              <span className="max-w-[80px] truncate">{user.name?.split(' ')[0] || 'Account'}</span>
+            </motion.button>
+          ) : (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              type="button"
+              onClick={() => setIsLoginOpen(true)}
+              className="group inline-flex h-9 items-center justify-center rounded-md border border-white/10 bg-white/5 px-3.5 text-sm font-medium text-slate-200 transition-colors hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-300 shrink-0"
+              title="Login to DataEngineer Hub"
+            >
+              <User className="mr-1.5 h-3.5 w-3.5 transition-transform group-hover:scale-110" />
+              Login
+            </motion.button>
+          )}
+        </div>
+
+        {/* ── Mobile right area ── */}
+        <div className="flex shrink-0 items-center gap-1 lg:hidden ml-auto">
+          <button
+            type="button"
+            onClick={() => setIsSearchOpen(true)}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-slate-400 hover:bg-white/5 hover:text-white transition-colors"
+          >
+            <Search className="h-4 w-4" />
+          </button>
+
+          <Link
+            to="/upgrade"
+            className="inline-flex h-9 items-center gap-1 rounded-md bg-emerald-600 hover:bg-emerald-500 px-3 text-xs font-bold text-white transition-colors"
+          >
+            <Zap className="h-3 w-3 fill-current" />
+            Pro
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((o) => !o)}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+          >
+            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+      </nav>
+
+      {/* ── Mobile Menu ── */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="border-t border-white/8 bg-slate-950/95 backdrop-blur-xl lg:hidden"
+            style={{ maxHeight: `calc(100vh - ${topOffset}px - 3.5rem)`, overflowY: 'auto' }}
+          >
+            <div className="mx-auto max-w-7xl space-y-5 px-4 py-5">
+              <MobileSection title="Practice">
+                {PRACTICE_LINKS.map((item) => (
+                  <MobileLink key={item.path + item.name} item={item} active={isPathActive(currentPath, item.path)} onClick={() => setMobileMenuOpen(false)} />
+                ))}
+              </MobileSection>
+
+              <MobileSection title="Learn">
+                {LEARN_LINKS.map((item) => (
+                  <MobileLink key={item.path + item.name} item={item} active={isPathActive(currentPath, item.path)} onClick={() => setMobileMenuOpen(false)} />
+                ))}
+              </MobileSection>
+
+              <MobileSection title="More">
+                {MORE_LINKS.map((item) => (
+                  <MobileLink key={item.path + item.name} item={item} active={isPathActive(currentPath, item.path)} onClick={() => setMobileMenuOpen(false)} />
+                ))}
+              </MobileSection>
+
+              <div className="pt-2 flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setMobileMenuOpen(false); setIsLoginOpen(true); }}
+                  className="flex h-10 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 text-sm font-semibold text-white"
+                >
+                  <User className="h-4 w-4" />
+                  {user ? `Account (${user.name})` : 'Login / Sign in'}
+                </button>
+
+                <Link
+                  to="/upgrade"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex h-11 items-center justify-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-sm font-bold text-white transition-colors"
+                >
+                  <Zap className="h-4 w-4 fill-current" />
+                  Upgrade to Pro — $12/mo
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+    </header>
+  );
+};
+
+// ─── SaaS-Style Interactive Mega Menu Dropdown Component ───────────────────────
+
+const SaaSMegaMenuDropdown = ({ catalogData = PRACTICE_CATALOG, activeLevel, onLevelSelect, links, currentPath, onMouseEnter, onMouseLeave, title = 'COURSES' }) => {
+  const currentCourses = catalogData[activeLevel] || catalogData.beginner || Object.values(catalogData)[0] || [];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 6, scale: 0.98 }}
+      transition={{ duration: 0.14, ease: 'easeOut' }}
+      className="absolute left-0 top-full z-[100000] mt-2 w-[760px] rounded-2xl border border-slate-700/80 bg-[#0f172a]/95 backdrop-blur-2xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.85)] text-white"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <div className="grid grid-cols-12 gap-4">
+
+        {/* Column 1: Main Destinations */}
+        <div className="col-span-4 border-r border-slate-800/80 pr-3 space-y-1">
+          <p className="px-3 text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-2 flex items-center gap-1">
+            <Compass className="h-3 w-3" /> DESTINATIONS
+          </p>
+          {links.map((item) => {
+            const active = isPathActive(currentPath, item.path);
+            return (
+              <Link
+                key={item.path + item.name}
+                to={item.path}
+                className={`flex flex-col rounded-lg px-3 py-2 text-xs transition-all ${
+                  active
+                    ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30'
+                    : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+                }`}
+              >
+                <span className="font-semibold text-sm">{item.name}</span>
+                {item.desc && <span className="text-[10px] text-slate-400 mt-0.5">{item.desc}</span>}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Column 2: Level & Topic Selection (SaaS mouse-hover reactive) */}
+        <div className="col-span-3 border-r border-slate-800/80 pr-3 space-y-2">
+          <div>
+            <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-1.5 flex items-center gap-1">
+              <Layers className="h-3 w-3" /> LEVEL
+            </p>
+            <div className="space-y-1">
+              {[
+                { id: 'beginner', label: 'Beginner', color: 'bg-emerald-500' },
+                { id: 'intermediate', label: 'Intermediate', color: 'bg-blue-500' },
+                { id: 'advanced', label: 'Advanced', color: 'bg-purple-500' },
+              ].map((lvl) => {
+                const isSelected = activeLevel === lvl.id;
+                return (
+                  <button
+                    key={lvl.id}
+                    type="button"
+                    onMouseEnter={() => onLevelSelect(lvl.id)}
+                    onClick={() => onLevelSelect(lvl.id)}
+                    className={`w-full text-left rounded-lg px-2.5 py-2 text-xs font-semibold transition-all flex items-center justify-between ${
+                      isSelected
+                        ? 'bg-gradient-to-r from-blue-500/20 to-emerald-500/10 text-blue-300 border border-blue-500/40 shadow-sm'
+                        : 'text-slate-400 hover:bg-slate-800/70 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span className={`h-1.5 w-1.5 rounded-full ${lvl.color}`} />
+                      <span>{lvl.label}</span>
+                    </div>
+                    <ChevronRight className={`h-3 w-3 transition-transform ${isSelected ? 'text-blue-400 translate-x-0.5' : 'opacity-40'}`} />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Render extra topic categories present in catalogData */}
+          {Object.keys(catalogData).filter((k) => !['beginner', 'intermediate', 'advanced'].includes(k)).length > 0 && (
+            <div className="pt-2 border-t border-slate-800/80">
+              <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5 flex items-center gap-1">
+                <Sparkles className="h-3 w-3 text-amber-400" /> TRACKS
+              </p>
+              <div className="space-y-1">
+                {Object.keys(catalogData)
+                  .filter((k) => !['beginner', 'intermediate', 'advanced'].includes(k))
+                  .map((topicKey) => {
+                    const isSelected = activeLevel === topicKey;
+                    const formattedLabel = topicKey.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+                    return (
+                      <button
+                        key={topicKey}
+                        type="button"
+                        onMouseEnter={() => onLevelSelect(topicKey)}
+                        onClick={() => onLevelSelect(topicKey)}
+                        className={`w-full text-left rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all flex items-center justify-between ${
+                          isSelected
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                            : 'text-slate-400 hover:bg-slate-800/70 hover:text-white'
+                        }`}
+                      >
+                        <span>{formattedLabel}</span>
+                        <ChevronRight className={`h-3 w-3 transition-transform ${isSelected ? 'text-emerald-400 translate-x-0.5' : 'opacity-40'}`} />
+                      </button>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Column 3: Level Courses List */}
+        <div className="col-span-5 space-y-1.5">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              {activeLevel.replace('-', ' ').toUpperCase()} {title}
+            </p>
+            <Link to="/coding" className="text-[10px] font-bold text-emerald-400 hover:underline">
+              See all →
+            </Link>
+          </div>
+
+          {currentCourses.map((c) => (
+            <Link
+              key={c.name}
+              to={c.path}
+              className="group block rounded-xl border border-slate-800/80 bg-slate-900/60 p-2.5 hover:border-emerald-500/40 hover:bg-slate-900/90 transition-all shadow-sm"
+            >
+              <div className="flex items-center justify-between gap-1 mb-0.5">
+                <span className="text-xs font-bold text-white group-hover:text-emerald-300 transition-colors line-clamp-1">
+                  {c.name}
+                </span>
+                <div className="flex items-center gap-1 shrink-0">
+                  {c.aiTutor && (
+                    <span className="rounded bg-purple-500/20 px-1 py-0.2 text-[8px] font-extrabold text-purple-300 border border-purple-500/30">
+                      AI TUTOR
+                    </span>
+                  )}
+                  {c.isNew && (
+                    <span className="rounded bg-amber-500/20 px-1 py-0.2 text-[8px] font-extrabold text-amber-300 border border-amber-500/30">
+                      NEW
+                    </span>
+                  )}
+                  {c.pro ? (
+                    <span className="flex items-center gap-0.5 rounded bg-amber-500/20 px-1 py-0.2 text-[9px] font-bold text-amber-300">
+                      <Lock className="h-2 w-2" /> PRO
+                    </span>
+                  ) : (
+                    <span className="rounded bg-emerald-500/20 px-1 py-0.2 text-[9px] font-bold text-emerald-300">
+                      FREE
+                    </span>
+                  )}
+                </div>
+              </div>
+              <p className="text-[10px] text-slate-400 line-clamp-1">{c.desc}</p>
+            </Link>
+          ))}
+        </div>
+
+      </div>
+    </motion.div>
+  );
+};
+
+// ─── Simple Dropdown Panel ───────────────────────────────────────────────────
+
+const SimpleDropdownPanel = ({ links, currentPath, onMouseEnter, onMouseLeave }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 4, scale: 0.98 }}
+    animate={{ opacity: 1, y: 0, scale: 1 }}
+    exit={{ opacity: 0, y: 4, scale: 0.98 }}
+    transition={{ duration: 0.12 }}
+    className="absolute left-0 top-full z-[100000] mt-2 w-64 rounded-xl border border-slate-700/80 bg-[#0f172a] p-2 shadow-2xl shadow-black/90"
+    onMouseEnter={onMouseEnter}
+    onMouseLeave={onMouseLeave}
+  >
+    {links.map((item) => {
+      const active = isPathActive(currentPath, item.path);
+      return (
+        <Link
+          key={item.path + item.name}
+          to={item.path}
+          className={`flex flex-col rounded-lg px-3 py-2 text-sm transition-all duration-150 ${
+            active
+              ? 'bg-emerald-500/20 text-emerald-300 font-semibold'
+              : 'text-slate-200 hover:bg-slate-800/90 hover:text-white'
+          }`}
+        >
+          <span className="font-medium text-sm text-slate-100">{item.name}</span>
+          {item.desc && <span className="text-[11px] text-slate-400 mt-0.5 leading-snug">{item.desc}</span>}
+        </Link>
+      );
+    })}
+  </motion.div>
+);
+
+const MobileSection = ({ title, children }) => (
   <div>
-    <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+    <p className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
       {title}
     </p>
     <div className="grid grid-cols-2 gap-1">{children}</div>
   </div>
 );
 
-const MobileLink = ({ item, active, onClick }) => {
-  const Icon = item.icon;
-  return (
-    <Link
-      to={item.path}
-      onClick={onClick}
-      className={`flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium ${
-        active ? 'bg-blue-500/20 text-blue-200' : 'text-slate-200 hover:bg-white/5 hover:text-white'
-      }`}
-    >
-      <Icon className="h-4 w-4 shrink-0" />
-      {item.name}
-    </Link>
-  );
-};
+const MobileLink = ({ item, active, onClick }) => (
+  <Link
+    to={item.path}
+    onClick={onClick}
+    className={`flex min-h-10 items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+      active
+        ? 'bg-emerald-500/15 text-emerald-300'
+        : 'text-slate-300 hover:bg-white/5 hover:text-white'
+    }`}
+  >
+    {item.name}
+  </Link>
+);
+
 
 export default Header;
+

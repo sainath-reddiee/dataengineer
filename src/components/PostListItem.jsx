@@ -111,13 +111,13 @@ const PostListItem = ({ post }) => {
       </motion.div>
 
       {/* Main Content Area */}
-      <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6 bg-slate-900/60 group-hover:bg-slate-800/60 p-4 rounded-lg transition-colors duration-300">
-        <div className="w-full sm:w-48 flex-shrink-0 overflow-hidden rounded-lg">
+      <div className="relative z-10 flex flex-col sm:flex-row items-center gap-8 bg-slate-900/40 group-hover:bg-slate-800/60 p-6 sm:p-8 rounded-xl transition-colors duration-300">
+        <div className="w-full sm:w-64 flex-shrink-0 overflow-hidden rounded-xl shadow-md">
           <motion.div variants={imageVariants} className="h-full" transition={{ duration: 0.4, ease: 'easeOut' }}>
             <LazyImage
               src={post.image}
               alt={post.title}
-              className="aspect-video sm:aspect-square object-cover"
+              className="aspect-video sm:aspect-[4/3] object-cover"
             />
           </motion.div>
         </div>
@@ -126,10 +126,10 @@ const PostListItem = ({ post }) => {
           <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold mb-3 inline-block">
             {post.category}
           </span>
-          <h3 className="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors">
+          <h3 className="text-2xl font-bold mb-3 group-hover:text-blue-400 transition-colors leading-tight">
             {post.title}
           </h3>
-          <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+          <p className="text-gray-400 text-base mb-6 line-clamp-2 leading-relaxed">
             {post.excerpt}
           </p>
           <div className="flex items-center space-x-4 text-xs text-gray-400">

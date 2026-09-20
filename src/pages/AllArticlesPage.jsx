@@ -120,8 +120,8 @@ const AllArticlesPage = () => {
   };
 
   const containerClasses = viewMode === 'list'
-    ? 'flex flex-col space-y-4 max-w-4xl mx-auto'
-    : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6';
+    ? 'flex flex-col space-y-8 max-w-4xl mx-auto'
+    : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8';
 
   return (
     <>
@@ -144,7 +144,7 @@ const AllArticlesPage = () => {
     },
   }}
 />
-      <div className="pt-1 pb-6">
+      <div className="pt-8 pb-16">
         <div className="container mx-auto px-6">
           {/* Header Section */}
           <motion.div

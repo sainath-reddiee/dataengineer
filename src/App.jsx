@@ -1,6 +1,6 @@
 // src/App.jsx - FIXED VERSION
 import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
-import { Routes, Route, useLocation, Link, Navigate } from 'react-router-dom';
+import { Routes, Route, useLocation, Link, Navigate, useParams } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import Layout from '@/components/Layout';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -72,6 +72,16 @@ const PracticeQuizPage = lazy(() => import('./pages/PracticeQuizPage'));
 const PracticeTopicPage = lazy(() => import('./pages/PracticeTopicPage'));
 const PracticeQuestionPage = lazy(() => import('./pages/PracticeQuestionPage'));
 
+// Platform Expansion Hubs
+const UpgradeProPage = lazy(() => import('./pages/UpgradeProPage'));
+const DEPracticePadsPage = lazy(() => import('./pages/DEPracticePadsPage'));
+const DEInterviewBankPage = lazy(() => import('./pages/DEInterviewBankPage'));
+const CertificationsPrepPage = lazy(() => import('./pages/CertificationsPrepPage'));
+const EngineeringRoadmapsPage = lazy(() => import('./pages/EngineeringRoadmapsPage'));
+const GettingStartedPage = lazy(() => import('./pages/GettingStartedPage'));
+const AccountSettingsPage = lazy(() => import('./pages/AccountSettingsPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+
 // Not Found Page
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
@@ -112,6 +122,8 @@ const ArticleWriterPage = lazy(() => import('./pages/admin/ArticleWriterPage'));
 const SerpIntelligencePage = lazy(() => import('./pages/admin/SerpIntelligencePage'));
 const ActivityHistoryPage = lazy(() => import('./pages/admin/ActivityHistoryPage'));
 const WeeklyDigestPage = lazy(() => import('./pages/admin/WeeklyDigestPage'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const InterviewQuestionsManager = lazy(() => import('./pages/admin/InterviewQuestionsManager'));
 
 // Keep this tiny. A full-viewport "Loading Article…" overlay was what
 // AdSense snapshots when a lazy chunk is still in flight.
@@ -211,6 +223,12 @@ class RouteErrorBoundary extends React.Component {
   }
 }
 
+// Redirect /blog/:slug → /articles/:slug (client-side complement to vercel.json rewrite)
+const BlogSlugRedirect = () => {
+  const { slug } = useParams();
+  return <Navigate to={`/articles/${slug}`} replace />;
+};
+
 // Helper: wraps a lazy page in Suspense + per-route error boundary
 const SafeRoute = ({ children, fallbackText = "Loading..." }) => {
   const location = useLocation();
@@ -302,28 +320,11 @@ function App() {
       import('./pages/ToolsHubPage');
     }, prefetchDelay);
 
-    const logPerformance = () => {
-      if (typeof performance !== 'undefined') {
-        const perfData = performance.getEntriesByType('navigation')[0];
-        if (perfData) {
-          console.log('⚡ App Performance:', {
-            'Total Load': Math.round(perfData.loadEventEnd - perfData.fetchStart) + 'ms',
-            'DOM Ready': Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart) + 'ms',
-            'First Paint': performance.getEntriesByType('paint')[0]
-              ? Math.round(performance.getEntriesByType('paint')[0].startTime) + 'ms'
-              : 'N/A'
-          });
-        }
-      }
-    };
-
     trackEvent({
       action: 'app_initialized',
       category: 'performance',
       label: 'App Loaded'
     });
-
-    setTimeout(logPerformance, 1500);
 
     return () => clearTimeout(prefetchTimer);
   }, []);
@@ -343,6 +344,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<SafeRoute fallbackText="Loading Home..."><HomePage /></SafeRoute>} />
+          {/* /blog → /articles redirect (client-side) */}
+          <Route path="blog" element={<Navigate to="/articles" replace />} />
+          <Route path="blog/:slug" element={<BlogSlugRedirect />} />
           <Route path="articles" element={<SafeRoute fallbackText="Loading Articles..."><AllArticlesPage /></SafeRoute>} />
           <Route path="articles/:slug" element={<SafeRoute fallbackText="Loading Article..."><ArticlePage /></SafeRoute>} />
           <Route path="category/:categoryName" element={<SafeRoute fallbackText="Loading Category..."><CategoryPage /></SafeRoute>} />
@@ -395,6 +399,43 @@ function App() {
           <Route path="newsletter" element={<SafeRoute fallbackText="Loading Newsletter..."><NewsletterPage /></SafeRoute>} />
           <Route path="advertise" element={<SafeRoute fallbackText="Loading Advertise..."><AdvertisePage /></SafeRoute>} />
           <Route path="sponsors/dashboard" element={<SafeRoute fallbackText="Loading Sponsor Dashboard..."><SponsorDashboardPage /></SafeRoute>} />
+
+          {/* ── Platform Routes — DataEngineer Hub naming conventions ── */}
+          {/* /upgrade — main pricing page */}
+          <Route path="upgrade" element={<SafeRoute fallbackText="Loading Upgrade..."><UpgradeProPage /></SafeRoute>} />
+          {/* backward compat: old URL → new */}
+          <Route path="pro-membership" element={<Navigate to="/upgrade" replace />} />
+
+          {/* /coding — SQL & Python practice pads */}
+          <Route path="coding" element={<SafeRoute fallbackText="Loading Coding Practice..."><DEPracticePadsPage /></SafeRoute>} />
+          {/* backward compat */}
+          <Route path="sql-python-practice" element={<Navigate to="/coding" replace />} />
+
+          {/* /interview — interview question bank */}
+          <Route path="interview" element={<SafeRoute fallbackText="Loading Interview Bank..."><DEInterviewBankPage /></SafeRoute>} />
+          {/* backward compat */}
+          <Route path="de-interview-questions" element={<Navigate to="/interview" replace />} />
+
+          {/* /certs — certification practice tests */}
+          <Route path="certs" element={<SafeRoute fallbackText="Loading Certs Prep..."><CertificationsPrepPage /></SafeRoute>} />
+          {/* backward compat */}
+          <Route path="certifications-prep" element={<Navigate to="/certs" replace />} />
+
+          {/* /roadmaps — engineering career roadmaps */}
+          <Route path="roadmaps" element={<SafeRoute fallbackText="Loading Roadmaps..."><EngineeringRoadmapsPage /></SafeRoute>} />
+          {/* backward compat */}
+          <Route path="engineering-roadmaps" element={<Navigate to="/roadmaps" replace />} />
+
+          {/* /start-here — new user onboarding */}
+          <Route path="start-here" element={<SafeRoute fallbackText="Loading Start Here..."><GettingStartedPage /></SafeRoute>} />
+          {/* backward compat */}
+          <Route path="getting-started" element={<Navigate to="/start-here" replace />} />
+
+          {/* /login — account & settings (OAuth only) */}
+          <Route path="login" element={<SafeRoute fallbackText="Loading Login..."><LoginPage /></SafeRoute>} />
+          {/* backward compat */}
+          <Route path="account-settings" element={<Navigate to="/login" replace />} />
+          <Route path="settings" element={<Navigate to="/login" replace />} />
           {debugMode && (
             <Route path="debug" element={<SafeRoute fallbackText="Loading Debug..."><ApiDebugger /></SafeRoute>} />
           )}
@@ -435,15 +476,17 @@ function App() {
           <Route path="cannibalization" element={<SafeRoute><CannibalizationPage /></SafeRoute>} />
           <Route path="paa-optimizer" element={<SafeRoute><PAAOptimizerPage /></SafeRoute>} />
           <Route path="article-optimizer" element={<SafeRoute><ArticleOptimizerPage /></SafeRoute>} />
-                    <Route path="keyword-target" element={<SafeRoute><KeywordTargetPage /></SafeRoute>} />
-                    <Route path="article-fixer" element={<SafeRoute><ArticleFixerPage /></SafeRoute>} />
-                    <Route path="trend-intelligence" element={<SafeRoute><TrendIntelligencePage /></SafeRoute>} />
-                    <Route path="article-writer" element={<SafeRoute><ArticleWriterPage /></SafeRoute>} />
+          <Route path="keyword-target" element={<SafeRoute><KeywordTargetPage /></SafeRoute>} />
+          <Route path="article-fixer" element={<SafeRoute><ArticleFixerPage /></SafeRoute>} />
+          <Route path="trend-intelligence" element={<SafeRoute><TrendIntelligencePage /></SafeRoute>} />
+          <Route path="article-writer" element={<SafeRoute><ArticleWriterPage /></SafeRoute>} />
           <Route path="serp-intelligence" element={<SafeRoute><SerpIntelligencePage /></SafeRoute>} />
           <Route path="history" element={<SafeRoute><ActivityHistoryPage /></SafeRoute>} />
           <Route path="weekly-digest" element={<SafeRoute><WeeklyDigestPage /></SafeRoute>} />
           <Route path="contributors" element={<SafeRoute><ContributorManagerPage /></SafeRoute>} />
           <Route path="proposals" element={<SafeRoute><GuestProposalsPage /></SafeRoute>} />
+          <Route path="subscriptions" element={<SafeRoute><AdminDashboard /></SafeRoute>} />
+          <Route path="questions" element={<SafeRoute><InterviewQuestionsManager /></SafeRoute>} />
         </Route>
       </Routes>
       <Toaster />

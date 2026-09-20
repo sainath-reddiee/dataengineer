@@ -45,7 +45,6 @@ import { extractArticleFaqs } from '@/utils/articleFaq';
 import { analyzeKeyTakeaways } from '@/utils/articleTakeaways';
 import ArticleFaq from '@/components/ArticleFaq';
 import CiteThisArticle from '@/components/CiteThisArticle';
-import SaveArticleButton from '@/components/SaveArticleButton';
 import ArticleSeries from '@/components/ArticleSeries';
 import UpNextBar from '@/components/UpNextBar';
 import SupportPopup from '@/components/Support/SupportPopup';
@@ -732,8 +731,8 @@ const ArticlePage = () => {
 
           {/* Metadata Section */}
           <MetadataOption1 safePost={safePost} formatDate={formatDate} />
-          <div className="flex flex-wrap items-center gap-3">
-            <SaveArticleButton slug={slug} title={safePost.title} />
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-8 border-y border-white/10 my-10">
+            <ShareButtons url={`${SITE_CONFIG.url}/article/${slug}`} title={safePost.title} />
           </div>
 
           {/* Key Takeaways — AEO/AI visibility, Speakable schema target */}

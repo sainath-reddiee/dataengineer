@@ -13,7 +13,6 @@ export const initGA = () => {
 
   // GDPR: Only initialize if user has accepted cookies
   if (getConsentStatus() !== 'accepted') {
-    console.log('⏸️ GA init deferred — waiting for cookie consent');
     return;
   }
   
@@ -34,7 +33,6 @@ export const initGA = () => {
   });
 
   isInitialized = true;
-  console.log('✅ Google Analytics initialized');
 };
 
 // Track page views
@@ -48,8 +46,6 @@ export const trackPageView = (url) => {
     page_location: window.location.href,
     page_title: document.title,
   });
-  
-  console.log('📊 Page view tracked:', url);
 };
 
 // Track custom events
@@ -63,10 +59,6 @@ export const trackEvent = ({ action, category, label, value }) => {
     event_label: label,
     value: value,
   });
-  
-  if (import.meta.env.DEV) {
-    console.log('📊 Event tracked:', { action, category, label, value });
-  }
 };
 
 // Track article reads

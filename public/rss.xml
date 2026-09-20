@@ -8,7 +8,7 @@
     <link>https://dataengineerhub.blog</link>
     <description>Expert data engineering tutorials on Snowflake, AWS, Azure, SQL, Python, Airflow &amp; dbt. Practical guides for data professionals.</description>
     <language>en-us</language>
-    <lastBuildDate>Thu, 17 Sep 2026 07:30:11 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 20 Sep 2026 06:46:20 GMT</lastBuildDate>
     <atom:link href="https://dataengineerhub.blog/rss.xml" rel="self" type="application/rss+xml" />
     <image>
       <url>https://dataengineerhub.blog/logo.png</url>
@@ -18,6 +18,26 @@
     <managingEditor>contact@dataengineerhub.blog (Sainath Reddy)</managingEditor>
     <webMaster>contact@dataengineerhub.blog (Sainath Reddy)</webMaster>
     <ttl>60</ttl>
+    <item>
+      <title>Running LLM Tasks in Apache Airflow with the common.ai Provider</title>
+      <link>https://dataengineerhub.blog/articles/airflow-common-ai-provider-llm-tasks</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/airflow-common-ai-provider-llm-tasks</guid>
+      <description>For the past two years, the standard pattern for running LLM calls in Airflow was a PythonOperator that imported the OpenAI client, called the API, and returned the result as…</description>
+      <pubDate>Sat, 19 Sep 2026 00:46:54 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Airflow</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/09/Apache-airflow.png" type="image/png" />
+    </item>
+    <item>
+      <title>Snowflake Dynamic Data Masking &amp; Row Access Policies: A Production Guide</title>
+      <link>https://dataengineerhub.blog/articles/snowflake-dynamic-data-masking-row-access-policies</link>
+      <guid isPermaLink="true">https://dataengineerhub.blog/articles/snowflake-dynamic-data-masking-row-access-policies</guid>
+      <description>The governance review lands on a Wednesday. Your company needs to prove that analysts in one region cannot see customer PII from another, that customer emails are masked for anyone…</description>
+      <pubDate>Fri, 18 Sep 2026 09:01:33 GMT</pubDate>
+      <dc:creator>Sainath Reddy</dc:creator>
+      <category>Snowflake</category>
+      <enclosure url="https://app.dataengineerhub.blog/wp-content/uploads/2026/09/Snowflake-dynamic-data-masking.png" type="image/png" />
+    </item>
     <item>
       <title>Building Data Pipelines That Feed AI Features Without Breaking the Bill</title>
       <link>https://dataengineerhub.blog/articles/ai-data-pipelines-cost-control</link>

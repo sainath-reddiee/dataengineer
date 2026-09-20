@@ -9,51 +9,44 @@ import {
   Github,
   Linkedin,
   Mail,
-  Heart
+  Heart,
+  ArrowRight
 } from 'lucide-react';
 
 const Footer = () => {
-
   const footerLinks = {
-    content: [
-      { name: 'Latest Articles', href: '/articles' },
-      { name: 'Cheat Sheets', href: '/cheatsheets' },
-      { name: 'Tools', href: '/tools' },
-      { name: 'Certification prep', href: '/certification' },
-      ...(!ADSENSE_REVIEW_MODE ? [
-        { name: 'AWS Tutorials', href: '/category/aws' },
-        { name: 'Snowflake Guides', href: '/category/snowflake' },
-        { name: 'Azure Resources', href: '/category/azure' },
-        { name: 'SQL Tips', href: '/category/sql' },
-        { name: 'Interview Prep', href: '/interview-prep' },
-        { name: 'Glossary', href: '/glossary' },
-        { name: 'Comparisons', href: '/compare' },
-      ] : []),
+    practice: [
+      { name: 'Coding & Practice Hub', href: '/coding' },
+      { name: 'SQL Sandbox', href: '/tools/sql-playground' },
+      { name: 'Interview Prep & Bank', href: '/interview' },
+      { name: 'Certifications Prep', href: '/certs' },
     ],
-    tools: [
-      { name: 'All free tools', href: '/tools' },
-      { name: 'SQL Playground', href: '/tools/sql-playground' },
-      { name: 'Snowflake Cost Calculator', href: '/tools/snowflake-cost-calculator' },
-      { name: 'Warehouse comparison', href: '/tools/cloud-data-warehouse-cost-comparison' },
-      { name: 'Cron builder', href: '/tools/cron-expression-builder' },
-      { name: 'SQL Formatter', href: '/tools/sql-formatter' },
-      { name: 'dbt schema.yml', href: '/tools/dbt-schema-generator' },
+    learn: [
+      { name: 'Start Here', href: '/start-here' },
+      { name: 'Role Roadmaps', href: '/roadmaps' },
+      { name: 'Blog Articles', href: '/articles' },
+      { name: 'Free Tools & Calculators', href: '/tools' },
+      { name: 'Reading List', href: '/reading-list' },
+    ],
+    technologies: [
+      { name: 'Airflow', href: '/category/airflow' },
+      { name: 'dbt', href: '/category/dbt' },
+      { name: 'Python', href: '/category/python' },
+      { name: 'Databricks', href: '/category/databricks' },
+      { name: 'Salesforce', href: '/category/salesforce' },
+      { name: 'Developer Productivity', href: '/category/developer-productivity' },
     ],
     company: [
       { name: 'About', href: '/about' },
-      { name: 'Editorial Standards', href: '/editorial-standards' },
+      { name: 'Start Here', href: '/start-here' },
+      { name: 'Write for Us', href: '/contribute' },
       { name: 'Contact', href: '/contact' },
-      { name: 'All Articles', href: '/articles' },
-      { name: 'Reading List', href: '/reading-list' },
+      { name: 'Editorial Standards', href: '/editorial-standards' },
       { name: 'Privacy Policy', href: '/privacy-policy' },
-      { name: 'Cookie Policy', href: '/privacy-policy#cookies' },
       { name: 'Terms of Service', href: '/terms-of-service' },
       { name: 'Disclaimer', href: '/disclaimer' },
-      { name: 'Write for Us', href: '/contribute' },
-      { name: 'Advertise', href: '/advertise' },
       { name: 'Sitemap', href: '/sitemap-index.xml', external: true },
       { name: 'RSS Feed', href: '/rss.xml', external: true },
-      { name: 'Manage Cookies', action: () => { revokeConsent(); window.location.reload(); } }
     ]
   };
 
@@ -64,33 +57,36 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative py-16 border-t border-white/10 overflow-hidden">
+    <footer className="relative py-16 border-t border-white/10 bg-slate-950 overflow-hidden text-slate-300">
+      {/* Background ambient lighting */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"></div>
         <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+          {/* Brand & Socials Column */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="col-span-2 lg:col-span-1"
+            className="col-span-1 sm:col-span-2 lg:col-span-1"
           >
-            <Link to="/" className="flex items-center space-x-3 mb-6">
+            <Link to="/" className="flex items-center space-x-3 mb-4">
               <div className="relative">
-                <Database className="h-8 w-8 text-blue-400" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse"></div>
+                <Database className="h-7 w-7 text-blue-400" />
+                <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse"></div>
               </div>
-              <span className="text-2xl font-bold gradient-text">DataEngineer Hub</span>
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                DataEngineer Hub
+              </span>
             </Link>
-            <p className="text-gray-400 mb-6 leading-relaxed">
-              Your ultimate resource for mastering data engineering technologies.
-              From AWS to dbt, we cover it all with practical insights and expert guidance.
+            <p className="text-sm text-gray-400 mb-5 leading-relaxed">
+              SQL, pipelines, analytics, and ML — practical insights and expert guidance so you can ship.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex items-center space-x-3 mb-6">
               {socialLinks.map((social) => {
                 const IconComponent = social.icon;
                 return (
@@ -101,108 +97,115 @@ const Footer = () => {
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.95 }}
-                    className="w-10 h-10 bg-white/10 hover:bg-blue-500/20 rounded-full flex items-center justify-center transition-colors group"
+                    className="w-9 h-9 bg-white/5 hover:bg-blue-500/20 border border-white/10 rounded-lg flex items-center justify-center transition-colors group"
                     aria-label={`Visit ${social.name}`}
                   >
-                    <IconComponent className="h-5 w-5 text-gray-400 group-hover:text-blue-400 transition-colors" />
+                    <IconComponent className="h-4 w-4 text-gray-400 group-hover:text-blue-400 transition-colors" />
                   </motion.a>
                 );
               })}
             </div>
 
-            <div className="mt-6">
+            <div className="mt-4">
               <SupportButton variant="footerCta" label="Buy me a coffee" source="footer" />
             </div>
           </motion.div>
 
-          {[
-            { title: 'Content', links: footerLinks.content, delay: 0.1 },
-            { title: 'Free tools', links: footerLinks.tools, delay: 0.2 },
-            { title: 'Company', links: footerLinks.company, delay: 0.3 }
-          ].map((section) => (
-            <motion.div
-              key={section.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: section.delay }}
-              viewport={{ once: true }}
-            >
-              <span className="text-lg font-semibold text-white mb-6 block">{section.title}</span>
-              <ul className="space-y-3">
-                {section.links.map((link) => (
-                  <li key={link.name}>
-                    {link.action ? (
-                      <button
-                        onClick={link.action}
-                        className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group"
-                      >
-                        {link.name}
-                        <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
-                      </button>
-                    ) : link.external ? (
-                      <a
-                        href={link.href}
-                        className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group"
-                      >
-                        {link.name}
-                        <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
-                      </a>
-                    ) : (
-                      <Link
-                        to={link.href}
-                        className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group"
-                      >
-                        {link.name}
-                        <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
-                      </Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
+          {/* Practice Column */}
+          <FooterSection title="Practice" links={footerLinks.practice} delay={0.1} />
+
+          {/* Learn Column */}
+          <FooterSection title="Learn" links={footerLinks.learn} delay={0.2} />
+
+          {/* Technologies Column */}
+          <FooterSection title="Technologies" links={footerLinks.technologies} delay={0.3} />
+
+          {/* Company & Resources Column */}
+          <FooterSection title="Company" links={footerLinks.company} delay={0.4} />
         </div>
 
+        {/* Bottom bar */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
           viewport={{ once: true }}
           className="pt-8 border-t border-white/10"
         >
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-gray-400 text-sm flex items-center">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 text-sm text-gray-400">
+            <p className="flex items-center">
               © {new Date().getFullYear()} DataEngineer Hub. Made with
-              <Heart className="h-4 w-4 text-red-400 mx-1 animate-pulse" />
+              <Heart className="h-4 w-4 text-red-400 mx-1.5 animate-pulse shrink-0" />
               for data engineers worldwide.
             </p>
-            <p className="text-gray-400 text-sm">
-              Empowering the next generation of data professionals
+            <p className="text-gray-400 text-xs sm:text-sm">
+              Empowering data professionals to build scalable pipelines.
             </p>
           </div>
 
-          {/* CCPA / Ad Personalization Disclosure */}
+          {/* CCPA / Privacy Disclosure & Cookie Control */}
           <div className="mt-6 pt-4 border-t border-white/5 flex flex-col sm:flex-row flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-gray-500">
-            <span>Information from your device can be used to personalize your ad experience.</span>
+            <span>Information from your device can be used to personalize your experience.</span>
             <span className="hidden sm:inline text-gray-700">|</span>
             <button
               onClick={() => { revokeConsent(); window.location.reload(); }}
-              className="text-blue-400/70 hover:text-blue-400 hover:underline transition-colors"
+              className="text-blue-400/80 hover:text-blue-300 hover:underline transition-colors"
             >
               Do not sell or share my personal information
             </button>
             <span className="hidden sm:inline text-gray-700">|</span>
             <Link
               to="/terms-of-service"
-              className="text-blue-400/70 hover:text-blue-400 hover:underline transition-colors"
+              className="text-blue-400/80 hover:text-blue-300 hover:underline transition-colors"
             >
               Terms of Content Use
             </Link>
+            <span className="hidden sm:inline text-gray-700">|</span>
+            <button
+              onClick={() => { revokeConsent(); window.location.reload(); }}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              Manage Cookies
+            </button>
           </div>
         </motion.div>
       </div>
     </footer>
   );
 };
+
+const FooterSection = ({ title, links, delay }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6, delay }}
+    viewport={{ once: true }}
+  >
+    <h3 className="text-sm font-bold uppercase tracking-wider text-white mb-4">{title}</h3>
+    <ul className="space-y-2.5">
+      {links.map((link) => (
+        <li key={link.name}>
+          {link.external ? (
+            <a
+              href={link.href}
+              className="text-sm text-gray-400 hover:text-blue-400 transition-colors inline-flex items-center group"
+            >
+              {link.name}
+              <ArrowRight className="h-3 w-3 ml-1 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-blue-400" />
+            </a>
+          ) : (
+            <Link
+              to={link.href}
+              className="text-sm text-gray-400 hover:text-blue-400 transition-colors inline-flex items-center group"
+            >
+              {link.name}
+              <ArrowRight className="h-3 w-3 ml-1 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-blue-400" />
+            </Link>
+          )}
+        </li>
+      ))}
+    </ul>
+  </motion.div>
+);
 
 export default Footer;

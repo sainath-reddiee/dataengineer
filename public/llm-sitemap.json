@@ -11,9 +11,53 @@
     "Data Warehousing",
     "ETL/ELT"
   ],
-  "lastUpdated": "2026-09-17",
-  "totalArticles": 109,
+  "lastUpdated": "2026-09-20",
+  "totalArticles": 111,
   "pages": [
+    {
+      "url": "https://dataengineerhub.blog/articles/airflow-common-ai-provider-llm-tasks",
+      "title": "Running LLM Tasks in Apache Airflow with the common.ai Provider",
+      "summary": "For the past two years, the standard pattern for running LLM calls in Airflow was a PythonOperator that imported the OpenAI client, called the API, and returned the result as…",
+      "keyFacts": [
+        "When a model call consumed 50,000 tokens more than expected, there was nothing in the task logs to show it",
+        "Human-in-the-loop approval is a single parameter",
+        "📷 every capability the old pattern lacked is a first-class parameter in the new operators — nothing to build from scratch The new operators expose each LLM interaction as a distinct unit of work in the DAG graph",
+        "For privacy-sensitive environments, point LLMRetryPolicy at a local Ollama model so exception traces never leave your infrastructure"
+      ],
+      "entities": [
+        "airflow",
+        "sql",
+        "snowflake"
+      ],
+      "questionAnswered": "What is Running LLM Tasks in Apache Airflow with the common.ai Provider?",
+      "lastUpdated": "2026-09-19",
+      "published": "2026-09-19",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Airflow",
+      "wordCount": 2764
+    },
+    {
+      "url": "https://dataengineerhub.blog/articles/snowflake-dynamic-data-masking-row-access-policies",
+      "title": "Snowflake Dynamic Data Masking & Row Access Policies: A Production Guide",
+      "summary": "The governance review lands on a Wednesday. Your company needs to prove that analysts in one region cannot see customer PII from another, that customer emails are masked for anyone…",
+      "keyFacts": [
+        "Tag-based masking is the scalability unlock: attach a masking policy to a tag at the schema level and every new table with a matching column data type is automatically protected — no per-table ALTER COLUMN SET MASKING POLICY needed",
+        "IS_AGENT_ACTIVATED is a new 2026 context function you can embed in masking policy CASE expressions to mask data from AI agents even when the agent’s role would otherwise allow plain-text access",
+        "📷 ddm masks column values; rap filters rows — store data untouched in both cases, policy logic runs entirely at query time The bottom of that diagram carries the most important fact: Snowflake never modifies or encrypts the stored data"
+      ],
+      "entities": [
+        "snowflake",
+        "sql"
+      ],
+      "questionAnswered": "What does the Snowflake Dynamic Data Masking & Row Access Policies: A Production Guide cover?",
+      "lastUpdated": "2026-09-18",
+      "published": "2026-09-18",
+      "author": "Sainath Reddy",
+      "expertise": "Data Engineering Expert",
+      "category": "Snowflake",
+      "wordCount": 2825
+    },
     {
       "url": "https://dataengineerhub.blog/articles/ai-data-pipelines-cost-control",
       "title": "Building Data Pipelines That Feed AI Features Without Breaking the Bill",
@@ -31,12 +75,12 @@
         "spark"
       ],
       "questionAnswered": "1. Can the Output Be Computed Before Anyone Asks for It?",
-      "lastUpdated": "2026-09-17",
+      "lastUpdated": "2026-09-18",
       "published": "2026-09-17",
       "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Data Engineer",
-      "wordCount": 2165
+      "wordCount": 2168
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-cortex-token-usage-monitoring",
@@ -52,12 +96,12 @@
         "snowflake"
       ],
       "questionAnswered": "What does the Snowflake Cortex AI Token Usage Monitoring: The Complete Guide cover?",
-      "lastUpdated": "2026-09-16",
+      "lastUpdated": "2026-09-18",
       "published": "2026-09-16",
       "author": "Sainath Reddy",
       "expertise": "Data Engineering Expert",
       "category": "Snowflake",
-      "wordCount": 2560
+      "wordCount": 2561
     },
     {
       "url": "https://dataengineerhub.blog/articles/snowflake-mcp-server-guide",

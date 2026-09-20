@@ -1,6 +1,6 @@
 // src/components/Layout.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/Header';
@@ -9,6 +9,7 @@ import MetaTags from '@/components/SEO/MetaTags';
 import ScrollToTop from '@/components/ScrollToTop';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import NewsletterPopup from '@/components/NewsletterPopup';
+import { useGoogleOneTapLogin } from '@react-oauth/google';
 
 const ANNOUNCEMENT_BAR_HEIGHT = 40;
 // Keep this key in sync with AnnouncementBar.jsx so Layout can reserve the
@@ -22,6 +23,41 @@ const readInitialBarVisible = () => {
 const Layout = () => {
   const [isBarVisible, setIsBarVisible] = useState(readInitialBarVisible);
   const topOffset = isBarVisible ? ANNOUNCEMENT_BAR_HEIGHT : 0;
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('de_hub_user');
+      if (stored) {
+        setUser(JSON.parse(stored));
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  useGoogleOneTapLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const res = await fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + tokenResponse.credential);
+        const data = await res.json();
+        const userData = {
+          name: data.name || 'Google User',
+          email: data.email,
+          picture: data.picture,
+          provider: 'Google (One Tap)',
+          plan: 'free',
+          joinedAt: new Date().toISOString(),
+        };
+        localStorage.setItem('de_hub_user', JSON.stringify(userData));
+        window.dispatchEvent(new Event('storage'));
+        setUser(userData);
+      } catch (err) {
+        console.error('Failed to parse One Tap credential', err);
+      }
+    },
+    onError: () => console.log('One Tap Login Failed'),
+    disabled: !!user,
+  });
 
   return (
     <>

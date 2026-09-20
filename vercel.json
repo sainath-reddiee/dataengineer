@@ -112,6 +112,14 @@
             "destination": "/articles/:slug/index.html"
         },
         {
+            "source": "/blog",
+            "destination": "/articles/index.html"
+        },
+        {
+            "source": "/blog/:slug",
+            "destination": "/articles/:slug/index.html"
+        },
+        {
             "source": "/category/:slug",
             "destination": "/category/:slug/index.html"
         },
