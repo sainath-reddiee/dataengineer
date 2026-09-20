@@ -35,22 +35,31 @@ const Footer = () => {
       { name: 'SQL Playground', href: '/tools/sql-playground' },
       { name: 'Snowflake Cost Calculator', href: '/tools/snowflake-cost-calculator' },
       { name: 'Warehouse comparison', href: '/tools/cloud-data-warehouse-cost-comparison' },
-      { name: 'Cron builder', href: '/tools/cron-expression-builder' },
-      { name: 'SQL Formatter', href: '/tools/sql-formatter' },
-      { name: 'dbt schema.yml', href: '/tools/dbt-schema-generator' },
+      ...(!ADSENSE_REVIEW_MODE ? [
+        { name: 'Cron builder', href: '/tools/cron-expression-builder' },
+        { name: 'SQL Formatter', href: '/tools/sql-formatter' },
+        { name: 'dbt schema.yml', href: '/tools/dbt-schema-generator' },
+      ] : [
+        { name: 'Databricks Cost Calculator', href: '/tools/databricks-cost-calculator' },
+        { name: 'BigQuery Cost Calculator', href: '/tools/bigquery-cost-calculator' },
+      ]),
     ],
     company: [
       { name: 'About', href: '/about' },
       { name: 'Editorial Standards', href: '/editorial-standards' },
       { name: 'Contact', href: '/contact' },
       { name: 'All Articles', href: '/articles' },
-      { name: 'Reading List', href: '/reading-list' },
+      ...(!ADSENSE_REVIEW_MODE ? [
+        { name: 'Reading List', href: '/reading-list' },
+      ] : []),
       { name: 'Privacy Policy', href: '/privacy-policy' },
       { name: 'Cookie Policy', href: '/privacy-policy#cookies' },
       { name: 'Terms of Service', href: '/terms-of-service' },
       { name: 'Disclaimer', href: '/disclaimer' },
-      { name: 'Write for Us', href: '/contribute' },
-      { name: 'Advertise', href: '/advertise' },
+      ...(!ADSENSE_REVIEW_MODE ? [
+        { name: 'Write for Us', href: '/contribute' },
+        { name: 'Advertise', href: '/advertise' },
+      ] : []),
       { name: 'Sitemap', href: '/sitemap-index.xml', external: true },
       { name: 'RSS Feed', href: '/rss.xml', external: true },
       { name: 'Manage Cookies', action: () => { revokeConsent(); window.location.reload(); } }
