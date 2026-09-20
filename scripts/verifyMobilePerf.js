@@ -2,7 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { deferRenderBlockingStylesheets } from './deferRenderBlockingCss.js';
+import { cleanHomepagePaintHtml, deferRenderBlockingStylesheets } from './deferRenderBlockingCss.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -62,8 +62,18 @@ assert(
   'CSS defer helper must be idempotent'
 );
 assert(
-  deferRenderBlockingStylesheets('<link rel="stylesheet" href="/assets/x.css" media="all">').includes('media="print"'),
+  deferRenderBlockingStylesheets('<link rel="stylesheet" href="/assets/x.css" media="all" onload="this.media=\'all\'">').includes('media="print"'),
   'CSS defer helper must undo prerender media=all'
 );
+const prerendered = cleanHomepagePaintHtml(
+  '<link rel="stylesheet" href="/assets/x.css" media="all" onload="this.media=\'all\'">'
+  + '<link rel="modulepreload" href="/assets/js/framer-motion-abc.js">'
+  + '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1"></script>'
+  + '<script>var src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1";</script>'
+);
+assert(prerendered.includes('media="print"'), 'homepage cleaner must defer CSS after prerender');
+assert(!prerendered.includes('framer-motion-abc.js'), 'homepage cleaner must drop framer-motion preloads');
+assert(!prerendered.includes('<script async src="https://pagead2'), 'homepage cleaner must drop the injected ads tag');
+assert(prerendered.includes('var src = "https://pagead2'), 'delayed AdSense loader string must stay in HTML');
 
 console.log('✅ Mobile performance: cookie banner is first-paint, hero stays light on phones');

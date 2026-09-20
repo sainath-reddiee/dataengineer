@@ -5,7 +5,7 @@ import fs from 'fs';
 import vitePrerender from './plugins/vite-plugin-prerender.mjs';
 import { upsertSeoOverrideSource } from './src/utils/seoOverrideFile.js';
 import { copyDuckdbAssets } from './scripts/copyDuckdbAssets.js';
-import { deferRenderBlockingStylesheets } from './scripts/deferRenderBlockingCss.js';
+import { cleanHomepagePaintHtml, deferRenderBlockingStylesheets } from './scripts/deferRenderBlockingCss.js';
 
 const PuppeteerRenderer = vitePrerender.PuppeteerRenderer;
 
@@ -31,7 +31,7 @@ export default defineConfig({
       transformIndexHtml: {
         order: 'post',
         handler(html) {
-          return deferRenderBlockingStylesheets(html);
+          return cleanHomepagePaintHtml(html);
         },
       },
     },
@@ -141,6 +141,14 @@ export default defineConfig({
         // Block third-party requests (ads, analytics) to speed up rendering
         skipThirdPartyRequests: true,
       }),
+      postProcess(renderedRoute) {
+        if (renderedRoute.route === '/') {
+          renderedRoute.html = cleanHomepagePaintHtml(renderedRoute.html);
+        } else {
+          renderedRoute.html = deferRenderBlockingStylesheets(renderedRoute.html);
+        }
+        return renderedRoute;
+      },
     }),
 
     // Prerender snapshots the DOM after onload flips media="print" → "all".
@@ -152,7 +160,7 @@ export default defineConfig({
       closeBundle() {
         const indexPath = path.resolve(__dirname, 'dist/index.html');
         if (!fs.existsSync(indexPath)) return;
-        const next = deferRenderBlockingStylesheets(fs.readFileSync(indexPath, 'utf8'));
+        const next = cleanHomepagePaintHtml(fs.readFileSync(indexPath, 'utf8'));
         fs.writeFileSync(indexPath, next);
       },
     },
@@ -182,7 +190,9 @@ export default defineConfig({
           !dep.includes('pdf-vendor') &&
           !dep.includes('linking-engine') &&
           !dep.includes('ai-vendor') &&
-          !dep.includes('markdown')
+          !dep.includes('markdown') &&
+          !dep.includes('framer-motion') &&
+          !dep.includes('/ads-')
         );
       },
     },

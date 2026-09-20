@@ -6,7 +6,7 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { analyzeKeyTakeaways } from '../src/utils/articleTakeaways.js';
-import { deferRenderBlockingStylesheets } from './deferRenderBlockingCss.js';
+import { cleanHomepagePaintHtml } from './deferRenderBlockingCss.js';
 
 // Monkey-patch fs.writeFileSync to automatically clean up UTF-8 mojibake in generated HTML files
 const originalWriteFileSync = fs.writeFileSync;
@@ -7231,7 +7231,7 @@ function buildPracticeQuestionPreview(quizSlug) {
           } else {
             console.log(`   âœ“ Homepage already enhanced`);
           }
-          homepageHTML = deferRenderBlockingStylesheets(homepageHTML);
+          homepageHTML = cleanHomepagePaintHtml(homepageHTML);
           fs.writeFileSync(homepagePath, homepageHTML);
           const fileStats = fs.statSync(homepagePath);
           const fileSizeKB = (fileStats.size / 1024).toFixed(2);
