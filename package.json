@@ -41,6 +41,7 @@
     "test:duckdb": "node scripts/verifyDuckdbAssets.js",
     "test:search-playground": "node scripts/verifySearchPlaygroundSupport.js",
     "test:mobile-tools": "node scripts/verifyMobileToolsUx.js",
+    "test:mobile-perf": "node scripts/verifyMobilePerf.js",
     "test:takeaways-linking": "node scripts/verifyTakeawaysAndLinking.js",
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'",
     "test:build": "npm run build",
