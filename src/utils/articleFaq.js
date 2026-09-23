@@ -50,7 +50,17 @@ function isQuestionHeading(text) {
   if (q.length < 12 || q.length > 180) return false;
   if (q.endsWith('?')) return true;
   if (/^(how)\s+(do|does|can|could|should|to)\b/i.test(q)) return true;
+  // "Why burying LLM calls…" is a section title, not a question.
+  if (/^why\b/i.test(q) && !/^why\s+(is|are|do|does|did|can|should|would|will|'s)\b/i.test(q)) {
+    return false;
+  }
   return /^(what|why|when|where|which|who)\b/i.test(q);
+}
+
+function isFaqQuestionText(text) {
+  const q = String(text || '').trim();
+  if (!q || /^related reading\b/i.test(q)) return false;
+  return q.endsWith('?') && q.length >= 12 && q.length <= 180;
 }
 
 function addPair(pairs, seen, question, answer, limit) {
@@ -124,6 +134,31 @@ function extractInlineQa(html, limit, seen) {
   return pairs;
 }
 
+function extractSectionParagraphFaqs(sectionHtml, limit, seen) {
+  const pairs = [];
+  const paras = [];
+  const pRe = /<p\b[^>]*>([\s\S]*?)<\/p>/gi;
+  let match;
+  while ((match = pRe.exec(sectionHtml)) !== null) {
+    const text = stripTags(match[1]);
+    if (text) paras.push(text);
+  }
+
+  for (let i = 0; i < paras.length; i += 1) {
+    if (!isFaqQuestionText(paras[i])) continue;
+    let answer = '';
+    for (let j = i + 1; j < paras.length; j += 1) {
+      if (isFaqQuestionText(paras[j]) || /^related reading\b/i.test(paras[j])) break;
+      answer += ` ${paras[j]}`;
+    }
+    if (addPair(pairs, seen, paras[i], answer, limit)) break;
+  }
+  return pairs;
+}
+
+const RELATED_READING_RE =
+  /<p\b[^>]*>\s*(?:<(?:strong|b|em)[^>]*>\s*)?Related\s+reading\b/i;
+
 function extractFaqSection(html, limit, seen) {
   const pairs = [];
   const marker = FAQ_SECTION_RE.exec(html);
@@ -135,8 +170,13 @@ function extractFaqSection(html, limit, seen) {
   const headingLevel = Number(marker[1]) || 2;
   const stopRe = new RegExp(`<h[1-${headingLevel}][^>]*>`, 'i');
   const nextSame = rest.search(stopRe);
-  const end = nextSame === -1 ? html.length : after + nextSame;
-  const section = html.slice(after, end);
+  let end = nextSame === -1 ? html.length : after + nextSame;
+  let section = html.slice(after, end);
+  const leftoverIdx = section.search(RELATED_READING_RE);
+  if (leftoverIdx >= 0) {
+    end = after + leftoverIdx;
+    section = html.slice(after, end);
+  }
 
   const headingRe = /<h([3-5])[^>]*>([\s\S]*?)<\/h\1>/gi;
   const headings = [];
@@ -156,7 +196,15 @@ function extractFaqSection(html, limit, seen) {
         break;
       }
     }
-  } else {
+  }
+
+  if (pairs.length < 1) {
+    extractSectionParagraphFaqs(section, limit, seen).forEach((item) => {
+      if (pairs.length < limit) pairs.push(item);
+    });
+  }
+
+  if (pairs.length < 1) {
     extractInlineQa(section, limit, seen).forEach((item) => {
       if (pairs.length < limit) pairs.push(item);
     });
