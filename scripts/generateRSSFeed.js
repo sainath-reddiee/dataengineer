@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { isExcludedArticleSlug } from '../src/data/excludedSlugs.js';
-import { countIndexableWords } from '../src/data/adsenseQualityGate.js';
+import { countArticleIndexableWords } from '../src/utils/articleIndexableWords.js';
 import { MIN_INDEXABLE_WORD_COUNT } from '../src/data/thinTags.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -123,7 +123,9 @@ async function fetchAllPosts() {
 
         const indexed = allPosts.filter((post) => (
             !isExcludedArticleSlug(post.slug) &&
-            countIndexableWords(post.content?.rendered || '') >= MIN_INDEXABLE_WORD_COUNT
+            countArticleIndexableWords(post.content?.rendered || '', {
+              title: post.title?.rendered,
+            }) >= MIN_INDEXABLE_WORD_COUNT
         ));
         console.log(`Fetched ${allPosts.length} posts (${indexed.length} after excluding redirects and noindex articles)`);
         return indexed;

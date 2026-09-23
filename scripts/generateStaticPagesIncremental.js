@@ -124,6 +124,7 @@ import {
   countIndexableWords,
 } from '../src/data/adsenseQualityGate.js';
 import { collapseLongCodeBlocks } from '../src/utils/adsenseCodeRatio.js';
+import { pruneSitemaps } from './pruneSitemapNoindex.js';
 
 function countPlainWords(...parts) {
   const text = parts
@@ -7712,6 +7713,20 @@ function buildPracticeQuestionPreview(quizSlug) {
   // ============================================================================
 
   stampHeldOutRobots(distDir);
+
+  const pruneReports = pruneSitemaps({ rootDir: path.join(__dirname, '..') });
+  for (const report of pruneReports) {
+    const label = path.relative(path.join(__dirname, '..'), report.sitemapPath);
+    if (report.skipped) continue;
+    if (report.removed.length === 0) {
+      console.log(`🗺️  ${label}: no noindex URLs to drop`);
+      continue;
+    }
+    console.log(`🗺️  Pruned ${report.removed.length} noindex URL(s) from ${label}`);
+    for (const pathname of report.removed) {
+      console.log(`   ⏭️  ${pathname}`);
+    }
+  }
 
   newCache.stats = stats;
   saveCache(newCache);

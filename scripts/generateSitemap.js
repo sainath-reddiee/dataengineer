@@ -6,10 +6,10 @@ import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT, MIN_INDEXABLE_CATEGORY_COUNT, 
 import { EXCLUDED_ARTICLE_SLUGS } from '../src/data/excludedSlugs.js';
 import {
   ADSENSE_REVIEW_MODE,
-  countIndexableWords,
   getCheatsheetIndexableWordCount,
   isAdSenseNoindexPath,
 } from '../src/data/adsenseQualityGate.js';
+import { countArticleIndexableWords } from '../src/utils/articleIndexableWords.js';
 import { cheatsheets } from '../src/data/cheatsheetData.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -521,7 +521,9 @@ async function generateSitemap() {
     posts.forEach(post => {
       // Use the same 400-word rule as article SSG so a noindexed article can
       // never be advertised as indexable by the sitemap.
-      const articleWordCount = countIndexableWords(post.content?.rendered || '');
+      const articleWordCount = countArticleIndexableWords(post.content?.rendered || '', {
+        title: post.title?.rendered,
+      });
       if (
         EXCLUDED_ARTICLE_SLUGS.includes(post.slug) ||
         articleWordCount < MIN_INDEXABLE_WORD_COUNT
