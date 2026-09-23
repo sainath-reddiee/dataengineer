@@ -82,7 +82,11 @@ const cta = readFileSync(join(root, 'src/components/InArticleCTA.jsx'), 'utf8');
 const meta = readFileSync(join(root, 'src/components/SEO/MetaTags.jsx'), 'utf8');
 
 if (!header.includes('REVIEW_HIDDEN_LEARN') || !header.includes('REVIEW_HIDDEN_MAIN')) {
-  console.error('❌ Header must hide glossary/compare/practice and Advertise during review');
+  console.error('❌ Header must hide glossary/compare/practice during review');
+  failed += 1;
+}
+if (/REVIEW_HIDDEN_MAIN = new Set\(\[\s*['"]\/advertise['"]/.test(header)) {
+  console.error('❌ Header must keep Advertise in the main nav during review');
   failed += 1;
 }
 if (header.includes('=> (}')) {
@@ -147,7 +151,11 @@ if (!ssg.includes('renderArticleFaqHtml') || !ssg.includes('enhanceArticleCodeBl
   failed += 1;
 }
 if (!footer.includes('Reading List') || !footer.includes('ADSENSE_REVIEW_MODE')) {
-  console.error('❌ Footer must keep reading-list / advertise behind the review flag');
+  console.error('❌ Footer must keep reading-list behind the review flag');
+  failed += 1;
+}
+if (!footer.includes("{ name: 'Advertise', href: '/advertise' }")) {
+  console.error('❌ Footer must keep Advertise visible during review');
   failed += 1;
 }
 const htaccess = readFileSync(join(root, 'public/.htaccess'), 'utf8');

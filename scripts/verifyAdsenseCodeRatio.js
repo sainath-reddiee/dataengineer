@@ -91,8 +91,14 @@ assert(
   ssg.includes('countIndexableWords(') && ssg.includes('crawlerBody'),
   'article robots must use prose-only word counts'
 );
-assert(ssg.includes('ADSENSE_REVIEW_MODE ? \'\' : \'<li><a href="https://dataengineerhub.blog/advertise"')
-  || ssg.includes('advertiseLink'), 'SSG nav must hide Advertise during review');
+assert(
+  ssg.includes('<li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>'),
+  'SSG nav must keep Advertise for humans'
+);
+assert(
+  !ssg.includes("ADSENSE_REVIEW_MODE ? '' : '<li><a href=\"https://dataengineerhub.blog/advertise\""),
+  'Advertise must not be review-gated in SSG nav'
+);
 
 const gate = readFileSync(join(root, 'src/data/adsenseQualityGate.js'), 'utf8');
 assert(gate.includes('<pre\\b') || gate.includes('<pre\\b[\\s\\S]*?<\\/pre>'), 'countIndexableWords must strip <pre> before counting');

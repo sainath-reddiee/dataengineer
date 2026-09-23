@@ -25,7 +25,9 @@ import { useReadingList } from '@/hooks/useReadingList';
 import { ADSENSE_REVIEW_MODE, isReviewAllowlistedTool } from '@/data/adsenseQualityGate';
 import { FEATURED_TOOLS, toolHref } from '@/data/toolsCatalog';
 
-const REVIEW_HIDDEN_MAIN = new Set(['/advertise']);
+const REVIEW_HIDDEN_MAIN = new Set([
+  // Commercial placements stay in the main nav. AdsBot still noindexes that URL.
+]);
 const REVIEW_HIDDEN_LEARN = new Set([
   '/glossary',
   '/compare',

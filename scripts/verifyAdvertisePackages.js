@@ -44,6 +44,21 @@ assert(
   'Advertise page must not paint a flat black background over the site gradient'
 );
 
+const header = readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), '../src/components/Header.jsx'),
+  'utf8'
+);
+const footer = readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), '../src/components/Footer.jsx'),
+  'utf8'
+);
+assert(header.includes("path: '/advertise'"), 'Header must keep the Advertise route');
+assert(
+  !/REVIEW_HIDDEN_MAIN = new Set\(\[\s*['"]\/advertise['"]/.test(header),
+  'AdSense review mode must not hide Advertise from the main nav'
+);
+assert(footer.includes("{ name: 'Advertise', href: '/advertise' }"), 'Footer must keep Advertise');
+
 console.log('✅ Advertise packages no longer look like a cheap link shop');
 console.log('✅ Guest briefs ask for production incidents');
 console.log('✅ Advertise page uses the shared site background');
