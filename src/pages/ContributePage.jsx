@@ -3,8 +3,8 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   PenLine, Send, CheckCircle, BookOpen, Share2, Users, FileText, Code, Globe,
-  Star, Award, TrendingUp, ArrowRight, Sparkles, Heart, MessageSquare, Zap,
-  Target, Lightbulb, Rocket, Coffee
+  Star, Award, ArrowRight, Sparkles, Heart, MessageSquare, Zap,
+  Target, Lightbulb, Rocket, Coffee, Scale, X
 } from 'lucide-react';
 import SupportButton from '@/components/Support/SupportButton';
 import { Button } from '@/components/ui/button';
@@ -115,78 +115,92 @@ const ContributePage = () => {
   const benefits = [
     {
       icon: Globe,
-      title: 'Author Bio & Do-Follow Backlink',
-      desc: 'Get a dedicated author section with your photo, bio, social links, and a valuable do-follow backlink to your site.',
+      title: 'Your name on the piece',
+      desc: 'Photo, bio, and optional LinkedIn / GitHub / site links on the article and on /contributors after it ships. Not a paid SEO package.',
       color: 'from-blue-500 to-cyan-500',
     },
     {
       icon: Share2,
-      title: 'Multi-Channel Promotion',
-      desc: 'Your article gets shared across LinkedIn, Twitter, newsletter, and our social channels to practicing data engineers.',
+      title: 'Shown to practitioners',
+      desc: 'Live URL in RSS. We share strong pieces on LinkedIn and in the weekly digest when the topic fits that week.',
       color: 'from-green-500 to-emerald-500',
     },
     {
-      icon: Users,
-      title: 'Community Recognition',
-      desc: 'Join a growing network of contributors and build your reputation as a thought leader in data engineering.',
-      color: 'from-purple-500 to-pink-500',
-    },
-    {
-      icon: TrendingUp,
-      title: 'SEO & Visibility Boost',
-      desc: 'Benefit from our domain authority and SEO optimization. Your content reaches audiences searching for data engineering topics.',
-      color: 'from-orange-500 to-red-500',
-    },
-    {
       icon: Award,
-      title: 'Portfolio Building',
-      desc: 'Add published work to your professional portfolio. Great for career growth, speaking opportunities, and job applications.',
+      title: 'A cite you can keep',
+      desc: 'Use the published URL on a resume, interview loop, or conference bio. We do not ghost-write and we do not hide the byline.',
       color: 'from-yellow-500 to-orange-500',
     },
     {
       icon: MessageSquare,
-      title: 'Editorial Support',
-      desc: 'Our team helps refine your article with feedback on structure, clarity, and SEO — making your best work even better.',
+      title: 'An editor who ran the stack',
+      desc: 'Sainath reviews claims, code, and whether the piece says anything a first-page Google result does not already say.',
       color: 'from-indigo-500 to-blue-500',
+    },
+    {
+      icon: Scale,
+      title: 'You keep the copyright',
+      desc: 'You own the words. We get a perpetual license to publish, update numbers, and keep the URL live. Ask before syndicating elsewhere in the first 30 days.',
+      color: 'from-purple-500 to-pink-500',
+    },
+    {
+      icon: Heart,
+      title: 'Unpaid, on purpose',
+      desc: 'No kill fee and no invoice. If you need a labeled product placement, that is Advertise — a different page and a USD invoice.',
+      color: 'from-pink-500 to-rose-500',
     },
   ];
 
   const processSteps = [
     {
       step: '01',
-      title: 'Submit Your Idea',
-      desc: 'Fill out the proposal form with your topic, outline, and background. Takes about 5 minutes.',
+      title: 'Send the incident',
+      desc: 'Topic, what broke, warehouse/tool versions, and the H2s you will write. Five minutes if you already have the notes.',
       icon: Lightbulb,
       color: 'from-blue-500 to-cyan-500',
     },
     {
       step: '02',
-      title: 'Review & Feedback',
-      desc: 'We review your proposal within 3-5 business days and provide feedback or approval.',
+      title: 'Yes, no, or a rewrite',
+      desc: 'Reply in 3–5 weekday IST days. A no is a short email. A yes names the length, the FAQ, and the one number we need on the page.',
       icon: Target,
       color: 'from-purple-500 to-pink-500',
     },
     {
       step: '03',
-      title: 'Write & Collaborate',
-      desc: 'Write the full article with our editorial guidelines. We collaborate on revisions for quality and SEO.',
+      title: 'Draft, then one edit pass',
+      desc: 'You write. We check facts, code, and whether a first-page Google result already said it. Expect one round, not a rewrite committee.',
       icon: PenLine,
       color: 'from-green-500 to-emerald-500',
     },
     {
       step: '04',
-      title: 'Publish & Promote',
-      desc: 'Your article goes live with your author bio, backlinks, and gets promoted across all our channels.',
+      title: 'Ship with your byline',
+      desc: 'Live URL, RSS, /contributors card, optional newsletter mention. We patch numbers later the same way we patch staff posts.',
       icon: Rocket,
       color: 'from-orange-500 to-red-500',
     },
   ];
 
   const guidelines = [
-    { icon: FileText, title: 'Length', text: '1,600+ words of original, unpublished content. No vendor rewrites.' },
-    { icon: Code, title: 'Code & Visuals', text: 'Working samples, Query Profile / logs, or architecture you actually ran' },
-    { icon: BookOpen, title: 'Focus', text: 'A production incident, a number, or a decision you would make again' },
-    { icon: Zap, title: 'Quality', text: 'Clear headings, a FAQ with real questions, and an honest “when not to do this”' },
+    { icon: FileText, title: 'Length', text: '1,600+ words of original, unpublished prose. Code samples do not count toward the floor.' },
+    { icon: Code, title: 'Proof', text: 'Working SQL/Python, a Query Profile, a log line, or a cost screenshot you actually captured.' },
+    { icon: BookOpen, title: 'Focus', text: 'One production incident, one number, or one decision you would make again.' },
+    { icon: Zap, title: 'Shape', text: 'H2s a practitioner can scan, 2–5 real FAQ questions, and an honest “when not to do this”.' },
+  ];
+
+  const weWant = [
+    'A Query Profile, dbt log, or Airflow task that lied — and what you changed',
+    'Warehouse size, edition, region, and the bill or runtime before vs after',
+    'The command, SQL, or config you would paste into a teammate’s PR',
+    'A “do not do this” that you learned the expensive way',
+  ];
+
+  const weReject = [
+    'Vendor-doc rewrites, AI drafts, or “X vs Y” with no production numbers',
+    'Certification dumps, scraped lists, or pages whose only job is a keyword',
+    'Product pitches, sold backlink packages, or a byline you did not write',
+    'Anything you already published elsewhere without saying so up front',
   ];
 
   const topics = [
@@ -199,8 +213,8 @@ const ContributePage = () => {
   return (
     <>
       <MetaTags
-        title="Write for Us - Contribute a Guest Post"
-        description="Share your data engineering expertise with practicing engineers. Submit a guest post on Snowflake, dbt, Airflow, cloud platforms, and more. Get published with an author bio, backlinks, and multi-channel promotion."
+        title="Write for Us — Guest tutorials for DataEngineer Hub"
+        description="Pitch a production incident, not a vendor rewrite. Guest tutorials are unpaid editorial: your byline, editorial review, and a slot on /contributors after the piece ships. Product pitches belong on Advertise."
         keywords="write for us, guest post, contribute, data engineering blog, submit article, technical writing, guest author"
         type="website"
       />
@@ -218,11 +232,12 @@ const ContributePage = () => {
               <span className="text-sm font-medium text-blue-300">Community Contributions</span>
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-black mb-6 leading-tight">
-              Share Your <span className="gradient-text">Expertise</span>
+              Write the incident you <span className="gradient-text">actually debugged</span>
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl text-gray-300 leading-relaxed max-w-3xl mx-auto mb-8">
-              Join our community of data engineering authors. Write practical tutorials,
-              share real-world insights, and help fellow practitioners level up.
+              Guest tutorials are unpaid editorial. We want a warehouse size, an error
+              message, a dollar figure, or a decision you would make again — not a
+              rewrite of the Snowflake or dbt docs.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
@@ -239,10 +254,13 @@ const ContributePage = () => {
                 Read Published Articles
               </Link>
             </div>
-            <p className="text-sm text-gray-500 mt-6">
-              Want to promote a product instead of writing a tutorial? That is a paid USD sponsorship — see{' '}
+            <p className="text-sm text-gray-400 mt-6 max-w-2xl mx-auto">
+              Same bar as staff posts:{' '}
+              <Link to="/editorial-standards" className="text-blue-400 hover:underline">editorial standards</Link>
+              {' '}· live authors on{' '}
+              <Link to="/contributors" className="text-blue-400 hover:underline">/contributors</Link>
+              . Want to promote a product instead? That is a paid USD placement on{' '}
               <Link to="/advertise" className="text-blue-400 hover:underline">Advertise</Link>.
-              Guest posts here are editorial, not ads.
             </p>
             <div className="mt-8 mx-auto max-w-xl rounded-2xl border border-amber-500/25 bg-amber-500/[0.07] px-5 py-5 text-left">
               <div className="flex items-start gap-3">
@@ -290,6 +308,58 @@ const ContributePage = () => {
             ))}
           </motion.div>
 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.12 }}
+            className="grid md:grid-cols-2 gap-4 mb-16 max-w-5xl mx-auto"
+          >
+            <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/[0.07] p-6">
+              <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-emerald-400" />
+                We will publish
+              </h2>
+              <ul className="space-y-2 text-sm text-slate-200">
+                {weWant.map((item) => (
+                  <li key={item} className="flex gap-2">
+                    <span className="text-emerald-400 mt-0.5">+</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-2xl border border-rose-500/25 bg-rose-500/[0.07] p-6">
+              <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                <X className="h-5 w-5 text-rose-400" />
+                We will not publish
+              </h2>
+              <ul className="space-y-2 text-sm text-slate-200">
+                {weReject.map((item) => (
+                  <li key={item} className="flex gap-2">
+                    <span className="text-rose-400 mt-0.5">−</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </motion.div>
+
+          <div className="mb-16 max-w-5xl mx-auto rounded-2xl border border-slate-700/50 bg-slate-800/40 p-6 md:p-8">
+            <h2 className="text-xl font-bold text-white mb-3">A pitch that gets a yes</h2>
+            <p className="text-sm text-slate-300 leading-relaxed mb-4">
+              “On an Enterprise Medium in us-east-1, Query Profile said 0 bytes spilled while
+              the warehouse burned 47 credits. I will show the profile screenshot, the
+              <code className="text-pink-300">WAREHOUSE_LOAD_HISTORY</code> query, and the XS
+              change that cut the bill 61%.”
+            </p>
+            <p className="text-sm text-slate-400 leading-relaxed">
+              A pitch that gets a no: “A complete guide to Snowflake Time Travel for beginners,
+              with a backlink to my agency.” If the only number in the email is a domain rating,
+              use{' '}
+              <Link to="/advertise" className="text-blue-400 hover:underline">Advertise</Link>.
+            </p>
+          </div>
+
           {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• WHY CONTRIBUTE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -299,10 +369,11 @@ const ContributePage = () => {
           >
             <div className="text-center mb-8">
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
-                Why Write for <span className="gradient-text">DataEngineer Hub</span>?
+                What you get — and what you do not
               </h2>
               <p className="text-gray-400 max-w-2xl mx-auto">
-                More than just a guest post — it's an investment in your professional brand.
+                Same review as staff tutorials. No sold bylines. Full rulebook on{' '}
+                <Link to="/editorial-standards" className="text-blue-400 hover:underline">editorial standards</Link>.
               </p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -429,11 +500,11 @@ const ContributePage = () => {
                   <span className="font-bold text-white">What happens after you submit?</span>
                 </div>
                 <ol className="text-sm text-gray-300 space-y-2 list-decimal list-inside">
-                  <li>We review your proposal within <strong className="text-white">3-5 business days</strong></li>
-                  <li>If approved, you write the full article with our guidelines</li>
-                  <li>Collaborative editing for quality, clarity, and SEO optimization</li>
-                  <li>Article published with your author bio, photo, and backlinks</li>
-                  <li>Multi-channel promotion across our social networks and newsletter</li>
+                  <li>Review in <strong className="text-white">3–5 weekday IST days</strong> — a no is a short email, not silence</li>
+                  <li>If approved, you write the draft (usually 10–14 days)</li>
+                  <li>One edit pass for facts, code, and whether the piece is already on page one</li>
+                  <li>Published with your byline, bio, and optional profile links</li>
+                  <li>RSS + /contributors. Newsletter only when that week’s digest matches</li>
                 </ol>
               </div>
             </motion.div>
@@ -529,8 +600,8 @@ const ContributePage = () => {
               Ready to Share Your Knowledge?
             </h2>
             <p className="text-gray-300 max-w-xl mx-auto mb-6">
-              Whether you're a seasoned data engineer or just getting started, your unique
-              perspective can help others learn and grow. Every contribution matters.
+              If you have the Query Profile, the dbt log, or the invoice line, you have
+              enough. Pitch the incident — we will tell you if the outline is tight enough.
             </p>
             <a
               href="#submit-form"

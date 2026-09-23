@@ -1,11 +1,11 @@
 {
   "stats": [
-    { "label": "Published Guides", "value": "100+", "desc": "Original Snowflake, dbt, Airflow, and warehouse-cost tutorials — not vendor rewrites", "icon": "FileText" },
+    { "label": "Published Guides", "value": "115+", "desc": "Original Snowflake, dbt, Airflow, and warehouse-cost tutorials — not vendor rewrites", "icon": "FileText" },
     { "label": "Audience", "value": "Practitioners", "desc": "Engineers who cost warehouses, debug dbt tests, and sit SnowPro interviews", "icon": "Users" },
     { "label": "Sponsorships", "value": "Vetted", "desc": "Human review, sponsored label, nofollow by default — no paid-link packages", "icon": "Shield" }
   ],
   "inventory": {
-    "guides": 100,
+    "guides": 115,
     "cheatsheets": 30
   },
   "techStack": ["Snowflake", "dbt", "Databricks", "Apache Spark", "Apache Airflow", "BigQuery", "Kafka", "Python", "SQL", "Gen AI"],
