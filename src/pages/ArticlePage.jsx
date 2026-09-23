@@ -81,12 +81,13 @@ const processWordPressContent = (content) => {
       'p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
       'ul', 'ol', 'li', 'a', 'img', 'figure', 'figcaption',
       'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'caption',
-      'blockquote', 'pre', 'code', 'hr', 'div', 'span',
+      'blockquote', 'pre', 'code', 'hr', 'div', 'span', 'button',
       'iframe', 'video', 'audio', 'source', 'dl', 'dt', 'dd',
       'details', 'summary'
     ],
     ALLOWED_ATTR: [
-      'href', 'src', 'alt', 'title', 'class', 'id', 'open',
+      'href', 'src', 'alt', 'title', 'class', 'id', 'open', 'type',
+      'aria-hidden', 'aria-label',
       'width', 'height', 'target', 'rel', 'colspan', 'rowspan',
       'data-*', 'frameborder', 'allowfullscreen', 'loading'
     ],
@@ -792,7 +793,7 @@ const ArticlePage = () => {
 
               {/* Desktop: 2-column grid with sidebar ToC */}
               <div className="flex gap-8">
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 lg:pl-12">
                   <div className="prose prose-invert prose-lg md:prose-xl max-w-none prose-headings:text-white prose-h2:text-3xl prose-h2:font-bold prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-pink-400 prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
                     <div
                       dangerouslySetInnerHTML={{ __html: processedHtml }}

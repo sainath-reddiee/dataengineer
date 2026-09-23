@@ -40,6 +40,28 @@ const implied = extractArticleFaqs(`
 assert(implied.some((item) => item.question.startsWith('What the residential')), 'What-headings without ? still become FAQ');
 assert(!implied.some((item) => item.question.includes('Snowflake stores')), 'How + noun phrase must not become FAQ');
 
+const encoded = extractArticleFaqs(`
+  <h2>What 2extract actually is — and the one thing it isn&#8217;t</h2>
+  <p>2extract does not scrape websites. It doesn&#8217;t parse HTML.</p>
+  <div><strong>Use case</strong><span>Session strategy</span></div>
+  <p>Ignore this card grid when building the answer.</p>
+`);
+assert(encoded[0].question.includes("isn't"), 'FAQ questions must decode HTML entities');
+assert(encoded[0].answer.includes('does not scrape'), 'FAQ answers should keep the first paragraph');
+assert(!encoded[0].answer.includes('Session strategy'), 'FAQ answers must not swallow nearby card grids');
+
+const tableOnly = extractArticleFaqs(`
+  <h2>What the residential product is actually sold for</h2>
+  <p></p>
+  <table><thead><tr><th>Use case</th><th>Why residential matters here</th></tr></thead></table>
+  <h2>Where this actually breaks</h2>
+  <p>Country targeting is a request sent to the gateway, not a legal guarantee that every hop lands in that city.</p>
+`);
+assert(
+  !tableOnly.some((item) => item.question.includes('residential product')),
+  'a heading followed only by a table must not become a word-salad FAQ'
+);
+
 const sectionHtml = `
   <h2>Frequently Asked Questions</h2>
   <h3>Does cloning copy storage?</h3>

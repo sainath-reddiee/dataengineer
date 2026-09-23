@@ -6,6 +6,7 @@ import { countIndexableWords } from '../src/data/adsenseQualityGate.js';
 import {
   CODE_PREVIEW_LINES,
   collapseLongCodeBlocks,
+  detectCodeLanguage,
   measureTextToCodeRatio,
   stripCodeBlocks,
 } from '../src/utils/adsenseCodeRatio.js';
@@ -65,9 +66,21 @@ assert(
   `collapsed page must be prose-led (prose=${afterCollapse.proseWords} code=${afterCollapse.codeWords})`
 );
 
+const pyDataclass = `@dataclass
+class Targeting:
+    country: str | None = None
+    state: str | None = None`;
+assert(
+  detectCodeLanguage('<pre>', pyDataclass) === 'Python',
+  'Python dataclasses must not be labeled YAML'
+);
+assert(detectCodeLanguage('<pre class="language-sql">', 'SELECT 1') === 'SQL', 'language- class must win');
+
 const enhanced = enhanceArticleCodeBlocks(shortHtml);
 assert(enhanced.includes('article-code'), 'short snippets get a language bar for readers');
-assert(enhanced.includes('Copy the snippet') || enhanced.includes('Read the query'), 'code bar must add a prose hint');
+assert(enhanced.includes('article-code-lede') || enhanced.includes('SQL example'), 'code block must keep a prose caption for AdsBot');
+assert(enhanced.includes('article-code-gutter'), 'reader blocks must show line numbers');
+assert(enhanced.includes('tok-kw'), 'SQL keywords should be highlighted');
 const collapsedThenEnhanced = enhanceArticleCodeBlocks(collapsed);
 assert(collapsedThenEnhanced.includes('adsense-code-preview'), 'collapsed preview figure must remain');
 assert(!collapsedThenEnhanced.includes('article-code'), 'collapsed AdsBot previews must not be wrapped again');

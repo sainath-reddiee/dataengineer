@@ -15,9 +15,15 @@ function stripTags(html) {
     .replace(/<\/(p|li|h[1-6])>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&nbsp;/g, ' ')
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
     .replace(/&amp;/g, '&')
     .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&ldquo;|&rdquo;/g, '"')
+    .replace(/&lsquo;|&rsquo;/g, "'")
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/\s+/g, ' ')
@@ -59,6 +65,19 @@ function addPair(pairs, seen, question, answer, limit) {
   return pairs.length >= limit;
 }
 
+function firstParagraphs(html, maxChars = 520) {
+  const parts = [];
+  const re = /<p\b[^>]*>([\s\S]*?)<\/p>/gi;
+  let match;
+  while ((match = re.exec(html)) !== null) {
+    const text = stripTags(match[1]);
+    if (text.length < 20) continue;
+    parts.push(text);
+    if (parts.length >= 2 || parts.join(' ').length >= maxChars) break;
+  }
+  return parts.join(' ');
+}
+
 function extractHeadingFaqs(html, limit, seen) {
   const pairs = [];
   const headingRe = /<h([23])[^>]*>([\s\S]*?)<\/h\1>/gi;
@@ -80,7 +99,8 @@ function extractHeadingFaqs(html, limit, seen) {
     }
     const bodyStart = matches[i].end;
     const bodyEnd = i + 1 < matches.length ? matches[i + 1].index : html.length;
-    if (addPair(pairs, seen, question, html.slice(bodyStart, bodyEnd), limit)) break;
+    const answer = firstParagraphs(html.slice(bodyStart, bodyEnd));
+    if (addPair(pairs, seen, question, answer, limit)) break;
   }
 
   return pairs;

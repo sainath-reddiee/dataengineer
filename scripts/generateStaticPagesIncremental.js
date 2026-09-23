@@ -3267,24 +3267,34 @@ ${CONSENT_MODE_V2_HTML}
         margin: 1.5rem 0;
         border-radius: 10px;
         border: 1px solid rgba(96, 165, 250, 0.22);
-        background: rgba(15, 23, 42, 0.72);
+        background: #0b1220;
         overflow: hidden;
       }
       .seo-content .article-body .article-code-bar {
         display: flex;
         gap: 0.65rem;
         margin: 0;
-        padding: 0.55rem 0.75rem;
+        padding: 0.5rem 0.75rem;
         text-align: left;
         font-style: normal;
         color: #94a3b8;
-        background: rgba(30, 58, 138, 0.28);
+        background: rgba(30, 58, 138, 0.32);
       }
       .seo-content .article-body .article-code-lang {
         color: #dbeafe;
         font-weight: 700;
         text-transform: uppercase;
         font-size: 0.75rem;
+      }
+      .seo-content .article-body .article-code-lede {
+        margin: 0;
+        padding: 0.4rem 0.85rem 0.2rem;
+        color: #94a3b8;
+        font-size: 0.85rem;
+      }
+      .seo-content .article-body .article-code-gutter {
+        color: #64748b;
+        padding-right: 0.75rem;
       }
       .seo-content .article-body .article-code pre {
         margin: 0;
