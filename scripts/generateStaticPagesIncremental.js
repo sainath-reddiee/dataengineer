@@ -2718,10 +2718,6 @@ function getSiteNavCSS() {
 }
 
 function getSiteNavHTML() {
-  const advertiseLink = ADSENSE_REVIEW_MODE
-    ? ''
-    : `
-            <li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>`;
   return `
       <nav class="site-nav" aria-label="Site navigation">
         <div class="site-nav-inner">
@@ -2729,7 +2725,8 @@ function getSiteNavHTML() {
           <ul class="site-nav-links">
             <li><a href="https://dataengineerhub.blog/">Home</a></li>
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
-            <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>${advertiseLink}
+            <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
+            <li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
           </ul>
         </div>
@@ -3609,7 +3606,7 @@ ${CONSENT_MODE_V2_HTML}
             <li><a href="https://dataengineerhub.blog/">Home</a></li>
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
             <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
-            ${ADSENSE_REVIEW_MODE ? '' : '<li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>'}
+            <li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
           </ul>
         </div>
@@ -6600,7 +6597,7 @@ ${CONSENT_MODE_V2_HTML}
             <li><a href="https://dataengineerhub.blog/">Home</a></li>
             <li><a href="https://dataengineerhub.blog/articles">Articles</a></li>
             <li><a href="https://dataengineerhub.blog/tools">Tools</a></li>
-            ${ADSENSE_REVIEW_MODE ? '' : '<li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>'}
+            <li><a href="https://dataengineerhub.blog/advertise">Advertise</a></li>
             <li><a href="https://dataengineerhub.blog/about">About</a></li>
           </ul>
         </div>
