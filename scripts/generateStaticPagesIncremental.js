@@ -814,48 +814,60 @@ const ESSENTIAL_PAGES = [
   },
   {
     path: '/contribute',
-    title: 'Write for Us - Contribute a Guest Post',
-    description: 'Share your data engineering expertise with our community. Submit a guest post on Snowflake, dbt, Airflow, cloud platforms, and more. Get published with an author bio and backlink.',
+    title: 'Write for Us — Guest tutorials for DataEngineer Hub',
+    description: 'Pitch a production incident, not a vendor rewrite. Guest tutorials are unpaid editorial: your byline, editorial review, and a slot on /contributors after the piece ships.',
     content: `
       <h1>Write for Us</h1>
-      <p>Share your data engineering knowledge with fellow practitioners. We publish practical tutorials, architecture guides, and tool deep-dives on topics like Snowflake, dbt, Apache Airflow, Spark, AWS, Azure, GCP, and more.</p>
+      <p>Guest tutorials are unpaid editorial. Pitch a warehouse size, an error message, a dollar figure, or a decision you would make again. We do not publish vendor-doc rewrites, AI drafts, or sold bylines. Product pitches belong on <a href="/advertise">Advertise</a>. The same bar as staff posts is on <a href="/editorial-standards">editorial standards</a>.</p>
 
-      <h2>Why Contribute?</h2>
+      <h2>We will publish</h2>
       <ul>
-        <li><strong>Author Bio &amp; Backlink:</strong> Get a dedicated author section with your bio, photo, and a do-follow link back to your site or profile.</li>
-        <li><strong>Social Promotion:</strong> Your article will be shared across our social channels to practicing data engineers.</li>
-        <li><strong>Community Recognition:</strong> Join a growing community of contributors and establish yourself as a thought leader in data engineering.</li>
+        <li>A Query Profile, dbt log, or Airflow task that lied — and what you changed</li>
+        <li>Warehouse size, edition, region, and the bill or runtime before vs after</li>
+        <li>The command, SQL, or config you would paste into a teammate’s PR</li>
+        <li>A “do not do this” that you learned the expensive way</li>
       </ul>
 
-      <h2>What We Look For</h2>
-      <p>We are seeking practitioners who want to share practical, real-world data engineering insights. We avoid generic, surface-level articles that simply rephrase documentation. Instead, we look for detailed walkthroughs of real problems you solved, deep dives into tool performance optimizations, cost control strategies, or design patterns for complex streaming/batch pipelines. If you have spent hours debugging a strange error, successfully migrated a pipeline, or optimized a slow query, we want to hear your story and share it with our global reader base of fellow engineers, architects, and data practitioners.</p>
-
-      <h2>Submission Guidelines</h2>
+      <h2>We will not publish</h2>
       <ul>
-        <li>1,000+ words of original, unpublished content</li>
-        <li>Code samples, diagrams, or screenshots encouraged</li>
-        <li>Practical tutorials, how-tos, or architecture deep-dives preferred</li>
+        <li>Vendor-doc rewrites, unreviewed AI drafts, or “X vs Y” with no production numbers</li>
+        <li>Certification dumps, scraped lists, or pages whose only job is a keyword</li>
+        <li>Product pitches, dofollow packages, or a byline you did not write</li>
+        <li>Anything already published elsewhere unless you say so in the pitch</li>
       </ul>
 
-      <h2>Our Editorial Review Process</h2>
-      <p>To ensure our readers receive the highest quality tutorials, we put every submission through a collaborative peer-review process. When you submit a draft, our technical editors review it for clarity, technical accuracy, code validity, and formatting. We work closely with you to refine the structure, add diagrams if necessary, and ensure all code blocks are easy to copy and run. This cooperative process not only guarantees that the published piece is polished and authoritative, but also helps contributors refine their technical writing skills. Once finalized, your article goes live with full credit, a bio, and links back to your personal portfolio or social channels.</p>
+      <h2>What you get</h2>
+      <ul>
+        <li>Your name, bio, photo, and optional LinkedIn / GitHub / site links — not a paid SEO package</li>
+        <li>You keep copyright. We get a perpetual license to publish and update numbers</li>
+        <li>Live URL, RSS, and a card on <a href="/contributors">/contributors</a> after the piece ships</li>
+        <li>One edit pass from an editor who has run Snowflake, dbt, and Airflow in production</li>
+      </ul>
 
-      <h2>Topics We Cover</h2>
-      <p>Snowflake, dbt, Apache Airflow, Apache Spark, AWS / Azure / GCP, Data Modeling, ETL/ELT Pipelines, Data Quality, Data Governance, Streaming (Kafka, Flink), Python for Data Engineering, SQL Optimization.</p>
+      <h2>Submission guidelines</h2>
+      <ul>
+        <li>1,600+ words of original, unpublished prose. Code samples do not count toward the floor</li>
+        <li>Working SQL/Python, a Query Profile, a log line, or a cost screenshot you captured</li>
+        <li>2–5 real FAQ questions and an honest “when not to do this”</li>
+      </ul>
 
-      <h2>How It Works</h2>
+      <h2>How it works</h2>
       <ol>
-        <li>We review your proposal within 3-5 business days</li>
-        <li>If approved, you write the full article</li>
-        <li>We edit collaboratively for quality and SEO</li>
-        <li>Article goes live with your author bio and backlinks</li>
+        <li>Send the incident and outline. We reply in 3–5 weekday IST days. A no is a short email.</li>
+        <li>If approved, you write the draft (usually 10–14 days).</li>
+        <li>One edit pass for facts, code, and whether page-one Google already said it.</li>
+        <li>The article goes live with your byline. Newsletter mention only when that week’s digest matches.</li>
       </ol>
 
-      <h2>Submit Your Proposal</h2>
-      <p>Ready to contribute? Email us at <strong>sainath@dataengineerhub.blog</strong> with your proposed topic, a brief outline, and a link to any previous writing samples.</p>
+      <h2>A pitch that gets a yes</h2>
+      <p>“On an Enterprise Medium in us-east-1, Query Profile said 0 bytes spilled while the warehouse burned 47 credits. I will show the profile screenshot, the WAREHOUSE_LOAD_HISTORY query, and the XS change that cut the bill 61%.”</p>
+      <p>A pitch that gets a no: “A complete guide to Snowflake Time Travel for beginners, with a backlink to my agency.”</p>
+
+      <h2>Submit a proposal</h2>
+      <p>Use the form on this page or email <strong>sainath@dataengineerhub.blog</strong> with the topic, the production incident, an outline (H2s + FAQ), and a link to a writing sample or repo.</p>
 
       <h2>Prefer to support another way?</h2>
-      <p>Guest posts are editorial, not paid placements. If you just want to keep the playground and articles free, you can buy the hub a coffee via UPI (India) or PayPal from the Write for Us page. That is a personal thank-you, not a sponsorship.</p>
+      <p>Guest posts are editorial, not paid placements. If you just want to keep the playground and articles free, you can buy the hub a coffee via UPI (India) or PayPal from this page. That is a personal thank-you, not a sponsorship.</p>
     `
   },
   {

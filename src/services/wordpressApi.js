@@ -591,6 +591,12 @@ class WordPressAPI {
     }
   }
 
+  async getPublishedPostCount() {
+    const result = await this.makeRequest('/posts?per_page=1&status=publish&_fields=id');
+    const total = Number(result?.totalPosts) || 0;
+    return total > 0 ? total : 0;
+  }
+
   async getPostsByCategory(categoryId, options = {}) {
     return this.getPosts({ ...options, categoryId });
   }

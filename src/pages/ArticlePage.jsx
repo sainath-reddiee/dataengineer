@@ -587,7 +587,9 @@ const ArticlePage = () => {
     // paint would swap the HTML the reader is already looking at.
     if (post.htmlReady) {
       const readyFaqs = analyzeArticleFaqs(post.content);
-      const readyBody = readyFaqs.source === 'section' ? readyFaqs.html : post.content;
+      const readyBody = readyFaqs.source === 'section' || readyFaqs.source === 'rendered'
+        ? readyFaqs.html
+        : post.content;
       return {
         processedHtml: enhanceArticleCodeBlocks(injectArticleContextualLinks(readyBody, slug)),
         keyTakeaways: Array.isArray(post.keyTakeaways) ? post.keyTakeaways : [],
@@ -601,7 +603,9 @@ const ArticlePage = () => {
     // sentences stay in the body — showing them again as a box felt duplicated.
     const bodySource = elevate ? analysis.html : post.content;
     const faqAnalysis = analyzeArticleFaqs(bodySource);
-    const faqBody = faqAnalysis.source === 'section' ? faqAnalysis.html : bodySource;
+    const faqBody = faqAnalysis.source === 'section' || faqAnalysis.source === 'rendered'
+      ? faqAnalysis.html
+      : bodySource;
     const sanitized = processWordPressContent(faqBody);
     return {
       processedHtml: enhanceArticleCodeBlocks(

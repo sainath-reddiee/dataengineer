@@ -214,15 +214,53 @@ function extractFaqSection(html, limit, seen) {
   return { items: pairs, html, start, end };
 }
 
+const RENDERED_FAQ_RE =
+  /<section\b[^>]*class="[^"]*\barticle-faq\b[^"]*"[^>]*>[\s\S]*?<\/section>/i;
+
+function extractRenderedFaqs(html, limit = 6) {
+  const match = String(html || '').match(RENDERED_FAQ_RE);
+  if (!match) return { items: [], html: html || '' };
+
+  const items = [];
+  const itemRe =
+    /<details\b[^>]*class="[^"]*\barticle-faq-item\b[^"]*"[^>]*>\s*<summary>([\s\S]*?)<\/summary>\s*<p>([\s\S]*?)<\/p>\s*<\/details>/gi;
+  let row;
+  while ((row = itemRe.exec(match[0])) !== null && items.length < limit) {
+    const question = stripTags(row[1]);
+    const answer = stripTags(row[2]);
+    if (question.length >= 12 && answer.length >= 20) {
+      items.push({
+        question: question.endsWith('?') ? question : `${question}?`,
+        answer,
+      });
+    }
+  }
+
+  return {
+    items,
+    html: String(html).replace(match[0], '').replace(/\n{3,}/g, '\n\n'),
+  };
+}
+
 export function stripArticleFaqSection(html) {
-  const analysis = extractFaqSection(html, 8, new Set());
-  if (analysis.start < 0 || analysis.items.length < 1) return html || '';
-  return `${html.slice(0, analysis.start)}${html.slice(analysis.end)}`.replace(/^\s+/, '');
+  const withoutRendered = extractRenderedFaqs(html).html;
+  const analysis = extractFaqSection(withoutRendered, 8, new Set());
+  if (analysis.start < 0 || analysis.items.length < 1) return withoutRendered || '';
+  return `${withoutRendered.slice(0, analysis.start)}${withoutRendered.slice(analysis.end)}`.replace(/^\s+/, '');
 }
 
 export function analyzeArticleFaqs(html, limit = 6) {
   if (!html || typeof html !== 'string') {
     return { items: [], source: 'none', html: html || '' };
+  }
+
+  const rendered = extractRenderedFaqs(html, limit);
+  if (rendered.items.length >= 1) {
+    return {
+      items: rendered.items,
+      source: 'rendered',
+      html: rendered.html,
+    };
   }
 
   const seen = new Set();

@@ -1,6 +1,10 @@
 import { analyzeArticleFaqs, extractArticleFaqs, renderArticleFaqHtml } from '../src/utils/articleFaq.js';
 import { getNextSeriesArticle, getSeriesArticles } from '../src/utils/articleSeries.js';
 import { getFallbackArticles } from '../src/data/fallbackArticles.js';
+import { FALLBACK_ARTICLE_COUNT } from '../src/data/siteStats.js';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 function assert(condition, message) {
   if (!condition) {
@@ -136,6 +140,26 @@ assert(
 );
 assert(!paragraphFaq.html.includes('What is the Apache Airflow'), 'elevated paragraph FAQs must leave the body');
 
+const alreadyRendered = analyzeArticleFaqs(`
+  <h2>What Time Travel Actually Stores</h2>
+  <p>Time Travel keeps the old micro-partitions, not a nightly dump of every row.</p>
+  <section class="article-faq" aria-labelledby="article-faq-heading">
+    <h2 id="article-faq-heading">Question this article answers</h2>
+    <p class="article-faq-kicker">The short answer first.</p>
+    <details class="article-faq-item" open>
+      <summary>What Time Travel Actually Stores?</summary>
+      <p>Time Travel keeps the old micro-partitions, not a nightly dump of every row.</p>
+    </details>
+  </section>
+`);
+assert(alreadyRendered.source === 'rendered', 'SSG FAQ markup must be reused, not extracted again');
+assert(alreadyRendered.items.length === 1, `expected 1 rendered FAQ, got ${alreadyRendered.items.length}`);
+assert(!alreadyRendered.html.includes('article-faq'), 'rendered FAQ must leave the body so React does not paint it twice');
+assert(
+  !alreadyRendered.html.includes('Question this article answers'),
+  'the accordion heading must not remain in the article body'
+);
+
 const tagged = extractArticleFaqs(`
   <h2>FAQ</h2>
   <p>How do I add human approval to an Airflow LLM task?</p>
@@ -159,5 +183,16 @@ assert(next?.slug && next?.title, 'next article should have a slug and title');
 const suggestions = getFallbackArticles(6);
 assert(suggestions.length === 6, 'reading list suggestions should list 6 articles');
 
+assert(FALLBACK_ARTICLE_COUNT >= 115, 'homepage fallback must not flash the old 82 count');
+const statsHook = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../src/hooks/useStats.js'), 'utf8');
+assert(!statsHook.includes('totalArticles: 82'), 'useStats must not hardcode 82 articles');
+assert(statsHook.includes('getPublishedPostCount'), 'stats should read X-WP-Total from a count request');
+
+const contribute = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../src/pages/ContributePage.jsx'), 'utf8');
+assert(contribute.includes('editorial-standards'), 'Contribute must point at editorial standards');
+assert(!/do-follow|dofollow/i.test(contribute), 'Contribute must not sell a dofollow backlink');
+assert(contribute.includes('We will not publish'), 'Contribute must say what gets rejected');
+
 console.log('✅ Article FAQ extraction keeps only real questions');
 console.log('✅ Series and next-article helpers stay on-topic');
+console.log('✅ Homepage counts and Contribute guidelines stay current');
