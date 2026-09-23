@@ -6,6 +6,8 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { analyzeKeyTakeaways, isElevatedTakeawaysSource } from '../src/utils/articleTakeaways.js';
+import { analyzeArticleFaqs, renderArticleFaqHtml, renderArticleFaqSchema } from '../src/utils/articleFaq.js';
+import { enhanceArticleCodeBlocks } from '../src/utils/articleCodeBlocks.js';
 import { injectArticleContextualLinks } from '../src/data/articleContextualLinks.js';
 import { cleanHomepagePaintHtml } from './deferRenderBlockingCss.js';
 
@@ -2851,6 +2853,12 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   const takeawaysAnalysis = analyzeKeyTakeaways(processedContent);
   const elevateTakeaways = isElevatedTakeawaysSource(takeawaysAnalysis.source);
   processedContent = elevateTakeaways ? takeawaysAnalysis.html : processedContent;
+  const faqAnalysis = analyzeArticleFaqs(processedContent);
+  if (faqAnalysis.source === 'section') {
+    processedContent = faqAnalysis.html;
+  }
+  const articleFaqs = faqAnalysis.items;
+  const articleFaqHtml = renderArticleFaqHtml(articleFaqs);
   const takeawaysTitle = takeawaysAnalysis.label || 'TL;DR';
   const keyTakeawaysHtml = elevateTakeaways && takeawaysAnalysis.items.length > 0
     ? `<aside class="key-takeaways article-tldr" aria-label="${escapeHtml(takeawaysTitle)}">
@@ -2929,8 +2937,14 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   // Reading time uses the full tutorial (code included). Robots / schema use
   // prose-only words so a 2,000-token SQL dump cannot pad a thin page.
   const readingWordCount = countPlainWords(processedContent || '');
-  const articleWordCount = countIndexableWords(crawlerBody);
+  const articleWordCount = countIndexableWords(
+    crawlerBody,
+    faqAnalysis.source === 'section'
+      ? articleFaqs.flatMap((item) => [item.question, item.answer])
+      : []
+  );
   const articleRobotsDirective = robotsForWordCount(articleWordCount, pagePath);
+  crawlerBody = enhanceArticleCodeBlocks(crawlerBody);
 
   // ðŸ“– Reading time + formatted publish date for visible byline
   const readingTime = Math.max(1, Math.ceil(readingWordCount / 250));
@@ -3217,6 +3231,65 @@ ${CONSENT_MODE_V2_HTML}
         color: #94a3b8;
         font-size: 0.95rem;
         margin: 0.75rem 0 0;
+      }
+
+      .seo-content .article-body .article-faq {
+        margin: 2.25rem 0 0.5rem;
+        padding: 1.2rem 1.3rem;
+        border-radius: 12px;
+        border: 1px solid rgba(96, 165, 250, 0.28);
+        background: rgba(15, 23, 42, 0.55);
+      }
+      .seo-content .article-body .article-faq h2 {
+        color: #f8fafc;
+        font-size: 1.25rem;
+        margin: 0 0 0.35rem;
+      }
+      .seo-content .article-body .article-faq-kicker,
+      .seo-content .article-body .article-faq-item p {
+        color: #cbd5e1;
+        line-height: 1.7;
+      }
+      .seo-content .article-body .article-faq-item {
+        margin: 0.55rem 0;
+        border-radius: 8px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(15, 23, 42, 0.45);
+        padding: 0.15rem 0.2rem;
+      }
+      .seo-content .article-body .article-faq-item summary {
+        cursor: pointer;
+        padding: 0.75rem 0.9rem;
+        font-weight: 650;
+        color: #e2e8f0;
+      }
+      .seo-content .article-body .article-code {
+        margin: 1.5rem 0;
+        border-radius: 10px;
+        border: 1px solid rgba(96, 165, 250, 0.22);
+        background: rgba(15, 23, 42, 0.72);
+        overflow: hidden;
+      }
+      .seo-content .article-body .article-code-bar {
+        display: flex;
+        gap: 0.65rem;
+        margin: 0;
+        padding: 0.55rem 0.75rem;
+        text-align: left;
+        font-style: normal;
+        color: #94a3b8;
+        background: rgba(30, 58, 138, 0.28);
+      }
+      .seo-content .article-body .article-code-lang {
+        color: #dbeafe;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+      }
+      .seo-content .article-body .article-code pre {
+        margin: 0;
+        border: 0;
+        background: transparent;
       }
       
       .seo-content .article-body blockquote {
@@ -3603,6 +3676,7 @@ ${CONSENT_MODE_V2_HTML}
           <!-- 🔥 THIS IS THE KEY: FULL HTML CONTENT WITH IMAGES -->
           <div class="article-body">
             ${crawlerBody}
+            ${articleFaqHtml}
           </div>
 
           <!-- AdSense: we rely on Auto Ads (enabled in AdSense UI) instead of
@@ -3726,6 +3800,16 @@ ${CONSENT_MODE_V2_HTML}
       ]
     }
     </script>
+    ${(() => {
+      const faqSchema = !articleRobotsDirective.startsWith('noindex')
+        ? renderArticleFaqSchema(articleFaqs)
+        : null;
+      if (!faqSchema) return '';
+      return `
+    <script type="application/ld+json">
+    ${JSON.stringify(faqSchema)}
+    </script>`;
+    })()}
 
     <!-- 🔥 STRUCTURED DATA - Organization Schema -->
     <script type="application/ld+json">

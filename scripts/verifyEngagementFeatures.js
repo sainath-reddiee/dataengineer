@@ -1,4 +1,4 @@
-import { extractArticleFaqs } from '../src/utils/articleFaq.js';
+import { analyzeArticleFaqs, extractArticleFaqs, renderArticleFaqHtml } from '../src/utils/articleFaq.js';
 import { getNextSeriesArticle, getSeriesArticles } from '../src/utils/articleSeries.js';
 import { getFallbackArticles } from '../src/data/fallbackArticles.js';
 
@@ -26,6 +26,36 @@ assert(
   faqs.every((item) => item.question.endsWith('?')),
   'FAQ items must be real questions'
 );
+assert(
+  !faqs.some((item) => item.question.includes('Warehouse scaling')),
+  'noun-phrase How/section titles must not become FAQ items'
+);
+
+const implied = extractArticleFaqs(`
+  <h2>What the residential product is actually sold for</h2>
+  <p>You pay for successful residential requests, not for the proxy remaining idle between jobs.</p>
+  <h2>How Snowflake stores data</h2>
+  <p>This noun-phrase heading should stay a section title, not an FAQ row.</p>
+`);
+assert(implied.some((item) => item.question.startsWith('What the residential')), 'What-headings without ? still become FAQ');
+assert(!implied.some((item) => item.question.includes('Snowflake stores')), 'How + noun phrase must not become FAQ');
+
+const sectionHtml = `
+  <h2>Frequently Asked Questions</h2>
+  <h3>Does cloning copy storage?</h3>
+  <p>Zero-copy clone shares micro-partitions until one side writes, so you pay for changed partitions only.</p>
+  <h3>When should I clone a production database?</h3>
+  <p>Clone before a risky backfill or schema change so you can compare results without a second full copy.</p>
+  <h2>After the FAQ</h2>
+  <p>Continue with the implementation notes.</p>
+`;
+const section = analyzeArticleFaqs(sectionHtml);
+assert(section.source === 'section', 'explicit FAQ headings should elevate into the accordion');
+assert(section.items.length === 2, `expected 2 section FAQs, got ${section.items.length}`);
+assert(!section.html.includes('Does cloning copy storage'), 'elevated FAQ section must leave the body');
+const faqMarkup = renderArticleFaqHtml(section.items);
+assert(faqMarkup.includes('<details'), 'FAQ markup must keep answers in HTML for AdsBot');
+assert(faqMarkup.includes('open'), 'the first questions stay open so reviewers see answers');
 
 const series = getSeriesArticles('snowflake-cortex-code-dbt-optimization-guide', 'snowflake', 4);
 assert(series.length > 0, 'series should find other Snowflake articles');
