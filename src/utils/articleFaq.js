@@ -27,6 +27,7 @@ function stripTags(html) {
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/\s+/g, ' ')
+    .replace(/\s+([.,;:!?])/g, '$1')
     .trim();
 }
 

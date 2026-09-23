@@ -136,6 +136,16 @@ assert(
 );
 assert(!paragraphFaq.html.includes('What is the Apache Airflow'), 'elevated paragraph FAQs must leave the body');
 
+const tagged = extractArticleFaqs(`
+  <h2>FAQ</h2>
+  <p>How do I add human approval to an Airflow LLM task?</p>
+  <p>Set <code>require_approval=True</code> on any <code>@task.llm</code> or <code>LLMOperator</code>. The task writes XCom, then waits in awaiting_input until a reviewer decides.</p>
+`);
+assert(
+  tagged[0].answer.includes('LLMOperator. The task'),
+  'closing code tags must not leave a space before the period'
+);
+
 const series = getSeriesArticles('snowflake-cortex-code-dbt-optimization-guide', 'snowflake', 4);
 assert(series.length > 0, 'series should find other Snowflake articles');
 assert(
