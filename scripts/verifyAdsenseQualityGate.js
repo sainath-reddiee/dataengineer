@@ -134,6 +134,10 @@ if (!ssg.includes('function stampHeldOutRobots')) {
   console.error('❌ Incremental SSG must stamp leftover held-out HTML as noindex');
   failed += 1;
 }
+if (!ssg.includes('pruneSitemaps')) {
+  console.error('❌ Incremental SSG must prune noindex URLs from sitemap.xml');
+  failed += 1;
+}
 if (!ssg.includes('collapseLongCodeBlocks')) {
   console.error('❌ Article SSG must collapse long code dumps during AdSense review');
   failed += 1;

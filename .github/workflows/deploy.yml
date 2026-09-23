@@ -409,6 +409,9 @@ jobs:
             echo "- ℹ️  **Note:** Categories and tags are handled dynamically by React" >> $GITHUB_STEP_SUMMARY
           fi
 
+      - name: 🗺️ Drop noindex URLs from sitemap
+        run: node scripts/pruneSitemapNoindex.js
+
       - name: 🔍 Verify Build (Optional)
         if: steps.changes.outputs.verify_build == 'true'
         run: |
