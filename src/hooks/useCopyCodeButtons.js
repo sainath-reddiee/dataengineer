@@ -24,24 +24,40 @@ function styleChip(el, extra = {}) {
   });
 }
 
+function fallbackCopy(code) {
+  const textarea = document.createElement('textarea');
+  textarea.value = code;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textarea);
+}
+
 function bindCopy(button, code) {
   button.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-    } catch {
-      const textarea = document.createElement('textarea');
-      textarea.value = code;
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-    }
-
     const previous = button.textContent;
     button.textContent = 'Copied';
     button.style.color = '#4ade80';
+    try {
+      if (navigator.clipboard?.writeText) {
+        await Promise.race([
+          navigator.clipboard.writeText(code),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('clipboard timeout')), 600)),
+        ]);
+      } else {
+        fallbackCopy(code);
+      }
+    } catch {
+      try {
+        fallbackCopy(code);
+      } catch {
+        button.textContent = previous;
+        button.style.color = '';
+        return;
+      }
+    }
     setTimeout(() => {
       button.textContent = previous;
       button.style.color = '';

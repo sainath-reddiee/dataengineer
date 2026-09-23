@@ -39,6 +39,14 @@ function truncateAnswer(text, max = 520) {
   return (lastStop > 120 ? slice.slice(0, lastStop + 1) : slice).trim();
 }
 
+function isQuestionHeading(text) {
+  const q = String(text || '').trim();
+  if (q.length < 12 || q.length > 180) return false;
+  if (q.endsWith('?')) return true;
+  if (/^(how)\s+(do|does|can|could|should|to)\b/i.test(q)) return true;
+  return /^(what|why|when|where|which|who)\b/i.test(q);
+}
+
 function addPair(pairs, seen, question, answer, limit) {
   const q = stripTags(question);
   const a = truncateAnswer(stripTags(answer));
@@ -67,7 +75,7 @@ function extractHeadingFaqs(html, limit, seen) {
 
   for (let i = 0; i < matches.length; i += 1) {
     const question = matches[i].question;
-    if (!question.endsWith('?') || question.length < 12 || question.length > 180) {
+    if (!isQuestionHeading(question)) {
       continue;
     }
     const bodyStart = matches[i].end;

@@ -26,6 +26,19 @@ assert(
   faqs.every((item) => item.question.endsWith('?')),
   'FAQ items must be real questions'
 );
+assert(
+  !faqs.some((item) => item.question.includes('Warehouse scaling')),
+  'noun-phrase How/section titles must not become FAQ items'
+);
+
+const implied = extractArticleFaqs(`
+  <h2>What the residential product is actually sold for</h2>
+  <p>You pay for successful residential requests, not for the proxy remaining idle between jobs.</p>
+  <h2>How Snowflake stores data</h2>
+  <p>This noun-phrase heading should stay a section title, not an FAQ row.</p>
+`);
+assert(implied.some((item) => item.question.startsWith('What the residential')), 'What-headings without ? still become FAQ');
+assert(!implied.some((item) => item.question.includes('Snowflake stores')), 'How + noun phrase must not become FAQ');
 
 const sectionHtml = `
   <h2>Frequently Asked Questions</h2>
