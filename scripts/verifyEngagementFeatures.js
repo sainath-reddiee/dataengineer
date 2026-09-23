@@ -79,6 +79,17 @@ const faqMarkup = renderArticleFaqHtml(section.items);
 assert(faqMarkup.includes('<details'), 'FAQ markup must keep answers in HTML for AdsBot');
 assert(faqMarkup.includes('open'), 'the first questions stay open so reviewers see answers');
 
+const single = extractArticleFaqs(`
+  <h2>How do I size a Snowflake warehouse?</h2>
+  <p>Start with an X-Small warehouse and raise it only after queuing or spill appears in Query History.</p>
+  <h2>Warehouse scaling strategy</h2>
+  <p>This heading is not a question so it must not become an FAQ item.</p>
+`);
+assert(single.length === 1, `expected a single FAQ, got ${single.length}`);
+const singleMarkup = renderArticleFaqHtml(single);
+assert(singleMarkup.includes('article-faq'), 'one FAQ still uses the same accordion card');
+assert(singleMarkup.includes('Question this article answers'), 'one FAQ keeps the same style, singular heading');
+
 const series = getSeriesArticles('snowflake-cortex-code-dbt-optimization-guide', 'snowflake', 4);
 assert(series.length > 0, 'series should find other Snowflake articles');
 assert(

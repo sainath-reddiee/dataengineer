@@ -149,10 +149,10 @@ function extractFaqSection(html, limit, seen) {
     });
   }
 
-  if (headings.length >= 2) {
+  if (headings.length >= 1) {
     for (let i = 0; i < headings.length; i += 1) {
       const bodyEnd = i + 1 < headings.length ? headings[i + 1].index : section.length;
-      if (addPair(pairs, seen, headings[i].question, section.slice(headings[i].end, bodyEnd), limit)) {
+      if (addPair(pairs, seen, headings[i].question, firstParagraphs(section.slice(headings[i].end, bodyEnd)), limit)) {
         break;
       }
     }
@@ -167,7 +167,7 @@ function extractFaqSection(html, limit, seen) {
 
 export function stripArticleFaqSection(html) {
   const analysis = extractFaqSection(html, 8, new Set());
-  if (analysis.start < 0 || analysis.items.length < 2) return html || '';
+  if (analysis.start < 0 || analysis.items.length < 1) return html || '';
   return `${html.slice(0, analysis.start)}${html.slice(analysis.end)}`.replace(/^\s+/, '');
 }
 
@@ -178,7 +178,7 @@ export function analyzeArticleFaqs(html, limit = 6) {
 
   const seen = new Set();
   const section = extractFaqSection(html, limit, seen);
-  if (section.items.length >= 2) {
+  if (section.items.length >= 1) {
     return {
       items: section.items,
       source: 'section',
@@ -199,7 +199,8 @@ export function extractArticleFaqs(html, limit = 6) {
 }
 
 export function renderArticleFaqHtml(items) {
-  if (!Array.isArray(items) || items.length < 2) return '';
+  if (!Array.isArray(items) || items.length < 1) return '';
+  const many = items.length > 1;
 
   const rows = items.map((item, index) => {
     const open = index < 2 ? ' open' : '';
@@ -210,8 +211,10 @@ export function renderArticleFaqHtml(items) {
   }).join('\n');
 
   return `<section class="article-faq" aria-labelledby="article-faq-heading">
-      <h2 id="article-faq-heading">Questions this article answers</h2>
-      <p class="article-faq-kicker">Short answers first. Open a question to read the working note.</p>
+      <h2 id="article-faq-heading">${many ? 'Questions this article answers' : 'Question this article answers'}</h2>
+      <p class="article-faq-kicker">${many
+        ? 'Short answers first. Open a question to read the working note.'
+        : 'The short answer first. Open it to read the working note.'}</p>
 ${rows}
     </section>`;
 }
