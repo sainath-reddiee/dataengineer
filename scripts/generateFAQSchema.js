@@ -326,8 +326,8 @@ function injectFAQSchema(htmlPath, faqSchema) {
 
         // Check if a valid FAQPage schema already exists — skip injection to avoid duplicates
         const existingFAQCount = (html.match(/"@type"\s*:\s*"FAQPage"/g) || []).length;
-        if (existingFAQCount > 0) {
-            // Already has a FAQPage schema — don't inject another one
+        if (existingFAQCount > 0 || html.includes('class="article-faq"')) {
+            // Visible SSG FAQ (or its schema) already owns this page.
             return false;
         }
 

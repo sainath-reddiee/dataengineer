@@ -142,6 +142,10 @@ if (!ssg.includes('collapseLongCodeBlocks')) {
   console.error('❌ Article SSG must collapse long code dumps during AdSense review');
   failed += 1;
 }
+if (!ssg.includes('renderArticleFaqHtml') || !ssg.includes('enhanceArticleCodeBlocks')) {
+  console.error('❌ Article SSG must render visible FAQ and wrap code blocks');
+  failed += 1;
+}
 if (!footer.includes('Reading List') || !footer.includes('ADSENSE_REVIEW_MODE')) {
   console.error('❌ Footer must keep reading-list / advertise behind the review flag');
   failed += 1;

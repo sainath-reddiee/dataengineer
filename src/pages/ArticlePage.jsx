@@ -46,7 +46,8 @@ import {
   isReviewAllowlistedTool,
 } from '@/data/adsenseQualityGate';
 import { MIN_INDEXABLE_WORD_COUNT } from '@/data/thinTags';
-import { extractArticleFaqs } from '@/utils/articleFaq';
+import { analyzeArticleFaqs } from '@/utils/articleFaq';
+import { enhanceArticleCodeBlocks } from '@/utils/articleCodeBlocks';
 import { analyzeKeyTakeaways, isElevatedTakeawaysSource } from '@/utils/articleTakeaways';
 import { injectArticleContextualLinks } from '@/data/articleContextualLinks';
 import ArticleFaq from '@/components/ArticleFaq';
@@ -81,10 +82,11 @@ const processWordPressContent = (content) => {
       'ul', 'ol', 'li', 'a', 'img', 'figure', 'figcaption',
       'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'caption',
       'blockquote', 'pre', 'code', 'hr', 'div', 'span',
-      'iframe', 'video', 'audio', 'source', 'dl', 'dt', 'dd'
+      'iframe', 'video', 'audio', 'source', 'dl', 'dt', 'dd',
+      'details', 'summary'
     ],
     ALLOWED_ATTR: [
-      'href', 'src', 'alt', 'title', 'class', 'id',
+      'href', 'src', 'alt', 'title', 'class', 'id', 'open',
       'width', 'height', 'target', 'rel', 'colspan', 'rowspan',
       'data-*', 'frameborder', 'allowfullscreen', 'loading'
     ],
@@ -576,15 +578,20 @@ const ArticlePage = () => {
   // to satisfy React's Rules of Hooks (consistent call order every render)
   // Strip an explicit TL;DR / Key Takeaways block from the body when we elevate
   // those bullets into the KeyTakeaways component — otherwise readers see both.
-  const { processedHtml, keyTakeaways, takeawaysTitle } = useMemo(() => {
-    if (!post?.content) return { processedHtml: '', keyTakeaways: [], takeawaysTitle: 'TL;DR' };
+  const { processedHtml, keyTakeaways, takeawaysTitle, articleFaqs } = useMemo(() => {
+    if (!post?.content) {
+      return { processedHtml: '', keyTakeaways: [], takeawaysTitle: 'TL;DR', articleFaqs: [] };
+    }
     // SSG already sanitized/linked this body. Re-running the pipeline on first
     // paint would swap the HTML the reader is already looking at.
     if (post.htmlReady) {
+      const readyFaqs = analyzeArticleFaqs(post.content);
+      const readyBody = readyFaqs.source === 'section' ? readyFaqs.html : post.content;
       return {
-        processedHtml: injectArticleContextualLinks(post.content, slug),
+        processedHtml: enhanceArticleCodeBlocks(injectArticleContextualLinks(readyBody, slug)),
         keyTakeaways: Array.isArray(post.keyTakeaways) ? post.keyTakeaways : [],
         takeawaysTitle: post.takeawaysTitle || 'TL;DR',
+        articleFaqs: readyFaqs.items,
       };
     }
     const analysis = analyzeKeyTakeaways(post.content);
@@ -592,11 +599,16 @@ const ArticlePage = () => {
     // Only elevate explicit TL;DR / Key Takeaways sections. Synthetic H2
     // sentences stay in the body — showing them again as a box felt duplicated.
     const bodySource = elevate ? analysis.html : post.content;
-    const sanitized = processWordPressContent(bodySource);
+    const faqAnalysis = analyzeArticleFaqs(bodySource);
+    const faqBody = faqAnalysis.source === 'section' ? faqAnalysis.html : bodySource;
+    const sanitized = processWordPressContent(faqBody);
     return {
-      processedHtml: injectArticleContextualLinks(injectInternalLinks(sanitized, slug), slug),
+      processedHtml: enhanceArticleCodeBlocks(
+        injectArticleContextualLinks(injectInternalLinks(sanitized, slug), slug)
+      ),
       keyTakeaways: elevate ? analysis.items : [],
       takeawaysTitle: analysis.label || 'TL;DR',
+      articleFaqs: faqAnalysis.items,
     };
   }, [post?.content, post?.htmlReady, post?.keyTakeaways, slug]);
 
@@ -693,7 +705,6 @@ const ArticlePage = () => {
       extractVideosFromContent(safePost.content, safePost.title, safePost.excerpt, safePost.image, safePost.date)
     );
 
-    const articleFaqs = extractArticleFaqs(safePost.content);
     const articleIsThin =
       countIndexableWords(safePost.content) < MIN_INDEXABLE_WORD_COUNT;
 
@@ -756,7 +767,6 @@ const ArticlePage = () => {
 
           {/* Key Takeaways — AEO/AI visibility, Speakable schema target */}
           <KeyTakeaways items={keyTakeaways} title={takeawaysTitle} />
-          <ArticleFaq items={articleFaqs} />
 
           {/* ── Listen to this Article — Native Audio Reader ── */}
           <AudioReader content={safePost.content} title={safePost.title} />
@@ -789,6 +799,7 @@ const ArticlePage = () => {
                       className="article-content"
                     />
                   </div>
+                  <ArticleFaq items={articleFaqs} />
                 </div>
                 {/* Desktop ToC sidebar */}
                 <div className="hidden xl:block w-64 shrink-0">

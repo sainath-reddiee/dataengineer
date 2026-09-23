@@ -9,6 +9,7 @@ import {
   measureTextToCodeRatio,
   stripCodeBlocks,
 } from '../src/utils/adsenseCodeRatio.js';
+import { enhanceArticleCodeBlocks } from '../src/utils/articleCodeBlocks.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -64,9 +65,19 @@ assert(
   `collapsed page must be prose-led (prose=${afterCollapse.proseWords} code=${afterCollapse.codeWords})`
 );
 
+const enhanced = enhanceArticleCodeBlocks(shortHtml);
+assert(enhanced.includes('article-code'), 'short snippets get a language bar for readers');
+assert(enhanced.includes('Copy the snippet') || enhanced.includes('Read the query'), 'code bar must add a prose hint');
+const collapsedThenEnhanced = enhanceArticleCodeBlocks(collapsed);
+assert(collapsedThenEnhanced.includes('adsense-code-preview'), 'collapsed preview figure must remain');
+assert(!collapsedThenEnhanced.includes('article-code'), 'collapsed AdsBot previews must not be wrapped again');
+
 const ssg = readFileSync(join(root, 'scripts/generateStaticPagesIncremental.js'), 'utf8');
 assert(ssg.includes('collapseLongCodeBlocks'), 'article SSG must collapse long code during review');
-assert(ssg.includes('countIndexableWords(crawlerBody)'), 'article robots must use prose-only word counts');
+assert(
+  ssg.includes('countIndexableWords(') && ssg.includes('crawlerBody'),
+  'article robots must use prose-only word counts'
+);
 assert(ssg.includes('ADSENSE_REVIEW_MODE ? \'\' : \'<li><a href="https://dataengineerhub.blog/advertise"')
   || ssg.includes('advertiseLink'), 'SSG nav must hide Advertise during review');
 
