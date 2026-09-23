@@ -1,4 +1,5 @@
 import { analyzeKeyTakeaways, stripKeyTakeawaysSection } from '../src/utils/articleTakeaways.js';
+import { injectArticleContextualLinks } from '../src/data/articleContextualLinks.js';
 import {
   buildLinkCandidates,
   hasLinkToArticle,
@@ -102,5 +103,37 @@ assert(
   'should still link a different article via a longer phrase'
 );
 
+const paragraphTldr = `
+<p>A ten-thousand-row job died two hours in.</p>
+<p><strong>TL;DR</strong></p>
+<p>2extract is a residential and mobile proxy network, not a scraper — targeting lives entirely in the proxy username, not headers or dashboard toggles.</p>
+<p><strong>One pricing detail worth knowing</strong></p>
+<p>Most proxy vendors sell a country as a separate product. 2extract sells one residential proxy and treats geography as a parameter on the request.</p>
+<h2>What 2extract actually is — and the one thing it isn’t</h2>
+<p>2extract does not scrape websites.</p>
+`;
+const paragraphAnalysis = analyzeKeyTakeaways(paragraphTldr);
+assert(paragraphAnalysis.source === 'paragraph', `expected paragraph source, got ${paragraphAnalysis.source}`);
+assert(paragraphAnalysis.label === 'TL;DR', `expected TL;DR label, got ${paragraphAnalysis.label}`);
+assert(paragraphAnalysis.items.length >= 2, `expected 2+ paragraph takeaways, got ${paragraphAnalysis.items.length}`);
+assert(paragraphAnalysis.items[0].includes('residential'), 'first paragraph takeaway should mention residential');
+assert(!/TL;?DR/i.test(paragraphAnalysis.html), 'paragraph TL;DR label must be stripped from the body');
+assert(paragraphAnalysis.html.includes('What 2extract actually is'), 'body after paragraph TL;DR must remain');
+
+const linked = injectArticleContextualLinks('<p>Intro about proxies.</p><p>More detail.</p>', '2extract-web-scraping-python-mcp');
+assert(
+  (linked.match(/utm_source=dataengineerhubblog/g) || []).length === 2,
+  '2extract article must get beginning and end contextual links'
+);
+assert(linked.indexOf('deh-contextual-link--intro') < linked.indexOf('deh-contextual-link--outro'), 'intro link precedes outro link');
+const already = injectArticleContextualLinks(linked, '2extract-web-scraping-python-mcp');
+assert(already === linked, 'contextual links must be idempotent');
+assert(
+  injectArticleContextualLinks('<p>Other article.</p>', 'snowflake-cost-guide') === '<p>Other article.</p>',
+  'unrelated slugs must not get 2extract links'
+);
+
 console.log('✅ TL;DR / Key Takeaways are elevated once and stripped from the body');
+console.log('✅ Paragraph-style TL;DR becomes a formatted takeaways card');
 console.log('✅ Internal linking prefers longer phrases, skips headings/code, and respects existing links');
+console.log('✅ 2extract article gets beginning and end contextual links');
