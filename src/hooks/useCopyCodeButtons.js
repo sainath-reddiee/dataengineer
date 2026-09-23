@@ -35,6 +35,14 @@ function fallbackCopy(code) {
   document.body.removeChild(textarea);
 }
 
+function codeFromBlock(pre, figure) {
+  const sources = figure?.querySelectorAll('.article-code-src');
+  if (sources && sources.length) {
+    return [...sources].map((node) => node.textContent.replace(/\u00a0/g, ' ')).join('\n');
+  }
+  return pre.querySelector('code')?.textContent || pre.textContent || '';
+}
+
 function bindCopy(button, code) {
   button.addEventListener('click', async () => {
     const previous = button.textContent;
@@ -66,7 +74,7 @@ function bindCopy(button, code) {
 }
 
 /**
- * Injects Copy (and Run in playground for SQL) into every <pre> in an article.
+ * Injects Copy / Wrap / Run into every article code block.
  */
 const useCopyCodeButtons = (dependency) => {
   useEffect(() => {
@@ -81,8 +89,8 @@ const useCopyCodeButtons = (dependency) => {
         const figure = pre.closest('.article-code');
         if (figure?.querySelector('.copy-code-btn')) return;
 
-        const code = pre.querySelector('code')?.textContent || pre.textContent || '';
-        const langClass = `${pre.className} ${pre.querySelector('code')?.className || ''}`;
+        const code = codeFromBlock(pre, figure);
+        const langClass = `${pre.className} ${pre.querySelector('code')?.className || ''} ${figure?.getAttribute('data-lang') || ''}`;
         const actions = figure?.querySelector('.article-code-actions');
 
         const button = document.createElement('button');
@@ -100,7 +108,7 @@ const useCopyCodeButtons = (dependency) => {
           pre.appendChild(button);
         }
 
-        if (figure && !figure.querySelector('.wrap-code-btn')) {
+        if (figure && actions && !figure.querySelector('.wrap-code-btn')) {
           const wrap = document.createElement('button');
           wrap.type = 'button';
           wrap.className = 'wrap-code-btn compact-control';
@@ -110,7 +118,17 @@ const useCopyCodeButtons = (dependency) => {
             const on = figure.classList.toggle('is-wrap');
             wrap.textContent = on ? 'Scroll' : 'Wrap';
           });
-          actions?.appendChild(wrap);
+          actions.appendChild(wrap);
+        }
+
+        const expand = figure?.querySelector('.article-code-expand');
+        if (expand && !expand.dataset.bound) {
+          expand.dataset.bound = '1';
+          expand.addEventListener('click', () => {
+            const on = figure.classList.toggle('is-expanded');
+            const total = figure.getAttribute('data-lines') || '';
+            expand.textContent = on ? 'Show less' : `Show all ${total} lines`;
+          });
         }
 
         if (looksLikeSql(code, langClass)) {
