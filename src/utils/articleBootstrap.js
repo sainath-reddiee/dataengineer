@@ -101,5 +101,6 @@ export function buildBootstrappedPost(slug, parkedSeoHtml) {
     },
     htmlReady: Boolean(body),
     keyTakeaways: Array.isArray(meta.keyTakeaways) ? meta.keyTakeaways : [],
+    takeawaysTitle: meta.takeawaysTitle || 'TL;DR',
   };
 }

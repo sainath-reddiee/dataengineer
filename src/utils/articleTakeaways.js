@@ -56,14 +56,56 @@ function itemsFromParagraphHtml(sectionHtml) {
   const items = [];
   for (const line of firstP[1].split(/<br\s*\/?>|\n/gi)) {
     const t = cleanLi(line).replace(/^[→•\-\*\s]+/, '').trim();
-    if (t.length >= 8 && t.length <= 240) items.push(t);
+    if (t.length >= 8 && t.length <= 420) items.push(t);
   }
   return items;
+}
+
+function splitReadableSentences(text) {
+  return String(text || '')
+    .split(/(?<=[.!?])\s+(?=[A-Z])/)
+    .map((part) => part.trim())
+    .filter((part) => part.length >= 24 && part.length <= 420 && !/^TL;?DR\b/i.test(part));
+}
+
+function itemsFromSectionParagraphs(sectionHtml) {
+  const items = [];
+  const pRe = /<p[^>]*>([\s\S]*?)<\/p>/gi;
+  let pendingLabel = '';
+  let sawParagraph = false;
+  let m;
+  while ((m = pRe.exec(sectionHtml)) !== null) {
+    const raw = m[1];
+    if (/^\s*(?:<strong>)?\s*(?:TL;?DR|Key\s*Takeaways|Summary|At\s*a\s*Glance)\b/i.test(raw)) {
+      continue;
+    }
+    const t = cleanLi(raw).replace(/^[→•\-\*\s]+/, '').trim();
+    if (!t) continue;
+    sawParagraph = true;
+    if (t.length < 40) {
+      pendingLabel = t.replace(/[:.]\s*$/, '');
+      continue;
+    }
+    const item = pendingLabel ? `${pendingLabel}: ${t}` : t;
+    pendingLabel = '';
+    if (item.length <= 420) {
+      items.push(item);
+    } else {
+      items.push(...splitReadableSentences(item));
+    }
+  }
+  if (sawParagraph && items.length > 0) return items.slice(0, 6);
+
+  return splitReadableSentences(cleanLi(sectionHtml)).slice(0, 5);
 }
 
 /** Heading that is a takeaways / TL;DR / summary label (allows emoji / suffix). */
 export const TAKEAWAYS_HEADING_RE =
   /<h([1-3])[^>]*>\s*(?:[^\w<]{1,4}\s*)?(?:Key\s*Takeaways|TL;?DR|Summary|At\s*a\s*Glance)\b[^<]*<\/h\1>/i;
+
+/** WordPress often writes TL;DR as a bold paragraph, not an H2. */
+export const TAKEAWAYS_PARAGRAPH_RE =
+  /<p[^>]*>\s*(?:<strong>)?\s*(?:[^\w<]{1,4}\s*)?(?:TL;?DR|Key\s*Takeaways|Summary|At\s*a\s*Glance)\b(?:\s*<\/strong>)?\s*<\/p>/i;
 
 const COMMENT_BLOCK_RE =
   /<!--\s*key-takeaways\s*-->([\s\S]*?)<!--\s*\/?key-takeaways\s*-->/i;
@@ -79,21 +121,21 @@ export function stripKeyTakeawaysSection(html) {
     return html.replace(COMMENT_BLOCK_RE, '').replace(/^\s+/, '');
   }
 
-  const headingMatch = TAKEAWAYS_HEADING_RE.exec(html);
-  if (!headingMatch) return html;
+  const marker = TAKEAWAYS_HEADING_RE.exec(html) || TAKEAWAYS_PARAGRAPH_RE.exec(html);
+  if (!marker) return html;
 
-  const start = headingMatch.index;
-  const afterHeading = start + headingMatch[0].length;
-  const rest = html.slice(afterHeading);
+  const start = marker.index;
+  const afterMarker = start + marker[0].length;
+  const rest = html.slice(afterMarker);
   const nextHeading = rest.search(/<h[1-3][^>]*>/i);
-  const end = nextHeading === -1 ? html.length : afterHeading + nextHeading;
+  const end = nextHeading === -1 ? html.length : afterMarker + nextHeading;
   return `${html.slice(0, start)}${html.slice(end)}`.replace(/^\s+/, '');
 }
 
 /**
- * @returns {{ items: string[], source: 'comment'|'heading'|'synthetic'|'none', html: string }}
+ * @returns {{ items: string[], source: 'comment'|'heading'|'paragraph'|'synthetic'|'none', label?: string, html: string }}
  * `html` is the input with an explicit takeaways section removed when source is
- * comment or heading (so a Key Takeaways UI can render without duplicating it).
+ * comment, heading, or paragraph (so a Key Takeaways UI can render without duplicating it).
  */
 export function analyzeKeyTakeaways(html) {
   if (!html || typeof html !== 'string') {
@@ -107,23 +149,28 @@ export function analyzeKeyTakeaways(html) {
       return {
         items: items.slice(0, 8),
         source: 'comment',
+        label: 'Key Takeaways',
         html: stripKeyTakeawaysSection(html),
       };
     }
   }
 
   const headingMatch = TAKEAWAYS_HEADING_RE.exec(html);
-  if (headingMatch) {
-    const afterHeading = headingMatch.index + headingMatch[0].length;
-    const rest = html.slice(afterHeading);
+  const paragraphMatch = !headingMatch ? TAKEAWAYS_PARAGRAPH_RE.exec(html) : null;
+  const marker = headingMatch || paragraphMatch;
+  if (marker) {
+    const afterMarker = marker.index + marker[0].length;
+    const rest = html.slice(afterMarker);
     const nextHeading = rest.search(/<h[1-3][^>]*>/i);
     const sectionHtml = nextHeading === -1 ? rest : rest.slice(0, nextHeading);
     let items = itemsFromListHtml(sectionHtml);
+    if (items.length === 0) items = itemsFromSectionParagraphs(sectionHtml);
     if (items.length === 0) items = itemsFromParagraphHtml(sectionHtml);
     if (items.length > 0) {
       return {
         items: items.slice(0, 8),
-        source: 'heading',
+        source: headingMatch ? 'heading' : 'paragraph',
+        label: /TL;?DR/i.test(marker[0]) ? 'TL;DR' : 'Key Takeaways',
         html: stripKeyTakeawaysSection(html),
       };
     }
@@ -152,6 +199,10 @@ export function analyzeKeyTakeaways(html) {
   }
 
   return { items: [], source: 'none', html };
+}
+
+export function isElevatedTakeawaysSource(source) {
+  return source === 'comment' || source === 'heading' || source === 'paragraph';
 }
 
 /** Back-compat helper used by callers that only need the bullet list. */

@@ -43,6 +43,7 @@
     "test:mobile-tools": "node scripts/verifyMobileToolsUx.js",
     "test:mobile-perf": "node scripts/verifyMobilePerf.js",
     "test:takeaways-linking": "node scripts/verifyTakeawaysAndLinking.js",
+    "test:publish-speed": "node scripts/verifyPublishSpeed.js",
     "test:sitemap": "npm run sitemap:generate && npm run sitemap:validate && echo '✅ Sitemap passed'",
     "test:build": "npm run build",
     "pseo:sitemaps": "node scripts/generateSitemap.js",

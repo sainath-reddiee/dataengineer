@@ -5,7 +5,8 @@ import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import { analyzeKeyTakeaways } from '../src/utils/articleTakeaways.js';
+import { analyzeKeyTakeaways, isElevatedTakeawaysSource } from '../src/utils/articleTakeaways.js';
+import { injectArticleContextualLinks } from '../src/data/articleContextualLinks.js';
 import { cleanHomepagePaintHtml } from './deferRenderBlockingCss.js';
 
 // Monkey-patch fs.writeFileSync to automatically clean up UTF-8 mojibake in generated HTML files
@@ -2847,21 +2848,22 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   // Elevate TL;DR / Key Takeaways into a single .key-takeaways box (speakable)
   // and strip that section from the body so crawlers do not see it twice.
   const takeawaysAnalysis = analyzeKeyTakeaways(processedContent);
-  const elevateTakeaways =
-    takeawaysAnalysis.source === 'comment' || takeawaysAnalysis.source === 'heading';
+  const elevateTakeaways = isElevatedTakeawaysSource(takeawaysAnalysis.source);
   processedContent = elevateTakeaways ? takeawaysAnalysis.html : processedContent;
+  const takeawaysTitle = takeawaysAnalysis.label || 'TL;DR';
   const keyTakeawaysHtml = elevateTakeaways && takeawaysAnalysis.items.length > 0
-    ? `<div class="key-takeaways" style="margin:1.5rem 0;padding:1.25rem 1.4rem;border-radius:12px;border:1px solid rgba(96,165,250,0.35);background:rgba(30,58,138,0.25);">
-        <h2 style="margin:0 0 0.75rem;font-size:1.15rem;color:#93c5fd;">Key Takeaways</h2>
-        <ul style="margin:0;padding-left:1.2rem;color:#e2e8f0;">
-          ${takeawaysAnalysis.items.map((item) => `<li style="margin:0.35rem 0;">${escapeHtml(item)}</li>`).join('\n          ')}
+    ? `<aside class="key-takeaways article-tldr" aria-label="${escapeHtml(takeawaysTitle)}">
+        <p class="article-tldr-kicker">${escapeHtml(takeawaysTitle)}</p>
+        <ul>
+          ${takeawaysAnalysis.items.map((item) => `<li>${escapeHtml(item)}</li>`).join('\n          ')}
         </ul>
-      </div>`
+      </aside>`
     : '';
 
   // 🔗 Inject internal links so crawlers see cross-article links in static HTML
   processedContent = injectInternalLinksSSG(processedContent, slug);
   processedContent = normalizeArticleLinks(processedContent, globalPostSlugs);
+  processedContent = injectArticleContextualLinks(processedContent, slug);
 
   // ðŸ“‘ Extract headings for Table of Contents and inject anchor IDs
   const tocHeadings = [];
@@ -2964,6 +2966,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     author: resolvedAuthorName,
     authorData: resolvedAuthorData,
     keyTakeaways: elevateTakeaways ? takeawaysAnalysis.items : [],
+    takeawaysTitle: elevateTakeaways ? takeawaysTitle : 'TL;DR',
   });
 
   // ðŸŽ¬ Extract YouTube/Vimeo embeds for VideoObject schema
@@ -6700,7 +6703,8 @@ function outputPageExists(distDir, pagePath) {
 }
 
 async function buildIncremental(options = {}) {
-  let { force = false, postsOnly = false } = options;
+  let { force = false, postsOnly = false, onlySlug = '' } = options;
+  onlySlug = String(onlySlug || '').replace(/^\/+|\/+$/g, '');
   if (postsOnly) {
     console.warn('⚠️  --posts-only is deprecated because it can leave crawler discovery pages stale.');
     console.warn('   Running a full build instead.');
@@ -6802,6 +6806,15 @@ async function buildIncremental(options = {}) {
     for (const post of posts) {
       const pagePath = `/articles/${post.slug}`;
       currentPages.add(pagePath);
+
+      if (onlySlug && post.slug !== onlySlug) {
+        const cachedSkipped = cache.pages[pagePath];
+        if (cachedSkipped) {
+          newCache.pages[pagePath] = cachedSkipped;
+          stats.unchanged++;
+        }
+        continue;
+      }
 
       const rawTitle = stripHTML(post.title.rendered);
       const rawDescription = truncateAtSentence(stripHTML(post.excerpt.rendered), 160) ||
@@ -7733,9 +7746,11 @@ function buildPracticeQuestionPreview(quizSlug) {
 // ============================================================================
 
 const args = process.argv.slice(2);
+const slugArg = args.find((arg) => arg.startsWith('--slug='));
 const options = {
   force: args.includes('--force'),
-  postsOnly: args.includes('--posts-only')
+  postsOnly: args.includes('--posts-only'),
+  onlySlug: slugArg ? slugArg.slice('--slug='.length) : '',
 };
 
 if (args.includes('--help')) {
@@ -7748,6 +7763,7 @@ Usage:
 Options:
   --force        Force rebuild all pages (ignore cache)
   --posts-only   Deprecated; accepted as a safe full build
+  --slug=NAME    Rebuild one article plus listing/homepage (WordPress publish)
   --help         Show this help message
 
 Examples:

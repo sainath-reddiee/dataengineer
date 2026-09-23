@@ -124,8 +124,13 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
           fi
 
-          # Detect code changes
-          if git diff --name-only HEAD^ HEAD | grep -qE '^(src/|scripts/|public/|index.html|vite.config.js|tailwind.config.js|package)'; then
+          # WordPress publish is content-only. Do not treat the last two
+          # commits on main as "code changed" — that forced a full Vite
+          # rebuild + FTP of every article (~13 minutes per update).
+          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            echo "code_changed=false" >> $GITHUB_OUTPUT
+            echo "📄 WordPress publish — skip Vite, incremental pages only"
+          elif git diff --name-only HEAD^ HEAD | grep -qE '^(src/|scripts/|public/|index.html|vite.config.js|tailwind.config.js|package)'; then
             echo "code_changed=true" >> $GITHUB_OUTPUT
             echo "🔨 Code changes detected - full rebuild needed"
           else
@@ -198,6 +203,14 @@ jobs:
               ;;
           esac
 
+          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            WP_SLUG_FLAG="${{ github.event.client_payload.slug }}"
+            if [ -n "$WP_SLUG_FLAG" ]; then
+              echo "build_flags=--slug=$WP_SLUG_FLAG" >> $GITHUB_OUTPUT
+              echo "⚡ Incremental publish for /$WP_SLUG_FLAG"
+            fi
+          fi
+
       - name: 💾 Restore Build Cache
         id: cache-restore
         if: steps.changes.outputs.skip_cache != 'true'
@@ -205,6 +218,7 @@ jobs:
         with:
           path: |
             ~/.npm
+            dist
             public/sitemap.xml
             public/indexnow-key.txt
             .build-cache.json
@@ -234,12 +248,44 @@ jobs:
         run: |
           npm run sitemap:generate
           npm run sitemap:validate
-          npm run llm-sitemap || echo "⚠️ LLM sitemap generation skipped"
-          npm run llms-full || echo "⚠️ llms-full generation skipped"
           npm run rss-feed || echo "⚠️ RSS generation skipped"
+          if [ "${{ github.event_name }}" != "repository_dispatch" ]; then
+            npm run llm-sitemap || echo "⚠️ LLM sitemap generation skipped"
+            npm run llms-full || echo "⚠️ llms-full generation skipped"
+          else
+            echo "⚡ Skipping llms-full / llm-sitemap on WordPress publish"
+          fi
 
       - name: 🏗️ Build Application (Vite)
+        if: github.event_name != 'repository_dispatch' || steps.changes.outputs.code_changed == 'true'
         run: npm run build:vite
+        env:
+          NODE_ENV: production
+          VITE_ADS_ENABLED: ${{ secrets.VITE_ADS_ENABLED }}
+          VITE_ADSENSE_PUBLISHER_ID: ${{ secrets.VITE_ADSENSE_PUBLISHER_ID }}
+          VITE_ADSENSE_SLOT_ID: ${{ secrets.VITE_ADSENSE_SLOT_ID }}
+          VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
+          VITE_ADMIN_USER_HASH: ${{ secrets.VITE_ADMIN_USER_HASH }}
+          VITE_ADMIN_PASS_HASH: ${{ secrets.VITE_ADMIN_PASS_HASH }}
+          VITE_GISCUS_REPO: ${{ secrets.VITE_GISCUS_REPO }}
+          VITE_GISCUS_REPO_ID: ${{ secrets.VITE_GISCUS_REPO_ID }}
+          VITE_GISCUS_CATEGORY: ${{ secrets.VITE_GISCUS_CATEGORY }}
+          VITE_GISCUS_CATEGORY_ID: ${{ secrets.VITE_GISCUS_CATEGORY_ID }}
+          VITE_BREVO_API_KEY: ${{ secrets.VITE_BREVO_API_KEY }}
+          VITE_BREVO_LIST_ID: ${{ secrets.VITE_BREVO_LIST_ID }}
+          VITE_WEB3FORMS_KEY: ${{ secrets.VITE_WEB3FORMS_KEY }}
+          VITE_GSC_CLIENT_ID: ${{ secrets.VITE_GSC_CLIENT_ID }}
+          VITE_WP_APP_PASSWORD: ${{ secrets.VITE_WP_APP_PASSWORD }}
+
+      - name: 🛟 Ensure dist exists after a content-only publish
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          if [ -f dist/index.html ]; then
+            echo "✅ Restored dist/index.html — skipping Vite"
+            exit 0
+          fi
+          echo "⚠️ dist/ missing from cache — running Vite once"
+          npm run build:vite
         env:
           NODE_ENV: production
           VITE_ADS_ENABLED: ${{ secrets.VITE_ADS_ENABLED }}
@@ -1092,7 +1138,7 @@ jobs:
       - name: 💾 Save Cache
         if: |
           steps.changes.outputs.skip_cache != 'true' &&
-          (steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true')
+          (steps.cache-restore.outputs.cache-hit != 'true' || steps.changes.outputs.code_changed == 'true' || github.event_name == 'repository_dispatch')
         uses: actions/cache/save@v5
         with:
           path: |

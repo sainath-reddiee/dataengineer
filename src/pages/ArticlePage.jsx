@@ -47,7 +47,8 @@ import {
 } from '@/data/adsenseQualityGate';
 import { MIN_INDEXABLE_WORD_COUNT } from '@/data/thinTags';
 import { extractArticleFaqs } from '@/utils/articleFaq';
-import { analyzeKeyTakeaways } from '@/utils/articleTakeaways';
+import { analyzeKeyTakeaways, isElevatedTakeawaysSource } from '@/utils/articleTakeaways';
+import { injectArticleContextualLinks } from '@/data/articleContextualLinks';
 import ArticleFaq from '@/components/ArticleFaq';
 import CiteThisArticle from '@/components/CiteThisArticle';
 import SaveArticleButton from '@/components/SaveArticleButton';
@@ -575,25 +576,27 @@ const ArticlePage = () => {
   // to satisfy React's Rules of Hooks (consistent call order every render)
   // Strip an explicit TL;DR / Key Takeaways block from the body when we elevate
   // those bullets into the KeyTakeaways component — otherwise readers see both.
-  const { processedHtml, keyTakeaways } = useMemo(() => {
-    if (!post?.content) return { processedHtml: '', keyTakeaways: [] };
+  const { processedHtml, keyTakeaways, takeawaysTitle } = useMemo(() => {
+    if (!post?.content) return { processedHtml: '', keyTakeaways: [], takeawaysTitle: 'TL;DR' };
     // SSG already sanitized/linked this body. Re-running the pipeline on first
     // paint would swap the HTML the reader is already looking at.
     if (post.htmlReady) {
       return {
-        processedHtml: post.content,
+        processedHtml: injectArticleContextualLinks(post.content, slug),
         keyTakeaways: Array.isArray(post.keyTakeaways) ? post.keyTakeaways : [],
+        takeawaysTitle: post.takeawaysTitle || 'TL;DR',
       };
     }
     const analysis = analyzeKeyTakeaways(post.content);
-    const elevate = analysis.source === 'comment' || analysis.source === 'heading';
+    const elevate = isElevatedTakeawaysSource(analysis.source);
     // Only elevate explicit TL;DR / Key Takeaways sections. Synthetic H2
     // sentences stay in the body — showing them again as a box felt duplicated.
     const bodySource = elevate ? analysis.html : post.content;
     const sanitized = processWordPressContent(bodySource);
     return {
-      processedHtml: injectInternalLinks(sanitized, slug),
+      processedHtml: injectArticleContextualLinks(injectInternalLinks(sanitized, slug), slug),
       keyTakeaways: elevate ? analysis.items : [],
+      takeawaysTitle: analysis.label || 'TL;DR',
     };
   }, [post?.content, post?.htmlReady, post?.keyTakeaways, slug]);
 
@@ -752,7 +755,7 @@ const ArticlePage = () => {
           </div>
 
           {/* Key Takeaways — AEO/AI visibility, Speakable schema target */}
-          <KeyTakeaways items={keyTakeaways} />
+          <KeyTakeaways items={keyTakeaways} title={takeawaysTitle} />
           <ArticleFaq items={articleFaqs} />
 
           {/* ── Listen to this Article — Native Audio Reader ── */}
