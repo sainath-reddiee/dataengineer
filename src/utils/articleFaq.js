@@ -15,9 +15,15 @@ function stripTags(html) {
     .replace(/<\/(p|li|h[1-6])>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&nbsp;/g, ' ')
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
     .replace(/&amp;/g, '&')
     .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&ldquo;|&rdquo;/g, '"')
+    .replace(/&lsquo;|&rsquo;/g, "'")
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/\s+/g, ' ')
@@ -44,7 +50,17 @@ function isQuestionHeading(text) {
   if (q.length < 12 || q.length > 180) return false;
   if (q.endsWith('?')) return true;
   if (/^(how)\s+(do|does|can|could|should|to)\b/i.test(q)) return true;
+  // "Why burying LLM calls…" is a section title, not a question.
+  if (/^why\b/i.test(q) && !/^why\s+(is|are|do|does|did|can|should|would|will|'s)\b/i.test(q)) {
+    return false;
+  }
   return /^(what|why|when|where|which|who)\b/i.test(q);
+}
+
+function isFaqQuestionText(text) {
+  const q = String(text || '').trim();
+  if (!q || /^related reading\b/i.test(q)) return false;
+  return q.endsWith('?') && q.length >= 12 && q.length <= 180;
 }
 
 function addPair(pairs, seen, question, answer, limit) {
@@ -57,6 +73,19 @@ function addPair(pairs, seen, question, answer, limit) {
   seen.add(key);
   pairs.push({ question: q.endsWith('?') ? q : `${q}?`, answer: a });
   return pairs.length >= limit;
+}
+
+function firstParagraphs(html, maxChars = 520) {
+  const parts = [];
+  const re = /<p\b[^>]*>([\s\S]*?)<\/p>/gi;
+  let match;
+  while ((match = re.exec(html)) !== null) {
+    const text = stripTags(match[1]);
+    if (text.length < 20) continue;
+    parts.push(text);
+    if (parts.length >= 2 || parts.join(' ').length >= maxChars) break;
+  }
+  return parts.join(' ');
 }
 
 function extractHeadingFaqs(html, limit, seen) {
@@ -80,7 +109,8 @@ function extractHeadingFaqs(html, limit, seen) {
     }
     const bodyStart = matches[i].end;
     const bodyEnd = i + 1 < matches.length ? matches[i + 1].index : html.length;
-    if (addPair(pairs, seen, question, html.slice(bodyStart, bodyEnd), limit)) break;
+    const answer = firstParagraphs(html.slice(bodyStart, bodyEnd));
+    if (addPair(pairs, seen, question, answer, limit)) break;
   }
 
   return pairs;
@@ -104,6 +134,31 @@ function extractInlineQa(html, limit, seen) {
   return pairs;
 }
 
+function extractSectionParagraphFaqs(sectionHtml, limit, seen) {
+  const pairs = [];
+  const paras = [];
+  const pRe = /<p\b[^>]*>([\s\S]*?)<\/p>/gi;
+  let match;
+  while ((match = pRe.exec(sectionHtml)) !== null) {
+    const text = stripTags(match[1]);
+    if (text) paras.push(text);
+  }
+
+  for (let i = 0; i < paras.length; i += 1) {
+    if (!isFaqQuestionText(paras[i])) continue;
+    let answer = '';
+    for (let j = i + 1; j < paras.length; j += 1) {
+      if (isFaqQuestionText(paras[j]) || /^related reading\b/i.test(paras[j])) break;
+      answer += ` ${paras[j]}`;
+    }
+    if (addPair(pairs, seen, paras[i], answer, limit)) break;
+  }
+  return pairs;
+}
+
+const RELATED_READING_RE =
+  /<p\b[^>]*>\s*(?:<(?:strong|b|em)[^>]*>\s*)?Related\s+reading\b/i;
+
 function extractFaqSection(html, limit, seen) {
   const pairs = [];
   const marker = FAQ_SECTION_RE.exec(html);
@@ -115,8 +170,13 @@ function extractFaqSection(html, limit, seen) {
   const headingLevel = Number(marker[1]) || 2;
   const stopRe = new RegExp(`<h[1-${headingLevel}][^>]*>`, 'i');
   const nextSame = rest.search(stopRe);
-  const end = nextSame === -1 ? html.length : after + nextSame;
-  const section = html.slice(after, end);
+  let end = nextSame === -1 ? html.length : after + nextSame;
+  let section = html.slice(after, end);
+  const leftoverIdx = section.search(RELATED_READING_RE);
+  if (leftoverIdx >= 0) {
+    end = after + leftoverIdx;
+    section = html.slice(after, end);
+  }
 
   const headingRe = /<h([3-5])[^>]*>([\s\S]*?)<\/h\1>/gi;
   const headings = [];
@@ -129,14 +189,22 @@ function extractFaqSection(html, limit, seen) {
     });
   }
 
-  if (headings.length >= 2) {
+  if (headings.length >= 1) {
     for (let i = 0; i < headings.length; i += 1) {
       const bodyEnd = i + 1 < headings.length ? headings[i + 1].index : section.length;
-      if (addPair(pairs, seen, headings[i].question, section.slice(headings[i].end, bodyEnd), limit)) {
+      if (addPair(pairs, seen, headings[i].question, firstParagraphs(section.slice(headings[i].end, bodyEnd)), limit)) {
         break;
       }
     }
-  } else {
+  }
+
+  if (pairs.length < 1) {
+    extractSectionParagraphFaqs(section, limit, seen).forEach((item) => {
+      if (pairs.length < limit) pairs.push(item);
+    });
+  }
+
+  if (pairs.length < 1) {
     extractInlineQa(section, limit, seen).forEach((item) => {
       if (pairs.length < limit) pairs.push(item);
     });
@@ -147,7 +215,7 @@ function extractFaqSection(html, limit, seen) {
 
 export function stripArticleFaqSection(html) {
   const analysis = extractFaqSection(html, 8, new Set());
-  if (analysis.start < 0 || analysis.items.length < 2) return html || '';
+  if (analysis.start < 0 || analysis.items.length < 1) return html || '';
   return `${html.slice(0, analysis.start)}${html.slice(analysis.end)}`.replace(/^\s+/, '');
 }
 
@@ -158,7 +226,7 @@ export function analyzeArticleFaqs(html, limit = 6) {
 
   const seen = new Set();
   const section = extractFaqSection(html, limit, seen);
-  if (section.items.length >= 2) {
+  if (section.items.length >= 1) {
     return {
       items: section.items,
       source: 'section',
@@ -179,7 +247,8 @@ export function extractArticleFaqs(html, limit = 6) {
 }
 
 export function renderArticleFaqHtml(items) {
-  if (!Array.isArray(items) || items.length < 2) return '';
+  if (!Array.isArray(items) || items.length < 1) return '';
+  const many = items.length > 1;
 
   const rows = items.map((item, index) => {
     const open = index < 2 ? ' open' : '';
@@ -190,8 +259,10 @@ export function renderArticleFaqHtml(items) {
   }).join('\n');
 
   return `<section class="article-faq" aria-labelledby="article-faq-heading">
-      <h2 id="article-faq-heading">Questions this article answers</h2>
-      <p class="article-faq-kicker">Short answers first. Open a question to read the working note.</p>
+      <h2 id="article-faq-heading">${many ? 'Questions this article answers' : 'Question this article answers'}</h2>
+      <p class="article-faq-kicker">${many
+        ? 'Short answers first. Open a question to read the working note.'
+        : 'The short answer first. Open it to read the working note.'}</p>
 ${rows}
     </section>`;
 }

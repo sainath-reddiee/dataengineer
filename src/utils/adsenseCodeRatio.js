@@ -80,14 +80,15 @@ export function detectCodeLanguage(markup, text) {
     if (mapped) return mapped;
   }
 
-  const sample = String(text || '').slice(0, 500);
-  if (/^\s*[{[]/.test(sample)) return 'JSON';
+  const sample = String(text || '').slice(0, 800);
   if (/\b(from pyspark|import pyspark|spark\.|DataFrame)\b/i.test(sample)) return 'PySpark';
+  if (/\b(def |class |import |from |@dataclass|None\s*=|True\s*=|False\s*=)\b/.test(sample)) return 'Python';
+  if (/^\s*[{[]/.test(sample)) return 'JSON';
   if (/\b(SELECT|WITH|CREATE|INSERT|UPDATE|MERGE|COPY INTO|QUALIFY)\b/i.test(sample)) return 'SQL';
-  if (/^\s*---\s*$/m.test(sample) || (/^\s*[A-Za-z0-9_-]+:\s+\S+/m.test(sample) && !/\bSELECT\b/i.test(sample))) {
+  const yamlKeys = sample.match(/^\s*[A-Za-z0-9_-]+:\s+\S+/gm) || [];
+  if (/^\s*---\s*$/m.test(sample) || (yamlKeys.length >= 2 && !/\b(SELECT|def |class |import )\b/i.test(sample))) {
     return 'YAML';
   }
-  if (/\b(def |class |import |from )\b/.test(sample)) return 'Python';
   return 'code';
 }
 
