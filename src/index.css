@@ -203,14 +203,16 @@ a:not([class]) {
 
 .article-tldr ul {
   margin: 0;
-  padding-left: 1.15rem;
+  padding-left: 1.2rem;
   color: #e2e8f0;
+  list-style: disc;
 }
 
 .article-tldr li {
-  margin: 0.45rem 0;
-  line-height: 1.6;
+  margin: 0.55rem 0;
+  line-height: 1.65;
   color: #e2e8f0;
+  padding-left: 0.15rem;
 }
 
 .article-content .deh-contextual-link {
