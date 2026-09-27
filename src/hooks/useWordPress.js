@@ -255,7 +255,19 @@ export const usePosts = ({
 export const usePost = (slug, enabled = true) => {
   const bootstrapped = useMemo(() => {
     if (!slug || typeof window === 'undefined') return null;
-    return buildBootstrappedPost(slug, getParkedSsgArticle(slug));
+    const fromSsg = buildBootstrappedPost(slug, getParkedSsgArticle(slug));
+    if (fromSsg?.htmlReady) return fromSsg;
+    try {
+      const storageKey = `deh_cached_post_${slug}`;
+      const cached = sessionStorage.getItem(storageKey) || localStorage.getItem(storageKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed?.post) return parsed.post;
+      }
+    } catch {
+      // ignore
+    }
+    return null;
   }, [slug]);
 
   const [post, setPost] = useState(bootstrapped);

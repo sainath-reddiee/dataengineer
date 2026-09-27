@@ -18,7 +18,7 @@ const LEDES = {
   JSON: 'JSON example — use this payload as a starting point.',
   JavaScript: 'JavaScript example — copy the helper, then wire your inputs.',
   TypeScript: 'TypeScript example — copy the helper, then wire your inputs.',
-  shell: 'Shell example — run this in a scratch session first.',
+  shell: 'Shell commands — run these in your terminal or CI/CD pipeline.',
   Snippet: 'Code example — copy the snippet, then match it to your project.',
 };
 
@@ -28,6 +28,7 @@ const KEYWORDS = {
   PySpark: /\b(def|class|import|from|return|if|else|for|in|None|True|False|with|as|spark|DataFrame)\b/g,
   JavaScript: /\b(const|let|var|function|return|if|else|for|while|of|in|await|async|import|from|export|class|new|this)\b/g,
   TypeScript: /\b(const|let|var|function|return|if|else|for|while|of|in|await|async|import|from|export|class|new|this|type|interface)\b/g,
+  shell: /\b(cd|snow|dbt|git|docker|pip|npm|npx|curl|export|source|echo|cat|grep|mkdir|rm|chmod|sudo|aws|gcloud|az|kubectl|terraform|python|python3|pytest)\b/g,
 };
 
 function decodeEntities(value) {
@@ -49,12 +50,19 @@ function escapeHtml(value) {
 }
 
 function preText(block) {
-  return decodeEntities(
-    String(block || '')
-      .replace(/^<pre\b[^>]*>/i, '')
-      .replace(/<\/pre>$/i, '')
-      .replace(/<\/?code\b[^>]*>/gi, '')
-  );
+  let text = String(block || '')
+    .replace(/^<pre\b[^>]*>/i, '')
+    .replace(/<\/pre>$/i, '')
+    .replace(/<\/?code\b[^>]*>/gi, '')
+    .replace(/<\/p>\s*<p[^>]*>/gi, '\n')
+    .replace(/<\/?p\b[^>]*>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, '');
+
+  return decodeEntities(text)
+    .replace(/\r\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 }
 
 function alreadyWrapped(html, offset) {
@@ -67,10 +75,37 @@ function alreadyWrapped(html, offset) {
 }
 
 function highlightLine(escaped, language) {
+  // 1. Full-line comment (starts with # or --)
+  if (/^\s*(?:#|--)/.test(escaped)) {
+    return `<span class="tok-comment">${escaped}</span>`;
+  }
+
+  let line = escaped;
+
+  // 2. Trailing comments
+  const commentMatch = line.match(/^([\s\S]*?)(\s+#\s+[\s\S]*|\s+--\s+[\s\S]*)$/);
+  let trailingComment = '';
+  if (commentMatch) {
+    line = commentMatch[1];
+    trailingComment = `<span class="tok-comment">${commentMatch[2]}</span>`;
+  }
+
+  // 3. Quoted strings ("..." or '...')
+  line = line.replace(/(["'])(?:(?=(\\?))\2[\s\S])*?\1/g, '<span class="tok-str">$&</span>');
+
+  // 4. CLI flags (--target, --save-output, -v)
+  if (language === 'shell' || language === 'Snippet') {
+    line = line.replace(/\b(--[a-zA-Z0-9_-]+|-[a-zA-Z0-9])\b/g, '<span class="tok-flag">$&</span>');
+  }
+
+  // 5. Language keywords
   const pattern = KEYWORDS[language];
-  if (!pattern) return escaped;
-  pattern.lastIndex = 0;
-  return escaped.replace(pattern, '<span class="tok-kw">$&</span>');
+  if (pattern) {
+    pattern.lastIndex = 0;
+    line = line.replace(pattern, (match) => `<span class="tok-kw">${match}</span>`);
+  }
+
+  return line + trailingComment;
 }
 
 export function renderHighlightedCode(text, language) {
@@ -78,7 +113,7 @@ export function renderHighlightedCode(text, language) {
   return lines.map((line, index) => {
     const highlighted = highlightLine(escapeHtml(line), language);
     return `<span class="article-code-line"><span class="article-code-gutter" aria-hidden="true">${index + 1}</span><span class="article-code-src">${highlighted || ' '}</span></span>`;
-  }).join('\n');
+  }).join('');
 }
 
 export function enhanceArticleCodeBlocks(html) {

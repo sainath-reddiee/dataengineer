@@ -1,4 +1,4 @@
-﻿// scripts/generateStaticPagesIncremental.js
+// scripts/generateStaticPagesIncremental.js
 // FIXED VERSION - Generates FULL CONTENT for SEO/AdSense with IMAGES
 import fs from 'fs';
 import path from 'path';
@@ -3988,9 +3988,10 @@ function generateHomepageEnhancement(allArticleSummaries, categories) {
             Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and modern data engineering practices.
           </p>`;
 
-  // Show articles grouped by category
+  // Show articles grouped by top categories (limited to prevent excessive DOM complexity > 1,500 nodes)
   const sortedCategories = Object.entries(articlesByCategory)
-    .sort((a, b) => b[1].length - a[1].length);
+    .sort((a, b) => b[1].length - a[1].length)
+    .slice(0, 6);
 
   for (const [catName, articles] of sortedCategories) {
     articlesHTML += `
@@ -3998,7 +3999,7 @@ function generateHomepageEnhancement(allArticleSummaries, categories) {
             <h3 style="color: #60a5fa; font-size: 1.4rem; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">${catName} (${articles.length} articles)</h3>
             <ul style="list-style: none; padding: 0;">`;
 
-    for (const article of articles.slice(0, 8)) {
+    for (const article of articles.slice(0, 4)) {
       articlesHTML += `
               <li style="margin-bottom: 0.8rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <a href="https://dataengineerhub.blog/articles/${article.slug}" style="color: #e2e8f0; text-decoration: none; font-size: 1.05rem; font-weight: 500;">${escapeHtml(article.title)}</a>

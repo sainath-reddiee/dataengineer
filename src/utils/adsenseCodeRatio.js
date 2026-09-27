@@ -70,6 +70,10 @@ function preInnerText(block) {
       .replace(/^<pre\b[^>]*>/i, '')
       .replace(/<\/pre>$/i, '')
       .replace(/<\/?code\b[^>]*>/gi, '')
+      .replace(/<\/p>\s*<p[^>]*>/gi, '\n')
+      .replace(/<\/?p\b[^>]*>/gi, '\n')
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<[^>]+>/g, '')
   );
 }
 
@@ -82,7 +86,10 @@ export function detectCodeLanguage(markup, text) {
 
   const sample = String(text || '').slice(0, 800);
   if (/\b(from pyspark|import pyspark|spark\.|DataFrame)\b/i.test(sample)) return 'PySpark';
-  if (/\b(def |class |import |from |@dataclass|None\s*=|True\s*=|False\s*=)\b/.test(sample)) return 'Python';
+  if (/(?:^|\n)\s*(?:\$|#!\/bin\/(?:bash|sh)|cd\s|snow\s|dbt\s|pip\s|npm\s|npx\s|docker\s|git\s|curl\s|export\s|kubectl\s)/m.test(sample)) {
+    return 'shell';
+  }
+  if (/\b(def\s+\w+\s*\(|class\s+\w+|import\s+\w+|from\s+[\w.]+\s+import|@dataclass|None\s*=|True\s*=|False\s*=)\b/.test(sample)) return 'Python';
   if (/^\s*[{[]/.test(sample)) return 'JSON';
   if (/\b(SELECT|WITH|CREATE|INSERT|UPDATE|MERGE|COPY INTO|QUALIFY)\b/i.test(sample)) return 'SQL';
   const yamlKeys = sample.match(/^\s*[A-Za-z0-9_-]+:\s+\S+/gm) || [];

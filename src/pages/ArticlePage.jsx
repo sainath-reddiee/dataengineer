@@ -125,7 +125,6 @@ const processWordPressContent = (content) => {
     .replace(/<table/g, '<table class="wp-table"')
     .replace(/<iframe/g, '<div class="iframe-wrapper"><iframe')
     .replace(/<\/iframe>/g, '</iframe></div>')
-    .replace(/\n\n/g, '</p><p>')
     // Optimize inline images: add lazy loading, async decoding, and reserve
     // intrinsic dimensions to reduce CLS. If width/height are already set, we
     // leave them alone.

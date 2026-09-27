@@ -192,7 +192,9 @@ export default defineConfig({
           !dep.includes('ai-vendor') &&
           !dep.includes('markdown') &&
           !dep.includes('framer-motion') &&
-          !dep.includes('/ads-')
+          !dep.includes('/ads-') &&
+          !dep.includes('article-extras') &&
+          !dep.includes('article-data')
         );
       },
     },
@@ -259,6 +261,13 @@ export default defineConfig({
             if (id.includes('Ad')) {
               return 'ads';
             }
+            if (id.includes('AudioReader') || id.includes('GiscusComments') || id.includes('SupportPopup') || id.includes('CiteThisArticle') || id.includes('ArticleFaq')) {
+              return 'article-extras';
+            }
+          }
+
+          if (id.includes('src/data/articleContextualLinks') || id.includes('src/data/courseRecommendations')) {
+            return 'article-data';
           }
         },
 

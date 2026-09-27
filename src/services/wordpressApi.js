@@ -174,6 +174,24 @@ class WordPressAPI {
       }
 
       const cleanSlug = slug.trim();
+      const storageKey = `deh_cached_post_${cleanSlug}`;
+
+      // Check persistent browser storage (instant 0ms response)
+      if (typeof window !== 'undefined') {
+        try {
+          const stored = sessionStorage.getItem(storageKey) || localStorage.getItem(storageKey);
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (parsed?.post && Date.now() - parsed.timestamp < 30 * 60 * 1000) {
+              console.log('⚡ Loaded post instantly from browser cache:', cleanSlug);
+              return parsed.post;
+            }
+          }
+        } catch {
+          // ignore storage parse errors
+        }
+      }
+
       console.log('🔍 Fetching post by slug:', cleanSlug);
 
       const result = await this.makeRequest(
@@ -193,6 +211,17 @@ class WordPressAPI {
 
       const post = this.transformPost(posts[0]);
       console.log('✅ Post loaded successfully with', post.readTime);
+
+      // Save to browser cache for instant repeat loads
+      if (typeof window !== 'undefined') {
+        try {
+          const payload = JSON.stringify({ post, timestamp: Date.now() });
+          sessionStorage.setItem(storageKey, payload);
+          localStorage.setItem(storageKey, payload);
+        } catch {
+          // ignore quota errors
+        }
+      }
 
       return post;
     } catch (error) {

@@ -1,4 +1,4 @@
-﻿// src/pages/ToolsHubPage.jsx
+// src/pages/ToolsHubPage.jsx
 /**
  * Tools Hub Page
  * Lists all free data-engineering calculators and tools
@@ -198,44 +198,78 @@ export default function ToolsHubPage() {
         </div>
 
         {/* Tool cards grid */}
-        <div className="max-w-6xl mx-auto px-4 pb-8">
-          <div className="sticky top-[4.25rem] z-20 -mx-4 mb-5 border-b border-white/5 bg-slate-950/80 px-4 py-3 backdrop-blur-xl">
-            <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="max-w-6xl mx-auto px-4 pb-12">
+          {/* Enhanced Filter Section (Non-sticky: scrolls naturally with page) */}
+          <div className="mb-8 rounded-2xl border border-white/10 bg-slate-900/60 p-4 sm:p-5 shadow-xl shadow-slate-950/30 backdrop-blur-md">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Filter by Category
+              </span>
+              {(category !== 'all' || stage) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCategory('all');
+                    setStage('');
+                  }}
+                  className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  Clear all filters ×
+                </button>
+              )}
+            </div>
+
+            <div className="flex flex-wrap gap-2">
               {TOOL_CATEGORIES.map((item) => (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => setCategory(item.id)}
-                  className={`compact-control shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                  className={`compact-control rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
                     category === item.id
-                      ? 'border-blue-400/50 bg-blue-500/20 text-blue-100'
-                      : 'border-white/10 bg-white/5 text-slate-300'
+                      ? 'border border-blue-400/60 bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                      : 'border border-white/10 bg-slate-800/80 text-slate-300 hover:border-white/20 hover:bg-slate-700/80 hover:text-white'
                   }`}
                 >
                   {item.label}
                 </button>
               ))}
             </div>
-            <div className="mt-2 flex gap-2 overflow-x-auto">
+
+            <div className="mt-4 pt-3.5 border-t border-white/10 flex flex-wrap items-center gap-2">
+              <span className="text-xs font-medium text-slate-400 mr-1 shrink-0">
+                Data Stack Stage:
+              </span>
               {TOOL_STAGES.map((item) => (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => setStage(item.id)}
-                  className={`compact-control shrink-0 rounded-full px-3 py-1 text-[11px] ${
+                  className={`compact-control rounded-full px-3 py-1 text-xs font-medium transition-all ${
                     stage === item.id
-                      ? 'bg-indigo-500/25 text-indigo-100 ring-1 ring-indigo-400/40'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-purple-600/30 text-purple-200 border border-purple-400/50 shadow-sm shadow-purple-900/30'
+                      : 'border border-white/5 bg-slate-800/40 text-slate-400 hover:border-white/15 hover:text-slate-200'
                   }`}
                 >
                   {item.label}
                 </button>
               ))}
             </div>
+
             {activeStage && (
-              <p className="mt-2 text-xs text-slate-400">
-                Showing {activeStage.label} tools — {activeStage.hint}
-              </p>
+              <div className="mt-3 flex items-center justify-between rounded-lg border border-purple-500/20 bg-purple-500/10 px-3 py-2 text-xs text-purple-200">
+                <span>
+                  Filtering by <strong>{activeStage.label}</strong> stage: {activeStage.hint}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setStage('')}
+                  className="ml-2 font-bold text-purple-300 hover:text-white"
+                  title="Remove stage filter"
+                >
+                  ×
+                </button>
+              </div>
             )}
           </div>
 
@@ -272,7 +306,7 @@ export default function ToolsHubPage() {
               );
 
               const cardClass =
-                'group block bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 rounded-2xl p-4 sm:p-6 h-full transition-all duration-200';
+                'card-3d group block bg-slate-800/60 hover:bg-slate-800/90 border border-slate-700/80 hover:border-blue-400/50 rounded-2xl p-5 sm:p-6 h-full shadow-lg shadow-slate-950/20 hover:shadow-2xl hover:shadow-blue-950/30 transition-all duration-200';
 
               return (
                 <motion.div

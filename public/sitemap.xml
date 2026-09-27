@@ -1,103 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/about</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/contact</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/privacy-policy</loc>
     <lastmod>2025-12-01</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/terms-of-service</loc>
     <lastmod>2025-12-01</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/disclaimer</loc>
     <lastmod>2025-12-01</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/editorial-standards</loc>
     <lastmod>2026-08-31</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/cheatsheets</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/certification</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/tools</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/tools/snowflake-cost-calculator</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/tools/databricks-cost-calculator</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/tools/bigquery-cost-calculator</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/tools/cloud-data-warehouse-cost-comparison</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/tools/sql-playground</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/ai-data-pipelines-cost-control</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>weekly</changefreq>
@@ -107,7 +107,7 @@
       <image:title>Building Data Pipelines That Feed AI Features Without Breaking the Bill</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-token-usage-monitoring</loc>
     <lastmod>2026-09-16</lastmod>
     <changefreq>weekly</changefreq>
@@ -117,7 +117,7 @@
       <image:title>Snowflake Cortex AI Token Usage Monitoring: The Complete Guide</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-mcp-server-guide</loc>
     <lastmod>2026-09-15</lastmod>
     <changefreq>weekly</changefreq>
@@ -127,7 +127,7 @@
       <image:title>Using MCP Servers with Snowflake: A Practitioner’s Guide</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/from-etl-pipelines-to-reusable-data-products</loc>
     <lastmod>2026-08-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -137,7 +137,7 @@
       <image:title>From ETL Pipelines to Data Products: Designing Reusable Data Infrastructure for Enterprise AI</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/etl-vs-elt-vs-reverse-etl-framework</loc>
     <lastmod>2026-08-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -147,7 +147,7 @@
       <image:title>ETL vs. ELT vs. Reverse ETL: A Practitioner’s Framework for Choosing the Right Pattern for a Given Workload</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/justify-data-platform-investment</loc>
     <lastmod>2026-08-25</lastmod>
     <changefreq>monthly</changefreq>
@@ -157,7 +157,7 @@
       <image:title>Data Engineering ROI: How to Justify Your Data Platform Investment to the Board</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-ai-hidden-token-costs</loc>
     <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
@@ -167,7 +167,7 @@
       <image:title>Identifying Hidden Token Costs in Snowflake Cortex AI</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-time-travel-fail-safe</loc>
     <lastmod>2026-08-05</lastmod>
     <changefreq>monthly</changefreq>
@@ -177,7 +177,7 @@
       <image:title>Snowflake Time Travel vs. Fail-safe: What Gets Recovered and When</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/sql-patterns-that-show-up-in-interviews</loc>
     <lastmod>2026-08-03</lastmod>
     <changefreq>monthly</changefreq>
@@ -187,7 +187,7 @@
       <image:title>SQL Patterns That Actually Show Up in Interviews (All 10, With Code)</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/optimizing-dbt-models-modern-warehouses</loc>
     <lastmod>2026-08-03</lastmod>
     <changefreq>monthly</changefreq>
@@ -197,7 +197,7 @@
       <image:title>Optimizing dbt Models for Modern Warehouses: An Author &amp; Reviewer’s Guide</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/what-actually-works-building-ai-agents</loc>
     <lastmod>2026-08-03</lastmod>
     <changefreq>monthly</changefreq>
@@ -207,7 +207,7 @@
       <image:title>Building AI Agents: What Actually Works in Production</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/20-ai-concepts-for-data-engineers</loc>
     <lastmod>2026-08-03</lastmod>
     <changefreq>monthly</changefreq>
@@ -217,7 +217,7 @@
       <image:title>20 AI Concepts Every Data Engineer Actually Needs</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/why-larger-llms-give-wrong-answers-in-production</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>monthly</changefreq>
@@ -227,7 +227,7 @@
       <image:title>Why Larger LLMs Give Incorrect Answers in Production</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/medallion-architecture-reconsidered</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>monthly</changefreq>
@@ -237,7 +237,7 @@
       <image:title>The Medallion Architecture, Reconsidered: What It Solved and Where It Cracks</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/7-steps-autonomous-agent</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>monthly</changefreq>
@@ -247,7 +247,7 @@
       <image:title>7 Steps to Building and Deploying Your First Autonomous Agent</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/future-of-data-engineering-ai-driven-world</loc>
     <lastmod>2026-08-02</lastmod>
     <changefreq>monthly</changefreq>
@@ -257,7 +257,7 @@
       <image:title>The Future of Data Engineering in an AI-Driven World</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/how-snowflake-stores-data-internally</loc>
     <lastmod>2026-07-27</lastmod>
     <changefreq>monthly</changefreq>
@@ -267,7 +267,7 @@
       <image:title>How Snowflake Stores Data Internally: Micro-Partitions, FDN &amp; Pruning</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/why-senior-engineers-write-sql-differently</loc>
     <lastmod>2026-07-27</lastmod>
     <changefreq>monthly</changefreq>
@@ -277,7 +277,7 @@
       <image:title>Why Senior Data Engineers Write SQL Differently (With Examples)</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/agentic-ai-security-data-pipelines</loc>
     <lastmod>2026-07-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -287,7 +287,7 @@
       <image:title>Your Data Pipeline Agent Is a Confused Deputy Waiting to Happen</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/agent-real-memory-ollama</loc>
     <lastmod>2026-07-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -297,7 +297,7 @@
       <image:title>What Happens When You Give Your Local Agent a Real Memory</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/how-ai-is-reshaping-data-engineering</loc>
     <lastmod>2026-08-07</lastmod>
     <changefreq>monthly</changefreq>
@@ -307,7 +307,7 @@
       <image:title>How AI Is Reshaping Data Engineering: A Practical Guide (2026)</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/sql-portfolio-projects-that-get-hired</loc>
     <lastmod>2026-07-25</lastmod>
     <changefreq>monthly</changefreq>
@@ -317,7 +317,7 @@
       <image:title>5 Real-World SQL Portfolio Projects That Actually Get You Hired</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/food-data-quality-pipeline-guest-post</loc>
     <lastmod>2026-07-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -327,7 +327,7 @@
       <image:title>What 4.2 Million Food Records Taught Me About Reliable Data Quality Pipelines</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/best-mcp-servers-agentic-development</loc>
     <lastmod>2026-07-25</lastmod>
     <changefreq>monthly</changefreq>
@@ -337,7 +337,7 @@
       <image:title>Top MCP Servers for High-Performance Agentic Development 2026</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/introduction-to-loop-engineering</loc>
     <lastmod>2026-07-23</lastmod>
     <changefreq>monthly</changefreq>
@@ -347,7 +347,7 @@
       <image:title>Introduction to Loop Engineering: Designing AI Agent Loops (2026)</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/ollama-local-llm-data-pipeline</loc>
     <lastmod>2026-07-23</lastmod>
     <changefreq>monthly</changefreq>
@@ -357,7 +357,7 @@
       <image:title>Running Ollama Inside a Data Pipeline: What Actually Breaks</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/build-mcp-server-python-fastmcp</loc>
     <lastmod>2026-07-23</lastmod>
     <changefreq>monthly</changefreq>
@@ -367,7 +367,7 @@
       <image:title>Build a Simple MCP Server in Python with FastMCP (2026)</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/model-context-protocol-explained-3-levels</loc>
     <lastmod>2026-07-23</lastmod>
     <changefreq>monthly</changefreq>
@@ -377,7 +377,7 @@
       <image:title>Model Context Protocol Explained in 3 Levels of Difficulty</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/ai-agent-tool-design-patterns</loc>
     <lastmod>2026-07-23</lastmod>
     <changefreq>monthly</changefreq>
@@ -387,7 +387,7 @@
       <image:title>AI Agent Tool Design: What Works and What Doesn’t</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/tools-vs-subagents-ai-agents</loc>
     <lastmod>2026-07-23</lastmod>
     <changefreq>monthly</changefreq>
@@ -397,7 +397,7 @@
       <image:title>Tools vs Subagents: Building Effective AI Agents Without Over-Engineering</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/ai-coding-agents-pipeline-metadata-security</loc>
     <lastmod>2026-07-23</lastmod>
     <changefreq>monthly</changefreq>
@@ -407,7 +407,7 @@
       <image:title>How to Give AI Coding Agents Access to Your Pipeline Metadata Without Opening Security Holes</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/databricks-unity-catalog-iceberg-2026</loc>
     <lastmod>2026-07-23</lastmod>
     <changefreq>monthly</changefreq>
@@ -417,7 +417,7 @@
       <image:title>Databricks Unity Catalog + Apache Iceberg in 2026</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/salesforce-data-cloud-zero-copy-snowflake</loc>
     <lastmod>2026-07-18</lastmod>
     <changefreq>monthly</changefreq>
@@ -427,7 +427,7 @@
       <image:title>How Salesforce Data Cloud Zero Copy Actually Works With Snowflake</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/airflow-etl-audit-logger-snowflake</loc>
     <lastmod>2026-07-17</lastmod>
     <changefreq>monthly</changefreq>
@@ -437,7 +437,7 @@
       <image:title>Building a Bulletproof ETL Audit Logger: Capturing Airflow Execution Context in Snowflake</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/native-tables-to-dynamic-iceberg-v3-snowflake</loc>
     <lastmod>2026-07-16</lastmod>
     <changefreq>monthly</changefreq>
@@ -447,7 +447,7 @@
       <image:title>The 2026 Migration Trap: Moving from Native Tables to Dynamic Apache Iceberg v3 in Snowflake</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/governing-ai-agents-snowflake-coco-mcp-security</loc>
     <lastmod>2026-07-16</lastmod>
     <changefreq>monthly</changefreq>
@@ -457,7 +457,7 @@
       <image:title>Governing the AI Agent: Securing Snowflake CoCo and MCP Workflows in Production</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/dbt-unit-testing-snowflake-credit-cost</loc>
     <lastmod>2026-07-16</lastmod>
     <changefreq>monthly</changefreq>
@@ -467,7 +467,7 @@
       <image:title>The Dark Side of dbt Unit Testing in Snowflake: Managing Credit Burn on Large Test Suites</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/dynamic-airflow-dags-snowflake-metadata</loc>
     <lastmod>2026-08-07</lastmod>
     <changefreq>monthly</changefreq>
@@ -477,7 +477,7 @@
       <image:title>Dynamic Airflow DAGs via Snowflake Metadata: Eliminating Hardcoded Pipeline Tasks</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-zero-copy-clone-storage-cicd</loc>
     <lastmod>2026-07-16</lastmod>
     <changefreq>monthly</changefreq>
@@ -487,7 +487,7 @@
       <image:title>Debugging Zero-Copy Clone Storage Costs in CI/CD</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-coco-mcp-guide</loc>
     <lastmod>2026-07-10</lastmod>
     <changefreq>monthly</changefreq>
@@ -497,7 +497,7 @@
       <image:title>How to Use MCP in Snowflake CoCo Desktop</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/why-llms-give-different-answers</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
@@ -507,7 +507,7 @@
       <image:title>Why LLMs give different answers to the same question</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-interactive-tables-guide</loc>
     <lastmod>2026-07-16</lastmod>
     <changefreq>monthly</changefreq>
@@ -517,7 +517,7 @@
       <image:title>Snowflake Interactive tables: How and when to use them ( From Production)</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/rag-retrieval-augumented-generation-production-guide</loc>
     <lastmod>2026-07-07</lastmod>
     <changefreq>monthly</changefreq>
@@ -527,7 +527,7 @@
       <image:title>Why your RAG Pipeline Fails ( and how to fix it in Production )</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/airflow-dbt-snowflake-orchestration-guide</loc>
     <lastmod>2026-07-04</lastmod>
     <changefreq>monthly</changefreq>
@@ -537,7 +537,7 @@
       <image:title>Orchestrating dbt with Airflow on Snowflake: Job vs Model-Level in 2026</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/dbt-state-snowflake-configuration</loc>
     <lastmod>2026-07-03</lastmod>
     <changefreq>monthly</changefreq>
@@ -547,7 +547,7 @@
       <image:title>How to setup DBT state in Your Snowflake project (step-by-step Config Guide)</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/duckdb-vs-spark-when-to-switch</loc>
     <lastmod>2026-07-03</lastmod>
     <changefreq>monthly</changefreq>
@@ -557,7 +557,7 @@
       <image:title>Stop Spinning Up Spark clusters for 50GB Datasets</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/data-contracts-schema-brekage-guide</loc>
     <lastmod>2026-06-30</lastmod>
     <changefreq>monthly</changefreq>
@@ -567,7 +567,7 @@
       <image:title>Someone renamed a column.Your Pipeline Died.Here’s the fix</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/why-ai-agents-forget-memory-architecture</loc>
     <lastmod>2026-06-30</lastmod>
     <changefreq>monthly</changefreq>
@@ -577,7 +577,7 @@
       <image:title>Why AI Agents Forget: The Architecture behind Memory failures</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/dbt-state-skip-unchanged-nodes</loc>
     <lastmod>2026-06-23</lastmod>
     <changefreq>monthly</changefreq>
@@ -587,7 +587,7 @@
       <image:title>dbt state: Skip Unchanged Nodes, Cut Warehouse Compute 30%</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/dbr-fusion-engine-migration-guide</loc>
     <lastmod>2026-06-22</lastmod>
     <changefreq>monthly</changefreq>
@@ -597,7 +597,7 @@
       <image:title>dbt Fusion: 30x Faster parsing(And why Migration matters)</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-aiceberg-v3-migration-guide</loc>
     <lastmod>2026-06-22</lastmod>
     <changefreq>monthly</changefreq>
@@ -607,7 +607,7 @@
       <image:title>Snowflake Iceberg V3: When to Actually Migrate(vs Native Tables)</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-query-execution-architecture</loc>
     <lastmod>2026-06-21</lastmod>
     <changefreq>monthly</changefreq>
@@ -617,7 +617,7 @@
       <image:title>Snowflake Query Execution: what really happens under the hood</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-warehouse-cache-explained</loc>
     <lastmod>2026-06-17</lastmod>
     <changefreq>yearly</changefreq>
@@ -627,7 +627,7 @@
       <image:title>How the Warehouse Cache Actually Works in Snowflake</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/sql-most-valuable-skill-ai-2026</loc>
     <lastmod>2026-06-11</lastmod>
     <changefreq>yearly</changefreq>
@@ -637,7 +637,7 @@
       <image:title>Everyone Said SQL Was Dead. It’s Now the Most Valuable Skill in AI (2026)</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-time-travel-architecture</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>yearly</changefreq>
@@ -647,7 +647,7 @@
       <image:title>The Hidden Architecture Behind Snowflake Time Travel: Why It’s Not Really a Backup Feature</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-coco-desktop</loc>
     <lastmod>2026-06-06</lastmod>
     <changefreq>yearly</changefreq>
@@ -657,7 +657,7 @@
       <image:title>Snowflake CoCo Desktop — What It Is, How It Works, and Whether It’s Worth It</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/airflow-vs-prefect</loc>
     <lastmod>2026-05-09</lastmod>
     <changefreq>yearly</changefreq>
@@ -667,7 +667,7 @@
       <image:title>Airflow vs Prefect: 2026 Comparison Guide</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/delta-lake-vs-iceberg</loc>
     <lastmod>2026-05-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -677,27 +677,7 @@
       <image:title>Delta Lake vs Apache Iceberg — Why I Chose Iceberg for Our Data Lakehouse</image:title>
     </image:image>
   </url>
-  <url>
-    <loc>https://dataengineerhub.blog/articles/the-problem-with-data-engineering-certifications-that-nobody-talks-about</loc>
-    <lastmod>2026-05-08</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/05/IMG_9688_11zon.jpg</image:loc>
-      <image:title>The Problem with Data Engineering Certifications That Nobody Talks About</image:title>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://dataengineerhub.blog/articles/snowflake-zero-copy-cloning-problems</loc>
-    <lastmod>2026-05-05</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/Snowflake-zero-copy-clone-issue.jpg</image:loc>
-      <image:title>The Problem with Zero-Copy Cloning in Snowflake That Nobody Talks About</image:title>
-    </image:image>
-  </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/claude-code-power-user-guide</loc>
     <lastmod>2026-05-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -707,17 +687,7 @@
       <image:title>Claude Code Power User Guide: Stop Using It Like Autocomplete</image:title>
     </image:image>
   </url>
-  <url>
-    <loc>https://dataengineerhub.blog/articles/query-snowflake-in-duckdb-cut-costs</loc>
-    <lastmod>2026-04-19</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/04/19D3D99C-0012-453B-B706-032B99A24AAB_11zon.jpg</image:loc>
-      <image:title>How to Query Snowflake in DuckDB (And Cut Your Bill While Doing It)</image:title>
-    </image:image>
-  </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/dbt-tests-pass-bad-data</loc>
     <lastmod>2026-04-17</lastmod>
     <changefreq>yearly</changefreq>
@@ -727,7 +697,7 @@
       <image:title>The Problem with dbt Tests Nobody Talks About — They Pass and You Still Ship Bad Data</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/automation-in-data-engineering</loc>
     <lastmod>2026-04-16</lastmod>
     <changefreq>yearly</changefreq>
@@ -737,7 +707,7 @@
       <image:title>It’s Not AI You Should Worry About—It’s Automation</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/why-i-stopped-using-snowflake-tasks-orchestration</loc>
     <lastmod>2026-04-12</lastmod>
     <changefreq>yearly</changefreq>
@@ -747,7 +717,7 @@
       <image:title>Why I Stopped Using Snowflake Tasks for Orchestration</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-code-cost-control-2026</loc>
     <lastmod>2026-05-09</lastmod>
     <changefreq>yearly</changefreq>
@@ -757,7 +727,7 @@
       <image:title>2026 Guide: Snowflake Cortex Code Cost Control</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-expert-interview-questions</loc>
     <lastmod>2026-04-09</lastmod>
     <changefreq>yearly</changefreq>
@@ -767,7 +737,7 @@
       <image:title>Snowflake Interview Questions — Expert Level</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-dbt-projects-airflow-orchestration</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>yearly</changefreq>
@@ -777,7 +747,7 @@
       <image:title>Orchestrating Snowflake dbt Projects with Airflow — End-to-End Pipeline Guide</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-code-guide-real-examples</loc>
     <lastmod>2026-04-11</lastmod>
     <changefreq>yearly</changefreq>
@@ -787,7 +757,7 @@
       <image:title>How I Taught Myself Snowflake Cortex Code (And What I Found)</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-code-dbt-optimization-guide</loc>
     <lastmod>2026-05-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -797,7 +767,7 @@
       <image:title>2026 Guide: Cut dbt Build Time 48% with Snowflake Cortex Code</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-managed-iceberg-tables-complete-guide-2026</loc>
     <lastmod>2026-02-02</lastmod>
     <changefreq>yearly</changefreq>
@@ -807,7 +777,7 @@
       <image:title>Snowflake Managed Iceberg Tables 2026</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-parse-document-complete-guide-2026</loc>
     <lastmod>2026-05-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -817,7 +787,7 @@
       <image:title>Snowflake AI_PARSE_DOCUMENT: Full Guide 2026</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-cost-comparison</loc>
     <lastmod>2026-05-10</lastmod>
     <changefreq>yearly</changefreq>
@@ -827,7 +797,7 @@
       <image:title>Snowflake Cortex Cost 2026: The Definitive Expert’s Guide</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-streams-tasks-pipeline-guide</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>yearly</changefreq>
@@ -837,7 +807,7 @@
       <image:title>Snowflake Streams &amp; Tasks: SCD2 Pipeline Guide</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cost-optimization-techniques-2026</loc>
     <lastmod>2026-01-02</lastmod>
     <changefreq>yearly</changefreq>
@@ -847,7 +817,7 @@
       <image:title>Snowflake Cost Optimization: 12 Proven Techniques to Cut Your Bill by 40% in 2026</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-query-optimization-guide-2026</loc>
     <lastmod>2026-01-02</lastmod>
     <changefreq>yearly</changefreq>
@@ -857,7 +827,7 @@
       <image:title>Snowflake Query Optimization: What Actually Works in 2026</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-interview-questions-answers-2026</loc>
     <lastmod>2026-05-10</lastmod>
     <changefreq>yearly</changefreq>
@@ -867,7 +837,7 @@
       <image:title>Snowflake Interview Questions and Answers 2026</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-ai-complete-guide-2026</loc>
     <lastmod>2026-01-01</lastmod>
     <changefreq>yearly</changefreq>
@@ -877,7 +847,7 @@
       <image:title>Snowflake Cortex AI: Complete Guide for 2026</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/meeting-notes-rag-snowflake-ai-assistant</loc>
     <lastmod>2026-01-04</lastmod>
     <changefreq>yearly</changefreq>
@@ -887,7 +857,7 @@
       <image:title>Build a Meeting Notes RAG in Snowflake: AI-Powered Meeting Intelligence System</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-openflow-ai-data-ingestion-guide</loc>
     <lastmod>2025-11-11</lastmod>
     <changefreq>yearly</changefreq>
@@ -897,7 +867,7 @@
       <image:title>Snowflake OpenFlow: Revolutionizing Data Ingestion with AI-Powered Workflows</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/build-rag-snowflake-cortex-search-guide</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>yearly</changefreq>
@@ -907,7 +877,7 @@
       <image:title>Build RAG in Snowflake: Complete Cortex Search Guide 2025</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-aisql-query-optimization-guide</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>yearly</changefreq>
@@ -917,7 +887,7 @@
       <image:title>7 Ways to Cut Snowflake Cortex AI Costs [2026]</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-intelligence-guide-setup-optimization</loc>
     <lastmod>2025-11-07</lastmod>
     <changefreq>yearly</changefreq>
@@ -927,7 +897,7 @@
       <image:title>Snowflake Intelligence Guide: Setup, Optimization &amp; Real SQL Examples</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-native-dbt-integration-2025-guide</loc>
     <lastmod>2025-10-17</lastmod>
     <changefreq>yearly</changefreq>
@@ -937,7 +907,7 @@
       <image:title>Snowflake Native dbt Integration: Complete 2025 Guide</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/salesforce-copilot-custom-action-guide</loc>
     <lastmod>2025-10-17</lastmod>
     <changefreq>yearly</changefreq>
@@ -947,7 +917,7 @@
       <image:title>Your First Salesforce Copilot Action : A 5-Step Guide</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/build-databricks-ai-agent-gpt5-guide</loc>
     <lastmod>2025-10-17</lastmod>
     <changefreq>yearly</changefreq>
@@ -957,7 +927,7 @@
       <image:title>Build a Databricks AI Agent with GPT-5</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/salesforce-agentforce-complete-guide-2025</loc>
     <lastmod>2025-10-17</lastmod>
     <changefreq>yearly</changefreq>
@@ -967,7 +937,7 @@
       <image:title>Salesforce Agentforce: Complete 2025 Guide &amp; Examples</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-unique-aggregations-hidden-functions</loc>
     <lastmod>2025-10-16</lastmod>
     <changefreq>yearly</changefreq>
@@ -977,7 +947,7 @@
       <image:title>Snowflake’s Unique Aggregation Functions You Need to Know</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-dynamic-tables-complete-guide-2025</loc>
     <lastmod>2025-10-16</lastmod>
     <changefreq>yearly</changefreq>
@@ -987,7 +957,7 @@
       <image:title>Snowflake Dynamic Tables: Complete 2025 Guide &amp; Examples</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-sql-tutorial-2025-complete-guide</loc>
     <lastmod>2025-10-16</lastmod>
     <changefreq>yearly</changefreq>
@@ -997,7 +967,7 @@
       <image:title>Snowflake SQL Tutorial: Master MERGE ALL BY NAME in 2025</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-optima-automatic-query-optimization-guide</loc>
     <lastmod>2025-10-16</lastmod>
     <changefreq>yearly</changefreq>
@@ -1007,7 +977,7 @@
       <image:title>Snowflake Optima: 15x Faster Queries at Zero Cost</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/open-semantic-interchange-snowflake-ai-problem-solved</loc>
     <lastmod>2025-10-14</lastmod>
     <changefreq>yearly</changefreq>
@@ -1017,7 +987,7 @@
       <image:title>Open Semantic Interchange: Solving AI’s $1T Problem</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/synapse-to-fabric-migration-adx-eventhouse-guide</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1027,7 +997,7 @@
       <image:title>Synapse to Fabric: Your ADX Migration Guide 2025</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/build-snowflake-cortex-ai-agent-guide</loc>
     <lastmod>2026-05-09</lastmod>
     <changefreq>yearly</changefreq>
@@ -1037,7 +1007,7 @@
       <image:title>Cortex Agents 2026: Build AI Bots with Snowflake</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/mastering-real-time-etl-with-google-cloud-dataflow</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1047,7 +1017,7 @@
       <image:title>Mastering Real-Time ETL with Google Cloud Dataflow: A Comprehensive Tutorial</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/star-schema-vs-snowflake-schema-comparison</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1057,7 +1027,7 @@
       <image:title>Star Schema vs Snowflake Schema:Key Differences &amp; Use Cases</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/data-pipelines-python</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1067,7 +1037,7 @@
       <image:title>Mastering Python Data Pipelines: Extract from APIs &amp; Databases, Load to S3 &amp; Snowflake</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cortex-ai-financial-services</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1077,7 +1047,7 @@
       <image:title>Revolutionizing Finance: A Deep Dive into Snowflake’s Cortex AI</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-data-science-agent-automate-ml-2025</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1087,7 +1057,7 @@
       <image:title>Snowflake Data Science Agent: Automate ML Workflows 2025</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-mcp-server-agentic-ai-guide-2025</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1097,7 +1067,7 @@
       <image:title>Enterprise AI 2025: Snowflake MCP Links Agents to Data</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-merge-optimization-techniques</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1107,7 +1077,7 @@
       <image:title>5 Advanced Techniques for Optimizing Snowflake MERGE Queries</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/querying-data-in-snowflake</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1117,7 +1087,7 @@
       <image:title>Querying data in snowflake: A Guide to JSON and Time Travel</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/load-data-into-snowflake</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1127,7 +1097,7 @@
       <image:title>How to Load Data into Snowflake: Guide to Warehouse, Stages and File Format</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/aws-data-pipeline-cost-optimization-strategies</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1137,7 +1107,7 @@
       <image:title>AWS Data Pipeline Cost Optimization Strategies</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/advanced-snowflake-interview-questions-experienced</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1147,7 +1117,7 @@
       <image:title>Advanced Snowflake Interview Questions for Experienced</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/automated-etl-airflow-python</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1157,7 +1127,7 @@
       <image:title>Automated ETL with Airflow and Python: A Practical Guide</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/build-data-lakehouse-on-azure</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1167,7 +1137,7 @@
       <image:title>How to Build a Data Lakehouse on Azure</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/serverless-data-pipeline-aws</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1177,7 +1147,7 @@
       <image:title>Building a Serverless Data Pipeline on AWS: A Step-by-Step Guide</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/articles/dbt-projects-snowflake-structure</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1187,49 +1157,49 @@
       <image:title>Structuring dbt Projects in Snowflake: The Definitive Guide</image:title>
     </image:image>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/cheatsheets/snowflake-sql</loc>
     <lastmod>2026-04-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/cheatsheets/sql-window-functions</loc>
     <lastmod>2026-04-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/cheatsheets/dbt-commands</loc>
     <lastmod>2026-04-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/cheatsheets/airflow-essentials</loc>
     <lastmod>2026-04-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/cheatsheets/snowflake-best-practices</loc>
     <lastmod>2026-04-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/cheatsheets/python-for-data-engineers</loc>
     <lastmod>2026-04-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/cheatsheets/databricks</loc>
     <lastmod>2026-04-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
+<url>
     <loc>https://dataengineerhub.blog/cheatsheets/data-modeling</loc>
     <lastmod>2026-04-16</lastmod>
     <changefreq>monthly</changefreq>

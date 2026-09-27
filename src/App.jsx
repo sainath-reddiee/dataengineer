@@ -13,8 +13,8 @@ import CookieConsent from '@/components/CookieConsent';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 // Lazy load pages for code splitting.
 // ArticlePage is eagerly imported so AdSense human reviewers never see
-// a loading skeleton while a lazy chunk downloads. The SSG static HTML
-// bridges the first-paint gap, but the React component must be in the
+// a loading skeleton while a lazy chunk downloads. (formerly lazy(() => import('./pages/ArticlePage')))
+// The SSG static HTML bridges the first-paint gap, but the React component must be in the
 // main bundle for instant hydration.
 const HomePage = lazy(() => import('./pages/HomePage'));
 import ArticlePage from './pages/ArticlePage';

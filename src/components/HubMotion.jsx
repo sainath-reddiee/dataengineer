@@ -84,33 +84,23 @@ const HubMotion = ({ reduceMotion = false }) => {
           disabled={reduceMotion}
           className="relative mb-3 overflow-hidden rounded-2xl border border-white/15 bg-slate-900/70 p-3 shadow-2xl shadow-blue-950/40 backdrop-blur-md"
         >
-          <div className="flex items-stretch gap-1.5">
+          <div className="flex items-center gap-1.5">
             {TOOL_STAGES.map((stage, index) => (
               <div key={stage.id} className="flex min-w-0 flex-1 items-center gap-1.5">
-                <motion.div
-                  className="min-w-0 flex-1 rounded-lg bg-white/5 px-1.5 py-2 text-center ring-1 ring-white/5 sm:px-2"
-                  animate={reduceMotion ? undefined : { y: [0, -6, 0] }}
-                  transition={reduceMotion ? undefined : {
-                    duration: 2.6,
-                    repeat: Infinity,
-                    delay: index * 0.22,
-                    ease: 'easeInOut',
-                  }}
+                <Link
+                  to={`/tools?stack=${stage.id}`}
+                  className="min-w-0 flex-1 rounded-lg bg-white/5 px-1.5 py-2 text-center ring-1 ring-white/5 transition-all hover:bg-white/10 hover:-translate-y-0.5 sm:px-2 block"
                 >
-                  <Link to={`/tools?stack=${stage.id}`} className="block">
-                    <p className="text-[11px] font-semibold text-white">{stage.label}</p>
-                    <p className="mt-0.5 text-[9px] leading-tight text-slate-400 sm:text-[10px]">{stage.hint}</p>
-                  </Link>
-                </motion.div>
+                  <span className="block text-[11px] font-semibold text-white truncate">{stage.label}</span>
+                  <span className="mt-0.5 block text-[9px] leading-tight text-slate-400 sm:text-[10px] truncate">{stage.hint}</span>
+                </Link>
                 {index < TOOL_STAGES.length - 1 && (
-                  <motion.span
+                  <span
                     aria-hidden="true"
-                    className="hidden text-blue-300 sm:inline"
-                    animate={reduceMotion ? undefined : { x: [0, 3, 0], opacity: [0.4, 1, 0.4] }}
-                    transition={reduceMotion ? undefined : { duration: 1.4, repeat: Infinity, delay: index * 0.15 }}
+                    className="hidden text-blue-300 sm:inline select-none"
                   >
                     →
-                  </motion.span>
+                  </span>
                 )}
               </div>
             ))}
@@ -119,33 +109,21 @@ const HubMotion = ({ reduceMotion = false }) => {
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        {ACTIONS.map((action, index) => {
+        {ACTIONS.map((action) => {
           const Icon = action.icon;
           const href = ADSENSE_REVIEW_MODE && action.reviewTo ? action.reviewTo : action.to;
           return (
-            <TiltCard
+            <Link
               key={action.to}
-              disabled={reduceMotion}
-              intensity={8}
-              className="overflow-hidden rounded-xl"
+              to={href}
+              className="card-3d block rounded-xl border border-white/10 bg-slate-900/60 px-3 py-2.5 shadow-lg shadow-slate-950/30 transition-all hover:border-blue-400/40 hover:bg-slate-900/80"
             >
-              <motion.div
-                initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.25, delay: 0.05 * index }}
-              >
-                <Link
-                  to={href}
-                  className="block rounded-xl border border-white/10 bg-slate-900/60 px-3 py-2.5 shadow-lg shadow-slate-950/30 transition-colors hover:border-blue-400/40 hover:bg-slate-900/80"
-                >
-                  <span className="mb-1 flex items-center gap-2 text-sm font-semibold text-white">
-                    <Icon className="h-3.5 w-3.5 text-blue-300" />
-                    {action.title}
-                  </span>
-                  <span className="block text-xs text-slate-400">{action.blurb}</span>
-                </Link>
-              </motion.div>
-            </TiltCard>
+              <span className="mb-1 flex items-center gap-2 text-sm font-semibold text-white">
+                <Icon className="h-3.5 w-3.5 text-blue-300" />
+                {action.title}
+              </span>
+              <span className="block text-xs text-slate-400">{action.blurb}</span>
+            </Link>
           );
         })}
       </div>
