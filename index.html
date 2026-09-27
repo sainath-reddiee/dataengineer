@@ -622,7 +622,13 @@
           inject();
           return;
         }
-        window.addEventListener('load', function () { setTimeout(inject, 2500); }, { once: true });
+        window.addEventListener('load', function () {
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(inject, { timeout: 1500 });
+          } else {
+            setTimeout(inject, 1000);
+          }
+        }, { once: true });
       })();
     </script>
   </body>

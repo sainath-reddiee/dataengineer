@@ -11,10 +11,13 @@ import { recordEngagementRoute, bootstrapEngagementListeners } from '@/utils/eng
 import { useApiDebugger } from '@/hooks/useApiDebugger';
 import CookieConsent from '@/components/CookieConsent';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
-// Lazy load pages for code splitting. ArticlePage used to be eager and
-// dragged ~DOMPurify + linking + PostCard onto every homepage visit.
+// Lazy load pages for code splitting.
+// ArticlePage is eagerly imported so AdSense human reviewers never see
+// a loading skeleton while a lazy chunk downloads. The SSG static HTML
+// bridges the first-paint gap, but the React component must be in the
+// main bundle for instant hydration.
 const HomePage = lazy(() => import('./pages/HomePage'));
-const ArticlePage = lazy(() => import('./pages/ArticlePage'));
+import ArticlePage from './pages/ArticlePage';
 const CategoryPage = lazy(() => import('./pages/CategoryPage'));
 const TagPage = lazy(() => import('./pages/TagPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
@@ -340,7 +343,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<SafeRoute fallbackText="Loading Home..."><HomePage /></SafeRoute>} />
           <Route path="articles" element={<SafeRoute fallbackText="Loading Articles..."><AllArticlesPage /></SafeRoute>} />
-          <Route path="articles/:slug" element={<SafeRoute fallbackText="Loading Article..."><ArticlePage /></SafeRoute>} />
+          <Route path="articles/:slug" element={<RouteErrorBoundary><ArticlePage /></RouteErrorBoundary>} />
           <Route path="category/:categoryName" element={<SafeRoute fallbackText="Loading Category..."><CategoryPage /></SafeRoute>} />
           <Route path="tag" element={<SafeRoute fallbackText="Loading Tags..."><TagsArchivePage /></SafeRoute>} />
           <Route path="tag/:tagSlug" element={<SafeRoute fallbackText="Loading Tag..."><TagPage /></SafeRoute>} />
