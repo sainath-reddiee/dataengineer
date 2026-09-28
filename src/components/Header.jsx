@@ -200,18 +200,20 @@ const Header = ({ topOffset = 0 }) => {
         </button>
 
         <div className="hidden flex-1 items-center justify-center gap-1 lg:flex">
-          {visibleMainLinks.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              onMouseEnter={() => {
-                if (item.path === '/tools') import('@/pages/ToolsHubPage');
-              }}
-              className={pillClass(isPathActive(currentPath, item.path))}
-            >
-              {item.name}
-            </Link>
-          ))}
+          {visibleMainLinks
+            .filter((item) => item.path !== '/about')
+            .map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                onMouseEnter={() => {
+                  if (item.path === '/tools') import('@/pages/ToolsHubPage');
+                }}
+                className={pillClass(isPathActive(currentPath, item.path))}
+              >
+                {item.name}
+              </Link>
+            ))}
 
           <div
             ref={learnRef}
@@ -266,6 +268,18 @@ const Header = ({ topOffset = 0 }) => {
                 </div>
             )}
           </div>
+
+          {visibleMainLinks
+            .filter((item) => item.path === '/about')
+            .map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={pillClass(isPathActive(currentPath, item.path))}
+              >
+                {item.name}
+              </Link>
+            ))}
         </div>
 
         <div className="hidden items-center gap-2 lg:flex">

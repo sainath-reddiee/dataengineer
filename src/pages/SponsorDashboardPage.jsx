@@ -41,7 +41,64 @@ export default function SponsorDashboardPage() {
     };
   }, []);
 
-  const sponsorData = useMemo(() => findSponsorByToken(token, activeSponsors), [token]);
+  const [extraSponsors, setExtraSponsors] = useState(() => {
+    try {
+      const local = typeof window !== 'undefined' ? localStorage.getItem('custom_active_sponsors') : null;
+      if (local) {
+        const parsed = JSON.parse(local);
+        return Array.isArray(parsed) ? parsed : [];
+      }
+    } catch (err) {
+      void err;
+    }
+    return [];
+  });
+
+  const allSponsors = useMemo(() => {
+    const map = new Map();
+    activeSponsors.forEach((s) => {
+      if (s?.token) map.set(s.token, s);
+    });
+    extraSponsors.forEach((s) => {
+      if (s?.token) map.set(s.token, s);
+    });
+    return Array.from(map.values());
+  }, [extraSponsors]);
+
+  const sponsorData = useMemo(() => findSponsorByToken(token, allSponsors), [token, allSponsors]);
+
+  useEffect(() => {
+    if (!token || sponsorData) return;
+    try {
+      const savedConfig = typeof window !== 'undefined' ? sessionStorage.getItem('sponsors_github_config') : null;
+      if (savedConfig) {
+        const { token: ghToken, owner = 'sainath-reddiee', repo = 'dataengineer', branch = 'main' } = JSON.parse(savedConfig);
+        if (ghToken) {
+          const cleanToken = ghToken.replace(/^(Bearer|token)\s+/i, '').trim();
+          fetch(`https://api.github.com/repos/${owner}/${repo}/contents/src/data/activeSponsors.json?ref=${branch}`, {
+            headers: {
+              Accept: 'application/vnd.github.v3+json',
+              Authorization: `Bearer ${cleanToken}`
+            }
+          })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data) => {
+              if (data?.content) {
+                const decoded = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
+                const parsed = JSON.parse(decoded);
+                if (Array.isArray(parsed)) {
+                  setExtraSponsors(parsed);
+                  localStorage.setItem('custom_active_sponsors', JSON.stringify(parsed));
+                }
+              }
+            })
+            .catch((err) => { void err; });
+        }
+      }
+    } catch (err) {
+      void err;
+    }
+  }, [token, sponsorData]);
   const campaignStatus = useMemo(() => getCampaignStatus(sponsorData), [sponsorData]);
   const analyticsData = useMemo(() => {
     void statsTick;

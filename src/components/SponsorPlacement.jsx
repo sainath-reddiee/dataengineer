@@ -30,15 +30,33 @@ export default function SponsorPlacement({
   const tagsKey = normalizedTags.join(',');
   const filterKey = Array.isArray(placementFilter) ? placementFilter.join(',') : String(placementFilter || '');
 
+  const allSponsors = useMemo(() => {
+    try {
+      const local = typeof window !== 'undefined' ? localStorage.getItem('custom_active_sponsors') : null;
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const map = new Map();
+          activeSponsors.forEach((s) => { if (s?.token) map.set(s.token, s); });
+          parsed.forEach((s) => { if (s?.token) map.set(s.token, s); });
+          return Array.from(map.values());
+        }
+      }
+    } catch (err) {
+      void err;
+    }
+    return activeSponsors;
+  }, []);
+
   const sponsor = useMemo(
-    () => pickSponsor(activeSponsors, {
+    () => pickSponsor(allSponsors, {
       category,
       tags: normalizedTags,
       slug,
       placementFilter,
       relaxTargeting,
     }),
-    [category, tagsKey, slug, filterKey, relaxTargeting] // eslint-disable-line react-hooks/exhaustive-deps
+    [allSponsors, category, tagsKey, slug, filterKey, relaxTargeting] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   useEffect(() => {

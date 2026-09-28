@@ -20,7 +20,24 @@ function generateTokenValue() {
 }
 
 export default function SponsorManagerPage() {
-  const initialSponsors = Array.isArray(activeSponsorsData) ? activeSponsorsData : (activeSponsorsData?.default || []);
+  const initialSponsors = useMemo(() => {
+    const bundled = Array.isArray(activeSponsorsData) ? activeSponsorsData : (activeSponsorsData?.default || []);
+    try {
+      const local = typeof window !== 'undefined' ? localStorage.getItem('custom_active_sponsors') : null;
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const map = new Map();
+          bundled.forEach((s) => { if (s?.token) map.set(s.token, s); });
+          parsed.forEach((s) => { if (s?.token) map.set(s.token, s); });
+          return Array.from(map.values());
+        }
+      }
+    } catch (err) {
+      void err;
+    }
+    return bundled;
+  }, []);
   const [sponsors, setSponsors] = useState(initialSponsors);
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [jsonCopied, setJsonCopied] = useState(false);
@@ -167,6 +184,7 @@ export default function SponsorManagerPage() {
       try {
         await saveViaLocalDevApi(updatedSponsors);
         setSponsors(updatedSponsors);
+        try { localStorage.setItem('custom_active_sponsors', JSON.stringify(updatedSponsors)); } catch (err) { void err; }
         setServerSource('local Vite JSON');
         setSyncStatus('success');
         setTimeout(() => setSyncStatus(''), 4000);
@@ -246,6 +264,7 @@ export default function SponsorManagerPage() {
       }
 
       setSponsors(updatedSponsors);
+      try { localStorage.setItem('custom_active_sponsors', JSON.stringify(updatedSponsors)); } catch (err) { void err; }
       setServerSource('GitHub API');
       setSyncStatus('github_success');
       setTimeout(() => setSyncStatus(''), 6000);

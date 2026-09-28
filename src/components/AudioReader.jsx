@@ -1,5 +1,4 @@
-// src/components/AudioReader.jsx — "Listen to this Article" via Web Speech API
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Headphones,
@@ -275,28 +274,28 @@ const AudioReader = ({ content, title }) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             onClick={() => setIsOpen(true)}
-            className="group flex items-center gap-2.5 w-full sm:w-auto px-5 py-3 rounded-2xl
+            className="group flex items-center gap-2.5 w-auto px-4 py-2.5 rounded-2xl
                        bg-gradient-to-r from-slate-800/80 to-slate-700/60
-                       hover:from-blue-900/40 hover:to-purple-900/30
+                       hover:from-slate-800 hover:to-slate-700
                        border border-slate-700/50 hover:border-blue-500/40
                        backdrop-blur-md shadow-lg hover:shadow-blue-500/10
                        transition-all duration-300 cursor-pointer"
             aria-label="Listen to this article"
           >
-            <span className="relative flex items-center justify-center w-9 h-9 rounded-xl
+            <span className="relative flex items-center justify-center w-8 h-8 rounded-xl
                             bg-gradient-to-br from-blue-500 to-purple-600
-                            shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40
-                            transition-shadow duration-300">
-              <Headphones className="w-4.5 h-4.5 text-white" />
+                            shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/40
+                            transition-shadow duration-300 shrink-0">
+              <Headphones className="w-4 h-4 text-white" />
               {/* animated pulse ring */}
               <span className="absolute inset-0 rounded-xl bg-blue-400/30 animate-ping opacity-0 group-hover:opacity-100" />
             </span>
             <span className="flex flex-col items-start leading-tight">
-              <span className="text-sm font-semibold text-white group-hover:text-blue-300 transition-colors">
+              <span className="text-xs sm:text-sm font-semibold text-white group-hover:text-blue-300 transition-colors">
                 Listen to this article
               </span>
-              <span className="text-[11px] text-gray-500 group-hover:text-gray-400 transition-colors">
-                ~{Math.ceil(wordCount / 150)} min · powered by your browser
+              <span className="text-[10px] text-gray-400 group-hover:text-gray-300 transition-colors">
+                ~{Math.ceil(wordCount / 150)} min · browser audio
               </span>
             </span>
           </motion.button>

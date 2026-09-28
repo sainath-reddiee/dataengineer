@@ -76,9 +76,13 @@
     "targeting": {
       "categories": [
         "sql",
-        "snowfake"
+        "snowflake"
       ],
       "tags": [
+        "sql",
+        "data-engineering",
+        "interview",
+        "data engineering",
         "sql.data-engineering.interview"
       ]
     }

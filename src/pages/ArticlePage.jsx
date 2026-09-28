@@ -765,15 +765,14 @@ const ArticlePage = () => {
 
           {/* Metadata Section */}
           <MetadataOption1 safePost={safePost} formatDate={formatDate} />
-          <div className="flex flex-wrap items-center gap-3">
+          {/* Reader Action Bar: Listen to this article + Save for later in ONE line */}
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+            <AudioReader content={safePost.content} title={safePost.title} />
             <SaveArticleButton slug={slug} title={safePost.title} />
           </div>
 
           {/* Key Takeaways — AEO/AI visibility, Speakable schema target */}
           <KeyTakeaways items={keyTakeaways} title={takeawaysTitle} />
-
-          {/* ── Listen to this Article — Native Audio Reader ── */}
-          <AudioReader content={safePost.content} title={safePost.title} />
 
           {/* ── Advertising Disclosure (AdSense policy requirement) ── */}
           <div className="flex items-center gap-2 text-xs text-gray-500 bg-slate-800/40 border border-slate-700/40 rounded-lg px-3 py-2">
