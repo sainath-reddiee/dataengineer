@@ -62,5 +62,25 @@
         "sql-playground"
       ]
     }
+  },
+  {
+    "company": "Dataengineer Interview Playbook",
+    "logo": "/assets/sponsors/dataengineerinterviewplaybook.svg",
+    "url": "https://sainath34.gumroad.com/l/dataengineer_kit",
+    "placement": "directory",
+    "startDate": "2026-09-28",
+    "endDate": "2030-10-28",
+    "active": true,
+    "token": "sp_3c70d6257e5f",
+    "notes": "directory sponsorship",
+    "targeting": {
+      "categories": [
+        "sql",
+        "snowfake"
+      ],
+      "tags": [
+        "sql.data-engineering.interview"
+      ]
+    }
   }
 ]
