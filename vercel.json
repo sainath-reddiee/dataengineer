@@ -62,6 +62,33 @@
             ]
         },
         {
+            "source": "/",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=3600, stale-while-revalidate=86400"
+                }
+            ]
+        },
+        {
+            "source": "/articles",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=3600, stale-while-revalidate=86400"
+                }
+            ]
+        },
+        {
+            "source": "/articles/:slug",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=3600, stale-while-revalidate=86400"
+                }
+            ]
+        },
+        {
             "source": "/admin/:path*",
             "headers": [
                 {

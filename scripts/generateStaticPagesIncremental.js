@@ -7350,6 +7350,13 @@ function buildPracticeQuestionPreview(quizSlug) {
             console.log(`   âœ“ Homepage already enhanced`);
           }
           homepageHTML = cleanHomepagePaintHtml(homepageHTML);
+
+          // Stamp the actual build time so bots see a freshness signal
+          // instead of the __BUILD_TIMESTAMP__ placeholder from index.html.
+          const buildTimestamp = new Date().toISOString();
+          homepageHTML = homepageHTML.replace(/__BUILD_TIMESTAMP__/g, buildTimestamp);
+          console.log(`   ✓ Build timestamp stamped: ${buildTimestamp}`);
+
           fs.writeFileSync(homepagePath, homepageHTML);
           const fileStats = fs.statSync(homepagePath);
           const fileSizeKB = (fileStats.size / 1024).toFixed(2);

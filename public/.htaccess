@@ -535,5 +535,31 @@ AddDefaultCharset UTF-8
 </FilesMatch>
 
 # ==============================================================================
+# J) CACHE-CONTROL — Prevent bots from seeing stale SSG snapshots
+# ==============================================================================
+# HTML pages: short cache so crawlers re-fetch fresh content after each deploy.
+# stale-while-revalidate lets the CDN serve the old page instantly while
+# fetching the new one in the background — zero downtime, zero staleness.
+<IfModule mod_headers.c>
+    <FilesMatch "\.html$">
+        Header set Cache-Control "public, max-age=3600, stale-while-revalidate=86400"
+    </FilesMatch>
+</IfModule>
+
+# Hashed JS/CSS/font assets: immutable 1-year cache (filenames change on rebuild)
+<IfModule mod_headers.c>
+    <FilesMatch "\.(js|css|woff2?)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+
+# Images: 7-day cache (content rarely changes, but not immutable)
+<IfModule mod_headers.c>
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|avif|svg|ico)$">
+        Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
+</IfModule>
+
+# ==============================================================================
 # END OF CONFIGURATION
 # ==============================================================================
