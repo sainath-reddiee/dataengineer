@@ -1,0 +1,221 @@
+{
+  "tags": [
+    {
+      "id": 104,
+      "name": "agent"
+    },
+    {
+      "id": 33,
+      "name": "ai"
+    },
+    {
+      "id": 88,
+      "name": "AI coding"
+    },
+    {
+      "id": 46,
+      "name": "airflow"
+    },
+    {
+      "id": 90,
+      "name": "Anthropic"
+    },
+    {
+      "id": 43,
+      "name": "aws"
+    },
+    {
+      "id": 27,
+      "name": "azure"
+    },
+    {
+      "id": 89,
+      "name": "CI/CD"
+    },
+    {
+      "id": 85,
+      "name": "Claude Code"
+    },
+    {
+      "id": 86,
+      "name": "CLAUDE.md"
+    },
+    {
+      "id": 73,
+      "name": "copilot"
+    },
+    {
+      "id": 32,
+      "name": "cortex"
+    },
+    {
+      "id": 108,
+      "name": "Cortex AI"
+    },
+    {
+      "id": 111,
+      "name": "Cost Engineering"
+    },
+    {
+      "id": 98,
+      "name": "data mesh"
+    },
+    {
+      "id": 97,
+      "name": "data quality"
+    },
+    {
+      "id": 96,
+      "name": "data strategy"
+    },
+    {
+      "id": 37,
+      "name": "data-engineering"
+    },
+    {
+      "id": 42,
+      "name": "data-masking"
+    },
+    {
+      "id": 41,
+      "name": "data-modeling"
+    },
+    {
+      "id": 36,
+      "name": "data-warehouse"
+    },
+    {
+      "id": 72,
+      "name": "databricks"
+    },
+    {
+      "id": 47,
+      "name": "dbt"
+    },
+    {
+      "id": 112,
+      "name": "dcm"
+    },
+    {
+      "id": 93,
+      "name": "delta lake"
+    },
+    {
+      "id": 87,
+      "name": "developer tools"
+    },
+    {
+      "id": 81,
+      "name": "duckdb"
+    },
+    {
+      "id": 107,
+      "name": "elt"
+    },
+    {
+      "id": 35,
+      "name": "etl"
+    },
+    {
+      "id": 110,
+      "name": "FinOps"
+    },
+    {
+      "id": 99,
+      "name": "fusion"
+    },
+    {
+      "id": 34,
+      "name": "gcp"
+    },
+    {
+      "id": 95,
+      "name": "I"
+    },
+    {
+      "id": 79,
+      "name": "iceberg"
+    },
+    {
+      "id": 45,
+      "name": "interview"
+    },
+    {
+      "id": 92,
+      "name": "Lakehouse"
+    },
+    {
+      "id": 102,
+      "name": "llm"
+    },
+    {
+      "id": 103,
+      "name": "mcp"
+    },
+    {
+      "id": 30,
+      "name": "migration"
+    },
+    {
+      "id": 38,
+      "name": "ml"
+    },
+    {
+      "id": 109,
+      "name": "Monitoring"
+    },
+    {
+      "id": 75,
+      "name": "openflow"
+    },
+    {
+      "id": 44,
+      "name": "optimization"
+    },
+    {
+      "id": 48,
+      "name": "osi"
+    },
+    {
+      "id": 94,
+      "name": "perfect"
+    },
+    {
+      "id": 113,
+      "name": "Platform Engineering"
+    },
+    {
+      "id": 91,
+      "name": "prompt engineering"
+    },
+    {
+      "id": 78,
+      "name": "rag"
+    },
+    {
+      "id": 106,
+      "name": "roi"
+    },
+    {
+      "id": 71,
+      "name": "salesforce"
+    },
+    {
+      "id": 105,
+      "name": "security"
+    },
+    {
+      "id": 31,
+      "name": "snowflake"
+    },
+    {
+      "id": 39,
+      "name": "sql"
+    },
+    {
+      "id": 29,
+      "name": "synapse"
+    }
+  ],
+  "fetchedAt": "2026-09-29T16:15:08.103Z"
+}

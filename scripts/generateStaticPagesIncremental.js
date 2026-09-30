@@ -152,6 +152,104 @@ function robotsForWordCount(wordCount, pathname) {
   return ADSENSE_INDEX_ROBOTS;
 }
 
+/**
+ * Extract HowTo steps from HTML content (SSG-compatible version)
+ * Uses regex patterns to detect step-based content for HowTo schema
+ */
+function extractHowToStepsSSG(html) {
+  if (!html || typeof html !== 'string') return [];
+
+  const steps = [];
+
+  try {
+    // Strategy 1: Headings with "Step N:" pattern
+    const stepHeadingPattern = /<h[23][^>]*>([^<]*step\s+\d+\s*[:\-–—]\s*[^<]*)<\/h[23]>/gi;
+    const headings = [...html.matchAll(stepHeadingPattern)];
+
+    for (const match of headings) {
+      const headingHtml = match[0];
+      const headingText = match[1].replace(/<[^>]+>/g, '').trim();
+      const stepName = headingText.replace(/^step\s+\d+\s*[:\-–—]\s*/i, '').trim() || headingText;
+
+      // Find content after this heading until next heading
+      const afterHeading = html.substring(match.index + headingHtml.length);
+      const nextHeadingIdx = afterHeading.search(/<h[1-6][^>]*>/i);
+      const stepContent = nextHeadingIdx >= 0 ? afterHeading.substring(0, nextHeadingIdx) : afterHeading.substring(0, 2000);
+
+      // Extract text from paragraphs, lists, code blocks
+      let stepText = stepContent
+        .replace(/<pre\b[^>]*>[\s\S]*?<\/pre>/gi, (m) => m.replace(/<[^>]+>/g, '').substring(0, 200))
+        .replace(/<code\b[^>]*>[\s\S]*?<\/code>/gi, (m) => m.replace(/<[^>]+>/g, '').substring(0, 200))
+        .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, '$1. ')
+        .replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, '$1 ')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .substring(0, 500);
+
+      if (stepText.length > 20) {
+        steps.push({ name: stepName, text: stepText });
+      }
+    }
+
+    // Strategy 2: Ordered list under "how to" / "steps" / "tutorial" section
+    if (steps.length < 2) {
+      const sectionPattern = /<h[23][^>]*>([^<]*(?:how\s+to|steps|tutorial|getting\s+started|setup\s+guide|installation)[^<]*)<\/h[23]>/gi;
+      const sections = [...html.matchAll(sectionPattern)];
+
+      for (const match of sections) {
+        if (steps.length >= 2) break;
+        const afterSection = html.substring(match.index + match[0].length);
+        const nextHeadingIdx = afterSection.search(/<h[1-3][^>]*>/i);
+        const sectionContent = nextHeadingIdx >= 0 ? afterSection.substring(0, nextHeadingIdx) : afterSection.substring(0, 3000);
+
+        const olMatch = sectionContent.match(/<ol[^>]*>([\s\S]*?)<\/ol>/i);
+        if (olMatch) {
+          const listContent = olMatch[1];
+          const items = [...listContent.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)];
+          for (const item of items) {
+            const itemText = item[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+            if (itemText.length > 15) {
+              const dotIndex = itemText.indexOf('. ');
+              const name = dotIndex > 0 ? itemText.substring(0, dotIndex) : itemText.substring(0, 80);
+              const desc = dotIndex > 0 ? itemText.substring(dotIndex + 2) : itemText;
+              steps.push({ name, text: desc.substring(0, 500) });
+            }
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.warn('HowTo extraction failed:', error.message);
+    return [];
+  }
+
+  return steps.length >= 2 ? steps.slice(0, 10) : [];
+}
+
+/**
+ * Generate HowTo schema JSON-LD
+ */
+function generateHowToSchemaSSG(steps, title, description, imageUrl) {
+  if (!steps || steps.length < 2) return null;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: title,
+    description: description,
+    image: imageUrl ? { '@type': 'ImageObject', url: imageUrl } : undefined,
+    step: steps.map((step, index) => ({
+      '@type': 'HowToStep',
+      position: index + 1,
+      name: step.name,
+      text: step.text,
+      ...(step.image && { image: { '@type': 'ImageObject', url: step.image } })
+    })),
+    totalTime: undefined // Could be calculated from readTime
+  };
+}
+
 /** Belt-and-suspenders: rewrite leftover dist HTML so held-out URLs cannot ship with index. */
 function stampHeldOutRobots(distDir) {
   const roots = [
@@ -575,6 +673,14 @@ function normalizeHeadings(html) {
 // ============================================================================
 
 const CACHE_FILE = path.join(__dirname, '..', '.build-cache.json');
+
+// 🔥 NEW: Local cache for WordPress posts — survives API outages
+const WP_POSTS_CACHE_FILE = path.join(__dirname, '..', '.wp-posts-cache.json');
+const WP_CATEGORIES_CACHE_FILE = path.join(__dirname, '..', '.wp-categories-cache.json');
+const WP_TAGS_CACHE_FILE = path.join(__dirname, '..', '.wp-tags-cache.json');
+
+// Minimum articles required to consider build successful (adjust if you have fewer)
+const MIN_ARTICLES_FOR_SUCCESS = 1;
 
 const ESSENTIAL_PAGES = [
   {
@@ -2308,6 +2414,36 @@ function hashContent(content) {
 }
 
 // ============================================================================
+// WORDPRESS API CACHE — survives API outages
+// ============================================================================
+
+function loadWPCache(cacheFile, label) {
+  try {
+    if (fs.existsSync(cacheFile)) {
+      const cache = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
+      console.log(`📦 Loaded ${label} cache: ${cache.posts?.length || cache.categories?.length || cache.tags?.length || 0} items (fetched ${new Date(cache.fetchedAt).toLocaleString()})`);
+      return cache;
+    }
+  } catch (e) {
+    console.warn(`⚠️  Could not load ${label} cache:`, e.message);
+  }
+  return null;
+}
+
+function saveWPCache(cacheFile, label, data) {
+  try {
+    const cache = {
+      ...data,
+      fetchedAt: new Date().toISOString(),
+    };
+    fs.writeFileSync(cacheFile, JSON.stringify(cache, null, 2));
+    console.log(`💾 Saved ${label} cache`);
+  } catch (e) {
+    console.error(`❌ Failed to save ${label} cache:`, e.message);
+  }
+}
+
+// ============================================================================
 // BUNDLE DETECTION
 // ============================================================================
 
@@ -2445,6 +2581,33 @@ function findCriticalChunks(distDir) {
 }
 
 async function fetchFromWP(endpoint, fields = '') {
+  const isPostsEndpoint = endpoint === '/posts';
+  const isCategoriesEndpoint = endpoint === '/categories';
+  const isTagsEndpoint = endpoint === '/tags';
+
+  // 🔥 Try cache first for main endpoints
+  if (isPostsEndpoint) {
+    const cached = loadWPCache(WP_POSTS_CACHE_FILE, 'posts');
+    if (cached?.posts?.length) {
+      console.log(`📦 Using cached posts (${cached.posts.length} items)`);
+      return cached.posts;
+    }
+  }
+  if (isCategoriesEndpoint) {
+    const cached = loadWPCache(WP_CATEGORIES_CACHE_FILE, 'categories');
+    if (cached?.categories?.length) {
+      console.log(`📦 Using cached categories (${cached.categories.length} items)`);
+      return cached.categories;
+    }
+  }
+  if (isTagsEndpoint) {
+    const cached = loadWPCache(WP_TAGS_CACHE_FILE, 'tags');
+    if (cached?.tags?.length) {
+      console.log(`📦 Using cached tags (${cached.tags.length} items)`);
+      return cached.tags;
+    }
+  }
+
   const items = [];
   let page = 1;
   const RETRY_COUNT = 3;
@@ -2484,8 +2647,33 @@ async function fetchFromWP(endpoint, fields = '') {
         if (attempt < RETRY_COUNT) {
           await new Promise(resolve => setTimeout(resolve, 2000 * attempt)); // Linear backoff
         } else {
-          // After all retries failed, log error but continue with empty data
+          // After all retries failed, log error
           console.error(`âŒ Error fetching ${endpoint}: ${error.message}`);
+          
+          // 🔥 FALLBACK: Try cache if API completely fails
+          if (isPostsEndpoint) {
+            const cached = loadWPCache(WP_POSTS_CACHE_FILE, 'posts');
+            if (cached?.posts?.length) {
+              console.log(`🔄 API failed — falling back to cached posts (${cached.posts.length} items)`);
+              return cached.posts;
+            }
+          }
+          if (isCategoriesEndpoint) {
+            const cached = loadWPCache(WP_CATEGORIES_CACHE_FILE, 'categories');
+            if (cached?.categories?.length) {
+              console.log(`🔄 API failed — falling back to cached categories (${cached.categories.length} items)`);
+              return cached.categories;
+            }
+          }
+          if (isTagsEndpoint) {
+            const cached = loadWPCache(WP_TAGS_CACHE_FILE, 'tags');
+            if (cached?.tags?.length) {
+              console.log(`🔄 API failed — falling back to cached tags (${cached.tags.length} items)`);
+              return cached.tags;
+            }
+          }
+          
+          // No cache fallback - return empty
           console.log(`â„¹ï¸  Continuing build with empty data for ${endpoint}`);
           return items; // Return whatever we have so far (might be empty)
         }
@@ -2504,6 +2692,19 @@ async function fetchFromWP(endpoint, fields = '') {
     items.push(...data);
     page++;
 
+  }
+
+  // 🔥 Save to cache on successful fetch
+  if (items.length > 0) {
+    if (isPostsEndpoint) {
+      saveWPCache(WP_POSTS_CACHE_FILE, 'posts', { posts: items });
+    }
+    if (isCategoriesEndpoint) {
+      saveWPCache(WP_CATEGORIES_CACHE_FILE, 'categories', { categories: items });
+    }
+    if (isTagsEndpoint) {
+      saveWPCache(WP_TAGS_CACHE_FILE, 'tags', { tags: items });
+    }
   }
 
   return items;
@@ -3272,6 +3473,67 @@ ${CONSENT_MODE_V2_HTML}
         font-weight: 650;
         color: #e2e8f0;
       }
+
+      /* 🔥 AUTHOR BIO STYLES - E-E-A-T visible block */
+      .seo-content .author-bio {
+        margin: 3rem 0 0;
+      }
+      .seo-content .author-bio h2 {
+        color: #93c5fd;
+        font-size: 1.4rem;
+        margin: 0 0 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .seo-content .author-bio img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid rgba(96, 165, 250, 0.4);
+        flex-shrink: 0;
+      }
+      .seo-content .author-bio p {
+        color: #cbd5e1;
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin: 0 0 1rem;
+      }
+      .seo-content .author-bio strong {
+        color: #f8fafc;
+      }
+      .seo-content .author-bio a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+      .seo-content .author-bio a:first-child {
+        background: rgba(96, 165, 250, 0.15);
+        border: 1px solid rgba(96, 165, 250, 0.3);
+        color: #60a5fa;
+      }
+      .seo-content .author-bio a:nth-child(2) {
+        background: rgba(16, 185, 129, 0.15);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #34d399;
+      }
+      .seo-content .author-bio a:nth-child(3) {
+        background: rgba(251, 191, 36, 0.15);
+        border: 1px solid rgba(251, 191, 36, 0.3);
+        color: #fbbf24;
+      }
+      .seo-content .author-bio a:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+
       .seo-content .article-body .article-code {
         margin: 1.5rem 0;
         border-radius: 10px;
@@ -3697,6 +3959,94 @@ ${CONSENT_MODE_V2_HTML}
             ${crawlerBody}
             ${articleFaqHtml}
           </div>
+
+          <!-- 🔥 AUTHOR BIO BLOCK - Critical E-E-A-T signal visible to crawlers
+               Matches React AuthorBioCard structure for smooth hydration -->
+          <section class="author-bio" aria-labelledby="author-heading" style="margin-top: 3rem;">
+            <div class="author-bio-card" style="position: relative; border-radius: 1.5rem; border: 1px solid rgba(96, 165, 250, 0.2); background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.3) 50%, rgba(15, 23, 42, 0.9) 100%); padding: 2rem 2.5rem; backdrop-filter: blur(8px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);">
+              <!-- Decorative blobs -->
+              <div class="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-cyan-500/5" style="border-radius: 1.5rem;"></div>
+              <div class="pointer-events-none absolute -top-20 -right-20 w-72 h-72 rounded-full blur-3xl bg-blue-500/8"></div>
+              <div class="pointer-events-none absolute -bottom-10 -left-10 w-56 h-56 rounded-full blur-3xl bg-purple-500/6"></div>
+
+              <!-- Badge row -->
+              <div class="relative mb-5" style="display: flex; align-items: center; gap: 0.75rem;">
+                <span style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 9999px; background: rgba(96, 165, 250, 0.15); border: 1px solid rgba(96, 165, 250, 0.3); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #93c5fd;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #60a5fa;">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                  Founder & Owner
+                </span>
+              </div>
+
+              {/* Main row */}
+              <div class="relative" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="flex flex-col sm:flex-row gap-5 md:gap-7" style="align-items: flex-start;">
+                  {/* Avatar */}
+                  <div class="flex-shrink-0">
+                    <img src="${escapeHtml(authorData?.avatarUrl || 'https://secure.gravatar.com/avatar/344a01fa4bf69414fd1de0aee6e1fce9?s=96&d=mm&r=g')}" alt="${escapeHtml(authorData?.name || 'Sainath Reddy')}" width="96" height="96" loading="lazy" style="width: 80px; height: 80px; border-radius: 1rem; object-fit: cover; border: 2px solid rgba(96, 165, 250, 0.3); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(96, 165, 250, 0.1);" />
+                  </div>
+
+                  {/* Info */}
+                  <div class="flex-1 space-y-3 min-w-0" style="min-width: 0;">
+                    {/* Name */}
+                    <div>
+                      <a href="https://dataengineerhub.blog/about" style="text-decoration: none; color: inherit;">
+                        <h3 style="font-size: 1.5rem; font-weight: 900; color: #ffffff; margin: 0; line-height: 1.2;">
+                          ${escapeHtml(authorData?.name || 'Sainath Reddy')}
+                        </h3>
+                      </a>
+                      <p style="font-size: 0.875rem; font-weight: 600; color: #93c5fd; margin: 0.25rem 0 0;">Founder & Owner</p>
+                    </div>
+
+                    {/* Bio */}
+                    <p style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.7; margin: 0; max-width: 42rem;">
+                      Data Engineer with 5+ years of experience building scalable data pipelines, cloud data warehouses, and end-to-end analytics solutions. Passionate about making complex data engineering concepts accessible to everyone.
+                    </p>
+
+                    {/* Social links + CTA */}
+                    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; padding-top: 0.5rem;">
+                      <a href="https://dataengineerhub.blog/about" style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 600; color: #93c5fd; padding: 0.5rem 1rem; border-radius: 0.5rem; background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.2); text-decoration: none; transition: all 0.2s;">
+                        About the Author
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                      </a>
+                      <a href="https://dataengineerhub.blog/contact" style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 600; color: #34d399; padding: 0.5rem 1rem; border-radius: 0.5rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); text-decoration: none; transition: all 0.2s;">
+                        Contact
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                      </a>
+                      <a href="https://www.linkedin.com/in/sainathreddypogaku/" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 600; color: #fbbf24; padding: 0.5rem 1rem; border-radius: 0.5rem; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); text-decoration: none; transition: all 0.2s;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227.792 24 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        LinkedIn
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CTA buttons (mobile visible, desktop in right column in React) */}
+                <div class="flex gap-3 mt-5 md:hidden" style="flex-wrap: wrap;">
+                  <a href="/articles" style="flex: 1; min-width: 140px; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: linear-gradient(135deg, #2563eb, #7c3aed); color: white; font-weight: 700; border-radius: 0.5rem; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4); transition: all 0.2s;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    More Articles
+                  </a>
+                  <a href="/contact" style="flex: 1; min-width: 140px; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.5rem; border: 2px solid rgba(96, 165, 250, 0.4); color: #93c5fd; font-weight: 600; border-radius: 0.5rem; text-decoration: none; background: rgba(96, 165, 250, 0.05); transition: all 0.2s;">
+                    Get in Touch
+                  </a>
+                </div>
+              </div>
+
+              {/* Desktop CTA buttons - hidden on mobile, shown on desktop */}
+              <div class="hidden md:flex flex-col gap-3 flex-shrink-0" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(96, 165, 250, 0.15);">
+                <a href="/articles" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: linear-gradient(135deg, #2563eb, #7c3aed); color: white; font-weight: 700; border-radius: 0.5rem; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4); transition: all 0.2s;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  More Articles
+                </a>
+                <a href="/contact" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.5rem; border: 2px solid rgba(96, 165, 250, 0.4); color: #93c5fd; font-weight: 600; border-radius: 0.5rem; text-decoration: none; background: rgba(96, 165, 250, 0.05); transition: all 0.2s;">
+                  Get in Touch
+                </a>
+              </div>
+            </div>
+          </section>
 
           <!-- AdSense: we rely on Auto Ads (enabled in AdSense UI) instead of
                manual ad units. The adsbygoogle loader in head is enough
@@ -4252,7 +4602,10 @@ ${CONSENT_MODE_V2_HTML}
 
 function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   const { jsFile, cssFile } = bundleFiles;
-  const pagePath = `/category/${category.slug}`;
+  
+  // 🔥 FIX: Some categories may not have slug — derive from name
+  const catSlug = category.slug || category.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const pagePath = `/category/${catSlug}`;
 
   // ðŸ›¡ï¸ Sanitize WordPress-sourced category name
   const safeName = escapeHtml(category.name);
@@ -4282,7 +4635,7 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
     snowflake: "Snowflake is a cloud-based data platform that offers a unique multi-cluster shared-data architecture. It supports elastic compute scaling, zero-copy cloning, secure data sharing, and native semi-structured data support. Learn how to optimize query performance, manage costs, structure dbt projects, utilize Cortex AI, and build real-time streaming pipelines with Snowflake."
   };
 
-  const defaultIntro = categoryIntroMap[category.slug.toLowerCase()] || '';
+  const defaultIntro = categoryIntroMap[catSlug.toLowerCase()] || '';
   const finalCatDescription = catDescription || defaultIntro;
 
   // Build article list HTML
@@ -7211,11 +7564,13 @@ function buildPracticeQuestionPreview(quizSlug) {
 
         // Skip empty categories — pages with "0 articles" trigger AdSense "low value content" rejection
         if (categoryArticles.length === 0) {
-          console.log(`   â­ Skipping empty category: ${cat.name} (0 articles)`);
+          console.log(`   ⏭️  Skipping empty category: ${cat.name} (0 articles)`);
           continue;
         }
 
-        const pagePath = `/category/${cat.slug}`;
+        // 🔥 FIX: Some categories may not have slug — derive from name
+        const catSlug = cat.slug || cat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        const pagePath = `/category/${catSlug}`;
         currentPages.add(pagePath);
 
         const contentHash = hashContent({ cat, articleCount: categoryArticles.length, articles: categoryArticles.map(a => a.slug) });
@@ -7841,6 +8196,61 @@ function buildPracticeQuestionPreview(quizSlug) {
 
   newCache.stats = stats;
   saveCache(newCache);
+
+  // 🔥 POST-BUILD VERIFICATION: Ensure article pages were actually generated
+  let articleCount = 0;
+  let missingArticles = [];
+  
+  if (fs.existsSync(articlesDir)) {
+    const entries = fs.readdirSync(articlesDir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.isDirectory() && entry.name !== 'index.html') {
+        const articleHtmlPath = path.join(articlesDir, entry.name, 'index.html');
+        if (fs.existsSync(articleHtmlPath)) {
+          articleCount++;
+        } else {
+          missingArticles.push(entry.name);
+        }
+      }
+    }
+  }
+  
+  console.log('\n' + '='.repeat(60));
+  console.log('🔍 POST-BUILD VERIFICATION');
+  console.log('='.repeat(60));
+  console.log(`📁 Article directories found: ${articleCount}`);
+  if (missingArticles.length > 0) {
+    console.log(`❌ Missing index.html for: ${missingArticles.slice(0, 10).join(', ')}${missingArticles.length > 10 ? ' ...' : ''}`);
+  }
+  
+  // Check against WordPress posts if we have that data
+  const cachedPosts = loadWPCache(WP_POSTS_CACHE_FILE, 'posts');
+  const expectedArticleCount = cachedPosts?.posts?.length || 0;
+  if (expectedArticleCount > 0) {
+    console.log(`📊 Expected articles (from WP): ${expectedArticleCount}`);
+    const coverage = ((articleCount / expectedArticleCount) * 100).toFixed(1);
+    console.log(`📈 Generation coverage: ${coverage}%`);
+    
+    if (articleCount < MIN_ARTICLES_FOR_SUCCESS) {
+      console.error(`\n❌ BUILD FAILED: Only ${articleCount} articles generated (minimum: ${MIN_ARTICLES_FOR_SUCCESS})`);
+      console.error('   This usually means WordPress API failed AND no cache was available.');
+      console.error('   Check .wp-posts-cache.json exists or WordPress API is reachable.');
+      process.exit(1);
+    }
+    
+    if (coverage < 50) {
+      console.warn(`\n⚠️  WARNING: Low article generation coverage (${coverage}%)`);
+      console.warn('   Many articles may be missing from dist/articles/');
+    }
+  } else if (articleCount < MIN_ARTICLES_FOR_SUCCESS) {
+    console.error(`\n❌ BUILD FAILED: Only ${articleCount} articles generated (minimum: ${MIN_ARTICLES_FOR_SUCCESS})`);
+    console.error('   No WordPress cache available to verify expected count.');
+    process.exit(1);
+  }
+  
+  if (missingArticles.length > 0) {
+    console.warn(`\n⚠️  ${missingArticles.length} article directories missing index.html`);
+  }
 
   const totalTime = ((Date.now() - startTime) / 1000).toFixed(2);
 

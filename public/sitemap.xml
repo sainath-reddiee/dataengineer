@@ -918,16 +918,6 @@
     </image:image>
   </url>
 <url>
-    <loc>https://dataengineerhub.blog/articles/build-databricks-ai-agent-gpt5-guide</loc>
-    <lastmod>2025-10-17</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/ChatGPT-Image-Oct-16-2025-08_18_08-PM_11zon.jpg</image:loc>
-      <image:title>Build a Databricks AI Agent with GPT-5</image:title>
-    </image:image>
-  </url>
-<url>
     <loc>https://dataengineerhub.blog/articles/salesforce-agentforce-complete-guide-2025</loc>
     <lastmod>2025-10-17</lastmod>
     <changefreq>yearly</changefreq>
@@ -935,16 +925,6 @@
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg_11zon-2.jpg</image:loc>
       <image:title>Salesforce Agentforce: Complete 2025 Guide &amp; Examples</image:title>
-    </image:image>
-  </url>
-<url>
-    <loc>https://dataengineerhub.blog/articles/snowflake-unique-aggregations-hidden-functions</loc>
-    <lastmod>2025-10-16</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/C4F9EC12-CE45-4426-ACF5-6CE3A6D5A08.jpeg</image:loc>
-      <image:title>Snowflake’s Unique Aggregation Functions You Need to Know</image:title>
     </image:image>
   </url>
 <url>
@@ -1008,16 +988,6 @@
     </image:image>
   </url>
 <url>
-    <loc>https://dataengineerhub.blog/articles/mastering-real-time-etl-with-google-cloud-dataflow</loc>
-    <lastmod>2025-10-08</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/jpeg_imresizer.jpg</image:loc>
-      <image:title>Mastering Real-Time ETL with Google Cloud Dataflow: A Comprehensive Tutorial</image:title>
-    </image:image>
-  </url>
-<url>
     <loc>https://dataengineerhub.blog/articles/star-schema-vs-snowflake-schema-comparison</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1025,16 +995,6 @@
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/dataenigneerhub.jpg</image:loc>
       <image:title>Star Schema vs Snowflake Schema:Key Differences &amp; Use Cases</image:title>
-    </image:image>
-  </url>
-<url>
-    <loc>https://dataengineerhub.blog/articles/data-pipelines-python</loc>
-    <lastmod>2025-10-08</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/Designer_imresizer-10.jpg</image:loc>
-      <image:title>Mastering Python Data Pipelines: Extract from APIs &amp; Databases, Load to S3 &amp; Snowflake</image:title>
     </image:image>
   </url>
 <url>
@@ -1078,16 +1038,6 @@
     </image:image>
   </url>
 <url>
-    <loc>https://dataengineerhub.blog/articles/querying-data-in-snowflake</loc>
-    <lastmod>2025-10-08</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/New.png</image:loc>
-      <image:title>Querying data in snowflake: A Guide to JSON and Time Travel</image:title>
-    </image:image>
-  </url>
-<url>
     <loc>https://dataengineerhub.blog/articles/load-data-into-snowflake</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1115,16 +1065,6 @@
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-3.png</image:loc>
       <image:title>Advanced Snowflake Interview Questions for Experienced</image:title>
-    </image:image>
-  </url>
-<url>
-    <loc>https://dataengineerhub.blog/articles/automated-etl-airflow-python</loc>
-    <lastmod>2025-10-08</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-2.png</image:loc>
-      <image:title>Automated ETL with Airflow and Python: A Practical Guide</image:title>
     </image:image>
   </url>
 <url>
@@ -1177,12 +1117,6 @@
   </url>
 <url>
     <loc>https://dataengineerhub.blog/cheatsheets/airflow-essentials</loc>
-    <lastmod>2026-04-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-<url>
-    <loc>https://dataengineerhub.blog/cheatsheets/snowflake-best-practices</loc>
     <lastmod>2026-04-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

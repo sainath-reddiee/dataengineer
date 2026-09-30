@@ -52,6 +52,7 @@ const AuthorBioCard = ({ author }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: 'easeOut' }}
       className="border-t-2 border-gray-700/50 pt-8 mt-12"
+      suppressHydrationWarning
     >
       {/* Card */}
       <div className={isOwner

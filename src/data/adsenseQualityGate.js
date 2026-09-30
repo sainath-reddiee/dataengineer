@@ -26,6 +26,21 @@
  * Pages stay live for human visitors. Flip the flag after AdSense approval
  * to reopen those sections for organic search.
  */
+/**
+ * ADSENSE_REVIEW_MODE = true during AdSense review process.
+ * 
+ * When TRUE:
+ * - Glossary, Compare, Tag, Category, Interview Prep, Practice, 
+ *   News, Newsletter, Reading List, most Cheatsheets, most Tools
+ *   are NOINDEXED via robots meta + X-Robots-Tag header
+ * - Only flagship pages indexed: Articles, About, Contact, Privacy,
+ *   Terms, Disclaimer, Editorial Standards, Certification, Advertise,
+ *   Contribute, Contributors, Tools Hub, Cheatsheets Hub, 
+ *   allowlisted Tools/Cheatsheets
+ * 
+ * SET TO FALSE ONLY AFTER ADSENSE APPROVAL.
+ * Then gradually reopen sections while monitoring.
+ */
 export const ADSENSE_REVIEW_MODE = true;
 /** Bump when held-out paths change so incremental SSG rewrites stale robots meta. */
 export const ADSENSE_GATE_VERSION = 4;
