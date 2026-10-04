@@ -412,7 +412,7 @@ const RelatedPosts = ({ currentPostId, category }) => {
 // ============================================================================
 // 🎨 OPTION 1: MINIMALIST AUTHOR CHIP + FLOATING ACTION (RECOMMENDED)
 // ============================================================================
-const MetadataOption1 = ({ safePost, formatDate }) => {
+const MetadataOption1 = ({ safePost, formatDate, slug }) => {
   const isOwner = isBlogOwner({ name: safePost.author, id: safePost.authorData?.id, slug: safePost.authorData?.slug });
   const authorDisplayName = isOwner ? OWNER_DISPLAY_NAME : (safePost.author || 'Unknown Author');
   const authorInitials = authorDisplayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -446,12 +446,22 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
       </div>
 
       {/* Title */}
-      <h1 className="text-2xl md:text-3xl lg:text-[2.75rem] font-black leading-tight bg-gradient-to-r from-white via-blue-100 to-blue-300 bg-clip-text text-transparent">
+      <h1
+        className="text-2xl md:text-3xl lg:text-[2.75rem] font-black"
+        style={{
+          lineHeight: 1.3,
+          backgroundImage: 'linear-gradient(to right, #ffffff, #dbeafe, #93c5fd)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          paddingBottom: '0.15em',
+        }}
+      >
         {safePost.title}
       </h1>
 
-      {/* 🔥 OPTION 1: AUTHOR CHIP WITH FLOATING SHARE */}
-      <div className="flex items-center justify-between pt-6 group">
+      {/* 🔥 OPTION 1: AUTHOR CHIP WITH FLOATING SHARE + READER ACTIONS */}
+      <div className="flex items-center justify-between pt-6 group flex-wrap gap-3">
         {/* Author Chip - Clickable */}
         <AuthorWrapper
           className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-800 hover:to-slate-700 border border-slate-600/40 hover:border-slate-500/60 transition-all backdrop-blur-sm group/chip"
@@ -475,6 +485,12 @@ const MetadataOption1 = ({ safePost, formatDate }) => {
           </div>
           {authorLink && <ArrowRight className="h-4 w-4 text-gray-400 group-hover/chip:text-blue-400 transition-colors" />}
         </AuthorWrapper>
+
+        {/* Reader Actions: Listen + Save */}
+        <div className="flex items-center gap-2">
+          <AudioReader content={safePost.content} title={safePost.title} />
+          <SaveArticleButton slug={slug} title={safePost.title} />
+        </div>
 
         {/* Floating Meta Badges */}
         <div className="flex items-center gap-2">
@@ -764,12 +780,7 @@ const ArticlePage = () => {
           </div>
 
           {/* Metadata Section */}
-          <MetadataOption1 safePost={safePost} formatDate={formatDate} />
-          {/* Reader Action Bar: Listen to this article + Save for later in ONE line */}
-          <div className="flex flex-wrap items-center gap-3 pt-1">
-            <AudioReader content={safePost.content} title={safePost.title} />
-            <SaveArticleButton slug={slug} title={safePost.title} />
-          </div>
+          <MetadataOption1 safePost={safePost} formatDate={formatDate} slug={slug} />
 
           {/* Key Takeaways — AEO/AI visibility, Speakable schema target */}
           <KeyTakeaways items={keyTakeaways} title={takeawaysTitle} />
