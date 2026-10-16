@@ -3,7 +3,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import Hero from '../components/Hero';
 import FeaturedToolsRail from '../components/FeaturedToolsRail';
 import MetaTags from '../components/SEO/MetaTags';
-import { Sparkles, TrendingUp, FileText, Zap, BookOpen, Wrench, GraduationCap } from 'lucide-react';
+import { Sparkles, TrendingUp, FileText, Zap, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 // cheatsheetData is large (~all cheat sheet content). We dynamic-import it so
@@ -165,10 +165,6 @@ const HomePage = () => {
             ============================================================================ */}
         <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-4 sm:py-6 space-y-8 sm:space-y-10">
 
-          <div className="min-h-[11rem] sm:min-h-[8rem]">
-            <FeaturedToolsRail />
-          </div>
-
           <section className="rounded-xl border border-slate-700/70 bg-slate-800/40 px-5 py-4 sm:px-6 sm:py-5">
             <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
               Written by{' '}
@@ -186,6 +182,26 @@ const HomePage = () => {
                 article library
               </Link>.
             </p>
+          </section>
+
+          {/* Latest articles lead: this is a publication first, tools second. */}
+          <section>
+            <SectionHeader
+              icon={FileText}
+              title="Latest Articles"
+              subtitle="Fresh content weekly"
+              actionText="Archive"
+              actionLink="/articles"
+            />
+            <Suspense fallback={<SectionSkeleton height="h-40" />}>
+              <RecentPosts
+                initialLimit={6}
+                showLoadMore={true}
+                showViewToggle={false}
+                title={null}
+                showCategoryError={false}
+              />
+            </Suspense>
           </section>
 
           {/* 🌟 FEATURED POSTS - Optimized section */}
@@ -220,6 +236,10 @@ const HomePage = () => {
             <NewsPosts />
           </Suspense>
 
+          <div className="min-h-[11rem] sm:min-h-[8rem]">
+            <FeaturedToolsRail />
+          </div>
+
           {/* 🛠 TECH CATEGORIES - Grid view */}
           <section>
             <SectionHeader
@@ -243,74 +263,6 @@ const HomePage = () => {
               actionLink="/cheatsheets"
             />
             <CheatSheetCards />
-          </section>
-
-          <section>
-            <SectionHeader
-              icon={Wrench}
-              title="Interview prep"
-              subtitle="Practice questions and certification paths"
-            />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Link
-                to="/tools"
-                className="card-3d group bg-gradient-to-br from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 border border-slate-700 hover:border-blue-500/50 rounded-xl p-5"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-blue-500/20">
-                    <Wrench className="w-5 h-5 text-blue-400" />
-                  </div>
-                  <h3 className="text-base font-semibold text-white group-hover:text-blue-400 transition-colors">
-                    Browse the full tools hub
-                  </h3>
-                </div>
-                <p className="text-sm text-gray-400">
-                  Filter by Cost, SQL, Convert, or pipeline stage. Every calculator stays in the browser.
-                </p>
-                <span className="inline-block mt-3 text-xs font-semibold text-blue-400 group-hover:text-blue-300">
-                  Open tools hub →
-                </span>
-              </Link>
-              <Link
-                to="/interview-prep"
-                className="card-3d group bg-gradient-to-br from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 border border-slate-700 hover:border-purple-500/50 rounded-xl p-5"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-purple-500/20">
-                    <GraduationCap className="w-5 h-5 text-purple-400" />
-                  </div>
-                  <h3 className="text-base font-semibold text-white group-hover:text-purple-400 transition-colors">
-                    Interview Prep Hub
-                  </h3>
-                </div>
-                <p className="text-sm text-gray-400">
-                  Curated Snowflake, SQL, Python, dbt & system-design interview questions with expert answers for data engineering roles.
-                </p>
-                <span className="inline-block mt-3 text-xs font-semibold text-purple-400 group-hover:text-purple-300">
-                  Start preparing →
-                </span>
-              </Link>
-            </div>
-          </section>
-
-          {/* 📚 RECENT POSTS - Compact list */}
-          <section>
-            <SectionHeader
-              icon={FileText}
-              title="Latest Articles"
-              subtitle="Fresh content weekly"
-              actionText="Archive"
-              actionLink="/articles"
-            />
-            <Suspense fallback={<SectionSkeleton height="h-40" />}>
-              <RecentPosts
-                initialLimit={6}
-                showLoadMore={true}
-                showViewToggle={false}
-                title={null}
-                showCategoryError={false}
-              />
-            </Suspense>
           </section>
 
           {/* AD - BOTTOM */}

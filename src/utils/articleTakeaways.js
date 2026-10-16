@@ -34,7 +34,9 @@ function cleanLi(s) {
     .replace(/<\/p>/gi, ' ')
     .replace(/<\/li>/gi, ' ');
   const text = withSpaces.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
-  return decodeHtmlEntities(text);
+  // The takeaways card draws its own bullet, so drop typed markers such as
+  // "→", "•", "-" or "✓" that otherwise render as a second bullet.
+  return decodeHtmlEntities(text).replace(/^(?:[→•▸►✓✔➜➤*-]\s*)+/u, '').trim();
 }
 
 function itemsFromListHtml(sectionHtml) {

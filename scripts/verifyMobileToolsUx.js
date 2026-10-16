@@ -39,7 +39,7 @@ assert(footer.includes('/tools/sql-playground'), 'Footer should deep-link the pl
 assert(widget.includes('/tools/snowflake-cost-calculator'), 'Article widgets should open a real calculator');
 assert(!widget.includes("to: '/compare'"), 'Article widgets should not dump people on Compare');
 assert(articleMap.includes('calculators:'), 'Related tools map should include calculators');
-assert(article.includes('Interactive tools'), 'Articles should list interactive tools on mobile');
+assert(article.includes('<InlineToolWidget'), 'Articles should offer one relevant interactive tool');
 assert(playground.includes("searchParams.get('sql')"), 'Playground should accept ?sql= deep links');
 assert(playground.includes("pane === 'editor'"), 'Playground should tab Editor/Results on phones');
 assert(motion.includes('/tools?stack='), 'Homepage stages should jump into a filtered tools hub');

@@ -125,6 +125,18 @@ a:not([class]) {
   overflow-wrap: break-word;
 }
 
+/* Long-form reading size: 17px on phones, 18px from laptop width. The
+   column itself is capped near 70 characters in ArticlePage. */
+.article-content {
+  font-size: 1.0625rem;
+}
+
+@media (min-width: 1024px) {
+  .article-content {
+    font-size: 1.125rem;
+  }
+}
+
 .article-content * {
   max-width: 100%;
   box-sizing: border-box;

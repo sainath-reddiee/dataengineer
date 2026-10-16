@@ -86,11 +86,13 @@ const PostCard = ({ post }) => {
           style={{ clipPath: 'url(#liquid-mask)' }}
         >
           <motion.div variants={imageVariants} className="w-full h-full">
+            {/* Same width and quality as the base layer above so both layers
+                share one cached download instead of fetching the image twice. */}
             <LazyImage
               src={post.image}
               alt={post.title}
               width={400}
-              quality={90}
+              quality={80}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="w-full h-full object-cover"
             />

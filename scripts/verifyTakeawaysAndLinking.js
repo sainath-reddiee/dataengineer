@@ -45,6 +45,7 @@ const analysis = analyzeKeyTakeaways(sample);
 assert(analysis.source === 'heading', `expected heading source, got ${analysis.source}`);
 assert(analysis.items.length === 3, `expected 3 takeaways, got ${analysis.items.length}`);
 assert(analysis.items[0].includes('warehouse'), 'first takeaway should mention warehouse');
+assert(analysis.items.every((item) => !item.startsWith('→')), 'typed arrow markers must not render as a second bullet');
 assert(!/TL;?DR/i.test(analysis.html), 'stripped HTML must not keep the TL;DR heading');
 assert(!analysis.html.includes('Cut warehouse size'), 'stripped HTML must not keep takeaway bullets');
 assert(analysis.html.includes('How sizing works'), 'body sections after TL;DR must remain');

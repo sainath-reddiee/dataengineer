@@ -37,9 +37,9 @@ const SaveArticleButton = ({ slug, title }) => {
       </span>
       <span className="flex flex-col items-start leading-tight">
         <span className="text-xs sm:text-sm font-semibold group-hover:text-amber-300 transition-colors">
-          {saved ? 'Saved for later' : 'Save for later'}
+          {saved ? 'Saved' : 'Save'}<span className="hidden sm:inline"> for later</span>
         </span>
-        <span className="text-[10px] text-gray-400 group-hover:text-gray-300 transition-colors">
+        <span className="hidden sm:block text-[10px] text-gray-400 group-hover:text-gray-300 transition-colors">
           {saved ? 'Saved in reading list' : 'Read offline or later'}
         </span>
       </span>

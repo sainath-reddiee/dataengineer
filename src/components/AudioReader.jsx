@@ -291,10 +291,12 @@ const AudioReader = ({ content, title }) => {
               <span className="absolute inset-0 rounded-xl bg-blue-400/30 animate-ping opacity-0 group-hover:opacity-100" />
             </span>
             <span className="flex flex-col items-start leading-tight">
+              {/* Short label and no sub-line on phones so the reader actions
+                  fit one row above the article instead of stacking. */}
               <span className="text-xs sm:text-sm font-semibold text-white group-hover:text-blue-300 transition-colors">
-                Listen to this article
+                Listen<span className="hidden sm:inline"> to this article</span>
               </span>
-              <span className="text-[10px] text-gray-400 group-hover:text-gray-300 transition-colors">
+              <span className="hidden sm:block text-[10px] text-gray-400 group-hover:text-gray-300 transition-colors">
                 ~{Math.ceil(wordCount / 150)} min · browser audio
               </span>
             </span>

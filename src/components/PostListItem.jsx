@@ -117,6 +117,8 @@ const PostListItem = ({ post }) => {
             <LazyImage
               src={post.image}
               alt={post.title}
+              width={400}
+              sizes="(max-width: 640px) 100vw, 192px"
               className="aspect-video sm:aspect-square object-cover"
             />
           </motion.div>

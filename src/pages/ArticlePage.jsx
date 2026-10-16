@@ -19,20 +19,17 @@ import TagsList from '@/components/TagsList';
 import DOMPurify from 'dompurify';
 import PostCard from '@/components/PostCard';
 import PostCardSkeleton from '@/components/PostCardSkeleton';
-import ArticleNavigation from '@/components/ArticleNavigation';
 import ReadingProgressBar from '@/components/ReadingProgressBar';
 import TableOfContents, { extractHeadings, injectHeadingIds } from '@/components/TableOfContents';
 import ShareButtons from '@/components/ShareButtons';
 import KeyTakeaways from '@/components/KeyTakeaways';
 import GiscusComments from '@/components/GiscusComments';
-import InArticleCTA from '@/components/InArticleCTA';
 import AudioReader from '@/components/AudioReader';
 import EmailDigestBanner from '@/components/EmailDigestBanner';
 import useCopyCodeButtons from '@/hooks/useCopyCodeButtons';
 import useReactions from '@/hooks/useReactions';
 import usePopularity from '@/hooks/usePopularity';
 import { injectInternalLinks } from '@/lib/pseo/linkingEngine';
-import { getRelatedTools } from '@/data/articleToolMap';
 import { getRecommendedCourses, getPlatformColor } from '@/data/courseRecommendations';
 import InlineToolWidget from '@/components/InlineToolWidget';
 import AuthorBioCard from '@/components/AuthorBioCard';
@@ -42,8 +39,6 @@ import { useSsgArticleFallback } from '@/hooks/useSsgArticleFallback';
 import {
   ADSENSE_REVIEW_MODE,
   countIndexableWords,
-  isReviewAllowlistedCheatsheet,
-  isReviewAllowlistedTool,
 } from '@/data/adsenseQualityGate';
 import { MIN_INDEXABLE_WORD_COUNT } from '@/data/thinTags';
 import { analyzeArticleFaqs } from '@/utils/articleFaq';
@@ -51,12 +46,9 @@ import { enhanceArticleCodeBlocks } from '@/utils/articleCodeBlocks';
 import { analyzeKeyTakeaways, isElevatedTakeawaysSource } from '@/utils/articleTakeaways';
 import { injectArticleContextualLinks } from '@/data/articleContextualLinks';
 import ArticleFaq from '@/components/ArticleFaq';
-import CiteThisArticle from '@/components/CiteThisArticle';
 import SaveArticleButton from '@/components/SaveArticleButton';
 import ArticleSeries from '@/components/ArticleSeries';
-import UpNextBar from '@/components/UpNextBar';
-import SupportPopup from '@/components/Support/SupportPopup';
-import { BookOpen, GitCompare, Library, ExternalLink, GraduationCap, Megaphone, MessageCircleQuestion, Send, Wrench } from 'lucide-react';
+import { ExternalLink, GraduationCap, Megaphone } from 'lucide-react';
 
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
@@ -184,58 +176,6 @@ const ErrorDisplay = ({ error, onRetry, slug }) => {
   );
 };
 
-const RelatedTools = ({ post }) => {
-  const tools = React.useMemo(() => getRelatedTools(post, 4), [post]);
-  const cheatsheets = (tools.cheatsheets || []).filter(
-    (sheet) => !ADSENSE_REVIEW_MODE || isReviewAllowlistedCheatsheet(sheet.slug)
-  );
-  const comparisons = ADSENSE_REVIEW_MODE ? [] : tools.comparisons;
-  const glossary = ADSENSE_REVIEW_MODE ? [] : tools.glossary;
-  const calculators = (tools.calculators || []).filter(
-    (tool) => !ADSENSE_REVIEW_MODE || isReviewAllowlistedTool(tool.slug)
-  );
-  const total = cheatsheets.length + comparisons.length + glossary.length + calculators.length;
-  if (total === 0) return null;
-
-  const Column = ({ icon: Icon, title, items, base, accent }) => {
-    if (!items || items.length === 0) return null;
-    return (
-      <div className="rounded-2xl border border-slate-700/50 bg-slate-900/40 p-5 backdrop-blur-sm">
-        <h3 className={`flex items-center gap-2 text-lg font-bold ${accent} mb-3`}>
-          <Icon className="h-5 w-5" />
-          {title}
-        </h3>
-        <ul className="space-y-2">
-          {items.map((it) => (
-            <li key={it.slug}>
-              <Link
-                to={`${base}/${it.slug}`}
-                className="block rounded-lg border border-slate-700/40 bg-slate-800/40 px-3 py-2 text-sm text-gray-200 transition-colors hover:border-blue-400/50 hover:bg-slate-800/80 hover:text-white"
-              >
-                {it.title}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  };
-
-  return (
-    <section className="mt-16" aria-labelledby="related-tools-heading">
-      <h2 id="related-tools-heading" className="text-3xl font-bold mb-8 text-white text-center">
-        Related <span className="gradient-text">Tools &amp; References</span>
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <Column icon={Wrench}     title="Interactive tools" items={calculators} base="/tools"       accent="text-amber-300" />
-        <Column icon={BookOpen}   title="Cheat Sheets" items={cheatsheets} base="/cheatsheets" accent="text-blue-300" />
-        <Column icon={GitCompare} title="Comparisons"  items={comparisons} base="/compare"      accent="text-purple-300" />
-        <Column icon={Library}    title="Glossary"     items={glossary}    base="/glossary"     accent="text-green-300" />
-      </div>
-    </section>
-  );
-};
-
 const RecommendedCourses = ({ post }) => {
   const courses = React.useMemo(() => getRecommendedCourses(post, 3), [post]);
   if (courses.length === 0) return null;
@@ -306,75 +246,6 @@ const RecommendedCourses = ({ post }) => {
         Some links are affiliate links — at no extra cost to you, we may earn a small commission if you enroll.{' '}
         <Link to="/disclaimer" className="underline hover:text-gray-400">Learn more</Link>
       </p>
-    </section>
-  );
-};
-
-const AskQuestion = ({ post, slug }) => {
-  const [open, setOpen] = React.useState(false);
-  const [question, setQuestion] = React.useState('');
-  const [sent, setSent] = React.useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!question.trim()) return;
-
-    const subject = encodeURIComponent(`Question about: ${post.title}`);
-    const body = encodeURIComponent(
-      `Article: https://dataengineerhub.blog/articles/${slug}\n\n${question}`
-    );
-    window.location.href = `mailto:sainath@dataengineerhub.blog?subject=${subject}&body=${body}`;
-
-    trackEvent({ action: 'ask_question', category: 'engagement', label: post.title });
-    setSent(true);
-    setQuestion('');
-    setTimeout(() => { setSent(false); setOpen(false); }, 3000);
-  };
-
-  return (
-    <section className="mt-12 rounded-2xl border border-slate-700/50 bg-slate-900/40 p-6 backdrop-blur-sm text-center">
-      {sent ? (
-        <p className="text-green-400 font-medium">Your email client should have opened — thanks for reaching out!</p>
-      ) : !open ? (
-        <button
-          onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-2 text-gray-300 hover:text-blue-300 transition-colors font-medium"
-        >
-          <MessageCircleQuestion className="h-5 w-5" />
-          Have a question about this article? Ask the author
-        </button>
-      ) : (
-        <form onSubmit={handleSubmit} className="max-w-xl mx-auto space-y-4 text-left">
-          <label htmlFor="ask-q" className="block text-sm font-semibold text-white">
-            Your question about &ldquo;{post.title}&rdquo;
-          </label>
-          <textarea
-            id="ask-q"
-            rows={3}
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Type your question here…"
-            className="w-full rounded-lg border border-slate-600/50 bg-slate-800/60 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          />
-          <div className="flex items-center gap-3">
-            <button
-              type="submit"
-              disabled={!question.trim()}
-              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <Send className="h-4 w-4" />
-              Send Question
-            </button>
-            <button
-              type="button"
-              onClick={() => { setOpen(false); setQuestion(''); }}
-              className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      )}
     </section>
   );
 };
@@ -760,14 +631,20 @@ const ArticlePage = () => {
           className="flex items-center justify-between gap-4 mb-6 flex-wrap"
         >
           <Breadcrumbs breadcrumbs={breadcrumbs} />
-          <Button asChild variant="outline" size="sm" className="border border-slate-700/60 text-gray-300 hover:text-blue-300 hover:bg-blue-500/10 hover:border-blue-400/40 backdrop-blur-sm shrink-0">
+          {/* The breadcrumb already links back; on phones this button only
+              pushed the article further down. */}
+          <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex border border-slate-700/60 text-gray-300 hover:text-blue-300 hover:bg-blue-500/10 hover:border-blue-400/40 backdrop-blur-sm shrink-0">
             <Link to="/articles"><ArrowLeft className="mr-2 h-4 w-4" />All Articles</Link>
           </Button>
         </motion.div>
 
         <motion.article initial={false} animate={{ opacity: 1 }} className="space-y-8">
+          {/* Title and byline first so readers see what they opened before
+              the image; matches the static HTML order. */}
+          <MetadataOption1 safePost={safePost} formatDate={formatDate} slug={slug} />
+
           {/* Hero Image */}
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl max-h-[280px] sm:max-h-[340px] md:max-h-[400px] aspect-video">
+          <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl max-h-[220px] sm:max-h-[340px] md:max-h-[400px] aspect-video">
             <LazyImage
               src={safePost.image}
               alt={safePost.title}
@@ -779,24 +656,8 @@ const ArticlePage = () => {
             />
           </div>
 
-          {/* Metadata Section */}
-          <MetadataOption1 safePost={safePost} formatDate={formatDate} slug={slug} />
-
           {/* Key Takeaways — AEO/AI visibility, Speakable schema target */}
           <KeyTakeaways items={keyTakeaways} title={takeawaysTitle} />
-
-          {/* ── Advertising Disclosure (AdSense policy requirement) ── */}
-          <div className="flex items-center gap-2 text-xs text-gray-500 bg-slate-800/40 border border-slate-700/40 rounded-lg px-3 py-2">
-            <svg className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>
-              This page may contain advertisements.{' '}
-              <Link to="/privacy-policy" className="text-blue-500 hover:text-blue-400 underline decoration-blue-500/40">
-                Learn how we use ads
-              </Link>.
-            </span>
-          </div>
 
           {/* Article Content with Table of Contents */}
               {/* Mobile ToC (above content) — hidden on xl where sidebar TOC shows */}
@@ -806,7 +667,8 @@ const ArticlePage = () => {
 
               {/* Desktop: 2-column grid with sidebar ToC */}
               <div className="flex gap-8">
-                <div className="flex-1 min-w-0 lg:pl-12">
+                {/* ~75 characters per line at 18px; wider columns are tiring to read. */}
+                <div className="flex-1 min-w-0 max-w-2xl mx-auto">
                   <div className="prose prose-invert prose-lg md:prose-xl max-w-none prose-headings:text-white prose-h2:text-3xl prose-h2:font-bold prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-pink-400 prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
                     <div
                       dangerouslySetInnerHTML={{ __html: processedHtml }}
@@ -874,33 +736,28 @@ const ArticlePage = () => {
 
           {/* Rich Author Bio Card */}
           <AuthorBioCard author={safePost.authorData} />
+
+          <p className="text-xs text-gray-500">
+            This page may contain advertisements.{' '}
+            <Link to="/privacy-policy" className="text-blue-400 hover:text-blue-300 underline decoration-blue-500/40">
+              How we use ads
+            </Link>.
+          </p>
         </motion.article>
 
-        <CiteThisArticle
-          title={safePost.title}
-          slug={slug}
-          author={authorDisplayName}
-          date={safePost.date}
-        />
+        {/* End of article stays short: series, related reading, discussion.
+            Extra link blocks, sticky bars and popups were removed because
+            they buried the content and read as link farming to reviewers. */}
         <ArticleSeries slug={slug} category={safePost.category} />
-
-        <InArticleCTA />
 
         {!ADSENSE_REVIEW_MODE && <EmailDigestBanner />}
 
-        <RelatedTools post={safePost} />
-
         {!ADSENSE_REVIEW_MODE && <RecommendedCourses post={safePost} />}
 
-        <AskQuestion post={safePost} slug={slug} />
-
-        <ArticleNavigation currentPostId={safePost.id} category={safePost.category} />
         <RelatedPosts currentPostId={safePost.id} category={safePost.category} />
 
         <GiscusComments />
       </div>
-      <UpNextBar slug={slug} category={safePost.category} />
-      <SupportPopup />
     </div>
   );
 };

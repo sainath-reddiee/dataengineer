@@ -412,24 +412,16 @@ export function getCanonicalUrl(path = '') {
 }
 
 /**
- * Format page title with template
- * OPTIMIZED: Avoids "..." truncation which reduces CTR by 20-30%
+ * Format page title. Titles render exactly as the page provides them.
+ *
+ * Never cut them here: Google shortens long titles for display on its own,
+ * while a hard cut changed the real <title> after React mounted (58 article
+ * titles ended mid-phrase, e.g. "...Row Access Policies: A") and no longer
+ * matched the static HTML.
  */
-export function formatTitle(title, options = {}) {
-  // Brand suffix removed per request — page titles render exactly as the
-  // page provides them, with no automatic "" appended.
-  const { maxLength = SEO_DEFAULTS.maxTitleLength } = options;
-
-  if (!title) return SEO_DEFAULTS.defaultTitle;
-
-  // Truncate at word boundary if over the limit (no ellipsis).
-  if (title.length > maxLength) {
-    const truncated = title.substring(0, maxLength);
-    const lastSpace = truncated.lastIndexOf(' ');
-    return lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated;
-  }
-
-  return title;
+export function formatTitle(title) {
+  const clean = String(title || '').replace(/\s+/g, ' ').trim();
+  return clean || SEO_DEFAULTS.defaultTitle;
 }
 
 /**

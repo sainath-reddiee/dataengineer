@@ -34,7 +34,7 @@ AdSense "low value content" is a judgement on originality and usefulness, not wo
 5. Merge overlapping posts on the same topic (Snowflake Time Travel, Cortex, cost optimisation) and 301 the weaker URL.
 6. Decide the future of the glossary/compare/quiz/calculator inventory: keep only what you would personally vouch for, and delete the rest (410) instead of hiding it.
 7. Strengthen the About page: real photo, LinkedIn, employer history or projects, and why you write.
-8. Keep the Gemini blog automation on `draft` only. Never publish AI drafts without a full personal rewrite.
+8. The Gemini workflow in `.github/workflows/blog-automation.yml` is an unused placeholder; articles are written by hand. Consider deleting it so the repo does not suggest otherwise.
 
 ## Phase 3: One render path and better hosting (Claude)
 
