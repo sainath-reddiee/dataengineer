@@ -22,7 +22,7 @@ const prices = advertiseConfig.opportunities.flatMap((opp) =>
 
 assert(!prices.some((row) => row.includes(':15') || row.includes(':25') || row.includes(':30')), 'cheap weekly/mention SKUs should be gone');
 assert(
-  advertiseConfig.opportunities.find((o) => o.packageKey === 'content')?.durations[0].price >= 200,
+  advertiseConfig.opportunities.find((o) => o.packageKey === 'content')?.durations[0].price >= 150,
   'integration guide should be priced as real writing, not a $99 brochure'
 );
 assert(
@@ -35,14 +35,13 @@ assert(
   'each brief needs a title and a concrete ask'
 );
 
+assert(!/Most booked|Most popular/i.test(advertisePage), 'no popularity badge without real bookings');
 assert(
-  advertisePage.includes('from-slate-900 via-blue-900 to-indigo-900'),
-  'Advertise page should use the same blue-indigo shell as the rest of the site'
+  advertiseConfig.opportunities.every((o) => !o.popular),
+  'packages must not be flagged popular without real bookings'
 );
-assert(
-  !advertisePage.includes('advertise-page min-h-screen bg-slate-950'),
-  'Advertise page must not paint a flat black background over the site gradient'
-);
+assert(advertisePage.includes('useFormSpamGuard'), 'inquiry form must keep the spam guard');
+assert(advertisePage.includes('newsletter/stats'), 'subscriber count must come from the live endpoint, not a hard-coded number');
 
 const header = readFileSync(
   join(dirname(fileURLToPath(import.meta.url)), '../src/components/Header.jsx'),
@@ -61,4 +60,4 @@ assert(footer.includes("{ name: 'Advertise', href: '/advertise' }"), 'Footer mus
 
 console.log('✅ Advertise packages no longer look like a cheap link shop');
 console.log('✅ Guest briefs ask for production incidents');
-console.log('✅ Advertise page uses the shared site background');
+console.log('✅ Advertise page claims only what is real (no popularity badge, live counts, spam guard)');

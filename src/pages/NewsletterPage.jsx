@@ -1,108 +1,120 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Mail, BookOpen, Zap, Shield, Rss } from 'lucide-react';
+import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Rss } from 'lucide-react';
 import Newsletter from '@/components/Newsletter';
 import MetaTags from '@/components/SEO/MetaTags';
+import { WORDPRESS_API_URL } from '@/apiConfig';
+
+const UNSUBSCRIBE_URL = `${WORDPRESS_API_URL}/wp-json/dehub/v1/newsletter/unsubscribe`;
+
+// Result of the emailed confirmation link (?confirmed=1 or ?confirm=invalid).
+const ConfirmNotice = ({ ok }) => (
+  <div className={`mb-10 border-l-2 px-4 py-3 text-[16px] ${ok ? 'border-green-600 bg-green-50 text-green-900' : 'border-red-600 bg-red-50 text-red-900'}`} role="status">
+    {ok
+      ? "You're subscribed. The next article will arrive in your inbox."
+      : 'That confirmation link is not valid any more. Subscribe again below and use the newest email.'}
+  </div>
+);
+
+// Unsubscribe needs a click on this page: link scanners in mail clients
+// follow GET links, so a bare link must never remove anyone.
+const UnsubscribePanel = ({ token }) => {
+  const [state, setState] = useState('idle');
+  const unsubscribe = async () => {
+    setState('working');
+    try {
+      const res = await fetch(UNSUBSCRIBE_URL, { method: 'POST', body: new URLSearchParams({ token }) });
+      const body = await res.json().catch(() => ({}));
+      setState(res.ok && body.success ? 'done' : 'error');
+    } catch {
+      setState('error');
+    }
+  };
+
+  return (
+    <div className="mb-10 border-y border-paper-500 py-6">
+      {state === 'done' ? (
+        <p className="text-[17px] text-ink-body">You're unsubscribed and won't get more emails. Sorry to see you go.</p>
+      ) : (
+        <>
+          <p className="mb-4 text-[17px] text-ink-body">Stop getting an email when a new article is published?</p>
+          <button
+            type="button"
+            onClick={unsubscribe}
+            disabled={state === 'working'}
+            className="inline-flex min-h-11 items-center rounded bg-ink px-5 text-[15px] font-medium text-paper hover:bg-rust-600 disabled:opacity-60"
+          >
+            {state === 'working' ? 'Unsubscribing…' : 'Unsubscribe'}
+          </button>
+          {state === 'error' && (
+            <p className="mt-3 text-sm text-red-700">
+              That didn't work. Reply to any newsletter email and I'll remove you by hand.
+            </p>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
 
 const NewsletterPage = () => {
+  const [searchParams] = useSearchParams();
+  const unsubscribeToken = searchParams.get('unsubscribe') || '';
+  const confirmed = searchParams.get('confirmed') === '1';
+  const confirmInvalid = searchParams.get('confirm') === 'invalid';
+
   return (
     <>
       <MetaTags
-        title="Weekly Data Digest - Subscribe"
+        title="Newsletter: new articles by email"
         noindex={true}
-        description="Subscribe to the DataEngineer Hub weekly digest. Get tutorials, tool deep-dives, and data engineering insights on Snowflake, dbt, Airflow, and the modern data stack delivered to your inbox."
-        keywords="data engineering newsletter, weekly digest, Snowflake tutorials, dbt guides, data engineering updates"
+        description="Get an email when DataEngineer Hub publishes a new article on Snowflake, dbt, Airflow, or the modern data stack. No spam, unsubscribe in one click."
+        keywords="data engineering newsletter, Snowflake tutorials, dbt guides, data engineering updates"
       />
-      <div className="pt-8 pb-12">
-        {/* Intro section — gives the page real content depth */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="max-w-3xl mx-auto px-4 mb-12"
-        >
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 text-center">
-            The Weekly Data Engineering Digest
+      <div className="px-4 pb-16 pt-10 sm:px-6">
+        <div className="mx-auto max-w-2xl">
+          <p className="kicker mb-3">Newsletter</p>
+          <h1 className="font-serif text-[36px] font-semibold leading-tight text-ink sm:text-[44px]">
+            New articles, by email
           </h1>
-          <p className="text-gray-300 text-lg leading-relaxed mb-6 text-center max-w-2xl mx-auto">
-            Stay current with the tools, techniques, and platforms that matter most in
-            modern data engineering. Every week we distil what's new across Snowflake,
-            Databricks, BigQuery, dbt, Airflow, and SQL into one concise email — so you
-            can spend less time browsing and more time building.
-          </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-            {[
-              {
-                icon: BookOpen,
-                title: 'In-depth tutorials',
-                text: 'Step-by-step guides on cost optimization, warehouse tuning, pipeline design, and query performance across cloud platforms.',
-              },
-              {
-                icon: Zap,
-                title: 'Tool deep-dives',
-                text: 'Hands-on walkthroughs of our free calculators, SQL playground, cron builder, format converter, and new releases.',
-              },
-              {
-                icon: Mail,
-                title: 'Weekly cadence',
-                text: 'One email per week — no daily noise, no promotional fluff. Unsubscribe any time with a single click.',
-              },
-              {
-                icon: Shield,
-                title: 'Privacy first',
-                text: 'Your address is stored so we can send the digest. We do not sell the list or rent it to advertisers.',
-              },
-            ].map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.title}
-                  className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <Icon className="w-5 h-5 text-blue-400 shrink-0" aria-hidden="true" />
-                    <h2 className="text-white font-semibold text-sm">{item.title}</h2>
-                  </div>
-                  <p className="text-gray-400 text-sm leading-relaxed">{item.text}</p>
-                </div>
-              );
-            })}
+          {(confirmed || confirmInvalid) && <div className="mt-8"><ConfirmNotice ok={confirmed} /></div>}
+          {unsubscribeToken && <div className="mt-8"><UnsubscribePanel token={unsubscribeToken} /></div>}
+
+          <div className="mt-6 space-y-4 font-serif text-[19px] leading-relaxed text-ink-body">
+            <p>
+              When I publish a new article on Snowflake, dbt, Airflow or the rest of the data stack, you get one
+              short email with the title, a summary and the link. That is the whole newsletter: no daily noise, no
+              promotions, no tracking pixels.
+            </p>
+            <p>
+              Subscribing takes two steps: enter your email, then click the confirmation link I send you. Every
+              email has a one-click unsubscribe, and your address is never sold or shared with sponsors.
+            </p>
           </div>
 
-          <p className="text-gray-400 text-sm text-center">
+          <div className="mt-10">
+            <Newsletter />
+          </div>
+
+          <p className="mt-8 text-[15px] text-ink-muted">
             Prefer RSS?{' '}
-            <a
-              href="/rss.xml"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:underline inline-flex items-center gap-1"
-            >
-              <Rss className="w-3.5 h-3.5" aria-hidden="true" />
-              Grab the feed
+            <a href="/rss.xml" className="inline-flex items-center gap-1 text-rust-600 underline decoration-rust-200 underline-offset-2">
+              <Rss className="h-3.5 w-3.5" aria-hidden="true" />
+              Use the feed
             </a>
-            {' '}· The same three links also go on{' '}
+            . New articles are also shared on{' '}
             <a
               href="https://www.linkedin.com/in/sainathreddypogaku/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sky-400 hover:underline"
+              className="text-rust-600 underline decoration-rust-200 underline-offset-2"
             >
               LinkedIn
             </a>
-            {' '}each week.
+            .
           </p>
-        </motion.div>
-
-        {/* Signup widget */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mb-8"
-        >
-          <Newsletter />
-        </motion.div>
+        </div>
       </div>
     </>
   );

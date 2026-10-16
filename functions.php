@@ -1536,41 +1536,48 @@ function dehub_forward_newsletter_subscriber($email, $queue_on_failure = true) {
 }
 
 function handle_newsletter_subscription($request) {
-    $email = sanitize_email($request->get_param('email'));
+    $email = strtolower(sanitize_email($request->get_param('email')));
 
     if (!is_email($email)) {
         return new WP_Error('invalid_email', 'Invalid email address', array('status' => 400));
     }
 
     global $wpdb;
-    $table_name = dehub_newsletter_table();
-    $existing = $wpdb->get_var($wpdb->prepare("SELECT id FROM $table_name WHERE email = %s", $email));
+    $table_name = dehub_newsletter_table_name();
+    $row = $wpdb->get_row($wpdb->prepare("SELECT id, status, token FROM $table_name WHERE email = %s", $email));
 
-    if (!$existing) {
-        $inserted = $wpdb->insert(
-            $table_name,
-            array(
-                'email' => $email,
-                'subscribed_date' => current_time('mysql'),
-                'status' => 'active'
-            )
-        );
+    if ($row && $row->status === 'active') {
+        return array('success' => true, 'already' => true, 'pending' => false, 'message' => 'Already subscribed');
+    }
+
+    // Double opt-in: new, pending or previously unsubscribed addresses get a
+    // confirmation link. At most one confirmation email per address per 10 min.
+    $token = ($row && $row->token) ? $row->token : dehub_newsletter_new_token();
+    if ($row) {
+        $wpdb->update($table_name, array('status' => 'pending', 'token' => $token), array('id' => (int) $row->id));
+    } else {
+        $inserted = $wpdb->insert($table_name, array(
+            'email' => $email,
+            'subscribed_date' => current_time('mysql'),
+            'status' => 'pending',
+            'token' => $token,
+        ));
         if ($inserted === false) {
-            $again = $wpdb->get_var($wpdb->prepare("SELECT id FROM $table_name WHERE email = %s", $email));
-            if (!$again) {
-                return new WP_Error('subscription_failed', 'Failed to subscribe', array('status' => 500));
-            }
-            $existing = $again;
+            return new WP_Error('subscription_failed', 'Failed to subscribe', array('status' => 500));
         }
     }
 
-    // WordPress is the list. Do not forward to Brevo/Buttondown — those
-    // APIs add IP-allowlist failures and hide emails from the site owner.
+    $throttle = 'dehub_nl_confirm_' . md5($email);
+    if (!get_transient($throttle)) {
+        set_transient($throttle, 1, 10 * MINUTE_IN_SECONDS);
+        dehub_newsletter_send_confirmation($email, $token);
+    }
 
     return array(
         'success' => true,
-        'already' => (bool) $existing,
-        'message' => $existing ? 'Already subscribed' : 'Successfully subscribed to newsletter',
+        'already' => false,
+        'pending' => true,
+        'message' => 'Check your inbox to confirm your subscription',
     );
 }
 
@@ -4225,6 +4232,261 @@ add_action('rest_api_init', function () {
         },
     ]);
 });
+
+
+// ============================================================================
+// NEWSLETTER: double opt-in, new-post emails, unsubscribe. No third party.
+// ============================================================================
+// WordPress is the list (wp_newsletter_subscribers). Mail goes out through the
+// site's own mailbox over SMTP. wp-config.php settings:
+//   DEHUB_SMTP_USER / DEHUB_SMTP_PASS   mailbox login (e.g. sainath@dataengineerhub.blog)
+//   DEHUB_SMTP_HOST / DEHUB_SMTP_PORT   default smtp.hostinger.com:465
+//   DEHUB_NEWSLETTER_MODE               'test' (default: only admin_email) or 'live'
+//   DEHUB_NEWSLETTER_DAILY_CAP          default 250 emails per day
+// Statuses: pending (awaiting confirmation), active, unsubscribed.
+
+define('DEHUB_NEWSLETTER_SCHEMA', '2');
+define('DEHUB_NEWSLETTER_BATCH', 40);
+define('DEHUB_PUBLIC_SITE', 'https://dataengineerhub.blog');
+
+function dehub_newsletter_new_token() {
+    return bin2hex(random_bytes(24));
+}
+
+function dehub_newsletter_table_name() {
+    global $wpdb;
+    return $wpdb->prefix . 'newsletter_subscribers';
+}
+
+// Adds token + confirmed_date to the existing table. Rows that signed up
+// before double opt-in stay active and get an unsubscribe token.
+add_action('init', function () {
+    if (get_option('dehub_newsletter_schema') === DEHUB_NEWSLETTER_SCHEMA) {
+        return;
+    }
+    global $wpdb;
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    $table = dehub_newsletter_table_name();
+    $charset = $wpdb->get_charset_collate();
+    dbDelta("CREATE TABLE {$table} (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        email varchar(190) NOT NULL,
+        subscribed_date datetime DEFAULT CURRENT_TIMESTAMP,
+        status varchar(20) DEFAULT 'active',
+        token varchar(64) DEFAULT NULL,
+        confirmed_date datetime DEFAULT NULL,
+        PRIMARY KEY  (id),
+        UNIQUE KEY email (email),
+        KEY token (token)
+    ) {$charset};");
+    $ids = $wpdb->get_col("SELECT id FROM {$table} WHERE token IS NULL OR token = ''");
+    foreach ($ids as $id) {
+        $wpdb->update($table, array('token' => dehub_newsletter_new_token()), array('id' => (int) $id));
+    }
+    update_option('dehub_newsletter_schema', DEHUB_NEWSLETTER_SCHEMA);
+});
+
+// Send all site mail (newsletter, contact replies) through the real mailbox.
+add_action('phpmailer_init', function ($phpmailer) {
+    $user = dehub_newsletter_const('DEHUB_SMTP_USER');
+    $pass = dehub_newsletter_const('DEHUB_SMTP_PASS');
+    if ($user === '' || $pass === '') {
+        return;
+    }
+    $port = (int) (dehub_newsletter_const('DEHUB_SMTP_PORT') ?: 465);
+    $phpmailer->isSMTP();
+    $phpmailer->Host = dehub_newsletter_const('DEHUB_SMTP_HOST') ?: 'smtp.hostinger.com';
+    $phpmailer->Port = $port;
+    $phpmailer->SMTPAuth = true;
+    $phpmailer->SMTPSecure = $port === 587 ? 'tls' : 'ssl';
+    $phpmailer->Username = $user;
+    $phpmailer->Password = $pass;
+    $phpmailer->setFrom($user, dehub_newsletter_const('DEHUB_NEWSLETTER_FROM_NAME') ?: 'Sainath at DataEngineer Hub', false);
+});
+
+function dehub_newsletter_unsubscribe_api_url($token) {
+    return rest_url('dehub/v1/newsletter/unsubscribe') . '?token=' . rawurlencode($token);
+}
+
+function dehub_newsletter_unsubscribe_page_url($token) {
+    return DEHUB_PUBLIC_SITE . '/newsletter?unsubscribe=' . rawurlencode($token);
+}
+
+function dehub_newsletter_mail($to, $subject, $html, $text, $token = '') {
+    $headers = array('Content-Type: text/html; charset=UTF-8');
+    if ($token !== '') {
+        // RFC 8058 one-click unsubscribe, shown as a button by Gmail and others.
+        $headers[] = 'List-Unsubscribe: <' . dehub_newsletter_unsubscribe_api_url($token) . '>';
+        $headers[] = 'List-Unsubscribe-Post: List-Unsubscribe=One-Click';
+    }
+    $alt = function ($phpmailer) use ($text) {
+        $phpmailer->AltBody = $text;
+    };
+    add_action('phpmailer_init', $alt, 20);
+    $sent = wp_mail($to, $subject, $html, $headers);
+    remove_action('phpmailer_init', $alt, 20);
+    return $sent;
+}
+
+function dehub_newsletter_wrap_html($inner, $footer) {
+    return '<div style="background:#FAF8F4;padding:24px 12px;">'
+        . '<div style="max-width:560px;margin:0 auto;background:#FFFFFF;border:1px solid #E4DED3;padding:28px;font-family:Georgia,\'Times New Roman\',serif;color:#1B1A17;line-height:1.6;">'
+        . '<p style="margin:0 0 20px;font-family:Arial,sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#9C3A1A;">DataEngineer Hub</p>'
+        . $inner
+        . '<p style="margin:28px 0 0;padding-top:16px;border-top:1px solid #E4DED3;font-family:Arial,sans-serif;font-size:12px;color:#77705F;">' . $footer . '</p>'
+        . '</div></div>';
+}
+
+function dehub_newsletter_send_confirmation($email, $token) {
+    $confirm = rest_url('dehub/v1/newsletter/confirm') . '?token=' . rawurlencode($token);
+    $html = dehub_newsletter_wrap_html(
+        '<h1 style="font-size:24px;margin:0 0 12px;">Confirm your subscription</h1>'
+        . '<p style="margin:0 0 20px;">Tap the button to get an email when a new article is published. Nothing else, and you can leave any time.</p>'
+        . '<p style="margin:0 0 20px;"><a href="' . esc_url($confirm) . '" style="display:inline-block;background:#1B1A17;color:#FAF8F4;padding:10px 18px;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;">Confirm subscription</a></p>'
+        . '<p style="margin:0;font-size:14px;color:#5E584F;">If you did not sign up at dataengineerhub.blog, ignore this email and nothing happens.</p>',
+        'Sent because this address was entered at dataengineerhub.blog.'
+    );
+    $text = "Confirm your DataEngineer Hub subscription:\n{$confirm}\n\nIf you did not sign up, ignore this email.";
+    return dehub_newsletter_mail($email, 'Confirm your DataEngineer Hub subscription', $html, $text);
+}
+
+add_action('rest_api_init', function () {
+    // Confirmation link from the email. Redirects back to the site.
+    register_rest_route('dehub/v1', '/newsletter/confirm', array(
+        'methods'  => 'GET',
+        'permission_callback' => '__return_true',
+        'callback' => function ($request) {
+            global $wpdb;
+            $table = dehub_newsletter_table_name();
+            $token = sanitize_text_field((string) $request->get_param('token'));
+            $row = $token !== '' ? $wpdb->get_row($wpdb->prepare("SELECT id, status FROM {$table} WHERE token = %s", $token)) : null;
+            $target = DEHUB_PUBLIC_SITE . '/newsletter?confirm=invalid';
+            if ($row && $row->status !== 'unsubscribed') {
+                $wpdb->update($table, array('status' => 'active', 'confirmed_date' => current_time('mysql')), array('id' => (int) $row->id));
+                delete_transient('dehub_newsletter_count');
+                $target = DEHUB_PUBLIC_SITE . '/newsletter?confirmed=1';
+            }
+            $response = new WP_REST_Response(null, 302);
+            $response->header('Location', $target);
+            return $response;
+        },
+    ));
+
+    // Unsubscribe: the page button and RFC 8058 one-click both POST here.
+    register_rest_route('dehub/v1', '/newsletter/unsubscribe', array(
+        'methods'  => 'POST',
+        'permission_callback' => '__return_true',
+        'callback' => function ($request) {
+            global $wpdb;
+            $table = dehub_newsletter_table_name();
+            $token = sanitize_text_field((string) $request->get_param('token'));
+            if ($token === '') {
+                return new WP_REST_Response(array('success' => false), 400);
+            }
+            $updated = $wpdb->update($table, array('status' => 'unsubscribed'), array('token' => $token));
+            delete_transient('dehub_newsletter_count');
+            return new WP_REST_Response(array('success' => $updated !== false && $updated > 0), 200);
+        },
+    ));
+
+    // Public, aggregate count of confirmed subscribers (no emails).
+    register_rest_route('dehub/v1', '/newsletter/stats', array(
+        'methods'  => 'GET',
+        'permission_callback' => '__return_true',
+        'callback' => function () {
+            $count = get_transient('dehub_newsletter_count');
+            if ($count === false) {
+                global $wpdb;
+                $table = dehub_newsletter_table_name();
+                $count = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$table} WHERE status = 'active'");
+                set_transient('dehub_newsletter_count', $count, 10 * MINUTE_IN_SECONDS);
+            }
+            return rest_ensure_response(array('subscribers' => (int) $count));
+        },
+    ));
+});
+
+// New article published: queue one newsletter send. The delay lets the
+// static site deploy finish so the link works when the email arrives.
+// Tag a post "no-newsletter" to skip it.
+add_action('transition_post_status', function ($new_status, $old_status, $post) {
+    if ($new_status !== 'publish' || $old_status === 'publish' || $post->post_type !== 'post') {
+        return;
+    }
+    if (get_post_meta($post->ID, '_dehub_newsletter_queued', true) || has_tag('no-newsletter', $post)) {
+        return;
+    }
+    update_post_meta($post->ID, '_dehub_newsletter_queued', current_time('mysql'));
+    wp_schedule_single_event(time() + 20 * MINUTE_IN_SECONDS, 'dehub_newsletter_send_batch', array((int) $post->ID, 0));
+}, 10, 3);
+
+add_action('dehub_newsletter_send_batch', 'dehub_newsletter_send_batch', 10, 2);
+function dehub_newsletter_send_batch($post_id, $after_id) {
+    $post = get_post($post_id);
+    if (!$post || $post->post_status !== 'publish') {
+        return;
+    }
+
+    // Stay under the mailbox's daily sending limit; continue tomorrow.
+    $cap = (int) (dehub_newsletter_const('DEHUB_NEWSLETTER_DAILY_CAP') ?: 250);
+    $day_key = 'dehub_newsletter_sent_' . current_time('Ymd');
+    $sent_today = (int) get_option($day_key, 0);
+    if ($sent_today >= $cap) {
+        wp_schedule_single_event(strtotime('tomorrow 08:00', current_time('timestamp')) - (int) (get_option('gmt_offset') * HOUR_IN_SECONDS), 'dehub_newsletter_send_batch', array((int) $post_id, (int) $after_id));
+        return;
+    }
+
+    $live = dehub_newsletter_const('DEHUB_NEWSLETTER_MODE') === 'live';
+    if ($live) {
+        global $wpdb;
+        $table = dehub_newsletter_table_name();
+        $limit = min(DEHUB_NEWSLETTER_BATCH, $cap - $sent_today);
+        $rows = $wpdb->get_results($wpdb->prepare(
+            "SELECT id, email, token FROM {$table} WHERE status = 'active' AND id > %d ORDER BY id ASC LIMIT %d",
+            (int) $after_id,
+            $limit
+        ));
+    } else {
+        // Test mode: only the site owner receives it.
+        $rows = array((object) array('id' => 0, 'email' => get_option('admin_email'), 'token' => ''));
+        $limit = 1;
+    }
+
+    $slug = $post->post_name;
+    $url = DEHUB_PUBLIC_SITE . '/articles/' . rawurlencode($slug)
+        . '?utm_source=newsletter&utm_medium=email&utm_campaign=' . rawurlencode($slug);
+    $title = wp_strip_all_tags(get_the_title($post));
+    $summary = has_excerpt($post) ? wp_strip_all_tags($post->post_excerpt) : wp_trim_words(wp_strip_all_tags(strip_shortcodes($post->post_content)), 60);
+
+    $last_id = (int) $after_id;
+    $sent = 0;
+    foreach ($rows as $row) {
+        $token = (string) $row->token;
+        $footer = $token !== ''
+            ? 'You get this because you subscribed at dataengineerhub.blog. <a href="' . esc_url(dehub_newsletter_unsubscribe_page_url($token)) . '" style="color:#77705F;">Unsubscribe</a>'
+            : 'Test send to the site owner. Set DEHUB_NEWSLETTER_MODE to live to email subscribers.';
+        $html = dehub_newsletter_wrap_html(
+            '<p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:12px;color:#77705F;">New article</p>'
+            . '<h1 style="font-size:26px;line-height:1.2;margin:0 0 14px;"><a href="' . esc_url($url) . '" style="color:#1B1A17;text-decoration:none;">' . esc_html($title) . '</a></h1>'
+            . '<p style="margin:0 0 22px;font-size:17px;color:#33302B;">' . esc_html($summary) . '</p>'
+            . '<p style="margin:0;"><a href="' . esc_url($url) . '" style="display:inline-block;background:#1B1A17;color:#FAF8F4;padding:10px 18px;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;">Read the article</a></p>'
+            . '<p style="margin:22px 0 0;font-size:15px;color:#5E584F;">Reply to this email if something in it is wrong or you want a follow-up. It reaches me directly. Sainath</p>',
+            $footer
+        );
+        $text = "{$title}\n\n{$summary}\n\nRead it: {$url}\n\n" . ($token !== '' ? 'Unsubscribe: ' . dehub_newsletter_unsubscribe_page_url($token) : '');
+        if (dehub_newsletter_mail($row->email, $title, $html, $text, $token)) {
+            $sent++;
+        }
+        $last_id = max($last_id, (int) $row->id);
+    }
+    update_option($day_key, $sent_today + $sent, false);
+
+    if ($live && count($rows) === $limit && $limit > 0) {
+        wp_schedule_single_event(time() + 2 * MINUTE_IN_SECONDS, 'dehub_newsletter_send_batch', array((int) $post_id, $last_id));
+    } else {
+        update_post_meta($post_id, '_dehub_newsletter_sent', current_time('mysql'));
+    }
+}
 
 
 // ============================================================================

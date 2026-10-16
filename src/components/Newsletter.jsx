@@ -9,7 +9,7 @@ import { trackNewsletterSignup } from '@/utils/analytics';
 const Newsletter = () => {
   const [ref, , hasIntersected] = useIntersectionObserver();
   const [email, setEmail] = useState('');
-  const { subscribe, loading, error, success, reset } = useNewsletter();
+  const { subscribe, loading, error, success, pending, reset } = useNewsletter();
   const { checkSpam, recordSuccess, cooldownSecs, honeypotProps } = useFormSpamGuard('newsletter');
 
   // Local spam-block state (shown when checkSpam returns blocked)
@@ -122,7 +122,7 @@ const Newsletter = () => {
                   {success ? (
                     <div className="inline-flex items-center gap-2 text-green-400 font-medium text-lg">
                       <CheckCircle className="h-5 w-5" />
-                      You're subscribed — welcome to the Data Digest!
+                      {pending ? 'Almost there: check your inbox (and spam folder) for a confirmation link.' : "You're subscribed. New articles will arrive by email."}
                     </div>
                   ) : (
                     <>

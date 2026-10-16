@@ -1,118 +1,58 @@
 {
-  "stats": [
-    {
-      "label": "Published Guides",
-      "value": "115+",
-      "desc": "Original Snowflake, dbt, Airflow, and warehouse-cost tutorials — not vendor rewrites",
-      "icon": "FileText"
-    },
-    {
-      "label": "Audience",
-      "value": "Practitioners",
-      "desc": "Engineers who cost warehouses, debug dbt tests, and sit SnowPro interviews",
-      "icon": "Users"
-    },
-    {
-      "label": "Sponsorships",
-      "value": "Vetted",
-      "desc": "Human review, sponsored label, nofollow by default — no paid-link packages",
-      "icon": "Shield"
-    }
-  ],
   "inventory": {
-    "guides": 115,
+    "guides": 119,
     "cheatsheets": 30
   },
-  "techStack": [
-    "Snowflake",
-    "dbt",
-    "Databricks",
-    "Apache Spark",
-    "Apache Airflow",
-    "BigQuery",
-    "Kafka",
-    "Python",
-    "SQL",
-    "Gen AI"
-  ],
+  "techStack": ["Snowflake", "dbt", "Databricks", "Apache Spark", "Apache Airflow", "BigQuery", "Kafka", "Python", "SQL", "AI on data"],
   "opportunities": [
     {
       "title": "Sponsored card in matching guides",
       "packageKey": "resource_reference",
       "popular": false,
-      "tagline": "One labeled card on articles, cheat sheets, and tools that already match your stack",
+      "tagline": "One labeled card on the tutorials, cheat sheets and calculators that match your product",
       "bullets": [
-        "Shown on matching tutorials, cheat sheets, and interactive calculators, not glossary or compare archives",
-        "Labeled \"Sponsored\". Outbound links are rel=\"sponsored nofollow\": referral traffic, not a backlink product",
-        "One sponsor per page so we never stack competitors side by side",
-        "Private dashboard link with viewable impressions and clicks counted on our server, plus UTM-tagged links for your own analytics",
-        "You approve the headline, one-line description, and destination URL before it goes live"
+        "Shown only where your stack is the topic, for example a dbt tool on dbt guides",
+        "Labeled \"Sponsored\"; the link is rel=\"sponsored nofollow\"",
+        "One sponsor per page, so you never sit next to a competitor",
+        "Private dashboard link with viewable impressions and clicks counted on our server, plus UTM tags for your analytics",
+        "You approve the headline, one-line description and URL before it goes live"
       ],
-      "cta": "Book a sponsored card",
-      "icon": "BookOpen",
+      "cta": "Ask about a sponsored card",
       "durations": [
-        {
-          "key": "monthly",
-          "label": "Monthly",
-          "price": 79,
-          "desc": "One labeled card across matching live guides for 30 days. $79 USD. Best for a launch or a trial offer.",
-          "savings": "Month-to-month, no auto-renew"
-        },
-        {
-          "key": "yearly",
-          "label": "Yearly",
-          "price": 699,
-          "desc": "Same placement for 12 months. $699 USD billed once (about 26% less than paying monthly).",
-          "savings": "Save vs 12 × $79"
-        }
+        { "key": "monthly", "label": "Monthly", "price": 39, "desc": "30 days across matching pages. Founding-sponsor rate." },
+        { "key": "yearly", "label": "Yearly", "price": 349, "desc": "12 months, billed once. About 25% less than monthly." }
       ]
     },
     {
       "title": "Tools Hub listing",
       "packageKey": "directory",
       "popular": false,
-      "tagline": "A permanent card in the sponsored row of the free-tools directory",
+      "tagline": "A card in the labeled sponsored row of the free-tools page",
       "bullets": [
-        "Logo, one-line summary, and CTA in the labeled sponsored row at the top of the Tools Hub",
-        "Seen by people costing warehouses or generating SQL, so intent is high",
-        "One free copy or URL update per quarter",
-        "Same server-counted impressions and clicks as in-guide cards",
-        "No weekly flash sale. Pay once and stay listed while the hub is live"
+        "Logo, one-line summary and link at the top of the Tools Hub, labeled \"Sponsored\"",
+        "Seen by people sizing warehouses, estimating costs and writing SQL",
+        "One free copy or URL change per quarter",
+        "Server-counted impressions and clicks, same dashboard as the sponsored card"
       ],
-      "cta": "List my tool",
-      "icon": "Layers",
+      "cta": "Ask about a listing",
       "durations": [
-        {
-          "key": "one_time",
-          "label": "One-Time Fee",
-          "price": 149,
-          "desc": "Permanent Tools Hub card. $149 USD once. Replaces the old weekly/monthly directory SKUs so buyers are not choosing between three overlapping listings.",
-          "savings": "Permanent directory card"
-        }
+        { "key": "yearly", "label": "12 months", "price": 79, "desc": "One payment for a year in the Tools Hub." }
       ]
     },
     {
       "title": "Co-authored integration guide",
       "packageKey": "content",
       "popular": false,
-      "tagline": "We write a real tutorial with your product in a production workflow — the unique-content SKU",
+      "tagline": "A real tutorial that uses your product inside a production workflow",
       "bullets": [
-        "1,800+ words with working code, a failure mode, and a decision we would make again",
-        "Companion GitHub repo when the workflow needs cloneable examples",
-        "Published as a tutorial marked \"Sponsored\" at the top, with your product links set to rel=\"sponsored\"",
-        "Not a guest post. You do not buy a byline. We keep editorial control",
-        "This is the package that adds unique pages to the site, not another directory card"
+        "1,500+ words with working code, a failure mode and an honest trade-off",
+        "Companion GitHub repo when readers need runnable examples",
+        "Marked \"Sponsored\" at the top; your product links use rel=\"sponsored\"",
+        "Not a guest post: I write it, keep editorial control, and can say no to a brochure"
       ],
       "cta": "Propose a guide",
-      "icon": "Code",
       "durations": [
-        {
-          "key": "one_time",
-          "label": "One-Time Fee",
-          "price": 249,
-          "desc": "A co-authored, labeled tutorial. $249 USD once. We will decline a brief that is only a product brochure.",
-          "savings": "Permanent indexed article"
-        }
+        { "key": "one_time", "label": "One-time", "price": 199, "desc": "One published, permanent tutorial. Priced on the writing work, not traffic." }
       ]
     }
   ]

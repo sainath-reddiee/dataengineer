@@ -596,17 +596,21 @@ export const useNewsletter = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  // Double opt-in: true until the reader clicks the emailed confirmation link.
+  const [pending, setPending] = useState(false);
 
   const subscribe = useCallback(async (email) => {
     try {
       setLoading(true);
       setError(null);
       setSuccess(false);
+      setPending(false);
 
-      await wordpressApi.subscribeNewsletter(email);
+      const result = await wordpressApi.subscribeNewsletter(email);
+      setPending(Boolean(result?.pending));
       setSuccess(true);
 
-      return { success: true };
+      return { success: true, pending: Boolean(result?.pending) };
     } catch (err) {
       const raw = String(err?.message || '');
       if (typeof wordpressApi.isEspIpRestrictionError === 'function' && wordpressApi.isEspIpRestrictionError(raw)) {
@@ -625,7 +629,7 @@ export const useNewsletter = () => {
     setSuccess(false);
   }, []);
 
-  return { subscribe, loading, error, success, reset };
+  return { subscribe, loading, error, success, pending, reset };
 };
 
 // useContact hook removed — contact form now uses Web3Forms directly in ContactPage.jsx

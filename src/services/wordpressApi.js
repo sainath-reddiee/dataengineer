@@ -683,7 +683,7 @@ class WordPressAPI {
       if (payload.success !== false || this.isEspIpRestrictionError(leaked)) {
         // Record the session success so subsequent calls return immediately
         this._sessionNewsletterSuccesses.set(normEmail, Date.now());
-        return { success: true, already: Boolean(payload.already) };
+        return { success: true, already: Boolean(payload.already), pending: Boolean(payload.pending) };
       }
 
       throw new Error(this.publicNewsletterError(payload.message));

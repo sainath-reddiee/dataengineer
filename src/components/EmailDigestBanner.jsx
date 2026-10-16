@@ -15,7 +15,7 @@ const EmailDigestBanner = () => {
     }
   });
   const [email, setEmail] = useState('');
-  const { subscribe, loading, error, success, reset } = useNewsletter();
+  const { subscribe, loading, error, success, pending, reset } = useNewsletter();
 
   const handleDismiss = () => {
     try {
@@ -51,7 +51,7 @@ const EmailDigestBanner = () => {
       {success ? (
         <div className="flex items-center justify-center gap-2 text-green-400 font-medium py-2">
           <CheckCircle className="h-5 w-5" />
-          You're subscribed — welcome to the Data Digest!
+          {pending ? 'Almost there: check your inbox (and spam folder) for a confirmation link.' : "You're subscribed. New articles will arrive by email."}
         </div>
       ) : (
         <div className="flex flex-col sm:flex-row items-center gap-4">
