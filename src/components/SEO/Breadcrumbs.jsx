@@ -1,53 +1,41 @@
 // src/components/SEO/Breadcrumbs.jsx
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Home } from 'lucide-react';
 
 /**
  * Breadcrumbs Component
- * Provides visual navigation breadcrumbs.
+ * A quiet text trail ("Home / Articles / Title"), not a boxed widget.
  * Note: BreadcrumbList JSON-LD is injected by MetaTags.jsx to avoid duplicates.
  */
 const Breadcrumbs = ({ breadcrumbs, className = '' }) => {
     if (!breadcrumbs || breadcrumbs.length <= 1) return null;
 
     return (
-        <nav
-            aria-label="Breadcrumb"
-            className={`inline-flex items-center text-sm bg-slate-800/40 px-4 py-2 rounded-lg border border-slate-700/50 ${className}`}
-        >
-                <ol className="flex items-center flex-wrap">
-                    {breadcrumbs.map((crumb, index) => {
-                        const isLast = index === breadcrumbs.length - 1;
-                        const isFirst = index === 0;
+        <nav aria-label="Breadcrumb" className={`min-w-0 font-mono text-[12px] text-ink-faint ${className}`}>
+            <ol className="flex min-w-0 flex-wrap items-center">
+                {breadcrumbs.map((crumb, index) => {
+                    const isLast = index === breadcrumbs.length - 1;
 
-                        return (
-                            <li key={crumb.url} className="flex items-center">
-                                {index > 0 && (
-                                    <ChevronRight className="h-3.5 w-3.5 text-gray-500 mx-2 shrink-0" aria-hidden="true" />
-                                )}
+                    return (
+                        <li key={crumb.url} className="flex min-w-0 items-center">
+                            {index > 0 && <span className="mx-2 text-paper-600" aria-hidden="true">/</span>}
 
-                                {isLast ? (
-                                    <span
-                                        className="text-gray-300 font-medium line-clamp-1"
-                                        aria-current="page"
-                                    >
-                                        {crumb.name}
-                                    </span>
-                                ) : (
-                                    <Link
-                                        to={crumb.url.replace('https://dataengineerhub.blog', '')}
-                                        className="text-blue-300 hover:text-blue-200 transition-colors flex items-center gap-1 shrink-0"
-                                    >
-                                        {isFirst && <Home className="h-3.5 w-3.5" aria-hidden="true" />}
-                                        <span className="hover:underline">{crumb.name}</span>
-                                    </Link>
-                                )}
-                            </li>
-                        );
-                    })}
-                </ol>
-            </nav>
+                            {isLast ? (
+                                <span className="line-clamp-1 text-ink-muted" aria-current="page">
+                                    {crumb.name}
+                                </span>
+                            ) : (
+                                <Link
+                                    to={crumb.url.replace('https://dataengineerhub.blog', '')}
+                                    className="shrink-0 text-ink-muted underline-offset-2 transition-colors hover:text-rust-600 hover:underline"
+                                >
+                                    {crumb.name}
+                                </Link>
+                            )}
+                        </li>
+                    );
+                })}
+            </ol>
+        </nav>
     );
 };
 

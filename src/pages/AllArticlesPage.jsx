@@ -6,11 +6,10 @@ import { ChevronLeft, ChevronRight, Search, SortAsc, SortDesc, Grid, List } from
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { usePosts } from '@/hooks/useWordPress';
+import ArticleLedger from '@/components/editorial/ArticleLedger';
 import PostCard from '@/components/PostCard';
 import PostCardSkeleton from '@/components/PostCardSkeleton';
-import PostListItem from '@/components/PostListItem';
 import PostListItemSkeleton from '@/components/PostListItemSkeleton';
-import FeaturedPosts from '@/components/FeaturedPosts';
 import MetaTags from '@/components/SEO/MetaTags';
 import { generateBreadcrumbs, SITE_CONFIG } from '@/lib/seoConfig';
 import { debounce } from '@/utils/performance';
@@ -25,7 +24,8 @@ const AllArticlesPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState('desc');
   const [activeSearch, setActiveSearch] = useState('');
-  const [viewMode, setViewMode] = useState('grid');
+  // Archive defaults to the dense list; the card grid is one click away.
+  const [viewMode, setViewMode] = useState('list');
 
   // Read ?search= query param on mount (supports Google Sitelinks Search Box)
   useEffect(() => {
@@ -120,8 +120,8 @@ const AllArticlesPage = () => {
   };
 
   const containerClasses = viewMode === 'list'
-    ? 'flex flex-col space-y-4 max-w-4xl mx-auto'
-    : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6';
+    ? 'flex flex-col space-y-4'
+    : 'grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-3';
 
   return (
     <>
@@ -146,168 +146,99 @@ const AllArticlesPage = () => {
 />
       <div className="pt-1 pb-6">
         <div className="container mx-auto px-6">
-          {/* Header Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-8"
-          >
-            <h1 className="text-3xl md:text-4xl font-black mb-2">
-              All <span className="gradient-text">Articles</span>
+          {/* Archive header: what this is, how many, and search. */}
+          <header className="mx-auto max-w-6xl border-b-2 border-ink pb-6 pt-8">
+            <p className="kicker mb-3">The archive</p>
+            <h1 className="font-serif text-[34px] font-semibold leading-tight text-ink sm:text-[42px]">
+              {activeSearch ? `Results for "${activeSearch}"` : 'All articles'}
             </h1>
-            <p className="text-base text-gray-200 mb-3 max-w-3xl mx-auto">
-              Explore our full library of content, from beginner tutorials to advanced deep dives into data engineering.
+            <p className="mt-3 max-w-2xl text-[17px] leading-relaxed text-ink-body">
+              Long-form notes on{' '}
+              <Link to="/category/snowflake" className="text-rust-600 underline decoration-rust-200 underline-offset-2">Snowflake</Link>,{' '}
+              <Link to="/category/dbt" className="text-rust-600 underline decoration-rust-200 underline-offset-2">dbt</Link>,{' '}
+              <Link to="/category/airflow" className="text-rust-600 underline decoration-rust-200 underline-offset-2">Apache Airflow</Link>,{' '}
+              <Link to="/category/aws" className="text-rust-600 underline decoration-rust-200 underline-offset-2">AWS</Link>,{' '}
+              <Link to="/category/python" className="text-rust-600 underline decoration-rust-200 underline-offset-2">Python</Link> and{' '}
+              <Link to="/category/sql" className="text-rust-600 underline decoration-rust-200 underline-offset-2">SQL</Link>, newest first.
             </p>
-            <p className="text-sm text-gray-300 mb-6 max-w-3xl mx-auto leading-relaxed">
-              Browse long-form guides on{' '}
-              <Link to="/category/snowflake" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">Snowflake</Link>,{' '}
-              <Link to="/category/dbt" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">dbt</Link>,{' '}
-              <Link to="/category/airflow" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">Apache Airflow</Link>,{' '}
-              <Link to="/category/aws" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">AWS</Link>,{' '}
-              <Link to="/category/python" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">Python</Link>, and{' '}
-              <Link to="/category/sql" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">SQL</Link>.
-              {' '}Want to contribute?{' '}
-              <Link to="/contribute" className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50">Write for us</Link>.
-            </p>
-            
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto mb-6">
-              <form onSubmit={handleSearch} className="flex gap-2 mb-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="Search articles..."
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                    className="pl-10 bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-blue-400"
-                    aria-label="Search articles"
-                  />
-                </div>
-                <Button 
-                  type="submit" 
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6"
-                  disabled={loading}
-                  aria-label="Search"
+
+            <form onSubmit={handleSearch} className="mt-6 flex max-w-xl gap-2" role="search">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint" />
+                <Input
+                  type="text"
+                  placeholder="Search by tool, error or topic"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  className="h-11 rounded border-paper-500 bg-paper-50 pl-10 text-ink placeholder:text-ink-faint focus:border-ink"
+                  aria-label="Search articles"
+                />
+              </div>
+              <Button
+                type="submit"
+                className="h-11 rounded bg-ink px-5 text-paper hover:bg-rust-600"
+                disabled={loading}
+                aria-label="Search"
+              >
+                Search
+              </Button>
+            </form>
+            {activeSearch && (
+              <button
+                onClick={handleClearSearch}
+                className="mt-3 text-sm text-rust-600 underline underline-offset-2"
+                aria-label="Clear search"
+              >
+                Clear search
+              </button>
+            )}
+          </header>
+
+          {/* Count, view and sort controls */}
+          {!loading && (
+            <div className="mx-auto mb-2 mt-4 flex max-w-6xl flex-wrap items-center justify-between gap-4">
+              <p className="font-mono text-[12px] uppercase tracking-[0.06em] text-ink-faint">
+                {totalPosts > 0 ? `${totalPosts} articles` : ''}
+              </p>
+              <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('list')}
+                    aria-pressed={viewMode === 'list'}
+                    className={`inline-flex h-10 w-10 items-center justify-center rounded border transition-colors ${
+                      viewMode === 'list' ? 'border-ink bg-ink text-paper' : 'border-paper-500 text-ink-muted hover:text-ink'
+                    }`}
+                    aria-label="Switch to list view"
+                    title="List view"
+                  >
+                    <List className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('grid')}
+                    aria-pressed={viewMode === 'grid'}
+                    className={`inline-flex h-10 w-10 items-center justify-center rounded border transition-colors ${
+                      viewMode === 'grid' ? 'border-ink bg-ink text-paper' : 'border-paper-500 text-ink-muted hover:text-ink'
+                    }`}
+                    aria-label="Switch to grid view"
+                    title="Grid view"
+                  >
+                    <Grid className="h-4 w-4" />
+                  </button>
+                <button
+                  type="button"
+                  onClick={toggleSortOrder}
+                  className="ml-1 inline-flex h-10 items-center gap-2 rounded border border-paper-500 px-3 text-sm text-ink-muted transition-colors hover:text-ink"
+                  title={sortOrder === 'desc' ? 'Show oldest first' : 'Show newest first'}
+                  aria-label={sortOrder === 'desc' ? 'Sort oldest first' : 'Sort newest first'}
                 >
-                  Search
-                </Button>
-              </form>
-              
-              {/* Active Search Display */}
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-4">
-                  {activeSearch && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-400">Searching for:</span>
-                      <span className="bg-blue-600/20 text-blue-300 px-2 py-1 rounded-full">
-                        "{activeSearch}"
-                      </span>
-                      <button 
-                        onClick={handleClearSearch}
-                        className="text-gray-400 hover:text-white"
-                        title="Clear search"
-                        aria-label="Clear search"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  )}
-                </div>
+                  {sortOrder === 'desc' ? <SortDesc className="h-4 w-4" /> : <SortAsc className="h-4 w-4" />}
+                  {sortOrder === 'desc' ? 'Newest first' : 'Oldest first'}
+                </button>
               </div>
             </div>
-          </motion.div>
-          
-          {/* Featured Posts - Only on first page without search */}
-          {currentPage === 1 && !activeSearch && <FeaturedPosts />}
-          
-          {/* Articles Section Header */}
-          {!loading && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="mb-6"
-            >
-              <div className="flex items-center justify-between flex-wrap gap-4">
-                <div className="flex items-center gap-4">
-                  <h2 className="text-2xl font-bold gradient-text">
-                    {activeSearch ? `Search Results` : 'All Articles'}
-                  </h2>
-                  {totalPosts > 0 && (
-                    <span className="text-sm text-gray-400 bg-gray-800/50 px-3 py-1 rounded-full">
-                      {totalPosts} total articles
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  {/* VIEW TOGGLE BUTTONS - FIXED WITH ACCESSIBILITY */}
-                  <div className="flex items-center space-x-2 mr-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setViewMode('grid')}
-                      className={viewMode === 'grid'
-                        ? "bg-blue-600 text-white min-h-[44px] min-w-[44px]"
-                        : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20 min-h-[44px] min-w-[44px]"
-                      }
-                      aria-label="Switch to grid view"
-                      title="Grid view"
-                    >
-                      <Grid className="h-4 w-4" />
-                      <span className="sr-only">Grid view</span>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setViewMode('list')}
-                      className={viewMode === 'list'
-                        ? "bg-blue-600 text-white min-h-[44px] min-w-[44px]"
-                        : "border-blue-400/50 text-blue-300 hover:bg-blue-500/20 min-h-[44px] min-w-[44px]"
-                      }
-                      aria-label="Switch to list view"
-                      title="List view"
-                    >
-                      <List className="h-4 w-4" />
-                      <span className="sr-only">List view</span>
-                    </Button>
-                  </div>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={toggleSortOrder}
-                    className="border-purple-400/50 text-purple-300 hover:bg-purple-500/20"
-                    title={sortOrder === 'desc' ? 'Click for oldest first' : 'Click for newest first'}
-                    aria-label={sortOrder === 'desc' ? 'Sort oldest first' : 'Sort newest first'}
-                  >
-                    {sortOrder === 'desc' ? (
-                      <>
-                        <SortDesc className="h-4 w-4 mr-2" />
-                        Newest First
-                      </>
-                    ) : (
-                      <>
-                        <SortAsc className="h-4 w-4 mr-2" />
-                        Oldest First
-                      </>
-                    )}
-                  </Button>
-                  <Button 
-                    onClick={refresh} 
-                    variant="outline" 
-                    size="sm"
-                    className="border-blue-400/50 text-blue-300 hover:bg-blue-500/20"
-                    disabled={loading}
-                    aria-label="Refresh articles"
-                  >
-                    Refresh
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
           )}
-          
+
           {/* Loading State */}
           {loading ? (
             <div className={containerClasses}>
@@ -365,27 +296,16 @@ const AllArticlesPage = () => {
             </motion.div>
           ) : (
             <>
-              {/* Posts Grid/List */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                className={containerClasses}
-              >
-                {posts.map((post, index) => (
-                  <motion.div
-                    key={post.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ 
-                      duration: 0.5, 
-                      delay: index * 0.05 
-                    }}
-                  >
-                    {viewMode === 'list' ? <PostListItem post={post} /> : <PostCard post={post} />}
-                  </motion.div>
-                ))}
-              </motion.div>
+              {/* Posts: dense ledger by default, card grid on request */}
+              <div className="mx-auto max-w-6xl">
+                {viewMode === 'list' ? (
+                  <ArticleLedger posts={posts} />
+                ) : (
+                  <div className={`${containerClasses} pt-6`}>
+                    {posts.map((post) => <PostCard key={post.id} post={post} />)}
+                  </div>
+                )}
+              </div>
 
               {/* Ad after posts grid, before pagination */}
               <Suspense fallback={null}>
