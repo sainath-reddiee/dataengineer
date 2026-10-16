@@ -3,7 +3,18 @@
     "guides": 119,
     "cheatsheets": 30
   },
-  "techStack": ["Snowflake", "dbt", "Databricks", "Apache Spark", "Apache Airflow", "BigQuery", "Kafka", "Python", "SQL", "AI on data"],
+  "techStack": [
+    "Snowflake",
+    "dbt",
+    "Databricks",
+    "Apache Spark",
+    "Apache Airflow",
+    "BigQuery",
+    "Kafka",
+    "Python",
+    "SQL",
+    "AI on data"
+  ],
   "opportunities": [
     {
       "title": "Sponsored card in matching guides",
@@ -19,8 +30,18 @@
       ],
       "cta": "Ask about a sponsored card",
       "durations": [
-        { "key": "monthly", "label": "Monthly", "price": 39, "desc": "30 days across matching pages. Founding-sponsor rate." },
-        { "key": "yearly", "label": "Yearly", "price": 349, "desc": "12 months, billed once. About 25% less than monthly." }
+        {
+          "key": "monthly",
+          "label": "Monthly",
+          "price": 39,
+          "desc": "30 days across matching pages. Founding-sponsor rate."
+        },
+        {
+          "key": "yearly",
+          "label": "Yearly",
+          "price": 349,
+          "desc": "12 months, billed once. About 25% less than monthly."
+        }
       ]
     },
     {
@@ -36,7 +57,12 @@
       ],
       "cta": "Ask about a listing",
       "durations": [
-        { "key": "yearly", "label": "12 months", "price": 79, "desc": "One payment for a year in the Tools Hub." }
+        {
+          "key": "yearly",
+          "label": "12 months",
+          "price": 79,
+          "desc": "One payment for a year in the Tools Hub."
+        }
       ]
     },
     {
@@ -52,7 +78,33 @@
       ],
       "cta": "Propose a guide",
       "durations": [
-        { "key": "one_time", "label": "One-time", "price": 199, "desc": "One published, permanent tutorial. Priced on the writing work, not traffic." }
+        {
+          "key": "one_time",
+          "label": "One-time",
+          "price": 199,
+          "desc": "One published, permanent tutorial. Priced on the writing work, not traffic."
+        }
+      ]
+    },
+    {
+      "title": "Sponsored announcement",
+      "packageKey": "announcement",
+      "popular": false,
+      "tagline": "A press release in the labeled Announcements section",
+      "bullets": [
+        "Published within 3 working days of payment: up to 800 words plus one image or logo",
+        "Marked \"Sponsored announcement\"; every link is rel=\"sponsored nofollow\"",
+        "Kept out of search results and article feeds, so it is never mistaken for a tutorial",
+        "Light edit for clarity; claims must be accurate and verifiable"
+      ],
+      "cta": "Submit an announcement",
+      "durations": [
+        {
+          "key": "one_time",
+          "label": "Per release",
+          "price": 49,
+          "desc": "One release, published permanently. No extra fees."
+        }
       ]
     }
   ]

@@ -1220,20 +1220,28 @@ const ESSENTIAL_PAGES = [
   },
   {
     path: '/advertise',
-    title: 'Advertise — DataEngineer Hub (USD placements)',
-    description: 'Paid placements for data tools billed in USD. Sponsored cards, Tools Hub listings, co-authored guides, and newsletter blurbs. Guest articles are free on Write for Us.',
+    title: 'Advertise on DataEngineer Hub',
+    description: 'Founding-sponsor rates for labeled placements on DataEngineer Hub: sponsored cards, Tools Hub listings, co-authored integration guides and sponsored announcements for data-engineering products.',
     content: `
-      <h1>Reach engineers who are already costing a warehouse</h1>
-      <p>Paid placements only, billed in <strong>USD</strong>. Guest tutorials are free and editorial on <a href="/contribute">Write for Us</a>. Sponsor links are labeled and nofollow — we do not sell dofollow packages.</p>
+      <h1>Sponsor DataEngineer Hub</h1>
+      <p>This is a small, specialist site written by one working data engineer. Readers come here to fix a Snowflake bill, debug a dbt build or prepare for an interview. The prices below are founding-sponsor rates that match the current audience; a current analytics screenshot is available on request.</p>
 
-      <h2>USD packages</h2>
+      <h2>What you can sponsor (USD)</h2>
       <ul>
-        <li><strong>Sponsored card in matching guides:</strong> from $79/month or $699/year — labeled card on articles, cheat sheets, and tools. Not glossary or compare archives.</li>
-        <li><strong>Tools Hub listing:</strong> $149 one-time — permanent directory card.</li>
-        <li><strong>Co-authored integration guide:</strong> $249 one-time — labeled tutorial with working code.</li>
-        <li><strong>Newsletter:</strong> $79 per issue — ~150-word labeled blurb.</li>
+        <li><strong>Sponsored card in matching guides:</strong> $39 per month or $349 per year. One labeled card on the tutorials, cheat sheets and calculators that match your product.</li>
+        <li><strong>Tools Hub listing:</strong> $79 for 12 months. A labeled card in the sponsored row of the free-tools page.</li>
+        <li><strong>Co-authored integration guide:</strong> $199 one-time. A real tutorial using your product, with working code, marked as sponsored.</li>
+        <li><strong>Sponsored announcement:</strong> $49 per release. A press release in the labeled, noindexed <a href="/announcements">Announcements</a> section.</li>
+        <li><strong>Newsletter mention:</strong> $19 per issue, as a waitlist. Nothing is charged until an issue is scheduled.</li>
       </ul>
-      <p>Cancel before go-live for a full refund. Inquire via the form on this page or <a href="mailto:sainath@dataengineerhub.blog">sainath@dataengineerhub.blog</a>. See the <a href="/disclaimer">disclaimer</a> and <a href="/privacy-policy">privacy policy</a>.</p>
+
+      <h2>House rules</h2>
+      <ul>
+        <li>Every paid placement is labeled and links use rel="sponsored nofollow". No dofollow links, link insertions or SEO guest posts.</li>
+        <li>No gambling, crypto trading, loans or products I would not use myself.</li>
+        <li>One sponsor per page; sponsors never decide what articles say.</li>
+      </ul>
+      <p>Payment is by PayPal invoice in USD (cards accepted). Cancel before go-live for a full refund. Send an inquiry with the form on this page or email <a href="mailto:sainath@dataengineerhub.blog">sainath@dataengineerhub.blog</a>. Guest tutorials are free and editorial: see <a href="/contribute">Write for us</a>.</p>
     `
   },
   {

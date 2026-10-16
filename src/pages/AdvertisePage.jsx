@@ -66,6 +66,11 @@ const FAQS = [
       'Yes. Cancel before go-live for a full refund. Monthly cards do not auto-renew; I email before the end date.',
   },
   {
+    question: 'Do you publish press releases?',
+    answer:
+      'Yes, as sponsored announcements ($49 per release) in a separate, labeled Announcements section. They are kept out of search results and article feeds, and every link is rel="sponsored nofollow".',
+  },
+  {
     question: 'I want to write a guest article. Is that advertising?',
     answer: 'No. Guest tutorials are free and editorial; pitch them on the Write for us page instead of this form.',
   },
@@ -78,7 +83,7 @@ function formatUsd(value) {
 function priceUnit(d) {
   if (d.key === 'monthly') return '/ month';
   if (d.key === 'yearly') return d.label === '12 months' ? 'for 12 months' : '/ year';
-  return 'one-time';
+  return d.label === 'Per release' ? 'per release' : 'one-time';
 }
 
 function priceLine(opp) {

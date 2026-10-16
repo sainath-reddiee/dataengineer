@@ -4413,7 +4413,7 @@ add_action('transition_post_status', function ($new_status, $old_status, $post) 
     if ($new_status !== 'publish' || $old_status === 'publish' || $post->post_type !== 'post') {
         return;
     }
-    if (get_post_meta($post->ID, '_dehub_newsletter_queued', true) || has_tag('no-newsletter', $post)) {
+    if (get_post_meta($post->ID, '_dehub_newsletter_queued', true) || has_tag('no-newsletter', $post) || has_category('announcements', $post)) {
         return;
     }
     update_post_meta($post->ID, '_dehub_newsletter_queued', current_time('mysql'));
@@ -4487,6 +4487,38 @@ function dehub_newsletter_send_batch($post_id, $after_id) {
         update_post_meta($post_id, '_dehub_newsletter_sent', current_time('mysql'));
     }
 }
+
+
+// ============================================================================
+// SPONSORED ANNOUNCEMENTS (press releases)
+// ============================================================================
+// Posts in the "announcements" category are paid press releases. They live
+// at /announcements/<slug> on the site, are labeled and noindexed there, and
+// must never mix into article feeds, the sitemap, RSS or related posts.
+// Public REST post lists therefore exclude the category unless a request
+// asks for it (categories=<id>, a slug lookup, or include_announcements=1).
+
+function dehub_announcements_category_id() {
+    static $id = null;
+    if ($id === null) {
+        $term = get_category_by_slug('announcements');
+        $id = $term ? (int) $term->term_id : 0;
+    }
+    return $id;
+}
+
+add_filter('rest_post_query', function ($args, $request) {
+    $cat = dehub_announcements_category_id();
+    if (!$cat) {
+        return $args;
+    }
+    if ($request->get_param('slug') || $request->get_param('categories') || $request->get_param('include_announcements')) {
+        return $args;
+    }
+    $existing = isset($args['category__not_in']) ? (array) $args['category__not_in'] : array();
+    $args['category__not_in'] = array_values(array_unique(array_merge($existing, array($cat))));
+    return $args;
+}, 10, 2);
 
 
 // ============================================================================

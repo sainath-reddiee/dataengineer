@@ -25,6 +25,7 @@ Reply within two working days; the advertise page promises it.
 > - Sponsored card on matching guides, cheat sheets and calculators: $39 per month or $349 per year
 > - Tools Hub listing for 12 months: $79
 > - Co-authored integration guide (I write a real tutorial using {product}): $199
+> - Sponsored announcement (press release) in our Announcements section: $49 per release
 >
 > All placements are labeled "Sponsored" and links are rel="sponsored nofollow". You get a private dashboard link with viewable impressions and clicks, and UTM-tagged links for your own analytics.
 >
@@ -60,6 +61,17 @@ Reply within two working days; the advertise page promises it.
 > Sainath
 
 Check the current count at https://app.dataengineerhub.blog/wp-json/dehub/v1/newsletter/stats before replying.
+
+## Press release requests
+
+Press releases are welcome as sponsored announcements ($49). Reply with the rates in template A, and ask for the release text (up to 800 words), one logo or image, and the target URL.
+
+To publish one:
+
+1. In WordPress, create the post in the **Announcements** category (slug `announcements`). Do not also put it in a normal category.
+2. Light edit: remove guaranteed-results claims and unverifiable statistics; keep it under 800 words.
+3. Publish. It appears at `https://dataengineerhub.blog/announcements/<slug>`, labeled, noindexed, with every link set to `rel="sponsored nofollow"` automatically. It is never emailed to newsletter subscribers and never appears in article lists, the sitemap or RSS.
+4. Email the live link to the sponsor.
 
 ## After payment: going live
 

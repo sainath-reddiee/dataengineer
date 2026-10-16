@@ -93,6 +93,12 @@ $env:DEHUB_SPONSOR_SECRET = "<the same secret>"; node scripts/sponsorDashboardLi
 
 The campaign id is the sponsor's `token` in `src/data/activeSponsors.json` (the admin Sponsor Manager copies this command for you). Email the printed link to the sponsor.
 
-## 7. Clean-up
+## 7. Announcements category (press releases)
+
+In WordPress, go to Posts, then Categories, and create a category named **Announcements** with the slug `announcements`. Posts in it are paid press releases: the updated functions.php keeps them out of every public post list, the sitemap, RSS and newsletter emails, and the site shows them only at `/announcements`.
+
+Upload the new functions.php **before** publishing the first announcement; with the old file, an announcement would appear in article feeds.
+
+## 8. Clean-up
 
 Delete `public_html/assets/js/index-DDFF6wS3.js` on the main site in Hostinger File Manager. It is an old bundle that contained the revoked WordPress password. The password no longer works, but the file has no reason to stay.

@@ -7,7 +7,7 @@ import { formatStoryDate, plainExcerpt, storyKicker } from './storyMeta';
  * headline and one-line summary in the middle, date on the right. Built for
  * readers who skim titles, the way engineering blogs index their archives.
  */
-const ArticleLedger = ({ posts }) => {
+const ArticleLedger = ({ posts, basePath = '/articles' }) => {
   if (!posts || posts.length === 0) return null;
 
   return (
@@ -19,7 +19,7 @@ const ArticleLedger = ({ posts }) => {
           </p>
           <div>
             <Link
-              to={`/articles/${post.slug}`}
+              to={`${basePath}/${post.slug}`}
               reloadDocument={ADSENSE_REVIEW_MODE}
               className="font-serif text-xl font-semibold leading-snug text-ink hover:text-rust-600"
             >

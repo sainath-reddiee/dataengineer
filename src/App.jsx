@@ -40,6 +40,7 @@ const ApiDebugger = lazy(() => import('./components/ApiDebugger'));
 const TagsArchivePage = lazy(() => import('./pages/TagsArchivePage'));
 const Certification = lazy(() => import('./pages/Certification'));
 const AdvertisePage = lazy(() => import('./pages/AdvertisePage'));
+const AnnouncementsPage = lazy(() => import('./pages/AnnouncementsPage'));
 const SponsorDashboardPage = lazy(() => import('./pages/SponsorDashboardPage'));
 
 // PSEO Pages (Programmatic SEO)
@@ -393,6 +394,9 @@ function App() {
           <Route path="news" element={<SafeRoute fallbackText="Loading News..."><NewsPage /></SafeRoute>} />
           <Route path="newsletter" element={<SafeRoute fallbackText="Loading Newsletter..."><NewsletterPage /></SafeRoute>} />
           <Route path="advertise" element={<SafeRoute fallbackText="Loading Advertise..."><AdvertisePage /></SafeRoute>} />
+          {/* Paid press releases: noindexed section, rendered with the article view. */}
+          <Route path="announcements" element={<SafeRoute fallbackText="Loading Announcements..."><AnnouncementsPage /></SafeRoute>} />
+          <Route path="announcements/:slug" element={<RouteErrorBoundary><ArticlePage /></RouteErrorBoundary>} />
           <Route path="sponsors/dashboard" element={<SafeRoute fallbackText="Loading Sponsor Dashboard..."><SponsorDashboardPage /></SafeRoute>} />
           {debugMode && (
             <Route path="debug" element={<SafeRoute fallbackText="Loading Debug..."><ApiDebugger /></SafeRoute>} />

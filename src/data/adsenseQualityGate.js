@@ -82,7 +82,14 @@ export function isReviewAllowlistedCheatsheet(slug) {
   return REVIEW_CHEATSHEET_SET.has(String(slug || ''));
 }
 
+export function isSponsoredAnnouncementPath(pathname) {
+  const path = normalizePath(pathname);
+  return path === '/announcements' || path.startsWith('/announcements/');
+}
+
 export function isAdSenseNoindexPath(pathname) {
+  // Paid press releases are noindexed permanently, review mode or not.
+  if (isSponsoredAnnouncementPath(pathname)) return true;
   if (!ADSENSE_REVIEW_MODE) return false;
   const path = normalizePath(pathname);
 

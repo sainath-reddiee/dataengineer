@@ -52,6 +52,7 @@ const Footer = () => {
         { name: 'Write for Us', href: '/contribute' },
       ] : []),
       { name: 'Advertise', href: '/advertise' },
+      { name: 'Sponsored announcements', href: '/announcements' },
       { name: 'Sitemap', href: '/sitemap-index.xml', external: true },
       { name: 'RSS Feed', href: '/rss.xml', external: true },
       { name: 'Manage Cookies', action: () => { revokeConsent(); window.location.reload(); } }

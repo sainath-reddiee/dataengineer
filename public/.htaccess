@@ -207,7 +207,8 @@
     # /contributors (and any other missing route) look like duplicate
     # homepages to AdSense — a repeated "low value content" rejection.
     # ========================================================================
-    RewriteCond %{REQUEST_URI} ^/(admin|debug|sponsors/dashboard) [NC]
+    # /announcements is a React-rendered, noindexed section (X-Robots-Tag above).
+    RewriteCond %{REQUEST_URI} ^/(admin|debug|sponsors/dashboard|announcements)(/|$) [NC]
     RewriteRule ^ /index.html [L]
 
 </IfModule>
@@ -229,6 +230,8 @@
 # Lists must match src/data/adsenseQualityGate.js (verifyAdsenseQualityGate checks).
 <IfModule mod_setenvif.c>
     SetEnvIf Request_URI "^/(glossary|compare|tag|tags|cheatsheets/category|category|interview-prep|practice|advertise|contribute|contributors|news|newsletter|reading-list)(/|$)" ADSENSE_REVIEW_PATH
+    # Sponsored announcements (press releases) are always noindex, not only during review.
+    SetEnvIf Request_URI "^/announcements(/|$)" ADSENSE_REVIEW_PATH
     SetEnvIf Request_URI "^/cheatsheets/(?!(snowflake-sql|sql-window-functions|dbt-commands|airflow-essentials|snowflake-best-practices|databricks|python-for-data-engineers|data-modeling)(/|$))[^/]+" ADSENSE_REVIEW_PATH
     SetEnvIf Request_URI "^/tools/(?!(snowflake-cost-calculator|cloud-data-warehouse-cost-comparison|sql-playground|databricks-cost-calculator|bigquery-cost-calculator)(/|$))[^/]+" ADSENSE_REVIEW_PATH
 </IfModule>

@@ -1,6 +1,6 @@
 // src/pages/ArticlePage.jsx - ENHANCED WITH BREADCRUMBS AND SEO
 import React, { Suspense, useEffect, useMemo } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { ArrowLeft, User, AlertCircle, RefreshCw, Share2 } from 'lucide-react';
@@ -33,6 +33,7 @@ import { injectInternalLinks } from '@/lib/pseo/linkingEngine';
 import { getRecommendedCourses, getPlatformColor } from '@/data/courseRecommendations';
 import InlineToolWidget from '@/components/InlineToolWidget';
 import AuthorBioCard from '@/components/AuthorBioCard';
+import { markSponsoredLinks } from '@/utils/sponsoredLinks';
 import SponsorPlacement from '@/components/SponsorPlacement';
 import { isBlogOwner, OWNER_DISPLAY_NAME, OWNER_ROLE, OWNER_PROFILE_PATH } from '@/lib/contributorIdentity';
 import { useSsgArticleFallback } from '@/hooks/useSsgArticleFallback';
@@ -283,7 +284,7 @@ const RelatedPosts = ({ currentPostId, category }) => {
 // ============================================================================
 // Article header: topic line, serif headline, summary, ruled byline row.
 // ============================================================================
-const MetadataOption1 = ({ safePost, formatDate, slug }) => {
+const MetadataOption1 = ({ safePost, formatDate, slug, isAnnouncement = false }) => {
   const isOwner = isBlogOwner({ name: safePost.author, id: safePost.authorData?.id, slug: safePost.authorData?.slug });
   const authorDisplayName = isOwner ? OWNER_DISPLAY_NAME : (safePost.author || 'Unknown Author');
   const authorInitials = authorDisplayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -331,7 +332,7 @@ const MetadataOption1 = ({ safePost, formatDate, slug }) => {
             </span>
           )}
           <span className="flex flex-col leading-tight">
-            <span className="text-[15px] font-medium text-ink">By {authorDisplayName}</span>
+            <span className="text-[15px] font-medium text-ink">{isAnnouncement ? 'Sponsored announcement' : `By ${authorDisplayName}`}</span>
             <span className="text-[13px] text-ink-faint">{authorSubtitle}</span>
           </span>
         </AuthorWrapper>
@@ -366,6 +367,8 @@ const MetadataOption1 = ({ safePost, formatDate, slug }) => {
 
 const ArticlePage = () => {
   const { slug } = useParams();
+  // /announcements/:slug renders paid press releases with this same view.
+  const isAnnouncement = useLocation().pathname.startsWith('/announcements/');
   const { post, loading, error, refetch } = usePost(slug);
 
 
@@ -533,7 +536,7 @@ const ArticlePage = () => {
   );
 
   // Generate breadcrumbs for SEO
-  const breadcrumbs = generateBreadcrumbs(`/articles/${slug}`, safePost.title);
+  const breadcrumbs = generateBreadcrumbs(`${isAnnouncement ? '/announcements' : '/articles'}/${slug}`, safePost.title);
 
     // Auto-extract HowTo schema from step-based content
     const howToSteps = extractHowToSteps(safePost.content || '');
@@ -596,9 +599,15 @@ const ArticlePage = () => {
         <motion.article initial={false} animate={{ opacity: 1 }} className="space-y-8">
           {/* Title and byline first so readers see what they opened before
               the image; matches the static HTML order. */}
-          <MetadataOption1 safePost={safePost} formatDate={formatDate} slug={slug} />
+          <MetadataOption1 safePost={safePost} formatDate={formatDate} slug={slug} isAnnouncement={isAnnouncement} />
 
-          {isSponsoredPost && (
+          {isAnnouncement ? (
+            <p className="mx-auto max-w-3xl border-l-2 border-rust-500 bg-paper-300 px-4 py-3 text-[15px] text-ink-body">
+              <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-rust-600">Sponsored announcement</span>{' '}
+              This is a paid announcement supplied by the company named in it, published with light editing. It is not a
+              review, and DataEngineer Hub has not necessarily tested the product. Links are marked as sponsored.
+            </p>
+          ) : isSponsoredPost && (
             <p className="mx-auto max-w-3xl border-l-2 border-rust-500 bg-paper-300 px-4 py-3 text-[15px] text-ink-body">
               <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-rust-600">Sponsored</span>{' '}
               This guide was written in partnership with a sponsor. Our{' '}
@@ -634,7 +643,7 @@ const ArticlePage = () => {
                   </div>
                   <div className="prose max-w-none prose-headings:text-ink prose-strong:text-ink">
                     <div
-                      dangerouslySetInnerHTML={{ __html: processedHtml }}
+                      dangerouslySetInnerHTML={{ __html: isAnnouncement || isSponsoredPost ? markSponsoredLinks(processedHtml) : processedHtml }}
                       className="article-content"
                     />
                   </div>
@@ -647,7 +656,7 @@ const ArticlePage = () => {
 
           {/* Renders only when a live sponsor matches this article; always labeled. */}
           <div className="mx-auto max-w-2xl">
-            <SponsorPlacement category={safePost.category} tags={safePost.tags} slug={slug} />
+            {!isAnnouncement && <SponsorPlacement category={safePost.category} tags={safePost.tags} slug={slug} />}
           </div>
 
           {/* Everything after the body stays in the reading column. */}
@@ -686,9 +695,17 @@ const ArticlePage = () => {
               })}
             </div>
 
-            <InlineToolWidget post={safePost} />
-
-            <AuthorBioCard author={safePost.authorData} />
+            {isAnnouncement ? (
+              <p className="text-[15px] text-ink-muted">
+                <Link to="/announcements" className="text-rust-600 underline decoration-rust-200 underline-offset-2">More sponsored announcements</Link>
+                {' '}· <Link to="/articles" className="text-rust-600 underline decoration-rust-200 underline-offset-2">Read the tutorials</Link>
+              </p>
+            ) : (
+              <>
+                <InlineToolWidget post={safePost} />
+                <AuthorBioCard author={safePost.authorData} />
+              </>
+            )}
 
             <p className="text-xs text-ink-faint">
               This page may contain advertisements.{' '}
@@ -702,15 +719,19 @@ const ArticlePage = () => {
         {/* End of article stays short: series, related reading, discussion.
             Extra link blocks, sticky bars and popups were removed because
             they buried the content and read as link farming to reviewers. */}
-        <div className="mx-auto mt-12 max-w-2xl">
-          <ArticleSeries slug={slug} category={safePost.category} />
-        </div>
+        {!isAnnouncement && (
+          <>
+            <div className="mx-auto mt-12 max-w-2xl">
+              <ArticleSeries slug={slug} category={safePost.category} />
+            </div>
 
-        {!ADSENSE_REVIEW_MODE && <EmailDigestBanner />}
+            {!ADSENSE_REVIEW_MODE && <EmailDigestBanner />}
 
-        {!ADSENSE_REVIEW_MODE && <RecommendedCourses post={safePost} />}
+            {!ADSENSE_REVIEW_MODE && <RecommendedCourses post={safePost} />}
 
-        <RelatedPosts currentPostId={safePost.id} category={safePost.category} />
+            <RelatedPosts currentPostId={safePost.id} category={safePost.category} />
+          </>
+        )}
 
         <div className="mx-auto max-w-2xl">
           <GiscusComments />
