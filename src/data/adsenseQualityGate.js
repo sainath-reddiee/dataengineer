@@ -43,7 +43,8 @@
  */
 export const ADSENSE_REVIEW_MODE = true;
 /** Bump when held-out paths change so incremental SSG rewrites stale robots meta. */
-export const ADSENSE_GATE_VERSION = 4;
+// v5: full code blocks for crawlers and the TL;DR body-truncation fix.
+export const ADSENSE_GATE_VERSION = 5;
 
 export const ADSENSE_REVIEW_CHEATSHEETS = [
   'snowflake-sql',
