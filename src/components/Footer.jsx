@@ -1,15 +1,8 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { revokeConsent } from './CookieConsent';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 import SupportButton from '@/components/Support/SupportButton';
-import {
-  Database,
-  Github,
-  Linkedin,
-  Mail,
-  Heart
-} from 'lucide-react';
+import { Github, Linkedin, Mail } from 'lucide-react';
 
 const Footer = () => {
 
@@ -71,28 +64,23 @@ const Footer = () => {
     { name: 'Email', icon: Mail, href: 'mailto:sainath@dataengineerhub.blog' }
   ];
 
-  return (
-    <footer className="relative py-16 border-t border-white/10 overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl"></div>
-      </div>
+  const linkClass = 'text-[15px] text-paper-600 transition-colors hover:text-paper';
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          <div className="col-span-2 lg:col-span-1">
-            <Link to="/" className="flex items-center space-x-3 mb-6">
-              <div className="relative">
-                <Database className="h-8 w-8 text-blue-400" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-pink-500 to-violet-500 rounded-full animate-pulse"></div>
-              </div>
-              <span className="text-2xl font-bold gradient-text">DataEngineer Hub</span>
+  // Dark ink band closes the page like a newspaper colophon. Uses the
+  // explicit paper/ink tokens because legacy white/gray classes are inverted.
+  return (
+    <footer className="mt-16 bg-ink text-paper">
+      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+          <div className="sm:col-span-2 lg:col-span-1">
+            <Link to="/" className="font-serif text-2xl font-semibold text-paper">
+              DataEngineer Hub
             </Link>
-            <p className="text-gray-400 mb-6 leading-relaxed">
-              Your ultimate resource for mastering data engineering technologies.
-              From AWS to dbt, we cover it all with practical insights and expert guidance.
+            <p className="mt-4 max-w-sm text-[15px] leading-relaxed text-paper-600">
+              Production notes on Snowflake, dbt, Airflow and the modern data stack, written and
+              maintained by Sainath Reddy.
             </p>
-            <div className="flex space-x-4">
+            <div className="mt-5 flex gap-4">
               {socialLinks.map((social) => {
                 const IconComponent = social.icon;
                 return (
@@ -101,53 +89,40 @@ const Footer = () => {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 bg-white/10 hover:bg-blue-500/20 rounded-full flex items-center justify-center transition-colors group"
+                    className="text-paper-600 transition-colors hover:text-rust-300"
                     aria-label={`Visit ${social.name}`}
                   >
-                    <IconComponent className="h-5 w-5 text-gray-400 group-hover:text-blue-400 transition-colors" />
+                    <IconComponent className="h-5 w-5" />
                   </a>
                 );
               })}
             </div>
-
             <div className="mt-6">
               <SupportButton variant="footerCta" label="Buy me a coffee" source="footer" />
             </div>
           </div>
 
           {[
-            { title: 'Content', links: footerLinks.content },
+            { title: 'Read', links: footerLinks.content },
             { title: 'Free tools', links: footerLinks.tools },
-            { title: 'Company', links: footerLinks.company }
+            { title: 'About the site', links: footerLinks.company }
           ].map((section) => (
             <div key={section.title}>
-              <span className="text-lg font-semibold text-white mb-6 block">{section.title}</span>
-              <ul className="space-y-3">
+              <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.08em] text-rust-300">{section.title}</p>
+              <ul className="space-y-2.5">
                 {section.links.map((link) => (
                   <li key={link.name}>
                     {link.action ? (
-                      <button
-                        onClick={link.action}
-                        className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group"
-                      >
+                      <button onClick={link.action} className={linkClass}>
                         {link.name}
-                        <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
                       </button>
                     ) : link.external ? (
-                      <a
-                        href={link.href}
-                        className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group"
-                      >
+                      <a href={link.href} className={linkClass}>
                         {link.name}
-                        <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
                       </a>
                     ) : (
-                      <Link
-                        to={link.href}
-                        className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group"
-                      >
+                      <Link to={link.href} className={linkClass}>
                         {link.name}
-                        <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
                       </Link>
                     )}
                   </li>
@@ -157,33 +132,17 @@ const Footer = () => {
           ))}
         </div>
 
-        <div className="pt-8 border-t border-white/10">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-gray-400 text-sm flex items-center">
-              © {new Date().getFullYear()} DataEngineer Hub. Made with
-              <Heart className="h-4 w-4 text-red-400 mx-1 animate-pulse" />
-              for data engineers worldwide.
-            </p>
-            <p className="text-gray-400 text-sm">
-              Empowering the next generation of data professionals
-            </p>
-          </div>
-
-          {/* CCPA / Ad Personalization Disclosure */}
-          <div className="mt-6 pt-4 border-t border-white/5 flex flex-col sm:flex-row flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-gray-500">
+        <div className="mt-12 flex flex-col gap-3 border-t border-ink-muted/40 pt-6 text-sm text-paper-600 md:flex-row md:items-center md:justify-between">
+          <p>© {new Date().getFullYear()} DataEngineer Hub. Written in Hyderabad.</p>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
             <span>Information from your device can be used to personalize your ad experience.</span>
-            <span className="hidden sm:inline text-gray-700">|</span>
             <button
               onClick={() => { revokeConsent(); window.location.reload(); }}
-              className="text-blue-400/70 hover:text-blue-400 hover:underline transition-colors"
+              className="text-paper-600 underline underline-offset-2 hover:text-paper"
             >
               Do not sell or share my personal information
             </button>
-            <span className="hidden sm:inline text-gray-700">|</span>
-            <Link
-              to="/terms-of-service"
-              className="text-blue-400/70 hover:text-blue-400 hover:underline transition-colors"
-            >
+            <Link to="/terms-of-service" className="text-paper-600 underline underline-offset-2 hover:text-paper">
               Terms of Content Use
             </Link>
           </div>

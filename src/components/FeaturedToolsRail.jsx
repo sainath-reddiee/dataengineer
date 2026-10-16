@@ -11,18 +11,16 @@ const FeaturedToolsRail = () => {
 
   return (
   <section aria-labelledby="featured-tools-heading">
-    <div className="mb-4 flex items-end justify-between gap-3">
+    <div className="mb-6 flex items-end justify-between gap-4 border-t-2 border-ink pt-3">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-300/80">
-          Use a tool in the browser
-        </p>
-        <h2 id="featured-tools-heading" className="mt-1 text-lg font-bold text-white sm:text-xl">
+        <h2 id="featured-tools-heading" className="font-serif text-2xl font-semibold text-ink">
           Free tools, no signup
         </h2>
+        <p className="mt-1 text-sm text-ink-faint">Calculators and a SQL playground that run in your browser.</p>
       </div>
       <Link
         to="/tools"
-        className="inline-flex items-center gap-1 text-xs font-semibold text-blue-400 hover:text-blue-300 sm:text-sm"
+        className="inline-flex items-center gap-1 whitespace-nowrap pb-1 text-sm text-rust-600 hover:text-rust-700"
       >
         All tools <ArrowRight className="h-3.5 w-3.5" />
       </Link>
@@ -33,20 +31,18 @@ const FeaturedToolsRail = () => {
         const Icon = TOOL_ICONS[tool.icon] || Wrench;
         const inner = (
           <>
-            <span className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/15 ring-1 ring-blue-400/20">
-              <Icon className="h-5 w-5 text-blue-300" />
-            </span>
-            <span className="block text-sm font-semibold text-white group-hover:text-blue-300">
+            <Icon className="mb-3 h-5 w-5 text-rust-500" />
+            <span className="block font-serif text-lg font-semibold text-ink group-hover:text-rust-600">
               {tool.title}
             </span>
-            <span className="mt-1 block text-xs text-slate-400">{tool.tagline}</span>
-            <span className="mt-3 inline-flex text-[11px] font-semibold text-blue-300 sm:hidden">
+            <span className="mt-1 block text-sm text-ink-muted">{tool.tagline}</span>
+            <span className="mt-3 inline-flex font-mono text-[11px] text-rust-600 sm:hidden">
               Open →
             </span>
           </>
         );
         const className =
-          'card-3d group w-[78%] shrink-0 snap-start rounded-2xl border border-white/10 bg-slate-900/60 p-4 sm:w-auto';
+          'group w-[78%] shrink-0 snap-start rounded-sm border border-paper-500 bg-paper-50 p-5 transition-colors hover:border-paper-600 sm:w-auto';
         return tool.external ? (
           <a key={tool.slug} href={tool.url} className={className}>
             {inner}

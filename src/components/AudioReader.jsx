@@ -274,31 +274,14 @@ const AudioReader = ({ content, title }) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             onClick={() => setIsOpen(true)}
-            className="group flex items-center gap-2.5 w-auto px-4 py-2.5 rounded-2xl
-                       bg-gradient-to-r from-slate-800/80 to-slate-700/60
-                       hover:from-slate-800 hover:to-slate-700
-                       border border-slate-700/50 hover:border-blue-500/40
-                       backdrop-blur-md shadow-lg hover:shadow-blue-500/10
-                       transition-all duration-300 cursor-pointer"
+            className="group inline-flex h-10 items-center gap-2 rounded border px-3 text-sm transition-colors border-paper-500 text-ink-soft hover:border-paper-600 hover:text-ink"
             aria-label="Listen to this article"
           >
-            <span className="relative flex items-center justify-center w-8 h-8 rounded-xl
-                            bg-gradient-to-br from-blue-500 to-purple-600
-                            shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/40
-                            transition-shadow duration-300 shrink-0">
-              <Headphones className="w-4 h-4 text-white" />
-              {/* animated pulse ring */}
-              <span className="absolute inset-0 rounded-xl bg-blue-400/30 animate-ping opacity-0 group-hover:opacity-100" />
-            </span>
-            <span className="flex flex-col items-start leading-tight">
-              {/* Short label and no sub-line on phones so the reader actions
-                  fit one row above the article instead of stacking. */}
-              <span className="text-xs sm:text-sm font-semibold text-white group-hover:text-blue-300 transition-colors">
-                Listen<span className="hidden sm:inline"> to this article</span>
-              </span>
-              <span className="hidden sm:block text-[10px] text-gray-400 group-hover:text-gray-300 transition-colors">
-                ~{Math.ceil(wordCount / 150)} min · browser audio
-              </span>
+            <Headphones className="h-4 w-4" />
+            {/* Short label on phones so the reader actions fit one row. */}
+            <span>Listen</span>
+            <span className="hidden font-mono text-[11px] text-ink-faint sm:inline">
+              ~{Math.ceil(wordCount / 150)} min
             </span>
           </motion.button>
         )}

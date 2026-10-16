@@ -1,195 +1,50 @@
-// src/components/PostCard.jsx - COMPLETE VERSION WITH TAGS
-import React from 'react';
+// src/components/PostCard.jsx - editorial article card
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Calendar, Clock, ArrowRight, User, Eye, TrendingUp } from 'lucide-react';
 import LazyImage from './LazyImage';
-import TagsList from './TagsList';
-import FreshnessBadge from './FreshnessBadge';
-import { useViewCount } from '@/hooks/usePopularity';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
+import { formatStoryDate, plainExcerpt, storyKicker } from './editorial/storyMeta';
 
-const isMobile = window.innerWidth <= 768;
-
-const cardVariants = {
-  rest: { scale: 1 },
-  hover: isMobile ? { scale: 1 } : { scale: 1.03 }, // Disable scale on mobile
-};
-
-const MotionLink = motion.create(Link);
-
+/**
+ * A plain, magazine-style card: image, topic line, serif headline, short
+ * summary, date. No hover lifts, view counters or hashtag chips; the title
+ * carries the card. The whole card is one link so the hit area stays large.
+ */
 const PostCard = ({ post }) => {
   if (!post) return null;
 
-  const { views, isPopular } = useViewCount(post.slug);
-
-  const cardVariants = {
-    rest: {
-      boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.2)',
-    },
-    hover: {
-      boxShadow: '0px 15px 30px rgba(0, 0, 0, 0.3)',
-    },
-  };
-
-  const imageMaskVariants = {
-    rest: {
-      scale: 0,
-      transition: { duration: 0.5, ease: 'easeOut' }
-    },
-    hover: {
-      scale: 4,
-      transition: { duration: 0.5, ease: [0.25, 1, 0.5, 1] }
-    },
-  };
-
-  const imageVariants = {
-    rest: { scale: 1 },
-    hover: { scale: 1.1 },
-  };
-
   return (
-    <MotionLink
+    <Link
       to={`/articles/${post.slug}`}
       reloadDocument={ADSENSE_REVIEW_MODE}
-      className="relative block blog-card rounded-xl overflow-hidden group h-full"
-      variants={cardVariants}
-      initial="rest"
-      whileHover="hover"
-      animate="rest"
-      transition={{ duration: 0.4 }}
+      className="group flex h-full flex-col"
     >
-      <div className="relative h-48 overflow-hidden">
-        <svg width="0" height="0" className="absolute">
-          <defs>
-            <filter id="liquid-filter">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
-              <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="contrast" />
-              <feComposite in="SourceGraphic" in2="contrast" operator="atop" />
-            </filter>
-          </defs>
-        </svg>
-
-        <div className="w-full h-full filter saturate-[0.7] brightness-[0.8]">
+      {post.image && (
+        <div className="mb-4 aspect-[16/9] overflow-hidden rounded-sm border border-paper-500 bg-paper-300">
           <LazyImage
             src={post.image}
-            alt={post.title}
+            alt=""
             width={400}
             quality={80}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="w-full h-full object-cover"
+            className="h-full w-full object-cover"
           />
         </div>
-
-        <div
-          className="absolute inset-0"
-          style={{ clipPath: 'url(#liquid-mask)' }}
-        >
-          <motion.div variants={imageVariants} className="w-full h-full">
-            {/* Same width and quality as the base layer above so both layers
-                share one cached download instead of fetching the image twice. */}
-            <LazyImage
-              src={post.image}
-              alt={post.title}
-              width={400}
-              quality={80}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="w-full h-full object-cover"
-            />
-          </motion.div>
-        </div>
-
-        <svg width="0" height="0" className="absolute">
-          <clipPath id="liquid-mask">
-            <g style={{ filter: 'url(#liquid-filter)' }}>
-              <motion.circle
-                cx="50%"
-                cy="50%"
-                r="80"
-                variants={imageMaskVariants}
-              />
-              <motion.circle
-                cx="20%"
-                cy="40%"
-                r="60"
-                variants={{
-                  rest: imageMaskVariants.rest,
-                  hover: { ...imageMaskVariants.hover, transition: { ...imageMaskVariants.hover.transition, delay: 0.1 } }
-                }}
-              />
-            </g>
-          </clipPath>
-        </svg>
-
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-        <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
-          <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-            {post.category}
-          </span>
-          <FreshnessBadge date={post.date} modifiedDate={post.modified} />
-          {isPopular && (
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-0.5 rounded-full text-xs font-semibold inline-flex items-center gap-1">
-              <TrendingUp className="h-3 w-3" />
-              Popular
-            </span>
-          )}
-        </div>
-      </div>
-
-      <div className="p-6">
-        <h3 className="text-lg font-bold mb-3 group-hover:text-blue-400 transition-colors line-clamp-2">
-          {post.title}
-        </h3>
-        <p className="text-gray-400 text-sm mb-4 line-clamp-3">
-          {post.excerpt}
+      )}
+      <p className="font-mono text-[11px] uppercase tracking-wide text-rust-600">{storyKicker(post)}</p>
+      <h3 className="mt-1.5 font-serif text-xl font-semibold leading-snug text-ink group-hover:text-rust-600">
+        {post.title}
+      </h3>
+      {post.excerpt && (
+        <p className="mt-2 line-clamp-3 text-[15px] leading-relaxed text-ink-muted">
+          {plainExcerpt(post.excerpt, 200)}
         </p>
-
-        {/* TAGS SECTION - NEW */}
-        {post.tags && post.tags.length > 0 && (
-          <div className="mb-4">
-            <TagsList
-              tags={post.tags}
-              limit={3}
-              showIcon={false}
-              size="default"
-              linkless
-            />
-          </div>
-        )}
-
-        {/* Author row - E-E-A-T signal for Google Discover */}
-        <div className="flex items-center space-x-2 mb-3 text-xs text-gray-500">
-          <User className="h-3 w-3 flex-shrink-0" />
-          <span>
-            {post.author || 'Sainath Reddy'}
-            <span className="mx-1">·</span>
-            <span className="text-gray-600">
-              {(post.author || 'Sainath Reddy') === 'Sainath Reddy' ? 'Data Engineer' : 'Guest Author'}
-            </span>
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between text-xs text-gray-400">
-          <div className="flex items-center space-x-3">
-            <div className="flex items-center space-x-1">
-              <Calendar className="h-3 w-3" />
-              <span>{new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Clock className="h-3 w-3" />
-              <span>{post.readTime}</span>
-            </div>
-            {views > 0 && (
-              <div className="flex items-center space-x-1">
-                <Eye className="h-3 w-3" />
-                <span>{views}</span>
-              </div>
-            )}
-          </div>
-          <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-        </div>
-      </div>
-    </MotionLink>
+      )}
+      {post.date && (
+        <time dateTime={post.date} className="mt-auto pt-3 font-mono text-[11px] text-ink-faint">
+          {formatStoryDate(post.date)}
+        </time>
+      )}
+    </Link>
   );
 };
 

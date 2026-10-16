@@ -22,7 +22,6 @@ const widget = readFileSync(join(root, 'src/components/InlineToolWidget.jsx'), '
 const articleMap = readFileSync(join(root, 'src/data/articleToolMap.js'), 'utf8');
 const article = readFileSync(join(root, 'src/pages/ArticlePage.jsx'), 'utf8');
 const playground = readFileSync(join(root, 'src/pages/SqlPlaygroundPage.jsx'), 'utf8');
-const motion = readFileSync(join(root, 'src/components/HubMotion.jsx'), 'utf8');
 const cta = readFileSync(join(root, 'src/components/InArticleCTA.jsx'), 'utf8');
 
 assert(catalog.includes("slug: 'sql-playground'"), 'Catalog must include the playground');
@@ -42,7 +41,6 @@ assert(articleMap.includes('calculators:'), 'Related tools map should include ca
 assert(article.includes('<InlineToolWidget'), 'Articles should offer one relevant interactive tool');
 assert(playground.includes("searchParams.get('sql')"), 'Playground should accept ?sql= deep links');
 assert(playground.includes("pane === 'editor'"), 'Playground should tab Editor/Results on phones');
-assert(motion.includes('/tools?stack='), 'Homepage stages should jump into a filtered tools hub');
 assert(cta.includes("to: '/tools'"), 'In-article explore rail should keep Free Tools');
 assert(header.includes('<span>Tools</span>'), 'Mobile header Tools shortcut must be labeled, not icon-only');
 assert(header.includes('FEATURED_TOOLS'), 'Mobile menu should list featured tools');

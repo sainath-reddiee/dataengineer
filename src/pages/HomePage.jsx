@@ -1,73 +1,45 @@
-// src/pages/HomePage.jsx - ENHANCED WITH SEO STRUCTURED DATA
+// src/pages/HomePage.jsx - editorial front page
 import React, { Suspense, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
 import FeaturedToolsRail from '../components/FeaturedToolsRail';
 import MetaTags from '../components/SEO/MetaTags';
-import { Sparkles, TrendingUp, FileText, Zap, BookOpen } from 'lucide-react';
-import { Link } from 'react-router-dom';
-
-// cheatsheetData is large (~all cheat sheet content). We dynamic-import it so
-// it doesn't block the initial HomePage bundle / LCP.
+import LeadStories from '../components/editorial/LeadStories';
+import ArticleLedger from '../components/editorial/ArticleLedger';
+import { usePosts } from '@/hooks/useWordPress';
 
 const FeaturedPosts = React.lazy(() => import('../components/FeaturedPosts'));
 const TrendingPosts = React.lazy(() => import('../components/TrendingPosts'));
-const RecentPosts = React.lazy(() => import('../components/RecentPosts'));
 const NewsPosts = React.lazy(() => import('../components/NewsPosts'));
 const TechCategories = React.lazy(() => import('../components/TechCategories'));
 const Newsletter = React.lazy(() => import('../components/Newsletter'));
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 
-// 🔥 OPTIMIZED SKELETON - reserve height so lazy sections do not shift LCP
-const SectionSkeleton = ({ height = "h-32" }) => (
-  <div className={`${height} bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-pulse rounded-lg mb-4`}>
-    <div className="flex items-center justify-center h-full">
-      <div className="w-6 h-6 border-3 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-    </div>
-  </div>
+// Lead story + "Also new" column take the first four; the ledger lists the next eight.
+const LEAD_COUNT = 4;
+const FRONT_PAGE_COUNT = 12;
+
+// Reserve height so lazy sections do not shift layout while they load.
+const SectionSkeleton = ({ height = 'h-32' }) => (
+  <div className={`${height} rounded bg-paper-300`} aria-hidden="true" />
 );
 
-// 🎨 SECTION HEADER - Compact and modern (no framer-motion on the homepage)
-const SectionHeader = ({
-  icon: Icon,
-  title,
-  subtitle,
-  actionText,
-  actionLink,
-  isDark = false
-}) => (
-  <div className="mb-4 sm:mb-5 flex items-start justify-between gap-3">
-    <div className="flex items-center gap-3 flex-1">
-      <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-gradient-to-br from-blue-500/20 to-purple-500/20'}`}>
-        <Icon className={`w-5 h-5 ${isDark ? 'text-gray-400' : 'text-blue-400'}`} />
-      </div>
-      <div>
-        <h2 className="text-lg sm:text-xl font-bold text-white leading-tight">
-          {title}
-        </h2>
-        {subtitle && (
-          <p className="text-xs sm:text-sm text-gray-400 mt-0.5">{subtitle}</p>
-        )}
-      </div>
+// Newspaper-style section heading: a ruled line, serif title, optional link.
+const SectionHeader = ({ title, note, actionText, actionLink }) => (
+  <div className="mb-6 flex items-end justify-between gap-4 border-t-2 border-ink pt-3">
+    <div>
+      <h2 className="font-serif text-2xl font-semibold text-ink">{title}</h2>
+      {note && <p className="mt-1 text-sm text-ink-faint">{note}</p>}
     </div>
     {actionText && actionLink && (
-      <Link
-        to={actionLink}
-        className="whitespace-nowrap text-xs sm:text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors py-1 px-2 hover:bg-blue-500/10 rounded"
-      >
+      <Link to={actionLink} className="whitespace-nowrap pb-1 text-sm text-rust-600 hover:text-rust-700">
         {actionText} →
       </Link>
     )}
   </div>
 );
 
-// 📋 CHEAT SHEET CARDS - Featured cheat sheets on homepage
-const DIFFICULTY_COLORS = {
-  Beginner: 'bg-green-500/20 text-green-300',
-  Intermediate: 'bg-blue-500/20 text-blue-300',
-  Advanced: 'bg-orange-500/20 text-orange-300',
-};
-
-// Pick a diverse mix: one per category, up to 8 cards
+// Featured cheat sheets, one per topic.
 const FEATURED_SLUGS = [
   'snowflake-interview-questions',
   'snowflake-sql',
@@ -79,30 +51,20 @@ const FEATURED_SLUGS = [
   'snowflake-cost-optimization-interview',
 ];
 
-const CheatSheetCards = () => {
+const CheatSheetList = () => {
   const [data, setData] = useState({ cheatsheets: null, categories: null });
 
   useEffect(() => {
     let cancelled = false;
+    // cheatsheetData is large; load it after first paint.
     import('@/data/cheatsheetData').then((mod) => {
       if (cancelled) return;
-      setData({
-        cheatsheets: mod.cheatsheets,
-        categories: mod.CHEATSHEET_CATEGORIES,
-      });
+      setData({ cheatsheets: mod.cheatsheets, categories: mod.CHEATSHEET_CATEGORIES });
     });
     return () => { cancelled = true; };
   }, []);
 
-  if (!data.cheatsheets) {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="h-36 rounded-xl bg-slate-800/50 border border-slate-700 animate-pulse" />
-        ))}
-      </div>
-    );
-  }
+  if (!data.cheatsheets) return <SectionSkeleton height="h-48" />;
 
   const featured = FEATURED_SLUGS
     .map((slug) => data.cheatsheets.find((s) => s.slug === slug))
@@ -110,35 +72,28 @@ const CheatSheetCards = () => {
     .slice(0, 8);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <ul className="grid gap-x-8 sm:grid-cols-2">
       {featured.map((sheet) => {
         const cat = data.categories.find((c) => c.id === sheet.category);
         return (
-          <Link
-            key={sheet.slug}
-            to={`/cheatsheets/${sheet.slug}`}
-            className="card-3d group bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 rounded-xl p-4"
-          >
-            <div className="flex items-center gap-2 mb-2">
-              {cat && <span className="text-xs">{cat.icon}</span>}
-              <span className="text-[10px] uppercase tracking-wider text-gray-500">{cat?.name}</span>
-            </div>
-            <h3 className="text-sm font-semibold text-white group-hover:text-blue-400 transition-colors line-clamp-2 mb-2">
+          <li key={sheet.slug} className="border-b border-paper-500 py-4">
+            <p className="font-mono text-[11px] uppercase tracking-wide text-ink-faint">
+              {[cat?.name, sheet.difficulty].filter(Boolean).join(' · ')}
+            </p>
+            <Link to={`/cheatsheets/${sheet.slug}`} className="mt-1 block font-serif text-lg font-semibold text-ink hover:text-rust-600">
               {sheet.title}
-            </h3>
-            <p className="text-xs text-gray-400 line-clamp-2 mb-3">{sheet.shortDescription}</p>
-            <span className={`text-xs px-2 py-0.5 rounded ${DIFFICULTY_COLORS[sheet.difficulty] || DIFFICULTY_COLORS.Intermediate}`}>
-              {sheet.difficulty}
-            </span>
-          </Link>
+            </Link>
+            <p className="mt-1 line-clamp-2 text-[15px] text-ink-muted">{sheet.shortDescription}</p>
+          </li>
         );
       })}
-    </div>
+    </ul>
   );
 };
 
 const HomePage = () => {
-  // Organization + WebSite JSON-LD are emitted in the static index.html shell.
+  const { posts, loading, error } = usePosts({ per_page: FRONT_PAGE_COUNT });
+  const ledgerPosts = posts.slice(LEAD_COUNT);
 
   return (
     <>
@@ -152,81 +107,28 @@ const HomePage = () => {
       {/* Organization + WebSite JSON-LD is emitted in the static index.html shell
           so Googlebot sees it without JS. Do not duplicate here. */}
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white overflow-x-clip">
-        {/* ============================================================================
-            HERO SECTION - Compact
-            ============================================================================ */}
-        <div className="pb-4 sm:pb-6">
-          <Hero />
-        </div>
+      <div className="min-h-screen overflow-x-clip bg-paper text-ink">
+        <Hero />
 
-        {/* ============================================================================
-            CONTAINER WITH OPTIMIZED SPACING
-            ============================================================================ */}
-        <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-4 sm:py-6 space-y-8 sm:space-y-10">
+        <div className="mx-auto max-w-6xl space-y-16 px-4 py-10 sm:px-6">
+          <LeadStories posts={posts} loading={loading} error={error} />
 
-          <section className="rounded-xl border border-slate-700/70 bg-slate-800/40 px-5 py-4 sm:px-6 sm:py-5">
-            <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
-              Written by{' '}
-              <Link to="/about" className="text-blue-400 hover:text-blue-300 font-semibold">
-                Sainath Reddy
-              </Link>
-              , a data engineer in Hyderabad. These are production notes — warehouse cost
-              incidents, dbt review comments, Cortex token bills — not rewritten vendor docs.
-              Read the{' '}
-              <Link to="/editorial-standards" className="text-blue-400 hover:text-blue-300 font-semibold">
-                editorial standards
-              </Link>
-              {' '}or skip to the{' '}
-              <Link to="/articles" className="text-blue-400 hover:text-blue-300 font-semibold">
-                article library
-              </Link>.
-            </p>
-          </section>
+          {ledgerPosts.length > 0 && (
+            <section>
+              <SectionHeader title="More from the notebook" actionText="Full archive" actionLink="/articles" />
+              <ArticleLedger posts={ledgerPosts} />
+            </section>
+          )}
 
-          {/* Latest articles lead: this is a publication first, tools second. */}
           <section>
-            <SectionHeader
-              icon={FileText}
-              title="Latest Articles"
-              subtitle="Fresh content weekly"
-              actionText="Archive"
-              actionLink="/articles"
-            />
-            <Suspense fallback={<SectionSkeleton height="h-40" />}>
-              <RecentPosts
-                initialLimit={6}
-                showLoadMore={true}
-                showViewToggle={false}
-                title={null}
-                showCategoryError={false}
-              />
-            </Suspense>
-          </section>
-
-          {/* 🌟 FEATURED POSTS - Optimized section */}
-          <section>
-            <SectionHeader
-              icon={Sparkles}
-              title="Featured"
-              subtitle="Must-read articles"
-              actionText="View all"
-              actionLink="/articles"
-            />
+            <SectionHeader title="Editor's picks" note="The articles readers return to most." actionText="All articles" actionLink="/articles" />
             <Suspense fallback={<SectionSkeleton height="h-40" />}>
               <FeaturedPosts compact />
             </Suspense>
           </section>
 
-          {/* 🔥 TRENDING POSTS - Compact grid */}
           <section>
-            <SectionHeader
-              icon={TrendingUp}
-              title="Trending Now"
-              subtitle="Most popular this week"
-              actionText="See all"
-              actionLink="/articles"
-            />
+            <SectionHeader title="Trending this week" />
             <Suspense fallback={<SectionSkeleton height="h-40" />}>
               <TrendingPosts compact />
             </Suspense>
@@ -236,53 +138,32 @@ const HomePage = () => {
             <NewsPosts />
           </Suspense>
 
-          <div className="min-h-[11rem] sm:min-h-[8rem]">
+          <div className="min-h-[8rem]">
             <FeaturedToolsRail />
           </div>
 
-          {/* 🛠 TECH CATEGORIES - Grid view */}
           <section>
-            <SectionHeader
-              icon={FileText}
-              title="Technologies"
-              subtitle="Explore by tech stack"
-              actionText="Browse all"
-              actionLink="/articles"
-            />
+            <SectionHeader title="Topics" actionText="Browse the archive" actionLink="/articles" />
             <Suspense fallback={<SectionSkeleton height="h-32" />}>
               <TechCategories compact />
             </Suspense>
           </section>
 
           <section>
-            <SectionHeader
-              icon={BookOpen}
-              title="Cheat Sheets & Interview Prep"
-              subtitle="References, best practices & interview questions"
-              actionText="View all"
-              actionLink="/cheatsheets"
-            />
-            <CheatSheetCards />
+            <SectionHeader title="Cheat sheets" note="One-page references for the commands you look up every week." actionText="All cheat sheets" actionLink="/cheatsheets" />
+            <CheatSheetList />
           </section>
 
-          {/* AD - BOTTOM */}
           <Suspense fallback={null}>
             <AdPlacement />
           </Suspense>
 
-          {/* 📧 NEWSLETTER - Compact */}
           <section>
-            <SectionHeader
-              icon={Zap}
-              title="Stay Updated"
-              subtitle="Get weekly insights"
-              isDark={true}
-            />
+            <SectionHeader title="The weekly letter" note="New articles and one practical tip, once a week. No spam." />
             <Suspense fallback={<SectionSkeleton height="h-20" />}>
               <Newsletter />
             </Suspense>
           </section>
-
         </div>
       </div>
     </>

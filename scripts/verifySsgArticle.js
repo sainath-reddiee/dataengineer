@@ -132,7 +132,7 @@ const generator = await import('node:fs').then((fs) =>
 );
 assert(generator.includes('deh-post-bootstrap'), 'SSG articles must embed post bootstrap JSON');
 assert(generator.includes('article-hero'), 'SSG articles should paint the hero before React mounts');
-assert(generator.includes('inter-latin.woff2'), 'SSG articles should preload Inter like the React app');
+assert(generator.includes('source-serif-4-400.woff2'), 'SSG articles should preload the article serif like the React app');
 
 const app = await import('node:fs').then((fs) =>
   fs.readFileSync(new URL('../src/App.jsx', import.meta.url), 'utf8')

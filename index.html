@@ -228,8 +228,8 @@
         margin: 0;
         padding: 0;
         font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
-        color: #f8fafc;
+        background: linear-gradient(135deg, #F6F2EB 0%, #FCF4EF 50%, #FCF4EF 100%);
+        color: #1B1A17;
         line-height: 1.6;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -263,7 +263,7 @@
         font-size: 3rem;
         font-weight: 700;
         margin-bottom: 1.5rem;
-        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 40%, #f472b6 80%, #fbbf24 100%);
+        background: linear-gradient(135deg, #B4441F 0%, #B4441F 40%, #B4441F 80%, #d97706 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -272,7 +272,7 @@
       .seo-fallback p {
         font-size: 1.25rem;
         line-height: 1.8;
-        color: #cbd5e1;
+        color: #3F3B35;
         margin-bottom: 2rem;
       }
       
@@ -284,21 +284,21 @@
       }
       
       .seo-fallback .topic-card {
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(27, 26, 23, 0.05);
         padding: 1.5rem;
         border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(27, 26, 23, 0.1);
       }
       
       .seo-fallback .topic-card h2 {
         font-size: 1.5rem;
-        color: #60a5fa;
+        color: #B4441F;
         margin-bottom: 0.5rem;
       }
       
       .seo-fallback .topic-card p {
         font-size: 1rem;
-        color: #94a3b8;
+        color: #5E584F;
       }
       
       /* SEO fallback stays visible for crawlers/AdSense.
@@ -321,14 +321,14 @@
       .loading-spinner {
         width: 48px;
         height: 48px;
-        border: 4px solid #60a5fa;
+        border: 4px solid #B4441F;
         border-top: 4px solid transparent;
         border-radius: 50%;
         animation: spin 1s linear infinite;
       }
       
       .loading-text {
-        color: #93c5fd;
+        color: #9C3A1A;
         font-weight: 500;
         margin-top: 20px;
         font-size: 18px;
@@ -336,16 +336,16 @@
       }
 
       /* Site Nav (static, visible to crawlers; hidden when React mounts) */
-      .site-nav { background: rgba(2, 6, 23, 0.8); border-bottom: 1px solid rgba(255,255,255,0.1); min-height: 64px; padding: 0 24px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; backdrop-filter: blur(20px); }
+      .site-nav { background: rgba(250, 248, 244, 0.8); border-bottom: 1px solid rgba(27, 26, 23,0.1); min-height: 64px; padding: 0 24px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; backdrop-filter: blur(20px); }
       .site-nav-inner { max-width: 80rem; width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-      .site-nav-brand { color: #60a5fa; font-weight: 700; font-size: 1.1rem; text-decoration: none; }
+      .site-nav-brand { color: #1B1A17; font-family: 'Source Serif 4', Georgia, serif; font-weight: 600; font-size: 1.35rem; text-decoration: none; }
       .site-nav-links { display: flex; flex-wrap: wrap; gap: 4px 8px; list-style: none; padding: 0; margin: 0; }
-      .site-nav-links a { color: #cbd5e1; text-decoration: none; font-size: 0.875rem; transition: color 0.2s; border-radius: 0.5rem; padding: 0.5rem 0.75rem; }
-      .site-nav-links a:hover { color: #60a5fa; }
+      .site-nav-links a { color: #3F3B35; text-decoration: none; font-size: 0.875rem; transition: color 0.2s; border-radius: 0.5rem; padding: 0.5rem 0.75rem; }
+      .site-nav-links a:hover { color: #B4441F; }
       /* Site Footer */
-      .site-footer { max-width: 900px; margin: 3rem auto 0; padding: 2rem 20px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; font-size: 0.85rem; color: #94a3b8; }
+      .site-footer { max-width: 900px; margin: 3rem auto 0; padding: 2rem 20px; border-top: 1px solid rgba(27, 26, 23,0.1); text-align: center; font-size: 0.85rem; color: #5E584F; }
       .site-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; list-style: none; padding: 0; margin: 0 0 0.75rem; }
-      .site-footer-links a { color: #60a5fa; text-decoration: none; }
+      .site-footer-links a { color: #B4441F; text-decoration: none; }
       .site-footer-links a:hover { text-decoration: underline; }
       /* Static nav/footer stay visible for crawlers/AdSense. DO NOT hide via CSS. */
       @media (max-width: 768px) { .site-nav-links { gap: 4px 12px; } }
@@ -353,41 +353,41 @@
       /* Match React hero so the SSG → React swap does not restart LCP */
       .deh-home-hero { min-height: 22rem; padding: 2.5rem 0 1rem; }
       .deh-home-hero h1, .seo-fallback h1 {
-        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        font-size: 1.875rem;
+        font-family: 'Source Serif 4', Georgia, Cambria, serif;
+        font-size: 2.125rem;
         line-height: 1.1;
-        font-weight: 900;
-        letter-spacing: -0.025em;
-        color: #ffffff;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: #1B1A17;
         margin: 0 0 1rem;
       }
       @media (min-width: 640px) { .deh-home-hero h1, .seo-fallback h1 { font-size: 2.25rem; } }
       @media (min-width: 768px) { .deh-home-hero h1, .seo-fallback h1 { font-size: 3rem; } }
       @media (min-width: 640px) { .deh-home-hero { min-height: 20rem; } }
-      .deh-home-hero .eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(147,197,253,0.8); margin-bottom: 0.75rem; }
+      .deh-home-hero .eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(156, 58, 26,0.8); margin-bottom: 0.75rem; }
       .deh-home-hero .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.25rem 0 0; }
       .deh-home-hero .hero-actions a { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; text-decoration: none; }
-      .deh-home-hero .hero-actions .primary { background: linear-gradient(135deg, #2563eb, #4f46e5); color: #fff; }
-      .deh-home-hero .hero-actions .secondary { border: 1px solid rgba(255,255,255,0.15); color: #f1f5f9; }
+      .deh-home-hero .hero-actions .primary { background: linear-gradient(135deg, #F0C6B2, #F0C6B2); color: #1B1A17; }
+      .deh-home-hero .hero-actions .secondary { border: 1px solid rgba(27, 26, 23,0.15); color: #24221E; }
 
       /* Cookie banner lives OUTSIDE #root so first paint includes it (CLS fix). */
       #deh-cookie-banner { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; padding: 1rem; }
       html.deh-need-consent #deh-cookie-banner { display: block; }
-      #deh-cookie-banner .deh-cookie-card { max-width: 56rem; margin: 0 auto; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 1rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.45); display: flex; flex-direction: column; gap: 1rem; }
-      #deh-cookie-banner p { margin: 0; font-size: 0.875rem; color: #cbd5e1; line-height: 1.5; }
-      #deh-cookie-banner a { color: #60a5fa; }
+      #deh-cookie-banner .deh-cookie-card { max-width: 56rem; margin: 0 auto; background: #EFEAE1; border: 1px solid rgba(27, 26, 23,0.1); border-radius: 0.75rem; padding: 1rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.45); display: flex; flex-direction: column; gap: 1rem; }
+      #deh-cookie-banner p { margin: 0; font-size: 0.875rem; color: #3F3B35; line-height: 1.5; }
+      #deh-cookie-banner a { color: #B4441F; }
       #deh-cookie-banner .deh-cookie-actions { display: flex; gap: 0.75rem; }
       #deh-cookie-banner button { min-height: 40px; padding: 0.5rem 1rem; border: 0; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; }
-      #deh-cookie-banner [data-consent="decline"] { background: rgba(255,255,255,0.1); color: #d1d5db; }
-      #deh-cookie-banner [data-consent="accept"] { background: #2563eb; color: #fff; }
+      #deh-cookie-banner [data-consent="decline"] { background: rgba(27, 26, 23,0.1); color: #3F3B35; }
+      #deh-cookie-banner [data-consent="accept"] { background: #F0C6B2; color: #1B1A17; }
       html.deh-consent-ready #deh-cookie-banner { display: none !important; }
 
       /* E-E-A-T author/about block on homepage */
-      .seo-author-block { max-width: 1200px; margin: 2rem auto 0; padding: 2rem 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; }
-      .seo-author-block h2 { color: #60a5fa; font-size: 1.5rem; margin-bottom: 0.75rem; }
-      .seo-author-block p { color: #cbd5e1; font-size: 1rem; line-height: 1.7; margin-bottom: 0.75rem; }
-      .seo-author-block .author-meta { color: #94a3b8; font-size: 0.9rem; }
-      .seo-author-block a { color: #60a5fa; text-decoration: none; }
+      .seo-author-block { max-width: 1200px; margin: 2rem auto 0; padding: 2rem 20px; background: rgba(27, 26, 23,0.04); border: 1px solid rgba(27, 26, 23,0.08); border-radius: 12px; }
+      .seo-author-block h2 { color: #B4441F; font-size: 1.5rem; margin-bottom: 0.75rem; }
+      .seo-author-block p { color: #3F3B35; font-size: 1rem; line-height: 1.7; margin-bottom: 0.75rem; }
+      .seo-author-block .author-meta { color: #5E584F; font-size: 0.9rem; }
+      .seo-author-block a { color: #B4441F; text-decoration: none; }
       .seo-author-block a:hover { text-decoration: underline; }
     </style>
     
@@ -399,7 +399,7 @@
     <link rel="manifest" href="/manifest.json">
     
     <meta name="robots" content="index, follow, max-image-preview:large" />
-    <meta name="theme-color" content="#1e293b">
+    <meta name="theme-color" content="#EFEAE1">
 
     <!-- Open Graph and Twitter Card meta tags are set dynamically per route by MetaTags.jsx.
          Static fallback tags removed to prevent crawlers from seeing homepage OG data on article pages. -->
@@ -440,8 +440,8 @@
         </div>
       </nav>
       <div class="seo-fallback deh-home-hero">
-        <p class="eyebrow">DataEngineer Hub · production tutorials</p>
-        <h1>Master Data Engineering with Expert Tutorials</h1>
+        <p class="eyebrow">Production notes for data engineers</p>
+        <h1>Snowflake, dbt and Airflow, written from real incidents rather than vendor docs.</h1>
 
         <p>
           Production notes on Snowflake, dbt, Airflow, and the warehouse bill — written by a

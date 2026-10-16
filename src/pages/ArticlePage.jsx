@@ -3,7 +3,7 @@ import React, { Suspense, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Calendar, Clock, User, AlertCircle, RefreshCw, Tag, Share2 } from 'lucide-react';
+import { ArrowLeft, User, AlertCircle, RefreshCw, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';
@@ -269,11 +269,11 @@ const RelatedPosts = ({ currentPostId, category }) => {
   if (relatedPosts.length === 0) return null;
 
   return (
-    <div className="mt-16">
-      <h2 className="text-3xl font-bold mb-8 text-white text-center">
-        Related <span className="gradient-text">Articles</span>
+    <div className="mx-auto mt-16 max-w-6xl">
+      <h2 className="mb-8 border-t-2 border-ink pt-3 font-serif text-2xl font-semibold text-ink">
+        Keep reading
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-8">
         {relatedPosts.map(post => <PostCard key={post.id} post={post} />)}
       </div>
     </div>
@@ -281,7 +281,7 @@ const RelatedPosts = ({ currentPostId, category }) => {
 };
 
 // ============================================================================
-// 🎨 OPTION 1: MINIMALIST AUTHOR CHIP + FLOATING ACTION (RECOMMENDED)
+// Article header: topic line, serif headline, summary, ruled byline row.
 // ============================================================================
 const MetadataOption1 = ({ safePost, formatDate, slug }) => {
   const isOwner = isBlogOwner({ name: safePost.author, id: safePost.authorData?.id, slug: safePost.authorData?.slug });
@@ -293,124 +293,74 @@ const MetadataOption1 = ({ safePost, formatDate, slug }) => {
   const AuthorWrapper = ({ children, className }) =>
     authorLink ? <Link to={authorLink} className={className}>{children}</Link>
                : <span className={className}>{children}</span>;
+  // Only show "Updated" when the post really changed after publication.
+  const wasUpdated = safePost.modified
+    && new Date(safePost.modified) > new Date(safePost.date)
+    && formatDate(safePost.modified) !== formatDate(safePost.date);
 
   return (
-    <motion.div
-      initial={false}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-4"
-    >
-      {/* Category */}
-      <div>
+    <motion.header initial={false} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-3xl">
+      <p className="kicker mb-4">
         {ADSENSE_REVIEW_MODE ? (
-          <span className="inline-flex items-center px-3 py-1.5 bg-blue-500/20 border border-blue-400/40 rounded-full text-xs font-semibold text-blue-300">
-            {safePost.category}
-          </span>
+          <span>{safePost.category}</span>
         ) : (
-          <Link
-            to={`/category/${safePost.category.toLowerCase()}`}
-            className="inline-flex items-center px-3 py-1.5 bg-blue-500/20 border border-blue-400/40 rounded-full text-xs font-semibold text-blue-300 hover:bg-blue-500/30 transition-all"
-          >
+          <Link to={`/category/${safePost.category.toLowerCase()}`} className="hover:underline">
             {safePost.category}
           </Link>
         )}
-      </div>
+        <span className="text-ink-faint"> · {safePost.readTime}</span>
+      </p>
 
-      {/* Title */}
-      <h1
-        className="text-2xl md:text-3xl lg:text-[2.75rem] font-black"
-        style={{
-          lineHeight: 1.3,
-          backgroundImage: 'linear-gradient(to right, #ffffff, #dbeafe, #93c5fd)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          paddingBottom: '0.15em',
-        }}
-      >
+      <h1 className="font-serif text-[32px] font-semibold leading-[1.12] text-ink sm:text-[42px] lg:text-[46px]">
         {safePost.title}
       </h1>
 
-      {/* 🔥 OPTION 1: AUTHOR CHIP WITH FLOATING SHARE + READER ACTIONS */}
-      <div className="flex items-center justify-between pt-6 group flex-wrap gap-3">
-        {/* Author Chip - Clickable */}
-        <AuthorWrapper
-          className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-800 hover:to-slate-700 border border-slate-600/40 hover:border-slate-500/60 transition-all backdrop-blur-sm group/chip"
-        >
+      <div className="mt-7 flex flex-wrap items-center justify-between gap-4 border-y border-paper-500 py-4">
+        <AuthorWrapper className="flex items-center gap-3">
           {authorAvatarUrl ? (
             <img
               src={authorAvatarUrl}
-              alt={authorDisplayName}
+              alt=""
               width={40}
               height={40}
-              className="w-10 h-10 rounded-full object-cover border border-blue-500/30 shadow-lg"
+              className="h-10 w-10 rounded-full object-cover"
             />
           ) : (
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-paper-400 text-sm font-medium text-ink-soft">
               {authorInitials}
-            </div>
+            </span>
           )}
-          <div className="flex flex-col gap-0.5">
-            <span className="text-sm font-bold text-white group-hover/chip:text-blue-300">{authorDisplayName}</span>
-            <span className="text-xs text-gray-400">{authorSubtitle}</span>
-          </div>
-          {authorLink && <ArrowRight className="h-4 w-4 text-gray-400 group-hover/chip:text-blue-400 transition-colors" />}
+          <span className="flex flex-col leading-tight">
+            <span className="text-[15px] font-medium text-ink">By {authorDisplayName}</span>
+            <span className="text-[13px] text-ink-faint">{authorSubtitle}</span>
+          </span>
         </AuthorWrapper>
 
-        {/* Reader Actions: Listen + Save */}
+        <p className="font-mono text-[12px] text-ink-faint">
+          <time dateTime={safePost.date}>{formatDate(safePost.date)}</time>
+          {wasUpdated && <> · Updated <time dateTime={safePost.modified}>{formatDate(safePost.modified)}</time></>}
+        </p>
+
         <div className="flex items-center gap-2">
           <AudioReader content={safePost.content} title={safePost.title} />
           <SaveArticleButton slug={slug} title={safePost.title} />
-        </div>
-
-        {/* Floating Meta Badges */}
-        <div className="flex items-center gap-2">
-          <div className="hidden sm:flex items-center gap-2 text-xs text-gray-400">
-            <Calendar className="h-3.5 w-3.5 text-purple-400/60" />
-            <span>{formatDate(safePost.date)}</span>
-            <span className="text-gray-400">•</span>
-            <Clock className="h-3.5 w-3.5 text-green-400/60" />
-            <span>{safePost.readTime}</span>
-            {safePost.modified && safePost.modified !== safePost.date && (
-              <>
-                <span className="text-gray-400">•</span>
-                <span className="text-blue-400">Updated: {formatDate(safePost.modified)}</span>
-              </>
-            )}
-          </div>
-
           <button
             onClick={async () => {
               if (navigator.share) {
-                navigator.share({
-                  title: safePost.title,
-                  url: window.location.href
-                }).catch(() => { });
+                navigator.share({ title: safePost.title, url: window.location.href }).catch(() => { });
               } else {
                 try { await navigator.clipboard.writeText(window.location.href); } catch { /* ignore */ }
               }
             }}
-            className="p-2.5 rounded-full bg-slate-800/60 hover:bg-slate-700 border border-slate-600/40 text-gray-400 hover:text-white transition-all"
+            className="inline-flex h-10 w-10 items-center justify-center rounded border border-paper-500 text-ink-muted transition-colors hover:border-paper-600 hover:text-ink"
             title="Share article"
+            aria-label="Share article"
           >
             <Share2 className="h-4 w-4" />
           </button>
         </div>
       </div>
-
-      {/* Mobile Meta (only shows on small screens) */}
-      <div className="sm:hidden flex items-center gap-3 text-xs text-gray-400 pt-2">
-        <span className="flex items-center gap-1">
-          <Calendar className="h-3.5 w-3.5" />
-          {formatDate(safePost.date)}
-        </span>
-        <span>•</span>
-        <span className="flex items-center gap-1">
-          <Clock className="h-3.5 w-3.5" />
-          {safePost.readTime}
-        </span>
-      </div>
-    </motion.div>
+    </motion.header>
   );
 };
 
@@ -644,7 +594,7 @@ const ArticlePage = () => {
           <MetadataOption1 safePost={safePost} formatDate={formatDate} slug={slug} />
 
           {/* Hero Image */}
-          <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl max-h-[220px] sm:max-h-[340px] md:max-h-[400px] aspect-video">
+          <figure className="relative mx-auto aspect-video max-h-[220px] max-w-4xl overflow-hidden rounded-sm border border-paper-500 bg-paper-300 sm:max-h-[360px] md:max-h-[440px]">
             <LazyImage
               src={safePost.image}
               alt={safePost.title}
@@ -654,22 +604,21 @@ const ArticlePage = () => {
               className="w-full h-full object-cover"
               priority={true}
             />
-          </div>
+          </figure>
 
           {/* Key Takeaways — AEO/AI visibility, Speakable schema target */}
-          <KeyTakeaways items={keyTakeaways} title={takeawaysTitle} />
 
           {/* Article Content with Table of Contents */}
-              {/* Mobile ToC (above content) — hidden on xl where sidebar TOC shows */}
-              <div className="xl:hidden">
-                <TableOfContents headings={headings} />
-              </div>
-
-              {/* Desktop: 2-column grid with sidebar ToC */}
-              <div className="flex gap-8">
-                {/* ~75 characters per line at 18px; wider columns are tiring to read. */}
-                <div className="flex-1 min-w-0 max-w-2xl mx-auto">
-                  <div className="prose prose-invert prose-lg md:prose-xl max-w-none prose-headings:text-white prose-h2:text-3xl prose-h2:font-bold prose-h2:mb-4 prose-h3:text-2xl prose-h3:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-pink-400 prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded">
+              {/* Body column is centred under the headline (~75 characters per
+                  line at 19px). On wide screens the contents list sits in the
+                  right margin instead of pushing the column off-centre. */}
+              <div className="relative">
+                <div className="mx-auto min-w-0 max-w-2xl">
+                  <KeyTakeaways items={keyTakeaways} title={takeawaysTitle} />
+                  <div className="xl:hidden">
+                    <TableOfContents headings={headings} />
+                  </div>
+                  <div className="prose max-w-none prose-headings:text-ink prose-strong:text-ink">
                     <div
                       dangerouslySetInnerHTML={{ __html: processedHtml }}
                       className="article-content"
@@ -677,8 +626,7 @@ const ArticlePage = () => {
                   </div>
                   <ArticleFaq items={articleFaqs} />
                 </div>
-                {/* Desktop ToC sidebar */}
-                <div className="hidden xl:block w-64 shrink-0">
+                <div className="absolute inset-y-0 left-[calc(50%+23rem)] hidden w-56 xl:block">
                   <TableOfContents headings={headings} />
                 </div>
               </div>
@@ -687,68 +635,61 @@ const ArticlePage = () => {
             <SponsorPlacement category={safePost.category} tags={safePost.tags} slug={slug} />
           )}
 
-          {/* Tags Section */}
-          {safePost.tags && safePost.tags.length > 0 && (
-            <motion.div
-              initial={false}
-              animate={{ opacity: 1 }}
-              className="my-8 p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl border border-slate-700/50 backdrop-blur-sm"
-            >
-              <h3 className="text-xl font-bold mb-4 text-white flex items-center gap-2">
-                <Tag className="h-6 w-6 text-blue-400" />
-                Related Topics
-              </h3>
-                <TagsList tags={safePost.tags} showIcon={false} size="default" linkless={ADSENSE_REVIEW_MODE} />
-            </motion.div>
-          )}
+          {/* Everything after the body stays in the reading column. */}
+          <div className="mx-auto max-w-2xl space-y-8 border-t border-paper-500 pt-8">
+            {safePost.tags && safePost.tags.length > 0 && (
+              <TagsList tags={safePost.tags} linkless={ADSENSE_REVIEW_MODE} />
+            )}
 
-          {!ADSENSE_REVIEW_MODE && (
-            <Suspense fallback={<div className="h-32" />}>
-              <AdPlacement />
-            </Suspense>
-          )}
+            {!ADSENSE_REVIEW_MODE && (
+              <Suspense fallback={<div className="h-32" />}>
+                <AdPlacement />
+              </Suspense>
+            )}
 
-          {/* Reactions Bar — engagement signal for Google Discover */}
-          <div className="my-8 flex flex-wrap items-center gap-3">
-            <span className="text-sm text-gray-400 mr-1">React:</span>
-            {[['👍','Like'],['🔥','Fire'],['💡','Insightful'],['🎉','Celebrate'],['❤️','Love']].map(([emoji, label]) => {
-              const count = reactions[emoji] || 0;
-              const isActive = userReaction === emoji;
-              return (
-                <button
-                  key={emoji}
-                  aria-label={`React with ${label}${count > 0 ? `, ${count} reaction${count !== 1 ? 's' : ''}` : ''}`}
-                  onClick={() => react(emoji)}
-                  className={`compact-control inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-all border ${
-                    isActive
-                      ? 'bg-blue-500/20 border-blue-500/50 text-white scale-105'
-                      : 'bg-gray-800/60 border-gray-700/50 text-gray-400 hover:border-gray-600 hover:text-gray-300'
-                  }`}
-                >
-                  <span>{emoji}</span>
-                  {count > 0 && <span className="text-xs font-medium">{count}</span>}
-                </button>
-              );
-            })}
+            {/* Reactions: a quiet "was this useful" row, not a social bar. */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="mr-1 text-sm text-ink-faint">Was this useful?</span>
+              {[['👍','Like'],['🔥','Fire'],['💡','Insightful'],['🎉','Celebrate'],['❤️','Love']].map(([emoji, label]) => {
+                const count = reactions[emoji] || 0;
+                const isActive = userReaction === emoji;
+                return (
+                  <button
+                    key={emoji}
+                    aria-label={`React with ${label}${count > 0 ? `, ${count} reaction${count !== 1 ? 's' : ''}` : ''}`}
+                    onClick={() => react(emoji)}
+                    className={`compact-control inline-flex items-center gap-1.5 rounded border px-2.5 py-1 text-sm transition-colors ${
+                      isActive
+                        ? 'border-rust-300 bg-rust-50 text-rust-700'
+                        : 'border-paper-500 text-ink-muted hover:border-paper-600'
+                    }`}
+                  >
+                    <span>{emoji}</span>
+                    {count > 0 && <span className="font-mono text-xs">{count}</span>}
+                  </button>
+                );
+              })}
+            </div>
+
+            <InlineToolWidget post={safePost} />
+
+            <AuthorBioCard author={safePost.authorData} />
+
+            <p className="text-xs text-ink-faint">
+              This page may contain advertisements.{' '}
+              <Link to="/privacy-policy" className="text-rust-600 underline decoration-rust-200 underline-offset-2">
+                How we use ads
+              </Link>.
+            </p>
           </div>
-
-          <InlineToolWidget post={safePost} />
-
-          {/* Rich Author Bio Card */}
-          <AuthorBioCard author={safePost.authorData} />
-
-          <p className="text-xs text-gray-500">
-            This page may contain advertisements.{' '}
-            <Link to="/privacy-policy" className="text-blue-400 hover:text-blue-300 underline decoration-blue-500/40">
-              How we use ads
-            </Link>.
-          </p>
         </motion.article>
 
         {/* End of article stays short: series, related reading, discussion.
             Extra link blocks, sticky bars and popups were removed because
             they buried the content and read as link farming to reviewers. */}
-        <ArticleSeries slug={slug} category={safePost.category} />
+        <div className="mx-auto mt-12 max-w-2xl">
+          <ArticleSeries slug={slug} category={safePost.category} />
+        </div>
 
         {!ADSENSE_REVIEW_MODE && <EmailDigestBanner />}
 
@@ -756,7 +697,9 @@ const ArticlePage = () => {
 
         <RelatedPosts currentPostId={safePost.id} category={safePost.category} />
 
-        <GiscusComments />
+        <div className="mx-auto max-w-2xl">
+          <GiscusComments />
+        </div>
       </div>
     </div>
   );

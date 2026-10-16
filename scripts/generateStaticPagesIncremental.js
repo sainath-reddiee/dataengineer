@@ -2854,8 +2854,8 @@ function getSiteNavCSS() {
   return `
       /* Site Nav */
       .site-nav {
-        background: rgba(2, 6, 23, 0.8);
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+        background: rgba(250, 248, 244, 0.8);
+        border-bottom: 1px solid rgba(27, 26, 23,0.1);
         min-height: 64px;
         padding: 0 24px;
         position: sticky;
@@ -2876,9 +2876,10 @@ function getSiteNavCSS() {
         gap: 8px;
       }
       .site-nav-brand {
-        color: #60a5fa;
-        font-weight: 700;
-        font-size: 1.1rem;
+        color: #1B1A17;
+        font-family: 'Source Serif 4', Georgia, serif;
+        font-weight: 600;
+        font-size: 1.35rem;
         text-decoration: none;
       }
       .site-nav-links {
@@ -2890,22 +2891,22 @@ function getSiteNavCSS() {
         margin: 0;
       }
       .site-nav-links a {
-        color: #cbd5e1;
+        color: #3F3B35;
         text-decoration: none;
         font-size: 0.875rem;
         transition: color 0.2s;
       }
-      .site-nav-links a:hover { color: #60a5fa; }
+      .site-nav-links a:hover { color: #B4441F; }
 
       /* Site Footer */
       .site-footer {
         max-width: 900px;
         margin: 3rem auto 0;
         padding: 2rem 20px;
-        border-top: 1px solid rgba(255,255,255,0.1);
+        border-top: 1px solid rgba(27, 26, 23,0.1);
         text-align: center;
         font-size: 0.85rem;
-        color: #94a3b8;
+        color: #5E584F;
       }
       .site-footer-links {
         display: flex;
@@ -2917,7 +2918,7 @@ function getSiteNavCSS() {
         margin: 0 0 0.75rem;
       }
       .site-footer-links a {
-        color: #60a5fa;
+        color: #B4441F;
         text-decoration: none;
       }
       .site-footer-links a:hover { text-decoration: underline; }
@@ -3019,13 +3020,15 @@ function sortCategoriesByPriority(categories) {
 // ============================================================================
 
 function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
-  const { id: postId, title: rawTitle, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, featuredImage, categoryNames = [], tagNames = [], authorName = 'Sainath Reddy', authorData = null } = pageData;
+  const { id: postId, title: rawTitle, headline: rawHeadline, description: rawDescription, path: pagePath, fullContent = '', slug, date: postDate, modified: postModified, featuredImage, categoryNames = [], tagNames = [], authorName = 'Sainath Reddy', authorData = null } = pageData;
   const { jsFile, cssFile, modulePreloadHtml = '' } = bundleFiles;
 
   // 🛡️ Sanitize user-supplied strings from WordPress
   // WordPress REST API returns pre-encoded entities in rendered fields —
   // decode first, then re-encode to prevent double-encoding.
   const title = escapeHtml(decodeHtmlEntities(rawTitle));
+  // Visible headline matches the WordPress title React renders; <title> may use an SEO override.
+  const headline = escapeHtml(decodeHtmlEntities(rawHeadline || rawTitle));
   const description = escapeHtml(decodeHtmlEntities(rawDescription));
   const titleJsonLd = escapeJsonLd(decodeHtmlEntities(rawTitle));
   const descriptionJsonLd = escapeJsonLd(decodeHtmlEntities(rawDescription));
@@ -3280,7 +3283,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS" href="https://dataengineerhub.blog/rss.xml" />
     <meta name="robots" content="${articleRobotsDirective}" />
 ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />` : ''}
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="${relativePrefix}fonts/inter-latin.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="${relativePrefix}fonts/source-serif-4-400.woff2">
 
     <!-- Open Graph -->
     <meta property="og:type" content="article" />
@@ -3309,77 +3312,105 @@ ${CONSENT_MODE_V2_HTML}
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#1e293b">
+    <meta name="theme-color" content="#EFEAE1">
     <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />
     ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
 
     <style>
-      /* 🎨 STYLED FOR CRAWLER VISIBILITY — match React chrome so the
-         createRoot handoff does not look like a second site. */
+      /* Editorial light: same paper, ink and type as the React article so
+         the handoff does not look like a second site. */
       @font-face {
-        font-family: 'Inter';
+        font-family: 'Source Serif 4';
         font-style: normal;
-        font-weight: 100 900;
+        font-weight: 400;
         font-display: swap;
-        src: url('${relativePrefix}fonts/inter-latin.woff2') format('woff2');
+        src: url('${relativePrefix}fonts/source-serif-4-400.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Source Serif 4';
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: url('${relativePrefix}fonts/source-serif-4-600.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'IBM Plex Sans';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url('${relativePrefix}fonts/plex-sans-400.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'IBM Plex Mono';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url('${relativePrefix}fonts/plex-mono-400.woff2') format('woff2');
       }
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      
+
       body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
-        color: #f8fafc;
+        font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #FAF8F4;
+        color: #1B1A17;
         line-height: 1.6;
         min-height: 100vh;
       }
-      
-      /* 🔥 CRITICAL: SEO content is FULLY VISIBLE by default */
+
+      /* SEO content is fully visible by default. */
       .seo-content {
-        max-width: 80rem;
+        max-width: 48rem;
         margin: 0 auto;
-        padding: 1rem 1.5rem 3rem;
+        padding: 2rem 1.25rem 3rem;
         background: transparent;
       }
-      
+
       .seo-content h1 {
-        font-size: 2.5rem;
-        margin-bottom: 1.5rem;
-        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        line-height: 1.2;
+        font-family: 'Source Serif 4', Georgia, serif;
+        font-weight: 600;
+        font-size: 2.6rem;
+        margin-bottom: 1rem;
+        color: #1B1A17;
+        line-height: 1.12;
       }
-      
+
       .seo-content .excerpt {
-        font-size: 1.2rem;
-        color: #cbd5e1;
+        font-family: 'Source Serif 4', Georgia, serif;
+        font-size: 1.25rem;
+        color: #5E584F;
         margin-bottom: 2rem;
         padding-bottom: 1.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid #E4DED3;
       }
-      
-      /* 🔥 FULL ARTICLE CONTENT - Visible to crawlers */
+
+      /* Full article body, set like the React reading column. */
       .seo-content .article-body {
-        color: #e2e8f0;
-        font-size: 1.1rem;
-        line-height: 1.8;
+        font-family: 'Source Serif 4', Georgia, serif;
+        color: #33302B;
+        font-size: 1.1875rem;
+        line-height: 1.75;
+        max-width: 42rem;
+        margin: 0 auto;
       }
-      
+
       .seo-content .article-body h2 {
-        color: #93c5fd;
-        font-size: 1.8rem;
-        margin-top: 2.5rem;
+        font-family: 'Source Serif 4', Georgia, serif;
+        font-weight: 600;
+        color: #1B1A17;
+        font-size: 1.75rem;
+        margin-top: 3rem;
         margin-bottom: 1rem;
       }
-      
+
       .seo-content .article-body h3 {
-        color: #bae6fd;
-        font-size: 1.4rem;
-        margin-top: 2rem;
+        font-family: 'Source Serif 4', Georgia, serif;
+        font-weight: 600;
+        color: #1B1A17;
+        font-size: 1.375rem;
+        margin-top: 2.25rem;
         margin-bottom: 0.8rem;
       }
-      
+
       .seo-content .article-body p {
         margin-bottom: 1.2rem;
       }
@@ -3395,57 +3426,57 @@ ${CONSENT_MODE_V2_HTML}
       }
       
       .seo-content .article-body code {
-        background: rgba(0, 0, 0, 0.3);
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-family: 'Courier New', monospace;
-        color: #fbbf24;
+        background: #F1EDE5;
+        padding: 0.1rem 0.35rem;
+        border-radius: 3px;
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 0.85em;
+        color: #632511;
       }
-      
+
       .seo-content .article-body pre {
-        background: rgba(0, 0, 0, 0.5);
-        padding: 1.5rem;
-        border-radius: 8px;
+        background: #1B1A17;
+        padding: 1.25rem;
+        border-radius: 6px;
         overflow-x: auto;
-        margin: 1.5rem 0;
-        border-left: 4px solid #60a5fa;
+        margin: 2rem 0;
       }
-      
+
       .seo-content .article-body pre code {
         background: none;
         padding: 0;
-        color: #e2e8f0;
+        color: #ECE6DB;
       }
 
       .seo-content .article-body .article-faq {
         margin: 2.25rem 0 0.5rem;
         padding: 1.2rem 1.3rem;
         border-radius: 12px;
-        border: 1px solid rgba(96, 165, 250, 0.28);
-        background: rgba(15, 23, 42, 0.55);
+        border: 1px solid rgba(180, 68, 31, 0.28);
+        background: rgba(246, 242, 235, 0.55);
       }
       .seo-content .article-body .article-faq h2 {
-        color: #f8fafc;
+        color: #1B1A17;
         font-size: 1.25rem;
         margin: 0 0 0.35rem;
       }
       .seo-content .article-body .article-faq-kicker,
       .seo-content .article-body .article-faq-item p {
-        color: #cbd5e1;
+        color: #3F3B35;
         line-height: 1.7;
       }
       .seo-content .article-body .article-faq-item {
         margin: 0.55rem 0;
         border-radius: 8px;
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        background: rgba(15, 23, 42, 0.45);
+        border: 1px solid rgba(94, 88, 79, 0.18);
+        background: rgba(246, 242, 235, 0.45);
         padding: 0.15rem 0.2rem;
       }
       .seo-content .article-body .article-faq-item summary {
         cursor: pointer;
         padding: 0.75rem 0.9rem;
         font-weight: 650;
-        color: #e2e8f0;
+        color: #2F2C27;
       }
 
       /* 🔥 AUTHOR BIO STYLES - E-E-A-T visible block */
@@ -3453,7 +3484,7 @@ ${CONSENT_MODE_V2_HTML}
         margin: 3rem 0 0;
       }
       .seo-content .author-bio h2 {
-        color: #93c5fd;
+        color: #9C3A1A;
         font-size: 1.4rem;
         margin: 0 0 1rem;
         display: flex;
@@ -3465,17 +3496,17 @@ ${CONSENT_MODE_V2_HTML}
         height: 80px;
         border-radius: 50%;
         object-fit: cover;
-        border: 2px solid rgba(96, 165, 250, 0.4);
+        border: 2px solid rgba(180, 68, 31, 0.4);
         flex-shrink: 0;
       }
       .seo-content .author-bio p {
-        color: #cbd5e1;
+        color: #3F3B35;
         font-size: 0.95rem;
         line-height: 1.7;
         margin: 0 0 1rem;
       }
       .seo-content .author-bio strong {
-        color: #f8fafc;
+        color: #1B1A17;
       }
       .seo-content .author-bio a {
         display: inline-flex;
@@ -3489,19 +3520,19 @@ ${CONSENT_MODE_V2_HTML}
         transition: all 0.2s;
       }
       .seo-content .author-bio a:first-child {
-        background: rgba(96, 165, 250, 0.15);
-        border: 1px solid rgba(96, 165, 250, 0.3);
-        color: #60a5fa;
+        background: rgba(180, 68, 31, 0.15);
+        border: 1px solid rgba(180, 68, 31, 0.3);
+        color: #B4441F;
       }
       .seo-content .author-bio a:nth-child(2) {
         background: rgba(16, 185, 129, 0.15);
         border: 1px solid rgba(16, 185, 129, 0.3);
-        color: #34d399;
+        color: #059669;
       }
       .seo-content .author-bio a:nth-child(3) {
-        background: rgba(251, 191, 36, 0.15);
-        border: 1px solid rgba(251, 191, 36, 0.3);
-        color: #fbbf24;
+        background: rgba(217, 119, 6, 0.15);
+        border: 1px solid rgba(217, 119, 6, 0.3);
+        color: #d97706;
       }
       .seo-content .author-bio a:hover {
         transform: translateY(-1px);
@@ -3511,7 +3542,7 @@ ${CONSENT_MODE_V2_HTML}
       .seo-content .article-body .article-code {
         margin: 1.5rem 0;
         border-radius: 10px;
-        border: 1px solid rgba(96, 165, 250, 0.22);
+        border: 1px solid rgba(180, 68, 31, 0.22);
         background: #0b1220;
         overflow: hidden;
       }
@@ -3522,11 +3553,11 @@ ${CONSENT_MODE_V2_HTML}
         padding: 0.5rem 0.75rem;
         text-align: left;
         font-style: normal;
-        color: #94a3b8;
-        background: rgba(30, 58, 138, 0.32);
+        color: #5E584F;
+        background: rgba(252, 244, 239, 0.32);
       }
       .seo-content .article-body .article-code-lang {
-        color: #dbeafe;
+        color: #632511;
         font-weight: 700;
         text-transform: uppercase;
         font-size: 0.75rem;
@@ -3534,11 +3565,11 @@ ${CONSENT_MODE_V2_HTML}
       .seo-content .article-body .article-code-lede {
         margin: 0;
         padding: 0.4rem 0.85rem 0.2rem;
-        color: #94a3b8;
+        color: #5E584F;
         font-size: 0.85rem;
       }
       .seo-content .article-body .article-code-gutter {
-        color: #64748b;
+        color: #77705F;
         padding-right: 0.75rem;
       }
       .seo-content .article-body .article-code pre {
@@ -3548,11 +3579,11 @@ ${CONSENT_MODE_V2_HTML}
       }
       
       .seo-content .article-body blockquote {
-        border-left: 4px solid #a78bfa;
+        border-left: 4px solid #B4441F;
         padding-left: 1.5rem;
         margin: 1.5rem 0;
         font-style: italic;
-        color: #cbd5e1;
+        color: #3F3B35;
       }
       
       /* ðŸ–¼ï¸ IMAGE STYLING - Proper display and loading */
@@ -3572,7 +3603,7 @@ ${CONSENT_MODE_V2_HTML}
       .seo-content .article-body figcaption {
         text-align: center;
         font-size: 0.9rem;
-        color: #94a3b8;
+        color: #5E584F;
         margin-top: 0.5rem;
         font-style: italic;
       }
@@ -3585,32 +3616,32 @@ ${CONSENT_MODE_V2_HTML}
       
       .seo-content .article-body table th,
       .seo-content .article-body table td {
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(27, 26, 23, 0.2);
         padding: 0.8rem;
         text-align: left;
       }
       
       .seo-content .article-body table th {
-        background: rgba(96, 165, 250, 0.2);
+        background: rgba(180, 68, 31, 0.2);
         font-weight: 600;
       }
       
       .seo-content .article-body a {
-        color: #60a5fa;
+        color: #B4441F;
         text-decoration: none;
         border-bottom: 1px solid transparent;
         transition: border-color 0.2s;
       }
       
       .seo-content .article-body a:hover {
-        border-bottom-color: #60a5fa;
+        border-bottom-color: #B4441F;
       }
       
       .back-link {
         display: inline-block;
         margin-top: 2rem;
         padding: 12px 24px;
-        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        background: linear-gradient(135deg, #E2A487, #E2A487);
         color: white;
         text-decoration: none;
         border-radius: 8px;
@@ -3624,8 +3655,8 @@ ${CONSENT_MODE_V2_HTML}
       
       /* Table of Contents styles */
       .article-toc {
-        background: rgba(15, 23, 42, 0.9);
-        border: 1px solid rgba(148, 163, 184, 0.25);
+        background: rgba(246, 242, 235, 0.9);
+        border: 1px solid rgba(94, 88, 79, 0.25);
         border-radius: 12px;
         padding: 16px 20px;
         margin: 20px 0 28px;
@@ -3635,7 +3666,7 @@ ${CONSENT_MODE_V2_HTML}
         font-weight: 700;
         font-size: 1rem;
         cursor: pointer;
-        color: #e2e8f0;
+        color: #2F2C27;
       }
       .article-toc ul {
         list-style: none;
@@ -3649,7 +3680,7 @@ ${CONSENT_MODE_V2_HTML}
         padding-left: 20px;
       }
       .article-toc a {
-        color: #93c5fd;
+        color: #9C3A1A;
         text-decoration: none;
         font-size: 0.95rem;
         line-height: 1.5;
@@ -3688,7 +3719,7 @@ ${CONSENT_MODE_V2_HTML}
         padding: 0;
         margin: 0;
         font-size: 0.875rem;
-        color: #94a3b8;
+        color: #5E584F;
       }
       
       .breadcrumb-item {
@@ -3697,7 +3728,7 @@ ${CONSENT_MODE_V2_HTML}
       }
       
       .breadcrumb-link {
-        color: #60a5fa;
+        color: #B4441F;
         text-decoration: none;
         display: flex;
         align-items: center;
@@ -3706,7 +3737,7 @@ ${CONSENT_MODE_V2_HTML}
       }
       
       .breadcrumb-link:hover {
-        color: #93c5fd;
+        color: #9C3A1A;
         text-decoration: underline;
       }
       
@@ -3717,11 +3748,11 @@ ${CONSENT_MODE_V2_HTML}
       
       .breadcrumb-separator {
         margin: 0 8px;
-        color: #64748b;
+        color: #77705F;
       }
       
       .breadcrumb-current {
-        color: #cbd5e1;
+        color: #3F3B35;
         font-weight: 500;
         max-width: 300px;
         overflow: hidden;
@@ -3769,8 +3800,8 @@ ${CONSENT_MODE_V2_HTML}
 
       /* Site Nav — 64px sticky bar to match React Header */
       .site-nav {
-        background: rgba(15, 23, 42, 0.95);
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+        background: rgba(246, 242, 235, 0.95);
+        border-bottom: 1px solid rgba(27, 26, 23,0.1);
         min-height: 64px;
         padding: 0 24px;
         position: sticky;
@@ -3790,9 +3821,10 @@ ${CONSENT_MODE_V2_HTML}
         gap: 8px;
       }
       .site-nav-brand {
-        color: #60a5fa;
-        font-weight: 700;
-        font-size: 1.1rem;
+        color: #1B1A17;
+        font-family: 'Source Serif 4', Georgia, serif;
+        font-weight: 600;
+        font-size: 1.35rem;
         text-decoration: none;
       }
       .site-nav-links {
@@ -3804,22 +3836,22 @@ ${CONSENT_MODE_V2_HTML}
         margin: 0;
       }
       .site-nav-links a {
-        color: #cbd5e1;
+        color: #3F3B35;
         text-decoration: none;
         font-size: 0.875rem;
         transition: color 0.2s;
       }
-      .site-nav-links a:hover { color: #60a5fa; }
+      .site-nav-links a:hover { color: #B4441F; }
 
       /* Site Footer */
       .site-footer {
         max-width: 900px;
         margin: 3rem auto 0;
         padding: 2rem 20px;
-        border-top: 1px solid rgba(255,255,255,0.1);
+        border-top: 1px solid rgba(27, 26, 23,0.1);
         text-align: center;
         font-size: 0.85rem;
-        color: #94a3b8;
+        color: #5E584F;
       }
       .site-footer-links {
         display: flex;
@@ -3831,7 +3863,7 @@ ${CONSENT_MODE_V2_HTML}
         margin: 0 0 0.75rem;
       }
       .site-footer-links a {
-        color: #60a5fa;
+        color: #B4441F;
         text-decoration: none;
       }
       .site-footer-links a:hover { text-decoration: underline; }
@@ -3885,9 +3917,9 @@ ${CONSENT_MODE_V2_HTML}
       <!-- 🔥 FULL ARTICLE CONTENT - Visible to Googlebot/AdSense crawlers -->
       <div class="seo-content">
         <article>
-          <h1 class="article-title">${title}</h1>
-          <div style="display:flex;align-items:center;gap:0.6rem;margin:0.75rem 0 1rem;flex-wrap:wrap;color:#94a3b8;font-size:0.9rem;">
-            <a href="/about" style="color:#60a5fa;text-decoration:none;font-weight:500;">Sainath Reddy</a>
+          <h1 class="article-title">${headline}</h1>
+          <div style="display:flex;align-items:center;gap:0.6rem;margin:0.75rem 0 1rem;flex-wrap:wrap;color:#5E584F;font-size:0.9rem;">
+            <a href="/about" style="color:#B4441F;text-decoration:none;font-weight:500;">Sainath Reddy</a>
             <span>·</span>
             <time datetime="${effectivePublished}">${formattedDate}</time>
             <span>·</span>
@@ -3900,8 +3932,8 @@ ${CONSENT_MODE_V2_HTML}
 
           ${slug === 'snowflake-cost-optimization-techniques-2026' ? `
           <!-- Contextual CTA: drive readers to the interactive cost calculator -->
-          <aside class="calculator-promo" style="background:linear-gradient(90deg,#1e3a8a 0%,#6b21a8 100%);border-radius:12px;padding:1.1rem 1.4rem;margin:0 0 1.75rem 0;box-shadow:0 4px 14px rgba(107,33,168,0.25);">
-            <a href="/tools/snowflake-cost-calculator" style="color:#ffffff;text-decoration:none;font-weight:600;font-size:1rem;display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+          <aside class="calculator-promo" style="background:linear-gradient(90deg,#FCF4EF 0%,#F8E4D9 100%);border-radius:12px;padding:1.1rem 1.4rem;margin:0 0 1.75rem 0;box-shadow:0 4px 14px rgba(248, 228, 217,0.25);">
+            <a href="/tools/snowflake-cost-calculator" style="color:#1B1A17;text-decoration:none;font-weight:600;font-size:1rem;display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
               <span style="font-size:1.3rem;" aria-hidden="true">ðŸ§®</span>
               <span>Try our free Snowflake Cost Calculator — estimate your monthly spend in seconds →</span>
             </a>
@@ -3918,10 +3950,10 @@ ${CONSENT_MODE_V2_HTML}
             ].filter((tool) => !ADSENSE_REVIEW_MODE || isReviewAllowlistedTool(tool.slug));
             if (relatedToolItems.length === 0) return '';
             return `
-          <aside class="related-tools" style="background:#0f172a;border:1px solid rgba(96,165,250,0.25);border-radius:12px;padding:1.1rem 1.4rem;margin:0 0 1.75rem 0;">
-            <h3 style="color:#93c5fd;font-size:1rem;margin:0 0 0.6rem;font-weight:600;">Free Snowflake Tools</h3>
+          <aside class="related-tools" style="background:#F6F2EB;border:1px solid rgba(180, 68, 31,0.25);border-radius:12px;padding:1.1rem 1.4rem;margin:0 0 1.75rem 0;">
+            <h3 style="color:#9C3A1A;font-size:1rem;margin:0 0 0.6rem;font-weight:600;">Free Snowflake Tools</h3>
             <ul style="list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr;gap:0.45rem;">
-              ${relatedToolItems.map((tool) => `<li><a href="/tools/${tool.slug}" style="color:#60a5fa;text-decoration:none;font-weight:500;">${escapeHtml(tool.title)}</a> <span style="color:#94a3b8;font-size:0.9rem;">&mdash; ${escapeHtml(tool.blurb)}</span></li>`).join('\n              ')}
+              ${relatedToolItems.map((tool) => `<li><a href="/tools/${tool.slug}" style="color:#B4441F;text-decoration:none;font-weight:500;">${escapeHtml(tool.title)}</a> <span style="color:#5E584F;font-size:0.9rem;">&mdash; ${escapeHtml(tool.blurb)}</span></li>`).join('\n              ')}
             </ul>
           </aside>`;
           })()}
@@ -3937,7 +3969,7 @@ ${CONSENT_MODE_V2_HTML}
           <!-- 🔥 AUTHOR BIO BLOCK - Critical E-E-A-T signal visible to crawlers
                Matches React AuthorBioCard structure for smooth hydration -->
           <section class="author-bio" aria-labelledby="author-heading" style="margin-top: 3rem;">
-            <div class="author-bio-card" style="position: relative; border-radius: 1.5rem; border: 1px solid rgba(96, 165, 250, 0.2); background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.3) 50%, rgba(15, 23, 42, 0.9) 100%); padding: 2rem 2.5rem; backdrop-filter: blur(8px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);">
+            <div class="author-bio-card" style="position: relative; border-radius: 1.5rem; border: 1px solid rgba(180, 68, 31, 0.2); background: linear-gradient(135deg, rgba(246, 242, 235, 0.9) 0%, rgba(252, 244, 239, 0.3) 50%, rgba(246, 242, 235, 0.9) 100%); padding: 2rem 2.5rem; backdrop-filter: blur(8px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);">
               <!-- Decorative blobs -->
               <div class="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-cyan-500/5" style="border-radius: 1.5rem;"></div>
               <div class="pointer-events-none absolute -top-20 -right-20 w-72 h-72 rounded-full blur-3xl bg-blue-500/8"></div>
@@ -3945,8 +3977,8 @@ ${CONSENT_MODE_V2_HTML}
 
               <!-- Badge row -->
               <div class="relative mb-5" style="display: flex; align-items: center; gap: 0.75rem;">
-                <span style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 9999px; background: rgba(96, 165, 250, 0.15); border: 1px solid rgba(96, 165, 250, 0.3); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #93c5fd;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #60a5fa;">
+                <span style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 9999px; background: rgba(180, 68, 31, 0.15); border: 1px solid rgba(180, 68, 31, 0.3); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #9C3A1A;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #B4441F;">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
                     <polyline points="22 4 12 14.01 9 11.01"/>
                   </svg>
@@ -3959,7 +3991,7 @@ ${CONSENT_MODE_V2_HTML}
                 <div class="flex flex-col sm:flex-row gap-5 md:gap-7" style="align-items: flex-start;">
                   {/* Avatar */}
                   <div class="flex-shrink-0">
-                    <img src="${escapeHtml(authorData?.avatarUrl || 'https://secure.gravatar.com/avatar/344a01fa4bf69414fd1de0aee6e1fce9?s=96&d=mm&r=g')}" alt="${escapeHtml(authorData?.name || 'Sainath Reddy')}" width="96" height="96" loading="lazy" style="width: 80px; height: 80px; border-radius: 1rem; object-fit: cover; border: 2px solid rgba(96, 165, 250, 0.3); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(96, 165, 250, 0.1);" />
+                    <img src="${escapeHtml(authorData?.avatarUrl || 'https://secure.gravatar.com/avatar/344a01fa4bf69414fd1de0aee6e1fce9?s=96&d=mm&r=g')}" alt="${escapeHtml(authorData?.name || 'Sainath Reddy')}" width="96" height="96" loading="lazy" style="width: 80px; height: 80px; border-radius: 1rem; object-fit: cover; border: 2px solid rgba(180, 68, 31, 0.3); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(180, 68, 31, 0.1);" />
                   </div>
 
                   {/* Info */}
@@ -3967,29 +3999,29 @@ ${CONSENT_MODE_V2_HTML}
                     {/* Name */}
                     <div>
                       <a href="https://dataengineerhub.blog/about" style="text-decoration: none; color: inherit;">
-                        <h3 style="font-size: 1.5rem; font-weight: 900; color: #ffffff; margin: 0; line-height: 1.2;">
+                        <h3 style="font-size: 1.5rem; font-weight: 900; color: #1B1A17; margin: 0; line-height: 1.2;">
                           ${escapeHtml(authorData?.name || 'Sainath Reddy')}
                         </h3>
                       </a>
-                      <p style="font-size: 0.875rem; font-weight: 600; color: #93c5fd; margin: 0.25rem 0 0;">Founder & Owner</p>
+                      <p style="font-size: 0.875rem; font-weight: 600; color: #9C3A1A; margin: 0.25rem 0 0;">Founder & Owner</p>
                     </div>
 
                     {/* Bio */}
-                    <p style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.7; margin: 0; max-width: 42rem;">
+                    <p style="font-size: 0.95rem; color: #3F3B35; line-height: 1.7; margin: 0; max-width: 42rem;">
                       Data Engineer with 5+ years of experience building scalable data pipelines, cloud data warehouses, and end-to-end analytics solutions. Passionate about making complex data engineering concepts accessible to everyone.
                     </p>
 
                     {/* Social links + CTA */}
                     <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; padding-top: 0.5rem;">
-                      <a href="https://dataengineerhub.blog/about" style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 600; color: #93c5fd; padding: 0.5rem 1rem; border-radius: 0.5rem; background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.2); text-decoration: none; transition: all 0.2s;">
+                      <a href="https://dataengineerhub.blog/about" style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 600; color: #9C3A1A; padding: 0.5rem 1rem; border-radius: 0.5rem; background: rgba(180, 68, 31, 0.1); border: 1px solid rgba(180, 68, 31, 0.2); text-decoration: none; transition: all 0.2s;">
                         About the Author
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                       </a>
-                      <a href="https://dataengineerhub.blog/contact" style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 600; color: #34d399; padding: 0.5rem 1rem; border-radius: 0.5rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); text-decoration: none; transition: all 0.2s;">
+                      <a href="https://dataengineerhub.blog/contact" style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 600; color: #059669; padding: 0.5rem 1rem; border-radius: 0.5rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); text-decoration: none; transition: all 0.2s;">
                         Contact
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                       </a>
-                      <a href="https://www.linkedin.com/in/sainathreddypogaku/" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 600; color: #fbbf24; padding: 0.5rem 1rem; border-radius: 0.5rem; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); text-decoration: none; transition: all 0.2s;">
+                      <a href="https://www.linkedin.com/in/sainathreddypogaku/" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 600; color: #d97706; padding: 0.5rem 1rem; border-radius: 0.5rem; background: rgba(217, 119, 6, 0.1); border: 1px solid rgba(217, 119, 6, 0.2); text-decoration: none; transition: all 0.2s;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                         LinkedIn
                       </a>
@@ -3999,23 +4031,23 @@ ${CONSENT_MODE_V2_HTML}
 
                 {/* CTA buttons (mobile visible, desktop in right column in React) */}
                 <div class="flex gap-3 mt-5 md:hidden" style="flex-wrap: wrap;">
-                  <a href="/articles" style="flex: 1; min-width: 140px; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: linear-gradient(135deg, #2563eb, #7c3aed); color: white; font-weight: 700; border-radius: 0.5rem; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4); transition: all 0.2s;">
+                  <a href="/articles" style="flex: 1; min-width: 140px; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: linear-gradient(135deg, #F0C6B2, #F0C6B2); color: white; font-weight: 700; border-radius: 0.5rem; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(240, 198, 178, 0.4); transition: all 0.2s;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     More Articles
                   </a>
-                  <a href="/contact" style="flex: 1; min-width: 140px; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.5rem; border: 2px solid rgba(96, 165, 250, 0.4); color: #93c5fd; font-weight: 600; border-radius: 0.5rem; text-decoration: none; background: rgba(96, 165, 250, 0.05); transition: all 0.2s;">
+                  <a href="/contact" style="flex: 1; min-width: 140px; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.5rem; border: 2px solid rgba(180, 68, 31, 0.4); color: #9C3A1A; font-weight: 600; border-radius: 0.5rem; text-decoration: none; background: rgba(180, 68, 31, 0.05); transition: all 0.2s;">
                     Get in Touch
                   </a>
                 </div>
               </div>
 
               {/* Desktop CTA buttons - hidden on mobile, shown on desktop */}
-              <div class="hidden md:flex flex-col gap-3 flex-shrink-0" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(96, 165, 250, 0.15);">
-                <a href="/articles" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: linear-gradient(135deg, #2563eb, #7c3aed); color: white; font-weight: 700; border-radius: 0.5rem; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4); transition: all 0.2s;">
+              <div class="hidden md:flex flex-col gap-3 flex-shrink-0" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(180, 68, 31, 0.15);">
+                <a href="/articles" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: linear-gradient(135deg, #F0C6B2, #F0C6B2); color: white; font-weight: 700; border-radius: 0.5rem; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(240, 198, 178, 0.4); transition: all 0.2s;">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                   More Articles
                 </a>
-                <a href="/contact" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.5rem; border: 2px solid rgba(96, 165, 250, 0.4); color: #93c5fd; font-weight: 600; border-radius: 0.5rem; text-decoration: none; background: rgba(96, 165, 250, 0.05); transition: all 0.2s;">
+                <a href="/contact" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.5rem; border: 2px solid rgba(180, 68, 31, 0.4); color: #9C3A1A; font-weight: 600; border-radius: 0.5rem; text-decoration: none; background: rgba(180, 68, 31, 0.05); transition: all 0.2s;">
                   Get in Touch
                 </a>
               </div>
@@ -4032,10 +4064,10 @@ ${CONSENT_MODE_V2_HTML}
           <div class="auto-ads-placement" style="min-height: 1px;" aria-hidden="true"></div>`}
           
           ${relatedArticles.length > 0 ? `
-          <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
-            <h2 style="color: #93c5fd; font-size: 1.4rem; margin-bottom: 1rem;">More Articles</h2>
+          <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(27, 26, 23,0.1);">
+            <h2 style="color: #9C3A1A; font-size: 1.4rem; margin-bottom: 1rem;">More Articles</h2>
             <ul style="list-style: none; padding: 0;">
-              ${relatedArticles.map(a => `<li style="margin-bottom: 0.8rem;"><a href="/articles/${a.slug}" style="color: #60a5fa; text-decoration: none; font-weight: 500;">${escapeHtml(a.title)}</a></li>`).join('\n              ')}
+              ${relatedArticles.map(a => `<li style="margin-bottom: 0.8rem;"><a href="/articles/${a.slug}" style="color: #B4441F; text-decoration: none; font-weight: 500;">${escapeHtml(a.title)}</a></li>`).join('\n              ')}
             </ul>
           </div>
           ` : ''}
@@ -4044,7 +4076,7 @@ ${CONSENT_MODE_V2_HTML}
         </article>
         
         <noscript>
-          <p style="margin-top: 2rem; padding: 1rem; background: rgba(251, 191, 36, 0.2); border-radius: 8px; color: #fbbf24;">
+          <p style="margin-top: 2rem; padding: 1rem; background: rgba(217, 119, 6, 0.2); border-radius: 8px; color: #d97706;">
             ✅ This article is fully accessible without JavaScript.
             Enable JavaScript for enhanced interactive features.
           </p>
@@ -4300,14 +4332,14 @@ function generateHomepageEnhancement(allArticleSummaries, categories) {
   // Build rich HTML content
   let articlesHTML = `
         <div class="seo-articles" style="margin-top: 3rem;">
-          <p style="color: #cbd5e1; text-align: center; margin-bottom: 2rem; font-size: 1.05rem; max-width: 46rem; margin-left: auto; margin-right: auto; line-height: 1.6;">
-            Written by <a href="https://dataengineerhub.blog/about" style="color: #60a5fa;">Sainath Reddy</a>, a data engineer in Hyderabad.
+          <p style="color: #3F3B35; text-align: center; margin-bottom: 2rem; font-size: 1.05rem; max-width: 46rem; margin-left: auto; margin-right: auto; line-height: 1.6;">
+            Written by <a href="https://dataengineerhub.blog/about" style="color: #B4441F;">Sainath Reddy</a>, a data engineer in Hyderabad.
             These are production notes — warehouse cost incidents, dbt review comments, Cortex token bills — not rewritten vendor docs.
-            Read the <a href="https://dataengineerhub.blog/editorial-standards" style="color: #60a5fa;">editorial standards</a>
-            or skip to the <a href="https://dataengineerhub.blog/articles" style="color: #60a5fa;">article library</a>.
+            Read the <a href="https://dataengineerhub.blog/editorial-standards" style="color: #B4441F;">editorial standards</a>
+            or skip to the <a href="https://dataengineerhub.blog/articles" style="color: #B4441F;">article library</a>.
           </p>
-          <h2 style="font-size: 2rem; color: #93c5fd; margin-bottom: 1.5rem; text-align: center;">Latest Data Engineering Articles</h2>
-          <p style="color: #cbd5e1; text-align: center; margin-bottom: 2rem; font-size: 1.1rem;">
+          <h2 style="font-size: 2rem; color: #9C3A1A; margin-bottom: 1.5rem; text-align: center;">Latest Data Engineering Articles</h2>
+          <p style="color: #3F3B35; text-align: center; margin-bottom: 2rem; font-size: 1.1rem;">
             Explore our comprehensive collection of ${allArticleSummaries.length} in-depth tutorials and guides covering 
             Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and modern data engineering practices.
           </p>`;
@@ -4320,14 +4352,14 @@ function generateHomepageEnhancement(allArticleSummaries, categories) {
   for (const [catName, articles] of sortedCategories) {
     articlesHTML += `
           <div style="margin-bottom: 2rem;">
-            <h3 style="color: #60a5fa; font-size: 1.4rem; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">${catName} (${articles.length} articles)</h3>
+            <h3 style="color: #B4441F; font-size: 1.4rem; margin-bottom: 1rem; border-bottom: 1px solid rgba(27, 26, 23,0.1); padding-bottom: 0.5rem;">${catName} (${articles.length} articles)</h3>
             <ul style="list-style: none; padding: 0;">`;
 
     for (const article of articles.slice(0, 4)) {
       articlesHTML += `
-              <li style="margin-bottom: 0.8rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <a href="https://dataengineerhub.blog/articles/${article.slug}" style="color: #e2e8f0; text-decoration: none; font-size: 1.05rem; font-weight: 500;">${escapeHtml(article.title)}</a>
-                ${article.excerpt ? `<p style="color: #94a3b8; font-size: 0.9rem; margin-top: 0.3rem; line-height: 1.5;">${escapeHtml(article.excerpt)}</p>` : ''}
+              <li style="margin-bottom: 0.8rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(27, 26, 23,0.05);">
+                <a href="https://dataengineerhub.blog/articles/${article.slug}" style="color: #2F2C27; text-decoration: none; font-size: 1.05rem; font-weight: 500;">${escapeHtml(article.title)}</a>
+                ${article.excerpt ? `<p style="color: #5E584F; font-size: 0.9rem; margin-top: 0.3rem; line-height: 1.5;">${escapeHtml(article.excerpt)}</p>` : ''}
               </li>`;
     }
 
@@ -4338,7 +4370,7 @@ function generateHomepageEnhancement(allArticleSummaries, categories) {
 
   articlesHTML += `
           <div style="text-align: center; margin-top: 2rem;">
-            <a href="https://dataengineerhub.blog/articles" style="display: inline-block; padding: 12px 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">Browse All ${allArticleSummaries.length} Articles</a>
+            <a href="https://dataengineerhub.blog/articles" style="display: inline-block; padding: 12px 32px; background: linear-gradient(135deg, #E2A487, #E2A487); color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">Browse All ${allArticleSummaries.length} Articles</a>
           </div>
         </div>`;
 
@@ -4371,8 +4403,8 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
       .filter(Boolean)
       .map((c) => (
         ADSENSE_REVIEW_MODE
-          ? `<span style="color: #60a5fa; font-size: 0.8rem; background: rgba(96,165,250,0.1); padding: 2px 8px; border-radius: 4px;">${escapeHtml(c.name)}</span>`
-          : `<a href="https://dataengineerhub.blog/category/${c.slug}" style="color: #60a5fa; text-decoration: none; font-size: 0.8rem; background: rgba(96,165,250,0.1); padding: 2px 8px; border-radius: 4px;">${escapeHtml(c.name)}</a>`
+          ? `<span style="color: #B4441F; font-size: 0.8rem; background: rgba(180, 68, 31,0.1); padding: 2px 8px; border-radius: 4px;">${escapeHtml(c.name)}</span>`
+          : `<a href="https://dataengineerhub.blog/category/${c.slug}" style="color: #B4441F; text-decoration: none; font-size: 0.8rem; background: rgba(180, 68, 31,0.1); padding: 2px 8px; border-radius: 4px;">${escapeHtml(c.name)}</a>`
       ))
       .join(' ');
 
@@ -4417,7 +4449,7 @@ ${CONSENT_MODE_V2_HTML}
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#1e293b">
+    <meta name="theme-color" content="#EFEAE1">
     <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />
     ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
 
@@ -4425,8 +4457,8 @@ ${CONSENT_MODE_V2_HTML}
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
-        color: #f8fafc;
+        background: linear-gradient(135deg, #F6F2EB 0%, #FCF4EF 50%, #FCF4EF 100%);
+        color: #1B1A17;
         line-height: 1.6;
         min-height: 100vh;
       }
@@ -4434,7 +4466,7 @@ ${CONSENT_MODE_V2_HTML}
         max-width: 900px;
         margin: 0 auto;
         padding: 40px 20px;
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(27, 26, 23, 0.05);
         backdrop-filter: blur(10px);
         border-radius: 16px;
         margin-top: 40px;
@@ -4443,49 +4475,49 @@ ${CONSENT_MODE_V2_HTML}
       .seo-content h1 {
         font-size: 2.5rem;
         margin-bottom: 1rem;
-        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
+        background: linear-gradient(135deg, #B4441F 0%, #B4441F 50%, #B4441F 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
         line-height: 1.2;
       }
-      .seo-content h2 { color: #93c5fd; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }
-      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }
-      .seo-content a { color: #60a5fa; text-decoration: none; }
+      .seo-content h2 { color: #9C3A1A; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }
+      .seo-content p { color: #2F2C27; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }
+      .seo-content a { color: #B4441F; text-decoration: none; }
       .seo-content a:hover { text-decoration: underline; }
       /* SEO content + breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */
       .breadcrumb-nav { max-width: 900px; margin: 20px auto 0; padding: 0 20px; }
-      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }
+      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #5E584F; }
       .breadcrumb-item { display: flex; align-items: center; }
-      .breadcrumb-link { color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 4px; }
-      .breadcrumb-link:hover { color: #93c5fd; text-decoration: underline; }
-      .breadcrumb-separator { margin: 0 8px; color: #64748b; }
-      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }
+      .breadcrumb-link { color: #B4441F; text-decoration: none; display: flex; align-items: center; gap: 4px; }
+      .breadcrumb-link:hover { color: #9C3A1A; text-decoration: underline; }
+      .breadcrumb-separator { margin: 0 8px; color: #77705F; }
+      .breadcrumb-current { color: #3F3B35; font-weight: 500; }
       .article-card {
         list-style: none;
         margin-bottom: 1rem;
         padding: 1.1rem 1.15rem;
-        background: rgba(15, 23, 42, 0.55);
-        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(246, 242, 235, 0.55);
+        border: 1px solid rgba(94, 88, 79, 0.18);
         border-radius: 14px;
       }
       .article-card-tags { margin-bottom: 0.45rem; }
       .article-card-title {
         display: block;
-        color: #f8fafc;
+        color: #1B1A17;
         text-decoration: none;
         font-size: 1.12rem;
         font-weight: 700;
         line-height: 1.35;
       }
       .article-card-excerpt {
-        color: #94a3b8;
+        color: #5E584F;
         font-size: 0.92rem;
         margin: 0.45rem 0 0.7rem;
         line-height: 1.55;
       }
       .article-card-cta {
-        color: #93c5fd;
+        color: #9C3A1A;
         font-size: 0.85rem;
         font-weight: 600;
         text-decoration: none;
@@ -4525,7 +4557,7 @@ ${CONSENT_MODE_V2_HTML}
           ${articleListHTML}
         </ul>
 
-        <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(96,165,250,0.1); border-radius: 12px; border: 1px solid rgba(96,165,250,0.2);">
+        <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(180, 68, 31,0.1); border-radius: 12px; border: 1px solid rgba(180, 68, 31,0.2);">
           <h2 style="font-size: 1.3rem; margin-top: 0;">About DataEngineer Hub</h2>
           <p style="margin-bottom: 0;">
             DataEngineer Hub is created by Sainath Reddy, a data engineer with extensive experience building
@@ -4534,7 +4566,7 @@ ${CONSENT_MODE_V2_HTML}
           </p>
         </div>
 
-        <p style="margin-top: 2rem;"><a href="https://dataengineerhub.blog" style="color:#93c5fd;">← Back to Home</a></p>
+        <p style="margin-top: 2rem;"><a href="https://dataengineerhub.blog" style="color:#9C3A1A;">← Back to Home</a></p>
       </div>
       ${getSiteFooterHTML()}
     </div>
@@ -4618,9 +4650,9 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
     const safeTitle = escapeHtml(article.title);
     const safeExcerpt = escapeHtml(article.excerpt);
     articleListHTML += `
-              <li style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08);">
-                <a href="https://dataengineerhub.blog/articles/${article.slug}" style="color: #f1f5f9; text-decoration: none; font-size: 1.15rem; font-weight: 600; line-height: 1.4;">${safeTitle}</a>
-                ${article.excerpt ? `<p style="color: #94a3b8; font-size: 0.95rem; margin-top: 0.5rem; line-height: 1.6;">${safeExcerpt}</p>` : ''}
+              <li style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(27, 26, 23,0.08);">
+                <a href="https://dataengineerhub.blog/articles/${article.slug}" style="color: #24221E; text-decoration: none; font-size: 1.15rem; font-weight: 600; line-height: 1.4;">${safeTitle}</a>
+                ${article.excerpt ? `<p style="color: #5E584F; font-size: 0.95rem; margin-top: 0.5rem; line-height: 1.6;">${safeExcerpt}</p>` : ''}
               </li>`;
   }
 
@@ -4658,29 +4690,29 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
-  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <meta name="theme-color" content="#EFEAE1">\n';
   html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   if (productionCssFile) {
     html += '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n';
   }
   html += '\n    <style>\n';
   html += '      * { margin: 0; padding: 0; box-sizing: border-box; }\n';
-  html += '      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%); color: #f8fafc; line-height: 1.6; min-height: 100vh; }\n';
-  html += '      .seo-content { max-width: 900px; margin: 0 auto; padding: 40px 20px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 16px; margin-top: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }\n';
-  html += '      .seo-content h1 { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }\n';
-  html += '      .seo-content h2 { color: #93c5fd; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
-  html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
-  html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
+  html += '      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #F6F2EB 0%, #FCF4EF 50%, #FCF4EF 100%); color: #1B1A17; line-height: 1.6; min-height: 100vh; }\n';
+  html += '      .seo-content { max-width: 900px; margin: 0 auto; padding: 40px 20px; background: rgba(27, 26, 23,0.05); backdrop-filter: blur(10px); border-radius: 16px; margin-top: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }\n';
+  html += '      .seo-content h1 { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #B4441F 0%, #B4441F 50%, #B4441F 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }\n';
+  html += '      .seo-content h2 { color: #9C3A1A; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
+  html += '      .seo-content p { color: #2F2C27; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
+  html += '      .seo-content a { color: #B4441F; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
   html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 900px; margin: 20px auto 0; padding: 0 20px; }\n';
-  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
+  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #5E584F; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
-  html += '      .breadcrumb-link { color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
-  html += '      .breadcrumb-link:hover { color: #93c5fd; text-decoration: underline; }\n';
-  html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
-  html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
+  html += '      .breadcrumb-link { color: #B4441F; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
+  html += '      .breadcrumb-link:hover { color: #9C3A1A; text-decoration: underline; }\n';
+  html += '      .breadcrumb-separator { margin: 0 8px; color: #77705F; }\n';
+  html += '      .breadcrumb-current { color: #3F3B35; font-weight: 500; }\n';
   html += '      @media (max-width: 768px) { .seo-content { padding: 20px 15px; margin-top: 20px; } .seo-content h1 { font-size: 1.8rem; } }\n';
   html += getSiteNavCSS() + '\n';
   html += '    </style>\n';
@@ -4710,8 +4742,8 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
     html += '        <p>This listing has no published tutorials yet. Use the <a href="https://dataengineerhub.blog/articles">article library</a> or a related category hub instead of waiting on an empty archive.</p>\n';
   }
   html += '        <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">\n';
-  html += '          <a href="https://dataengineerhub.blog/articles" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">Browse All Articles</a>\n';
-  html += '          <a href="https://dataengineerhub.blog" style="display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; border: 1px solid rgba(255,255,255,0.2);">&#8592; Back to Home</a>\n';
+  html += '          <a href="https://dataengineerhub.blog/articles" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #E2A487, #E2A487); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">Browse All Articles</a>\n';
+  html += '          <a href="https://dataengineerhub.blog" style="display: inline-block; padding: 12px 24px; background: rgba(27, 26, 23,0.1); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; border: 1px solid rgba(27, 26, 23,0.2);">&#8592; Back to Home</a>\n';
   html += '        </div>\n';
   html += '      </div>\n';
   html += getSiteFooterHTML() + '\n';
@@ -4767,7 +4799,7 @@ function markdownToHTML(md) {
     var tableHTML = '<div style="overflow-x: auto; margin: 1.5rem 0;"><table style="width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.2); border-radius: 8px;">';
     tableHTML += '<thead><tr>';
     for (var i = 0; i < headers.length; i++) {
-      tableHTML += '<th style="padding: 10px 14px; border-bottom: 2px solid rgba(96,165,250,0.3); color: #93c5fd; text-align: left; font-weight: 600;">' + headers[i] + '</th>';
+      tableHTML += '<th style="padding: 10px 14px; border-bottom: 2px solid rgba(180, 68, 31,0.3); color: #9C3A1A; text-align: left; font-weight: 600;">' + headers[i] + '</th>';
     }
     tableHTML += '</tr></thead><tbody>';
     var rows = bodyRows.trim().split('\n');
@@ -4775,7 +4807,7 @@ function markdownToHTML(md) {
       var cells = rows[r].split('|').map(function(c) { return c.trim(); }).filter(function(c) { return c; });
       tableHTML += '<tr>';
       for (var c = 0; c < cells.length; c++) {
-        tableHTML += '<td style="padding: 8px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); color: #e2e8f0;">' + cells[c] + '</td>';
+        tableHTML += '<td style="padding: 8px 14px; border-bottom: 1px solid rgba(27, 26, 23,0.06); color: #2F2C27;">' + cells[c] + '</td>';
       }
       tableHTML += '</tr>';
     }
@@ -4784,9 +4816,9 @@ function markdownToHTML(md) {
   });
 
   // Convert headers
-  html = html.replace(/^#### (.+)$/gm, '<h4 style="color: #a5b4fc; font-size: 1.15rem; margin-top: 1.5rem; margin-bottom: 0.5rem;">$1</h4>');
-  html = html.replace(/^### (.+)$/gm, '<h3 style="color: #93c5fd; font-size: 1.3rem; margin-top: 1.8rem; margin-bottom: 0.6rem;">$1</h3>');
-  html = html.replace(/^## (.+)$/gm, '<h2 style="color: #93c5fd; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem;">$1</h2>');
+  html = html.replace(/^#### (.+)$/gm, '<h4 style="color: #9C3A1A; font-size: 1.15rem; margin-top: 1.5rem; margin-bottom: 0.5rem;">$1</h4>');
+  html = html.replace(/^### (.+)$/gm, '<h3 style="color: #9C3A1A; font-size: 1.3rem; margin-top: 1.8rem; margin-bottom: 0.6rem;">$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2 style="color: #9C3A1A; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem;">$1</h2>');
 
   // Convert bold and italic
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
@@ -4802,7 +4834,7 @@ function markdownToHTML(md) {
     for (var i = 0; i < items.length; i++) {
       var item = items[i].replace(/^[\t ]*[-*] /, '').trim();
       if (item) {
-        listHTML += '<li style="margin-bottom: 0.4rem; color: #e2e8f0;">' + item + '</li>';
+        listHTML += '<li style="margin-bottom: 0.4rem; color: #2F2C27;">' + item + '</li>';
       }
     }
     listHTML += '</ul>';
@@ -4816,7 +4848,7 @@ function markdownToHTML(md) {
     for (var i = 0; i < items.length; i++) {
       var item = items[i].replace(/^\d+\. /, '').trim();
       if (item) {
-        listHTML += '<li style="margin-bottom: 0.4rem; color: #e2e8f0;">' + item + '</li>';
+        listHTML += '<li style="margin-bottom: 0.4rem; color: #2F2C27;">' + item + '</li>';
       }
     }
     listHTML += '</ol>';
@@ -4824,7 +4856,7 @@ function markdownToHTML(md) {
   });
 
   // Convert paragraphs (double newlines)
-  html = html.replace(/\n\n+/g, '</p><p style="color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8;">');
+  html = html.replace(/\n\n+/g, '</p><p style="color: #2F2C27; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8;">');
 
   // Restore code blocks
   for (var i = 0; i < codeBlocks.length; i++) {
@@ -4833,7 +4865,7 @@ function markdownToHTML(md) {
 
   // Wrap in paragraph if not starting with a block element
   if (html && !html.trim().match(/^<(h[1-6]|ul|ol|div|table|pre|p)/)) {
-    html = '<p style="color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8;">' + html;
+    html = '<p style="color: #2F2C27; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8;">' + html;
   }
   if (html && !html.trim().match(/(\/h[1-6]|\/ul|\/ol|\/div|\/table|\/pre|\/p)>$/)) {
     html = html + '</p>';
@@ -4889,10 +4921,10 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
       return a.term.localeCompare(b.term);
     });
 
-    categoryNavHTML += '<a href="#glossary-' + catKey + '" style="display: inline-block; padding: 6px 14px; background: rgba(96,165,250,0.12); color: #93c5fd; text-decoration: none; border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(96,165,250,0.25); margin: 4px;">' + catDisplayName + ' (' + catTerms.length + ')</a>';
+    categoryNavHTML += '<a href="#glossary-' + catKey + '" style="display: inline-block; padding: 6px 14px; background: rgba(180, 68, 31,0.12); color: #9C3A1A; text-decoration: none; border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(180, 68, 31,0.25); margin: 4px;">' + catDisplayName + ' (' + catTerms.length + ')</a>';
 
     categorySectionsHTML += '<div id="glossary-' + catKey + '" style="margin-top: 2.5rem;">';
-    categorySectionsHTML += '<h2 style="color: #93c5fd; font-size: 1.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(147,197,253,0.2);">' + catDisplayName + '</h2>';
+    categorySectionsHTML += '<h2 style="color: #9C3A1A; font-size: 1.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(156, 58, 26,0.2);">' + catDisplayName + '</h2>';
     categorySectionsHTML += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">';
 
     for (var t = 0; t < catTerms.length; t++) {
@@ -4902,9 +4934,9 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
         shortDef = shortDef.substring(0, 147) + '...';
       }
 
-      categorySectionsHTML += '<a href="https://dataengineerhub.blog/glossary/' + glossaryTerm.slug + '" style="display: block; padding: 1.2rem; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); text-decoration: none; transition: border-color 0.2s;">';
-      categorySectionsHTML += '<h3 style="color: #f1f5f9; font-size: 1.1rem; margin-bottom: 0.4rem; font-weight: 600;">' + glossaryTerm.term + '</h3>';
-      categorySectionsHTML += '<p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.5; margin: 0;">' + shortDef + '</p>';
+      categorySectionsHTML += '<a href="https://dataengineerhub.blog/glossary/' + glossaryTerm.slug + '" style="display: block; padding: 1.2rem; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid rgba(27, 26, 23,0.08); text-decoration: none; transition: border-color 0.2s;">';
+      categorySectionsHTML += '<h3 style="color: #24221E; font-size: 1.1rem; margin-bottom: 0.4rem; font-weight: 600;">' + glossaryTerm.term + '</h3>';
+      categorySectionsHTML += '<p style="color: #5E584F; font-size: 0.9rem; line-height: 1.5; margin: 0;">' + shortDef + '</p>';
       categorySectionsHTML += '</a>';
     }
 
@@ -4945,7 +4977,7 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
-  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <meta name="theme-color" content="#EFEAE1">\n';
   html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   html += (productionCssFile ? '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n' : '');
   html += '\n';
@@ -4953,8 +4985,8 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '      * { margin: 0; padding: 0; box-sizing: border-box; }\n';
   html += '      body {\n';
   html += '        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n';
-  html += '        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);\n';
-  html += '        color: #f8fafc;\n';
+  html += '        background: linear-gradient(135deg, #F6F2EB 0%, #FCF4EF 50%, #FCF4EF 100%);\n';
+  html += '        color: #1B1A17;\n';
   html += '        line-height: 1.6;\n';
   html += '        min-height: 100vh;\n';
   html += '      }\n';
@@ -4962,7 +4994,7 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '        max-width: 1000px;\n';
   html += '        margin: 0 auto;\n';
   html += '        padding: 40px 20px;\n';
-  html += '        background: rgba(255, 255, 255, 0.05);\n';
+  html += '        background: rgba(27, 26, 23, 0.05);\n';
   html += '        backdrop-filter: blur(10px);\n';
   html += '        border-radius: 16px;\n';
   html += '        margin-top: 40px;\n';
@@ -4971,25 +5003,25 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '      .seo-content h1 {\n';
   html += '        font-size: 2.5rem;\n';
   html += '        margin-bottom: 1rem;\n';
-  html += '        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);\n';
+  html += '        background: linear-gradient(135deg, #B4441F 0%, #B4441F 50%, #B4441F 100%);\n';
   html += '        -webkit-background-clip: text;\n';
   html += '        -webkit-text-fill-color: transparent;\n';
   html += '        background-clip: text;\n';
   html += '        line-height: 1.2;\n';
   html += '      }\n';
-  html += '      .seo-content h2 { color: #93c5fd; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
-  html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
-  html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
+  html += '      .seo-content h2 { color: #9C3A1A; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
+  html += '      .seo-content p { color: #2F2C27; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
+  html += '      .seo-content a { color: #B4441F; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
   html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 1000px; margin: 20px auto 0; padding: 0 20px; }\n';
-  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
+  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #5E584F; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
-  html += '      .breadcrumb-link { color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
-  html += '      .breadcrumb-link:hover { color: #93c5fd; text-decoration: underline; }\n';
-  html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
-  html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
+  html += '      .breadcrumb-link { color: #B4441F; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
+  html += '      .breadcrumb-link:hover { color: #9C3A1A; text-decoration: underline; }\n';
+  html += '      .breadcrumb-separator { margin: 0 8px; color: #77705F; }\n';
+  html += '      .breadcrumb-current { color: #3F3B35; font-weight: 500; }\n';
   html += '      @media (max-width: 768px) {\n';
   html += '        .seo-content { padding: 20px 15px; margin-top: 20px; }\n';
   html += '        .seo-content h1 { font-size: 1.8rem; }\n';
@@ -5029,7 +5061,7 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '\n';
   html += categorySectionsHTML;
   html += '\n';
-  html += '        <div style="margin-top: 2.5rem; padding: 1.5rem; background: rgba(96,165,250,0.1); border-radius: 12px; border: 1px solid rgba(96,165,250,0.2);">\n';
+  html += '        <div style="margin-top: 2.5rem; padding: 1.5rem; background: rgba(180, 68, 31,0.1); border-radius: 12px; border: 1px solid rgba(180, 68, 31,0.2);">\n';
   html += '          <h2 style="font-size: 1.3rem; margin-top: 0;">Explore More</h2>\n';
   html += '          <p style="margin-bottom: 0.5rem;">\n';
   html += '            Looking for side-by-side tool comparisons? Check out our <a href="https://dataengineerhub.blog/compare">Data Engineering Comparisons</a> hub\n';
@@ -5040,7 +5072,7 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '          </p>\n';
   html += '        </div>\n';
   html += '\n';
-  html += '        <a href="https://dataengineerhub.blog" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 Back to Home</a>\n';
+  html += '        <a href="https://dataengineerhub.blog" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #E2A487, #E2A487); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 Back to Home</a>\n';
   html += '      </div>\n';
   html += getSiteFooterHTML() + '\n';
   html += '    </div>\n';
@@ -5131,10 +5163,10 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   // Build key points HTML
   var keyPointsHTML = '';
   if (term.keyPoints && term.keyPoints.length > 0) {
-    keyPointsHTML += '<h2 style="color: #93c5fd; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem;">Key Points</h2>';
+    keyPointsHTML += '<h2 style="color: #9C3A1A; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem;">Key Points</h2>';
     keyPointsHTML += '<ul style="margin: 0.8rem 0; padding-left: 1.5rem;">';
     for (var i = 0; i < term.keyPoints.length; i++) {
-      keyPointsHTML += '<li style="margin-bottom: 0.6rem; color: #e2e8f0; line-height: 1.7;">' + term.keyPoints[i] + '</li>';
+      keyPointsHTML += '<li style="margin-bottom: 0.6rem; color: #2F2C27; line-height: 1.7;">' + term.keyPoints[i] + '</li>';
     }
     keyPointsHTML += '</ul>';
   }
@@ -5143,12 +5175,12 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   var faqHTML = '';
   var faqSchemaItems = '';
   if (term.faqs && term.faqs.length > 0) {
-    faqHTML += '<h2 style="color: #93c5fd; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem;">Frequently Asked Questions</h2>';
+    faqHTML += '<h2 style="color: #9C3A1A; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem;">Frequently Asked Questions</h2>';
     for (var f = 0; f < term.faqs.length; f++) {
       var faq = term.faqs[f];
-      faqHTML += '<div style="margin-bottom: 1.5rem; padding: 1.2rem; background: rgba(0,0,0,0.2); border-radius: 10px; border-left: 3px solid #60a5fa;">';
-      faqHTML += '<h3 style="color: #f1f5f9; font-size: 1.15rem; margin-bottom: 0.5rem;">' + escapeHtml(faq.question) + '</h3>';
-      faqHTML += '<p style="color: #cbd5e1; font-size: 1.05rem; line-height: 1.7; margin: 0;">' + escapeHtml(faq.answer) + '</p>';
+      faqHTML += '<div style="margin-bottom: 1.5rem; padding: 1.2rem; background: rgba(0,0,0,0.2); border-radius: 10px; border-left: 3px solid #B4441F;">';
+      faqHTML += '<h3 style="color: #24221E; font-size: 1.15rem; margin-bottom: 0.5rem;">' + escapeHtml(faq.question) + '</h3>';
+      faqHTML += '<p style="color: #3F3B35; font-size: 1.05rem; line-height: 1.7; margin: 0;">' + escapeHtml(faq.answer) + '</p>';
       faqHTML += '</div>';
       if (f > 0) faqSchemaItems += ',';
       faqSchemaItems += '{"@type":"Question","name":' + JSON.stringify(faq.question) + ',"acceptedAnswer":{"@type":"Answer","text":' + JSON.stringify(faq.answer.replace(/\n/g, ' ')) + '}}';
@@ -5158,7 +5190,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   // Build related terms HTML
   var relatedHTML = '';
   if (term.relatedTerms && term.relatedTerms.length > 0) {
-    relatedHTML += '<h2 style="color: #93c5fd; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem;">Related Terms</h2>';
+    relatedHTML += '<h2 style="color: #9C3A1A; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem;">Related Terms</h2>';
     relatedHTML += '<div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">';
     for (var r = 0; r < term.relatedTerms.length; r++) {
       var relSlug = term.relatedTerms[r];
@@ -5167,10 +5199,10 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
         if (allGlossaryTerms[t].slug === relSlug) { relTerm = allGlossaryTerms[t]; break; }
       }
       if (relTerm) {
-        relatedHTML += '<a href="https://dataengineerhub.blog/glossary/' + relSlug + '" style="display: inline-block; padding: 8px 16px; background: rgba(96,165,250,0.15); color: #93c5fd; text-decoration: none; border-radius: 20px; font-size: 0.95rem; border: 1px solid rgba(96,165,250,0.3); transition: background 0.2s;">' + relTerm.term + '</a>';
+        relatedHTML += '<a href="https://dataengineerhub.blog/glossary/' + relSlug + '" style="display: inline-block; padding: 8px 16px; background: rgba(180, 68, 31,0.15); color: #9C3A1A; text-decoration: none; border-radius: 20px; font-size: 0.95rem; border: 1px solid rgba(180, 68, 31,0.3); transition: background 0.2s;">' + relTerm.term + '</a>';
       } else {
         var displayName = relSlug.replace(/-/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
-        relatedHTML += '<a href="https://dataengineerhub.blog/glossary/' + relSlug + '" style="display: inline-block; padding: 8px 16px; background: rgba(96,165,250,0.15); color: #93c5fd; text-decoration: none; border-radius: 20px; font-size: 0.95rem; border: 1px solid rgba(96,165,250,0.3);">' + displayName + '</a>';
+        relatedHTML += '<a href="https://dataengineerhub.blog/glossary/' + relSlug + '" style="display: inline-block; padding: 8px 16px; background: rgba(180, 68, 31,0.15); color: #9C3A1A; text-decoration: none; border-radius: 20px; font-size: 0.95rem; border: 1px solid rgba(180, 68, 31,0.3);">' + displayName + '</a>';
       }
     }
     relatedHTML += '</div>';
@@ -5179,10 +5211,10 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   // Build related tools HTML
   var toolsHTML = '';
   if (term.relatedTools && term.relatedTools.length > 0) {
-    toolsHTML += '<h2 style="color: #93c5fd; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem;">Related Tools</h2>';
+    toolsHTML += '<h2 style="color: #9C3A1A; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem;">Related Tools</h2>';
     toolsHTML += '<div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">';
     for (var tl = 0; tl < term.relatedTools.length; tl++) {
-      toolsHTML += '<span style="display: inline-block; padding: 8px 16px; background: rgba(167,139,250,0.15); color: #a5b4fc; border-radius: 20px; font-size: 0.95rem; border: 1px solid rgba(167,139,250,0.3);">' + term.relatedTools[tl] + '</span>';
+      toolsHTML += '<span style="display: inline-block; padding: 8px 16px; background: rgba(180, 68, 31,0.15); color: #9C3A1A; border-radius: 20px; font-size: 0.95rem; border: 1px solid rgba(180, 68, 31,0.3);">' + term.relatedTools[tl] + '</span>';
     }
     toolsHTML += '</div>';
   }
@@ -5190,11 +5222,11 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   // Build external links HTML
   var linksHTML = '';
   if (term.externalLinks && term.externalLinks.length > 0) {
-    linksHTML += '<h2 style="color: #93c5fd; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem;">Learn More</h2>';
+    linksHTML += '<h2 style="color: #9C3A1A; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem;">Learn More</h2>';
     linksHTML += '<ul style="list-style: none; padding: 0;">';
     for (var el = 0; el < term.externalLinks.length; el++) {
       var link = term.externalLinks[el];
-      linksHTML += '<li style="margin-bottom: 0.75rem;"><a href="' + link.url + '" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: none; font-size: 1.05rem;">&#8599; ' + link.title + '</a></li>';
+      linksHTML += '<li style="margin-bottom: 0.75rem;"><a href="' + link.url + '" target="_blank" rel="noopener noreferrer" style="color: #B4441F; text-decoration: none; font-size: 1.05rem;">&#8599; ' + link.title + '</a></li>';
     }
     linksHTML += '</ul>';
   }
@@ -5252,29 +5284,29 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
-  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <meta name="theme-color" content="#EFEAE1">\n';
   html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   if (productionCssFile) {
     html += '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n';
   }
   html += '\n    <style>\n';
   html += '      * { margin: 0; padding: 0; box-sizing: border-box; }\n';
-  html += '      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%); color: #f8fafc; line-height: 1.6; min-height: 100vh; }\n';
-  html += '      .seo-content { max-width: 900px; margin: 0 auto; padding: 40px 20px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 16px; margin-top: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }\n';
-  html += '      .seo-content h1 { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }\n';
-  html += '      .seo-content h2 { color: #93c5fd; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
-  html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
-  html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
+  html += '      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #F6F2EB 0%, #FCF4EF 50%, #FCF4EF 100%); color: #1B1A17; line-height: 1.6; min-height: 100vh; }\n';
+  html += '      .seo-content { max-width: 900px; margin: 0 auto; padding: 40px 20px; background: rgba(27, 26, 23,0.05); backdrop-filter: blur(10px); border-radius: 16px; margin-top: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }\n';
+  html += '      .seo-content h1 { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #B4441F 0%, #B4441F 50%, #B4441F 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }\n';
+  html += '      .seo-content h2 { color: #9C3A1A; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
+  html += '      .seo-content p { color: #2F2C27; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
+  html += '      .seo-content a { color: #B4441F; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
   html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 900px; margin: 20px auto 0; padding: 0 20px; }\n';
-  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
+  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #5E584F; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
-  html += '      .breadcrumb-link { color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
-  html += '      .breadcrumb-link:hover { color: #93c5fd; text-decoration: underline; }\n';
-  html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
-  html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
+  html += '      .breadcrumb-link { color: #B4441F; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
+  html += '      .breadcrumb-link:hover { color: #9C3A1A; text-decoration: underline; }\n';
+  html += '      .breadcrumb-separator { margin: 0 8px; color: #77705F; }\n';
+  html += '      .breadcrumb-current { color: #3F3B35; font-weight: 500; }\n';
   html += '      @media (max-width: 768px) { .seo-content { padding: 20px 15px; margin-top: 20px; } .seo-content h1 { font-size: 1.8rem; } }\n';
   html += getSiteNavCSS() + '\n';
   html += '    </style>\n';
@@ -5297,13 +5329,13 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   // Main content
   html += '      <div class="seo-content">\n';
   html += '        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">\n';
-  html += '          <span style="padding: 6px 14px; background: rgba(96,165,250,0.15); color: #93c5fd; border-radius: 20px; font-size: 0.85rem; border: 1px solid rgba(96,165,250,0.3);">' + categoryDisplay + '</span>\n';
+  html += '          <span style="padding: 6px 14px; background: rgba(180, 68, 31,0.15); color: #9C3A1A; border-radius: 20px; font-size: 0.85rem; border: 1px solid rgba(180, 68, 31,0.3);">' + categoryDisplay + '</span>\n';
   if (term.lastUpdated) {
-    html += '          <span style="color: #64748b; font-size: 0.85rem;">Updated: ' + term.lastUpdated + '</span>\n';
+    html += '          <span style="color: #77705F; font-size: 0.85rem;">Updated: ' + term.lastUpdated + '</span>\n';
   }
   html += '        </div>\n';
   html += '        <h1>What is ' + term.term + '?</h1>\n';
-  html += '        <p style="font-size: 1.2rem; color: #cbd5e1; margin-bottom: 2rem; line-height: 1.8; border-left: 3px solid #60a5fa; padding-left: 1rem;">' + term.shortDefinition + '</p>\n\n';
+  html += '        <p style="font-size: 1.2rem; color: #3F3B35; margin-bottom: 2rem; line-height: 1.8; border-left: 3px solid #B4441F; padding-left: 1rem;">' + term.shortDefinition + '</p>\n\n';
 
   if (term.practitionerIntro) {
     html += '        <h2>From the field</h2>\n';
@@ -5348,11 +5380,11 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
       return termWords.some(function(w) { return titleLower.indexOf(w) !== -1; });
     }).slice(0, 5);
     if (matched.length > 0) {
-      html += '        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">\n';
-      html += '          <h2 style="color: #93c5fd; font-size: 1.3rem; margin-bottom: 1rem;">Related Articles</h2>\n';
+      html += '        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(27, 26, 23,0.1);">\n';
+      html += '          <h2 style="color: #9C3A1A; font-size: 1.3rem; margin-bottom: 1rem;">Related Articles</h2>\n';
       html += '          <ul style="list-style: none; padding: 0;">\n';
       for (var i = 0; i < matched.length; i++) {
-        html += '            <li style="margin-bottom: 0.6rem;"><a href="/articles/' + matched[i].slug + '" style="color: #60a5fa; text-decoration: none; font-weight: 500;">' + escapeHtml(matched[i].title) + '</a></li>\n';
+        html += '            <li style="margin-bottom: 0.6rem;"><a href="/articles/' + matched[i].slug + '" style="color: #B4441F; text-decoration: none; font-weight: 500;">' + escapeHtml(matched[i].title) + '</a></li>\n';
       }
       html += '          </ul>\n';
       html += '        </div>\n\n';
@@ -5361,8 +5393,8 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
 
   // Navigation buttons
   html += '        <div style="margin-top: 2.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">\n';
-  html += '          <a href="https://dataengineerhub.blog/glossary" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">Browse All Terms</a>\n';
-  html += '          <a href="https://dataengineerhub.blog/articles" style="display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; border: 1px solid rgba(255,255,255,0.2);">Read Articles</a>\n';
+  html += '          <a href="https://dataengineerhub.blog/glossary" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #E2A487, #E2A487); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">Browse All Terms</a>\n';
+  html += '          <a href="https://dataengineerhub.blog/articles" style="display: inline-block; padding: 12px 24px; background: rgba(27, 26, 23,0.1); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; border: 1px solid rgba(27, 26, 23,0.2);">Read Articles</a>\n';
   html += '        </div>\n';
   html += '      </div>\n';
   html += getSiteFooterHTML() + '\n';
@@ -5501,10 +5533,10 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
       return nameA.localeCompare(nameB);
     });
 
-    categoryNavHTML += '<a href="#compare-' + catKey + '" style="display: inline-block; padding: 6px 14px; background: rgba(167,139,250,0.12); color: #c4b5fd; text-decoration: none; border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(167,139,250,0.25); margin: 4px;">' + catDisplayName + ' (' + catComps.length + ')</a>';
+    categoryNavHTML += '<a href="#compare-' + catKey + '" style="display: inline-block; padding: 6px 14px; background: rgba(180, 68, 31,0.12); color: #9C3A1A; text-decoration: none; border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(180, 68, 31,0.25); margin: 4px;">' + catDisplayName + ' (' + catComps.length + ')</a>';
 
     categorySectionsHTML += '<div id="compare-' + catKey + '" style="margin-top: 2.5rem;">';
-    categorySectionsHTML += '<h2 style="color: #c4b5fd; font-size: 1.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(196,181,253,0.2);">' + catDisplayName + '</h2>';
+    categorySectionsHTML += '<h2 style="color: #9C3A1A; font-size: 1.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(156, 58, 26,0.2);">' + catDisplayName + '</h2>';
     categorySectionsHTML += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">';
 
     for (var t = 0; t < catComps.length; t++) {
@@ -5516,14 +5548,14 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
 
       var winnerBadge = '';
       if (comparison.winner && comparison.winner !== 'It Depends') {
-        winnerBadge = '<span style="display: inline-block; padding: 2px 8px; background: rgba(74,222,128,0.15); color: #4ade80; border-radius: 4px; font-size: 0.8rem; margin-top: 0.5rem;">Winner: ' + comparison.winner + '</span>';
+        winnerBadge = '<span style="display: inline-block; padding: 2px 8px; background: rgba(22, 163, 74,0.15); color: #16a34a; border-radius: 4px; font-size: 0.8rem; margin-top: 0.5rem;">Winner: ' + comparison.winner + '</span>';
       } else {
-        winnerBadge = '<span style="display: inline-block; padding: 2px 8px; background: rgba(250,204,21,0.15); color: #facc15; border-radius: 4px; font-size: 0.8rem; margin-top: 0.5rem;">It Depends</span>';
+        winnerBadge = '<span style="display: inline-block; padding: 2px 8px; background: rgba(202, 138, 4,0.15); color: #ca8a04; border-radius: 4px; font-size: 0.8rem; margin-top: 0.5rem;">It Depends</span>';
       }
 
-      categorySectionsHTML += '<a href="https://dataengineerhub.blog/compare/' + comparison.slug + '" style="display: block; padding: 1.2rem; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); text-decoration: none; transition: border-color 0.2s;">';
-      categorySectionsHTML += '<h3 style="color: #f1f5f9; font-size: 1.1rem; margin-bottom: 0.4rem; font-weight: 600;">' + comparison.toolA + ' vs ' + comparison.toolB + '</h3>';
-      categorySectionsHTML += '<p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.5; margin: 0 0 0.3rem 0;">' + shortVerdict + '</p>';
+      categorySectionsHTML += '<a href="https://dataengineerhub.blog/compare/' + comparison.slug + '" style="display: block; padding: 1.2rem; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid rgba(27, 26, 23,0.08); text-decoration: none; transition: border-color 0.2s;">';
+      categorySectionsHTML += '<h3 style="color: #24221E; font-size: 1.1rem; margin-bottom: 0.4rem; font-weight: 600;">' + comparison.toolA + ' vs ' + comparison.toolB + '</h3>';
+      categorySectionsHTML += '<p style="color: #5E584F; font-size: 0.9rem; line-height: 1.5; margin: 0 0 0.3rem 0;">' + shortVerdict + '</p>';
       categorySectionsHTML += winnerBadge;
       categorySectionsHTML += '</a>';
     }
@@ -5565,7 +5597,7 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
-  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <meta name="theme-color" content="#EFEAE1">\n';
   html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   html += (productionCssFile ? '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n' : '');
   html += '\n';
@@ -5573,8 +5605,8 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '      * { margin: 0; padding: 0; box-sizing: border-box; }\n';
   html += '      body {\n';
   html += '        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n';
-  html += '        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);\n';
-  html += '        color: #f8fafc;\n';
+  html += '        background: linear-gradient(135deg, #F6F2EB 0%, #FCF4EF 50%, #FCF4EF 100%);\n';
+  html += '        color: #1B1A17;\n';
   html += '        line-height: 1.6;\n';
   html += '        min-height: 100vh;\n';
   html += '      }\n';
@@ -5582,7 +5614,7 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '        max-width: 1000px;\n';
   html += '        margin: 0 auto;\n';
   html += '        padding: 40px 20px;\n';
-  html += '        background: rgba(255, 255, 255, 0.05);\n';
+  html += '        background: rgba(27, 26, 23, 0.05);\n';
   html += '        backdrop-filter: blur(10px);\n';
   html += '        border-radius: 16px;\n';
   html += '        margin-top: 40px;\n';
@@ -5591,25 +5623,25 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '      .seo-content h1 {\n';
   html += '        font-size: 2.5rem;\n';
   html += '        margin-bottom: 1rem;\n';
-  html += '        background: linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #60a5fa 100%);\n';
+  html += '        background: linear-gradient(135deg, #B4441F 0%, #B4441F 50%, #B4441F 100%);\n';
   html += '        -webkit-background-clip: text;\n';
   html += '        -webkit-text-fill-color: transparent;\n';
   html += '        background-clip: text;\n';
   html += '        line-height: 1.2;\n';
   html += '      }\n';
-  html += '      .seo-content h2 { color: #c4b5fd; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
-  html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
-  html += '      .seo-content a { color: #a78bfa; text-decoration: none; }\n';
+  html += '      .seo-content h2 { color: #9C3A1A; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
+  html += '      .seo-content p { color: #2F2C27; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
+  html += '      .seo-content a { color: #B4441F; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
   html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 1000px; margin: 20px auto 0; padding: 0 20px; }\n';
-  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
+  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #5E584F; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
-  html += '      .breadcrumb-link { color: #a78bfa; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
-  html += '      .breadcrumb-link:hover { color: #c4b5fd; text-decoration: underline; }\n';
-  html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
-  html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
+  html += '      .breadcrumb-link { color: #B4441F; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
+  html += '      .breadcrumb-link:hover { color: #9C3A1A; text-decoration: underline; }\n';
+  html += '      .breadcrumb-separator { margin: 0 8px; color: #77705F; }\n';
+  html += '      .breadcrumb-current { color: #3F3B35; font-weight: 500; }\n';
   html += '      @media (max-width: 768px) {\n';
   html += '        .seo-content { padding: 20px 15px; margin-top: 20px; }\n';
   html += '        .seo-content h1 { font-size: 1.8rem; }\n';
@@ -5648,7 +5680,7 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '\n';
   html += categorySectionsHTML;
   html += '\n';
-  html += '        <div style="margin-top: 2.5rem; padding: 1.5rem; background: rgba(167,139,250,0.1); border-radius: 12px; border: 1px solid rgba(167,139,250,0.2);">\n';
+  html += '        <div style="margin-top: 2.5rem; padding: 1.5rem; background: rgba(180, 68, 31,0.1); border-radius: 12px; border: 1px solid rgba(180, 68, 31,0.2);">\n';
   html += '          <h2 style="font-size: 1.3rem; margin-top: 0;">Explore More</h2>\n';
   html += '          <p style="margin-bottom: 0.5rem;">\n';
   html += '            Need to understand a specific concept before comparing tools? Visit our <a href="https://dataengineerhub.blog/glossary">Data Engineering Glossary</a>\n';
@@ -5659,7 +5691,7 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '          </p>\n';
   html += '        </div>\n';
   html += '\n';
-  html += '        <a href="https://dataengineerhub.blog" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 Back to Home</a>\n';
+  html += '        <a href="https://dataengineerhub.blog" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #E2A487, #E2A487); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 Back to Home</a>\n';
   html += '      </div>\n';
   html += getSiteFooterHTML() + '\n';
   html += '    </div>\n';
@@ -5750,23 +5782,23 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   // Build feature comparison table
   var featureTableHTML = '';
   if (comparison.features && comparison.features.length > 0) {
-    featureTableHTML += '<h2 style="color: #93c5fd; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem;">Feature Comparison</h2>';
+    featureTableHTML += '<h2 style="color: #9C3A1A; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem;">Feature Comparison</h2>';
     featureTableHTML += '<div style="overflow-x: auto; margin: 1rem 0;">';
     featureTableHTML += '<table style="width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.2); border-radius: 8px; overflow: hidden;">';
     featureTableHTML += '<thead><tr>';
-    featureTableHTML += '<th style="padding: 12px 16px; border-bottom: 2px solid rgba(96,165,250,0.3); color: #93c5fd; text-align: left; font-weight: 600;">Feature</th>';
-    featureTableHTML += '<th style="padding: 12px 16px; border-bottom: 2px solid rgba(96,165,250,0.3); color: #93c5fd; text-align: left; font-weight: 600;">' + comparison.toolA + '</th>';
-    featureTableHTML += '<th style="padding: 12px 16px; border-bottom: 2px solid rgba(96,165,250,0.3); color: #93c5fd; text-align: left; font-weight: 600;">' + comparison.toolB + '</th>';
-    featureTableHTML += '<th style="padding: 12px 16px; border-bottom: 2px solid rgba(96,165,250,0.3); color: #93c5fd; text-align: center; font-weight: 600;">Winner</th>';
+    featureTableHTML += '<th style="padding: 12px 16px; border-bottom: 2px solid rgba(180, 68, 31,0.3); color: #9C3A1A; text-align: left; font-weight: 600;">Feature</th>';
+    featureTableHTML += '<th style="padding: 12px 16px; border-bottom: 2px solid rgba(180, 68, 31,0.3); color: #9C3A1A; text-align: left; font-weight: 600;">' + comparison.toolA + '</th>';
+    featureTableHTML += '<th style="padding: 12px 16px; border-bottom: 2px solid rgba(180, 68, 31,0.3); color: #9C3A1A; text-align: left; font-weight: 600;">' + comparison.toolB + '</th>';
+    featureTableHTML += '<th style="padding: 12px 16px; border-bottom: 2px solid rgba(180, 68, 31,0.3); color: #9C3A1A; text-align: center; font-weight: 600;">Winner</th>';
     featureTableHTML += '</tr></thead><tbody>';
     for (var fi = 0; fi < comparison.features.length; fi++) {
       var feat = comparison.features[fi];
-      var winnerColor = feat.winner === comparison.toolA ? '#34d399' : (feat.winner === comparison.toolB ? '#f472b6' : '#fbbf24');
+      var winnerColor = feat.winner === comparison.toolA ? '#059669' : (feat.winner === comparison.toolB ? '#B4441F' : '#d97706');
       featureTableHTML += '<tr>';
-      featureTableHTML += '<td style="padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); color: #f1f5f9; font-weight: 500;">' + feat.name + '</td>';
-      featureTableHTML += '<td style="padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); color: #e2e8f0;">' + feat.toolAValue + '</td>';
-      featureTableHTML += '<td style="padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); color: #e2e8f0;">' + feat.toolBValue + '</td>';
-      featureTableHTML += '<td style="padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); color: ' + winnerColor + '; text-align: center; font-weight: 500;">' + (feat.winner || 'Tie') + '</td>';
+      featureTableHTML += '<td style="padding: 10px 16px; border-bottom: 1px solid rgba(27, 26, 23,0.06); color: #24221E; font-weight: 500;">' + feat.name + '</td>';
+      featureTableHTML += '<td style="padding: 10px 16px; border-bottom: 1px solid rgba(27, 26, 23,0.06); color: #2F2C27;">' + feat.toolAValue + '</td>';
+      featureTableHTML += '<td style="padding: 10px 16px; border-bottom: 1px solid rgba(27, 26, 23,0.06); color: #2F2C27;">' + feat.toolBValue + '</td>';
+      featureTableHTML += '<td style="padding: 10px 16px; border-bottom: 1px solid rgba(27, 26, 23,0.06); color: ' + winnerColor + '; text-align: center; font-weight: 500;">' + (feat.winner || 'Tie') + '</td>';
       featureTableHTML += '</tr>';
     }
     featureTableHTML += '</tbody></table></div>';
@@ -5779,19 +5811,19 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
 
     // Tool A pros/cons
     prosConsHTML += '<div>';
-    prosConsHTML += '<h3 style="color: #34d399; font-size: 1.2rem; margin-bottom: 0.8rem;">' + comparison.toolA + ' Pros</h3>';
+    prosConsHTML += '<h3 style="color: #059669; font-size: 1.2rem; margin-bottom: 0.8rem;">' + comparison.toolA + ' Pros</h3>';
     if (comparison.pros.toolA && comparison.pros.toolA.length > 0) {
       prosConsHTML += '<ul style="list-style: none; padding: 0;">';
       for (var pa = 0; pa < comparison.pros.toolA.length; pa++) {
-        prosConsHTML += '<li style="margin-bottom: 0.5rem; color: #e2e8f0; padding-left: 1.2rem; position: relative;"><span style="position: absolute; left: 0; color: #34d399;">+</span> ' + comparison.pros.toolA[pa] + '</li>';
+        prosConsHTML += '<li style="margin-bottom: 0.5rem; color: #2F2C27; padding-left: 1.2rem; position: relative;"><span style="position: absolute; left: 0; color: #059669;">+</span> ' + comparison.pros.toolA[pa] + '</li>';
       }
       prosConsHTML += '</ul>';
     }
     if (comparison.cons && comparison.cons.toolA && comparison.cons.toolA.length > 0) {
-      prosConsHTML += '<h3 style="color: #f87171; font-size: 1.2rem; margin-top: 1.5rem; margin-bottom: 0.8rem;">' + comparison.toolA + ' Cons</h3>';
+      prosConsHTML += '<h3 style="color: #dc2626; font-size: 1.2rem; margin-top: 1.5rem; margin-bottom: 0.8rem;">' + comparison.toolA + ' Cons</h3>';
       prosConsHTML += '<ul style="list-style: none; padding: 0;">';
       for (var ca = 0; ca < comparison.cons.toolA.length; ca++) {
-        prosConsHTML += '<li style="margin-bottom: 0.5rem; color: #e2e8f0; padding-left: 1.2rem; position: relative;"><span style="position: absolute; left: 0; color: #f87171;">-</span> ' + comparison.cons.toolA[ca] + '</li>';
+        prosConsHTML += '<li style="margin-bottom: 0.5rem; color: #2F2C27; padding-left: 1.2rem; position: relative;"><span style="position: absolute; left: 0; color: #dc2626;">-</span> ' + comparison.cons.toolA[ca] + '</li>';
       }
       prosConsHTML += '</ul>';
     }
@@ -5799,19 +5831,19 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
 
     // Tool B pros/cons
     prosConsHTML += '<div>';
-    prosConsHTML += '<h3 style="color: #34d399; font-size: 1.2rem; margin-bottom: 0.8rem;">' + comparison.toolB + ' Pros</h3>';
+    prosConsHTML += '<h3 style="color: #059669; font-size: 1.2rem; margin-bottom: 0.8rem;">' + comparison.toolB + ' Pros</h3>';
     if (comparison.pros.toolB && comparison.pros.toolB.length > 0) {
       prosConsHTML += '<ul style="list-style: none; padding: 0;">';
       for (var pb = 0; pb < comparison.pros.toolB.length; pb++) {
-        prosConsHTML += '<li style="margin-bottom: 0.5rem; color: #e2e8f0; padding-left: 1.2rem; position: relative;"><span style="position: absolute; left: 0; color: #34d399;">+</span> ' + comparison.pros.toolB[pb] + '</li>';
+        prosConsHTML += '<li style="margin-bottom: 0.5rem; color: #2F2C27; padding-left: 1.2rem; position: relative;"><span style="position: absolute; left: 0; color: #059669;">+</span> ' + comparison.pros.toolB[pb] + '</li>';
       }
       prosConsHTML += '</ul>';
     }
     if (comparison.cons && comparison.cons.toolB && comparison.cons.toolB.length > 0) {
-      prosConsHTML += '<h3 style="color: #f87171; font-size: 1.2rem; margin-top: 1.5rem; margin-bottom: 0.8rem;">' + comparison.toolB + ' Cons</h3>';
+      prosConsHTML += '<h3 style="color: #dc2626; font-size: 1.2rem; margin-top: 1.5rem; margin-bottom: 0.8rem;">' + comparison.toolB + ' Cons</h3>';
       prosConsHTML += '<ul style="list-style: none; padding: 0;">';
       for (var cb = 0; cb < comparison.cons.toolB.length; cb++) {
-        prosConsHTML += '<li style="margin-bottom: 0.5rem; color: #e2e8f0; padding-left: 1.2rem; position: relative;"><span style="position: absolute; left: 0; color: #f87171;">-</span> ' + comparison.cons.toolB[cb] + '</li>';
+        prosConsHTML += '<li style="margin-bottom: 0.5rem; color: #2F2C27; padding-left: 1.2rem; position: relative;"><span style="position: absolute; left: 0; color: #dc2626;">-</span> ' + comparison.cons.toolB[cb] + '</li>';
       }
       prosConsHTML += '</ul>';
     }
@@ -5826,13 +5858,13 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   // FAQs (render existing faqs[] data + emit FAQPage JSON-LD below)
   var faqsHTML = '';
   if (comparison.faqs && comparison.faqs.length > 0) {
-    faqsHTML += '<h2 style="color: #93c5fd; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem;">Frequently Asked Questions</h2>';
+    faqsHTML += '<h2 style="color: #9C3A1A; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem;">Frequently Asked Questions</h2>';
     faqsHTML += '<div style="display: flex; flex-direction: column; gap: 0.75rem;">';
     for (var fq = 0; fq < comparison.faqs.length; fq++) {
       var faq = comparison.faqs[fq];
-      faqsHTML += '<details style="background: rgba(0,0,0,0.2); border: 1px solid rgba(96,165,250,0.2); border-radius: 8px; padding: 1rem 1.25rem;">';
-      faqsHTML += '<summary style="color: #f1f5f9; font-weight: 600; cursor: pointer; font-size: 1.05rem;">' + escapeHtml(faq.question) + '</summary>';
-      faqsHTML += '<p style="color: #cbd5e1; margin-top: 0.75rem; line-height: 1.75;">' + escapeHtml(faq.answer) + '</p>';
+      faqsHTML += '<details style="background: rgba(0,0,0,0.2); border: 1px solid rgba(180, 68, 31,0.2); border-radius: 8px; padding: 1rem 1.25rem;">';
+      faqsHTML += '<summary style="color: #24221E; font-weight: 600; cursor: pointer; font-size: 1.05rem;">' + escapeHtml(faq.question) + '</summary>';
+      faqsHTML += '<p style="color: #3F3B35; margin-top: 0.75rem; line-height: 1.75;">' + escapeHtml(faq.answer) + '</p>';
       faqsHTML += '</details>';
     }
     faqsHTML += '</div>';
@@ -5841,7 +5873,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   // Related comparisons
   var relatedCompHTML = '';
   if (comparison.relatedComparisons && comparison.relatedComparisons.length > 0) {
-    relatedCompHTML += '<h2 style="color: #93c5fd; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem;">Related Comparisons</h2>';
+    relatedCompHTML += '<h2 style="color: #9C3A1A; font-size: 1.6rem; margin-top: 2.5rem; margin-bottom: 1rem;">Related Comparisons</h2>';
     relatedCompHTML += '<div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">';
     for (var rc = 0; rc < comparison.relatedComparisons.length; rc++) {
       var relSlug = comparison.relatedComparisons[rc];
@@ -5850,7 +5882,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
         if (allComparisons[ac].slug === relSlug) { relComp = allComparisons[ac]; break; }
       }
       var relLabel = relComp ? (relComp.toolA + ' vs ' + relComp.toolB) : relSlug.replace(/-/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
-      relatedCompHTML += '<a href="https://dataengineerhub.blog/compare/' + relSlug + '" style="display: inline-block; padding: 8px 16px; background: rgba(96,165,250,0.15); color: #93c5fd; text-decoration: none; border-radius: 20px; font-size: 0.95rem; border: 1px solid rgba(96,165,250,0.3);">' + relLabel + '</a>';
+      relatedCompHTML += '<a href="https://dataengineerhub.blog/compare/' + relSlug + '" style="display: inline-block; padding: 8px 16px; background: rgba(180, 68, 31,0.15); color: #9C3A1A; text-decoration: none; border-radius: 20px; font-size: 0.95rem; border: 1px solid rgba(180, 68, 31,0.3);">' + relLabel + '</a>';
     }
     relatedCompHTML += '</div>';
   }
@@ -5858,9 +5890,9 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   // Winner badge
   var winnerBadge = '';
   if (comparison.winner) {
-    var badgeColor = comparison.winner === 'It Depends' ? 'rgba(251,191,36,0.15)' : 'rgba(52,211,153,0.15)';
-    var badgeTextColor = comparison.winner === 'It Depends' ? '#fbbf24' : '#34d399';
-    var badgeBorder = comparison.winner === 'It Depends' ? 'rgba(251,191,36,0.3)' : 'rgba(52,211,153,0.3)';
+    var badgeColor = comparison.winner === 'It Depends' ? 'rgba(217, 119, 6,0.15)' : 'rgba(5, 150, 105,0.15)';
+    var badgeTextColor = comparison.winner === 'It Depends' ? '#d97706' : '#059669';
+    var badgeBorder = comparison.winner === 'It Depends' ? 'rgba(217, 119, 6,0.3)' : 'rgba(5, 150, 105,0.3)';
     winnerBadge = '<span style="padding: 6px 14px; background: ' + badgeColor + '; color: ' + badgeTextColor + '; border-radius: 20px; font-size: 0.85rem; border: 1px solid ' + badgeBorder + '; font-weight: 600;">Winner: ' + comparison.winner + '</span>';
   }
 
@@ -5913,29 +5945,29 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
-  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <meta name="theme-color" content="#EFEAE1">\n';
   html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   if (productionCssFile) {
     html += '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n';
   }
   html += '\n    <style>\n';
   html += '      * { margin: 0; padding: 0; box-sizing: border-box; }\n';
-  html += '      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%); color: #f8fafc; line-height: 1.6; min-height: 100vh; }\n';
-  html += '      .seo-content { max-width: 900px; margin: 0 auto; padding: 40px 20px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 16px; margin-top: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }\n';
-  html += '      .seo-content h1 { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }\n';
-  html += '      .seo-content h2 { color: #93c5fd; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
-  html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
-  html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
+  html += '      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #F6F2EB 0%, #FCF4EF 50%, #FCF4EF 100%); color: #1B1A17; line-height: 1.6; min-height: 100vh; }\n';
+  html += '      .seo-content { max-width: 900px; margin: 0 auto; padding: 40px 20px; background: rgba(27, 26, 23,0.05); backdrop-filter: blur(10px); border-radius: 16px; margin-top: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }\n';
+  html += '      .seo-content h1 { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #B4441F 0%, #B4441F 50%, #B4441F 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }\n';
+  html += '      .seo-content h2 { color: #9C3A1A; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
+  html += '      .seo-content p { color: #2F2C27; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
+  html += '      .seo-content a { color: #B4441F; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
   html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 900px; margin: 20px auto 0; padding: 0 20px; }\n';
-  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
+  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #5E584F; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
-  html += '      .breadcrumb-link { color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
-  html += '      .breadcrumb-link:hover { color: #93c5fd; text-decoration: underline; }\n';
-  html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
-  html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
+  html += '      .breadcrumb-link { color: #B4441F; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
+  html += '      .breadcrumb-link:hover { color: #9C3A1A; text-decoration: underline; }\n';
+  html += '      .breadcrumb-separator { margin: 0 8px; color: #77705F; }\n';
+  html += '      .breadcrumb-current { color: #3F3B35; font-weight: 500; }\n';
   html += '      @media (max-width: 768px) { .seo-content { padding: 20px 15px; margin-top: 20px; } .seo-content h1 { font-size: 1.8rem; } .pros-cons-grid { grid-template-columns: 1fr !important; } }\n';
   html += getSiteNavCSS() + '\n';
   html += '    </style>\n';
@@ -5958,14 +5990,14 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   // Main content
   html += '      <div class="seo-content">\n';
   html += '        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">\n';
-  html += '          <span style="padding: 6px 14px; background: rgba(96,165,250,0.15); color: #93c5fd; border-radius: 20px; font-size: 0.85rem; border: 1px solid rgba(96,165,250,0.3);">' + (comparison.category || '') + '</span>\n';
+  html += '          <span style="padding: 6px 14px; background: rgba(180, 68, 31,0.15); color: #9C3A1A; border-radius: 20px; font-size: 0.85rem; border: 1px solid rgba(180, 68, 31,0.3);">' + (comparison.category || '') + '</span>\n';
   html += '          ' + winnerBadge + '\n';
   if (comparison.lastUpdated) {
-    html += '          <span style="color: #64748b; font-size: 0.85rem;">Updated: ' + comparison.lastUpdated + '</span>\n';
+    html += '          <span style="color: #77705F; font-size: 0.85rem;">Updated: ' + comparison.lastUpdated + '</span>\n';
   }
   html += '        </div>\n';
   html += '        <h1>' + comparison.toolA + ' vs ' + comparison.toolB + '</h1>\n';
-  html += '        <p style="font-size: 1.2rem; color: #cbd5e1; margin-bottom: 2rem; line-height: 1.8; border-left: 3px solid #60a5fa; padding-left: 1rem;">' + (comparison.shortVerdict || '') + '</p>\n\n';
+  html += '        <p style="font-size: 1.2rem; color: #3F3B35; margin-bottom: 2rem; line-height: 1.8; border-left: 3px solid #B4441F; padding-left: 1rem;">' + (comparison.shortVerdict || '') + '</p>\n\n';
 
   // Intro (markdown)
   if (introHTML) {
@@ -5982,7 +6014,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
 
   // Final verdict (markdown)
   if (verdictHTML) {
-    html += '        <div style="margin-top: 2.5rem; padding: 1.5rem; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(96,165,250,0.2);">\n';
+    html += '        <div style="margin-top: 2.5rem; padding: 1.5rem; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(180, 68, 31,0.2);">\n';
     html += '          ' + verdictHTML + '\n';
     html += '        </div>\n\n';
   }
@@ -5997,8 +6029,8 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
 
   // Navigation buttons
   html += '        <div style="margin-top: 2.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">\n';
-  html += '          <a href="https://dataengineerhub.blog/compare" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">Browse All Comparisons</a>\n';
-  html += '          <a href="https://dataengineerhub.blog/glossary" style="display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; border: 1px solid rgba(255,255,255,0.2);">Explore Glossary</a>\n';
+  html += '          <a href="https://dataengineerhub.blog/compare" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #E2A487, #E2A487); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">Browse All Comparisons</a>\n';
+  html += '          <a href="https://dataengineerhub.blog/glossary" style="display: inline-block; padding: 12px 24px; background: rgba(27, 26, 23,0.1); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; border: 1px solid rgba(27, 26, 23,0.2);">Explore Glossary</a>\n';
   html += '        </div>\n';
   html += '      </div>\n';
   html += getSiteFooterHTML() + '\n';
@@ -6110,10 +6142,10 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
     var catSheets = categoryMap[catKey];
     var catDisplayName = catNameLookup[catKey] || catKey.replace(/-/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
 
-    categoryNavHTML += '<a href="#cs-' + escapeHtml(catKey) + '" style="display: inline-block; padding: 6px 14px; background: rgba(96,165,250,0.12); color: #93c5fd; text-decoration: none; border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(96,165,250,0.25); margin: 4px;">' + escapeHtml(catDisplayName) + ' (' + catSheets.length + ')</a>';
+    categoryNavHTML += '<a href="#cs-' + escapeHtml(catKey) + '" style="display: inline-block; padding: 6px 14px; background: rgba(180, 68, 31,0.12); color: #9C3A1A; text-decoration: none; border-radius: 20px; font-size: 0.9rem; border: 1px solid rgba(180, 68, 31,0.25); margin: 4px;">' + escapeHtml(catDisplayName) + ' (' + catSheets.length + ')</a>';
 
     categorySectionsHTML += '<div id="cs-' + escapeHtml(catKey) + '" style="margin-top: 2.5rem;">';
-    categorySectionsHTML += '<h2 style="color: #93c5fd; font-size: 1.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(147,197,253,0.2);">' + escapeHtml(catDisplayName) + '</h2>';
+    categorySectionsHTML += '<h2 style="color: #9C3A1A; font-size: 1.5rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(156, 58, 26,0.2);">' + escapeHtml(catDisplayName) + '</h2>';
     categorySectionsHTML += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">';
 
     for (var s = 0; s < catSheets.length; s++) {
@@ -6121,10 +6153,10 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
       var shortDesc = sheet.shortDescription || '';
       if (shortDesc.length > 160) shortDesc = shortDesc.substring(0, 157) + '...';
 
-      categorySectionsHTML += '<a href="https://dataengineerhub.blog/cheatsheets/' + escapeHtml(sheet.slug) + '" style="display: block; padding: 1.2rem; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); text-decoration: none;">';
-      categorySectionsHTML += '<h3 style="color: #f1f5f9; font-size: 1.1rem; margin-bottom: 0.4rem; font-weight: 600;">' + escapeHtml(sheet.title) + '</h3>';
-      categorySectionsHTML += '<p style="color: #94a3b8; font-size: 0.85rem; line-height: 1.5; margin: 0 0 0.5rem 0;">' + escapeHtml(shortDesc) + '</p>';
-      categorySectionsHTML += '<span style="display: inline-block; padding: 2px 8px; background: rgba(96,165,250,0.15); color: #93c5fd; border-radius: 4px; font-size: 0.75rem;">' + escapeHtml(sheet.difficulty || 'Intermediate') + '</span>';
+      categorySectionsHTML += '<a href="https://dataengineerhub.blog/cheatsheets/' + escapeHtml(sheet.slug) + '" style="display: block; padding: 1.2rem; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid rgba(27, 26, 23,0.08); text-decoration: none;">';
+      categorySectionsHTML += '<h3 style="color: #24221E; font-size: 1.1rem; margin-bottom: 0.4rem; font-weight: 600;">' + escapeHtml(sheet.title) + '</h3>';
+      categorySectionsHTML += '<p style="color: #5E584F; font-size: 0.85rem; line-height: 1.5; margin: 0 0 0.5rem 0;">' + escapeHtml(shortDesc) + '</p>';
+      categorySectionsHTML += '<span style="display: inline-block; padding: 2px 8px; background: rgba(180, 68, 31,0.15); color: #9C3A1A; border-radius: 4px; font-size: 0.75rem;">' + escapeHtml(sheet.difficulty || 'Intermediate') + '</span>';
       categorySectionsHTML += '</a>';
     }
 
@@ -6159,28 +6191,28 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
-  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <meta name="theme-color" content="#EFEAE1">\n';
   html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   html += (productionCssFile ? '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n' : '');
   html += '\n';
   html += '    <style>\n';
   html += '      * { margin: 0; padding: 0; box-sizing: border-box; }\n';
-  html += '      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%); color: #f8fafc; line-height: 1.6; min-height: 100vh; }\n';
-  html += '      .seo-content { max-width: 1000px; margin: 40px auto 0; padding: 40px 20px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }\n';
-  html += '      .seo-content h1 { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }\n';
-  html += '      .seo-content h2 { color: #93c5fd; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
-  html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
-  html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
+  html += '      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #F6F2EB 0%, #FCF4EF 50%, #FCF4EF 100%); color: #1B1A17; line-height: 1.6; min-height: 100vh; }\n';
+  html += '      .seo-content { max-width: 1000px; margin: 40px auto 0; padding: 40px 20px; background: rgba(27, 26, 23,0.05); backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }\n';
+  html += '      .seo-content h1 { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #B4441F 0%, #B4441F 50%, #B4441F 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }\n';
+  html += '      .seo-content h2 { color: #9C3A1A; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
+  html += '      .seo-content p { color: #2F2C27; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
+  html += '      .seo-content a { color: #B4441F; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
   html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 1000px; margin: 20px auto 0; padding: 0 20px; }\n';
-  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
+  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #5E584F; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
-  html += '      .breadcrumb-link { color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
-  html += '      .breadcrumb-link:hover { color: #93c5fd; text-decoration: underline; }\n';
-  html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
-  html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
+  html += '      .breadcrumb-link { color: #B4441F; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
+  html += '      .breadcrumb-link:hover { color: #9C3A1A; text-decoration: underline; }\n';
+  html += '      .breadcrumb-separator { margin: 0 8px; color: #77705F; }\n';
+  html += '      .breadcrumb-current { color: #3F3B35; font-weight: 500; }\n';
   html += '      @media (max-width: 768px) { .seo-content { padding: 20px 15px; margin-top: 20px; } .seo-content h1 { font-size: 1.8rem; } }\n';
   html += getSiteNavCSS() + '\n';
   html += '    </style>\n';
@@ -6207,12 +6239,12 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '          ' + categoryNavHTML + '\n';
   html += '        </div>\n\n';
   html += categorySectionsHTML + '\n';
-  html += '        <div style="margin-top: 2.5rem; padding: 1.5rem; background: rgba(96,165,250,0.1); border-radius: 12px; border: 1px solid rgba(96,165,250,0.2);">\n';
+  html += '        <div style="margin-top: 2.5rem; padding: 1.5rem; background: rgba(180, 68, 31,0.1); border-radius: 12px; border: 1px solid rgba(180, 68, 31,0.2);">\n';
   html += '          <h2 style="font-size: 1.3rem; margin-top: 0;">Explore More</h2>\n';
   html += '          <p style="margin-bottom: 0.5rem;">Looking for in-depth explanations? Check our <a href="https://dataengineerhub.blog/glossary">Data Engineering Glossary</a> for ' + totalSheets + '+ key terms.</p>\n';
   html += '          <p style="margin-bottom: 0;">For hands-on tutorials and guides, browse the <a href="https://dataengineerhub.blog/articles">full article library</a>.</p>\n';
   html += '        </div>\n\n';
-  html += '        <a href="https://dataengineerhub.blog" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 Back to Home</a>\n';
+  html += '        <a href="https://dataengineerhub.blog" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #E2A487, #E2A487); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 Back to Home</a>\n';
   html += '      </div>\n';
   html += getSiteFooterHTML() + '\n';
   html += '    </div>\n\n';
@@ -6299,24 +6331,24 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   for (var sIdx = 0; sIdx < sections.length; sIdx++) {
     var section = sections[sIdx];
     sectionsHTML += '<div style="margin-top: 2rem;">';
-    sectionsHTML += '<h2 style="color: #93c5fd; font-size: 1.4rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(147,197,253,0.2);">' + escapeHtml(section.title) + '</h2>';
+    sectionsHTML += '<h2 style="color: #9C3A1A; font-size: 1.4rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(156, 58, 26,0.2);">' + escapeHtml(section.title) + '</h2>';
 
     if (section.type === 'table' && section.columns && section.items) {
       sectionsHTML += '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">';
       sectionsHTML += '<thead><tr>';
       for (var col = 0; col < section.columns.length; col++) {
-        sectionsHTML += '<th style="text-align: left; padding: 10px 12px; background: rgba(96,165,250,0.15); color: #93c5fd; border-bottom: 2px solid rgba(96,165,250,0.3); font-weight: 600;">' + escapeHtml(section.columns[col]) + '</th>';
+        sectionsHTML += '<th style="text-align: left; padding: 10px 12px; background: rgba(180, 68, 31,0.15); color: #9C3A1A; border-bottom: 2px solid rgba(180, 68, 31,0.3); font-weight: 600;">' + escapeHtml(section.columns[col]) + '</th>';
       }
       sectionsHTML += '</tr></thead><tbody>';
       for (var row = 0; row < section.items.length; row++) {
         var bgColor = row % 2 === 0 ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.05)';
         sectionsHTML += '<tr style="background: ' + bgColor + ';">';
         for (var cell = 0; cell < section.items[row].length; cell++) {
-          sectionsHTML += '<td style="padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); color: #e2e8f0;">';
+          sectionsHTML += '<td style="padding: 8px 12px; border-bottom: 1px solid rgba(27, 26, 23,0.06); color: #2F2C27;">';
           // Wrap code-like content in <code>
           var cellText = section.items[row][cell];
           if (cell > 0 && /[A-Z_]{2,}|SELECT|CREATE|INSERT|FROM|WHERE|ALTER|DROP|dbt |--/.test(cellText)) {
-            sectionsHTML += '<code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; color: #a5f3fc;">' + escapeHtml(cellText) + '</code>';
+            sectionsHTML += '<code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; color: #155e75;">' + escapeHtml(cellText) + '</code>';
           } else {
             sectionsHTML += escapeHtml(cellText);
           }
@@ -6327,21 +6359,21 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
       sectionsHTML += '</tbody></table></div>';
 
     } else if (section.type === 'code' && section.code) {
-      sectionsHTML += '<pre style="background: rgba(0,0,0,0.4); padding: 16px; border-radius: 8px; overflow-x: auto; border: 1px solid rgba(255,255,255,0.08);"><code style="color: #a5f3fc; font-size: 0.85rem; line-height: 1.6;">' + escapeHtml(section.code) + '</code></pre>';
+      sectionsHTML += '<pre style="background: rgba(0,0,0,0.4); padding: 16px; border-radius: 8px; overflow-x: auto; border: 1px solid rgba(27, 26, 23,0.08);"><code style="color: #155e75; font-size: 0.85rem; line-height: 1.6;">' + escapeHtml(section.code) + '</code></pre>';
 
     } else if (section.type === 'tips' && section.items) {
       sectionsHTML += '<ul style="list-style: none; padding: 0;">';
       for (var tip = 0; tip < section.items.length; tip++) {
-        sectionsHTML += '<li style="padding: 8px 0 8px 24px; position: relative; color: #e2e8f0; line-height: 1.6; border-bottom: 1px solid rgba(255,255,255,0.04);"><span style="position: absolute; left: 0; color: #34d399;">&#10003;</span>' + escapeHtml(section.items[tip]) + '</li>';
+        sectionsHTML += '<li style="padding: 8px 0 8px 24px; position: relative; color: #2F2C27; line-height: 1.6; border-bottom: 1px solid rgba(27, 26, 23,0.04);"><span style="position: absolute; left: 0; color: #059669;">&#10003;</span>' + escapeHtml(section.items[tip]) + '</li>';
       }
       sectionsHTML += '</ul>';
 
     } else if (section.type === 'qna' && section.items) {
       for (var qn = 0; qn < section.items.length; qn++) {
         var item = section.items[qn];
-        sectionsHTML += '<div style="margin-bottom: 1.2rem; padding: 1rem; background: rgba(0,0,0,0.15); border-radius: 8px; border-left: 3px solid #60a5fa;">';
-        sectionsHTML += '<p style="color: #93c5fd; font-weight: 600; margin-bottom: 0.5rem;">Q: ' + escapeHtml(item.question) + '</p>';
-        sectionsHTML += '<p style="color: #e2e8f0; margin: 0; line-height: 1.7;">' + escapeHtml(item.answer) + '</p>';
+        sectionsHTML += '<div style="margin-bottom: 1.2rem; padding: 1rem; background: rgba(0,0,0,0.15); border-radius: 8px; border-left: 3px solid #B4441F;">';
+        sectionsHTML += '<p style="color: #9C3A1A; font-weight: 600; margin-bottom: 0.5rem;">Q: ' + escapeHtml(item.question) + '</p>';
+        sectionsHTML += '<p style="color: #2F2C27; margin: 0; line-height: 1.7;">' + escapeHtml(item.answer) + '</p>';
         sectionsHTML += '</div>';
       }
     }
@@ -6353,11 +6385,11 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   var faqHTML = '';
   if (sheet.faqs && sheet.faqs.length > 0) {
     faqHTML += '<div style="margin-top: 2.5rem;">';
-    faqHTML += '<h2 style="color: #93c5fd; font-size: 1.4rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(147,197,253,0.2);">Frequently Asked Questions</h2>';
+    faqHTML += '<h2 style="color: #9C3A1A; font-size: 1.4rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(156, 58, 26,0.2);">Frequently Asked Questions</h2>';
     for (var fq = 0; fq < sheet.faqs.length; fq++) {
       faqHTML += '<div style="margin-bottom: 1.2rem; padding: 1rem; background: rgba(0,0,0,0.15); border-radius: 8px;">';
-      faqHTML += '<h3 style="color: #f1f5f9; font-size: 1.05rem; margin-bottom: 0.5rem;">' + escapeHtml(sheet.faqs[fq].question) + '</h3>';
-      faqHTML += '<p style="color: #cbd5e1; margin: 0; line-height: 1.7;">' + escapeHtml(sheet.faqs[fq].answer) + '</p>';
+      faqHTML += '<h3 style="color: #24221E; font-size: 1.05rem; margin-bottom: 0.5rem;">' + escapeHtml(sheet.faqs[fq].question) + '</h3>';
+      faqHTML += '<p style="color: #3F3B35; margin: 0; line-height: 1.7;">' + escapeHtml(sheet.faqs[fq].answer) + '</p>';
       faqHTML += '</div>';
     }
     faqHTML += '</div>';
@@ -6367,7 +6399,7 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   var relatedHTML = '';
   if (sheet.relatedSlugs && sheet.relatedSlugs.length > 0) {
     relatedHTML += '<div style="margin-top: 2rem;">';
-    relatedHTML += '<h2 style="color: #93c5fd; font-size: 1.3rem; margin-bottom: 1rem;">Related Cheat Sheets</h2>';
+    relatedHTML += '<h2 style="color: #9C3A1A; font-size: 1.3rem; margin-bottom: 1rem;">Related Cheat Sheets</h2>';
     relatedHTML += '<div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">';
     for (var rs = 0; rs < sheet.relatedSlugs.length; rs++) {
       var relSlug = sheet.relatedSlugs[rs];
@@ -6376,7 +6408,7 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
       for (var rl = 0; rl < allCheatsheets.length; rl++) {
         if (allCheatsheets[rl].slug === relSlug) { relTitle = allCheatsheets[rl].title; break; }
       }
-      relatedHTML += '<a href="https://dataengineerhub.blog/cheatsheets/' + escapeHtml(relSlug) + '" style="display: inline-block; padding: 6px 14px; background: rgba(96,165,250,0.12); color: #93c5fd; text-decoration: none; border-radius: 20px; font-size: 0.85rem; border: 1px solid rgba(96,165,250,0.25);">' + escapeHtml(relTitle) + '</a>';
+      relatedHTML += '<a href="https://dataengineerhub.blog/cheatsheets/' + escapeHtml(relSlug) + '" style="display: inline-block; padding: 6px 14px; background: rgba(180, 68, 31,0.12); color: #9C3A1A; text-decoration: none; border-radius: 20px; font-size: 0.85rem; border: 1px solid rgba(180, 68, 31,0.25);">' + escapeHtml(relTitle) + '</a>';
     }
     relatedHTML += '</div></div>';
   }
@@ -6410,28 +6442,28 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
-  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <meta name="theme-color" content="#EFEAE1">\n';
   html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   html += (productionCssFile ? '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n' : '');
   html += '\n';
   html += '    <style>\n';
   html += '      * { margin: 0; padding: 0; box-sizing: border-box; }\n';
-  html += '      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%); color: #f8fafc; line-height: 1.6; min-height: 100vh; }\n';
-  html += '      .seo-content { max-width: 900px; margin: 40px auto 0; padding: 40px 20px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }\n';
-  html += '      .seo-content h1 { font-size: 2.2rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }\n';
-  html += '      .seo-content h2 { color: #93c5fd; font-size: 1.4rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
-  html += '      .seo-content p { color: #e2e8f0; font-size: 1.05rem; margin-bottom: 1rem; line-height: 1.8; }\n';
-  html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
+  html += '      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #F6F2EB 0%, #FCF4EF 50%, #FCF4EF 100%); color: #1B1A17; line-height: 1.6; min-height: 100vh; }\n';
+  html += '      .seo-content { max-width: 900px; margin: 40px auto 0; padding: 40px 20px; background: rgba(27, 26, 23,0.05); backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }\n';
+  html += '      .seo-content h1 { font-size: 2.2rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, #B4441F 0%, #B4441F 50%, #B4441F 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }\n';
+  html += '      .seo-content h2 { color: #9C3A1A; font-size: 1.4rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
+  html += '      .seo-content p { color: #2F2C27; font-size: 1.05rem; margin-bottom: 1rem; line-height: 1.8; }\n';
+  html += '      .seo-content a { color: #B4441F; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
   html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 900px; margin: 20px auto 0; padding: 0 20px; }\n';
-  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
+  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #5E584F; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
-  html += '      .breadcrumb-link { color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
-  html += '      .breadcrumb-link:hover { color: #93c5fd; text-decoration: underline; }\n';
-  html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
-  html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
+  html += '      .breadcrumb-link { color: #B4441F; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
+  html += '      .breadcrumb-link:hover { color: #9C3A1A; text-decoration: underline; }\n';
+  html += '      .breadcrumb-separator { margin: 0 8px; color: #77705F; }\n';
+  html += '      .breadcrumb-current { color: #3F3B35; font-weight: 500; }\n';
   html += '      @media (max-width: 768px) { .seo-content { padding: 20px 15px; margin-top: 20px; } .seo-content h1 { font-size: 1.6rem; } table { font-size: 0.8rem; } }\n';
   html += getSiteNavCSS() + '\n';
   html += '    </style>\n';
@@ -6450,15 +6482,15 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '      </nav>\n\n';
   html += '      <div class="seo-content">\n';
   html += '        <h1>' + escapeHtml(sheet.title) + '</h1>\n';
-  html += '        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem;">';
-  html += '<span style="background: rgba(96,165,250,0.15); color: #93c5fd; padding: 2px 8px; border-radius: 4px; margin-right: 8px;">' + escapeHtml(sheet.difficulty || 'Intermediate') + '</span>';
+  html += '        <p style="color: #5E584F; font-size: 0.9rem; margin-bottom: 1.5rem;">';
+  html += '<span style="background: rgba(180, 68, 31,0.15); color: #9C3A1A; padding: 2px 8px; border-radius: 4px; margin-right: 8px;">' + escapeHtml(sheet.difficulty || 'Intermediate') + '</span>';
   html += 'Last updated: ' + escapeHtml(sheet.lastUpdated || '') + ' &bull; ' + sections.length + ' sections';
   html += '</p>\n';
   html += '        <p>' + escapeHtml(sheet.shortDescription || '') + '</p>\n\n';
   html += sectionsHTML + '\n';
   html += faqHTML + '\n';
   html += relatedHTML + '\n';
-  html += '        <a href="https://dataengineerhub.blog/cheatsheets" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 All Cheat Sheets</a>\n';
+  html += '        <a href="https://dataengineerhub.blog/cheatsheets" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #E2A487, #E2A487); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 All Cheat Sheets</a>\n';
   html += '      </div>\n';
   html += getSiteFooterHTML() + '\n';
   html += '    </div>\n\n';
@@ -6547,10 +6579,10 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   var articleListHTML = '';
   for (var i = 0; i < tagArticles.length; i++) {
     var article = tagArticles[i];
-    articleListHTML += '\n              <li style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08);">';
-    articleListHTML += '\n                <a href="https://dataengineerhub.blog/articles/' + article.slug + '" style="color: #f1f5f9; text-decoration: none; font-size: 1.15rem; font-weight: 600; line-height: 1.4;">' + escapeHtml(article.title) + '</a>';
+    articleListHTML += '\n              <li style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(27, 26, 23,0.08);">';
+    articleListHTML += '\n                <a href="https://dataengineerhub.blog/articles/' + article.slug + '" style="color: #24221E; text-decoration: none; font-size: 1.15rem; font-weight: 600; line-height: 1.4;">' + escapeHtml(article.title) + '</a>';
     if (article.excerpt) {
-      articleListHTML += '\n                <p style="color: #94a3b8; font-size: 0.95rem; margin-top: 0.5rem; line-height: 1.6;">' + escapeHtml(article.excerpt) + '</p>';
+      articleListHTML += '\n                <p style="color: #5E584F; font-size: 0.95rem; margin-top: 0.5rem; line-height: 1.6;">' + escapeHtml(article.excerpt) + '</p>';
     }
     articleListHTML += '\n              </li>';
   }
@@ -6586,29 +6618,29 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '    <link rel="icon" type="image/png" href="/logo.png" />\n';
   html += '    <link rel="apple-touch-icon" href="/logo.png">\n';
   html += '    <link rel="manifest" href="/manifest.json">\n';
-  html += '    <meta name="theme-color" content="#1e293b">\n';
+  html += '    <meta name="theme-color" content="#EFEAE1">\n';
   html += '    <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />\n';
   if (productionCssFile) {
     html += '    <link rel="stylesheet" crossorigin href="' + productionCssFile + '">\n';
   }
   html += '\n    <style>\n';
   html += '      * { margin: 0; padding: 0; box-sizing: border-box; }\n';
-  html += '      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%); color: #f8fafc; line-height: 1.6; min-height: 100vh; }\n';
-  html += '      .seo-content { max-width: 900px; margin: 0 auto; padding: 40px 20px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 16px; margin-top: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }\n';
-  html += '      .seo-content h1 { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }\n';
-  html += '      .seo-content h2 { color: #93c5fd; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
-  html += '      .seo-content p { color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
-  html += '      .seo-content a { color: #60a5fa; text-decoration: none; }\n';
+  html += '      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #F6F2EB 0%, #FCF4EF 50%, #FCF4EF 100%); color: #1B1A17; line-height: 1.6; min-height: 100vh; }\n';
+  html += '      .seo-content { max-width: 900px; margin: 0 auto; padding: 40px 20px; background: rgba(27, 26, 23,0.05); backdrop-filter: blur(10px); border-radius: 16px; margin-top: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }\n';
+  html += '      .seo-content h1 { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #B4441F 0%, #B4441F 50%, #B4441F 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; }\n';
+  html += '      .seo-content h2 { color: #9C3A1A; font-size: 1.6rem; margin-top: 2rem; margin-bottom: 0.8rem; }\n';
+  html += '      .seo-content p { color: #2F2C27; font-size: 1.1rem; margin-bottom: 1.2rem; line-height: 1.8; }\n';
+  html += '      .seo-content a { color: #B4441F; text-decoration: none; }\n';
   html += '      .seo-content a:hover { text-decoration: underline; }\n';
   html += '      /* SEO content stays visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      /* Breadcrumbs stay visible for crawlers/AdSense. DO NOT hide. */\n';
   html += '      .breadcrumb-nav { max-width: 900px; margin: 20px auto 0; padding: 0 20px; }\n';
-  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #94a3b8; }\n';
+  html += '      .breadcrumb-list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #5E584F; }\n';
   html += '      .breadcrumb-item { display: flex; align-items: center; }\n';
-  html += '      .breadcrumb-link { color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
-  html += '      .breadcrumb-link:hover { color: #93c5fd; text-decoration: underline; }\n';
-  html += '      .breadcrumb-separator { margin: 0 8px; color: #64748b; }\n';
-  html += '      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }\n';
+  html += '      .breadcrumb-link { color: #B4441F; text-decoration: none; display: flex; align-items: center; gap: 4px; }\n';
+  html += '      .breadcrumb-link:hover { color: #9C3A1A; text-decoration: underline; }\n';
+  html += '      .breadcrumb-separator { margin: 0 8px; color: #77705F; }\n';
+  html += '      .breadcrumb-current { color: #3F3B35; font-weight: 500; }\n';
   html += '      @media (max-width: 768px) { .seo-content { padding: 20px 15px; margin-top: 20px; } .seo-content h1 { font-size: 1.8rem; } }\n';
   html += getSiteNavCSS() + '\n';
   html += '    </style>\n';
@@ -6641,8 +6673,8 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
     html += '        <p>This tag does not currently have enough published tutorials to justify a standalone archive. Browse the <a href="https://dataengineerhub.blog/articles">article library</a> instead.</p>\n\n';
   }
   html += '        <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">\n';
-  html += '          <a href="https://dataengineerhub.blog/articles" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">Browse All Articles</a>\n';
-  html += '          <a href="https://dataengineerhub.blog" style="display: inline-block; padding: 12px 24px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; border: 1px solid rgba(255,255,255,0.2);">&#8592; Back to Home</a>\n';
+  html += '          <a href="https://dataengineerhub.blog/articles" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #E2A487, #E2A487); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">Browse All Articles</a>\n';
+  html += '          <a href="https://dataengineerhub.blog" style="display: inline-block; padding: 12px 24px; background: rgba(27, 26, 23,0.1); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; border: 1px solid rgba(27, 26, 23,0.2);">&#8592; Back to Home</a>\n';
   html += '        </div>\n';
   html += '      </div>\n';
   html += getSiteFooterHTML() + '\n';
@@ -6735,7 +6767,7 @@ ${CONSENT_MODE_V2_HTML}
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#1e293b">
+    <meta name="theme-color" content="#EFEAE1">
     <link rel="alternate" type="application/rss+xml" title="DataEngineer Hub RSS Feed" href="https://dataengineerhub.blog/rss.xml" />
     ${productionCssFile ? `<link rel="stylesheet" crossorigin href="${productionCssFile}">` : ''}
 
@@ -6743,8 +6775,8 @@ ${CONSENT_MODE_V2_HTML}
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
-        color: #f8fafc;
+        background: linear-gradient(135deg, #F6F2EB 0%, #FCF4EF 50%, #FCF4EF 100%);
+        color: #1B1A17;
         line-height: 1.6;
         min-height: 100vh;
       }
@@ -6753,7 +6785,7 @@ ${CONSENT_MODE_V2_HTML}
         max-width: 900px;
         margin: 0 auto;
         padding: 40px 20px;
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(27, 26, 23, 0.05);
         backdrop-filter: blur(10px);
         border-radius: 16px;
         margin-top: 40px;
@@ -6763,7 +6795,7 @@ ${CONSENT_MODE_V2_HTML}
       .seo-content h1 {
         font-size: 2.5rem;
         margin-bottom: 1.5rem;
-        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
+        background: linear-gradient(135deg, #B4441F 0%, #B4441F 50%, #B4441F 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -6771,14 +6803,14 @@ ${CONSENT_MODE_V2_HTML}
       }
 
       .seo-content h2 {
-        color: #93c5fd;
+        color: #9C3A1A;
         font-size: 1.6rem;
         margin-top: 2rem;
         margin-bottom: 0.8rem;
       }
 
       .seo-content p {
-        color: #e2e8f0;
+        color: #2F2C27;
         font-size: 1.1rem;
         margin-bottom: 1.2rem;
         line-height: 1.8;
@@ -6787,7 +6819,7 @@ ${CONSENT_MODE_V2_HTML}
       .seo-content ul, .seo-content ol {
         margin-left: 2rem;
         margin-bottom: 1.2rem;
-        color: #e2e8f0;
+        color: #2F2C27;
       }
 
       .seo-content li {
@@ -6796,7 +6828,7 @@ ${CONSENT_MODE_V2_HTML}
       }
 
       .seo-content a {
-        color: #60a5fa;
+        color: #B4441F;
         text-decoration: none;
       }
 
@@ -6808,7 +6840,7 @@ ${CONSENT_MODE_V2_HTML}
         display: inline-block;
         margin-top: 2rem;
         padding: 12px 24px;
-        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        background: linear-gradient(135deg, #E2A487, #E2A487);
         color: white;
         text-decoration: none;
         border-radius: 8px;
@@ -6836,15 +6868,15 @@ ${CONSENT_MODE_V2_HTML}
         padding: 0;
         margin: 0;
         font-size: 0.875rem;
-        color: #94a3b8;
+        color: #5E584F;
       }
 
       .breadcrumb-item { display: flex; align-items: center; }
-      .breadcrumb-link { color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 4px; }
-      .breadcrumb-link:hover { color: #93c5fd; text-decoration: underline; }
+      .breadcrumb-link { color: #B4441F; text-decoration: none; display: flex; align-items: center; gap: 4px; }
+      .breadcrumb-link:hover { color: #9C3A1A; text-decoration: underline; }
       .breadcrumb-icon { width: 16px; height: 16px; }
-      .breadcrumb-separator { margin: 0 8px; color: #64748b; }
-      .breadcrumb-current { color: #cbd5e1; font-weight: 500; }
+      .breadcrumb-separator { margin: 0 8px; color: #77705F; }
+      .breadcrumb-current { color: #3F3B35; font-weight: 500; }
 
       @media (max-width: 768px) {
         .seo-content { padding: 20px 15px; margin-top: 20px; }
@@ -6853,8 +6885,8 @@ ${CONSENT_MODE_V2_HTML}
 
       /* Site Nav */
       .site-nav {
-        background: rgba(2, 6, 23, 0.8);
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+        background: rgba(250, 248, 244, 0.8);
+        border-bottom: 1px solid rgba(27, 26, 23,0.1);
         min-height: 64px;
         padding: 0 24px;
         position: sticky;
@@ -6875,9 +6907,10 @@ ${CONSENT_MODE_V2_HTML}
         gap: 8px;
       }
       .site-nav-brand {
-        color: #60a5fa;
-        font-weight: 700;
-        font-size: 1.1rem;
+        color: #1B1A17;
+        font-family: 'Source Serif 4', Georgia, serif;
+        font-weight: 600;
+        font-size: 1.35rem;
         text-decoration: none;
       }
       .site-nav-links {
@@ -6889,22 +6922,22 @@ ${CONSENT_MODE_V2_HTML}
         margin: 0;
       }
       .site-nav-links a {
-        color: #cbd5e1;
+        color: #3F3B35;
         text-decoration: none;
         font-size: 0.875rem;
         transition: color 0.2s;
       }
-      .site-nav-links a:hover { color: #60a5fa; }
+      .site-nav-links a:hover { color: #B4441F; }
 
       /* Site Footer */
       .site-footer {
         max-width: 900px;
         margin: 3rem auto 0;
         padding: 2rem 20px;
-        border-top: 1px solid rgba(255,255,255,0.1);
+        border-top: 1px solid rgba(27, 26, 23,0.1);
         text-align: center;
         font-size: 0.85rem;
-        color: #94a3b8;
+        color: #5E584F;
       }
       .site-footer-links {
         display: flex;
@@ -6916,7 +6949,7 @@ ${CONSENT_MODE_V2_HTML}
         margin: 0 0 0.75rem;
       }
       .site-footer-links a {
-        color: #60a5fa;
+        color: #B4441F;
         text-decoration: none;
       }
       .site-footer-links a:hover { text-decoration: underline; }
@@ -6965,7 +6998,7 @@ ${CONSENT_MODE_V2_HTML}
         <a href="https://dataengineerhub.blog" class="back-link">â† Back to Home</a>
 
         <noscript>
-          <p style="margin-top: 2rem; padding: 1rem; background: rgba(251, 191, 36, 0.2); border-radius: 8px; color: #fbbf24;">
+          <p style="margin-top: 2rem; padding: 1rem; background: rgba(217, 119, 6, 0.2); border-radius: 8px; color: #d97706;">
             This page is fully accessible without JavaScript.
           </p>
         </noscript>
@@ -7326,6 +7359,7 @@ async function buildIncremental(options = {}) {
       const pageData = {
         id: post.id,
         title: seoOverride?.title || rawTitle,
+        headline: rawTitle,
         description: seoOverride?.description || optimizedDescription,
         path: pagePath,
         fullContent: fullContent, // 🔥 FULL content for crawlers

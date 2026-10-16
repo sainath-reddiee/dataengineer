@@ -1,3 +1,4 @@
+// Guardrail for the editorial site chrome: header, masthead, homepage.
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,79 +16,56 @@ const header = readFileSync(join(root, 'src/components/Header.jsx'), 'utf8');
 const hero = readFileSync(join(root, 'src/components/Hero.jsx'), 'utf8');
 const home = readFileSync(join(root, 'src/pages/HomePage.jsx'), 'utf8');
 const css = readFileSync(join(root, 'src/index.css'), 'utf8');
+const tailwind = readFileSync(join(root, 'tailwind.config.js'), 'utf8');
 
-const forbidden = [
-  ['Spark', 'mega-menu spark particles'],
-  ['w-[640px]', '640px articles mega-menu'],
-  ['controlHeader', 'hide-on-scroll header'],
-  ['setIsVisible', 'hide-on-scroll header state'],
-  ['textShadow', 'glowing nav text'],
-  ['text-xs 2xl:text-base', 'squeezed desktop nav type'],
-];
-
-for (const [token, label] of forbidden) {
-  assert(!header.includes(token), `Header should not keep ${label} (${token})`);
-}
-
+// Every route stays reachable from the header.
 const requiredRoutes = [
-  '/',
-  '/articles',
-  '/tools',
-  '/advertise',
-  '/about',
-  '/interview-prep',
-  '/practice',
-  '/cheatsheets',
-  '/glossary',
-  '/compare',
-  '/contribute',
-  '/reading-list',
+  '/', '/articles', '/tools', '/advertise', '/about', '/interview-prep', '/practice',
+  '/cheatsheets', '/glossary', '/compare', '/contribute', '/reading-list',
 ];
-
 for (const route of requiredRoutes) {
   assert(header.includes(`'${route}'`) || header.includes(`"${route}"`), `Header must still reach ${route}`);
 }
-
 assert(header.includes('Learn'), 'Header should collapse study links into a Learn menu');
-assert(header.includes('title="Main"') || header.includes('>Main<') || header.includes('"Main"'), 'Mobile nav should group Main links');
-assert(header.includes('Learn'), 'Mobile nav should keep a Learn group');
+assert(header.includes('title="Main"') || header.includes('"Main"'), 'Mobile nav should group Main links');
 assert(header.includes('Site'), 'Mobile nav should keep a Site group');
-assert(
-  header.includes('bg-blue-500/20 text-blue-200') || header.includes('bg-blue-500/10 text-blue-300'),
-  'Active links should use a pill, not squeezed text'
-);
-assert(header.includes('backdrop-blur-xl'), 'Header should stay frosted and sticky');
 assert(header.includes('h-16'), 'Header should stay 64px to match Layout padding');
 assert(header.includes('SearchModal'), 'Search modal must remain wired');
 assert(header.includes('aria-label="Search articles"'), 'Mobile header should keep search outside the hamburger');
-assert(header.includes('Search articles…'), 'Mobile header should show a search bar like DataLane chrome');
 assert(header.includes('SupportModal'), 'Coffee / support modal must remain wired');
-assert(!header.includes("animate={{ y: isVisible"), 'Header must stay visible while scrolling');
+assert(!header.includes('controlHeader') && !header.includes('setIsVisible'), 'Header must stay visible while scrolling');
 
-assert(hero.includes('DataEngineer Hub · production tutorials'), 'Hero should use a SaaS-style eyebrow');
-assert(!hero.includes('card-3d'), 'Hero stats must stay inline, not boxed cards');
-assert(hero.includes('md:justify-start'), 'Hero stats should sit with the copy, not in a centered card grid');
-assert(hero.includes('/tools/sql-playground'), 'Hero should keep a playground CTA');
-assert(hero.includes('rounded-lg'), 'Hero CTAs should use SaaS rounded-lg buttons');
-assert(hero.includes('HubMotion'), 'Hero should show the motion map that explains the hub');
+// Editorial look: serif wordmark, no gradients, glass or glow in the chrome.
+assert(header.includes('font-serif'), 'Header wordmark should be set in the serif');
+for (const [token, label] of [
+  ['bg-gradient', 'gradient fills'],
+  ['bg-clip-text', 'gradient text'],
+  ['backdrop-blur', 'frosted glass'],
+  ['textShadow', 'glowing text'],
+]) {
+  assert(!header.includes(token), `Header should not use ${label} (${token})`);
+  assert(!hero.includes(token), `Masthead should not use ${label} (${token})`);
+}
 
-const hub = readFileSync(join(root, 'src/components/HubMotion.jsx'), 'utf8');
-assert(hub.includes('What you can do here'), 'Hub motion should explain the site at a glance');
-assert(hub.includes('TOOL_STAGES'), 'Hub motion should show the data-stack stages');
-assert(readFileSync(join(root, 'src/data/toolsCatalog.js'), 'utf8').includes("id: 'ingest'"), 'Pipeline stages must stay in the tools catalog');
-assert(hub.includes('/interview-prep'), 'Hub motion should still reach interview prep');
-assert(hub.includes('hub-3d-scene'), 'Homepage explainer should use a 3D scene');
-assert(hub.includes('TiltCard'), 'Homepage explainer should tilt on pointer move');
-assert(css.includes('.hub-3d-scene'), '3D scene CSS must exist');
+// Masthead: states what the site covers and who writes it.
+assert(hero.includes('<h1'), 'Homepage masthead must keep the page h1');
+assert(hero.includes('/about') && hero.includes('/editorial-standards'), 'Masthead should credit the author and link editorial standards');
+assert(hero.includes('/tools/sql-playground'), 'Masthead should keep a playground link');
 
-assert(home.includes('max-w-6xl'), 'Homepage should tighten to a SaaS content width');
-assert(home.includes('<FeaturedPosts compact'), 'Homepage featured section should drop the extra marketing header');
-assert(home.includes('FeaturedToolsRail'), 'Homepage should surface tools before the article feed on mobile');
-assert(home.includes('<TrendingPosts compact'), 'Homepage trending section should drop the extra marketing header');
-assert(home.includes('<TechCategories compact'), 'Homepage tech grid should drop the extra marketing header');
-assert(home.includes('card-3d'), 'Homepage cards should use the lift hover');
-assert(css.includes('.card-3d'), 'Global card-3d hover must exist');
-assert(css.includes('prefers-reduced-motion'), 'card-3d must respect reduced motion');
+// Homepage reads like a publication: lead story first, then the ledger.
+assert(home.includes('<LeadStories'), 'Homepage should open with the lead story');
+assert(home.includes('<ArticleLedger'), 'Homepage should list more articles as a ledger');
+assert(home.indexOf('<LeadStories') < home.indexOf('<FeaturedToolsRail'), 'Articles must come before tools on the homepage');
+assert(home.includes('<FeaturedPosts compact') && home.includes('<TrendingPosts compact'), 'Homepage keeps editor picks and trending');
 
-console.log('✅ SaaS header keeps every route without the old mega-menu');
-console.log('✅ Hero and homepage use quieter SaaS chrome');
+// Design tokens exist and fonts are self-hosted.
+for (const token of ['paper', 'ink', 'rust']) {
+  assert(tailwind.includes(`const ${token} =`), `Tailwind theme must define the ${token} palette`);
+}
+for (const font of ['source-serif-4-400.woff2', 'plex-sans-400.woff2', 'plex-mono-400.woff2']) {
+  assert(css.includes(font), `index.css must self-host ${font}`);
+}
+assert(css.includes('prefers-reduced-motion'), 'Motion must respect reduced-motion preferences');
+
+console.log('✅ Header keeps every route in the editorial chrome');
+console.log('✅ Masthead and homepage lead with the writing, not the tools');

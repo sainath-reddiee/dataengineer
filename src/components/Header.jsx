@@ -65,11 +65,12 @@ const LEARN_PATHS = [
   '/reading-list',
 ];
 
+// Editorial nav: plain text links; the current page gets a rust underline.
 const pillClass = (active) =>
-  `inline-flex items-center gap-1.5 min-h-10 px-3 rounded-lg text-sm font-medium transition-colors ${
+  `relative inline-flex items-center gap-1 min-h-10 px-2.5 text-[15px] transition-colors ${
     active
-      ? 'bg-blue-500/20 text-blue-200 ring-1 ring-blue-400/25'
-      : 'text-slate-300 hover:bg-white/5 hover:text-white'
+      ? 'text-ink after:absolute after:inset-x-2.5 after:bottom-1.5 after:h-0.5 after:bg-rust-500'
+      : 'text-ink-muted hover:text-ink'
   }`;
 
 const isPathActive = (pathname, path) => {
@@ -174,16 +175,12 @@ const Header = ({ topOffset = 0 }) => {
 
   return (
     <header
-      className="fixed left-0 right-0 z-[9999] border-b border-white/10 bg-slate-950/80 backdrop-blur-xl"
+      className="fixed left-0 right-0 z-[9999] border-b border-ink bg-paper"
       style={{ top: topOffset }}
     >
-      <nav className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-3 sm:px-6 lg:gap-4">
-        <Link to="/" className="group z-10 flex min-w-0 shrink items-center gap-2">
-          <span className="relative shrink-0">
-            <DatabaseMark />
-            <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-gradient-to-r from-pink-500 to-violet-500" />
-          </span>
-          <span className="hidden min-[420px]:inline truncate text-[15px] font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent sm:text-lg max-w-[9rem] min-[480px]:max-w-none">
+      <nav className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4 sm:px-6 lg:gap-6">
+        <Link to="/" className="z-10 flex min-w-0 shrink-0 items-baseline gap-2" aria-label="DataEngineer Hub home">
+          <span className="font-serif text-[21px] font-semibold leading-none tracking-tight text-ink sm:text-[23px]">
             DataEngineer Hub
           </span>
         </Link>
@@ -191,15 +188,14 @@ const Header = ({ topOffset = 0 }) => {
         <button
           type="button"
           onClick={() => setIsSearchOpen(true)}
-          className="lg:hidden flex min-h-10 min-w-0 flex-1 items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 text-sm text-slate-400 transition-colors hover:border-white/25 hover:bg-white/10 hover:text-slate-200"
+          className="lg:hidden ml-auto inline-flex h-10 w-10 items-center justify-center text-ink-muted transition-colors hover:text-ink"
           aria-label="Search articles"
           title="Search"
         >
-          <Search className="h-4 w-4 shrink-0 text-slate-300" />
-          <span className="truncate">Search</span>
+          <Search className="h-5 w-5" />
         </button>
 
-        <div className="hidden flex-1 items-center justify-center gap-1 lg:flex">
+        <div className="hidden flex-1 items-center justify-end gap-1 lg:flex">
           {visibleMainLinks
             .filter((item) => item.path !== '/about')
             .map((item) => (
@@ -240,7 +236,7 @@ const Header = ({ topOffset = 0 }) => {
                 <div
                   id="learn-menu"
                   role="menu"
-                  className="absolute left-0 top-full z-50 mt-2 w-64 rounded-xl border border-white/10 bg-slate-950/95 p-2 shadow-2xl backdrop-blur-xl"
+                  className="absolute right-0 top-full z-50 mt-2 w-60 rounded-md border border-paper-500 bg-paper-50 p-1.5 shadow-lg"
                 >
                   {visibleLearnLinks.map((item) => {
                     const Icon = item.icon;
@@ -249,16 +245,16 @@ const Header = ({ topOffset = 0 }) => {
                         key={item.path}
                         to={item.path}
                         role="menuitem"
-                        className={`flex min-h-10 items-center gap-2.5 rounded-lg px-3 text-sm transition-colors ${
+                        className={`flex min-h-10 items-center gap-2.5 rounded px-3 text-sm transition-colors ${
                           isPathActive(currentPath, item.path)
-                            ? 'bg-blue-500/20 text-blue-200'
-                            : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                            ? 'bg-rust-50 text-rust-600'
+                            : 'text-ink-soft hover:bg-paper-300 hover:text-ink'
                         }`}
                       >
                         <Icon className="h-4 w-4 shrink-0" />
                         <span className="flex-1">{item.name}</span>
                         {item.path === '/reading-list' && readingListCount > 0 && (
-                          <span className="min-w-[1.15rem] rounded-full bg-amber-500 px-1 text-center text-[10px] font-bold text-slate-950">
+                          <span className="min-w-[1.15rem] rounded-full bg-rust-500 px-1 text-center font-mono text-[10px] text-paper">
                             {readingListCount}
                           </span>
                         )}
@@ -282,16 +278,16 @@ const Header = ({ topOffset = 0 }) => {
             ))}
         </div>
 
-        <div className="hidden items-center gap-2 lg:flex">
+        <div className="hidden items-center gap-1 border-l border-paper-500 pl-4 lg:flex">
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="inline-flex min-h-10 w-56 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 text-sm text-slate-400 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-white"
+            className="inline-flex min-h-10 items-center gap-2 px-2 text-[15px] text-ink-muted transition-colors hover:text-ink"
             title="Search (Ctrl+K)"
           >
-            <Search className="h-4 w-4 text-slate-300" />
-            <span className="flex-1 text-left">Search articles…</span>
-            <kbd className="hidden rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-slate-400 xl:inline">
+            <Search className="h-4 w-4" />
+            <span>Search</span>
+            <kbd className="hidden rounded border border-paper-500 px-1.5 py-0.5 font-mono text-[10px] text-ink-faint xl:inline">
               Ctrl K
             </kbd>
           </button>
@@ -299,25 +295,18 @@ const Header = ({ topOffset = 0 }) => {
           <button
             type="button"
             onClick={() => setIsSupportOpen(true)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-amber-300 transition-colors hover:bg-white/5 hover:text-amber-200"
+            className="inline-flex h-10 w-10 items-center justify-center text-ink-faint transition-colors hover:text-rust-500"
             title="Support DataEngineer Hub"
             aria-label="Buy me a coffee"
           >
             <Coffee className="h-4 w-4" />
           </button>
-
-          <Link
-            to="/articles"
-            className="inline-flex min-h-10 items-center rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-4 text-sm font-semibold text-white shadow-lg shadow-blue-950/40 transition-colors hover:from-blue-500 hover:to-indigo-500"
-          >
-            Explore
-          </Link>
         </div>
 
         <div className="flex shrink-0 items-center gap-0.5 lg:hidden">
           <Link
             to="/tools"
-            className="inline-flex h-10 items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 text-sm font-semibold text-slate-200 transition-colors hover:border-white/25 hover:bg-white/10 hover:text-white"
+            className="inline-flex h-10 items-center gap-1 px-2 text-sm text-ink-muted transition-colors hover:text-ink"
             aria-label="Free tools"
             title="Free tools"
           >
@@ -327,7 +316,7 @@ const Header = ({ topOffset = 0 }) => {
           <button
             type="button"
             onClick={() => setIsSupportOpen(true)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-amber-300 transition-colors hover:bg-white/5 hover:text-amber-200"
+            className="hidden h-11 w-11 items-center justify-center text-ink-faint transition-colors hover:text-rust-500 min-[400px]:inline-flex"
             aria-label="Buy me a coffee"
             title="Buy me a coffee"
           >
@@ -336,7 +325,7 @@ const Header = ({ topOffset = 0 }) => {
           <button
             type="button"
             onClick={() => setMobileMenuOpen((open) => !open)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+            className="inline-flex h-11 w-11 items-center justify-center text-ink transition-colors hover:text-rust-500"
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMenuOpen}
             aria-controls="mobile-menu"
@@ -349,18 +338,18 @@ const Header = ({ topOffset = 0 }) => {
       {isMenuOpen && (
           <div
             id="mobile-menu"
-            className="border-t border-white/10 bg-slate-950/95 backdrop-blur-xl lg:hidden"
+            className="border-t border-paper-500 bg-paper lg:hidden"
             style={{ maxHeight: `calc(100vh - ${topOffset}px - 4rem)` }}
           >
             <div className="mx-auto max-w-7xl space-y-5 overflow-y-auto overscroll-contain px-4 py-4">
               <div>
-                <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                <p className="kicker mb-2 px-1">
                   Free tools
                 </p>
                 <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
                   {visibleFeaturedTools.map((tool) => {
                     const className =
-                      'shrink-0 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200';
+                      'shrink-0 rounded border border-paper-500 bg-paper-50 px-3 py-2 text-xs text-ink-soft';
                     return tool.external ? (
                       <a key={tool.slug} href={tool.url} className={className} onClick={() => setMobileMenuOpen(false)}>
                         {tool.title}
@@ -425,7 +414,7 @@ const Header = ({ topOffset = 0 }) => {
                     setMobileMenuOpen(false);
                     setIsSupportOpen(true);
                   }}
-                  className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-amber-300 hover:bg-white/5"
+                  className="flex min-h-11 items-center gap-2 rounded px-3 text-sm text-ink-soft hover:bg-paper-300"
                 >
                   <Coffee className="h-4 w-4" />
                   Buy me a coffee
@@ -435,7 +424,7 @@ const Header = ({ topOffset = 0 }) => {
               <Link
                 to="/articles"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex min-h-12 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-sm font-semibold text-white"
+                className="flex min-h-12 items-center justify-center rounded bg-ink text-sm font-medium text-paper"
               >
                 Explore articles
               </Link>
@@ -453,26 +442,9 @@ const Header = ({ topOffset = 0 }) => {
   );
 };
 
-const DatabaseMark = () => (
-  <svg
-    viewBox="0 0 24 24"
-    className="h-7 w-7 text-blue-400 transition-transform duration-200 group-hover:rotate-6 group-hover:scale-105"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <ellipse cx="12" cy="5" rx="9" ry="3" />
-    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
-    <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
-  </svg>
-);
-
 const MobileGroup = ({ title, children }) => (
   <div>
-    <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+    <p className="kicker mb-2 px-1">
       {title}
     </p>
     <div className="grid grid-cols-2 gap-1">{children}</div>
@@ -485,8 +457,8 @@ const MobileLink = ({ item, active, onClick }) => {
     <Link
       to={item.path}
       onClick={onClick}
-      className={`flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium ${
-        active ? 'bg-blue-500/20 text-blue-200' : 'text-slate-200 hover:bg-white/5 hover:text-white'
+      className={`flex min-h-11 items-center gap-2 rounded px-3 text-sm ${
+        active ? 'bg-rust-50 text-rust-600' : 'text-ink-soft hover:bg-paper-300 hover:text-ink'
       }`}
     >
       <Icon className="h-4 w-4 shrink-0" />

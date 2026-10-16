@@ -69,11 +69,10 @@ const TableOfContents = ({ headings = [] }) => {
     <>
       {/* Desktop: Sticky sidebar */}
       <nav aria-label="Table of contents" className="hidden xl:block sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
-        <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 backdrop-blur-sm">
-          <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-            <List className="w-4 h-4" />
-            On This Page
-          </h2>
+        <div className="border-l border-paper-500 pl-4">
+          <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-faint">
+            On this page
+          </p>
           <ul className="space-y-1">
             {headings.map(({ id, text, level }) => (
               <li key={id}>
@@ -83,12 +82,12 @@ const TableOfContents = ({ headings = [] }) => {
                     e.preventDefault();
                     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }}
-                  className={`block text-sm py-1.5 transition-colors leading-snug ${
-                    level === 3 ? 'pl-4' : 'pl-0'
+                  className={`-ml-[17px] block border-l-2 py-1.5 pl-[15px] text-[14px] leading-snug transition-colors ${
+                    level === 3 ? 'pl-7' : ''
                   } ${
                     activeId === id
-                      ? 'text-blue-400 font-semibold'
-                      : 'text-gray-400 hover:text-gray-200'
+                      ? 'border-rust-500 text-ink'
+                      : 'border-transparent text-ink-faint hover:text-ink'
                   }`}
                 >
                   {text}
@@ -103,11 +102,11 @@ const TableOfContents = ({ headings = [] }) => {
       <div className="xl:hidden mb-6">
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="w-full flex items-center justify-between px-4 py-3 bg-slate-800/60 border border-slate-700/50 rounded-xl text-sm text-gray-300 hover:text-white transition-colors"
+          className="flex w-full items-center justify-between border-y border-paper-500 py-3 text-sm text-ink-soft transition-colors hover:text-ink"
         >
-          <span className="flex items-center gap-2 font-semibold">
-            <List className="w-4 h-4 text-blue-400" />
-            Table of Contents ({headings.length})
+          <span className="flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.06em]">
+            <List className="h-4 w-4 text-rust-500" />
+            On this page · {headings.length} sections
           </span>
           {isCollapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
         </button>
@@ -119,7 +118,7 @@ const TableOfContents = ({ headings = [] }) => {
               exit={{ height: 0, opacity: 0 }}
               className="overflow-hidden"
             >
-              <ul className="mt-2 px-4 py-3 bg-slate-800/40 border border-slate-700/50 rounded-xl space-y-1">
+              <ul className="space-y-1 border-b border-paper-500 py-3">
                 {headings.map(({ id, text, level }) => (
                   <li key={id}>
                     <a
@@ -133,7 +132,7 @@ const TableOfContents = ({ headings = [] }) => {
                           document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         }, 350);
                       }}
-                      className={`block text-sm py-1.5 text-gray-400 hover:text-blue-400 transition-colors ${
+                      className={`block py-1.5 text-[15px] text-ink-muted transition-colors hover:text-rust-600 ${
                         level === 3 ? 'pl-4' : 'pl-0'
                       }`}
                     >
