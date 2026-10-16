@@ -520,8 +520,23 @@ jobs:
             echo "ℹ️ No FTP sync state found in root"
           fi
 
-      - name: 🧹 Remove leftover Hostinger FTP temp files
+      # Leftover `.in.*` temp files only exist after a failed or cancelled
+      # upload. Listing every dist/ folder over FTPS costs ~90s, so skip the
+      # sweep when the previous deploy succeeded. Any lookup error falls back
+      # to running the sweep, and a failed upload below always sweeps first.
+      - name: 🔎 Check previous deploy result
+        id: prev_deploy
         if: steps.changes.outputs.skip_deploy != 'true' && steps.changes.outputs.dry_run != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          prev=$(gh run list --repo "${{ github.repository }}" --workflow deploy.yml --status completed --limit 1 --json conclusion -q '.[0].conclusion' 2>/dev/null || true)
+          echo "conclusion=${prev:-unknown}" >> "$GITHUB_OUTPUT"
+          echo "Previous deploy conclusion: ${prev:-unknown}"
+        continue-on-error: true
+
+      - name: 🧹 Remove leftover Hostinger FTP temp files
+        if: steps.changes.outputs.skip_deploy != 'true' && steps.changes.outputs.dry_run != 'true' && steps.prev_deploy.outputs.conclusion != 'success'
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}

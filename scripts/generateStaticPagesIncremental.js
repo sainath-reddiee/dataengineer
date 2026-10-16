@@ -3043,8 +3043,9 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   // Convert absolute modulepreload paths to relative
   const relativeModulePreload = modulePreloadHtml.replace(/href="\/assets\//g, `href="${relativePrefix}assets/`);
 
+  // Fallback date only. Never stamp build time or random hashes into the HTML:
+  // unchanged pages must stay byte-identical so the FTP deploy skips them.
   const buildTimestamp = new Date().toISOString();
-  const buildHash = crypto.randomBytes(8).toString('hex');
 
   // Ensure dateModified is never before datePublished (Google flags this)
   const effectivePublished = postDate || buildTimestamp;
@@ -3300,7 +3301,6 @@ ${featuredImage ? `    <link rel="preload" as="image" href="${featuredImage}" />
     <meta property="article:modified_time" content="${effectiveModified}" />
     <meta property="article:author" content="https://dataengineerhub.blog/about" />
 ${categoryNames.length > 0 ? `    <meta property="article:section" content="${escapeHtml(categoryNames[0])}" />\n` : ''}${tagNames.slice(0, 6).map(t => `    <meta property="article:tag" content="${escapeHtml(t)}" />`).join('\n')}
-    <!-- Build: ${buildTimestamp} | Hash: ${buildHash} -->
 
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
@@ -4437,7 +4437,6 @@ function generateArticlesListingHTML(allArticleSummaries, categories, bundleFile
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="en_US" />
-    <!-- Build: ${buildTimestamp} -->
 
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
@@ -4679,7 +4678,6 @@ function generateCategoryPageHTML(category, categoryArticles, bundleFiles) {
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
   html += '    <meta property="og:locale" content="en_US" />\n';
-  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -4965,7 +4963,6 @@ function generateGlossaryHubPageHTML(allGlossaryTerms, bundleFiles) {
   html += '    <meta property="og:image:height" content="630" />\n';
   html += '    <meta property="og:locale" content="en_US" />\n';
   html += '\n';
-  html += '    <!-- Build: ' + buildTimestamp + ' -->\n';
   html += '\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
@@ -5273,7 +5270,6 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
   html += '    <meta property="og:locale" content="en_US" />\n';
-  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -5585,7 +5581,6 @@ function generateCompareHubPageHTML(allComparisons, bundleFiles) {
   html += '    <meta property="og:image:height" content="630" />\n';
   html += '    <meta property="og:locale" content="en_US" />\n';
   html += '\n';
-  html += '    <!-- Build: ' + buildTimestamp + ' -->\n';
   html += '\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
@@ -5934,7 +5929,6 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
   html += '    <meta property="og:locale" content="en_US" />\n';
-  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -6180,7 +6174,6 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
   html += '    <meta property="og:locale" content="en_US" />\n';
-  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -6431,7 +6424,6 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
   html += '    <meta property="og:locale" content="en_US" />\n';
-  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -6607,7 +6599,6 @@ function generateTagPageHTML(tag, tagArticles, bundleFiles) {
   html += '    <meta property="og:image:width" content="1200" />\n';
   html += '    <meta property="og:image:height" content="630" />\n';
   html += '    <meta property="og:locale" content="en_US" />\n';
-  html += '    <!-- Build: ' + buildTimestamp + ' -->\n\n';
   html += '    <link rel="dns-prefetch" href="//app.dataengineerhub.blog">\n';
   html += '    <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>\n';
   html += '    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">\n';
@@ -6755,7 +6746,6 @@ function generateEssentialPageHTML(pageData, bundleFiles) {
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="en_US" />
-    <!-- Build: ${buildTimestamp} -->
 
     <link rel="dns-prefetch" href="//app.dataengineerhub.blog">
     <link rel="preconnect" href="https://app.dataengineerhub.blog" crossorigin>
