@@ -173,6 +173,15 @@ function dehub_rest_delete_guest_author($request) {
     return rest_ensure_response(['success' => $deleted]);
 }
 
+/**
+ * Guest-author writes change public author pages, so they need a signed-in
+ * WordPress user who can edit users (cookie session or Application Password).
+ * Reads stay public.
+ */
+function dehub_can_manage_guest_authors() {
+    return current_user_can('edit_users');
+}
+
 // Register REST API endpoints for guest authors
 add_action('rest_api_init', function () {
     // 1. Guest Authors CRUD Endpoint
@@ -203,7 +212,7 @@ add_action('rest_api_init', function () {
                 $saved = dehub_save_guest_author($params);
                 return rest_ensure_response($saved);
             },
-            'permission_callback' => '__return_true'
+            'permission_callback' => 'dehub_can_manage_guest_authors'
         ]
     ]);
 
@@ -211,7 +220,7 @@ add_action('rest_api_init', function () {
         [
             'methods'  => 'DELETE',
             'callback' => 'dehub_rest_delete_guest_author',
-            'permission_callback' => '__return_true'
+            'permission_callback' => 'dehub_can_manage_guest_authors'
         ],
         [
             // POST delete avoids a CORS preflight. DELETE + Authorization is
@@ -219,7 +228,7 @@ add_action('rest_api_init', function () {
             // Access-Control-Allow-Origin, which is what the admin panel hits.
             'methods'  => 'POST',
             'callback' => 'dehub_rest_delete_guest_author',
-            'permission_callback' => '__return_true'
+            'permission_callback' => 'dehub_can_manage_guest_authors'
         ]
     ]);
 

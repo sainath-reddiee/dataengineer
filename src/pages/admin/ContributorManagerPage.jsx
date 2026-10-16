@@ -22,9 +22,25 @@ const WP_BASE = import.meta.env.DEV
 
 const WP_API = `${WP_BASE}/wp-json/wp/v2`;
 
-/** Build Basic-auth header from env (username:app_password base64) */
+/**
+ * WordPress Application Password for admin writes, entered at runtime and kept
+ * in this tab's sessionStorage only. It must never come from a VITE_ env var:
+ * those are compiled into the public JavaScript every visitor downloads.
+ */
+const WP_AUTH_KEY = 'deh-wp-app-auth';
+
+function readWpAuth() {
+  try { return sessionStorage.getItem(WP_AUTH_KEY) || ''; } catch { return ''; }
+}
+
+function saveWpAuth(username, appPassword) {
+  const token = btoa(`${username.trim()}:${appPassword.trim()}`);
+  try { sessionStorage.setItem(WP_AUTH_KEY, token); } catch { /* private mode */ }
+  return token;
+}
+
 function authHeader() {
-  const raw = import.meta.env.VITE_WP_APP_PASSWORD || '';
+  const raw = readWpAuth();
   if (!raw) return {};
   return { Authorization: `Basic ${raw}` };
 }
@@ -118,9 +134,9 @@ async function saveGuestAuthor(fields) {
 /** Delete guest author */
 async function deleteGuestAuthorApi(id) {
   const url = `${WP_BASE}/wp-json/dehub/v1/guest-authors/${encodeURIComponent(id)}`;
-  // POST with no custom headers is a "simple" request (no OPTIONS preflight).
-  // DELETE + Authorization is what triggered the live CORS failure.
-  const res = await fetch(url, { method: 'POST' });
+  // Deleting requires a signed-in WordPress user; the CORS preflight for the
+  // Authorization header is answered by functions.php.
+  const res = await fetch(url, { method: 'POST', headers: { ...authHeader() } });
   if (!res.ok) {
     throw new Error(`Failed to delete guest author`);
   }
@@ -270,7 +286,8 @@ export default function ContributorManagerPage() {
   // ── Active tab in right panel
   const [activeTab, setActiveTab] = useState('preview'); // 'preview' | 'edit' | 'posts' | 'assign'
 
-  const hasAppPwd = Boolean(import.meta.env.VITE_WP_APP_PASSWORD);
+  const [hasAppPwd, setHasAppPwd] = useState(() => Boolean(readWpAuth()));
+  const [authForm, setAuthForm] = useState({ username: '', password: '' });
 
   // ── Add Guest Contributor (No WP user account created!)
   const handleAddGuest = async (e) => {
@@ -372,7 +389,7 @@ export default function ContributorManagerPage() {
     if (!selectedUser || !editFields) return;
     const isGuest = selectedUser.is_guest || (typeof selectedUser.id === 'string' && selectedUser.id.startsWith('guest_'));
     if (!hasAppPwd && !isGuest) {
-      toast({ title: 'App Password required', description: 'Set VITE_WP_APP_PASSWORD in .env to enable saving.', variant: 'destructive' });
+      toast({ title: 'App Password required', description: 'Enter a WordPress Application Password at the top of this page to enable saving.', variant: 'destructive' });
       return;
     }
     setSaving(true);
@@ -408,7 +425,7 @@ export default function ContributorManagerPage() {
   // ── Assign post author
   const handleAssign = async (post) => {
     if (!selectedUser || !hasAppPwd) {
-      toast({ title: 'App Password required', description: 'Set VITE_WP_APP_PASSWORD in .env to enable post assignment.', variant: 'destructive' });
+      toast({ title: 'App Password required', description: 'Enter a WordPress Application Password at the top of this page to enable post assignment.', variant: 'destructive' });
       return;
     }
     setAssigning(post.id);
@@ -486,8 +503,38 @@ export default function ContributorManagerPage() {
           className="flex items-start gap-3 bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
           <AlertCircle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
           <div className="text-sm">
-            <p className="font-semibold text-amber-300">Read-only mode — set <code className="bg-amber-900/40 px-1 rounded">VITE_WP_APP_PASSWORD</code> in <code className="bg-amber-900/40 px-1 rounded">.env</code> to enable saving & post assignment.</p>
-            <p className="text-amber-400/70 mt-1">WP Admin → Users → (your user) → Application Passwords → Create, then base64-encode <code>username:password</code>.</p>
+            <p className="font-semibold text-amber-300">Read-only mode. Enter a WordPress Application Password to enable saving and post assignment.</p>
+            <p className="text-amber-400/70 mt-1">WP Admin → Users → your user → Application Passwords → Create. It is kept in this browser tab only and cleared when the tab closes.</p>
+            <form
+              className="mt-3 flex flex-wrap gap-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!authForm.username.trim() || !authForm.password.trim()) return;
+                saveWpAuth(authForm.username, authForm.password);
+                setAuthForm({ username: '', password: '' });
+                setHasAppPwd(true);
+              }}
+            >
+              <input
+                type="text"
+                autoComplete="username"
+                placeholder="WordPress username"
+                value={authForm.username}
+                onChange={(e) => setAuthForm((f) => ({ ...f, username: e.target.value }))}
+                className="rounded border border-amber-500/30 bg-transparent px-2 py-1 text-sm"
+              />
+              <input
+                type="password"
+                autoComplete="current-password"
+                placeholder="Application password"
+                value={authForm.password}
+                onChange={(e) => setAuthForm((f) => ({ ...f, password: e.target.value }))}
+                className="rounded border border-amber-500/30 bg-transparent px-2 py-1 text-sm"
+              />
+              <button type="submit" className="rounded bg-amber-500/20 px-3 py-1 text-sm font-medium text-amber-300">
+                Unlock editing
+              </button>
+            </form>
           </div>
         </motion.div>
       )}
@@ -727,7 +774,7 @@ export default function ContributorManagerPage() {
                       {!hasAppPwd && (
                         <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-sm">
                           <AlertCircle className="h-4 w-4 text-amber-400 flex-shrink-0 mt-0.5" />
-                          <span className="text-amber-300">Set <code className="bg-amber-900/40 px-1 rounded text-xs">VITE_WP_APP_PASSWORD</code> to enable saving. Until then, use <strong>WP Admin → Users</strong> to save changes.</span>
+                          <span className="text-amber-300">Enter a WordPress Application Password at the top of this page to enable saving, or use <strong>WP Admin → Users</strong>.</span>
                         </div>
                       )}
 
@@ -824,7 +871,7 @@ export default function ContributorManagerPage() {
                       {!hasAppPwd && (
                         <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-sm">
                           <AlertCircle className="h-4 w-4 text-amber-400 flex-shrink-0 mt-0.5" />
-                          <span className="text-amber-300">Set <code className="bg-amber-900/40 px-1 rounded text-xs">VITE_WP_APP_PASSWORD</code> to enable post assignment.</span>
+                          <span className="text-amber-300">Enter a WordPress Application Password at the top of this page to enable post assignment.</span>
                         </div>
                       )}
 

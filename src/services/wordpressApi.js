@@ -767,17 +767,9 @@ class WordPressAPI {
     }
   }
 
-  // ─── Contributor / User management ─────────────────────────────────────────
-
-  /**
-   * Build the Basic-auth header from the env variable.
-   * VITE_WP_APP_PASSWORD should be base64-encoded "username:app_password".
-   */
-  _authHeaders() {
-    const raw = import.meta.env.VITE_WP_APP_PASSWORD || '';
-    if (!raw) return {};
-    return { Authorization: `Basic ${raw}` };
-  }
+  // ─── Contributors (read-only) ──────────────────────────────────────────────
+  // Writes to WordPress users/posts must never run from the public bundle: any
+  // credential shipped to the browser is readable by every visitor.
 
   /**
    * List all WordPress users with contributor / author / editor roles.
@@ -817,11 +809,9 @@ class WordPressAPI {
    */
   async getPostsByAuthor(authorId, page = 1, perPage = 12) {
     try {
-      const result = await this.getPosts({ page, per_page: perPage });
-      // WP REST supports ?author= filter — make a direct request
+      // Published posts are public: never send credentials from the browser.
       const res = await fetch(
-        `${this.baseURL}/posts?author=${authorId}&per_page=${perPage}&page=${page}&status=publish&_embed=wp:featuredmedia,wp:term,author`,
-        { headers: this._authHeaders() }
+        `${this.baseURL}/posts?author=${authorId}&per_page=${perPage}&page=${page}&status=publish&_embed=wp:featuredmedia,wp:term,author`
       );
       if (!res.ok) throw new Error(`Failed to fetch posts for author ${authorId} (${res.status})`);
       const totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1');
@@ -834,61 +824,6 @@ class WordPressAPI {
     }
   }
 
-  /**
-   * Update a user's profile fields (name, bio, url) and custom meta (linkedin, twitter, github, job_title, author_avatar_url).
-   * Requires Application Password.
-   */
-  async updateUserMeta(userId, fields = {}) {
-    try {
-      const body = {
-        ...(fields.name      && { name: fields.name }),
-        ...(fields.bio       !== undefined && { description: fields.bio }),
-        ...(fields.website   !== undefined && { url: fields.website }),
-        meta: {
-          ...(fields.linkedin   !== undefined && { linkedin_url: fields.linkedin }),
-          ...(fields.twitter    !== undefined && { twitter_url: fields.twitter }),
-          ...(fields.github     !== undefined && { github_url: fields.github }),
-          ...(fields.jobTitle   !== undefined && { job_title: fields.jobTitle }),
-          ...(fields.avatarUrl  !== undefined && { author_avatar_url: fields.avatarUrl }),
-        },
-      };
-      const res = await fetch(`${this.baseURL}/users/${userId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...this._authHeaders() },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) {
-        const txt = await res.text();
-        throw new Error(`Failed to update user ${userId}: ${txt}`);
-      }
-      return await res.json();
-    } catch (error) {
-      console.error(`❌ updateUserMeta(${userId}) failed:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Reassign a post's author to a different WordPress user.
-   * Requires Application Password with edit_posts capability.
-   */
-  async updatePostAuthor(postId, authorId) {
-    try {
-      const res = await fetch(`${this.baseURL}/posts/${postId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...this._authHeaders() },
-        body: JSON.stringify({ author: authorId }),
-      });
-      if (!res.ok) {
-        const txt = await res.text();
-        throw new Error(`Failed to reassign post ${postId}: ${txt}`);
-      }
-      return await res.json();
-    } catch (error) {
-      console.error(`❌ updatePostAuthor(${postId}, ${authorId}) failed:`, error);
-      throw error;
-    }
-  }
 }
 
 export const wordpressApi = new WordPressAPI();

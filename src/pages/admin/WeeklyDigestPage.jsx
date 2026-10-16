@@ -48,8 +48,15 @@ export function WeeklyDigestPage() {
     return () => { cancelled = true; };
   }, []);
 
+  // Export token is entered at runtime and kept in this tab only. It must not
+  // be a VITE_ env var: those are compiled into the public bundle.
+  const [exportToken, setExportToken] = useState(() => {
+    try { return sessionStorage.getItem('deh-newsletter-export-token') || ''; } catch { return ''; }
+  });
+  const [tokenInput, setTokenInput] = useState('');
+
   useEffect(() => {
-    const token = import.meta.env.VITE_NEWSLETTER_EXPORT_TOKEN;
+    const token = exportToken;
     if (!token) return undefined;
     let cancelled = false;
     (async () => {
@@ -61,7 +68,7 @@ export function WeeklyDigestPage() {
       }
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [exportToken]);
 
   const recent = useMemo(() => selectRecentPosts(posts, 7, 6), [posts]);
   const emailDraft = useMemo(() => buildEmailDigest(recent), [recent]);
@@ -210,9 +217,30 @@ export function WeeklyDigestPage() {
                 In WordPress <code className="text-slate-200">wp-config.php</code> add{' '}
                 <code className="text-slate-200">define(&apos;DEHUB_NEWSLETTER_EXPORT_TOKEN&apos;, &apos;a-long-random-string&apos;);</code>
               </li>
-              <li>Put the same string in the admin build as <code className="text-slate-200">VITE_NEWSLETTER_EXPORT_TOKEN</code>.</li>
-              <li>Upload the latest <code className="text-slate-200">functions.php</code> and rebuild admin.</li>
+              <li>Upload the latest <code className="text-slate-200">functions.php</code>.</li>
+              <li>Paste the same string below. It stays in this browser tab only.</li>
             </ol>
+            <form
+              className="flex flex-wrap gap-2 pt-1"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const value = tokenInput.trim();
+                if (!value) return;
+                try { sessionStorage.setItem('deh-newsletter-export-token', value); } catch { /* private mode */ }
+                setExportToken(value);
+                setTokenInput('');
+              }}
+            >
+              <input
+                type="password"
+                autoComplete="off"
+                placeholder="Export token"
+                value={tokenInput}
+                onChange={(e) => setTokenInput(e.target.value)}
+                className="rounded border border-slate-600 bg-transparent px-2 py-1 text-sm"
+              />
+              <button type="submit" className="rounded border border-slate-600 px-3 py-1 text-sm">Load subscribers</button>
+            </form>
             <p className="text-xs text-gray-500">
               Until then you can still open the table <code>wp_newsletter_subscribers</code> in phpMyAdmin.
             </p>
