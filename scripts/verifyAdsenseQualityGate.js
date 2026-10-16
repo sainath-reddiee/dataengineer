@@ -97,15 +97,13 @@ if (!footer.includes('ADSENSE_REVIEW_MODE')) {
   console.error('❌ Footer must keep glossary behind the review flag');
   failed += 1;
 }
-if (
-  !robots.includes('Disallow: /interview-prep')
-  || !robots.includes('Disallow: /category/')
-  || !robots.includes('Disallow: /news')
-  || !robots.includes('Disallow: /newsletter')
-  || !robots.includes('Disallow: /reading-list')
-) {
-  console.error('❌ AdsBot robots must steer off interview-prep, archives, news, newsletter, and reading-list');
-  failed += 1;
+// Held-out sections are noindexed, not hidden. Ad crawlers must be able to
+// see everything humans and Googlebot can, so no public section is disallowed.
+for (const section of ['/glossary', '/compare', '/category', '/interview-prep', '/news', '/newsletter', '/reading-list', '/advertise']) {
+  if (new RegExp(`^Disallow: ${section}(/|$)`, 'm').test(robots)) {
+    console.error(`❌ robots.txt must not hide public section ${section} from any crawler`);
+    failed += 1;
+  }
 }
 if (!shell.includes('cheatOk') || !shell.includes('toolOk')) {
   console.error('❌ index.html must noindex non-allowlisted cheat sheets and tools');
@@ -142,8 +140,19 @@ if (!ssg.includes('pruneSitemaps')) {
   console.error('❌ Incremental SSG must prune noindex URLs from sitemap.xml');
   failed += 1;
 }
-if (!ssg.includes('collapseLongCodeBlocks')) {
-  console.error('❌ Article SSG must collapse long code dumps during AdSense review');
+// Crawlers and humans must get the same page. Trimming code only in the
+// static HTML that bots keep, or branching on user agent at boot, is cloaking.
+if (ssg.includes('collapseLongCodeBlocks') || ssg.includes('adsense-code-preview')) {
+  console.error('❌ Article SSG must not rewrite code blocks for crawlers');
+  failed += 1;
+}
+const mainEntry = readFileSync(join(root, 'src/main.jsx'), 'utf8');
+if (mainEntry.includes('isCrawlerUserAgent')) {
+  console.error('❌ main.jsx must render React for every visitor, not branch on crawler user agents');
+  failed += 1;
+}
+if (/googlebot|adsbot-google|mediapartners-google/i.test(shell.replace(/<!--[\s\S]*?-->/g, '').replace(/\/\/[^\n]*/g, ''))) {
+  console.error('❌ index.html scripts must not branch on Google crawler user agents');
   failed += 1;
 }
 if (!ssg.includes('renderArticleFaqHtml') || !ssg.includes('enhanceArticleCodeBlocks')) {
@@ -162,6 +171,29 @@ const htaccess = readFileSync(join(root, 'public/.htaccess'), 'utf8');
 if (!htaccess.includes('interview-prep') || !htaccess.includes('snowflake-sql')) {
   console.error('❌ .htaccess X-Robots-Tag must cover the expanded review hold-outs');
   failed += 1;
+}
+// Hostinger's LiteSpeed ignores SetEnvIfExpr, which silently disabled the
+// X-Robots-Tag safety net in production. Only plain SetEnvIf works there.
+if (/^\s*SetEnvIfExpr\b/m.test(htaccess)) {
+  console.error('❌ .htaccess must use SetEnvIf, not SetEnvIfExpr (unsupported on Hostinger LiteSpeed)');
+  failed += 1;
+}
+const reviewEnvLines = htaccess
+  .split('\n')
+  .filter((line) => /^\s*SetEnvIf Request_URI .* ADSENSE_REVIEW_PATH\s*$/.test(line));
+const cheatsheetLine = reviewEnvLines.find((line) => line.includes('^/cheatsheets/(?!')) || '';
+const toolLine = reviewEnvLines.find((line) => line.includes('^/tools/(?!')) || '';
+for (const slug of ADSENSE_REVIEW_CHEATSHEETS) {
+  if (!cheatsheetLine.includes(slug)) {
+    console.error(`❌ .htaccess cheat-sheet allowlist is missing ${slug}`);
+    failed += 1;
+  }
+}
+for (const slug of ADSENSE_REVIEW_TOOLS) {
+  if (!toolLine.includes(slug)) {
+    console.error(`❌ .htaccess tool allowlist is missing ${slug}`);
+    failed += 1;
+  }
 }
 
 if (failed > 0) {

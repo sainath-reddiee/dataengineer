@@ -223,10 +223,14 @@
 # but Hostinger can keep old HTML in its full-page cache for 24 hours after an
 # FTP replacement. Send the directive at HTTP level as well, and prevent new
 # cached copies from delaying a review-mode change.
+# Plain SetEnvIf, not SetEnvIfExpr: Hostinger's LiteSpeed ignores
+# SetEnvIfExpr, so the header never fired live. DEH_PRIVATE_APP below uses the
+# same SetEnvIf form and is confirmed working in production.
+# Lists must match src/data/adsenseQualityGate.js (verifyAdsenseQualityGate checks).
 <IfModule mod_setenvif.c>
-    SetEnvIfExpr "%{REQUEST_URI} =~ m#^/(glossary|compare|tag|tags|cheatsheets/category|category|interview-prep|practice|advertise|contribute|contributors|news|newsletter|reading-list)(?:/|$)#" ADSENSE_REVIEW_PATH
-    SetEnvIfExpr "%{REQUEST_URI} =~ m#^/cheatsheets/(?!snowflake-sql|sql-window-functions|dbt-commands|airflow-essentials|snowflake-best-practices|databricks|python-for-data-engineers|data-modeling)[^/]+#" ADSENSE_REVIEW_PATH
-    SetEnvIfExpr "%{REQUEST_URI} =~ m#^/tools/(?!snowflake-cost-calculator|cloud-data-warehouse-cost-comparison|sql-playground|databricks-cost-calculator|bigquery-cost-calculator)[^/]+#" ADSENSE_REVIEW_PATH
+    SetEnvIf Request_URI "^/(glossary|compare|tag|tags|cheatsheets/category|category|interview-prep|practice|advertise|contribute|contributors|news|newsletter|reading-list)(/|$)" ADSENSE_REVIEW_PATH
+    SetEnvIf Request_URI "^/cheatsheets/(?!(snowflake-sql|sql-window-functions|dbt-commands|airflow-essentials|snowflake-best-practices|databricks|python-for-data-engineers|data-modeling)(/|$))[^/]+" ADSENSE_REVIEW_PATH
+    SetEnvIf Request_URI "^/tools/(?!(snowflake-cost-calculator|cloud-data-warehouse-cost-comparison|sql-playground|databricks-cost-calculator|bigquery-cost-calculator)(/|$))[^/]+" ADSENSE_REVIEW_PATH
 </IfModule>
 <IfModule mod_headers.c>
     Header always set X-Robots-Tag "noindex, follow" env=ADSENSE_REVIEW_PATH

@@ -1,16 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { isCrawlerUserAgent } from '@/utils/isCrawler';
 
 const CONSENT_KEY = 'cookie_consent';
 const CONSENT_TIMESTAMP_KEY = 'cookie_consent_ts';
 const CONSENT_COOKIE_NAME = 'cookie_consent';
 const CONSENT_MAX_AGE_DAYS = 365; // 12 months
 const STATIC_BANNER_ID = 'deh-cookie-banner';
-
-function isBot() {
-  return isCrawlerUserAgent();
-}
 
 function hideStaticBanner() {
   if (typeof document === 'undefined') return;
@@ -96,7 +91,6 @@ const CookieConsent = () => {
   // A post-mount setState is what Lighthouse scores as ~0.9 CLS.
   const [visible, setVisible] = useState(() => {
     if (typeof window === 'undefined') return false;
-    if (isBot()) return false;
     return !getConsentStatus();
   });
 
@@ -124,14 +118,14 @@ const CookieConsent = () => {
   }, []);
 
   useEffect(() => {
-    if (isBot() || getConsentStatus()) {
+    if (getConsentStatus()) {
       hideStaticBanner();
       setVisible(false);
     }
 
     const onChanged = (event) => {
       if (event?.detail === 'revoked') {
-        setVisible(!isBot());
+        setVisible(true);
         return;
       }
       hideStaticBanner();

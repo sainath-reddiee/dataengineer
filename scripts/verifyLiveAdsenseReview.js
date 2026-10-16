@@ -21,7 +21,9 @@ function isNoindex(value) {
 
 const mustNoindex = [
   '/glossary/snowflake',
+  '/glossary/data-lake',
   '/compare/airflow-vs-prefect',
+  '/compare/snowflake-vs-databricks',
   '/practice',
   '/interview-prep',
   '/category/snowflake',
@@ -67,19 +69,29 @@ if (sitemap.status !== 200) {
 }
 
 const robotsTxt = await fetchText('/robots.txt');
-if (!robotsTxt.html.includes('Disallow: /interview-prep') || !robotsTxt.html.includes('Disallow: /category/')) {
-  console.error('❌ live robots.txt is missing the expanded AdsBot disallows');
+if (/^Disallow: \/(glossary|compare|category|interview-prep)(\/|$)/m.test(robotsTxt.html)) {
+  console.error('❌ live robots.txt still hides public sections from ad crawlers');
   failed += 1;
 }
 
 for (const path of mustNoindex) {
   const page = await fetchText(path);
   const value = robots(page.html);
+  const header = page.headers.get('x-robots-tag') || '';
+  // The retired Cloudflare Worker served /glossary/* and /compare/* from R2,
+  // bypassing Hostinger, the current SSG output, and .htaccess entirely.
+  if (page.headers.get('x-r2-key')) {
+    console.error(`❌ ${path} is served from Cloudflare R2 (x-r2-key), not Hostinger: remove the Worker route`);
+    failed += 1;
+  }
   if (!isNoindex(value)) {
     console.error(`❌ ${path} robots="${value || '(missing)'}" (expected noindex)`);
     failed += 1;
+  } else if (!isNoindex(header)) {
+    console.error(`❌ ${path} meta is noindex but X-Robots-Tag header is missing (.htaccess safety net not firing)`);
+    failed += 1;
   } else {
-    console.log(`✅ ${path} ${value}`);
+    console.log(`✅ ${path} ${value} (header: ${header})`);
   }
 }
 

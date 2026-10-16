@@ -1,10 +1,8 @@
 /**
  * Reader-facing article code blocks.
  *
- * Every article <pre> is wrapped the same way (React + SSG). Long dumps are
- * still collapsed for AdsBot by collapseLongCodeBlocks; this helper skips
- * those preview figures and only styles what humans (and leftover short
- * snippets) actually read.
+ * Every article <pre> is wrapped the same way (React + SSG), so crawlers
+ * and humans read identical code blocks.
  */
 import { detectCodeLanguage } from './adsenseCodeRatio.js';
 
@@ -71,7 +69,7 @@ function alreadyWrapped(html, offset) {
   if (start === -1) return false;
   const window = before.slice(start);
   if (window.includes('</figure>')) return false;
-  return /article-code|adsense-code-preview/.test(window);
+  return /article-code/.test(window);
 }
 
 function highlightLine(escaped, language) {
@@ -122,7 +120,7 @@ export function enhanceArticleCodeBlocks(html) {
 
   return source.replace(/<pre\b[\s\S]*?<\/pre>/gi, (block, offset) => {
     if (alreadyWrapped(source, offset)) return block;
-    if (/adsense-code-preview|article-code/.test(block)) return block;
+    if (/article-code/.test(block)) return block;
 
     const text = preText(block);
     if (!text.trim()) return block;

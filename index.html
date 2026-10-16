@@ -412,7 +412,6 @@
         try {
           if (localStorage.getItem('cookie_consent')) return;
         } catch (e) { /* private mode */ }
-        if (/googlebot|adsbot-google|mediapartners-google/i.test(navigator.userAgent || '')) return;
         document.documentElement.classList.add('deh-need-consent');
       })();
       // Performance mark
@@ -547,7 +546,7 @@
           var el = document.getElementById('deh-cookie-banner');
           if (el) el.hidden = true;
         }
-        if (decided() || /googlebot|adsbot-google|mediapartners-google/i.test(navigator.userAgent || '')) hide();
+        if (decided()) hide();
         function save(value) {
           try {
             localStorage.setItem(KEY, value);
@@ -614,9 +613,9 @@
       });
     </script>
 
-    <!-- AdSense loader URL stays in HTML for site verification. Humans load
-         it after first paint so DoubleClick does not steal the 4G budget
-         from LCP. AdsBot / Googlebot inject immediately. -->
+    <!-- AdSense loader URL stays in HTML for site verification. It loads
+         after first paint so DoubleClick does not steal the 4G budget from
+         LCP. Same timing for every visitor: no user-agent branches. -->
     <script>
       (function () {
         var src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728';
@@ -627,10 +626,6 @@
           s.src = src;
           s.crossOrigin = 'anonymous';
           document.head.appendChild(s);
-        }
-        if (/googlebot|adsbot-google|mediapartners-google/i.test(navigator.userAgent || '')) {
-          inject();
-          return;
         }
         window.addEventListener('load', function () {
           if ('requestIdleCallback' in window) {

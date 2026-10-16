@@ -13,11 +13,11 @@
  *   news, newsletter, reading-list, most cheat sheets, and utility tools
  *   are noindexed
  * - they are omitted from sitemap.xml
- * - AdsBot / Mediapartners-Google are steered off those prefixes
  * - header / in-article CTAs stop walking reviewers into that inventory
- * - long <pre> dumps are collapsed in SSG HTML so AdsBot scores prose, not
- *   raw SQL / YAML / PySpark / JSON; humans still get full snippets in React
  * - indexable word counts ignore code so a script dump cannot pad a thin page
+ *
+ * Crawlers and humans always receive the same page. Nothing here branches on
+ * user agent or rewrites content for bots; that would be cloaking.
  *
  * Flagship pages stay indexable: articles, about/trust pages, the tools and
  * cheat-sheet hubs, a short allowlist of calculators and reference sheets,

@@ -125,7 +125,6 @@ import {
   getCheatsheetIndexableWordCount,
   countIndexableWords,
 } from '../src/data/adsenseQualityGate.js';
-import { collapseLongCodeBlocks } from '../src/utils/adsenseCodeRatio.js';
 import { pruneSitemaps } from './pruneSitemapNoindex.js';
 
 function countPlainWords(...parts) {
@@ -3134,15 +3133,9 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
   // ðŸ–¼ï¸ Determine OG image: use featured image or fallback to default
   const ogImageUrl = featuredImage || 'https://dataengineerhub.blog/og-image.jpg';
 
-  // Crawler-facing body: collapse long SQL/YAML/PySpark/JSON dumps during
-  // AdSense review so AdsBot scores editorial prose, not a script collection.
-  // Humans still hydrate the full WordPress snippets in React.
+  // Static body is the full WordPress article, identical to what React
+  // renders. Never trim or rewrite it for crawlers: that is cloaking.
   let crawlerBody = sanitizeWordPressHTML(processedContent);
-  if (ADSENSE_REVIEW_MODE) {
-    crawlerBody = collapseLongCodeBlocks(crawlerBody, {
-      title: decodeHtmlEntities(rawTitle),
-    });
-  }
 
   // Reading time uses the full tutorial (code included). Robots / schema use
   // prose-only words so a 2,000-token SQL dump cannot pad a thin page.
@@ -3422,25 +3415,6 @@ ${CONSENT_MODE_V2_HTML}
         background: none;
         padding: 0;
         color: #e2e8f0;
-      }
-
-      .seo-content .article-body .adsense-code-preview {
-        margin: 1.5rem 0;
-        padding: 1rem 1.15rem;
-        border-radius: 10px;
-        border: 1px solid rgba(148, 163, 184, 0.25);
-        background: rgba(15, 23, 42, 0.55);
-      }
-      .seo-content .article-body .adsense-code-preview figcaption {
-        color: #cbd5e1;
-        font-style: normal;
-        text-align: left;
-        margin: 0 0 0.75rem;
-      }
-      .seo-content .article-body .adsense-code-preview p {
-        color: #94a3b8;
-        font-size: 0.95rem;
-        margin: 0.75rem 0 0;
       }
 
       .seo-content .article-body .article-faq {

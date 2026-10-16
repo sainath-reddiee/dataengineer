@@ -1,14 +1,13 @@
 # robots.txt - DataEngineer Hub
-# Last updated: 2026-08-31
+# Last updated: 2026-10-16
 #
 # If Cloudflare AI Crawl Control is enabled, it PREPENDS Disallow rules for
 # GPTBot, ClaudeBot, Google-Extended, and others. Those override the Allow
 # rules below for those user-agents. Turn AI Crawl Control off (or set those
 # bots to Allow) so ChatGPT / Claude / Gemini can cite these articles.
 #
-# Default Googlebot may still crawl glossary/compare so it can see noindex
-# and drop those URLs. AdsBot is steered away from those template sections
-# so AdSense review samples articles, tools, and cheat sheets instead.
+# Held-out review sections (glossary, compare, archives, etc.) stay crawlable
+# so Google can see their noindex and drop them from the index.
 
 # =============================================================================
 # Default rules — allow indexing of all public sections
@@ -52,6 +51,9 @@ Allow: /.well-known/
 
 # =============================================================================
 # GOOGLE ADSENSE & ADS CRAWLERS
+# Ad crawlers ignore the * group, so they are named explicitly. They get the
+# same private-path rules as every other crawler: no section is hidden from
+# them that humans or Googlebot can see.
 # =============================================================================
 User-agent: Mediapartners-Google
 Allow: /
@@ -61,27 +63,6 @@ Disallow: /debug
 Disallow: /sponsors/dashboard
 Disallow: /practice/*/q/
 Disallow: /practice/*/topics/
-Disallow: /glossary
-Disallow: /glossary/
-Disallow: /compare
-Disallow: /compare/
-Disallow: /tag
-Disallow: /tag/
-Disallow: /tags
-Disallow: /cheatsheets/category/
-Disallow: /category
-Disallow: /category/
-Disallow: /interview-prep
-Disallow: /practice
-Disallow: /practice/
-Disallow: /advertise
-Disallow: /contribute
-Disallow: /contributors
-Disallow: /news
-Disallow: /news/
-Disallow: /newsletter
-Disallow: /newsletter/
-Disallow: /reading-list
 
 User-agent: AdsBot-Google
 Allow: /
@@ -91,27 +72,6 @@ Disallow: /debug
 Disallow: /sponsors/dashboard
 Disallow: /practice/*/q/
 Disallow: /practice/*/topics/
-Disallow: /glossary
-Disallow: /glossary/
-Disallow: /compare
-Disallow: /compare/
-Disallow: /tag
-Disallow: /tag/
-Disallow: /tags
-Disallow: /cheatsheets/category/
-Disallow: /category
-Disallow: /category/
-Disallow: /interview-prep
-Disallow: /practice
-Disallow: /practice/
-Disallow: /advertise
-Disallow: /contribute
-Disallow: /contributors
-Disallow: /news
-Disallow: /news/
-Disallow: /newsletter
-Disallow: /newsletter/
-Disallow: /reading-list
 
 User-agent: AdsBot-Google-Mobile
 Allow: /
@@ -121,27 +81,6 @@ Disallow: /debug
 Disallow: /sponsors/dashboard
 Disallow: /practice/*/q/
 Disallow: /practice/*/topics/
-Disallow: /glossary
-Disallow: /glossary/
-Disallow: /compare
-Disallow: /compare/
-Disallow: /tag
-Disallow: /tag/
-Disallow: /tags
-Disallow: /cheatsheets/category/
-Disallow: /category
-Disallow: /category/
-Disallow: /interview-prep
-Disallow: /practice
-Disallow: /practice/
-Disallow: /advertise
-Disallow: /contribute
-Disallow: /contributors
-Disallow: /news
-Disallow: /news/
-Disallow: /newsletter
-Disallow: /newsletter/
-Disallow: /reading-list
 
 # =============================================================================
 # SITEMAPS

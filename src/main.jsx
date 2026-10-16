@@ -7,7 +7,6 @@ import { HelmetProvider } from 'react-helmet-async';
 import App from '@/App';
 import '@/index.css';
 import { initThirdPartyScripts } from '@/utils/scriptLoader';
-import { isCrawlerUserAgent } from '@/utils/isCrawler';
 import { parkSsgArticleFromRoot } from '@/utils/ssgArticle';
 import { parkArticleBootstrapFromRoot } from '@/utils/articleBootstrap';
 
@@ -37,17 +36,11 @@ if (import.meta.env.DEV) {
   });
 }
 
-// Policy (site-wide: home, /articles, every /articles/:slug, tools, etc.):
-// - Humans and LLM in-app browsers → always React (full UI).
-// - AdsBot / Googlebot / other documented crawlers → keep SSG HTML so
-//   AdSense still sees the full article-body without a loading shell.
+// Every visitor, crawler or human, gets the same React render. The SSG HTML
+// is parked first so React paints the same article body without a loading
+// shell. Never branch on user agent here: serving crawlers a different page
+// from humans is cloaking under Google's spam policies.
 const initApp = () => {
-  if (isCrawlerUserAgent()) {
-    document.body.classList.remove('react-loading');
-    document.body.classList.add('react-loaded');
-    return;
-  }
-
   const rootEl = document.getElementById('root');
   parkSsgArticleFromRoot(rootEl);
   parkArticleBootstrapFromRoot(rootEl);
@@ -71,9 +64,8 @@ const initApp = () => {
   }, 1000);
 };
 
-// Crawlers keep SSG immediately. Humans let the static hero paint first
-// (FCP/LCP) then hydrate on idle so the 300 KB app bundle is not on the
-// critical path for the first contentful text.
+// Let the static hero paint first (FCP/LCP) then mount on idle so the
+// 300 KB app bundle is not on the critical path for the first contentful text.
 const bootApp = () => {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp, { once: true });
@@ -82,9 +74,7 @@ const bootApp = () => {
   }
 };
 
-if (isCrawlerUserAgent()) {
-  bootApp();
-} else if (typeof window.requestIdleCallback === 'function') {
+if (typeof window.requestIdleCallback === 'function') {
   window.requestIdleCallback(bootApp, { timeout: 1200 });
 } else {
   bootApp();

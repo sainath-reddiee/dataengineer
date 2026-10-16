@@ -1,12 +1,8 @@
 /**
- * Who may keep the static SSG HTML (no React).
+ * Crawler detection for analytics only (e.g. sponsor impression counts).
  *
- * Default is ALWAYS React on every route. Manual users, Gemini/ChatGPT
- * in-app Chrome, and AdSense human reviewers never stay on static HTML.
- *
- * Only documented crawlers skip React — those bots read the pre-rendered
- * article-body, which is what AdSense/Googlebot need for approval.
- * AdsBot / Mediapartners / Googlebot stay in this list on purpose.
+ * Never use this to change what a page renders: crawlers and humans must
+ * receive the same content, or Google treats it as cloaking.
  */
 export const CRAWLER_UA_PATTERN =
   /googlebot|adsbot-google|mediapartners-google|bingbot|slurp|facebookexternalhit|linkedinbot|twitterbot|whatsapp|telegrambot|baiduspider|yandex|duckduckbot|semrushbot|ahrefsbot|mj12bot|dotbot|rogerbot|archive\.org_bot|applebot|petalbot|gptbot|chatgpt-user|oai-searchbot|claudebot|claude-web|anthropic-ai|google-extended|googleother|bytespider|ccbot|perplexity|cohere-ai|ia_archiver/i;

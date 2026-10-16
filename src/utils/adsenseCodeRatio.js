@@ -1,14 +1,10 @@
 /**
- * AdsBot text-to-code helpers for programming tutorials.
+ * Text-to-code helpers for programming tutorials: language detection and
+ * prose vs code word measurement.
  *
- * Automated AdSense review treats long unedited SQL / YAML / PySpark / JSON
- * dumps as thin textual content. Collapse those blocks in crawler-facing SSG
- * HTML only. React visitors keep the full WordPress snippets.
+ * Code blocks are never rewritten for crawlers. Static HTML and React show
+ * the same full snippets to every visitor.
  */
-
-export const LONG_CODE_LINE_THRESHOLD = 12;
-export const LONG_CODE_WORD_THRESHOLD = 80;
-export const CODE_PREVIEW_LINES = 8;
 
 const LANG_LABELS = {
   sql: 'SQL',
@@ -36,15 +32,6 @@ const LANG_LABELS = {
   tf: 'Terraform',
   toml: 'TOML',
 };
-
-function escapeHtml(value) {
-  return String(value || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
 
 function decodeEntities(value) {
   return String(value || '')
@@ -127,52 +114,4 @@ export function measureTextToCodeRatio(html) {
     totalWords: total,
     codeShare: total === 0 ? 0 : codeWords / total,
   };
-}
-
-function precedingHeading(html, offset, fallback) {
-  const region = String(html || '').slice(0, Math.max(0, offset));
-  const matches = [...region.matchAll(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/gi)];
-  const last = matches[matches.length - 1];
-  const text = last ? stripTags(last[1]) : '';
-  return text || fallback || 'this tutorial';
-}
-
-function isLongCodeBlock(text) {
-  const normalized = String(text || '').replace(/\r\n/g, '\n');
-  const lines = normalized.split('\n');
-  const wordCount = wordsIn(normalized).length;
-  return lines.length >= LONG_CODE_LINE_THRESHOLD || wordCount >= LONG_CODE_WORD_THRESHOLD;
-}
-
-/**
- * Replace long <pre> dumps with an 8-line excerpt plus a unique prose caption
- * taken from the preceding heading. Short snippets stay intact.
- */
-export function collapseLongCodeBlocks(html, { title = 'this tutorial' } = {}) {
-  const source = String(html || '');
-  if (!source) return source;
-
-  const usedCaptions = new Map();
-
-  return source.replace(/<pre\b[\s\S]*?<\/pre>/gi, (block, offset) => {
-    const text = preInnerText(block);
-    if (!isLongCodeBlock(text)) return block;
-
-    const lines = text.replace(/\r\n/g, '\n').split('\n');
-    const language = detectCodeLanguage(block, text);
-    const heading = precedingHeading(source, offset, title);
-    let caption = `${heading}: excerpt of this ${language} example`;
-    const seen = (usedCaptions.get(caption) || 0) + 1;
-    usedCaptions.set(caption, seen);
-    if (seen > 1) caption = `${caption} (part ${seen})`;
-
-    const preview = lines.slice(0, CODE_PREVIEW_LINES).join('\n');
-    const omitted = Math.max(0, lines.length - CODE_PREVIEW_LINES);
-    const remainder =
-      omitted > 0
-        ? `The remaining ${omitted} lines stay in the interactive article so this page remains a written walkthrough rather than a raw ${language} dump.`
-        : `The full ${language} listing stays in the interactive article; this page keeps the surrounding explanation.`;
-
-    return `<figure class="adsense-code-preview"><figcaption>${escapeHtml(caption)}. This is a shortened excerpt of a ${lines.length}-line script.</figcaption><pre><code>${escapeHtml(preview)}${omitted ? '\n…' : ''}</code></pre><p>${escapeHtml(remainder)}</p></figure>`;
-  });
 }
