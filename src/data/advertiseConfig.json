@@ -1,26 +1,52 @@
 {
   "stats": [
-    { "label": "Published Guides", "value": "115+", "desc": "Original Snowflake, dbt, Airflow, and warehouse-cost tutorials — not vendor rewrites", "icon": "FileText" },
-    { "label": "Audience", "value": "Practitioners", "desc": "Engineers who cost warehouses, debug dbt tests, and sit SnowPro interviews", "icon": "Users" },
-    { "label": "Sponsorships", "value": "Vetted", "desc": "Human review, sponsored label, nofollow by default — no paid-link packages", "icon": "Shield" }
+    {
+      "label": "Published Guides",
+      "value": "115+",
+      "desc": "Original Snowflake, dbt, Airflow, and warehouse-cost tutorials — not vendor rewrites",
+      "icon": "FileText"
+    },
+    {
+      "label": "Audience",
+      "value": "Practitioners",
+      "desc": "Engineers who cost warehouses, debug dbt tests, and sit SnowPro interviews",
+      "icon": "Users"
+    },
+    {
+      "label": "Sponsorships",
+      "value": "Vetted",
+      "desc": "Human review, sponsored label, nofollow by default — no paid-link packages",
+      "icon": "Shield"
+    }
   ],
   "inventory": {
     "guides": 115,
     "cheatsheets": 30
   },
-  "techStack": ["Snowflake", "dbt", "Databricks", "Apache Spark", "Apache Airflow", "BigQuery", "Kafka", "Python", "SQL", "Gen AI"],
+  "techStack": [
+    "Snowflake",
+    "dbt",
+    "Databricks",
+    "Apache Spark",
+    "Apache Airflow",
+    "BigQuery",
+    "Kafka",
+    "Python",
+    "SQL",
+    "Gen AI"
+  ],
   "opportunities": [
     {
       "title": "Sponsored card in matching guides",
       "packageKey": "resource_reference",
-      "popular": true,
+      "popular": false,
       "tagline": "One labeled card on articles, cheat sheets, and tools that already match your stack",
       "bullets": [
-        "Shown on matching tutorials, cheat sheets, and interactive calculators — not glossary or compare archives",
-        "Marked Sponsored. Outbound links are nofollow. This is referral traffic, not a backlink product",
-        "One sponsor per guide so we never stack competitors on the same page",
-        "You approve the headline, one-line description, and destination URL before it goes live",
-        "Private token dashboard for viewable impressions and UTM-tagged clicks"
+        "Shown on matching tutorials, cheat sheets, and interactive calculators, not glossary or compare archives",
+        "Labeled \"Sponsored\". Outbound links are rel=\"sponsored nofollow\": referral traffic, not a backlink product",
+        "One sponsor per page so we never stack competitors side by side",
+        "Private dashboard link with viewable impressions and clicks counted on our server, plus UTM-tagged links for your own analytics",
+        "You approve the headline, one-line description, and destination URL before it goes live"
       ],
       "cta": "Book a sponsored card",
       "icon": "BookOpen",
@@ -45,13 +71,13 @@
       "title": "Tools Hub listing",
       "packageKey": "directory",
       "popular": false,
-      "tagline": "A permanent card in the free-tools directory practitioners already use",
+      "tagline": "A permanent card in the sponsored row of the free-tools directory",
       "bullets": [
-        "Logo, one-line summary, and CTA in the matching Tools Hub section",
-        "Seen by people costing warehouses or generating SQL — high purchase intent",
-        "One free copy/URL update per quarter",
-        "No weekly flash sale. Pay once; stay listed while the hub is live",
-        "Same viewable-impression tracking as in-guide cards"
+        "Logo, one-line summary, and CTA in the labeled sponsored row at the top of the Tools Hub",
+        "Seen by people costing warehouses or generating SQL, so intent is high",
+        "One free copy or URL update per quarter",
+        "Same server-counted impressions and clicks as in-guide cards",
+        "No weekly flash sale. Pay once and stay listed while the hub is live"
       ],
       "cta": "List my tool",
       "icon": "Layers",
@@ -73,7 +99,7 @@
       "bullets": [
         "1,800+ words with working code, a failure mode, and a decision we would make again",
         "Companion GitHub repo when the workflow needs cloneable examples",
-        "Published as a labeled sponsored tutorial on the blog and sent to the newsletter",
+        "Published as a tutorial marked \"Sponsored\" at the top, with your product links set to rel=\"sponsored\"",
         "Not a guest post. You do not buy a byline. We keep editorial control",
         "This is the package that adds unique pages to the site, not another directory card"
       ],

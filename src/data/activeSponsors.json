@@ -1,69 +1,5 @@
 [
   {
-    "company": "SnowflakePartner",
-    "logo": "/assets/sponsors/snowflake.svg",
-    "url": "https://snowflake.com",
-    "placement": "directory",
-    "startDate": "2026-07-17",
-    "endDate": "2026-08-17",
-    "active": false,
-    "token": "sp_snowflake123",
-    "notes": "Ecosystem Showcase - Monthly option (Auto-expires on August 17th)",
-    "targeting": {
-      "categories": [
-        "snowflake"
-      ],
-      "slugs": [
-        "snowflake-cost-calculator",
-        "snowflake-warehouse-sizing"
-      ]
-    }
-  },
-  {
-    "company": "SponsorCorp",
-    "logo": "/assets/sponsors/sponsorcorp.svg",
-    "url": "https://sponsorcorp.com",
-    "placement": "directory",
-    "startDate": "2026-07-17",
-    "endDate": "2026-08-17",
-    "active": false,
-    "token": "sp_8f3a9e1d2c",
-    "notes": "Ecosystem Showcase - Monthly option (Auto-expires on August 17th)",
-    "targeting": {
-      "categories": [
-        "snowflake",
-        "warehousing"
-      ],
-      "slugs": [
-        "snowflake-credit-cost",
-        "snowflake-query-cost-estimator"
-      ]
-    }
-  },
-  {
-    "company": "DataUtility",
-    "logo": "/assets/sponsors/datautility.svg",
-    "url": "https://datautility.io",
-    "placement": "resource_reference",
-    "startDate": "2026-07-17",
-    "endDate": "2027-07-17",
-    "active": false,
-    "token": "sp_4b7e2c9a6f",
-    "notes": "Developer Resource Reference - Yearly option (Auto-expires next year)",
-    "targeting": {
-      "categories": [
-        "dbt",
-        "sql",
-        "orchestration"
-      ],
-      "slugs": [
-        "dbt-cloud-cost-calculator",
-        "sql-formatter",
-        "sql-playground"
-      ]
-    }
-  },
-  {
     "company": "Dataengineer Interview Playbook",
     "logo": "/assets/sponsors/dataengineerinterviewplaybook.svg",
     "url": "https://sainath34.gumroad.com/l/dataengineer_kit",
@@ -72,7 +8,7 @@
     "endDate": "2030-10-28",
     "active": true,
     "token": "sp_3c70d6257e5f",
-    "notes": "directory sponsorship",
+    "notes": "Interview questions and answers for data engineering roles, written by the site author.",
     "targeting": {
       "categories": [
         "sql",
@@ -85,6 +21,7 @@
         "data engineering",
         "sql.data-engineering.interview"
       ]
-    }
+    },
+    "ownProduct": true
   }
 ]

@@ -188,9 +188,10 @@ export default function ToolsHubPage() {
         </div>
 
         <div className="max-w-6xl mx-auto px-4">
+          {/* Every paid Tools Hub listing shows here, each labeled. */}
           <SponsorPlacement
             placementFilter="directory"
-            relaxTargeting
+            showAll
             category="tools"
             slug="tools"
             className="mt-0 mb-8"

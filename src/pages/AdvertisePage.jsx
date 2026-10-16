@@ -24,6 +24,7 @@ import { trackEvent } from '@/utils/analytics';
 import { getFAQSchema } from '@/lib/seoConfig';
 import { useStats } from '@/hooks/useStats';
 import advertiseConfig from '@/data/advertiseConfig.json';
+import { useFormSpamGuard } from '@/hooks/useFormSpamGuard';
 import SupportPanel from '@/components/Support/SupportPanel';
 
 // Keep this page off the 340KB cheatsheetData chunk — a hard count is enough
@@ -37,17 +38,17 @@ const SPONSOR_CONTACT_EMAIL = 'sainath@dataengineerhub.blog';
 
 const NEWSLETTER = {
   key: 'newsletter_sponsorship',
-  title: 'Newsletter sponsorship',
-  tagline: 'A labeled blurb in the weekly digest once the list is live',
+  title: 'Newsletter sponsorship (waitlist)',
+  tagline: 'The weekly letter is not sending yet. Join the waitlist; nothing is charged until your issue goes out',
   price: 79,
   priceLabel: '/ issue',
   bullets: [
     '~150 words + one CTA at the top of an issue',
     'Plain-text friendly — readable in engineering inboxes',
     'Screenshot after send as proof',
-    'If the list is not live yet, we hold the slot or refund',
+    'No payment until the letter is sending and your issue date is confirmed',
   ],
-  cta: 'Reserve a newsletter slot',
+  cta: 'Join the newsletter waitlist',
 };
 
 const PROCESS_STEPS = [
@@ -73,7 +74,7 @@ const SPONSOR_GETS = [
   'Manual review before anything goes live',
   'Labeled placement next to a matching stack',
   'UTM links you can see in your own analytics',
-  'One free copy or URL fix after publish',
+  'One free copy or URL update per quarter',
   'Email to Sainath — not a ticket queue',
   'Full refund if you cancel before go-live',
 ];
@@ -125,7 +126,7 @@ const FAQS = [
     category: 'Delivery',
     question: 'How do you report results?',
     answer:
-      'Live URL + UTM parameters you own. Newsletter: a send screenshot. Private impression dashboard when the campaign token is issued. We do not seed fake totals.',
+      'Live URL and UTM parameters you own, plus a private dashboard link with viewable impressions and clicks counted on our server. Newsletter: a send screenshot. We do not seed fake totals.',
   },
 ];
 
@@ -176,6 +177,7 @@ const AdvertisePage = () => {
     message: '',
   });
   const [loading, setLoading] = useState(false);
+  const { checkSpam, recordSuccess, honeypotProps } = useFormSpamGuard('advertise');
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
   const [selectedDurations, setSelectedDurations] = useState({
@@ -220,6 +222,8 @@ const AdvertisePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.name) return;
+    // Honeypot, too-fast and duplicate submissions are dropped quietly.
+    if (checkSpam({ ...formData, email: formData.email.trim().toLowerCase() }).blocked) return;
     setLoading(true);
     setError(null);
 
@@ -287,6 +291,7 @@ const AdvertisePage = () => {
         category: 'monetization',
         label: formData.package,
       });
+      recordSuccess({ ...formData, email: formData.email.trim().toLowerCase() });
       setSubmitted(true);
       setFormData({
         name: '',
@@ -860,6 +865,7 @@ const AdvertisePage = () => {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-3">
+                <input {...honeypotProps} />
                 <label className="block text-xs text-slate-400">
                   Your name
                   <input

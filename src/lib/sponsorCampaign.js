@@ -40,6 +40,12 @@ export function matchesPlacementFilter(sponsor, placementFilter) {
   return allowed.includes(sponsor?.placement);
 }
 
+// Every live sponsor for a placement, e.g. all paid Tools Hub listings. A
+// directory listing is bought for the hub itself, so targeting is ignored.
+export function pickAllSponsors(catalog, { placementFilter, now } = {}) {
+  return getLiveSponsors(catalog, now).filter((item) => matchesPlacementFilter(item, placementFilter));
+}
+
 export function pickSponsor(catalog, {
   category,
   tags = [],
@@ -115,8 +121,14 @@ export function placementLabel(placement) {
   return String(placement || 'Placement').replace(/_/g, ' ');
 }
 
-export function partnerDashboardPath(token) {
-  const cleaned = String(token || '').trim();
-  if (!cleaned) return '/sponsors/dashboard';
-  return `/sponsors/dashboard?token=${encodeURIComponent(cleaned)}`;
+// The dashboard needs an HMAC key derived from DEHUB_SPONSOR_SECRET, which
+// only WordPress and the owner's machine know, never the browser bundle.
+export function partnerDashboardPath(campaign, key) {
+  const cleaned = String(campaign || '').trim();
+  if (!cleaned || !key) return '/sponsors/dashboard';
+  return `/sponsors/dashboard?campaign=${encodeURIComponent(cleaned)}&key=${encodeURIComponent(key)}`;
+}
+
+export function dashboardLinkCommand(campaign) {
+  return `DEHUB_SPONSOR_SECRET=<secret> node scripts/sponsorDashboardLink.js ${String(campaign || '').trim()}`;
 }

@@ -4086,6 +4086,148 @@ function dehub_gh_deploy_settings_page(): void {
 }
 
 // ============================================================================
+// SPONSOR STATS: server-side impressions and clicks per campaign
+// ============================================================================
+// The site records a viewable impression (card 50% on screen for 1s, once per
+// browser session and page) and each click with a form-encoded beacon. Counts
+// are aggregated per campaign per day; no IPs or user data are stored.
+// Sponsors read their numbers through a private link signed with
+// DEHUB_SPONSOR_SECRET (define it in wp-config.php). Generate a sponsor's link
+// with: DEHUB_SPONSOR_SECRET=... node scripts/sponsorDashboardLink.js <campaign>
+
+define('DEHUB_SPONSOR_STATS_DB_VERSION', '1');
+
+function dehub_sponsor_stats_table() {
+    global $wpdb;
+    return $wpdb->prefix . 'dehub_sponsor_stats';
+}
+
+add_action('init', function () {
+    if (get_option('dehub_sponsor_stats_db_version') === DEHUB_SPONSOR_STATS_DB_VERSION) {
+        return;
+    }
+    global $wpdb;
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    $table = dehub_sponsor_stats_table();
+    $charset = $wpdb->get_charset_collate();
+    dbDelta("CREATE TABLE {$table} (
+        campaign varchar(64) NOT NULL,
+        day date NOT NULL,
+        impressions int unsigned NOT NULL DEFAULT 0,
+        clicks int unsigned NOT NULL DEFAULT 0,
+        PRIMARY KEY  (campaign, day)
+    ) {$charset};");
+    update_option('dehub_sponsor_stats_db_version', DEHUB_SPONSOR_STATS_DB_VERSION);
+});
+
+function dehub_sponsor_campaign_param($value) {
+    $campaign = sanitize_key((string) $value);
+    return preg_match('/^[a-z0-9_-]{3,64}$/', $campaign) ? $campaign : '';
+}
+
+function dehub_sponsor_access_key($campaign) {
+    if (!defined('DEHUB_SPONSOR_SECRET') || !DEHUB_SPONSOR_SECRET) {
+        return '';
+    }
+    return substr(hash_hmac('sha256', $campaign, DEHUB_SPONSOR_SECRET), 0, 32);
+}
+
+add_action('rest_api_init', function () {
+    // Public, anonymous counter. Rate limited per visitor so a reload loop
+    // cannot inflate a sponsor's numbers.
+    register_rest_route('dehub/v1', '/sponsor-event', [
+        'methods'  => 'POST',
+        'permission_callback' => '__return_true',
+        'callback' => function ($request) {
+            $campaign = dehub_sponsor_campaign_param($request->get_param('campaign'));
+            $type = $request->get_param('type') === 'click' ? 'click' : 'impression';
+            if (!$campaign) {
+                return new WP_REST_Response(['ok' => false], 400);
+            }
+
+            $ua = isset($_SERVER['HTTP_USER_AGENT']) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
+            if ($ua === '' || preg_match('/bot|crawl|spider|slurp|mediapartners|adsbot|preview|headless/i', $ua)) {
+                return new WP_REST_Response(['ok' => true, 'counted' => false], 202);
+            }
+
+            $ip = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+            $context = sanitize_text_field((string) $request->get_param('context'));
+            $window = $type === 'click' ? MINUTE_IN_SECONDS : 30 * MINUTE_IN_SECONDS;
+            $limit_key = 'dehub_sp_' . md5($ip . '|' . $campaign . '|' . $type . '|' . $context);
+            if (get_transient($limit_key)) {
+                return new WP_REST_Response(['ok' => true, 'counted' => false], 202);
+            }
+            set_transient($limit_key, 1, $window);
+
+            global $wpdb;
+            $table = dehub_sponsor_stats_table();
+            $column = $type === 'click' ? 'clicks' : 'impressions';
+            $wpdb->query($wpdb->prepare(
+                "INSERT INTO {$table} (campaign, day, impressions, clicks) VALUES (%s, %s, %d, %d)
+                 ON DUPLICATE KEY UPDATE {$column} = {$column} + 1",
+                $campaign,
+                current_time('Y-m-d'),
+                $type === 'impression' ? 1 : 0,
+                $type === 'click' ? 1 : 0
+            ));
+            return new WP_REST_Response(['ok' => true, 'counted' => true], 202);
+        },
+    ]);
+
+    // Private stats for one campaign. The key is an HMAC of the campaign id,
+    // so it cannot be guessed from the public bundle or the campaign id alone.
+    register_rest_route('dehub/v1', '/sponsor-stats', [
+        'methods'  => 'GET',
+        'permission_callback' => '__return_true',
+        'callback' => function ($request) {
+            $campaign = dehub_sponsor_campaign_param($request->get_param('campaign'));
+            $expected = $campaign ? dehub_sponsor_access_key($campaign) : '';
+            if ($expected === '') {
+                return new WP_REST_Response(['success' => false, 'message' => 'Sponsor stats are not configured.'], 503);
+            }
+            $key = (string) $request->get_param('key');
+            if (!hash_equals($expected, $key)) {
+                return new WP_REST_Response(['success' => false, 'message' => 'This dashboard link is not valid.'], 403);
+            }
+
+            global $wpdb;
+            $table = dehub_sponsor_stats_table();
+            $rows = $wpdb->get_results($wpdb->prepare(
+                "SELECT day, impressions, clicks FROM {$table}
+                 WHERE campaign = %s AND day >= DATE_SUB(%s, INTERVAL 90 DAY)
+                 ORDER BY day ASC",
+                $campaign,
+                current_time('Y-m-d')
+            ), ARRAY_A);
+            $totals = $wpdb->get_row($wpdb->prepare(
+                "SELECT COALESCE(SUM(impressions), 0) AS impressions, COALESCE(SUM(clicks), 0) AS clicks
+                 FROM {$table} WHERE campaign = %s",
+                $campaign
+            ), ARRAY_A);
+
+            $response = rest_ensure_response([
+                'success'  => true,
+                'campaign' => $campaign,
+                'totals'   => [
+                    'impressions' => (int) ($totals['impressions'] ?? 0),
+                    'clicks'      => (int) ($totals['clicks'] ?? 0),
+                ],
+                'daily'    => array_map(function ($row) {
+                    return [
+                        'day'         => $row['day'],
+                        'impressions' => (int) $row['impressions'],
+                        'clicks'      => (int) $row['clicks'],
+                    ];
+                }, $rows ?: []),
+            ]);
+            $response->header('Cache-Control', 'no-store');
+            return $response;
+        },
+    ]);
+});
+
+
+// ============================================================================
 // END OF FILE - ALL CODE COMPLETE AND VERIFIED
 // ============================================================================
 ?>

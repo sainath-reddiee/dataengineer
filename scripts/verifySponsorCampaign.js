@@ -50,7 +50,8 @@ ok(url.searchParams.get('utm_content') === 'directory:snowflake', 'utm_content i
 
 const alt = buildTrackedDestination({ destinationUrl: 'https://other.example', token: 'sp_x', placement: 'content' }, 'tools');
 ok(alt.includes('utm_source=dataengineerhub'), 'destinationUrl fallback still gets UTM tags');
-ok(partnerDashboardPath('sp a').includes('token=sp%20a'), 'dashboard path encodes the token');
+ok(partnerDashboardPath('sp a', 'k1').includes('campaign=sp%20a&key=k1'), 'dashboard path encodes campaign and key');
+ok(partnerDashboardPath('sp_a') === '/sponsors/dashboard', 'dashboard path without a key grants nothing');
 
 const catalog = [
   { ...live, targeting: { categories: ['snowflake'] } },

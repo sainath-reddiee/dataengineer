@@ -527,6 +527,11 @@ const ArticlePage = () => {
     }
   };
 
+  // Co-authored sponsor guides carry the WordPress tag "sponsored".
+  const isSponsoredPost = (safePost.tags || []).some(
+    (t) => String(typeof t === 'string' ? t : (t?.slug || t?.name || '')).toLowerCase() === 'sponsored'
+  );
+
   // Generate breadcrumbs for SEO
   const breadcrumbs = generateBreadcrumbs(`/articles/${slug}`, safePost.title);
 
@@ -593,6 +598,15 @@ const ArticlePage = () => {
               the image; matches the static HTML order. */}
           <MetadataOption1 safePost={safePost} formatDate={formatDate} slug={slug} />
 
+          {isSponsoredPost && (
+            <p className="mx-auto max-w-3xl border-l-2 border-rust-500 bg-paper-300 px-4 py-3 text-[15px] text-ink-body">
+              <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-rust-600">Sponsored</span>{' '}
+              This guide was written in partnership with a sponsor. Our{' '}
+              <Link to="/editorial-standards" className="text-rust-600 underline decoration-rust-200 underline-offset-2">editorial standards</Link>{' '}
+              still apply, and links to the sponsor are marked as sponsored.
+            </p>
+          )}
+
           {/* Hero Image */}
           <figure className="relative mx-auto aspect-video max-h-[220px] max-w-4xl overflow-hidden rounded-sm border border-paper-500 bg-paper-300 sm:max-h-[360px] md:max-h-[440px]">
             <LazyImage
@@ -631,9 +645,10 @@ const ArticlePage = () => {
                 </div>
               </div>
 
-          {!ADSENSE_REVIEW_MODE && (
+          {/* Renders only when a live sponsor matches this article; always labeled. */}
+          <div className="mx-auto max-w-2xl">
             <SponsorPlacement category={safePost.category} tags={safePost.tags} slug={slug} />
-          )}
+          </div>
 
           {/* Everything after the body stays in the reading column. */}
           <div className="mx-auto max-w-2xl space-y-8 border-t border-paper-500 pt-8">

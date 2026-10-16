@@ -1,10 +1,31 @@
 // First-party sponsor performance tracking.
 // Viewable impressions (50% visible for 1s, once per session+context) and clicks
-// are stored locally so the partner dashboard can show real numbers without a
-// backend. GA4 also receives the same events after cookie consent.
-// Crawlers (AdsBot/Googlebot) are never counted.
+// are sent to WordPress (dehub/v1/sponsor-event), which aggregates daily counts
+// per campaign; sponsors read them through a signed private dashboard link.
+// A local copy is kept for the admin preview. GA4 also receives the events
+// after cookie consent. Crawlers (AdsBot/Googlebot) are never counted.
 
 import { isCrawlerUserAgent } from './isCrawler.js';
+import { WORDPRESS_API_URL } from '../apiConfig.js';
+
+const SPONSOR_EVENT_URL = `${WORDPRESS_API_URL}/wp-json/dehub/v1/sponsor-event`;
+
+// Anonymous count only: campaign id, event type and page context. A
+// form-encoded beacon is a "simple" request, so no CORS preflight is needed.
+function sendServerEvent(token, type, context) {
+  if (typeof document === 'undefined' || typeof navigator === 'undefined') return;
+  const body = new URLSearchParams({ campaign: token, type, context: String(context || '').slice(0, 64) });
+  try {
+    if (navigator.sendBeacon && navigator.sendBeacon(SPONSOR_EVENT_URL, body)) return;
+  } catch {
+    // fall through to fetch
+  }
+  try {
+    fetch(SPONSOR_EVENT_URL, { method: 'POST', body, keepalive: true, mode: 'no-cors' }).catch(() => {});
+  } catch {
+    // tracking is best-effort
+  }
+}
 
 export const SPONSOR_STATS_KEY = 'deh_sponsor_stats_v1';
 const MAX_CAMPAIGNS = 50;
@@ -139,6 +160,7 @@ export function recordSponsorImpression({ token, company, placement, context, us
     bump(entry, 'impressions', ctx);
     entry.lastImpressionAt = Date.now();
   });
+  sendServerEvent(token, 'impression', ctx);
 
   mirrorToGa4({
     action: 'sponsor_impression',
@@ -156,6 +178,7 @@ export function recordSponsorClick({ token, company, placement, context, userAge
     bump(entry, 'clicks', ctx);
     entry.lastClickAt = Date.now();
   });
+  sendServerEvent(token, 'click', ctx);
   mirrorToGa4({
     action: 'sponsor_link_clicked',
     category: 'sponsorship',

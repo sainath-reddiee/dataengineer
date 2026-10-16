@@ -6,7 +6,7 @@ import {
   Trash2, RefreshCw, Code, CheckCircle, AlertTriangle, ShieldCheck, Settings, Pause, Play
 } from 'lucide-react';
 import activeSponsorsData from '@/data/activeSponsors.json';
-import { ALLOWED_PLACEMENTS, getCampaignStatus, placementLabel, partnerDashboardPath } from '@/lib/sponsorCampaign';
+import { ALLOWED_PLACEMENTS, getCampaignStatus, placementLabel, dashboardLinkCommand } from '@/lib/sponsorCampaign';
 import { formatCtr, getSponsorStats } from '@/utils/sponsorTracking';
 
 function generateTokenValue() {
@@ -364,15 +364,14 @@ export default function SponsorManagerPage() {
     const saved = await saveSponsorsToServer(updated);
     if (!saved) return;
 
-    const dashboardPath = partnerDashboardPath(trimmedToken);
+    const command = dashboardLinkCommand(trimmedToken);
     setLastSaved({
       company: trimmedCompany,
       token: trimmedToken,
-      dashboardPath,
+      command,
     });
-    const dashboardUrl = `${window.location.origin}${dashboardPath}`;
     try {
-      await navigator.clipboard.writeText(dashboardUrl);
+      await navigator.clipboard.writeText(command);
     } catch {
       // Clipboard may be blocked; the banner still shows the link.
     }
@@ -403,8 +402,8 @@ export default function SponsorManagerPage() {
   };
 
   const copyClientDashboardLink = (sponsorToken, idx) => {
-    const link = `${window.location.origin}${partnerDashboardPath(sponsorToken)}`;
-    navigator.clipboard.writeText(link);
+    // Copies the command that prints the sponsor's private, signed link.
+    navigator.clipboard.writeText(dashboardLinkCommand(sponsorToken));
     setCopiedIndex(idx);
     setTimeout(() => setCopiedIndex(null), 2000);
   };
@@ -446,7 +445,7 @@ export default function SponsorManagerPage() {
             <Key className="h-8 w-8 text-blue-400" /> Sponsor Campaign Manager
           </h1>
           <p className="text-sm text-gray-400 mt-2">
-            Create campaigns, pause them, copy the partner dashboard link, and sync JSON. First-party viewable impressions and clicks show per token on this browser; GA4 gets the same events after consent.
+            Create campaigns, pause them, and sync JSON. Impressions and clicks are counted on the WordPress server for every reader. "Share" copies the command that prints a sponsor's private dashboard link; run it on your machine with the secret from wp-config.php.
           </p>
         </div>
 
@@ -455,17 +454,10 @@ export default function SponsorManagerPage() {
             <div>
               <div className="text-sm font-bold text-emerald-200">{lastSaved.company} saved</div>
               <p className="text-xs text-emerald-100/80 mt-1 font-mono break-all">
-                Token {lastSaved.token} · partner link copied when the clipboard is available
+                Campaign id {lastSaved.token}. Run this to get the sponsor's private dashboard link (copied when the clipboard is available):
               </p>
+              <code className="mt-1 block break-all text-xs text-emerald-100">{lastSaved.command}</code>
             </div>
-            <a
-              href={lastSaved.dashboardPath}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-semibold transition shrink-0"
-            >
-              Open partner dashboard
-            </a>
           </div>
         )}
 
@@ -789,16 +781,6 @@ export default function SponsorManagerPage() {
                             )}
                             Share
                           </button>
-                          <a
-                            href={partnerDashboardPath(s.token)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition"
-                            title="Open partner dashboard"
-                          >
-                            <Globe className="h-3 w-3" />
-                            View
-                          </a>
                           <button
                             onClick={() => handleDeleteSponsor(idx)}
                             className="bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 p-1.5 rounded-lg text-red-400 transition"

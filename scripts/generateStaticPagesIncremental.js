@@ -3925,6 +3925,7 @@ ${CONSENT_MODE_V2_HTML}
             <span>·</span>
             <span>${readingTime} min read</span>
           </div>
+          ${tagNames.some((t) => String(t).toLowerCase() === 'sponsored') ? `<p class="sponsored-disclosure" style="border-left:2px solid #B4441F;background:#F4F0E8;padding:0.75rem 1rem;margin:0 0 1.25rem;font-size:0.95rem;color:#33302B;"><strong style="font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:#9C3A1A;">Sponsored</strong> This guide was written in partnership with a sponsor. Our <a href="/editorial-standards" style="color:#9C3A1A;">editorial standards</a> still apply, and links to the sponsor are marked as sponsored.</p>` : ''}
           ${heroHtml}
           <p class="excerpt article-description">${description}</p>
 
