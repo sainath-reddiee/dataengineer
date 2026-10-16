@@ -17,7 +17,9 @@ function assert(condition, message) {
   }
 }
 
-const filler = 'word '.repeat(380);
+// Sized just under the threshold so only the TL;DR words push the raw HTML
+// over it (tracks MIN_INDEXABLE_WORD_COUNT instead of a hard-coded 400).
+const filler = 'word '.repeat(MIN_INDEXABLE_WORD_COUNT - 20);
 const tldrHtml = `
   <p class="wp-block-paragraph"><strong>TL;DR</strong></p>
   <p>Certifications rarely prove you can ship a pipeline that survives Monday morning.</p>

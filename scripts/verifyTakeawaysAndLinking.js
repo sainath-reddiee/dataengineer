@@ -27,6 +27,20 @@ const sample = `
 <p>Teams often overspend on Snowflake when auto-suspend is off.</p>
 `;
 
+// Posts that split sections with <hr> and have no H2/H3 must keep their body:
+// only the TL;DR list is elevated, never everything after the marker.
+const hrOnly = `
+<p><strong>TL;DR</strong></p>
+<ul><li>Clones share micro-partitions with the source table.</li><li>Dropping the source keeps storage billed.</li></ul>
+<hr class="wp-block-separator"/>
+<p>${'Body prose about cloning behaviour in production. '.repeat(40)}</p>
+<hr class="wp-block-separator"/>
+<p>Closing notes from running this on a real account.</p>
+`;
+const hrAnalysis = analyzeKeyTakeaways(hrOnly);
+assert(hrAnalysis.source === 'paragraph' && hrAnalysis.items.length === 2, 'hr-separated TL;DR list must still be elevated');
+assert(hrAnalysis.html.includes('Body prose about cloning') && hrAnalysis.html.includes('Closing notes'), 'hr-separated posts must keep the article body after the TL;DR');
+
 const analysis = analyzeKeyTakeaways(sample);
 assert(analysis.source === 'heading', `expected heading source, got ${analysis.source}`);
 assert(analysis.items.length === 3, `expected 3 takeaways, got ${analysis.items.length}`);

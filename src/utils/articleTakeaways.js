@@ -111,6 +111,19 @@ const COMMENT_BLOCK_RE =
   /<!--\s*key-takeaways\s*-->([\s\S]*?)<!--\s*\/?key-takeaways\s*-->/i;
 
 /**
+ * Offset (within `rest`, the HTML after the marker) where the takeaways
+ * section ends. Stops at the next heading or <hr> divider, and when the
+ * section opens with a list, right after that list. Posts that separate
+ * sections with <hr> and have no H2/H3 would otherwise lose the whole body.
+ */
+function takeawaysSectionEnd(rest) {
+  const stops = [rest.search(/<h[1-3][^>]*>/i), rest.search(/<hr\b/i)].filter((i) => i !== -1);
+  const leadingList = rest.match(/^\s*<(ul|ol)\b[\s\S]*?<\/\1>/i);
+  if (leadingList) stops.push(leadingList[0].length);
+  return stops.length ? Math.min(...stops) : rest.length;
+}
+
+/**
  * Remove an explicit takeaways / TL;DR block from HTML.
  * Safe to call when no block exists (returns input unchanged).
  */
@@ -126,9 +139,7 @@ export function stripKeyTakeawaysSection(html) {
 
   const start = marker.index;
   const afterMarker = start + marker[0].length;
-  const rest = html.slice(afterMarker);
-  const nextHeading = rest.search(/<h[1-3][^>]*>/i);
-  const end = nextHeading === -1 ? html.length : afterMarker + nextHeading;
+  const end = afterMarker + takeawaysSectionEnd(html.slice(afterMarker));
   return `${html.slice(0, start)}${html.slice(end)}`.replace(/^\s+/, '');
 }
 
@@ -161,8 +172,7 @@ export function analyzeKeyTakeaways(html) {
   if (marker) {
     const afterMarker = marker.index + marker[0].length;
     const rest = html.slice(afterMarker);
-    const nextHeading = rest.search(/<h[1-3][^>]*>/i);
-    const sectionHtml = nextHeading === -1 ? rest : rest.slice(0, nextHeading);
+    const sectionHtml = rest.slice(0, takeawaysSectionEnd(rest));
     let items = itemsFromListHtml(sectionHtml);
     if (items.length === 0) items = itemsFromSectionParagraphs(sectionHtml);
     if (items.length === 0) items = itemsFromParagraphHtml(sectionHtml);
