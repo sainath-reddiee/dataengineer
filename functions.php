@@ -4688,7 +4688,10 @@ add_action('rest_api_init', function () {
                 'mode'    => dehub_dodo_mode(),
                 'plans'   => dehub_dodo_ready() ? array_keys(dehub_dodo_products()) : array(),
             ));
-            $response->header('Cache-Control', 'public, max-age=300');
+            // Not cacheable: LiteSpeed stored a copy without the CORS header
+            // (from a request with no Origin), which hid the card buttons.
+            $response->header('Cache-Control', 'no-store');
+            $response->header('X-LiteSpeed-Cache-Control', 'no-cache');
             return $response;
         },
     ));
@@ -4800,6 +4803,7 @@ add_action('rest_api_init', function () {
                 'mode'    => $order['mode'],
             ));
             $response->header('Cache-Control', 'no-store');
+            $response->header('X-LiteSpeed-Cache-Control', 'no-cache');
             return $response;
         },
     ));

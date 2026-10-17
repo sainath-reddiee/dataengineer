@@ -34,7 +34,7 @@ AdSense "low value content" is a judgement on originality and usefulness, not wo
 5. Merge overlapping posts on the same topic (Snowflake Time Travel, Cortex, cost optimisation) and 301 the weaker URL.
 6. Decide the future of the glossary/compare/quiz/calculator inventory: keep only what you would personally vouch for, and delete the rest (410) instead of hiding it.
 7. Strengthen the About page: real photo, LinkedIn, employer history or projects, and why you write.
-8. The Gemini workflow in `.github/workflows/blog-automation.yml` is an unused placeholder; articles are written by hand. Consider deleting it so the repo does not suggest otherwise.
+8. Done (2026-10-17): deleted `.github/workflows/blog-automation.yml`, the unused Gemini placeholder; articles are written by hand. Its 15 GitHub secrets can now be removed in the repo settings (list in [dodo-config.md](dodo-config.md#github-secrets)).
 
 ## Phase 3: One render path and better hosting (Claude)
 
