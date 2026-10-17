@@ -61,8 +61,8 @@ define('DEHUB_SPONSOR_INBOX', 'sainath@dataengineerhub.blog');
 - [x] Latest functions.php uploaded
 - [x] `node scripts/dodoWebhookPing.js` returns 200 (2026-10-17)
 - [x] End-to-end test payment passes (order `deh_2d8afb21446df80f1e3c43cd`, webhook 200, return page "Payment received", 2026-10-17)
-- [ ] Hardened functions.php (orders DB v2) uploaded; Tools > Sponsor orders shows "Orders DB version 2"
-- [ ] `node scripts/verifyCheckout.js --live --expect-mode=test` passes (with the webhook secret set)
+- [x] Hardened functions.php (orders DB v2) uploaded (2026-10-17; webhook events table confirmed by the duplicate-delivery check)
+- [x] `node scripts/verifyCheckout.js --live --expect-mode=test` passes with the webhook secret set (2026-10-17, all signed checks green)
 - [ ] Declined card, full refund and partial refund pass; exactly one pair of order emails per payment
 
 ## Live mode
