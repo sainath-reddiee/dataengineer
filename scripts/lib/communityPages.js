@@ -10,6 +10,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getMockPlan, MOCK_LENGTHS } from '../../src/lib/practice/mockExam.js';
 import { resourceHref, resourceTypeLabel } from '../../src/lib/roadmaps/resourceHref.js';
+import { cheatsheets } from '../../src/data/cheatsheetData.js';
+import { buildBank, STACKS } from '../../src/lib/interview/bank.js';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const PRACTICE_SLUGS = ['snowpro-core', 'snowpro-genai', 'databricks-de', 'aws-de-associate'];
@@ -118,6 +120,44 @@ ${r.intro ? `      <p>${escapeHtml(r.intro)}</p>\n` : ''}${stages}
   return [hub, ...pages];
 }
 
+export function loadInterviewBank() {
+  return buildBank(cheatsheets, readJson('src', 'data', 'interview', 'questions.json'));
+}
+
+export function buildInterviewPages(bank = loadInterviewBank()) {
+  const groups = STACKS.map((stack) => {
+    const items = bank.filter((q) => q.stack === stack.id);
+    if (!items.length) return '';
+    const list = items
+      .map((q) => `        <li>${escapeHtml(q.question)}${q.source ? ` <a href="${q.source}">(${escapeHtml(q.sheetTitle)})</a>` : ''}</li>`)
+      .join('\n');
+    return `      <h2>${escapeHtml(stack.label)} (${items.length})</h2>\n      <ul>\n${list}\n      </ul>`;
+  }).filter(Boolean).join('\n');
+  return [
+    {
+      path: '/interview-prep/questions',
+      title: 'Data Engineering Interview Question Bank',
+      description: 'Filter data engineering interview questions by stack, topic and level, reveal answers when you are ready, and drill the ones you miss with spaced repetition.',
+      content: `
+      <h1>Interview question bank</h1>
+      <p>${bank.length} questions from the interview cheat sheets. Answers stay hidden until you open them in the interactive bank, and drill mode schedules the ones you miss for review. Each question links to the cheat sheet with the full answer.</p>
+${groups}
+      <p>Back to <a href="/interview-prep">interview prep</a>.</p>
+    `,
+    },
+    {
+      path: '/interview-prep/drill',
+      title: 'Interview Drill',
+      description: 'Drill data engineering interview questions one at a time with self-rating and spaced repetition.',
+      noindex: true,
+      content: `
+      <h1>Interview drill</h1>
+      <p>Answer in your head (or out loud), reveal, then rate yourself honestly. Due reviews come first, then new questions. Drill mode runs in your browser and needs JavaScript; the questions are listed in the <a href="/interview-prep/questions">question bank</a>.</p>
+    `,
+    },
+  ];
+}
+
 export function buildCommunityPages() {
-  return [...buildMockExamPages(), ...buildRoadmapPages()];
+  return [...buildMockExamPages(), ...buildRoadmapPages(), ...buildInterviewPages()];
 }

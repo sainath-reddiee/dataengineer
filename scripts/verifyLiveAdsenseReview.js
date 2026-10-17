@@ -28,6 +28,7 @@ const mustNoindex = [
   '/practice/snowpro-core/mock-exam',
   '/roadmaps',
   '/roadmaps/data-engineer',
+  '/interview-prep/questions',
   '/interview-prep',
   '/category/snowflake',
   '/cheatsheets/snowflake-interview-questions',

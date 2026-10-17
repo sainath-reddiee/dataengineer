@@ -56,6 +56,7 @@ const STATIC_PAGES = [
   { url: '/practice', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
   // Role roadmaps: held out by the AdSense gate (filtered here) until approval.
   { url: '/roadmaps', changefreq: 'monthly', priority: 0.7, lastmod: '2026-10-17' },
+  { url: '/interview-prep/questions', changefreq: 'weekly', priority: 0.6, lastmod: '2026-10-17' },
   { url: '/roadmaps/data-engineer', changefreq: 'monthly', priority: 0.6, lastmod: '2026-10-17' },
   { url: '/roadmaps/analytics-engineer', changefreq: 'monthly', priority: 0.6, lastmod: '2026-10-17' },
   { url: '/roadmaps/data-platform-engineer', changefreq: 'monthly', priority: 0.6, lastmod: '2026-10-17' },

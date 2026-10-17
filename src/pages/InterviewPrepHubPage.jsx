@@ -489,6 +489,15 @@ export default function InterviewPrepHubPage() {
             </p>
           </motion.div>
 
+          <div className="mb-6 flex flex-wrap gap-3">
+            <Link to="/interview-prep/questions" className="inline-flex items-center px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-medium">
+              Question bank &rarr;
+            </Link>
+            <Link to="/interview-prep/drill" className="inline-flex items-center px-4 py-2 rounded-lg border border-amber-500/60 text-amber-200 hover:bg-amber-500/10 text-sm font-medium">
+              Drill with spaced repetition &rarr;
+            </Link>
+          </div>
+
           <p className="mb-8 text-sm text-gray-300">
             Want a longer learning path?{' '}
             <Link to="/roadmaps" className="text-amber-300 hover:text-amber-200 underline">Role roadmaps</Link>{' '}

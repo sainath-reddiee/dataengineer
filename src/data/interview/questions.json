@@ -1,0 +1,5 @@
+{
+  "_readme": "Owner-written interview questions. Only status 'approved' entries appear on the site. Shape: {id, stack, topic, difficulty, status, question, answer, tip?}. stack is one of snowflake, sql, pipelines, modeling, spark, cloud; difficulty is Beginner, Intermediate or Advanced. Write these yourself: the bank must not present generated text as yours. 'exclude' hides any question id (including cheat-sheet ones) from the bank and drill.",
+  "questions": [],
+  "exclude": []
+}

@@ -28,6 +28,8 @@ const mustNoindex = [
   '/practice/aws-de-associate/mock-exam',
   '/roadmaps',
   '/roadmaps/data-engineer',
+  '/interview-prep/questions',
+  '/interview-prep/drill',
   '/advertise',
   '/contribute',
   '/contributors',
