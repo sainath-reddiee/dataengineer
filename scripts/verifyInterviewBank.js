@@ -68,6 +68,28 @@ check(!/<p>[^<]{200,}/.test(pages[0].content.replace(/<p>\d+ questions from[^<]*
 check(fs.readFileSync(path.join(root, 'src/pages/InterviewDrillPage.jsx'), 'utf8').includes('noindex={true}'), 'drill page renders noindex');
 check(!fs.readFileSync(path.join(root, 'src/hooks/useInterviewDrill.js'), 'utf8').includes('addAttempt('), 'drills never write practice attempts');
 
+// /interview-prep hub: every internal link (article list, tracks, study plan,
+// literal <Link to>) has a static page. Parsed from source because the page
+// imports React and path aliases.
+const hub = fs.readFileSync(path.join(root, 'src/pages/InterviewPrepHubPage.jsx'), 'utf8');
+const block = (name) => hub.match(new RegExp(`const ${name} = \\[([\\s\\S]*?)\\r?\\n\\];`))?.[1] || '';
+const hubArticles = [...block('INTERVIEW_ARTICLES').matchAll(/slug: '([^']+)'/g)].map((m) => m[1]);
+const typed = [...hub.matchAll(/slug: '([^']+)', type: '(article|cheatsheet)'/g)].map((m) => ({ slug: m[1], type: m[2] }));
+const hubHrefs = new Set([
+  ...hubArticles.map((s) => `/articles/${s}`),
+  ...typed.map((t) => `/${t.type === 'article' ? 'articles' : 'cheatsheets'}/${t.slug}`),
+  ...[...hub.matchAll(/\b(?:to|href)="(\/[^"]*)"/g)].map((m) => m[1]),
+]);
+check(hubArticles.length > 0 && typed.length > 20, `hub page links parsed (${hubArticles.length} articles, ${typed.length} typed items)`);
+for (const href of hubHrefs) {
+  const link = resolveInternalHref(href, routes);
+  check(link.ok, `/interview-prep links ${href} (${link.reason})`);
+}
+// A track article missing from INTERVIEW_ARTICLES is silently dropped, and a
+// track with nothing left still gets a jump link to a missing anchor.
+const trackArticles = [...block('TRACKS').matchAll(/slug: '([^']+)', type: 'article'/g)].map((m) => m[1]);
+for (const s of trackArticles) check(hubArticles.includes(s), `/interview-prep track article ${s} is listed in INTERVIEW_ARTICLES`);
+
 const minApproved = Number((process.argv.find((x) => x.startsWith('--min-approved=')) || '').split('=')[1] || 0);
 const approvedOwner = owner.questions.filter((q) => q.status === 'approved').length;
 check(approvedOwner >= minApproved, `at least ${minApproved} approved owner-written questions (found ${approvedOwner})`);
@@ -77,4 +99,4 @@ if (failed) {
   process.exit(1);
 }
 const perStack = STACKS.map((s) => `${s.label} ${bank.filter((q) => q.stack === s.id).length}`).join(', ');
-console.log(`✅ Interview bank: ${bank.length} questions (${perStack}), drill order, wiring`);
+console.log(`✅ Interview bank: ${bank.length} questions (${perStack}), drill order, wiring, ${hubHrefs.size} hub links`);

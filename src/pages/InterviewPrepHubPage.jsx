@@ -38,22 +38,22 @@ import { generateBreadcrumbs } from '@/lib/seoConfig';
 
 const INTERVIEW_ARTICLES = [
   {
-    slug: 'top-50-data-engineer-interview-questions-2026',
-    title: 'Top 50 Data Engineer Interview Questions (2026)',
+    slug: 'snowflake-interview-questions-answers-2026',
+    title: 'Snowflake Interview Questions and Answers (2026)',
     description:
-      'The most common behavioral + technical questions across L3–L6 data engineering roles. Each with model answers.',
+      'Questions asked in real senior data engineer loops, a prep checklist, how questions differ by company, and the common mistakes that sink candidates.',
   },
   {
-    slug: 'snowflake-interview-questions-advanced',
-    title: 'Advanced Snowflake Interview Questions — Expert Level',
+    slug: 'advanced-snowflake-interview-questions-experienced',
+    title: 'Advanced Snowflake Interview Questions for Experienced Engineers',
     description:
-      'Deep-dive expert Snowflake interview prep for staff/senior/principal DE roles. Architecture-grade answers.',
+      'Architecture and design, performance tuning and cost, ingestion and integration, plus scenario-based problem-solving questions.',
   },
   {
-    slug: 'data-engineer-system-design-interview',
-    title: 'Data Engineer System Design Interview — The Complete Guide',
+    slug: 'snowflake-expert-interview-questions',
+    title: 'Snowflake Interview Questions: Expert Level',
     description:
-      'How to approach and solve end-to-end system design questions: data ingestion, storage, serving, cost, SLAs.',
+      'Internals, query optimization, credits, pipelines, security and RBAC, and real-world scenarios for senior and staff roles.',
   },
 ];
 
@@ -90,8 +90,8 @@ const TRACKS = [
     accent: 'from-fuchsia-500/20 to-pink-500/20 border-fuchsia-500/30',
     dot: 'text-fuchsia-300',
     items: [
-      { slug: 'data-engineer-system-design-interview', type: 'article' },
       { slug: 'data-engineering-interview-questions', type: 'cheatsheet' },
+      { slug: 'data-modeling', type: 'cheatsheet' },
     ],
   },
   {
@@ -102,7 +102,9 @@ const TRACKS = [
     dot: 'text-cyan-300',
     items: [
       { slug: 'snowflake-interview-questions', type: 'cheatsheet' },
-      { slug: 'snowflake-interview-questions-advanced', type: 'article' },
+      { slug: 'snowflake-interview-questions-answers-2026', type: 'article' },
+      { slug: 'advanced-snowflake-interview-questions-experienced', type: 'article' },
+      { slug: 'snowflake-expert-interview-questions', type: 'article' },
       { slug: 'snowflake-cost-optimization-interview', type: 'cheatsheet' },
       { slug: 'snowflake-performance-deep-dive-interview', type: 'cheatsheet' },
       { slug: 'snowflake-semi-structured-interview', type: 'cheatsheet' },
@@ -183,16 +185,6 @@ const TRACKS = [
     items: [
       { slug: 'python-for-data-engineers', type: 'cheatsheet' },
       { slug: 'pyspark', type: 'cheatsheet' },
-    ],
-  },
-  {
-    id: 'behavioral',
-    label: 'Behavioral & Top-50',
-    icon: Briefcase,
-    accent: 'from-slate-500/20 to-gray-500/20 border-slate-500/30',
-    dot: 'text-slate-300',
-    items: [
-      { slug: 'top-50-data-engineer-interview-questions-2026', type: 'article' },
     ],
   },
 ];
@@ -301,7 +293,7 @@ const WEEK2_PLAN = [
     day: 'Sat',
     title: 'System design practice',
     tasks: [
-      { label: 'Read: Data Engineer System Design article', slug: 'data-engineer-system-design-interview', type: 'article' },
+      { label: 'Re-read: System Design Essentials in the DE Interview Questions sheet', slug: 'data-engineering-interview-questions', type: 'cheatsheet' },
       { label: 'Design a real-time ingestion pipeline, out loud, in 45 min', slug: null, type: 'activity' },
     ],
   },
@@ -326,7 +318,7 @@ const FAQ = [
   },
   {
     q: 'Are these aligned with specific company interviews?',
-    a: 'The content covers the common denominator of data engineering interviews at modern tech-forward companies (Snowflake-centric with dbt + orchestration). FAANG-scale system design is covered separately. For role-specific prep, look at the company\'s recent JD and map to sections here.',
+    a: 'The content covers the common denominator of data engineering interviews at modern tech-forward companies (Snowflake-centric with dbt + orchestration). System design is covered by the System Design Essentials section of the Data Engineering Interview Questions cheat sheet. For role-specific prep, look at the company\'s recent JD and map to sections here.',
   },
   {
     q: 'How much SQL do I need?',
@@ -334,7 +326,7 @@ const FAQ = [
   },
   {
     q: 'What about behavioral interviews?',
-    a: 'Prepare 4-6 STAR-format stories: a difficult cost optimization, a production incident you resolved, a migration you led, a conflict with a stakeholder, a time you were wrong. Have specific numbers ready (latency %, cost $, data volume). The system design article has a behavioral appendix.',
+    a: 'Prepare 4-6 STAR-format stories: a difficult cost optimization, a production incident you resolved, a migration you led, a conflict with a stakeholder, a time you were wrong. Have specific numbers ready (latency %, cost $, data volume). The Snowflake Interview Questions and Answers article covers how loops differ by company and the mistakes that sink candidates.',
   },
   {
     q: 'Do I need to know multiple cloud warehouses?',
@@ -589,8 +581,8 @@ export default function InterviewPrepHubPage() {
               <li className="flex gap-3">
                 <span className="shrink-0 w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center font-semibold">5</span>
                 <div>
-                  <Link to="/articles/data-engineer-system-design-interview" className="text-white font-medium hover:text-amber-300">Data Engineer System Design Guide</Link>
-                  <span className="block text-gray-400">End-to-end pipelines, ingestion/storage/serving, cost + SLA trade-offs.</span>
+                  <Link to="/articles/advanced-snowflake-interview-questions-experienced" className="text-white font-medium hover:text-amber-300">Advanced Snowflake Interview Questions</Link>
+                  <span className="block text-gray-400">Architecture, tuning, cost, ingestion, and scenario-based problem solving.</span>
                 </div>
               </li>
             </ol>
@@ -712,8 +704,8 @@ export default function InterviewPrepHubPage() {
               <h2 className="text-2xl font-semibold text-white">Long-form interview articles</h2>
             </div>
             <p className="text-gray-400 text-sm mb-6 max-w-3xl">
-              For topics that benefit from narrative context — system design, behavioral framing,
-              end-to-end walkthroughs.
+              For topics that benefit from narrative context: real interview loops, architecture
+              trade-offs, and scenario-based walkthroughs.
             </p>
             <div className="grid grid-cols-1 gap-4">
               {INTERVIEW_ARTICLES.map((article) => (
