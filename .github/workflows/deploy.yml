@@ -62,6 +62,10 @@ on:
 # Overlapping FTP deploys (or a cancelled upload) leave those files behind and the
 # next run fails with: "Temporary hidden file ... already exists".
 # Queue deploys instead of cancelling — cancelling mid-upload creates more leftovers.
+permissions:
+  contents: read
+  actions: read
+
 concurrency:
   group: hostinger-ftp-deploy
   cancel-in-progress: false
@@ -92,17 +96,37 @@ jobs:
 
       - name: 🔍 Detect Changes & Configure Build
         id: changes
+        # Untrusted values (the WordPress post title/slug arrive in a
+        # repository_dispatch payload) are passed as env vars and never
+        # interpolated into the script, so they cannot inject shell code or
+        # write to GITHUB_ENV / GITHUB_OUTPUT.
+        env:
+          RAW_WP_SLUG: ${{ github.event.client_payload.slug }}
+          RAW_WP_TITLE: ${{ github.event.client_payload.title }}
+          RAW_WP_ACTION: ${{ github.event.client_payload.action }}
+          RAW_WP_POST_ID: ${{ github.event.client_payload.post_id }}
+          IN_BUILD_TYPE: ${{ github.event.inputs.build_type }}
+          IN_SKIP_CACHE: ${{ github.event.inputs.skip_cache }}
+          IN_SKIP_DEPLOY: ${{ github.event.inputs.skip_deploy }}
+          IN_VERIFY_BUILD: ${{ github.event.inputs.verify_build }}
+          IN_NOTIFY_SE: ${{ github.event.inputs.notify_search_engines }}
+          IN_DRY_RUN: ${{ github.event.inputs.dry_run }}
         run: |
           echo "trigger=${{ github.event_name }}" >> $GITHUB_OUTPUT
 
+          # Only well-formed values survive; anything else becomes empty.
+          WP_SLUG=""
+          if [[ "$RAW_WP_SLUG" =~ ^[a-z0-9-]{1,200}$ ]]; then WP_SLUG="$RAW_WP_SLUG"; fi
+          WP_ACTION=""
+          if [[ "$RAW_WP_ACTION" =~ ^[a-z_-]{1,40}$ ]]; then WP_ACTION="$RAW_WP_ACTION"; fi
+          WP_POST_ID=""
+          if [[ "$RAW_WP_POST_ID" =~ ^[0-9]{1,12}$ ]]; then WP_POST_ID="$RAW_WP_POST_ID"; fi
+          # Title is display-only: one line, no markdown/HTML control characters.
+          WP_TITLE=$(printf '%s' "$RAW_WP_TITLE" | tr -d '\r\n`|<>' | cut -c1-200)
+
           # ── WordPress auto-deploy: log which article triggered this run ──
           if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
-            WP_SLUG="${{ github.event.client_payload.slug }}"
-            WP_TITLE="${{ github.event.client_payload.title }}"
-            WP_ACTION="${{ github.event.client_payload.action }}"
-            WP_POST_ID="${{ github.event.client_payload.post_id }}"
             echo "wp_slug=$WP_SLUG"     >> $GITHUB_OUTPUT
-            echo "wp_title=$WP_TITLE"   >> $GITHUB_OUTPUT
             echo "wp_action=$WP_ACTION" >> $GITHUB_OUTPUT
             echo ""
             echo "📝 WordPress triggered this deploy:"
@@ -140,12 +164,12 @@ jobs:
           
           # Configure build based on trigger type and inputs
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            BUILD_TYPE="${{ github.event.inputs.build_type }}"
-            SKIP_CACHE="${{ github.event.inputs.skip_cache }}"
-            SKIP_DEPLOY="${{ github.event.inputs.skip_deploy }}"
-            VERIFY_BUILD="${{ github.event.inputs.verify_build }}"
-            NOTIFY_SE="${{ github.event.inputs.notify_search_engines }}"
-            DRY_RUN="${{ github.event.inputs.dry_run }}"
+            BUILD_TYPE="$IN_BUILD_TYPE"
+            SKIP_CACHE="$IN_SKIP_CACHE"
+            SKIP_DEPLOY="$IN_SKIP_DEPLOY"
+            VERIFY_BUILD="$IN_VERIFY_BUILD"
+            NOTIFY_SE="$IN_NOTIFY_SE"
+            DRY_RUN="$IN_DRY_RUN"
             
             echo "build_type=$BUILD_TYPE" >> $GITHUB_OUTPUT
             echo "skip_cache=$SKIP_CACHE" >> $GITHUB_OUTPUT
@@ -181,7 +205,7 @@ jobs:
           fi
           
           # Determine build flags
-          case "${{ github.event.inputs.build_type }}" in
+          case "$IN_BUILD_TYPE" in
             "force-rebuild"|"nuclear-redeploy")
               echo "build_flags=--force" >> $GITHUB_OUTPUT
               echo "🔨 Force rebuild all pages"
@@ -204,7 +228,7 @@ jobs:
           esac
 
           if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
-            WP_SLUG_FLAG="${{ github.event.client_payload.slug }}"
+            WP_SLUG_FLAG="$WP_SLUG"
             if [ -n "$WP_SLUG_FLAG" ]; then
               echo "build_flags=--slug=$WP_SLUG_FLAG" >> $GITHUB_OUTPUT
               echo "⚡ Incremental publish for /$WP_SLUG_FLAG"
