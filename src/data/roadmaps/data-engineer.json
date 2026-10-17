@@ -1,0 +1,230 @@
+{
+  "slug": "data-engineer",
+  "title": "Data Engineer roadmap",
+  "tagline": "From SQL and modeling to pipelines, warehouses, cost control and the certification exam.",
+  "intro": null,
+  "introBrief": "Owner to write, 120 to 250 words in your own voice: how you got into data engineering, what you would learn first if starting again, and what to skip.",
+  "published": true,
+  "stages": [
+    {
+      "id": "sql-modeling",
+      "title": "SQL and data modeling",
+      "skills": [
+        {
+          "id": "sql-querying",
+          "title": "Query and join data confidently",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "snowflake-sql", "label": "Snowflake SQL cheat sheet" },
+            { "type": "article", "ref": "querying-data-in-snowflake", "label": "Querying JSON and Time Travel in Snowflake" },
+            { "type": "tool", "ref": "sql-playground", "label": "SQL playground" }
+          ]
+        },
+        {
+          "id": "window-functions",
+          "title": "Window functions",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "sql-window-functions-guide", "label": "SQL window functions guide" },
+            { "type": "cheatsheet", "ref": "sql-window-functions", "label": "Window functions cheat sheet" }
+          ]
+        },
+        {
+          "id": "dimensional-modeling",
+          "title": "Dimensional modeling",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "data-modeling-modern-data-warehouse", "label": "Data modeling for the modern warehouse" },
+            { "type": "article", "ref": "star-schema-vs-snowflake-schema-comparison", "label": "Star schema vs snowflake schema" },
+            { "type": "cheatsheet", "ref": "data-modeling", "label": "Data modeling cheat sheet" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "python-pipelines",
+      "title": "Python and file formats",
+      "skills": [
+        {
+          "id": "python-for-pipelines",
+          "title": "Python for pipelines",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "python-for-data-engineers", "label": "Python for data engineers" },
+            { "type": "article", "ref": "data-pipelines-python", "label": "Python data pipelines from APIs and databases" }
+          ]
+        },
+        {
+          "id": "spark-basics",
+          "title": "Spark basics",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "pyspark", "label": "PySpark cheat sheet" }
+          ]
+        },
+        {
+          "id": "file-formats",
+          "title": "CSV, JSON, Parquet and Avro",
+          "note": null,
+          "resources": [
+            { "type": "tool", "ref": "json-parquet-avro-converter", "label": "JSON, Parquet and Avro converter" },
+            { "type": "tool", "ref": "csv-to-sql", "label": "CSV to SQL" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ingestion-orchestration",
+      "title": "Ingestion and orchestration",
+      "skills": [
+        {
+          "id": "loading-data",
+          "title": "Load data into a warehouse",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "load-data-into-snowflake", "label": "Load data into Snowflake: stages and file formats" },
+            { "type": "article", "ref": "snowflake-openflow-ai-data-ingestion-guide", "label": "Snowflake OpenFlow ingestion" }
+          ]
+        },
+        {
+          "id": "incremental-processing",
+          "title": "Incremental processing and CDC",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "what-is-incremental-data-processing-a-data-engineers-guide", "label": "Incremental data processing" },
+            { "type": "article", "ref": "snowflake-streams-tasks-pipeline-guide", "label": "Snowflake streams and tasks pipelines" }
+          ]
+        },
+        {
+          "id": "airflow",
+          "title": "Orchestrate with Airflow",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "airflow-essentials", "label": "Airflow essentials" },
+            { "type": "article", "ref": "automated-etl-airflow-python", "label": "Automated ETL with Airflow and Python" },
+            { "type": "cheatsheet", "ref": "airflow-best-practices", "label": "Airflow best practices" },
+            { "type": "tool", "ref": "cron-expression-builder", "label": "Cron expression builder" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "warehouse-lakehouse",
+      "title": "Warehouse and lakehouse",
+      "skills": [
+        {
+          "id": "snowflake-architecture",
+          "title": "How a cloud warehouse works",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "what-is-snowflake-guide", "label": "What is Snowflake?" },
+            { "type": "article", "ref": "snowflake-architecture", "label": "Snowflake architecture explained" }
+          ]
+        },
+        {
+          "id": "declarative-pipelines",
+          "title": "Declarative pipelines",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "snowflake-dynamic-tables-complete-guide-2025", "label": "Snowflake dynamic tables" }
+          ]
+        },
+        {
+          "id": "lakehouse",
+          "title": "Lakehouse and open table formats",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "databricks", "label": "Databricks cheat sheet" },
+            { "type": "article", "ref": "build-data-lakehouse-on-azure", "label": "Build a data lakehouse on Azure" },
+            { "type": "article", "ref": "snowflake-managed-iceberg-tables-complete-guide-2026", "label": "Snowflake managed Iceberg tables" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transformation",
+      "title": "Transformation with dbt",
+      "skills": [
+        {
+          "id": "dbt-basics",
+          "title": "dbt projects and commands",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "dbt-commands", "label": "dbt commands cheat sheet" },
+            { "type": "article", "ref": "dbt-projects-snowflake-structure", "label": "Structuring dbt projects in Snowflake" }
+          ]
+        },
+        {
+          "id": "dbt-in-production",
+          "title": "dbt in production",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "dbt-best-practices", "label": "dbt best practices" },
+            { "type": "tool", "ref": "dbt-schema-generator", "label": "dbt schema generator" },
+            { "type": "article", "ref": "snowflake-dbt-projects-airflow-orchestration", "label": "Orchestrating dbt projects with Airflow" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cost-reliability",
+      "title": "Performance, cost and governance",
+      "skills": [
+        {
+          "id": "query-performance",
+          "title": "Query performance",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "snowflake-query-optimization-guide-2026", "label": "Snowflake query optimization" },
+            { "type": "article", "ref": "snowflake-merge-optimization-techniques", "label": "Optimizing MERGE queries" }
+          ]
+        },
+        {
+          "id": "cost-control",
+          "title": "Cost control",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "snowflake-cost-optimization-techniques-2026", "label": "Snowflake cost optimization techniques" },
+            { "type": "tool", "ref": "snowflake-cost-calculator", "label": "Snowflake cost calculator" },
+            { "type": "tool", "ref": "snowflake-warehouse-sizing", "label": "Warehouse sizing tool" }
+          ]
+        },
+        {
+          "id": "governance",
+          "title": "Masking, sharing and governance",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "dynamic-data-masking-snowflake", "label": "Dynamic data masking in Snowflake" },
+            { "type": "article", "ref": "snowflake-data-sharing-governance", "label": "Snowflake data sharing and governance" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "certify-interview",
+      "title": "Certification and interviews",
+      "skills": [
+        {
+          "id": "certification",
+          "title": "Pass a certification",
+          "note": null,
+          "resources": [
+            { "type": "practice", "ref": "snowpro-core", "label": "SnowPro Core practice test" },
+            { "type": "mock", "ref": "snowpro-core", "label": "SnowPro Core timed mock exam" },
+            { "type": "mock", "ref": "databricks-de", "label": "Databricks Data Engineer mock exam" }
+          ]
+        },
+        {
+          "id": "interviews",
+          "title": "Prepare for interviews",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "data-engineering-interview-questions", "label": "Data engineering interview questions" },
+            { "type": "cheatsheet", "ref": "sql-interview-questions", "label": "SQL interview questions" },
+            { "type": "article", "ref": "snowflake-interview-questions-answers-2026", "label": "Snowflake interview questions and answers" }
+          ]
+        }
+      ]
+    }
+  ]
+}

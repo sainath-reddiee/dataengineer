@@ -1,0 +1,157 @@
+{
+  "slug": "analytics-engineer",
+  "title": "Analytics Engineer roadmap",
+  "tagline": "Advanced SQL, dimensional models and dbt, with the cost and AI features analytics teams now own.",
+  "intro": null,
+  "introBrief": "Owner to write, 120 to 250 words in your own voice: how the analytics engineer role differs from data engineering in teams you have worked with, and what to master first.",
+  "published": true,
+  "stages": [
+    {
+      "id": "sql-depth",
+      "title": "SQL in depth",
+      "skills": [
+        {
+          "id": "analytic-sql",
+          "title": "Window functions and analytic SQL",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "sql-window-functions-guide", "label": "SQL window functions guide" },
+            { "type": "cheatsheet", "ref": "sql-window-functions", "label": "Window functions cheat sheet" },
+            { "type": "article", "ref": "snowflake-unique-aggregations-hidden-functions", "label": "Snowflake's lesser-known aggregation functions" }
+          ]
+        },
+        {
+          "id": "semi-structured",
+          "title": "Semi-structured data",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "querying-data-in-snowflake", "label": "Querying JSON and Time Travel in Snowflake" },
+            { "type": "cheatsheet", "ref": "snowflake-semi-structured-interview", "label": "Semi-structured data interview sheet" }
+          ]
+        },
+        {
+          "id": "merge-patterns",
+          "title": "MERGE and upsert patterns",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "snowflake-sql-tutorial-2025-complete-guide", "label": "MERGE ALL BY NAME tutorial" },
+            { "type": "tool", "ref": "sql-playground", "label": "SQL playground" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "modeling",
+      "title": "Modeling for analytics",
+      "skills": [
+        {
+          "id": "dimensional-models",
+          "title": "Facts, dimensions and grain",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "data-modeling", "label": "Data modeling cheat sheet" },
+            { "type": "article", "ref": "data-modeling-modern-data-warehouse", "label": "Data modeling for the modern warehouse" },
+            { "type": "article", "ref": "star-schema-vs-snowflake-schema-comparison", "label": "Star schema vs snowflake schema" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dbt",
+      "title": "dbt",
+      "skills": [
+        {
+          "id": "dbt-structure",
+          "title": "Project structure and commands",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "dbt-commands", "label": "dbt commands cheat sheet" },
+            { "type": "article", "ref": "dbt-projects-snowflake-structure", "label": "Structuring dbt projects in Snowflake" }
+          ]
+        },
+        {
+          "id": "dbt-native",
+          "title": "dbt inside the warehouse",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "snowflake-native-dbt-integration-2025-guide", "label": "Snowflake native dbt integration" },
+            { "type": "article", "ref": "snowflake-cortex-code-dbt-optimization-guide", "label": "Cutting dbt build time with Cortex Code" }
+          ]
+        },
+        {
+          "id": "dbt-quality",
+          "title": "Tests, docs and conventions",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "dbt-best-practices", "label": "dbt best practices" },
+            { "type": "tool", "ref": "dbt-schema-generator", "label": "dbt schema generator" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cost-awareness",
+      "title": "Cost awareness",
+      "skills": [
+        {
+          "id": "query-cost",
+          "title": "What a query costs",
+          "note": null,
+          "resources": [
+            { "type": "tool", "ref": "snowflake-query-cost-estimator", "label": "Snowflake query cost estimator" },
+            { "type": "tool", "ref": "dbt-cloud-cost-calculator", "label": "dbt Cloud cost calculator" },
+            { "type": "article", "ref": "snowflake-query-optimization-guide-2026", "label": "Snowflake query optimization" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "serving-ai",
+      "title": "Serving data and AI features",
+      "skills": [
+        {
+          "id": "semantic-layer",
+          "title": "Semantic layers and natural-language analytics",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "snowflake-intelligence-guide-setup-optimization", "label": "Snowflake Intelligence setup" },
+            { "type": "article", "ref": "open-semantic-interchange-snowflake-ai-problem-solved", "label": "Open Semantic Interchange" }
+          ]
+        },
+        {
+          "id": "ai-sql",
+          "title": "AI functions in SQL",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "snowflake-cortex-ai-complete-guide-2026", "label": "Snowflake Cortex AI guide" },
+            { "type": "article", "ref": "snowflake-cortex-aisql-query-optimization-guide", "label": "Optimizing Cortex AISQL queries" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "certify-interview",
+      "title": "Certification and interviews",
+      "skills": [
+        {
+          "id": "certification",
+          "title": "Pass SnowPro Core",
+          "note": null,
+          "resources": [
+            { "type": "practice", "ref": "snowpro-core", "label": "SnowPro Core practice test" },
+            { "type": "mock", "ref": "snowpro-core", "label": "SnowPro Core timed mock exam" }
+          ]
+        },
+        {
+          "id": "interviews",
+          "title": "Prepare for interviews",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "sql-interview-questions", "label": "SQL interview questions" },
+            { "type": "cheatsheet", "ref": "snowflake-interview-questions", "label": "Snowflake interview questions" }
+          ]
+        }
+      ]
+    }
+  ]
+}

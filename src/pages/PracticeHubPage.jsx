@@ -340,6 +340,10 @@ const PracticeHubPage = () => {
                 </li>
               ))}
             </ul>
+            <p className="mt-4 text-sm text-slate-400">
+              Not sure what to study first? Follow a{' '}
+              <Link to="/roadmaps" className="text-blue-300 hover:text-blue-200 underline">role roadmap</Link>.
+            </p>
           </section>
 
           {/* FAQ section — collapsible, searchable, categorized, deep-linkable */}

@@ -54,6 +54,11 @@ const STATIC_PAGES = [
   { url: '/contribute', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
   // /news is noindexed until the WP news category has dated posts
   { url: '/practice', changefreq: 'weekly', priority: 0.8, lastmod: 'today' },
+  // Role roadmaps: held out by the AdSense gate (filtered here) until approval.
+  { url: '/roadmaps', changefreq: 'monthly', priority: 0.7, lastmod: '2026-10-17' },
+  { url: '/roadmaps/data-engineer', changefreq: 'monthly', priority: 0.6, lastmod: '2026-10-17' },
+  { url: '/roadmaps/analytics-engineer', changefreq: 'monthly', priority: 0.6, lastmod: '2026-10-17' },
+  { url: '/roadmaps/data-platform-engineer', changefreq: 'monthly', priority: 0.6, lastmod: '2026-10-17' },
   { url: '/practice/snowpro-core', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
   { url: '/practice/snowpro-genai', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },
   { url: '/practice/databricks-de', changefreq: 'weekly', priority: 0.75, lastmod: 'today' },

@@ -489,6 +489,12 @@ export default function InterviewPrepHubPage() {
             </p>
           </motion.div>
 
+          <p className="mb-8 text-sm text-gray-300">
+            Want a longer learning path?{' '}
+            <Link to="/roadmaps" className="text-amber-300 hover:text-amber-200 underline">Role roadmaps</Link>{' '}
+            for data, analytics and platform engineers track your progress skill by skill.
+          </p>
+
           {/* Track nav */}
           <nav aria-label="Interview tracks" className="mb-10">
             <div className="flex flex-wrap gap-2">

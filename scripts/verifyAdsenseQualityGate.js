@@ -26,6 +26,8 @@ const mustNoindex = [
   '/practice/snowpro-core',
   '/practice/snowpro-core/mock-exam',
   '/practice/aws-de-associate/mock-exam',
+  '/roadmaps',
+  '/roadmaps/data-engineer',
   '/advertise',
   '/contribute',
   '/contributors',
@@ -92,6 +94,28 @@ if (/REVIEW_HIDDEN_MAIN = new Set\(\[\s*['"]\/advertise['"]/.test(header)) {
   console.error('❌ Header must keep Advertise in the main nav during review');
   failed += 1;
 }
+// Community-feature prefixes are held out in all four layers, not just the gate.
+const htaccessRules = readFileSync(join(root, 'public/.htaccess'), 'utf8');
+const ssgSource = readFileSync(join(root, 'scripts/generateStaticPagesIncremental.js'), 'utf8');
+for (const prefix of ['roadmaps']) {
+  const layers = {
+    '.htaccess ADSENSE_REVIEW_PATH': new RegExp(`SetEnvIf Request_URI "[^"]*\\|${prefix}\\|`).test(htaccessRules),
+    'index.html isHeldOut': shell.includes(`path === '/${prefix}'`),
+    'SSG stampHeldOutRobots roots': new RegExp(`function stampHeldOutRobots[\\s\\S]{0,600}'${prefix}'`).test(ssgSource),
+    'Header REVIEW_HIDDEN_LEARN': new RegExp(`REVIEW_HIDDEN_LEARN = new Set\\(\\[[^\\]]*'/${prefix}'`).test(header),
+  };
+  for (const [layer, ok] of Object.entries(layers)) {
+    if (!ok) {
+      console.error(`❌ /${prefix} is not held out in ${layer}`);
+      failed += 1;
+    }
+  }
+  if (cta.includes(`/${prefix}`) || footer.includes(`'/${prefix}'`)) {
+    console.error(`❌ /${prefix} is linked from in-article CTAs or the footer during review`);
+    failed += 1;
+  }
+}
+
 if (header.includes('=> (}')) {
   console.error('❌ Header.jsx has a broken JSX map callback (=> (})');
   failed += 1;

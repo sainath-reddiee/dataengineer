@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getMockPlan, MOCK_LENGTHS } from '../../src/lib/practice/mockExam.js';
+import { resourceHref, resourceTypeLabel } from '../../src/lib/roadmaps/resourceHref.js';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const PRACTICE_SLUGS = ['snowpro-core', 'snowpro-genai', 'databricks-de', 'aws-de-associate'];
@@ -65,6 +66,58 @@ ${domains}
   });
 }
 
+export function loadRoadmaps() {
+  const dir = path.join(root, 'src', 'data', 'roadmaps');
+  return fs.readdirSync(dir)
+    .filter((f) => f.endsWith('.json'))
+    .map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')))
+    .filter((r) => r.published);
+}
+
+export const ROADMAPS_HUB = {
+  title: 'Role roadmaps',
+  intro: 'Step-by-step learning paths for data roles. Each skill links to a tutorial, cheat sheet, tool or practice test on this site. Tick skills off as you go; progress stays in your browser.',
+};
+
+export function buildRoadmapPages() {
+  const roadmaps = loadRoadmaps();
+  const hub = {
+    path: '/roadmaps',
+    title: 'Data Engineering Role Roadmaps',
+    description: 'Learning roadmaps for data engineers, analytics engineers and data platform engineers, built from tutorials, cheat sheets, tools and practice tests.',
+    content: `
+      <h1>${ROADMAPS_HUB.title}</h1>
+      <p>${ROADMAPS_HUB.intro}</p>
+      <ul>
+${roadmaps.map((r) => `        <li><a href="/roadmaps/${r.slug}"><strong>${escapeHtml(r.title)}</strong></a>: ${escapeHtml(r.tagline)}</li>`).join('\n')}
+      </ul>
+    `,
+  };
+  const pages = roadmaps.map((r) => {
+    const stages = r.stages.map((stage, i) => {
+      const skills = stage.skills.map((skill) => {
+        const links = skill.resources
+          .map((res) => `<li>${escapeHtml(resourceTypeLabel(res))}: <a href="${resourceHref(res)}">${escapeHtml(res.label)}</a></li>`)
+          .join('');
+        return `        <li><strong>${escapeHtml(skill.title)}</strong>${skill.note ? ` ${escapeHtml(skill.note)}` : ''}<ul>${links}</ul></li>`;
+      }).join('\n');
+      return `      <h2>${i + 1}. ${escapeHtml(stage.title)}</h2>\n      <ul>\n${skills}\n      </ul>`;
+    }).join('\n');
+    return {
+      path: `/roadmaps/${r.slug}`,
+      title: r.title,
+      description: r.tagline,
+      content: `
+      <h1>${escapeHtml(r.title)}</h1>
+      <p>${escapeHtml(r.tagline)}</p>
+${r.intro ? `      <p>${escapeHtml(r.intro)}</p>\n` : ''}${stages}
+      <p>See all <a href="/roadmaps">role roadmaps</a>.</p>
+    `,
+    };
+  });
+  return [hub, ...pages];
+}
+
 export function buildCommunityPages() {
-  return [...buildMockExamPages()];
+  return [...buildMockExamPages(), ...buildRoadmapPages()];
 }

@@ -9,7 +9,7 @@
  * pages as low-value even when each page is 400+ words.
  *
  * While ADSENSE_REVIEW_MODE is true:
- * - glossary, compare, tags, categories, interview-prep, practice quizzes,
+ * - glossary, compare, tags, categories, interview-prep, practice quizzes, roadmaps,
  *   news, newsletter, reading-list, most cheat sheets, and utility tools
  *   are noindexed
  * - they are omitted from sitemap.xml
@@ -44,7 +44,7 @@
 export const ADSENSE_REVIEW_MODE = true;
 /** Bump when held-out paths change so incremental SSG rewrites stale robots meta. */
 // v6: editorial light redesign of every static template.
-export const ADSENSE_GATE_VERSION = 6;
+export const ADSENSE_GATE_VERSION = 7;
 
 export const ADSENSE_REVIEW_CHEATSHEETS = [
   'snowflake-sql',
@@ -100,6 +100,7 @@ export function isAdSenseNoindexPath(pathname) {
   if (path === '/category' || path.startsWith('/category/')) return true;
   if (path === '/interview-prep' || path.startsWith('/interview-prep/')) return true;
   if (path === '/practice' || path.startsWith('/practice/')) return true;
+  if (path === '/roadmaps' || path.startsWith('/roadmaps/')) return true;
   if (path === '/advertise' || path.startsWith('/advertise/')) return true;
   if (path === '/contribute' || path.startsWith('/contribute/')) return true;
   if (path === '/contributors' || path.startsWith('/contributors/')) return true;

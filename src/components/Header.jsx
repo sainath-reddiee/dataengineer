@@ -13,6 +13,7 @@ import {
   Library,
   Megaphone,
   Menu,
+  Milestone,
   PenLine,
   Search,
   Target,
@@ -29,6 +30,7 @@ const REVIEW_HIDDEN_MAIN = new Set([
   // Commercial placements stay in the main nav. AdsBot still noindexes that URL.
 ]);
 const REVIEW_HIDDEN_LEARN = new Set([
+  '/roadmaps',
   '/glossary',
   '/compare',
   '/interview-prep',
@@ -46,6 +48,7 @@ const MAIN_LINKS = [
 ];
 
 const LEARN_LINKS = [
+  { name: 'Roadmaps', path: '/roadmaps', icon: Milestone },
   { name: 'Interview Prep', path: '/interview-prep', icon: GraduationCap },
   { name: 'Practice Tests', path: '/practice', icon: Target },
   { name: 'Cheat Sheets', path: '/cheatsheets', icon: FileText },
@@ -56,6 +59,7 @@ const LEARN_LINKS = [
 ];
 
 const LEARN_PATHS = [
+  '/roadmaps',
   '/interview-prep',
   '/practice',
   '/cheatsheets',

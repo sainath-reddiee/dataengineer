@@ -1,0 +1,172 @@
+{
+  "slug": "data-platform-engineer",
+  "title": "Data Platform Engineer roadmap",
+  "tagline": "Cloud foundations, platform architecture, governance, cost management and reliability at scale.",
+  "intro": null,
+  "introBrief": "Owner to write, 120 to 250 words in your own voice: what a platform engineer owns that a pipeline engineer does not, and the mistakes you have seen platforms make.",
+  "published": true,
+  "stages": [
+    {
+      "id": "cloud-foundations",
+      "title": "Cloud foundations",
+      "skills": [
+        {
+          "id": "aws-data",
+          "title": "AWS data services",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "aws-for-data-engineers", "label": "AWS for data engineers" },
+            { "type": "article", "ref": "serverless-data-pipeline-aws", "label": "Serverless data pipeline on AWS" }
+          ]
+        },
+        {
+          "id": "azure-gcp-data",
+          "title": "Azure and Google Cloud data services",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "azure-for-data-engineers", "label": "Azure for data engineers" },
+            { "type": "article", "ref": "mastering-real-time-etl-with-google-cloud-dataflow", "label": "Real-time ETL with Google Cloud Dataflow" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "platform-architecture",
+      "title": "Platform architecture",
+      "skills": [
+        {
+          "id": "warehouse-internals",
+          "title": "Warehouse internals",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "snowflake-architecture", "label": "Snowflake architecture explained" },
+            { "type": "cheatsheet", "ref": "snowflake-performance-deep-dive-interview", "label": "Snowflake performance deep dive" }
+          ]
+        },
+        {
+          "id": "open-formats",
+          "title": "Lakehouse and open table formats",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "snowflake-managed-iceberg-tables-complete-guide-2026", "label": "Snowflake managed Iceberg tables" },
+            { "type": "article", "ref": "build-data-lakehouse-on-azure", "label": "Build a data lakehouse on Azure" },
+            { "type": "cheatsheet", "ref": "snowflake-iceberg-tables-interview", "label": "Iceberg tables interview sheet" }
+          ]
+        },
+        {
+          "id": "workload-unification",
+          "title": "Transactional and analytical workloads",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "snowflake-hybrid-tables-unify-transactional-analytical-data", "label": "Snowflake hybrid tables" },
+            { "type": "article", "ref": "synapse-to-fabric-migration-adx-eventhouse-guide", "label": "Synapse to Fabric migration" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "governance-security",
+      "title": "Governance and security",
+      "skills": [
+        {
+          "id": "access-masking",
+          "title": "Access control and masking",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "dynamic-data-masking-snowflake", "label": "Dynamic data masking in Snowflake" },
+            { "type": "cheatsheet", "ref": "snowflake-governance-interview", "label": "Governance interview sheet" }
+          ]
+        },
+        {
+          "id": "sharing",
+          "title": "Secure data sharing",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "snowflake-data-sharing-governance", "label": "Snowflake data sharing and governance" },
+            { "type": "cheatsheet", "ref": "snowflake-data-sharing-interview", "label": "Data sharing interview sheet" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cost-management",
+      "title": "Cost management",
+      "skills": [
+        {
+          "id": "platform-cost",
+          "title": "Compare platform costs",
+          "note": null,
+          "resources": [
+            { "type": "tool", "ref": "cloud-data-warehouse-cost-comparison", "label": "Cloud data warehouse cost comparison" },
+            { "type": "tool", "ref": "databricks-cost-calculator", "label": "Databricks cost calculator" },
+            { "type": "tool", "ref": "bigquery-cost-calculator", "label": "BigQuery cost calculator" }
+          ]
+        },
+        {
+          "id": "pipeline-cost",
+          "title": "Pipeline and AI cost",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "aws-data-pipeline-cost-optimization-strategies", "label": "AWS data pipeline cost optimization" },
+            { "type": "article", "ref": "snowflake-cortex-cost-comparison", "label": "Snowflake Cortex cost comparison" },
+            { "type": "article", "ref": "snowflake-cortex-code-cost-control-2026", "label": "Cortex Code cost control" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "orchestration-scale",
+      "title": "Orchestration at scale",
+      "skills": [
+        {
+          "id": "choose-orchestrator",
+          "title": "Choose the orchestrator",
+          "note": null,
+          "resources": [
+            { "type": "article", "ref": "why-i-stopped-using-snowflake-tasks-orchestration", "label": "Why I stopped using Snowflake tasks for orchestration" },
+            { "type": "cheatsheet", "ref": "airflow-best-practices", "label": "Airflow best practices" }
+          ]
+        },
+        {
+          "id": "streaming",
+          "title": "Streaming ingestion",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "snowflake-snowpipe-streaming-interview", "label": "Snowpipe Streaming interview sheet" },
+            { "type": "cheatsheet", "ref": "snowflake-streams-tasks-interview", "label": "Streams and tasks interview sheet" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reliability",
+      "title": "Reliability and recovery",
+      "skills": [
+        {
+          "id": "replication-failover",
+          "title": "Replication and failover",
+          "note": null,
+          "resources": [
+            { "type": "cheatsheet", "ref": "snowflake-replication-failover-interview", "label": "Replication and failover interview sheet" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "certify",
+      "title": "Certification",
+      "skills": [
+        {
+          "id": "cloud-certification",
+          "title": "Pass a cloud data certification",
+          "note": null,
+          "resources": [
+            { "type": "practice", "ref": "aws-de-associate", "label": "AWS Data Engineer Associate practice test" },
+            { "type": "mock", "ref": "aws-de-associate", "label": "AWS Data Engineer Associate mock exam" },
+            { "type": "mock", "ref": "databricks-de", "label": "Databricks Data Engineer mock exam" }
+          ]
+        }
+      ]
+    }
+  ]
+}

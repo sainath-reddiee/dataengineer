@@ -259,6 +259,7 @@ function stampHeldOutRobots(distDir) {
     'tag',
     'tags',
     'practice',
+    'roadmaps',
     'interview-prep',
     'advertise',
     'contribute',
