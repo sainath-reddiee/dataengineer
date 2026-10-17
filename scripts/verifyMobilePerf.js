@@ -49,7 +49,11 @@ assert(
 );
 assert(!indexHtml.includes('rel="preload" as="font"'), 'do not preload Inter ahead of first paint on mobile');
 assert(!indexHtml.includes('pagead2.googlesyndication.com" crossorigin'), 'do not preconnect AdSense on the homepage critical path');
-assert(!indexHtml.includes('@font-face'), 'do not download Inter before first paint');
+// The shell may declare the self-hosted editorial fonts (swap, about 20 KB
+// each) so it matches React, but never a third-party font host or Inter.
+assert(!/Inter\b|fonts\.googleapis|fonts\.gstatic/.test(indexHtml), 'do not load Inter or Google Fonts before first paint');
+assert(!/@font-face[^}]*url\((?!'\/fonts\/)/.test(indexHtml), 'shell @font-face rules must point at /fonts/');
+assert(!/font-display:\s*block/.test(indexHtml), 'shell fonts must not block text paint');
 assert(!header.includes("from 'framer-motion'"), 'Header chrome must stay off the homepage framer-motion chunk');
 assert(!footer.includes("from 'framer-motion'"), 'Footer must stay off the homepage framer-motion chunk');
 assert(!scroll.includes("from 'framer-motion'"), 'ScrollToTop must stay off the homepage framer-motion chunk');
