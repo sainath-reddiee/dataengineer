@@ -101,6 +101,10 @@ check(page.includes('+ tax') && page.includes('local currency'), 'checkout says 
 check(page.includes('Check again') && page.includes("'not_found'"), 'return page can re-check and explains unknown orders');
 check(page.includes('/refund-policy') && page.includes('/terms-of-service'), 'consent line links the terms and refund policy');
 check(!read('src/data/advertiseConfig.json').includes('No extra fees'), 'no "No extra fees" claim');
+check(page.includes("next.delete('email')"), 'return page removes the buyer email Dodo appends to the URL');
+check(page.includes("providerStatus === 'processing'"), 'return page explains a payment Dodo is still processing');
+const analytics = read('src/utils/analytics.js');
+check(/page_path: redactUrl\(url\)/.test(analytics) && /page_location: redactUrl\(window\.location\.href\)/.test(analytics) && analytics.includes("'email'"), 'page views sent to Google Analytics have email params removed');
 
 // ---- Legal pages ----
 const statics = read('scripts/generateStaticPagesIncremental.js');

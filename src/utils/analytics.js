@@ -37,15 +37,29 @@ export const initGA = () => {
   console.log('✅ Google Analytics initialized');
 };
 
+// Google Analytics must never receive personal data. Payment providers append
+// the buyer's email to return URLs (Dodo: ?email=...), so drop such params.
+const PII_PARAMS = ['email', 'name', 'phone', 'customer_email'];
+export const redactUrl = (url) => {
+  try {
+    const parsed = new URL(url, 'https://dataengineerhub.blog');
+    PII_PARAMS.forEach((p) => parsed.searchParams.delete(p));
+    const isAbsolute = /^https?:\/\//.test(url);
+    return isAbsolute ? parsed.toString() : parsed.pathname + parsed.search + parsed.hash;
+  } catch {
+    return url;
+  }
+};
+
 // Track page views
 export const trackPageView = (url) => {
   if (typeof window === 'undefined' || typeof window.gtag === 'undefined') {
     return;
   }
-  
+
   window.gtag('config', GA_MEASUREMENT_ID, {
-    page_path: url,
-    page_location: window.location.href,
+    page_path: redactUrl(url),
+    page_location: redactUrl(window.location.href),
     page_title: document.title,
   });
   
