@@ -1241,7 +1241,7 @@ const ESSENTIAL_PAGES = [
         <li>No gambling, crypto trading, loans or products I would not use myself.</li>
         <li>One sponsor per page; sponsors never decide what articles say.</li>
       </ul>
-      <p>Payment is by PayPal invoice in USD (cards accepted). Cancel before go-live for a full refund. Send an inquiry with the form on this page or email <a href="mailto:sainath@dataengineerhub.blog">sainath@dataengineerhub.blog</a>. Guest tutorials are free and editorial: see <a href="/contribute">Write for us</a>.</p>
+      <p>Payment is in USD, by card through the secure checkout (Dodo Payments) or a PayPal invoice. Anything I decline, or you cancel before go-live, is refunded in full. Send an inquiry with the form on this page or email <a href="mailto:sainath@dataengineerhub.blog">sainath@dataengineerhub.blog</a>. Guest tutorials are free and editorial: see <a href="/contribute">Write for us</a>.</p>
     `
   },
   {

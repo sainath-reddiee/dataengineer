@@ -30,8 +30,9 @@ assert(search.includes('aria-label="Close search"'), 'Search must expose a close
 assert(search.includes("body.style.overflow = 'hidden'"), 'Search must lock background scroll');
 
 assert(header.includes('aria-label="Search articles"'), 'Mobile header should expose search outside the hamburger');
-assert(header.includes('Search articles…'), 'Mobile header should show a search bar, not only an icon');
-assert(header.includes('flex-1 items-center gap-2 rounded-full'), 'Mobile search should be a flex pill in the header chrome');
+// Editorial header: the serif masthead needs the width, so mobile search is a
+// 40px icon button that opens the full search sheet.
+assert(header.includes('lg:hidden ml-auto inline-flex h-10 w-10'), 'Mobile search button should be a 40px tap target');
 assert(search.includes('Popular topics'), 'Search sheet should offer topic chips before someone types');
 assert(search.includes('Jump to'), 'Search sheet should shortcut to playground and study pages');
 assert(search.includes('deh-search-recent'), 'Search should remember recent opens');

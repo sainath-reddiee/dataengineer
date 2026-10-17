@@ -178,6 +178,14 @@ function dehub_rest_delete_guest_author($request) {
  * WordPress user who can edit users (cookie session or Application Password).
  * Reads stay public.
  */
+// Guest author records hold an email for the editor; never expose it publicly.
+function dehub_public_guest_author($author) {
+    if (is_array($author) && !current_user_can('edit_users')) {
+        unset($author['email']);
+    }
+    return $author;
+}
+
 function dehub_can_manage_guest_authors() {
     return current_user_can('edit_users');
 }
@@ -192,9 +200,9 @@ add_action('rest_api_init', function () {
                 $slug = $request->get_param('slug');
                 if (!empty($slug)) {
                     $found = dehub_get_guest_author_by('slug', $slug);
-                    return rest_ensure_response($found ? [$found] : []);
+                    return rest_ensure_response($found ? [dehub_public_guest_author($found)] : []);
                 }
-                return rest_ensure_response(dehub_get_guest_authors());
+                return rest_ensure_response(array_map('dehub_public_guest_author', dehub_get_guest_authors()));
             },
             'permission_callback' => '__return_true'
         ],
@@ -262,14 +270,14 @@ function dehub_get_contributors_endpoint($request) {
     if (!empty($slug)) {
         $guest = dehub_get_guest_author_by('slug', $slug);
         if ($guest) {
-            return rest_ensure_response([$guest]);
+            return rest_ensure_response([dehub_public_guest_author($guest)]);
         }
     }
 
     // Fetch guest authors from option
     $guest_authors = dehub_get_guest_authors();
     foreach ($guest_authors as $g) {
-        $data[] = $g;
+        $data[] = dehub_public_guest_author($g);
     }
 
     // Fetch WordPress users
@@ -328,7 +336,7 @@ add_filter('rest_prepare_post', function ($response, $post, $request) {
             $guest_author = dehub_get_guest_author_by('slug', $guest_author_id);
         }
         if ($guest_author) {
-            $response->data['guest_author_details'] = $guest_author;
+            $response->data['guest_author_details'] = dehub_public_guest_author($guest_author);
         }
     }
     return $response;
@@ -1718,52 +1726,8 @@ function handle_newsletter_export() {
     );
 }
 
-// Contact form endpoint
-add_action('rest_api_init', 'register_contact_endpoint');
-function register_contact_endpoint() {
-    register_rest_route('wp/v2', '/contact/submit', array(
-        'methods' => 'POST',
-        'callback' => 'handle_contact_submission',
-        'permission_callback' => '__return_true',
-        'args' => array(
-            'name' => array('required' => true),
-            'email' => array('required' => true),
-            'message' => array('required' => true)
-        )
-    ));
-}
-
-function handle_contact_submission($request) {
-    $name = sanitize_text_field($request->get_param('name'));
-    $email = sanitize_email($request->get_param('email'));
-    $message = sanitize_textarea_field($request->get_param('message'));
-    
-    if (!is_email($email)) {
-        return new WP_Error('invalid_email', 'Invalid email address', array('status' => 400));
-    }
-    
-    $admin_email = get_option('admin_email');
-    $subject = 'New Contact Form Submission from ' . $name;
-    $email_message = "Name: $name\nEmail: $email\n\nMessage:\n$message";
-    
-    $sent = wp_mail($admin_email, $subject, $email_message, array(
-        'From: DataEngineer Hub <noreply@dataengineerhub.blog>',
-        'Reply-To: ' . $email
-    ));
-    
-    if (!$sent) {
-        return new WP_Error('email_failed', 'Failed to send message', array('status' => 500));
-    }
-    
-    $user_subject = 'Thank you for contacting DataEngineer Hub';
-    $user_message = "Hi $name,\n\nThank you for your message. We'll get back to you shortly.\n\nBest regards,\nDataEngineer Hub Team";
-    wp_mail($email, $user_subject, $user_message);
-    
-    return array(
-        'success' => true,
-        'message' => 'Contact form submitted successfully'
-    );
-}
+// The old /wp/v2/contact/submit route was removed: it mailed any address a
+// caller supplied. Site forms post to Web3Forms instead.
 
 // ============================================================================
 // THEME SUPPORT & CUSTOMIZATIONS - MUST BE AT TOP
@@ -2506,7 +2470,9 @@ function register_category_debug_endpoint() {
     register_rest_route('wp/v2', '/debug/categories/(?P<id>\d+)', array(
         'methods' => 'GET',
         'callback' => 'debug_post_categories_endpoint',
-        'permission_callback' => '__return_true',
+        'permission_callback' => function () {
+            return current_user_can('edit_posts');
+        },
         'args' => array(
             'id' => array(
                 'validate_callback' => function($param) {
@@ -3247,8 +3213,17 @@ function get_certifications_by_provider($request) {
 }
 
 function track_certification_download($request) {
-    $post_id = $request['id'];
-    
+    $post_id = (int) $request['id'];
+    if (get_post_type($post_id) !== 'certification' || get_post_status($post_id) !== 'publish') {
+        return new WP_REST_Response(array('success' => false), 404);
+    }
+    $ip = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+    $limit_key = 'dehub_certdl_' . md5($ip . '|' . $post_id);
+    if (get_transient($limit_key)) {
+        return new WP_REST_Response(array('success' => true, 'counted' => false), 200);
+    }
+    set_transient($limit_key, 1, HOUR_IN_SECONDS);
+
     $current_count = get_post_meta($post_id, '_cert_downloads_count', true);
     $new_count = intval($current_count) + 1;
     update_post_meta($post_id, '_cert_downloads_count', $new_count);
@@ -4164,6 +4139,14 @@ add_action('rest_api_init', function () {
             if (get_transient($limit_key)) {
                 return new WP_REST_Response(['ok' => true, 'counted' => false], 202);
             }
+            // The page context is client-supplied, so also cap each visitor
+            // per campaign per day; rotating contexts cannot inflate counts.
+            $daily_key = 'dehub_spd_' . md5($ip . '|' . $campaign . '|' . $type . '|' . current_time('Y-m-d'));
+            $daily = (int) get_transient($daily_key);
+            if ($daily >= ($type === 'click' ? 5 : 20)) {
+                return new WP_REST_Response(array('ok' => true, 'counted' => false), 202);
+            }
+            set_transient($daily_key, $daily + 1, DAY_IN_SECONDS);
             set_transient($limit_key, 1, $window);
 
             global $wpdb;
@@ -4519,6 +4502,395 @@ add_filter('rest_post_query', function ($args, $request) {
     $args['category__not_in'] = array_values(array_unique(array_merge($existing, array($cat))));
     return $args;
 }, 10, 2);
+
+
+// ============================================================================
+// SPONSOR CHECKOUT: Dodo Payments (card checkout for advertise packages)
+// ============================================================================
+// The site is static, so the browser never talks to Dodo with a key. It asks
+// WordPress for a checkout session, WordPress calls Dodo with the secret key
+// from wp-config.php, and the buyer is redirected to Dodo's hosted checkout.
+// Dodo then calls the signed webhook below, which marks the order paid and
+// emails both sides. wp-config.php settings:
+//   DEHUB_DODO_API_KEY         secret API key (Dodo dashboard > Developer > API keys)
+//   DEHUB_DODO_WEBHOOK_SECRET  signing secret of the webhook endpoint (whsec_...)
+//   DEHUB_DODO_MODE            'test' (default) or 'live'; must match the key
+//   DEHUB_DODO_PRODUCTS        array of '<package>:<plan>' => 'pdt_...' product ids
+//   DEHUB_SPONSOR_INBOX        optional; where paid-order emails go
+// Prices live on the Dodo products, so a buyer cannot change what they pay.
+
+define('DEHUB_ORDERS_DB_VERSION', '1');
+
+function dehub_checkout_catalog() {
+    return array(
+        'resource_reference' => array('title' => 'Sponsored card in matching guides', 'plans' => array('monthly', 'yearly')),
+        'directory'          => array('title' => 'Tools Hub listing', 'plans' => array('yearly')),
+        'content'            => array('title' => 'Co-authored integration guide', 'plans' => array('one_time')),
+        'announcement'       => array('title' => 'Sponsored announcement', 'plans' => array('one_time')),
+    );
+}
+
+function dehub_orders_table() {
+    global $wpdb;
+    return $wpdb->prefix . 'dehub_orders';
+}
+
+add_action('init', function () {
+    if (get_option('dehub_orders_db_version') === DEHUB_ORDERS_DB_VERSION) {
+        return;
+    }
+    global $wpdb;
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    $table = dehub_orders_table();
+    $charset = $wpdb->get_charset_collate();
+    dbDelta("CREATE TABLE {$table} (
+        id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+        ref varchar(48) NOT NULL,
+        package varchar(40) NOT NULL,
+        plan varchar(20) NOT NULL,
+        email varchar(190) NOT NULL,
+        name varchar(120) NOT NULL DEFAULT '',
+        company varchar(160) NOT NULL DEFAULT '',
+        website varchar(255) NOT NULL DEFAULT '',
+        notes text,
+        status varchar(20) NOT NULL DEFAULT 'created',
+        mode varchar(8) NOT NULL DEFAULT 'test',
+        session_id varchar(100) NOT NULL DEFAULT '',
+        payment_id varchar(100) NOT NULL DEFAULT '',
+        amount int(10) unsigned NOT NULL DEFAULT 0,
+        currency varchar(8) NOT NULL DEFAULT '',
+        created_at datetime NOT NULL,
+        updated_at datetime NOT NULL,
+        PRIMARY KEY  (id),
+        UNIQUE KEY ref (ref),
+        KEY session_id (session_id),
+        KEY payment_id (payment_id)
+    ) {$charset};");
+    update_option('dehub_orders_db_version', DEHUB_ORDERS_DB_VERSION);
+});
+
+function dehub_dodo_mode() {
+    return dehub_newsletter_const('DEHUB_DODO_MODE') === 'live' ? 'live' : 'test';
+}
+
+function dehub_dodo_products() {
+    if (!defined('DEHUB_DODO_PRODUCTS') || !is_array(DEHUB_DODO_PRODUCTS)) {
+        return array();
+    }
+    $catalog = dehub_checkout_catalog();
+    $products = array();
+    foreach (DEHUB_DODO_PRODUCTS as $key => $product_id) {
+        $parts = explode(':', (string) $key);
+        if (count($parts) !== 2 || !isset($catalog[$parts[0]]) || !in_array($parts[1], $catalog[$parts[0]]['plans'], true)) {
+            continue;
+        }
+        $product_id = trim((string) $product_id);
+        if ($product_id !== '') {
+            $products[$key] = $product_id;
+        }
+    }
+    return $products;
+}
+
+function dehub_dodo_ready() {
+    return dehub_newsletter_const('DEHUB_DODO_API_KEY') !== '' && count(dehub_dodo_products()) > 0;
+}
+
+function dehub_sponsor_inbox() {
+    $inbox = dehub_newsletter_const('DEHUB_SPONSOR_INBOX');
+    return is_email($inbox) ? $inbox : get_option('admin_email');
+}
+
+function dehub_order_by($field, $value) {
+    global $wpdb;
+    if (!in_array($field, array('ref', 'session_id', 'payment_id'), true) || $value === '') {
+        return null;
+    }
+    $table = dehub_orders_table();
+    return $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE {$field} = %s LIMIT 1", $value), ARRAY_A);
+}
+
+function dehub_order_update($id, $fields) {
+    global $wpdb;
+    $fields['updated_at'] = current_time('mysql', true);
+    $wpdb->update(dehub_orders_table(), $fields, array('id' => (int) $id));
+}
+
+// Standard Webhooks signature: base64(HMAC-SHA256("{id}.{timestamp}.{body}")),
+// keyed with the base64-decoded part of the whsec_ secret.
+function dehub_dodo_verify_signature($request) {
+    $secret = dehub_newsletter_const('DEHUB_DODO_WEBHOOK_SECRET');
+    $id = (string) $request->get_header('webhook-id');
+    $timestamp = (string) $request->get_header('webhook-timestamp');
+    $header = (string) $request->get_header('webhook-signature');
+    if ($secret === '' || $id === '' || $timestamp === '' || $header === '' || !ctype_digit($timestamp)) {
+        return false;
+    }
+    if (abs(time() - (int) $timestamp) > 5 * MINUTE_IN_SECONDS) {
+        return false;
+    }
+    $key = strpos($secret, 'whsec_') === 0 ? base64_decode(substr($secret, 6), true) : $secret;
+    if ($key === false || $key === '') {
+        return false;
+    }
+    $expected = base64_encode(hash_hmac('sha256', $id . '.' . $timestamp . '.' . $request->get_body(), $key, true));
+    foreach (preg_split('/\s+/', trim($header)) as $part) {
+        $pieces = explode(',', $part, 2);
+        if (count($pieces) === 2 && $pieces[0] === 'v1' && hash_equals($expected, $pieces[1])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function dehub_order_paid_emails($order) {
+    $catalog = dehub_checkout_catalog();
+    $title = isset($catalog[$order['package']]) ? $catalog[$order['package']]['title'] : $order['package'];
+    $amount = $order['amount'] ? sprintf('%s %.2f', $order['currency'], $order['amount'] / 100) : 'see Dodo dashboard';
+    $test = $order['mode'] === 'test' ? '[TEST] ' : '';
+
+    wp_mail(
+        dehub_sponsor_inbox(),
+        $test . 'Paid: ' . $title . ' (' . $order['plan'] . ') from ' . ($order['company'] ?: $order['email']),
+        "Order {$order['ref']}\n"
+        . "Package: {$title} ({$order['plan']})\n"
+        . "Amount: {$amount}\n"
+        . "Dodo payment: {$order['payment_id']}\n\n"
+        . "Name: {$order['name']}\nEmail: {$order['email']}\nCompany: {$order['company']}\nWebsite: {$order['website']}\n\n"
+        . "Notes:\n{$order['notes']}\n",
+        array('Reply-To: ' . $order['email'])
+    );
+
+    $next = $order['package'] === 'announcement'
+        ? "Reply to this email with the release text (up to 800 words) and one image or logo. It goes live within 3 working days and I will send you the link."
+        : "I will reply within two working days to agree the copy, link and start date. Nothing goes live until you approve it.";
+    wp_mail(
+        $order['email'],
+        $test . 'Payment received: ' . $title . ' on DataEngineer Hub',
+        "Hi " . ($order['name'] ?: 'there') . ",\n\n"
+        . "Thanks, your payment for \"{$title}\" went through. Dodo Payments sends the tax receipt separately.\n\n"
+        . $next . "\n\n"
+        . "Your order reference is {$order['ref']}. If the placement turns out not to be a fit before it goes live, I refund in full.\n\n"
+        . "Sainath\nDataEngineer Hub\n" . DEHUB_PUBLIC_SITE . "\n",
+        array('Reply-To: ' . dehub_sponsor_inbox())
+    );
+}
+
+add_action('rest_api_init', function () {
+    // Which packages can be paid by card right now. Lets the site hide the
+    // card buttons until the Dodo products exist.
+    register_rest_route('dehub/v1', '/checkout/options', array(
+        'methods'  => 'GET',
+        'permission_callback' => '__return_true',
+        'callback' => function () {
+            $response = rest_ensure_response(array(
+                'enabled' => dehub_dodo_ready(),
+                'mode'    => dehub_dodo_mode(),
+                'plans'   => dehub_dodo_ready() ? array_keys(dehub_dodo_products()) : array(),
+            ));
+            $response->header('Cache-Control', 'public, max-age=300');
+            return $response;
+        },
+    ));
+
+    register_rest_route('dehub/v1', '/checkout', array(
+        'methods'  => 'POST',
+        'permission_callback' => '__return_true',
+        'callback' => function ($request) {
+            if (!dehub_dodo_ready()) {
+                return new WP_REST_Response(array('success' => false, 'message' => 'Card checkout is not set up yet. Please use the inquiry form.'), 503);
+            }
+            if ((string) $request->get_param('company_url') !== '') {
+                return new WP_REST_Response(array('success' => false, 'message' => 'Request rejected.'), 400);
+            }
+
+            $package = sanitize_key((string) $request->get_param('package'));
+            $plan = sanitize_key((string) $request->get_param('plan'));
+            $products = dehub_dodo_products();
+            $product_key = $package . ':' . $plan;
+            if (!isset($products[$product_key])) {
+                return new WP_REST_Response(array('success' => false, 'message' => 'That package cannot be paid by card yet.'), 400);
+            }
+
+            $email = sanitize_email((string) $request->get_param('email'));
+            $name = sanitize_text_field((string) $request->get_param('name'));
+            if (!is_email($email) || $name === '') {
+                return new WP_REST_Response(array('success' => false, 'message' => 'Please enter your name and a valid email.'), 400);
+            }
+
+            $ip = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+            $limit_key = 'dehub_co_' . md5($ip);
+            $attempts = (int) get_transient($limit_key);
+            if ($attempts >= 6) {
+                return new WP_REST_Response(array('success' => false, 'message' => 'Too many attempts. Try again in a few minutes or email me.'), 429);
+            }
+            set_transient($limit_key, $attempts + 1, 10 * MINUTE_IN_SECONDS);
+
+            $website = esc_url_raw((string) $request->get_param('website'));
+            $order = array(
+                'ref'        => 'deh_' . bin2hex(random_bytes(12)),
+                'package'    => $package,
+                'plan'       => $plan,
+                'email'      => $email,
+                'name'       => mb_substr($name, 0, 120),
+                'company'    => mb_substr(sanitize_text_field((string) $request->get_param('company')), 0, 160),
+                'website'    => mb_substr($website, 0, 255),
+                'notes'      => mb_substr(sanitize_textarea_field((string) $request->get_param('notes')), 0, 4000),
+                'status'     => 'created',
+                'mode'       => dehub_dodo_mode(),
+                'created_at' => current_time('mysql', true),
+                'updated_at' => current_time('mysql', true),
+            );
+
+            global $wpdb;
+            if (!$wpdb->insert(dehub_orders_table(), $order)) {
+                return new WP_REST_Response(array('success' => false, 'message' => 'Could not start checkout. Please email me instead.'), 500);
+            }
+            $order_id = (int) $wpdb->insert_id;
+
+            $base = $order['mode'] === 'live' ? 'https://live.dodopayments.com' : 'https://test.dodopayments.com';
+            $body = array(
+                'product_cart' => array(array('product_id' => $products[$product_key], 'quantity' => 1)),
+                'customer'     => array('email' => $email, 'name' => $order['name']),
+                'return_url'   => DEHUB_PUBLIC_SITE . '/advertise/checkout?order=' . rawurlencode($order['ref']),
+                'metadata'     => array('order_ref' => $order['ref'], 'package' => $package, 'plan' => $plan),
+            );
+            $response = wp_remote_post($base . '/checkouts', array(
+                'timeout' => 20,
+                'headers' => array(
+                    'Authorization' => 'Bearer ' . dehub_newsletter_const('DEHUB_DODO_API_KEY'),
+                    'Content-Type'  => 'application/json',
+                ),
+                'body' => wp_json_encode($body),
+            ));
+
+            $code = is_wp_error($response) ? 0 : (int) wp_remote_retrieve_response_code($response);
+            $data = is_wp_error($response) ? null : json_decode(wp_remote_retrieve_body($response), true);
+            if ($code < 200 || $code >= 300 || empty($data['checkout_url'])) {
+                $detail = is_wp_error($response) ? $response->get_error_message() : ('HTTP ' . $code . ' ' . mb_substr(wp_remote_retrieve_body($response), 0, 300));
+                error_log('[dehub checkout] Dodo session failed for ' . $order['ref'] . ': ' . $detail);
+                dehub_order_update($order_id, array('status' => 'error'));
+                return new WP_REST_Response(array('success' => false, 'message' => 'The payment provider did not respond. Please try again or email me.'), 502);
+            }
+
+            dehub_order_update($order_id, array(
+                'status'     => 'pending',
+                'session_id' => isset($data['session_id']) ? (string) $data['session_id'] : '',
+            ));
+            return new WP_REST_Response(array('success' => true, 'checkout_url' => $data['checkout_url'], 'order' => $order['ref']), 200);
+        },
+    ));
+
+    // Order status for the return page. The reference is random, and only the
+    // package and status are returned, never the buyer's details.
+    register_rest_route('dehub/v1', '/checkout/status', array(
+        'methods'  => 'GET',
+        'permission_callback' => '__return_true',
+        'callback' => function ($request) {
+            $ref = (string) $request->get_param('order');
+            $order = preg_match('/^deh_[a-f0-9]{24}$/', $ref) ? dehub_order_by('ref', $ref) : null;
+            if (!$order) {
+                return new WP_REST_Response(array('success' => false, 'message' => 'Order not found.'), 404);
+            }
+            $response = rest_ensure_response(array(
+                'success' => true,
+                'status'  => $order['status'],
+                'package' => $order['package'],
+                'plan'    => $order['plan'],
+                'mode'    => $order['mode'],
+            ));
+            $response->header('Cache-Control', 'no-store');
+            return $response;
+        },
+    ));
+
+    register_rest_route('dehub/v1', '/dodo-webhook', array(
+        'methods'  => 'POST',
+        'permission_callback' => '__return_true',
+        'callback' => function ($request) {
+            if (!dehub_dodo_verify_signature($request)) {
+                return new WP_REST_Response(array('ok' => false), 401);
+            }
+            // Dodo retries until it gets a 2xx; process each delivery once.
+            $seen_key = 'dehub_dodo_wh_' . md5((string) $request->get_header('webhook-id'));
+            if (get_transient($seen_key)) {
+                return new WP_REST_Response(array('ok' => true, 'duplicate' => true), 200);
+            }
+
+            $payload = json_decode($request->get_body(), true);
+            $type = isset($payload['type']) ? (string) $payload['type'] : '';
+            $data = isset($payload['data']) && is_array($payload['data']) ? $payload['data'] : array();
+            $ref = isset($data['metadata']['order_ref']) ? (string) $data['metadata']['order_ref'] : '';
+            $order = dehub_order_by('ref', $ref);
+            if (!$order && !empty($data['checkout_session_id'])) {
+                $order = dehub_order_by('session_id', (string) $data['checkout_session_id']);
+            }
+            if (!$order && !empty($data['payment_id'])) {
+                $order = dehub_order_by('payment_id', (string) $data['payment_id']);
+            }
+
+            if ($type === 'payment.succeeded') {
+                if ($order && $order['status'] !== 'paid') {
+                    $fields = array(
+                        'status'     => 'paid',
+                        'payment_id' => isset($data['payment_id']) ? (string) $data['payment_id'] : '',
+                        'amount'     => isset($data['total_amount']) ? (int) $data['total_amount'] : 0,
+                        'currency'   => isset($data['currency']) ? strtoupper((string) $data['currency']) : '',
+                    );
+                    dehub_order_update($order['id'], $fields);
+                    dehub_order_paid_emails(array_merge($order, $fields));
+                } elseif (!$order) {
+                    // Never lose a payment: tell the owner even if no order row matches.
+                    wp_mail(
+                        dehub_sponsor_inbox(),
+                        'Dodo payment with no matching order',
+                        "A payment.succeeded webhook arrived without a known order reference.\n\n" . wp_json_encode($data, JSON_PRETTY_PRINT)
+                    );
+                }
+            } elseif ($order && in_array($type, array('payment.failed', 'payment.cancelled'), true) && $order['status'] !== 'paid') {
+                dehub_order_update($order['id'], array('status' => $type === 'payment.failed' ? 'failed' : 'cancelled'));
+            } elseif ($order && $type === 'refund.succeeded') {
+                dehub_order_update($order['id'], array('status' => 'refunded'));
+            }
+
+            set_transient($seen_key, 1, 7 * DAY_IN_SECONDS);
+            return new WP_REST_Response(array('ok' => true), 200);
+        },
+    ));
+});
+
+// Tools > Sponsor orders: the last 100 checkouts, newest first.
+add_action('admin_menu', function () {
+    add_management_page('Sponsor orders', 'Sponsor orders', 'manage_options', 'dehub-sponsor-orders', function () {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+        global $wpdb;
+        $table = dehub_orders_table();
+        $rows = $wpdb->get_results("SELECT * FROM {$table} ORDER BY id DESC LIMIT 100", ARRAY_A);
+        $catalog = dehub_checkout_catalog();
+        echo '<div class="wrap"><h1>Sponsor orders</h1>';
+        echo '<p>Checkout is <strong>' . (dehub_dodo_ready() ? 'on' : 'off') . '</strong> in <strong>' . esc_html(dehub_dodo_mode()) . '</strong> mode. ';
+        echo 'Webhook URL for Dodo: <code>' . esc_html(rest_url('dehub/v1/dodo-webhook')) . '</code></p>';
+        echo '<table class="widefat striped"><thead><tr><th>Date (UTC)</th><th>Status</th><th>Package</th><th>Buyer</th><th>Amount</th><th>Notes</th><th>Ref</th></tr></thead><tbody>';
+        if (!$rows) {
+            echo '<tr><td colspan="7">No orders yet.</td></tr>';
+        }
+        foreach ((array) $rows as $row) {
+            $title = isset($catalog[$row['package']]) ? $catalog[$row['package']]['title'] : $row['package'];
+            echo '<tr>';
+            echo '<td>' . esc_html($row['created_at']) . '</td>';
+            echo '<td>' . esc_html($row['status'] . ($row['mode'] === 'test' ? ' (test)' : '')) . '</td>';
+            echo '<td>' . esc_html($title . ' / ' . $row['plan']) . '</td>';
+            echo '<td>' . esc_html($row['name']) . '<br><a href="mailto:' . esc_attr($row['email']) . '">' . esc_html($row['email']) . '</a><br>' . esc_html($row['company']) . ' ' . ($row['website'] ? '<a href="' . esc_url($row['website']) . '" rel="noopener" target="_blank">site</a>' : '') . '</td>';
+            echo '<td>' . ($row['amount'] ? esc_html(sprintf('%s %.2f', $row['currency'], $row['amount'] / 100)) : '') . '</td>';
+            echo '<td style="max-width:320px;white-space:pre-wrap">' . esc_html($row['notes']) . '</td>';
+            echo '<td><code>' . esc_html($row['ref']) . '</code><br><small>' . esc_html($row['payment_id']) . '</small></td>';
+            echo '</tr>';
+        }
+        echo '</tbody></table></div>';
+    });
+});
 
 
 // ============================================================================

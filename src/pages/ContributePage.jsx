@@ -146,7 +146,7 @@ const ContributePage = () => {
     {
       icon: Heart,
       title: 'Unpaid, on purpose',
-      desc: 'No kill fee and no invoice. If you need a labeled product placement, that is Advertise — a different page and a USD invoice.',
+      desc: 'No kill fee and no invoice. If you need a labeled product placement, that is Advertise, a different page and a paid, labeled placement.',
       color: 'from-pink-500 to-rose-500',
     },
   ];

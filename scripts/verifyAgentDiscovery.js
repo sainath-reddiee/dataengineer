@@ -68,11 +68,12 @@ if (!/Header always set Link/.test(htaccess) || !/DEH_AGENT_LINKS/.test(htaccess
   ok('Link headers are scoped to the homepage and api-catalog');
 }
 if (/RewriteCond %\{DOCUMENT_ROOT\}\/articles\/%1\/index\.html !-f/.test(htaccess)
-  && /RewriteRule \^articles\/\(\[\^\/\]\+\)\/\?\$ \/index\.html/.test(htaccess)
-  && /env=DEH_ARTICLE_SPA/.test(htaccess)) {
-  ok('.htaccess SPA-fallbacks missing article HTML so reloads do not 404');
+  && /RewriteRule \^articles\/\(\[\^\/\]\+\)\/\?\$ - \[R=404,L\]/.test(htaccess)) {
+  // Unknown article URLs must 404 rather than serve the homepage shell: soft
+  // 404s were one of the AdSense "low value content" causes.
+  ok('.htaccess returns 404 for article slugs without static HTML');
 } else {
-  fail('.htaccess must fallback /articles/:slug to /index.html when static HTML is missing');
+  fail('.htaccess must return 404 for /articles/:slug when static HTML is missing');
 }
 
 const robots = fs.readFileSync(path.join(publicDir, 'robots.txt'), 'utf8');

@@ -1,4 +1,4 @@
-# WordPress setup: wp-config.php, newsletter and sponsor stats
+# WordPress setup: wp-config.php, newsletter, sponsor stats and checkout
 
 One-time setup for the WordPress backend at app.dataengineerhub.blog. Nothing here changes your WordPress admin username or password.
 
@@ -102,3 +102,45 @@ Upload the new functions.php **before** publishing the first announcement; with 
 ## 8. Clean-up
 
 Delete `public_html/assets/js/index-DDFF6wS3.js` on the main site in Hostinger File Manager. It is an old bundle that contained the revoked WordPress password. The password no longer works, but the file has no reason to stay.
+
+## 9. Card checkout with Dodo Payments
+
+The browser never holds a Dodo key. The advertise page asks WordPress for a checkout session, WordPress calls Dodo with the secret key from wp-config.php, and the buyer pays on Dodo's hosted page. Dodo then calls a signed webhook that marks the order paid and emails both of you. Card buttons stay hidden until this is configured, so nothing breaks in the meantime.
+
+**Step 1: create the products in Dodo (Test mode first).** In the Dodo dashboard, switch to Test mode, then Products, and create five one-time products in USD:
+
+| Product | Price | wp-config key |
+| --- | --- | --- |
+| Sponsored card, 30 days | $39 | `resource_reference:monthly` |
+| Sponsored card, 12 months | $349 | `resource_reference:yearly` |
+| Tools Hub listing, 12 months | $79 | `directory:yearly` |
+| Co-authored integration guide | $199 | `content:one_time` |
+| Sponsored announcement | $49 | `announcement:one_time` |
+
+Use one-time payments, not subscriptions: the advertise page promises monthly cards do not auto-renew. Copy each product id (`pdt_...`).
+
+**Step 2: API key and webhook.** In Developer, then API Keys, create a key. In Developer, then Webhooks, add the endpoint `https://app.dataengineerhub.blog/wp-json/dehub/v1/dodo-webhook`, subscribe to `payment.succeeded`, `payment.failed`, `payment.cancelled` and `refund.succeeded`, and copy its signing secret (`whsec_...`).
+
+**Step 3: wp-config.php** (above "That's all, stop editing!"):
+
+```php
+define('DEHUB_DODO_MODE', 'test');               // 'live' once tested
+define('DEHUB_DODO_API_KEY', 'paste-test-api-key');
+define('DEHUB_DODO_WEBHOOK_SECRET', 'whsec_paste-secret');
+define('DEHUB_DODO_PRODUCTS', array(
+    'resource_reference:monthly' => 'pdt_...',
+    'resource_reference:yearly'  => 'pdt_...',
+    'directory:yearly'           => 'pdt_...',
+    'content:one_time'           => 'pdt_...',
+    'announcement:one_time'      => 'pdt_...',
+));
+define('DEHUB_SPONSOR_INBOX', 'sainath@dataengineerhub.blog'); // paid-order emails
+```
+
+Leave out any package you do not want to sell by card; its button simply will not show.
+
+**Step 4: upload functions.php and test.** Open `https://dataengineerhub.blog/advertise/checkout?package=announcement`, pay with a Dodo test card, and confirm that you land back on the "Payment received" page, both emails arrive, and the order shows as paid under Tools, then Sponsor orders in wp-admin (that screen also shows the webhook URL).
+
+**Step 5: go live.** Dodo needs your business verified before live payments. Then create the same five products in Live mode, and replace the mode, API key, webhook secret and product ids with the live values. Test and live ids are different, so all of them must change together.
+
+If checkout says "The payment provider did not respond", the reason is in the PHP error log as `[dehub checkout]`, usually a test key used with live mode or a product id from the other mode.

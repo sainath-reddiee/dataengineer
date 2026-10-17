@@ -207,8 +207,9 @@
     # /contributors (and any other missing route) look like duplicate
     # homepages to AdSense — a repeated "low value content" rejection.
     # ========================================================================
-    # /announcements is a React-rendered, noindexed section (X-Robots-Tag above).
-    RewriteCond %{REQUEST_URI} ^/(admin|debug|sponsors/dashboard|announcements)(/|$) [NC]
+    # /announcements and /advertise/checkout are React-rendered and noindexed
+    # (X-Robots-Tag above).
+    RewriteCond %{REQUEST_URI} ^/(admin|debug|sponsors/dashboard|announcements|advertise/checkout)(/|$) [NC]
     RewriteRule ^ /index.html [L]
 
 </IfModule>
