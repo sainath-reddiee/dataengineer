@@ -24,7 +24,7 @@ const NEXT_STEPS = {
   default: 'I will email you within two working days to agree the copy, link and start date. Nothing goes live until you approve it.',
 };
 
-const Shell = ({ children }) => (
+const Shell = ({ children, wide = false }) => (
   <>
     <MetaTags
       title="Pay for a sponsorship"
@@ -32,7 +32,7 @@ const Shell = ({ children }) => (
       noindex={true}
     />
     <div className="px-4 pb-16 pt-10 sm:px-6">
-      <div className="mx-auto max-w-2xl">{children}</div>
+      <div className={`mx-auto ${wide ? 'max-w-5xl' : 'max-w-2xl'}`}>{children}</div>
     </div>
   </>
 );
@@ -63,8 +63,12 @@ const OrderStatus = ({ orderRef, providerStatus }) => {
   }, [orderRef]);
 
   const opp = OPPORTUNITIES.find((o) => o.packageKey === order?.package);
-  const status = order?.status;
+  // Dodo appends ?status=failed|cancelled when the buyer backs out; a
+  // cancelled checkout may never send a webhook, so trust it unless paid.
+  const providerGaveUp = providerStatus === 'failed' || providerStatus === 'cancelled';
+  const status = order?.status !== 'paid' && providerGaveUp ? 'failed' : order?.status;
   const waiting = !order || status === 'pending' || status === 'created';
+  const retryPath = order ? `/advertise/checkout?package=${order.package}&plan=${order.plan}` : '/advertise/checkout';
 
   return (
     <Shell>
@@ -76,6 +80,26 @@ const OrderStatus = ({ orderRef, providerStatus }) => {
             {opp ? `"${opp.title}" is paid.` : 'Your package is paid.'} A confirmation email is on its way, and Dodo Payments sends the tax receipt separately.
           </p>
           <p className="mt-3 text-[17px] leading-relaxed text-ink-body">{NEXT_STEPS[order.package] || NEXT_STEPS.default}</p>
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+            {order.package === 'announcement' ? (
+              <a
+                href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Announcement for order ${orderRef}`)}`}
+                className="inline-flex min-h-11 items-center rounded bg-ink px-5 text-[15px] font-medium text-paper hover:bg-rust-600"
+              >
+                Email the release now
+              </a>
+            ) : (
+              <a
+                href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Sponsorship order ${orderRef}`)}`}
+                className="inline-flex min-h-11 items-center rounded bg-ink px-5 text-[15px] font-medium text-paper hover:bg-rust-600"
+              >
+                Send the copy and link
+              </a>
+            )}
+            <Link to="/articles" className="text-[15px] text-ink-soft underline decoration-paper-600 underline-offset-4 hover:text-rust-600">
+              Back to the articles
+            </Link>
+          </div>
         </>
       )}
       {waiting && (
@@ -94,7 +118,7 @@ const OrderStatus = ({ orderRef, providerStatus }) => {
         <>
           <h1 className="font-serif text-[34px] font-semibold leading-tight text-ink">The payment did not go through</h1>
           <p className="mt-4 text-[17px] leading-relaxed text-ink-body">
-            Nothing was charged. You can <Link to="/advertise/checkout" className={linkClass}>try again</Link> or email{' '}
+            Nothing was charged. You can <Link to={retryPath} className={linkClass}>try again</Link> or email{' '}
             <a href={`mailto:${CONTACT_EMAIL}`} className={linkClass}>{CONTACT_EMAIL}</a> for a PayPal invoice.
           </p>
         </>
@@ -128,7 +152,7 @@ const CheckoutForm = ({ initialPackage, initialPlan }) => {
     const enabled = new Set(options?.plans || []);
     return OPPORTUNITIES.flatMap((opp) => opp.durations
       .filter((d) => enabled.has(`${opp.packageKey}:${d.key}`))
-      .map((d) => ({ value: `${opp.packageKey}:${d.key}`, label: `${opp.title}, ${planLabel(opp, d)}`, opp })));
+      .map((d) => ({ value: `${opp.packageKey}:${d.key}`, label: `${opp.title}, ${planLabel(opp, d)}`, opp, d })));
   }, [options]);
 
   // Preselect the package from the link, or the first plan of that package.
@@ -158,77 +182,113 @@ const CheckoutForm = ({ initialPackage, initialPlan }) => {
     }
   };
 
+  const busy = loading;
+
   return (
-    <Shell>
+    <Shell wide>
       <p className="kicker mb-3">Checkout</p>
       <h1 className="font-serif text-[34px] font-semibold leading-tight text-ink sm:text-[40px]">Pay for a sponsorship</h1>
-      <p className="mt-4 text-[17px] leading-relaxed text-ink-body">
-        Card payment through Dodo Payments, which acts as the merchant of record and sends the tax receipt. Prices are in
-        USD. If I decide a placement is not a fit, or you cancel before it goes live, you get a full refund.
-      </p>
-      <p className="mt-2 text-sm text-ink-faint">
-        Not sure yet? <Link to="/advertise#inquiry" className={linkClass}>Send an inquiry first</Link>; there is no obligation.
+      <p className="mt-3 max-w-2xl text-[17px] leading-relaxed text-ink-body">
+        A few details for the order, then you pay on Dodo Payments' secure page. Not sure yet?{' '}
+        <Link to="/advertise#inquiry" className={linkClass}>Send an inquiry first</Link>; there is no obligation.
       </p>
 
-      {options === null && <p className="mt-8 text-ink-muted">Loading packages…</p>}
+      {options === null && (
+        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]" aria-busy="true" aria-label="Loading packages">
+          <div className="space-y-4">
+            {[0, 1, 2].map((i) => <div key={i} className="h-12 rounded bg-paper-300" />)}
+          </div>
+          <div className="h-56 rounded bg-paper-300" />
+        </div>
+      )}
       {options && choices.length === 0 && (
-        <div className="mt-8 border-l-2 border-rust-500 bg-paper-100 px-4 py-4 text-[16px] text-ink-body">
+        <div className="mt-8 max-w-2xl border-l-2 border-rust-500 bg-paper-100 px-4 py-4 text-[16px] text-ink-body">
           Card checkout is not available right now. Email <a href={`mailto:${CONTACT_EMAIL}`} className={linkClass}>{CONTACT_EMAIL}</a> and
           I will send a PayPal invoice instead.
         </div>
       )}
 
       {choices.length > 0 && (
-        <form onSubmit={onSubmit} className="mt-8 space-y-4">
-          <input type="text" name="company_url" value={form.company_url} onChange={onChange} tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
-          <label className="block text-sm text-ink-muted">
-            Package
-            <select value={choice} onChange={(e) => setChoice(e.target.value)} className={inputClass}>
-              {choices.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
-            </select>
-          </label>
-          {selected && <p className="text-[15px] text-ink-muted">{selected.opp.tagline}.</p>}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block text-sm text-ink-muted">
-              Your name
-              <input required name="name" value={form.name} onChange={onChange} className={inputClass} autoComplete="name" maxLength={120} />
-            </label>
-            <label className="block text-sm text-ink-muted">
-              Work email
-              <input required type="email" name="email" value={form.email} onChange={onChange} className={inputClass} autoComplete="email" />
-            </label>
-            <label className="block text-sm text-ink-muted">
-              Company or product
-              <input name="company" value={form.company} onChange={onChange} className={inputClass} autoComplete="organization" maxLength={160} />
-            </label>
-            <label className="block text-sm text-ink-muted">
-              Website
-              <input type="url" name="website" value={form.website} onChange={onChange} className={inputClass} placeholder="https://" />
-            </label>
-          </div>
-          <label className="block text-sm text-ink-muted">
-            Anything I should know (link, headline, start date)
-            <textarea name="notes" rows={4} value={form.notes} onChange={onChange} className={inputClass} maxLength={4000} />
-          </label>
-          <label className="flex items-start gap-3 text-[15px] text-ink-body">
-            <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 h-4 w-4 accent-rust-600" required />
-            <span>
-              I have read the <Link to="/advertise#rules" className={linkClass}>house rules</Link>: placements are labeled
-              "Sponsored", links are nofollow, and the copy needs approval before it goes live.
-            </span>
-          </label>
-          {error && <p className="text-sm text-red-700" role="alert">{error}</p>}
-          <button
-            type="submit"
-            disabled={loading || !agreed || !selected}
-            className="inline-flex min-h-11 items-center rounded bg-ink px-6 text-[15px] font-medium text-paper hover:bg-rust-600 disabled:opacity-60"
-          >
-            {loading ? 'Opening secure checkout…' : 'Continue to payment'}
-          </button>
-          {options?.mode === 'test' && (
-            <p className="text-sm text-ink-faint">Test mode: use a Dodo test card, nothing is charged.</p>
+        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-12">
+          <form onSubmit={onSubmit} className="space-y-4" aria-describedby="checkout-summary">
+            <input type="text" name="company_url" value={form.company_url} onChange={onChange} tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
+            <fieldset disabled={busy} className="space-y-4">
+              <label className="block text-sm text-ink-muted">
+                Package
+                <select value={choice} onChange={(e) => setChoice(e.target.value)} className={inputClass}>
+                  {choices.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+                </select>
+              </label>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block text-sm text-ink-muted">
+                  Your name
+                  <input required name="name" value={form.name} onChange={onChange} className={inputClass} autoComplete="name" maxLength={120} />
+                </label>
+                <label className="block text-sm text-ink-muted">
+                  Work email <span className="text-ink-faint">(receipt and next steps)</span>
+                  <input required type="email" name="email" value={form.email} onChange={onChange} className={inputClass} autoComplete="email" inputMode="email" />
+                </label>
+                <label className="block text-sm text-ink-muted">
+                  Company or product
+                  <input name="company" value={form.company} onChange={onChange} className={inputClass} autoComplete="organization" maxLength={160} />
+                </label>
+                <label className="block text-sm text-ink-muted">
+                  Website
+                  <input type="url" name="website" value={form.website} onChange={onChange} className={inputClass} placeholder="https://" inputMode="url" />
+                </label>
+              </div>
+              <label className="block text-sm text-ink-muted">
+                {selected?.opp.packageKey === 'announcement'
+                  ? 'Headline or a short note (you send the full release after paying)'
+                  : 'Anything I should know (link, headline, preferred start date)'}
+                <textarea name="notes" rows={4} value={form.notes} onChange={onChange} className={inputClass} maxLength={4000} />
+              </label>
+              <label className="flex items-start gap-3 text-[15px] text-ink-body">
+                <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 h-4 w-4 shrink-0 accent-rust-600" required />
+                <span>
+                  I have read the <Link to="/advertise#rules" className={linkClass}>house rules</Link>: placements are labeled
+                  "Sponsored", links are nofollow, and the copy needs approval before it goes live.
+                </span>
+              </label>
+            </fieldset>
+            {error && (
+              <p className="border-l-2 border-red-600 bg-red-50 px-3 py-2 text-sm text-red-800" role="alert">{error}</p>
+            )}
+            <button
+              type="submit"
+              disabled={busy || !selected}
+              className="inline-flex min-h-12 w-full items-center justify-center rounded bg-ink px-6 text-[16px] font-medium text-paper hover:bg-rust-600 disabled:opacity-60 sm:w-auto"
+            >
+              {busy ? 'Opening secure checkout…' : selected ? `Continue to payment · $${selected.d.price}` : 'Continue to payment'}
+            </button>
+            <p className="text-sm text-ink-faint">
+              You enter card details on Dodo Payments, not on this site. One payment, and a full refund if I decline the placement.
+              {options?.mode === 'test' && ' Test mode is on: use a Dodo test card, nothing is charged.'}
+            </p>
+          </form>
+
+          {selected && (
+            <aside id="checkout-summary" className="order-first h-fit rounded border border-ink bg-paper-50 p-5 lg:sticky lg:top-24 lg:order-none" aria-label="Order summary">
+              <p className="kicker">Order summary</p>
+              <p className="mt-2 font-serif text-xl font-semibold leading-snug text-ink">{selected.opp.title}</p>
+              <p className="mt-1 text-sm text-ink-muted">{selected.d.desc}</p>
+              <p className="mt-4 flex items-baseline justify-between border-y border-paper-500 py-3">
+                <span className="text-[15px] text-ink-body">Total (USD)</span>
+                <span className="font-mono text-2xl text-ink">${selected.d.price}</span>
+              </p>
+              <ul className="mt-4 hidden space-y-2 text-[14px] leading-relaxed text-ink-body lg:block">
+                {selected.opp.bullets.slice(0, 3).map((b) => (
+                  <li key={b} className="flex gap-2"><span aria-hidden="true" className="text-rust-600">✓</span><span>{b}</span></li>
+                ))}
+              </ul>
+              <ul className="mt-5 hidden space-y-1.5 border-t border-paper-500 pt-4 text-[13px] text-ink-muted lg:block">
+                <li>One payment, no auto-renewal.</li>
+                <li>Full refund if I decline it or you cancel before go-live.</li>
+                <li>Tax receipt from Dodo Payments, the merchant of record.</li>
+              </ul>
+            </aside>
           )}
-        </form>
+        </div>
       )}
     </Shell>
   );

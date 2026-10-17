@@ -139,7 +139,17 @@ define('DEHUB_SPONSOR_INBOX', 'sainath@dataengineerhub.blog'); // paid-order ema
 
 Leave out any package you do not want to sell by card; its button simply will not show.
 
-**Step 4: upload functions.php and test.** Open `https://dataengineerhub.blog/advertise/checkout?package=announcement`, pay with a Dodo test card, and confirm that you land back on the "Payment received" page, both emails arrive, and the order shows as paid under Tools, then Sponsor orders in wp-admin (that screen also shows the webhook URL).
+**Step 4: upload functions.php and test end to end (Test mode).**
+
+1. Endpoint check: `https://app.dataengineerhub.blog/wp-json/dehub/v1/checkout/options` should show `"enabled":true`, `"mode":"test"` and your five plans.
+2. Webhook secret check, no payment needed. In PowerShell: `$env:DEHUB_DODO_WEBHOOK_SECRET='whsec_...'; node scripts/dodoWebhookPing.js`. Expect `200 Signature accepted`. A 401 means the secret in wp-config.php differs from Dodo's.
+3. Buyer flow: on `/advertise`, click "Pay now by card" under Sponsored announcement. Fill the form with your own email, tick the house rules, and continue. You should land on Dodo's hosted page in test mode.
+4. Pay with a Dodo test card from the Dodo docs (Testing section). You return to `/advertise/checkout?order=...`, which shows "Confirming your payment…" for a few seconds, then "Payment received".
+5. Confirm the four outcomes: the buyer email arrives (with next steps), the owner email arrives at DEHUB_SPONSOR_INBOX, the order is `paid` under Tools, then Sponsor orders, and the payment appears in the Dodo dashboard with the order reference in its metadata.
+6. Unhappy paths: start another checkout and close or cancel on Dodo's page. The return page should say "The payment did not go through" with a "try again" link that keeps the package. Then refund the first test payment in Dodo and check the order turns `refunded`.
+7. Repeat step 3 once on a phone to check the layout.
+
+If checkout shows "The payment provider did not respond", the PHP error log has a `[dehub checkout]` line with Dodo's reason.
 
 **Step 5: go live.** Dodo needs your business verified before live payments. Then create the same five products in Live mode, and replace the mode, API key, webhook secret and product ids with the live values. Test and live ids are different, so all of them must change together.
 

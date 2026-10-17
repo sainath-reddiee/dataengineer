@@ -275,7 +275,7 @@ const AdvertisePage = () => {
                     {cardPlans.some((plan) => plan.startsWith(`${opp.packageKey}:`)) && (
                       <Link
                         to={`/advertise/checkout?package=${opp.packageKey}`}
-                        className="text-[15px] text-ink-muted underline decoration-paper-600 underline-offset-4 hover:text-ink"
+                        className="inline-flex min-h-10 items-center rounded border border-ink px-4 text-[14px] font-medium text-ink hover:bg-ink hover:text-paper"
                       >
                         {opp.packageKey === 'announcement' ? 'Pay now by card' : 'Already agreed? Pay by card'}
                       </Link>
