@@ -34,16 +34,18 @@ define('DEHUB_NEWSLETTER_DAILY_CAP', 250);
 // define('DEHUB_NEWSLETTER_EXPORT_TOKEN', 'long-random-string');
 // define('DEHUB_NEWSLETTER_DEBUG', true);
 
-// Sponsor card checkout, Dodo Payments TEST mode (see plans/dodo-config.md).
-define('DEHUB_DODO_MODE', 'test');
-define('DEHUB_DODO_API_KEY', 'paste-from-Dodo-Developer-API-Keys');
-define('DEHUB_DODO_WEBHOOK_SECRET', 'whsec_paste-from-endpoint-ep_3KoX30SJV8KqnMOZJklXJ49ql5L');
+// Sponsor card checkout, Dodo Payments LIVE mode (see plans/dodo-config.md).
+// Change mode, key, secret and all five product ids in one save: live and
+// test ids differ. Rollback: define('DEHUB_DODO_PRODUCTS', array());
+define('DEHUB_DODO_MODE', 'live');
+define('DEHUB_DODO_API_KEY', 'paste-LIVE-key-from-Dodo-Live-mode-Developer-API-Keys');
+define('DEHUB_DODO_WEBHOOK_SECRET', 'whsec_paste-from-LIVE-endpoint-ep_3Kovo4BYOtharY9xWM15MXlwJle');
 define('DEHUB_DODO_PRODUCTS', array(
-    'resource_reference:monthly' => 'pdt_0NpvBmBAGUna8Ox8JeAQF', // Sponsored card, 30 days, $39
-    'resource_reference:yearly'  => 'pdt_0NpvBqYGmLl5M41qS8gfs', // Sponsored card, 12 months, $349
-    'directory:yearly'           => 'pdt_0NpvBudcV1lWKYwtEvaog', // Tools Hub listing, $79
-    'content:one_time'           => 'pdt_0NpvByWzdrITrGntQ3Tlt', // Co-authored guide, $199
-    'announcement:one_time'      => 'pdt_0NpvBh3JqReyVliOJrgUC', // Sponsored announcement, $49
+    'resource_reference:monthly' => 'pdt_0NpvoxmCTKvaqvGrI58kn', // Sponsored card, 30 days, $39
+    'resource_reference:yearly'  => 'pdt_0Npvoxi4NPUEkec41OxYq', // Sponsored card, 12 months, $349
+    'directory:yearly'           => 'pdt_0Npvoxe1aRfOzZIv0N4TP', // Tools Hub listing, $79
+    'content:one_time'           => 'pdt_0NpvoxZSFXcg47HrfraND', // Co-authored guide, $199
+    'announcement:one_time'      => 'pdt_0Npvoxq9GYrGHOt1xaKZB', // Sponsored announcement, $49
 ));
 define('DEHUB_SPONSOR_INBOX', 'sainath@dataengineerhub.blog'); // paid-order emails
 

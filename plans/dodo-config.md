@@ -63,11 +63,54 @@ define('DEHUB_SPONSOR_INBOX', 'sainath@dataengineerhub.blog');
 - [x] End-to-end test payment passes (order `deh_2d8afb21446df80f1e3c43cd`, webhook 200, return page "Payment received", 2026-10-17)
 - [x] Hardened functions.php (orders DB v2) uploaded (2026-10-17; webhook events table confirmed by the duplicate-delivery check)
 - [x] `node scripts/verifyCheckout.js --live --expect-mode=test` passes with the webhook secret set (2026-10-17, all signed checks green)
-- [ ] Declined card, full refund and partial refund pass; exactly one pair of order emails per payment
+- [x] Second payment and webhook pass (order `deh_f983bdbb3f574fd9259b82ff`, webhook 200 in 419 ms); six Dodo sample events (refund, dispute) return 200
+- [ ] Real refund not completed in test mode: Dodo pays refunds from the wallet balance ("Insufficient funds in wallet"), and Indian card payments cannot be partly refunded. Covered by the live smoke test (step 11)
+- [ ] Test order `deh_899aca8e65969f8ddbde938f` stays `pending` (paid with an India success card that Dodo left in Processing); the daily cron expires it after 48 hours
 
 ## Live mode
 
-Not created yet. Test and live ids differ, so the mode, key, secret and all product ids change together.
+Business verification approved (Dodo > Verification: "Live payments are active", checked 2026-10-17). Test and live ids differ, so the mode, key, secret and all product ids change together.
+
+### Live products (imported from Test, 2026-10-17)
+
+Same names, prices and tax settings as the test products.
+
+| wp-config key | Product | Price | Product id |
+| --- | --- | --- | --- |
+| `resource_reference:monthly` | Sponsored Card, 30 Days | $39 | `pdt_0NpvoxmCTKvaqvGrI58kn` |
+| `resource_reference:yearly` | Sponsored Card, 12 Months | $349 | `pdt_0Npvoxi4NPUEkec41OxYq` |
+| `directory:yearly` | Tools Hub Listing, 12 Months | $79 | `pdt_0Npvoxe1aRfOzZIv0N4TP` |
+| `content:one_time` | Co-Authored Integration Guide | $199 | `pdt_0NpvoxZSFXcg47HrfraND` |
+| `announcement:one_time` | Sponsored Announcement | $49 | `pdt_0Npvoxq9GYrGHOt1xaKZB` |
+
+### Live webhook endpoint
+
+| Field | Value |
+| --- | --- |
+| Endpoint id | `ep_3Kovo4BYOtharY9xWM15MXlwJle` (created 2026-10-17) |
+| URL | `https://app.dataengineerhub.blog/wp-json/dehub/v1/dodo-webhook` |
+| Events | `payment.succeeded`, `payment.failed`, `payment.cancelled`, `refund.succeeded`, `refund.failed`, `dispute.accepted`, `dispute.cancelled`, `dispute.challenged`, `dispute.expired`, `dispute.lost`, `dispute.opened`, `dispute.won` |
+| Signing secret | Live mode > Developer > Webhooks > this endpoint > Signing secret (reveal, copy) into `DEHUB_DODO_WEBHOOK_SECRET`. Never paste it into chat. |
+
+### Live API key
+
+Create it in Live mode > Developer > API Keys and paste it straight into wp-config.php as `DEHUB_DODO_API_KEY`. It is shown once.
+
+### Live wp-config.php block
+
+The live block is in [wp-config-dehub-block.php](wp-config-dehub-block.php). Change mode, key, secret and the five product ids in one save.
+
+### Live checklist
+
+- [x] Business verification approved
+- [x] Five live products created
+- [x] Live webhook endpoint created with 12 events
+- [ ] Live API key created and in wp-config.php
+- [ ] Live signing secret in wp-config.php, `DEHUB_DODO_MODE` set to `'live'`
+- [ ] Latest functions.php (security fixes, commit bf9421b) uploaded, caches purged
+- [ ] `node scripts/verifyCheckout.js --live --expect-mode=live` passes
+- [ ] Real $39 smoke test paid, then refunded (the wallet must hold at least the refund amount)
+- [ ] Test endpoint `ep_3KoX30SJV8KqnMOZJklXJ49ql5L` disabled and its secret rotated; stale live `loca.lt` and `/api/webhook/dodo` endpoints deleted
 
 ### Cutover runbook
 
