@@ -538,6 +538,10 @@
       (function () {
         var src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8624144810216728';
         function inject() {
+          // Never on the private admin/sponsor tools: they keep API tokens in
+          // browser storage, so no third-party script runs there.
+          var p = location.pathname;
+          if (p.indexOf('/admin') === 0 || p === '/debug' || p.indexOf('/sponsors/dashboard') === 0) return;
           if (document.querySelector('script[src*="adsbygoogle.js"]')) return;
           var s = document.createElement('script');
           s.async = true;

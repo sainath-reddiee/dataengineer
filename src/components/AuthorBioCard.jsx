@@ -11,6 +11,7 @@ import {
   OWNER_ROLE,
   OWNER_PROFILE_PATH,
 } from '@/lib/contributorIdentity';
+import { safeExternalUrl } from '@/utils/safeUrl';
 
 const linkClass =
   'inline-flex items-center gap-1.5 text-sm text-rust-600 underline decoration-rust-200 underline-offset-2 hover:decoration-rust-500';
@@ -35,9 +36,13 @@ const AuthorBioCard = ({ author }) => {
       `${YOE}+ years building pipelines and warehouses on Snowflake, Databricks, AWS and Azure. These articles are written up from that work: the incidents, the cost surprises and the design decisions.`
     : author.bio;
 
-  const twitterUrl = author.twitter
-    ? (author.twitter.startsWith('http') ? author.twitter : `https://twitter.com/${author.twitter.replace('@', '')}`)
-    : null;
+  const twitterRaw = (author.twitter || '').trim();
+  const twitterUrl = /^@?[A-Za-z0-9_]{1,30}$/.test(twitterRaw)
+    ? `https://twitter.com/${twitterRaw.replace('@', '')}`
+    : safeExternalUrl(twitterRaw);
+  const linkedinUrl = safeExternalUrl(author.linkedin);
+  const githubUrl = safeExternalUrl(author.github);
+  const websiteUrl = safeExternalUrl(author.website);
   const contributorSlug = !isOwner && author.slug ? author.slug : null;
 
   return (
@@ -75,8 +80,8 @@ const AuthorBioCard = ({ author }) => {
             {isOwner && (
               <Link to={OWNER_PROFILE_PATH} className={linkClass}>About Sainath</Link>
             )}
-            {author.linkedin && (
-              <a href={author.linkedin} target="_blank" rel="noopener noreferrer" className={linkClass} aria-label={`${displayName} on LinkedIn`}>
+            {linkedinUrl && (
+              <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className={linkClass} aria-label={`${displayName} on LinkedIn`}>
                 <Linkedin className="h-3.5 w-3.5" /> LinkedIn
               </a>
             )}
@@ -85,13 +90,13 @@ const AuthorBioCard = ({ author }) => {
                 <Twitter className="h-3.5 w-3.5" /> X
               </a>
             )}
-            {!isOwner && author.github && (
-              <a href={author.github} target="_blank" rel="noopener noreferrer" className={linkClass} aria-label={`${displayName} on GitHub`}>
+            {!isOwner && githubUrl && (
+              <a href={githubUrl} target="_blank" rel="noopener noreferrer" className={linkClass} aria-label={`${displayName} on GitHub`}>
                 <Github className="h-3.5 w-3.5" /> GitHub
               </a>
             )}
-            {!isOwner && author.website && (
-              <a href={author.website} target="_blank" rel="noopener noreferrer" className={linkClass} aria-label={`${displayName}'s website`}>
+            {!isOwner && websiteUrl && (
+              <a href={websiteUrl} target="_blank" rel="noopener noreferrer" className={linkClass} aria-label={`${displayName}'s website`}>
                 <Globe className="h-3.5 w-3.5" /> Website
               </a>
             )}

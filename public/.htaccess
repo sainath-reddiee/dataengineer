@@ -381,19 +381,22 @@
     Header always set Access-Control-Allow-Headers "Content-Type"
     
     # Prevent MIME-sniffing
-    Header set X-Content-Type-Options "nosniff"
+    Header always set X-Content-Type-Options "nosniff"
     
     # Prevent clickjacking
-    Header set X-Frame-Options "DENY"
+    Header always set X-Frame-Options "DENY"
+    # No framing, no plugins, no <base> hijack. Script sources are not
+    # restricted yet (AdSense needs a broad allowlist); add that separately.
+    Header always set Content-Security-Policy "frame-ancestors 'none'; object-src 'none'; base-uri 'self'"
     
     # XSS Protection (legacy, but still good)
     Header set X-XSS-Protection "1; mode=block"
     
     # Referrer Policy - balance between privacy and analytics
-    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
     
     # Permissions Policy (formerly Feature-Policy)
-    Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
     
     # HSTS - Force HTTPS for 1 year, include subdomains
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"

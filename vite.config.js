@@ -41,6 +41,18 @@ export default defineConfig({
       name: 'local-sponsors-api',
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
+          // These dev-only endpoints write files. Refuse cross-site requests:
+          // any page open while `npm run dev` runs could otherwise POST here.
+          if (req.method === 'POST' && req.url?.startsWith('/api/save-')) {
+            const origin = req.headers.origin || '';
+            const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+            const isJson = (req.headers['content-type'] || '').startsWith('application/json');
+            if (!isLocal || !isJson) {
+              res.statusCode = 403;
+              res.end('Forbidden');
+              return;
+            }
+          }
           if (req.url === '/api/save-sponsors' && req.method === 'POST') {
             let body = '';
             req.on('data', chunk => { body += chunk; });

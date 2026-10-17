@@ -10,6 +10,7 @@ import {
   ArrowRight, Search, Sparkles, BadgeCheck, Crown
 } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
+import { safeExternalUrl } from '@/utils/safeUrl';
 import {
   isBlogOwner,
   contributorRole,
@@ -81,10 +82,13 @@ function ContributorCard({ user, index, featured = false }) {
   const owner = isBlogOwner(user);
   const displayName = owner ? OWNER_DISPLAY_NAME : user.name;
   const avatar = user.meta?.author_avatar_url || user.avatar_urls?.['96'] || '';
-  const linkedin = user.meta?.linkedin_url || '';
-  const twitter = user.meta?.twitter_url || '';
-  const github = user.meta?.github_url || '';
-  const website = user.url || '';
+  const linkedin = safeExternalUrl(user.meta?.linkedin_url);
+  const twitterRaw = (user.meta?.twitter_url || '').trim();
+  const twitter = /^@?[A-Za-z0-9_]{1,30}$/.test(twitterRaw)
+    ? `https://twitter.com/${twitterRaw.replace('@', '')}`
+    : safeExternalUrl(twitterRaw);
+  const github = safeExternalUrl(user.meta?.github_url);
+  const website = safeExternalUrl(user.url);
   const jobTitle = contributorRole(user);
   const bio = decodeHtml(user.description || (owner ? 'Data Engineer building scalable data pipelines, cloud warehouses, and modern analytics solutions.' : ''));
   const profileTo = owner ? OWNER_PROFILE_PATH : `/contributors/${user.slug}`;
@@ -157,7 +161,7 @@ function ContributorCard({ user, index, featured = false }) {
           </a>
         )}
         {twitter && (
-          <a href={twitter.startsWith('http') ? twitter : `https://twitter.com/${twitter.replace('@', '')}`}
+          <a href={twitter}
             target="_blank" rel="noopener noreferrer"
             aria-label={`${user.name} on Twitter`}
             className="p-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/20 text-sky-400 hover:text-sky-300 transition-all">
