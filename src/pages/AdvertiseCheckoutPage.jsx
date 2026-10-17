@@ -116,7 +116,9 @@ const OrderStatus = ({ orderRef, providerStatus }) => {
         <>
           <h1 className={HEADING}>Confirming your payment…</h1>
           <p className={BODY} role="status">
-            {gaveUpChecking && providerStatus === 'succeeded'
+            {providerStatus === 'processing'
+              ? 'Dodo Payments says your bank is still processing this payment. That can take a few minutes. You will get an email once it completes, and there is no need to pay again.'
+              : gaveUpChecking && providerStatus === 'succeeded'
               ? 'Dodo Payments reported the payment as successful; the confirmation is taking longer than usual. You will still get an email, and there is no need to pay again.'
               : gaveUpChecking
                 ? 'I could not confirm the payment yet. If you were charged, you will get an email shortly; there is no need to pay again.'
@@ -345,8 +347,17 @@ const CheckoutForm = ({ initialPackage, initialPlan }) => {
 };
 
 const AdvertiseCheckoutPage = () => {
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const orderRef = params.get('order');
+
+  // Dodo appends the buyer's email to the return URL; keep it out of the
+  // address bar, browser history and shared links.
+  useEffect(() => {
+    if (!params.has('email')) return;
+    const next = new URLSearchParams(params);
+    next.delete('email');
+    setParams(next, { replace: true });
+  }, [params, setParams]);
   if (orderRef && /^deh_[a-f0-9]{24}$/.test(orderRef)) {
     return <OrderStatus orderRef={orderRef} providerStatus={params.get('status')} />;
   }

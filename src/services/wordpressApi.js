@@ -1,4 +1,6 @@
 // src/services/wordpressApi.js - FIXED READ TIME CALCULATION + GUEST AUTHOR SUPPORT + CORS PROXY SUPPORT
+import { isListableArticle } from '../data/listingHoldouts.js';
+
 const WORDPRESS_API_URL = import.meta.env.DEV ? '' : 'https://app.dataengineerhub.blog';
 const WP_API_BASE = `${WORDPRESS_API_URL}/wp-json/wp/v2`;
 
@@ -452,7 +454,9 @@ class WordPressAPI {
       featured = null,
       trending = null,
       orderby = 'date',
-      order = 'desc'
+      order = 'desc',
+      // Admin tools need every post; public lists skip merged and thin ones.
+      includeHeldOut = false
     } = options;
 
     try {
@@ -485,7 +489,9 @@ class WordPressAPI {
         return { posts: [], totalPages: 1, totalPosts: 0 };
       }
 
-      const transformedPosts = this.transformPosts(posts);
+      const transformedPosts = this.transformPosts(
+        includeHeldOut ? posts : this.listablePosts(posts)
+      );
 
       return {
         posts: transformedPosts,
@@ -496,6 +502,13 @@ class WordPressAPI {
       console.error('❌ Error in getPosts:', error);
       throw error;
     }
+  }
+
+  // Runs on raw WordPress posts: transformPost swaps missing content for the
+  // excerpt, which would make every related post look thin.
+  listablePosts(wpPosts) {
+    if (!Array.isArray(wpPosts)) return wpPosts;
+    return wpPosts.filter((post) => isListableArticle(post?.slug, post?.content?.rendered));
   }
 
   transformPosts(wpPosts) {
@@ -735,7 +748,8 @@ class WordPressAPI {
         page,
         per_page: perPage,
         orderby: 'date',
-        order: 'desc'
+        order: 'desc',
+        includeHeldOut: true
       });
 
       console.log(`✅ Fetched ${result.posts.length} posts`);
@@ -759,7 +773,7 @@ class WordPressAPI {
       }
 
       const rawPosts = result.data.map(item => item.data || item);
-      return this.transformPosts(rawPosts);
+      return this.transformPosts(this.listablePosts(rawPosts));
 
     } catch (error) {
       console.error('❌ Could not fetch related posts:', error.message);
@@ -817,7 +831,7 @@ class WordPressAPI {
       const totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1');
       const totalPosts = parseInt(res.headers.get('X-WP-Total') || '0');
       const raw = await res.json();
-      return { posts: this.transformPosts(raw), totalPages, totalPosts };
+      return { posts: this.transformPosts(this.listablePosts(raw)), totalPages, totalPosts };
     } catch (error) {
       console.error(`❌ getPostsByAuthor(${authorId}) failed:`, error);
       throw error;

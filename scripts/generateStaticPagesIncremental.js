@@ -127,6 +127,7 @@ import {
   countIndexableWords,
 } from '../src/data/adsenseQualityGate.js';
 import { pruneSitemaps } from './pruneSitemapNoindex.js';
+import { isListableArticle } from '../src/data/listingHoldouts.js';
 
 function countPlainWords(...parts) {
   const text = parts
@@ -543,19 +544,38 @@ function escapeJsonForScript(value) {
  * Strips dangerous elements (script, iframe, object, embed, form),
  * on* event handlers, and javascript: URIs.
  */
+// Decode the entity tricks used to hide "javascript:" inside URL attributes.
+function decodeUrlEntities(value) {
+  return String(value)
+    .replace(/&#x([0-9a-f]+);?/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&#(\d+);?/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)))
+    .replace(/&colon;/gi, ':')
+    .replace(/&(?:tab|newline);/gi, '');
+}
+
+function isDangerousUrl(value) {
+  // Browsers ignore whitespace and control characters inside the scheme.
+  const compact = decodeUrlEntities(value).replace(/[\u0000- \u007f-\u009f]+/g, '').toLowerCase();
+  return compact.startsWith('javascript:') || compact.startsWith('vbscript:') || compact.startsWith('data:');
+}
+
 function sanitizeWordPressHTML(html) {
   if (!html) return '';
   return String(html)
-    // Remove script tags and content
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    // Remove iframe, object, embed, form tags
-    .replace(/<\/?(?:iframe|object|embed|form|applet)\b[^>]*>/gi, '')
-    // Remove on* event handlers from any tag
-    .replace(/\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
-    // Remove javascript: URIs
-    .replace(/href\s*=\s*["']?\s*javascript:/gi, 'href="')
-    // Remove data: URIs in src attributes (potential XSS vector)
-    .replace(/src\s*=\s*["']?\s*data:/gi, 'src="')
+    // Remove script/style blocks (also "</script >" with whitespace) and stray openers
+    .replace(/<(script|style)\b[\s\S]*?<\/\1\s*>/gi, '')
+    .replace(/<\/?(?:script|style)\b[^>]*>/gi, '')
+    // Remove iframe, object, embed, form, base, meta, link tags
+    .replace(/<\/?(?:iframe|object|embed|form|applet|base|meta|link)\b[^>]*>/gi, '')
+    // Inside tags only (never prose or code text): drop on* event handlers,
+    // including "<svg/onload=..." where "/" separates attributes, and
+    // neutralise javascript:/vbscript:/data: URLs, even when entity-encoded.
+    .replace(/<[a-z][^>]*>/gi, (tag) => tag
+      .replace(/[\s/]+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+      .replace(/(\s|\/)(href|src|xlink:href|action|formaction|poster|background)\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, (match, sep, attr, quoted) => {
+        const value = quoted.replace(/^["']|["']$/g, '');
+        return isDangerousUrl(value) ? `${sep}${attr}="#"` : match;
+      }))
     // Fix invalid HTML: remove <p> wrapping around block elements (h1-h6, div, ul, ol, table, blockquote)
     .replace(/<p>\s*(<(?:h[1-6]|div|ul|ol|table|blockquote)\b)/gi, '$1')
     .replace(/(<\/(?:h[1-6]|div|ul|ol|table|blockquote)>)\s*<\/p>/gi, '$1')
@@ -3295,7 +3315,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     videoSchemaBlock = `
     <!-- ðŸŽ¬ STRUCTURED DATA - VideoObject Schema -->
     <script type="application/ld+json">
-    ${JSON.stringify(videoData, null, 2)}
+    ${escapeJsonForScript(videoData)}
     </script>`;
   }
 
@@ -3331,7 +3351,7 @@ function generateFullArticleHTML(pageData, bundleFiles, relatedArticles = []) {
     howToSchemaBlock = `
     <!-- ðŸ“‹ STRUCTURED DATA - HowTo Schema -->
     <script type="application/ld+json">
-    ${JSON.stringify(howToData, null, 2)}
+    ${escapeJsonForScript(howToData)}
     </script>`;
   }
 
@@ -4050,17 +4070,17 @@ ${CONSENT_MODE_V2_HTML}
                 </span>
               </div>
 
-              {/* Main row */}
+              <!-- Main row -->
               <div class="relative" style="display: flex; flex-direction: column; gap: 1.5rem;">
                 <div class="flex flex-col sm:flex-row gap-5 md:gap-7" style="align-items: flex-start;">
-                  {/* Avatar */}
+                  <!-- Avatar -->
                   <div class="flex-shrink-0">
                     <img src="${escapeHtml(authorData?.avatarUrl || 'https://secure.gravatar.com/avatar/344a01fa4bf69414fd1de0aee6e1fce9?s=96&d=mm&r=g')}" alt="${escapeHtml(authorData?.name || 'Sainath Reddy')}" width="96" height="96" loading="lazy" style="width: 80px; height: 80px; border-radius: 1rem; object-fit: cover; border: 2px solid rgba(180, 68, 31, 0.3); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(180, 68, 31, 0.1);" />
                   </div>
 
-                  {/* Info */}
+                  <!-- Info -->
                   <div class="flex-1 space-y-3 min-w-0" style="min-width: 0;">
-                    {/* Name */}
+                    <!-- Name -->
                     <div>
                       <a href="https://dataengineerhub.blog/about" style="text-decoration: none; color: inherit;">
                         <h3 style="font-size: 1.5rem; font-weight: 900; color: #1B1A17; margin: 0; line-height: 1.2;">
@@ -4070,12 +4090,12 @@ ${CONSENT_MODE_V2_HTML}
                       <p style="font-size: 0.875rem; font-weight: 600; color: #9C3A1A; margin: 0.25rem 0 0;">Founder & Owner</p>
                     </div>
 
-                    {/* Bio */}
+                    <!-- Bio -->
                     <p style="font-size: 0.95rem; color: #3F3B35; line-height: 1.7; margin: 0; max-width: 42rem;">
                       Data Engineer with 5+ years of experience building scalable data pipelines, cloud data warehouses, and end-to-end analytics solutions. Passionate about making complex data engineering concepts accessible to everyone.
                     </p>
 
-                    {/* Social links + CTA */}
+                    <!-- Social links + CTA -->
                     <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; padding-top: 0.5rem;">
                       <a href="https://dataengineerhub.blog/about" style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 600; color: #9C3A1A; padding: 0.5rem 1rem; border-radius: 0.5rem; background: rgba(180, 68, 31, 0.1); border: 1px solid rgba(180, 68, 31, 0.2); text-decoration: none; transition: all 0.2s;">
                         About the Author
@@ -4093,7 +4113,7 @@ ${CONSENT_MODE_V2_HTML}
                   </div>
                 </div>
 
-                {/* CTA buttons (mobile visible, desktop in right column in React) */}
+                <!-- CTA buttons (mobile visible, desktop in right column in React) -->
                 <div class="flex gap-3 mt-5 md:hidden" style="flex-wrap: wrap;">
                   <a href="/articles" style="flex: 1; min-width: 140px; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: linear-gradient(135deg, #F0C6B2, #F0C6B2); color: white; font-weight: 700; border-radius: 0.5rem; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(240, 198, 178, 0.4); transition: all 0.2s;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -4105,7 +4125,7 @@ ${CONSENT_MODE_V2_HTML}
                 </div>
               </div>
 
-              {/* Desktop CTA buttons - hidden on mobile, shown on desktop */}
+              <!-- Desktop CTA buttons - hidden on mobile, shown on desktop -->
               <div class="hidden md:flex flex-col gap-3 flex-shrink-0" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(180, 68, 31, 0.15);">
                 <a href="/articles" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: linear-gradient(135deg, #F0C6B2, #F0C6B2); color: white; font-weight: 700; border-radius: 0.5rem; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(240, 198, 178, 0.4); transition: all 0.2s;">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -4172,7 +4192,7 @@ ${CONSENT_MODE_V2_HTML}
       "description": "${descriptionJsonLd}",
       "image": {
         "@type": "ImageObject",
-        "url": "${ogImageUrl}",
+        "url": ${escapeJsonForScript(ogImageUrl)},
         "width": 1200,
         "height": 630
       },
@@ -4200,8 +4220,8 @@ ${CONSENT_MODE_V2_HTML}
       "datePublished": "${effectivePublished}",
       "dateModified": "${effectiveModified}",
       "wordCount": ${articleWordCount},
-      ${categoryNames.length > 0 ? `"articleSection": ${JSON.stringify(categoryNames[0])},` : ''}
-      ${tagNames.length > 0 ? `"keywords": ${JSON.stringify(tagNames.slice(0, 10))},` : ''}
+      ${categoryNames.length > 0 ? `"articleSection": ${escapeJsonForScript(categoryNames[0])},` : ''}
+      ${tagNames.length > 0 ? `"keywords": ${escapeJsonForScript(tagNames.slice(0, 10))},` : ''}
       "speakable": {
         "@type": "SpeakableSpecification",
         "cssSelector": [".article-title", ".article-description"]
@@ -4247,7 +4267,7 @@ ${CONSENT_MODE_V2_HTML}
       if (!faqSchema) return '';
       return `
     <script type="application/ld+json">
-    ${JSON.stringify(faqSchema)}
+    ${escapeJsonForScript(faqSchema)}
     </script>`;
     })()}
 
@@ -5236,7 +5256,7 @@ function generateGlossaryPageHTML(term, allGlossaryTerms, bundleFiles, allArticl
       faqHTML += '<p style="color: #3F3B35; font-size: 1.05rem; line-height: 1.7; margin: 0;">' + escapeHtml(faq.answer) + '</p>';
       faqHTML += '</div>';
       if (f > 0) faqSchemaItems += ',';
-      faqSchemaItems += '{"@type":"Question","name":' + JSON.stringify(faq.question) + ',"acceptedAnswer":{"@type":"Answer","text":' + JSON.stringify(faq.answer.replace(/\n/g, ' ')) + '}}';
+      faqSchemaItems += '{"@type":"Question","name":' + escapeJsonForScript(faq.question) + ',"acceptedAnswer":{"@type":"Answer","text":' + escapeJsonForScript(faq.answer.replace(/\n/g, ' ')) + '}}';
     }
   }
 
@@ -6130,7 +6150,7 @@ function generateComparePageHTML(comparison, allComparisons, bundleFiles) {
       'mainEntity': faqEntities
     };
     html += '    <script type="application/ld+json">\n';
-    html += '    ' + JSON.stringify(faqSchema, null, 2).split('\n').join('\n    ') + '\n';
+    html += '    ' + escapeJsonForScript(faqSchema) + '\n';
     html += '    <\/script>\n\n';
   }
 
@@ -7302,8 +7322,10 @@ async function buildIncremental(options = {}) {
     // Populate post slugs for link normalization
     posts.forEach(p => globalPostSlugs.add(p.slug));
 
-    // Build article list for "More Articles" section and listing pages
-    allArticleSummaries = posts.map(p => ({
+    // Build article list for "More Articles" section and listing pages.
+    // Merged and thin posts keep their own page but stay out of every list
+    // (same rule as the React lists, src/data/listingHoldouts.js).
+    allArticleSummaries = posts.filter(p => isListableArticle(p.slug, p.content?.rendered)).map(p => ({
       slug: p.slug,
       title: stripHTML(p.title.rendered),
       excerpt: truncateAtSentence(stripHTML(p.excerpt.rendered), 200),

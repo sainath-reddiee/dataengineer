@@ -53,6 +53,13 @@
     RewriteRule ^articles/snowflake-performance/?$ /articles/snowflake-query-optimization-guide-2026 [R=301,L]
     RewriteRule ^articles/snowflake-performance-tuning-techniques/?$ /articles/snowflake-query-optimization-guide-2026 [R=301,L]
     RewriteRule ^articles/loading-data-from-s3-to-snowflake/?$ /articles/load-data-into-snowflake [R=301,L]
+    # Merged 2026-10-17: overlapping posts consolidated into the stronger one.
+    RewriteRule ^articles/dbt-state-skip-unchanged-nodes/?$ /articles/dbt-state-skip-unchanged-models [R=301,L]
+    RewriteRule ^articles/snowflake-mcp-server-agentic-ai-guide-2025/?$ /articles/snowflake-mcp-server-guide [R=301,L]
+    RewriteRule ^articles/advanced-snowflake-interview-questions-experienced/?$ /articles/snowflake-expert-interview-questions [R=301,L]
+    RewriteRule ^articles/snowflake-aiceberg-v3-migration-guide/?$ /articles/native-tables-to-dynamic-iceberg-v3-snowflake [R=301,L]
+    RewriteRule ^articles/airflow-dbt-snowflake-orchestration-guide/?$ /articles/snowflake-dbt-projects-airflow-orchestration [R=301,L]
+    RewriteRule ^articles/snowflake-cortex-token-usage-monitoring/?$ /articles/snowflake-cortex-ai-hidden-token-costs [R=301,L]
 
     # Cookie policy lives in the Privacy Policy cookies section — do not 404.
     RewriteRule ^cookie-policy/?$ /privacy-policy [R=301,L]
@@ -381,19 +388,22 @@
     Header always set Access-Control-Allow-Headers "Content-Type"
     
     # Prevent MIME-sniffing
-    Header set X-Content-Type-Options "nosniff"
+    Header always set X-Content-Type-Options "nosniff"
     
     # Prevent clickjacking
-    Header set X-Frame-Options "DENY"
+    Header always set X-Frame-Options "DENY"
+    # No framing, no plugins, no <base> hijack. Script sources are not
+    # restricted yet (AdSense needs a broad allowlist); add that separately.
+    Header always set Content-Security-Policy "frame-ancestors 'none'; object-src 'none'; base-uri 'self'"
     
     # XSS Protection (legacy, but still good)
     Header set X-XSS-Protection "1; mode=block"
     
     # Referrer Policy - balance between privacy and analytics
-    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
     
     # Permissions Policy (formerly Feature-Policy)
-    Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
     
     # HSTS - Force HTTPS for 1 year, include subdomains
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"

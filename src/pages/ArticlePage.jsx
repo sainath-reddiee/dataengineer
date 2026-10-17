@@ -422,13 +422,15 @@ const ArticlePage = () => {
     if (!post?.content) {
       return { processedHtml: '', keyTakeaways: [], takeawaysTitle: 'TL;DR', articleFaqs: [] };
     }
-    // SSG already sanitized/linked this body. Re-running the pipeline on first
-    // paint would swap the HTML the reader is already looking at.
+    // SSG already linked this body. Re-running the pipeline on first paint
+    // would swap the HTML the reader is already looking at, but DOMPurify still
+    // runs: it leaves clean markup unchanged and the build sanitizer is regex-based.
     if (post.htmlReady) {
-      const readyFaqs = analyzeArticleFaqs(post.content);
+      const safeContent = DOMPurify.sanitize(post.content, { ADD_ATTR: ['target', 'rel', 'loading', 'decoding'] });
+      const readyFaqs = analyzeArticleFaqs(safeContent);
       const readyBody = readyFaqs.source === 'section' || readyFaqs.source === 'rendered'
         ? readyFaqs.html
-        : post.content;
+        : safeContent;
       return {
         processedHtml: enhanceArticleCodeBlocks(injectArticleContextualLinks(readyBody, slug)),
         keyTakeaways: Array.isArray(post.keyTakeaways) ? post.keyTakeaways : [],

@@ -9,5 +9,11 @@
     "/articles/snowflake-openflow-tutorial": "/articles/snowflake-openflow-ai-data-ingestion-guide",
     "/articles/snowflake-performance": "/articles/snowflake-query-optimization-guide-2026",
     "/articles/snowflake-performance-tuning-techniques": "/articles/snowflake-query-optimization-guide-2026",
-    "/articles/loading-data-from-s3-to-snowflake": "/articles/load-data-into-snowflake"
+    "/articles/loading-data-from-s3-to-snowflake": "/articles/load-data-into-snowflake",
+    "/articles/dbt-state-skip-unchanged-nodes": "/articles/dbt-state-skip-unchanged-models",
+    "/articles/snowflake-mcp-server-agentic-ai-guide-2025": "/articles/snowflake-mcp-server-guide",
+    "/articles/advanced-snowflake-interview-questions-experienced": "/articles/snowflake-expert-interview-questions",
+    "/articles/snowflake-aiceberg-v3-migration-guide": "/articles/native-tables-to-dynamic-iceberg-v3-snowflake",
+    "/articles/airflow-dbt-snowflake-orchestration-guide": "/articles/snowflake-dbt-projects-airflow-orchestration",
+    "/articles/snowflake-cortex-token-usage-monitoring": "/articles/snowflake-cortex-ai-hidden-token-costs"
 }

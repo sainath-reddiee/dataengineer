@@ -8,6 +8,11 @@ on:
   # Allow manual trigger
   workflow_dispatch:
 
+# Commits the weekly report and opens an issue; nothing else.
+permissions:
+  contents: write
+  issues: write
+
 jobs:
   generate-optimization-report:
     runs-on: ubuntu-latest
