@@ -55,7 +55,7 @@
     "pseo:merge": "node scripts/merge-pseo-data.cjs",
     "test:secrets": "node scripts/verifyNoBundledSecrets.js",
     "test:checkout": "node scripts/verifyCheckout.js",
-    "test:community": "node scripts/verifyMockExam.js && node scripts/verifyRoadmaps.js && node scripts/verifyInterviewBank.js"
+    "test:community": "node scripts/verifyMockExam.js && node scripts/verifyRoadmaps.js && node scripts/verifyInterviewBank.js && node scripts/verifyWarehousePricing.js"
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "^1.33.1-dev45.0",

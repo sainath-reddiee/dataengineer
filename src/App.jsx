@@ -82,6 +82,7 @@ const RoadmapsHubPage = lazy(() => import('./pages/RoadmapsHubPage'));
 const RoadmapPage = lazy(() => import('./pages/RoadmapPage'));
 const InterviewQuestionBankPage = lazy(() => import('./pages/InterviewQuestionBankPage'));
 const InterviewDrillPage = lazy(() => import('./pages/InterviewDrillPage'));
+const WarehouseCostEstimatorPage = lazy(() => import('./pages/WarehouseCostEstimatorPage'));
 
 // Not Found Page
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
@@ -380,6 +381,7 @@ function App() {
           <Route path="playground" element={<Navigate to="/tools/sql-playground" replace />} />
           <Route path="tools/json-parquet-avro-converter" element={<SafeRoute fallbackText="Loading Format Converter..."><FormatConverterPage /></SafeRoute>} />
           <Route path="tools/cloud-data-warehouse-cost-comparison" element={<SafeRoute fallbackText="Loading Warehouse Comparison..."><WarehouseComparisonCalculatorPage /></SafeRoute>} />
+          <Route path="tools/warehouse-cost-estimator" element={<SafeRoute fallbackText="Loading Cost Estimator..."><WarehouseCostEstimatorPage /></SafeRoute>} />
           <Route path="cheatsheets/category/:categoryId" element={<SafeRoute fallbackText="Loading Category..."><CheatSheetCategoryPage /></SafeRoute>} />
           <Route path="interview-prep" element={<SafeRoute fallbackText="Loading Interview Prep Hub..."><InterviewPrepHubPage /></SafeRoute>} />
           <Route path="interview-prep/questions" element={<SafeRoute fallbackText="Loading Question Bank..."><InterviewQuestionBankPage /></SafeRoute>} />

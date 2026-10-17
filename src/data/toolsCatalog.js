@@ -216,6 +216,19 @@ export const TOOLS = [
     featured: true,
   },
   {
+    slug: 'warehouse-cost-estimator',
+    title: 'Warehouse Cost Estimator',
+    icon: 'Scale',
+    tagline: 'Snowflake, Databricks, BigQuery, Redshift',
+    description:
+      'One workload, four platforms: monthly list-price estimates with every unit, unit price, source and formula shown, including Redshift Serverless. Editable credits, DBUs, slots and RPUs.',
+    primaryFor: 'Platform comparison with transparent assumptions, migration budgeting',
+    category: 'cost',
+    stages: ['warehouse'],
+    keywords: ['compare', 'snowflake', 'bigquery', 'databricks', 'redshift', 'cost'],
+    featured: false,
+  },
+  {
     slug: 'snowflake-certification-practice',
     title: 'Snowflake Certification Practice',
     icon: 'Award',

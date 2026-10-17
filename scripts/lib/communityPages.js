@@ -12,6 +12,8 @@ import { getMockPlan, MOCK_LENGTHS } from '../../src/lib/practice/mockExam.js';
 import { resourceHref, resourceTypeLabel } from '../../src/lib/roadmaps/resourceHref.js';
 import { cheatsheets } from '../../src/data/cheatsheetData.js';
 import { buildBank, STACKS } from '../../src/lib/interview/bank.js';
+import { WAREHOUSE_PRICING } from '../../src/data/warehousePricing.js';
+import { estimateAll } from '../../src/lib/estimator/warehouseEstimate.js';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const PRACTICE_SLUGS = ['snowpro-core', 'snowpro-genai', 'databricks-de', 'aws-de-associate'];
@@ -158,6 +160,46 @@ ${groups}
   ];
 }
 
+export function buildEstimatorPages() {
+  const rows = [
+    ['snowflake', 'Credit', (p) => `$${p.creditPrice} per credit`],
+    ['snowflake', 'Storage', (p) => `$${p.storagePerGB} per GB-month`],
+    ['databricks', 'DBU (SQL Pro)', (p) => `$${p.dbuPrice} per DBU`],
+    ['databricks', 'Storage', (p) => `$${p.storagePerGB} per GB-month`],
+    ['bigquery', 'On-demand', (p) => `$${p.onDemandPerTB} per TB scanned`],
+    ['bigquery', 'Editions (Enterprise)', (p) => `$${p.editionsPerSlotHour} per slot-hour`],
+    ['bigquery', 'Storage (active)', (p) => `$${p.storagePerGB} per GB-month`],
+    ['redshift', 'Serverless compute', (p) => `$${p.rpuHourPrice} per RPU-hour`],
+    ['redshift', 'Managed storage', (p) => `$${p.storagePerGB} per GB-month`],
+  ].map(([id, item, fmt]) => {
+    const p = WAREHOUSE_PRICING[id];
+    return `        <tr><td>${escapeHtml(p.label)}</td><td>${escapeHtml(item)}</td><td>${escapeHtml(fmt(p))}</td><td><a href="${p.source.url}" rel="noopener noreferrer">${escapeHtml(p.source.title)}</a>, ${p.verifiedOn}</td></tr>`;
+  }).join('\n');
+  const { results, lowestId } = estimateAll({});
+  const example = results.map((r) => `        <li>${escapeHtml(r.label)}: about $${Math.round(r.total).toLocaleString('en-US')} per month (${escapeHtml(r.units)})</li>`).join('\n');
+  return [{
+    path: '/tools/warehouse-cost-estimator',
+    title: 'Warehouse Cost Estimator: Snowflake, Databricks, BigQuery, Redshift',
+    description: "Estimate one workload's monthly list-price cost on Snowflake, Databricks, BigQuery and Redshift Serverless, with every unit price, source and formula shown.",
+    content: `
+      <h1>Warehouse cost estimator</h1>
+      <p>Describe one monthly workload and compare list-price estimates for Snowflake, Databricks, BigQuery and Redshift Serverless. Every unit and price is shown with its source and the date it was checked. Contract discounts, egress and reserved capacity are not included. The interactive estimator on this page needs JavaScript.</p>
+      <h2>Price assumptions</h2>
+      <table>
+        <thead><tr><th>Platform</th><th>Item</th><th>List price</th><th>Source, checked</th></tr></thead>
+        <tbody>
+${rows}
+        </tbody>
+      </table>
+      <h2>Example: 50 TB scanned, 160 compute hours, 500 GB, mixed workload</h2>
+      <ul>
+${example}
+      </ul>
+      <p>Lowest list-price estimate for these inputs: ${escapeHtml(results.find((r) => r.id === lowestId).label)}. Equal hours on different engines do not do equal work, so validate with your own queries.</p>
+    `,
+  }];
+}
+
 export function buildCommunityPages() {
-  return [...buildMockExamPages(), ...buildRoadmapPages(), ...buildInterviewPages()];
+  return [...buildMockExamPages(), ...buildRoadmapPages(), ...buildInterviewPages(), ...buildEstimatorPages()];
 }

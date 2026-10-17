@@ -30,6 +30,7 @@ const mustNoindex = [
   '/roadmaps/data-engineer',
   '/interview-prep/questions',
   '/interview-prep/drill',
+  '/tools/warehouse-cost-estimator',
   '/advertise',
   '/contribute',
   '/contributors',
