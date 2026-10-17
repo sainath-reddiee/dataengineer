@@ -58,6 +58,24 @@ assert(
 );
 assert(footer.includes("{ name: 'Advertise', href: '/advertise' }"), 'Footer must keep Advertise');
 
+// Prices are shown before tax; Dodo adds tax at checkout and may charge in the
+// buyer's currency, so the page must not promise a flat all-in total.
+assert(!JSON.stringify(advertiseConfig).includes('No extra fees'), 'advertise copy must not promise "No extra fees"');
+assert(advertisePage.includes('applicable tax'), 'advertise page must say prices are plus applicable tax');
+
+// The WordPress checkout keeps its own USD list prices for order emails; they
+// must match what the site shows.
+const php = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../functions.php'), 'utf8');
+const catalog = php.slice(php.indexOf('function dehub_checkout_catalog()'), php.indexOf('function dehub_orders_table()'));
+for (const opp of advertiseConfig.opportunities) {
+  for (const d of opp.durations) {
+    assert(
+      new RegExp(`'${opp.packageKey}'[^\\n]*'${d.key}' => ${d.price}\\b`).test(catalog),
+      `functions.php list price for ${opp.packageKey}:${d.key} must be ${d.price}`
+    );
+  }
+}
+
 console.log('✅ Advertise packages no longer look like a cheap link shop');
 console.log('✅ Guest briefs ask for production incidents');
 console.log('✅ Advertise page claims only what is real (no popularity badge, live counts, spam guard)');

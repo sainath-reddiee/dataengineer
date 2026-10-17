@@ -10,6 +10,7 @@
 // 200 = signature accepted. 401 = secret mismatch (or clock skew over 5 min).
 // 404 = the new functions.php is not uploaded yet.
 import crypto from 'node:crypto';
+import { webhookHeaders } from './lib/dodoSign.js';
 
 const secret = process.env.DEHUB_DODO_WEBHOOK_SECRET || '';
 const url = process.env.DEHUB_DODO_WEBHOOK_URL || 'https://app.dataengineerhub.blog/wp-json/dehub/v1/dodo-webhook';
@@ -19,7 +20,6 @@ if (!secret) {
   process.exit(2);
 }
 
-const key = secret.startsWith('whsec_') ? Buffer.from(secret.slice(6), 'base64') : Buffer.from(secret);
 const id = `msg_ping_${crypto.randomBytes(8).toString('hex')}`;
 const timestamp = Math.floor(Date.now() / 1000);
 const body = JSON.stringify({
@@ -28,18 +28,8 @@ const body = JSON.stringify({
   timestamp: new Date(timestamp * 1000).toISOString(),
   data: { note: 'Signature check from scripts/dodoWebhookPing.js' },
 });
-const signature = crypto.createHmac('sha256', key).update(`${id}.${timestamp}.${body}`).digest('base64');
 
-const res = await fetch(url, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'webhook-id': id,
-    'webhook-timestamp': String(timestamp),
-    'webhook-signature': `v1,${signature}`,
-  },
-  body,
-});
+const res = await fetch(url, { method: 'POST', headers: webhookHeaders(secret, body, { id, timestamp }), body });
 
 const hints = {
   200: 'Signature accepted: the webhook endpoint and secret are set up correctly.',

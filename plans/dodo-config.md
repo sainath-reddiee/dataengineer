@@ -24,8 +24,8 @@ The two older subscription products (DataEngineer Pro Monthly/Annual) are not us
 | --- | --- |
 | Endpoint id | `ep_3KoX30SJV8KqnMOZJklXJ49ql5L` |
 | URL | `https://app.dataengineerhub.blog/wp-json/dehub/v1/dodo-webhook` |
-| Events | `payment.succeeded`, `payment.failed`, `payment.cancelled`, `refund.succeeded` |
-| Signing secret | Developer > Webhooks > this endpoint > Signing secret (reveal, copy) → `DEHUB_DODO_WEBHOOK_SECRET` |
+| Events | `payment.succeeded`, `payment.failed`, `payment.cancelled`, `refund.succeeded` (add `refund.failed` and every `dispute.*` event: the hardened webhook handles them) |
+| Signing secret | Developer > Webhooks > this endpoint > Signing secret (reveal, copy) → `DEHUB_DODO_WEBHOOK_SECRET`. **Rotate it**: it was pasted into a chat on 2026-10-17. |
 
 Two other endpoints in the dashboard are not used by this site and can be disabled or deleted: `.../dehub/v1/checkout/options` (wrong route, it is not the webhook) and `https://bright-toes-spend.loca.lt/api/webhook/dodo` (old local tunnel).
 
@@ -60,11 +60,33 @@ define('DEHUB_SPONSOR_INBOX', 'sainath@dataengineerhub.blog');
 - [x] Webhook signing secret in wp-config.php
 - [x] Latest functions.php uploaded
 - [x] `node scripts/dodoWebhookPing.js` returns 200 (2026-10-17)
-- [ ] End-to-end test payment, cancel and refund pass
+- [x] End-to-end test payment passes (order `deh_2d8afb21446df80f1e3c43cd`, webhook 200, return page "Payment received", 2026-10-17)
+- [ ] Hardened functions.php (orders DB v2) uploaded; Tools > Sponsor orders shows "Orders DB version 2"
+- [ ] `node scripts/verifyCheckout.js --live --expect-mode=test` passes (with the webhook secret set)
+- [ ] Declined card, full refund and partial refund pass; exactly one pair of order emails per payment
 
 ## Live mode
 
-Not created yet. Live needs business verification first, then the same five products, a live API key and a live webhook endpoint. Test and live ids differ, so the mode, key, secret and all product ids change together.
+Not created yet. Test and live ids differ, so the mode, key, secret and all product ids change together.
+
+### Cutover runbook
+
+Run top to bottom. "You" steps need the Dodo dashboard, Hostinger or wp-config.php.
+
+1. **You: test-mode pass.** Upload the hardened `functions.php`, open Tools > Sponsor orders and confirm "Orders DB version 2". Run `node scripts/verifyCheckout.js --live --expect-mode=test`. Then pay, decline a card, fully refund one payment and partly refund another. Each order should end in the right status with one pair of emails, and the "Recent webhook events" table should show no 401 or 500.
+2. **You: read real payloads.** In Developer > Webhooks > endpoint > Logs, open a `payment.succeeded` and a `refund.succeeded` delivery and confirm the fields the handler reads exist: `payment_id`, `total_amount`, `tax`, `currency`, `metadata.order_ref`, `checkout_session_id`; for refunds `amount`, `currency`, `is_partial`. Tell Claude about any difference.
+3. **You: business verification.** Dodo approves live payments after verifying the business. The Terms, Privacy and Refund Policy pages it looks for are live.
+4. **You: live products.** Switch the dashboard to Live mode and create the same five one-time USD products (same names and prices, tax category "Digital products", tax exclusive). Record the ids in a Live table below.
+5. **You: live API key.** Create it and paste it straight into wp-config.php. Never into chat or a file in this repo (`npm run test:secrets` fails the build if one appears).
+6. **You: live webhook.** Add `https://app.dataengineerhub.blog/wp-json/dehub/v1/dodo-webhook` with `payment.succeeded`, `payment.failed`, `payment.cancelled`, `refund.succeeded`, `refund.failed` and all `dispute.*` events. Copy its signing secret into wp-config.php.
+7. **You: retire test endpoints.** Disable `ep_3KoX30SJV8KqnMOZJklXJ49ql5L` (its secret was exposed in chat) and delete the `.../checkout/options` and `loca.lt` endpoints. Test and live share one URL, so a still-active test endpoint would only produce 401s against the live secret.
+8. **You: wp-config.php, one edit.** Set `DEHUB_DODO_MODE` to `'live'` together with the live API key, the live webhook secret and all five live product ids. Save once.
+9. **You: purge caches.** LiteSpeed Cache > Toolbox > Purge All, the hPanel cache, and Cloudflare if it caches the app hostname.
+10. **Verify.** `https://app.dataengineerhub.blog/wp-json/dehub/v1/checkout/options?t=1` shows `"mode":"live"` and five plans; `node scripts/verifyCheckout.js --live --expect-mode=live` passes with the live secret; the checkout page shows no test-mode note.
+11. **You: real smoke test.** Buy the $39 sponsored card with your own card, check the return page, the two emails, and the admin row (charged, tax, paid). Then refund it in Dodo and check the order turns `refunded` and no paid email is resent. The processing fee is usually not returned.
+12. **Monitor for a week.** Search the PHP error log for `[dehub`, read the daily digest emails, and check the webhook events table.
+
+**Rollback:** `define('DEHUB_DODO_PRODUCTS', array());` hides the card buttons and the checkout returns 503, while the inquiry form and PayPal invoices keep working. Do not switch back to test mode while live orders are pending.
 
 ## GitHub secrets
 

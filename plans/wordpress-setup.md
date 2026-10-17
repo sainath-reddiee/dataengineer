@@ -119,7 +119,7 @@ The browser never holds a Dodo key. The advertise page asks WordPress for a chec
 
 Use one-time payments, not subscriptions: the advertise page promises monthly cards do not auto-renew. Copy each product id (`pdt_...`).
 
-**Step 2: API key and webhook.** In Developer, then API Keys, create a key. In Developer, then Webhooks, add the endpoint `https://app.dataengineerhub.blog/wp-json/dehub/v1/dodo-webhook`, subscribe to `payment.succeeded`, `payment.failed`, `payment.cancelled` and `refund.succeeded`, and copy its signing secret (`whsec_...`).
+**Step 2: API key and webhook.** In Developer, then API Keys, create a key. In Developer, then Webhooks, add the endpoint `https://app.dataengineerhub.blog/wp-json/dehub/v1/dodo-webhook`, subscribe to `payment.succeeded`, `payment.failed`, `payment.cancelled`, `refund.succeeded`, `refund.failed` and every `dispute.*` event, and copy its signing secret (`whsec_...`).
 
 **Step 3: wp-config.php** (above "That's all, stop editing!"):
 
@@ -139,7 +139,7 @@ define('DEHUB_SPONSOR_INBOX', 'sainath@dataengineerhub.blog'); // paid-order ema
 
 Leave out any package you do not want to sell by card; its button simply will not show.
 
-**Step 4: upload functions.php and test end to end (Test mode).**
+**Step 4: upload functions.php and test end to end (Test mode).** After uploading, open Tools, then Sponsor orders: it should say "Orders DB version 2" (the table upgrades itself on the first request). Then run `node scripts/verifyCheckout.js --live --expect-mode=test` with `DEHUB_DODO_WEBHOOK_SECRET` set; it creates no order and sends no email.
 
 1. Endpoint check: `https://app.dataengineerhub.blog/wp-json/dehub/v1/checkout/options` should show `"enabled":true`, `"mode":"test"` and your five plans.
 2. Webhook secret check, no payment needed. In PowerShell: `$env:DEHUB_DODO_WEBHOOK_SECRET='whsec_...'; node scripts/dodoWebhookPing.js`. Expect `200 Signature accepted`. A 401 means the secret in wp-config.php differs from Dodo's.
@@ -151,6 +151,6 @@ Leave out any package you do not want to sell by card; its button simply will no
 
 If checkout shows "The payment provider did not respond", the PHP error log has a `[dehub checkout]` line with Dodo's reason.
 
-**Step 5: go live.** Dodo needs your business verified before live payments. Then create the same five products in Live mode, and replace the mode, API key, webhook secret and product ids with the live values. Test and live ids are different, so all of them must change together.
+**Step 5: go live.** Follow the cutover runbook in [dodo-config.md](dodo-config.md#cutover-runbook). Dodo needs your business verified before live payments, and the mode, API key, webhook secret and all five product ids must change together.
 
 If checkout says "The payment provider did not respond", the reason is in the PHP error log as `[dehub checkout]`, usually a test key used with live mode or a product id from the other mode.

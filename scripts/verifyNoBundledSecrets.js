@@ -6,6 +6,7 @@
 //   - the deploy workflow passes a secret-looking VITE_* variable to the build
 //   - source code reads a secret-looking VITE_* variable
 //   - the built bundle contains a Basic-auth literal or a GitHub token
+import { spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -47,8 +48,28 @@ for (const file of bundle) {
   }
 }
 
+// Dodo Payments secrets live only in wp-config.php on the server. Placeholders
+// such as 'whsec_paste-secret' are short or contain '-', so they do not match.
+const DODO_SECRET = /\bwhsec_[A-Za-z0-9+/=]{24,}/;
+const DODO_KEY = /DEHUB_DODO_API_KEY'\s*,\s*'(?!paste)[^']{16,}'/;
+const tracked = spawnSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' });
+const trackedFiles = tracked.status === 0 ? tracked.stdout.split('\n').filter((f) => /\.(js|jsx|mjs|cjs|json|php|md|txt|html|yml|yaml|env)$/.test(f)) : [];
+for (const rel of trackedFiles) {
+  const file = join(root, rel);
+  if (!existsSync(file)) continue;
+  const text = readFileSync(file, 'utf8');
+  if (DODO_SECRET.test(text)) fail(`${rel} contains a Dodo webhook signing secret (whsec_...); rotate it in the Dodo dashboard`);
+  if (DODO_KEY.test(text)) fail(`${rel} contains a Dodo API key; revoke it in the Dodo dashboard`);
+}
+for (const file of bundle) {
+  if (DODO_SECRET.test(readFileSync(file, 'utf8'))) fail(`${file.slice(root.length + 1)} contains a Dodo webhook signing secret`);
+}
+for (const file of walk(join(root, 'src'), ['.js', '.jsx'])) {
+  if (/VITE_[A-Z0-9_]*DODO/.test(readFileSync(file, 'utf8'))) fail(`${file.slice(root.length + 1)} reads a VITE_*DODO variable; Dodo keys must stay in WordPress`);
+}
+
 if (failed > 0) {
   console.error(`\n❌ Secret scan failed (${failed}). Revoke anything that shipped, then remove it from the build.`);
   process.exit(1);
 }
-console.log(`✅ No secrets in the build config, source, or ${bundle.length} bundle files`);
+console.log(`✅ No secrets in the build config, source, ${trackedFiles.length} tracked files, or ${bundle.length} bundle files`);
