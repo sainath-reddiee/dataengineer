@@ -27,6 +27,7 @@ const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
 const NewsletterPage = lazy(() => import('./pages/NewsletterPage'));
 const DisclaimerPage = lazy(() => import('./pages/DisclaimerPage'));
+const RefundPolicyPage = lazy(() => import('./pages/RefundPolicyPage'));
 const EditorialStandardsPage = lazy(() => import('./pages/EditorialStandardsPage'));
 const ReadingListPage = lazy(() => import('./pages/ReadingListPage'));
 const ContributePage = lazy(() => import('./pages/ContributePage'));
@@ -387,6 +388,7 @@ function App() {
           <Route path="cookie-policy" element={<Navigate to="/privacy-policy#cookies" replace />} />
           <Route path="terms-of-service" element={<SafeRoute fallbackText="Loading Terms..."><TermsOfServicePage /></SafeRoute>} />
           <Route path="disclaimer" element={<SafeRoute fallbackText="Loading Disclaimer..."><DisclaimerPage /></SafeRoute>} />
+          <Route path="refund-policy" element={<SafeRoute fallbackText="Loading Refund Policy..."><RefundPolicyPage /></SafeRoute>} />
           <Route path="editorial-standards" element={<SafeRoute fallbackText="Loading Editorial Standards..."><EditorialStandardsPage /></SafeRoute>} />
           <Route path="reading-list" element={<SafeRoute fallbackText="Loading Reading List..."><ReadingListPage /></SafeRoute>} />
           <Route path="contribute" element={<SafeRoute fallbackText="Loading..."><ContributePage /></SafeRoute>} />

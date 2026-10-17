@@ -15,7 +15,7 @@ const PrivacyPolicyPage = () => {
         </h1>
         
         <div className="prose prose-invert max-w-none text-gray-300">
-          <p className="text-gray-400">Last Updated: April 27, 2026</p>
+          <p className="text-gray-400">Last Updated: October 17, 2026</p>
 
           <p>
             Welcome to DataEngineer Hub ("we," "us," or "our"). We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about this privacy notice, or our practices with regards to your personal information, please contact us.
@@ -29,6 +29,16 @@ const PrivacyPolicyPage = () => {
             <strong>Information automatically collected:</strong> We automatically collect certain information when you visit, use or navigate the website. This information does not reveal your specific identity (like your name or contact information) but may include device and usage information, such as your IP address, browser and device characteristics, operating system, language preferences, referring URLs, device name, country, location, and other technical information.
           </p>
 
+          <p id="orders">
+            <strong>Orders and payments:</strong> If you buy a sponsorship package, we store the details you enter at
+            checkout (name, email, company, website and notes) together with the order reference, package, amount,
+            tax, currency, payment status and the Dodo Payments payment id. We use them to deliver the placement, send
+            order emails and keep accounting records, and keep them for as long as tax and accounting law requires
+            (up to 8 years), then delete them. We never see or store your card details: you enter them on Dodo
+            Payments' page, and Dodo Payments processes them as merchant of record under its own{' '}
+            <a className="text-blue-400 underline" href="https://dodopayments.com/legal/privacy-policy" rel="noopener noreferrer" target="_blank">privacy policy</a>.
+          </p>
+
           <h2 className="text-xl font-bold text-white mt-8">2. HOW DO WE USE YOUR INFORMATION?</h2>
           <p>
             We use personal information collected via our website for a variety of business purposes, including to send you marketing and promotional communications, to manage user accounts, and to deliver and facilitate delivery of services to the user.
@@ -37,6 +47,11 @@ const PrivacyPolicyPage = () => {
           <h2 className="text-xl font-bold text-white mt-8">3. WILL YOUR INFORMATION BE SHARED WITH ANYONE?</h2>
           <p>
             We only share information with your consent, to comply with laws, to provide you with services, to protect your rights, or to fulfill business obligations. We may process or share your data that we hold based on the following legal basis: Consent, Legitimate Interests, Performance of a Contract, or Legal Obligations.
+          </p>
+          <p>
+            When you pay for a sponsorship, your name and email are shared with Dodo Payments to create the checkout,
+            and Dodo Payments shares the payment result with us. Dodo Payments is the merchant of record for those
+            payments.
           </p>
           
           <h2 id="cookies" className="text-xl font-bold text-white mt-8">4. DO WE USE COOKIES AND OTHER TRACKING TECHNOLOGIES?</h2>

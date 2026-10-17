@@ -46,9 +46,10 @@ const STATIC_PAGES = [
   { url: '/articles', changefreq: 'daily', priority: 0.9, lastmod: 'today' },
   { url: '/about', changefreq: 'monthly', priority: 0.7, lastmod: '2026-03-01' },
   { url: '/contact', changefreq: 'monthly', priority: 0.4, lastmod: '2026-03-01' },
-  { url: '/privacy-policy', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
-  { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
+  { url: '/privacy-policy', changefreq: 'yearly', priority: 0.3, lastmod: '2026-10-17' },
+  { url: '/terms-of-service', changefreq: 'yearly', priority: 0.3, lastmod: '2026-10-17' },
   { url: '/disclaimer', changefreq: 'yearly', priority: 0.3, lastmod: '2025-12-01' },
+  { url: '/refund-policy', changefreq: 'yearly', priority: 0.3, lastmod: '2026-10-17' },
   { url: '/editorial-standards', changefreq: 'yearly', priority: 0.5, lastmod: '2026-08-31' },
   { url: '/contribute', changefreq: 'monthly', priority: 0.5, lastmod: '2026-03-01' },
   // /news is noindexed until the WP news category has dated posts

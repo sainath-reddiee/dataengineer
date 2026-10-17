@@ -48,6 +48,7 @@ const Footer = () => {
       { name: 'Cookie Policy', href: '/privacy-policy#cookies' },
       { name: 'Terms of Service', href: '/terms-of-service' },
       { name: 'Disclaimer', href: '/disclaimer' },
+      { name: 'Refund Policy', href: '/refund-policy' },
       ...(!ADSENSE_REVIEW_MODE ? [
         { name: 'Write for Us', href: '/contribute' },
       ] : []),

@@ -15,7 +15,7 @@ const TermsOfServicePage = () => {
         </h1>
 
         <div className="prose prose-invert max-w-none text-gray-300">
-          <p className="text-gray-400">Last Updated: May 9, 2026</p>
+          <p className="text-gray-400">Last Updated: October 17, 2026</p>
 
           <h2 className="text-xl font-bold text-white mt-8">1. Agreement to Terms</h2>
           <p>
@@ -111,6 +111,22 @@ const TermsOfServicePage = () => {
             <a className="text-blue-400 underline" href="/disclaimer">Disclaimer</a> and{' '}
             <a className="text-blue-400 underline" href="/privacy-policy">Privacy Policy</a> for full details.
           </p>
+
+          <h2 className="text-xl font-bold text-white mt-8">8A. Sponsorships and Payments</h2>
+          <p>
+            Sponsorship packages listed on the <a className="text-blue-400 underline" href="/advertise">Advertise</a> page
+            can be paid by card. Card payments are processed by Dodo Payments as merchant of record: Dodo Payments
+            charges your card, collects any applicable tax and issues the receipt, and its{' '}
+            <a className="text-blue-400 underline" href="https://dodopayments.com/legal/buyer-terms" rel="noopener noreferrer" target="_blank">buyer terms</a>{' '}
+            apply to the purchase alongside these Terms. Prices are shown in USD before tax; applicable VAT, GST or
+            sales tax is added at checkout, and you may be charged in your local currency.
+          </p>
+          <ul>
+            <li>Every package is a one-time payment. Nothing renews automatically.</li>
+            <li>Every placement is labeled "Sponsored", uses nofollow links, and needs your approval of the copy before it goes live.</li>
+            <li>We may decline any placement that does not fit the house rules; a declined placement is refunded in full.</li>
+            <li>Refunds follow the <a className="text-blue-400 underline" href="/refund-policy">Refund Policy</a>.</li>
+          </ul>
 
           <h2 className="text-xl font-bold text-white mt-8">9. Disclaimer of Warranties</h2>
           <p>

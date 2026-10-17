@@ -632,7 +632,7 @@ function normalizeArticleLinks(htmlContent, postSlugs) {
         
         // If the slug does not exist on disk, it's a broken link.
         // Strip the anchor tags and leave the inner text so we don't serve 404s.
-        const essentialPaths = ['/about', '/contact', '/privacy-policy', '/terms-of-service', '/disclaimer', '/editorial-standards', '/contribute', '/newsletter', '/certification', '/rss.xml', '/articles', '/', '/news', '/practice', '/advertise', '/contributors', '/tag', '/tools', '/interview-prep', '/cheatsheets', '/glossary', '/compare'];
+        const essentialPaths = ['/about', '/contact', '/privacy-policy', '/terms-of-service', '/disclaimer', '/refund-policy', '/editorial-standards', '/contribute', '/newsletter', '/certification', '/rss.xml', '/articles', '/', '/news', '/practice', '/advertise', '/contributors', '/tag', '/tools', '/interview-prep', '/cheatsheets', '/glossary', '/compare'];
         const cleanPath = relativePath.trim().replace(/\/$/, '');
         const isEssential = essentialPaths.includes(cleanPath);
         
@@ -768,7 +768,7 @@ const ESSENTIAL_PAGES = [
     description: 'Read the Privacy Policy for DataEngineer Hub. Learn how we collect, use, and protect your personal information.',
     content: `
       <h1>Privacy Policy</h1>
-      <p><strong>Last Updated:</strong> April 2026</p>
+      <p><strong>Last Updated:</strong> October 17, 2026</p>
       <p>DataEngineer Hub ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you visit our website at dataengineerhub.blog.</p>
 
       <h2>Information We Collect</h2>
@@ -777,6 +777,9 @@ const ESSENTIAL_PAGES = [
         <li><strong>Log Data:</strong> When you visit our website, our servers may automatically log standard data provided by your web browser, including your IP address, browser type, pages visited, and the date/time of your visit.</li>
         <li><strong>Cookies:</strong> We use cookies and similar tracking technologies to enhance your browsing experience and analyze site traffic.</li>
       </ul>
+
+      <h2 id="orders">Orders and payments</h2>
+      <p>If you buy a sponsorship package, we store the details you enter at checkout (name, email, company, website and notes) with the order reference, package, amount, tax, currency, payment status and the Dodo Payments payment id. We use them to deliver the placement, send order emails and keep accounting records, and keep them for as long as tax and accounting law requires (up to 8 years). We never see or store card details: Dodo Payments processes them as merchant of record under its own <a href="https://dodopayments.com/legal/privacy-policy" rel="noopener noreferrer">privacy policy</a>. Your name and email are shared with Dodo Payments to create the checkout.</p>
 
       <h2>Google AdSense and DART Cookies</h2>
       <p>We use Google AdSense to display advertisements on our website. Google, as a third-party vendor, uses the DART cookie to serve ads based on your visit to our site and other sites on the Internet. You may opt out of the use of the DART cookie by visiting the <a href="https://adssettings.google.com/" rel="noopener noreferrer">Google Ads Settings</a> page. For how Google uses data on partner sites, see <a href="https://policies.google.com/technologies/partner-sites" rel="noopener noreferrer">Google's partner-sites policy</a>.</p>
@@ -793,7 +796,7 @@ const ESSENTIAL_PAGES = [
       </ul>
 
       <h2>Third-Party Services</h2>
-      <p>We may use third-party services such as Google Analytics and Google AdSense that collect, monitor, and analyze browsing data. These services have their own privacy policies addressing how they use such information.</p>
+      <p>We may use third-party services such as Google Analytics, Google AdSense and Dodo Payments (sponsorship payments only) that collect, monitor, and analyze browsing data. These services have their own privacy policies addressing how they use such information.</p>
 
       <h2>GDPR Compliance (EU Users)</h2>
       <p>If you are a European Union resident, you have certain data protection rights under the General Data Protection Regulation (GDPR). You have the right to access, update, or delete your personal information. You can exercise these rights by contacting us.</p>
@@ -817,7 +820,7 @@ const ESSENTIAL_PAGES = [
     description: 'Read the Terms of Service for DataEngineer Hub. Understand the rules and regulations governing your use of our website.',
     content: `
       <h1>Terms of Service</h1>
-      <p><strong>Last Updated:</strong> September 2025</p>
+      <p><strong>Last Updated:</strong> October 17, 2026</p>
       <p>Welcome to DataEngineer Hub. By accessing and using this website (dataengineerhub.blog), you agree to comply with and be bound by the following terms and conditions.</p>
 
       <h2>Acceptance of Terms</h2>
@@ -836,6 +839,15 @@ const ESSENTIAL_PAGES = [
       <h2>User Conduct</h2>
       <p>You agree not to use the website for any unlawful purpose, attempt to gain unauthorized access to any portion of the website, or interfere with the proper working of the website.</p>
 
+      <h2>Sponsorships and Payments</h2>
+      <p>Sponsorship packages on the <a href="/advertise">Advertise</a> page can be paid by card. Dodo Payments processes card payments as merchant of record: it charges your card, collects any applicable tax and issues the receipt, and its <a href="https://dodopayments.com/legal/buyer-terms" rel="noopener noreferrer">buyer terms</a> apply alongside these Terms. Prices are in USD before tax; VAT, GST or sales tax is added at checkout and you may be charged in your local currency.</p>
+      <ul>
+        <li>Every package is a one-time payment. Nothing renews automatically.</li>
+        <li>Every placement is labeled "Sponsored", uses nofollow links, and needs your approval of the copy before it goes live.</li>
+        <li>We may decline any placement that does not fit the house rules; a declined placement is refunded in full.</li>
+        <li>Refunds follow the <a href="/refund-policy">Refund Policy</a>.</li>
+      </ul>
+
       <h2>Disclaimer of Warranties</h2>
       <p>The content on DataEngineer Hub is provided "as is" without warranties of any kind. While we strive for accuracy, we make no guarantees about the completeness, reliability, or suitability of the information provided.</p>
 
@@ -847,6 +859,43 @@ const ESSENTIAL_PAGES = [
 
       <h2>Contact</h2>
       <p>For questions about these Terms of Service, contact us at <strong>sainath@dataengineerhub.blog</strong>.</p>
+    `
+  },
+  {
+    path: '/refund-policy',
+    title: 'Refund Policy',
+    description: 'Refund policy for paid sponsorship packages on dataengineerhub.blog: full refunds before go-live, how to ask, how long it takes, and the role of Dodo Payments as merchant of record.',
+    content: `
+      <h1>Refund Policy</h1>
+      <p><strong>Last Updated:</strong> October 17, 2026</p>
+
+      <h2>What this covers</h2>
+      <p>This policy covers the paid sponsorship packages listed on the <a href="/advertise">Advertise</a> page: sponsored cards, Tools Hub listings, co-authored integration guides and sponsored announcements. Reading the site is free and nothing else on dataengineerhub.blog is sold.</p>
+
+      <h2>Who you pay</h2>
+      <p>Card payments are processed by Dodo Payments, which acts as the merchant of record. Dodo Payments charges your card, calculates and collects any applicable tax (VAT, GST or sales tax), and sends the tax receipt. Their <a href="https://dodopayments.com/legal/buyer-terms" rel="noopener noreferrer">buyer terms</a> also apply to the purchase. Prices on this site are in USD before tax, and you may be charged in your local currency.</p>
+
+      <h2>Full refund before go-live</h2>
+      <ul>
+        <li>If I decline your placement for any reason, you get a full refund.</li>
+        <li>If you cancel before the placement goes live, you get a full refund.</li>
+        <li>If I cannot publish within the time stated for the package and you do not want to wait, you get a full refund.</li>
+      </ul>
+
+      <h2>After go-live</h2>
+      <p>Once a placement is live, the payment is not refundable, because the work has been delivered. One exception: if I remove a 12-month card or listing early for a reason other than a breach of the <a href="/advertise#rules">house rules</a>, I refund the unused whole months pro rata. Monthly cards do not auto-renew, so there is nothing to cancel.</p>
+
+      <h2>How to ask for a refund</h2>
+      <p>Email <strong>sainath@dataengineerhub.blog</strong> with your order reference (it starts with <code>deh_</code> and is in your confirmation email). I reply within two working days and issue approved refunds through Dodo Payments within five working days. Your bank may take a further 5 to 10 working days to show the money.</p>
+
+      <h2>Tax and currency</h2>
+      <p>A refund returns the full amount you were charged, including tax, to the card you paid with. If you were charged in your local currency, the refund is made in that currency; exchange-rate differences applied by your bank are outside my control.</p>
+
+      <h2>Before a chargeback</h2>
+      <p>Please email me before disputing a charge with your bank. Refunds through Dodo Payments are faster than a chargeback, and a dispute pauses the placement while it is reviewed.</p>
+
+      <h2>Related</h2>
+      <p>See the <a href="/terms-of-service">terms of service</a> and the <a href="/privacy-policy">privacy policy</a> for how order details are stored.</p>
     `
   },
   {
@@ -2961,6 +3010,7 @@ function getSiteFooterHTML() {
           <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy Policy</a></li>
           <li><a href="https://dataengineerhub.blog/terms-of-service">Terms</a></li>
           <li><a href="https://dataengineerhub.blog/disclaimer">Disclaimer</a></li>
+          <li><a href="https://dataengineerhub.blog/refund-policy">Refund Policy</a></li>
           <li><a href="https://dataengineerhub.blog/editorial-standards">Editorial Standards</a></li>
           <li><a href="https://dataengineerhub.blog/about">About</a></li>
           <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
@@ -4097,6 +4147,7 @@ ${CONSENT_MODE_V2_HTML}
           <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy Policy</a></li>
           <li><a href="https://dataengineerhub.blog/terms-of-service">Terms</a></li>
           <li><a href="https://dataengineerhub.blog/disclaimer">Disclaimer</a></li>
+          <li><a href="https://dataengineerhub.blog/refund-policy">Refund Policy</a></li>
           <li><a href="https://dataengineerhub.blog/editorial-standards">Editorial Standards</a></li>
           <li><a href="https://dataengineerhub.blog/about">About</a></li>
           <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
@@ -6999,6 +7050,7 @@ ${CONSENT_MODE_V2_HTML}
           <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy Policy</a></li>
           <li><a href="https://dataengineerhub.blog/terms-of-service">Terms</a></li>
           <li><a href="https://dataengineerhub.blog/disclaimer">Disclaimer</a></li>
+          <li><a href="https://dataengineerhub.blog/refund-policy">Refund Policy</a></li>
           <li><a href="https://dataengineerhub.blog/editorial-standards">Editorial Standards</a></li>
           <li><a href="https://dataengineerhub.blog/about">About</a></li>
           <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>

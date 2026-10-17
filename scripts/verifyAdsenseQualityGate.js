@@ -46,6 +46,7 @@ const mustIndex = [
   '/editorial-standards',
   '/contact',
   '/privacy-policy',
+  '/refund-policy',
   '/cheatsheets',
   '/tools',
   '/certification',
