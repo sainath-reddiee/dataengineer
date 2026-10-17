@@ -37,11 +37,17 @@ const Shell = ({ children, wide = false }) => (
   </>
 );
 
+const MAX_CHECKS = 10;
+const HEADING = 'font-serif text-[34px] font-semibold leading-tight text-ink';
+const BODY = 'mt-4 text-[17px] leading-relaxed text-ink-body';
+
 const OrderStatus = ({ orderRef, providerStatus }) => {
   const [order, setOrder] = useState(null);
   const [checks, setChecks] = useState(0);
+  const [round, setRound] = useState(0);
 
-  // The webhook usually lands within seconds of the redirect; poll briefly.
+  // The webhook usually lands within seconds of the redirect; poll briefly,
+  // and let the buyer start another round if it takes longer.
   useEffect(() => {
     let cancelled = false;
     let timer;
@@ -54,29 +60,33 @@ const OrderStatus = ({ orderRef, providerStatus }) => {
         trackEvent({ action: 'sponsorship_paid', category: 'monetization', label: `${data.package}:${data.plan}` });
         return;
       }
-      if (n < 10 && (!data || data.status === 'pending' || data.status === 'created')) {
+      if (data?.notFound) return;
+      if (n < MAX_CHECKS && (!data || data.status === 'pending' || data.status === 'created')) {
         timer = setTimeout(() => check(n + 1), 3000);
       }
     };
     check(1);
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [orderRef]);
+  }, [orderRef, round]);
 
   const opp = OPPORTUNITIES.find((o) => o.packageKey === order?.package);
   // Dodo appends ?status=failed|cancelled when the buyer backs out; a
   // cancelled checkout may never send a webhook, so trust it unless paid.
   const providerGaveUp = providerStatus === 'failed' || providerStatus === 'cancelled';
-  const status = order?.status !== 'paid' && providerGaveUp ? 'failed' : order?.status;
+  const status = order?.notFound ? 'not_found' : order?.status !== 'paid' && providerGaveUp ? 'failed' : order?.status;
   const waiting = !order || status === 'pending' || status === 'created';
-  const retryPath = order ? `/advertise/checkout?package=${order.package}&plan=${order.plan}` : '/advertise/checkout';
+  const gaveUpChecking = waiting && checks >= MAX_CHECKS;
+  const retryPath = order?.package ? `/advertise/checkout?package=${order.package}&plan=${order.plan}` : '/advertise/checkout';
+  const known = ['paid', 'pending', 'created', 'failed', 'cancelled', 'error', 'expired', 'refunded', 'partially_refunded', 'not_found'];
+  const mail = <a href={`mailto:${CONTACT_EMAIL}`} className={linkClass}>{CONTACT_EMAIL}</a>;
 
   return (
     <Shell>
       <p className="kicker mb-3">Checkout</p>
       {status === 'paid' && (
         <>
-          <h1 className="font-serif text-[34px] font-semibold leading-tight text-ink">Payment received, thank you</h1>
-          <p className="mt-4 text-[17px] leading-relaxed text-ink-body">
+          <h1 className={HEADING}>Payment received, thank you</h1>
+          <p className={BODY}>
             {opp ? `"${opp.title}" is paid.` : 'Your package is paid.'} A confirmation email is on its way, and Dodo Payments sends the tax receipt separately.
           </p>
           <p className="mt-3 text-[17px] leading-relaxed text-ink-body">{NEXT_STEPS[order.package] || NEXT_STEPS.default}</p>
@@ -104,31 +114,59 @@ const OrderStatus = ({ orderRef, providerStatus }) => {
       )}
       {waiting && (
         <>
-          <h1 className="font-serif text-[34px] font-semibold leading-tight text-ink">Confirming your payment…</h1>
-          <p className="mt-4 text-[17px] leading-relaxed text-ink-body" role="status">
-            {checks >= 10 && providerStatus === 'succeeded'
+          <h1 className={HEADING}>Confirming your payment…</h1>
+          <p className={BODY} role="status">
+            {gaveUpChecking && providerStatus === 'succeeded'
               ? 'Dodo Payments reported the payment as successful; the confirmation is taking longer than usual. You will still get an email, and there is no need to pay again.'
-              : checks >= 10
+              : gaveUpChecking
                 ? 'I could not confirm the payment yet. If you were charged, you will get an email shortly; there is no need to pay again.'
                 : 'This usually takes a few seconds.'}
           </p>
+          {gaveUpChecking && (
+            <button
+              type="button"
+              onClick={() => { setChecks(0); setRound((r) => r + 1); }}
+              className="mt-5 inline-flex min-h-11 items-center rounded border border-ink px-5 text-[15px] font-medium text-ink hover:border-rust-600 hover:text-rust-600"
+            >
+              Check again
+            </button>
+          )}
         </>
       )}
-      {(status === 'failed' || status === 'cancelled' || status === 'error') && (
+      {(status === 'failed' || status === 'cancelled' || status === 'error' || status === 'expired') && (
         <>
-          <h1 className="font-serif text-[34px] font-semibold leading-tight text-ink">The payment did not go through</h1>
-          <p className="mt-4 text-[17px] leading-relaxed text-ink-body">
-            Nothing was charged. You can <Link to={retryPath} className={linkClass}>try again</Link> or email{' '}
-            <a href={`mailto:${CONTACT_EMAIL}`} className={linkClass}>{CONTACT_EMAIL}</a> for a PayPal invoice.
+          <h1 className={HEADING}>The payment did not go through</h1>
+          <p className={BODY}>
+            Nothing was charged. You can <Link to={retryPath} className={linkClass}>try again</Link> or email {mail} for a PayPal invoice.
           </p>
         </>
       )}
-      {status === 'refunded' && (
-        <h1 className="font-serif text-[34px] font-semibold leading-tight text-ink">This order was refunded</h1>
+      {(status === 'refunded' || status === 'partially_refunded') && (
+        <>
+          <h1 className={HEADING}>{status === 'refunded' ? 'This order was refunded' : 'This order was partly refunded'}</h1>
+          <p className={BODY}>
+            Dodo Payments returns the money, including any tax, to the card you paid with. Banks usually take 5 to 10 working days to show it.
+            See the <Link to="/refund-policy" className={linkClass}>refund policy</Link>, or email {mail} with any question.
+          </p>
+        </>
+      )}
+      {status === 'not_found' && (
+        <>
+          <h1 className={HEADING}>I could not find this order</h1>
+          <p className={BODY}>
+            Check that the link is complete. If you paid, email {mail} with this reference and I will sort it out; there is no need to pay again.
+          </p>
+        </>
+      )}
+      {order && !waiting && !known.includes(status) && (
+        <>
+          <h1 className={HEADING}>Order status: {String(status).replace(/_/g, ' ')}</h1>
+          <p className={BODY}>If this looks wrong, email {mail} with the reference below.</p>
+        </>
       )}
       <p className="mt-8 text-sm text-ink-faint">
         Order reference <span className="font-mono">{orderRef}</span>
-        {order?.mode === 'test' && ' (test mode, no real charge)'}. Questions: <a href={`mailto:${CONTACT_EMAIL}`} className={linkClass}>{CONTACT_EMAIL}</a>.
+        {order?.mode === 'test' && ' (test mode, no real charge)'}. Questions: {mail}.
       </p>
     </Shell>
   );
@@ -247,7 +285,9 @@ const CheckoutForm = ({ initialPackage, initialPlan }) => {
                 <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 h-4 w-4 shrink-0 accent-rust-600" required />
                 <span>
                   I have read the <Link to="/advertise#rules" className={linkClass}>house rules</Link>: placements are labeled
-                  "Sponsored", links are nofollow, and the copy needs approval before it goes live.
+                  "Sponsored", links are nofollow, and the copy needs approval before it goes live. I agree to the{' '}
+                  <Link to="/terms-of-service" className={linkClass}>terms</Link> and{' '}
+                  <Link to="/refund-policy" className={linkClass}>refund policy</Link>.
                 </span>
               </label>
             </fieldset>
@@ -259,10 +299,11 @@ const CheckoutForm = ({ initialPackage, initialPlan }) => {
               disabled={busy || !selected}
               className="inline-flex min-h-12 w-full items-center justify-center rounded bg-ink px-6 text-[16px] font-medium text-paper hover:bg-rust-600 disabled:opacity-60 sm:w-auto"
             >
-              {busy ? 'Opening secure checkout…' : selected ? `Continue to payment · $${selected.d.price}` : 'Continue to payment'}
+              {busy ? 'Opening secure checkout…' : selected ? `Continue to payment · $${selected.d.price} + tax` : 'Continue to payment'}
             </button>
             <p className="text-sm text-ink-faint">
               You enter card details on Dodo Payments, not on this site. One payment, and a full refund if I decline the placement.
+              Applicable tax (VAT, GST or sales tax) is added at checkout, and you may be charged in your local currency.
               {options?.mode === 'test' && ' Test mode is on: use a Dodo test card, nothing is charged.'}
             </p>
           </form>
@@ -272,9 +313,18 @@ const CheckoutForm = ({ initialPackage, initialPlan }) => {
               <p className="kicker">Order summary</p>
               <p className="mt-2 font-serif text-xl font-semibold leading-snug text-ink">{selected.opp.title}</p>
               <p className="mt-1 text-sm text-ink-muted">{selected.d.desc}</p>
-              <p className="mt-4 flex items-baseline justify-between border-y border-paper-500 py-3">
-                <span className="text-[15px] text-ink-body">Total (USD)</span>
-                <span className="font-mono text-2xl text-ink">${selected.d.price}</span>
+              <div className="mt-4 border-y border-paper-500 py-3">
+                <p className="flex items-baseline justify-between">
+                  <span className="text-[15px] text-ink-body">Price (USD)</span>
+                  <span className="font-mono text-2xl text-ink">${selected.d.price}</span>
+                </p>
+                <p className="mt-1 flex items-baseline justify-between text-[13px] text-ink-muted">
+                  <span>Tax</span>
+                  <span>added at checkout where applicable</span>
+                </p>
+              </div>
+              <p className="mt-2 text-[13px] leading-snug text-ink-muted">
+                Dodo Payments shows the final total, possibly in your local currency, before you pay.
               </p>
               <ul className="mt-4 hidden space-y-2 text-[14px] leading-relaxed text-ink-body lg:block">
                 {selected.opp.bullets.slice(0, 3).map((b) => (

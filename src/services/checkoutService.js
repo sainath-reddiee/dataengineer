@@ -6,7 +6,9 @@ const BASE = `${WORDPRESS_API_URL}/wp-json/dehub/v1`;
 
 export async function getCheckoutOptions() {
   try {
-    const res = await fetch(`${BASE}/checkout/options`);
+    // Fresh `t` for the same reason as getOrderStatus: a cached copy could
+    // keep showing test mode after the switch to live.
+    const res = await fetch(`${BASE}/checkout/options?t=${Date.now()}`, { cache: 'no-store' });
     if (!res.ok) return { enabled: false, plans: [] };
     const data = await res.json();
     return { enabled: Boolean(data.enabled), mode: data.mode, plans: Array.isArray(data.plans) ? data.plans : [] };
@@ -32,6 +34,7 @@ export async function startCheckout(payload) {
 // returning the first "pending" answer; a fresh `t` reaches PHP every poll.
 export async function getOrderStatus(order) {
   const res = await fetch(`${BASE}/checkout/status?order=${encodeURIComponent(order)}&t=${Date.now()}`, { cache: 'no-store' });
+  if (res.status === 404) return { notFound: true };
   if (!res.ok) return null;
   return res.json();
 }

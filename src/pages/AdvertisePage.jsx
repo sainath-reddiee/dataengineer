@@ -29,7 +29,7 @@ const NEWSLETTER = {
 const STEPS = [
   ['Tell me about the product', 'Use the form below or email. A link and one line on who it helps is enough to start.'],
   ['I check the fit', 'Data-engineering tools, courses and services only. You get a yes or a short no within two working days.'],
-  ['Pay in USD', 'By card through the secure checkout (Dodo Payments, receipt included) or a PayPal invoice. If it is not a fit, or you cancel before go-live, you get a full refund.'],
+  ['Pay by card or invoice', 'By card through the secure checkout (Dodo Payments, receipt included; applicable tax is added at checkout) or a PayPal invoice. If it is not a fit, or you cancel before go-live, you get a full refund.'],
   ['Live within 48 hours', 'You get the live URL, UTM-tagged links and a private dashboard link with server-counted impressions and clicks.'],
 ];
 
@@ -54,7 +54,7 @@ const FAQS = [
   {
     question: 'How do I pay?',
     answer:
-      'By card through the checkout on this site, handled by Dodo Payments as merchant of record (they send the tax receipt). You can pay once we agree on the fit, or straight away for an announcement. A PayPal invoice is also fine. Anything I decline is refunded in full.',
+      'By card through the checkout on this site, handled by Dodo Payments as merchant of record (they send the tax receipt). Prices are in USD plus applicable tax, which Dodo adds at checkout, and you may be charged in your local currency. You can pay once we agree on the fit, or straight away for an announcement. A PayPal invoice is also fine. Anything I decline is refunded in full; see the refund policy at dataengineerhub.blog/refund-policy.',
   },
   {
     question: 'How do you report results?',
@@ -298,6 +298,10 @@ const AdvertisePage = () => {
                 </button>
               </li>
             </ol>
+            <p className="mt-4 text-sm text-ink-faint">
+              Prices are in USD plus applicable tax (VAT, GST or sales tax), which Dodo Payments calculates at checkout; you may be
+              charged in your local currency. See the <Link to="/refund-policy" className="underline decoration-paper-600 underline-offset-2 hover:text-rust-600">refund policy</Link>.
+            </p>
           </Section>
 
           <Section id="process" title="How it works">

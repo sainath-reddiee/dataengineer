@@ -103,7 +103,7 @@
           "key": "one_time",
           "label": "Per release",
           "price": 49,
-          "desc": "One release, published permanently. No extra fees."
+          "desc": "One release, published permanently."
         }
       ]
     }
