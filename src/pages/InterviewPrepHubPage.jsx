@@ -44,12 +44,6 @@ const INTERVIEW_ARTICLES = [
       'Questions asked in real senior data engineer loops, a prep checklist, how questions differ by company, and the common mistakes that sink candidates.',
   },
   {
-    slug: 'advanced-snowflake-interview-questions-experienced',
-    title: 'Advanced Snowflake Interview Questions for Experienced Engineers',
-    description:
-      'Architecture and design, performance tuning and cost, ingestion and integration, plus scenario-based problem-solving questions.',
-  },
-  {
     slug: 'snowflake-expert-interview-questions',
     title: 'Snowflake Interview Questions: Expert Level',
     description:
@@ -103,7 +97,6 @@ const TRACKS = [
     items: [
       { slug: 'snowflake-interview-questions', type: 'cheatsheet' },
       { slug: 'snowflake-interview-questions-answers-2026', type: 'article' },
-      { slug: 'advanced-snowflake-interview-questions-experienced', type: 'article' },
       { slug: 'snowflake-expert-interview-questions', type: 'article' },
       { slug: 'snowflake-cost-optimization-interview', type: 'cheatsheet' },
       { slug: 'snowflake-performance-deep-dive-interview', type: 'cheatsheet' },
@@ -581,8 +574,8 @@ export default function InterviewPrepHubPage() {
               <li className="flex gap-3">
                 <span className="shrink-0 w-6 h-6 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center font-semibold">5</span>
                 <div>
-                  <Link to="/articles/advanced-snowflake-interview-questions-experienced" className="text-white font-medium hover:text-amber-300">Advanced Snowflake Interview Questions</Link>
-                  <span className="block text-gray-400">Architecture, tuning, cost, ingestion, and scenario-based problem solving.</span>
+                  <Link to="/articles/snowflake-expert-interview-questions" className="text-white font-medium hover:text-amber-300">Snowflake Expert Interview Questions</Link>
+                  <span className="block text-gray-400">Internals, tuning, credits, pipelines, RBAC, and real-world scenario questions.</span>
                 </div>
               </li>
             </ol>
