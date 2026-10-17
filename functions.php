@@ -4676,6 +4676,19 @@ function dehub_order_paid_emails($order) {
     );
 }
 
+// LiteSpeed Cache ignores Cache-Control on REST responses and shared one
+// cached copy (without the CORS header) across origins, hiding the card
+// buttons. Opt every checkout route out through the plugin's own hook.
+add_filter('rest_pre_dispatch', function ($result, $server, $request) {
+    if (strpos($request->get_route(), '/dehub/v1/checkout') === 0) {
+        do_action('litespeed_control_set_nocache', 'dehub checkout is per-request');
+        if (!defined('DONOTCACHEPAGE')) {
+            define('DONOTCACHEPAGE', true);
+        }
+    }
+    return $result;
+}, 10, 3);
+
 add_action('rest_api_init', function () {
     // Which packages can be paid by card right now. Lets the site hide the
     // card buttons until the Dodo products exist.
@@ -4688,8 +4701,6 @@ add_action('rest_api_init', function () {
                 'mode'    => dehub_dodo_mode(),
                 'plans'   => dehub_dodo_ready() ? array_keys(dehub_dodo_products()) : array(),
             ));
-            // Not cacheable: LiteSpeed stored a copy without the CORS header
-            // (from a request with no Origin), which hid the card buttons.
             $response->header('Cache-Control', 'no-store');
             $response->header('X-LiteSpeed-Cache-Control', 'no-cache');
             return $response;
