@@ -28,8 +28,10 @@ export async function startCheckout(payload) {
   return data;
 }
 
+// The host's LiteSpeed cache keeps REST responses, so a fixed URL would keep
+// returning the first "pending" answer; a fresh `t` reaches PHP every poll.
 export async function getOrderStatus(order) {
-  const res = await fetch(`${BASE}/checkout/status?order=${encodeURIComponent(order)}`, { cache: 'no-store' });
+  const res = await fetch(`${BASE}/checkout/status?order=${encodeURIComponent(order)}&t=${Date.now()}`, { cache: 'no-store' });
   if (!res.ok) return null;
   return res.json();
 }

@@ -4689,6 +4689,16 @@ add_filter('rest_pre_dispatch', function ($result, $server, $request) {
     return $result;
 }, 10, 3);
 
+// Hostinger's LiteSpeed still caches these responses, so make every copy
+// valid for any origin. The routes are public and never use cookies.
+add_filter('rest_pre_serve_request', function ($served, $result, $request) {
+    if (strpos($request->get_route(), '/dehub/v1/checkout') === 0 && !headers_sent()) {
+        header('Access-Control-Allow-Origin: *', true);
+        header_remove('Access-Control-Allow-Credentials');
+    }
+    return $served;
+}, 99, 3); // after core's rest_send_cors_headers (10)
+
 add_action('rest_api_init', function () {
     // Which packages can be paid by card right now. Lets the site hide the
     // card buttons until the Dodo products exist.
