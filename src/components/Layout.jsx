@@ -1,28 +1,15 @@
 // src/components/Layout.jsx
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import MetaTags from '@/components/SEO/MetaTags';
 import ScrollToTop from '@/components/ScrollToTop';
-import AnnouncementBar from '@/components/AnnouncementBar';
 import NewsletterPopup from '@/components/NewsletterPopup';
 
-const ANNOUNCEMENT_BAR_HEIGHT = 40;
-// Keep this key in sync with AnnouncementBar.jsx so Layout can reserve the
-// correct paddingTop synchronously on the first render (avoiding CLS).
-const ANNOUNCEMENT_STORAGE_KEY = 'announcement_dismissed_snowpro-gen-ai-2026';
-
-const readInitialBarVisible = () => {
-  return false;
-};
-
 const Layout = () => {
-  const [isBarVisible, setIsBarVisible] = useState(readInitialBarVisible);
-  const topOffset = isBarVisible ? ANNOUNCEMENT_BAR_HEIGHT : 0;
-
   return (
     <>
       <MetaTags />
@@ -33,9 +20,8 @@ const Layout = () => {
         >
           Skip to main content
         </a>
-        <AnnouncementBar onVisibilityChange={setIsBarVisible} />
-        <Header topOffset={topOffset} />
-        <div style={{ paddingTop: 64 + topOffset }}></div>
+        <Header topOffset={0} />
+        <div style={{ paddingTop: 64 }}></div>
         {/* The 'relative z-0' classes are the crucial fix here */}
         <main id="main-content" tabIndex={-1} className="flex-grow relative z-0 outline-none">
           <Outlet />

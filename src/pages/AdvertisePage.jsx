@@ -10,6 +10,7 @@ import { useStats } from '@/hooks/useStats';
 import advertiseConfig from '@/data/advertiseConfig.json';
 import { useFormSpamGuard } from '@/hooks/useFormSpamGuard';
 import { WORDPRESS_API_URL } from '@/apiConfig';
+import { getCheckoutOptions } from '@/services/checkoutService';
 
 const OPPORTUNITIES = advertiseConfig.opportunities;
 const TECH_STACK = advertiseConfig.techStack || [];
@@ -28,7 +29,7 @@ const NEWSLETTER = {
 const STEPS = [
   ['Tell me about the product', 'Use the form below or email. A link and one line on who it helps is enough to start.'],
   ['I check the fit', 'Data-engineering tools, courses and services only. You get a yes or a short no within two working days.'],
-  ['Invoice in USD', 'PayPal invoice (cards accepted) or bank transfer. Nothing is charged before you approve the copy.'],
+  ['Pay in USD', 'By card through the secure checkout (Dodo Payments, receipt included) or a PayPal invoice. If it is not a fit, or you cancel before go-live, you get a full refund.'],
   ['Live within 48 hours', 'You get the live URL, UTM-tagged links and a private dashboard link with server-counted impressions and clicks.'],
 ];
 
@@ -53,7 +54,7 @@ const FAQS = [
   {
     question: 'How do I pay?',
     answer:
-      'After we agree on the fit and the copy, I send a USD invoice through PayPal (cards accepted) or share bank details. There is no self-serve checkout.',
+      'By card through the checkout on this site, handled by Dodo Payments as merchant of record (they send the tax receipt). You can pay once we agree on the fit, or straight away for an announcement. A PayPal invoice is also fine. Anything I decline is refunded in full.',
   },
   {
     question: 'How do you report results?',
@@ -110,6 +111,7 @@ const AdvertisePage = () => {
   const { totalArticles } = useStats();
   const articleCount = totalArticles || advertiseConfig.inventory.guides;
   const [subscribers, setSubscribers] = useState(null);
+  const [cardPlans, setCardPlans] = useState([]);
 
   const [formData, setFormData] = useState({ name: '', email: '', company: '', website: '', package: 'resource_reference', message: '' });
   const [loading, setLoading] = useState(false);
@@ -124,6 +126,13 @@ const AdvertisePage = () => {
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => { if (!cancelled && data && Number.isFinite(data.subscribers)) setSubscribers(data.subscribers); })
       .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
+  // Card checkout buttons appear only for packages with a Dodo product set up.
+  useEffect(() => {
+    let cancelled = false;
+    getCheckoutOptions().then((data) => { if (!cancelled) setCardPlans(data.enabled ? data.plans : []); });
     return () => { cancelled = true; };
   }, []);
 
@@ -255,13 +264,23 @@ const AdvertisePage = () => {
                     <p className="mt-3 text-sm text-ink-faint">{opp.durations.map((d) => `${d.label}: ${d.desc}`).join(' ')}</p>
                   )}
                   {opp.durations.length === 1 && <p className="mt-3 text-sm text-ink-faint">{opp.durations[0].desc}</p>}
-                  <button
-                    type="button"
-                    onClick={() => choosePackage(opp.packageKey)}
-                    className="mt-4 text-[15px] font-medium text-rust-600 underline decoration-rust-200 underline-offset-4 hover:decoration-rust-500"
-                  >
-                    {opp.cta} →
-                  </button>
+                  <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
+                    <button
+                      type="button"
+                      onClick={() => choosePackage(opp.packageKey)}
+                      className="text-[15px] font-medium text-rust-600 underline decoration-rust-200 underline-offset-4 hover:decoration-rust-500"
+                    >
+                      {opp.cta} →
+                    </button>
+                    {cardPlans.some((plan) => plan.startsWith(`${opp.packageKey}:`)) && (
+                      <Link
+                        to={`/advertise/checkout?package=${opp.packageKey}`}
+                        className="text-[15px] text-ink-muted underline decoration-paper-600 underline-offset-4 hover:text-ink"
+                      >
+                        {opp.packageKey === 'announcement' ? 'Pay now by card' : 'Already agreed? Pay by card'}
+                      </Link>
+                    )}
+                  </div>
                 </li>
               ))}
               <li className="py-6">

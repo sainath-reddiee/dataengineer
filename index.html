@@ -218,181 +218,96 @@
     </script>
     
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      
+      /* Static shell: what every visitor and crawler sees before React mounts.
+         It mirrors the React header and masthead (same fonts, sizes and
+         spacing) so the hand-off is invisible. Keep it visible: hiding it
+         with CSS is what AdSense reviewers snapshot as an empty page. */
+      @font-face { font-family: 'Source Serif 4'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/source-serif-4-600.woff2') format('woff2'); }
+      @font-face { font-family: 'IBM Plex Sans'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/plex-sans-400.woff2') format('woff2'); }
+      @font-face { font-family: 'IBM Plex Sans'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/plex-sans-500.woff2') format('woff2'); }
+      @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/plex-mono-400.woff2') format('woff2'); }
+
+      *, *::before, *::after { box-sizing: border-box; }
       body {
         margin: 0;
-        padding: 0;
-        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-        background: linear-gradient(135deg, #F6F2EB 0%, #FCF4EF 50%, #FCF4EF 100%);
+        font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        background: #FAF8F4;
         color: #1B1A17;
-        line-height: 1.6;
+        line-height: 1.5;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
-      
-      #root {
-        min-height: 100vh;
-      }
-      
-      img {
-        max-width: 100%;
-        height: auto;
-        display: block;
-      }
-      
-      /* ✅ CRITICAL: SEO content visible to bots by default */
+      #root { min-height: 100vh; }
+      img { max-width: 100%; height: auto; display: block; }
+
       html.deh-private-app .seo-fallback,
       html.deh-private-app .seo-articles,
-      html.deh-private-app .seo-author-block {
-        display: none !important;
-      }
+      html.deh-private-app .seo-author-block { display: none !important; }
 
-      .seo-fallback {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 60px 20px;
-        display: block;
-      }
-      
-      .seo-fallback h1 {
-        font-size: 3rem;
-        font-weight: 700;
-        margin-bottom: 1.5rem;
-        background: linear-gradient(135deg, #B4441F 0%, #B4441F 40%, #B4441F 80%, #d97706 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      
-      .seo-fallback p {
-        font-size: 1.25rem;
-        line-height: 1.8;
-        color: #3F3B35;
-        margin-bottom: 2rem;
-      }
-      
-      .seo-fallback .topics {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-top: 3rem;
-      }
-      
-      .seo-fallback .topic-card {
-        background: rgba(27, 26, 23, 0.05);
-        padding: 1.5rem;
-        border-radius: 8px;
-        border: 1px solid rgba(27, 26, 23, 0.1);
-      }
-      
-      .seo-fallback .topic-card h2 {
-        font-size: 1.5rem;
-        color: #B4441F;
-        margin-bottom: 0.5rem;
-      }
-      
-      .seo-fallback .topic-card p {
-        font-size: 1rem;
-        color: #5E584F;
-      }
-      
-      /* SEO fallback stays visible for crawlers/AdSense.
-         React's createRoot().render() naturally replaces #root children.
-         DO NOT add display:none here — it causes AdSense 'Low Value Content' rejections. */
-      
-      /* Loading spinner is never a full-viewport overlay. A covering spinner
-         is what AdSense reviewers snapshot when JS runs before React paints. */
-      .loading-container {
-        display: none;
-      }
-      
-      /* SEO fallback stays visible even during loading for crawlers. */
-      
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-      
-      .loading-spinner {
-        width: 48px;
-        height: 48px;
-        border: 4px solid #B4441F;
-        border-top: 4px solid transparent;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-      
-      .loading-text {
-        color: #9C3A1A;
-        font-weight: 500;
-        margin-top: 20px;
-        font-size: 18px;
-        text-align: center;
-      }
+      .deh-wrap { max-width: 72rem; margin: 0 auto; padding: 0 16px; }
+      @media (min-width: 640px) { .deh-wrap { padding: 0 24px; } }
 
-      /* Site Nav (static, visible to crawlers; hidden when React mounts) */
-      .site-nav { background: rgba(250, 248, 244, 0.8); border-bottom: 1px solid rgba(27, 26, 23,0.1); min-height: 64px; padding: 0 24px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; backdrop-filter: blur(20px); }
-      .site-nav-inner { max-width: 80rem; width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-      .site-nav-brand { color: #1B1A17; font-family: 'Source Serif 4', Georgia, serif; font-weight: 600; font-size: 1.35rem; text-decoration: none; }
-      .site-nav-links { display: flex; flex-wrap: wrap; gap: 4px 8px; list-style: none; padding: 0; margin: 0; }
-      .site-nav-links a { color: #3F3B35; text-decoration: none; font-size: 0.875rem; transition: color 0.2s; border-radius: 0.5rem; padding: 0.5rem 0.75rem; }
-      .site-nav-links a:hover { color: #B4441F; }
-      /* Site Footer */
-      .site-footer { max-width: 900px; margin: 3rem auto 0; padding: 2rem 20px; border-top: 1px solid rgba(27, 26, 23,0.1); text-align: center; font-size: 0.85rem; color: #5E584F; }
-      .site-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; list-style: none; padding: 0; margin: 0 0 0.75rem; }
-      .site-footer-links a { color: #B4441F; text-decoration: none; }
-      .site-footer-links a:hover { text-decoration: underline; }
-      /* Static nav/footer stay visible for crawlers/AdSense. DO NOT hide via CSS. */
-      @media (max-width: 768px) { .site-nav-links { gap: 4px 12px; } }
+      /* Header: matches src/components/Header.jsx (fixed, 64px, ink rule). */
+      .site-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 64px; background: #FAF8F4; border-bottom: 1px solid #1B1A17; }
+      .site-nav-inner { max-width: 72rem; height: 64px; margin: 0 auto; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+      @media (min-width: 640px) { .site-nav-inner { padding: 0 24px; } }
+      .site-nav-brand { font-family: 'Source Serif 4', Georgia, serif; font-size: 21px; font-weight: 600; line-height: 1; letter-spacing: -0.01em; color: #1B1A17; text-decoration: none; white-space: nowrap; }
+      @media (min-width: 640px) { .site-nav-brand { font-size: 23px; } }
+      .site-nav-links { display: none; list-style: none; margin: 0; padding: 0; gap: 4px; }
+      @media (min-width: 1024px) { .site-nav-links { display: flex; } }
+      .site-nav-links a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 10px; font-size: 15px; color: #5E584F; text-decoration: none; }
+      .site-nav-links a:hover { color: #1B1A17; }
+      .deh-nav-spacer { height: 64px; }
 
-      /* Match React hero so the SSG → React swap does not restart LCP */
-      .deh-home-hero { min-height: 22rem; padding: 2.5rem 0 1rem; }
-      .deh-home-hero h1, .seo-fallback h1 {
-        font-family: 'Source Serif 4', Georgia, Cambria, serif;
-        font-size: 2.125rem;
-        line-height: 1.1;
-        font-weight: 600;
-        letter-spacing: -0.01em;
-        color: #1B1A17;
-        margin: 0 0 1rem;
-      }
-      @media (min-width: 640px) { .deh-home-hero h1, .seo-fallback h1 { font-size: 2.25rem; } }
-      @media (min-width: 768px) { .deh-home-hero h1, .seo-fallback h1 { font-size: 3rem; } }
-      @media (min-width: 640px) { .deh-home-hero { min-height: 20rem; } }
-      .deh-home-hero .eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(156, 58, 26,0.8); margin-bottom: 0.75rem; }
-      .deh-home-hero .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.25rem 0 0; }
-      .deh-home-hero .hero-actions a { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; text-decoration: none; }
-      .deh-home-hero .hero-actions .primary { background: linear-gradient(135deg, #F0C6B2, #F0C6B2); color: #1B1A17; }
-      .deh-home-hero .hero-actions .secondary { border: 1px solid rgba(27, 26, 23,0.15); color: #24221E; }
+      /* Masthead: matches src/components/Hero.jsx. */
+      .deh-home-hero { border-bottom: 1px solid #E4DED3; padding: 40px 0 32px; }
+      @media (min-width: 640px) { .deh-home-hero { padding-top: 56px; } }
+      .deh-kicker { margin: 0 0 16px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #B4441F; }
+      .deh-home-hero h1 { max-width: 56rem; margin: 0 0 20px; font-family: 'Source Serif 4', Georgia, Cambria, serif; font-size: 34px; font-weight: 600; line-height: 1.1; color: #1B1A17; }
+      @media (min-width: 640px) { .deh-home-hero h1 { font-size: 46px; } }
+      .deh-home-hero .deh-dek { max-width: 42rem; margin: 0 0 24px; font-size: 17px; line-height: 1.625; color: #33302B; }
+      .deh-inline-link { color: #9C3A1A; text-decoration: underline; text-decoration-color: #F0C6B2; text-underline-offset: 2px; }
+      .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
+      .hero-actions .primary { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; border-radius: 4px; background: #1B1A17; color: #FAF8F4; font-size: 15px; font-weight: 500; text-decoration: none; }
+      .deh-meta { margin: 0; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #77705F; }
+      .hero-actions .secondary { font-size: 15px; color: #2B2925; text-decoration: underline; text-decoration-color: #CFC7B8; text-underline-offset: 4px; }
+
+      /* Below the masthead: same section rhythm as HomePage.jsx. */
+      .deh-sections { padding: 40px 0 64px; }
+      .deh-section { border-top: 2px solid #1B1A17; padding-top: 12px; margin-bottom: 64px; }
+      .deh-section h2 { margin: 0 0 20px; font-family: 'Source Serif 4', Georgia, serif; font-size: 24px; font-weight: 600; line-height: 1.25; color: #1B1A17; }
+      .deh-section p { max-width: 46rem; margin: 0 0 12px; font-size: 17px; line-height: 1.65; color: #33302B; }
+      .deh-topics { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; margin: 0; padding: 0; }
+      .deh-topics a { font-size: 15px; color: #9C3A1A; text-decoration: underline; text-decoration-color: #F0C6B2; text-underline-offset: 3px; }
+      .seo-author-block .author-meta { font-size: 15px; color: #5E584F; }
+
+      /* Article list injected by the static generator: ledger style. */
+      .seo-articles h3 { margin: 28px 0 0; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; color: #9C3A1A; }
+      .seo-articles ul { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid #E4DED3; }
+      .seo-articles li { padding: 16px 0; border-top: 1px solid #E4DED3; }
+      .seo-articles li a { font-family: 'Source Serif 4', Georgia, serif; font-size: 20px; font-weight: 600; line-height: 1.3; color: #1B1A17; text-decoration: none; }
+      .seo-articles li p { margin: 6px 0 0; font-size: 15px; line-height: 1.6; color: #5E584F; }
+      .seo-articles .deh-more { display: inline-block; margin-top: 24px; font-size: 15px; color: #9C3A1A; text-decoration: underline; text-decoration-color: #F0C6B2; text-underline-offset: 3px; }
+
+      .site-footer { border-top: 1px solid #1B1A17; padding: 32px 0 48px; font-size: 14px; color: #5E584F; }
+      .site-footer-links { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; margin: 0 0 12px; padding: 0; }
+      .site-footer-links a { color: #33302B; text-decoration: none; }
+      .site-footer-links a:hover { color: #9C3A1A; }
+      .site-footer p { margin: 0; }
 
       /* Cookie banner lives OUTSIDE #root so first paint includes it (CLS fix). */
       #deh-cookie-banner { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; padding: 1rem; }
       html.deh-need-consent #deh-cookie-banner { display: block; }
-      #deh-cookie-banner .deh-cookie-card { max-width: 56rem; margin: 0 auto; background: #EFEAE1; border: 1px solid rgba(27, 26, 23,0.1); border-radius: 0.75rem; padding: 1rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.45); display: flex; flex-direction: column; gap: 1rem; }
-      #deh-cookie-banner p { margin: 0; font-size: 0.875rem; color: #3F3B35; line-height: 1.5; }
-      #deh-cookie-banner a { color: #B4441F; }
+      #deh-cookie-banner .deh-cookie-card { max-width: 56rem; margin: 0 auto; background: #FFFFFF; border: 1px solid #1B1A17; border-radius: 6px; padding: 1rem; box-shadow: 0 12px 32px -12px rgba(27, 26, 23, 0.35); display: flex; flex-direction: column; gap: 1rem; }
+      #deh-cookie-banner p { margin: 0; font-size: 0.875rem; color: #33302B; line-height: 1.5; }
+      #deh-cookie-banner a { color: #9C3A1A; }
       #deh-cookie-banner .deh-cookie-actions { display: flex; gap: 0.75rem; }
-      #deh-cookie-banner button { min-height: 40px; padding: 0.5rem 1rem; border: 0; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; }
-      #deh-cookie-banner [data-consent="decline"] { background: rgba(27, 26, 23,0.1); color: #3F3B35; }
-      #deh-cookie-banner [data-consent="accept"] { background: #F0C6B2; color: #1B1A17; }
+      #deh-cookie-banner button { min-height: 40px; padding: 0.5rem 1rem; border: 1px solid #CFC7B8; border-radius: 4px; font: inherit; font-size: 0.875rem; font-weight: 500; cursor: pointer; }
+      #deh-cookie-banner [data-consent="decline"] { background: #FAF8F4; color: #33302B; }
+      #deh-cookie-banner [data-consent="accept"] { background: #1B1A17; border-color: #1B1A17; color: #FAF8F4; }
       html.deh-consent-ready #deh-cookie-banner { display: none !important; }
-
-      /* E-E-A-T author/about block on homepage */
-      .seo-author-block { max-width: 1200px; margin: 2rem auto 0; padding: 2rem 20px; background: rgba(27, 26, 23,0.04); border: 1px solid rgba(27, 26, 23,0.08); border-radius: 12px; }
-      .seo-author-block h2 { color: #B4441F; font-size: 1.5rem; margin-bottom: 0.75rem; }
-      .seo-author-block p { color: #3F3B35; font-size: 1rem; line-height: 1.7; margin-bottom: 0.75rem; }
-      .seo-author-block .author-meta { color: #5E584F; font-size: 0.9rem; }
-      .seo-author-block a { color: #B4441F; text-decoration: none; }
-      .seo-author-block a:hover { text-decoration: underline; }
     </style>
     
-    <!-- Inter is loaded from deferred CSS with font-display:optional so the
-         hero H1 (LCP) is not held for a webfont on slow 4G. -->
     
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png">
@@ -425,8 +340,8 @@
   </head>
   <body>
     <div id="root">
-      <!-- ✅ CRITICAL: Static content visible by default for SEO.
-           Hidden via CSS when body.react-loaded is set by App.jsx after React mounts. -->
+      <!-- Static shell, visible to everyone until React replaces it. Styled to
+           match the React page so the swap is not noticeable. -->
       <nav class="site-nav" aria-label="Site navigation">
         <div class="site-nav-inner">
           <a href="https://dataengineerhub.blog" class="site-nav-brand">DataEngineer Hub</a>
@@ -439,23 +354,30 @@
           </ul>
         </div>
       </nav>
-      <div class="seo-fallback deh-home-hero">
-        <p class="eyebrow">Production notes for data engineers</p>
-        <h1>Snowflake, dbt and Airflow, written from real incidents rather than vendor docs.</h1>
+      <div class="deh-nav-spacer"></div>
 
-        <p>
-          Production notes on Snowflake, dbt, Airflow, and the warehouse bill — written by a
-          working data engineer, not recycled vendor docs.
-        </p>
-
-        <div class="hero-actions">
-          <a class="primary" href="/articles">Explore Articles</a>
-          <a class="secondary" href="/tools/sql-playground">SQL Playground</a>
+      <section class="seo-fallback deh-home-hero">
+        <div class="deh-wrap">
+          <p class="deh-kicker">Production notes for data engineers</p>
+          <h1>Snowflake, dbt and Airflow, written from real incidents rather than vendor docs.</h1>
+          <p class="deh-dek">
+            Warehouse bills, broken DAGs and code-review lessons from
+            <a class="deh-inline-link" href="/about">Sainath Reddy</a>, a working data engineer. Every article follows our
+            <a class="deh-inline-link" href="/editorial-standards">editorial standards</a>.
+          </p>
+          <div class="hero-actions">
+            <a class="primary" href="/articles">Browse all articles</a>
+            <a class="secondary" href="/tools/sql-playground">Open the SQL playground</a>
+            <p class="deh-meta">119+ articles · 13+ technologies · updated weekly</p>
+          </div>
         </div>
+      </section>
 
-        <nav aria-label="Main topics">
-          <ul style="list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:0.5rem 1rem;">
-            <li><a href="/articles">All Articles</a></li>
+      <div class="deh-wrap deh-sections">
+        <section class="deh-section" aria-label="Topics">
+          <h2>Topics</h2>
+          <ul class="deh-topics">
+            <li><a href="/articles">All articles</a></li>
             <li><a href="/category/snowflake">Snowflake</a></li>
             <li><a href="/category/databricks">Databricks</a></li>
             <li><a href="/category/aws">AWS</a></li>
@@ -465,57 +387,52 @@
             <li><a href="/category/airflow">Airflow</a></li>
             <li><a href="/category/python">Python</a></li>
             <li><a href="/category/sql">SQL</a></li>
-            <li><a href="/category/developer-productivity">Developer Productivity</a></li>
-            <li><a href="/about">About</a></li>
+            <li><a href="/category/developer-productivity">Developer productivity</a></li>
           </ul>
-        </nav>
+        </section>
+
+        <section class="deh-section seo-author-block" aria-label="About the author">
+          <h2>About the author</h2>
+          <p>
+            Articles on this site are written and maintained by <strong>Sainath Reddy</strong>,
+            a practicing data engineer who builds production data platforms on Snowflake,
+            Databricks, AWS, Azure, GCP, Salesforce Data Cloud, dbt, Apache Airflow and Apache
+            Spark. Every tutorial comes from real engineering work, not reposted material, and is
+            checked before publication for technical accuracy and current vendor behaviour.
+          </p>
+          <p>
+            Coverage spans cloud data warehousing (Snowflake, BigQuery, Redshift), lakehouse
+            architectures (Databricks, Delta Lake, Iceberg), orchestration (Airflow, Snowflake
+            Tasks, Step Functions), transformation (dbt, SQL, PySpark), streaming (Kafka, Kinesis,
+            Snowpipe Streaming), AI on data (Snowflake Cortex, Databricks Mosaic AI, RAG
+            patterns), data quality and governance, FinOps, and certification guidance.
+          </p>
+          <p class="author-meta">
+            More on the <a class="deh-inline-link" href="https://dataengineerhub.blog/about">About page</a>, or
+            <a class="deh-inline-link" href="https://dataengineerhub.blog/contact">get in touch</a>.
+          </p>
+        </section>
+
+        <noscript>
+          <p>
+            You are viewing the static version of DataEngineer Hub. Use the links above to open articles, the
+            <a href="/about">About</a> page, or <a href="/contact">Contact</a>. Interactive tools need JavaScript in a modern browser.
+          </p>
+        </noscript>
       </div>
 
-      <!-- E-E-A-T: Author/about block visible to AdSense reviewers and crawlers -->
-      <section class="seo-author-block" aria-label="About the author">
-        <h2>About the Author</h2>
-        <p>
-          Articles on this site are written and maintained by <strong>Sainath Reddy</strong>,
-          a practicing data engineer with hands-on experience building production data
-          platforms across Snowflake, Databricks, AWS, Azure, GCP, Salesforce Data Cloud,
-          dbt, Apache Airflow, Apache Spark, and the broader modern data stack. Every
-          tutorial is based on real-world engineering work — not reposted material — and is
-          reviewed before publication for technical accuracy and current vendor behaviour.
-        </p>
-        <p>
-          Editorial focus spans cloud data warehousing (Snowflake, BigQuery, Redshift),
-          lakehouse architectures (Databricks, Delta Lake, Iceberg), data orchestration
-          (Airflow, Snowflake Tasks, Step Functions), transformation (dbt, SQL, PySpark),
-          streaming (Kafka, Kinesis, Snowpipe Streaming), AI on data (Snowflake Cortex,
-          Databricks Mosaic AI, RAG patterns), data quality &amp; governance, FinOps, and
-          career &amp; certification guidance for data professionals.
-        </p>
-        <p class="author-meta">
-          Learn more on our
-          <a href="https://dataengineerhub.blog/about">About page</a>
-          or
-          <a href="https://dataengineerhub.blog/contact">contact us</a>.
-        </p>
-      </section>
-
-      <!-- noscript lives OUTSIDE seo-fallback so it is never hidden by the react-loaded class -->
-      <noscript>
-        <p style="margin-top: 2rem; padding: 1rem;">
-          You are viewing the static version of DataEngineer Hub. Use the links above to open articles, the
-          <a href="/about">About</a> page, or <a href="/contact">Contact</a>. Interactive tools need JavaScript in a modern browser.
-        </p>
-      </noscript>
-
       <footer class="site-footer">
-        <ul class="site-footer-links">
-          <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy Policy</a></li>
-          <li><a href="https://dataengineerhub.blog/terms-of-service">Terms</a></li>
-          <li><a href="https://dataengineerhub.blog/disclaimer">Disclaimer</a></li>
-          <li><a href="https://dataengineerhub.blog/about">About</a></li>
-          <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
-          <li><a href="https://dataengineerhub.blog/rss.xml">RSS</a></li>
-        </ul>
-        <p>&copy; 2026 DataEngineer Hub. All rights reserved.</p>
+        <div class="deh-wrap">
+          <ul class="site-footer-links">
+            <li><a href="https://dataengineerhub.blog/privacy-policy">Privacy Policy</a></li>
+            <li><a href="https://dataengineerhub.blog/terms-of-service">Terms</a></li>
+            <li><a href="https://dataengineerhub.blog/disclaimer">Disclaimer</a></li>
+            <li><a href="https://dataengineerhub.blog/about">About</a></li>
+            <li><a href="https://dataengineerhub.blog/contact">Contact</a></li>
+            <li><a href="https://dataengineerhub.blog/rss.xml">RSS</a></li>
+          </ul>
+          <p>&copy; 2026 DataEngineer Hub. All rights reserved.</p>
+        </div>
       </footer>
     </div>
 

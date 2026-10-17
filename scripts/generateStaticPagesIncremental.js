@@ -1241,7 +1241,7 @@ const ESSENTIAL_PAGES = [
         <li>No gambling, crypto trading, loans or products I would not use myself.</li>
         <li>One sponsor per page; sponsors never decide what articles say.</li>
       </ul>
-      <p>Payment is by PayPal invoice in USD (cards accepted). Cancel before go-live for a full refund. Send an inquiry with the form on this page or email <a href="mailto:sainath@dataengineerhub.blog">sainath@dataengineerhub.blog</a>. Guest tutorials are free and editorial: see <a href="/contribute">Write for us</a>.</p>
+      <p>Payment is in USD, by card through the secure checkout (Dodo Payments) or a PayPal invoice. Anything I decline, or you cancel before go-live, is refunded in full. Send an inquiry with the form on this page or email <a href="mailto:sainath@dataengineerhub.blog">sainath@dataengineerhub.blog</a>. Guest tutorials are free and editorial: see <a href="/contribute">Write for us</a>.</p>
     `
   },
   {
@@ -4338,49 +4338,40 @@ function generateHomepageEnhancement(allArticleSummaries, categories) {
     articlesByCategory[catName].push(article);
   }
 
-  // Build rich HTML content
+  // Ledger-style list, styled by the shell CSS in index.html so it matches
+  // the React homepage instead of flashing a different design.
   let articlesHTML = `
-        <div class="seo-articles" style="margin-top: 3rem;">
-          <p style="color: #3F3B35; text-align: center; margin-bottom: 2rem; font-size: 1.05rem; max-width: 46rem; margin-left: auto; margin-right: auto; line-height: 1.6;">
-            Written by <a href="https://dataengineerhub.blog/about" style="color: #B4441F;">Sainath Reddy</a>, a data engineer in Hyderabad.
-            These are production notes — warehouse cost incidents, dbt review comments, Cortex token bills — not rewritten vendor docs.
-            Read the <a href="https://dataengineerhub.blog/editorial-standards" style="color: #B4441F;">editorial standards</a>
-            or skip to the <a href="https://dataengineerhub.blog/articles" style="color: #B4441F;">article library</a>.
-          </p>
-          <h2 style="font-size: 2rem; color: #9C3A1A; margin-bottom: 1.5rem; text-align: center;">Latest Data Engineering Articles</h2>
-          <p style="color: #3F3B35; text-align: center; margin-bottom: 2rem; font-size: 1.1rem;">
-            Explore our comprehensive collection of ${allArticleSummaries.length} in-depth tutorials and guides covering 
-            Snowflake, Apache Spark, dbt, Airflow, Python, SQL, and modern data engineering practices.
+        <div class="deh-section seo-articles">
+          <h2>Latest articles</h2>
+          <p>
+            Production notes on warehouse cost incidents, dbt review comments and Cortex token bills,
+            written by <a class="deh-inline-link" href="https://dataengineerhub.blog/about">Sainath Reddy</a>, a data engineer in Hyderabad.
+            ${allArticleSummaries.length} tutorials so far; read the
+            <a class="deh-inline-link" href="https://dataengineerhub.blog/editorial-standards">editorial standards</a>.
           </p>`;
 
-  // Show articles grouped by top categories (limited to prevent excessive DOM complexity > 1,500 nodes)
+  // Top categories only, to keep the DOM under about 1,500 nodes.
   const sortedCategories = Object.entries(articlesByCategory)
     .sort((a, b) => b[1].length - a[1].length)
     .slice(0, 6);
 
   for (const [catName, articles] of sortedCategories) {
     articlesHTML += `
-          <div style="margin-bottom: 2rem;">
-            <h3 style="color: #B4441F; font-size: 1.4rem; margin-bottom: 1rem; border-bottom: 1px solid rgba(27, 26, 23,0.1); padding-bottom: 0.5rem;">${catName} (${articles.length} articles)</h3>
-            <ul style="list-style: none; padding: 0;">`;
-
+          <h3>${catName} · ${articles.length} articles</h3>
+          <ul>`;
     for (const article of articles.slice(0, 4)) {
       articlesHTML += `
-              <li style="margin-bottom: 0.8rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(27, 26, 23,0.05);">
-                <a href="https://dataengineerhub.blog/articles/${article.slug}" style="color: #2F2C27; text-decoration: none; font-size: 1.05rem; font-weight: 500;">${escapeHtml(article.title)}</a>
-                ${article.excerpt ? `<p style="color: #5E584F; font-size: 0.9rem; margin-top: 0.3rem; line-height: 1.5;">${escapeHtml(article.excerpt)}</p>` : ''}
-              </li>`;
+            <li>
+              <a href="https://dataengineerhub.blog/articles/${article.slug}">${escapeHtml(article.title)}</a>
+              ${article.excerpt ? `<p>${escapeHtml(article.excerpt)}</p>` : ''}
+            </li>`;
     }
-
     articlesHTML += `
-            </ul>
-          </div>`;
+          </ul>`;
   }
 
   articlesHTML += `
-          <div style="text-align: center; margin-top: 2rem;">
-            <a href="https://dataengineerhub.blog/articles" style="display: inline-block; padding: 12px 32px; background: linear-gradient(135deg, #E2A487, #E2A487); color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">Browse All ${allArticleSummaries.length} Articles</a>
-          </div>
+          <a class="deh-more" href="https://dataengineerhub.blog/articles">Browse all ${allArticleSummaries.length} articles</a>
         </div>`;
 
   return articlesHTML;
@@ -7711,6 +7702,13 @@ function buildPracticeQuestionPreview(quizSlug) {
           } else {
             console.log(`   âœ“ Homepage already enhanced`);
           }
+          // Same numbers the React masthead shows (useStats), so the line
+          // does not change when React takes over.
+          const liveCategoryCount = categories.filter((cat) => cat.name !== 'Uncategorized' && cat.count > 0).length;
+          homepageHTML = homepageHTML.replace(
+            /<p class="deh-meta">[^<]*<\/p>/,
+            `<p class="deh-meta">${Math.max(allArticleSummaries.length, 115)}+ articles · ${liveCategoryCount || 15}+ technologies · updated weekly</p>`
+          );
           homepageHTML = cleanHomepagePaintHtml(homepageHTML);
 
           // Stamp the actual build time so bots see a freshness signal

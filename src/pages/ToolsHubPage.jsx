@@ -515,7 +515,7 @@ export default function ToolsHubPage() {
               engineering best practices — built for engineers shipping to production.
             </p>
             <Link
-              to="/blog"
+              to="/articles"
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors"
             >
               Browse All Articles

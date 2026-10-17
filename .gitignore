@@ -35,3 +35,9 @@ public/duckdb/
 # Don't ignore example
 !.env.example
 
+
+# Local build and lint logs
+build.err
+build.out
+lint_output.txt
+citation-optimization-report.json
