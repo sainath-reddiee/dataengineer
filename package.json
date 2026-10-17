@@ -12,7 +12,7 @@
     "build:full": "npm run build:vite && node scripts/generateStaticPagesIncremental.js && npm run faq-schema",
     "build:force": "npm run build:vite && node scripts/generateStaticPagesIncremental.js --force && npm run faq-schema",
     "build:categories": "node scripts/generateStaticPagesIncremental.js --force && npm run faq-schema",
-    "build:verify": "node scripts/verifyNoBundledSecrets.js && node scripts/verifyCheckout.js && node scripts/verifyAdsenseQualityGate.js && node scripts/verifyBuild.js",
+    "build:verify": "node scripts/verifyNoBundledSecrets.js && node scripts/verifyCheckout.js && npm run -s test:community && node scripts/verifyAdsenseQualityGate.js && node scripts/verifyBuild.js",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "sitemap:generate": "node scripts/generateSitemap.js",
@@ -54,7 +54,8 @@
     "pseo:search-index": "node scripts/generate-search-index.js",
     "pseo:merge": "node scripts/merge-pseo-data.cjs",
     "test:secrets": "node scripts/verifyNoBundledSecrets.js",
-    "test:checkout": "node scripts/verifyCheckout.js"
+    "test:checkout": "node scripts/verifyCheckout.js",
+    "test:community": "node scripts/verifyMockExam.js"
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "^1.33.1-dev45.0",

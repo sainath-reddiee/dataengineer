@@ -25,6 +25,7 @@ const mustNoindex = [
   '/compare/airflow-vs-prefect',
   '/compare/snowflake-vs-databricks',
   '/practice',
+  '/practice/snowpro-core/mock-exam',
   '/interview-prep',
   '/category/snowflake',
   '/cheatsheets/snowflake-interview-questions',
@@ -37,6 +38,7 @@ const mustIndex = [
   '/about',
   '/editorial-standards',
   '/certification',
+  '/refund-policy',
   ...ADSENSE_REVIEW_CHEATSHEETS.slice(0, 3).map((slug) => `/cheatsheets/${slug}`),
   ...ADSENSE_REVIEW_TOOLS.slice(0, 3).map((slug) => `/tools/${slug}`),
 ];

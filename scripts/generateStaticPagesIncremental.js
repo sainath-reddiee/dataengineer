@@ -10,6 +10,7 @@ import { analyzeArticleFaqs, renderArticleFaqHtml, renderArticleFaqSchema } from
 import { enhanceArticleCodeBlocks } from '../src/utils/articleCodeBlocks.js';
 import { injectArticleContextualLinks } from '../src/data/articleContextualLinks.js';
 import { cleanHomepagePaintHtml } from './deferRenderBlockingCss.js';
+import { buildCommunityPages } from './lib/communityPages.js';
 
 // Monkey-patch fs.writeFileSync to automatically clean up UTF-8 mojibake in generated HTML files
 const originalWriteFileSync = fs.writeFileSync;
@@ -2432,6 +2433,9 @@ const ESSENTIAL_PAGES = [
     `
   }
 ];
+
+// Mock exams, roadmaps, interview bank, estimator v2 (scripts/lib/communityPages.js).
+ESSENTIAL_PAGES.push(...buildCommunityPages());
 
 // ============================================================================
 // CACHE MANAGEMENT

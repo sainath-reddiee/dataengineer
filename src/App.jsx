@@ -77,6 +77,7 @@ const PracticeHubPage = lazy(() => import('./pages/PracticeHubPage'));
 const PracticeQuizPage = lazy(() => import('./pages/PracticeQuizPage'));
 const PracticeTopicPage = lazy(() => import('./pages/PracticeTopicPage'));
 const PracticeQuestionPage = lazy(() => import('./pages/PracticeQuestionPage'));
+const PracticeMockExamPage = lazy(() => import('./pages/PracticeMockExamPage'));
 
 // Not Found Page
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
@@ -379,6 +380,7 @@ function App() {
           <Route path="interview-prep" element={<SafeRoute fallbackText="Loading Interview Prep Hub..."><InterviewPrepHubPage /></SafeRoute>} />
           <Route path="practice" element={<SafeRoute fallbackText="Loading Practice Tests..."><PracticeHubPage /></SafeRoute>} />
           <Route path="practice/:slug" element={<SafeRoute fallbackText="Loading Quiz..."><PracticeQuizPage /></SafeRoute>} />
+          <Route path="practice/:slug/mock-exam" element={<SafeRoute fallbackText="Loading Mock Exam..."><PracticeMockExamPage /></SafeRoute>} />
           <Route path="practice/:slug/topics/:topicSlug" element={<SafeRoute fallbackText="Loading Topic..."><PracticeTopicPage /></SafeRoute>} />
           <Route path="practice/:slug/q/:questionSlug" element={<SafeRoute fallbackText="Loading Question..."><PracticeQuestionPage /></SafeRoute>} />
           <Route path="about" element={<SafeRoute fallbackText="Loading About..."><AboutPage /></SafeRoute>} />

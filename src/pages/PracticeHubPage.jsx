@@ -323,6 +323,25 @@ const PracticeHubPage = () => {
             })}
           </section>
 
+          <section aria-labelledby="mock-heading" className="mb-12 bg-slate-900/60 border border-slate-800 rounded-xl p-6">
+            <h2 id="mock-heading" className="text-xl font-bold text-white mb-1">Timed mock exams</h2>
+            <p className="text-sm text-slate-400 mb-4">
+              Domain-weighted questions under the official clock, no feedback until you submit, then a full answer review.
+            </p>
+            <ul className="flex flex-wrap gap-3">
+              {quizzes.map((q) => (
+                <li key={q.slug}>
+                  <Link
+                    to={`/practice/${q.slug}/mock-exam`}
+                    className="inline-flex items-center px-4 py-2 rounded-lg border border-slate-700 hover:border-blue-400 bg-slate-800/60 text-sm text-slate-200"
+                  >
+                    {q.shortTitle} mock exam &rarr;
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+
           {/* FAQ section — collapsible, searchable, categorized, deep-linkable */}
           <section
             id="faq"

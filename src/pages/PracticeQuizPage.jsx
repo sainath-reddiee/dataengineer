@@ -127,6 +127,16 @@ const PracticeQuizPage = () => {
 
               {mode === 'topic' && null}
 
+              <Link
+                to={`/practice/${slug}/mock-exam`}
+                className="block mb-8 bg-slate-900/80 border border-slate-700 hover:border-blue-400 rounded-xl p-5 transition-colors"
+              >
+                <div className="text-white font-semibold">Timed mock exam &rarr;</div>
+                <div className="text-sm text-slate-400 mt-1">
+                  Quick, Standard or Full length at the official pace, domain-weighted, with a full answer review at the end.
+                </div>
+              </Link>
+
               <section className="bg-slate-900/60 border border-slate-800 rounded-xl p-6">
                 <h2 className="text-white font-semibold mb-3">Exam Domains</h2>
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-slate-300">

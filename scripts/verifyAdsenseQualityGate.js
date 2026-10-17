@@ -24,6 +24,8 @@ const mustNoindex = [
   '/interview-prep',
   '/practice',
   '/practice/snowpro-core',
+  '/practice/snowpro-core/mock-exam',
+  '/practice/aws-de-associate/mock-exam',
   '/advertise',
   '/contribute',
   '/contributors',

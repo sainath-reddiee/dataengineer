@@ -14,6 +14,7 @@ const QuestionCard = ({
   onSubmit,
   showFeedback = true, // false in exam mode
   quizSlug,
+  hideSubmit = false, // mock exams submit once at the end
 }) => {
   if (!question) return null;
 
@@ -85,7 +86,7 @@ const QuestionCard = ({
         })}
       </ul>
 
-      {!submitted && (
+      {!submitted && !hideSubmit && (
         <div className="mt-6 flex justify-end">
           <button
             type="button"
