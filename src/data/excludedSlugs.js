@@ -15,6 +15,12 @@ export const EXCLUDED_ARTICLE_SLUGS = [
   'snowflake-performance',
   'snowflake-performance-tuning-techniques',
   'loading-data-from-s3-to-snowflake',
+  'dbt-state-skip-unchanged-nodes',
+  'snowflake-mcp-server-agentic-ai-guide-2025',
+  'advanced-snowflake-interview-questions-experienced',
+  'snowflake-aiceberg-v3-migration-guide',
+  'airflow-dbt-snowflake-orchestration-guide',
+  'snowflake-cortex-token-usage-monitoring',
 ];
 
 export function isExcludedArticleSlug(slug) {

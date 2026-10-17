@@ -1,6 +1,6 @@
 # Editorial worklist
 
-Generated 2026-10-16 by `npm run content:audit` from 118 published posts.
+Generated 2026-10-17 by `npm run content:audit` from 118 published posts.
 Highest score first: rework those posts before the next AdSense application.
 
 - **Rework first** (score 6+): 57 posts

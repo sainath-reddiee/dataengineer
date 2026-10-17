@@ -1,6 +1,6 @@
 # DataEngineer Hub: roadmap to AdSense approval and a top-tier site
 
-Last updated 2026-10-16. Work top to bottom; each phase unlocks the next.
+Last updated 2026-10-17. Work top to bottom; each phase unlocks the next.
 "You" means a step only the site owner can do (accounts, writing). "Claude" means code work in this repo.
 
 ## Phase 0: Stop the self-inflicted damage (done, on branch `fix/adsense-one-render-noindex`)
@@ -28,10 +28,21 @@ Last updated 2026-10-16. Work top to bottom; each phase unlocks the next.
 AdSense "low value content" is a judgement on originality and usefulness, not word count.
 
 1. Work through `plans/editorial-worklist.md`, starting with the 57 "Rework first" posts. Target: the top 20 before reapplying.
+   - 2026-10-17: copy-edit drafts for the top 20 are in `plans/rework/<slug>.md`. Each keeps your words and claims and fixes headings, filler, em-dashes and unexplained code. For each one: fill every `[ADD YOUR OWN: ...]` marker with your own screenshot, number or error, check the facts listed in its editor notes, then paste it into the WordPress editor (it converts Markdown to blocks) and update the post.
 2. For every reworked post, add first-hand evidence: your own screenshots, query profiles, measured costs, and errors you hit.
 3. Rewrite in your own voice. Cut stock phrases, most em-dashes, and templated TL;DR blocks.
 4. Give posts real H2 section headings (24 posts have fewer than 3).
-5. Merge overlapping posts on the same topic (Snowflake Time Travel, Cortex, cost optimisation) and 301 the weaker URL.
+5. Merge overlapping posts on the same topic and 301 the weaker URL.
+   - Done 2026-10-17 (301 in `.htaccess`, `redirects.json`, `excludedSlugs.js`):
+     - `dbt-state-skip-unchanged-nodes` to `dbt-state-skip-unchanged-models`
+     - `snowflake-mcp-server-agentic-ai-guide-2025` to `snowflake-mcp-server-guide`
+     - `advanced-snowflake-interview-questions-experienced` to `snowflake-expert-interview-questions`
+     - `snowflake-aiceberg-v3-migration-guide` to `native-tables-to-dynamic-iceberg-v3-snowflake`
+     - `airflow-dbt-snowflake-orchestration-guide` to `snowflake-dbt-projects-airflow-orchestration`
+     - `snowflake-cortex-token-usage-monitoring` to `snowflake-cortex-ai-hidden-token-costs`
+   - You: once the keeper drafts are pasted in (two of them already fold in the merged post's unique section), set the six merged posts to Draft in WordPress. The redirects keep working either way.
+   - Still overlapping, left as separate posts for now: the two Time Travel posts, the two zero-copy cloning posts, the two SQL interview posts.
+5a. Thin posts (under 800 prose words) are noindexed and, since 2026-10-17, left out of every article list on the site (`src/data/listingHoldouts.js`). A post comes back to the lists by itself once you expand it past 800 words. Currently 9: `snowflake-unique-aggregations-hidden-functions`, `mastering-real-time-etl-with-google-cloud-dataflow`, `snowflake-streams-tasks-pipeline-guide`, `data-pipelines-python`, `snowpro-specialty-gen-ai-practice-exams`, `automated-etl-airflow-python`, `build-databricks-ai-agent-gpt5-guide`, `querying-data-in-snowflake`, `snowflake-intelligence-guide-setup-optimization`. Expand the ones you care about; unpublish the rest.
 6. Decide the future of the glossary/compare/quiz/calculator inventory: keep only what you would personally vouch for, and delete the rest (410) instead of hiding it.
 7. Strengthen the About page: real photo, LinkedIn, employer history or projects, and why you write.
 8. Done (2026-10-17): deleted `.github/workflows/blog-automation.yml`, the unused Gemini placeholder; articles are written by hand. Its 15 GitHub secrets can now be removed in the repo settings (list in [dodo-config.md](dodo-config.md#github-secrets)).
@@ -58,8 +69,13 @@ AdSense "low value content" is a judgement on originality and usefulness, not wo
 ## Phase 5: Compliance, then reapply (You and Claude)
 
 1. Replace the custom cookie banner with AdSense's own "Privacy & messaging" GDPR message (a Google-certified consent platform, required for EEA/UK/Switzerland traffic).
+   - You, in AdSense: Privacy & messaging > European regulations > Create message. Select dataengineerhub.blog, language English, privacy policy URL `https://dataengineerhub.blog/privacy-policy`, user choices "Consent" and "Manage options" (add "Do not consent" too), then Publish. If the site cannot be selected yet because it is not approved, do this right after approval: ads do not serve before then anyway.
+   - Optional: Privacy & messaging > US state regulations, same site.
+   - Claude, the same day: remove the custom banner (`#deh-cookie-banner` in `index.html` and `src/components/CookieConsent.jsx`), keep the Consent Mode defaults, add a footer "Privacy settings" link that reopens Google's message, and update the cookie section of the Privacy Policy. Two banners must never show together.
+   - The consent banner is a compliance requirement for serving ads in Europe. It is not why the site was rejected for low value content.
 2. Make sure the AdSense code is present on the homepage as Google's standard tag (Claude).
-3. Reapply only when all of these are true:
+3. Code freeze from 2026-10-17: no new features, layout changes, URL changes or redirects until the decision. Only post edits in WordPress, the consent cutover and fixes for anything broken. Earliest sensible reapply: 2026-11-07 to 2026-11-14, if the top 20 are done.
+4. Reapply only when all of these are true:
    - The live check passes.
    - Search Console shows the template pages excluded.
    - The top 20 posts are reworked.

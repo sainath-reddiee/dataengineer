@@ -127,6 +127,7 @@ import {
   countIndexableWords,
 } from '../src/data/adsenseQualityGate.js';
 import { pruneSitemaps } from './pruneSitemapNoindex.js';
+import { isListableArticle } from '../src/data/listingHoldouts.js';
 
 function countPlainWords(...parts) {
   const text = parts
@@ -7321,8 +7322,10 @@ async function buildIncremental(options = {}) {
     // Populate post slugs for link normalization
     posts.forEach(p => globalPostSlugs.add(p.slug));
 
-    // Build article list for "More Articles" section and listing pages
-    allArticleSummaries = posts.map(p => ({
+    // Build article list for "More Articles" section and listing pages.
+    // Merged and thin posts keep their own page but stay out of every list
+    // (same rule as the React lists, src/data/listingHoldouts.js).
+    allArticleSummaries = posts.filter(p => isListableArticle(p.slug, p.content?.rendered)).map(p => ({
       slug: p.slug,
       title: stripHTML(p.title.rendered),
       excerpt: truncateAtSentence(stripHTML(p.excerpt.rendered), 200),
