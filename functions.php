@@ -28,11 +28,20 @@ function dehub_cors_allowed_origin() {
         return $origin;
     }
 
-    if (preg_match('#^https?://(localhost|127\.0\.0\.1)(:\d+)?$#', $origin)) {
+    // Any localhost port only on a local WordPress, never in production.
+    if (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'local'
+        && preg_match('#^https?://(localhost|127\.0\.0\.1)(:\d+)?$#', $origin)) {
         return $origin;
     }
 
     return '';
+}
+
+// CORS applies to the REST API only. wp-admin, admin-ajax and wp-login must
+// never be readable cross-origin.
+function dehub_is_rest_request_uri() {
+    $uri = isset($_SERVER['REQUEST_URI']) ? (string) $_SERVER['REQUEST_URI'] : '';
+    return strpos($uri, '/wp-json/') !== false || isset($_GET['rest_route']);
 }
 
 function dehub_send_cors_headers($exit_on_options = true) {
@@ -45,11 +54,12 @@ function dehub_send_cors_headers($exit_on_options = true) {
     }
 
     $origin = dehub_cors_allowed_origin();
-    // Never pair Access-Control-Allow-Origin: * with Allow-Credentials: true.
-    // Browsers reject that combination, which is what broke admin contributor calls.
+    // No Allow-Credentials: the site never sends WordPress cookies
+    // cross-origin (admin calls use an Application Password header), and
+    // credentialed CORS would let any script on the public site act as a
+    // logged-in WordPress user.
     if ($origin) {
         header('Access-Control-Allow-Origin: ' . $origin);
-        header('Access-Control-Allow-Credentials: true');
         header('Vary: Origin');
     }
 
@@ -65,8 +75,19 @@ function dehub_send_cors_headers($exit_on_options = true) {
 }
 
 function handle_cors_requests() {
-    dehub_send_cors_headers(true);
+    if (dehub_is_rest_request_uri()) {
+        dehub_send_cors_headers(true);
+    }
 }
+
+// WordPress core's rest_send_cors_headers() adds Allow-Credentials on every
+// REST response; drop it after core runs (priority 10).
+add_filter('rest_pre_serve_request', function ($served) {
+    if (!headers_sent()) {
+        header_remove('Access-Control-Allow-Credentials');
+    }
+    return $served;
+}, 100);
 
 remove_action('init', 'handle_cors_requests');
 add_action('init', 'handle_cors_requests', 1);
@@ -280,10 +301,15 @@ function dehub_get_contributors_endpoint($request) {
         $data[] = dehub_public_guest_author($g);
     }
 
-    // Fetch WordPress users
+    // Fetch WordPress users. Anonymous callers only see people who have
+    // published posts; choosing roles (e.g. administrator) needs edit_users.
     $args = [];
-    if (!empty($roles)) {
-        $args['role__in'] = explode(',', $roles);
+    if (current_user_can('edit_users')) {
+        if (!empty($roles)) {
+            $args['role__in'] = array_map('sanitize_key', explode(',', $roles));
+        }
+    } else {
+        $args['has_published_posts'] = ['post'];
     }
     if (!empty($slug)) {
         $args['search'] = $slug;
@@ -422,11 +448,22 @@ add_action( 'edit_user_profile_update', 'dehub_save_author_social_fields' );
 function dehub_save_author_social_fields( $user_id ) {
     if ( ! current_user_can( 'edit_user', $user_id ) ) return;
 
+    // URL fields accept only http(s): a javascript: link here would run on the
+    // public contributors page. twitter_url may also be a bare @handle.
+    $url_fields = [ 'linkedin_url', 'github_url', 'author_avatar_url' ];
     foreach ( [ 'linkedin_url', 'twitter_url', 'job_title', 'github_url', 'author_avatar_url' ] as $field ) {
-        if ( isset( $_POST[ $field ] ) ) {
-            $value = sanitize_text_field( $_POST[ $field ] );
-            update_user_meta( $user_id, $field, $value );
+        if ( ! isset( $_POST[ $field ] ) ) {
+            continue;
         }
+        $raw = trim( wp_unslash( $_POST[ $field ] ) );
+        if ( in_array( $field, $url_fields, true ) ) {
+            $value = esc_url_raw( $raw, [ 'http', 'https' ] );
+        } elseif ( $field === 'twitter_url' ) {
+            $value = preg_match( '/^@?[A-Za-z0-9_]{1,30}$/', $raw ) ? $raw : esc_url_raw( $raw, [ 'http', 'https' ] );
+        } else {
+            $value = sanitize_text_field( $raw );
+        }
+        update_user_meta( $user_id, $field, $value );
     }
 }
 // ============================================================================
@@ -1550,6 +1587,21 @@ function handle_newsletter_subscription($request) {
         return new WP_Error('invalid_email', 'Invalid email address', array('status' => 400));
     }
 
+    // Bots fill hidden fields; real forms leave them empty. Pretend success.
+    if ((string) $request->get_param('company_url') !== '' || (string) $request->get_param('website') !== '') {
+        return array('success' => true, 'already' => false, 'pending' => true, 'message' => 'Check your inbox to confirm.');
+    }
+
+    // Each request may send a confirmation email from the site mailbox, so cap
+    // both per visitor and per day; a flood could get the mailbox suspended.
+    $ip_key = 'dehub_nl_ip_' . md5(dehub_client_ip());
+    $day_key = 'dehub_nl_day_' . gmdate('Ymd');
+    if ((int) get_transient($ip_key) >= 5 || (int) get_transient($day_key) >= 300) {
+        return new WP_Error('rate_limited', 'Too many sign-ups right now. Please try again later.', array('status' => 429));
+    }
+    set_transient($ip_key, (int) get_transient($ip_key) + 1, HOUR_IN_SECONDS);
+    set_transient($day_key, (int) get_transient($day_key) + 1, DAY_IN_SECONDS);
+
     global $wpdb;
     $table_name = dehub_newsletter_table_name();
     $row = $wpdb->get_row($wpdb->prepare("SELECT id, status, token FROM $table_name WHERE email = %s", $email));
@@ -1607,10 +1659,9 @@ function register_newsletter_brevo_status_endpoint() {
     ));
 }
 
+// Brevo diagnostics show account details, so only a logged-in admin (or the
+// export token holder) may read them, even with DEHUB_NEWSLETTER_DEBUG on.
 function dehub_newsletter_debug_allowed() {
-    if (defined('DEHUB_NEWSLETTER_DEBUG') && DEHUB_NEWSLETTER_DEBUG) {
-        return true;
-    }
     return dehub_newsletter_export_allowed();
 }
 
@@ -1706,10 +1757,18 @@ function handle_newsletter_brevo_status() {
 }
 
 function dehub_newsletter_export_allowed() {
+    // Subscriber data must never sit in a LiteSpeed or browser cache.
+    do_action('litespeed_control_set_nocache', 'dehub newsletter export');
+    if (!defined('DONOTCACHEPAGE')) {
+        define('DONOTCACHEPAGE', true);
+    }
+    nocache_headers();
     if (current_user_can('manage_options')) {
         return true;
     }
-    $token = isset($_GET['token']) ? sanitize_text_field(wp_unslash($_GET['token'])) : '';
+    // Prefer the X-Export-Token header (kept out of URLs and logs); ?token= still works.
+    $header = isset($_SERVER['HTTP_X_EXPORT_TOKEN']) ? (string) $_SERVER['HTTP_X_EXPORT_TOKEN'] : '';
+    $token = $header !== '' ? sanitize_text_field(wp_unslash($header)) : (isset($_GET['token']) ? sanitize_text_field(wp_unslash($_GET['token'])) : '');
     return defined('DEHUB_NEWSLETTER_EXPORT_TOKEN')
         && DEHUB_NEWSLETTER_EXPORT_TOKEN
         && hash_equals((string) DEHUB_NEWSLETTER_EXPORT_TOKEN, $token);
@@ -1966,7 +2025,8 @@ function get_related_posts_by_id($data) {
     $post_id = $data['id'];
     $post = get_post($post_id);
 
-    if (empty($post)) {
+    // Same 404 for drafts and private posts, so their IDs cannot be probed.
+    if (empty($post) || $post->post_status !== 'publish' || $post->post_password !== '') {
         return new WP_Error('not_found', 'Post not found', array('status' => 404));
     }
 
@@ -2090,7 +2150,9 @@ add_filter('rest_post_dispatch', 'add_rest_cache_headers', 10, 3);
 function add_rest_cache_headers($result, $server, $request) {
     $route = $request->get_route();
     
-    if (strpos($route, '/wp/v2/posts') !== false) {
+    // Public caching only for anonymous reads; drafts and context=edit
+    // responses for logged-in users must never land in a shared cache.
+    if (strpos($route, '/wp/v2/posts') !== false && !is_user_logged_in() && $request->get_method() === 'GET') {
         $result->header('Cache-Control', 'public, max-age=300, s-maxage=600');
         $result->header('Vary', 'Accept-Encoding');
     }
@@ -2207,6 +2269,15 @@ function disable_unused_rest_endpoints($endpoints) {
     foreach ($unused_endpoints as $endpoint) {
         if (isset($endpoints[$endpoint])) {
             unset($endpoints[$endpoint]);
+        }
+    }
+    // Also /wp/v2/users/<id> and /wp/v2/users/me (user enumeration). Logged-in
+    // editors keep them so the block editor's author picker still works.
+    if (!current_user_can('edit_posts')) {
+        foreach (array_keys($endpoints) as $route) {
+            if (strpos($route, '/wp/v2/users') === 0) {
+                unset($endpoints[$route]);
+            }
         }
     }
     
@@ -2470,8 +2541,8 @@ function register_category_debug_endpoint() {
     register_rest_route('wp/v2', '/debug/categories/(?P<id>\d+)', array(
         'methods' => 'GET',
         'callback' => 'debug_post_categories_endpoint',
-        'permission_callback' => function () {
-            return current_user_can('edit_posts');
+        'permission_callback' => function ($request) {
+            return current_user_can('edit_post', (int) $request['id']);
         },
         'args' => array(
             'id' => array(
@@ -3151,6 +3222,15 @@ function get_certifications_by_taxonomy($request) {
         ),
     );
 
+    // Only real taxonomies of this post type, password-protected items skipped,
+    // and always the public "view" context: ?context=edit would otherwise
+    // return raw content and the post password to anonymous callers.
+    if (!in_array($taxonomy, get_object_taxonomies('certification'), true)) {
+        return new WP_REST_Response(array(), 200);
+    }
+    $args['has_password'] = false;
+    $request->set_param('context', 'view');
+
     $query = new WP_Query($args);
     $controller = new WP_REST_Posts_Controller('certification');
     $response = array();
@@ -3217,7 +3297,7 @@ function track_certification_download($request) {
     if (get_post_type($post_id) !== 'certification' || get_post_status($post_id) !== 'publish') {
         return new WP_REST_Response(array('success' => false), 404);
     }
-    $ip = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+    $ip = dehub_client_ip();
     $limit_key = 'dehub_certdl_' . md5($ip . '|' . $post_id);
     if (get_transient($limit_key)) {
         return new WP_REST_Response(array('success' => true, 'counted' => false), 200);
@@ -4132,7 +4212,7 @@ add_action('rest_api_init', function () {
                 return new WP_REST_Response(['ok' => true, 'counted' => false], 202);
             }
 
-            $ip = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+            $ip = dehub_client_ip();
             $context = sanitize_text_field((string) $request->get_param('context'));
             $window = $type === 'click' ? MINUTE_IN_SECONDS : 30 * MINUTE_IN_SECONDS;
             $limit_key = 'dehub_sp_' . md5($ip . '|' . $campaign . '|' . $type . '|' . $context);
