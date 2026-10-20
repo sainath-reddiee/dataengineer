@@ -53,8 +53,9 @@ on:
         required: false
         type: boolean
         default: false
-  schedule:
-    - cron: '0 21 * * *'
+  # No daily schedule: code changes deploy on push, WordPress posts deploy via
+  # repository_dispatch, and anything else can be run manually. A nightly run
+  # only burned Actions minutes re-uploading an unchanged site.
   repository_dispatch:
     types: [post-published]
 
@@ -83,7 +84,7 @@ jobs:
     # killed (this happened on 2026-09-06: nuclear-redeploy was cancelled at
     # 25m mid-glossary-upload and the live site 403'd with sitemap.xml/tags
     # missing until a follow-up full redeploy completed). Automated triggers
-    # (push/schedule/repository_dispatch) stay at the tighter 25m budget since
+    # (push/repository_dispatch) stay at the tighter 25m budget since
     # those are small incremental diffs and should fail fast if something
     # hangs; manual full-rebuild dispatches get much more headroom to finish.
     timeout-minutes: ${{ (github.event.inputs.build_type == 'nuclear-redeploy' || github.event.inputs.build_type == 'force-rebuild' || github.event.inputs.build_type == 'full-with-categories' || github.event.inputs.build_type == 'posts-only') && 120 || 25 }}
@@ -804,7 +805,6 @@ jobs:
           (steps.ftp_deploy.outcome == 'success' || steps.ftp_deploy_retry.outcome == 'success') &&
           (steps.cache-restore.outputs.cache-hit != 'true' ||
            github.event_name == 'repository_dispatch' ||
-           github.event_name == 'schedule' ||
            github.event_name == 'workflow_dispatch')
         run: |
           npm run sitemap:notify || echo "⚠️ Search engine notification queued"
