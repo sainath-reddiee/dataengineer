@@ -82,10 +82,22 @@ if (robots.includes('Allow: /auth.md') && robots.includes('Allow: /.well-known/'
 } else {
   fail('robots.txt must Allow /auth.md and /.well-known/');
 }
-if (robots.includes('Content-Signal:') && robots.includes('Agentmap:')) {
-  ok('robots.txt has Content-Signal and Agentmap');
+if (robots.includes('Content-Signal:')) {
+  ok('robots.txt has Content-Signal');
 } else {
-  fail('robots.txt must include Content-Signal and Agentmap');
+  fail('robots.txt must include Content-Signal');
+}
+if (/^\s*Agentmap:/m.test(robots)) {
+  fail('robots.txt must not use Agentmap: — Google flags it as an unknown directive');
+} else {
+  ok('robots.txt has no Agentmap directive');
+}
+const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const llmsTxt = fs.readFileSync(path.join(publicDir, 'llms.txt'), 'utf8');
+if (/ai-catalog\.json/.test(homepage) && /ai-catalog\.json/.test(llmsTxt)) {
+  ok('ARD catalog is advertised from HTML and llms.txt, not robots.txt');
+} else {
+  fail('index.html and llms.txt must point at /.well-known/ai-catalog.json');
 }
 
 if (!fs.existsSync(path.join(root, 'public', 'index.md'))) {
@@ -137,7 +149,6 @@ if (ard.specVersion && ard.host?.identifier && Array.isArray(ard.entries) && ard
   fail('ai-catalog.json must include specVersion, host, and entries');
 }
 
-const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 if (/rel="api-catalog"/.test(homepage) && /rel="describedby"/.test(homepage)) {
   ok('index.html has HTML discovery link relations');
 } else {

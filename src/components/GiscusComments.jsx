@@ -41,7 +41,10 @@ const GiscusComments = () => {
           script.setAttribute('data-reactions-enabled', '1');
           script.setAttribute('data-emit-metadata', '0');
           script.setAttribute('data-input-position', 'top');
-          script.setAttribute('data-theme', 'dark_dimmed');
+          script.setAttribute(
+            'data-theme',
+            document.documentElement.classList.contains('dark') ? 'dark_dimmed' : 'light'
+          );
           script.setAttribute('data-lang', 'en');
           script.crossOrigin = 'anonymous';
           script.async = true;
@@ -58,6 +61,19 @@ const GiscusComments = () => {
 
     return () => observer.disconnect();
   }, [repo, repoId, category, categoryId]);
+
+  useEffect(() => {
+    const sync = (theme) => {
+      const iframe = containerRef.current?.querySelector('iframe');
+      iframe?.contentWindow?.postMessage(
+        { giscus: { setConfig: { theme: theme === 'dark' ? 'dark_dimmed' : 'light' } } },
+        'https://giscus.app'
+      );
+    };
+    const onTheme = (event) => sync(event.detail);
+    window.addEventListener('deh-theme', onTheme);
+    return () => window.removeEventListener('deh-theme', onTheme);
+  }, []);
 
   // Don't render anything if Giscus is not configured
   if (!repo || !repoId || !categoryId) return null;

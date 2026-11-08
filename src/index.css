@@ -25,14 +25,14 @@
   font-family: 'Source Serif 4';
   font-style: normal;
   font-weight: 600;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/source-serif-4-600.woff2') format('woff2');
 }
 @font-face {
   font-family: 'IBM Plex Sans';
   font-style: normal;
   font-weight: 400;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/plex-sans-400.woff2') format('woff2');
 }
 @font-face {
@@ -89,7 +89,56 @@
   --font-serif: 'Source Serif 4', Georgia, Cambria, 'Times New Roman', serif;
   --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --deh-paper: #FAF8F4;
+  --deh-paper-50: #FFFFFF;
+  --deh-paper-100: #FDFCFA;
+  --deh-paper-200: #FAF8F4;
+  --deh-paper-300: #F4F0E8;
+  --deh-paper-400: #ECE6DB;
+  --deh-paper-500: #E4DED3;
+  --deh-paper-600: #CFC7B8;
+  --deh-ink: #1B1A17;
+  --deh-ink-soft: #2B2925;
+  --deh-ink-body: #33302B;
+  --deh-ink-muted: #5E584F;
+  --deh-ink-faint: #77705F;
   color-scheme: light;
+}
+
+html.dark {
+  --background: 36 8% 8%;
+  --foreground: 40 22% 94%;
+  --card: 36 10% 11%;
+  --card-foreground: 40 22% 94%;
+  --popover: 36 10% 11%;
+  --popover-foreground: 40 22% 94%;
+  --primary: 18 70% 62%;
+  --primary-foreground: 36 8% 8%;
+  --secondary: 36 10% 16%;
+  --secondary-foreground: 40 22% 94%;
+  --muted: 36 10% 16%;
+  --muted-foreground: 36 12% 70%;
+  --accent: 18 28% 18%;
+  --accent-foreground: 18 70% 72%;
+  --destructive: 0 62% 48%;
+  --destructive-foreground: 40 22% 94%;
+  --border: 36 10% 22%;
+  --input: 36 10% 22%;
+  --ring: 18 70% 62%;
+  --deh-paper: #161411;
+  --deh-paper-50: #1C1A16;
+  --deh-paper-100: #1C1A16;
+  --deh-paper-200: #161411;
+  --deh-paper-300: #221F1A;
+  --deh-paper-400: #2C2822;
+  --deh-paper-500: #3A352E;
+  --deh-paper-600: #5A5348;
+  --deh-ink: #F6F1E8;
+  --deh-ink-soft: #F0EBE2;
+  --deh-ink-body: #F1EBE2;
+  --deh-ink-muted: #D8D1C4;
+  --deh-ink-faint: #C4BDB0;
+  color-scheme: dark;
 }
 
 * {
@@ -338,13 +387,59 @@ a:not([class]) {
   padding-left: 0.15rem;
 }
 
+/* Collapsed by default so the schematic does not push the article down. */
+.deh-instrument-disclosure {
+  margin: 0.5rem 0 0.25rem;
+  border: 1px solid var(--deh-paper-500);
+  background: var(--deh-paper-50);
+  color: var(--deh-ink);
+}
+
+.deh-instrument-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  min-height: 2.75rem;
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-sans);
+}
+
+.deh-instrument-summary::-webkit-details-marker {
+  display: none;
+}
+
+.deh-instrument-summary-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9C3A1A;
+}
+
+.deh-instrument-summary-meta {
+  font-size: 0.82rem;
+  color: var(--deh-ink-muted);
+}
+
+.deh-instrument-disclosure[open] {
+  border-top: 2px solid var(--deh-ink);
+}
+
+.deh-instrument-disclosure[open] .deh-instrument-summary {
+  border-bottom: 1px solid var(--deh-paper-500);
+}
+
 /* Interactive Editorial Pipeline Instrument (Trace, 60s Billing, FDN Pruning, Retry Diff) */
 .deh-instrument {
-  margin: 1.75rem 0 2.25rem;
-  border: 1px solid #DCD5C8;
-  border-top: 2px solid #1B1A17;
-  background: #FAF8F4;
-  color: #1B1A17;
+  margin: 0;
+  border: 0;
+  background: var(--deh-paper);
+  color: var(--deh-ink);
 }
 
 .deh-instrument-header {
@@ -354,8 +449,8 @@ a:not([class]) {
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0.9rem 1.15rem;
-  border-bottom: 1px solid #E4DED3;
-  background: #F4F0E8;
+  border-bottom: 1px solid var(--deh-paper-500);
+  background: var(--deh-paper-300);
 }
 
 .deh-instrument-kicker {
@@ -939,6 +1034,62 @@ a:not([class]) {
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+/* Dark mode keeps the charcoal paper theme. Article HTML still ships
+   light-theme hex (#33302B / #1B1A17), so remap those here instead of
+   rewriting the light stylesheet. */
+html.dark .prose {
+  --tw-prose-body: var(--deh-ink-body);
+  --tw-prose-headings: var(--deh-ink);
+  --tw-prose-bold: var(--deh-ink);
+  --tw-prose-links: #E2A487;
+  --tw-prose-quotes: var(--deh-ink-body);
+}
+
+html.dark .article-content,
+html.dark .prose,
+html.dark .article-content p,
+html.dark .article-content li,
+html.dark .article-content td,
+html.dark .article-content th,
+html.dark .article-content blockquote,
+html.dark .article-content figcaption,
+html.dark .article-tldr,
+html.dark .article-tldr ul,
+html.dark .article-tldr li {
+  color: var(--deh-ink-body);
+}
+
+html.dark .article-content h1,
+html.dark .article-content h2,
+html.dark .article-content h3,
+html.dark .article-content h4,
+html.dark .article-content h5,
+html.dark .article-content h6,
+html.dark .article-content strong,
+html.dark .article-content b,
+html.dark .prose h1,
+html.dark .prose h2,
+html.dark .prose h3,
+html.dark .prose h4,
+html.dark .prose strong {
+  color: var(--deh-ink);
+}
+
+html.dark .article-content a,
+html.dark .article-content .deh-contextual-link a {
+  color: #E2A487;
+}
+
+html.dark .article-content .deh-contextual-link {
+  color: var(--deh-ink-body);
+  background: rgba(226, 164, 135, 0.1);
+}
+
+html.dark .article-tldr {
+  background: var(--deh-paper-300);
+  border-top-color: var(--deh-ink);
 }
 
 .article-faq {

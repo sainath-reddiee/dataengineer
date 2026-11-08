@@ -225,6 +225,24 @@ for (const slug of ADSENSE_REVIEW_TOOLS) {
     failed += 1;
   }
 }
+const pagesHeaders = readFileSync(join(root, 'public/_headers'), 'utf8');
+const pagesRedirects = readFileSync(join(root, 'public/_redirects'), 'utf8');
+if (/^\s*\/\* \/index\.html 200\s*$/m.test(pagesRedirects)) {
+  console.error('❌ public/_redirects must not SPA-fallback unknown URLs (AdSense duplicate homepage)');
+  failed += 1;
+}
+for (const slug of ADSENSE_REVIEW_CHEATSHEETS) {
+  if (!pagesHeaders.includes(`/cheatsheets/${slug}`)) {
+    console.error(`❌ public/_headers cheat-sheet allowlist is missing ${slug}`);
+    failed += 1;
+  }
+}
+for (const slug of ADSENSE_REVIEW_TOOLS) {
+  if (!pagesHeaders.includes(`/tools/${slug}`)) {
+    console.error(`❌ public/_headers tool allowlist is missing ${slug}`);
+    failed += 1;
+  }
+}
 
 if (failed > 0) {
   console.error(`\n❌ AdSense quality gate failed (${failed} check(s))`);

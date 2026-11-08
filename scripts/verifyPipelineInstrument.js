@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   extractPipelineInstrument,
   extractArticleCodeSnippets,
@@ -144,6 +147,13 @@ assert(
   ssgSnippets.length === 1 && ssgSnippets[0].firstLine.includes('CREATE TABLE ops.pipeline_audit_log'),
   `SSG-highlighted code lines must stay intact, got: ${ssgSnippets[0]?.firstLine}`
 );
+
+const instrumentUi = readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), '..', 'src/components/editorial/PipelineInstrument.jsx'),
+  'utf8'
+);
+assert(instrumentUi.includes('<details'), 'Pipeline schematic must collapse into a details disclosure');
+assert(instrumentUi.includes("useState(false)"), 'Pipeline schematic must start collapsed');
 
 console.log('✅ Curated flagship pipeline blueprints verified (trace, billing, storage, incident)');
 console.log('✅ Dynamic SQL/code/heading extraction works for future WordPress posts');

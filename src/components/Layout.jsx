@@ -1,7 +1,7 @@
 // src/components/Layout.jsx
 
-import { lazy, Suspense } from 'react';
-import { Outlet } from 'react-router-dom';
+import { lazy, Suspense, useState } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import MetaTags from '@/components/SEO/MetaTags';
@@ -12,6 +12,12 @@ const Toaster = lazy(() =>
 );
 
 const Layout = () => {
+  const { pathname } = useLocation();
+  const [hasStaticHero] = useState(
+    () => typeof document !== 'undefined' && Boolean(document.getElementById('deh-static-hero'))
+  );
+  const pinStaticHero = hasStaticHero && pathname === '/';
+
   return (
     <>
       <MetaTags />
@@ -23,7 +29,7 @@ const Layout = () => {
           Skip to main content
         </a>
         <Header topOffset={0} />
-        <div style={{ paddingTop: 64 }}></div>
+        {!pinStaticHero && <div style={{ paddingTop: 64 }}></div>}
         <main id="main-content" tabIndex={-1} className="flex-grow relative z-0 outline-none">
           <Outlet />
         </main>

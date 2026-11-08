@@ -16,22 +16,22 @@ const defaults = require('tailwindcss/colors');
  * ink. Hand-designed surfaces use the semantic paper / ink / rust names.
  */
 const paper = {
-	DEFAULT: '#FAF8F4',
-	50: '#FFFFFF',
-	100: '#FDFCFA',
-	200: '#FAF8F4',
-	300: '#F4F0E8',
-	400: '#ECE6DB',
-	500: '#E4DED3',
-	600: '#CFC7B8',
+	DEFAULT: 'var(--deh-paper)',
+	50: 'var(--deh-paper-50)',
+	100: 'var(--deh-paper-100)',
+	200: 'var(--deh-paper-200)',
+	300: 'var(--deh-paper-300)',
+	400: 'var(--deh-paper-400)',
+	500: 'var(--deh-paper-500)',
+	600: 'var(--deh-paper-600)',
 };
 
 const ink = {
-	DEFAULT: '#1B1A17',
-	soft: '#2B2925',
-	body: '#33302B',
-	muted: '#5E584F',
-	faint: '#665F52',
+	DEFAULT: 'var(--deh-ink)',
+	soft: 'var(--deh-ink-soft)',
+	body: 'var(--deh-ink-body)',
+	muted: 'var(--deh-ink-muted)',
+	faint: 'var(--deh-ink-faint)',
 };
 
 const rust = {
@@ -116,8 +116,8 @@ module.exports = {
 				paper,
 				ink,
 				rust,
-				white: ink.DEFAULT,
-				black: paper.DEFAULT,
+				white: 'var(--deh-ink)',
+				black: 'var(--deh-paper)',
 				slate: legacyNeutral,
 				gray: legacyNeutral,
 				zinc: legacyNeutral,

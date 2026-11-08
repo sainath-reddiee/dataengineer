@@ -1,28 +1,71 @@
-// public/_redirects - Netlify/Vercel redirects for canonical URLs
-// This ensuress all URLs redirect to canonical versions
+# Cloudflare Pages redirects. Hostinger/LiteSpeed ignores this file.
+# Do NOT add `/* /index.html 200` — that made unknown URLs look like the
+# homepage to AdSense. Missing public routes must 404 via /404.html.
 
-# Force HTTPS
-http://dataengineerhub.blog/* https://dataengineerhub.blog/:splat 301!
-http://www.dataengineerhub.blog/* https://dataengineerhub.blog/:splat 301!
+# FTP cannot upload a leading-dot directory; Pages can still serve the RFC path.
+/.well-known/* /well-known/:splat 200
 
-# Remove www
-https://www.dataengineerhub.blog/* https://dataengineerhub.blog/:splat 301!
+# Canonical article merges (keep in sync with src/data/redirects.json)
+/articles/building-snowflake-agents-in-10-minutes /articles/build-snowflake-cortex-ai-agent-guide 301
+/articles/build-a-snowflake-agent-in-10-minutes /articles/build-snowflake-cortex-ai-agent-guide 301
+/articles/snowflake-unique-aggregation-hidden-functions /articles/snowflake-unique-aggregations-hidden-functions 301
+/articles/snowflake-options-automate-query-optimization-guide /articles/snowflake-optima-automatic-query-optimization-guide 301
+/articles/snowflake-query-optimization-2025 /articles/snowflake-query-optimization-guide-2026 301
+/articles/build-a-simple-rag-application-in-snowflake-using-streamlit-and-snowflake-cortex /articles/build-rag-snowflake-cortex-search-guide 301
+/articles/build-rag-snowflake-documentation /articles/build-rag-snowflake-cortex-search-guide 301
+/articles/snowflake-openflow-tutorial /articles/snowflake-openflow-ai-data-ingestion-guide 301
+/articles/snowflake-performance /articles/snowflake-query-optimization-guide-2026 301
+/articles/snowflake-performance-tuning-techniques /articles/snowflake-query-optimization-guide-2026 301
+/articles/loading-data-from-s3-to-snowflake /articles/load-data-into-snowflake 301
+/articles/dbt-state-skip-unchanged-nodes /articles/dbt-state-skip-unchanged-models 301
+/articles/snowflake-mcp-server-agentic-ai-guide-2025 /articles/snowflake-mcp-server-guide 301
+/articles/advanced-snowflake-interview-questions-experienced /articles/snowflake-expert-interview-questions 301
+/articles/snowflake-aiceberg-v3-migration-guide /articles/native-tables-to-dynamic-iceberg-v3-snowflake 301
+/articles/airflow-dbt-snowflake-orchestration-guide /articles/snowflake-dbt-projects-airflow-orchestration 301
+/articles/snowflake-cortex-token-usage-monitoring /articles/snowflake-cortex-ai-hidden-token-costs 301
 
-# Trailing slash redirects - Remove trailing slashes
-/articles/ /articles 301!
-/category/:slug/ /category/:slug 301!
-/tag/:slug/ /tag/:slug 301!
-/about/ /about 301!
-/contact/ /contact 301!
-/newsletter/ /newsletter 301!
-/privacy-policy/ /privacy-policy 301!
-/terms-of-service/ /terms-of-service 301!
-/disclaimer/ /disclaimer 301!
-/glossary/ /glossary 301!
-/compare/ /compare 301!
-/cheatsheets/ /cheatsheets 301!
-/certification/ /certification 301!
-/tags/ /tags 301!
+/cookie-policy /privacy-policy 301
+/playground /tools/sql-playground 301
 
-# SPA fallback - Must be last
-/* /index.html 200
+# Thin tag archives (1-2 posts) — doorway pages. Same list as .htaccess.
+/tag/ai-coding /articles 301
+/tag/anthropic /articles 301
+/tag/ci-cd /articles 301
+/tag/claude-code /articles 301
+/tag/claude-md /articles 301
+/tag/copilot /articles 301
+/tag/delta-lake /articles 301
+/tag/developer-tools /articles 301
+/tag/duckdb /articles 301
+/tag/fusion /articles 301
+/tag/gcp /articles 301
+/tag/migration /articles 301
+/tag/ml /articles 301
+/tag/openflow /articles 301
+/tag/osi /articles 301
+/tag/perfect /articles 301
+/tag/prompt-engineering /articles 301
+/tag/rag /articles 301
+/tag/security /articles 301
+/tag/synapse /articles 301
+/tag/databricks /articles 301
+/tag/llm /articles 301
+/tag/optimization /articles 301
+/tag/i /articles 301
+
+/contributors/* /contributors 301
+
+# Do not add `/*/ /:splat 301`. Pages already 308s directory URLs onto a
+# trailing slash; stripping it here loops /articles/slug ⇄ /articles/slug/.
+# Canonicals in HTML still omit the slash; Google consolidates on that.
+
+# Private / noindex app shells have no static HTML. Serve the SPA without
+# turning every unknown public URL into a homepage duplicate.
+/admin /index.html 200
+/admin/* /index.html 200
+/debug /index.html 200
+/debug/* /index.html 200
+/sponsors/dashboard /index.html 200
+/announcements /index.html 200
+/announcements/* /index.html 200
+/advertise/checkout /index.html 200

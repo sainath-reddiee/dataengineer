@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
-import { formatStoryDate, plainExcerpt, storyKicker } from './storyMeta';
+import { formatStoryDate, plainExcerpt } from './storyMeta';
 
 /**
  * Dense, scannable article list: topic and read time on the left, serif
@@ -13,9 +13,12 @@ const ArticleLedger = ({ posts, basePath = '/articles' }) => {
   return (
     <ol className="divide-y divide-paper-500 border-y border-paper-500">
       {posts.map((post) => (
-        <li key={post.id || post.slug} className="grid gap-1 py-5 sm:grid-cols-[9rem_minmax(0,1fr)_6.5rem] sm:gap-6">
-          <p className="font-mono text-[11px] uppercase tracking-wide text-rust-600 sm:pt-1.5">
-            {storyKicker(post)}
+        <li key={post.id || post.slug} className="grid gap-1 py-5 sm:grid-cols-[9.5rem_minmax(0,1fr)_6.5rem] sm:gap-6">
+          <p className="self-start min-w-0 font-mono text-[11px] uppercase tracking-wide text-rust-600 sm:pt-1.5">
+            <span className="block break-words">{post.category || 'Article'}</span>
+            {post.readTime && (
+              <span className="mt-1 block normal-case tracking-normal text-ink-faint">{post.readTime}</span>
+            )}
           </p>
           <div>
             <Link

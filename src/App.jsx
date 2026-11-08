@@ -246,6 +246,8 @@ const RouteChangeTracker = ({ onRouteChange }) => {
       performance.mark('route-change');
     }
 
+    document.documentElement.classList.toggle('deh-on-home', location.pathname === '/');
+
     trackPageView(location.pathname + location.search);
 
     // Classify landing as an AI-assistant referral (no-op after first session hit).

@@ -25,6 +25,7 @@ const SupportModal = lazy(() => import('@/components/Support/SupportModal'));
 import { useReadingList } from '@/hooks/useReadingList';
 import { ADSENSE_REVIEW_MODE, isReviewAllowlistedTool } from '@/data/adsenseQualityGate';
 import { FEATURED_TOOLS_NAV } from '@/data/featuredToolsNav';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const REVIEW_HIDDEN_MAIN = new Set([
   // Commercial placements stay in the main nav. AdsBot still noindexes that URL.
@@ -198,6 +199,7 @@ const Header = ({ topOffset = 0 }) => {
         >
           <Search className="h-5 w-5" />
         </button>
+        <ThemeToggle className="lg:hidden" />
 
         <div className="hidden flex-1 items-center justify-end gap-1 lg:flex">
           {visibleMainLinks
@@ -296,6 +298,7 @@ const Header = ({ topOffset = 0 }) => {
             </kbd>
           </button>
 
+          <ThemeToggle />
           <button
             type="button"
             onClick={() => setIsSupportOpen(true)}

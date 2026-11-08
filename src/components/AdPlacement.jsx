@@ -68,10 +68,10 @@ const AdPlacement = ({ className = '', format = 'auto', style = {} }) => {
   // ── Production: only render when both flags are set ──────────
   if (ADS_ENABLED && SLOT_ID) {
     return (
-      <div className={`text-center overflow-hidden ${className}`}>
+      <div className={`text-center overflow-hidden ${className}`} style={{ minHeight: 280 }}>
         <ins
           className="adsbygoogle"
-          style={{ display: 'block', ...style }}
+          style={{ display: 'block', minHeight: 280, ...style }}
           data-ad-client={CLIENT_ID}
           data-ad-slot={SLOT_ID}
           data-ad-format={format}

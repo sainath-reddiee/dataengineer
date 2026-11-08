@@ -94,6 +94,8 @@ const CheatSheetList = () => {
 const HomePage = () => {
   const { posts, loading, error } = usePosts({ per_page: FRONT_PAGE_COUNT });
   const ledgerPosts = posts.slice(LEAD_COUNT);
+  const keepStaticHero =
+    typeof document !== 'undefined' && Boolean(document.getElementById('deh-static-hero'));
 
   return (
     <>
@@ -108,7 +110,7 @@ const HomePage = () => {
           so Googlebot sees it without JS. Do not duplicate here. */}
 
       <div className="min-h-screen overflow-x-clip bg-paper text-ink">
-        <Hero />
+        {!keepStaticHero && <Hero />}
 
         <div className="mx-auto max-w-6xl space-y-16 px-4 py-10 sm:px-6">
           <LeadStories posts={posts} loading={loading} error={error} />

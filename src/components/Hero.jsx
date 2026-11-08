@@ -11,7 +11,7 @@ const Hero = () => {
   const { totalArticles, totalCategories, updateFrequency } = useStats();
 
   return (
-    <section className="border-b border-paper-500 px-4 pb-8 pt-10 sm:px-6 sm:pt-14">
+    <section className="border-b border-paper-500 px-4 pb-8 pt-10 sm:px-6 sm:pt-14 min-h-[20.5rem] sm:min-h-[22rem]">
       <div className="mx-auto max-w-6xl">
         <p className="kicker mb-4">Production notes for data engineers</p>
         <h1 className="mb-5 max-w-4xl font-serif text-[34px] font-semibold leading-[1.1] text-ink sm:text-[46px]">

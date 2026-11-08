@@ -24,7 +24,12 @@ assert(indexHtml.includes('deh-consent-ready'), 'first-paint script must hide th
 assert(indexHtml.includes('deh-need-consent'), 'head script must opt humans into the banner before first paint');
 const heroH1 = (hero.match(/<h1[^>]*>\s*([^<]+?)\s*<\/h1>/) || [])[1] || '';
 assert(heroH1 && indexHtml.includes(heroH1), 'static H1 in index.html must match the React masthead H1');
-assert(indexHtml.includes('deh-home-hero'), 'static hero must reserve height for the React swap');
+assert(indexHtml.includes('id="deh-static-hero"'), 'static hero must live outside #root so createRoot cannot reset LCP');
+const rootAt = indexHtml.indexOf('id="root"');
+const heroAt = indexHtml.indexOf('id="deh-static-hero"');
+assert(heroAt !== -1 && rootAt !== -1 && heroAt < rootAt, 'static hero must appear before #root');
+assert(indexHtml.includes('min-height: 20.5rem'), 'static hero must reserve height against font/CSS swap');
+assert(/font-display:\s*optional/.test(indexHtml), 'LCP fonts must use font-display:optional to avoid swap CLS');
 assert(!hero.includes("from 'framer-motion'"), 'Hero must stay off the homepage framer-motion chunk');
 assert(!hero.includes('HubMotion'), 'Hero must stay a text-only masthead with no animated scene');
 assert(!home.includes("from 'framer-motion'"), 'HomePage section headers must not animate in with framer-motion');
@@ -42,7 +47,9 @@ const deferCss = readFileSync(join(root, 'scripts/deferRenderBlockingCss.js'), '
 assert(vite.includes('defer-render-blocking-css'), 'Vite must defer the Tailwind stylesheet off first paint');
 assert(vite.includes('restore-deferred-css'), 'prerender must not put homepage CSS back on the critical path');
 assert(deferCss.includes('export function deferRenderBlockingStylesheets'), 'shared CSS defer helper must exist');
-assert(main.includes('requestIdleCallback'), 'React must hydrate after the static hero can paint');
+assert(main.includes("import('./pages/HomePage')"), 'homepage chunk must start loading before createRoot');
+assert(main.includes('waitForStylesheets'), 'React must wait for deferred CSS before replacing #root');
+assert(home.includes('deh-static-hero'), 'HomePage must reuse the static hero instead of painting a second H1');
 assert(
   indexHtml.includes('adsbygoogle.js?client=ca-pub-') && indexHtml.includes('setTimeout(inject, 2500)'),
   'AdSense must stay in HTML but load after first paint for humans'
@@ -57,7 +64,7 @@ assert(!/font-display:\s*block/.test(indexHtml), 'shell fonts must not block tex
 assert(!header.includes("from 'framer-motion'"), 'Header chrome must stay off the homepage framer-motion chunk');
 assert(!footer.includes("from 'framer-motion'"), 'Footer must stay off the homepage framer-motion chunk');
 assert(!scroll.includes("from 'framer-motion'"), 'ScrollToTop must stay off the homepage framer-motion chunk');
-assert(app.includes("lazy(() => import('./pages/ArticlePage'))"), 'ArticlePage must not ride along on the homepage bundle');
+assert(app.includes("import ArticlePage from './pages/ArticlePage'"), 'ArticlePage stays eager so article SSG does not flash a chunk gap');
 assert(app.includes('!isMobile'), 'do not prefetch article/tool hubs during a mobile PSI run');
 
 const deferred = deferRenderBlockingStylesheets('<link rel="stylesheet" crossorigin href="/assets/index-abc.css">');

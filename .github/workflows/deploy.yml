@@ -53,6 +53,11 @@ on:
         required: false
         type: boolean
         default: false
+      deploy_cloudflare:
+        description: 'Also deploy dist-pages to Cloudflare Pages (preview until DNS cutover)?'
+        required: false
+        type: boolean
+        default: false
   # No daily schedule: code changes deploy on push, WordPress posts deploy via
   # repository_dispatch, and anything else can be run manually. A nightly run
   # only burned Actions minutes re-uploading an unchanged site.
@@ -112,6 +117,8 @@ jobs:
           IN_VERIFY_BUILD: ${{ github.event.inputs.verify_build }}
           IN_NOTIFY_SE: ${{ github.event.inputs.notify_search_engines }}
           IN_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          IN_DEPLOY_CLOUDFLARE: ${{ github.event.inputs.deploy_cloudflare }}
+          ENABLE_CLOUDFLARE_PAGES: ${{ vars.ENABLE_CLOUDFLARE_PAGES }}
         run: |
           echo "trigger=${{ github.event_name }}" >> $GITHUB_OUTPUT
 
@@ -235,6 +242,13 @@ jobs:
               echo "⚡ Incremental publish for /$WP_SLUG_FLAG"
             fi
           fi
+
+          DEPLOY_CF="false"
+          if [ "$IN_DEPLOY_CLOUDFLARE" = "true" ] || [ "$ENABLE_CLOUDFLARE_PAGES" = "true" ]; then
+            DEPLOY_CF="true"
+          fi
+          echo "deploy_cloudflare=$DEPLOY_CF" >> $GITHUB_OUTPUT
+          echo "☁️ Cloudflare Pages deploy: $DEPLOY_CF"
 
       - name: 💾 Restore Build Cache
         id: cache-restore
@@ -900,6 +914,18 @@ jobs:
         with:
           path: .ftp-deploy-sync-state.json
           key: ftp-state-${{ github.run_id }}
+
+      - name: ☁️ Prepare Cloudflare Pages bundle
+        if: steps.changes.outputs.deploy_cloudflare == 'true' && steps.changes.outputs.dry_run != 'true'
+        run: node scripts/prepareCloudflarePages.js
+
+      - name: ☁️ Deploy to Cloudflare Pages
+        if: steps.changes.outputs.deploy_cloudflare == 'true' && steps.changes.outputs.dry_run != 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist-pages --project-name=dataengineerhub --branch=${{ github.ref_name }}
 
       - name: 💾 Upload Artifact
         if: |

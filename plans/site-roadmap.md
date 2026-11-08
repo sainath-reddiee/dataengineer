@@ -52,11 +52,22 @@ AdSense "low value content" is a judgement on originality and usefulness, not wo
 1. Migrate to React Router v7 framework mode with `prerender`, so the same React components build the HTML and hydrate it. Articles first, then home/listings, then tools and cheat sheets.
 2. Move WordPress fetches from `useEffect` hooks to route loaders (build-time data).
 3. Retire `generateStaticPagesIncremental.js`, the Puppeteer prerender plugin, and the HTML-parking utilities.
-4. Move the public site to Cloudflare Pages (free, commercial use allowed; confirm current terms): atomic deploys and preview URLs, with no FTP half-uploads.
-   - Load the DuckDB `.wasm` files (34 MB and 39 MB) from jsDelivr: Pages caps files at 25 MiB.
-   - Port `api/og-practice-result.js` to a Pages Function.
-   - Replace `.htaccess` with `_redirects` and `_headers`.
-   - WordPress stays on Hostinger at `app.dataengineerhub.blog`.
+4. Move the public site to Cloudflare Pages (project `dataengineerhub` is live on `dataengineerhub.pages.dev`; custom domains are attached and verifying):
+   - `_headers` + `_redirects` live in `public/` (Hostinger ignores them; Pages uses them). There is no `/* /index.html 200` fallback — unknown URLs 404.
+   - `scripts/prepareCloudflarePages.js` copies `dist/` → `dist-pages/`, strips `.htaccess` and any file ≥ 25 MiB (DuckDB wasm). The playground then loads wasm from jsDelivr and keeps the worker same-origin.
+   - GitHub Action: workflow_dispatch **Also deploy dist-pages to Cloudflare Pages**, or set repo variable `ENABLE_CLOUDFLARE_PAGES=true`. Needs secrets `CLOUDFLARE_API_TOKEN` (Account / Cloudflare Pages / Edit) and `CLOUDFLARE_ACCOUNT_ID`.
+   - You, dashboard, before first deploy:
+     1. Delete Worker `dataengineerhub-pseo-router` routes on `dataengineerhub.blog` (it still serves old R2 glossary/compare as index,follow).
+     2. Workers & Pages → Create project `dataengineerhub` (direct upload is fine; GitHub Actions deploys).
+     3. Add the two GitHub secrets. Run the workflow with **deploy_cloudflare**. Preview is `https://dataengineerhub.pages.dev` (noindexed).
+   - You, DNS cutover (after the preview matches production):
+     1. Pages → Custom domains → `dataengineerhub.blog` and `www`.
+     2. Keep orange-cloud DNS. SSL Full (strict). Cache: cache everything on `/assets/*`, bypass HTML or use the `_headers` TTLs.
+     3. Purge Everything. Leave WordPress on Hostinger at `app.dataengineerhub.blog`.
+     4. Run `node scripts/verifyLiveAdsenseReview.js` against the apex domain.
+     5. Set `ENABLE_CLOUDFLARE_PAGES=true`. After a week of clean deploys, stop using Hostinger `public_html` for the public site (keep the FTP secrets until then).
+   - Optional later: put DuckDB wasm on an R2 custom domain instead of jsDelivr; port `api/og-practice-result.js` to a Pages Function. Neither blocks cutover.
+   - Pages will not fix AdSense Auto-ads CLS or React JS weight. Those stay in-app / AdSense dashboard. It will fix TTFB, atomic deploys, and stale LiteSpeed/FTP HTML.
 
 ## Phase 4: Reader experience polish (Claude)
 

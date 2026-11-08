@@ -36,11 +36,49 @@ if (import.meta.env.DEV) {
   });
 }
 
+// Start the homepage chunk immediately so createRoot() does not wipe the
+// static hero and then sit on a Suspense bar until HomePage.js arrives.
+const homepageChunk = import('./pages/HomePage');
+
+function waitForStylesheets(timeoutMs = 1500) {
+  const links = [...document.querySelectorAll('link[rel="stylesheet"]')];
+  if (links.length === 0) return Promise.resolve();
+  return new Promise((resolve) => {
+    const timer = setTimeout(resolve, timeoutMs);
+    let pending = links.length;
+    const done = () => {
+      pending -= 1;
+      if (pending <= 0) {
+        clearTimeout(timer);
+        resolve();
+      }
+    };
+    for (const link of links) {
+      if (link.sheet) {
+        if (link.media === 'print') link.media = 'all';
+        done();
+        continue;
+      }
+      link.addEventListener('load', () => {
+        if (link.media === 'print') link.media = 'all';
+        done();
+      }, { once: true });
+      link.addEventListener('error', done, { once: true });
+    }
+  });
+}
+
 // Every visitor, crawler or human, gets the same React render. The SSG HTML
 // is parked first so React paints the same article body without a loading
 // shell. Never branch on user agent here: serving crawlers a different page
 // from humans is cloaking under Google's spam policies.
-const initApp = () => {
+const initApp = async () => {
+  const path = window.location.pathname.replace(/\/+$/, '') || '/';
+  await Promise.all([
+    path === '/' ? homepageChunk : Promise.resolve(),
+    waitForStylesheets(),
+  ]);
+
   const rootEl = document.getElementById('root');
   parkSsgArticleFromRoot(rootEl);
   parkArticleBootstrapFromRoot(rootEl);
@@ -64,18 +102,21 @@ const initApp = () => {
   }, 1000);
 };
 
-// Let the static hero paint first (FCP/LCP) then mount on idle so the
-// 300 KB app bundle is not on the critical path for the first contentful text.
+// Let the static hero paint first (FCP/LCP), then mount. Double rAF is after
+// first paint; HomePage is already fetching in parallel.
 const bootApp = () => {
+  const start = () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        initApp();
+      });
+    });
+  };
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initApp, { once: true });
+    document.addEventListener('DOMContentLoaded', start, { once: true });
   } else {
-    initApp();
+    start();
   }
 };
 
-if (typeof window.requestIdleCallback === 'function') {
-  window.requestIdleCallback(bootApp, { timeout: 1200 });
-} else {
-  bootApp();
-}
+bootApp();

@@ -24,7 +24,8 @@ assert(
   'DuckDB should ship the wasm module on the Vite asset graph'
 );
 assert(duckdb.includes('/duckdb/duckdb-eh.wasm'), 'DuckDB should still prefer same-origin /duckdb/ copies when present');
-assert(!duckdb.includes('jsdelivr'), 'DuckDB must not depend on jsDelivr at runtime');
+assert(duckdb.includes('cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@'), 'DuckDB wasm must fall back to jsDelivr when Pages strips 25 MiB files');
+assert(duckdb.includes('bundledWasmOk'), 'jsDelivr is last resort after HEAD of the hashed Vite wasm');
 assert(vite.includes('copyDuckdbAssets'), 'Vite must copy DuckDB assets for local /duckdb/ fallback');
 assert(duckdb.includes('INIT_TIMEOUT_MS'), 'DuckDB init must time out instead of hanging forever');
 

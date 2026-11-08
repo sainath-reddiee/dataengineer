@@ -4,6 +4,8 @@
 // Vite `?url` imports put wasm + workers on the hashed asset graph so they
 // ship even when public/duckdb/ was not uploaded (it is gitignored).
 // Same-origin /duckdb/ copies are preferred when present (stable URLs, cache).
+// Cloudflare Pages rejects files over 25 MiB, so production wasm is stripped
+// from dist-pages and we fall back to jsDelivr for the engine only.
 
 import ehWasmUrl from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url';
 import mvpWasmUrl from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url';
@@ -11,6 +13,8 @@ import ehWorkerUrl from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?ur
 import mvpWorkerUrl from '@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url';
 
 const INIT_TIMEOUT_MS = 90_000;
+const DUCKDB_NPM_VERSION = '1.33.1-dev45.0';
+const DUCKDB_CDN = `https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@${DUCKDB_NPM_VERSION}/dist`;
 const SELF_HOSTED = {
   mvp: {
     mainModule: '/duckdb/duckdb-mvp.wasm',
@@ -89,6 +93,39 @@ function workerHref(scriptPath) {
   return scriptPath;
 }
 
+async function createWorker(scriptPath) {
+  const href = workerHref(scriptPath);
+  const origin = window.location.origin;
+  const sameOrigin = href.startsWith(origin) || href.startsWith('blob:');
+  if (sameOrigin) {
+    return new Worker(href);
+  }
+  const res = await fetch(href);
+  if (!res.ok) {
+    throw new Error(`DuckDB worker download failed (${res.status})`);
+  }
+  return new Worker(URL.createObjectURL(await res.blob()));
+}
+
+async function resolveBundles() {
+  const selfHostedOk = await assetExists(SELF_HOSTED.eh.mainModule);
+  if (selfHostedOk) return SELF_HOSTED;
+
+  const bundledWasmOk = await assetExists(BUNDLED.eh.mainModule);
+  if (bundledWasmOk) return BUNDLED;
+
+  return {
+    mvp: {
+      mainModule: `${DUCKDB_CDN}/duckdb-mvp.wasm`,
+      mainWorker: BUNDLED.mvp.mainWorker,
+    },
+    eh: {
+      mainModule: `${DUCKDB_CDN}/duckdb-eh.wasm`,
+      mainWorker: BUNDLED.eh.mainWorker,
+    },
+  };
+}
+
 function describeProgress(progress) {
   const loaded = Number(progress?.bytesLoaded ?? progress?.loaded ?? 0);
   const total = Number(progress?.bytesTotal ?? progress?.total ?? 0);
@@ -118,13 +155,12 @@ export async function getDb() {
     emitProgress({ phase: 'import', percent: null, message: 'Starting the SQL engine…' });
     const duckdb = await import('@duckdb/duckdb-wasm');
 
-    const selfHostedOk = await assetExists(SELF_HOSTED.eh.mainModule);
-    const bundles = selfHostedOk ? SELF_HOSTED : BUNDLED;
+    const bundles = await resolveBundles();
     const bundle = await duckdb.selectBundle(bundles);
 
     emitProgress({ phase: 'worker', percent: null, message: 'Starting the SQL worker…' });
     // eh/mvp workers ship as classic IIFE bundles, not ES modules.
-    const worker = new Worker(workerHref(bundle.mainWorker));
+    const worker = await createWorker(bundle.mainWorker);
     worker.addEventListener('error', (event) => {
       const detail = event.message || event.filename || 'worker failed to start';
       console.warn(`DuckDB worker: ${detail}`);

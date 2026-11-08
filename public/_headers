@@ -1,0 +1,266 @@
+# Cloudflare Pages headers. Hostinger/LiteSpeed ignores this file and keeps
+# using .htaccess. Do not add a catch-all that would index preview URLs.
+#
+# More specific rules override earlier ones for the same header name.
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Content-Security-Policy: frame-ancestors 'none'; object-src 'none'; base-uri 'self'
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Content-Signal: search=yes, ai-input=yes, ai-train=yes
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.wasm
+  Content-Type: application/wasm
+  Cache-Control: public, max-age=31536000, immutable
+
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/
+  Link: </.well-known/api-catalog>; rel=api-catalog, </openapi.json>; rel=service-desc; type=application/json, </llms.txt>; rel=service-doc; type=text/plain, </llm-sitemap.json>; rel=describedby; type=application/json
+
+/glossary
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/glossary/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/compare
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/compare/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/tag
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/tag/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/tags
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/tags/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/category
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/category/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/cheatsheets/category
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/cheatsheets/category/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/interview-prep
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/interview-prep/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/practice
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/practice/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/roadmaps
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/roadmaps/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/advertise
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/advertise/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/contribute
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/contribute/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/contributors
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/contributors/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/news
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/news/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/newsletter
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/newsletter/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/reading-list
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/announcements
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/announcements/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/admin
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/admin/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/debug
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/debug/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/cheatsheets/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/cheatsheets/snowflake-sql
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/cheatsheets/sql-window-functions
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/cheatsheets/dbt-commands
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/cheatsheets/airflow-essentials
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/cheatsheets/snowflake-best-practices
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/cheatsheets/databricks
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/cheatsheets/python-for-data-engineers
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/cheatsheets/data-modeling
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/tools/*
+  X-Robots-Tag: noindex, follow
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/tools/snowflake-cost-calculator
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/tools/cloud-data-warehouse-cost-comparison
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/tools/sql-playground
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/tools/databricks-cost-calculator
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/tools/bigquery-cost-calculator
+  X-Robots-Tag: index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/well-known/api-catalog
+  Content-Type: application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=86400
+  Link: </.well-known/api-catalog>; rel=api-catalog, </openapi.json>; rel=service-desc; type=application/json, </llms.txt>; rel=service-doc; type=text/plain, </llm-sitemap.json>; rel=describedby; type=application/json
+
+/.well-known/api-catalog
+  Content-Type: application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=86400
+  Link: </.well-known/api-catalog>; rel=api-catalog, </openapi.json>; rel=service-desc; type=application/json, </llms.txt>; rel=service-doc; type=text/plain, </llm-sitemap.json>; rel=describedby; type=application/json
+
+/well-known/ai-catalog.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=86400
+
+/.well-known/ai-catalog.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=86400
+
+/index.md
+  Content-Type: text/markdown; charset=utf-8
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/auth.md
+  Content-Type: text/markdown; charset=utf-8
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=86400

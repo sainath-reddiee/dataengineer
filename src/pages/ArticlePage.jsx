@@ -606,17 +606,20 @@ const ArticlePage = () => {
             />
           </figure>
 
+          {!isAnnouncement && (
+            <Suspense fallback={null}>
+              <div className="mx-auto max-w-4xl">
+                <PipelineInstrument post={safePost} slug={slug} />
+              </div>
+            </Suspense>
+          )}
+
           {/* Body column is centred under the headline (~65-75 characters per
               line at 19px). On wide screens the sticky contents list sits in
               the right margin instead of pushing the column off-centre. */}
           <div className="relative">
             <div className="mx-auto min-w-0 max-w-2xl">
               <KeyTakeaways items={keyTakeaways} title={takeawaysTitle} />
-              {!isAnnouncement && (
-                <Suspense fallback={null}>
-                  <PipelineInstrument post={safePost} slug={slug} />
-                </Suspense>
-              )}
               <div className="xl:hidden">
                 <TableOfContents headings={headings} />
               </div>

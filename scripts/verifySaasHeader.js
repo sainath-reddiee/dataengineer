@@ -33,6 +33,7 @@ assert(header.includes('h-16'), 'Header should stay 64px to match Layout padding
 assert(header.includes('SearchModal'), 'Search modal must remain wired');
 assert(header.includes('aria-label="Search articles"'), 'Mobile header should keep search outside the hamburger');
 assert(header.includes('SupportModal'), 'Coffee / support modal must remain wired');
+assert(header.includes('ThemeToggle'), 'Header must keep a light/dark mode toggle');
 assert(!header.includes('controlHeader') && !header.includes('setIsVisible'), 'Header must stay visible while scrolling');
 
 // Editorial look: serif wordmark, no gradients, glass or glow in the chrome.

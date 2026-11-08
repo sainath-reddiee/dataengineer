@@ -1,0 +1,7 @@
+# Cloudflare Pages project. Production aliases: dataengineerhub.pages.dev
+# Custom domains dataengineerhub.blog + www are attached on the project.
+# Preview branch stays on *.pages.dev (noindexed in public/_headers).
+# WordPress remains on Hostinger at app.dataengineerhub.blog.
+name = "dataengineerhub"
+compatibility_date = "2026-11-08"
+pages_build_output_dir = "dist-pages"

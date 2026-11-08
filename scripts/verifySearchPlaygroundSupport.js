@@ -40,7 +40,8 @@ assert(search.includes('deh-search-recent'), 'Search should remember recent open
 assert(duckdb.includes("from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url'"), 'DuckDB wasm must ride the Vite asset graph');
 assert(duckdb.includes("from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url'"), 'DuckDB worker must ride the Vite asset graph');
 assert(duckdb.includes('/duckdb/duckdb-eh.wasm'), 'DuckDB should still prefer same-origin /duckdb/ copies when present');
-assert(!duckdb.includes('jsdelivr'), 'DuckDB must not depend on jsDelivr at runtime');
+assert(duckdb.includes('cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@'), 'DuckDB wasm must fall back to jsDelivr when Pages strips 25 MiB files');
+assert(duckdb.includes('bundledWasmOk'), 'jsDelivr is last resort after HEAD of the hashed Vite wasm');
 assert(duckdb.includes('INIT_TIMEOUT_MS'), 'DuckDB init must time out instead of spinning forever');
 assert(duckdb.includes('onDuckDbProgress'), 'Playground needs a progress hook so the first 32 MB download is visible');
 assert(duckdb.includes('resetDb'), 'Failed DuckDB inits must be retryable');

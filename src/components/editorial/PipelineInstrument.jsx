@@ -31,6 +31,7 @@ export default function PipelineInstrument({ post, slug }) {
   const [sweepKey, setSweepKey] = useState(0);
   const [storageState, setStorageState] = useState('pruned'); // 'pruned' | 'unclustered' | 'cow'
   const [incidentState, setIncidentState] = useState('compare'); // 'failed' | 'compare'
+  const [open, setOpen] = useState(false);
   const timerRef = useRef(null);
 
   useEffect(() => {
@@ -102,8 +103,23 @@ export default function PipelineInstrument({ post, slug }) {
   const allowToolLink = !ADSENSE_REVIEW_MODE || isReviewAllowlistedTool(spec.toolSlug);
 
   return (
+    <details
+      className="deh-instrument-disclosure"
+      onToggle={(event) => {
+        const next = event.currentTarget.open;
+        setOpen(next);
+        if (!next) setIsPlayingTrace(false);
+      }}
+    >
+      <summary className="deh-instrument-summary">
+        <span className="deh-instrument-summary-kicker">Pipeline schematic</span>
+        <span className="deh-instrument-summary-meta">
+          {MODE_LABELS[spec.primaryMode] || 'Diagram'} · {open ? 'Hide' : 'Show'}
+        </span>
+      </summary>
+      {open && (
     <figure
-      className="deh-instrument my-8"
+      className="deh-instrument"
       aria-label={`Interactive engineering schematic: ${spec.kicker}`}
     >
       <div className="deh-instrument-header">
@@ -632,5 +648,7 @@ export default function PipelineInstrument({ post, slug }) {
         )}
       </figcaption>
     </figure>
+      )}
+    </details>
   );
 }
