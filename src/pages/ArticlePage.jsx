@@ -2,7 +2,8 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, AlertCircle, RefreshCw, Share2 } from 'lucide-react';
+import { ArrowLeft, AlertCircle, RefreshCw } from 'lucide-react';
+import ShareButtons from '@/components/ShareButtons';
 import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import { usePost } from '@/hooks/useWordPress';
@@ -15,7 +16,6 @@ import ReadingProgressBar from '@/components/ReadingProgressBar';
 import TableOfContents, { extractHeadings, injectHeadingIds } from '@/components/TableOfContents';
 import KeyTakeaways from '@/components/KeyTakeaways';
 import useCopyCodeButtons from '@/hooks/useCopyCodeButtons';
-import useReactions from '@/hooks/useReactions';
 import usePopularity from '@/hooks/usePopularity';
 import { markSponsoredLinks } from '@/utils/sponsoredLinks';
 import { isBlogOwner, OWNER_DISPLAY_NAME, OWNER_ROLE, OWNER_PROFILE_PATH } from '@/lib/contributorIdentity';
@@ -29,14 +29,13 @@ import { analyzeArticleFaqs } from '@/utils/articleFaq';
 import { enhanceArticleCodeBlocks } from '@/utils/articleCodeBlocks';
 import { analyzeKeyTakeaways, isElevatedTakeawaysSource } from '@/utils/articleTakeaways';
 import { injectArticleContextualLinks } from '@/data/articleContextualLinks';
+import { readReadingPlace, writeReadingPlace } from '@/utils/readingPlace';
 
 const PipelineInstrument = React.lazy(() => import('@/components/editorial/PipelineInstrument'));
 const AdPlacement = React.lazy(() => import('../components/AdPlacement'));
 const AudioReader = React.lazy(() => import('@/components/AudioReader'));
 const GiscusComments = React.lazy(() => import('@/components/GiscusComments'));
-const ShareButtons = React.lazy(() => import('@/components/ShareButtons'));
 const EmailDigestBanner = React.lazy(() => import('@/components/EmailDigestBanner'));
-const InlineToolWidget = React.lazy(() => import('@/components/InlineToolWidget'));
 const AuthorBioCard = React.lazy(() => import('@/components/AuthorBioCard'));
 const SponsorPlacement = React.lazy(() => import('@/components/SponsorPlacement'));
 const ArticleFaq = React.lazy(() => import('@/components/ArticleFaq'));
@@ -249,7 +248,7 @@ const MetadataOption1 = ({ safePost, formatDate, slug, isAnnouncement = false })
     && formatDate(safePost.modified) !== formatDate(safePost.date);
 
   return (
-    <header className="mx-auto max-w-3xl">
+    <header>
       <p className="kicker mb-4">
         {ADSENSE_REVIEW_MODE ? (
           <span>{safePost.category}</span>
@@ -300,21 +299,7 @@ const MetadataOption1 = ({ safePost, formatDate, slug, isAnnouncement = false })
           <Suspense fallback={<span className="inline-block h-10 w-10" />}>
             <SaveArticleButton slug={slug} title={safePost.title} />
           </Suspense>
-          <button
-            type="button"
-            onClick={async () => {
-              if (navigator.share) {
-                navigator.share({ title: safePost.title, url: window.location.href }).catch(() => {});
-              } else {
-                try { await navigator.clipboard.writeText(window.location.href); } catch { /* ignore */ }
-              }
-            }}
-            className="inline-flex h-10 w-10 items-center justify-center rounded border border-paper-500 text-ink-muted transition-colors hover:border-paper-600 hover:text-ink"
-            title="Share article"
-            aria-label="Share article"
-          >
-            <Share2 className="h-4 w-4" />
-          </button>
+          <ShareButtons title={safePost.title} />
         </div>
       </div>
     </header>
@@ -357,8 +342,8 @@ const ArticlePage = () => {
   // Inject copy buttons on code blocks after content renders
   useCopyCodeButtons(post?.content);
 
-  // Engagement hooks — must be called before early returns (Rules of Hooks)
-  const { reactions, userReaction, react } = useReactions(slug);
+  // Popularity is recorded for the archive. Reactions stay off the page so the
+  // close of an article is not a second toolbar.
   usePopularity(slug);
 
   // SSG HTML is already sanitized at build time. Re-running DOMPurify here
@@ -470,6 +455,53 @@ const ArticlePage = () => {
   }, [post, slug]);
 
   const headings = useMemo(() => extractHeadings(processedHtml), [processedHtml]);
+
+  useEffect(() => {
+    if (!slug || !processedHtml || !post?.title) return undefined;
+    const hashId = window.location.hash.replace(/^#/, '');
+    const place = readReadingPlace();
+    const targetId = hashId || (place?.slug === slug ? place.headingId : '');
+    let jumpTimer = 0;
+    if (targetId) {
+      const jump = () => {
+        const target = document.getElementById(targetId);
+        if (target) target.scrollIntoView({ block: 'start' });
+      };
+      // The heading id is injected with the article HTML, after the browser's
+      // first hash jump, so retry once the node is actually in the document.
+      requestAnimationFrame(jump);
+      jumpTimer = window.setTimeout(jump, 60);
+    }
+
+    let timer = 0;
+    const save = () => {
+      const nodes = [...document.querySelectorAll('.article-content h2[id]')];
+      if (nodes.length === 0) return;
+      let current = nodes[0];
+      for (const node of nodes) {
+        if (node.getBoundingClientRect().top <= 120) current = node;
+      }
+      const index = nodes.indexOf(current);
+      writeReadingPlace({
+        slug,
+        title: post.title,
+        headingId: current.id,
+        heading: (current.textContent || '').trim().slice(0, 80),
+        stage: String(index + 1).padStart(2, '0'),
+      });
+    };
+    const onScroll = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(save, 400);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.clearTimeout(timer);
+      window.clearTimeout(jumpTimer);
+    };
+  }, [slug, processedHtml, post?.title]);
+
   const parkedSsgHtml = useSsgArticleFallback(slug);
 
   if ((loading && !post) || ((error || !post) && parkedSsgHtml)) {
@@ -540,9 +572,6 @@ const ArticlePage = () => {
   return (
     <div className="pt-4 pb-12">
       <ReadingProgressBar readTime={safePost.readTime} />
-      <Suspense fallback={null}>
-        <ShareButtons title={safePost.title} url={typeof window !== 'undefined' ? window.location.href : ''} />
-      </Suspense>
 
       <MetaTags
         title={seoMeta?.title || safePost.title}
@@ -574,55 +603,53 @@ const ArticlePage = () => {
           </Link>
         </div>
 
-        <article className="space-y-8">
-          <MetadataOption1 safePost={safePost} formatDate={formatDate} slug={slug} isAnnouncement={isAnnouncement} />
+        <article>
+          {/* The reading column stays on the center track at every width.
+              From 1280px the contents rail occupies the right margin (48px
+              gutter, 200px of H2 stages). Narrower windows keep the same
+              column and fold contents into the strip above the essay. */}
+          <div className="article-spread">
+            <div className="article-spread-lead">
+              <MetadataOption1 safePost={safePost} formatDate={formatDate} slug={slug} isAnnouncement={isAnnouncement} />
 
-          {isAnnouncement ? (
-            <p className="mx-auto max-w-3xl border-l-2 border-rust-500 bg-paper-300 px-4 py-3 text-[15px] text-ink-body">
-              <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-rust-600">Sponsored announcement</span>{' '}
-              This is a paid announcement supplied by the company named in it, published with light editing. It is not a
-              review, and DataEngineer Hub has not necessarily tested the product. Links are marked as sponsored.
-            </p>
-          ) : isSponsoredPost && (
-            <p className="mx-auto max-w-3xl border-l-2 border-rust-500 bg-paper-300 px-4 py-3 text-[15px] text-ink-body">
-              <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-rust-600">Sponsored</span>{' '}
-              This guide was written in partnership with a sponsor. Our{' '}
-              <Link to="/editorial-standards" className="text-rust-600 underline decoration-rust-200 underline-offset-2">editorial standards</Link>{' '}
-              still apply, and links to the sponsor are marked as sponsored.
-            </p>
-          )}
+              {isAnnouncement ? (
+                <p className="border-l-2 border-rust-500 bg-paper-300 px-4 py-3 text-[15px] text-ink-body">
+                  <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-rust-600">Sponsored announcement</span>{' '}
+                  This is a paid announcement supplied by the company named in it, published with light editing. It is not a
+                  review, and DataEngineer Hub has not necessarily tested the product. Links are marked as sponsored.
+                </p>
+              ) : isSponsoredPost && (
+                <p className="border-l-2 border-rust-500 bg-paper-300 px-4 py-3 text-[15px] text-ink-body">
+                  <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-rust-600">Sponsored</span>{' '}
+                  This guide was written in partnership with a sponsor. Our{' '}
+                  <Link to="/editorial-standards" className="text-rust-600 underline decoration-rust-200 underline-offset-2">editorial standards</Link>{' '}
+                  still apply, and links to the sponsor are marked as sponsored.
+                </p>
+              )}
 
-          {/* Hero Image: explicit 16:9 aspect ratio & dimensions prevent CLS */}
-          <figure className="relative mx-auto aspect-video max-h-[220px] max-w-4xl overflow-hidden rounded-sm border border-paper-500 bg-paper-300 sm:max-h-[360px] md:max-h-[440px]">
-            <LazyImage
-              src={safePost.image}
-              alt={safePost.title}
-              width={1600}
-              height={900}
-              quality={90}
-              sizes="(max-width: 768px) 100vw, 1200px"
-              className="h-full w-full object-cover"
-              priority={true}
-            />
-          </figure>
+              <figure className="article-hero-frame relative h-[200px] w-full overflow-hidden border border-paper-500 bg-paper-300 sm:h-[220px]">
+                <LazyImage
+                  src={safePost.image}
+                  alt={safePost.title}
+                  width={1600}
+                  height={900}
+                  quality={90}
+                  sizes="(max-width: 768px) 100vw, 672px"
+                  className="h-full w-full object-cover"
+                  priority={true}
+                />
+              </figure>
 
-          {!isAnnouncement && (
-            <Suspense fallback={null}>
-              <div className="mx-auto max-w-4xl">
-                <PipelineInstrument post={safePost} slug={slug} />
-              </div>
-            </Suspense>
-          )}
+              {!isAnnouncement && (
+                <Suspense fallback={null}>
+                  <PipelineInstrument post={safePost} slug={slug} />
+                </Suspense>
+              )}
+            </div>
 
-          {/* Body column is centred under the headline (~65-75 characters per
-              line at 19px). On wide screens the sticky contents list sits in
-              the right margin instead of pushing the column off-centre. */}
-          <div className="relative">
-            <div className="mx-auto min-w-0 max-w-2xl">
+            <div className="article-spread-body">
               <KeyTakeaways items={keyTakeaways} title={takeawaysTitle} />
-              <div className="xl:hidden">
-                <TableOfContents headings={headings} />
-              </div>
+              <TableOfContents headings={headings} placement="strip" />
               <div className="prose max-w-none prose-headings:text-ink prose-strong:text-ink">
                 {waitingOnSanitize ? (
                   <ArticleSkeleton />
@@ -637,22 +664,18 @@ const ArticlePage = () => {
                 <ArticleFaq items={articleFaqs} />
               </Suspense>
             </div>
-            <div className="absolute inset-y-0 left-[calc(50%+23rem)] hidden w-56 xl:block">
-              <TableOfContents headings={headings} />
-            </div>
+
+            <aside className="article-spread-rail">
+              <TableOfContents headings={headings} placement="rail" />
+            </aside>
           </div>
 
-          {/* Renders only when a live sponsor matches this article; always labeled. */}
-          <div className="mx-auto max-w-2xl">
+          <div className="article-spread-close">
             {!isAnnouncement && (
               <Suspense fallback={null}>
                 <SponsorPlacement category={safePost.category} tags={safePost.tags} slug={slug} />
               </Suspense>
             )}
-          </div>
-
-          {/* Everything after the body stays in the reading column. */}
-          <div className="mx-auto max-w-2xl space-y-8 border-t border-paper-500 pt-8">
             {safePost.tags && safePost.tags.length > 0 && (
               <TagsList tags={safePost.tags} linkless={ADSENSE_REVIEW_MODE} />
             )}
@@ -663,32 +686,6 @@ const ArticlePage = () => {
               </Suspense>
             )}
 
-            {/* Reactions: a quiet "was this useful" row, not a social bar. */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="mr-1 text-sm text-ink-faint">Was this useful?</span>
-              {[['👍', 'Like'], ['🔥', 'Fire'], ['💡', 'Insightful'], ['🎉', 'Celebrate'], ['❤️', 'Love']].map(([emoji, label]) => {
-                const count = reactions[emoji] || 0;
-                const isActive = userReaction === emoji;
-                return (
-                  <button
-                    key={emoji}
-                    type="button"
-                    aria-pressed={isActive}
-                    aria-label={`React with ${label}${count > 0 ? `, ${count} reaction${count !== 1 ? 's' : ''}` : ''}`}
-                    onClick={() => react(emoji)}
-                    className={`compact-control inline-flex items-center gap-1.5 rounded border px-2.5 py-1 text-sm transition-colors ${
-                      isActive
-                        ? 'border-rust-300 bg-rust-50 text-rust-700'
-                        : 'border-paper-500 text-ink-muted hover:border-paper-600'
-                    }`}
-                  >
-                    <span aria-hidden="true">{emoji}</span>
-                    {count > 0 && <span className="font-mono text-xs">{count}</span>}
-                  </button>
-                );
-              })}
-            </div>
-
             {isAnnouncement ? (
               <p className="text-[15px] text-ink-muted">
                 <Link to="/announcements" className="text-rust-600 underline decoration-rust-200 underline-offset-2">More sponsored announcements</Link>
@@ -696,9 +693,6 @@ const ArticlePage = () => {
               </p>
             ) : (
               <>
-                <Suspense fallback={null}>
-                  <InlineToolWidget post={safePost} />
-                </Suspense>
                 <Suspense fallback={null}>
                   <AuthorBioCard author={safePost.authorData} />
                 </Suspense>

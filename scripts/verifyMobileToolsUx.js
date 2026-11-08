@@ -32,13 +32,13 @@ assert(hub.includes('TOOL_CATEGORIES'), 'Tools hub should filter by category on 
 assert(hub.includes("params.get('stack')"), 'Tools hub should honor pipeline-stage deep links');
 assert(search.includes('searchTools'), 'Search must rank local tools before WP articles');
 assert(header.includes('aria-label="Free tools"'), 'Mobile header should expose a tools shortcut');
-assert(home.includes('FeaturedToolsRail'), 'Home should show a tools rail above the article feed');
+assert(!home.includes('FeaturedToolsRail'), 'Home stays quiet; tools live in the header, footer, and /tools');
 assert(footer.includes('Free tools'), 'Footer should list calculators, not only categories');
 assert(footer.includes('/tools/sql-playground'), 'Footer should deep-link the playground');
 assert(widget.includes('/tools/snowflake-cost-calculator'), 'Article widgets should open a real calculator');
 assert(!widget.includes("to: '/compare'"), 'Article widgets should not dump people on Compare');
 assert(articleMap.includes('calculators:'), 'Related tools map should include calculators');
-assert(article.includes('<InlineToolWidget'), 'Articles should offer one relevant interactive tool');
+assert(!article.includes('<InlineToolWidget'), 'Articles should not end with a tool promo');
 assert(playground.includes("searchParams.get('sql')"), 'Playground should accept ?sql= deep links');
 assert(playground.includes("pane === 'editor'"), 'Playground should tab Editor/Results on phones');
 assert(cta.includes("to: '/tools'"), 'In-article explore rail should keep Free Tools');

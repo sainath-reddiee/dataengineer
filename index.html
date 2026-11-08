@@ -308,17 +308,22 @@
       .site-footer-links a:hover { color: #9C3A1A; }
       .site-footer p { margin: 0; }
 
-      /* Cookie banner lives OUTSIDE #root so first paint includes it (CLS fix). */
-      #deh-cookie-banner { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; padding: 1rem; }
+      /* One line at the bottom edge. It must not become a card over the essay.
+         Google's Privacy & messaging prompt, when published, replaces this
+         line. The two are never on screen together. */
+      #deh-cookie-banner { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; padding: 0; }
       html.deh-need-consent #deh-cookie-banner { display: block; }
-      #deh-cookie-banner .deh-cookie-card { max-width: 56rem; margin: 0 auto; background: #FFFFFF; border: 1px solid #1B1A17; border-radius: 6px; padding: 1rem; box-shadow: 0 12px 32px -12px rgba(27, 26, 23, 0.35); display: flex; flex-direction: column; gap: 1rem; }
-      #deh-cookie-banner p { margin: 0; font-size: 0.875rem; color: #33302B; line-height: 1.5; }
+      #deh-cookie-banner .deh-cookie-card { max-width: none; margin: 0; background: #FAF8F4; border: 0; border-top: 1px solid #1B1A17; border-radius: 0; padding: 0.5rem 1rem; box-shadow: none; display: flex; flex-direction: row; align-items: center; gap: 0.75rem 1rem; }
+      #deh-cookie-banner p { margin: 0; flex: 1; min-width: 12rem; font-size: 0.8125rem; color: #33302B; line-height: 1.35; }
       #deh-cookie-banner a { color: #9C3A1A; }
-      #deh-cookie-banner .deh-cookie-actions { display: flex; gap: 0.75rem; }
-      #deh-cookie-banner button { min-height: 40px; padding: 0.5rem 1rem; border: 1px solid #CFC7B8; border-radius: 4px; font: inherit; font-size: 0.875rem; font-weight: 500; cursor: pointer; }
-      #deh-cookie-banner [data-consent="decline"] { background: #FAF8F4; color: #33302B; }
+      #deh-cookie-banner .deh-cookie-actions { display: flex; gap: 0.5rem; flex: none; }
+      #deh-cookie-banner button { min-height: 36px; padding: 0.35rem 0.85rem; border: 1px solid #CFC7B8; border-radius: 4px; font: inherit; font-size: 0.8125rem; font-weight: 500; cursor: pointer; }
+      #deh-cookie-banner [data-consent="decline"] { background: transparent; color: #33302B; }
       #deh-cookie-banner [data-consent="accept"] { background: #1B1A17; border-color: #1B1A17; color: #FAF8F4; }
       html.deh-consent-ready #deh-cookie-banner { display: none !important; }
+      @media (max-width: 640px) {
+        #deh-cookie-banner .deh-cookie-card { flex-wrap: wrap; }
+      }
     </style>
     
     
@@ -459,10 +464,9 @@
     <div id="deh-cookie-banner" role="dialog" aria-label="Cookie consent">
       <div class="deh-cookie-card">
         <p>
-          We use cookies and similar technologies to enhance your experience, analyze site traffic, and serve relevant ads.
-          By clicking "Accept", you consent to the use of cookies. Read our
-          <a href="/privacy-policy#cookies">Privacy Policy</a>
-          for more information.
+          Cookies run analytics and ads.
+          <a href="/privacy-policy#cookies">Privacy Policy</a>.
+          Accept to allow them, or decline and keep essential cookies only.
         </p>
         <div class="deh-cookie-actions">
           <button type="button" data-consent="decline">Decline</button>
@@ -571,11 +575,49 @@
         window.addEventListener('load', function () {
           if ('requestIdleCallback' in window) {
             requestIdleCallback(inject, { timeout: 2500 });
+            requestIdleCallback(loadFundingChoices, { timeout: 2500 });
           } else {
             setTimeout(inject, 2500);
+            setTimeout(loadFundingChoices, 2500);
           }
         }, { once: true });
       })();
+      function loadFundingChoices() {
+        var p = location.pathname;
+        if (p.indexOf('/admin') === 0 || p === '/debug' || p.indexOf('/sponsors/dashboard') === 0) return;
+        var pub = 'pub-8624144810216728';
+        if (document.querySelector('script[src*="fundingchoicesmessages.google.com"]')) return;
+        window.googlefc = window.googlefc || {};
+        window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
+        function yieldToGoogle() {
+          document.documentElement.classList.add('deh-consent-ready');
+          document.documentElement.classList.remove('deh-need-consent');
+          var el = document.getElementById('deh-cookie-banner');
+          if (el) el.hidden = true;
+        }
+        window.googlefc.callbackQueue.push({
+          CONSENT_DATA_READY: function () {
+            if (document.querySelector('#fc-dialog, .fc-consent-root, .fc-dialog-container, .fc-dialog-overlay')) {
+              yieldToGoogle();
+            }
+          }
+        });
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://fundingchoicesmessages.google.com/i/' + pub + '?ers=1';
+        s.onload = function () {
+          var ticks = 0;
+          var timer = setInterval(function () {
+            ticks += 1;
+            if (document.querySelector('#fc-dialog, .fc-consent-root, .fc-dialog-container, .fc-dialog-overlay')) {
+              yieldToGoogle();
+              clearInterval(timer);
+            }
+            if (ticks > 20) clearInterval(timer);
+          }, 300);
+        };
+        document.head.appendChild(s);
+      }
     </script>
   </body>
 </html>

@@ -1,6 +1,7 @@
-// src/components/ShareButtons.jsx
-import { useState, useEffect } from 'react';
-import { Link2, Check } from 'lucide-react';
+// Share stays in the byline. The fixed left rail is intentionally gone:
+// it occupied the margin the reading column needs.
+import { useEffect, useRef, useState } from 'react';
+import { Link2, Check, Share2 } from 'lucide-react';
 
 const LinkedInIcon = ({ className }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
@@ -15,23 +16,59 @@ const WhatsAppIcon = ({ className }) => (
 );
 
 const ShareButtons = ({ title, url }) => {
+  const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const [pageUrl, setPageUrl] = useState(url || '');
+  const rootRef = useRef(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsVisible(window.scrollY > 400);
+    if (url) setPageUrl(url);
+    else if (typeof window !== 'undefined') setPageUrl(window.location.href);
+  }, [url]);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onPointer = (event) => {
+      if (!rootRef.current?.contains(event.target)) setOpen(false);
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    const onKey = (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('pointerdown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
 
-  if (!isVisible) return null;
+  const encodedUrl = encodeURIComponent(pageUrl);
+  const encodedTitle = encodeURIComponent(title || '');
 
-  const encodedUrl = encodeURIComponent(url);
-  const encodedTitle = encodeURIComponent(title);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(pageUrl);
+    } catch {
+      const textarea = document.createElement('textarea');
+      textarea.value = pageUrl;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
-  const shareLinks = [
+  const items = [
+    {
+      name: 'Copy link',
+      onClick: handleCopy,
+      icon: copied ? Check : Link2,
+      label: copied ? 'Link copied' : 'Copy link',
+    },
     {
       name: 'LinkedIn',
       href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
@@ -44,54 +81,59 @@ const ShareButtons = ({ title, url }) => {
     },
   ];
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      const textarea = document.createElement('textarea');
-      textarea.value = url;
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
   return (
-    <div
-      className="fixed left-4 top-1/2 z-40 hidden -translate-y-1/2 flex-col gap-2 lg:flex"
-      aria-label="Share article"
-    >
-      {shareLinks.map((link) => (
-        <a
-          key={link.name}
-          href={link.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-paper-500 bg-paper-50 text-ink-muted transition-colors hover:border-ink hover:text-ink"
-          aria-label={`Share on ${link.name}`}
-        >
-          <link.icon className="h-4 w-4" />
-        </a>
-      ))}
+    <div ref={rootRef} className="relative">
       <button
         type="button"
-        onClick={handleCopy}
-        className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition-colors ${
-          copied
-            ? 'border-rust-500 bg-rust-50 text-rust-600'
-            : 'border-paper-500 bg-paper-50 text-ink-muted hover:border-ink hover:text-ink'
-        }`}
-        aria-label={copied ? 'Link copied' : 'Copy article link'}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        onClick={() => setOpen((value) => !value)}
+        className="inline-flex h-10 w-10 items-center justify-center rounded border border-paper-500 text-ink-muted transition-colors hover:border-paper-600 hover:text-ink"
+        title="Share article"
+        aria-label="Share article"
       >
-        {copied ? <Check className="h-4 w-4" /> : <Link2 className="h-4 w-4" />}
+        <Share2 className="h-4 w-4" />
       </button>
+      <div
+        role="menu"
+        aria-label="Share article"
+        className={`article-share-menu absolute right-0 z-30 mt-2 w-44 border border-paper-500 bg-paper-50 py-1 ${
+          open ? 'is-open' : ''
+        }`}
+        hidden={!open}
+      >
+        {items.map((item) => {
+          const Icon = item.icon;
+          if (item.href) {
+            return (
+              <a
+                key={item.name}
+                role="menuitem"
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-3 py-2 text-sm text-ink-soft transition-colors hover:bg-paper-300 hover:text-ink"
+                onClick={() => setOpen(false)}
+              >
+                <Icon className="h-4 w-4" />
+                {item.name}
+              </a>
+            );
+          }
+          return (
+            <button
+              key={item.name}
+              type="button"
+              role="menuitem"
+              onClick={item.onClick}
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-ink-soft transition-colors hover:bg-paper-300 hover:text-ink"
+            >
+              <Icon className="h-4 w-4" />
+              {item.label}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 };

@@ -69,7 +69,6 @@ export const revokeConsent = () => {
   localStorage.removeItem(CONSENT_TIMESTAMP_KEY);
   setConsentCookie('');
 
-  // Revoke Google Consent Mode v2 permissions
   if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
     window.gtag('consent', 'update', {
       'ad_storage': 'denied',
@@ -84,6 +83,25 @@ export const revokeConsent = () => {
 
   showStaticBanner();
   window.dispatchEvent(new CustomEvent('consentChanged', { detail: 'revoked' }));
+};
+
+/**
+ * Footer "Privacy settings". Reopens Google's certified message when that
+ * prompt is on the page. Otherwise reopens the one-line site banner.
+ * The two prompts are never left on screen together.
+ */
+export const openPrivacySettings = () => {
+  const fc = typeof window !== 'undefined' ? window.googlefc : null;
+  if (fc && typeof fc.showRevocationMessage === 'function') {
+    try {
+      fc.showRevocationMessage();
+      hideStaticBanner();
+      return;
+    } catch {
+      // Fall through to the site banner.
+    }
+  }
+  revokeConsent();
 };
 
 const CookieConsent = () => {
@@ -146,27 +164,28 @@ const CookieConsent = () => {
     <div
       role="dialog"
       aria-label="Cookie consent"
-      className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6"
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-ink bg-paper px-4 py-2"
     >
-      <div className="max-w-4xl mx-auto bg-slate-800 border border-white/10 rounded-xl p-4 md:p-6 shadow-2xl backdrop-blur-sm flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <p className="text-sm text-gray-300 flex-1">
-          We use cookies and similar technologies to enhance your experience, analyze site traffic, and serve relevant ads.
-          By clicking "Accept", you consent to the use of cookies. Read our{' '}
-          <Link to="/privacy-policy#cookies" className="text-blue-400 hover:underline">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3">
+        <p className="min-w-[12rem] flex-1 text-[13px] leading-snug text-ink-body">
+          Cookies run analytics and ads.{' '}
+          <Link to="/privacy-policy#cookies" className="text-rust-600 underline decoration-rust-200 underline-offset-2">
             Privacy Policy
-          </Link>{' '}
-          for more information.
+          </Link>
+          . Accept to allow them, or decline and keep essential cookies only.
         </p>
-        <div className="flex gap-3 shrink-0">
+        <div className="flex gap-2">
           <button
+            type="button"
             onClick={() => saveConsent('declined')}
-            className="px-4 py-2 text-sm font-medium text-gray-300 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+            className="rounded border border-paper-600 px-3 py-1.5 text-sm text-ink-body hover:border-ink"
           >
             Decline
           </button>
           <button
+            type="button"
             onClick={() => saveConsent('accepted')}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+            className="rounded bg-ink px-3 py-1.5 text-sm text-paper hover:bg-rust-600"
           >
             Accept
           </button>

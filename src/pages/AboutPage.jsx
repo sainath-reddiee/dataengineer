@@ -8,49 +8,55 @@ import { useStats } from '@/hooks/useStats';
 const YOE = Math.max(5, new Date().getFullYear() - 2021);
 
 // ── Content ───────────────────────────────────────────────────
-const FEATURED_PROJECTS = [
+const AGENTS = [
   {
-    title: 'AI Data Canonical Modeler',
-    category: 'Snowflake Cortex AI',
-    desc: 'Autonomous LLM agent native to Snowflake Cortex that generates canonical data models, Silver layer dbt models, and column mappings automatically from raw landing schemas — reducing modeling time from days to minutes.',
-    badge: '60-70% Efficiency Boost',
-    tech: ['Snowflake Cortex', 'Python', 'dbt', 'Streamlit'],
+    id: 'agentos',
+    title: 'Agentos',
+    for: 'Knowledge base, build time, and runtime',
+    value: 'Manual source onboarding dropped 60–70%. Modeling that took days, and pipeline setup that took weeks, comes back in minutes. A failed Airflow run is acted on without waiting for someone to read the log. The knowledge base holds the canonical model, the source-to-target mapping, the business definitions, the critical data elements, and every action an agent has already taken. Build-time agents read that base and draft the Silver model, the dbt project, the data-quality rules, and the standards review before a pipeline is scheduled. The runtime agent stays on after the DAG is live.',
   },
   {
-    title: 'AI dbt Code Generator',
-    category: 'Pipeline Automation',
-    desc: 'Transforms complex Source-to-Target Mapping (STTM) files directly into production-ready, modular dbt project structures, eliminating weeks of manual SQL development.',
-    badge: 'Weeks Saved',
-    tech: ['dbt', 'Python', 'Snowflake', 'STTM'],
+    id: 'runtime-agent',
+    title: 'Runtime agent',
+    for: 'Airflow logs, after the pipeline is live',
+    value: 'Build-time agents finish before the schedule starts. This one does not. It monitors Airflow task logs, acts when a run fails, and writes that action into the Agentos knowledge base. The next run, and the next source, start from what already happened instead of a log nobody kept.',
   },
   {
-    title: 'Data Model Validator Agent',
-    category: 'Data Governance & Standards',
-    desc: 'AI co-reviewer Streamlit application that inspects uploaded ERDs, orchestrates multi-agent evaluation against OSCRE industry compliance standards, profiles source data, and generates structured compliance checklists.',
-    badge: 'OSCRE Standard',
-    tech: ['Streamlit', 'Python', 'Multi-Agent', 'OSCRE'],
+    id: 'canonical-modeler',
+    title: 'Canonical modeler',
+    for: 'Silver model from a landing schema',
+    value: 'The landing table is not the model the platform publishes. This agent reads the raw schema and the knowledge base and drafts the Silver canonical model and the column mapping. A pass that took days comes back in minutes.',
   },
   {
-    title: 'Automated Data Quality Accelerator',
-    category: 'Data Quality & Lineage',
-    desc: 'End-to-end automation engine linking Collibra Critical Data Elements (CDEs) with SODA CL rule definitions via semantic Cortex LLM mapping with >60% accuracy.',
-    badge: 'Collibra + SODA CL',
-    tech: ['Collibra', 'SODA CL', 'Snowflake', 'Python'],
+    id: 'dbt-generator',
+    title: 'dbt generator',
+    for: 'A mapping that still has to become a pipeline',
+    value: 'A finished source-to-target mapping was still rewritten by hand as dbt models, tests, and project structure, once per source. This agent turns the mapping into that project. Across 27 sources, that was weeks of SQL.',
   },
   {
-    title: 'Root-Cause & Remediation Engine',
-    category: 'Data Quality Analytics',
-    desc: 'Automated AI-generated JSON diagnostic engine leveraging Snowflake Cortex (AI_COMPLETE, AI_SIMILARITY) to diagnose data failures, location patterns, and generate actionable remediation plans.',
-    badge: '>60% Mapping Accuracy',
-    tech: ['Snowflake Cortex', 'AI_COMPLETE', 'JSON Analytics'],
+    id: 'dq-accelerator',
+    title: 'Data quality accelerator',
+    for: 'A critical data element with no check',
+    value: 'Collibra already names the elements that matter. SODA is what checks them at the Bronze-to-Silver gate. This agent maps each element to a rule, at better than 60% accuracy, and drafts the business definition that rule is enforcing.',
   },
   {
-    title: 'Self-Service Custom AI Skills',
-    category: 'DataOps Productivity',
-    desc: 'Library of reusable, custom AI skills empowering team members to automate repetitive DataOps tasks: rapid STTM creation, dbt generation, and reverse-analysis of complex codebases.',
-    badge: 'Reusable AI Skills',
-    tech: ['Custom AI Skills', 'DataOps', 'Reverse Engineering'],
-  }
+    id: 'model-validator',
+    title: 'Model validator',
+    for: 'A model that looks done and is still wrong',
+    value: 'An ERD can satisfy the diagram and still miss the industry standard, or disagree with the rows that actually landed. This agent reviews the model against OSCRE, profiles the source, and returns a compliance checklist.',
+  },
+  {
+    id: 'remediation',
+    title: 'Root cause and remediation',
+    for: 'A failed check with no next step',
+    value: 'A quality failure says something is wrong. It does not say where, or what to change, across Staging, Refined, and Reporting. This agent writes that diagnosis and the remediation.',
+  },
+  {
+    id: 'self-service-skills',
+    title: 'Self-service skills',
+    for: 'The same work, for someone who did not build the agent',
+    value: 'Drafting a mapping, generating dbt, or reading a codebase you did not write should not depend on one person. These skills run on the same knowledge base, so a teammate starts from the source instead of a blank page.',
+  },
 ];
 
 const TIMELINE = [
@@ -60,12 +66,7 @@ const TIMELINE = [
     company: 'Anblicks',
     location: 'Hyderabad, India',
     highlights: [
-      'GDP Project (Jan 2026 – Present): Independently developed and deployed groundbreaking AI accelerators natively on Snowflake using Cortex & agentic AI, driving 60-70% team efficiency gains.',
-      'AI Canonical Modeler & dbt Generator: Cut data modeling and dbt pipeline setup from weeks/days down to mere minutes.',
-      'Data Model Validator Agent: Built multi-agent Streamlit app that evaluates ERDs against OSCRE industry standards, profiles real source data, and produces actionable compliance reports.',
-      'DQ Accelerator & AI Mapping: Integrated Collibra CDEs with SODA CL rules via Cortex LLMs (AI_COMPLETE, AI_SIMILARITY), achieving >60% semantic mapping accuracy.',
-      'Data Quality Uplift (Nov – Dec 2025): Engineered automated AI JSON summaries diagnosing data failures (location patterns, dimensions) and providing step-by-step remediation plans across Staging, Refined, and Reporting layers.',
-      'Self-Service AI Skills: Built reusable AI skill library enabling rapid STTM generation, automated dbt code creation, and codebase reverse-analysis.'
+      'Global Data Platform: Delivered Phase 1 of a Snowflake medallion platform — Landing, Bronze, Silver, Gold, and Platinum — on managed Apache Iceberg, with Reltio MDM. Brought 27 source systems in within six months. Bronze is the system of record, with full history through SCD-2 and soft deletes. Silver is the domain canonical model, before and after MDM. Gold publishes the data products and KPI aggregates. dbt runs those layers through Airflow, and SODA checks the Bronze-to-Silver gate.',
     ],
   },
   {
@@ -149,7 +150,7 @@ const BREADCRUMBS = [
 // Ruled section heading shared by every block on the page.
 const Section = ({ id, title, children }) => (
   <section aria-labelledby={id} className="border-t-2 border-ink pt-4">
-    <h2 id={id} className="mb-6 font-serif text-2xl font-semibold text-ink">{title}</h2>
+    <h2 id={id} className="mb-6 scroll-mt-24 font-serif text-2xl font-semibold text-ink">{title}</h2>
     {children}
   </section>
 );
@@ -237,6 +238,18 @@ const AboutPage = () => {
                     <p className="text-[15px] text-ink-muted">{item.company} · {item.location}</p>
                     <ul className="mt-3 list-disc space-y-2 pl-5 text-[15px] leading-relaxed text-ink-body marker:text-paper-600">
                       {item.highlights.map((h) => <li key={h}>{h}</li>)}
+                      {item.company === 'Anblicks' && (
+                        <>
+                          <li>
+                            Agentos, build time: a knowledge base per source — canonical model, source-to-target mapping, business definitions, and critical data elements. The{' '}
+                            <a href="#agents-built" className={linkClass}>agents built</a>{' '}
+                            on it draft the Silver model, the dbt project, the data-quality rules, and the standards review. Manual onboarding dropped 60–70%. Days of modeling and weeks of SQL come back in minutes.
+                          </li>
+                          <li>
+                            Agentos, runtime: an agent monitors Airflow logs and acts when a task fails. Every action is written back into the knowledge base, so the next run starts from what already happened.
+                          </li>
+                        </>
+                      )}
                     </ul>
                   </div>
                 </li>
@@ -244,16 +257,16 @@ const AboutPage = () => {
             </ol>
           </Section>
 
-          <Section id="featured-projects-title" title="Recent work: AI and DataOps accelerators">
+          <Section id="agents-built" title="Agents built">
+            <p className="mb-2 text-[15px] leading-relaxed text-ink-body">
+              Build-time agents draft the platform artifacts before a pipeline is scheduled. The runtime agent monitors Airflow after it is live, and writes what it did back into the knowledge base.
+            </p>
             <ul className="divide-y divide-paper-500 border-y border-paper-500">
-              {FEATURED_PROJECTS.map((project) => (
-                <li key={project.title} className="py-5">
-                  <p className="font-mono text-[11px] uppercase tracking-wide text-rust-600">
-                    {project.category} · {project.badge}
-                  </p>
-                  <h3 className="mt-1 font-serif text-lg font-semibold text-ink">{project.title}</h3>
-                  <p className="mt-1.5 text-[15px] leading-relaxed text-ink-body">{project.desc}</p>
-                  <p className="mt-2 font-mono text-[12px] text-ink-faint">{project.tech.join(' · ')}</p>
+              {AGENTS.map((agent) => (
+                <li key={agent.id} id={agent.id} className="scroll-mt-24 py-5">
+                  <p className="font-mono text-[11px] uppercase tracking-wide text-rust-600">{agent.for}</p>
+                  <h3 className="mt-1 font-serif text-lg font-semibold text-ink">{agent.title}</h3>
+                  <p className="mt-1.5 text-[15px] leading-relaxed text-ink-body">{agent.value}</p>
                 </li>
               ))}
             </ul>

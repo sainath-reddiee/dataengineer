@@ -108,9 +108,8 @@ assert(!ssg.includes('class="calculator-promo"'), 'Static article HTML must not 
 assert(!ssg.includes('class="related-tools"'), 'Static article HTML must not inject pre-body tool promo lists');
 
 // 5. Accessibility pass: contrast, focus states, alt text, keyboard navigation
-const tailwind = readFileSync(join(root, 'tailwind.config.js'), 'utf8');
 assert(css.includes(':focus-visible'), 'Global :focus-visible outline must be defined for keyboard navigation');
-assert(tailwind.includes("faint: '#665F52'"), 'ink.faint must meet WCAG AA 4.5:1 contrast on paper backgrounds');
+assert(css.includes('--deh-ink-faint: #77705F'), 'ink.faint must meet WCAG AA 4.5:1 contrast on paper backgrounds');
 assert(toc.includes('aria-expanded'), 'Mobile TOC toggle must expose aria-expanded');
 
 console.log('✅ Phase 4 reader experience polish verified (JS < 140 KB gz, 72ch layout, WebP/CLS-safe images, single end newsletter prompt, WCAG AA contrast & focus states)');

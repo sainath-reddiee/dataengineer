@@ -56,8 +56,8 @@ assert(hero.includes('/tools/sql-playground'), 'Masthead should keep a playgroun
 // Homepage reads like a publication: lead story first, then the ledger.
 assert(home.includes('<LeadStories'), 'Homepage should open with the lead story');
 assert(home.includes('<ArticleLedger'), 'Homepage should list more articles as a ledger');
-assert(home.indexOf('<LeadStories') < home.indexOf('<FeaturedToolsRail'), 'Articles must come before tools on the homepage');
-assert(home.includes('<FeaturedPosts compact') && home.includes('<TrendingPosts compact'), 'Homepage keeps editor picks and trending');
+assert(home.includes('<ContinueReading'), 'Homepage should offer continue-reading when a place is saved');
+assert(!home.includes('FeaturedToolsRail') && !home.includes('FeaturedPosts') && !home.includes('TrendingPosts'), 'Homepage stays a masthead, a lead, and one ledger');
 
 // Design tokens exist and fonts are self-hosted.
 for (const token of ['paper', 'ink', 'rust']) {

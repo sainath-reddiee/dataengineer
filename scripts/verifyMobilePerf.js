@@ -33,7 +33,7 @@ assert(/font-display:\s*optional/.test(indexHtml), 'LCP fonts must use font-disp
 assert(!hero.includes("from 'framer-motion'"), 'Hero must stay off the homepage framer-motion chunk');
 assert(!hero.includes('HubMotion'), 'Hero must stay a text-only masthead with no animated scene');
 assert(!home.includes("from 'framer-motion'"), 'HomePage section headers must not animate in with framer-motion');
-assert(home.includes("import FeaturedToolsRail from"), 'tools rail must be eager so it does not pop in under the hero');
+assert(!home.includes('FeaturedToolsRail'), 'homepage must not mount a tools rail under the hero');
 assert(consent.includes("useState(() =>"), 'CookieConsent must decide visibility on the first render');
 assert(stats.includes('loading: false'), 'hero stats must not flash a loading row');
 

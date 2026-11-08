@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { revokeConsent } from './CookieConsent';
+import { openPrivacySettings } from './CookieConsent';
 import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 import SupportButton from '@/components/Support/SupportButton';
 import { Github, Linkedin, Mail } from 'lucide-react';
@@ -56,7 +56,7 @@ const Footer = () => {
       { name: 'Sponsored announcements', href: '/announcements' },
       { name: 'Sitemap', href: '/sitemap-index.xml', external: true },
       { name: 'RSS Feed', href: '/rss.xml', external: true },
-      { name: 'Manage Cookies', action: () => { revokeConsent(); window.location.reload(); } }
+      { name: 'Privacy settings', action: () => { openPrivacySettings(); } }
     ]
   };
 

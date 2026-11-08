@@ -325,8 +325,10 @@ a:not([class]) {
 .article-content h2 {
   font-size: 1.75rem;
   line-height: 1.25;
-  margin-top: 3rem;
+  margin-top: 3.25rem;
+  padding-top: 1.35rem;
   padding-bottom: 0;
+  border-top: 1px solid var(--deh-paper-500);
   border-bottom: 0;
 }
 
@@ -347,6 +349,12 @@ a:not([class]) {
   margin-top: 0;
 }
 
+.article-content > h2:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
 .article-content p {
   margin-bottom: 1.4rem;
   max-width: 72ch;
@@ -356,12 +364,12 @@ a:not([class]) {
 
 .key-takeaways.article-tldr,
 .article-tldr {
-  margin: 1.5rem 0 2rem;
-  padding: 1rem 1.25rem 1.2rem;
+  margin: 0 0 2.25rem;
+  padding: 1rem 0 0.15rem;
   border-radius: 0;
   border: 0;
-  border-top: 2px solid #1B1A17;
-  background: #F4F0E8;
+  border-top: 1px solid var(--deh-ink);
+  background: transparent;
 }
 
 .article-tldr-kicker {
@@ -375,16 +383,235 @@ a:not([class]) {
 
 .article-tldr ul {
   margin: 0;
-  padding-left: 1.2rem;
+  padding-left: 0;
   color: #2F2C27;
-  list-style: disc;
+  list-style: none;
 }
 
 .article-tldr li {
-  margin: 0.55rem 0;
-  line-height: 1.65;
+  position: relative;
+  margin: 0.7rem 0;
+  line-height: 1.7;
   color: #2F2C27;
-  padding-left: 0.15rem;
+  padding-left: 1.15rem;
+}
+
+.article-tldr li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  background: #B4441F;
+}
+
+/* Reading spread. The essay stays on the center track at every width.
+   From 1280px the right margin is wide enough for a 48px gutter and a
+   200px stage list, so the rail fades in without moving the column. */
+.article-spread {
+  display: grid;
+  grid-template-columns: 1fr min(100%, 42rem) 1fr;
+  align-items: start;
+  row-gap: 2rem;
+}
+
+.article-spread-lead,
+.article-spread-body {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.article-spread-lead {
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.article-spread-body {
+  grid-row: 2;
+}
+
+.article-spread-rail {
+  grid-column: 3;
+  grid-row: 2;
+  justify-self: start;
+  align-self: stretch;
+  min-width: 0;
+  width: 0;
+  margin: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(8px);
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.article-spread-close {
+  width: min(100%, 42rem);
+  margin: 2.5rem auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  border-top: 1px solid var(--deh-paper-500);
+  padding-top: 2rem;
+}
+
+@media (min-width: 80rem) {
+  .article-spread-rail {
+    width: 12.5rem;
+    margin-left: 3rem;
+    overflow: visible;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    visibility: visible;
+  }
+
+  .article-toc-strip {
+    display: none;
+  }
+}
+
+.article-toc-kicker,
+.article-toc-strip-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--deh-ink-faint);
+}
+
+.article-toc-kicker {
+  margin: 0 0 0.85rem;
+}
+
+.article-toc-rail {
+  width: 100%;
+  min-width: 0;
+  padding-left: 4px;
+}
+
+.article-toc-track {
+  position: relative;
+}
+
+.article-toc-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-left: 1px solid var(--deh-paper-500);
+}
+
+.article-toc-list li {
+  margin: 0;
+}
+
+.article-toc-rail a,
+.article-toc-strip-list a {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  min-width: 0;
+  padding: 0.4rem 0 0.4rem 0.75rem;
+  color: var(--deh-ink-faint);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.article-toc-rail a:hover,
+.article-toc-strip-list a:hover,
+.article-toc-rail a.is-active,
+.article-toc-strip-list a.is-active {
+  color: var(--deh-ink);
+}
+
+.article-toc-index {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--deh-ink-faint);
+}
+
+.article-toc-rail a.is-active .article-toc-index,
+.article-toc-strip-list a.is-active .article-toc-index {
+  color: #B4441F;
+}
+
+.article-toc-label {
+  min-width: 0;
+  font-size: 13.5px;
+  line-height: 1.35;
+}
+
+.article-toc-rail .article-toc-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.article-toc-marker {
+  position: absolute;
+  left: -4px;
+  width: 7px;
+  height: 7px;
+  background: #B4441F;
+  pointer-events: none;
+}
+
+.article-toc-marker.is-set {
+  transition: top 220ms ease;
+}
+
+.article-toc-strip {
+  margin: 0 0 1.75rem;
+}
+
+.article-toc-strip-toggle {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--deh-paper-500);
+  border-bottom: 1px solid var(--deh-paper-500);
+  background: transparent;
+  padding: 0.75rem 0;
+  color: var(--deh-ink-soft);
+  cursor: pointer;
+}
+
+.article-toc-strip-toggle:hover {
+  color: var(--deh-ink);
+}
+
+.article-toc-strip-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.article-toc-strip-list {
+  margin: 0;
+  padding: 0.5rem 0 0.25rem;
+  list-style: none;
+  border-bottom: 1px solid var(--deh-paper-500);
+}
+
+.article-share-menu[hidden] {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .article-spread-rail,
+  .article-toc-marker.is-set,
+  .article-toc-rail a,
+  .article-toc-strip-list a {
+    transition: none;
+  }
 }
 
 /* Collapsed by default so the schematic does not push the article down. */
@@ -1088,8 +1315,18 @@ html.dark .article-content .deh-contextual-link {
 }
 
 html.dark .article-tldr {
-  background: var(--deh-paper-300);
+  background: transparent;
   border-top-color: var(--deh-ink);
+}
+
+html.dark .article-tldr li::before,
+html.dark .article-toc-marker {
+  background: #E2A487;
+}
+
+html.dark .article-toc-rail a.is-active .article-toc-index,
+html.dark .article-toc-strip-list a.is-active .article-toc-index {
+  color: #E2A487;
 }
 
 .article-faq {
