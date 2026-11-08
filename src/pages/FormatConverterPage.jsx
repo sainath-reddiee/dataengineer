@@ -132,45 +132,13 @@ async function parquetToJson(uint8Array) {
 }
 
 async function jsonToAvro(jsonStr) {
-  const avsc = await import('avsc');
-  const data = JSON.parse(jsonStr);
-  const arr = Array.isArray(data) ? data : [data];
-  if (arr.length === 0) throw new Error('Input JSON is empty — need at least one record to infer schema.');
-  // Infer Avro type from the first record
-  const type = avsc.Type.forValue(arr[0]);
-  // Wrap in array type for encoding all records
-  const arrayType = avsc.Type.forSchema({ type: 'array', items: type.schema() });
-  const buffer = arrayType.toBuffer(arr);
-  const preview = arr.slice(0, 50);
-  const cols = Object.keys(arr[0] || {});
-  return { buffer: new Uint8Array(buffer), preview, columns: cols, totalRows: arr.length, avroSchema: type.schema() };
+  const { jsonToAvro: encodeAvro } = await import('@/lib/avro');
+  return encodeAvro(jsonStr);
 }
 
 async function avroToJson(uint8Array) {
-  const avsc = await import('avsc');
-  // Try decoding as a single array first, then fall back to block decoding
-  // Avro container files have a magic header: 'Obj\x01'
-  const isContainer = uint8Array[0] === 0x4f && uint8Array[1] === 0x62 &&
-                      uint8Array[2] === 0x6a && uint8Array[3] === 0x01;
-  let records = [];
-  if (isContainer) {
-    // Avro Object Container File — decode with BlockDecoder
-    const decoder = avsc.createBlobDecoder(new Blob([uint8Array]));
-    records = await new Promise((resolve, reject) => {
-      const rows = [];
-      decoder.on('data', (val) => rows.push(val));
-      decoder.on('end', () => resolve(rows));
-      decoder.on('error', reject);
-    });
-  } else {
-    // Raw Avro binary — try to decode with auto-inferred schema
-    // This is a best-effort fallback; structured container files are preferred
-    throw new Error('Avro file does not appear to be an Object Container File (OCF). Please use a .avro file with the standard Obj\\x01 header. Raw binary Avro without an embedded schema cannot be auto-decoded.');
-  }
-  const jsonStr = JSON.stringify(records, null, 2);
-  const cols = records.length > 0 ? Object.keys(records[0]) : [];
-  const preview = records.slice(0, 50);
-  return { text: jsonStr, preview, columns: cols, totalRows: records.length };
+  const { avroToJson: decodeAvro } = await import('@/lib/avro');
+  return decodeAvro(uint8Array);
 }
 
 async function parquetToAvro(uint8Array) {

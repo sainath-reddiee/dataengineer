@@ -14,6 +14,7 @@ import MetaTags from '@/components/SEO/MetaTags';
 import { generateBreadcrumbs, SITE_CONFIG } from '@/lib/seoConfig';
 import { debounce } from '@/utils/performance';
 import { trackSearch } from '@/utils/analytics';
+import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 
 // Lazy load AdPlacement
 const AdPlacement = React.lazy(() => import('@/components/AdPlacement'));
@@ -153,13 +154,19 @@ const AllArticlesPage = () => {
               {activeSearch ? `Results for "${activeSearch}"` : 'All articles'}
             </h1>
             <p className="mt-3 max-w-2xl text-[17px] leading-relaxed text-ink-body">
-              Long-form notes on{' '}
-              <Link to="/category/snowflake" className="text-rust-600 underline decoration-rust-200 underline-offset-2">Snowflake</Link>,{' '}
-              <Link to="/category/dbt" className="text-rust-600 underline decoration-rust-200 underline-offset-2">dbt</Link>,{' '}
-              <Link to="/category/airflow" className="text-rust-600 underline decoration-rust-200 underline-offset-2">Apache Airflow</Link>,{' '}
-              <Link to="/category/aws" className="text-rust-600 underline decoration-rust-200 underline-offset-2">AWS</Link>,{' '}
-              <Link to="/category/python" className="text-rust-600 underline decoration-rust-200 underline-offset-2">Python</Link> and{' '}
-              <Link to="/category/sql" className="text-rust-600 underline decoration-rust-200 underline-offset-2">SQL</Link>, newest first.
+              {ADSENSE_REVIEW_MODE ? (
+                'Long-form notes on Snowflake, dbt, Apache Airflow, AWS, Python and SQL, newest first.'
+              ) : (
+                <>
+                  Long-form notes on{' '}
+                  <Link to="/category/snowflake" className="text-rust-600 underline decoration-rust-200 underline-offset-2">Snowflake</Link>,{' '}
+                  <Link to="/category/dbt" className="text-rust-600 underline decoration-rust-200 underline-offset-2">dbt</Link>,{' '}
+                  <Link to="/category/airflow" className="text-rust-600 underline decoration-rust-200 underline-offset-2">Apache Airflow</Link>,{' '}
+                  <Link to="/category/aws" className="text-rust-600 underline decoration-rust-200 underline-offset-2">AWS</Link>,{' '}
+                  <Link to="/category/python" className="text-rust-600 underline decoration-rust-200 underline-offset-2">Python</Link> and{' '}
+                  <Link to="/category/sql" className="text-rust-600 underline decoration-rust-200 underline-offset-2">SQL</Link>, newest first.
+                </>
+              )}
             </p>
 
             <form onSubmit={handleSearch} className="mt-6 flex max-w-xl gap-2" role="search">
@@ -240,13 +247,13 @@ const AllArticlesPage = () => {
           )}
 
           {/* Loading State */}
-          {loading ? (
+          {loading && posts.length === 0 ? (
             <div className={containerClasses}>
               {Array.from({ length: postsPerPage }).map((_, i) => (
                 viewMode === 'list' ? <PostListItemSkeleton key={i} /> : <PostCardSkeleton key={i} />
               ))}
             </div>
-          ) : error ? (
+          ) : error && posts.length === 0 ? (
             /* Error State */
             <motion.div
               initial={{ opacity: 0, y: 20 }}

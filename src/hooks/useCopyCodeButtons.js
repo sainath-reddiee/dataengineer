@@ -9,16 +9,15 @@ function styleChip(el, extra = {}) {
     padding: '4px 10px',
     fontSize: '12px',
     fontWeight: '600',
-    color: '#94a3b8',
-    backgroundColor: 'rgba(30, 41, 59, 0.9)',
-    border: '1px solid rgba(71, 85, 105, 0.5)',
-    borderRadius: '6px',
+    color: '#DCD5C8',
+    backgroundColor: '#2E2B26',
+    border: '1px solid #4A453D',
+    borderRadius: '4px',
     cursor: 'pointer',
     zIndex: '10',
-    transition: 'all 0.2s ease',
-    backdropFilter: 'blur(4px)',
-    lineHeight: '1.5',
-    minHeight: '32px',
+    transition: 'all 0.15s ease',
+    lineHeight: '1.4',
+    minHeight: '28px',
     minWidth: 'auto',
     ...extra,
   });
@@ -47,7 +46,7 @@ function bindCopy(button, code) {
   button.addEventListener('click', async () => {
     const previous = button.textContent;
     button.textContent = 'Copied';
-    button.style.color = '#4ade80';
+    button.classList.add('is-copied');
     try {
       if (navigator.clipboard?.writeText) {
         await Promise.race([
@@ -62,13 +61,13 @@ function bindCopy(button, code) {
         fallbackCopy(code);
       } catch {
         button.textContent = previous;
-        button.style.color = '';
+        button.classList.remove('is-copied');
         return;
       }
     }
     setTimeout(() => {
       button.textContent = previous;
-      button.style.color = '';
+      button.classList.remove('is-copied');
     }, 2000);
   });
 }
@@ -78,9 +77,9 @@ function bindCopy(button, code) {
  */
 const useCopyCodeButtons = (dependency) => {
   useEffect(() => {
-    if (!dependency) return;
+    if (!dependency) return undefined;
 
-    const timer = setTimeout(() => {
+    const rafId = window.requestAnimationFrame(() => {
       const container = document.querySelector('.article-content');
       if (!container) return;
 
@@ -114,9 +113,11 @@ const useCopyCodeButtons = (dependency) => {
           wrap.className = 'wrap-code-btn compact-control';
           wrap.textContent = 'Wrap';
           wrap.setAttribute('aria-label', 'Toggle line wrap');
+          wrap.setAttribute('aria-pressed', 'false');
           wrap.addEventListener('click', () => {
             const on = figure.classList.toggle('is-wrap');
             wrap.textContent = on ? 'Scroll' : 'Wrap';
+            wrap.setAttribute('aria-pressed', on ? 'true' : 'false');
           });
           actions.appendChild(wrap);
         }
@@ -127,22 +128,22 @@ const useCopyCodeButtons = (dependency) => {
           expand.addEventListener('click', () => {
             const on = figure.classList.toggle('is-expanded');
             const total = figure.getAttribute('data-lines') || '';
-            expand.textContent = on ? 'Show less' : `Show all ${total} lines`;
+            expand.textContent = on ? 'Collapse code' : `Show all ${total} lines`;
           });
         }
 
         if (looksLikeSql(code, langClass)) {
           const run = document.createElement('a');
           run.className = 'run-sql-btn compact-control';
-          run.textContent = 'Run';
+          run.textContent = 'Run SQL';
           run.href = playgroundSqlHref(code);
-          run.setAttribute('aria-label', 'Run this SQL in the playground');
+          run.setAttribute('aria-label', 'Run this SQL query in the browser SQL playground');
           if (actions) {
             actions.appendChild(run);
           } else {
             styleChip(run, {
               right: '72px',
-              color: '#93c5fd',
+              color: '#F0C6B2',
               textDecoration: 'none',
               display: 'inline-flex',
               alignItems: 'center',
@@ -151,10 +152,10 @@ const useCopyCodeButtons = (dependency) => {
           }
         }
       });
-    }, 200);
+    });
 
     return () => {
-      clearTimeout(timer);
+      window.cancelAnimationFrame(rafId);
       const container = document.querySelector('.article-content');
       if (container) {
         container.querySelectorAll('.copy-code-btn, .run-sql-btn, .wrap-code-btn').forEach((el) => el.remove());

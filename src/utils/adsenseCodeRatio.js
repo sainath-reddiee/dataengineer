@@ -78,7 +78,9 @@ export function detectCodeLanguage(markup, text) {
   }
   if (/\b(def\s+\w+\s*\(|class\s+\w+|import\s+\w+|from\s+[\w.]+\s+import|@dataclass|None\s*=|True\s*=|False\s*=)\b/.test(sample)) return 'Python';
   if (/^\s*[{[]/.test(sample)) return 'JSON';
-  if (/\b(SELECT|WITH|CREATE|INSERT|UPDATE|MERGE|COPY INTO|QUALIFY)\b/i.test(sample)) return 'SQL';
+  if (/\b(interface\s+[A-Z]\w*|type\s+[A-Z]\w*\s*=|:\s*(?:string|number|boolean|Record<|Array<))\b/.test(sample)) return 'TypeScript';
+  if (/\b(const\s+\w+\s*=|let\s+\w+\s*=|export\s+(?:default|function|const)|function\s+\w+\s*\()\b/.test(sample)) return 'JavaScript';
+  if (/\b(SELECT\s+[\s\S]+?\bFROM\b|CREATE\s+(?:OR\s+REPLACE\s+)?(?:TABLE|VIEW|DATABASE|SCHEMA|WAREHOUSE|ROLE|TASK|STREAM|RESOURCE\s+MONITOR|MASKING\s+POLICY|ROW\s+ACCESS\s+POLICY|DBT\s+PROJECT)|INSERT\s+INTO|COPY\s+INTO|MERGE\s+INTO|ALTER\s+(?:TABLE|WAREHOUSE|DATABASE|SCHEMA|TASK)|EXECUTE\s+DBT\s+PROJECT|QUALIFY\s+ROW_NUMBER)\b/i.test(sample) || /\b(SELECT|CREATE|INSERT|UPDATE|MERGE|QUALIFY)\b/.test(sample)) return 'SQL';
   const yamlKeys = sample.match(/^\s*[A-Za-z0-9_-]+:\s+\S+/gm) || [];
   if (/^\s*---\s*$/m.test(sample) || (yamlKeys.length >= 2 && !/\b(SELECT|def |class |import )\b/i.test(sample))) {
     return 'YAML';

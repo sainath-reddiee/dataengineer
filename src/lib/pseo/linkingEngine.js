@@ -4,43 +4,13 @@
  * Implements Hub-and-Spoke model for optimal SEO link equity distribution.
  */
 
-import { glossaryTerms, GLOSSARY_CATEGORIES } from '@/data/glossaryData';
-import { comparisons } from '@/data/comparisonData';
 import { SITE_CONFIG } from '@/lib/seoConfig';
-
-// =============================================================================
-// DYNAMIC ARTICLES (Auto-synced from WordPress)
-// =============================================================================
-
-/**
- * Articles are auto-synced from WordPress via:
- *   node scripts/sync-articles-for-linking.js
- * 
- * The sync runs as part of the pSEO build process and generates:
- *   src/data/pseo/articles.json
- * 
- * Format:
- *   { slug, title, keywords, categories }
- */
-
-import articlesData from '../../data/pseo/articles.json' with { type: 'json' };
 import {
     injectArticleLinks,
     buildLinkCandidates,
     hasLinkToArticle,
     MAX_INTERNAL_LINKS,
 } from './injectArticleLinks.js';
-
-const SYNCED_ARTICLES = articlesData || [];
-
-/**
- * Export for use in templates. Combines synced articles with any manual overrides.
- */
-export const MANUAL_ARTICLES = [
-    ...SYNCED_ARTICLES,
-    // Add manual overrides below if needed (these take priority)
-    // { slug: 'special-article', title: 'My Special Article', keywords: ['special'] },
-];
 
 export { buildLinkCandidates, hasLinkToArticle, MAX_INTERNAL_LINKS };
 
@@ -92,7 +62,7 @@ function maskCodeBlocks(html) {
  */
 export function injectInternalLinks(htmlContent, excludeSlug = '', options = {}) {
     return injectArticleLinks(htmlContent, excludeSlug, {
-        articles: options.articles || MANUAL_ARTICLES,
+        articles: options.articles || [],
         maxLinks: options.maxLinks,
     });
 }
@@ -116,7 +86,7 @@ export function injectGlossaryCrossLinks(htmlContent, currentSlug = '', maxLinks
     let result = stripped;
     let linkCount = 0;
 
-    const allTerms = terms || glossaryTerms || [];
+    const allTerms = terms || [];
 
     // Sort terms by length (descending) to match longer phrases first
     const sortedTerms = [...allTerms]
@@ -158,7 +128,7 @@ export function injectGlossaryCrossLinks(htmlContent, currentSlug = '', maxLinks
  * @returns {Array} - Array of related term objects { slug, term, category }
  */
 export const getRelatedGlossaryTerms = (currentSlug, limit = 5, { terms = null } = {}) => {
-    const allTerms = terms || glossaryTerms || [];
+    const allTerms = terms || [];
     const currentTerm = allTerms.find(t => t.slug === currentSlug);
     if (!currentTerm) return [];
 
@@ -220,7 +190,7 @@ export const getRelatedGlossaryTerms = (currentSlug, limit = 5, { terms = null }
  * @returns {Array} - Array of related comparison objects
  */
 export const getRelatedComparisons = (currentSlug, limit = 3, { comparisons: comps = null } = {}) => {
-    const allComparisons = comps || comparisons || [];
+    const allComparisons = comps || [];
     const currentComparison = allComparisons.find(c => c.slug === currentSlug);
     if (!currentComparison) return [];
 
@@ -266,7 +236,7 @@ export const getRelatedComparisons = (currentSlug, limit = 3, { comparisons: com
  */
 export const getGlossaryTermsForTool = (toolName, limit = 3, { terms = null } = {}) => {
     const normalizedTool = toolName.toLowerCase();
-    const allTerms = terms || glossaryTerms || [];
+    const allTerms = terms || [];
 
     return allTerms
         .filter(t => {
@@ -359,7 +329,7 @@ export const findLinkableTerms = (text, excludeSlug = '', { terms = null } = {})
     if (!text) return [];
 
     const normalizedText = text.toLowerCase();
-    const allTerms = terms || glossaryTerms || [];
+    const allTerms = terms || [];
 
     return allTerms
         .filter(t => t.slug !== excludeSlug)
@@ -380,13 +350,14 @@ export const findLinkableTerms = (text, excludeSlug = '', { terms = null } = {})
 
 /**
  * Get all glossary terms grouped by category for the hub page.
- * 
+ * Pass the already-loaded corpus — do not import glossaryData here.
+ *
  * @returns {Object} - { categoryId: { name, icon, terms: [] } }
  */
-export const getGlossaryByCategory = () => {
+export const getGlossaryByCategory = ({ terms = [], categories = [] } = {}) => {
     const grouped = {};
 
-    GLOSSARY_CATEGORIES.forEach(cat => {
+    categories.forEach(cat => {
         grouped[cat.id] = {
             name: cat.name,
             icon: cat.icon,
@@ -394,7 +365,7 @@ export const getGlossaryByCategory = () => {
         };
     });
 
-    glossaryTerms.forEach(term => {
+    terms.forEach(term => {
         if (grouped[term.category]) {
             grouped[term.category].terms.push({
                 slug: term.slug,
@@ -404,7 +375,6 @@ export const getGlossaryByCategory = () => {
         }
     });
 
-    // Sort terms alphabetically within each category
     Object.values(grouped).forEach(cat => {
         cat.terms.sort((a, b) => a.term.localeCompare(b.term));
     });
@@ -414,13 +384,14 @@ export const getGlossaryByCategory = () => {
 
 /**
  * Get all comparisons grouped by category for the hub page.
- * 
+ * Pass the already-loaded corpus — do not import comparisonData here.
+ *
  * @returns {Object} - { category: [comparisons] }
  */
-export const getComparisonsByCategory = () => {
+export const getComparisonsByCategory = ({ comparisons: comps = [] } = {}) => {
     const grouped = {};
 
-    comparisons.forEach(comp => {
+    comps.forEach(comp => {
         if (!grouped[comp.category]) {
             grouped[comp.category] = [];
         }

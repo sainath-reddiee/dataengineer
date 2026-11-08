@@ -1,8 +1,8 @@
 // src/components/InlineToolWidget.jsx - Contextual tool card shown on article pages
 // Maps article categories to the matching calculator or playground.
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Wrench, ArrowRight } from 'lucide-react';
+import { ADSENSE_REVIEW_MODE, isAdSenseNoindexPath } from '@/data/adsenseQualityGate';
 
 const TOOL_MAP = {
   Spark: { label: 'SQL Playground', to: '/tools/sql-playground', desc: 'Practice window functions and joins in the browser' },
@@ -22,6 +22,12 @@ const TOOL_MAP = {
   dbt: { label: 'dbt Schema.yml Generator', to: '/tools/dbt-schema-generator', desc: 'Scaffold schema.yml and a staging model from DDL' },
 };
 
+const REVIEW_FALLBACK_TOOL = {
+  label: 'SQL Playground',
+  to: '/tools/sql-playground',
+  desc: 'Run QUALIFY, window functions, and CTEs in the browser on DuckDB',
+};
+
 const DEFAULT_TOOL = { label: 'Free Data Engineering Tools', to: '/tools', desc: 'Cost calculators, SQL helpers, converters, and generators' };
 
 export default function InlineToolWidget({ post }) {
@@ -30,28 +36,34 @@ export default function InlineToolWidget({ post }) {
   let tool = TOOL_MAP[post.category];
   if (!tool && post.tags) {
     for (const tag of post.tags) {
-      tool = TOOL_MAP[tag];
+      const tagName = typeof tag === 'string' ? tag : (tag?.name || tag?.slug || '');
+      tool = TOOL_MAP[tagName];
       if (tool) break;
     }
   }
   if (!tool) tool = DEFAULT_TOOL;
 
+  if (ADSENSE_REVIEW_MODE && isAdSenseNoindexPath(tool.to)) {
+    tool = REVIEW_FALLBACK_TOOL;
+  }
+
   return (
-    <div className="my-8 p-5 rounded-2xl border border-blue-500/30 bg-gradient-to-r from-blue-900/20 to-purple-900/20 backdrop-blur-sm">
+    <div className="my-8 rounded border border-paper-500 bg-paper-300 p-5">
       <div className="flex items-start gap-4">
-        <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-          <Wrench className="h-5 w-5 text-blue-400" />
+        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded border border-paper-500 bg-paper text-rust-600">
+          <Wrench className="h-5 w-5" />
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wider text-blue-400 mb-1">Try this tool</p>
-          <p className="text-white font-bold text-base mb-1">{tool.label}</p>
-          <p className="text-gray-400 text-sm mb-3">{tool.desc}</p>
+        <div className="min-w-0 flex-1">
+          <p className="mb-1 font-mono text-[11px] uppercase tracking-wider text-rust-600"> Companion tool</p>
+          <p className="mb-1 font-serif text-lg font-semibold text-ink">{tool.label}</p>
+          <p className="mb-3 text-sm text-ink-muted">{tool.desc}</p>
           <Link
             to={tool.to}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors group"
+            reloadDocument={ADSENSE_REVIEW_MODE}
+            className="group inline-flex items-center gap-1.5 text-sm font-medium text-rust-600 hover:text-rust-700"
           >
             Open it now
-            <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
       </div>

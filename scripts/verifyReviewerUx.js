@@ -45,5 +45,18 @@ const articlePage = readFileSync(join(root, 'src/pages/ArticlePage.jsx'), 'utf8'
 assert(articlePage.includes('useSsgArticleFallback'), 'ArticlePage should fetch SSG HTML for in-app clicks');
 assert(articlePage.includes('htmlReady'), 'cold article loads should reuse SSG HTML instead of refetching');
 
+const wpHook = readFileSync(join(root, 'src/hooks/useWordPress.js'), 'utf8');
+assert(wpHook.includes('getFallbackArticles'), 'usePosts should seed initial page-1 listings synchronously so #root never wipes into empty skeletons');
+
+const toolsHub = readFileSync(join(root, 'src/pages/ToolsHubPage.jsx'), 'utf8');
+assert(toolsHub.includes('isReviewAllowlistedTool'), 'ToolsHubPage must filter out noindexed utility tools during AdSense review');
+
+const cheatsheetsHub = readFileSync(join(root, 'src/pages/CheatSheetHubPage.jsx'), 'utf8');
+assert(cheatsheetsHub.includes('isReviewAllowlistedCheatsheet'), 'CheatSheetHubPage must filter out noindexed Q&A sheets during AdSense review');
+
+const certPage = readFileSync(join(root, 'src/pages/Certification.jsx'), 'utf8');
+assert(certPage.includes('ADSENSE_REVIEW_MODE'), 'Certification page must gate external sleeping iframe and noindex links during AdSense review');
+
 console.log('✅ Reviewer UX fallbacks keep article titles on the homepage');
 console.log('✅ Public Refresh / news-error chrome is not shown to reviewers');
+console.log('✅ Indexed hubs (/tools, /cheatsheets, /certification, /) filter out held-out noindex links');

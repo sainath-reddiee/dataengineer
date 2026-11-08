@@ -119,6 +119,7 @@ import { THIN_TAG_SLUGS, MIN_INDEXABLE_TAG_COUNT, MIN_INDEXABLE_CATEGORY_COUNT, 
 import {
   isAdSenseNoindexPath,
   isReviewAllowlistedTool,
+  isReviewAllowlistedCheatsheet,
   ADSENSE_REVIEW_ROBOTS,
   ADSENSE_INDEX_ROBOTS,
   ADSENSE_GATE_VERSION,
@@ -1547,68 +1548,40 @@ const ESSENTIAL_PAGES = [
       <h3>Snowflake cost tools</h3>
       <ul>
         <li><strong><a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a></strong> - full monthly spend estimator. Model compute, storage, Snowpipe, Cortex AI, and serverless feature costs across all editions and regions.</li>
-        <li><strong><a href="/tools/snowflake-credit-cost">Credit -&gt; USD Converter</a></strong> - instant credit price lookup. Convert any credit count to USD across Standard, Enterprise, Business Critical, and VPS editions for every supported cloud region.</li>
-        <li><strong><a href="/tools/snowflake-query-cost-estimator">Query Cost Estimator</a></strong> - price per query from bytes scanned and warehouse size. Includes the 60-second resume minimum and scales to daily and monthly totals.</li>
-        <li><strong><a href="/tools/snowflake-warehouse-sizing">Warehouse Sizing Estimator</a></strong> - recommends a starting warehouse size (XS to 6XL) from workload type, data volume, and concurrency. Shows one-size-up and one-size-down cost comparison.</li>
+        <li><strong>Credit -&gt; USD Converter</strong> - instant credit price lookup across Standard, Enterprise, Business Critical, and VPS editions for every supported cloud region.</li>
+        <li><strong>Query Cost Estimator</strong> - price per query from bytes scanned and warehouse size, including the 60-second resume minimum.</li>
+        <li><strong>Warehouse Sizing Estimator</strong> - recommends a starting warehouse size (XS to 6XL) from workload type, data volume, and concurrency.</li>
       </ul>
 
-      <h3>Databricks &amp; dbt cost tools</h3>
+      <h3>Databricks &amp; multi-cloud cost tools</h3>
       <ul>
         <li><strong><a href="/tools/databricks-cost-calculator">Databricks Cost Calculator</a></strong> - DBU + underlying cloud VM pricing estimator. Pick SKU (Jobs, All-Purpose, SQL, Serverless), cluster size, and runtime hours across AWS, Azure, and GCP.</li>
-        <li><strong><a href="/tools/dbt-cloud-cost-calculator">dbt Cloud Cost Calculator</a></strong> - price dbt Cloud plans by developer seats, successful model runs, and job concurrency. Compares Developer, Team, and Enterprise tiers.</li>
-      </ul>
-
-      <h3>SQL &amp; data productivity tools</h3>
-      <ul>
-        <li><strong><a href="/tools/sql-formatter">SQL Formatter</a></strong> - beautify messy SQL instantly. Handles Snowflake, BigQuery, PostgreSQL, and ANSI SQL with configurable indent size and keyword case.</li>
-        <li><strong><a href="/tools/cron-expression-builder">Cron Expression Builder</a></strong> - build and validate cron expressions visually. Preview the next 5 fire times and copy schedules for Airflow, dbt Cloud, Snowflake Tasks, or Databricks Jobs.</li>
-        <li><strong><a href="/tools/json-to-sql-ddl">JSON to SQL DDL</a></strong> - paste a JSON sample, get a CREATE TABLE statement. Supports Snowflake VARIANT, PostgreSQL JSONB, BigQuery STRUCT, and standard SQL types.</li>
-        <li><strong><a href="/tools/csv-to-sql">CSV to SQL Converter</a></strong> - paste CSV data, get CREATE TABLE DDL and INSERT statements with inferred types. RFC 4180 compliant parser, Snowflake/Postgres/BigQuery/ANSI dialects.</li>
-        <li><strong><a href="/tools/dbt-schema-generator">dbt Schema.yml Generator</a></strong> - paste a CREATE TABLE, get a dbt schema.yml with inferred unique/not_null tests, a staging SQL model, and a sources.yml entry with freshness checks.</li>
-        <li><strong><a href="/tools/unix-timestamp-converter">Unix Timestamp Converter</a></strong> - epoch to human date and back. Auto-detects seconds, milliseconds, microseconds, nanoseconds. SQL cheat sheet for Snowflake, Postgres, BigQuery, MySQL, Redshift, Databricks.</li>
-      </ul>
-
-      <h3>Multi-cloud cost calculators</h3>
-      <ul>
         <li><strong><a href="/tools/bigquery-cost-calculator">BigQuery Cost Calculator</a></strong> - model on-demand ($6.25/TB scanned) and capacity Editions (Standard/Enterprise/Enterprise Plus slot-hours), storage tiers, and streaming ingest. Includes on-demand vs Editions break-even analysis.</li>
+        <li><strong><a href="/tools/cloud-data-warehouse-cost-comparison">Cloud Data Warehouse Cost Comparison</a></strong> - compare monthly cost across Snowflake, BigQuery, and Databricks side by side from a single workload profile.</li>
       </ul>
 
-      <h3>SQL practice</h3>
+      <h3>SQL practice &amp; productivity</h3>
       <ul>
         <li><strong><a href="/tools/sql-playground">SQL Playground</a></strong> - in-browser SQL engine powered by DuckDB-WASM. Practice window functions, CTEs, QUALIFY, aggregations, and joins on preloaded sample datasets. No server, no signup, 100% client-side.</li>
       </ul>
 
-      <h3>Data format conversion</h3>
-      <ul>
-        <li><strong><a href="/tools/json-parquet-avro-converter">JSON / Parquet / Avro Converter</a></strong> - convert between JSON, Apache Parquet, and Apache Avro directly in your browser. Powered by DuckDB-WASM for Parquet and avsc for Avro. No upload, no server — 100% client-side.</li>
-      </ul>
-
       <h2>Which tool should I use?</h2>
       <ul>
-        <li><strong>Planning a new Snowflake workload?</strong> Start with the <a href="/tools/snowflake-warehouse-sizing">Warehouse Sizing Estimator</a> to pick a size, then use the <a href="/tools/snowflake-cost-calculator">Cost Calculator</a> to model monthly spend.</li>
-        <li><strong>Optimizing a slow Snowflake query?</strong> Use the <a href="/tools/snowflake-query-cost-estimator">Query Cost Estimator</a> to compare cost before and after applying clustering keys, Search Optimization Service, or materialized views.</li>
-        <li><strong>Reviewing a Snowflake invoice?</strong> Plug credit counts from ACCOUNT_USAGE into the <a href="/tools/snowflake-credit-cost">Credit Converter</a> for quick dollar-value checks.</li>
+        <li><strong>Planning a new Snowflake workload?</strong> Use the <a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a> to model warehouse size, auto-suspend, storage, and monthly credit spend.</li>
+        <li><strong>Comparing cloud data warehouses?</strong> Run the <a href="/tools/cloud-data-warehouse-cost-comparison">Cloud Warehouse Cost Comparison</a> for side-by-side Snowflake, BigQuery, and Databricks estimates.</li>
         <li><strong>Comparing Databricks vs Snowflake?</strong> Run the <a href="/tools/databricks-cost-calculator">Databricks Cost Calculator</a> for the same workload hours and compare DBU + VM cost against a Snowflake estimate.</li>
-        <li><strong>Budgeting dbt Cloud seats?</strong> The <a href="/tools/dbt-cloud-cost-calculator">dbt Cloud Cost Calculator</a> prices developer seats, model runs, and concurrency across Developer, Team, and Enterprise tiers.</li>
-        <li><strong>Shipping SQL to production?</strong> Clean it first with the <a href="/tools/sql-formatter">SQL Formatter</a> - consistent formatting makes code review faster and cuts merge conflicts.</li>
-        <li><strong>Scheduling a pipeline?</strong> Build the schedule visually in the <a href="/tools/cron-expression-builder">Cron Expression Builder</a> and paste the expression into Airflow, dbt Cloud, Snowflake Tasks, or Databricks Jobs.</li>
-        <li><strong>Modeling a new JSON source?</strong> Drop a sample into the <a href="/tools/json-to-sql-ddl">JSON to SQL DDL</a> generator to scaffold your CREATE TABLE statement in seconds.</li>
-        <li><strong>Loading a CSV export?</strong> Paste into the <a href="/tools/csv-to-sql">CSV to SQL Converter</a> for instant CREATE TABLE + INSERT scaffolding - great for seeds, fixtures, and small lookups.</li>
-        <li><strong>Onboarding a new table into dbt?</strong> Run the <a href="/tools/dbt-schema-generator">dbt Schema.yml Generator</a> on the CREATE TABLE to auto-scaffold schema.yml, staging SQL, and sources.yml with freshness checks.</li>
-        <li><strong>Debugging timestamp data?</strong> The <a href="/tools/unix-timestamp-converter">Unix Timestamp Converter</a> handles seconds, milliseconds, microseconds, and nanoseconds with SQL examples for every major warehouse.</li>
         <li><strong>Running on Google Cloud?</strong> Use the <a href="/tools/bigquery-cost-calculator">BigQuery Cost Calculator</a> to model on-demand vs capacity Editions pricing and find the break-even point for your workload.</li>
         <li><strong>Practicing SQL?</strong> Open the <a href="/tools/sql-playground">SQL Playground</a> — run queries on preloaded sample tables directly in your browser with DuckDB-WASM. No setup required.</li>
-        <li><strong>Converting file formats?</strong> The <a href="/tools/json-parquet-avro-converter">JSON / Parquet / Avro Converter</a> handles all six conversion paths between JSON, Parquet, and Avro — powered by DuckDB-WASM and avsc, entirely in your browser.</li>
       </ul>
 
       <h2>Are these tools free?</h2>
       <p>Yes. Every tool on this page is free, requires no login, and stores nothing on our servers. All calculations and transformations run in your browser. Share the configured URL with your team - the query string preserves all inputs.</p>
 
       <h2>How accurate are the cost estimates?</h2>
-      <p>Estimates use each vendor's publicly documented list pricing as of 2026 (Snowflake editions, Databricks DBU rates, dbt Cloud plan tiers). Actual invoiced cost depends on your contract (capacity deals typically discount 20-40% off list), regional pricing, and real usage patterns. Always verify against your vendor's usage views (Snowflake ACCOUNT_USAGE, Databricks System Tables, dbt Cloud admin console) for authoritative billing data.</p>
+      <p>Estimates use each vendor's publicly documented list pricing as of 2026 (Snowflake editions, Databricks DBU rates, BigQuery on-demand and slot tiers). Actual invoiced cost depends on your contract (capacity deals typically discount 20-40% off list), regional pricing, and real usage patterns. Always verify against your vendor's usage views (Snowflake ACCOUNT_USAGE, Databricks System Tables, BigQuery INFORMATION_SCHEMA) for authoritative billing data.</p>
 
       <h2>Related reading</h2>
-      <p>For deeper guidance, read our articles on <a href="/articles/snowflake-cost-optimization-techniques-2026">12 Snowflake cost optimization techniques</a>, <a href="/articles/snowflake-cortex-cost-comparison">Snowflake Cortex cost comparison</a>, and <a href="/category/snowflake">our Snowflake category</a> for tutorials on warehouse tuning, query performance, and ACCOUNT_USAGE analysis. Preparing for interviews? Visit <a href="/interview-prep">Interview Prep</a> for a 14-day study plan and 16 cheat sheets.</p>
+      <p>For deeper guidance, read our articles on <a href="/articles/snowflake-cost-optimization-techniques-2026">12 Snowflake cost optimization techniques</a>, <a href="/articles/snowflake-cortex-cost-comparison">Snowflake Cortex cost comparison</a>, and browse <a href="/articles">all data engineering tutorials</a> and <a href="/cheatsheets">reference cheat sheets</a> for warehouse tuning, query performance, and ACCOUNT_USAGE analysis.</p>
     `
   },
   {
@@ -1647,7 +1620,7 @@ const ESSENTIAL_PAGES = [
       </ul>
 
       <h2>Related reading</h2>
-      <p>Compare against Snowflake with our <a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a>, read <a href="/cheatsheets/databricks">Databricks cheat sheet</a>, and explore <a href="/cheatsheets/category/architecture">architecture cheat sheets</a> for platform comparison guidance.</p>
+      <p>Compare against Snowflake with our <a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a>, read the <a href="/cheatsheets/databricks">Databricks cheat sheet</a>, and explore the <a href="/tools/cloud-data-warehouse-cost-comparison">Cloud Warehouse Cost Comparison</a> for platform comparison guidance.</p>
     `
   },
   {
@@ -1972,7 +1945,7 @@ const ESSENTIAL_PAGES = [
       <p>For predictable medium workloads the three platforms are within ~20% of each other on list price. Real differences come from usage patterns. Use the <a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a> and <a href="/tools/databricks-cost-calculator">Databricks Cost Calculator</a> for apples-to-apples comparisons at your actual TB and workload shape.</p>
 
       <h2>Related tools</h2>
-      <p>Use the <a href="/tools/json-to-sql-ddl">JSON to SQL DDL Generator</a> to scaffold BigQuery CREATE TABLE statements from sample data. Use the <a href="/tools/sql-formatter">SQL Formatter</a> to clean up dialect-specific SQL. For multi-cloud comparisons see <a href="/compare/snowflake-vs-google-bigquery">Snowflake vs BigQuery</a>.</p>
+      <p>Use the <a href="/tools/cloud-data-warehouse-cost-comparison">Cloud Data Warehouse Cost Comparison</a> to model Snowflake, BigQuery, and Databricks side by side, and test SQL patterns in the <a href="/tools/sql-playground">SQL Playground</a>.</p>
     `
   },
   {
@@ -2084,10 +2057,10 @@ const ESSENTIAL_PAGES = [
 
       <h2>Related Tools</h2>
       <ul>
-        <li><a href="/tools/sql-formatter">SQL Formatter</a> — clean up your SQL before running it here.</li>
+        <li><a href="/tools/snowflake-cost-calculator">Snowflake Cost Calculator</a> — estimate warehouse credit burn for your queries.</li>
         <li><a href="/cheatsheets/snowflake-sql">Snowflake SQL Cheat Sheet</a> — full Snowflake SQL reference with examples you can copy into the playground.</li>
         <li><a href="/cheatsheets/sql-window-functions">Window Functions Reference</a> — ROW_NUMBER, RANK, LAG, LEAD — all examples are runnable in this playground.</li>
-        <li><a href="/interview-prep">Interview Prep Hub</a> — complete 14-day study plan for data engineer interviews.</li>
+        <li><a href="/articles">Data Engineering Tutorials</a> — production SQL and pipeline architecture guides.</li>
       </ul>
     `
   },
@@ -2645,7 +2618,7 @@ function findCriticalChunks(distDir) {
 
   const jsFiles = fs.readdirSync(jsDir);
   // Critical chunks that the browser will need immediately after the entry module
-  const criticalPrefixes = ['react-vendor-', 'vendor-', 'helmet-', 'framer-motion-', 'markdown-', 'icons-'];
+  const criticalPrefixes = ['react-vendor-', 'vendor-', 'helmet-', 'dompurify-'];
   const chunks = [];
 
   for (const prefix of criticalPrefixes) {
@@ -2893,10 +2866,26 @@ function makeImagesAbsolute(content) {
   // Pattern 7: Remove HTML entities that cause encoding issues
   processedContent = processedContent.replace(/&#038;/g, '&');
 
-  // Pattern 8: Add loading="lazy" to <img> tags that don't already have it
+  // Pattern 8: Add loading="lazy", decoding="async", explicit width/height, and WebP format on Photon URLs
   processedContent = processedContent.replace(
-    /<img(?![^>]*loading=)([^>]*?)(\s*\/?>)/gi,
-    '<img loading="lazy"$1$2'
+    /<img\b([^>]*?)(\s*\/?>)/gi,
+    (match, rawAttrs, close) => {
+      let attrs = rawAttrs;
+      const srcMatch = attrs.match(/src="([^"]+)"/i);
+      const src = srcMatch ? srcMatch[1] : '';
+      if (src && /i\d\.wp\.com\//i.test(src) && !/[?&]format=/i.test(src)) {
+        const sep = src.includes('?') ? '&' : '?';
+        attrs = attrs.replace(/src="[^"]+"/i, `src="${src}${sep}format=webp"`);
+      }
+      if (!/\bloading=/i.test(attrs)) attrs += ' loading="lazy"';
+      if (!/\bdecoding=/i.test(attrs)) attrs += ' decoding="async"';
+      const dimMatch = src.match(/-(\d{2,4})x(\d{2,4})\.[a-z0-9]+/i);
+      const w = dimMatch ? dimMatch[1] : '800';
+      const h = dimMatch ? dimMatch[2] : '450';
+      if (!/\bwidth=/i.test(attrs)) attrs += ` width="${w}"`;
+      if (!/\bheight=/i.test(attrs)) attrs += ` height="${h}"`;
+      return `<img${attrs}${close}`;
+    }
   );
 
   // Pattern 9: Alt text fallback — derive from filename when alt is empty or missing
@@ -3623,40 +3612,62 @@ ${CONSENT_MODE_V2_HTML}
       }
 
       .seo-content .article-body .article-code {
-        margin: 1.5rem 0;
-        border-radius: 10px;
-        border: 1px solid rgba(180, 68, 31, 0.22);
-        background: #0b1220;
+        margin: 1.85rem 0;
+        border-radius: 6px;
+        border: 1px solid #2E2B26;
+        border-top: 2px solid #B4441F;
+        background: #181715;
         overflow: hidden;
       }
       .seo-content .article-body .article-code-bar {
         display: flex;
-        gap: 0.65rem;
+        align-items: center;
+        gap: 0.6rem;
         margin: 0;
-        padding: 0.5rem 0.75rem;
+        padding: 0.5rem 0.85rem;
         text-align: left;
         font-style: normal;
-        color: #5E584F;
-        background: rgba(252, 244, 239, 0.32);
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        color: #B8B0A2;
+        background: #22201C;
+        border-bottom: 1px solid #302D28;
       }
       .seo-content .article-body .article-code-lang {
-        color: #632511;
-        font-weight: 700;
+        color: #F8E4D9;
+        background: rgba(180, 68, 31, 0.28);
+        border: 1px solid rgba(226, 164, 135, 0.32);
+        padding: 0.14rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 600;
+        font-style: normal;
         text-transform: uppercase;
-        font-size: 0.75rem;
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+      }
+      .seo-content .article-body .article-code-meta {
+        color: #A39C8E;
+        font-size: 0.72rem;
+        font-style: normal;
       }
       .seo-content .article-body .article-code-lede {
         margin: 0;
-        padding: 0.4rem 0.85rem 0.2rem;
-        color: #5E584F;
-        font-size: 0.85rem;
+        padding: 0.42rem 0.9rem;
+        color: #C8C0B3;
+        background: #1D1B18;
+        border-bottom: 1px solid #2A2723;
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 0.78rem;
+        font-style: normal;
       }
       .seo-content .article-body .article-code-gutter {
         color: #77705F;
-        padding-right: 0.75rem;
+        padding: 0 0.75rem 0 0.65rem;
+        margin-right: 0.85rem;
+        border-right: 1px solid rgba(250, 248, 244, 0.08);
       }
       .seo-content .article-body .article-code pre {
         margin: 0;
+        padding: 0.75rem 0 0.85rem;
         border: 0;
         background: transparent;
       }
@@ -3683,7 +3694,7 @@ ${CONSENT_MODE_V2_HTML}
         margin: 1.5rem 0;
       }
       
-      .seo-content .article-body figcaption {
+      .seo-content .article-body figcaption:not(.article-code-bar) {
         text-align: center;
         font-size: 0.9rem;
         color: #5E584F;
@@ -4013,34 +4024,6 @@ ${CONSENT_MODE_V2_HTML}
           <p class="excerpt article-description">${description}</p>
 
           ${tocHtml}
-
-          ${slug === 'snowflake-cost-optimization-techniques-2026' ? `
-          <!-- Contextual CTA: drive readers to the interactive cost calculator -->
-          <aside class="calculator-promo" style="background:linear-gradient(90deg,#FCF4EF 0%,#F8E4D9 100%);border-radius:12px;padding:1.1rem 1.4rem;margin:0 0 1.75rem 0;box-shadow:0 4px 14px rgba(248, 228, 217,0.25);">
-            <a href="/tools/snowflake-cost-calculator" style="color:#1B1A17;text-decoration:none;font-weight:600;font-size:1rem;display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
-              <span style="font-size:1.3rem;" aria-hidden="true">ðŸ§®</span>
-              <span>Try our free Snowflake Cost Calculator — estimate your monthly spend in seconds →</span>
-            </a>
-          </aside>` : ''}
-
-          ${(() => {
-            const isSnowflakeArticle = (categoryNames || []).some((c) => String(c).toLowerCase() === 'snowflake');
-            if (!isSnowflakeArticle) return '';
-            const relatedToolItems = [
-              { slug: 'snowflake-cost-calculator', title: 'Snowflake Cost Calculator', blurb: 'full monthly spend estimator' },
-              { slug: 'snowflake-query-cost-estimator', title: 'Query Cost Estimator', blurb: 'cost per query from bytes scanned' },
-              { slug: 'snowflake-warehouse-sizing', title: 'Warehouse Sizing', blurb: 'pick XS–6XL for your workload' },
-              { slug: 'snowflake-credit-cost', title: 'Credit → USD Converter', blurb: 'instant credit price lookup' },
-            ].filter((tool) => !ADSENSE_REVIEW_MODE || isReviewAllowlistedTool(tool.slug));
-            if (relatedToolItems.length === 0) return '';
-            return `
-          <aside class="related-tools" style="background:#F6F2EB;border:1px solid rgba(180, 68, 31,0.25);border-radius:12px;padding:1.1rem 1.4rem;margin:0 0 1.75rem 0;">
-            <h3 style="color:#9C3A1A;font-size:1rem;margin:0 0 0.6rem;font-weight:600;">Free Snowflake Tools</h3>
-            <ul style="list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr;gap:0.45rem;">
-              ${relatedToolItems.map((tool) => `<li><a href="/tools/${tool.slug}" style="color:#B4441F;text-decoration:none;font-weight:500;">${escapeHtml(tool.title)}</a> <span style="color:#5E584F;font-size:0.9rem;">&mdash; ${escapeHtml(tool.blurb)}</span></li>`).join('\n              ')}
-            </ul>
-          </aside>`;
-          })()}
 
           ${keyTakeawaysHtml}
 
@@ -6184,12 +6167,15 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   var productionJsFile = jsFile;
   var productionCssFile = cssFile;
   var buildTimestamp = new Date().toISOString();
-  var totalSheets = allCheatsheets.length;
+  var visibleCheatsheets = ADSENSE_REVIEW_MODE
+    ? allCheatsheets.filter(function(cs) { return isReviewAllowlistedCheatsheet(cs.slug); })
+    : allCheatsheets;
+  var totalSheets = visibleCheatsheets.length;
 
   // Group by category
   var categoryMap = {};
-  for (var i = 0; i < allCheatsheets.length; i++) {
-    var cs = allCheatsheets[i];
+  for (var i = 0; i < visibleCheatsheets.length; i++) {
+    var cs = visibleCheatsheets[i];
     var cat = cs.category || 'general';
     if (!categoryMap[cat]) categoryMap[cat] = [];
     categoryMap[cat].push(cs);
@@ -6310,7 +6296,7 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += categorySectionsHTML + '\n';
   html += '        <div style="margin-top: 2.5rem; padding: 1.5rem; background: rgba(180, 68, 31,0.1); border-radius: 12px; border: 1px solid rgba(180, 68, 31,0.2);">\n';
   html += '          <h2 style="font-size: 1.3rem; margin-top: 0;">Explore More</h2>\n';
-  html += '          <p style="margin-bottom: 0.5rem;">Looking for in-depth explanations? Check our <a href="https://dataengineerhub.blog/glossary">Data Engineering Glossary</a> for ' + totalSheets + '+ key terms.</p>\n';
+  html += '          <p style="margin-bottom: 0.5rem;">Want to test these patterns interactively? Try our <a href="https://dataengineerhub.blog/tools">free data engineering calculators and SQL playground</a>.</p>\n';
   html += '          <p style="margin-bottom: 0;">For hands-on tutorials and guides, browse the <a href="https://dataengineerhub.blog/articles">full article library</a>.</p>\n';
   html += '        </div>\n\n';
   html += '        <a href="https://dataengineerhub.blog" style="display: inline-block; margin-top: 2rem; padding: 12px 24px; background: linear-gradient(135deg, #E2A487, #E2A487); color: white; text-decoration: none; border-radius: 8px; font-weight: 500;">\u2190 Back to Home</a>\n';
@@ -6339,9 +6325,9 @@ function generateCheatsheetHubPageHTML(allCheatsheets, categories, bundleFiles) 
   html += '      "name": "Data Engineering Cheat Sheets",\n';
   html += '      "numberOfItems": ' + totalSheets + ',\n';
   html += '      "itemListElement": [\n';
-  for (var ili = 0; ili < allCheatsheets.length; ili++) {
-    html += '        { "@type": "ListItem", "position": ' + (ili + 1) + ', "name": "' + escapeJsonLd(allCheatsheets[ili].title) + '", "url": "https://dataengineerhub.blog/cheatsheets/' + allCheatsheets[ili].slug + '" }';
-    html += (ili < allCheatsheets.length - 1 ? ',\n' : '\n');
+  for (var ili = 0; ili < visibleCheatsheets.length; ili++) {
+    html += '        { "@type": "ListItem", "position": ' + (ili + 1) + ', "name": "' + escapeJsonLd(visibleCheatsheets[ili].title) + '", "url": "https://dataengineerhub.blog/cheatsheets/' + visibleCheatsheets[ili].slug + '" }';
+    html += (ili < visibleCheatsheets.length - 1 ? ',\n' : '\n');
   }
   html += '      ]\n';
   html += '    }\n';
@@ -6466,12 +6452,15 @@ function generateCheatsheetPageHTML(sheet, allCheatsheets, bundleFiles) {
 
   // Related cheat sheets
   var relatedHTML = '';
-  if (sheet.relatedSlugs && sheet.relatedSlugs.length > 0) {
+  var visibleRelatedSlugs = (sheet.relatedSlugs || []).filter(function(relSlug) {
+    return !ADSENSE_REVIEW_MODE || isReviewAllowlistedCheatsheet(relSlug);
+  });
+  if (visibleRelatedSlugs.length > 0) {
     relatedHTML += '<div style="margin-top: 2rem;">';
     relatedHTML += '<h2 style="color: #9C3A1A; font-size: 1.3rem; margin-bottom: 1rem;">Related Cheat Sheets</h2>';
     relatedHTML += '<div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">';
-    for (var rs = 0; rs < sheet.relatedSlugs.length; rs++) {
-      var relSlug = sheet.relatedSlugs[rs];
+    for (var rs = 0; rs < visibleRelatedSlugs.length; rs++) {
+      var relSlug = visibleRelatedSlugs[rs];
       // Find title from allCheatsheets
       var relTitle = relSlug;
       for (var rl = 0; rl < allCheatsheets.length; rl++) {

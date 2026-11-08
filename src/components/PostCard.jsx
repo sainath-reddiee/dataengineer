@@ -22,8 +22,9 @@ const PostCard = ({ post }) => {
         <div className="mb-4 aspect-[16/9] overflow-hidden rounded-sm border border-paper-500 bg-paper-300">
           <LazyImage
             src={post.image}
-            alt=""
+            alt={post.title || 'Article illustration'}
             width={400}
+            height={225}
             quality={80}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="h-full w-full object-cover"

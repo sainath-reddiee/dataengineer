@@ -24,7 +24,7 @@ const SearchModal = lazy(() => import('@/components/SearchModal'));
 const SupportModal = lazy(() => import('@/components/Support/SupportModal'));
 import { useReadingList } from '@/hooks/useReadingList';
 import { ADSENSE_REVIEW_MODE, isReviewAllowlistedTool } from '@/data/adsenseQualityGate';
-import { FEATURED_TOOLS, toolHref } from '@/data/toolsCatalog';
+import { FEATURED_TOOLS_NAV } from '@/data/featuredToolsNav';
 
 const REVIEW_HIDDEN_MAIN = new Set([
   // Commercial placements stay in the main nav. AdsBot still noindexes that URL.
@@ -108,8 +108,8 @@ const Header = ({ topOffset = 0 }) => {
     (item) => !ADSENSE_REVIEW_MODE || !REVIEW_HIDDEN_LEARN.has(item.path)
   );
   const visibleFeaturedTools = ADSENSE_REVIEW_MODE
-    ? FEATURED_TOOLS.filter((tool) => isReviewAllowlistedTool(tool.slug))
-    : FEATURED_TOOLS;
+    ? FEATURED_TOOLS_NAV.filter((tool) => isReviewAllowlistedTool(tool.slug))
+    : FEATURED_TOOLS_NAV;
   const isLearnActive = visibleLearnLinks.some((item) => isPathActive(currentPath, item.path));
 
   useEffect(() => {
@@ -354,14 +354,10 @@ const Header = ({ topOffset = 0 }) => {
                   {visibleFeaturedTools.map((tool) => {
                     const className =
                       'shrink-0 rounded border border-paper-500 bg-paper-50 px-3 py-2 text-xs text-ink-soft';
-                    return tool.external ? (
-                      <a key={tool.slug} href={tool.url} className={className} onClick={() => setMobileMenuOpen(false)}>
-                        {tool.title}
-                      </a>
-                    ) : (
+                    return (
                       <Link
                         key={tool.slug}
-                        to={toolHref(tool)}
+                        to={tool.href}
                         className={className}
                         onClick={() => setMobileMenuOpen(false)}
                       >

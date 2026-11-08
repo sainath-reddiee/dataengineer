@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { ADSENSE_REVIEW_MODE } from '../src/data/adsenseQualityGate.js';
+import { EXCLUDED_ARTICLE_SLUGS } from '../src/data/excludedSlugs.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.join(__dirname, '..', 'dist');
@@ -520,19 +521,7 @@ async function verifyBuild() {
   // Check 4c: Sitemap must not list 301'd article aliases
   // ============================================================================
   log('\n🗺️  Checking sitemap for redirected article slugs...', 'blue');
-  const redirectedSlugs = [
-    'snowflake-query-optimization-2025',
-    'building-snowflake-agents-in-10-minutes',
-    'build-a-snowflake-agent-in-10-minutes',
-    'snowflake-unique-aggregation-hidden-functions',
-    'snowflake-options-automate-query-optimization-guide',
-    'build-a-simple-rag-application-in-snowflake-using-streamlit-and-snowflake-cortex',
-    'build-rag-snowflake-documentation',
-    'snowflake-openflow-tutorial',
-    'snowflake-performance',
-    'snowflake-performance-tuning-techniques',
-    'loading-data-from-s3-to-snowflake',
-  ];
+  const redirectedSlugs = EXCLUDED_ARTICLE_SLUGS;
   const sitemapCandidates = [
     path.join(distDir, 'sitemap.xml'),
     path.join(__dirname, '..', 'public', 'sitemap.xml'),

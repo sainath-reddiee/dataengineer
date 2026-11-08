@@ -3,7 +3,7 @@
 // after onload flipped media to "all" and after the delayed AdSense tag
 // was injected. Re-apply this after those steps.
 
-const HEAVY_PRELOAD = /framer-motion|\/ads-|duckdb|pdf-vendor|linking-engine|ai-vendor/i;
+const HEAVY_PRELOAD = /framer-motion|\/ads-|duckdb|pdf-vendor|ai-vendor|cheatsheetData|practiceSeo/i;
 
 export function deferRenderBlockingStylesheets(html) {
   if (typeof html !== 'string' || !html) return html;

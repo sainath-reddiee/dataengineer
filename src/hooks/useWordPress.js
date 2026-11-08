@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import wordpressApi from '@/services/wordpressApi';
 import { buildBootstrappedPost } from '@/utils/articleBootstrap';
 import { getParkedSsgArticle } from '@/utils/ssgArticle';
+import { getFallbackArticles } from '@/data/fallbackArticles';
 
 // Hook for fetching posts with proper sorting and pagination
 export const usePosts = ({
@@ -17,11 +18,23 @@ export const usePosts = ({
   order = 'desc',
   enabled = true
 } = {}) => {
-  const [posts, setPosts] = useState([]);
+  const canSeedFromFallback =
+    enabled &&
+    page === 1 &&
+    !categorySlug &&
+    !tag &&
+    !search &&
+    !featured &&
+    !trending &&
+    order === 'desc';
+
+  const [posts, setPosts] = useState(() =>
+    canSeedFromFallback ? getFallbackArticles(per_page, 0) : []
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalPosts, setTotalPosts] = useState(0);
+  const [totalPosts, setTotalPosts] = useState(() => (canSeedFromFallback ? 105 : 0));
   const [hasMore, setHasMore] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -31,11 +44,12 @@ export const usePosts = ({
   // CRITICAL FIX: Reset posts immediately when categorySlug changes
   useEffect(() => {
     console.log('🔄 Category/search/tag changed, resetting state:', { categorySlug, search, tag });
-    setPosts([]);
+    const seed = !categorySlug && !search && !tag ? getFallbackArticles(12, 0) : [];
+    setPosts(seed);
     setError(null);
     setLoading(true);
     setTotalPages(1);
-    setTotalPosts(0);
+    setTotalPosts(seed.length > 0 ? 105 : 0);
     setHasMore(false);
   }, [categorySlug, search, tag]);
 
@@ -152,9 +166,9 @@ export const usePosts = ({
         if (!isCancelled && requestId === currentRequestRef.current) {
           console.error(`❌ [Request #${requestId}] Error fetching posts:`, err);
           setError(err.message);
-          setPosts([]);
+          setPosts((prev) => (prev.length > 0 ? prev : []));
           setTotalPages(1);
-          setTotalPosts(0);
+          setTotalPosts((prev) => (prev > 0 ? prev : 0));
           setHasMore(false);
         }
       } finally {

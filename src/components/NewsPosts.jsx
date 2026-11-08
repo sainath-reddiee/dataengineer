@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Zap } from 'lucide-react';
 import { usePosts } from '@/hooks/useWordPress';
 import { reduceMotion } from '@/utils/performance';
+import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 import PostCard from './PostCard';
 
 const NewsPosts = () => {
@@ -13,9 +14,10 @@ const NewsPosts = () => {
   const { posts: newsPosts, loading, error } = usePosts({
     categorySlug: 'news',
     per_page: 3,
+    enabled: !ADSENSE_REVIEW_MODE,
   });
 
-  if (loading) {
+  if (ADSENSE_REVIEW_MODE || loading) {
     return null;
   }
 

@@ -121,6 +121,38 @@ export default defineConfig({
       }
     },
 
+    // avsc's Type API still `require()`s Node builtins. Map them to browser
+    // shims before vite:resolve externalizes them as empty stubs.
+    {
+      name: 'avsc-browser-builtins',
+      enforce: 'pre',
+      resolveId(source, importer) {
+        if (!importer) return null;
+        const from = importer.replace(/\\/g, '/');
+        if (!from.includes('/node_modules/avsc/')) return null;
+        const id = source.replace(/^node:/, '');
+        if (id === 'buffer') {
+          return path.resolve(__dirname, 'src/lib/node-shims/buffer.js');
+        }
+        if (id === 'util') {
+          return path.resolve(__dirname, 'src/lib/node-shims/util.js');
+        }
+        if (id === 'crypto') {
+          return path.resolve(__dirname, 'node_modules/avsc/etc/browser/lib/crypto.js');
+        }
+        if (
+          id === 'stream' ||
+          id === 'zlib' ||
+          id === 'events' ||
+          id === 'path' ||
+          id === 'fs'
+        ) {
+          return path.resolve(__dirname, 'src/lib/node-shims/empty.js');
+        }
+        return null;
+      },
+    },
+
     // Pre-render public hub/static pages so crawlers see real content without
     // needing to execute JavaScript.
     vitePrerender({
@@ -188,22 +220,28 @@ export default defineConfig({
     exclude: [
       // Exclude jsPDF optional peer dependencies from optimization
       'canvg',
-      'html2canvas'
+      'html2canvas',
+      // avsc is loaded through src/lib/avro.js + browser builtin shims
+      'avsc',
     ]
   },
 
   build: {
-    // Suppress modulepreload for chunks that are lazy-loaded or heavy
-    // (duckdb, pdf-vendor, linking-engine, etc.). They should not execute eagerly on critical path.
+    // Suppress modulepreload for chunks that are lazy-loaded or heavy.
+    // They should not execute eagerly on the article/home critical path.
     modulePreload: {
       resolveDependencies: (filename, deps) => {
         return deps.filter(dep =>
           !dep.includes('duckdb') &&
           !dep.includes('pdf-vendor') &&
-          !dep.includes('linking-engine') &&
           !dep.includes('ai-vendor') &&
           !dep.includes('markdown') &&
           !dep.includes('framer-motion') &&
+          !dep.includes('cheatsheetData') &&
+          !dep.includes('practiceSeo') &&
+          !dep.includes('seoOverrides') &&
+          !dep.includes('articlesCatalog') &&
+          !dep.includes('dompurify') &&
           !dep.includes('/ads-') &&
           !dep.includes('article-extras') &&
           !dep.includes('article-data')
@@ -228,58 +266,59 @@ export default defineConfig({
       ],
       output: {
         manualChunks: (id) => {
-          if (id.includes('src/lib/pseo') || id.includes('linkingEngine')) {
-            return 'linking-engine';
+          if (id.includes('preload-helper') || id.includes('commonjsHelpers')) {
+            return 'react-vendor';
           }
+
+          // Do not force glossary/comparison JSON into one named chunk.
+          // glossaryLoader / comparisonLoader already dynamic-import per
+          // category so each spoke page downloads only its own file.
 
           if (id.includes('node_modules')) {
             if (id.includes('avsc')) {
               return undefined;
             }
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'react-vendor';
-            }
-            if (id.includes('framer-motion')) {
-              return 'framer-motion';
-            }
-            if (id.includes('@radix-ui')) {
-              return 'ui-vendor';
-            }
-            if (id.includes('lucide-react')) {
-              return 'icons';
-            }
-            if (id.includes('jspdf')) {
-              return 'pdf-vendor';
+            if (
+              id.includes('@duckdb/duckdb-wasm') ||
+              id.includes('apache-arrow') ||
+              id.includes('flatbuffers')
+            ) {
+              return 'duckdb';
             }
             if (id.includes('@google/generative-ai')) {
               return 'ai-vendor';
             }
-            if (id.includes('react-helmet-async')) {
-              return 'helmet';
+            if (id.includes('framer-motion')) {
+              return 'framer-motion';
             }
-            if (id.includes('marked') || id.includes('dompurify')) {
+            if (/[\\/]node_modules[\\/]marked[\\/]/.test(id)) {
               return 'markdown';
             }
-            if (id.includes('@duckdb/duckdb-wasm')) {
-              return 'duckdb';
+            if (id.includes('dompurify')) {
+              return 'dompurify';
             }
-            return 'vendor';
-          }
-
-          if (id.includes('src/components/')) {
-            if (id.includes('PostCard') || id.includes('PostListItem')) {
-              return 'post-components';
+            if (id.includes('jspdf')) {
+              return 'pdf-vendor';
             }
-            if (id.includes('Ad')) {
-              return 'ads';
+            if (
+              id.includes('/react/') ||
+              id.includes('/react-dom/') ||
+              id.includes('/react-router') ||
+              id.includes('/@remix-run/router/') ||
+              id.includes('/scheduler/') ||
+              id.includes('react-helmet-async') ||
+              id.includes('invariant') ||
+              id.includes('shallowequal') ||
+              id.includes('react-fast-compare') ||
+              id.includes('\\react\\') ||
+              id.includes('\\react-dom\\') ||
+              id.includes('\\react-router') ||
+              id.includes('\\@remix-run\\router\\') ||
+              id.includes('\\scheduler\\')
+            ) {
+              return 'react-vendor';
             }
-            if (id.includes('AudioReader') || id.includes('GiscusComments') || id.includes('SupportPopup') || id.includes('CiteThisArticle') || id.includes('ArticleFaq')) {
-              return 'article-extras';
-            }
-          }
-
-          if (id.includes('src/data/articleContextualLinks') || id.includes('src/data/courseRecommendations')) {
-            return 'article-data';
+            return undefined;
           }
         },
 

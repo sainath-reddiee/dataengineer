@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Zap, RefreshCw } from 'lucide-react';
 import { useCategories } from '@/hooks/useWordPress';
 import { MIN_INDEXABLE_CATEGORY_COUNT } from '@/data/thinTags';
+import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 
 // Icon provider with drop-shadow for visibility
 const getCategoryIcon = (category, className = 'h-8 w-8') => {
@@ -90,9 +91,10 @@ const SparkleCard = ({ category }) => {
   })), []);
 
   const MotionLink = motion.create(Link);
+  const targetPath = ADSENSE_REVIEW_MODE ? '/articles' : path;
 
   return (
-    <MotionLink to={path} className="block h-full group" initial="rest" whileHover="hover">
+    <MotionLink to={targetPath} className="block h-full group" initial="rest" whileHover="hover">
       <motion.div
         variants={{ rest: { scale: 1 }, hover: { scale: 1.03 } }}
         transition={{ type: 'spring', stiffness: 400, damping: 20 }}

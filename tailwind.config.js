@@ -31,7 +31,7 @@ const ink = {
 	soft: '#2B2925',
 	body: '#33302B',
 	muted: '#5E584F',
-	faint: '#77705F',
+	faint: '#665F52',
 };
 
 const rust = {
@@ -56,7 +56,7 @@ const legacyNeutral = {
 	200: '#2F2C27',
 	300: '#3F3B35',
 	400: '#5E584F',
-	500: '#77705F',
+	500: '#665F52',
 	600: '#B8B0A2',
 	700: '#DCD5C8',
 	800: '#EFEAE1',

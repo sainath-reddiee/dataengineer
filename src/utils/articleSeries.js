@@ -1,4 +1,4 @@
-import articlesData from '../data/pseo/articles.json' with { type: 'json' };
+import articlesData from '../data/articlesCatalog.js';
 
 function normalize(value) {
   return String(value || '').toLowerCase().trim();

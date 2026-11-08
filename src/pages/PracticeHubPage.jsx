@@ -2,8 +2,7 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import * as LucideIcons from 'lucide-react';
-import { Search, Link2, Check, ChevronDown } from 'lucide-react';
+import { BookOpen, Cloud, Database, Flame, Sparkles, Search, Link2, Check, ChevronDown } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import StreakBadge from '@/components/practice/StreakBadge';
@@ -132,8 +131,16 @@ const FAQS = [
   },
 ];
 
+const PRACTICE_ICONS = {
+  BookOpen,
+  Cloud,
+  Database,
+  Flame,
+  Sparkles,
+};
+
 const Icon = ({ name, className }) => {
-  const Cmp = LucideIcons[name] || LucideIcons.BookOpen;
+  const Cmp = PRACTICE_ICONS[name] || BookOpen;
   return <Cmp className={className} />;
 };
 

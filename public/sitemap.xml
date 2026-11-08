@@ -108,16 +108,6 @@
     </image:image>
   </url>
 <url>
-    <loc>https://dataengineerhub.blog/articles/snowflake-cortex-token-usage-monitoring</loc>
-    <lastmod>2026-09-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/09/Snowflake-cortex-token-usage.png</image:loc>
-      <image:title>Snowflake Cortex AI Token Usage Monitoring: The Complete Guide</image:title>
-    </image:image>
-  </url>
-<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-mcp-server-guide</loc>
     <lastmod>2026-09-15</lastmod>
     <changefreq>weekly</changefreq>
@@ -528,16 +518,6 @@
     </image:image>
   </url>
 <url>
-    <loc>https://dataengineerhub.blog/articles/airflow-dbt-snowflake-orchestration-guide</loc>
-    <lastmod>2026-07-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/07/airflow_dbt_featured.png</image:loc>
-      <image:title>Orchestrating dbt with Airflow on Snowflake: Job vs Model-Level in 2026</image:title>
-    </image:image>
-  </url>
-<url>
     <loc>https://dataengineerhub.blog/articles/dbt-state-snowflake-configuration</loc>
     <lastmod>2026-07-03</lastmod>
     <changefreq>monthly</changefreq>
@@ -578,16 +558,6 @@
     </image:image>
   </url>
 <url>
-    <loc>https://dataengineerhub.blog/articles/dbt-state-skip-unchanged-nodes</loc>
-    <lastmod>2026-06-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/06/state_featured.png</image:loc>
-      <image:title>dbt state: Skip Unchanged Nodes, Cut Warehouse Compute 30%</image:title>
-    </image:image>
-  </url>
-<url>
     <loc>https://dataengineerhub.blog/articles/dbr-fusion-engine-migration-guide</loc>
     <lastmod>2026-06-22</lastmod>
     <changefreq>monthly</changefreq>
@@ -595,16 +565,6 @@
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/06/fusion_featured.jpg</image:loc>
       <image:title>dbt Fusion: 30x Faster parsing(And why Migration matters)</image:title>
-    </image:image>
-  </url>
-<url>
-    <loc>https://dataengineerhub.blog/articles/snowflake-aiceberg-v3-migration-guide</loc>
-    <lastmod>2026-06-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/06/iceberg_featured.jpg</image:loc>
-      <image:title>Snowflake Iceberg V3: When to Actually Migrate(vs Native Tables)</image:title>
     </image:image>
   </url>
 <url>
@@ -798,16 +758,6 @@
     </image:image>
   </url>
 <url>
-    <loc>https://dataengineerhub.blog/articles/snowflake-streams-tasks-pipeline-guide</loc>
-    <lastmod>2026-04-07</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2026/01/Designer_11zon.jpg</image:loc>
-      <image:title>Snowflake Streams &amp; Tasks: SCD2 Pipeline Guide</image:title>
-    </image:image>
-  </url>
-<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-cost-optimization-techniques-2026</loc>
     <lastmod>2026-01-02</lastmod>
     <changefreq>yearly</changefreq>
@@ -885,16 +835,6 @@
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/11/A-hand-drawn-technic_11zon.jpg</image:loc>
       <image:title>7 Ways to Cut Snowflake Cortex AI Costs [2026]</image:title>
-    </image:image>
-  </url>
-<url>
-    <loc>https://dataengineerhub.blog/articles/snowflake-intelligence-guide-setup-optimization</loc>
-    <lastmod>2025-11-07</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/11/Copilot_20251107_080501.png</image:loc>
-      <image:title>Snowflake Intelligence Guide: Setup, Optimization &amp; Real SQL Examples</image:title>
     </image:image>
   </url>
 <url>
@@ -1018,16 +958,6 @@
     </image:image>
   </url>
 <url>
-    <loc>https://dataengineerhub.blog/articles/snowflake-mcp-server-agentic-ai-guide-2025</loc>
-    <lastmod>2025-10-08</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/10/generated_image-3.jpg</image:loc>
-      <image:title>Enterprise AI 2025: Snowflake MCP Links Agents to Data</image:title>
-    </image:image>
-  </url>
-<url>
     <loc>https://dataengineerhub.blog/articles/snowflake-merge-optimization-techniques</loc>
     <lastmod>2025-10-08</lastmod>
     <changefreq>yearly</changefreq>
@@ -1055,16 +985,6 @@
     <image:image>
       <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/AWS.png</image:loc>
       <image:title>AWS Data Pipeline Cost Optimization Strategies</image:title>
-    </image:image>
-  </url>
-<url>
-    <loc>https://dataengineerhub.blog/articles/advanced-snowflake-interview-questions-experienced</loc>
-    <lastmod>2025-10-08</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://app.dataengineerhub.blog/wp-content/uploads/2025/09/image-3.png</image:loc>
-      <image:title>Advanced Snowflake Interview Questions for Experienced</image:title>
     </image:image>
   </url>
 <url>

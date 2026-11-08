@@ -39,16 +39,16 @@ const SectionHeader = ({ title, note, actionText, actionLink }) => (
   </div>
 );
 
-// Featured cheat sheets, one per topic.
+// Featured cheat sheets, one per topic (all allowlisted during AdSense review).
 const FEATURED_SLUGS = [
-  'snowflake-interview-questions',
   'snowflake-sql',
+  'sql-window-functions',
   'dbt-commands',
   'airflow-essentials',
-  'sql-window-functions',
+  'snowflake-best-practices',
+  'databricks',
   'python-for-data-engineers',
-  'data-engineering-interview-questions',
-  'snowflake-cost-optimization-interview',
+  'data-modeling',
 ];
 
 const CheatSheetList = () => {

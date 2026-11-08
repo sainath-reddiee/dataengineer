@@ -21,6 +21,7 @@ import {
 
 import { cheatsheets, CHEATSHEET_CATEGORIES } from '@/data/cheatsheetData';
 import { SITE_CONFIG } from '@/lib/seoConfig';
+import { ADSENSE_REVIEW_MODE, isReviewAllowlistedCheatsheet } from '@/data/adsenseQualityGate';
 
 const DIFFICULTY_COLORS = {
   Beginner: 'bg-green-500/20 text-green-300',
@@ -32,9 +33,17 @@ export default function CheatSheetHubPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
 
+  const baseSheets = useMemo(
+    () =>
+      ADSENSE_REVIEW_MODE
+        ? cheatsheets.filter((s) => isReviewAllowlistedCheatsheet(s.slug))
+        : cheatsheets,
+    []
+  );
+
   // Filter cheat sheets based on search and category
   const filteredSheets = useMemo(() => {
-    let sheets = cheatsheets;
+    let sheets = baseSheets;
 
     if (selectedCategory) {
       sheets = sheets.filter((s) => s.category === selectedCategory);
@@ -50,7 +59,7 @@ export default function CheatSheetHubPage() {
     }
 
     return sheets;
-  }, [searchQuery, selectedCategory]);
+  }, [baseSheets, searchQuery, selectedCategory]);
 
   // Group by category for display
   const sheetsByCategory = useMemo(() => {
@@ -87,8 +96,8 @@ export default function CheatSheetHubPage() {
     name: 'Data Engineering Cheat Sheets',
     description: pageDescription,
     url: canonicalUrl,
-    numberOfItems: cheatsheets.length,
-    itemListElement: cheatsheets.map((sheet, idx) => ({
+    numberOfItems: baseSheets.length,
+    itemListElement: baseSheets.map((sheet, idx) => ({
       '@type': 'ListItem',
       position: idx + 1,
       name: sheet.title,
@@ -158,7 +167,7 @@ export default function CheatSheetHubPage() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-full text-blue-300 text-sm mb-6">
                 <FileText className="w-4 h-4" />
-                <span>{cheatsheets.length} Cheat Sheets</span>
+                <span>{baseSheets.length} Cheat Sheets</span>
               </div>
 
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
@@ -225,20 +234,22 @@ export default function CheatSheetHubPage() {
                 </button>
               ))}
             </div>
-            <div className="mt-4 text-xs text-gray-500">
-              Prefer a dedicated page per category?{' '}
-              {CHEATSHEET_CATEGORIES.map((cat, idx) => (
-                <React.Fragment key={cat.id}>
-                  <Link
-                    to={`/cheatsheets/category/${cat.id}`}
-                    className="text-blue-400 hover:text-blue-300 underline underline-offset-2"
-                  >
-                    {cat.name}
-                  </Link>
-                  {idx < CHEATSHEET_CATEGORIES.length - 1 ? ' · ' : ''}
-                </React.Fragment>
-              ))}
-            </div>
+            {!ADSENSE_REVIEW_MODE && (
+              <div className="mt-4 text-xs text-gray-500">
+                Prefer a dedicated page per category?{' '}
+                {CHEATSHEET_CATEGORIES.map((cat, idx) => (
+                  <React.Fragment key={cat.id}>
+                    <Link
+                      to={`/cheatsheets/category/${cat.id}`}
+                      className="text-blue-400 hover:text-blue-300 underline underline-offset-2"
+                    >
+                      {cat.name}
+                    </Link>
+                    {idx < CHEATSHEET_CATEGORIES.length - 1 ? ' · ' : ''}
+                  </React.Fragment>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

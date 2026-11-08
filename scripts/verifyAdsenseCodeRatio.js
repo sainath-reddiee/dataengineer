@@ -53,6 +53,26 @@ assert(enhanced.includes('article-code'), 'short snippets get a language bar for
 assert(enhanced.includes('article-code-lede') || enhanced.includes('SQL example'), 'code block must keep a prose caption for AdsBot');
 assert(enhanced.includes('article-code-gutter'), 'reader blocks must show line numbers');
 assert(enhanced.includes('tok-kw'), 'SQL keywords should be highlighted');
+
+const windowSqlHtml = `<pre><code class="language-sql">SELECT record_id, event_date FROM source_records WHERE event_date >= @WindowStart AND event_date < @WindowEnd;</code></pre>`;
+const enhancedWindow = enhanceArticleCodeBlocks(windowSqlHtml);
+assert(enhancedWindow.includes('source_records'), 'contextual lede should reference the queried table');
+assert(enhancedWindow.includes('tok-var'), 'SQL @variables should be highlighted with tok-var');
+
+const doubleEncodedHtml = `<pre><code class="language-python">tags = &amp;#91;&quot;snowflake&quot;, &quot;dbt&quot;]</code></pre>`;
+const enhancedDecoded = enhanceArticleCodeBlocks(doubleEncodedHtml);
+assert(!enhancedDecoded.includes('&amp;#91;') && !enhancedDecoded.includes('&#91;'), 'double-encoded numeric entities must be decoded to [');
+assert(!enhancedDecoded.includes('Snippet snippet'), 'code lede must never duplicate Snippet snippet');
+
+const css = readFileSync(join(root, 'src/index.css'), 'utf8');
+assert(
+  css.includes('.article-content .article-code p.article-code-lede'),
+  'index.css must scope .article-code-lede above .article-content p so contrast is never lost'
+);
+assert(
+  css.includes('.article-content figcaption:not(.article-code-bar)'),
+  'index.css must exclude .article-code-bar from italic figcaption styles'
+);
 const ssg = readFileSync(join(root, 'scripts/generateStaticPagesIncremental.js'), 'utf8');
 assert(!ssg.includes('collapseLongCodeBlocks'), 'article SSG must keep full code blocks for every visitor');
 assert(

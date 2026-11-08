@@ -37,7 +37,13 @@ import {
   CHEATSHEET_CATEGORIES,
 } from '@/data/cheatsheetData';
 import { SITE_CONFIG } from '@/lib/seoConfig';
-import { getCheatsheetIndexableWordCount, isAdSenseNoindexPath } from '@/data/adsenseQualityGate';
+import {
+  ADSENSE_REVIEW_MODE,
+  getCheatsheetIndexableWordCount,
+  isAdSenseNoindexPath,
+  isReviewAllowlistedCheatsheet,
+  isReviewAllowlistedTool,
+} from '@/data/adsenseQualityGate';
 import { MIN_INDEXABLE_WORD_COUNT } from '@/data/thinTags';
 import SponsorPlacement from '@/components/SponsorPlacement';
 
@@ -281,7 +287,12 @@ export default function CheatSheetPage() {
   const sheet = getCheatSheetBySlug(slug);
 
   const relatedSheets = useMemo(
-    () => (sheet ? getRelatedCheatSheets(slug) : []),
+    () =>
+      sheet
+        ? getRelatedCheatSheets(slug).filter(
+            (s) => !ADSENSE_REVIEW_MODE || isReviewAllowlistedCheatsheet(s.slug)
+          )
+        : [],
     [slug, sheet]
   );
 
@@ -297,7 +308,17 @@ export default function CheatSheetPage() {
   }
 
   const category = CHEATSHEET_CATEGORIES.find((c) => c.id === sheet.category);
-  const relatedTools = CATEGORY_TOOLS[sheet.category] || [];
+  const rawTools = CATEGORY_TOOLS[sheet.category] || [];
+  const filteredCategoryTools = ADSENSE_REVIEW_MODE
+    ? rawTools.filter((t) => isReviewAllowlistedTool(t.slug))
+    : rawTools;
+  const relatedTools =
+    filteredCategoryTools.length > 0
+      ? filteredCategoryTools
+      : [
+          { slug: 'sql-playground', title: 'SQL Playground', tagline: 'Run queries in your browser' },
+          { slug: 'snowflake-cost-calculator', title: 'Snowflake Cost Calculator', tagline: 'Monthly warehouse spend' },
+        ];
   const canonicalUrl = `${SITE_CONFIG.url}/cheatsheets/${sheet.slug}`;
   const hubUrl = `${SITE_CONFIG.url}/cheatsheets`;
 

@@ -22,6 +22,7 @@ import { SITE_CONFIG } from '@/lib/seoConfig';
 import SponsorPlacement from '@/components/SponsorPlacement';
 import { TOOLS, TOOL_CATEGORIES, TOOL_STAGES, filterTools } from '@/data/toolsCatalog';
 import { TOOL_ICONS } from '@/data/toolIcons';
+import { ADSENSE_REVIEW_MODE, isReviewAllowlistedTool } from '@/data/adsenseQualityGate';
 
 const FAQS = [
   {
@@ -54,7 +55,17 @@ export default function ToolsHubPage() {
   const stage = TOOL_STAGES.some((item) => item.id === params.get('stack'))
     ? params.get('stack')
     : '';
-  const visibleTools = useMemo(() => filterTools({ category, stage }), [category, stage]);
+  const baseTools = useMemo(
+    () => (ADSENSE_REVIEW_MODE ? TOOLS.filter((t) => isReviewAllowlistedTool(t.slug)) : TOOLS),
+    []
+  );
+  const visibleTools = useMemo(
+    () =>
+      filterTools({ category, stage }).filter(
+        (t) => !ADSENSE_REVIEW_MODE || isReviewAllowlistedTool(t.slug)
+      ),
+    [category, stage]
+  );
   const activeStage = TOOL_STAGES.find((item) => item.id === stage);
 
   const setCategory = (id) => {
@@ -91,8 +102,8 @@ export default function ToolsHubPage() {
     name: 'Free Data Engineering Tools and Calculators',
     description: pageDescription,
     url: canonicalUrl,
-    numberOfItems: TOOLS.length,
-    itemListElement: TOOLS.map((tool, idx) => ({
+    numberOfItems: baseTools.length,
+    itemListElement: baseTools.map((tool, idx) => ({
       '@type': 'ListItem',
       position: idx + 1,
       name: tool.title,
@@ -172,7 +183,7 @@ export default function ToolsHubPage() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-full text-blue-300 text-sm mb-6">
                 <Wrench className="w-4 h-4" />
-                <span>{TOOLS.length} Free Tools</span>
+                <span>{baseTools.length} Free Tools</span>
               </div>
 
               <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
@@ -350,15 +361,11 @@ export default function ToolsHubPage() {
             <h2 className="text-2xl font-bold text-white mb-3">Which tool should I use?</h2>
             <ul className="text-gray-300 space-y-2 list-disc pl-5">
               <li>
-                <strong className="text-white">Planning a new Snowflake workload?</strong> Start with the{' '}
-                <Link to="/tools/snowflake-warehouse-sizing" className="text-blue-400 hover:underline">
-                  Warehouse Sizing Estimator
-                </Link>{' '}
-                to pick an initial size, then use the{' '}
+                <strong className="text-white">Planning a new Snowflake workload?</strong> Use the{' '}
                 <Link to="/tools/snowflake-cost-calculator" className="text-blue-400 hover:underline">
-                  Cost Calculator
+                  Snowflake Cost Calculator
                 </Link>{' '}
-                to model monthly spend.
+                to model warehouse size, auto-suspend, storage, and serverless credit spend.
               </li>
               <li>
                 <strong className="text-white">Comparing cloud data warehouses?</strong> Use the{' '}
@@ -366,13 +373,6 @@ export default function ToolsHubPage() {
                   Cloud Warehouse Cost Comparison
                 </Link>{' '}
                 for side-by-side Snowflake vs BigQuery vs Databricks pricing on the same workload profile.
-              </li>
-              <li>
-                <strong className="text-white">Optimizing a slow Snowflake query?</strong> Use the{' '}
-                <Link to="/tools/snowflake-query-cost-estimator" className="text-blue-400 hover:underline">
-                  Query Cost Estimator
-                </Link>{' '}
-                to compare cost before and after optimization (clustering, SOS, materialized views).
               </li>
               <li>
                 <strong className="text-white">Budgeting for Databricks or BigQuery?</strong> The{' '}
@@ -383,35 +383,14 @@ export default function ToolsHubPage() {
                 <Link to="/tools/bigquery-cost-calculator" className="text-blue-400 hover:underline">
                   BigQuery Cost Calculator
                 </Link>{' '}
-                estimate monthly spend with platform-specific pricing models.
+                estimate monthly spend with platform-specific DBU, slot, and on-demand TB models.
               </li>
               <li>
-                <strong className="text-white">Estimating dbt Cloud costs?</strong> The{' '}
-                <Link to="/tools/dbt-cloud-cost-calculator" className="text-blue-400 hover:underline">
-                  dbt Cloud Cost Calculator
-                </Link>{' '}
-                covers seat licensing, model runs, and consumption-based pricing.
-              </li>
-              <li>
-                <strong className="text-white">Need a quick SQL or data utility?</strong> The{' '}
+                <strong className="text-white">Practicing or validating SQL queries?</strong> The{' '}
                 <Link to="/tools/sql-playground" className="text-blue-400 hover:underline">
                   SQL Playground
-                </Link>,{' '}
-                <Link to="/tools/cron-expression-builder" className="text-blue-400 hover:underline">
-                  Cron Builder
-                </Link>, and{' '}
-                <Link to="/tools/json-parquet-avro-converter" className="text-blue-400 hover:underline">
-                  Format Converter
                 </Link>{' '}
-                are everyday utilities that work entirely in your browser.
-              </li>
-              <li>
-                <strong className="text-white">Reviewing an invoice?</strong> Plug credit counts
-                from ACCOUNT_USAGE into the{' '}
-                <Link to="/tools/snowflake-credit-cost" className="text-blue-400 hover:underline">
-                  Credit → USD Converter
-                </Link>{' '}
-                for quick dollar-value checks.
+                runs window functions, CTEs, and QUALIFY directly in your browser on DuckDB-WASM.
               </li>
             </ul>
           </div>
@@ -430,24 +409,24 @@ export default function ToolsHubPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               {
-                slug: 'snowflake-cost-optimization-interview',
-                title: 'Snowflake Cost Optimization',
-                pair: 'Cost Calculator + Query Cost Estimator',
+                slug: 'snowflake-best-practices',
+                title: 'Snowflake Best Practices',
+                pair: 'Snowflake Cost Calculator',
               },
               {
                 slug: 'snowflake-sql',
                 title: 'Snowflake SQL Reference',
-                pair: 'SQL Formatter + Query Cost Estimator',
+                pair: 'SQL Playground + Cost Calculator',
               },
               {
                 slug: 'dbt-commands',
                 title: 'dbt Commands Reference',
-                pair: 'dbt Cloud Cost Calculator',
+                pair: 'Warehouse Comparison + SQL Playground',
               },
               {
                 slug: 'airflow-essentials',
                 title: 'Airflow Essentials',
-                pair: 'Cron Expression Builder',
+                pair: 'Pipeline Orchestration Reference',
               },
               {
                 slug: 'databricks',
@@ -455,9 +434,9 @@ export default function ToolsHubPage() {
                 pair: 'Databricks Cost Calculator',
               },
               {
-                slug: 'snowflake-interview-questions',
-                title: 'Snowflake Interview Questions',
-                pair: 'Warehouse Sizing + Cost Calculator',
+                slug: 'sql-window-functions',
+                title: 'SQL Window Functions',
+                pair: 'Browser SQL Playground',
               },
             ].map((sheet) => (
               <Link

@@ -5,6 +5,7 @@ import { Award, BookOpen, Target, Calendar, CheckCircle2, AlertTriangle, Externa
 import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import { generateBreadcrumbs } from '@/lib/seoConfig';
+import { ADSENSE_REVIEW_MODE } from '@/data/adsenseQualityGate';
 
 const FAQ = [
   {
@@ -322,27 +323,67 @@ const Certification = () => {
 
         {/* Practice tool */}
         <section>
-          <h2 className="text-2xl font-bold text-white mb-4">Interactive Practice Questions</h2>
-          <p className="text-gray-300 mb-4">
-            The embedded app below is a free practice question bank covering SnowPro Core, Advanced:
-            Data Engineer, Advanced: Architect, and Specialty: Gen AI. It runs entirely in your
-            browser, gives instant feedback with rationales, and tracks your readiness by topic.
-          </p>
-          <div className="w-full rounded-lg border border-gray-700 overflow-hidden" style={{ height: '720px' }}>
-            <iframe
-              src="https://snowcert.streamlit.app/?embed=true"
-              title="Snowflake Certification Practice App"
-              width="100%"
-              height="720"
-              style={{ border: 'none', height: '720px', display: 'block' }}
-              loading="lazy"
-              allow="clipboard-read; clipboard-write;"
-            />
-          </div>
-          <p className="text-gray-400 text-sm mt-2">
-            Tool opens in-page via Streamlit Community Cloud. If it takes a moment to wake from
-            idle, reload after ~10 seconds.
-          </p>
+          <h2 className="text-2xl font-bold text-white mb-4">Interactive Study &amp; Reference Materials</h2>
+          {ADSENSE_REVIEW_MODE ? (
+            <div className="p-6 rounded-lg border border-gray-700 bg-gray-800/40 space-y-4">
+              <p className="text-gray-300 text-sm leading-relaxed">
+                Pair the four-week study plan above with our hands-on Snowflake reference guides and interactive browser tools to verify every exam domain in practice:
+              </p>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <Link
+                  to="/cheatsheets/snowflake-sql"
+                  className="p-4 rounded border border-gray-700 bg-gray-900/40 hover:border-blue-500/60 transition-colors block"
+                >
+                  <span className="font-semibold text-white block mb-1">Snowflake SQL Cheat Sheet →</span>
+                  <span className="text-xs text-gray-400">DDL, DML, QUALIFY, Time Travel, zero-copy cloning, and semi-structured VARIANT syntax.</span>
+                </Link>
+                <Link
+                  to="/cheatsheets/snowflake-best-practices"
+                  className="p-4 rounded border border-gray-700 bg-gray-900/40 hover:border-blue-500/60 transition-colors block"
+                >
+                  <span className="font-semibold text-white block mb-1">Snowflake Best Practices →</span>
+                  <span className="text-xs text-gray-400">Warehouse sizing, auto-suspend, clustering keys, RBAC hierarchy, and credit monitoring.</span>
+                </Link>
+                <Link
+                  to="/tools/snowflake-cost-calculator"
+                  className="p-4 rounded border border-gray-700 bg-gray-900/40 hover:border-blue-500/60 transition-colors block"
+                >
+                  <span className="font-semibold text-white block mb-1">Snowflake Cost Calculator →</span>
+                  <span className="text-xs text-gray-400">Test how edition multipliers, warehouse sizes, and the 60-second minimum affect credit burn.</span>
+                </Link>
+                <Link
+                  to="/tools/sql-playground"
+                  className="p-4 rounded border border-gray-700 bg-gray-900/40 hover:border-blue-500/60 transition-colors block"
+                >
+                  <span className="font-semibold text-white block mb-1">Browser SQL Playground →</span>
+                  <span className="text-xs text-gray-400">Run window functions, CTEs, and QUALIFY queries directly in your browser.</span>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <>
+              <p className="text-gray-300 mb-4">
+                The embedded app below is a free practice question bank covering SnowPro Core, Advanced:
+                Data Engineer, Advanced: Architect, and Specialty: Gen AI. It runs entirely in your
+                browser, gives instant feedback with rationales, and tracks your readiness by topic.
+              </p>
+              <div className="w-full rounded-lg border border-gray-700 overflow-hidden" style={{ height: '720px' }}>
+                <iframe
+                  src="https://snowcert.streamlit.app/?embed=true"
+                  title="Snowflake Certification Practice App"
+                  width="100%"
+                  height="720"
+                  style={{ border: 'none', height: '720px', display: 'block' }}
+                  loading="lazy"
+                  allow="clipboard-read; clipboard-write;"
+                />
+              </div>
+              <p className="text-gray-400 text-sm mt-2">
+                Tool opens in-page via Streamlit Community Cloud. If it takes a moment to wake from
+                idle, reload after ~10 seconds.
+              </p>
+            </>
+          )}
         </section>
 
         {/* FAQ */}
@@ -362,23 +403,23 @@ const Certification = () => {
           <h2 className="text-2xl font-bold text-white mb-4">Related Resources on DataEngineer Hub</h2>
           <ul className="space-y-2 text-blue-400">
             <li>
-              <Link to="/category/snowflake" className="hover:underline inline-flex items-center gap-1">
-                <ExternalLink className="w-4 h-4" /> Snowflake Articles & Tutorials
-              </Link>
-            </li>
-            <li>
               <Link to="/articles" className="hover:underline inline-flex items-center gap-1">
-                <ExternalLink className="w-4 h-4" /> All Data Engineering Articles
+                <ExternalLink className="w-4 h-4" /> All Data Engineering Articles &amp; Tutorials
               </Link>
             </li>
             <li>
-              <Link to="/cheatsheets" className="hover:underline inline-flex items-center gap-1">
-                <ExternalLink className="w-4 h-4" /> Cheat Sheets & Interview Prep
+              <Link to="/cheatsheets/snowflake-sql" className="hover:underline inline-flex items-center gap-1">
+                <ExternalLink className="w-4 h-4" /> Snowflake SQL Reference Cheat Sheet
               </Link>
             </li>
             <li>
-              <Link to="/practice" className="hover:underline inline-flex items-center gap-1">
-                <ExternalLink className="w-4 h-4" /> Certification Practice Tests
+              <Link to="/cheatsheets/snowflake-best-practices" className="hover:underline inline-flex items-center gap-1">
+                <ExternalLink className="w-4 h-4" /> Snowflake Production Best Practices
+              </Link>
+            </li>
+            <li>
+              <Link to="/tools/snowflake-cost-calculator" className="hover:underline inline-flex items-center gap-1">
+                <ExternalLink className="w-4 h-4" /> Snowflake Warehouse Cost Calculator
               </Link>
             </li>
           </ul>

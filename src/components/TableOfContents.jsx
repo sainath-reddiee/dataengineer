@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { List, ChevronDown, ChevronUp } from 'lucide-react';
 
 /**
@@ -12,7 +11,7 @@ export function extractHeadings(html) {
   let match;
   while ((match = regex.exec(html)) !== null) {
     headings.push({
-      level: parseInt(match[1]),
+      level: parseInt(match[1], 10),
       id: match[2],
       text: match[3].replace(/<[^>]*>/g, '').trim(),
     });
@@ -44,11 +43,11 @@ const TableOfContents = ({ headings = [] }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
 
   useEffect(() => {
-    if (headings.length === 0) return;
+    if (headings.length === 0) return undefined;
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
-          .filter(e => e.isIntersecting)
+          .filter((e) => e.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
         if (visible.length > 0) {
           setActiveId(visible[0].target.id);
@@ -65,10 +64,23 @@ const TableOfContents = ({ headings = [] }) => {
 
   if (headings.length < 3) return null;
 
+  const jumpToHeading = (e, id, closeMobile = false) => {
+    e.preventDefault();
+    if (closeMobile) setIsCollapsed(true);
+    const target = document.getElementById(id);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setActiveId(id);
+    }
+  };
+
   return (
     <>
       {/* Desktop: Sticky sidebar */}
-      <nav aria-label="Table of contents" className="hidden xl:block sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
+      <nav
+        aria-label="Table of contents"
+        className="hidden xl:block sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pr-2"
+      >
         <div className="border-l border-paper-500 pl-4">
           <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-faint">
             On this page
@@ -78,15 +90,13 @@ const TableOfContents = ({ headings = [] }) => {
               <li key={id}>
                 <a
                   href={`#${id}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }}
+                  aria-current={activeId === id ? 'location' : undefined}
+                  onClick={(e) => jumpToHeading(e, id, false)}
                   className={`-ml-[17px] block border-l-2 py-1.5 pl-[15px] text-[14px] leading-snug transition-colors ${
                     level === 3 ? 'pl-7' : ''
                   } ${
                     activeId === id
-                      ? 'border-rust-500 text-ink'
+                      ? 'border-rust-500 font-medium text-ink'
                       : 'border-transparent text-ink-faint hover:text-ink'
                   }`}
                 >
@@ -99,52 +109,42 @@ const TableOfContents = ({ headings = [] }) => {
       </nav>
 
       {/* Mobile: Collapsible */}
-      <div className="xl:hidden mb-6">
+      <nav aria-label="Table of contents" className="xl:hidden mb-6">
         <button
+          type="button"
+          aria-expanded={!isCollapsed}
+          aria-controls="mobile-toc-list"
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="flex w-full items-center justify-between border-y border-paper-500 py-3 text-sm text-ink-soft transition-colors hover:text-ink"
         >
           <span className="flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.06em]">
-            <List className="h-4 w-4 text-rust-500" />
+            <List className="h-4 w-4 text-rust-500" aria-hidden="true" />
             On this page · {headings.length} sections
           </span>
-          {isCollapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
-        </button>
-        <AnimatePresence>
-          {!isCollapsed && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
-            >
-              <ul className="space-y-1 border-b border-paper-500 py-3">
-                {headings.map(({ id, text, level }) => (
-                  <li key={id}>
-                    <a
-                      href={`#${id}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setIsCollapsed(true);
-                        // Delay scroll until after collapse animation completes,
-                        // otherwise layout reflow cancels the smooth scroll
-                        setTimeout(() => {
-                          document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }, 350);
-                      }}
-                      className={`block py-1.5 text-[15px] text-ink-muted transition-colors hover:text-rust-600 ${
-                        level === 3 ? 'pl-4' : 'pl-0'
-                      }`}
-                    >
-                      {text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
+          {isCollapsed ? (
+            <ChevronDown className="h-4 w-4" aria-hidden="true" />
+          ) : (
+            <ChevronUp className="h-4 w-4" aria-hidden="true" />
           )}
-        </AnimatePresence>
-      </div>
+        </button>
+        {!isCollapsed && (
+          <ul id="mobile-toc-list" className="space-y-1 border-b border-paper-500 py-3">
+            {headings.map(({ id, text, level }) => (
+              <li key={id}>
+                <a
+                  href={`#${id}`}
+                  onClick={(e) => jumpToHeading(e, id, true)}
+                  className={`block py-1.5 text-[15px] text-ink-muted transition-colors hover:text-rust-600 ${
+                    level === 3 ? 'pl-4' : 'pl-0'
+                  }`}
+                >
+                  {text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </nav>
     </>
   );
 };

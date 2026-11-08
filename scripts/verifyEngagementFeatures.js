@@ -1,10 +1,13 @@
 import { analyzeArticleFaqs, extractArticleFaqs, renderArticleFaqHtml } from '../src/utils/articleFaq.js';
-import { getNextSeriesArticle, getSeriesArticles } from '../src/utils/articleSeries.js';
-import { getFallbackArticles } from '../src/data/fallbackArticles.js';
 import { FALLBACK_ARTICLE_COUNT } from '../src/data/siteStats.js';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { register } from 'node:module';
+
+register(new URL('./json-import-loader.mjs', import.meta.url));
+const { getNextSeriesArticle, getSeriesArticles } = await import('../src/utils/articleSeries.js');
+const { getFallbackArticles } = await import('../src/data/fallbackArticles.js');
 
 function assert(condition, message) {
   if (!condition) {

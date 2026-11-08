@@ -43,7 +43,7 @@ assert(playground.includes("searchParams.get('sql')"), 'Playground should accept
 assert(playground.includes("pane === 'editor'"), 'Playground should tab Editor/Results on phones');
 assert(cta.includes("to: '/tools'"), 'In-article explore rail should keep Free Tools');
 assert(header.includes('<span>Tools</span>'), 'Mobile header Tools shortcut must be labeled, not icon-only');
-assert(header.includes('FEATURED_TOOLS'), 'Mobile menu should list featured tools');
+assert(header.includes('FEATURED_TOOLS_NAV'), 'Mobile menu should list featured tools');
 assert(hub.includes('py-8 sm:py-16'), 'Tools hub hero should stay short on phones');
 assert(readFileSync(join(root, 'src/hooks/useCopyCodeButtons.js'), 'utf8').includes('playgroundSqlHref'), 'Article SQL blocks should deep-link the playground');
 assert(readFileSync(join(root, 'src/pages/CostCalculatorPage.jsx'), 'utf8').includes('StickyToolTotal'), 'Snowflake calculator should keep the monthly total on screen');

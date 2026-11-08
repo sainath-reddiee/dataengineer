@@ -1,7 +1,6 @@
 // src/App.jsx - FIXED VERSION
 import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Routes, Route, useLocation, Link, Navigate } from 'react-router-dom';
-import { Toaster } from '@/components/ui/toaster';
 import Layout from '@/components/Layout';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import MobileOptimization from '@/components/MobileOptimization';
@@ -465,7 +464,6 @@ function App() {
           <Route path="proposals" element={<SafeRoute><GuestProposalsPage /></SafeRoute>} />
         </Route>
       </Routes>
-      <Toaster />
       <CookieConsent />
     </ErrorBoundary>
   );

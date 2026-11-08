@@ -4,7 +4,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import * as LucideIcons from 'lucide-react';
+import { BookOpen, Cloud, Database, Flame, Sparkles } from 'lucide-react';
 import MetaTags from '@/components/SEO/MetaTags';
 import Breadcrumbs from '@/components/SEO/Breadcrumbs';
 import QuestionCard from '@/components/practice/QuestionCard';
@@ -18,8 +18,16 @@ import { useQuiz } from '@/hooks/useQuiz';
 import { useQuizStore } from '@/hooks/useQuizStore';
 import { quizBreadcrumbs, getQuizSchema } from '@/lib/practiceSeo';
 
+const PRACTICE_ICONS = {
+  BookOpen,
+  Cloud,
+  Database,
+  Flame,
+  Sparkles,
+};
+
 const Icon = ({ name, className }) => {
-  const Cmp = LucideIcons[name] || LucideIcons.BookOpen;
+  const Cmp = PRACTICE_ICONS[name] || BookOpen;
   return <Cmp className={className} />;
 };
 

@@ -9,9 +9,12 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { EXCLUDED_ARTICLE_SLUGS } from '../src/data/excludedSlugs.js';
+import { isAdSenseNoindexPath } from '../src/data/adsenseQualityGate.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const EXCLUDED_SET = new Set(EXCLUDED_ARTICLE_SLUGS.map((s) => `/articles/${s}`));
 
 export function pageHasNoindex(html) {
   const robots = String(html || '').match(/<meta\s+name=["']robots["']\s+content=["']([^"']+)["']/i);
@@ -40,9 +43,14 @@ export function filterSitemapXml(xml, distDir, { readFileSync = fs.readFileSync,
 
     let pathname;
     try {
-      pathname = new URL(locMatch[1].trim()).pathname;
+      pathname = new URL(locMatch[1].trim()).pathname.replace(/\/+$/, '') || '/';
     } catch {
       kept.push(block);
+      continue;
+    }
+
+    if (EXCLUDED_SET.has(pathname) || isAdSenseNoindexPath(pathname)) {
+      removed.push(pathname);
       continue;
     }
 
